@@ -44,7 +44,6 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.MathUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -77,6 +76,7 @@ import org.chromium.chrome.browser.toolbar.CustomTabCount;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
+import org.chromium.chrome.browser.ui.edge_to_edge.TransitiveTopInsetProvider;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 
@@ -128,8 +128,8 @@ public class NewTabAnimationLayoutUnitTest {
             ObservableSuppliers.createNullable();
     private final SettableNonNullObservableSupplier<Boolean> mScrimVisibilitySupplier =
             ObservableSuppliers.createNonNull(false);
-    private final SettableMonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier =
-            ObservableSuppliers.createMonotonic();
+    private final TransitiveTopInsetProvider mTransitiveTopInsetProvider =
+            new TransitiveTopInsetProvider();
     private final SettableNonNullObservableSupplier<Float>
             mNtpSearchBoxTransitionPercentageSupplier = ObservableSuppliers.createNonNull(0f);
     private NewTabAnimationLayout mNewTabAnimationLayout;
@@ -186,7 +186,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mToolbarManager.getCustomTabCount()).thenReturn(mCustomTabCount);
         when(mToolbarManager.getNtpSearchBoxTransitionPercentageSupplier())
                 .thenReturn(mNtpSearchBoxTransitionPercentageSupplier);
-        mTopInsetProviderSupplier.set(mTopInsetProvider);
+        mTransitiveTopInsetProvider.set(mTopInsetProvider);
         mScrimVisibilitySupplier.set(false);
         doAnswer(
                         invocation -> {
@@ -195,6 +195,17 @@ public class NewTabAnimationLayoutUnitTest {
                         })
                 .when(mUpdateHost)
                 .createLayoutTab(anyInt(), anyBoolean());
+        // Mock TopInsetProvider to trigger observer callback when addObserver is called
+        doAnswer(
+                        invocation -> {
+                            TopInsetProvider.Observer observer =
+                                    (TopInsetProvider.Observer) invocation.getArgument(0);
+                            // Trigger the callback immediately with systemTopInset=100
+                            observer.onToEdgeChange(100, true);
+                            return null;
+                        })
+                .when(mTopInsetProvider)
+                .addObserver(any(TopInsetProvider.Observer.class));
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
@@ -216,7 +227,7 @@ public class NewTabAnimationLayoutUnitTest {
                                 mToolbarManager,
                                 mBrowserControlsManager,
                                 mScrimVisibilitySupplier,
-                                mTopInsetProviderSupplier));
+                                mTransitiveTopInsetProvider));
         mNewTabAnimationLayout.setTabModelSelector(mTabModelSelector);
         mNewTabAnimationLayout.setTabContentManager(mTabContentManager);
         when(mAnimationHostView.findViewById(R.id.tab_switcher_button))
@@ -362,7 +373,6 @@ public class NewTabAnimationLayoutUnitTest {
         when(mNewTab.isNativePage()).thenReturn(true);
         when(mNewTab.getNativePage()).thenReturn(mNtp);
         when(mNtp.supportsEdgeToEdgeOnTop()).thenReturn(true);
-        when(mTopInsetProvider.getSystemTopInset()).thenReturn(100);
         when(mBrowserControlsManager.getContentOffset()).thenReturn(50);
 
         mNewTabAnimationLayout.onTabCreated(

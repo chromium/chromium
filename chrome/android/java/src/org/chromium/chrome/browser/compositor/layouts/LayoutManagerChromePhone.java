@@ -42,7 +42,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     // TODO(crbug.com/40282469): Rename SimpleAnimationLayout to NewTabAnimationLayout once it is
     // rolled out.
     private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolderSupplier;
-    private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
+    private final TopInsetProvider mTopInsetProvider;
     private final NonNullObservableSupplier<Boolean> mScrimVisibilitySupplier;
     private final ToolbarManager mToolbarManager;
     private final ViewGroup mContentView;
@@ -64,6 +64,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      * @param contentView The base content view.
      * @param toolbarManager The {@link ToolbarManager} instance.
      * @param scrimVisibilitySupplier Supplier for the Scrim visibility.
+     * @param topInsetProvider The {@link TopInsetProvider} instance.
      */
     public LayoutManagerChromePhone(
             LayoutManagerHost host,
@@ -77,7 +78,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             ViewGroup contentView,
             ToolbarManager toolbarManager,
             NonNullObservableSupplier<Boolean> scrimVisibilitySupplier,
-            MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier) {
+            TopInsetProvider topInsetProvider) {
         super(
                 host,
                 contentContainer,
@@ -90,7 +91,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
         mContentView = contentView;
         mToolbarManager = toolbarManager;
         mScrimVisibilitySupplier = scrimVisibilitySupplier;
-        mTopInsetProviderSupplier = topInsetProviderSupplier;
+        mTopInsetProvider = topInsetProvider;
     }
 
     @Override
@@ -126,7 +127,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                             mToolbarManager,
                             getBrowserControlsManager(),
                             mScrimVisibilitySupplier,
-                            mTopInsetProviderSupplier);
+                            mTopInsetProvider);
         } else {
             mSimpleAnimationLayout =
                     new SimpleAnimationLayout(context, this, renderHost, getContentContainer());

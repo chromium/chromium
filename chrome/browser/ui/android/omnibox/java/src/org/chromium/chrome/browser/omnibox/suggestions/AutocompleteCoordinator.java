@@ -65,8 +65,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     private final ViewGroup mParent;
     private final AutocompleteDelegate mDelegate;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
-    private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
-    private final Callback<TopInsetProvider> mTopInsetProviderAvailableCallback;
+    private final TopInsetProvider mTopInsetProvider;
     private final TopInsetProvider.Observer mTopInsetProviderObserver;
     private final Callback<Profile> mProfileChangeCallback;
     private final AutocompleteMediator mMediator;
@@ -97,7 +96,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
             LocationBarDataProvider locationBarDataProvider,
             MonotonicObservableSupplier<Profile> profileObservableSupplier,
-            MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
+            TopInsetProvider topInsetProvider,
             Callback<String> bringTabGroupToForegroundCallback,
             BookmarkState bookmarkState,
             OmniboxActionDelegate omniboxActionDelegate,
@@ -110,7 +109,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         mParent = parent;
         mDelegate = delegate;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mTopInsetProviderSupplier = topInsetProviderSupplier;
+        mTopInsetProvider = topInsetProvider;
         Context context = parent.getContext();
 
         ModelList listItems = new ModelList();
@@ -186,11 +185,9 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             mRecycledViewPool = null;
         }
 
-        // Set up TopInsetProvider observer to handle edge-to-edge changes.
+        // Set up observer to handle edge-to-edge changes.
         mTopInsetProviderObserver = this::onToEdgeChange;
-        mTopInsetProviderAvailableCallback = this::onTopInsetProviderAvailable;
-        mTopInsetProviderSupplier.addSyncObserverAndCallIfNonNull(
-                mTopInsetProviderAvailableCallback);
+        mTopInsetProvider.addObserver(mTopInsetProviderObserver);
 
         // https://crbug.com/966227 Set initial layout direction ahead of inflating the suggestions.
         updateSuggestionListLayoutDirection();
@@ -202,11 +199,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             mRecycledViewPool.destroy();
         }
         mProfileSupplier.removeObserver(mProfileChangeCallback);
-        var topInsetProvider = mTopInsetProviderSupplier.get();
-        if (topInsetProvider != null) {
-            topInsetProvider.removeObserver(mTopInsetProviderObserver);
-        }
-        mTopInsetProviderSupplier.removeObserver(mTopInsetProviderAvailableCallback);
+        mTopInsetProvider.removeObserver(mTopInsetProviderObserver);
         mMediator.destroy();
         if (mContainer != null) {
             mContainer.destroy();
@@ -539,11 +532,6 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     public void removeOmniboxSuggestionsDropdownScrollListener(
             OmniboxSuggestionsDropdownScrollListener listener) {
         mScrollListenerList.removeObserver(listener);
-    }
-
-    private void onTopInsetProviderAvailable(TopInsetProvider topInsetProvider) {
-        topInsetProvider.addObserver(mTopInsetProviderObserver);
-        mTopInsetProviderSupplier.removeObserver(mTopInsetProviderAvailableCallback);
     }
 
     /**

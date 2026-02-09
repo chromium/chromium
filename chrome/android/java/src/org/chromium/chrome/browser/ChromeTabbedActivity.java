@@ -315,7 +315,7 @@ import org.chromium.chrome.browser.ui.browser_window.BrowserWindowType;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
-import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
+import org.chromium.chrome.browser.ui.edge_to_edge.TransitiveTopInsetProvider;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
@@ -510,8 +510,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private final OneshotSupplierImpl<HubManager> mHubManagerSupplier = new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<ModuleRegistry> mModuleRegistrySupplier =
             new OneshotSupplierImpl<>();
-    private final SettableMonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier =
-            ObservableSuppliers.createMonotonic();
+    private final TransitiveTopInsetProvider mTransitiveTopInsetProvider =
+            new TransitiveTopInsetProvider();
+
     private final IncognitoTabHost mIncognitoTabHost =
             new IncognitoTabHost() {
                 @Override
@@ -1031,7 +1032,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             getContentView().findViewById(R.id.coordinator),
                             getToolbarManager(),
                             mRootUiCoordinator.getScrimManager().getScrimVisibilitySupplier(),
-                            mTopInsetProviderSupplier);
+                            mTransitiveTopInsetProvider);
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
     }
@@ -3050,7 +3051,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 getTabContentManagerSupplier(),
                 this::getSnackbarManager,
                 mEdgeToEdgeControllerSupplier,
-                mTopInsetProviderSupplier,
+                mTransitiveTopInsetProvider,
                 mBottomChinSupplier,
                 getActivityType(),
                 this::isInOverviewMode,
@@ -3572,7 +3573,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             getToolbarManager().getTabStripHeightSupplier(),
                             mModuleRegistrySupplier,
                             mEdgeToEdgeControllerSupplier,
-                            mTopInsetProviderSupplier,
+                            mTransitiveTopInsetProvider,
                             getStartupMetricsTracker(),
                             mRootUiCoordinator.getExclusiveAccessManager(),
                             mBackPressManager,

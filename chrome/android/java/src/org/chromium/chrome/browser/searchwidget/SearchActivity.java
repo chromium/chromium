@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
+import org.chromium.chrome.browser.ui.edge_to_edge.NoOpTopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -378,7 +379,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         backPressManager,
                         /* omniboxSuggestionsDropdownScrollListener= */ null,
                         /* tabModelSelectorSupplier= */ ObservableSuppliers.createMonotonic(),
-                        /* topInsetProviderSupplier= */ ObservableSuppliers.createMonotonic(),
+                        /* topInsetProvider= */ new NoOpTopInsetProvider(),
                         new LocationBarEmbedder() {},
                         mLocationBarUiOverrides,
                         findViewById(R.id.control_container),

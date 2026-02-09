@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.TabbedModeTabDelegateFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
+import org.chromium.chrome.browser.ui.edge_to_edge.NoOpTopInsetProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -94,7 +95,7 @@ public class TabUmaTest {
                 rootUiCoordinator.getToolbarManager().getTabStripHeightSupplier(),
                 new OneshotSupplierImpl<>(),
                 ObservableSuppliers.alwaysNull(),
-                ObservableSuppliers.alwaysNull(),
+                new NoOpTopInsetProvider(),
                 cta.getStartupMetricsTracker(),
                 /* exclusiveAccessManager= */ null,
                 /* backPressManager= */ null,

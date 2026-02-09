@@ -30,7 +30,4 @@ public interface TopInsetProvider extends Destroyable {
 
     /** Removes an observer. */
     void removeObserver(Observer observer);
-
-    /** Returns the system's top inset. */
-    int getSystemTopInset();
 }

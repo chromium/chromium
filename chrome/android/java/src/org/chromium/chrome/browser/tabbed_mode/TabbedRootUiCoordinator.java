@@ -401,7 +401,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param tabContentManagerSupplier Supplies the {@link TabContentManager}.
      * @param snackbarManagerSupplier Supplies the {@link SnackbarManager}.
      * @param edgeToEdgeSupplier Supplies the {@link EdgeToEdgeController}.
-     * @param topInsetProviderSupplier Supplies the {@link TopInsetProvider}.
+     * @param topInsetProvider The {@link TopInsetProvider} instance.
      * @param systemBarColorHelperSupplier Supplies the {@link SystemBarColorHelper} for the
      *     edge-to-edge bottom chin.
      * @param activityType The {@link ActivityType} for the activity.
@@ -458,7 +458,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<TabContentManager> tabContentManagerSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull SettableMonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            @NonNull SettableMonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
+            @NonNull TopInsetProvider topInsetProvider,
             @NonNull OneshotSupplierImpl<SystemBarColorHelper> systemBarColorHelperSupplier,
             @ActivityType int activityType,
             @NonNull Supplier<Boolean> isInOverviewModeSupplier,
@@ -516,7 +516,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 tabContentManagerSupplier,
                 snackbarManagerSupplier,
                 edgeToEdgeSupplier,
-                topInsetProviderSupplier,
+                topInsetProvider,
                 activityType,
                 isInOverviewModeSupplier,
                 appMenuDelegate,

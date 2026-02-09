@@ -100,7 +100,7 @@ public class NativePageFactory {
     private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
+    private final TopInsetProvider mTopInsetProvider;
     private final StartupMetricsTracker mStartupMetricsTracker;
     private @Nullable NewTabPageCreationTracker mNewTabPageCreationTracker;
 
@@ -128,7 +128,7 @@ public class NativePageFactory {
             NonNullObservableSupplier<Integer> tabStripHeightSupplier,
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
+            TopInsetProvider topInsetProvider,
             StartupMetricsTracker startupMetricsTracker,
             BackPressManager backPressManager,
             MultiInstanceManager multiInstanceManager,
@@ -150,7 +150,7 @@ public class NativePageFactory {
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mModuleRegistrySupplier = moduleRegistrySupplier;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
-        mTopInsetProviderSupplier = topInsetProviderSupplier;
+        mTopInsetProvider = topInsetProvider;
         mStartupMetricsTracker = startupMetricsTracker;
         mBackPressManager = backPressManager;
         mMultiInstanceManager = multiInstanceManager;
@@ -179,7 +179,7 @@ public class NativePageFactory {
                             mTabStripHeightSupplier,
                             mModuleRegistrySupplier,
                             mEdgeToEdgeControllerSupplier,
-                            mTopInsetProviderSupplier,
+                            mTopInsetProvider,
                             mStartupMetricsTracker,
                             mBackPressManager,
                             mMultiInstanceManager,
@@ -217,7 +217,7 @@ public class NativePageFactory {
         private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
         private final MonotonicObservableSupplier<EdgeToEdgeController>
                 mEdgeToEdgeControllerSupplier;
-        private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
+        private final TopInsetProvider mTopInsetProvider;
         private final StartupMetricsTracker mStartupMetricsTracker;
         private final BackPressManager mBackPressManager;
         private final MultiInstanceManager mMultiInstanceManager;
@@ -242,7 +242,7 @@ public class NativePageFactory {
                 NonNullObservableSupplier<Integer> tabStripHeightSupplier,
                 OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
                 MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-                MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
+                TopInsetProvider topInsetProvider,
                 StartupMetricsTracker startupMetricsTracker,
                 BackPressManager backPressManager,
                 MultiInstanceManager multiInstanceManager,
@@ -265,7 +265,7 @@ public class NativePageFactory {
             mTabStripHeightSupplier = tabStripHeightSupplier;
             mModuleRegistrySupplier = moduleRegistrySupplier;
             mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
-            mTopInsetProviderSupplier = topInsetProviderSupplier;
+            mTopInsetProvider = topInsetProvider;
             mStartupMetricsTracker = startupMetricsTracker;
             mBackPressManager = backPressManager;
             mMultiInstanceManager = multiInstanceManager;
@@ -312,7 +312,7 @@ public class NativePageFactory {
                     mTabStripHeightSupplier,
                     mModuleRegistrySupplier,
                     mEdgeToEdgeControllerSupplier,
-                    mTopInsetProviderSupplier,
+                    mTopInsetProvider,
                     mStartupMetricsTracker,
                     mMultiInstanceManager);
         }

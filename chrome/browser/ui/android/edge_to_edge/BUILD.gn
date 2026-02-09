@@ -15,8 +15,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeFieldTrialImpl.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeUtils.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/NavigationBarColorProvider.java",
+    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/NoOpTopInsetProvider.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/SimpleEdgeToEdgeController.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/TopInsetProvider.java",
+    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/TransitiveTopInsetProvider.java",
   ]
   deps = [
     "//base:base_java",

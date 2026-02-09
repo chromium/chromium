@@ -127,7 +127,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final NonNullObservableSupplier<Integer> mKeyboardAccessoryHeightSupplier;
     private final NonNullObservableSupplier<Integer> mControlContainerTranslationSupplier;
     private final NonNullObservableSupplier<Integer> mControlContainerHeightSupplier;
-    private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
+    private final TopInsetProvider mTopInsetProvider;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Handler mHandler;
     @LayerVisibility private int mLayerVisibility;
@@ -149,7 +149,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final Callback<Integer> mControlContainerTranslationCallback;
     private final Callback<Integer> mControlContainerHeightCallback;
     private final SharedPreferences mSharedPreferences;
-    private final Callback<TopInsetProvider> mTopInsetProviderAvailableCallback;
     private final TopInsetProvider.Observer mTopInsetProviderObserver;
     private int mTopInset;
 
@@ -181,7 +180,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
      * @param controlContainerHeightSupplier Supplier of an override current height of the control
      *     container. If the value is equal to LayoutParams.WRAP_CONTENT, it should be understood as
      *     meaning that the height should no longer be overridden.
-     * @param topInsetProviderSupplier Supplier of the {@link TopInsetProvider}.
+     * @param topInsetProvider The {@link TopInsetProvider} instance.
      * @param controlsPosition Supplier to update whenever toolbar position changes.
      * @param profileSupplier Supplier of the currently applicable profile.
      */
@@ -203,7 +202,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             View toolbarProgressBarContainer,
             NonNullObservableSupplier<Integer> controlContainerTranslationSupplier,
             NonNullObservableSupplier<Integer> controlContainerHeightSupplier,
-            MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
+            TopInsetProvider topInsetProvider,
             Handler handler,
             Context context,
             SettableNonNullObservableSupplier<Integer> controlsPosition,
@@ -226,7 +225,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mToolbarProgressBarContainer = toolbarProgressBarContainer;
         mControlContainerTranslationSupplier = controlContainerTranslationSupplier;
         mControlContainerHeightSupplier = controlContainerHeightSupplier;
-        mTopInsetProviderSupplier = topInsetProviderSupplier;
+        mTopInsetProvider = topInsetProvider;
         mCurrentPosition = controlsPosition;
         mKeyboardHeightSupplier = keyboardHeightSupplier;
         mWindowAndroid = windowAndroid;
@@ -369,11 +368,9 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mKeyboardHeightSupplier.addObserver(mKeyboardHeightToolbarCallback);
         mKeyboardHeightSupplier.addObserver(mKeyboardHeightProgressBarCallback);
 
-        // Set up TopInsetProvider observer to handle edge-to-edge changes.
+        // Set up observer to handle edge-to-edge changes.
         mTopInsetProviderObserver = this::onToEdgeChange;
-        mTopInsetProviderAvailableCallback = this::onTopInsetProviderAvailable;
-        mTopInsetProviderSupplier.addSyncObserverAndCallIfNonNull(
-                mTopInsetProviderAvailableCallback);
+        mTopInsetProvider.addObserver(mTopInsetProviderObserver);
 
         updateCurrentPosition();
         mHandler = handler;
@@ -398,11 +395,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mControlContainerTranslationSupplier.removeObserver(mControlContainerTranslationCallback);
         mControlContainerHeightSupplier.removeObserver(mControlContainerHeightCallback);
         mKeyboardAccessoryHeightSupplier.removeObserver(mKeyboardAccessoryHeightObserver);
-        var topInsetProvider = mTopInsetProviderSupplier.get();
-        if (topInsetProvider != null) {
-            topInsetProvider.removeObserver(mTopInsetProviderObserver);
-        }
-        mTopInsetProviderSupplier.removeObserver(mTopInsetProviderAvailableCallback);
+        mTopInsetProvider.removeObserver(mTopInsetProviderObserver);
     }
 
     /**
@@ -772,11 +765,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         int sample = userPrefersTop ? ControlsPosition.TOP : ControlsPosition.BOTTOM;
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.ToolbarPosition.PositionPrefChanged", sample, ControlsPosition.NONE);
-    }
-
-    private void onTopInsetProviderAvailable(TopInsetProvider topInsetProvider) {
-        topInsetProvider.addObserver(mTopInsetProviderObserver);
-        mTopInsetProviderSupplier.removeObserver(mTopInsetProviderAvailableCallback);
     }
 
     /**

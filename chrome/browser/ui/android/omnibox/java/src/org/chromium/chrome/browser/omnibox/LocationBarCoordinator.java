@@ -223,7 +223,7 @@ public class LocationBarCoordinator
             @Nullable OmniboxSuggestionsDropdownScrollListener
                     omniboxSuggestionsDropdownScrollListener,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
+            TopInsetProvider topInsetProvider,
             LocationBarEmbedder locationBarEmbedder,
             LocationBarEmbedderUiOverrides uiOverrides,
             @Nullable View baseChromeLayout,
@@ -358,7 +358,7 @@ public class LocationBarCoordinator
                         shareDelegateSupplier,
                         locationBarDataProvider,
                         profileObservableSupplier,
-                        topInsetProviderSupplier,
+                        topInsetProvider,
                         bringTabGroupToFrontCallback,
                         bookmarkState,
                         omniboxActionDelegate,

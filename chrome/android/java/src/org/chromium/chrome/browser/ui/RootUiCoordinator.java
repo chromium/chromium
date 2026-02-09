@@ -189,6 +189,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.MissingNavbarInsetsReason;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
+import org.chromium.chrome.browser.ui.edge_to_edge.TransitiveTopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -406,7 +407,7 @@ public class RootUiCoordinator
     protected AdaptiveToolbarUiCoordinator mAdaptiveToolbarUiCoordinator;
     protected final NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private final boolean mIsTablet;
-    private final SettableMonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
+    private @NonNull final TopInsetProvider mTopInsetProvider;
     private @Nullable ToolbarControlContainer mToolbarContainer;
     private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private @Nullable final ExclusiveAccessManager mExclusiveAccessManager;
@@ -449,7 +450,7 @@ public class RootUiCoordinator
      * @param tabContentManagerSupplier Supplies the {@link TabContentManager}.
      * @param snackbarManagerSupplier Supplies the {@link SnackbarManager}.
      * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController}.
-     * @param topInsetProviderSupplier Suppliers an {@link TopInsetProvider}.
+     * @param topInsetProvider The {@link TopInsetProvider} instance.
      * @param activityType The {@link ActivityType} for the activity.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
      * @param appMenuDelegate The app menu delegate.
@@ -498,7 +499,7 @@ public class RootUiCoordinator
             @NonNull
                     SettableMonotonicObservableSupplier<EdgeToEdgeController>
                             edgeToEdgeControllerSupplier,
-            @NonNull SettableMonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
+            @NonNull TopInsetProvider topInsetProvider,
             @ActivityType int activityType,
             @NonNull Supplier<Boolean> isInOverviewModeSupplier,
             @NonNull AppMenuDelegate appMenuDelegate,
@@ -533,7 +534,7 @@ public class RootUiCoordinator
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
-        mTopInsetProviderSupplier = topInsetProviderSupplier;
+        mTopInsetProvider = topInsetProvider;
         mActivityType = activityType;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
         mAppMenuDelegate = appMenuDelegate;
@@ -956,10 +957,7 @@ public class RootUiCoordinator
             mEdgeToEdgeBottomChin.destroy();
         }
 
-        var topInsetProvider = mTopInsetProviderSupplier.get();
-        if (topInsetProvider != null) {
-            topInsetProvider.destroy();
-        }
+        mTopInsetProvider.destroy();
 
         if (mBoardingPassController != null) {
             mBoardingPassController.destroy();
@@ -1215,13 +1213,23 @@ public class RootUiCoordinator
         if (mWindowAndroid.getInsetObserver() != null
                 && NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
                         mWindowAndroid, mIsTablet)) {
-            var topInsetCoordinator =
-                    new TopInsetCoordinator(
-                            mActivity,
-                            mActivityTabProvider.asObservable(),
-                            mWindowAndroid.getInsetObserver(),
-                            mLayoutStateProviderOneShotSupplier);
-            mTopInsetProviderSupplier.set(topInsetCoordinator);
+            // Only create TopInsetCoordinator if there's a valid TransitiveTopInsetProvider
+            // available. TopInsetCoordinator registers a listener with the singleton
+            // NtpCustomizationConfigManager, which must be removed via destroy(). The destroy()
+            // is called by TransitiveTopInsetProvider when the activity is destroyed. For
+            // CustomTabActivity, no TransitiveTopInsetProvider is provided , so creating a
+            // TopInsetCoordinator here would cause a memory leak since there's no owner to call
+            // destroy().
+            if (mTopInsetProvider
+                    instanceof TransitiveTopInsetProvider transitiveTopInsetProvider) {
+                var topInsetCoordinator =
+                        new TopInsetCoordinator(
+                                mActivity,
+                                mActivityTabProvider.asObservable(),
+                                mWindowAndroid.getInsetObserver(),
+                                mLayoutStateProviderOneShotSupplier);
+                transitiveTopInsetProvider.set(topInsetCoordinator);
+            }
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.LINK_HOVER_STATUS_BAR)) {
             ViewStub statusBarStub = mActivity.findViewById(R.id.link_hover_status_bar_stub);
@@ -1879,7 +1887,7 @@ public class RootUiCoordinator
                             mTabBookmarkerSupplier,
                             getMenuButtonVisibilityDelegate(),
                             mTopControlsStacker,
-                            mTopInsetProviderSupplier,
+                            mTopInsetProvider,
                             mXrSpaceModeObservableSupplier,
                             mPageZoomManager,
                             mSnackbarManagerSupplier.get(),

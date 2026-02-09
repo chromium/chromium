@@ -218,11 +218,9 @@ public class NewTabPage
     private final boolean mIsInNightMode;
     private final @Nullable OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private final boolean mCanSupportEdgeToEdgeForCustomizedTheme;
-    private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
-    private @Nullable Callback<TopInsetProvider> mTopInsetProviderCallback;
+    private final TopInsetProvider mTopInsetProvider;
+    private TopInsetProvider.@Nullable Observer mTopInsetChangeObserver;
 
-    private TopInsetProvider.@org.chromium.build.annotations.Nullable Observer
-            mTopInsetChangeObserver;
     private NtpCustomizationConfigManager.@org.chromium.build.annotations.Nullable
             HomepageStateListener
             mHomepageStateListener;
@@ -558,7 +556,7 @@ public class NewTabPage
             NonNullObservableSupplier<Integer> tabStripHeightSupplier,
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
+            TopInsetProvider topInsetProvider,
             StartupMetricsTracker startupMetricsTracker,
             MultiInstanceManager multiInstanceManager) {
         mConstructedTimeNs = System.nanoTime();
@@ -578,7 +576,7 @@ public class NewTabPage
         mIsInNightMode = isInNightMode;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mModuleRegistrySupplier = moduleRegistrySupplier;
-        mTopInsetProviderSupplier = topInsetProviderSupplier;
+        mTopInsetProvider = topInsetProvider;
         mWindowAndroid = windowAndroid;
 
         Profile profile = mTab.getProfile();
@@ -832,21 +830,7 @@ public class NewTabPage
 
     private void initTopInsetProviderObserver() {
         mTopInsetChangeObserver = this::onToEdgeChange;
-        var topInsetProvider = mTopInsetProviderSupplier.get();
-        if (topInsetProvider != null) {
-            topInsetProvider.addObserver(mTopInsetChangeObserver);
-            return;
-        }
-
-        mTopInsetProviderCallback =
-                provider -> {
-                    provider.addObserver(assumeNonNull(mTopInsetChangeObserver));
-                    if (mTopInsetProviderCallback != null) {
-                        mTopInsetProviderSupplier.removeObserver(mTopInsetProviderCallback);
-                        mTopInsetProviderCallback = null;
-                    }
-                };
-        mTopInsetProviderSupplier.addObserver(mTopInsetProviderCallback);
+        mTopInsetProvider.addObserver(mTopInsetChangeObserver);
     }
 
     // Called when ChromeFeatureList.sNewTabPageCustomizationV2 is enabled to add a
@@ -1231,20 +1215,14 @@ public class NewTabPage
             mHomeModulesCoordinator.destroy();
         }
 
-        var topInsetProvider = mTopInsetProviderSupplier.get();
-        if (topInsetProvider != null && mTopInsetChangeObserver != null) {
-            topInsetProvider.removeObserver(mTopInsetChangeObserver);
+        if (mTopInsetChangeObserver != null) {
+            mTopInsetProvider.removeObserver(mTopInsetChangeObserver);
             mTopInsetChangeObserver = null;
         }
 
         if (mHomepageStateListener != null) {
             NtpCustomizationConfigManager.getInstance().removeListener(mHomepageStateListener);
             mHomepageStateListener = null;
-        }
-
-        if (mTopInsetProviderCallback != null) {
-            mTopInsetProviderSupplier.removeObserver(mTopInsetProviderCallback);
-            mTopInsetProviderCallback = null;
         }
 
         sTotalCount--;

@@ -107,6 +107,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.chrome.browser.ui.edge_to_edge.NoOpTopInsetProvider;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
@@ -278,7 +279,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 tabContentManagerSupplier,
                 snackbarManagerSupplier,
                 edgeToEdgeControllerSupplier,
-                ObservableSuppliers.createMonotonic(),
+                new NoOpTopInsetProvider(),
                 activityType,
                 isInOverviewModeSupplier,
                 appMenuDelegate,

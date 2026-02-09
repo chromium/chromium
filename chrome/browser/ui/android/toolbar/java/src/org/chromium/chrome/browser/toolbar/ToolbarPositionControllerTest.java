@@ -303,7 +303,6 @@ public class ToolbarPositionControllerTest {
             ObservableSuppliers.createNonNull(TOOLBAR_HEIGHT);
     private final SettableNonNullObservableSupplier<Integer> mKeyboardHeightSupplier =
             ObservableSuppliers.createNonNull(0);
-    private SettableNonNullObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
     private SettableNonNullObservableSupplier<Profile> mProfileSupplier;
     private HistogramWatcher mStartupExpectation;
 
@@ -347,7 +346,6 @@ public class ToolbarPositionControllerTest {
         mProgressBarLayoutParams.gravity = Gravity.BOTTOM;
         mProgressBarLayoutParams.anchorGravity = Gravity.BOTTOM;
         mProgressBarLayoutParams.setAnchorId(CONTROL_CONTAINER_ID);
-        mTopInsetProviderSupplier = ObservableSuppliers.createNonNull(mTopInsetProvider);
         mProfileSupplier = ObservableSuppliers.createNonNull(mProfile);
         UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefs);
@@ -377,7 +375,7 @@ public class ToolbarPositionControllerTest {
                         mProgressBarContainer,
                         mControlContainerTranslationSupplier,
                         mControlContainerHeightSupplier,
-                        mTopInsetProviderSupplier,
+                        mTopInsetProvider,
                         new Handler(Looper.getMainLooper()),
                         mContext,
                         mToolbarPosition,

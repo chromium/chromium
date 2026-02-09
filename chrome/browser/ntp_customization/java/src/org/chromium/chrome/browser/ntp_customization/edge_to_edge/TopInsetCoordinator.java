@@ -318,12 +318,6 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, 
         refreshWindowInsets(/* consumeTopInset= */ false);
     }
 
-    /** Returns the system's top inset. */
-    @Override
-    public int getSystemTopInset() {
-        return mSystemInsets.top;
-    }
-
     // Adds observers which track Tab and Layout transitions and are only needed when the customized
     // background is selected for NTPs.
     private void addObservers() {

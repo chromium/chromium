@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
 import org.chromium.chrome.browser.omnibox.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.edge_to_edge.NoOpTopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -96,7 +97,7 @@ public class TabBottomSheetFusebox {
                         /* backPressManager= */ null,
                         /* omniboxSuggestionsDropdownScrollListener= */ null,
                         /* tabModelSelectorSupplier= */ ObservableSuppliers.alwaysNull(),
-                        /* topInsetProviderSupplier= */ ObservableSuppliers.alwaysNull(),
+                        /* topInsetProvider= */ new NoOpTopInsetProvider(),
                         new LocationBarEmbedder() {},
                         uiOverrides,
                         controlContainer,

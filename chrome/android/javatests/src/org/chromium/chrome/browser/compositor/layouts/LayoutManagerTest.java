@@ -40,7 +40,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -76,7 +75,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
-import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
+import org.chromium.chrome.browser.ui.edge_to_edge.NoOpTopInsetProvider;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -119,8 +118,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     private final PointerProperties[] mProperties = new PointerProperties[2];
     private final PointerCoords[] mPointerCoords = new PointerCoords[2];
-    private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier =
-            ObservableSuppliers.alwaysNull();
     private NonNullObservableSupplier<Boolean> mScrimVisibilitySupplier;
 
     private float mDpToPx;
@@ -241,7 +238,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                         mContentView,
                         mToolbarManager,
                         mScrimVisibilitySupplier,
-                        mTopInsetProviderSupplier);
+                        new NoOpTopInsetProvider());
 
         tabContentManagerSupplier.set(tabContentManager);
         mManager = mManagerPhone;
