@@ -162,7 +162,7 @@ void MarkProfileDirectoryForDeletion(const base::FilePath& path) {
   // on shutdown. In case of a crash remaining files are removed on next start.
   ScopedListPrefUpdate deleted_profiles(g_browser_process->local_state(),
                                         prefs::kProfilesDeleted);
-  deleted_profiles->Append(base::FilePathToValue(path));
+  deleted_profiles->Append(base::FilePathToValue(path.BaseName()));
 
   // Set profile as ephemeral.
   ProfileAttributesEntry* entry = g_browser_process->profile_manager()

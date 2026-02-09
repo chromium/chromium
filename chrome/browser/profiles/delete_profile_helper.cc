@@ -12,7 +12,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/values_util.h"
@@ -51,6 +50,9 @@ namespace {
 
 // Called after a deleted profile was checked and cleaned up.
 void ProfileCleanedUp(base::Value profile_path_value) {
+  if (!g_browser_process || g_browser_process->IsShuttingDown()) {
+    return;
+  }
   ScopedListPrefUpdate deleted_profiles(g_browser_process->local_state(),
                                         prefs::kProfilesDeleted);
   deleted_profiles->EraseValue(profile_path_value);
@@ -227,8 +229,10 @@ void DeleteProfileHelper::CleanUpEphemeralProfiles() {
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(&NukeProfileFromDisk, profile_path,
-                       base::OnceClosure()));
+        base::BindOnce(
+            &NukeProfileFromDisk, profile_path,
+            base::BindOnce(&ProfileCleanedUp,
+                           base::FilePathToValue(profile_path.BaseName()))));
 
     storage.RemoveProfile(profile_path);
   }
@@ -237,40 +241,46 @@ void DeleteProfileHelper::CleanUpEphemeralProfiles() {
 void DeleteProfileHelper::CleanUpDeletedProfiles() {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  const base::ListValue& deleted_profiles =
-      local_state->GetList(prefs::kProfilesDeleted);
 
-  for (const base::Value& value : deleted_profiles) {
+  // Clone the list because calling `ProfileCleanedUp()` inside the loop will
+  // modify the preference, which would invalidate an iterator over the
+  // preference's internal list.
+  base::ListValue deleted_profiles =
+      local_state->GetList(prefs::kProfilesDeleted).Clone();
+
+  for (base::Value& value : deleted_profiles) {
     std::optional<base::FilePath> profile_path = base::ValueToFilePath(value);
-    // Although it should never happen, make sure this is a valid path in the
-    // user_data_dir, so we don't accidentally delete something else.
-    if (profile_path && profile_manager_->IsAllowedProfilePath(*profile_path)) {
-      if (base::PathExists(*profile_path)) {
-        LOG(WARNING) << "Files of a deleted profile still exist after restart. "
-                        "Cleaning up now.";
-        DCHECK(!profile_manager_->GetProfileByPath(*profile_path));
-        base::ThreadPool::PostTask(
-            FROM_HERE,
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-             base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-            base::BindOnce(&NukeProfileFromDisk, *profile_path,
-                           base::BindOnce(&ProfileCleanedUp, value.Clone())));
-      } else {
-        // Everything is fine, the profile was removed on shutdown.
-        content::GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(&ProfileCleanedUp, value.Clone()));
-      }
+    bool is_valid_path = false;
+    if (profile_path && !profile_path->IsAbsolute()) {
+      profile_path = profile_manager_->user_data_dir().Append(*profile_path);
+      // Although it should never happen, make sure this is a valid path in the
+      // user_data_dir, so we don't accidentally delete something else.
+      is_valid_path = profile_manager_->IsAllowedProfilePath(*profile_path);
+    }
+
+    if (is_valid_path) {
+      DCHECK(!profile_manager_->GetProfileByPath(*profile_path));
+      base::ThreadPool::PostTask(
+          FROM_HERE,
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+          base::BindOnce(&NukeProfileFromDisk, *profile_path,
+                         base::BindOnce(&ProfileCleanedUp, std::move(value))));
     } else {
       LOG(ERROR) << "Found invalid profile path in deleted_profiles: "
-                 << profile_path->AsUTF8Unsafe();
-      SCOPED_CRASH_KEY_STRING256("DeleteProfileHelper", "profile_path",
-                                 profile_path->AsUTF8Unsafe());
+                 << (profile_path ? profile_path->AsUTF8Unsafe() : "unknown");
+      ProfileCleanedUp(std::move(value));
+
+      SCOPED_CRASH_KEY_STRING256(
+          "DeleteProfileHelper", "profile_path",
+          profile_path ? profile_path->AsUTF8Unsafe() : "unknown");
       SCOPED_CRASH_KEY_STRING256(
           "DeleteProfileHelper", "user_data_dir",
           profile_manager_->user_data_dir().AsUTF8Unsafe());
       SCOPED_CRASH_KEY_BOOL(
           "DeleteProfileHelper", "allowed_path",
-          profile_manager_->IsAllowedProfilePath(*profile_path));
+          profile_path &&
+              profile_manager_->IsAllowedProfilePath(*profile_path));
       base::debug::DumpWithoutCrashing();
     }
   }
@@ -413,7 +423,10 @@ void DeleteProfileHelper::OnLoadProfileForProfileDeletion(
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(&NukeProfileFromDisk, profile_dir, base::OnceClosure()));
+        base::BindOnce(
+            &NukeProfileFromDisk, profile_dir,
+            base::BindOnce(&ProfileCleanedUp,
+                           base::FilePathToValue(profile_dir.BaseName()))));
   }
 
   storage.RemoveProfile(profile_dir);

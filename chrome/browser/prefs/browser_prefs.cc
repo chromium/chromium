@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/values_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/android_buildflags.h"
@@ -976,6 +977,9 @@ constexpr char kGlicGuestUrlPresetAutopush[] = "glic.guest_url_preset_autopush";
 constexpr char kGlicGuestUrlPresetPreprod[] = "glic.guest_url_preset_preprod";
 constexpr char kGlicGuestUrlPresetProd[] = "glic.guest_url_preset_prod";
 
+// Deprecated 02/2026.
+constexpr char kProfilesDeletedOld[] = "profiles.profiles_deleted";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1097,6 +1101,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 01/2026.
   registry->RegisterStringPref(kDeviceName, "");
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Deprecated 02/2026.
+  registry->RegisterListPref(kProfilesDeletedOld);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2327,6 +2334,26 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 01/2026.
   local_state->ClearPref(kDeviceName);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Added 02/2026.
+  if (local_state->HasPrefPath(kProfilesDeletedOld)) {
+    const base::ListValue& old_list = local_state->GetList(kProfilesDeletedOld);
+    if (!old_list.empty()) {
+      ScopedListPrefUpdate update(local_state, prefs::kProfilesDeleted);
+      for (const auto& value : old_list) {
+        std::optional<base::FilePath> path = base::ValueToFilePath(value);
+        if (path) {
+          base::FilePath basename = path->BaseName();
+          // Avoid the edge case where the base name is the root, e.g `/` on
+          // linux.
+          if (!basename.IsAbsolute()) {
+            update->Append(base::FilePathToValue(basename));
+          }
+        }
+      }
+    }
+    local_state->ClearPref(kProfilesDeletedOld);
+  }
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

@@ -2089,7 +2089,7 @@ inline constexpr char kProfilesOrder[] = "profile.profiles_order";
 
 // A list of profile paths that should be deleted on shutdown. The deletion does
 // not happen if the browser crashes, so we remove the profile on next start.
-inline constexpr char kProfilesDeleted[] = "profiles.profiles_deleted";
+inline constexpr char kProfilesDeleted[] = "profiles.profile_basenames_deleted";
 
 // On Chrome OS, total number of non-Chrome user process crashes
 // since the last report.
