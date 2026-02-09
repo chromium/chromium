@@ -118,7 +118,7 @@ class LocalFileSyncService final : public RemoteChangeProcessor,
   // ProcessLocalChange().
   //
   // TODO(kinuko): Remove this method once we stop using multiple backends
-  // (crbug.com/324215), or deprecate the other if we keep doing so.
+  // (crbug.com/41077438), or deprecate the other if we keep doing so.
   void SetLocalChangeProcessorCallback(
       GetLocalChangeProcessorCallback get_local_change_processor);
 

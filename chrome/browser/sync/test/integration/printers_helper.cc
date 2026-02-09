@@ -125,7 +125,7 @@ void WaitForPrinterStoreToLoad(content::BrowserContext* context) {
   //
   // TODO(sync): Remove this forced initialization once there is a mechanism
   // to queue writes/reads before the DataTypeStore is associated with the
-  // SyncedPrinterManager. https://crbug.com/709094.
+  // SyncedPrinterManager. https://crbug.com/41311715.
   content::RunAllTasksUntilIdle();
 }
 

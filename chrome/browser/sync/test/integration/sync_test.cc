@@ -809,7 +809,7 @@ bool SyncTest::SetupSyncWithMode(SetupSyncMode setup_mode,
     // It is deleted on certain conditions which are not satisfied by our tests,
     // and this causes the SigninTracker observer to stay hanging at shutdown.
     // Calling LoginUIService::SyncConfirmationUIClosed forces the observer to
-    // be removed. http://crbug.com/484388
+    // be removed. http://crbug.com/40416788
     for (int i = 0; i < num_clients_; ++i) {
       LoginUIServiceFactory::GetForProfile(GetProfile(i))
           ->SyncConfirmationUIClosed(
@@ -844,7 +844,7 @@ void SyncTest::TearDownOnMainThread() {
     CheckForDataTypeFailures(client_index);
   }
 
-  // Workaround for https://crbug.com/801569: |prefs::kProfileLastUsed| stores
+  // Workaround for https://crbug.com/41364511: |prefs::kProfileLastUsed| stores
   // the profile path relative to the user dir, but our testing profiles are
   // outside the user dir (see CreateProfile). So code trying to access the last
   // used profile by path will fail. To work around that, set the last used

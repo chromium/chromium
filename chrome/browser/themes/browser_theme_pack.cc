@@ -1144,7 +1144,7 @@ void BrowserThemePack::AddColorMixers(ui::ColorProvider* provider,
                                       const ui::ColorProviderKey& key) const {
   ui::ColorMixer& mixer = provider->AddMixer();
 
-  // TODO(http://crbug.com/878664): Enable for all cases.
+  // TODO(http://crbug.com/41410580): Enable for all cases.
   mixer[kColorToolbarBackgroundSubtleEmphasis] = ui::BlendForMinContrast(
       kColorToolbar, kColorToolbar, ChooseOmniboxBgBlendTarget(),
       kMinOmniboxToolbarContrast);

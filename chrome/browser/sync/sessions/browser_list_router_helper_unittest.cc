@@ -103,7 +103,8 @@ TEST_F(BrowserListRouterHelperTest, ObservationScopedToSingleProfile) {
   new_browser_in_second_profile->tab_strip_model()->CloseAllTabs();
 }
 
-// Added when fixing https://crbug.com/777745, ensure tab discards are observed.
+// Added when fixing https://crbug.com/40546261, ensure tab discards are
+// observed.
 TEST_F(BrowserListRouterHelperTest, NotifyOnDiscardTab) {
   TestingProfile* profile_1 = profile();
   TestingProfile* profile_2 =

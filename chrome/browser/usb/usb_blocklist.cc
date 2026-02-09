@@ -69,7 +69,7 @@ constexpr UsbBlocklist::Entry kStaticEntries[] = {
 
     {0x09c3, 0x0023, kMaxVersion},  // HID Global BlueTrust Token
 
-    // Yubikey devices. https://crbug.com/818807
+    // Yubikey devices. https://crbug.com/40090685
     {0x1050, 0x0010, kMaxVersion},
     {0x1050, 0x0018, kMaxVersion},
     {0x1050, 0x0030, kMaxVersion},

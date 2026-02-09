@@ -1086,7 +1086,7 @@ bool ThemeService::DisableExtension(const std::string& extension_id) {
     // Do not disable the previous theme if it is already uninstalled. Sending
     // |ThemeServiceObserver::OnThemeChanged()| causes the previous theme to be
     // uninstalled when the notification causes the remaining infobar to close
-    // and does not open any new infobars. See crbug.com/468280.
+    // and does not open any new infobars. See crbug.com/41163322.
     extensions::ExtensionRegistrar::Get(profile_)->DisableExtension(
         extension_id, {extensions::disable_reason::DISABLE_USER_ACTION});
     return true;

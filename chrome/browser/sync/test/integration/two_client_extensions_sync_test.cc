@@ -62,7 +62,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          GetSyncTestModes(),
                          testing::PrintToStringParamName());
 
-// Flaky on Mac: http://crbug.com/535996
+// Flaky on Mac: http://crbug.com/41204208
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_StartWithDifferentExtensions DISABLED_StartWithDifferentExtensions
 #else

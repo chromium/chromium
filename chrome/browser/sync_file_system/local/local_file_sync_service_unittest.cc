@@ -305,7 +305,7 @@ TEST_F(LocalFileSyncServiceTest, LocalChangeObserver) {
 }
 
 #if BUILDFLAG(IS_WIN)
-// Flaky: http://crbug.com/171487
+// Flaky: http://crbug.com/40960777
 #define MAYBE_LocalChangeObserverMultipleContexts\
     DISABLED_LocalChangeObserverMultipleContexts
 #else

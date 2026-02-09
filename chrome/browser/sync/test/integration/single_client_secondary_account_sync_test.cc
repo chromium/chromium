@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// Regression test for crbug.com/955989 that verifies the cache GUID is not
+// Regression test for crbug.com/40624424 that verifies the cache GUID is not
 // reset upon restart of the browser, in standalone transport mode with
 // unconsented accounts.
 //

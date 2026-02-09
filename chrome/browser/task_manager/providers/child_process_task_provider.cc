@@ -110,7 +110,7 @@ void ChildProcessTaskProvider::DeleteTask(base::ProcessHandle handle) {
   // processes and are notified (on the UI thread) that the collection is
   // completed at |ChildProcessDataCollected()|.
   if (itr == tasks_by_processid_.end()) {
-    // BUG(crbug.com/611067): Temporarily removing due to test flakes. The
+    // BUG(crbug.com/40468872): Temporarily removing due to test flakes. The
     // reason why this happens is well understood (see bug), but there's no
     // quick and easy fix.
     // NOTREACHED();

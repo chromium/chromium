@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, EmptyUpdatesAreIgnored) {
   ASSERT_TRUE(TriggerGetUpdatesAndWait());
 
   // Check that the new progress marker is stored for empty updates. This is a
-  // regression check for crbug.com/924447.
+  // regression check for crbug.com/41436932.
   sync_pb::DataTypeState state_after =
       GetWalletDataTypeState(syncer::AUTOFILL_WALLET_OFFER, 0, GetStoreType());
   EXPECT_NE(state_before.progress_marker().token(),

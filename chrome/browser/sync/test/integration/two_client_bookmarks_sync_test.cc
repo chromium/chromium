@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientBookmarksSyncTest, SC_SetFaviconHiDPI) {
 // because the last updated time is used to determine whether a bookmark's
 // favicon should be redownloaded when the web when the bookmark is visited.
 // If sync prevents the "last updated time" from expiring, the favicon is
-// never redownloaded from the web. (http://crbug.com/481414)
+// never redownloaded from the web. (http://crbug.com/40415651)
 IN_PROC_BROWSER_TEST_P(TwoClientBookmarksSyncTest,
                        SC_UpdatingTitleDoesNotUpdateFaviconLastUpdatedTime) {
   ASSERT_TRUE(SetupClients());
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientBookmarksSyncTest,
 // is updated for one bookmark it is also updated for the other bookmark. This
 // ensures that sync has the most up to date data and prevents sync from
 // reverting the newly updated bookmark favicon back to the old favicon.
-// crbug.com/485657
+// crbug.com/40417296
 IN_PROC_BROWSER_TEST_P(TwoClientBookmarksSyncTest,
                        SC_SetFaviconTwoBookmarksSameIconURL) {
   const GURL page_url1("http://www.google.com/a");
@@ -2836,7 +2836,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientBookmarksSyncTest,
   }
 }
 
-// TODO(shadi): crbug.com/569213: Enable this as E2E test.
+// TODO(shadi): crbug.com/41228522: Enable this as E2E test.
 IN_PROC_BROWSER_TEST_P(TwoClientBookmarksSyncTest,
                        OneClientAddsFolderAndBookmark) {
   ASSERT_TRUE(SetupSync());

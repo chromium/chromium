@@ -400,7 +400,7 @@ class SyncTest : public PlatformBrowserTest,
   base::test::ScopedRunLoopTimeout sync_run_loop_timeout;
 
   // The default profile, created before our actual testing |profiles_|. This is
-  // needed in a workaround for https://crbug.com/801569, see comments in the
+  // needed in a workaround for https://crbug.com/41364511, see comments in the
   // .cc file.
   raw_ptr<Profile, AcrossTasksDanglingUntriaged> previous_profile_ = nullptr;
 

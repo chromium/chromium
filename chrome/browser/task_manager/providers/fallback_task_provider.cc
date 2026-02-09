@@ -127,7 +127,7 @@ void FallbackTaskProvider::ShowPendingTask(Task* task) {
         << "Every renderer should have at least one task provided by a primary "
         << "task provider. If a \"Renderer\" fallback task is shown, it is a "
         << "bug. If you have repro steps, please file a new bug and tag it as "
-        << "a dependency of crbug.com/739782.";
+        << "a dependency of crbug.com/40528867.";
   }
 
   pending_shown_tasks_.erase(task);

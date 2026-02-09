@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_P(SyncErrorTest, UpgradeClientErrorDuringInitialSync) {
 
 // This test verifies that sync keeps retrying if it encounters error during
 // setup.
-// crbug.com/689662
+// crbug.com/41300290
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ErrorWhileSettingUp DISABLED_ErrorWhileSettingUp
 #else

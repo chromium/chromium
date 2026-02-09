@@ -520,7 +520,7 @@ TEST_F(ThemeServiceTest, NTPLogoAlternate) {
   }
 }
 
-// crbug.com/468280
+// crbug.com/41163322
 TEST_F(ThemeServiceTest, UninstallThemeWhenNoReinstallers) {
   ThemeScoper scoper1 = LoadUnpackedTheme();
   ASSERT_EQ(scoper1.extension_id(), theme_service()->GetThemeID());

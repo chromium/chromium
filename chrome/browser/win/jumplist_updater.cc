@@ -111,7 +111,7 @@ JumpListUpdater::~JumpListUpdater() = default;
 
 // static
 bool JumpListUpdater::IsEnabled() {
-  // Do not create custom JumpLists in tests. See http://crbug.com/389375.
+  // Do not create custom JumpLists in tests. See http://crbug.com/40372575.
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kTestType);
 }

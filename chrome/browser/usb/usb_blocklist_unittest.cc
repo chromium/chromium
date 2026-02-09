@@ -113,7 +113,7 @@ TEST_F(UsbBlocklistTest, StringsWithOneValidEntry) {
 }
 
 TEST_F(UsbBlocklistTest, StaticEntries) {
-  // Yubikey devices. https://crbug.com/818807
+  // Yubikey devices. https://crbug.com/40090685
   //
   // The specific versions of these devices that we want to block are unknown.
   // The device versions listed here are abitrary chosen to test that any device

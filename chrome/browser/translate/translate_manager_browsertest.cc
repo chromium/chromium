@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageTranslationSuccess) {
 }
 
 // Test that the translation was successful in an about:blank page.
-// This is a regression test for https://crbug.com/943685.
+// This is a regression test for https://crbug.com/41447825.
 // Disabled due to flakiness: https://crbug.com/1202065.
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
                        DISABLED_PageTranslationAboutBlank) {
@@ -495,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   TranslateManager* manager = chrome_translate_client->GetTranslateManager();
   manager->TranslatePage("fr", "en", true);
 
-  // Verify that the crash from https://crbug.com/943685 didn't happen.
+  // Verify that the crash from https://crbug.com/41447825 didn't happen.
   EXPECT_EQ("still alive", content::EvalJs(popup, "'still alive'"));
 
   // Wait for translation to finish and verify it was successful.

@@ -57,7 +57,7 @@ void ArcProcessTaskProvider::UpdateProcessList(
       // After calling NotifyObserverTaskAdded(), the raw pointer of |task| is
       // remebered somewhere else. One should not (implicitly) delete the
       // referenced object before calling NotifyObserverTaskRemoved() first
-      // (crbug.com/587707).
+      // (crbug.com/41239957).
       DCHECK(!task.get()) <<
           "Task with the same pid should not be added twice.";
       task = std::make_unique<ArcProcessTask>(std::move(entry));

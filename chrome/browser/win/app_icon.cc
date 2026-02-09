@@ -22,7 +22,7 @@ int GetAppIconResourceId() {
 
 HICON GetAppIcon() {
   // TODO(mgiuca): Use GetAppIconImageFamily/CreateExact instead of LoadIcon, to
-  // get correct scaling. (See http://crbug.com/551256)
+  // get correct scaling. (See http://crbug.com/40443246)
   const int icon_id = GetAppIconResourceId();
   // HICON returned from LoadIcon do not leak and do not have to be destroyed.
   return LoadIcon(GetModuleHandle(chrome::kBrowserResourcesDll),
@@ -31,7 +31,7 @@ HICON GetAppIcon() {
 
 HICON GetSmallAppIcon() {
   // TODO(mgiuca): Use GetAppIconImageFamily/CreateExact instead of LoadIcon, to
-  // get correct scaling. (See http://crbug.com/551256)
+  // get correct scaling. (See http://crbug.com/40443246)
   const int icon_id = GetAppIconResourceId();
   gfx::Size size = GetSmallAppIconSize();
   // HICON returned from LoadImage must be released using DestroyIcon.

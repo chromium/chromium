@@ -611,7 +611,7 @@ TEST_F(ThemeSyncableServiceTest, ProcessSyncThemeChange_Extension) {
   EXPECT_FALSE(process_error.has_value()) << error->ToString();
   EXPECT_EQ(fake_theme_service_->theme_extension(), theme_extension_.get());
   // Don't show an infobar for theme installation. Regression test for
-  // crbug.com/731688
+  // crbug.com/40525049
   EXPECT_FALSE(fake_theme_service_->might_show_infobar());
 }
 

@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTagsTest, Basic) {
   EXPECT_EQ(1U, tracked_tags().size());
 }
 
-// Disabled due to flakiness, see crbug.com/519333 and crbug.com/639185.
+// Disabled due to flakiness, see crbug.com/40430827 and crbug.com/40481263.
 IN_PROC_BROWSER_TEST_F(ExtensionTagsTest,
                        DISABLED_PreAndPostExistingTaskProviding) {
   // Browser tests start with a single tab.

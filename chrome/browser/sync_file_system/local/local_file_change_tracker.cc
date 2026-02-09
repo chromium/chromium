@@ -96,7 +96,7 @@ void LocalFileChangeTracker::OnStartUpdate(const FileSystemURL& url) {
   if (changes_.contains(url) || demoted_changes_.contains(url)) {
     return;
   }
-  // TODO(nhiroki): propagate the error code (see http://crbug.com/152127).
+  // TODO(nhiroki): propagate the error code (see http://crbug.com/40950150).
   MarkDirtyOnDatabase(url);
 }
 
@@ -413,7 +413,7 @@ SyncStatusCode LocalFileChangeTracker::CollectLastDirtyChanges(
       }
       case base::File::FILE_ERROR_FAILED:
       default:
-        // TODO(nhiroki): handle file access error (http://crbug.com/155251).
+        // TODO(nhiroki): handle file access error (http://crbug.com/40951671).
         LOG(WARNING) << "Failed to access local file.";
         break;
     }

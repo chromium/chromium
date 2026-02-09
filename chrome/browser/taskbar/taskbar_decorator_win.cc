@@ -210,7 +210,7 @@ void UpdateTaskbarDecoration(Profile* profile, gfx::NativeWindow window) {
   // the relaunch details.
   // TODO(calamity): ideally this should not be necessary but due to issues
   // with the default shortcut being pinned, we add the runtime badge for
-  // safety. See crbug.com/313800.
+  // safety. See crbug.com/41070028.
   gfx::Image decoration;
   AvatarMenu::ImageLoadStatus status = AvatarMenu::GetImageForMenuButton(
       profile->GetPath(), &decoration, kOverlayIconSize);

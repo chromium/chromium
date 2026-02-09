@@ -207,7 +207,7 @@ void ChromeUsbDelegate::AdjustProtectedInterfaceClasses(
   // as badge readers)
   static constexpr auto kHidPrivilegedExtensionIds =
       base::MakeFixedFlatSet<std::string_view>({
-          // Imprivata Extensions, see crbug.com/1065112 and crbug.com/995294.
+          // Imprivata Extensions, see crbug.com/1065112 and crbug.com/40640984.
           "baobpecgllpajfeojepgedjdlnlfffde",
           "bnfoibgpjolimhppjmligmcgklpboloj",
           "cdgickkdpbekbnalbmpgochbninibkko",

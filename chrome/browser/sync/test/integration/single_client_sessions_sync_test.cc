@@ -756,8 +756,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest,
                    syncer::DataTypeEntityChange::kLocalDeletion));
 }
 
-// Regression test for crbug.com/915133 that verifies the browser doesn't crash
-// if the server sends corrupt data during initial merge.
+// Regression test for crbug.com/41431802 that verifies the browser doesn't
+// crash if the server sends corrupt data during initial merge.
 IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, CorruptInitialForeignTab) {
   // Tabs with a negative node ID should be ignored.
   sync_pb::EntitySpecifics specifics;
@@ -778,8 +778,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, CorruptInitialForeignTab) {
   EXPECT_EQ(0U, sessions.size());
 }
 
-// Regression test for crbug.com/915133 that verifies the browser doesn't crash
-// if the server sends corrupt data as incremental update.
+// Regression test for crbug.com/41431802 that verifies the browser doesn't
+// crash if the server sends corrupt data as incremental update.
 IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, CorruptForeignTabUpdate) {
   ASSERT_TRUE(SetupSync());
 

@@ -43,7 +43,7 @@ class ChildProcessTask : public Task {
 #endif
     // A render process that is unknown and for which no provider is available.
     // Should not be used; all processes should be shown in the Task Manager.
-    // See https://crbug.com/739782 .
+    // See https://crbug.com/40528867 .
     kUnknownRenderProcess,
   };
 

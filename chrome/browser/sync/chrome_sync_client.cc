@@ -114,7 +114,7 @@ base::FilePath ChromeSyncClient::GetLocalSyncBackendFolder() {
   // all machines, which is not a given. It is to be defined if only the
   // Default profile should get this treatment or all profile as is the case
   // now.
-  // TODO(pastarmovj): http://crbug.com/674928 Decide if only the Default one
+  // TODO(pastarmovj): http://crbug.com/41291598 Decide if only the Default one
   // should be considered roamed. For now the code assumes all profiles are
   // created in the same order on all machines.
   local_sync_backend_folder =

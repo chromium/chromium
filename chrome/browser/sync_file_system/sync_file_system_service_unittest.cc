@@ -400,7 +400,7 @@ TEST_F(SyncFileSystemServiceTest, SimpleSyncFlowWithFileBusy) {
 
 #if defined(THREAD_SANITIZER)
 // SyncFileSystemServiceTest.GetFileSyncStatus fails under ThreadSanitizer,
-// see http://crbug.com/294904.
+// see http://crbug.com/40333617.
 #define MAYBE_GetFileSyncStatus DISABLED_GetFileSyncStatus
 #else
 #define MAYBE_GetFileSyncStatus GetFileSyncStatus

@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, PostExistingTaskProviding) {
 }
 
 // Test that the default favicon is shown in the task manager after navigating
-// from a page with a favicon to a page without a favicon. crbug.com/528924
+// from a page with a favicon to a page without a favicon. crbug.com/40434621
 IN_PROC_BROWSER_TEST_F(TabContentsTagTest, NavigateToPageNoFavicon) {
   // We start with the "about:blank" tab.
   MockWebContentsTaskManager task_manager;

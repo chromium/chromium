@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// Regression test for crbug.com/955989 that verifies the cache GUID is not
+// Regression test for crbug.com/40624424 that verifies the cache GUID is not
 // reset upon restart of the browser, in standalone transport mode.
 IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
                        PRE_ReusesSameCacheGuid) {

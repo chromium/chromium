@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsSyncTest, NoBookmarkApps) {
   ASSERT_EQ(1u, server_apps.size());
 
   ASSERT_TRUE(SetupSync());
-  // Since bookmark apps are deprecated (https://crbug.com/877898), the client
+  // Since bookmark apps are deprecated (https://crbug.com/40591010), the client
   // should have deleted it from the server.
   EXPECT_TRUE(NoBookmarkAppServerChecker().Wait());
 }

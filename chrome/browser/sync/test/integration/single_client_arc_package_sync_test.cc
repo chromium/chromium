@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientArcPackageSyncTest,
   EXPECT_TRUE(FakeServerArcPackageMatchChecker(expected_specifics).Wait());
 }
 
-// Regression test for crbug.com/978837.
+// Regression test for crbug.com/41467957.
 IN_PROC_BROWSER_TEST_F(SingleClientArcPackageSyncTest, DisableAndReenable) {
   ASSERT_TRUE(SetupSync());
 

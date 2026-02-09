@@ -131,7 +131,7 @@ void ModuleDatabase::OnModuleLoad(content::ProcessType process_type,
   DCHECK(process_type == content::PROCESS_TYPE_BROWSER ||
          process_type == content::PROCESS_TYPE_RENDERER)
       << "The current logic in ModuleBlocklistCacheUpdater does not support "
-         "other process types yet. See https://crbug.com/662084 for details.";
+         "other process types yet. See https://crbug.com/40491970 for details.";
 
   ModuleInfo* module_info = nullptr;
   bool new_module = FindOrCreateModuleInfo(

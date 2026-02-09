@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
 
 // Tests that reload initiated by the script on the view-source page leaves
 // the page in view-source mode.
-// Times out on Mac, Windows, ChromeOS Linux: crbug.com/162080
+// Times out on Mac, Windows, ChromeOS Linux: crbug.com/40955430
 IN_PROC_BROWSER_TEST_F(ViewSourceTest, DISABLED_TestViewSourceReload) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, DISABLED_TestViewSourceReload) {
 }
 
 // This test ensures that view-source session history navigations work
-// correctly when switching processes. See https://crbug.com/544868.
+// correctly when switching processes. See https://crbug.com/40440793.
 IN_PROC_BROWSER_TEST_F(ViewSourceTest,
                        ViewSourceCrossProcessAndBack) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
 }
 
 // Tests that view-source mode of b.com subframe won't commit in an a.com (main
-// frame) process.  This is a regresion test for https://crbug.com/770946.
+// frame) process.  This is a regression test for https://crbug.com/40542846.
 IN_PROC_BROWSER_TEST_F(ViewSourceTest, CrossSiteSubframe) {
   // Navigate to a page with a cross-site frame.
   content::SetupCrossSiteRedirector(embedded_test_server());
@@ -296,12 +296,12 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, CrossSiteSubframe) {
   // Verify that the original main frame and the view-source subframe are in a
   // different process (e.g. if the main frame was malicious and the subframe
   // was an isolated origin, then the malicious frame shouldn't be able to see
-  // the contents of the isolated document).  See https://crbug.com/770946.
+  // the contents of the isolated document).  See https://crbug.com/40542846.
   EXPECT_NE(original_main_frame->GetSiteInstance(),
             view_source_frame->GetSiteInstance());
 
   // Verify that the original subframe and the view-source subframe are in a
-  // different process - see https://crbug.com/699493.
+  // different process - see https://crbug.com/40509794.
   EXPECT_NE(original_child_frame->GetSiteInstance(),
             view_source_frame->GetSiteInstance());
 
@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, HttpPostInMainframe) {
               HasSubstr("<title>EmbeddedTestServer - EchoAll</title>"));
 
   // Verify that the original contents and the view-source contents are in a
-  // different process - see https://crbug.com/699493.
+  // different process - see https://crbug.com/40509794.
   EXPECT_NE(current_main_frame->GetSiteInstance(),
             view_source_contents->GetPrimaryMainFrame()->GetSiteInstance());
 
@@ -516,7 +516,7 @@ class ViewSourceWithSplitCacheTest
 };
 
 // Tests that "View Source" works fine for *subframes* shown via HTTP POST.
-// This is a regression test for https://crbug.com/774691.
+// This is a regression test for https://crbug.com/41349757.
 IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheTest, HttpPostInSubframe) {
   // Navigate to a page with multiple frames.
   content::SetupCrossSiteRedirector(embedded_test_server());
@@ -592,7 +592,8 @@ IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheTest, HttpPostInSubframe) {
   EXPECT_THAT(source_text,
               HasSubstr("<title>EmbeddedTestServer - EchoAll</title>"));
 
-  // Verify that view-source opens in a new process - https://crbug.com/699493.
+  // Verify that view-source opens in a new process -
+  // https://crbug.com/40509794.
   EXPECT_NE(original_child_frame->GetSiteInstance(),
             view_source_contents->GetPrimaryMainFrame()->GetSiteInstance());
   EXPECT_NE(original_contents->GetSiteInstance(),
@@ -708,7 +709,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(true));
 
 // Verify that links clicked from view-source do not send a Referer header.
-// See https://crbug.com/834023.
+// See https://crbug.com/41383952.
 IN_PROC_BROWSER_TEST_F(ViewSourceTest, NavigationOmitsReferrer) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -747,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, JavaScriptURISanitized) {
 }
 
 // This test verifies that 'view-source' documents are not affected by vertical
-// scroll (see https://crbug.com/898688).
+// scroll (see https://crbug.com/40599616).
 IN_PROC_BROWSER_TEST_F(ViewSourcePermissionsPolicyTest,
                        ViewSourceNotAffectedByHeaderPolicy) {
   ASSERT_TRUE(embedded_test_server()->Start());

@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, KillTab) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyTab()));
 }
 
-// Regression test for http://crbug.com/444945.
+// Regression test for http://crbug.com/41149820.
 IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NavigateAwayFromHungRenderer) {
   ShowTaskManager();
 
@@ -625,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, ReloadExtension) {
 }
 
 // Checks that task manager counts a worker thread JS heap size.
-// http://crbug.com/241066
+// http://crbug.com/41012512
 IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, WebWorkerJSHeapMemory) {
   // Workers require a trustworthy (e.g. https) context.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
@@ -701,8 +701,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, JSHeapMemory) {
 }
 
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// This tests times out when MSan is enabled. See https://crbug.com/890313.
-// Failing on Linux CFI. See https://crbug.com/995132.
+// This tests times out when MSan is enabled. See https://crbug.com/41417851.
+// Failing on Linux CFI. See https://crbug.com/41476833.
 #define MAYBE_SentDataObserved DISABLED_SentDataObserved
 #else
 #define MAYBE_SentDataObserved SentDataObserved
@@ -747,8 +747,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_SentDataObserved) {
 }
 
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// This tests times out when MSan is enabled. See https://crbug.com/890313.
-// Failing on Linux CFI. See https://crbug.com/995132.
+// This tests times out when MSan is enabled. See https://crbug.com/41417851.
+// Failing on Linux CFI. See https://crbug.com/41476833.
 #define MAYBE_TotalSentDataObserved DISABLED_TotalSentDataObserved
 #else
 #define MAYBE_TotalSentDataObserved TotalSentDataObserved
@@ -926,7 +926,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, HistoryNavigationInNewTab) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("title1.html")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyTab()));
 
-  // In http://crbug.com/738169, the task_manager::Task for the background tab
+  // In http://crbug.com/40088230, the task_manager::Task for the background tab
   // was created with process id 0, resulting in zero values for all process
   // metrics. Ensure that this is not the case.
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerStatToExceed(
@@ -1075,7 +1075,7 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, KillSubframe) {
   // Remember |b_url| to be able to later renavigate to the same URL without
   // doing any process swaps (we want to avoid redirects that would happen
   // when going through /cross-site/foo.com/..., because
-  // https://crbug.com/642958 wouldn't repro in presence of process swaps).
+  // https://crbug.com/40483075 wouldn't repro in presence of process swaps).
   navigation_observer.Wait();
   auto* b_frame =
       ChildFrameAt(browser()->tab_strip_model()->GetActiveWebContents(), 0);
@@ -1105,7 +1105,7 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, KillSubframe) {
       WaitForTaskManagerRows(1, MatchTab("cross-site iframe test")));
 
   // Reload the subframe and verify it has re-appeared in the task manager.
-  // This is a regression test for https://crbug.com/642958.
+  // This is a regression test for https://crbug.com/40483075.
   ASSERT_TRUE(content::ExecJs(
       browser()
           ->tab_strip_model()

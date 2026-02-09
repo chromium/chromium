@@ -281,7 +281,7 @@ void SharedSampler::Refresh(base::ProcessId process_id, int64_t refresh_flags) {
         FROM_HERE, base::BindOnce(&SharedSampler::RefreshOnWorkerThread, this),
         base::BindOnce(&SharedSampler::OnRefreshDone, this));
   } else {
-    // http://crbug.com/678471
+    // http://crbug.com/40500128
     // A group of consecutive Refresh calls should all specify the same refresh
     // flags. Rarely RefreshOnWorkerThread could take a long time (> 1 sec),
     // long enough for a next refresh cycle to start before results are ready
