@@ -1347,8 +1347,14 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
     case lens::MimeType::kPdf:
       [[fallthrough]];
     case lens::MimeType::kAnnotatedPageContent:
-      CHECK(contextual_input_data->context_input.has_value() &&
-            contextual_input_data->context_input->size() > 0);
+      CHECK(contextual_input_data->context_input.has_value());
+      if (contextual_input_data->context_input->size() == 0) {
+        UpdateFileUploadStatus(
+            file_info->file_token,
+            contextual_search::FileUploadStatus::kValidationFailed,
+            contextual_search::FileUploadErrorType::kBrowserProcessingError);
+        return;
+      }
       [[fallthrough]];
     case lens::MimeType::kUnknown:
       // Call CreateContentextualDataUploadPayload off the main thread to avoid
