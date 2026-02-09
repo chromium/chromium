@@ -8,18 +8,19 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "components/legion/attestation/handler_impl.h"
 #include "components/legion/connection_basic.h"
 #include "components/legion/connection_metrics.h"
+#include "components/legion/connection_proxy.h"
 #include "components/legion/connection_timeout.h"
 #include "components/legion/connection_token_attestation.h"
+#include "components/legion/phosphor/token_manager.h"
 #include "components/legion/secure_channel_impl.h"
 #include "components/legion/secure_session_async_impl.h"
 #include "components/legion/websocket_client.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 namespace legion {
 
@@ -54,6 +55,22 @@ std::unique_ptr<Connection> CreateBasicMetricsTimeoutConnection(
   return connection_timeout;
 }
 
+std::unique_ptr<Connection> CreateTokenAttestationConnection(
+    const GURL& url,
+    phosphor::TokenManager* token_manager,
+    base::RepeatingClosure on_disconnect,
+    network::mojom::NetworkContext* network_context) {
+  auto connection_timeout =
+      CreateBasicMetricsTimeoutConnection(url, network_context, on_disconnect);
+
+  auto connection_token_attestation =
+      std::make_unique<ConnectionTokenAttestation>(
+          std::move(connection_timeout), token_manager,
+          std::move(on_disconnect));
+
+  return connection_token_attestation;
+}
+
 }  // namespace
 
 ApiKeyConnectionFactoryImpl::ApiKeyConnectionFactoryImpl(
@@ -81,10 +98,10 @@ TokenConnectionFactoryImpl::TokenConnectionFactoryImpl(
     network::mojom::NetworkContext* network_context,
     phosphor::TokenManager* token_manager)
     : url_(url),
-      network_context_(network_context),
-      token_manager_(token_manager) {
-  CHECK(network_context_);
+      token_manager_(token_manager),
+      network_context_(network_context) {
   CHECK(token_manager_);
+  CHECK(network_context_);
 
   std::string api_key;
   CHECK(!net::GetValueForKeyInQuery(url, "key", &api_key))
@@ -95,15 +112,40 @@ TokenConnectionFactoryImpl::~TokenConnectionFactoryImpl() = default;
 
 std::unique_ptr<Connection> TokenConnectionFactoryImpl::Create(
     base::RepeatingClosure on_disconnect) {
-  auto connection_timeout = CreateBasicMetricsTimeoutConnection(
-      url_, network_context_, on_disconnect);
+  return CreateTokenAttestationConnection(
+      url_, token_manager_, std::move(on_disconnect), network_context_);
+}
 
-  auto connection_token_attestation =
-      std::make_unique<ConnectionTokenAttestation>(
-          std::move(connection_timeout), token_manager_,
-          std::move(on_disconnect));
+ProxyWithTokenConnectionFactoryImpl::ProxyWithTokenConnectionFactoryImpl(
+    const GURL& url,
+    const GURL& proxy_url,
+    network::mojom::NetworkService* network_service,
+    phosphor::TokenManager* token_manager)
+    : url_(url),
+      proxy_url_(proxy_url),
+      network_service_(network_service),
+      token_manager_(token_manager) {
+  CHECK(proxy_url_.is_valid());
+  CHECK(token_manager_);
+  CHECK(network_service_);
 
-  return connection_token_attestation;
+  std::string api_key;
+  CHECK(!net::GetValueForKeyInQuery(url, "key", &api_key))
+      << "API key must NOT be passed in the URL for "
+         "ProxyWithTokenConnectionFactoryImpl";
+}
+
+ProxyWithTokenConnectionFactoryImpl::~ProxyWithTokenConnectionFactoryImpl() =
+    default;
+
+std::unique_ptr<Connection> ProxyWithTokenConnectionFactoryImpl::Create(
+    base::RepeatingClosure on_disconnect) {
+  auto inner_connection_factory = base::BindOnce(
+      &CreateTokenAttestationConnection, url_, token_manager_, on_disconnect);
+
+  return std::make_unique<ConnectionProxy>(
+      proxy_url_, token_manager_.get(), network_service_,
+      std::move(inner_connection_factory), std::move(on_disconnect));
 }
 
 }  // namespace legion

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "components/legion/client_impl.h"
@@ -40,12 +39,55 @@ std::unique_ptr<Client> Client::CreateWithToken(
     network::mojom::NetworkContext* network_context,
     phosphor::TokenManager* token_manager) {
   CHECK(base::FeatureList::IsEnabled(kLegion));
+  CHECK(network_context);
 
   auto connection_factory_impl = std::make_unique<TokenConnectionFactoryImpl>(
       url, network_context, token_manager);
 
   // Raw `new` is used here because the constructor is private.
   return base::WrapUnique(new ClientImpl(std::move(connection_factory_impl)));
+}
+
+// static
+std::unique_ptr<Client> Client::CreateWithProxyAndToken(
+    const GURL& url,
+    const GURL& proxy_url,
+    network::mojom::NetworkService* network_service,
+    phosphor::TokenManager* token_manager) {
+  CHECK(base::FeatureList::IsEnabled(kLegion));
+
+  auto connection_factory_impl =
+      std::make_unique<ProxyWithTokenConnectionFactoryImpl>(
+          url, proxy_url, network_service, token_manager);
+
+  // Raw `new` is used here because the constructor is private.
+  return base::WrapUnique(new ClientImpl(std::move(connection_factory_impl)));
+}
+
+// static
+std::unique_ptr<Client> Client::Create(
+    const std::string& url,
+    const std::string& api_key,
+    const std::string& proxy_url_string,
+    network::mojom::NetworkContext* network_context,
+    phosphor::TokenManager* token_manager,
+    network::mojom::NetworkService* network_service) {
+  if (!api_key.empty()) {
+    return Client::CreateWithApiKey(Client::FormatUrl(url, api_key),
+                                    network_context);
+  }
+
+  GURL formatted_url = Client::FormatUrl(url);
+  if (!proxy_url_string.empty()) {
+    GURL proxy_url(proxy_url_string);
+    if (!proxy_url.SchemeIsHTTPOrHTTPS()) {
+      proxy_url = GURL(base::StrCat({"https://", proxy_url_string}));
+    }
+    return Client::CreateWithProxyAndToken(formatted_url, proxy_url,
+                                           network_service, token_manager);
+  }
+
+  return Client::CreateWithToken(formatted_url, network_context, token_manager);
 }
 
 // static

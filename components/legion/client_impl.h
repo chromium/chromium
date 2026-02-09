@@ -5,16 +5,11 @@
 #ifndef COMPONENTS_LEGION_CLIENT_IMPL_H_
 #define COMPONENTS_LEGION_CLIENT_IMPL_H_
 
-#include <cstdint>
 #include <memory>
 #include <string>
 
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/legion/client.h"
 #include "components/legion/common/legion_logger.h"
@@ -22,10 +17,6 @@
 #include "components/legion/connection_factory.h"
 #include "components/legion/legion_common.h"
 #include "components/legion/proto/legion.pb.h"
-
-namespace network::mojom {
-class NetworkContext;
-}  // namespace network::mojom
 
 namespace legion {
 

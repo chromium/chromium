@@ -12,53 +12,14 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/legion/error_code.h"
-#include "components/legion/phosphor/token_manager.h"
 #include "components/legion/proto/legion.pb.h"
 #include "components/legion/testing/fake_connection.h"
+#include "components/legion/testing/fake_token_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace legion {
 
 namespace {
-
-class FakeTokenManager : public phosphor::TokenManager {
- public:
-  FakeTokenManager() = default;
-  ~FakeTokenManager() override = default;
-
-  void GetAuthToken(GetAuthTokenCallback callback) override {
-    pending_callbacks_.push_back(std::move(callback));
-  }
-
-  void PrefetchAuthTokens() override {}
-  void GetAuthTokenForProxy(GetAuthTokenCallback callback) override {
-    NOTREACHED();
-  }
-  void PrefetchAuthTokensForProxy() override { NOTREACHED(); }
-
-  std::optional<phosphor::BlindSignedAuthToken> GetToken() {
-    if (!return_token_) {
-      return std::nullopt;
-    }
-    return phosphor::BlindSignedAuthToken{
-        .token = "test_token",
-        .encoded_extensions = "test_extensions",
-        .expiration = base::Time::Now() + base::Minutes(1)};
-  }
-
-  void SetReturnToken(bool return_token) { return_token_ = return_token; }
-
-  void RunPendingCallbacks() {
-    while (!pending_callbacks_.empty()) {
-      std::move(pending_callbacks_.front()).Run(GetToken());
-      pending_callbacks_.pop_front();
-    }
-  }
-
- private:
-  bool return_token_ = true;
-  std::deque<GetAuthTokenCallback> pending_callbacks_;
-};
 
 class ConnectionTokenAttestationTest : public testing::Test {
  public:
@@ -115,7 +76,7 @@ TEST_F(ConnectionTokenAttestationTest, Success) {
         fake_connection_->pending_requests()[0].request;
     ASSERT_TRUE(pending_request.has_anonymous_token_request());
     EXPECT_EQ(pending_request.anonymous_token_request().anonymous_token(),
-              "test_token");
+              FakeTokenManager::kFakeToken);
   }
 
   // Respond to the attestation request.

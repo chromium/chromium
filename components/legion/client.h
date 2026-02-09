@@ -12,9 +12,9 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/legion/error_code.h"
-#include "components/legion/legion_common.h"
 #include "components/legion/phosphor/token_manager.h"
 #include "components/legion/proto/legion.pb.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "url/gurl.h"
 
 namespace network::mojom {
@@ -58,6 +58,26 @@ class Client {
       const GURL& url,
       network::mojom::NetworkContext* network_context,
       phosphor::TokenManager* token_manager);
+
+  static std::unique_ptr<Client> CreateWithProxyAndToken(
+      const GURL& url,
+      const GURL& proxy_url,
+      network::mojom::NetworkService* network_service,
+      phosphor::TokenManager* token_manager);
+
+  // Creates a client based on the provided configuration. This is a helper to
+  // consolidate client creation logic.
+  // - If `api_key` is not empty, it creates an API key based client.
+  // - Otherwise, it creates a token based client.
+  // - If `proxy_url_string` is not empty, the token based client will be
+  // wrapped in a proxy.
+  static std::unique_ptr<Client> Create(
+      const std::string& url,
+      const std::string& api_key,
+      const std::string& proxy_url_string,
+      network::mojom::NetworkContext* network_context,
+      phosphor::TokenManager* token_manager,
+      network::mojom::NetworkService* network_service);
 
   virtual ~Client() = default;
 

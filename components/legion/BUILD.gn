@@ -53,6 +53,8 @@ source_set("legion") {
     "connection_factory_impl.h",
     "connection_metrics.cc",
     "connection_metrics.h",
+    "connection_proxy.cc",
+    "connection_proxy.h",
     "connection_timeout.cc",
     "connection_timeout.h",
     "connection_token_attestation.cc",
@@ -85,6 +87,7 @@ source_set("legion") {
     "//crypto",
     "//mojo/public/cpp/system",
     "//net",
+    "//services/cert_verifier/public/mojom",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//third_party/boringssl",
@@ -99,12 +102,15 @@ source_set("testing") {
   sources = [
     "testing/fake_connection.cc",
     "testing/fake_connection.h",
+    "testing/fake_token_manager.cc",
+    "testing/fake_token_manager.h",
     "testing/mock_legion_client.h",
   ]
   public_deps = [
     ":legion",
     ":proto",
     "//base",
+    "//components/legion/phosphor",
     "//testing/gmock",
   ]
 }
@@ -115,6 +121,7 @@ source_set("unit_tests") {
     "client_impl_unittest.cc",
     "connection_basic_unittest.cc",
     "connection_metrics_unittest.cc",
+    "connection_proxy_unittest.cc",
     "connection_timeout_unittest.cc",
     "connection_token_attestation_unittest.cc",
     "legion_logger_unittest.cc",
@@ -135,7 +142,11 @@ source_set("unit_tests") {
     "//components/legion/phosphor",
     "//components/legion/phosphor:unit_tests",
     "//components/legion/proto_utils:unit_tests",
+    "//content/test:test_support",
     "//mojo/public/cpp/system",
+    "//services/network:network_service",
+    "//services/network:test_support",
+    "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/oak:oak_proto",

@@ -14,6 +14,9 @@ const base::FeatureParam<std::string> kLegionApiKey{&kLegion, "api-key", ""};
 
 const base::FeatureParam<std::string> kLegionUrl{&kLegion, "url", ""};
 
+const base::FeatureParam<std::string> kLegionProxyServerUrl{&kLegion,
+                                                            "proxy-url", ""};
+
 const base::FeatureParam<std::string> kLegionTokenServerUrl{
     &kLegion, /*name=*/"LegionTokenServerUrl",
     /*default_value=*/"https://prod.legion.goog"};

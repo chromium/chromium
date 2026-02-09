@@ -14,11 +14,10 @@
 
 namespace network::mojom {
 class NetworkContext;
+class NetworkService;
 }
 
 namespace legion {
-
-class Connection;
 
 namespace phosphor {
 class TokenManager;
@@ -66,7 +65,34 @@ class TokenConnectionFactoryImpl : public ConnectionFactory {
 
  private:
   const GURL url_;
+  const raw_ptr<phosphor::TokenManager> token_manager_;
   const raw_ptr<network::mojom::NetworkContext> network_context_;
+};
+
+// Factory for creating `Connection` instances that use blind token for client
+// attestation and proxy connection through a privacy proxy.
+class ProxyWithTokenConnectionFactoryImpl : public ConnectionFactory {
+ public:
+  ProxyWithTokenConnectionFactoryImpl(
+      const GURL& url,
+      const GURL& proxy_url,
+      network::mojom::NetworkService* network_service,
+      phosphor::TokenManager* token_manager);
+  ~ProxyWithTokenConnectionFactoryImpl() override;
+
+  ProxyWithTokenConnectionFactoryImpl(
+      const ProxyWithTokenConnectionFactoryImpl&) = delete;
+  ProxyWithTokenConnectionFactoryImpl& operator=(
+      const ProxyWithTokenConnectionFactoryImpl&) = delete;
+
+  // ConnectionFactory override:
+  std::unique_ptr<Connection> Create(
+      base::RepeatingClosure on_disconnect) override;
+
+ private:
+  const GURL url_;
+  const GURL proxy_url_;
+  const raw_ptr<network::mojom::NetworkService> network_service_;
   const raw_ptr<phosphor::TokenManager> token_manager_;
 };
 

@@ -1,10 +1,12 @@
 include_rules = [
   "+base",
   "+content/public/browser/service_process_host.h",
+  "+content/public/browser/network_service_instance.h",
   "+crypto",
   "+mojo/public/cpp",
   "+net",
   "+components/optimization_guide/proto/model_execution.proto",
+  "+services/cert_verifier/public/mojom",
   "+services/network",
   "+services/network/public/cpp",
   "+services/network/public/mojom",

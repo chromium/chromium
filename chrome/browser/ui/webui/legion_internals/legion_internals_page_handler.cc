@@ -4,23 +4,23 @@
 
 #include "chrome/browser/ui/webui/legion_internals/legion_internals_page_handler.h"
 
-#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/legion_internals/legion_internals.mojom.h"
 #include "components/legion/client.h"
 #include "components/legion/common/legion_logger.h"
 #include "components/legion/features.h"
 #include "components/legion/phosphor/token_manager.h"
 #include "components/legion/proto/legion.pb.h"
+#include "content/public/browser/network_service_instance.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 LegionInternalsPageHandler::LegionInternalsPageHandler(
     legion::phosphor::TokenManager* token_manager,
@@ -41,13 +41,9 @@ void LegionInternalsPageHandler::SetPage(
 void LegionInternalsPageHandler::Connect(const std::string& url,
                                          const std::string& api_key,
                                          ConnectCallback callback) {
-  if (!api_key.empty()) {
-    client_ = legion::Client::CreateWithApiKey(
-        legion::Client::FormatUrl(url, api_key), network_context_);
-  } else {
-    client_ = legion::Client::CreateWithToken(legion::Client::FormatUrl(url),
-                                              network_context_, token_manager_);
-  }
+  client_ = legion::Client::Create(
+      url, api_key, legion::kLegionProxyServerUrl.Get(), network_context_,
+      token_manager_, content::GetNetworkService());
   scoped_logger_observation_.Observe(client_->GetLogger());
   std::move(callback).Run();
 }
