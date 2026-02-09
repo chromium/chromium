@@ -6,6 +6,7 @@
 
 #include <type_traits>
 
+#include "base/command_line.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "components/prefs/pref_filter.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace {
@@ -218,6 +220,14 @@ void ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
     BrowserWindowInterface* bwi,
     base::OnceCallback<void(bool)> result_callback) {
   if (!features::IsReadAnythingOmniboxChipEnabled() || !bwi) {
+    std::move(result_callback).Run(false);
+    return;
+  }
+  // Don't show the omnibox entrypoint if automation is enabled, such as
+  // during automated testing.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableAutomation)) {
+    std::move(result_callback).Run(false);
     return;
   }
 
