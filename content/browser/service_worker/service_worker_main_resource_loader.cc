@@ -1102,13 +1102,6 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
   // network request purpose anymore.
   resource_request_.client_side_content_decoding_enabled = false;
 
-  synthetic_response_manager_.emplace(
-      service_worker_client_->CreateNetworkURLLoaderFactory(
-          ServiceWorkerClient::CreateNetworkURLLoaderFactoryType::
-              kSyntheticNetworkRequest,
-          context_wrapper->storage_partition(), resource_request_),
-      version);
-
   // Initiate the network request. If the request URL is eligible for the
   // SyntheticResponse feature, the request is always expected to be called.
   //
@@ -1120,10 +1113,9 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
   //   navigations use it as a initial response locally and pass it to the
   //   client with an empty body.
   // - In subsequent navigations, append the response body to the response.
-  synthetic_response_manager_->StartRequest(
-      GlobalRequestID::MakeBrowserInitiated().request_id,
-      NavigationURLLoader::GetURLLoaderOptions(
-          resource_request_.is_outermost_main_frame),
+  synthetic_response_manager_.emplace(version);
+  synthetic_response_manager_->InitiateRequest(
+      service_worker_client_.get(), context_wrapper->storage_partition(),
       resource_request_,
       base::BindRepeating(&ServiceWorkerMainResourceLoader::
                               OnReceiveResponseFromSyntheticNetworkRequest,

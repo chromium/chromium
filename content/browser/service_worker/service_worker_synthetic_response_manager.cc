@@ -17,9 +17,13 @@
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
+#include "content/browser/loader/navigation_url_loader.h"
+#include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/browser/service_worker/service_worker_synthetic_response_data_pipe_connector.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
+#include "content/public/browser/global_request_id.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/features.h"
@@ -210,9 +214,8 @@ class ServiceWorkerSyntheticResponseManager::SyntheticResponseURLLoaderClient
 };
 
 ServiceWorkerSyntheticResponseManager::ServiceWorkerSyntheticResponseManager(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     scoped_refptr<ServiceWorkerVersion> version)
-    : url_loader_factory_(url_loader_factory), version_(version) {
+    : version_(version) {
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerSyntheticResponseManager::"
               "ServiceWorkerSyntheticResponseManager",
@@ -230,6 +233,25 @@ ServiceWorkerSyntheticResponseManager::
               "ServiceWorkerSyntheticResponseManager::"
               "~ServiceWorkerSyntheticResponseManager",
               perfetto::TerminatingFlow::FromPointer(this));
+}
+
+void ServiceWorkerSyntheticResponseManager::InitiateRequest(
+    ServiceWorkerClient* service_worker_client,
+    StoragePartitionImpl* storage_partition,
+    network::ResourceRequest& request,
+    OnReceiveResponseCallback receive_response_callback,
+    OnReceiveRedirectCallback receive_redirect_callback,
+    OnCompleteCallback complete_callback) {
+  url_loader_factory_ = service_worker_client->CreateNetworkURLLoaderFactory(
+      ServiceWorkerClient::CreateNetworkURLLoaderFactoryType::
+          kSyntheticNetworkRequest,
+      storage_partition, request);
+
+  StartRequest(
+      GlobalRequestID::MakeBrowserInitiated().request_id,
+      NavigationURLLoader::GetURLLoaderOptions(request.is_outermost_main_frame),
+      request, std::move(receive_response_callback),
+      std::move(receive_redirect_callback), std::move(complete_callback));
 }
 
 void ServiceWorkerSyntheticResponseManager::StartRequest(
