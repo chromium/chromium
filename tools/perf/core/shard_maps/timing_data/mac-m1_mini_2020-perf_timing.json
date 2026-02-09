@@ -1712,10 +1712,6 @@
         "name": "dummy_benchmark.stable_benchmark_1/dummy_page.html"
     },
     {
-        "duration": "55.0",
-        "name": "jetstream2-minorms/JetStream2"
-    },
-    {
         "duration": "53.0",
         "name": "jetstream2-no-field-trials/JetStream2"
     },
@@ -3328,20 +3324,12 @@
         "name": "speedometer2-future/Speedometer2"
     },
     {
-        "duration": "24.0",
-        "name": "speedometer2-minorms/Speedometer2"
-    },
-    {
         "duration": "23.0",
         "name": "speedometer2/Speedometer2"
     },
     {
         "duration": "25.0",
         "name": "speedometer3-future/Speedometer3"
-    },
-    {
-        "duration": "25.0",
-        "name": "speedometer3-minorms/Speedometer3"
     },
     {
         "duration": "23.0",

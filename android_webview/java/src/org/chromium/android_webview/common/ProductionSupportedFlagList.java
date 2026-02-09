@@ -670,7 +670,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8HighEndAndroid"),
         Flag.baseFeature("V8MemoryReducer"),
         Flag.baseFeature("V8MemoryPoolReleaseOnMallocFailures"),
-        Flag.baseFeature("V8MinorMS"),
         Flag.baseFeature("V8PreconfigureOldGen"),
         Flag.baseFeature("V8ScavengerHigherCapacity"),
         Flag.baseFeature("V8IncrementalMarkingStartUserVisible"),

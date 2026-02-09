@@ -29,23 +29,3 @@ class Octane(press._PressBenchmark): # pylint: disable=protected-access
 
   def CreateStorySet(self, options):
     return page_sets.OctaneStorySet()
-
-
-@benchmark.Info(emails=['omerkatz@chromium.org'],
-                component='Blink>JavaScript>GarbageCollection')
-class OctaneMinorMS(press._PressBenchmark):  # pylint: disable=protected-access
-  """Google's Octane JavaScript benchmark without the MinorMS flag.
-
-  Shows the performance of Scavenger young generation GC in V8.
-
-  http://chromium.github.io/octane/index.html?auto=1
-  """
-  @classmethod
-  def Name(cls):
-    return 'octane-minorms'
-
-  def CreateStorySet(self, options):
-    return page_sets.OctaneStorySet()
-
-  def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--js-flags=--minor-ms')

@@ -101,9 +101,6 @@ BASE_FEATURE(kV8PreconfigureOldGen, kFeatureDefaultStateControlledByV8);
 const base::FeatureParam<int> kV8PreconfigureOldGenSize{
     &kV8PreconfigureOldGen, "V8PreconfigureOldGenSize", 32};
 
-// Enables MinorMC young generation garbage collector.
-BASE_FEATURE(kV8MinorMS, kFeatureDefaultStateControlledByV8);
-
 BASE_FEATURE(kV8ScavengerHigherCapacity, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kV8ScavengerMaxCapacity{

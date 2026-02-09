@@ -1712,10 +1712,6 @@
         "name": "dummy_benchmark.stable_benchmark_1/dummy_page.html"
     },
     {
-        "duration": "128.0",
-        "name": "jetstream2-minorms/JetStream2"
-    },
-    {
         "duration": "125.0",
         "name": "jetstream2/JetStream2"
     },

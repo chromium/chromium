@@ -51,7 +51,6 @@ GIN_EXPORT extern const base::FeatureParam<int> kV8MemoryReducerGCCount;
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8PreconfigureOldGen);
 GIN_EXPORT extern const base::FeatureParam<int> kV8PreconfigureOldGenSize;
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8MemoryPoolReleaseOnMallocFailures);
-GIN_EXPORT BASE_DECLARE_FEATURE(kV8MinorMS);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8MegaDomIC);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8NoReclaimUnmodifiedWrappers);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8OffThreadFinalization);

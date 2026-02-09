@@ -75,11 +75,6 @@
         }
     },
     "2": {
-        "benchmarks": {
-            "jetstream2-minorms": {
-                "abridged": false
-            }
-        },
         "crossbench": {
             "loadline_tablet.crossbench": {
                 "crossbench_name": "loadline-tablet-fast",
@@ -149,16 +144,10 @@
             "speedometer2-future": {
                 "abridged": false
             },
-            "speedometer2-minorms": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             },
             "speedometer3-future": {
-                "abridged": false
-            },
-            "speedometer3-minorms": {
                 "abridged": false
             },
             "startup.mobile": {

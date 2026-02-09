@@ -84,9 +84,6 @@
     },
     "4": {
         "benchmarks": {
-            "jetstream2-minorms": {
-                "abridged": false
-            },
             "media.desktop": {
                 "end": 9,
                 "abridged": false
@@ -249,9 +246,6 @@
             },
             "speedometer2-future": {
                 "abridged": false
-            },
-            "speedometer2-minorms": {
-                "abridged": false
             }
         }
     },
@@ -261,9 +255,6 @@
                 "abridged": false
             },
             "speedometer3-future": {
-                "abridged": false
-            },
-            "speedometer3-minorms": {
                 "abridged": false
             },
             "system_health.common_desktop": {

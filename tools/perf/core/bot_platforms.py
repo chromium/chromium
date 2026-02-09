@@ -264,11 +264,7 @@ OFFICIAL_BENCHMARK_CONFIGS = PerfSuite(
 OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
     'blink_perf.svg',
     'blink_perf.paint',
-    'jetstream2-minorms',
-    'octane-minorms',
-    'speedometer2-minorms',
     'speedometer2-predictable',
-    'speedometer3-minorms',
     'speedometer3-predictable',
 ])
 # TODO(crbug.com/40628256): Remove OFFICIAL_BENCHMARK_NAMES once sharding
@@ -682,13 +678,9 @@ _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.svg',
     'blink_perf.paint',
 ])
-_LINUX_BENCHMARK_CONFIGS_WITH_MINORMS_PREDICTABLE = PerfSuite(
+_LINUX_BENCHMARK_CONFIGS_WITH_PREDICTABLE = PerfSuite(
     _LINUX_BENCHMARK_CONFIGS).Add([
-        'jetstream2-minorms',
-        'octane-minorms',
-        'speedometer2-minorms',
         'speedometer2-predictable',
-        'speedometer3-minorms',
         'speedometer3-predictable',
     ])
 _LINUX_EXECUTABLE_CONFIGS = frozenset([
@@ -699,7 +691,7 @@ _LINUX_EXECUTABLE_CONFIGS = frozenset([
     _tracing_perftests(5),
 ])
 _LINUX_R350_BENCHMARK_CONFIGS = PerfSuite(
-    _LINUX_BENCHMARK_CONFIGS_WITH_MINORMS_PREDICTABLE).Remove([
+    _LINUX_BENCHMARK_CONFIGS_WITH_PREDICTABLE).Remove([
         'rendering.desktop',
         'rendering.desktop.notracing',
         'system_health.common_desktop',
@@ -725,10 +717,7 @@ _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
         'v8.runtime_stats.top_25',
     ]).Add([
-        'jetstream2-minorms',
         'jetstream2-no-field-trials',
-        'speedometer2-minorms',
-        'speedometer3-minorms',
         'speedometer3-no-field-trials',
     ]).Repeat([
         'speedometer2',
@@ -765,10 +754,6 @@ _MAC_M1_MINI_2020_EXECUTABLE_CONFIGS = frozenset([
 ])
 _MAC_M2_PRO_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'v8.runtime_stats.top_25',
-]).Add([
-    'jetstream2-minorms',
-    'speedometer2-minorms',
-    'speedometer3-minorms',
 ])
 _MAC_M3_PRO_BENCHMARK_CONFIGS = PerfSuite([])
 _MAC_M4_MINI_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS)
@@ -873,29 +858,11 @@ _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer3', pageset_repeat=16),
     _GetBenchmarkConfig('speedometer3-predictable'),
 ])
-_ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS = PerfSuite(
-    OFFICIAL_BENCHMARK_CONFIGS).Add([
-        _GetBenchmarkConfig('jetstream2-minorms'),
-        _GetBenchmarkConfig('speedometer2-minorms'),
-        _GetBenchmarkConfig('speedometer3-minorms'),
-    ])
 # TODO(crbug.com/409326154): Remove these for the crossbench variants when
 # supported.
 _ANDROID_PIXEL9_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
 ])
-_ANDROID_PIXEL_FOLD_BENCHMARK_CONFIGS = PerfSuite(
-    OFFICIAL_BENCHMARK_CONFIGS).Add([
-        _GetBenchmarkConfig('jetstream2-minorms'),
-        _GetBenchmarkConfig('speedometer2-minorms'),
-        _GetBenchmarkConfig('speedometer3-minorms'),
-    ])
-_ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS = PerfSuite(
-    OFFICIAL_BENCHMARK_CONFIGS).Add([
-        _GetBenchmarkConfig('jetstream2-minorms'),
-        _GetBenchmarkConfig('speedometer2-minorms'),
-        _GetBenchmarkConfig('speedometer3-minorms')
-    ])
 # Android Desktop (AL)
 _ANDROID_AL_BRYA_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
@@ -919,7 +886,6 @@ _FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS = PerfSuite([
 ])
 _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('speedometer2-minorms'),
     _GetBenchmarkConfig('speedometer3'),
 ])
 
@@ -1151,14 +1117,14 @@ ANDROID_PIXEL6_PGO = PerfPlatform(
 ANDROID_PIXEL6_PRO = PerfPlatform(
     'android-pixel6-pro-perf',
     'Android T',
-    _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS,
+    OFFICIAL_BENCHMARK_CONFIGS,
     10,
     'android',
     executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS)
 ANDROID_PIXEL6_PRO_PGO = PerfPlatform(
     'android-pixel6-pro-perf-pgo',
     'Android T',
-    _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS,
+    OFFICIAL_BENCHMARK_CONFIGS,
     16,
     'android',
     executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
@@ -1166,14 +1132,14 @@ ANDROID_PIXEL6_PRO_PGO = PerfPlatform(
 ANDROID_PIXEL_FOLD = PerfPlatform(
     'android-pixel-fold-perf',
     'Android U',
-    _ANDROID_PIXEL_FOLD_BENCHMARK_CONFIGS,
+    OFFICIAL_BENCHMARK_CONFIGS,
     10,
     'android',
     executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS)
 ANDROID_PIXEL_TANGOR = PerfPlatform(
     'android-pixel-tangor-perf',
     'Android U',
-    _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS,
+    OFFICIAL_BENCHMARK_CONFIGS,
     8,
     'android',
     executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,

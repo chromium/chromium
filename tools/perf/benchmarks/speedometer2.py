@@ -191,23 +191,6 @@ class V8Speedometer2Future(Speedometer2):
     options.AppendExtraBrowserArgs('--enable-features=V8VmFuture')
 
 
-@benchmark.Info(emails=['omerkatz@chromium.org'],
-                component='Blink>JavaScript>GarbageCollection',
-                documentation_url='https://browserbench.org/Speedometer2.1')
-class Speedometer2MinorMS(Speedometer2):
-  """The latest Speedometer2 benchmark without the MinorMS flag.
-
-  Shows the performance of Scavenger young generation GC in V8.
-  """
-
-  @classmethod
-  def Name(cls):
-    return 'speedometer2-minorms'
-
-  def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--js-flags=--minor-ms')
-
-
 @benchmark.Info(emails=['rasikan@google.com', 'wnwen@google.com'],
                 component='Blink>JavaScript',
                 documentation_url='https://browserbench.org/Speedometer2.1')

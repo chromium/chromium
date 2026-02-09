@@ -414,7 +414,6 @@ void SetFeatureFlags() {
   SetV8FlagsIfOverridden(features::kV8MemoryPoolReleaseOnMallocFailures,
                          "--memory-pool-release-on-malloc-failures",
                          "--no-memory-pool-release-on-malloc-failures");
-  SetV8FlagsIfOverridden(features::kV8MinorMS, "--minor-ms", "--no-minor-ms");
   if (base::FeatureList::IsEnabled(features::kV8ScavengerHigherCapacity)) {
     SetV8FlagsFormatted("--scavenger-max-new-space-capacity-mb=%i",
                         features::kV8ScavengerMaxCapacity.Get());
