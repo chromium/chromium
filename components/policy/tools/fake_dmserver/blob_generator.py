@@ -305,7 +305,7 @@ please refer to the README.md in this directory.""",
       encoded_policy = base64.b64encode(
           browser_settings.SerializeToString()).decode("utf-8")
       policy_blob["policies"].append({
-          "policy_type": "google/extension-install-cloud-policy/chrome/user",
+          "policy_type": "google/chrome/machine-level-user",
           "value": encoded_policy
       })
 
