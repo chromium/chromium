@@ -318,6 +318,47 @@ class EslintTsTest(unittest.TestCase):
       self.assertFalse(
           e in str(context.exception), f'Found unexpected error: {e}')
 
+  def testWebUiEslintPlugin_LitElementTemplateStructure(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test([
+          "with_webui_plugin_lit_element_template_structure_violations.html.ts"
+      ])
+
+    _EXPECTED_STRING = "@webui-eslint/lit-element-template-structure"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+
+    _FOR_STATEMENT_ERROR = "For loop found in the HTML template file 'with_webui_plugin_lit_element_template_structure_violations.html.ts'. Use the map() directive to render the same HTML for an array of items, and delegate more complex logic to the class definition file"
+
+    _FUNCTION_DEFINITION_ERROR = "Extra function definition '%(functionName)s' found in the HTML template file 'with_webui_plugin_lit_element_template_structure_violations.html.ts'. Complex logic should be delegated to the class definition file. Standalone/separate chunks of templates may need a dedicated custom element"
+
+    # The following strings *should* appear in the error output.
+    errors = [
+        _FOR_STATEMENT_ERROR,
+        _FUNCTION_DEFINITION_ERROR % {
+            'functionName': 'computeFoo'
+        },
+        _FUNCTION_DEFINITION_ERROR % {
+            'functionName': 'getButtonHtml'
+        },
+        _FUNCTION_DEFINITION_ERROR % {
+            'functionName': 'getSpinnerDiv'
+        },
+    ]
+    for e in errors:
+      self.assertTrue(
+          e in str(context.exception), f'Didn\'t find expected error: {e}')
+
+    # The following strings *should not* appear in the error output.
+    non_errors = [
+        # getHtml() declaration is allowed.
+        _FUNCTION_DEFINITION_ERROR % {
+            'functionName': 'getHtml'
+        },
+    ]
+    for e in non_errors:
+      self.assertFalse(
+          e in str(context.exception), f'Found unexpected error: {e}')
+
 
 if __name__ == "__main__":
   unittest.main()

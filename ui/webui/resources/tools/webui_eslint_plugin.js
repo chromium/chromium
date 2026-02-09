@@ -771,13 +771,123 @@ const inlineEventHandler = ESLintUtils.RuleCreator.withoutDocs({
   },
 });
 
+const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs({
+  name: 'lit-element-template-structure',
+  meta: {
+    type: 'problem',
+    docs: {
+      description:
+          'Ensures that HTML templates are not used for a Lit element\'s business logic, which should be contained in the class definition instead',
+      recommended: 'error',
+    },
+    messages: {
+      ifStatementFound:
+          'If statement found in the HTML template file \'{{fileName}}\'. Use ternary statements for conditional rendering, and delegate more complex logic to the class definition file',
+      forStatementFound:
+          'For loop found in the HTML template file \'{{fileName}}\'. Use the map() directive to render the same HTML for an array of items, and delegate more complex logic to the class definition file',
+      variableDeclarationFound:
+          'Local (const/let) variable \'{{variableName}}\' found in the HTML template file \'{{fileName}}\'. Logic should be delegated to the class definition file',
+      functionDefinitionFound:
+          'Extra function definition \'{{functionName}}\' found in the HTML template file \'{{fileName}}\'. Complex logic should be delegated to the class definition file. Standalone/separate chunks of templates may need a dedicated custom element',
+    },
+  },
+  defaultOptions: [],
+  create(context) {
+    const templateFilename = context.filename.replaceAll('\\', '/');
+    assert.ok(templateFilename.endsWith('.html.ts'));
+
+    const services = ESLintUtils.getParserServices(context);
+    const compilerOptions = services.program.getCompilerOptions();
+    let hasLitImport = false;
+
+    return {
+      [`ImportDeclaration[source.value=/${LIT_IMPORT_REGEX}/]`](node) {
+        hasLitImport = true;
+      },
+      ['FunctionDeclaration[id.name!=/getHtml/]'](node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        context.report({
+          node,
+          messageId: 'functionDefinitionFound',
+          data: {
+            functionName: node.id.name,
+            fileName: path.basename(templateFilename),
+          },
+        });
+      },
+      ['FunctionDeclaration[id.name=/getHtml/] ForStatement'](node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        context.report({
+          node,
+          messageId: 'forStatementFound',
+          data: {
+            fileName: path.basename(templateFilename),
+          },
+        });
+      },
+      ['FunctionDeclaration[id.name=/getHtml/] ForOfStatement'](node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        context.report({
+          node,
+          messageId: 'forStatementFound',
+          data: {
+            fileName: path.basename(templateFilename),
+          },
+        });
+      },
+      // TODO (crbug.com/481519338): Enable these parts of the check.
+      /*
+      ['VariableDeclaration'](node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        for (const declaration of node.declarations) {
+          context.report({
+            node,
+            messageId: 'variableDeclarationFound',
+            data: {
+              variableName: declaration.id.name,
+              fileName: path.basename(templateFilename),
+            },
+          });
+        }
+      },
+      [FunctionDeclaration[id.name=/getHtml/] 'IfStatement'](node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        context.report({
+          node,
+          messageId: 'ifStatementFound',
+          data: {
+            fileName: path.basename(templateFilename),
+          },
+        });
+      },
+      */
+    };
+  },
+});
+
 const rules = {
+  'inline-event-handler': inlineEventHandler,
   'lit-element-structure': litElementStructureRule,
+  'lit-element-template-structure': litElementTemplateStructure,
   'lit-property-accessor': litPropertyAccessorRule,
   'polymer-property-declare': polymerPropertyDeclareRule,
   'polymer-property-class-member': polymerPropertyClassMemberRule,
   'web-component-missing-deps': webComponentMissingDeps,
-  'inline-event-handler': inlineEventHandler,
 };
 
 export default {rules};
