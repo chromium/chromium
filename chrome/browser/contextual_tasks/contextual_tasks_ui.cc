@@ -168,7 +168,7 @@ void AddZeroStateStrings(content::WebUIDataSource* source, Profile* profile) {
 }
 
 ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
-    : TopChromeWebUIController(web_ui),
+    : ui::MojoWebUIController(web_ui),
       ui_service_(contextual_tasks::ContextualTasksUiServiceFactory::
                       GetForBrowserContext(
                           web_ui->GetWebContents()->GetBrowserContext())),

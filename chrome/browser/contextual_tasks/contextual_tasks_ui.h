@@ -63,7 +63,7 @@ class ContextualTasksPageHandler;
 
 class ContextualTasksUI
     : public contextual_tasks::ContextualTasksUIInterface,
-      public TopChromeWebUIController,
+      public ui::MojoWebUIController,
       public contextual_tasks::mojom::PageHandlerFactory,
       public composebox::mojom::PageHandlerFactory,
       public contextual_tasks_internals::mojom::
