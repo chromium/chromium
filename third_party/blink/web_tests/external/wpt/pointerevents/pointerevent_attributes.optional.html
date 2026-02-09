@@ -73,8 +73,8 @@
                                 ? { button: actions.ButtonType.RIGHT }
                                 : undefined;
           await actions
-            .pointerMove(0, 0)
             .addPointer('pointer1', pointerType)
+            .pointerMove(0, 0)
             .pointerMove(-20, -20, { origin: target })
             .pointerDown(buttonArguments)
             .pointerMove(20, 20, { origin: target })
