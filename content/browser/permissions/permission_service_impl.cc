@@ -257,6 +257,11 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
     std::vector<PermissionDescriptorPtr> permissions,
     EmbeddedPermissionRequestDescriptorPtr descriptor,
     RequestPageEmbeddedPermissionCallback callback) {
+  if (permissions.empty()) {
+    ReceivedBadMessage();
+    return;
+  }
+
   const base::Feature* required_feature = &blink::features::kPermissionElement;
   if (descriptor->detail) {
     if (descriptor->detail->is_geolocation()) {
@@ -307,6 +312,11 @@ void PermissionServiceImpl::RequestPermissions(
     RequestPermissionsCallback callback) {
   BrowserContext* browser_context = context_->GetBrowserContext();
   if (!browser_context) {
+    return;
+  }
+
+  if (permissions.empty()) {
+    ReceivedBadMessage();
     return;
   }
 
