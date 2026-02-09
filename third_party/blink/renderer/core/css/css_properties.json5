@@ -3662,6 +3662,7 @@
       getter: "GetGridLanesDirection",
       typedom_types: ["Keyword"],
       keywords: ["normal", "row", "column", "fill-reverse", "track-reverse"],
+      typedom_keywords: ["normal"],
       invalidate: ["layout", "paint"],
       runtime_flag: "CSSGridLanesLayout",
     },

@@ -150,6 +150,21 @@ const CSSValue* StyleValueToCSSValue(
       }
       break;
     }
+    case CSSPropertyID::kGridLanesDirection: {
+      const auto* value = style_value.ToCSSValue();
+      // Only 'normal' is stored as an identifier, the other keywords are
+      // wrapped in a list.
+      const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+      if (identifier_value && !value->IsCSSWideKeyword() &&
+          identifier_value->GetValueID() != CSSValueID::kNormal) {
+        DCHECK(identifier_value->GetValueID() == CSSValueID::kRow ||
+               identifier_value->GetValueID() == CSSValueID::kColumn);
+        CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+        list->Append(*style_value.ToCSSValue());
+        return list;
+      }
+      break;
+    }
     case CSSPropertyID::kOffsetRotate: {
       // level 1 only accepts single values, which are stored internally
       // as a single element list.

@@ -152,7 +152,6 @@ TEST_F(StylePropertyMapTest, CSSKeywordValuesTest) {
         case CSSPropertyID::kFontVariantEastAsian:
         case CSSPropertyID::kFontVariantLigatures:
         case CSSPropertyID::kFontVariantNumeric:
-        case CSSPropertyID::kGridLanesDirection:
         case CSSPropertyID::kOffsetRotate:
         case CSSPropertyID::kScrollSnapType:
         case CSSPropertyID::kScrollbarGutter:

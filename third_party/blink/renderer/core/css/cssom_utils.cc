@@ -74,7 +74,7 @@ bool CSSOMUtils::HasGridRepeatValue(const CSSValueList* value_list) {
 bool CSSOMUtils::IsGridLanesNormalDirectionValue(
     const CSSValue* grid_lanes_direction_values) {
   // The 'normal' keyword cannot be paired with any reversal keywords and as
-  // such is parsed as an identifier.
+  // such is always parsed as an identifier.
   if (const auto* value =
           DynamicTo<CSSIdentifierValue>(grid_lanes_direction_values)) {
     CHECK_EQ(value->GetValueID(), CSSValueID::kNormal);
