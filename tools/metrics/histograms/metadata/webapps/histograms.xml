@@ -514,7 +514,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.DiyAppsInstalledCount.ByUser" units="count"
-    expires_after="2026-03-21">
+    expires_after="2027-02-09">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2084,7 +2084,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.MlInstall.DialogResponse"
-    enum="WebAppMlInstallResponse" expires_after="2026-03-23">
+    enum="WebAppMlInstallResponse" expires_after="2027-02-09">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2199,7 +2199,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.NewCraftedAppInstalled.ByUser" enum="BooleanSuccess"
-    expires_after="2026-03-21">
+    expires_after="2027-02-09">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
