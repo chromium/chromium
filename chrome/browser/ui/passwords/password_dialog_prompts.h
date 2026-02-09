@@ -26,8 +26,6 @@ class AccountChooserPrompt {
   AccountChooserPrompt(const AccountChooserPrompt&) = delete;
   AccountChooserPrompt& operator=(const AccountChooserPrompt&) = delete;
 
-  virtual ~AccountChooserPrompt() = default;
-
   // Shows the account chooser dialog.
   virtual void ShowAccountChooser() = 0;
 
@@ -37,6 +35,7 @@ class AccountChooserPrompt {
 
  protected:
   AccountChooserPrompt() = default;
+  virtual ~AccountChooserPrompt() = default;
 };
 
 // A platform-independent interface for the autosignin promo.
@@ -76,7 +75,7 @@ class CredentialLeakPrompt {
 };
 
 // Factory function for AccountChooserPrompt on desktop platforms.
-std::unique_ptr<AccountChooserPrompt> CreateAccountChooserPromptView(
+AccountChooserPrompt* CreateAccountChooserPromptView(
     CredentialManagerDialogController* controller,
     content::WebContents* web_contents);
 

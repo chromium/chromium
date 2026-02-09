@@ -20,8 +20,10 @@ struct PasswordForm;
 
 class CredentialManagerDialogController;
 
-class AccountChooserDialogView : public views::BubbleDialogDelegate,
+class AccountChooserDialogView : public views::BubbleDialogDelegateView,
                                  public AccountChooserPrompt {
+  METADATA_HEADER(AccountChooserDialogView, views::BubbleDialogDelegateView)
+
  public:
   AccountChooserDialogView(CredentialManagerDialogController* controller,
                            content::WebContents* web_contents);
@@ -33,16 +35,14 @@ class AccountChooserDialogView : public views::BubbleDialogDelegate,
   void ShowAccountChooser() override;
   void ControllerGone() override;
 
-  // DialogDelegate:
-  bool Accept() override;
-
  private:
   // WidgetDelegate:
-  void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
-                                views::Widget* widget) const override;
   std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
   void WindowClosing() override;
+
+  // DialogDelegate:
+  bool Accept() override;
 
   // Sets up the child views.
   void InitWindow();
@@ -53,8 +53,6 @@ class AccountChooserDialogView : public views::BubbleDialogDelegate,
   raw_ptr<CredentialManagerDialogController, AcrossTasksDanglingUntriaged>
       controller_;
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
-
-  std::unique_ptr<views::Widget> widget_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_ACCOUNT_CHOOSER_DIALOG_VIEW_H_
