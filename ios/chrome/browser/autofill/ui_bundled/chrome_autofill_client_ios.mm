@@ -196,7 +196,8 @@ ValuablesDataManager* ChromeAutofillClientIOS::GetValuablesDataManager() {
 }
 
 EntityDataManager* ChromeAutofillClientIOS::GetEntityDataManager() {
-  if (base::FeatureList::IsEnabled(kIOSEnhancedAutofill)) {
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiCreateEntityDataManager)) {
     return IOSAutofillEntityDataManagerFactory::GetForProfile(profile_);
   }
   return nullptr;
