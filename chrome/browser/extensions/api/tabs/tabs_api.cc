@@ -1483,11 +1483,10 @@ ExtensionFunction::ResponseAction WindowsRemoveFunction::Run() {
   }
 #endif
 
-  WindowController::Reason reason;
-  if (!window_controller->CanClose(&reason)) {
-    return RespondNow(Error(reason == WindowController::REASON_NOT_EDITABLE
-                                ? ExtensionTabUtil::kTabStripNotEditableError
-                                : kUnknownErrorDoNotUse));
+  TabListInterface* tab_list =
+      TabListInterface::From(window_controller->GetBrowserWindowInterface());
+  if (tab_list && !tab_list->IsThisTabListEditable()) {
+    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
   }
   window_controller->window()->Close();
   return RespondNow(NoArguments());

@@ -52,11 +52,6 @@ class WindowController {
     kDontPopulateTabs,
   };
 
-  enum Reason {
-    REASON_NONE,
-    REASON_NOT_EDITABLE,
-  };
-
   // A bitmask used as filter on window types.
   using TypeFilter = uint32_t;
 
@@ -95,10 +90,6 @@ class WindowController {
   // associated with the extension (used by FullscreenController).
   virtual void SetFullscreenMode(bool is_fullscreen,
                                  const GURL& extension_url) const = 0;
-
-  // Returns false if the window is in a state where closing the window is not
-  // permitted and sets `reason` if not NULL.
-  virtual bool CanClose(Reason* reason) const = 0;
 
   // Returns the BrowserWindowInterface associated with this window controller,
   // if any. Defaults to returning null.

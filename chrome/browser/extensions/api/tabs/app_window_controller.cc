@@ -46,10 +46,6 @@ void AppWindowController::SetFullscreenMode(bool is_fullscreen,
   // Full screen not supported by app windows.
 }
 
-bool AppWindowController::CanClose(Reason* reason) const {
-  return true;
-}
-
 Browser* AppWindowController::GetBrowser() const {
   return nullptr;
 }

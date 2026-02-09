@@ -142,20 +142,6 @@ void BrowserExtensionWindowController::SetFullscreenMode(
 #endif
 }
 
-bool BrowserExtensionWindowController::CanClose(Reason* reason) const {
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-#else
-  // Don't let an extension remove the window if the user is dragging tabs
-  // in that window.
-  if (!window_->IsTabStripEditable()) {
-    *reason = WindowController::REASON_NOT_EDITABLE;
-    return false;
-  }
-#endif
-  return true;
-}
-
 BrowserWindowInterface*
 BrowserExtensionWindowController::GetBrowserWindowInterface() {
   return &browser_.get();

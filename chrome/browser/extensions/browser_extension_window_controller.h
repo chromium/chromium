@@ -51,7 +51,6 @@ class BrowserExtensionWindowController : public WindowController {
   std::string GetWindowTypeText() const override;
   void SetFullscreenMode(bool is_fullscreen,
                          const GURL& extension_url) const override;
-  bool CanClose(Reason* reason) const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
 #if !BUILDFLAG(IS_ANDROID)
   Browser* GetBrowser() const override;
