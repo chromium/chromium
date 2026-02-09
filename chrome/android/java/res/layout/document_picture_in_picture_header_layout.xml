@@ -15,7 +15,6 @@ by DocumentPictureInPictureHeaderViewBinder.
     android:id="@+id/document_picture_in_picture_header"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_vertical"
     android:orientation="horizontal" >
 
     <!-- src & content description are set programmatically by the mediator. -->
@@ -24,9 +23,9 @@ by DocumentPictureInPictureHeaderViewBinder.
         android:tooltipText="@string/accessibility_menu_info"
         android:background="@drawable/default_icon_background"
         android:layout_width=
-            "@dimen/document_picture_in_picture_header_icon_size"
+            "@dimen/document_picture_in_picture_header_component_size"
         android:layout_height=
-            "@dimen/document_picture_in_picture_header_icon_size"
+            "@dimen/document_picture_in_picture_header_component_size"
         android:scaleType="center" />
 
     <org.chromium.chrome.browser.omnibox.UrlBarApi26
@@ -35,7 +34,8 @@ by DocumentPictureInPictureHeaderViewBinder.
         android:inputType="none"
         android:singleLine="true"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height=
+            "@dimen/document_picture_in_picture_header_component_size"
         android:paddingStart=
             "@dimen/document_picture_in_picture_url_bar_padding"
         android:paddingEnd="@dimen/document_picture_in_picture_url_bar_padding"
@@ -51,8 +51,8 @@ by DocumentPictureInPictureHeaderViewBinder.
         android:tooltipText="@string/document_picture_in_picture_back_to_tab"
         android:background="@drawable/default_icon_background"
         android:layout_width=
-            "@dimen/document_picture_in_picture_header_icon_size"
+            "@dimen/document_picture_in_picture_header_component_size"
         android:layout_height=
-            "@dimen/document_picture_in_picture_header_icon_size"
+            "@dimen/document_picture_in_picture_header_component_size"
         android:scaleType="center" />
 </LinearLayout>

@@ -254,6 +254,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                         findViewById(R.id.document_picture_in_picture_header),
                         assumeNonNull(mAppHeaderCoordinator),
                         assumeNonNull(mAppThemeColorProvider),
+                        /* context= */ this,
                         /* delegate= */ this,
                         !assumeNonNull(mWindowOptions).disallowReturnToOpener,
                         // TODO(crbug.com/479456911): Dynamically set the security level and

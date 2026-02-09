@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.media.document_picture_in_picture_header;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -43,18 +45,22 @@ public class DocumentPictureInPictureHeaderMediator
                 ThemeColorProvider.TintObserver {
     private static final String TAG = "DocumentPiPHdrMdtr";
     private final PropertyModel mModel;
-    private @Nullable AppHeaderState mCurrentHeaderState;
+    private @MonotonicNonNull AppHeaderState mCurrentHeaderState;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
     private final ThemeColorProvider mThemeColorProvider;
+    private final Context mContext;
     private final DocumentPictureInPictureHeaderDelegate mDelegate;
     private final Rect mBackToTabRect = new Rect();
     private final Rect mSecurityIconRect = new Rect();
     private final List<Rect> mNonDraggableAreas = new ArrayList<>();
+    private final int mMinHeaderHeight;
+    private final int mComponentSize;
 
     public DocumentPictureInPictureHeaderMediator(
             PropertyModel model,
             DesktopWindowStateManager desktopWindowStateManager,
             ThemeColorProvider themeColorProvider,
+            Context context,
             DocumentPictureInPictureHeaderDelegate delegate,
             boolean isBackToTabShown,
             @ConnectionSecurityLevel int securityLevel,
@@ -62,7 +68,16 @@ public class DocumentPictureInPictureHeaderMediator
             GURL url) {
         mModel = model;
         mThemeColorProvider = themeColorProvider;
+        mContext = context;
         mDelegate = delegate;
+        mMinHeaderHeight =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.document_picture_in_picture_header_min_height);
+        mComponentSize =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.document_picture_in_picture_header_component_size);
         mModel.set(DocumentPictureInPictureHeaderProperties.IS_BACK_TO_TAB_SHOWN, isBackToTabShown);
 
         mModel.set(
@@ -115,17 +130,7 @@ public class DocumentPictureInPictureHeaderMediator
         mModel.set(
                 DocumentPictureInPictureHeaderProperties.IS_SHOWN,
                 mCurrentHeaderState.isInDesktopWindow());
-        // TODO(crbug.com/474041659): Account for header heights != 48dp set by different vendors.
-        mModel.set(
-                DocumentPictureInPictureHeaderProperties.HEADER_HEIGHT,
-                mCurrentHeaderState.getAppHeaderHeight());
-        mModel.set(
-                DocumentPictureInPictureHeaderProperties.HEADER_SPACING,
-                Insets.of(
-                        mCurrentHeaderState.getLeftPadding(),
-                        0,
-                        mCurrentHeaderState.getRightPadding(),
-                        0));
+        setHeaderHeightAndSpacing();
     }
 
     @Override
@@ -147,6 +152,59 @@ public class DocumentPictureInPictureHeaderMediator
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void onBackToTab() {
         mDelegate.onBackToTab();
+    }
+
+    // The calculations in this method below assumes the header components are in a horizontal
+    // linear layout, with all of the inner components sharing the same height = componentSize, like
+    // this:
+    //
+    // ======================================
+    // || SecurityIcon || Url || BackToTab ||
+    // ======================================
+    //
+    // We also assume that system controls are centered vertically based on the header height
+    // provided by the desktop window state manager, our goal is to align the header components with
+    // the system controls.
+    //
+    // The header has a minimum height property that we want to respect for accessibility, and that
+    // value is designed to fit all of the header components without being cut off. If the header
+    // from the desktop window state is taller than the minimum height, then the inner components
+    // will be centered in the header view, with the space distributed evenly at the top and bottom.
+    // PaddingTop = PaddingBottom = (headerHeight - componentSize) / 2.
+    //
+    // And if the header is shorter than the minimum height, then we change the header height to be
+    // the minimum height and try to center the components in the header vertically based on the old
+    // header height (not the minimum height), to vertically align header components with the system
+    // controls.
+    // PaddingTop = (oldHeaderHeight - componentSize) / 2.
+    // PaddingBottom = minHeaderHeight - componentSize - PaddingTop.
+    //
+    // However, if the vertical alignment with the system controls causes the components to be cut
+    // off (e.g. header components are too tall compared to the system controls so they need to be
+    // shifted up to maintain the same vertical alignment, which causes them to be cut off at the
+    // top (PaddingTop < 0)), then we will ignore the center alignment and let the components be
+    // aligned to the top (paddingTop = 0) to make sure components are not cut off.
+    private void setHeaderHeightAndSpacing() {
+        assert mCurrentHeaderState != null;
+        var headerHeight = mCurrentHeaderState.getAppHeaderHeight();
+
+        var paddingTop = Math.max((headerHeight - mComponentSize) / 2, 0);
+        var paddingBottom = 0;
+        if (headerHeight >= mMinHeaderHeight) {
+            paddingBottom = paddingTop;
+        } else {
+            headerHeight = mMinHeaderHeight;
+            paddingBottom = mMinHeaderHeight - mComponentSize - paddingTop;
+        }
+
+        mModel.set(DocumentPictureInPictureHeaderProperties.HEADER_HEIGHT, headerHeight);
+        mModel.set(
+                DocumentPictureInPictureHeaderProperties.HEADER_SPACING,
+                Insets.of(
+                        mCurrentHeaderState.getLeftPadding(),
+                        paddingTop,
+                        mCurrentHeaderState.getRightPadding(),
+                        paddingBottom));
     }
 
     private void onSecurityIconClicked() {

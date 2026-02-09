@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.media.document_picture_in_picture_header;
 
+import android.content.Context;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
@@ -38,6 +39,7 @@ public class DocumentPictureInPictureHeaderCoordinator {
             View view,
             DesktopWindowStateManager desktopWindowStateManager,
             ThemeColorProvider themeColorProvider,
+            Context context,
             DocumentPictureInPictureHeaderDelegate delegate,
             boolean isBackToTabShown,
             @ConnectionSecurityLevel int securityLevel,
@@ -51,6 +53,7 @@ public class DocumentPictureInPictureHeaderCoordinator {
                         model,
                         desktopWindowStateManager,
                         themeColorProvider,
+                        context,
                         delegate,
                         isBackToTabShown,
                         securityLevel,

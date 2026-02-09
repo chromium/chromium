@@ -471,6 +471,7 @@ found in the LICENSE file.
     <dimen name="auto_pip_permission_dialog_padding">24dp</dimen>
 
     <!-- Document PiP dimensions -->
-    <dimen name="document_picture_in_picture_header_icon_size">48dp</dimen>
+    <dimen name="document_picture_in_picture_header_component_size">48dp</dimen>
     <dimen name="document_picture_in_picture_url_bar_padding">6dp</dimen>
+    <dimen name="document_picture_in_picture_header_min_height">48dp</dimen>
 </resources>

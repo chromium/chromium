@@ -94,6 +94,7 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
                         mModel,
                         mDesktopWindowStateManager,
                         mThemeColorProvider,
+                        mContext,
                         mDelegate,
                         isBackToTabShown,
                         ConnectionSecurityLevel.SECURE,
@@ -235,8 +236,55 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         assertEquals(100, (int) mModel.get(DocumentPictureInPictureHeaderProperties.HEADER_HEIGHT));
         assertEquals(10, mModel.get(DocumentPictureInPictureHeaderProperties.HEADER_SPACING).left);
         assertEquals(20, mModel.get(DocumentPictureInPictureHeaderProperties.HEADER_SPACING).right);
+    }
+
+    @Test
+    @SmallTest
+    public void testStateChanged_HeaderHeightFitsComponents() {
+        createMediator();
+        var minHeaderHeight =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.document_picture_in_picture_header_min_height);
+        var headerHeight = minHeaderHeight + 10;
+
+        when(mAppHeaderState.getAppHeaderHeight()).thenReturn(headerHeight);
+
+        mMediator.onAppHeaderStateChanged(mAppHeaderState);
+
+        assertEquals(
+                headerHeight,
+                (int) mModel.get(DocumentPictureInPictureHeaderProperties.HEADER_HEIGHT));
+        assertEquals(5, mModel.get(DocumentPictureInPictureHeaderProperties.HEADER_SPACING).top);
+        assertEquals(5, mModel.get(DocumentPictureInPictureHeaderProperties.HEADER_SPACING).bottom);
+    }
+
+    @Test
+    @SmallTest
+    public void testStateChanged_HeaderHeightDoesNotFitComponents() {
+        createMediator();
+        var minHeaderHeight =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.document_picture_in_picture_header_min_height);
+        var componentSize =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.document_picture_in_picture_header_component_size);
+        var headerHeight = minHeaderHeight - 10;
+        var expectedPaddingBottom = minHeaderHeight - componentSize;
+
+        when(mAppHeaderState.getAppHeaderHeight()).thenReturn(headerHeight);
+
+        mMediator.onAppHeaderStateChanged(mAppHeaderState);
+
+        assertEquals(
+                minHeaderHeight,
+                (int) mModel.get(DocumentPictureInPictureHeaderProperties.HEADER_HEIGHT));
         assertEquals(0, mModel.get(DocumentPictureInPictureHeaderProperties.HEADER_SPACING).top);
-        assertEquals(0, mModel.get(DocumentPictureInPictureHeaderProperties.HEADER_SPACING).bottom);
+        assertEquals(
+                expectedPaddingBottom,
+                mModel.get(DocumentPictureInPictureHeaderProperties.HEADER_SPACING).bottom);
     }
 
     @Test
@@ -295,6 +343,7 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
                         mModel,
                         mDesktopWindowStateManager,
                         mThemeColorProvider,
+                        mContext,
                         mDelegate,
                         /* isBackToTabShown= */ true,
                         securityLevel,
@@ -322,6 +371,7 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
                         mModel,
                         mDesktopWindowStateManager,
                         mThemeColorProvider,
+                        mContext,
                         mDelegate,
                         /* isBackToTabShown= */ true,
                         ConnectionSecurityLevel.SECURE,
