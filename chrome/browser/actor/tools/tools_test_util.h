@@ -93,7 +93,6 @@ class ActorToolsTest : public PlatformBrowserTest {
   tabs::TabInterface* active_tab();
   content::RenderFrameHost* main_frame();
   ExecutionEngine& execution_engine();
-  ActorKeyedService& actor_keyed_service() const;
   ActorTask& actor_task() const;
 
   void GetPageApc();
