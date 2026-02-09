@@ -51,11 +51,24 @@ void HTMLInstallElement::UpdateAppearance() {
     return;
   }
 
-  // Empty if no attributes were provided, or those provided were invalid.
+  // If no attributes provided, check if current document is already installed.
+  if (InstallUrl().empty() && ManifestId().empty()) {
+    WebInstallService()->IsInstalled(
+        /*options=*/nullptr, BindOnce(&HTMLInstallElement::OnIsInstalledResult,
+                                      WrapWeakPersistent(this)));
+    return;
+  }
+
   // TODO(crbug.com/477643920): Evaluate element behavior with illegal/invalid
-  // attributes. (Currently we fall back to checking/installing the current
-  // document. This should likely be changed to raise an error).
+  // attributes. (Should we hide or grey out button, etc.).
   mojom::blink::InstallOptionsPtr options = GetCheckedInstallOptions();
+
+  if (!options) {
+    // Illegal arguments will never be installed. Skip straight to the
+    // IsInstalled result so we can post the UpdateAppearanceTask.
+    OnIsInstalledResult(false);
+    return;
+  }
 
   // Query installation status to update button text ("Install" vs "Launch").
   WebInstallService()->IsInstalled(
@@ -161,8 +174,24 @@ void HTMLInstallElement::OnActivated() {
     return;
   }
 
-  // Empty if no attributes were provided, or those provided were invalid.
+  // If no attributes provided, install current document.
+  if (InstallUrl().empty() && ManifestId().empty()) {
+    WebInstallService()->InstallFromElement(
+        /*options=*/nullptr, BindOnce(&HTMLInstallElement::OnInstallResult,
+                                      WrapWeakPersistent(this)));
+    return;
+  }
+
   mojom::blink::InstallOptionsPtr options = GetCheckedInstallOptions();
+  if (!options) {
+    // TODO(crbug.com/462493894): Decide how to surface kDataError. For now,
+    // fire promptdismiss for all error cases.
+    // TODO(crbug.com/481519343): Add long-term solution for error handling (a
+    // separate error attribute linked to the install result, etc.).
+    DispatchEvent(
+        *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
+    return;
+  }
 
   WebInstallService()->InstallFromElement(
       std::move(options),
@@ -173,17 +202,20 @@ mojom::blink::InstallOptionsPtr HTMLInstallElement::GetCheckedInstallOptions() {
   mojom::blink::InstallOptionsPtr options;
 
   KURL install_url = KURL(InstallUrl());
-  if (install_url.IsValid()) {
-    options = mojom::blink::InstallOptions::New();
-    options->install_url = install_url;
-
-    // TODO(crbug.com/469940918): Evaluate whether to accept manifestid alone.
-    // manifestid is only valid if installurl was also provided, as it's used
-    // for data validation on the installurl.
-    KURL manifest_id_url = KURL(ManifestId());
-    if (manifest_id_url.IsValid()) {
-      options->manifest_id = manifest_id_url;
-    }
+  if (!install_url.IsValid()) {
+    return nullptr;
+  }
+  options = mojom::blink::InstallOptions::New();
+  options->install_url = install_url;
+  // TODO(crbug.com469801429): Evaluate how to handle manifestid validation
+  // and resolution.
+  // TODO(crbug.com/469940918): Evaluate whether to accept manifestid alone.
+  // manifestid is only used if installurl was also provided, as it's used
+  // for data validation on the installurl. manifestid match check is handled
+  // by WebInstallUrlCommand.
+  KURL manifest_id_url = KURL(ManifestId());
+  if (manifest_id_url.IsValid()) {
+    options->manifest_id = manifest_id_url;
   }
   return options;
 }
@@ -193,10 +225,14 @@ void HTMLInstallElement::OnInstallResult(
     const KURL& manifest_id) {
   switch (result) {
     case mojom::blink::WebInstallServiceResult::kAbortError:
+    // TODO(crbug.com/462493894): Decide how to surface kDataError. For now,
+    // fire promptdismiss for all error cases.
+    // TODO(crbug.com/481519343): Add long-term solution for error handling (a
+    // separate error attribute linked to the install result, etc.).
+    case mojom::blink::WebInstallServiceResult::kDataError:
       DispatchEvent(
           *Event::CreateCancelableBubble(event_type_names::kPromptdismiss));
       break;
-    case mojom::blink::WebInstallServiceResult::kDataError:
     case mojom::blink::WebInstallServiceResult::kSuccess:
       DispatchEvent(
           *Event::CreateCancelableBubble(event_type_names::kPromptaction));

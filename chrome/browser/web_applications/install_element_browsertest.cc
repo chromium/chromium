@@ -641,4 +641,28 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
       app_id, WebAppFilter::LaunchableFromInstallApi()));
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Bad input error cases - bad manifests, invalid URLs, etc
+///////////////////////////////////////////////////////////////////////////////
+
+IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InvalidInstallUrl) {
+  // Navigate to a page with <install> elements.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL(kInstallElementPageStartUrl)));
+
+  // Dynamically set an invalid installurl attribute.
+  const GURL invalid_url = GURL("https://invalid.url");
+  ASSERT_TRUE(SetButtonInstallUrl(invalid_url));
+
+  // Click the install element.
+  ASSERT_TRUE(ClickElementWithId(kInstallElementId));
+
+  // No installation should have occurred due to the invalid URL.
+  // We cannot generate a valid app_id from an invalid URL, so we just verify
+  // that the dismiss event was fired as expected.
+  // TODO(crbug.com/462493894): Decide how to surface kDataError. For now,
+  // promptdismiss is used for all error cases.
+  WaitForDismissEvent(kInstallElementId);
+}
+
 }  // namespace web_app
