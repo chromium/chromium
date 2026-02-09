@@ -98,6 +98,9 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
   bool GetContextMenuAccelerator(int command_id,
                                  ui::Accelerator* accelerator) override;
 
+  void RecordMetricsOnTabSelectionChange(
+      std::optional<tab_groups::TabGroupId> group);
+
   std::unique_ptr<TabContextMenuController> context_menu_controller_;
   std::unique_ptr<TabMenuModelFactory> menu_model_factory_;
 
