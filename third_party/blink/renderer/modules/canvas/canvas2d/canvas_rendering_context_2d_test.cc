@@ -2993,7 +2993,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   Context2D()->fillRect(3, 3, 1, 1);
 
-  const CanvasResourceProviderSharedImage* provider =
+  const Canvas2DResourceProviderSharedImage* provider =
       Context2D()->GetResourceProviderForTesting()->As2DSharedImageProvider();
   ASSERT_THAT(provider, NotNull());
   EXPECT_EQ(provider->NumInflightResourcesForTesting(), 1);

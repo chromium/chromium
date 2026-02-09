@@ -301,7 +301,7 @@ OffscreenCanvasRenderingContext2D::ProduceCanvasResource(FlushReason reason) {
   }
 
   // Only CRPSI can produce CanvasResources.
-  CanvasResourceProviderSharedImage* si_provider =
+  Canvas2DResourceProviderSharedImage* si_provider =
       provider->As2DSharedImageProvider();
   if (!si_provider) {
     return nullptr;

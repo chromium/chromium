@@ -1374,7 +1374,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
              RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
     // In this case, we are using CPU raster and GPU compositing and native
     // mappable buffers are supported. Try to use a
-    // CanvasResourceProviderSharedImage, which if successful will result in
+    // Canvas2DResourceProviderSharedImage, which if successful will result in
     // using a SharedImage that can be mapped onto the CPU for software raster
     // writes and then read by the display compositor (and potentially used as
     // an overlay).

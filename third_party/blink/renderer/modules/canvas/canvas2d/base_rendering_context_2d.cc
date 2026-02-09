@@ -1395,7 +1395,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   // A texture needs to exist on the GPU. If we aren't able to create an
   // accelerated SharedImage provider, we won't be able to transfer the canvas.
   // In that case, WebGPU access is not possible.
-  CanvasResourceProviderSharedImage* provider =
+  Canvas2DResourceProviderSharedImage* provider =
       GetOrCreateResourceProvider()->As2DSharedImageProvider();
   if (!provider || !provider->IsAccelerated()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -1459,7 +1459,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   // Note: This must be a CRPSI since this method would have bailed out earlier
   // otherwise.
   resource_provider_from_webgpu_access_ =
-      base::WrapUnique<CanvasResourceProviderSharedImage>(
+      base::WrapUnique<Canvas2DResourceProviderSharedImage>(
           owned_provider.release()->As2DSharedImageProvider());
 
   // The user isn't obligated to ever transfer back, which means this resource
@@ -1517,7 +1517,7 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
 
   // Restore the canvas' resource provider back onto the canvas host,
   // surrendering our temporary ownership of the provider.
-  CanvasResourceProviderSharedImage* resource_provider =
+  Canvas2DResourceProviderSharedImage* resource_provider =
       resource_provider_from_webgpu_access_.get();
   ReplaceResourceProvider(std::move(resource_provider_from_webgpu_access_));
   resource_provider->SetDelegate(host);
