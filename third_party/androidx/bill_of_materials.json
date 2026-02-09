@@ -1100,6 +1100,16 @@
         "version": "1.0.1"
     },
     {
+        "name": "tracing-wire",
+        "group": "androidx.tracing",
+        "version": "2.0.0-SNAPSHOT"
+    },
+    {
+        "name": "tracing-wire-android",
+        "group": "androidx.tracing",
+        "version": "2.0.0-SNAPSHOT"
+    },
+    {
         "name": "transition",
         "group": "androidx.transition",
         "version": "1.7.0"
@@ -1177,32 +1187,27 @@
     {
         "name": "arcore",
         "group": "androidx.xr.arcore",
-        "version": "1.0.0-alpha08"
+        "version": "1.0.0-alpha07"
     },
     {
         "name": "arcore-openxr",
         "group": "androidx.xr.arcore",
-        "version": "1.0.0-alpha08"
-    },
-    {
-        "name": "arcore-projected",
-        "group": "androidx.xr.arcore",
-        "version": "1.0.0-alpha08"
+        "version": "1.0.0-alpha07"
     },
     {
         "name": "arcore-runtime",
         "group": "androidx.xr.arcore",
-        "version": "1.0.0-alpha08"
+        "version": "1.0.0-alpha07"
     },
     {
         "name": "runtime",
         "group": "androidx.xr.runtime",
-        "version": "1.0.0-alpha08"
+        "version": "1.0.0-alpha07"
     },
     {
         "name": "runtime-manifest",
         "group": "androidx.xr.runtime",
-        "version": "1.0.0-alpha08"
+        "version": "1.0.0-alpha07"
     },
     {
         "name": "scenecore",
@@ -1277,7 +1282,7 @@
     {
         "name": "googleid",
         "group": "com.google.android.libraries.identity.googleid",
-        "version": "1.1.0"
+        "version": "1.2.0"
     },
     {
         "name": "material",

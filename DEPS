@@ -1626,7 +1626,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'cc1c9f60cf6d0262a9ffa29bcfce6dc1fc83c748',
+    '73bac1062d2d4ab5f10ee4bb8cd5096099f2b6a7',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1726,7 +1726,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'dJ3xGQgP3gjT2n9aXf2sj4QdckdRZXrVhhrlsHQg8QQC',
+          'version': '6iX8Ty6ecQMrbVCMm6r5cQzlZPWUWARI3xgi0WpZPjcC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -3216,7 +3216,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/autorolled',
-              'version': 'LStkoCV2NKgZ1hqhnILaH4soxZtZa2-8RG67-JxAVUsC',
+              'version': 'RiKmV-EpMhg5ibpMbPpENQmfU4IPLpo8cxer4F3NSUgC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3351,17 +3351,6 @@ deps = {
           {
               'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlin_kotlin_parcelize_runtime',
               'version': 'version:2@1.9.22.cr2',
-          },
-      ],
-      'condition': 'checkout_android and non_git_source',
-      'dep_type': 'cipd',
-  },
-
-  'src/third_party/android_deps/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_guava': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlinx_kotlinx_coroutines_guava',
-              'version': 'version:2@1.8.1.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',

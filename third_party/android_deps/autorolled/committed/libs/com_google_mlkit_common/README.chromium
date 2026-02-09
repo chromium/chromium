@@ -1,0 +1,16 @@
+Name: common
+Short Name: common
+URL: https://dl.google.com/dl/android/maven2/com/google/mlkit/common/18.11.0/common-18.11.0.aar
+Version: 18.11.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Mlkit common pulled in via gradle.
+
+Local Modifications:
+No modifications.

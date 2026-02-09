@@ -8,9 +8,7 @@ has_native_libraries = false
 has_proguard_flags = true
 has_r_text_file = false
 is_manifest_empty = false
-manifest_package = "androidx.xr.arcore.projected"
-resources = [
-  "res/values/values.xml"
-]
+manifest_package = "com.google.mlkit.common"
+resources = []
 subjar_tuples = []
 subjars = []

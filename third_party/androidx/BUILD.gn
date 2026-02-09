@@ -1712,7 +1712,6 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_annotation_annotation_java",
       ":androidx_xr_arcore_arcore_openxr_java",
-      ":androidx_xr_arcore_arcore_projected_java",
       ":androidx_xr_arcore_arcore_runtime_java",
       ":androidx_xr_runtime_runtime_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
@@ -2601,6 +2600,8 @@ if (!limit_android_deps) {
     ]
     deps = [
       ":androidx_annotation_annotation_java",
+      ":androidx_tracing_tracing_java",
+      ":androidx_tracing_tracing_wire_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
@@ -3839,6 +3840,39 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_tracing_tracing_wire_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_tracing_tracing_wire_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_tracing_tracing_wire_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_tracing_tracing_wire_android/tracing-wire-android.aar"
+    info_path = "../androidx/committed/libs/androidx_tracing_tracing_wire_android/androidx_tracing_tracing_wire_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_tracing_tracing_java",
+      "//third_party/android_deps:com_squareup_okio_okio_java",
+      "//third_party/android_deps:com_squareup_wire_wire_runtime_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_versionedparcelable_versionedparcelable_java") {
     aar_path = "../androidx/cipd/libs/androidx_versionedparcelable_versionedparcelable/versionedparcelable.aar"
@@ -3888,27 +3922,6 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_android_aar_prebuilt("androidx_xr_arcore_arcore_projected_java") {
-    aar_path =
-        "cipd/libs/androidx_xr_arcore_arcore_projected/arcore-projected.aar"
-    info_path = "committed/libs/androidx_xr_arcore_arcore_projected/androidx_xr_arcore_arcore_projected.info"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.template
-    visibility = [
-      ":*",
-      "//third_party/android_deps:*",
-    ]
-    deps = [
-      ":androidx_annotation_annotation_java",
-      ":androidx_xr_arcore_arcore_runtime_java",
-      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_xr_arcore_arcore_runtime_java") {
     aar_path = "cipd/libs/androidx_xr_arcore_arcore_runtime/arcore-runtime.aar"
     info_path = "committed/libs/androidx_xr_arcore_arcore_runtime/androidx_xr_arcore_arcore_runtime.info"
@@ -3942,10 +3955,7 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/android_deps:*",
     ]
-    deps = [
-      ":androidx_annotation_annotation_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-    ]
+    deps = [ ":androidx_annotation_annotation_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

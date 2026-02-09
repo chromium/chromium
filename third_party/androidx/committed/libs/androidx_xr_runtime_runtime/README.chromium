@@ -1,7 +1,7 @@
 Name: XR Runtime
 Short Name: runtime
-URL: https://dl.google.com/dl/android/maven2/androidx/xr/runtime/runtime/1.0.0-alpha08/runtime-1.0.0-alpha08.aar
-Version: 1.0.0-alpha08
+URL: https://dl.google.com/dl/android/maven2/androidx/xr/runtime/runtime/1.0.0-alpha07/runtime-1.0.0-alpha07.aar
+Version: 1.0.0-alpha07
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Runtime interfaces and helper libraries for the androidx.xr namespace.
 
-See also: https://developer.android.com/jetpack/androidx/releases/xr-runtime#1.0.0-alpha08
+See also: https://developer.android.com/jetpack/androidx/releases/xr-runtime#1.0.0-alpha07
 
 
 Local Modifications:
