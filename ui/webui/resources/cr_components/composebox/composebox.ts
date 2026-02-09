@@ -952,8 +952,11 @@ export class ComposeboxElement extends I18nMixinLit
     this.focusInput();
   }
 
-  protected onModelClick_(e: CustomEvent<{model: ModelMode}>) {
+  protected async onModelClick_(e: CustomEvent<{model: ModelMode}>) {
     this.searchboxHandler_.setActiveModelMode(e.detail.model);
+
+    await this.updateComplete;
+    this.focusInput();
   }
 
   protected onErrorScrimDismissed_() {
