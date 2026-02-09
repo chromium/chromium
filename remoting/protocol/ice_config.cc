@@ -5,6 +5,7 @@
 #include "remoting/protocol/ice_config.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -25,7 +26,7 @@ namespace {
 const int kDefaultStunTurnPort = 3478;
 const int kDefaultTurnsPort = 5349;
 
-bool ParseLifetime(const std::string& string, base::TimeDelta* result) {
+bool ParseLifetime(std::string_view string, base::TimeDelta* result) {
   double seconds = 0;
   if (!base::EndsWith(string, "s", base::CompareCase::INSENSITIVE_ASCII) ||
       !base::StringToDouble(string.substr(0, string.size() - 1), &seconds)) {
