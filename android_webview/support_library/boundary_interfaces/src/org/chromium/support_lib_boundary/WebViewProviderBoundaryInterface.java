@@ -11,14 +11,27 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
 
+import androidx.annotation.IntDef;
+
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.InvocationHandler;
 import java.util.concurrent.Executor;
 
 @NullMarked
 public interface WebViewProviderBoundaryInterface {
+    @IntDef({
+        JavaScriptInjectionTime.DOCUMENT_START,
+        JavaScriptInjectionTime.DOCUMENT_END,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface JavaScriptInjectionTime {
+        int DOCUMENT_START = 0;
+        int DOCUMENT_END = 1;
+    }
 
     void insertVisualStateCallback(
             long requestId, /* VisualStateCallback */ InvocationHandler callback);
@@ -83,4 +96,20 @@ public interface WebViewProviderBoundaryInterface {
 
     void setWebViewNavigationClient(
             /* WebViewNavigationClient */ @Nullable InvocationHandler webViewNavigationClient);
+
+    /* ScriptHandler */ InvocationHandler addJavaScriptOnEvent(
+            String script,
+            String[] allowedOriginRules,
+            @JavaScriptInjectionTime int event,
+            String worldName);
+
+    void addWebMessageListener(
+            String jsObjectName,
+            String[] allowedOriginRules,
+            /* WebMessageListener */ InvocationHandler listener,
+            String worldName);
+
+    void removeWebMessageListener(String jsObjectName, String worldName);
+
+    int getJavaScriptWorld(String worldName);
 }

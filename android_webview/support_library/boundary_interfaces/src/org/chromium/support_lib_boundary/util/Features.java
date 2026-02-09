@@ -440,6 +440,11 @@ public class Features {
     public static final String ADD_QUIC_HINTS_V1 = "ADD_QUIC_HINTS_V1";
 
     // JsReplyProxy.executeJavaScript
+    // WebViewCompat.addJavaScriptOnEvent
+    // WebViewCompat.removeJavaScriptOnEvent
+    // WebViewCompat.addWebMessageListener with world
+    // WebViewCompat.removeWebMessageListener with world
+    // WebViewCompat.getJavaScriptWorld
     public static final String JS_INJECTION_IN_FRAME_AND_WORLD = "JS_INJECTION_IN_FRAME_AND_WORLD";
 
     // WebViewBuilder.applyTo

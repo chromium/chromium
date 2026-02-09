@@ -315,6 +315,11 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.PAGE_GET_URL,
         ApiCall.JS_REPLY_EXECUTE_JS,
         ApiCall.NAVIGATION_GET_WEB_RESOURCE_ERROR,
+        ApiCall.ADD_JAVA_SCRIPT_ON_EVENT,
+        ApiCall.REMOVE_JAVA_SCRIPT_ON_EVENT,
+        ApiCall.ADD_WEB_MESSAGE_LISTENER_WITH_WORLD,
+        ApiCall.REMOVE_WEB_MESSAGE_LISTENER_WITH_WORLD,
+        ApiCall.GET_JAVA_SCRIPT_WORLD,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -497,8 +502,13 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int PAGE_GET_URL = 171;
         int JS_REPLY_EXECUTE_JS = 172;
         int NAVIGATION_GET_WEB_RESOURCE_ERROR = 173;
+        int ADD_JAVA_SCRIPT_ON_EVENT = 174;
+        int REMOVE_JAVA_SCRIPT_ON_EVENT = 175;
+        int ADD_WEB_MESSAGE_LISTENER_WITH_WORLD = 176;
+        int REMOVE_WEB_MESSAGE_LISTENER_WITH_WORLD = 177;
+        int GET_JAVA_SCRIPT_WORLD = 178;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 174;
+        int COUNT = 179;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

@@ -24,6 +24,7 @@ android_library("glue_java") {
     "//components/content_capture/android:java",
     "//components/embedder_support/android:application_java",
     "//components/embedder_support/android:util_java",
+    "//components/js_injection/common:enum_mojom_java",
     "//content/public/android:content_java",
     "//content/public/android:content_util_java",
     "//net/android:net_java",

@@ -712,6 +712,11 @@ chromium-metrics-reviews@google.com.
   <int value="171" label="Page.getUrl"/>
   <int value="172" label="JsReplyProxy.executeJavaScript"/>
   <int value="173" label="Navigation.getWebResourceError"/>
+  <int value="174" label="WebViewCompat.addJavaScriptOnEvent"/>
+  <int value="175" label="WebViewCompat.removeJavaScriptOnEvent"/>
+  <int value="176" label="WebViewCompat.addWebMessageListener (with world)"/>
+  <int value="177" label="WebViewCompat.removeWebMessageListener (with world)"/>
+  <int value="178" label="WebViewCompat.getJavaScriptWorld"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
