@@ -166,8 +166,10 @@
   absolutifyUrls(docClone);
 
   // 4. Clean and modify the cloned DOM.
-  docClone.querySelectorAll('script, link[rel="stylesheet"], style')
-      .forEach(el => el.remove());
+  docClone.querySelectorAll(
+      'script:not([type="application/ld+json"]), ' +
+      'link[rel="stylesheet"], style')
+          .forEach(el => el.remove());
   const newStyle = docClone.createElement('style');
   newStyle.textContent = allCss;
   docClone.head.appendChild(newStyle);
