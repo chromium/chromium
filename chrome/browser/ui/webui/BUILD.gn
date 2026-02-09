@@ -154,6 +154,8 @@ source_set("webui") {
     "constrained_web_dialog_ui.h",
     "current_channel_logo.cc",
     "current_channel_logo.h",
+    "devtools/greendev_floaty_ui.cc",
+    "devtools/greendev_floaty_ui.h",
   ]
 
   sources += get_target_outputs(":webui_hosts")

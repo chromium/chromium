@@ -193,6 +193,12 @@ static_library("devtools") {
       "visual_logging.cc",
       "visual_logging.h",
     ]
+    if (toolkit_views) {
+      sources += [
+        "views/devtools_floaty.cc",
+        "views/devtools_floaty.h",
+      ]
+    }
     deps += [
       "//chrome/browser:browser_process",
       "//chrome/browser:flags",

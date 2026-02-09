@@ -44,6 +44,7 @@
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/features.h"
+#include "chrome/browser/devtools/views/devtools_floaty.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -4314,9 +4315,13 @@ void RenderViewContextMenu::ExecInspectBackgroundPage() {
 }
 
 void RenderViewContextMenu::ExecInspectElementWithGemini() {
-  // TODO(crbug.com/466071312): Implement this.
   LOG(ERROR) << "ExecInspectElementWithGemini called at " << params_.x << ", "
              << params_.y;
+  // TOOD(crbug.com/466071312): Send the actual node id.
+  DevToolsFloaty::Show(Profile::FromBrowserContext(browser_context_),
+                       render_process_id_, render_frame_id_,
+                       gfx::Point(params_.x, params_.y),
+                       /* *backend_node_id*/ 1);
 }
 
 void RenderViewContextMenu::CheckSupervisedUserURLFilterAndSaveLinkAs() {
