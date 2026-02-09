@@ -320,6 +320,12 @@ const char kEnablePrimaryNodeAccessForVkmsTesting[] =
 const char kHardwareVideoDecodeFrameRate[] = "hardware-video-decode-framerate";
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
 
+#if BUILDFLAG(USE_VAAPI)
+// Allows explicitly picking a device path to find the device for VA-API video
+// decoding and encoding.
+const char kHardwareVideoDevicePath[] = "hardware-video-device-path";
+#endif  // BUILDFLAG(USE_VAAPI)
+
 }  // namespace switches
 
 namespace media {

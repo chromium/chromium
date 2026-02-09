@@ -110,6 +110,10 @@ MEDIA_EXPORT extern const char kEnablePrimaryNodeAccessForVkmsTesting[];
 MEDIA_EXPORT extern const char kHardwareVideoDecodeFrameRate[];
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
 
+#if BUILDFLAG(USE_VAAPI)
+MEDIA_EXPORT extern const char kHardwareVideoDevicePath[];
+#endif  // BUILDFLAG(USE_VAAPI)
+
 }  // namespace switches
 
 namespace media {

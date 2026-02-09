@@ -1537,6 +1537,19 @@ void VADisplayStateSingleton::PreSandboxInitialization() {
   base::AutoLock lock(va_display_state.lock_);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kHardwareVideoDevicePath)) {
+    auto [drm_fd, should_skip] =
+        LoadDrmFD(base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            switches::kHardwareVideoDevicePath));
+    if (drm_fd.is_valid()) {
+      va_display_state.drm_fd_ = std::move(drm_fd);
+      LOG_IF(WARNING, should_skip)
+          << "Forcibly using value of --hardware-video-device-path";
+      return;
+    }
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kRenderNodeOverride)) {
     auto [drm_fd, should_skip] =
         LoadDrmFD(base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
