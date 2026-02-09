@@ -45,6 +45,7 @@
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/sync/base/account_pref_utils.h"
 #include "components/sync/base/collaboration_id.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -331,8 +332,16 @@ void TabGroupSyncServiceImpl::OnLastTabClosed(
 void TabGroupSyncServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  for (signin::ConsentLevel consent_level :
-       {signin::ConsentLevel::kSignin, signin::ConsentLevel::kSync}) {
+
+  std::vector<signin::ConsentLevel> consent_levels;
+  consent_levels.push_back(signin::ConsentLevel::kSignin);
+
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    consent_levels.push_back(signin::ConsentLevel::kSync);
+  }
+
+  for (signin::ConsentLevel consent_level : consent_levels) {
     // Only record metrics when setting the primary account.
     switch (event_details.GetEventTypeFor(consent_level)) {
       case signin::PrimaryAccountChangeEvent::Type::kNone:

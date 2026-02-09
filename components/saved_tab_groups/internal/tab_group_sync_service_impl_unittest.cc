@@ -40,6 +40,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/fake_data_type_controller.h"
@@ -2786,9 +2787,12 @@ TEST_F(TabGroupSyncServiceImplTest, MetricsOnSignin) {
               IsEmpty());
 }
 
+// TODO(crbug.com/417950948): Remove this test once kSync is fully deprecated.
 TEST_F(TabGroupSyncServiceImplTest, MetricsOnSync) {
-  base::HistogramTester histograms;
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
 
+  base::HistogramTester histograms;
   identity_test_environment_.MakePrimaryAccountAvailable(
       "account@gmail.com", signin::ConsentLevel::kSync);
 
