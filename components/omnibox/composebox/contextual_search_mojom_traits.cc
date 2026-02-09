@@ -189,7 +189,6 @@ bool EnumTraits<UsedInputType, omnibox::InputType>::FromMojom(
 }
 
 // static
-// static
 UsedFileUploadStatus
 EnumTraits<UsedFileUploadStatus, contextual_search::FileUploadStatus>::ToMojom(
     contextual_search::FileUploadStatus input) {
