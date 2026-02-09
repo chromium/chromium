@@ -88,6 +88,10 @@ BASE_DECLARE_FEATURE(kCredentialManagementUnifiedUi);
 // launched.
 BASE_DECLARE_FEATURE(kDebugUiForOtps);
 
+// When enabled, automated password change won't be offered when the form
+// contains new password field.
+BASE_DECLARE_FEATURE(kDisablePasswordChangeFromNewPasswordFields);
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 // Enables the Mojo JavaScript API for the password manager, replacing the
 // legacy passwordsPrivate extension API.

@@ -308,7 +308,11 @@ PasswordChangeAvailability ChromePasswordChangeService::GetPerSiteAvailability(
     return general_availability;
   }
 
-  if (form.IsLikelySignupForm()) {
+  if (form.IsLikelySignupForm() ||
+      (form.new_password_element_renderer_id &&
+       base::FeatureList::IsEnabled(
+           password_manager::features::
+               kDisablePasswordChangeFromNewPasswordFields))) {
     if (logger) {
       logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_SIGNUP_FORM);
     }
