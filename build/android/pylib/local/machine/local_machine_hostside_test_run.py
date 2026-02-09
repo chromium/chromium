@@ -148,8 +148,6 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
         'run',
         'commandAndExit',
         'cts',
-        '-m',
-        self.TestPackage(),
     ] + self._MakeModeArgs() + filter_args + ['--collect-tests-only']
 
     logging.info('Getting tests from cts-tradefed using --collect_tests_only.')
@@ -185,8 +183,6 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
         'run',
         'commandAndExit',
         'cts',
-        '-m',
-        self.TestPackage(),
     ] + self._MakeModeArgs() + filter_args + [
         '--retry-strategy',
         'RETRY_ANY_FAILURE',
