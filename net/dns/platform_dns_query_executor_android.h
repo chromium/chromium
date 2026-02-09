@@ -10,7 +10,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -20,9 +19,10 @@
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/sequence_checker.h"
 #include "base/strings/cstring_view.h"
+#include "base/types/expected.h"
+#include "net/base/io_buffer.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
-#include "net/dns/host_resolver_internal_result.h"
 
 namespace net {
 
@@ -40,9 +40,8 @@ namespace net {
 class NET_EXPORT PlatformDnsQueryExecutorAndroid final
     : private base::MessagePumpForIO::FdWatcher {
  public:
-  using Results = std::set<std::unique_ptr<HostResolverInternalResult>>;
-  using ResultsCallback =
-      base::OnceCallback<void(Results results, int os_error, int net_error)>;
+  using ResultsCallback = base::OnceCallback<void(
+      base::expected<scoped_refptr<net::IOBuffer>, int> result)>;
 
   class Delegate {
    public:
@@ -52,9 +51,7 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
     // for mocking in tests.
     virtual int Query(net_handle_t network,
                       base::cstring_view dname,
-                      int ns_class,
-                      int ns_type,
-                      uint32_t flags) = 0;
+                      uint16_t dns_query_type) = 0;
 
     // An abstraction over the `android_res_nresult` DNS resolution API to
     // allow for mocking in tests.
@@ -68,9 +65,7 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
 
     int Query(net_handle_t network,
               base::cstring_view dname,
-              int ns_class,
-              int ns_type,
-              uint32_t flags) __INTRODUCED_IN(29) override;
+              uint16_t dns_query_type) __INTRODUCED_IN(29) override;
 
     int Result(int fd, int* rcode, base::span<uint8_t> answer)
         __INTRODUCED_IN(29) override;
@@ -79,6 +74,7 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
   // `hostname` must be a valid domain name, and it's the caller's
   // responsibility to check it before calling this constructor.
   PlatformDnsQueryExecutorAndroid(std::string hostname,
+                                  uint16_t dns_query_type,
                                   handles::NetworkHandle target_network,
                                   Delegate* delegate) __INTRODUCED_IN(29);
 
@@ -106,7 +102,8 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
   void ReadResponse(int fd) __INTRODUCED_IN(29);
 
   // Callback for when resolution completes.
-  void OnLookupComplete(Results results, int os_error, int net_error);
+  void OnLookupComplete(
+      base::expected<scoped_refptr<net::IOBuffer>, int> result);
 
   bool IsActive() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -114,6 +111,8 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
   }
 
   const std::string hostname_;
+
+  const uint16_t dns_query_type_;
 
   const handles::NetworkHandle target_network_;
 

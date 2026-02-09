@@ -43,7 +43,7 @@ using ::testing::Return;
 using ::testing::SizeIs;
 using ::testing::StrEq;
 using ResultsCallbackTestFuture =
-    base::test::TestFuture<PlatformDnsQueryExecutorAndroid::Results, int, int>;
+    base::test::TestFuture<base::expected<scoped_refptr<net::IOBuffer>, int>>;
 
 static constexpr char kSkipTestOnAndroidVersionBelow29[] =
     "This test is skipped because it's being run on Android 28-, while the "
@@ -68,13 +68,20 @@ class MockDelegate : public PlatformDnsQueryExecutorAndroid::Delegate {
 
   MOCK_METHOD(int,
               Query,
-              (net_handle_t, base::cstring_view, int, int, uint32_t),
+              (net_handle_t, base::cstring_view, uint16_t),
               (override));
 
   MOCK_METHOD(int, Result, (int, int*, base::span<uint8_t>), (override));
 };
 
 class PlatformDnsQueryExecutorAndroidTest : public TestWithTaskEnvironment {};
+
+// A real DNS response for www.google.com -> 192.168.1.1
+const std::vector<uint8_t> dns_response = {
+    0x00, 0x00, 0x81, 0x80, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00,
+    0x03, 0x77, 0x77, 0x77, 0x06, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x03,
+    0x63, 0x6f, 0x6d, 0x00, 0x00, 0x01, 0x00, 0x01, 0xc0, 0x0c, 0x00, 0x01,
+    0x00, 0x01, 0x00, 0x00, 0x00, 0x3c, 0x00, 0x04, 0xc0, 0xa8, 0x01, 0x01};
 
 TEST_F(PlatformDnsQueryExecutorAndroidTest, Success) {
   if (__builtin_available(android 29, *)) {
@@ -83,47 +90,30 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest, Success) {
     MockDelegate delegate;
 
     EXPECT_CALL(delegate, Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
-                                ns_c_in, ns_t_a, 0))
+                                dns_protocol::kTypeA))
         .WillOnce(Return(fd.get()));
 
     EXPECT_CALL(delegate, Result(fd.get(), _, _))
         .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
-          // A real DNS response for www.google.com -> 192.168.1.1
-          const std::vector<uint8_t> dns_response = {
-              0x00, 0x00, 0x81, 0x80, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00,
-              0x00, 0x00, 0x03, 0x77, 0x77, 0x77, 0x06, 0x67, 0x6f, 0x6f,
-              0x67, 0x6c, 0x65, 0x03, 0x63, 0x6f, 0x6d, 0x00, 0x00, 0x01,
-              0x00, 0x01, 0xc0, 0x0c, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00,
-              0x00, 0x3c, 0x00, 0x04, 0xc0, 0xa8, 0x01, 0x01};
-
-          *rcode = ns_r_noerror;
-          CHECK_GE(answer.size(), dns_response.size());
+          *rcode = dns_protocol::kRcodeNOERROR;
           std::ranges::copy(dns_response, answer.begin());
           return dns_response.size();
         });
 
     PlatformDnsQueryExecutorAndroid executor(
-        "www.google.com", handles::kInvalidNetworkHandle, &delegate);
+        "www.google.com", dns_protocol::kTypeA, handles::kInvalidNetworkHandle,
+        &delegate);
 
     ResultsCallbackTestFuture future;
     executor.Start(future.GetCallback());
-    auto [results, os_error, net_error] = future.Take();
+    auto result = future.Take();
 
-    EXPECT_EQ(os_error, 0);
-    EXPECT_EQ(net_error, OK);
-
-    ASSERT_THAT(results, ElementsAre(Pointee(Property(
-                             &HostResolverInternalResult::type,
-                             HostResolverInternalResult::Type::kData))));
-
-    EXPECT_THAT(
-        results.begin()->get()->AsData(),
-        AllOf(Property(&HostResolverInternalDataResult::query_type,
-                       DnsQueryType::A),
-              Property(&HostResolverInternalDataResult::endpoints,
-                       ElementsAre(Property(
-                           &IPEndPoint::address,
-                           Property(&IPAddress::ToString, "192.168.1.1"))))));
+    EXPECT_TRUE(result.has_value());
+    EXPECT_EQ(result.value()->size(), static_cast<int>(dns_response.size()));
+    EXPECT_EQ(
+        absl::string_view(result.value()->data(), result.value()->size()),
+        absl::string_view(reinterpret_cast<const char*>(dns_response.data()),
+                          dns_response.size()));
   } else {
     GTEST_SKIP_(kSkipTestOnAndroidVersionBelow29);
   }
@@ -134,20 +124,20 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest,
   if (__builtin_available(android 29, *)) {
     MockDelegate delegate;
     EXPECT_CALL(delegate, Query(NETWORK_UNSPECIFIED, StrEq("any-domain"),
-                                ns_c_in, ns_t_a, 0))
+                                dns_protocol::kTypeA))
         .WillOnce(Return(-42));
     EXPECT_CALL(delegate, Result).Times(0);
 
-    PlatformDnsQueryExecutorAndroid executor(
-        "any-domain", handles::kInvalidNetworkHandle, &delegate);
+    PlatformDnsQueryExecutorAndroid executor("any-domain", dns_protocol::kTypeA,
+                                             handles::kInvalidNetworkHandle,
+                                             &delegate);
 
     ResultsCallbackTestFuture future;
     executor.Start(future.GetCallback());
-    auto [results, os_error, net_error] = future.Take();
+    auto result = future.Take();
 
-    EXPECT_EQ(os_error, 42);
-    EXPECT_NE(net_error, OK);
-    EXPECT_THAT(results, IsEmpty());
+    EXPECT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), ERR_NAME_NOT_RESOLVED);
   } else {
     GTEST_SKIP_(kSkipTestOnAndroidVersionBelow29);
   }
@@ -160,20 +150,20 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest,
 
     MockDelegate delegate;
     EXPECT_CALL(delegate, Query(NETWORK_UNSPECIFIED, StrEq("any-domain"),
-                                ns_c_in, ns_t_a, 0))
+                                dns_protocol::kTypeA))
         .WillOnce(Return(fd.get()));
     EXPECT_CALL(delegate, Result(fd.get(), _, _)).WillOnce(Return(-42));
 
-    PlatformDnsQueryExecutorAndroid executor(
-        "any-domain", handles::kInvalidNetworkHandle, &delegate);
+    PlatformDnsQueryExecutorAndroid executor("any-domain", dns_protocol::kTypeA,
+                                             handles::kInvalidNetworkHandle,
+                                             &delegate);
 
     ResultsCallbackTestFuture future;
     executor.Start(future.GetCallback());
-    auto [results, os_error, net_error] = future.Take();
+    auto result = future.Take();
 
-    EXPECT_EQ(os_error, 42);
-    EXPECT_NE(net_error, OK);
-    EXPECT_THAT(results, IsEmpty());
+    EXPECT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), ERR_NAME_NOT_RESOLVED);
   } else {
     GTEST_SKIP_(kSkipTestOnAndroidVersionBelow29);
   }
@@ -185,24 +175,24 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest, FailOnAndroidResNresultErrorRcode) {
 
     MockDelegate delegate;
     EXPECT_CALL(delegate, Query(NETWORK_UNSPECIFIED, StrEq("any-domain"),
-                                ns_c_in, ns_t_a, 0))
+                                dns_protocol::kTypeA))
         .WillOnce(Return(fd.get()));
     EXPECT_CALL(delegate, Result(fd.get(), _, _))
         .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
-          *rcode = ns_r_nxdomain;
-          return 0;
+          *rcode = dns_protocol::kRcodeNXDOMAIN;
+          return 5;
         });
 
-    PlatformDnsQueryExecutorAndroid executor(
-        "any-domain", handles::kInvalidNetworkHandle, &delegate);
+    PlatformDnsQueryExecutorAndroid executor("any-domain", dns_protocol::kTypeA,
+                                             handles::kInvalidNetworkHandle,
+                                             &delegate);
 
     ResultsCallbackTestFuture future;
     executor.Start(future.GetCallback());
-    auto [results, os_error, net_error] = future.Take();
+    auto result = future.Take();
 
-    EXPECT_EQ(os_error, 0);
-    EXPECT_EQ(net_error, ERR_NAME_NOT_RESOLVED);
-    EXPECT_THAT(results, IsEmpty());
+    EXPECT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), ERR_NAME_NOT_RESOLVED);
   } else {
     GTEST_SKIP_(kSkipTestOnAndroidVersionBelow29);
   }

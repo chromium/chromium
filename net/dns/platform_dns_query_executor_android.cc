@@ -6,47 +6,36 @@
 
 #include <android/multinetwork.h>
 #include <android/versioning.h>
-#include <arpa/inet.h>
-#include <arpa/nameser.h>
-#include <netinet/in6.h>
-#include <stddef.h>
 #include <stdint.h>
-#include <sys/socket.h>
 
-#include <array>
-#include <memory>
 #include <set>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
-#include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/sequence_checker.h"
 #include "base/strings/cstring_view.h"
 #include "base/task/current_thread.h"
-#include "base/time/time.h"
-#include "net/base/ip_address.h"
-#include "net/base/ip_endpoint.h"
+#include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
 #include "net/dns/dns_names_util.h"
-#include "net/dns/host_resolver_internal_result.h"
-#include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/dns_protocol.h"
 
 namespace net {
 
 namespace {
 
-// TODO(https://crbug.com/449966580): This is a temporary throwaway parsing
-// solution inspired by NativeDnsAsyncTest. Replace it with proper parsing.
-constexpr int MAXPACKET = 8 * 1024;
+// TODO(https://crbug.com/458035179): Investigate what buffer size to pass to
+// android_res_nresult. The maximum possible DNS packet size (including TCP) is
+// 64kb. Currently, we're using 8kb for practical reasons, but that might
+// theoretically result in a truncated response and a failed lookup. Should we
+// retry with 64kb in such cases?
+constexpr int kResponseBufferSize = 8 * 1024;
 
 // TODO(https://crbug.com/452586797): Verify this conversion logic is correct.
 net_handle_t MapNetworkHandle(handles::NetworkHandle network) {
@@ -54,29 +43,6 @@ net_handle_t MapNetworkHandle(handles::NetworkHandle network) {
     return NETWORK_UNSPECIFIED;
   }
   return static_cast<net_handle_t>(network);
-}
-
-// TODO(https://crbug.com/449966580): This is a temporary throwaway parsing
-// solution inspired by NativeDnsAsyncTest. Replace it with proper parsing.
-std::vector<std::string> ExtractIpAddressAnswers(base::span<const uint8_t> buf,
-                                                 int address_family) {
-  ns_msg handle;
-  if (ns_initparse(buf.data(), buf.size(), &handle) != 0) {
-    return {};
-  }
-  const int ancount = ns_msg_count(handle, ns_s_an);
-  std::vector<std::string> answers;
-  for (int i = 0; i < ancount; ++i) {
-    ns_rr rr;
-    if (ns_parserr(&handle, ns_s_an, i, &rr) < 0) {
-      continue;
-    }
-    std::array<char, INET6_ADDRSTRLEN> buffer;
-    if (inet_ntop(address_family, rr.rdata, buffer.data(), buffer.size())) {
-      answers.push_back(buffer.data());
-    }
-  }
-  return answers;
 }
 
 }  // namespace
@@ -87,26 +53,26 @@ PlatformDnsQueryExecutorAndroid::DelegateImpl::~DelegateImpl() = default;
 int PlatformDnsQueryExecutorAndroid::DelegateImpl::Query(
     net_handle_t network,
     base::cstring_view dname,
-    int ns_class,
-    int ns_type,
-    uint32_t flags) {
-  return android_res_nquery(network, dname.c_str(), ns_class, ns_type, flags);
+    uint16_t dns_query_type) {
+  return android_res_nquery(network, dname.c_str(), dns_query_type,
+                            dns_protocol::kClassIN,
+                            /*flags=*/0);
 }
 
 int PlatformDnsQueryExecutorAndroid::DelegateImpl::Result(
     int fd,
     int* rcode,
     base::span<uint8_t> answer) {
-  // TODO(https://crbug.com/458035179): Investigate what size of `answer` is
-  // necessary and optimal here.
   return android_res_nresult(fd, rcode, answer.data(), answer.size());
 }
 
 PlatformDnsQueryExecutorAndroid::PlatformDnsQueryExecutorAndroid(
     std::string hostname,
+    uint16_t dns_query_type,
     handles::NetworkHandle target_network,
     Delegate* delegate)
     : hostname_(std::move(hostname)),
+      dns_query_type_(dns_query_type),
       target_network_(target_network),
       delegate_(delegate),
       read_fd_watcher_(FROM_HERE) {
@@ -128,18 +94,20 @@ void PlatformDnsQueryExecutorAndroid::Start(ResultsCallback results_callback) {
   results_callback_ = std::move(results_callback);
 
   int fd = delegate_->Query(MapNetworkHandle(target_network_), hostname_,
-                            ns_c_in, ns_t_a, 0);
+                            dns_query_type_);
   if (fd < 0) {
-    OnLookupComplete(Results(), /*os_error=*/-fd,
-                     /*net_error=*/MapSystemError(-fd));
+    // TODO(https://crbug.com/451557941): Consider whether this should surface a
+    // lower-level system error.
+    OnLookupComplete(base::unexpected(ERR_NAME_NOT_RESOLVED));
     return;
   }
 
   if (!base::CurrentIOThread::Get()->WatchFileDescriptor(
           fd, /*persistent=*/false, base::MessagePumpForIO::WATCH_READ,
           &read_fd_watcher_, this)) {
-    OnLookupComplete(Results(), /*os_error=*/0,
-                     /*net_error=*/ERR_NAME_NOT_RESOLVED);
+    // TODO(https://crbug.com/451557941): Consider whether this should surface a
+    // specific error.
+    OnLookupComplete(base::unexpected(ERR_NAME_NOT_RESOLVED));
     return;
   }
 }
@@ -154,61 +122,38 @@ void PlatformDnsQueryExecutorAndroid::OnFileCanReadWithoutBlocking(int fd) {
 
 void PlatformDnsQueryExecutorAndroid::ReadResponse(int fd) {
   int rcode = -1;
-  std::vector<uint8_t> answer_buf(MAXPACKET);
-  int rv = delegate_->Result(fd, &rcode, answer_buf);
+  auto answer_buf = base::MakeRefCounted<GrowableIOBuffer>();
+  answer_buf->SetCapacity(kResponseBufferSize);
+  int rv = delegate_->Result(fd, &rcode, answer_buf->span());
 
   if (rv < 0) {
-    OnLookupComplete(Results(), /*os_error=*/-rv,
-                     /*net_error=*/MapSystemError(-rv));
+    // TODO(https://crbug.com/451557941): Consider whether this should surface a
+    // lower-level system error.
+    OnLookupComplete(base::unexpected(ERR_NAME_NOT_RESOLVED));
     return;
   }
 
-  if (rcode != ns_r_noerror) {
-    // TODO(https://crbug.com/451557941): Map `rcode` to `net_error`. See the
-    // library's mapping.
-    OnLookupComplete(Results(), /*os_error=*/0,
-                     /*net_error=*/ERR_NAME_NOT_RESOLVED);
+  if (rcode != dns_protocol::kRcodeNOERROR) {
+    // TODO(https://crbug.com/451557941): Consider whether we should do this
+    // mapping here, based on `rcode`, or if we can just relying on the caller
+    // to retrieve `rcode` from the response.
+    OnLookupComplete(base::unexpected(ERR_NAME_NOT_RESOLVED));
     return;
   }
 
-  Results results;
-  for (const auto& answer : ExtractIpAddressAnswers(
-           base::span(answer_buf).first(static_cast<size_t>(rv)), AF_INET)) {
-    const auto ip_address = IPAddress::FromIPLiteral(answer);
-    CHECK(ip_address.has_value())
-        << "android_res_nresult returned invalid IP address.";
-
-    results.insert(std::make_unique<HostResolverInternalDataResult>(
-        hostname_, DnsQueryType::A,
-        /*expiration=*/base::TimeTicks(),
-        /*timed_expiration=*/base::Time(),
-        HostResolverInternalResult::Source::kDns,
-        /*endpoints=*/std::vector<IPEndPoint>{IPEndPoint(*ip_address, 0)},
-        /*strings=*/std::vector<std::string>(),
-        /*hosts=*/std::vector<HostPortPair>()));
-  }
-  OnLookupComplete(std::move(results), /*os_error=*/0, /*net_error=*/OK);
+  // TODO(https://crbug.com/458035179): We currently communicate the DNS
+  // response size via this IOBuffer's capacity. Investigate whether we care and
+  // if we do how this can be made more performant.
+  answer_buf->SetCapacity(rv);
+  OnLookupComplete(answer_buf);
 }
 
-void PlatformDnsQueryExecutorAndroid::OnLookupComplete(Results results,
-                                                       int os_error,
-                                                       int net_error) {
+void PlatformDnsQueryExecutorAndroid::OnLookupComplete(
+    base::expected<scoped_refptr<net::IOBuffer>, int> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsActive());
 
-  // If results are empty, we should return an error.
-  if (net_error == OK && results.empty()) {
-    net_error = ERR_NAME_NOT_RESOLVED;
-  }
-
-  // This class mimics the `HostResolverSystemTask` API, and this logic is
-  // copied from there. `net_error` is part of the API because it's returned to
-  // the user in the `results_callback_`.
-  if (net_error != OK && NetworkChangeNotifier::IsOffline()) {
-    net_error = ERR_INTERNET_DISCONNECTED;
-  }
-
-  std::move(results_callback_).Run(std::move(results), os_error, net_error);
+  std::move(results_callback_).Run(result);
   // Running `results_callback_` can delete `this`.
 }
 
