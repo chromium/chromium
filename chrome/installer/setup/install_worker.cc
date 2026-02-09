@@ -824,9 +824,10 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
     }
 
     // Delay deploying the new chrome_proxy while chrome is running.
-    in_use_update_work_items->AddCopyTreeWorkItem(
+    in_use_update_work_items->AddMoveTreeWorkItem(
         src_path.Append(kChromeProxyExe),
-        target_path.Append(kChromeProxyNewExe), temp_path, WorkItem::ALWAYS);
+        target_path.Append(kChromeProxyNewExe), temp_path,
+        WorkItem::ALWAYS_MOVE);
 
     post_install_task_list->AddWorkItem(in_use_update_work_items.release());
   }
@@ -863,11 +864,11 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
           root, clients_key, KEY_WOW64_32KEY, installer::kCmdRenameChromeExe);
     }
 
-    // Only copy chrome_proxy.exe directly when chrome.exe isn't in use to avoid
+    // Only move chrome_proxy.exe directly when chrome.exe isn't in use to avoid
     // different versions getting mixed up between the two binaries.
-    regular_update_work_items->AddCopyTreeWorkItem(
+    regular_update_work_items->AddMoveTreeWorkItem(
         src_path.Append(kChromeProxyExe), target_path.Append(kChromeProxyExe),
-        temp_path, WorkItem::ALWAYS);
+        temp_path, WorkItem::ALWAYS_MOVE);
 
     post_install_task_list->AddWorkItem(regular_update_work_items.release());
   }
