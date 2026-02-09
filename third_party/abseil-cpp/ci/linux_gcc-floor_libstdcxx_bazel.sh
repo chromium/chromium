@@ -37,7 +37,12 @@ if [[ -z ${EXCEPTIONS_MODE:-} ]]; then
 fi
 
 source "${ABSEIL_ROOT}/ci/linux_docker_containers.sh"
-readonly DOCKER_CONTAINER=${LINUX_GCC_FLOOR_CONTAINER}
+readonly DOCKER_CONTAINER="${LINUX_GCC_FLOOR_CONTAINER}"
+
+# Print information about the environment.
+docker run "${DOCKER_CONTAINER}" /usr/bin/fastfetch -c ci
+docker run "${DOCKER_CONTAINER}" /opt/gcc-9/bin/gcc -v
+docker run "${DOCKER_CONTAINER}" cat /root/cached_bazel_versions
 
 # USE_BAZEL_CACHE=1 only works on Kokoro.
 # Without access to the credentials this won't work.
@@ -64,6 +69,10 @@ for std in ${STD}; do
     for exceptions_mode in ${EXCEPTIONS_MODE}; do
       echo "--------------------------------------------------------------------"
       time docker run \
+        --env="USE_BAZEL_VERSION=9.0.0" \
+        --env="CC=/opt/gcc-9/bin/gcc" \
+        --env="BAZEL_CXXOPTS=-std=${std}" \
+        --env="BAZEL_LINKOPTS=-L/opt/gcc-9/lib64:-Wl,-rpath=/opt/gcc-9/lib64" \
         --volume="${ABSEIL_ROOT}:/abseil-cpp:ro" \
         --workdir=/abseil-cpp \
         --cap-add=SYS_PTRACE \
@@ -72,8 +81,6 @@ for std in ${STD}; do
         ${DOCKER_CONTAINER} \
         /bin/bash --login -c "
         /usr/local/bin/bazel test ... \
-          --action_env=\"CC=/usr/local/bin/gcc\" \
-          --action_env=\"BAZEL_CXXOPTS=-std=${std}\" \
           --compilation_mode=\"${compilation_mode}\" \
           --copt=\"${exceptions_mode}\" \
           --copt=\"-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1\" \

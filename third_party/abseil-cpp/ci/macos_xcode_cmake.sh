@@ -16,8 +16,8 @@
 
 set -euox pipefail
 
-# Use Xcode 16.3
-sudo xcode-select -s /Applications/Xcode_16.3.app/Contents/Developer
+# Use Xcode 26.2
+sudo xcode-select -s /Applications/Xcode_26.2.app/Contents/Developer
 
 brew install cmake
 

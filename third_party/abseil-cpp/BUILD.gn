@@ -108,6 +108,7 @@ group("absl_component_deps") {
     "//third_party/abseil-cpp/absl/strings:string_view",
     "//third_party/abseil-cpp/absl/synchronization",
     "//third_party/abseil-cpp/absl/time",
+    "//third_party/abseil-cpp/absl/time:clock_interface",
     "//third_party/abseil-cpp/absl/types:optional",
     "//third_party/abseil-cpp/absl/types:span",
     "//third_party/abseil-cpp/absl/types:variant",
@@ -137,7 +138,9 @@ group("absl_component_deps") {
 # Abseil testing utilities should only be included in test binaries.
 source_set("test_support") {
   testonly = true
-  public_deps = [ "//third_party/abseil-cpp/absl/hash:hash_testing" ]
+  public_deps = [
+    "//third_party/abseil-cpp/absl/hash:hash_testing",
+  ]
   deps = [ ":absl" ]
 }
 
@@ -297,6 +300,10 @@ if (absl_build_tests) {
         "absl/debugging:demangle_rust_test",
         "absl/debugging:stacktrace_test",
         "absl/debugging:utf8_for_code_point_test",
+        "absl/extend/internal:aggregate_test",
+        "absl/extend/internal:dependencies_test",
+        "absl/extend/internal:num_bases_test",
+        "absl/extend/internal:num_initializers_test",
         "absl/flags:flag_test",
         "absl/functional:any_invocable_test",
         "absl/functional:function_ref_test",
@@ -377,6 +384,8 @@ if (absl_build_tests) {
         "absl/synchronization:mutex_test",
         "absl/synchronization:per_thread_sem_test",
         "absl/synchronization:waiter_test",
+        "absl/time:clock_interface_test",
+        "absl/time:simulated_clock_test",
         "absl/time:time_test",
         "absl/types:span_test",
         "absl/types:variant_test",

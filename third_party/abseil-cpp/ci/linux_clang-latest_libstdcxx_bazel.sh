@@ -39,6 +39,12 @@ fi
 source "${ABSEIL_ROOT}/ci/linux_docker_containers.sh"
 readonly DOCKER_CONTAINER=${LINUX_CLANG_LATEST_CONTAINER}
 
+# Print information about the environment.
+docker run "${DOCKER_CONTAINER}" /usr/bin/fastfetch -c ci
+docker run "${DOCKER_CONTAINER}" /usr/local/bin/gcc -v
+docker run "${DOCKER_CONTAINER}" /opt/llvm/bin/clang -v
+docker run "${DOCKER_CONTAINER}" cat /root/cached_bazel_versions
+
 # USE_BAZEL_CACHE=1 only works on Kokoro.
 # Without access to the credentials this won't work.
 if [[ ${USE_BAZEL_CACHE:-0} -ne 0 ]]; then
@@ -64,6 +70,9 @@ for std in ${STD}; do
     for exceptions_mode in ${EXCEPTIONS_MODE}; do
       echo "--------------------------------------------------------------------"
       time docker run \
+        --env="USE_BAZEL_VERSION=9.0.0" \
+        --env="CC=/opt/llvm/bin/clang" \
+        --env="BAZEL_CXXOPTS=-std=${std}" \
         --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp,readonly \
         --workdir=/abseil-cpp \
         --cap-add=SYS_PTRACE \
@@ -72,8 +81,6 @@ for std in ${STD}; do
         ${DOCKER_CONTAINER} \
         /bin/bash --login -c "
         /usr/local/bin/bazel test ... \
-          --action_env=\"CC=/opt/llvm/clang/bin/clang\" \
-          --action_env=\"BAZEL_CXXOPTS=-std=${std}\" \
           --compilation_mode=\"${compilation_mode}\" \
           --copt=\"--gcc-toolchain=/usr/local\" \
           --copt=\"-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1\" \

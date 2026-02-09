@@ -39,6 +39,11 @@ fi
 source "${ABSEIL_ROOT}/ci/linux_docker_containers.sh"
 readonly DOCKER_CONTAINER=${LINUX_ARM_CLANG_LATEST_CONTAINER}
 
+# Print information about the environment.
+docker run "${DOCKER_CONTAINER}" /usr/bin/fastfetch -c ci
+docker run "${DOCKER_CONTAINER}" /opt/llvm/bin/clang -v
+docker run "${DOCKER_CONTAINER}" cat /root/cached_bazel_versions
+
 # USE_BAZEL_CACHE=1 only works on Kokoro.
 # Without access to the credentials this won't work.
 if [[ ${USE_BAZEL_CACHE:-0} -ne 0 ]]; then
@@ -64,6 +69,11 @@ for std in ${STD}; do
     for exceptions_mode in ${EXCEPTIONS_MODE}; do
       echo "--------------------------------------------------------------------"
       time docker run \
+        --env="USE_BAZEL_VERSION=9.0.0" \
+        --env="CC=/opt/llvm/bin/clang" \
+        --env="BAZEL_CXXOPTS=-std=${std}:-nostdinc++" \
+        --env="BAZEL_LINKOPTS=-L/opt/llvm/lib/aarch64-unknown-linux-gnu:-lc++:-lc++abi:-lm:-Wl,-rpath=/opt/llvm/lib/aarch64-unknown-linux-gnu" \
+        --env="CPLUS_INCLUDE_PATH=/opt/llvm/include/c++/v1:/opt/llvm/include/aarch64-unknown-linux-gnu/c++/v1/" \
         --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp-ro,readonly \
         --tmpfs=/abseil-cpp \
         --workdir=/abseil-cpp \
@@ -77,17 +87,13 @@ for std in ${STD}; do
             cp ${ALTERNATE_OPTIONS:-} absl/base/options.h || exit 1
           fi
           /usr/local/bin/bazel test ... \
-            --action_env=CC=clang-19 \
             --compilation_mode=\"${compilation_mode}\" \
             --copt=\"${exceptions_mode}\" \
             --copt=\"-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1\" \
             --copt=-Werror \
-            --cxxopt=-std=${std} \
-            --cxxopt=-stdlib=libc++ \
             --define=\"absl=1\" \
             --features=external_include_paths \
             --keep_going \
-            --linkopt=-stdlib=libc++ \
             --per_file_copt=external/.*@-w \
             --show_timestamps \
             --test_env=\"GTEST_INSTALL_FAILURE_SIGNAL_HANDLER=1\" \

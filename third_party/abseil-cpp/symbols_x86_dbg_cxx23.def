@@ -1952,6 +1952,7 @@ EXPORTS
     ??0ChunkIterator@Cord@absl@@QAE@XZ
     ??0ChunkRange@Cord@absl@@QAE@PBV12@@Z
     ??0CivilInfo@TimeZone@absl@@QAE@XZ
+    ??0Clock@absl@@QAE@XZ
     ??0CommandLineFlag@absl@@QAE@XZ
     ??0CommonFields@container_internal@absl@@QAE@Unon_soo_tag_t@12@@Z
     ??0CommonFields@container_internal@absl@@QAE@Usoo_tag_t@12@@Z
@@ -2254,6 +2255,7 @@ EXPORTS
     ??1CRC@crc_internal@absl@@UAE@XZ
     ??1CRCImpl@crc_internal@absl@@UAE@XZ
     ??1CheckOpMessageBuilder@log_internal@absl@@QAE@XZ
+    ??1Clock@absl@@UAE@XZ
     ??1Cord@absl@@QAE@XZ
     ??1CordBuffer@absl@@QAE@XZ
     ??1CordRepCrc@cord_internal@absl@@QAE@XZ
@@ -2936,6 +2938,7 @@ EXPORTS
     ?Avail@FormatSinkImpl@str_format_internal@absl@@ABEIXZ
     ?Await@Mutex@absl@@QAEXABVCondition@2@@Z
     ?AwaitCommon@Mutex@absl@@AAE_NABVCondition@2@VKernelTimeout@synchronization_internal@2@@Z
+    ?AwaitWithDeadline@Mutex@absl@@QAE_NABVCondition@2@VTime@2@@Z
     ?BadDownCastCrash@base_internal@absl@@YAXPBD0@Z
     ?Base64Escape@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@34@@Z
     ?Base64Escape@absl@@YAXV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@34@@Z
@@ -3423,6 +3426,7 @@ EXPORTS
     ?GetPayload@StatusRep@status_internal@absl@@QBE?AV?$optional@VCord@absl@@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@56@@Z
     ?GetPolicyFunctions@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@container_internal@absl@@$$V@container_internal@absl@@CAABUPolicyFunctions@23@XZ
     ?GetProgramCounter@debugging_internal@absl@@YAPAXQAX@Z
+    ?GetRealClock@Clock@absl@@SAAAV12@XZ
     ?GetRefForEmptyClass@container_internal@absl@@YAPAXAAVCommonFields@12@@Z
     ?GetRepHi@time_internal@absl@@YA_JVDuration@2@@Z
     ?GetRepLo@time_internal@absl@@YAIVDuration@2@@Z
