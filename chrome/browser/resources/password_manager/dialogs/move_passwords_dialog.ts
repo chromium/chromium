@@ -72,7 +72,7 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
         observer: 'onPasswordsChanged_',
       },
       url: {type: String},
-      hasOnlyDeviceCredentials: {type: Boolean, value: true},
+      hasOnlyOneDeviceCredential: {type: Boolean, value: true},
 
       selectedPasswordIds_: {
         type: Array,
@@ -85,7 +85,7 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
 
   declare passwords: chrome.passwordsPrivate.PasswordUiEntry[];
   declare private url: string;
-  declare hasOnlyDeviceCredentials: boolean;
+  declare hasOnlyOneDeviceCredential: boolean;
   declare private selectedPasswordIds_: number[];
   declare descriptionString: string;
   declare passwordsTitle: string;
@@ -133,8 +133,7 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
   }
 
   private async updateDescriptionString_() {
-    const description =
-        this.hasOnlyDeviceCredentials && this.passwords.length === 1 ?
+    const description = this.hasOnlyOneDeviceCredential ?
         this.i18n('moveSinglePasswordDialogDescription') :
         await PluralStringProxyImpl.getInstance().getPluralString(
             'movePasswordsDialogDescription', this.passwords.length);

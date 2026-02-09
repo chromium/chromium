@@ -182,8 +182,9 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
             entry.storedIn === chrome.passwordsPrivate.PasswordStoreSet.DEVICE);
   }
 
-  private hasOnlyDeviceCredentials(): boolean {
-    return this.getCredentialsOnDevice_().length === this.item.entries.length;
+  private hasOnlyOneDeviceCredential(): boolean {
+    return this.getCredentialsOnDevice_().length === this.item.entries.length &&
+        this.getCredentialsOnDevice_().length === 1;
   }
 
   private shouldShowDeviceOnlyCredentialsIcon_(): boolean {
