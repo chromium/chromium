@@ -129,7 +129,14 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
 ComposeboxQueryControllerBridge::~ComposeboxQueryControllerBridge() = default;
 
 void ComposeboxQueryControllerBridge::Destroy(JNIEnv* env) {
-  query_controller()->RemoveObserver(this);
+  // Query controller is accessed through a weak ptr, possible that during
+  // shutdown it's already gone.
+  contextual_search::ContextualSearchContextController* controller =
+      query_controller();
+  if (controller) {
+    controller->RemoveObserver(this);
+  }
+
   delete this;
 }
 
