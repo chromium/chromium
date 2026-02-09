@@ -78,6 +78,15 @@ const ValuablesDataManager* AutofillClient::GetValuablesDataManager() const {
   return const_cast<AutofillClient*>(this)->GetValuablesDataManager();
 }
 
+WalletPassAccessManager* AutofillClient::GetWalletPassAccessManager() {
+  return nullptr;
+}
+
+const WalletPassAccessManager* AutofillClient::GetWalletPassAccessManager()
+    const {
+  return const_cast<AutofillClient*>(this)->GetWalletPassAccessManager();
+}
+
 AutofillOptimizationGuideDecider*
 AutofillClient::GetAutofillOptimizationGuideDecider() const {
   return nullptr;

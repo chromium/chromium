@@ -125,6 +125,7 @@ class SingleFieldFillRouter;
 class ValuablesDataManager;
 class VotesUploader;
 class PasswordManagerAutofillHelperDelegate;
+class WalletPassAccessManager;
 
 namespace autofill_metrics {
 class FormInteractionsUkmLogger;
@@ -328,6 +329,11 @@ class AutofillClient {
   // one.
   virtual EntityDataManager* GetEntityDataManager() = 0;
   const EntityDataManager* GetEntityDataManager() const;
+
+  // Gets the WalletPassAccessManager instance associated with the client, if
+  // there is one.
+  virtual WalletPassAccessManager* GetWalletPassAccessManager();
+  const WalletPassAccessManager* GetWalletPassAccessManager() const;
 
   // Gets the AutofillOptimizationGuideDecider instance associated with the
   // client. This function can return nullptr if we are on an unsupported

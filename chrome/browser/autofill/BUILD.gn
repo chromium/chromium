@@ -47,6 +47,8 @@ static_library("autofill") {
     "validation_rules_storage_factory.h",
     "valuables_data_manager_factory.cc",
     "valuables_data_manager_factory.h",
+    "wallet_pass_access_manager_factory.cc",
+    "wallet_pass_access_manager_factory.h",
   ]
 
   public_deps = [

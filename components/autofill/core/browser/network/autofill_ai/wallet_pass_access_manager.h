@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 
 namespace autofill {
@@ -18,7 +19,7 @@ class EntityInstance;
 // backend via `wallet::WalletHttpClient`.
 // It maps `autofill::EntityInstance`s to `wallet::WalletPass`es and vice versa
 // to issue UpsertPass and GetUnmaskedPass requests.
-class WalletPassAccessManager {
+class WalletPassAccessManager : public KeyedService {
  public:
   // Callback for save and update requests. On success, it returns
   // the masked `EntityInstance` as it is stored in the Wallet backend
@@ -31,8 +32,6 @@ class WalletPassAccessManager {
   // `entity_id`. Returns `std::nullopt` on failure.
   using GetUnmaskedEntityInstanceCallback =
       base::OnceCallback<void(std::optional<EntityInstance>)>;
-
-  virtual ~WalletPassAccessManager() = default;
 
   // Issues an save request to the Wallet backend for the given `entity`.
   // Notably, the returned entity will always have a new entity id.
