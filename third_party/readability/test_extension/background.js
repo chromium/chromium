@@ -80,17 +80,31 @@ function handleDistill(tabId, inNewTab, sendResponse) {
       {
         target: {tabId: tabId},
         files: [
+          // The order of scripts is important and should be preserved.
+          // 1. Core libraries (Readability.js).
           'Readability.js',
-          'article_processor.js',
-          'article_renderer.js',
+
+          // 2. The `dom_distiller_viewer` scripts, which provide helpers for
+          //    rendering. These were previously a single file, and must be
+          //    loaded before the article renderer, but in any order among
+          //    themselves.
           'content_processing.js',
-          'distiller.js',
           'dom_distiller_viewer_main.js',
           'font_size_slider.js',
           'image_classifier.js',
           'list_classifier.js',
           'pinch_handler.js',
           'settings_dialog.js',
+
+          // 3. `article_renderer.js`, which depends on `dom_distiller_viewer`
+          // scripts.
+          'article_renderer.js',
+
+          // 4. `article_processor.js`, which depends on the renderer.
+          'article_processor.js',
+
+          // 5. `distiller.js`, which triggers the process and must be last.
+          'distiller.js',
         ]
       },
       (results) => {

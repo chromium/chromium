@@ -8,7 +8,7 @@
 
   /**
    * Renders a Readability article into the provided DOM elements.
-   * Assumes that dom_distiller_viewer.js has been loaded.
+   * Assumes that `dom_distiller_viewer` scripts has been loaded.
    * @param {object} article The article object from Readability.
    * @param {Document} doc The document to render into.
    */
