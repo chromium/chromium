@@ -570,7 +570,7 @@ HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
             plane->CanUseForCrtcId(crtc_id)) {
           num_overlay_planes++;
           for (const auto& format : plane->supported_formats()) {
-            if (ui::IsValidBufferFormat(format)) {
+            if (ui::IsValidDrmFormat(format)) {
               shared_image_formats.emplace(
                   GetSharedImageFormatFromFourCCFormat(format));
             }

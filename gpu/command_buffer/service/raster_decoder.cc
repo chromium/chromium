@@ -1252,7 +1252,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
 #if BUILDFLAG(IS_CHROMEOS)
   base::EraseIf(caps.drm_formats_and_modifiers, [&](const auto& format) {
     auto drm_format = format.first;
-    return !ui::IsValidBufferFormat(drm_format) ||
+    return !ui::IsValidDrmFormat(drm_format) ||
            !caps.mappable_formats.contains(
                ui::GetSharedImageFormatFromFourCCFormat(drm_format));
   });

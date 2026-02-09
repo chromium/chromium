@@ -96,7 +96,7 @@ viz::SharedImageFormat GetSharedImageFormatFromFourCCFormat(int format) {
   }
 }
 
-bool IsValidBufferFormat(uint32_t current_format) {
+bool IsValidDrmFormat(uint32_t current_format) {
   switch (current_format) {
     case DRM_FORMAT_R8:
     case DRM_FORMAT_GR88:

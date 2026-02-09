@@ -156,7 +156,7 @@ void WaylandZwpLinuxDmabuf::AddSupportedFourCCFormatAndModifier(
     uint32_t fourcc_format,
     std::optional<uint64_t> modifier) {
   // Return on not supported fourcc formats.
-  if (!IsValidBufferFormat(fourcc_format)) {
+  if (!IsValidDrmFormat(fourcc_format)) {
     return;
   }
 

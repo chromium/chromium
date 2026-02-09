@@ -116,9 +116,10 @@ void WaylandDrm::HandleDrmFailure(const std::string& error) {
 }
 
 void WaylandDrm::AddSupportedFourCCFormat(uint32_t fourcc_format) {
-  // Return on unsupported fourcc formats.
-  if (!IsValidBufferFormat(fourcc_format))
+  // Return on unsupported drm fourcc formats.
+  if (!IsValidDrmFormat(fourcc_format)) {
     return;
+  }
 
   viz::SharedImageFormat format =
       GetSharedImageFormatFromFourCCFormat(fourcc_format);

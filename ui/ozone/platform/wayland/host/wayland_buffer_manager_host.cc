@@ -356,8 +356,9 @@ bool WaylandBufferManagerHost::ValidateDataFromGpu(
       reason = "Strides are invalid";
   }
 
-  if (!IsValidBufferFormat(format))
-    reason = "Buffer format is invalid";
+  if (!IsValidDrmFormat(format)) {
+    reason = "Drm format is invalid";
+  }
 
   if (!reason.empty()) {
     error_message_ = std::move(reason);

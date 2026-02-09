@@ -33,8 +33,8 @@ int GetFourCCFormatFromSharedImageFormat(const viz::SharedImageFormat& format);
 
 viz::SharedImageFormat GetSharedImageFormatFromFourCCFormat(int format);
 
-// Returns true if the fourcc format is known.
-bool IsValidBufferFormat(uint32_t current_format);
+// Returns true if the DRM FourCC format is known.
+bool IsValidDrmFormat(uint32_t current_format);
 
 // Returns a human-readable string for a DRM FourCC format, or
 // DRM_FORMAT_INVALID for an unknown or unsupported DRM format.
