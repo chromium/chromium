@@ -23,7 +23,9 @@ class EntityDataManager;
 // during tab close).
 // The arguments have the following meaning:
 // - `prompt_type`: The type of prompt that triggered the Wallet request.
-// - `entity`: The entity that we tried to save/update/migrate to Wallet.
+// - `entity`: The entity that we tried to save/update/migrate to Wallet. Note
+//    that this entity must have the same guid() as the local entity when this
+//    is a migration.
 // - `wallet_response`: The response from Wallet.
 void HandleWalletUpsertResponse(
     base::WeakPtr<EntityDataManager> entity_manager,

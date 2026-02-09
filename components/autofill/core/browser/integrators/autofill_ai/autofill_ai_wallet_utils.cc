@@ -83,7 +83,7 @@ void HandleWalletUpsertResponse(
   CHECK(!wallet_response->IsUnmaskedServerEntity());
   switch (prompt_type) {
     case kMigrate:
-      // TODO(crbug.com/481566741): Delete local entity.
+      entity_manager->RemoveEntityInstance(entity.guid());
       [[fallthrough]];
     case kSave:
     case kUpdate:

@@ -16,15 +16,21 @@ EntityDataChangedWaiter::EntityDataChangedWaiter(EntityDataManager* edm) {
 
 EntityDataChangedWaiter::~EntityDataChangedWaiter() = default;
 
-void EntityDataChangedWaiter::Wait(const base::Location& location) && {
+void EntityDataChangedWaiter::Wait(const base::Location& location,
+                                   size_t expected_events) && {
   // Log the location from whence `Wait` was called in case of timeout.
   base::test::ScopedRunLoopTimeout timeout(location, std::nullopt,
                                            base::NullCallback());
+  expected_events_ = expected_events;
   run_loop_.Run();
 }
 
 void EntityDataChangedWaiter::OnEntityInstancesChanged() {
-  run_loop_.Quit();
+  CHECK(expected_events_.has_value());
+  if (--*expected_events_ == 0) {
+    expected_events_.reset();
+    run_loop_.Quit();
+  }
 }
 
 }  // namespace autofill

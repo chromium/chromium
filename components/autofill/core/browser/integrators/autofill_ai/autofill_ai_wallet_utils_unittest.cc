@@ -19,6 +19,7 @@
 namespace autofill {
 namespace {
 
+using test::GetNationalIdCardEntityInstance;
 using test::GetPassportEntityInstance;
 using test::MaskEntityInstance;
 using ::testing::InSequence;
@@ -87,6 +88,34 @@ TEST_F(AutofillAiWalletUtilsTest, HandleWalletSaveResponseSuccess) {
   EntityDataChangedWaiter(&edm()).Wait();
   EXPECT_THAT(edm().GetEntityInstances(),
               UnorderedElementsAre(masked_passport));
+}
+
+// Tests that the import data bubble is closed after a successful Wallet migrate
+// response, that the local entity is removed and the masked server entity is
+// written to EDM.
+TEST_F(AutofillAiWalletUtilsTest, HandleWalletMigrateResponseSuccess) {
+  // Create pre-conditions.
+  const EntityInstance local_id_card =
+      GetNationalIdCardEntityInstance({.record_type = kLocal});
+  edm().AddOrUpdateEntityInstance(local_id_card);
+  EntityDataChangedWaiter(&edm()).Wait();
+  ASSERT_THAT(edm().GetEntityInstances(), UnorderedElementsAre(local_id_card));
+
+  // The actual behavior to test.
+  EXPECT_CALL(autofill_client(), CloseEntityImportBubble());
+
+  const EntityInstance server_id_card =
+      GetNationalIdCardEntityInstance({.record_type = kServerWallet});
+  const EntityInstance masked_server_id_card =
+      MaskEntityInstance(server_id_card);
+  HandleWalletUpsertResponse(
+      edm().GetWeakPtr(), autofill_client().GetWeakPtr(),
+      AutofillClient::AutofillAiImportPromptType::kMigrate,
+      /*entity=*/server_id_card,
+      /*wallet_response=*/masked_server_id_card);
+  EntityDataChangedWaiter(&edm()).Wait(FROM_HERE, /*expected_events=*/2);
+  EXPECT_THAT(edm().GetEntityInstances(),
+              UnorderedElementsAre(masked_server_id_card));
 }
 
 // Tests that the import data bubble is closed after a successful Wallet update
