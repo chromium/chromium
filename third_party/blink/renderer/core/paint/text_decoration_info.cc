@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
-#include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -272,8 +271,9 @@ void TextDecorationInfo::UpdateForDecorationIndex() {
   resolved_thickness_ = ComputeThickness();
 }
 
-void TextDecorationInfo::SetLineData(TextDecorationLine line,
-                                     float line_offset) {
+DecorationGeometry TextDecorationInfo::ComputeLineData(
+    TextDecorationLine line,
+    float line_offset) const {
   const float double_offset_from_thickness = ResolvedThickness() + 1.0f;
   float double_offset;
   float wavy_offset;
@@ -331,10 +331,11 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
 
   const gfx::PointF start_point =
       gfx::PointF(local_origin_) + gfx::Vector2dF(0, line_offset);
-  line_geometry_ = DecorationGeometry::Make(
+  DecorationGeometry geometry = DecorationGeometry::Make(
       style, gfx::RectF(start_point, gfx::SizeF(width_, ResolvedThickness())),
       double_offset, wavy_offset, base::OptionalToPtr(spelling_wave));
-  line_geometry_.antialias = antialias;
+  geometry.antialias = antialias;
+  return geometry;
 }
 
 // Returns the offset of the target text/box (|local_origin_|) from the
@@ -351,8 +352,8 @@ LayoutUnit TextDecorationInfo::OffsetFromDecoratingBox() const {
   return decorating_box_paint_offset - local_origin_.line_over;
 }
 
-void TextDecorationInfo::SetUnderlineLineData(
-    const TextDecorationOffset& decoration_offset) {
+DecorationGeometry TextDecorationInfo::ComputeUnderlineLineData(
+    const TextDecorationOffset& decoration_offset) const {
   DCHECK(HasUnderline());
   // Don't apply text-underline-offset to overlines. |line_offset| is zero.
   Length line_offset;
@@ -368,11 +369,12 @@ void TextDecorationInfo::SetUnderlineLineData(
     // The offset is for the decorating box. Convert it for the target text/box.
     paint_underline_offset += OffsetFromDecoratingBox();
   }
-  SetLineData(TextDecorationLine::kUnderline, paint_underline_offset);
+  return ComputeLineData(TextDecorationLine::kUnderline,
+                         paint_underline_offset);
 }
 
-void TextDecorationInfo::SetOverlineLineData(
-    const TextDecorationOffset& decoration_offset) {
+DecorationGeometry TextDecorationInfo::ComputeOverlineLineData(
+    const TextDecorationOffset& decoration_offset) const {
   DCHECK(HasOverline());
   // Don't apply text-underline-offset to overline.
   Length line_offset;
@@ -388,20 +390,20 @@ void TextDecorationInfo::SetOverlineLineData(
       decoration_offset.ComputeUnderlineOffsetForUnder(
           line_offset, TargetStyle().ComputedFontSize(), FontData(),
           ResolvedThickness(), position);
-  SetLineData(TextDecorationLine::kOverline, paint_overline_offset);
+  return ComputeLineData(TextDecorationLine::kOverline, paint_overline_offset);
 }
 
-void TextDecorationInfo::SetLineThroughLineData() {
+DecorationGeometry TextDecorationInfo::ComputeLineThroughLineData() const {
   DCHECK(HasLineThrough());
   // For increased line thickness, the line-through decoration needs to grow
   // in both directions from its origin, subtract half the thickness to keep
   // it centered at the same origin.
   const float line_through_offset = 2 * Ascent() / 3 - ResolvedThickness() / 2;
-  SetLineData(TextDecorationLine::kLineThrough, line_through_offset);
+  return ComputeLineData(TextDecorationLine::kLineThrough, line_through_offset);
 }
 
-void TextDecorationInfo::SetSpellingOrGrammarErrorLineData(
-    const TextDecorationOffset& decoration_offset) {
+DecorationGeometry TextDecorationInfo::ComputeSpellingOrGrammarErrorLineData(
+    const TextDecorationOffset& decoration_offset) const {
   DCHECK(HasSpellingOrGrammarError());
   DCHECK(!HasUnderline());
   DCHECK(!HasOverline());
@@ -410,9 +412,9 @@ void TextDecorationInfo::SetSpellingOrGrammarErrorLineData(
   const int paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
       FlippedUnderlinePosition(), TargetStyle().ComputedFontSize(), FontData(),
       Length(), ResolvedThickness());
-  SetLineData(HasSpellingError() ? TextDecorationLine::kSpellingError
-                                 : TextDecorationLine::kGrammarError,
-              paint_underline_offset);
+  return ComputeLineData(HasSpellingError() ? TextDecorationLine::kSpellingError
+                                            : TextDecorationLine::kGrammarError,
+                         paint_underline_offset);
 }
 
 Color TextDecorationInfo::LineColor() const {
@@ -461,10 +463,6 @@ float TextDecorationInfo::ComputeThickness() const {
       decoration.Thickness(), computed_font_size_, font_data_);
   const float minimum_thickness = minimum_thickness_is_one_ ? 1.0f : 0.0f;
   return std::max(minimum_thickness, thickness);
-}
-
-gfx::RectF TextDecorationInfo::Bounds() const {
-  return DecorationLinePainter::Bounds(GetGeometry());
 }
 
 void TextDecorationInfo::SetHighlightOverrideColor(

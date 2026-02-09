@@ -522,14 +522,12 @@ void TextPainter::SetEmphasisMark(const AtomicString& emphasis_mark,
   }
 }
 
-void TextPainter::PaintDecorationLine(const TextDecorationInfo& decoration_info,
+void TextPainter::PaintDecorationLine(const DecorationGeometry& geometry,
+                                      bool has_decoration_override,
                                       const Color& line_color,
                                       const AutoDarkMode& auto_dark_mode) {
-  const DecorationGeometry& geometry = decoration_info.GetGeometry();
-
   DecorationLinePainter decoration_painter(graphics_context_);
-  if (svg_text_paint_state_.has_value() &&
-      !decoration_info.HasDecorationOverride()) {
+  if (svg_text_paint_state_.has_value() && !has_decoration_override) {
     SvgPaints paints;
     const SvgTextPaintState& state = svg_text_paint_state_.value();
     PrepareSvgPaints(state, svg_context_paints_, SvgPaintMode::kTextDecoration,

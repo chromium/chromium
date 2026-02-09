@@ -688,21 +688,22 @@ LogicalRect InkOverflow::ComputeAppliedDecorationOverflow(
       continue;
     }
     if (decoration_info.HasUnderline()) {
-      decoration_info.SetUnderlineLineData(decoration_offset);
-      accumulated_bound.Union(decoration_info.Bounds());
+      accumulated_bound.Union(DecorationLinePainter::Bounds(
+          decoration_info.ComputeUnderlineLineData(decoration_offset)));
     }
     if (decoration_info.HasOverline()) {
-      decoration_info.SetOverlineLineData(decoration_offset);
-      accumulated_bound.Union(decoration_info.Bounds());
+      accumulated_bound.Union(DecorationLinePainter::Bounds(
+          decoration_info.ComputeOverlineLineData(decoration_offset)));
     }
     if (decoration_info.HasLineThrough()) {
-      decoration_info.SetLineThroughLineData();
-      accumulated_bound.Union(decoration_info.Bounds());
+      accumulated_bound.Union(DecorationLinePainter::Bounds(
+          decoration_info.ComputeLineThroughLineData()));
     }
     if (decoration_info.HasSpellingError() ||
         decoration_info.HasGrammarError()) {
-      decoration_info.SetSpellingOrGrammarErrorLineData(decoration_offset);
-      accumulated_bound.Union(decoration_info.Bounds());
+      accumulated_bound.Union(DecorationLinePainter::Bounds(
+          decoration_info.ComputeSpellingOrGrammarErrorLineData(
+              decoration_offset)));
     }
   }
   // Adjust the container coordinate system to the local coordinate system.

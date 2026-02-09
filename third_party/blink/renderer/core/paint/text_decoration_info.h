@@ -101,14 +101,18 @@ class CORE_EXPORT TextDecorationInfo {
   // the style passed at construction.
   void SetDecorationIndex(int decoration_index);
 
-  // Set data for one of the text decoration lines: over, under or
-  // through. Must be called before trying to paint or compute bounds
-  // for a line.
-  void SetLineData(TextDecorationLine line, float line_offset);
-  void SetUnderlineLineData(const TextDecorationOffset& decoration_offset);
-  void SetOverlineLineData(const TextDecorationOffset& decoration_offset);
-  void SetLineThroughLineData();
-  void SetSpellingOrGrammarErrorLineData(const TextDecorationOffset&);
+  // Creates a DecorationGeometry for one of the text decoration lines: over,
+  // under, line-through, or spelling/grammar error. It's necessary to paint
+  // or compute bounds for a line.
+  DecorationGeometry ComputeLineData(TextDecorationLine line,
+                                     float line_offset) const;
+  DecorationGeometry ComputeUnderlineLineData(
+      const TextDecorationOffset& decoration_offset) const;
+  DecorationGeometry ComputeOverlineLineData(
+      const TextDecorationOffset& decoration_offset) const;
+  DecorationGeometry ComputeLineThroughLineData() const;
+  DecorationGeometry ComputeSpellingOrGrammarErrorLineData(
+      const TextDecorationOffset&) const;
 
   // These methods do not depend on |SetDecorationIndex|.
   const ComputedStyle& TargetStyle() const { return target_style_; }
@@ -123,12 +127,6 @@ class CORE_EXPORT TextDecorationInfo {
   // |SetDecorationIndex| may change the results of these methods.
   const SimpleFontData* FontData() const { return font_data_; }
   Color LineColor() const;
-
-  // SetLineData must be called before using the remaining methods.
-  const DecorationGeometry& GetGeometry() const { return line_geometry_; }
-
-  // Compute bounds for the given line and the current decoration.
-  gfx::RectF Bounds() const;
 
   // Overrides the line color with the given topmost active highlight ‘color’
   // (for originating decorations being painted in highlight overlays), or the
@@ -212,7 +210,6 @@ class CORE_EXPORT TextDecorationInfo {
   const bool minimum_thickness_is_one_ = false;
   bool antialias_ = false;
 
-  DecorationGeometry line_geometry_;
   std::optional<Color> highlight_override_;
 };
 
