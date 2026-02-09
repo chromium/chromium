@@ -56,4 +56,7 @@ interface EchoService {
   DecryptEncrypt(
       os_crypt_async.mojom.Encryptor encryptor, array<uint8> input)
       => (array<uint8>? output);
+
+  // Verifies that CHECK_IS_TEST() is enabled.
+  VerifyCheckIsTest() => (bool is_test);
 };

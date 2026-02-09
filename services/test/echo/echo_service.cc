@@ -7,6 +7,8 @@
 #include <optional>
 #include <string>
 
+#include "base/check_is_test.h"
+#include "base/check_is_test.h"
 #include "base/check.h"
 #include "base/debug/stack_trace.h"
 #include "base/immediate_crash.h"
@@ -127,6 +129,11 @@ void EchoService::DecryptEncrypt(os_crypt_async::Encryptor encryptor,
   // Encrypt it again using the key inside this process, and return the
   // encrypted ciphertext to the caller.
   std::move(callback).Run(encryptor.EncryptString(*plaintext));
+}
+
+void EchoService::VerifyCheckIsTest(VerifyCheckIsTestCallback callback) {
+  CHECK_IS_TEST();
+  std::move(callback).Run(true);
 }
 
 }  // namespace echo

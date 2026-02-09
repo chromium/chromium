@@ -14,6 +14,7 @@
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/public/common/content_switches.h"
@@ -351,5 +352,14 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, PreloadLibraryBadPath) {
   observer.WaitForCrash();
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, UtilityCheckIsTest) {
+  mojo::Remote<echo::mojom::EchoService> echo_service;
+  content::ServiceProcessHost::Launch(
+      echo_service.BindNewPipeAndPassReceiver());
+  base::test::TestFuture<bool> future;
+  echo_service->VerifyCheckIsTest(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
 
 }  // namespace content

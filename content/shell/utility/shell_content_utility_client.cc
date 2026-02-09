@@ -21,6 +21,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/process/process.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/services/storage/test_api/test_api.h"
@@ -185,6 +186,7 @@ ShellContentUtilityClient::ShellContentUtilityClient(bool is_browsertest) {
   if (is_browsertest &&
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kProcessType) == switches::kUtilityProcess) {
+    base::test::AllowCheckIsTestForTesting();
     network_service_test_helper_ = NetworkServiceTestHelper::Create();
     audio_service_test_helper_ = std::make_unique<AudioServiceTestHelper>();
     storage::InjectTestApiImplementation();

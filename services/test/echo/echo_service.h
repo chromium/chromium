@@ -43,6 +43,8 @@ class EchoService : public mojom::EchoService {
                       const std::vector<uint8_t>& input,
                       DecryptEncryptCallback callback) override;
 
+  void VerifyCheckIsTest(VerifyCheckIsTestCallback callback) override;
+
   mojo::Receiver<mojom::EchoService> receiver_;
 };
 
