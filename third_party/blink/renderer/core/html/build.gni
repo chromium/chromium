@@ -670,6 +670,7 @@ blink_core_tests_html = [
   "blocking_attribute_test.cc",
   "canvas/canvas_async_blob_creator_test.cc",
   "canvas/canvas_font_cache_test.cc",
+  "canvas/canvas_accessibility_ukm_metrics_test.cc",
   "canvas/canvas_rendering_api_ukm_metrics_test.cc",
   "canvas/canvas_resource_tracker_test.cc",
   "canvas/html_canvas_element_test.cc",

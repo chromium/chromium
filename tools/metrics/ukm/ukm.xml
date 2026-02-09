@@ -260,6 +260,39 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Accessibility.Canvas">
+  <owner>rhalavati@google.com</owner>
+  <summary>
+    Recorded once for any visible canvas, or offscreen canvas which pushes its
+    rendered output directly into a placeholder element in the DOM.
+  </summary>
+  <metric name="HasKeyboardListener" enum="Boolean">
+    <summary>
+      Records whether the canvas listens to keyboard events or not.
+    </summary>
+  </metric>
+  <metric name="HasMouseListener" enum="Boolean">
+    <summary>
+      Records whether the canvas listens to mouse events or not.
+    </summary>
+  </metric>
+  <metric name="HasText" enum="Boolean">
+    <summary>
+      Records whether the canvas drew any text or not.
+    </summary>
+  </metric>
+  <metric name="IsOffscreen" enum="Boolean">
+    <summary>
+      Records whether the canvas is off-screen or not.
+    </summary>
+  </metric>
+  <metric name="RenderingContext" enum="CanvasRenderingAPI">
+    <summary>
+      Type of the rendering contexts created for the canvas.
+    </summary>
+  </metric>
+</event>
+
 <event name="Accessibility.CanvasHasNonTrivialFallback">
   <owner>lucasradaelli@google.com</owner>
   <summary>

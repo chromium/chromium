@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
@@ -312,6 +313,8 @@ void CanvasRenderingContext::DidDraw(
   CanvasRenderingContextHost* const host = Host();
   host->DidDraw(dirty_rect);
 
+  did_draw_text_ |= (draw_type == CanvasPerformanceMonitor::DrawType::kText);
+
   auto& monitor = GetCanvasPerformanceMonitor();
   monitor.DidDraw(draw_type);
   if (did_draw_in_current_task_)
@@ -341,6 +344,63 @@ void CanvasRenderingContext::DidProcessTask(
   if (CanvasRenderingContextHost* host = Host()) [[likely]] {
     host->PostFinalizeFrame(reason);
   }
+
+  did_process_task_ = true;
+  MaybeRecordUKMCanvasAccessibility();
+}
+
+void CanvasRenderingContext::MaybeRecordUKMCanvasAccessibility() {
+  if (accessibility_ukm_recorded_ || !did_process_task_) {
+    return;
+  }
+
+  CanvasRenderingContextHost* const host = Host();
+  if (!host) {
+    return;
+  }
+
+  bool has_keyboard_listener = false;
+  bool has_mouse_listener = false;
+  bool is_offscreen = host->IsOffscreenCanvas();
+  if (is_offscreen) {
+    // Offscreen canvases are collected only if they push their rendered output
+    // to a placeholder element in DOM.
+    if (!static_cast<OffscreenCanvas*>(host)->HasPlaceholderCanvas()) {
+      return;
+    }
+  } else {
+    HTMLCanvasElement* canvas_element = static_cast<HTMLCanvasElement*>(host);
+    // Non offscreen canvases are only collected if they are visible.
+    if (!canvas_element->IsDisplayed()) {
+      return;
+    }
+
+    DEFINE_STATIC_LOCAL(
+        const Vector<AtomicString>, keyboard_event_types,
+        ({event_type_names::kKeydown, event_type_names::kKeypress,
+          event_type_names::kKeyup}));
+    DEFINE_STATIC_LOCAL(
+        const Vector<AtomicString>, mouse_event_types,
+        ({event_type_names::kClick, event_type_names::kMousedown,
+          event_type_names::kMouseup, event_type_names::kMousemove,
+          event_type_names::kMouseover, event_type_names::kMouseout}));
+
+    has_keyboard_listener =
+        canvas_element->HasAnyEventListeners(keyboard_event_types);
+    has_mouse_listener =
+        canvas_element->HasAnyEventListeners(mouse_event_types);
+  }
+
+  const auto& ukm_params = host->GetUkmParameters();
+  ukm::builders::Accessibility_Canvas(ukm_params.source_id)
+      .SetRenderingContext(static_cast<int>(canvas_rendering_type_))
+      .SetIsOffscreen(is_offscreen)
+      .SetHasKeyboardListener(has_keyboard_listener)
+      .SetHasMouseListener(has_mouse_listener)
+      .SetHasText(did_draw_text_)
+      .Record(ukm_params.ukm_recorder);
+
+  accessibility_ukm_recorded_ = true;
 }
 
 void CanvasRenderingContext::RecordUMACanvasRenderingAPI() {
