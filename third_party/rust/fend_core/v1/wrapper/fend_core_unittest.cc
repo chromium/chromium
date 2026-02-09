@@ -349,7 +349,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST(FendCoreTest, CanTimeout) {
   std::optional<std::string> result =
-      evaluate("10**100000", /*timeout_in_ms=*/500);
+      evaluate("100000!", /*timeout_in_ms=*/100);
   EXPECT_EQ(result, std::nullopt);
 }
 
