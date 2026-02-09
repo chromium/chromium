@@ -39,6 +39,7 @@ struct VIZ_SERVICE_EXPORT DrawAndSwapParams {
   std::optional<int64_t> choreographer_vsync_id;
   std::optional<PossibleDeadline> deadline;
   std::optional<PossibleDeadline> preferred_deadline;
+  base::TimeTicks throttled_adjusted_frame_time;
 };
 
 class VIZ_SERVICE_EXPORT DisplaySchedulerClient {
