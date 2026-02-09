@@ -86,6 +86,7 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
+#import "third_party/abseil-cpp/absl/functional/overload.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/gfx/geometry/rect.h"
@@ -105,6 +106,8 @@ using autofill::FormGlobalId;
 using autofill::FormHandlersJavaScriptFeature;
 using autofill::FormRendererId;
 using autofill::Section;
+using autofill::Suggestion;
+using autofill::SuggestionType;
 using autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger;
 using base::NumberToString;
 using base::SysNSStringToUTF16;
@@ -138,18 +141,18 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 constexpr CGFloat kSuggestionIconWidth = 32;
 
 // Gets the icon that will be used for the specified suggestion.
-SuggestionIconType GetSuggestionIconType(const autofill::Suggestion& suggestion,
+SuggestionIconType GetSuggestionIconType(const Suggestion& suggestion,
                                          BOOL hasValue) {
   // TODO(crbug.com/40266549): Remove kClear when undo is fully enabled.
-  if ((suggestion.icon == autofill::Suggestion::Icon::kClear ||
-       suggestion.icon == autofill::Suggestion::Icon::kUndo) &&
+  if ((suggestion.icon == Suggestion::Icon::kClear ||
+       suggestion.icon == Suggestion::Icon::kUndo) &&
       base::FeatureList::IsEnabled(kAutofillUndoIos)) {
     return SuggestionIconType::kUndoAutofill;
-  } else if (suggestion.icon == autofill::Suggestion::Icon::kHome && hasValue &&
+  } else if (suggestion.icon == Suggestion::Icon::kHome && hasValue &&
              base::FeatureList::IsEnabled(
                  autofill::features::kAutofillEnableSupportForHomeAndWork)) {
     return SuggestionIconType::kAccountHome;
-  } else if (suggestion.icon == autofill::Suggestion::Icon::kWork && hasValue &&
+  } else if (suggestion.icon == Suggestion::Icon::kWork && hasValue &&
              base::FeatureList::IsEnabled(
                  autofill::features::kAutofillEnableSupportForHomeAndWork)) {
     return SuggestionIconType::kAccountWork;
@@ -161,6 +164,24 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   auto it =
       std::ranges::find(form.fields(), field_id, &FormFieldData::renderer_id);
   return it != form.fields().end() && it->is_focusable();
+}
+
+// Returns whether the FormSuggestion's payload contains a non empty guid.
+bool HasGuid(const Suggestion::Payload& payload) {
+  return std::visit(
+      absl::Overload{
+          // Duplicated logic for these two types
+          [](const Suggestion::AutofillProfilePayload& p) {
+            return !p.guid.value().empty();
+          },
+          [](const Suggestion::AutofillAiPayload& p) {
+            return !p.guid.value().empty();
+          },
+
+          [](const Suggestion::Guid& p) { return !p.value().empty(); },
+          [](const auto&) { return false; }  // Catch-all
+      },
+      payload);
 }
 
 }  // namespace
@@ -387,33 +408,27 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
         });
   }
 
-  if (suggestion.type == autofill::SuggestionType::kAddressEntry ||
-      suggestion.type == autofill::SuggestionType::kCreditCardEntry ||
-      suggestion.type == autofill::SuggestionType::kVirtualCreditCardEntry ||
-      suggestion.type ==
-          autofill::SuggestionType::kAddressFieldByFieldFilling ||
+  if (suggestion.type == SuggestionType::kAddressEntry ||
+      suggestion.type == SuggestionType::kCreditCardEntry ||
+      suggestion.type == SuggestionType::kVirtualCreditCardEntry ||
+      suggestion.type == SuggestionType::kAddressFieldByFieldFilling ||
+      suggestion.type == SuggestionType::kFillAutofillAi ||
       (base::FeatureList::IsEnabled(kAutofillUndoIos) &&
-       suggestion.type == autofill::SuggestionType::kUndoOrClear)) {
+       suggestion.type == SuggestionType::kUndoOrClear)) {
+    CHECK(suggestion.type != SuggestionType::kFillAutofillAi ||
+          base::FeatureList::IsEnabled(
+              autofill::features::kAutofillAiCreateEntityDataManager));
+
     _pendingAutocompleteFieldID = fieldRendererID;
     if (_suggestionDelegate) {
-      autofill::Suggestion autofill_suggestion(suggestion.type);
+      Suggestion autofill_suggestion(suggestion.type);
       autofill_suggestion.main_text.value =
           SysNSStringToUTF16(suggestion.value);
       autofill_suggestion.field_by_field_filling_type_used =
           suggestion.fieldByFieldFillingTypeUsed;
-      const std::string guid =
-          std::holds_alternative<autofill::Suggestion::AutofillProfilePayload>(
-              suggestion.payload)
-              ? std::get<autofill::Suggestion::AutofillProfilePayload>(
-                    suggestion.payload)
-                    .guid.value()
-              : std::get<autofill::Suggestion::Guid>(suggestion.payload)
-                    .value();
-      if (guid.empty()) {
-        autofill_suggestion.payload = autofill::Suggestion::Payload();
-      } else {
-        autofill_suggestion.payload = suggestion.payload;
-      }
+      autofill_suggestion.payload = HasGuid(suggestion.payload)
+                                        ? suggestion.payload
+                                        : Suggestion::Payload();
 
       _suggestionDelegate->DidAcceptSuggestion(autofill_suggestion,
                                                {static_cast<int>(index), 0});
@@ -434,8 +449,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
     return;
   }
 
-  if (suggestion.type == autofill::SuggestionType::kAutocompleteEntry ||
-      suggestion.type == autofill::SuggestionType::kFillExistingPlusAddress) {
+  if (suggestion.type == SuggestionType::kAutocompleteEntry ||
+      suggestion.type == SuggestionType::kFillExistingPlusAddress) {
     // FormSuggestion is a simple, single value that can be filled out now.
     [self fillField:SysNSStringToUTF8(fieldIdentifier)
         fieldRendererID:fieldRendererID
@@ -443,7 +458,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                formName:SysNSStringToUTF8(formName)
                   value:SysNSStringToUTF16(suggestion.value)
                 inFrame:frame];
-  } else if (suggestion.type == autofill::SuggestionType::kUndoOrClear) {
+  } else if (suggestion.type == SuggestionType::kUndoOrClear) {
     const auto callback = [](__weak AutofillAgent* agent,
                              base::WeakPtr<web::WebFrame> frame,
                              FormRendererId formId,
@@ -581,8 +596,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
 #pragma mark - AutofillClientIOSBridge
 
-- (void)showAutofillPopup:
-            (const std::vector<autofill::Suggestion>&)popup_suggestions
+- (void)showAutofillPopup:(const std::vector<Suggestion>&)popup_suggestions
        suggestionDelegate:
            (const base::WeakPtr<autofill::AutofillSuggestionDelegate>&)
                delegate {
@@ -610,16 +624,13 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
     NSString* displayDescription = nil;
     UIImage* icon = nil;
 
-    if (popup_suggestion.type == autofill::SuggestionType::kAutocompleteEntry ||
-        popup_suggestion.type == autofill::SuggestionType::kAddressEntry ||
-        popup_suggestion.type == autofill::SuggestionType::kCreditCardEntry ||
-        popup_suggestion.type ==
-            autofill::SuggestionType::kVirtualCreditCardEntry ||
-        popup_suggestion.type ==
-            autofill::SuggestionType::kAddressFieldByFieldFilling) {
+    if (popup_suggestion.type == SuggestionType::kAutocompleteEntry ||
+        popup_suggestion.type == SuggestionType::kAddressEntry ||
+        popup_suggestion.type == SuggestionType::kCreditCardEntry ||
+        popup_suggestion.type == SuggestionType::kVirtualCreditCardEntry ||
+        popup_suggestion.type == SuggestionType::kAddressFieldByFieldFilling) {
       // Filter out any key/value suggestions if the user hasn't typed yet.
-      if (popup_suggestion.type ==
-              autofill::SuggestionType::kAutocompleteEntry &&
+      if (popup_suggestion.type == SuggestionType::kAutocompleteEntry &&
           _typedValue.length == 0) {
         continue;
       }
@@ -648,14 +659,18 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                           autofill::FillingProduct::kCreditCard) {
         icon = [self createIcon:popup_suggestion];
       }
-    } else if (popup_suggestion.type ==
-                   autofill::SuggestionType::kUndoOrClear &&
+    } else if (popup_suggestion.type == SuggestionType::kUndoOrClear &&
                !base::FeatureList::IsEnabled(kAutofillUndoIos)) {
       // Show the "clear form" button.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
     } else if (popup_suggestion.type ==
-               autofill::SuggestionType::kFillExistingPlusAddress) {
-      // Show any plus_address suggestions.
+                   SuggestionType::kFillExistingPlusAddress ||
+               popup_suggestion.type == SuggestionType::kFillAutofillAi) {
+      CHECK(popup_suggestion.type != SuggestionType::kFillAutofillAi ||
+            base::FeatureList::IsEnabled(
+                autofill::features::kAutofillAiCreateEntityDataManager));
+
+      // Show any plus_address or autofill AI suggestions.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
       if (!popup_suggestion.labels.empty() &&
           !popup_suggestion.labels.front().empty()) {
@@ -716,7 +731,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
     }
 
     // Put "clear form" entry at the front of the suggestions.
-    if (popup_suggestion.type == autofill::SuggestionType::kUndoOrClear) {
+    if (popup_suggestion.type == SuggestionType::kUndoOrClear) {
       [suggestions insertObject:suggestion atIndex:0];
     } else {
       [suggestions addObject:suggestion];
@@ -1189,7 +1204,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 }
 
 // Helper method to create icons for payment cards.
-- (UIImage*)createIcon:(autofill::Suggestion)popup_suggestion {
+- (UIImage*)createIcon:(Suggestion)popup_suggestion {
   // If available, the custom icon for the card is preferred over the
   // generic network icon. The network icon may also be missing, in
   // which case we do not set an icon at all.
@@ -1210,7 +1225,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                            orientation:icon.imageOrientation];
     }
     return icon;
-  } else if (popup_suggestion.icon != autofill::Suggestion::Icon::kNoIcon) {
+  } else if (popup_suggestion.icon != Suggestion::Icon::kNoIcon) {
     const int resourceID =
         autofill::CreditCard::IconResourceId(popup_suggestion.icon);
     return ui::ResourceBundle::GetSharedInstance()
