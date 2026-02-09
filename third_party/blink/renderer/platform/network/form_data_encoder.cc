@@ -105,10 +105,9 @@ TextEncoding FormDataEncoder::EncodingFromAcceptCharset(
   String normalized_accept_charset = accept_charset;
   normalized_accept_charset.Replace(',', ' ');
 
-  Vector<String> charsets;
-  normalized_accept_charset.Split(' ', charsets);
-
-  for (const String& name : charsets) {
+  Vector<StringView> charsets =
+      StringView(normalized_accept_charset).SplitSkippingEmpty(' ');
+  for (const StringView& name : charsets) {
     TextEncoding encoding(name);
     if (encoding.IsValid())
       return encoding;

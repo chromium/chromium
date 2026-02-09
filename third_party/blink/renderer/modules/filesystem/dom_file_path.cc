@@ -85,9 +85,9 @@ bool DOMFilePath::IsParentOf(const String& parent, const String& may_be_child) {
 
 String DOMFilePath::RemoveExtraParentReferences(const String& path) {
   DCHECK(DOMFilePath::IsAbsolute(path));
-  Vector<String> components;
-  Vector<String> canonicalized;
-  path.Split(DOMFilePath::kSeparator, components);
+  Vector<StringView> canonicalized;
+  Vector<StringView> components =
+      StringView(path).SplitSkippingEmpty(DOMFilePath::kSeparator);
   for (const auto& component : components) {
     if (component == ".")
       continue;
@@ -105,7 +105,7 @@ String DOMFilePath::RemoveExtraParentReferences(const String& path) {
     result.Append(DOMFilePath::kSeparator);
     result.Append(component);
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 bool DOMFilePath::IsValidPath(const String& path) {
@@ -125,9 +125,9 @@ bool DOMFilePath::IsValidPath(const String& path) {
 
   // This method is only called on fully-evaluated absolute paths. Any sign of
   // ".." or "." is likely an attempt to break out of the sandbox.
-  Vector<String> components;
-  path.Split(DOMFilePath::kSeparator, components);
-  return std::ranges::none_of(components, [](const String& component) {
+  Vector<StringView> components =
+      StringView(path).SplitSkippingEmpty(DOMFilePath::kSeparator);
+  return std::ranges::none_of(components, [](const StringView& component) {
     return component == "." || component == "..";
   });
 }

@@ -61,11 +61,11 @@ namespace {
 
 bool VaryHeaderContainsAsterisk(const Response* response) {
   const FetchHeaderList* headers = response->headers()->HeaderList();
-  String varyHeader;
-  if (headers->Get("vary", varyHeader)) {
-    Vector<String> fields;
-    varyHeader.Split(',', fields);
-    String (String::*strip_whitespace)() const = &String::StripWhiteSpace;
+  String vary_header;
+  if (headers->Get("vary", vary_header)) {
+    Vector<StringView> fields = StringView(vary_header).SplitSkippingEmpty(',');
+    StringView (StringView::*strip_whitespace)() const =
+        &StringView::StripWhiteSpace;
     return std::ranges::contains(fields, "*", strip_whitespace);
   }
   return false;
