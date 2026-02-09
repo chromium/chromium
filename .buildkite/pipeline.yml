@@ -42,7 +42,7 @@ steps:
       - "build_id/linux/x86_64/**"
   - label: "🔨 Chromium (mac-x86_64)"
     key: "build-chromium-mac-x86_64"
-    timeout_in_minutes: 180
+    timeout_in_minutes: 360
     plugins:
       - thedyrt/skip-checkout#v0.1.1:
           cd: /Users/administrator/chromium/src
@@ -74,7 +74,7 @@ steps:
       - "build_id/macOS/x86_64/**"
   - label: "🔨 Chromium (mac-arm64)"
     key: "build-chromium-mac-arm64"
-    timeout_in_minutes: 180
+    timeout_in_minutes: 360
     plugins:
       - thedyrt/skip-checkout#v0.1.1:
           cd: /Users/administrator/chromium/src
