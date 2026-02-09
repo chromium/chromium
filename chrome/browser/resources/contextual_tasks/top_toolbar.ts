@@ -124,6 +124,10 @@ export class TopToolbarElement extends CrLitElement {
   }
 
   protected onSourcesClick_(e: Event) {
+    chrome.metricsPrivate.recordUserAction(
+        'ContextualTasks.WebUI.UserAction.OpenSourcesMenu');
+    chrome.metricsPrivate.recordBoolean(
+        'ContextualTasks.WebUI.UserAction.OpenSourcesMenu', true);
     this.$.sourcesMenu.get().showAt(e.target as HTMLElement);
   }
 
