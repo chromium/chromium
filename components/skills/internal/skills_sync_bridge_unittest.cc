@@ -208,14 +208,6 @@ TEST_F(SkillsSyncBridgeTest, IsEntityDataValid_EmptyGuid) {
   EXPECT_FALSE(bridge().IsEntityDataValid(entity_data));
 }
 
-TEST_F(SkillsSyncBridgeTest, IsEntityDataValid_MissingSimpleSkill) {
-  syncer::EntityData entity_data = CreateSkillEntityData();
-  ASSERT_TRUE(bridge().IsEntityDataValid(entity_data));
-
-  entity_data.specifics.mutable_skill()->clear_simple_skill();
-  EXPECT_FALSE(bridge().IsEntityDataValid(entity_data));
-}
-
 TEST_F(SkillsSyncBridgeTest, ShouldTrimAllKnownFields) {
   sync_pb::SkillSpecifics specifics;
   specifics.set_guid("guid");
@@ -488,6 +480,21 @@ TEST_F(SkillsSyncBridgeTest, ApplyIncrementalSyncChanges_Delete) {
             std::nullopt);
 
   EXPECT_THAT(GetAllLocalDataFromStore(), IsEmpty());
+}
+
+TEST_F(SkillsSyncBridgeTest, ApplyIncrementalSyncChanges_IgnoreUnknownSkill) {
+  syncer::EntityData entity_data = CreateSkillEntityData();
+
+  // Clear the `simple_skill` field to make the skill unknown to the sync
+  // bridge.
+  entity_data.specifics.mutable_skill()->clear_simple_skill();
+
+  EXPECT_CALL(mock_skills_service(), AddOrUpdateSkillFromSync).Times(0);
+  EXPECT_CALL(mock_skills_service(), DeleteSkill).Times(0);
+  ASSERT_EQ(ApplySingleUpdate(syncer::EntityChange::CreateAdd(
+                /*storage_key=*/entity_data.specifics.skill().guid(),
+                std::move(entity_data))),
+            std::nullopt);
 }
 
 TEST_F(SkillsSyncBridgeTest, ShouldPropagateUpdatesToSync) {

@@ -43,9 +43,6 @@ int64_t ToWindowsEpochMicros(base::Time time) {
 sync_pb::SkillSpecifics SkillToSpecifics(
     const Skill& skill,
     sync_pb::SkillSpecifics base_specifics) {
-  // Skill ID must be a valid GUID.
-  CHECK(base::Uuid::ParseLowercase(skill.id).is_valid());
-
   sync_pb::SkillSpecifics specifics = std::move(base_specifics);
   specifics.set_guid(skill.id);
   specifics.set_name(skill.name);
@@ -63,7 +60,7 @@ sync_pb::SkillSpecifics SkillToSpecifics(
 
 std::unique_ptr<Skill> SpecificsToSkill(
     const sync_pb::SkillSpecifics& specifics) {
-  CHECK(base::Uuid::ParseLowercase(specifics.guid()).is_valid());
+  CHECK(specifics.has_simple_skill());
 
   auto skill = std::make_unique<Skill>(
       /*id=*/specifics.guid(),
@@ -151,6 +148,12 @@ std::optional<syncer::ModelError> SkillsSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_UPDATE: {
         const sync_pb::SkillSpecifics& skill_specifics =
             entity_change->data().specifics.skill();
+
+        if (!skill_specifics.has_simple_skill()) {
+          // This is a new type of skill, ignore it in the bridge but its
+          // metadata should still be stored.
+          continue;
+        }
 
         const Skill* skill = skills_service_->AddOrUpdateSkillFromSync(
             skill_specifics.guid(), skill_specifics.name(),
@@ -296,15 +299,10 @@ bool SkillsSyncBridge::IsEntityDataValid(
     return false;
   }
 
-  const sync_pb::SkillSpecifics& skill_specifics =
-      entity_data.specifics.skill();
-  if (skill_specifics.guid().empty()) {
-    return false;
-  }
-
-  if (!skill_specifics.has_simple_skill()) {
-    return false;
-  }
+  // Do not validate the presence of `simple_skill` for forward compatibility
+  // with the newer version which may contain other skill types. The bridge will
+  // not propagate those changes to the server but it would be stored in sync
+  // metadata to detect unknown fields and potentially redownload the data.
 
   return true;
 }
@@ -380,15 +378,16 @@ void SkillsSyncBridge::OnReadAllDataAndMetadata(
   for (const syncer::DataTypeStore::Record& record : *entries) {
     proto::SkillLocalData local_data;
     if (!local_data.ParseFromString(record.value)) {
-      // TODO(crbug.com/471795213): record invalid data histogram.
       continue;
     }
     if (!IsEntityDataValid(SpecificsToEntityData(local_data.specifics()))) {
-      // TODO(crbug.com/471795213): record invalid data histogram.
+      continue;
+    }
+    if (!local_data.specifics().has_simple_skill()) {
+      // Verify this explicitly as `IsEntityDataValid()` does not check for it.
       continue;
     }
     if (record.id != local_data.specifics().guid()) {
-      // TODO(crbug.com/471795213): record invalid data histogram.
       continue;
     }
 
