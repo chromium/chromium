@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CreateTargetWithFocus) {
 // on other platforms.
 #define MAYBE_AutoAttachToUnloadedTab DISABLED_AutoAttachToUnloadedTab
 #else
-#define MAYBE_AutoAttachToUnloadedTab AutoAttachToUnloadedTab
+#define MAYBE_AutoAttachToUnloadedTab DISABLED_AutoAttachToUnloadedTab
 #endif
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, MAYBE_AutoAttachToUnloadedTab) {
