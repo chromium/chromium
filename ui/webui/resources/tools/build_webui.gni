@@ -191,7 +191,10 @@ template("build_webui") {
 
   if (defined(invoker.static_files)) {
     preprocess_if_expr("preprocess_static_files") {
-      visibility = [ ":$generate_grd_target_name" ]
+      visibility = [
+        ":$generate_grd_target_name",
+        ":lint_css",
+      ]
 
       defines = preprocessor_defines
 
@@ -359,12 +362,33 @@ template("build_webui") {
       in_files = invoker.css_files
       minify = optimize
     }
+  }
 
-    stylelint("lint_css") {
-      deps = [ ":preprocess_html_css_files" ]
-      in_folder = preprocess_dir
-      in_files = invoker.css_files
+  # Detect whether there are any CSS files to be checked via stylelint. Define
+  # the ":lint_css" target only if such files exist.
+  stylelint_in_files = []
+  stylelint_deps = []
+  if (defined(invoker.css_files)) {
+    stylelint_in_files += invoker.css_files
+    stylelint_deps += [ ":preprocess_html_css_files" ]
+  }
+  if (defined(invoker.static_files)) {
+    static_css_files = filter_include(invoker.static_files, [ "*.css" ])
+    if (static_css_files != []) {
+      stylelint_in_files += static_css_files
+      stylelint_deps += [ ":preprocess_static_files" ]
     }
+  }
+
+  if (stylelint_in_files != []) {
+    stylelint("lint_css") {
+      deps = stylelint_deps
+      in_folder = preprocess_dir
+      in_files = stylelint_in_files
+    }
+  } else {
+    # Prevent GN from throwing an error.
+    not_needed([ "stylelint_deps" ])
   }
 
   if (defined(invoker.mojo_files_deps)) {
@@ -721,7 +745,7 @@ template("build_webui") {
       deps += [ ":lint_ts" ]
     }
 
-    if (defined(invoker.css_files)) {
+    if (stylelint_in_files != []) {
       deps += [ ":lint_css" ]
     }
   }

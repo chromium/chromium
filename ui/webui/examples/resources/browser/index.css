@@ -2,7 +2,8 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;

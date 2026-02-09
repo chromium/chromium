@@ -18,7 +18,10 @@ div.ukm-collection-status {
   width: auto;
 }
 
-span#state, span#clientid, span#sessionid, span#is_sampling_enabled {
+span#state,
+span#clientid,
+span#sessionid,
+span#is_sampling_enabled {
   text-decoration: underline;
   font-weight: bold;
 }
