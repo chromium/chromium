@@ -348,8 +348,8 @@ void CanvasResourceSharedImage::OnRefReturned(
   // refs (necessary for the provider to actually recycle the resource in the
   // case where there this is the last outstanding ref).
   resource.reset();
-  if (Provider()) {
-    Provider()->OnResourceRefReturned(std::move(downcast_ref));
+  if (provider_) {
+    provider_->OnResourceRefReturned(std::move(downcast_ref));
   }
 }
 
@@ -375,8 +375,8 @@ CanvasResourceSharedImage::~CanvasResourceSharedImage() {
     return;
   }
 
-  if (Provider()) {
-    Provider()->OnDestroyResource();
+  if (provider_) {
+    provider_->OnDestroyResource();
   }
 }
 
@@ -567,10 +567,6 @@ void CanvasResourceSharedImage::OnMemoryDump(
   client_si->OnMemoryDump(
       pmd, dump->guid(),
       static_cast<int>(gpu::TracingImportance::kClientOwner));
-}
-
-CanvasResourceProviderSharedImage* CanvasResourceSharedImage::Provider() {
-  return provider_.get();
 }
 
 void CanvasResourceSharedImage::PrepareForWebGPUDummyMailbox() {

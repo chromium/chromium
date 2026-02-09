@@ -252,8 +252,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   void VerifySyncToken() override;
   bool UsesAcceleratedRaster() const final { return is_accelerated_; }
 
-  CanvasResourceProviderSharedImage* Provider();
-
   CanvasResourceSharedImage(
       gfx::Size size,
       viz::SharedImageFormat format,
