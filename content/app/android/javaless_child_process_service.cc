@@ -171,6 +171,16 @@ void ChildProcessService::Run() {
 }
 
 void ChildProcessService::SpawnMainThread() {
+  // LINT.IfChange
+#if defined(ARCH_CPU_64_BITS)
+  size_t stack_size = 8 * 1024 * 1024;
+#else
+  size_t stack_size = 4 * 1024 * 1024;
+#endif
+  // LINT.ThenChange(//base/android/java/src/org/chromium/base/process_launcher/ChildProcessService.java)
+  // Set up stack size to match Java.
+  base::SimpleThread::Options options;
+  options.stack_size = stack_size;
   thread_ =
       std::make_unique<base::DelegateSimpleThread>(this, "CrRendererMain");
   thread_->StartAsync();
