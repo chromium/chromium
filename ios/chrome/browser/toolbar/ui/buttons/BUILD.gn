@@ -14,6 +14,7 @@ source_set("buttons") {
     "//base",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/toolbar/ui:constants",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]
   frameworks = [ "UIKit.framework" ]

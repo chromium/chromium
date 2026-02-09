@@ -29,6 +29,8 @@ namespace {
 // TODO(crbug.com/472279443): Use real design.
 constexpr CGFloat kLocationBarHeight = 40;
 
+constexpr CGFloat kStackViewSpacing = 9;
+
 }  // namespace
 
 @implementation ToolbarViewController {
@@ -287,9 +289,12 @@ constexpr CGFloat kLocationBarHeight = 40;
   _stackView.axis = UILayoutConstraintAxisHorizontal;
   _stackView.distribution = UIStackViewDistributionFill;
   _stackView.alignment = UIStackViewAlignmentCenter;
+  _stackView.spacing = kStackViewSpacing;
 
   [self.view addSubview:_stackView];
-  AddSameConstraints(self.view.safeAreaLayoutGuide, _stackView);
+  AddSameConstraintsWithInsets(
+      _stackView, self.view.safeAreaLayoutGuide,
+      NSDirectionalEdgeInsetsMake(0, kStackViewSpacing, 0, kStackViewSpacing));
 
   [self updateButtonVisibility];
   [self

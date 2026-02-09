@@ -191,6 +191,7 @@ extern NSString* const kStaticGrey50Color;
 extern NSString* const kStaticGrey300Color;
 extern NSString* const kStaticGrey400Color;
 extern NSString* const kStaticGrey600Color;
+extern NSString* const kStaticGrey700Color;
 extern NSString* const kStaticGrey900Color;
 
 // **********************

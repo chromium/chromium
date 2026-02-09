@@ -1195,6 +1195,10 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   toolbarViewController.toolbarHeightDelegate = self.toolbarHeightDelegate;
   toolbarViewController.locationBarViewController = locationBar;
 
+  if (self.profile->IsOffTheRecord()) {
+    toolbarViewController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  }
+
   mediator.consumer = toolbarViewController;
 
   return toolbarViewController;

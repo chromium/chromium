@@ -17,83 +17,89 @@ constexpr CGFloat kDefaultSymbolPointSize = 22;
 @implementation ToolbarButtonFactory
 
 - (ToolbarButton*)makeBackButton {
-  ToolbarButton* button = [[ToolbarButton alloc] initWithImageLoader:^UIImage* {
-    return DefaultSymbolWithPointSize(kBackSymbol, kDefaultSymbolPointSize);
-  }];
+  ToolbarButton* button = [self toolbarButtonForImageNamed:kBackSymbol
+                                              defaultImage:YES];
   button.visibilityMask = ToolbarButtonVisibility::kAlways;
   button.accessibilityIdentifier = kToolbarBackButtonIdentifier;
   return button;
 }
 
 - (ToolbarButton*)makeForwardButton {
-  ToolbarButton* button = [[ToolbarButton alloc] initWithImageLoader:^UIImage* {
-    return DefaultSymbolWithPointSize(kForwardSymbol, kDefaultSymbolPointSize);
-  }];
+  ToolbarButton* button = [self toolbarButtonForImageNamed:kForwardSymbol
+                                              defaultImage:YES];
   button.visibilityMask = ToolbarButtonVisibility::kWhenEnabled;
   button.accessibilityIdentifier = kToolbarForwardButtonIdentifier;
   return button;
 }
 
 - (ToolbarButton*)makeReloadButton {
-  ToolbarButton* button = [[ToolbarButton alloc] initWithImageLoader:^UIImage* {
-    return CustomSymbolWithPointSize(kArrowClockWiseSymbol,
-                                     kDefaultSymbolPointSize);
-  }];
+  ToolbarButton* button = [self toolbarButtonForImageNamed:kArrowClockWiseSymbol
+                                              defaultImage:NO];
   button.visibilityMask = ToolbarButtonVisibility::kRegularRegular;
   button.accessibilityIdentifier = kToolbarReloadButtonIdentifier;
   return button;
 }
 
 - (ToolbarButton*)makeStopButton {
-  ToolbarButton* button = [[ToolbarButton alloc] initWithImageLoader:^UIImage* {
-    return DefaultSymbolWithPointSize(kXMarkSymbol, kDefaultSymbolPointSize);
-  }];
+  ToolbarButton* button = [self toolbarButtonForImageNamed:kXMarkSymbol
+                                              defaultImage:YES];
   button.visibilityMask = ToolbarButtonVisibility::kRegularRegular;
   button.accessibilityIdentifier = kToolbarStopButtonIdentifier;
   return button;
 }
 
 - (ToolbarButton*)makeShareButton {
-  ToolbarButton* button = [[ToolbarButton alloc] initWithImageLoader:^UIImage* {
-    return DefaultSymbolWithPointSize(kShareSymbol, kDefaultSymbolPointSize);
-  }];
+  ToolbarButton* button = [self toolbarButtonForImageNamed:kShareSymbol
+                                              defaultImage:YES];
   button.visibilityMask = ToolbarButtonVisibility::kCompactHeight;
   button.accessibilityIdentifier = kToolbarShareButtonIdentifier;
   return button;
 }
 
 - (ToolbarButton*)makeTabGridButton {
-  ToolbarButton* button = [[ToolbarButton alloc] initWithImageLoader:^UIImage* {
-    return CustomSymbolWithPointSize(kSquareNumberSymbol,
-                                     kDefaultSymbolPointSize);
-  }];
+  ToolbarButton* button = [self toolbarButtonForImageNamed:kSquareNumberSymbol
+                                              defaultImage:NO];
   button.visibilityMask = ToolbarButtonVisibility::kRegularRegular;
   button.accessibilityIdentifier = kToolbarTabGridButtonIdentifier;
   return button;
 }
 
 - (ToolbarButton*)makeToolsMenuButton {
-  ToolbarButton* button = [[ToolbarButton alloc] initWithImageLoader:^UIImage* {
-    return DefaultSymbolWithPointSize(kMenuSymbol, kDefaultSymbolPointSize);
-  }];
+  ToolbarButton* button = [self toolbarButtonForImageNamed:kMenuSymbol
+                                              defaultImage:YES];
   button.visibilityMask = ToolbarButtonVisibility::kAlways;
   button.accessibilityIdentifier = kToolbarToolsMenuButtonIdentifier;
   return button;
 }
 
 - (ToolbarButton*)makeAssistantButton {
-  ToolbarButton* button = [[ToolbarButton alloc] initWithImageLoader:^UIImage* {
+  ToolbarButton* button =
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-    return CustomSymbolWithPointSize(kGeminiBrandedLogoSymbol,
-                                     kDefaultSymbolPointSize);
+      [self toolbarButtonForImageNamed:kGeminiBrandedLogoSymbol
+                          defaultImage:NO];
 #else
-    return DefaultSymbolWithPointSize(kGeminiNonBrandedLogoSymbol,
-                                          kDefaultSymbolPointSize);
+      [self toolbarButtonForImageNamed:kGeminiNonBrandedLogoSymbol
+                          defaultImage:YES];
 #endif
-  }];
   button.visibilityMask = ToolbarButtonVisibility::kRegularRegular;
   button.accessibilityIdentifier = kToolbarAssistantButtonIdentifier;
   return button;
+}
+
+#pragma mark - Private
+
+// Returns a toolbar button with the given image, which can be a default symbol
+// or not.
+- (ToolbarButton*)toolbarButtonForImageNamed:(NSString*)imageName
+                                defaultImage:(BOOL)defaultImage {
+  if (defaultImage) {
+    return [[ToolbarButton alloc] initWithImageLoader:^UIImage* {
+      return DefaultSymbolWithPointSize(imageName, kDefaultSymbolPointSize);
+    }];
+  }
+  return [[ToolbarButton alloc] initWithImageLoader:^UIImage* {
+    return CustomSymbolWithPointSize(imageName, kDefaultSymbolPointSize);
+  }];
 }
 
 @end

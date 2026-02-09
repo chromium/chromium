@@ -12,7 +12,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 void ConfigureAnimationSemanticColors(id<LottieAnimation> animation) {
-  // LINT.IfChange(SemanticColorNames)
+  // LINT.IfChange(AnimationSemanticColorNames)
   NSArray<NSString*>* color_names = @[
     kAimInputItemTopBackgroundColor,
     kAimComposeboxButtonBackgroundColor,
@@ -123,6 +123,7 @@ void ConfigureAnimationSemanticColors(id<LottieAnimation> animation) {
     kStaticGrey300Color,
     kStaticGrey400Color,
     kStaticGrey600Color,
+    kStaticGrey700Color,
     kStaticGrey900Color,
     kLightOnlyGrey200Color
   ];
