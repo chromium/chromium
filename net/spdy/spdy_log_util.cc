@@ -29,10 +29,8 @@ base::ListValue ElideHttpHeaderBlockForNetLog(
     NetLogCaptureMode capture_mode) {
   base::ListValue headers_list;
   for (const auto& [key, value] : headers) {
-    headers_list.Append(NetLogStringValue(
-        base::StrCat({key, ": ",
-                      ElideHeaderValueForNetLog(capture_mode, std::string(key),
-                                                std::string(value))})));
+    headers_list.Append(NetLogStringValue(base::StrCat(
+        {key, ": ", ElideHeaderValueForNetLog(capture_mode, key, value)})));
   }
   return headers_list;
 }

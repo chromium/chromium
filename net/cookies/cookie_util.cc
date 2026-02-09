@@ -674,7 +674,7 @@ GURL CookieDomainAndPathToURL(std::string_view domain,
                               bool is_https) {
   return CookieDomainAndPathToURL(
       domain, path,
-      std::string(is_https ? url::kHttpsScheme : url::kHttpScheme));
+      std::string_view(is_https ? url::kHttpsScheme : url::kHttpScheme));
 }
 
 GURL CookieDomainAndPathToURL(std::string_view domain,

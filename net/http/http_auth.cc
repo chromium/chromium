@@ -56,7 +56,7 @@ void HttpAuth::ChooseBestChallenge(
 
   // Choose the challenge whose authentication handler gives the maximum score.
   std::unique_ptr<HttpAuthHandler> best;
-  const std::string header_name = GetChallengeHeaderName(target);
+  const auto header_name = GetChallengeHeaderName(target);
   std::optional<std::string_view> cur_challenge;
   size_t iter = 0;
   while (
@@ -91,8 +91,8 @@ HttpAuth::AuthorizationResult HttpAuth::HandleChallengeResponse(
   HttpAuth::Scheme current_scheme = handler->auth_scheme();
   if (disabled_schemes.find(current_scheme) != disabled_schemes.end())
     return HttpAuth::AUTHORIZATION_RESULT_REJECT;
-  const char* current_scheme_name = SchemeToString(current_scheme);
-  const std::string header_name = GetChallengeHeaderName(target);
+  const auto current_scheme_name = SchemeToString(current_scheme);
+  const std::string_view header_name = GetChallengeHeaderName(target);
   size_t iter = 0;
   std::optional<std::string_view> challenge;
   HttpAuth::AuthorizationResult authorization_result =
@@ -112,7 +112,7 @@ HttpAuth::AuthorizationResult HttpAuth::HandleChallengeResponse(
 }
 
 // static
-std::string HttpAuth::GetChallengeHeaderName(Target target) {
+std::string_view HttpAuth::GetChallengeHeaderName(Target target) {
   switch (target) {
     case AUTH_PROXY:
       return "Proxy-Authenticate";
@@ -124,7 +124,7 @@ std::string HttpAuth::GetChallengeHeaderName(Target target) {
 }
 
 // static
-std::string HttpAuth::GetAuthorizationHeaderName(Target target) {
+std::string_view HttpAuth::GetAuthorizationHeaderName(Target target) {
   switch (target) {
     case AUTH_PROXY:
       return HttpRequestHeaders::kProxyAuthorization;
@@ -136,7 +136,7 @@ std::string HttpAuth::GetAuthorizationHeaderName(Target target) {
 }
 
 // static
-std::string HttpAuth::GetAuthTargetString(Target target) {
+std::string_view HttpAuth::GetAuthTargetString(Target target) {
   switch (target) {
     case AUTH_PROXY:
       return "proxy";
@@ -148,7 +148,7 @@ std::string HttpAuth::GetAuthTargetString(Target target) {
 }
 
 // static
-const char* HttpAuth::SchemeToString(Scheme scheme) {
+std::string_view HttpAuth::SchemeToString(Scheme scheme) {
   static_assert(std::size(kSchemeNames) == AUTH_SCHEME_MAX,
                 "http auth scheme names incorrect size");
   if (scheme < AUTH_SCHEME_BASIC || scheme >= AUTH_SCHEME_MAX) {
@@ -167,7 +167,7 @@ HttpAuth::Scheme HttpAuth::StringToScheme(const std::string& str) {
 }
 
 // static
-const char* HttpAuth::AuthorizationResultToString(
+std::string_view HttpAuth::AuthorizationResultToString(
     AuthorizationResult authorization_result) {
   switch (authorization_result) {
     case AUTHORIZATION_RESULT_ACCEPT:

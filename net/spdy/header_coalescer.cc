@@ -31,8 +31,7 @@ void NetLogInvalidHeader(const NetLogWithSource& net_log,
                          .Set("header_name", NetLogStringValue(header_name))
                          .Set("header_value",
                               NetLogStringValue(ElideHeaderValueForNetLog(
-                                  capture_mode, std::string(header_name),
-                                  std::string(header_value))))
+                                  capture_mode, header_name, header_value)))
                          .Set("error", error_message);
                    });
 }

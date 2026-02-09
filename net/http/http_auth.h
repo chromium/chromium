@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/values.h"
 #include "net/base/auth.h"
@@ -132,25 +133,25 @@ class NET_EXPORT_PRIVATE HttpAuth {
 
   // Get the name of the header containing the auth challenge
   // (either WWW-Authenticate or Proxy-Authenticate).
-  static std::string GetChallengeHeaderName(Target target);
+  static std::string_view GetChallengeHeaderName(Target target);
 
   // Get the name of the header where the credentials go
   // (either Authorization or Proxy-Authorization).
-  static std::string GetAuthorizationHeaderName(Target target);
+  static std::string_view GetAuthorizationHeaderName(Target target);
 
   // Returns a string representation of a Target value that can be used in log
   // messages.
-  static std::string GetAuthTargetString(Target target);
+  static std::string_view GetAuthTargetString(Target target);
 
   // Returns a string representation of an authentication Scheme.
-  static const char* SchemeToString(Scheme scheme);
+  static std::string_view SchemeToString(Scheme scheme);
 
   // Returns an authentication Scheme from a string which was produced by
   // SchemeToString().
   static Scheme StringToScheme(const std::string& str);
 
   // Returns a string representation of an authorization result.
-  static const char* AuthorizationResultToString(
+  static std::string_view AuthorizationResultToString(
       AuthorizationResult authorization_result);
 
   // Returns a value for logging an authorization result to a NetLog.

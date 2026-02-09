@@ -69,10 +69,8 @@ base::ListValue ElideQuicHeaderListForNetLog(
   for (const auto& header : headers) {
     std::string_view key = header.first;
     std::string_view value = header.second;
-    headers_list.Append(NetLogStringValue(
-        base::StrCat({key, ": ",
-                      ElideHeaderValueForNetLog(capture_mode, std::string(key),
-                                                std::string(value))})));
+    headers_list.Append(NetLogStringValue(base::StrCat(
+        {key, ": ", ElideHeaderValueForNetLog(capture_mode, key, value)})));
   }
   return headers_list;
 }
