@@ -800,7 +800,7 @@ TEST_F(AppShimManagerTest, AppLaunchCancelled) {
       app_name, true, browser_window->GetBounds(), &profile_a_, true);
   params.window = browser_window.release();
   auto browser = Browser::DeprecatedCreateOwnedForTesting(params);
-  manager_->OnBrowserCreated(browser.get());
+  manager_->OnBrowserAdded(browser.get());
 
   // Validate that OnAppLaunchCancelled does not close the app,
   // and that the state is still valid.
@@ -810,7 +810,7 @@ TEST_F(AppShimManagerTest, AppLaunchCancelled) {
 
   // Removing the browser should close the app.
   EXPECT_CALL(*manager_, MaybeTerminate()).WillOnce(Return());
-  manager_->OnBrowserClosed(browser.get());
+  manager_->OnBrowserRemoved(browser.get());
   EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
 }
 
@@ -1506,7 +1506,7 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu_ShowsBrowser) {
       app_name, true, browser_window_a->GetBounds(), &profile_a_, true);
   params_a.window = browser_window_a.release();
   auto browser_a = Browser::DeprecatedCreateOwnedForTesting(params_a);
-  manager_->OnBrowserCreated(browser_a.get());
+  manager_->OnBrowserAdded(browser_a.get());
 
   // Select profile B from the menu. This should request that the app be
   // launched.
@@ -1524,7 +1524,7 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu_ShowsBrowser) {
       app_name, true, browser_window_b->GetBounds(), &profile_b_, true);
   params_b.window = browser_window_b.release();
   auto browser_b = Browser::DeprecatedCreateOwnedForTesting(params_b);
-  manager_->OnBrowserCreated(browser_b.get());
+  manager_->OnBrowserAdded(browser_b.get());
 
   EXPECT_FALSE(browser_window_a_ptr->did_show);
   EXPECT_FALSE(browser_window_b_ptr->did_show);
@@ -1889,7 +1889,7 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
   // Validate no application dock menu items have been set yet.
   ValidateDockMenuItems(nullptr, 0);
 
-  // Create browser objects that can be passed via OnBrowserActivated.
+  // Create browser objects that can be passed via OnBrowserSetLastActive.
   std::string app_name = web_app::GenerateApplicationNameFromAppId(kTestAppIdA);
   std::unique_ptr<Browser> browser_profile_a, browser_profile_b;
 
@@ -1916,7 +1916,7 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
       .WillOnce(Return(testing::ByMove(
           MakeDockMenuItems(menu_items_profile_a, kNumMenuItemsForProfileA))));
 
-  manager_->OnBrowserActivated(browser_profile_a.get());
+  manager_->OnBrowserSetLastActive(browser_profile_a.get());
   ValidateDockMenuItems(menu_items_profile_a, kNumMenuItemsForProfileA);
 
   // Set profile B browser as last active, and validate the application dock
@@ -1926,7 +1926,7 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
       .WillOnce(Return(testing::ByMove(
           MakeDockMenuItems(menu_items_profile_b, kNumMenuItemsForProfileB))));
 
-  manager_->OnBrowserActivated(browser_profile_b.get());
+  manager_->OnBrowserSetLastActive(browser_profile_b.get());
   ValidateDockMenuItems(menu_items_profile_b, kNumMenuItemsForProfileB);
 }
 

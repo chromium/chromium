@@ -56,7 +56,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -477,11 +476,11 @@ AppShimManager::AppShimManager(std::unique_ptr<Delegate> delegate)
   if (profile_manager_) {
     profile_manager_->AddObserver(this);
   }
-  browser_collection_observation_.Observe(
-      GlobalBrowserCollection::GetInstance());
+  BrowserList::AddObserver(this);
 }
 
 AppShimManager::~AppShimManager() {
+  BrowserList::RemoveObserver(this);
   AppShimHostBootstrap::SetClient(nullptr);
 }
 
@@ -1745,30 +1744,29 @@ void AppShimManager::OnAppDeactivated(content::BrowserContext* context,
 void AppShimManager::OnAppStop(content::BrowserContext* context,
                                const std::string& app_id) {}
 
-void AppShimManager::OnBrowserCreated(BrowserWindowInterface* browser) {
-  Profile* profile = browser->GetProfile();
-  const std::string app_id = web_app::GetAppIdFromApplicationName(
-      browser->GetBrowserForMigrationOnly()->app_name());
+void AppShimManager::OnBrowserAdded(Browser* browser) {
+  Profile* profile = browser->profile();
+  const std::string app_id =
+      web_app::GetAppIdFromApplicationName(browser->app_name());
   if (!delegate_->AppUsesRemoteCocoa(profile, app_id)) {
     return;
   }
   if (auto* profile_state = GetOrCreateProfileState(profile, app_id)) {
-    profile_state->browsers.insert(browser->GetBrowserForMigrationOnly());
+    profile_state->browsers.insert(browser);
     if (profile_state->browsers.size() == 1) {
-      OnAppActivated(browser->GetProfile(), app_id);
+      OnAppActivated(browser->profile(), app_id);
     }
   }
 }
 
-void AppShimManager::OnBrowserClosed(BrowserWindowInterface* browser) {
+void AppShimManager::OnBrowserRemoved(Browser* browser) {
   // We can't call OnAppDeactivated() while iterating on |apps_|. It would
   // invalidate the iterator.
   std::vector<std::string> apps_to_deactivate;
 
   for (const auto& [app_id, app_state] : apps_) {
     for (const auto& [profile, profile_state] : app_state->profiles) {
-      auto found =
-          profile_state->browsers.find(browser->GetBrowserForMigrationOnly());
+      auto found = profile_state->browsers.find(browser);
       if (found != profile_state->browsers.end()) {
         // If we have no browser windows open after erasing this window, then
         // close the ProfileState (and potentially the shim as well).
@@ -1782,11 +1780,11 @@ void AppShimManager::OnBrowserClosed(BrowserWindowInterface* browser) {
   }
 
   for (const std::string& app_id : apps_to_deactivate) {
-    OnAppDeactivated(browser->GetProfile(), app_id);
+    OnAppDeactivated(browser->profile(), app_id);
   }
 }
 
-void AppShimManager::OnBrowserActivated(BrowserWindowInterface* browser) {
+void AppShimManager::OnBrowserSetLastActive(Browser* browser) {
   // Rebuild the profile menu items (to ensure that the checkmark in the menu
   // is next to the new-active item).
   if (avatar_menu_) {
@@ -1795,14 +1793,14 @@ void AppShimManager::OnBrowserActivated(BrowserWindowInterface* browser) {
   UpdateAllProfileMenus();
 
   // Update the application dock menu for the current profile.
-  const std::string app_id = web_app::GetAppIdFromApplicationName(
-      browser->GetBrowserForMigrationOnly()->app_name());
-  if (!delegate_->AppUsesRemoteCocoa(browser->GetProfile(), app_id)) {
+  const std::string app_id =
+      web_app::GetAppIdFromApplicationName(browser->app_name());
+  if (!delegate_->AppUsesRemoteCocoa(browser->profile(), app_id)) {
     return;
   }
-  auto* profile_state = GetOrCreateProfileState(browser->GetProfile(), app_id);
+  auto* profile_state = GetOrCreateProfileState(browser->profile(), app_id);
   if (profile_state) {
-    UpdateApplicationDockMenu(browser->GetProfile(), profile_state);
+    UpdateApplicationDockMenu(browser->profile(), profile_state);
   }
 }
 
