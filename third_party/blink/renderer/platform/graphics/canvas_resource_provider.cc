@@ -1654,8 +1654,7 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
     return std::nullopt;
   }
   auto timer = CreateScopedRasterTimer();
-  bool want_to_print = (IsPrinting() && reason != FlushReason::kClear) ||
-                       reason == FlushReason::kPrinting ||
+  bool want_to_print = IsPrinting() || reason == FlushReason::kPrinting ||
                        reason == FlushReason::kCanvasPushFrameWhilePrinting;
   bool preserve_recording = want_to_print && clear_frame_;
 
@@ -1663,9 +1662,6 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
   // recording and must fallback to raster printing instead of vectorial
   // printing.
   clear_frame_ = false;
-  if (reason == FlushReason::kClear) {
-    clear_frame_ = true;
-  }
   cc::PaintRecord recording;
   recording = recorder_->ReleaseMainRecording();
   RasterRecord(recording);
