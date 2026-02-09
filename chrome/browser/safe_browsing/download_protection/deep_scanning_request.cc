@@ -565,9 +565,9 @@ void DeepScanningRequest::PopulateRequest(FileAnalysisRequest* request,
                                           const base::FilePath& path) {
   InitializeRequest(request, IsEnterpriseTriggered());
   request->set_analysis_connector(enterprise_connectors::FILE_DOWNLOADED);
-  if (file_metadata_.count(path) &&
-      !file_metadata_.at(path).mime_type.empty()) {
-    request->set_content_type(file_metadata_.at(path).mime_type);
+  if (auto it = file_metadata_.find(path);
+      it != file_metadata_.end() && !it->second.mime_type.empty()) {
+    request->set_content_type(it->second.mime_type);
   }
 }
 
