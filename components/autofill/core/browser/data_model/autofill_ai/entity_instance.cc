@@ -688,4 +688,26 @@ bool EntityInstance::FrecencyOrder::operator()(
   return lhs.use_date() > rhs.use_date();
 }
 
+bool IsMaskedStorageSupported(EntityType type,
+                              EntityInstance::RecordType record_type) {
+  switch (record_type) {
+    case EntityInstance::RecordType::kLocal:
+      return false;
+    case EntityInstance::RecordType::kServerWallet:
+      break;
+  }
+  switch (type.name()) {
+    case EntityTypeName::kDriversLicense:
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kPassport:
+    case EntityTypeName::kRedressNumber:
+      return true;
+    case EntityTypeName::kFlightReservation:
+    case EntityTypeName::kVehicle:
+      return false;
+  }
+  NOTREACHED();
+}
+
 }  // namespace autofill

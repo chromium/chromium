@@ -50,7 +50,7 @@ void HandleWalletUpsertResponse(
   using enum AutofillClient::AutofillAiImportPromptType;
   using enum UiAction;
 
-  CHECK(entity.type().SupportsMaskedStorage());
+  CHECK(IsMaskedStorageSupported(entity.type(), entity.record_type()));
   CHECK(!entity.IsMaskedServerEntity());
 
   if (!entity_manager) {

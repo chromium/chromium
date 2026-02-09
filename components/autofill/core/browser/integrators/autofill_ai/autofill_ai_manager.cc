@@ -145,21 +145,6 @@ base::flat_set<EntityTypeName> GetSaveEntitiesTypesNames(
   return entity_types;
 }
 
-// Returns whether saving `entity` will be synchronous in the UI. This is the
-// case iff the entity is saved locally or if it is written via sync.
-bool IsSaveSynchronous(const EntityInstance& entity) {
-  if (!entity.type().SupportsMaskedStorage()) {
-    return true;
-  }
-  switch (entity.record_type()) {
-    case EntityInstance::RecordType::kLocal:
-      return true;
-    case EntityInstance::RecordType::kServerWallet:
-      return false;
-  }
-  NOTREACHED();
-}
-
 // A placeholder for sending a Wallet upsert request.
 // TODO(crbug.com/478783796): Implement this properly.
 void SendWalletUpsertRequest(
@@ -365,7 +350,8 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
       old_entity = *client_->GetEntityDataManager()->GetEntityInstance(
           candidate_entity.guid());
     }
-    const bool is_save_synchronous = IsSaveSynchronous(candidate_entity);
+    const bool is_save_synchronous = !IsMaskedStorageSupported(
+        candidate_entity.type(), candidate_entity.record_type());
     client_->ShowEntityImportBubble(std::move(candidate_entity),
                                     std::move(old_entity), is_save_synchronous,
                                     std::move(prompt_result_callback));
@@ -408,7 +394,7 @@ void AutofillAiManager::HandlePromptResult(
     return;
   }
 
-  if (IsSaveSynchronous(entity)) {
+  if (!IsMaskedStorageSupported(entity.type(), entity.record_type())) {
     entity_manager.AddOrUpdateEntityInstance(std::move(entity));
     return;
   }

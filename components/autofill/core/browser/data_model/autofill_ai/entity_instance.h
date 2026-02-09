@@ -440,6 +440,19 @@ struct EntityInstance::CompareByGuid {
   }
 };
 
+// Returns whether this (entity type, record type) combination supports
+// restricting local storage of obfuscated attributes to "masks" (e.g., the last
+// x digits/characters).
+//
+// If this is `true`, the full entity information can be stored on a server and
+// can be retrieved by the client only on demand. It is not persisted locally on
+// disk. However, note that even if this is `true` users may not be eligible for
+// creating masked server entities depending on their sync settings or their
+// locale. See `MayPerformAutofillAiAction`
+//   for the relevant permission checks.
+bool IsMaskedStorageSupported(EntityType type,
+                              EntityInstance::RecordType record_type);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_AI_ENTITY_INSTANCE_H_
