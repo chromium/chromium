@@ -230,28 +230,33 @@ class BaseAutofillAiTest : public testing::Test {
 
   EntityInstance CreateEntity(EntityType type,
                               EntityInstance::RecordType record_type) {
-    switch (type.name()) {
-      case EntityTypeName::kPassport:
-        return test::GetPassportEntityInstance({.record_type = record_type});
-      case EntityTypeName::kDriversLicense:
-        return test::GetDriversLicenseEntityInstance(
-            {.record_type = record_type});
-      case EntityTypeName::kKnownTravelerNumber:
-        return test::GetKnownTravelerNumberInstance(
-            {.record_type = record_type});
-      case EntityTypeName::kRedressNumber:
-        return test::GetRedressNumberEntityInstance(
-            {.record_type = record_type});
-      case EntityTypeName::kVehicle:
-        return test::GetVehicleEntityInstance({.record_type = record_type});
-      case EntityTypeName::kNationalIdCard:
-        return test::GetNationalIdCardEntityInstance(
-            {.record_type = record_type});
-      case EntityTypeName::kFlightReservation:
-        return test::GetFlightReservationEntityInstance(
-            {.record_type = record_type});
-    }
-    NOTREACHED();
+    const EntityInstance entity = [&] {
+      switch (type.name()) {
+        case EntityTypeName::kPassport:
+          return test::GetPassportEntityInstance({.record_type = record_type});
+        case EntityTypeName::kDriversLicense:
+          return test::GetDriversLicenseEntityInstance(
+              {.record_type = record_type});
+        case EntityTypeName::kKnownTravelerNumber:
+          return test::GetKnownTravelerNumberInstance(
+              {.record_type = record_type});
+        case EntityTypeName::kRedressNumber:
+          return test::GetRedressNumberEntityInstance(
+              {.record_type = record_type});
+        case EntityTypeName::kVehicle:
+          return test::GetVehicleEntityInstance({.record_type = record_type});
+        case EntityTypeName::kNationalIdCard:
+          return test::GetNationalIdCardEntityInstance(
+              {.record_type = record_type});
+        case EntityTypeName::kFlightReservation:
+          return test::GetFlightReservationEntityInstance(
+              {.record_type = record_type});
+      }
+      NOTREACHED();
+    }();
+    return IsMaskedStorageSupported(type, record_type)
+               ? test::MaskEntityInstance(entity)
+               : entity;
   }
 
   MockAutofillClient& autofill_client() { return autofill_client_; }
