@@ -8,6 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
 
@@ -56,8 +57,18 @@ bool WaitableEvent::TimedWait(TimeDelta wait_delta, const Location& location) {
   // non-blocking WaitableEvents.
   std::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
       scoped_blocking_call;
+
   if (!only_used_while_idle_) {
-    scoped_blocking_call.emplace(location, BlockingType::MAY_BLOCK);
+    // Assert before checking if the event is signaled.
+    internal::AssertBaseSyncPrimitivesAllowed();
+    if (IsSignaled()) {
+      // If it is signaled already, there is no need to actually instantiate the
+      // scoped blocking call and wait.
+      return true;
+    }
+    // Since we know the event is not signaled, we use WILL_BLOCK instead of
+    // MAY_BLOCK.
+    scoped_blocking_call.emplace(location, BlockingType::WILL_BLOCK);
   }
 
   const bool result = TimedWaitImpl(wait_delta);
