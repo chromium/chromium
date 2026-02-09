@@ -235,16 +235,55 @@ std::vector<std::u16string> GetLabelsForSuggestions(
   });
 }
 
+// Returns a map of the minimum length of each masked attribute across all
+// entities.
+absl::flat_hash_map<AttributeType, size_t> GetAttributeMaskLengths(
+    base::span<const EntityInstance* const> entities) {
+  absl::flat_hash_map<AttributeType, size_t> lengths;
+  for (const EntityInstance* const entity : entities) {
+    for (const AttributeInstance& attribute : entity->attributes()) {
+      if (!attribute.masked()) {
+        continue;
+      }
+      const std::u16string value = attribute.GetCompleteRawInfo();
+      if (value.empty()) {
+        continue;
+      }
+      auto [it, inserted] = lengths.insert({attribute.type(), value.size()});
+      if (!inserted) {
+        it->second = std::min(it->second, value.size());
+      }
+    }
+  }
+  return lengths;
+}
+
 // Returns entities whose set of fields and values to be filled are not subsets
-// of another. This function favors server entities, for example if
-// two entities (one being local and one being server) are going to fill the
-// same fields with the same values, this function will keep the server one.
-// Note that `s` is expected to be sorted by descending priority and favor
-// higher-priority suggestions.
+// of another. This function favors server entities, for example if two entities
+// (one being local and one being server) are going to fill the same fields with
+// the same values, this function will keep the server one. Note that `entities`
+// is expected to be sorted by descending priority and favor higher-priority
+// suggestions.
 std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
     const std::vector<const EntityInstance*>& entities,
     const AttributeTypeAssignment& type_assignment,
     const std::string& app_locale) {
+  // If any of the attributes are masked, only compare the suffixes or the
+  // minimum length of the attributes.
+  const absl::flat_hash_map<AttributeType, size_t> mask_lengths =
+      GetAttributeMaskLengths(entities);
+  // Returns the suffix of `value` whose length is `mask_length` if
+  // `attribute_type` is masked, otherwise returns `value` unchanged.
+  auto maybe_take_suffix = [&mask_lengths](AttributeType attribute_type,
+                                           std::u16string value) {
+    if (const auto it = mask_lengths.find(attribute_type);
+        it != mask_lengths.end()) {
+      const size_t mask_length = std::min(it->second, value.size());
+      return value.substr(value.size() - mask_length);
+    }
+    return value;
+  };
+
   std::vector<std::vector<std::pair<FieldGlobalId, std::u16string>>>
       fields_to_values(entities.size());
   for (auto [entity, field_to_values] : base::zip(entities, fields_to_values)) {
@@ -262,8 +301,9 @@ std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
         continue;
       }
 
-      field_to_values.emplace_back(field->global_id(),
-                                   std::move(attribute_value));
+      field_to_values.emplace_back(
+          field->global_id(),
+          maybe_take_suffix(attribute_type, std::move(attribute_value)));
     }
   }
 
@@ -452,8 +492,8 @@ Suggestion GetSuggestionForEntity(
 // The desired ordering criteria are the following:
 // - Entities of the same type should appear together.
 // - Entities of type A should appear before entities of type B if the most
-//   "frecent" entity of type A is more frecent than the most frecent entity of
-//   type B.
+//   "frecent" entity of type A is more frecent than the most frecent entity
+//   of type B.
 //
 // In other terms, entities are grouped so that the most “frecent” suggestion
 // will be shown first, then all suggestions of the same type, then the next
@@ -520,8 +560,8 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
       entities_to_suggest, {}, &EntityInstance::guid);
 
   // Labels need to be consistent across the whole fill group. That is, as the
-  // user clicks around fields they need to see the same set of attributes as a
-  // combination of main text and labels. Therefore, entities that do not
+  // user clicks around fields they need to see the same set of attributes as
+  // a combination of main text and labels. Therefore, entities that do not
   // generate suggestions on a certain triggering field still affect label
   // generation and should be taken into account.
   std::vector<const EntityInstance*> other_entities_that_can_fill_section;
