@@ -382,14 +382,7 @@ BASE_FEATURE_PARAM(bool,
 
 // Enables Document-Isolation-Policy (DIP).
 // https://github.com/WICG/document-isolation-policy
-BASE_FEATURE(kDocumentIsolationPolicy,
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_LINUX)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kDocumentIsolationPolicy, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kConnectionAllowlists, base::FEATURE_DISABLED_BY_DEFAULT);
 
