@@ -1032,10 +1032,9 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
   }
   entity_data_manager->AddOrUpdateEntityInstance(entity_instance.value());
 
-  if (is_eligible_for_wallet_storage &&
-      entity_instance->record_type() == EntityInstance::RecordType::kLocal) {
-    // TODO(crbug.com/454892936): Show bubble to inform the user that the entity
-    // is saved locally.
+  if (private_api_entity_instance.stored_in_wallet.value_or(false) &&
+      !is_eligible_for_wallet_storage && autofill_client()) {
+    autofill_client()->ShowAutofillAiLocalSaveNotification();
   }
   return RespondNow(NoArguments());
 }
