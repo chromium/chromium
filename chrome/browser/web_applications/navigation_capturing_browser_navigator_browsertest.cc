@@ -809,7 +809,7 @@ IN_PROC_BROWSER_TEST_F(LaunchQueueLatencyMetricBrowserTest,
               testing::ElementsAre(GetLandingPage()));
 
   // Reloading the tab should not measure the latency of launch params being
-  // enqueued again, but the launch params will still be resent.
+  // enqueued again, and the launch params are not sent again.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   content::WaitForLoadStop(new_tab);
   apps::test::FlushLaunchQueuesForAllBrowserTabs();
@@ -817,7 +817,7 @@ IN_PROC_BROWSER_TEST_F(LaunchQueueLatencyMetricBrowserTest,
   histograms.ExpectTotalCount(kLaunchParamsEnqueueMetricWithNavigation, 1);
   EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
                   new_tab, "launchParamsTargetUrls"),
-              testing::ElementsAre(GetLandingPage()));
+              testing::IsEmpty());
 }
 
 using LaunchContainerMetricMeasurementTest =
