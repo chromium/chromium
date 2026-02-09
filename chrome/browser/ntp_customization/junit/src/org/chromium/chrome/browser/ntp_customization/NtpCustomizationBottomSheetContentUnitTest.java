@@ -179,7 +179,7 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
 
         // Case 3: Content height is medium (> 0.5, <= MAX_HEIGHT_RATIO), no overflow.
         when(mView.getMeasuredHeight()).thenReturn((int) (0.6 * CONTAINER_HEIGHT));
-        assertEquals(0.5f, mBottomSheetContent.getHalfHeightRatio(), FLOATING_POINT_DELTA);
+        assertEquals(0.6f, mBottomSheetContent.getHalfHeightRatio(), FLOATING_POINT_DELTA);
         assertEquals(0.6f, mBottomSheetContent.getFullHeightRatio(), FLOATING_POINT_DELTA);
         verify(mThemeCollectionsRecyclerView, times(4)).setPaddingRelative(0, 0, 0, 0);
 
@@ -187,7 +187,10 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
         float overflow = 100f;
         float maxHeight = NtpCustomizationBottomSheetContent.MAX_HEIGHT_RATIO * CONTAINER_HEIGHT;
         when(mThemeCollectionsRecyclerView.getBottom()).thenReturn((int) (maxHeight + overflow));
-        assertEquals(0.5f, mBottomSheetContent.getHalfHeightRatio(), FLOATING_POINT_DELTA);
+        assertEquals(
+                (float) NtpCustomizationBottomSheetContent.MAX_HEIGHT_RATIO,
+                mBottomSheetContent.getHalfHeightRatio(),
+                FLOATING_POINT_DELTA);
         assertEquals(
                 (float) NtpCustomizationBottomSheetContent.MAX_HEIGHT_RATIO,
                 mBottomSheetContent.getFullHeightRatio(),

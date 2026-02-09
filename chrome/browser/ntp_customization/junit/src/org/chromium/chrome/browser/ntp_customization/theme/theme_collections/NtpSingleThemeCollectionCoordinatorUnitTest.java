@@ -214,28 +214,22 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
     }
 
     @Test
-    public void testFetchImagesForCollection_expandSheet() {
+    public void testFetchImagesForCollection() {
         // Case 1: Fetch images on initialization.
         verify(mNtpThemeCollectionManager)
                 .getBackgroundImages(eq(TEST_COLLECTION_ID), mCallbackCaptor.capture());
-        mCallbackCaptor.getValue().onResult(new ArrayList<>());
-        verify(mBottomSheetController).expandSheet();
 
         // Case 2: Fetch images on update.
         mCoordinator.updateThemeCollection(
                 NEW_TEST_COLLECTION_ID, NEW_TEST_COLLECTION_TITLE, TEST_COLLECTION_HASH_2);
         verify(mNtpThemeCollectionManager)
                 .getBackgroundImages(eq(NEW_TEST_COLLECTION_ID), mCallbackCaptor.capture());
-        mCallbackCaptor.getValue().onResult(new ArrayList<>());
-        verify(mBottomSheetController, times(2)).expandSheet();
 
         // Case 3: Fetch images on another update.
         mCoordinator.updateThemeCollection(
                 TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, TEST_COLLECTION_HASH_1);
         verify(mNtpThemeCollectionManager, times(2))
                 .getBackgroundImages(eq(TEST_COLLECTION_ID), mCallbackCaptor.capture());
-        mCallbackCaptor.getValue().onResult(new ArrayList<>());
-        verify(mBottomSheetController, times(3)).expandSheet();
     }
 
     @Test

@@ -277,7 +277,10 @@ public class NtpSingleThemeCollectionCoordinator {
                     }
                     mNtpThemeCollectionsAdapter.setItems(mThemeCollectionImageList);
 
-                    mBottomSheetDelegate.getBottomSheetController().expandSheet();
+                    mSingleThemeCollectionBottomSheetRecyclerView.post(
+                            () -> {
+                                mBottomSheetDelegate.getBottomSheetController().expandSheet();
+                            });
                 });
     }
 

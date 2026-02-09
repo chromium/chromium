@@ -105,7 +105,7 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
             if (contentHeight != RECYCLER_VIEW_INVALID_HEIGHT) {
                 float contentRatio = (float) contentHeight / containerHeight;
                 if (contentRatio > 0.5) {
-                    return 0.5f;
+                    return Math.min(contentRatio, MAX_HEIGHT_RATIO);
                 }
             }
         }
