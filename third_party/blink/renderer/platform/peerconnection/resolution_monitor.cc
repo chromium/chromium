@@ -18,7 +18,6 @@
 #include "third_party/libgav1/src/src/buffer_pool.h"
 #include "third_party/libgav1/src/src/decoder_state.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
-#include "third_party/webrtc/api/array_view.h"
 #include "third_party/webrtc/common_video/h264/h264_common.h"
 #include "third_party/webrtc/common_video/h264/sps_parser.h"
 
@@ -242,24 +241,22 @@ class H264ResolutionMonitor : public ResolutionMonitor {
     }
 
     std::optional<gfx::Size> resolution;
-    auto buffer_span = base::span(buffer);
-    webrtc::ArrayView<const uint8_t> webrtc_buffer(buffer_span.data(),
-                                                   buffer_span.size());
+    base::span<const uint8_t> buffer_span(buffer);
     std::vector<webrtc::H264::NaluIndex> nalu_indices =
-        webrtc::H264::FindNaluIndices(webrtc_buffer);
+        webrtc::H264::FindNaluIndices(buffer_span);
     for (const auto& nalu_index : nalu_indices) {
       if (nalu_index.payload_size < webrtc::H264::kNaluTypeSize) {
         DLOG(ERROR) << "H.264 SPS NALU size too small for parsing NALU type.";
         return std::nullopt;
       }
-      auto nalu_payload = webrtc_buffer.subview(nalu_index.payload_start_offset,
-                                                nalu_index.payload_size);
+      auto nalu_payload = buffer_span.subspan(nalu_index.payload_start_offset,
+                                              nalu_index.payload_size);
       if (webrtc::H264::ParseNaluType(nalu_payload[0]) ==
           webrtc::H264::NaluType::kSps) {
         // Parse without NALU header.
         std::optional<webrtc::SpsParser::SpsState> sps =
             webrtc::SpsParser::ParseSps(
-                nalu_payload.subview(webrtc::H264::kNaluTypeSize));
+                nalu_payload.subspan(webrtc::H264::kNaluTypeSize));
         if (!sps || !sps->width || !sps->height) {
           DLOG(ERROR) << "Failed parsing H.264 SPS.";
           return std::nullopt;
