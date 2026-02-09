@@ -595,6 +595,10 @@ bool TabListBridge::IsThisTabListEditable() {
   return delegate->IsTabStripEditable();
 }
 
+bool TabListBridge::IsClosingAllTabs() {
+  return tab_strip_->closing_all();
+}
+
 void TabListBridge::WillCloseAllTabs(TabStripModel* model) {
   for (auto& observer : observers_) {
     observer.OnAllTabsAreClosing(*this);

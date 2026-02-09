@@ -183,6 +183,9 @@ class TabListInterface {
   // method `CanEditTabList()` below. See also comments there.
   virtual bool IsThisTabListEditable() = 0;
 
+  // Returns true if all tabs in this tab list are in the process of closing.
+  virtual bool IsClosingAllTabs() = 0;
+
   // Returns true if the tab list is currently considered editable. This will
   // return false if *any* tab list for the given `profile` has a tab being
   // dragged / dropped. This is because, even if the tab list doesn't have a

@@ -86,6 +86,7 @@ class TabListBridge : public TabListInterface, public TabStripModelObserver {
                             SessionID destination_window_id,
                             int destination_index) override;
   bool IsThisTabListEditable() override;
+  bool IsClosingAllTabs() override;
 
  private:
   // TabStripModelObserver:
