@@ -10,6 +10,8 @@ assert(is_cfm)
 
 static_library("artemis") {
   sources = [
+    "artemis_features.cc",
+    "artemis_features.h",
     "command_source.cc",
     "command_source.h",
     "data_aggregator_service.cc",
