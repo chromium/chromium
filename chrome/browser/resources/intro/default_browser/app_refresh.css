@@ -1,0 +1,91 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --text-max-width: 350px;
+  color: var(--cr-primary-text-color);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#header {
+  height: 52px;
+  padding: 0 24px 24px 16px;
+}
+
+#content-div {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  gap: 40px;
+  justify-content: center;
+}
+
+.content-child {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  height: 500px;
+}
+
+#showcase-illustration {
+  align-items: flex-start;
+  justify-content: flex-end;
+  position: relative;
+}
+
+#illustration {
+  border-radius: 24px;
+  content: url(images/refresh_showcase_illustration.png);
+  height: 100%;
+  max-height: 500px;
+  max-width: 500px;
+  object-fit: contain;
+  width: 100%;
+}
+
+#showcase-description {
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+#showcase-text {
+  padding-top: 48px;
+  gap: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-weight: 500;
+  height: 64px;
+  letter-spacing: 0px;
+  line-height: 32px;
+  max-width: var(--text-max-width);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  margin: 0;
+  max-width: var(--text-max-width);
+}
+
+#button-container {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  justify-content: flex-start;
+}

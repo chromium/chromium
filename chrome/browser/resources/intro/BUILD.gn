@@ -12,8 +12,11 @@ build_webui("build") {
 
   static_files = [
     "default_browser/default_browser.html",
+    "default_browser/default_browser_refresh.html",
     "images/default_browser_frame.svg",
     "images/default_browser_frame_dark.svg",
+    "images/keep_icon.svg",
+    "images/refresh_showcase_illustration.png",
     "intro.html",
   ]
 
@@ -35,6 +38,8 @@ build_webui("build") {
     ts_files += [
       "default_browser/app.html.ts",
       "default_browser/app.ts",
+      "default_browser/app_refresh.html.ts",
+      "default_browser/app_refresh.ts",
       "dice_app.html.ts",
       "dice_app.ts",
       "sign_in_promo.html.ts",
@@ -43,6 +48,7 @@ build_webui("build") {
 
     css_files = [
       "default_browser/app.css",
+      "default_browser/app_refresh.css",
       "dice_app.css",
       "sign_in_promo.css",
     ]

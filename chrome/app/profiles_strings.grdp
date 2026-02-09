@@ -1109,6 +1109,14 @@
       Skip
     </message>
 
+    <!-- Default Browser Promo Refresh -->
+    <message name="IDS_FRE_REFRESH_DEFAULT_BROWSER_SET_AS_DEFAULT" desc="The label for a button to confirm setting Chrome as their default browser.">
+      Set as default
+    </message>
+    <message name="IDS_FRE_REFRESH_DEFAULT_BROWSER_NO_THANKS" desc="The label for a button to skip setting Chrome as their default browser.">
+      No thanks
+    </message>
+
     <!-- Batch Upload Desktop -->
     <message name="IDS_BATCH_UPLOAD_TITLE" desc="Title of the Batch Upload dialog on Desktop. This dialog appears when the user clicks on an informational message about items saved to their device. This title precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
       Save items in account

@@ -2529,6 +2529,14 @@ Chromium is unable to recover your settings.
           Set Chromium as your default browser
         </message>
 
+        <!-- Default Browser Promo Refresh -->
+        <message name="IDS_FRE_REFRESH_DEFAULT_BROWSER_TITLE" desc="Title for the page that prompts user to set Chromium as their default browser in the refreshed first run experience.">
+          Set Chromium as default and pin it to taskbar
+        </message>
+        <message name="IDS_FRE_REFRESH_DEFAULT_BROWSER_SUBTITLE" desc="Subtitle for the page that prompts user to set Chromium as their default browser in the refreshed first run experience.">
+          Open links in Chromium from any app and keep the browser accessible on your taskbar
+        </message>
+
         <!-- Profile switch IPH -->
         <message name="IDS_PROFILE_SWITCH_PROMO" desc="Text of the In-Product-Help bubble for profile switching.">
           You can switch between Chromium profiles here

@@ -19,3 +19,7 @@ IN_PROC_BROWSER_TEST_F(IntroBrowserTest, SignInPromo) {
 IN_PROC_BROWSER_TEST_F(IntroBrowserTest, DiceApp) {
   RunTest("intro/dice_app_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(IntroBrowserTest, DefaultBrowserRefresh) {
+  RunTest("intro/default_browser_refresh_test.js", "mocha.run()");
+}
