@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "v8/include/v8-sandbox.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -52,8 +53,13 @@ constexpr std::underlying_type_t<v8::CppHeapPointerTag>
     kScriptWrappableStartTag = 256;
 // LINT.ThenChange(third_party/blink/renderer/bindings/scripts/web_idl/idl_compiler.py:ScriptWrappableStartTag)
 
+// The upper bound of all `ScriptWrappable` tags that we currently generate. If
+// you add a new `ScriptWrappable` in the codebase and hit a `static_assert`
+// that this is too small, increase this value.
+// LINT.IfChange(LastGeneratedScriptWrappableTag)
 static constexpr std::underlying_type_t<v8::CppHeapPointerTag>
-    kLastGeneratedScriptWrappableTag = 1500;
+    kLastGeneratedScriptWrappableTag = 2000;
+// LINT.ThenChange(gin/public/wrappable_pointer_tags.h)
 
 enum class ScriptWrappableArrayTag : std::underlying_type_t<
     v8::CppHeapPointerTag> {

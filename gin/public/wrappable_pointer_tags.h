@@ -20,7 +20,9 @@ namespace gin {
 enum WrappablePointerTag : uint16_t {
   // The type tags for gin::Wrappable start at the end of the value range to
   // avoid overlaps with the type tags of blink::ScriptWrappable.
-  kFirstPointerTag = 1601,
+  // LINT.IfChange(LastGeneratedScriptWrappableTag)
+  kFirstPointerTag = 2101,
+  // LINT.ThenChange(third_party/blink/renderer/platform/bindings/wrapper_type_info.h)
   kAccessibilityControllerBindings,  // content::AccessibilityControllerBindings
   kAPIBindingBridge,                 // extensions::APIBindingBridge
   kAPIBindingJSUtil,                 // extensions::APIBindingJSUtil
