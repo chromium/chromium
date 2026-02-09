@@ -5,10 +5,10 @@
 #ifndef CONTENT_BROWSER_CPU_PERFORMANCE_CPU_PERFORMANCE_H_
 #define CONTENT_BROWSER_CPU_PERFORMANCE_CPU_PERFORMANCE_H_
 
-#include <cstdint>
+#include <string>
 
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/cpu_performance.mojom.h"
+#include "third_party/blink/public/mojom/cpu_performance.mojom-shared.h"
 
 namespace content::cpu_performance {
 
@@ -19,7 +19,26 @@ using Tier = blink::mojom::PerformanceTier;
 // implementation for //content, which can be overridden by embedders.
 CONTENT_EXPORT Tier GetTier();
 
+enum class Manufacturer {
+  kUnknown,
+  // ---
+  kAMD,
+  kApple,
+  kIntel,
+  kMediaTek,
+  kMicrosoft,
+  kQualcomm,
+  kSamsung,
+};
+
+CONTENT_EXPORT Manufacturer GetManufacturer(std::string_view cpu_model);
+CONTENT_EXPORT std::pair<Manufacturer, std::string> SplitCpuModel(
+    std::string_view cpu_model);
+
+CONTENT_EXPORT void Initialize();
+
 CONTENT_EXPORT Tier GetTierFromCores(int cores);
+CONTENT_EXPORT Tier GetTierFromCpuInfo(std::string_view cpu_model, int cores);
 
 }  // namespace content::cpu_performance
 
