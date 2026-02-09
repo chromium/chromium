@@ -21,8 +21,8 @@ XRGPUTextureArraySwapChain::XRGPUTextureArraySwapChain(
 
   // Copy the wrapped swap chain's descriptor and divide its width by the
   // number of requested layers.
-  CHECK_EQ(descriptor_.size.width % layers, 0ul);
   descriptor_ = wrapped_swap_chain->descriptor();
+  CHECK_EQ(descriptor_.size.width % layers, 0ul);
   descriptor_.label = "XRGPUTextureArraySwapChain";
   descriptor_.format = format;
   descriptor_.size = {descriptor_.size.width / layers, descriptor_.size.height,
