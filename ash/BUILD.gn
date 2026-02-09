@@ -20,6 +20,10 @@ assert(enable_hidpi)
 # Chromebooks use ozone/DRM. linux-chromeos uses ozone/X11.
 assert(use_ozone)
 
+source_set("ash_export") {
+  sources = [ "ash_export.h" ]
+}
+
 # NOTE: Ash uses DEPS files to restrict access to its internals, rather than a
 # GN "public" section. See README.md for notes on dependencies.
 component("ash") {
@@ -319,7 +323,6 @@ component("ash") {
     "app_list/app_list_public_test_util.h",
     "ash_element_identifiers.cc",
     "ash_element_identifiers.h",
-    "ash_export.h",
     "ash_interfaces.cc",
     "ash_prefs.cc",
     "auth/active_session_auth_controller_impl.cc",
@@ -3265,6 +3268,7 @@ component("ash") {
   defines = [ "ASH_IMPLEMENTATION" ]
 
   public_deps = [
+    ":ash_export",
     "//ash/public/cpp",
     "//ash/public/cpp/app_list/vector_icons",
     "//ash/public/cpp/resources:ash_public_unscaled_resources",

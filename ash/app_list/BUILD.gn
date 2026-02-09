@@ -215,6 +215,7 @@ source_set("app_list") {
 
   # TODO(hejq): Remove this once app_list is migrated. http://crbug.com/733662
   public_deps = [
+    "//ash:ash_export",
     "//ash/app_list/model:app_list_model",
     "//ash/public/cpp",
     "//base",
