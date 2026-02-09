@@ -21,6 +21,11 @@
 
 namespace autofill {
 
+namespace {
+
+using test::GetPassportEntityInstanceWithRandomGuid;
+using test::GetVehicleEntityInstanceWithRandomGuid;
+
 class EntityInstanceCleanerTest : public testing::Test {
  public:
   void SetUp() override {
@@ -83,9 +88,9 @@ TEST_F(EntityInstanceCleanerTest, DeduplicationRunIfMilestoneIsDifferent) {
 }
 
 TEST_F(EntityInstanceCleanerTest, DuplicatedLocalEntitiesAreRemoved) {
-  EntityInstance entity1 = test::GetPassportEntityInstanceWithRandomGuid();
-  EntityInstance entity2 = test::GetPassportEntityInstanceWithRandomGuid();
-  EntityInstance entity3 = test::GetPassportEntityInstanceWithRandomGuid(
+  EntityInstance entity1 = GetVehicleEntityInstanceWithRandomGuid();
+  EntityInstance entity2 = GetVehicleEntityInstanceWithRandomGuid();
+  EntityInstance entity3 = GetVehicleEntityInstanceWithRandomGuid(
       {.record_type = EntityInstance::RecordType::kServerWallet});
 
   entity_data_manager().AddOrUpdateEntityInstance(entity1);
@@ -97,24 +102,22 @@ TEST_F(EntityInstanceCleanerTest, DuplicatedLocalEntitiesAreRemoved) {
   base::HistogramTester histogram_tester;
   sync_service().FireStateChanged();
   webdata_helper()->WaitUntilIdle();
-  base::span<const EntityInstance> instances =
-      entity_data_manager().GetEntityInstances();
 
-  EXPECT_THAT(instances.size(), 1u);
+  EXPECT_THAT(entity_data_manager().GetEntityInstances().size(), 1u);
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.AllEntities",
       2, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.Passport", 2,
+      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.Vehicle", 2,
       1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesDeduped.Passport", 2, 1);
+      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesDeduped.Vehicle", 2, 1);
 }
 
 TEST_F(EntityInstanceCleanerTest, EntityThatIsSubsetOfAnotherIsRemoved) {
   EntityInstance entity1 =
-      test::GetPassportEntityInstanceWithRandomGuid({.expiry_date = nullptr});
-  EntityInstance entity2 = test::GetPassportEntityInstanceWithRandomGuid();
+      GetPassportEntityInstanceWithRandomGuid({.expiry_date = nullptr});
+  EntityInstance entity2 = GetPassportEntityInstanceWithRandomGuid();
   entity_data_manager().AddOrUpdateEntityInstance(entity1);
   entity_data_manager().AddOrUpdateEntityInstance(entity2);
   webdata_helper()->WaitUntilIdle();
@@ -143,9 +146,9 @@ TEST_F(EntityInstanceCleanerTest, EntityThatIsSubsetOfAnotherIsRemoved) {
 
 TEST_F(EntityInstanceCleanerTest, DifferentEntities_NoneIsRemoved) {
   EntityInstance entity1 =
-      test::GetPassportEntityInstanceWithRandomGuid({.name = u"Jon snow"});
+      GetPassportEntityInstanceWithRandomGuid({.name = u"Jon snow"});
   EntityInstance entity2 =
-      test::GetPassportEntityInstanceWithRandomGuid({.name = u"Sansa"});
+      GetPassportEntityInstanceWithRandomGuid({.name = u"Sansa"});
   entity_data_manager().AddOrUpdateEntityInstance(entity1);
   entity_data_manager().AddOrUpdateEntityInstance(entity2);
   webdata_helper()->WaitUntilIdle();
@@ -155,9 +158,7 @@ TEST_F(EntityInstanceCleanerTest, DifferentEntities_NoneIsRemoved) {
   sync_service().FireStateChanged();
   webdata_helper()->WaitUntilIdle();
 
-  base::span<const EntityInstance> instances =
-      entity_data_manager().GetEntityInstances();
-  EXPECT_THAT(instances.size(), 2u);
+  EXPECT_THAT(entity_data_manager().GetEntityInstances().size(), 2u);
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.AllEntities",
       2, 1);
@@ -175,9 +176,9 @@ TEST_F(EntityInstanceCleanerTest,
        DuplicatedLocalEntities_FeatureOff_NotRemoved) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kAutofillAiDedupeEntities);
-  EntityInstance entity1 = test::GetPassportEntityInstanceWithRandomGuid();
-  EntityInstance entity2 = test::GetPassportEntityInstanceWithRandomGuid();
-  EntityInstance entity3 = test::GetPassportEntityInstanceWithRandomGuid(
+  EntityInstance entity1 = GetVehicleEntityInstanceWithRandomGuid();
+  EntityInstance entity2 = GetVehicleEntityInstanceWithRandomGuid();
+  EntityInstance entity3 = GetVehicleEntityInstanceWithRandomGuid(
       {.record_type = EntityInstance::RecordType::kServerWallet});
 
   entity_data_manager().AddOrUpdateEntityInstance(entity1);
@@ -189,19 +190,19 @@ TEST_F(EntityInstanceCleanerTest,
   base::HistogramTester histogram_tester;
   sync_service().FireStateChanged();
   webdata_helper()->WaitUntilIdle();
-  base::span<const EntityInstance> instances =
-      entity_data_manager().GetEntityInstances();
 
-  EXPECT_THAT(instances.size(), 3u);
+  EXPECT_THAT(entity_data_manager().GetEntityInstances().size(), 3u);
   histogram_tester.ExpectTotalCount(
       "Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.AllEntities",
       0);
   histogram_tester.ExpectTotalCount(
       "Autofill.Ai.Deduplication.NumberOfLocalEntitiesDeduped.AllEntities", 0);
   histogram_tester.ExpectTotalCount(
-      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.Passport", 0);
+      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesConsidered.Vehicle", 0);
   histogram_tester.ExpectTotalCount(
-      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesDeduped.Passport", 0);
+      "Autofill.Ai.Deduplication.NumberOfLocalEntitiesDeduped.Vehicle", 0);
 }
+
+}  // namespace
 
 }  // namespace autofill
