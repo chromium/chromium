@@ -515,10 +515,6 @@ void ContextualSearchboxHandler::ActivateMetricsFunnel(
   }
 }
 
-void ContextualSearchboxHandler::InitializeInputStateModelForDebugging() {
-  InitializeInputStateModel();
-}
-
 void ContextualSearchboxHandler::GetInputState(GetInputStateCallback callback) {
   if (input_state_) {
     std::move(callback).Run(*input_state_);
