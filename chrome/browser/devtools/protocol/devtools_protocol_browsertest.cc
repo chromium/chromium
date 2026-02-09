@@ -379,12 +379,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CreateTargetWithFocus) {
   EXPECT_EQ(4, browser()->tab_strip_model()->count());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-// On ChromeOS, the tabs are not backgrounded and unloaded in the same way as
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+// On ChromeOS and MacOS, the tabs are not backgrounded and unloaded in the same way as
 // on other platforms.
 #define MAYBE_AutoAttachToUnloadedTab DISABLED_AutoAttachToUnloadedTab
 #else
-#define MAYBE_AutoAttachToUnloadedTab DISABLED_AutoAttachToUnloadedTab
+#define MAYBE_AutoAttachToUnloadedTab AutoAttachToUnloadedTab
 #endif
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, MAYBE_AutoAttachToUnloadedTab) {
