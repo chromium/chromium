@@ -414,21 +414,19 @@ bool IsStateless() {
     return;
   }
 
-  if (@available(iOS 16.1, *)) {
-    CGRect oldKeyboardRect =
-        [notification.userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-    CGRect newKeyboardRect =
-        [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+  CGRect oldKeyboardRect =
+      [notification.userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+  CGRect newKeyboardRect =
+      [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
 
-    // We're only interested in quick height only changes.
-    if (oldKeyboardRect.origin.x != newKeyboardRect.origin.x ||
-        oldKeyboardRect.size.width != newKeyboardRect.size.width) {
-      return;
-    }
-
-    [self.consumer keyboardHeightChanged:newKeyboardRect.size.height
-                               oldHeight:oldKeyboardRect.size.height];
+  // We're only interested in quick height only changes.
+  if (oldKeyboardRect.origin.x != newKeyboardRect.origin.x ||
+      oldKeyboardRect.size.width != newKeyboardRect.size.width) {
+    return;
   }
+
+  [self.consumer keyboardHeightChanged:newKeyboardRect.size.height
+                             oldHeight:oldKeyboardRect.size.height];
 }
 
 - (void)textInputModeDidChange:(NSNotification*)notification {
