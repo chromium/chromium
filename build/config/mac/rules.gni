@@ -453,7 +453,7 @@ template("mac_app_bundle") {
     _product_type = "com.apple.product-type.bundle"
     _write_pkg_info = false
   } else {
-    assert(false, "Unsupported packge_type: " + packge_type)
+    assert(false, "Unsupported packge_type: " + _package_type)
   }
 
   _executable_target = target_name + "_executable"
