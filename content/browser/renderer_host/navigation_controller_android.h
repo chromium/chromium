@@ -74,7 +74,8 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       const base::android::JavaRef<jobject>& j_additional_navigation_params,
       int64_t input_start,
       int64_t navigation_ui_data_ptr,
-      bool is_pdf);
+      bool is_pdf,
+      bool remove_extra_headers_on_cross_origin_redirect);
   void ClearSslPreferences(JNIEnv* env);
   bool GetUseDesktopUserAgent(JNIEnv* env);
   void SetUseDesktopUserAgent(JNIEnv* env,

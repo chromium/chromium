@@ -228,7 +228,8 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
     const base::android::JavaRef<jobject>& j_additional_navigation_params,
     int64_t input_start,
     int64_t navigation_ui_data_ptr,
-    bool is_pdf) {
+    bool is_pdf,
+    bool remove_extra_headers_on_cross_origin_redirect) {
   DCHECK(url);
   NavigationController::LoadURLParams params(
       GURL(ConvertJavaStringToUTF8(env, url)));
@@ -247,6 +248,8 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
   params.has_user_gesture = has_user_gesture;
   params.should_clear_history_list = should_clear_history_list;
   params.is_pdf = is_pdf;
+  params.remove_extra_headers_on_cross_origin_redirect =
+      remove_extra_headers_on_cross_origin_redirect;
 
   if (j_additional_navigation_params) {
     params.initiator_frame_token =

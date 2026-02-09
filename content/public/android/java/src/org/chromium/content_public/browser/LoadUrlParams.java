@@ -56,6 +56,7 @@ public class LoadUrlParams {
     private @Nullable AdditionalNavigationParams mAdditionalNavigationParams;
     private @Nullable Supplier<Long> mNavigationUIDataSupplier;
     private boolean mIsPdf;
+    private boolean mRemoveExtraHeadersOnCrossOriginRedirect;
 
     /**
      * Creates an instance with default page transition type.
@@ -132,6 +133,8 @@ public class LoadUrlParams {
         copy.mHasUserGesture = other.mHasUserGesture;
         copy.mShouldClearHistoryList = other.mShouldClearHistoryList;
         copy.mAdditionalNavigationParams = other.mAdditionalNavigationParams;
+        copy.mRemoveExtraHeadersOnCrossOriginRedirect =
+                other.mRemoveExtraHeadersOnCrossOriginRedirect;
         return copy;
     }
 
@@ -644,6 +647,18 @@ public class LoadUrlParams {
     /** Sets whether the URL is a pdf file. */
     public void setIsPdf(boolean isPdf) {
         mIsPdf = isPdf;
+    }
+
+    /** Sets whether extra headers are removed on cross-origin redirect. */
+    public void setRemoveExtraHeadersOnCrossOriginRedirect(boolean remove) {
+        mRemoveExtraHeadersOnCrossOriginRedirect = remove;
+    }
+
+    /**
+     * @return Whether extra headers are removed on cross-origin redirect.
+     */
+    public boolean getRemoveExtraHeadersOnCrossOriginRedirect() {
+        return mRemoveExtraHeadersOnCrossOriginRedirect;
     }
 
     @NativeMethods
