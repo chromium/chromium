@@ -8,4 +8,7 @@ namespace accessibility_annotator {
 
 BASE_FEATURE(kContentAnnotator, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<int> kContentAnnotatorMaxPendingUrls{
+    &kContentAnnotator, "content_annotator_max_pending_urls", 10};
+
 }  // namespace accessibility_annotator

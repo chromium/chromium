@@ -5,9 +5,12 @@
 #ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_ANNOTATOR_SERVICE_H_
 #define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_ANNOTATOR_SERVICE_H_
 
+#include "base/containers/lru_cache.h"
 #include "base/memory/raw_ref.h"
+#include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "url/gurl.h"
 
 namespace accessibility_annotator {
 
@@ -32,8 +35,27 @@ class ContentAnnotatorService
       override;
 
  private:
+  using CacheIterator =
+      base::LRUCache<GURL, ContentClassificationInput>::iterator;
+
+  // Returns the iterator to the entry for the given URL, creating a new entry
+  // if it does not exist.
+  CacheIterator GetOrCreateJoinEntry(const GURL& url);
+
+  // If the data is complete, runs content classification and determines
+  // annotation eligibility.
+  void MaybeAnnotate(CacheIterator it);
+
   const raw_ref<page_content_annotations::PageContentAnnotationsService>
       page_content_annotations_service_;
+
+  // Stores and joins data for URLs that are pending annotation. The cache size
+  // is `kContentAnnotatorMaxPendingUrls`. When the cache is full, the last
+  // modified entry is evicted. The cache should only go over capacity in the
+  // case expected data from an observation does not arrive or the user
+  // navigates to several URLs faster than data can be collected for the URL and
+  // annotations processed.
+  base::LRUCache<GURL, ContentClassificationInput> join_entries_;
 };
 
 }  // namespace accessibility_annotator

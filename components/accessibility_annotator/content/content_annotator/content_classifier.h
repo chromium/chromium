@@ -22,12 +22,6 @@ struct ContentClassificationInput {
   std::optional<std::string> adopted_language;
   std::optional<std::string> page_title;
 
-  // Merges the data from `from` into this object populating the fields that are
-  // not set. The url is expected to be the same. Conflicts are resolved by
-  // `navigation_timestamp` if available otherwise values in `from` take
-  // precedence.
-  void MergeFrom(const ContentClassificationInput& from);
-
   // Returns true if all fields are populated.
   bool IsComplete() const;
 };

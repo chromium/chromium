@@ -12,6 +12,7 @@ source_set("content_annotator") {
 
   deps = [
     "//base",
+    "//components/accessibility_annotator/core:features",
     "//components/keyed_service/core",
     "//components/page_content_annotations/core",
   ]
@@ -19,10 +20,18 @@ source_set("content_annotator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "content_classifier_unittest.cc" ]
+  sources = [
+    "content_annotator_service_unittest.cc",
+    "content_classifier_unittest.cc",
+  ]
   deps = [
     ":content_annotator",
     "//base/test:test_support",
+    "//components/accessibility_annotator/core:features",
+    "//components/history/core/browser",
+    "//components/optimization_guide/core:test_support",
+    "//components/page_content_annotations/core",
+    "//components/page_content_annotations/core:test_support",
     "//testing/gtest",
     "//url",
   ]

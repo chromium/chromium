@@ -11,11 +11,6 @@ ContentClassificationInput::~ContentClassificationInput() = default;
 ContentClassificationInput::ContentClassificationInput(
     const ContentClassificationInput& other) = default;
 
-void ContentClassificationInput::MergeFrom(
-    const ContentClassificationInput& data) {
-  // TODO(crbug.com/475859254): Implement logic to merge the data.
-}
-
 bool ContentClassificationInput::IsComplete() const {
   return sensitivity_score.has_value() && navigation_timestamp.has_value() &&
          adopted_language.has_value() && page_title.has_value();
