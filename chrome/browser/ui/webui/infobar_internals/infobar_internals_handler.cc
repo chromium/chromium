@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/infobar_internals/infobar_internals_handler.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -30,6 +31,11 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"  // nogncheck
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/startup/startup_launch_manager.h"  // nogncheck
+#include "chrome/browser/ui/startup/startup_launch_infobar_manager_impl.h"
 #endif
 
 using InfoBarType = infobar_internals::mojom::InfoBarType;
@@ -62,6 +68,15 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       /*description=*/
       "Triggers the session restore infobar. This infobar can only be "
       "triggered on Mac, Windows and Linux."));
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kStartupLaunch, /*name=*/"Startup Launch",
+      /*description=*/
+      "Triggers the startup launch infobar. This infobar can only be "
+      "triggered on Windows, and only when LaunchOnStartup feature flag is "
+      "enabled."));
 #endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -106,6 +121,24 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
                         session_restore_infobar::SessionRestoreInfoBarDelegate::
                             InfobarMessageType::kTurnOffFromRestart);
       return true;
+    }
+#endif
+#if BUILDFLAG(IS_WIN)
+    case InfoBarType::kStartupLaunch: {
+      PrefService* local_state = g_browser_process->local_state();
+      local_state->ClearPref(prefs::kForegroundLaunchOnLogin);
+      local_state->ClearPref(prefs::kStartupLaunchInfobarAccepted);
+      local_state->ClearPref(prefs::kStartupLaunchInfobarDeclinedCount);
+      local_state->ClearPref(prefs::kStartupLaunchInfobarLastDeclinedTime);
+
+      if (auto* startup_launch_manager =
+              StartupLaunchManager::From(g_browser_process)) {
+        startup_launch_manager->SetInfoBarManager(
+            std::make_unique<StartupLaunchInfoBarManagerImpl>());
+        startup_launch_manager->MaybeShowInfoBars();
+        return true;
+      }
+      return false;
     }
 #endif
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

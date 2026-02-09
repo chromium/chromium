@@ -19,6 +19,10 @@ enum InfoBarType {
   // Session restore infobar. Can only be triggered on Win, Mac and Linux.
   [EnableIf=is_win|is_mac|is_linux]
   kSessionRestore,
+
+  // Startup launch infobar. Can only be triggered on Windows.
+  [EnableIf=is_win]
+  kStartupLaunch,
 };
 
 // Metadata describing an individual infobar that can be triggered.
