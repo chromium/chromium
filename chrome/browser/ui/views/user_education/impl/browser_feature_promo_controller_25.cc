@@ -52,7 +52,8 @@ void BrowserFeaturePromoController25::AddPreconditionProviders(
 
   if (required) {
     to_add_to.AddProvider(base::BindRepeating(
-        [](const user_education::FeaturePromoSpecification&,
+        [](const user_education::FeaturePromoSessionPolicy* policy,
+           const user_education::FeaturePromoSpecification& spec,
            const user_education::FeaturePromoParams&,
            const user_education::UserEducationContextPtr& context) {
           auto* browser_context = context->AsA<BrowserUserEducationContext>();
@@ -62,8 +63,16 @@ void BrowserFeaturePromoController25::AddPreconditionProviders(
               kBrowserNotClosingPrecondition));
           preconditions.AddPrecondition(browser_context->GetSharedPrecondition(
               kNoCriticalNoticeShowingPrecondition));
+
+          const auto info = policy->GetPromoPriorityInfo(spec);
+          if (info.priority != Priority::kHigh) {
+            preconditions.AddPrecondition(
+                browser_context->GetSharedPrecondition(
+                    kNoCriticalNoticeShowingPrecondition));
+          }
           return preconditions;
-        }));
+        },
+        base::Unretained(session_policy())));
   } else {
     to_add_to.AddProvider(base::BindRepeating(
         [](const user_education::FeaturePromoSessionPolicy* policy,
