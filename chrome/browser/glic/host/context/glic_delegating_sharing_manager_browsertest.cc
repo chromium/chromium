@@ -619,5 +619,60 @@ IN_PROC_BROWSER_TEST_F(GlicStablePinningDelegatingSharingManagerBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Spy class to intercept window activation changes.
+class SpyFocusedBrowserManager : public GlicEmptyFocusedBrowserManager {
+ public:
+  void OnGlicWindowActivationChanged(bool active) override {
+    last_activation_change_ = active;
+    GlicEmptyFocusedBrowserManager::OnGlicWindowActivationChanged(active);
+  }
+
+  std::optional<bool> last_activation_change() const {
+    return last_activation_change_;
+  }
+
+ private:
+  std::optional<bool> last_activation_change_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicStablePinningDelegatingSharingManagerBrowserTest,
+                       SetDelegatePropagatesWindowActivation) {
+  GlicEmptyPinnedTabManager pinned_mgr;
+
+  // Setup first delegate with spy.
+  auto focused_browser_manager1 = std::make_unique<SpyFocusedBrowserManager>();
+  SpyFocusedBrowserManager* spy1 = focused_browser_manager1.get();
+  auto manager1 = std::make_unique<GlicSharingManagerImpl>(
+      std::make_unique<GlicEmptyFocusedTabManager>(),
+      std::move(focused_browser_manager1), &pinned_mgr, browser()->profile(),
+      /*metrics=*/nullptr);
+
+  GlicStablePinningDelegatingSharingManager stable_manager(manager1.get());
+
+  // Trigger activation change.
+  stable_manager.OnGlicWindowActivationChanged(true);
+  EXPECT_EQ(spy1->last_activation_change(), true);
+
+  // Create second delegate with spy.
+  auto focused_browser_manager2 = std::make_unique<SpyFocusedBrowserManager>();
+  SpyFocusedBrowserManager* spy2 = focused_browser_manager2.get();
+  auto manager2 = std::make_unique<GlicSharingManagerImpl>(
+      std::make_unique<GlicEmptyFocusedTabManager>(),
+      std::move(focused_browser_manager2), &pinned_mgr, browser()->profile(),
+      /*metrics=*/nullptr);
+
+  // Set delegate. Should propagate cached "true" state.
+  stable_manager.SetDelegate(manager2.get());
+  EXPECT_EQ(spy2->last_activation_change(), true);
+
+  // Trigger deactivation.
+  stable_manager.OnGlicWindowActivationChanged(false);
+  EXPECT_EQ(spy2->last_activation_change(), false);
+
+  // Switch back. Should propagate cached "false" state.
+  stable_manager.SetDelegate(manager1.get());
+  EXPECT_EQ(spy1->last_activation_change(), false);
+}
+
 }  // namespace
 }  // namespace glic
