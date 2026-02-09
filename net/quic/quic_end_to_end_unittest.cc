@@ -11,9 +11,11 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "crypto/keypair.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/ip_address.h"
@@ -22,6 +24,7 @@
 #include "net/base/upload_data_stream.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
+#include "net/cert/x509_certificate.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_auth_handler_factory.h"
@@ -32,11 +35,13 @@
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
+#include "net/quic/crypto/proof_source_chromium.h"
 #include "net/quic/crypto_test_utils_chromium.h"
 #include "net/quic/quic_context.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/ssl/test_ssl_config_service.h"
+#include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
@@ -97,6 +102,15 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
         proxy_resolution_service_(
             ConfiguredProxyResolutionService::CreateDirect()),
         auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()) {
+    std::unique_ptr<CertBuilder> cert =
+        std::move(CertBuilder::CreateSimpleChain(1)[0]);
+    cert->SetSubjectAltName("test.example.com");
+    // ProofSourceChromium assumes the leaf cert uses an RSA key.
+    cert->UseKeyFromFile(GetTestCertsDirectory().AppendASCII("rsa-2048-1.key"));
+    cert_key_ = crypto::keypair::PrivateKey(
+        bssl::UpRef(cert->GetKey()), crypto::SubtlePassKey::ForTesting());
+    cert_ = cert->GetX509CertificateChain();
+
     request_.method = "GET";
     request_.url = GURL("https://test.example.com/");
     request_.load_flags = 0;
@@ -116,13 +130,6 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
     session_context_.http_user_agent_settings = &http_user_agent_settings_;
     session_context_.http_auth_handler_factory = auth_handler_factory_.get();
     session_context_.http_server_properties = &http_server_properties_;
-
-    CertVerifyResult verify_result;
-    verify_result.verified_cert =
-        ImportCertFromFile(GetTestCertsDirectory(), "quic-chain.pem");
-    cert_verifier_.AddResultForCertAndHost(verify_result.verified_cert.get(),
-                                           "test.example.com", verify_result,
-                                           OK);
   }
 
   // Creates a mock host resolver in which test.example.com
@@ -156,19 +163,29 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
 
   // Starts the QUIC server listening on a random port.
   void StartServer() {
+    std::unique_ptr<ProofSourceChromium> proof_source =
+        std::make_unique<ProofSourceChromium>();
+    CertificateList cert_list;
+    cert_list.push_back(cert_);
+    proof_source->InitializeFromCertAndKey(cert_list, *cert_key_);
     server_address_ = IPEndPoint(IPAddress(127, 0, 0, 1), 0);
     server_config_.SetInitialStreamFlowControlWindowToSend(
         quic::test::kInitialStreamFlowControlWindowForTest);
     server_config_.SetInitialSessionFlowControlWindowToSend(
         quic::test::kInitialSessionFlowControlWindowForTest);
     server_ = std::make_unique<QuicSimpleServer>(
-        net::test::ProofSourceForTestingChromium(), server_config_,
-        server_config_options_, AllSupportedQuicVersions(),
-        &memory_cache_backend_);
+        std::move(proof_source), server_config_, server_config_options_,
+        AllSupportedQuicVersions(), &memory_cache_backend_);
     server_->Listen(server_address_);
     server_address_ = server_->server_address();
     server_->StartReading();
     server_started_ = true;
+
+    CertVerifyResult verify_result;
+    verify_result.verified_cert = cert_list[0];
+    cert_verifier_.AddResultForCertAndHost(verify_result.verified_cert.get(),
+                                           "test.example.com", verify_result,
+                                           OK);
   }
 
   // Adds an entry to the cache used by the QUIC server to serve
@@ -219,6 +236,8 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
   QuicContext quic_context_;
   MappedHostResolver host_resolver_;
   MockCertVerifier cert_verifier_;
+  std::optional<crypto::keypair::PrivateKey> cert_key_;
+  scoped_refptr<X509Certificate> cert_;
   TransportSecurityState transport_security_state_;
   std::unique_ptr<TestSSLConfigService> ssl_config_service_;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
@@ -345,6 +364,48 @@ TEST_F(QuicEndToEndTest, MLKEMDisabled) {
   // client and server.
   EXPECT_EQ(consumer.error(), net::ERR_QUIC_PROTOCOL_ERROR);
 }
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+class QuicEndToEndMTCTest : public QuicEndToEndTest {
+ public:
+  void SetUp() override {
+    auto leaf = std::move(CertBuilder::CreateSimpleChain(1)[0]);
+    leaf->SetSubjectAltName("test.example.com");
+    // ProofSourceChromium assumes the leaf cert uses an RSA key.
+    leaf->UseKeyFromFile(GetTestCertsDirectory().AppendASCII("rsa-2048-1.key"));
+    cert_key_ = crypto::keypair::PrivateKey(
+        bssl::UpRef(leaf->GetKey()), crypto::SubtlePassKey::ForTesting());
+
+    // This is the log ID for the MTC experiment (see kMtcExperimentBaseId in
+    // quic_chromium_client_session.cc).
+    constexpr uint8_t kMtcLogId[] = {0x82, 0xda, 0x4b, 0x30, 0x07};
+    MtcLogBuilder mtc_log(kMtcLogId);
+    uint64_t leaf_index = mtc_log.AddEntry(*leaf);
+    mtc_log.AdvanceLandmark();
+    auto leaf_der = mtc_log.CreateSignaturelessCertificate(leaf_index);
+    ASSERT_TRUE(leaf_der);
+    cert_ = X509Certificate::CreateFromBytes(*leaf_der);
+
+    QuicEndToEndTest::SetUp();
+  }
+};
+
+TEST_F(QuicEndToEndMTCTest, SimpleConnection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {{features::kTLSTrustAnchorIDs, features::kVerifyMTCs}}, {});
+
+  AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
+
+  TestTransactionConsumer consumer(DEFAULT_PRIORITY,
+                                   transaction_factory_.get());
+  consumer.Start(&request_, NetLogWithSource());
+  CheckResponse(consumer, "HTTP/1.1 200", kResponseBody);
+
+  EXPECT_EQ(consumer.response_info()->ssl_info.cert->signature_algorithm(),
+            bssl::SignatureAlgorithm::kMtcProofDraftDavidben08);
+}
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 }  // namespace test
 }  // namespace net

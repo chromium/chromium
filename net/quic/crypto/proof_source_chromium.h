@@ -38,6 +38,9 @@ class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
                   const base::FilePath& key_path,
                   const base::FilePath& sct_path);
 
+  bool InitializeFromCertAndKey(const CertificateList& cert_list,
+                                const crypto::keypair::PrivateKey& private_key);
+
   // quic::ProofSource interface
   void GetProof(const quic::QuicSocketAddress& server_address,
                 const quic::QuicSocketAddress& client_address,
