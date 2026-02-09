@@ -540,9 +540,7 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 
 - (void)setEmptyState:(BOOL)empty {
   if (empty) {
-    // Empty downloads: show small title and empty view.
-    self.navigationItem.largeTitleDisplayMode =
-        UINavigationItemLargeTitleDisplayModeNever;
+    // Show empty view illustration.
     if (!self.tableView.backgroundView) {
       UIImage* emptyImage = [UIImage imageNamed:@"download_list_empty"];
       TableViewIllustratedEmptyView* emptyView = [[TableViewIllustratedEmptyView
@@ -556,9 +554,7 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
       self.tableView.backgroundView = emptyView;
     }
   } else {
-    // Non-empty downloads: show large title initially and hide empty view.
-    self.navigationItem.largeTitleDisplayMode =
-        UINavigationItemLargeTitleDisplayModeAlways;
+    // Hide the empty view.
     self.tableView.backgroundView = nil;
   }
   if (self.filterHeaderView && self.filterHeaderView.isHidden == NO) {
@@ -568,12 +564,17 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 
 - (void)setDownloadListHeaderShown:(BOOL)shown {
   if (shown) {
-    // Show the filter view if it's not already set.
+    // Records exist: allow automatic large/small title transition based on
+    // scroll position, and show filter header.
+    self.navigationItem.largeTitleDisplayMode =
+        UINavigationItemLargeTitleDisplayModeAutomatic;
     if (self.tableView.tableHeaderView != self.filterHeaderView) {
       self.tableView.tableHeaderView = self.filterHeaderView;
     }
   } else {
-    // Hide the filter view by setting tableHeaderView to nil.
+    // No records at all: show small title and hide filter header.
+    self.navigationItem.largeTitleDisplayMode =
+        UINavigationItemLargeTitleDisplayModeNever;
     self.tableView.tableHeaderView = nil;
   }
 }
