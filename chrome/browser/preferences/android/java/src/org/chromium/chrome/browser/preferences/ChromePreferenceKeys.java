@@ -689,8 +689,12 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix PAYMENTS_PAYMENT_INSTRUMENT_USE_DATE =
             new KeyPrefix("payment_instrument_use_date_*");
 
-    /** Preference to indicate whether payment request has been completed successfully once.*/
+    /** Preference to indicate whether payment request has been completed successfully once. */
     public static final String PAYMENTS_PAYMENT_COMPLETE_ONCE = "payment_complete_once";
+
+    /** Represents a persistent store that has fully written all tab state for a given window. */
+    public static final KeyPrefix TAB_PERSISTENCE_SHADOW_WRITTEN_STORE =
+            new KeyPrefix("Chrome.TabPersistence.ShadowWrittenStore.*");
 
     /**
      * Indicates whether or not there is any persistent (i.e. non-transient) content in chrome that
@@ -1368,6 +1372,7 @@ public final class ChromePreferenceKeys {
                 TAB_DECLUTTER_DIALOG_IPH_DISMISS_COUNT,
                 TAB_OR_GROUP_TEARING_MAX_INSTANCES_FAILURE_START_TIME_MS,
                 TAB_OR_GROUP_TEARING_MAX_INSTANCES_FAILURE_COUNT,
+                TAB_PERSISTENCE_SHADOW_WRITTEN_STORE.pattern(),
                 TIPS_NOTIFICATIONS_CHANNEL_ENABLED,
                 TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN,
                 TOOLBAR_TOP_ANCHORED,

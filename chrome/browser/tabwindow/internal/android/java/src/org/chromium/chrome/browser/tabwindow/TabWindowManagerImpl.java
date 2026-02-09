@@ -103,9 +103,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
 
     /** Holds dependencies associated with a specific window. */
     private static class WindowDeps {
-        @SuppressWarnings("unused")
         public final PersistentStoreMigrationManager manager;
-
         public final TabModelSelector selector;
 
         /**
@@ -438,6 +436,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
                         isActivityAtRequestedWindowIdInAppTasks,
                         isActivityAtRequestedWindowIdInSameTask);
         if (!handled) return originallyAssignedWindowIdForNewActivity;
+
         @WindowId
         int releasedWindowId = clearSelectorAndWindowIdAssignments(activityAtRequestedWindowId);
         if (releasedWindowId == INVALID_WINDOW_ID) {
