@@ -107,10 +107,8 @@ void Cursor::Advance(uint32_t count,
     return;
   }
 
-  if (!transaction_) {
+  if (!transaction_ || !transaction_->IsAcceptingRequests()) {
     Close();
-  } else {
-    CHECK(transaction_->IsAcceptingRequests());
   }
   if (closed_) {
     const DatabaseError error(CreateCursorClosedError());
@@ -195,10 +193,8 @@ void Cursor::Continue(IndexedDBKey key,
     return;
   }
 
-  if (!transaction_) {
+  if (!transaction_ || !transaction_->IsAcceptingRequests()) {
     Close();
-  } else {
-    CHECK(transaction_->IsAcceptingRequests());
   }
   if (closed_) {
     const DatabaseError error(CreateCursorClosedError());
@@ -274,10 +270,8 @@ void Cursor::Prefetch(int number_to_fetch,
                       blink::mojom::IDBCursor::PrefetchCallback callback) {
   TRACE_EVENT0("IndexedDB", "Cursor::Prefetch");
 
-  if (!transaction_) {
+  if (!transaction_ || !transaction_->IsAcceptingRequests()) {
     Close();
-  } else {
-    CHECK(transaction_->IsAcceptingRequests());
   }
   if (closed_) {
     const DatabaseError error(CreateCursorClosedError());
