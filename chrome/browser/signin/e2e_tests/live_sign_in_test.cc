@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSyncWithWebAccount) {
                                        start_syncing_script.c_str())));
   EXPECT_TRUE(login_ui_test_utils::CancelSyncConfirmationDialog(
       browser(), kDialogTimeout));
-  observer.WaitForAccountChanges(1, PrimarySyncAccountWait::kWaitForCleared);
+  observer.WaitForAccountChanges(1, PrimaryAccountWait::kWaitForCleared);
 
   const AccountsInCookieJarInfo& accounts_in_cookie_jar =
       identity_manager()->GetAccountsInCookieJar();
@@ -407,8 +407,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
       signin::test::account_reconcilor(new_browser));
   EXPECT_TRUE(login_ui_test_utils::ConfirmSyncConfirmationDialog(
       new_browser, kDialogTimeout));
-  new_browser_observer.WaitForAccountChanges(
-      1, PrimarySyncAccountWait::kWaitForAdded);
+  new_browser_observer.WaitForAccountChanges(1,
+                                             PrimaryAccountWait::kWaitForAdded);
 
   // Check accounts in cookies in the new profile.
   const AccountsInCookieJarInfo& accounts_in_cookie_jar =
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
 
   // Check that the second account was removed from the original profile.
   original_browser_observer.WaitForAccountChanges(
-      0, PrimarySyncAccountWait::kWaitForCleared);
+      0, PrimaryAccountWait::kWaitForCleared);
   const AccountsInCookieJarInfo& accounts_in_cookie_jar_2 =
       identity_manager()->GetAccountsInCookieJar();
   EXPECT_TRUE(accounts_in_cookie_jar_2.AreAccountsFresh());
@@ -476,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
       browser(), kDialogTimeout, SigninEmailConfirmationDialog::START_SYNC));
   EXPECT_TRUE(login_ui_test_utils::ConfirmSyncConfirmationDialog(
       browser(), kDialogTimeout));
-  observer.WaitForAccountChanges(1, PrimarySyncAccountWait::kWaitForAdded);
+  observer.WaitForAccountChanges(1, PrimaryAccountWait::kWaitForAdded);
 
   // Check no profile was created.
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 1U);

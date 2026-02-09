@@ -4,14 +4,18 @@
 
 #include "sign_in_test_observer.h"
 
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 
 namespace signin::test {
 
 SignInTestObserver::SignInTestObserver(IdentityManager* identity_manager,
-                                       AccountReconcilor* reconcilor)
-    : identity_manager_(identity_manager), reconcilor_(reconcilor) {
+                                       AccountReconcilor* reconcilor,
+                                       signin::ConsentLevel consent_level)
+    : identity_manager_(identity_manager),
+      reconcilor_(reconcilor),
+      consent_level_(consent_level) {
   identity_manager_observation_.Observe(identity_manager_.get());
   account_reconcilor_observation_.Observe(reconcilor_.get());
 }
@@ -20,7 +24,7 @@ SignInTestObserver::~SignInTestObserver() = default;
 
 void SignInTestObserver::OnPrimaryAccountChanged(
     const PrimaryAccountChangeEvent& event) {
-  if (event.GetEventTypeFor(ConsentLevel::kSync) ==
+  if (event.GetEventTypeFor(consent_level_) ==
       PrimaryAccountChangeEvent::Type::kNone) {
     return;
   }
@@ -57,9 +61,9 @@ void SignInTestObserver::OnStateChanged(
 
 void SignInTestObserver::WaitForAccountChanges(
     int signed_in_accounts,
-    PrimarySyncAccountWait primary_sync_account_wait) {
+    PrimaryAccountWait primary_account_wait) {
   expected_signed_in_accounts_ = signed_in_accounts;
-  primary_sync_account_wait_ = primary_sync_account_wait;
+  primary_account_wait_ = primary_account_wait;
   are_expectations_set = true;
   QuitIfConditionIsSatisfied();
   run_loop_.Run();
@@ -77,16 +81,18 @@ void SignInTestObserver::QuitIfConditionIsSatisfied() {
     return;
   }
 
-  switch (primary_sync_account_wait_) {
-    case PrimarySyncAccountWait::kWaitForAdded:
-      if (!HasValidPrimarySyncAccount())
+  switch (primary_account_wait_) {
+    case PrimaryAccountWait::kWaitForAdded:
+      if (!HasValidPrimaryAccount()) {
         return;
+      }
       break;
-    case PrimarySyncAccountWait::kWaitForCleared:
-      if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync))
+    case PrimaryAccountWait::kWaitForCleared:
+      if (identity_manager_->HasPrimaryAccount(consent_level_)) {
         return;
+      }
       break;
-    case PrimarySyncAccountWait::kNotWait:
+    case PrimaryAccountWait::kNotWait:
       break;
   }
 
@@ -116,9 +122,9 @@ int SignInTestObserver::CountSignedInAccountsInCookie() const {
   return accounts_in_cookie_jar.GetPotentiallyInvalidSignedInAccounts().size();
 }
 
-bool SignInTestObserver::HasValidPrimarySyncAccount() const {
+bool SignInTestObserver::HasValidPrimaryAccount() const {
   CoreAccountId primary_account_id =
-      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync);
+      identity_manager_->GetPrimaryAccountId(consent_level_);
   if (primary_account_id.empty())
     return false;
 

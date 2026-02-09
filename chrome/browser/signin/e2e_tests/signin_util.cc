@@ -16,9 +16,11 @@
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/core/browser/account_reconcilor.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
@@ -91,16 +93,19 @@ void SignInFunctions::SignInFromCurrentPage(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   SignInTestObserver observer(IdentityManagerFactory::GetForProfile(profile),
-                              AccountReconcilorFactory::GetForProfile(profile));
+                              AccountReconcilorFactory::GetForProfile(profile),
+                              ConsentLevel::kSignin);
   login_ui_test_utils::ExecuteJsToSigninInSigninFrame(
       web_contents, test_account.user, test_account.password);
   observer.WaitForAccountChanges(previously_signed_in_accounts + 1,
-                                 PrimarySyncAccountWait::kNotWait);
+                                 PrimaryAccountWait::kNotWait);
 }
 
 void SignInFunctions::TurnOnSync(
     const TestAccountSigninCredentials& test_account,
     int previously_signed_in_accounts) {
+  CHECK(!base::FeatureList::IsEnabled(
+      syncer::kReplaceSyncPromosWithSignInPromos));
   SignInFromSettings(test_account, previously_signed_in_accounts);
 
   SignInTestObserver observer(identity_manager(browser_.Run()),
@@ -108,19 +113,22 @@ void SignInFunctions::TurnOnSync(
   EXPECT_TRUE(login_ui_test_utils::ConfirmSyncConfirmationDialog(
       browser_.Run(), kDialogTimeout));
   observer.WaitForAccountChanges(previously_signed_in_accounts + 1,
-                                 PrimarySyncAccountWait::kWaitForAdded);
+                                 PrimaryAccountWait::kWaitForAdded);
 }
 
 void SignInFunctions::SignOutFromWeb() {
   SignInTestObserver observer(identity_manager(browser_.Run()),
-                              account_reconcilor(browser_.Run()));
+                              account_reconcilor(browser_.Run()),
+                              ConsentLevel::kSignin);
   ASSERT_TRUE(
       add_tab_function_.Run(0, GaiaUrls::GetInstance()->service_logout_url(),
                             ui::PageTransition::PAGE_TRANSITION_TYPED));
-  observer.WaitForAccountChanges(0, PrimarySyncAccountWait::kNotWait);
+  observer.WaitForAccountChanges(0, PrimaryAccountWait::kNotWait);
 }
 
 void SignInFunctions::TurnOffSync() {
+  CHECK(!base::FeatureList::IsEnabled(
+      syncer::kReplaceSyncPromosWithSignInPromos));
   GURL settings_url("chrome://settings");
   ASSERT_TRUE(add_tab_function_.Run(0, settings_url,
                                     ui::PageTransition::PAGE_TRANSITION_TYPED));
@@ -133,7 +141,7 @@ void SignInFunctions::TurnOffSync() {
       base::StringPrintf(
           kSettingsScriptWrapperFormat,
           "settings.SyncBrowserProxyImpl.getInstance().signOut(false)")));
-  observer.WaitForAccountChanges(0, PrimarySyncAccountWait::kWaitForCleared);
+  observer.WaitForAccountChanges(0, PrimaryAccountWait::kWaitForCleared);
 }
 
 }  // namespace signin::test

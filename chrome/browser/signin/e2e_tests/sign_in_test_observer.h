@@ -8,18 +8,21 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "components/signin/core/browser/account_reconcilor.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace signin::test {
-enum class PrimarySyncAccountWait { kWaitForAdded, kWaitForCleared, kNotWait };
+enum class PrimaryAccountWait { kWaitForAdded, kWaitForCleared, kNotWait };
 
 // Observes various sign-in events and allows to wait for a specific state of
 // signed-in accounts.
 class SignInTestObserver : public IdentityManager::Observer,
                            public AccountReconcilor::Observer {
  public:
-  explicit SignInTestObserver(IdentityManager* identity_manager,
-                              AccountReconcilor* reconcilor);
+  explicit SignInTestObserver(
+      IdentityManager* identity_manager,
+      AccountReconcilor* reconcilor,
+      signin::ConsentLevel consent_level = signin::ConsentLevel::kSync);
   ~SignInTestObserver() override;
 
   // IdentityManager::Observer:
@@ -39,17 +42,19 @@ class SignInTestObserver : public IdentityManager::Observer,
   void OnStateChanged(signin_metrics::AccountReconcilorState state) override;
 
   void WaitForAccountChanges(int signed_in_accounts,
-                             PrimarySyncAccountWait primary_sync_account_wait);
+                             PrimaryAccountWait primary_account_wait);
 
  private:
   void QuitIfConditionIsSatisfied();
 
   int CountAccountsWithValidRefreshToken() const;
   int CountSignedInAccountsInCookie() const;
-  bool HasValidPrimarySyncAccount() const;
+  bool HasValidPrimaryAccount() const;
 
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const raw_ptr<AccountReconcilor> reconcilor_;
+  const signin::ConsentLevel consent_level_;
+
   base::ScopedObservation<IdentityManager, IdentityManager::Observer>
       identity_manager_observation_{this};
   base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>
@@ -58,8 +63,7 @@ class SignInTestObserver : public IdentityManager::Observer,
 
   bool are_expectations_set = false;
   int expected_signed_in_accounts_ = 0;
-  PrimarySyncAccountWait primary_sync_account_wait_ =
-      PrimarySyncAccountWait::kNotWait;
+  PrimaryAccountWait primary_account_wait_ = PrimaryAccountWait::kNotWait;
 };
 
 }  // namespace signin::test
