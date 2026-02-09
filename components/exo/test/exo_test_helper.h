@@ -105,8 +105,7 @@ class ExoTestHelper {
       ShellSurfaceBase* shell_surface,
       viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888);
 
-  // Creates an exo::Buffer that will be backed by either GpuMemoryBuffer or
-  // MappableSI if enabled.
+  // Creates an exo::Buffer that will be backed by a MappableSharedImage.
   static std::unique_ptr<Buffer> CreateBuffer(
       gfx::Size buffer_size,
       viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888,
