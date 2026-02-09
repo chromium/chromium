@@ -4,6 +4,8 @@
 
 #include "components/desktop_to_mobile_promos/features.h"
 
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "components/sync_preferences/features.h"
 
@@ -68,16 +70,31 @@ bool MobilePromoOnDesktopTypeEnabled(
     return false;
   }
 
-  auto enabled_promo_type = static_cast<MobilePromoOnDesktopPromoType>(
-      base::GetFieldTrialParamByFeatureAsInt(
-          *feature, kMobilePromoOnDesktopPromoTypeParam,
-          static_cast<int>(MobilePromoOnDesktopPromoType::kAllPromos)));
+  std::string param_value = base::GetFieldTrialParamValueByFeature(
+      *feature, kMobilePromoOnDesktopPromoTypeParam);
 
-  if (enabled_promo_type == MobilePromoOnDesktopPromoType::kAllPromos) {
+  if (param_value.empty()) {
+    // Default to kAllPromos if no param is set.
     return true;
   }
 
-  return enabled_promo_type == type;
+  // Check if any of the promo types in the comma separated list equate to
+  // `type` and return true if so.
+  std::vector<std::string> promo_types = base::SplitString(
+      param_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (const auto& promo_type_str : promo_types) {
+    int promo_type_int;
+    if (base::StringToInt(promo_type_str, &promo_type_int)) {
+      auto enabled_type =
+          static_cast<MobilePromoOnDesktopPromoType>(promo_type_int);
+      if (enabled_type == MobilePromoOnDesktopPromoType::kAllPromos ||
+          enabled_type == type) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 bool IsMobilePromoOnDesktopNotificationsEnabled() {

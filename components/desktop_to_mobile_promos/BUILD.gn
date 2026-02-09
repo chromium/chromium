@@ -16,3 +16,14 @@ source_set("desktop_to_mobile_promos") {
     "//components/sync_preferences:features",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "features_unittest.cc" ]
+  deps = [
+    ":desktop_to_mobile_promos",
+    "//base/test:test_support",
+    "//components/sync_preferences:features",
+    "//testing/gtest",
+  ]
+}
