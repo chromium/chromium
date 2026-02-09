@@ -2057,6 +2057,9 @@
       <message name="IDS_IOS_CREDENTIAL_EXCHANGE_GENERIC_ERROR_TITLE" desc="Title of the alert shown during credential import flow when any generic error happened preventing the flow from finishing. [iOS only]">
         Trouble importing your data
       </message>
+      <message name="IDS_IOS_CREDENTIAL_EXCHANGE_NOTHING_IMPORTED_ENTERPRISE_MESSAGE" desc="Message of the alert shown during credential import flow when the import of both passwords and passkeys is blocked by an administrator. [iOS only]">
+        Import passwords and passkeys is disabled by your administrator
+      </message>
       <message name="IDS_IOS_CREDENTIAL_EXCHANGE_NOTHING_IMPORTED_MESSAGE" desc="Message of the alert shown during credential import flow when the other password manager did not share any passwords or passkeys. [iOS only]">
         The other password manager didn't share any passwords or passkeys
       </message>

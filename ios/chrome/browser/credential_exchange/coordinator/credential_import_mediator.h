@@ -29,6 +29,7 @@ enum class CredentialImportStage;
 class FaviconLoader;
 @class PasskeyImportItem;
 @class PasswordImportItem;
+class PrefService;
 
 // Delegate for CredentialImportMediator.
 @protocol CredentialImportMediatorDelegate <NSObject>
@@ -38,6 +39,10 @@ class FaviconLoader;
 
 // Notifies the delegate to display the "nothing imported" alert.
 - (void)showNothingImportedScreen;
+
+// Notifies the delegate to display the "nothing imported" alert due to
+// all credential types import being blocked by enterprise policies.
+- (void)showNothingImportedEnterpriseScreen;
 
 // Notifies the delegate to display a conflict resolution screen.
 - (void)showConflictResolutionScreenWithPasswords:
@@ -77,6 +82,7 @@ class FaviconLoader;
                 passkeyModel:(webauthn::PasskeyModel*)passkeyModel
                faviconLoader:(FaviconLoader*)faviconLoader
                  syncService:(syncer::SyncService*)syncService
+                 prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

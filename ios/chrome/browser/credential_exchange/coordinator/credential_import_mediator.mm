@@ -8,6 +8,8 @@
 #import "base/task/bind_post_task.h"
 #import "components/password_manager/core/browser/import/import_results.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_service.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_importer.h"
@@ -25,6 +27,20 @@
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ui/gfx/favicon_size.h"
 #import "url/gurl.h"
+
+namespace {
+
+using ::password_manager::prefs::kCredentialsEnablePasskeys;
+using ::password_manager::prefs::kCredentialsEnableService;
+
+// Returns true if an import is blocked by a policy with `pref_name`.
+bool ImportBlockedByPolicy(const PrefService* pref_service,
+                           const char* pref_name) {
+  return pref_service && pref_service->IsManagedPreference(pref_name) &&
+         !pref_service->GetBoolean(pref_name);
+}
+
+}  // namespace
 
 @interface CredentialImportMediator () <CredentialImporterDelegate,
                                         CredentialImportItemFaviconDataSource>
@@ -49,6 +65,9 @@
 
   // Used to check whether the user is syncing passwords.
   raw_ptr<syncer::SyncService> _syncService;
+
+  // Used to check the state of user's policies.
+  raw_ptr<PrefService> _prefService;
 }
 
 - (instancetype)initWithUUID:(NSUUID*)UUID
@@ -59,7 +78,8 @@
              savedPasswordsPresenter
                 passkeyModel:(webauthn::PasskeyModel*)passkeyModel
                faviconLoader:(FaviconLoader*)faviconLoader
-                 syncService:(syncer::SyncService*)syncService {
+                 syncService:(syncer::SyncService*)syncService
+                 prefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
     _savedPasswordsPresenter = std::move(savedPasswordsPresenter);
@@ -73,6 +93,7 @@
     _userEmail = std::move(userEmail);
     _faviconLoader = faviconLoader;
     _syncService = syncService;
+    _prefService = prefService;
   }
   return self;
 }
@@ -103,6 +124,18 @@
                       exporterDisplayName:(NSString*)exporterDisplayName {
   if (passwordCount == 0 && passkeyCount == 0) {
     [_delegate showNothingImportedScreen];
+    return;
+  }
+
+  // Check blocking policies only if there are some credentials of given type.
+  BOOL passwordsBlockedByPolicy =
+      passwordCount > 0 &&
+      ImportBlockedByPolicy(_prefService, kCredentialsEnableService);
+  BOOL passkeysBlockedByPolicy =
+      passkeyCount > 0 &&
+      ImportBlockedByPolicy(_prefService, kCredentialsEnablePasskeys);
+  if (passwordsBlockedByPolicy && passkeysBlockedByPolicy) {
+    [_delegate showNothingImportedEnterpriseScreen];
     return;
   }
 

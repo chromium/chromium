@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webauthn/coordinator/passkey_welcome_screen_coordinator.h"
@@ -128,7 +129,8 @@
                                   self.profile)
                 faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
                                   profile)
-                  syncService:SyncServiceFactory::GetForProfile(profile)];
+                  syncService:SyncServiceFactory::GetForProfile(profile)
+                  prefService:profile->GetPrefs()];
   _mediator.consumer = _viewController;
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
@@ -158,6 +160,16 @@
       IDS_IOS_CREDENTIAL_EXCHANGE_NOTHING_IMPORTED_TITLE);
   NSString* message = l10n_util::GetNSString(
       IDS_IOS_CREDENTIAL_EXCHANGE_NOTHING_IMPORTED_MESSAGE);
+  [self showAlertWithTitle:title
+                   message:message
+        baseViewController:self.baseViewController];
+}
+
+- (void)showNothingImportedEnterpriseScreen {
+  NSString* title = l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_EXCHANGE_NOTHING_IMPORTED_TITLE);
+  NSString* message = l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_EXCHANGE_NOTHING_IMPORTED_ENTERPRISE_MESSAGE);
   [self showAlertWithTitle:title
                    message:message
         baseViewController:self.baseViewController];
