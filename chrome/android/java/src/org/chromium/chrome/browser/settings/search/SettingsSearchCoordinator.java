@@ -608,7 +608,7 @@ public class SettingsSearchCoordinator
             updateSingleColumnSearchUiWidth();
         }
 
-        updateHelpMenuVisibility(false);
+        updateHelpMenuVisibility();
     }
 
     private void showBackArrowInSingleColumnMode(boolean show) {
@@ -646,14 +646,17 @@ public class SettingsSearchCoordinator
         if (mUseMultiColumn) mUpdateFirstVisibleTitle.onResult(0);
         mShowingEmptyFragment = false;
 
-        updateHelpMenuVisibility(true);
+        updateHelpMenuVisibility();
     }
 
-    private void updateHelpMenuVisibility(boolean visible) {
+    private void updateHelpMenuVisibility() {
         View menuView = getHelpMenuView();
-        if (menuView != null) {
-            menuView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        if (menuView == null) {
+            mHandler.post(this::updateHelpMenuVisibility);
+            return;
         }
+
+        menuView.setVisibility(shouldShowHelpMenu() ? View.VISIBLE : View.INVISIBLE);
     }
 
     private void stepBackInResultState() {
@@ -845,6 +848,10 @@ public class SettingsSearchCoordinator
     private void onConfigurationChangedInternal() {
         boolean useMultiColumn = mUseMultiColumnSupplier.getAsBoolean();
 
+        // Changing the layout restarts the activity, and in which case the help icon should remain
+        // invisible if in the search or results view.
+        updateHelpMenuVisibility();
+
         if (useMultiColumn == mUseMultiColumn) {
             // Resizing/rotation could only change the window width. Adjust search bar UI in
             // response to the header/detail pane width.
@@ -929,6 +936,14 @@ public class SettingsSearchCoordinator
                 }
             }
         }
+    }
+
+    /**
+     * Single source of truth for whether the help menu should be visible. Currently, it is visible
+     * only when we are in the main Settings state, not during Search or Results.
+     */
+    private boolean shouldShowHelpMenu() {
+        return mFragmentState == FS_SETTINGS;
     }
 
     private void setSearchBoxVerticalMargin(View searchBox, boolean multiColumn) {
