@@ -24,6 +24,7 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/data_type_state_helper.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 ReadingListSyncBridge::ReadingListSyncBridge(
     syncer::StorageType storage_type,
@@ -132,7 +133,7 @@ std::optional<syncer::ModelError> ReadingListSyncBridge::MergeFullSyncData(
   DCHECK(model_);
 
   // Keep track of the last update of each item.
-  std::set<std::string> synced_entries;
+  absl::flat_hash_set<std::string> synced_entries;
   std::unique_ptr<ReadingListModelImpl::ScopedReadingListBatchUpdateImpl>
       model_batch_updates = model_->BeginBatchUpdatesWithSyncMetadata();
 
@@ -179,7 +180,7 @@ std::optional<syncer::ModelError> ReadingListSyncBridge::MergeFullSyncData(
   // Commit local only entries to server.
   for (const auto& url : model_->GetKeys()) {
     scoped_refptr<const ReadingListEntry> entry = model_->GetEntryByURL(url);
-    if (synced_entries.count(url.spec())) {
+    if (synced_entries.contains(url.spec())) {
       // Entry already exists and has been merged above.
       continue;
     }
