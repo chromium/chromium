@@ -632,6 +632,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       completion();
     }
     self.firstPresentation = NO;
+
+    if (IsNewTabGridTransitionsEnabled()) {
+      self.transitionHandler = nil;
+    }
   };
 
   _viewController.childViewControllerForStatusBarStyle =
@@ -729,8 +733,16 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 // guided tour.
 - (void)handleTransitionToTabGridCompletionWithBringAndroidTabsPrompt:
     (BOOL)shouldDisplayBringAndroidTabsPrompt {
+  Browser* browser = self.regularBrowser;
+  if (!browser) {
+    return;
+  }
+
+  if (IsNewTabGridTransitionsEnabled()) {
+    self.transitionHandler = nil;
+  }
+
   if (IsBestOfAppGuidedTourEnabled()) {
-    Browser* browser = self.regularBrowser;
     FirstRunProfileAgent* profileAgent = [FirstRunProfileAgent
         agentFromProfile:browser->GetSceneState().profileState];
     [profileAgent tabGridWasPresented];
@@ -1150,6 +1162,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.incognitoBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [self.regularBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [self.dispatcher stopDispatchingForProtocol:@protocol(SceneCommands)];
+
+  if (IsNewTabGridTransitionsEnabled()) {
+    self.transitionHandler = nil;
+  }
 
   [_toolbarsCoordinator stop];
   _toolbarsCoordinator = nil;

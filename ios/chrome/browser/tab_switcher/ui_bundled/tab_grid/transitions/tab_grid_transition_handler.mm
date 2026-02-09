@@ -30,7 +30,7 @@
       _browserLayoutViewController;
 
   // Transition layout provider for the tab grid.
-  id<TabGridTransitionLayoutProviding> _tabGridTransitionLayoutProvider;
+  __weak id<TabGridTransitionLayoutProviding> _tabGridTransitionLayoutProvider;
 
   // Transition item for the selected cell in tab grid.
   TabGridTransitionItem* _tabGridCellItem;
