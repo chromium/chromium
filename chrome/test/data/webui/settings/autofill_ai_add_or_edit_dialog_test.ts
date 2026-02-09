@@ -25,6 +25,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
   let testAttributeTypes: chrome.autofillPrivate.AttributeType[];
 
   setup(function() {
+    loadTimeData.overrideValues({enableSaveToWalletFromSettings: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     entityDataManager = new TestEntityDataManagerProxy();
@@ -237,7 +238,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     // The validation error should not be visible yet and the save button
     // should be enabled.
     const validationError =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#validation-error');
+        dialog.shadowRoot!.querySelector<HTMLElement>('#validation-error-top');
     const saveButton =
         dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!validationError);
@@ -307,7 +308,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     const saveButton =
         dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     const validationError =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#validation-error');
+        dialog.shadowRoot!.querySelector<HTMLElement>('#validation-error-top');
     const inputs = dialog.shadowRoot!.querySelectorAll<CrInputElement>(
         '#attribute-instance-field');
 
@@ -745,7 +746,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     // The validation error should not be visible yet and the save button
     // should be enabled.
     const validationError =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#validation-error');
+        dialog.shadowRoot!.querySelector<HTMLElement>('#validation-error-top');
     const saveButton =
         dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!validationError);
@@ -800,7 +801,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     const dateValidationError =
         dialog.shadowRoot!.querySelector<HTMLElement>('#date-validation-error');
     const regularValidationError =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#validation-error');
+        dialog.shadowRoot!.querySelector<HTMLElement>('#validation-error-top');
     const saveButton =
         dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!dateSelectLabel);

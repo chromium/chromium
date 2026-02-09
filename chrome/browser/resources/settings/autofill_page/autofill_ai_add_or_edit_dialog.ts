@@ -250,7 +250,8 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   }
 
   private checkRequiredFields_(): boolean {
-    if (this.requiredAttributeTypes_.length === 0) {
+    if (this.requiredAttributeTypes_.length === 0 ||
+        !this.saveToWalletFromSettingsEnabled_) {
       return true;
     }
 
@@ -513,6 +514,10 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
       attributeInstance: AttributeInstance, validationError: string): boolean {
     // Don't show errors before the user tries to save.
     if (!this.userClickedSaveButton_ || !validationError) {
+      return false;
+    }
+
+    if (!this.saveToWalletFromSettingsEnabled_) {
       return false;
     }
 
