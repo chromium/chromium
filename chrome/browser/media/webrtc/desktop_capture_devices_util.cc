@@ -45,6 +45,11 @@
 #include "third_party/webrtc/modules/desktop_capture/mac/window_list_utils.h"
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/media/android/tab_sharing_indicator_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 // TODO(crbug.com/40181897): Eliminate code duplication with
@@ -284,7 +289,16 @@ void CreateMediaStreamCaptureIndicatorUI(
         on_media_stream_capture_indicator_ui_created_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::unique_ptr<MediaStreamUI> notification_ui;
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kUserMediaScreenCapturing) &&
+      base::FeatureList::IsEnabled(chrome::android::kMediaIndicatorsAndroid) &&
+      base::GetFieldTrialParamByFeatureAsBool(
+          chrome::android::kMediaIndicatorsAndroid, "sharing", false) &&
+      display_notification &&
+      media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
+    notification_ui = std::make_unique<TabSharingIndicatorAndroid>(media_id);
+  }
+#else
   // If required, register to display the notification for stream capture.
   if (display_notification) {
     if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
@@ -306,7 +320,7 @@ void CreateMediaStreamCaptureIndicatorUI(
           web_contents);
     }
   }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
   std::unique_ptr<content::MediaStreamUI> capture_indicator_ui =
       MediaCaptureDevicesDispatcher::GetInstance()
