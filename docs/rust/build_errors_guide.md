@@ -80,3 +80,65 @@ To opt into allowing certain unstable features, you need to:
       of the `feature` attribute
     * An example usage in
       [the Unstable Book](https://doc.rust-lang.org/unstable-book/index.html)
+
+## Missing sources
+
+`gn` and `ninja` know about build target inputs and sources through `input`
+and/or `sources` properties specified in `BUILD.gn` files.
+`rustc` independently discovers all `.rs` files by starting from a crate
+root, and then following `mod foo;` declarations.
+Chromium build will report an error when those 2 sources of information
+are out of sync - for example:
+
+```
+ERROR: Rust source file or input not in GN sources: ../../foo/bar/baz.rs
+```
+
+To fix errors like the one above
+you should ensure that the `BUILD.gn` lists the same source files and inputs
+as the ones actually used in `.rs` source code:
+
+* In manually-authored `BUILD.gn` files (e.g. in first-party code) you should
+  double-check the `sources` property (or the `inputs` property in less common
+  cases like when using
+  [`include!`](https://doc.rust-lang.org/std/macro.include.html) macro).
+    - TODO(lukasza): Figure out if/why it matters whether an `.rs` or `.rs.incl`
+      file is listed in `sources` vs `inputs`.
+* In `gnrt`-generated `BUILD.gn` files, `gnrt` typically can discover all
+  `.rs` files on its own, but sometimes `gnrt` may need extra crate metadata
+  that you can provide via `gnrt_config.toml` - for example:
+    - `extra_src_roots` (or `extra_input_roots`) can list source files
+      to append to `sources` (or `inputs`) for the main Rust target
+    - `extra_build_script_src_roots` (or `extra_build_script_input_roots`)
+      can list sources files to append to `sources` (or `inputs`)
+      for the `build.rs` script
+    - See a comment at the top of `gnrt_config.toml` for more information
+    - After editing `gnrt_config.toml` run
+      `tools/crates/run_gnrt.py gen` to regenerate `BUILD.gn` files.
+
+## Can't find and include `build.rs` output
+
+Third-party crates may depend on `build.rs` output - typically through
+`include!` of one or more files from the `env!("OUT_DIR")` directory.
+If `gn` and `ninja` are not aware of these `build.rs` outputs, then it may
+lead to build errors like the one:
+
+```
+   --> ../../third_party/rust/chromium_crates_io/vendor/rustversion-v1/src/lib.rs:217:30
+    |
+217 | const RUSTVERSION: Version = include!(concat!(env!("OUT_DIR"), "/version.expr"));
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ in this macro invocation
+    |
+   --> library/core/src/macros/mod.rs:1487:4
+    |
+    = note: in this expansion of `include!`
+```
+
+To fix the error above:
+
+* check if `build_script_outputs` in `gnrt_config.toml` lists
+  all `build.rs` outputs.
+    - See a comment at the top of `gnrt_config.toml` for more information
+    - After editing `gnrt_config.toml` run
+      `tools/crates/run_gnrt.py gen` to regenerate `BUILD.gn` files.
+

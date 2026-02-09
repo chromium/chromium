@@ -193,8 +193,11 @@ def verify_inputs(depline, sources, abs_build_root):
   # config rules.
   for file_files_key in missing_files:
     gn_type = "sources" if file_files_key.endswith(".rs") else "inputs"
-    print(f'ERROR: file not in GN {gn_type}: {found_files[file_files_key]}',
+    print(f'ERROR: Rust source file or input not in GN {gn_type}: ' +
+          f'{found_files[file_files_key]}',
           file=sys.stderr)
+  print('NOTE: See `//docs/rust/build_errors_guide.md` for more information.',
+        file=sys.stderr)
   return False
 
 

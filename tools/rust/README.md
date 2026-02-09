@@ -131,82 +131,22 @@ A build error when building the stdlib in Chromium may look like:
 ```
 FAILED: local_rustc_sysroot/lib/rustlib/x86_64-unknown-linux-gnu/lib/libstd.rlib
 ...build command...
-ERROR: file not in GN sources: ../../third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../portable-simd/crates/std_float/src/lib.rs
+ERROR: Rust source file or input not in GN sources: ../../third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../portable-simd/crates/std_float/src/lib.rs
 ```
 
 Or:
 ```
 FAILED: local_rustc_sysroot/lib/rustlib/x86_64-unknown-linux-gnu/lib/libstd.rlib
 ...build command...
-ERROR: file not in GN inputs: ../../third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../stdarch/crates/core_arch/src/core_arch_docs.md
+ERROR: Rust source file or input not in GN inputs: ../../third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../stdarch/crates/core_arch/src/core_arch_docs.md
 ```
 
-When building the stdlib in Chromium, the GN rules must have every rust source
-or other input file that makes up the crate listed in the `sources` and
-`inputs` GN variables. gnrt will walk the directory tree from the root of the
-crate and put every relevant file into the set. But sometimes a crate includes
-modules from paths outside the crate root's directory tree, with a path
-directive such as
-```rs
-#[path = "../../stuff.rs"]
-mod stuff;
-```
-or will `include!()` a file from another path, which is common for `.md` files:
-```rs
-include!("../../other_place.md")
-```
-
-The first error is saying the source file `std_float/src/lib.rs` did not
-appear in the `sources` variable. The `../../` part of the path shows that
-this is outside the crate root's directory tree. The second error is saying
-that `core_arch/src/core_arch_docs.md` did not appear in the `inputs` variable.
-
-To fix the error:
-* Determine the path that is missing, relative to the crate root. In the above
-  example this is `../../portable-simd/crates/std_float/src`. We could also use
-  `../../portable-simd` or anything in between, though that would add a lot
-  more sources to the GN rules than is necessary in this case. It's best to
-  point to the directory of the module root (where the `lib.rs` or `mod.rs`
-  is located).
-* Download the roll CL (on Gerrit, click on the 3 dots in the upper right
-  corner and click on "Download patch").
-* Find the failing build target crate's rules in
-  `//build/rust/std/gnrt_config.toml`. The failing crate in the above example
-  is `libstd.rlib`, so we want the `[crate.std]` section of the config file.
-* Determine if the target being built is a library or a build script. Build
-  script targets end with the suffix `_build_script`. For example:
-  ```
-  [13627/84339] RUST(BIN) clang_x64_for_rust_host_build_tools/compiler_builtins_compiler_builtins_vunknown_build_script
-  python3 ../../build/rust/gni_impl/rustc_wrapper.py --rustc=../../third_party/rust-toolchain/bin/rustc --depfi...(too long)
-  ERROR: file not in GN sources: ../../third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.123/configure.rs
-  ```
-* Determine if the missing file should go in `sources` or `inputs`.
-  * For `sources`, add the path to a `extra_src_roots` list in the crate's
-    rules. For the above example, we could add
-    `extra_src_roots = ['../../portable-simd/crates/std_float/src']`.
-    * Or if it was a build script target, then
-      `extra_build_script_src_roots = ['../../portable-simd/crates/std_float/src']`.
-  * For `inputs`, add the path to a `extra_input_roots` list in the crate's
-    rules. For the above example, we could add
-    `extra_input_roots = ['../../stdarch/crates/core_arch/src']`.
-    * Or if it was a build script target, then
-      `extra_build_script_input_roots = ['../../stdarch/crates/core_arch/src']`.
-* With the roll CL checked out, run `gclient sync`.
-
-*** note
-NOTE: `gclient sync` will download the version of the rust toolchain from the
-roll CL. In order for this to work, the upload_rust bots should've completed and
-`copy_staging_to_prod_and_goma.sh should've been run.
-***
-
-* Run `tools/rust/gnrt_stdlib.py` to use gnrt to rebuild the stdlib GN rules
-  using the updated config.
-
-*** note
-NOTE: All gnrt_config options are found in
-[//tools/crates/gnrt/lib/config.rs](https://source.chromium.org/chromium/chromium/src/+/main:tools/crates/gnrt/lib/config.rs).
-The `CrateConfig` type has the various per-crate config options.
-***
+How to fix such errors is described in
+[`//docs/rust/build_errors_guide.md`](../../docs/rust/build_errors_guide.md)
+(search for "Rust source file or input not in GN inputs").
+Note that regenerating `BUILD.gn` for Rust standard library requires a slightly
+different `gnrt` invocation - you should use the `tools/rust/gnrt_stdlib.py`
+script.
 
 ### Generating `BUILD.gn` files for stdlib crates
 

@@ -113,19 +113,15 @@ with discovering additional files consumed with something like
 So, if you see:
 
 ```
-ERROR: file not in GN sources:
+ERROR: Rust source file or input not in GN sources:
 ../../third_party/rust/chromium_crates_io/vendor/some_crate/README.md
 ```
 
-Then you can:
+Then you can add the missing files to
+`third_party/rust/chromium_crates_io/gnrt_config.toml` and then
+re-generate `BUILD.gn` files by running
+`tools/crates/run_gnrt.py gen`.
 
-* Add the missing files to
-  `third_party/rust/chromium_crates_io/gnrt_config.toml` - for example:
-
-  ```
-  [crate.some_crate]
-  extra_input_roots = ['../README.md']
-  ```
-
-* Re-generate `BUILD.gn` files by running:
-  `tools/crates/run_gnrt.py gen`
+See also
+[`//docs/rust/build_errors_guide.md`](../../docs/rust/build_errors_guide.md)
+(search for "Rust source file or input not in GN inputs").
