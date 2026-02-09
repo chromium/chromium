@@ -2669,12 +2669,13 @@ INSTANTIATE_TEST_SUITE_P(
     DocumentIsolationPolicyWithLogicalCOIBrowserTest,
     kTestParams,
     DocumentIsolationPolicyWithLogicalCOIBrowserTest::DescribeParams);
-static auto kTestParamsWithSiteIsolation = testing::Combine(
-    testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-    testing::Bool(),
-    testing::Bool(),
-    testing::Values(SiteIsolationStatus::kSiteIsolation,
-                    SiteIsolationStatus::kPartialSiteIsolation));
+static auto kTestParamsWithSiteIsolation =
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Values(SiteIsolationStatus::kSiteIsolation,
+                                     SiteIsolationStatus::kPartialSiteIsolation,
+                                     SiteIsolationStatus::kNoSiteIsolation));
 INSTANTIATE_TEST_SUITE_P(All,
                          DocumentIsolationPolicyBrowserTest,
                          kTestParamsWithSiteIsolation,
