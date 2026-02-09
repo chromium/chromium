@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -183,6 +184,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
 
         // Setup the shopping service.
         CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
+        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(false);
         doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
 
         ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
@@ -293,8 +295,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                 BaseCustomTabRootUiCoordinator.isGoogleBottomBarEnabled(null));
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     @MediumTest
     public void testInitProfileDependantFeatures_callsInitDefaultSearchEngine() {
