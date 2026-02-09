@@ -40,17 +40,19 @@ public class PasswordEchoSplitSettingHandlerTest {
     private static class SettingType {
         public final String key;
         public final String pref;
+        public final int defaultVal;
 
-        private SettingType(String key, String pref) {
+        private SettingType(String key, String pref, int defaultVal) {
             this.key = key;
             this.pref = pref;
+            this.defaultVal = defaultVal;
         }
 
         private static final SettingType PHYSICAL =
                 new SettingType(
-                        "show_password_physical", Pref.WEB_KIT_PASSWORD_ECHO_ENABLED_PHYSICAL);
+                        "show_password_physical", Pref.WEB_KIT_PASSWORD_ECHO_ENABLED_PHYSICAL, 0);
         private static final SettingType TOUCH =
-                new SettingType("show_password_touch", Pref.WEB_KIT_PASSWORD_ECHO_ENABLED_TOUCH);
+                new SettingType("show_password_touch", Pref.WEB_KIT_PASSWORD_ECHO_ENABLED_TOUCH, 1);
 
         public static SettingType[] values() {
             return new SettingType[] {PHYSICAL, TOUCH};
@@ -113,7 +115,9 @@ public class PasswordEchoSplitSettingHandlerTest {
 
     private boolean isPasswordEchoEnabledInSystemSettings(SettingType type) {
         return Settings.Secure.getInt(
-                        ContextUtils.getApplicationContext().getContentResolver(), type.key, 0)
+                        ContextUtils.getApplicationContext().getContentResolver(),
+                        type.key,
+                        type.defaultVal)
                 == 1;
     }
 
@@ -156,6 +160,33 @@ public class PasswordEchoSplitSettingHandlerTest {
             setSystemPasswordEchoAndAssertState(type, false);
             setSystemPasswordEchoAndAssertState(type, true);
             setSystemPasswordEchoAndAssertState(type, false);
+        }
+    }
+
+    // If the setting was never set by the user, the system should have the appropriate default
+    // value according to the setting type.
+    // The default for the touch setting is 'enabled'.
+    // The default for the physical setting is 'disabled'.
+    @Test
+    @SmallTest
+    public void testDefaultStateIfNeverSet() throws ExecutionException, IOException {
+        for (SettingType type : SettingType.values()) {
+            // Clear the setting from the device to test default behavior.
+            final String initialValue = mInitialShowPasswordValue.getOrDefault(type, "null");
+            if (!initialValue.equals("null")) {
+                final String shellCommand = String.format("settings delete secure %s", type.key);
+                mDevice.executeShellCommand(shellCommand);
+            }
+
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        PasswordEchoSettingState.getInstance()
+                                .getSettingObserver()
+                                .onChange(true, Settings.Secure.getUriFor(type.key));
+                    });
+
+            Assert.assertEquals(type.defaultVal == 1, isPasswordEchoEnabledInPrefService(type));
+            Assert.assertEquals(type.defaultVal == 1, isPasswordEchoEnabledInSystemSettings(type));
         }
     }
 }

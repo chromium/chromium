@@ -146,15 +146,21 @@ public class PasswordEchoSettingState {
     }
 
     private void updateLegacySettingState() {
+        // The default value for the legacy setting is 1 (momentarily show). Password echoing has
+        // historically been enabled by default on Android. This default applies if the user has
+        // never explicitly configured the setting.
         mPasswordEchoEnabledLegacy =
                 Settings.System.getInt(
                                 ContextUtils.getApplicationContext().getContentResolver(),
                                 KEY_TEXT_SHOW_PASSWORD_LEGACY,
-                                0)
+                                1)
                         == 1;
     }
 
     private void updatePhysicalSettingState() {
+        // The default value for the new physical setting is 0 (instantly hide) for parity with
+        // other operating systems, ensuring passwords remain hidden during physical input. This
+        // default applies if the user has never explicitly configured the setting.
         mPasswordEchoEnabledPhysical =
                 Settings.Secure.getInt(
                                 ContextUtils.getApplicationContext().getContentResolver(),
@@ -164,11 +170,14 @@ public class PasswordEchoSettingState {
     }
 
     private void updateTouchSettingState() {
+        // The default value for the new touch setting is 1 (momentarily show) to maintain
+        // consistency with the legacy touch setting. This default applies if the user has never
+        // explicitly configured the setting.
         mPasswordEchoEnabledTouch =
                 Settings.Secure.getInt(
                                 ContextUtils.getApplicationContext().getContentResolver(),
                                 KEY_TEXT_SHOW_PASSWORD_TOUCH,
-                                0)
+                                1)
                         == 1;
     }
 
