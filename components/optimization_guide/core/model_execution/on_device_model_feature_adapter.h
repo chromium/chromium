@@ -18,7 +18,6 @@
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
-#include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/model_execution/response_parser.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -28,7 +27,6 @@
 
 namespace optimization_guide {
 
-class Redactor;
 class ResponseParser;
 
 // The maximum number of tokens then model will support.
@@ -93,17 +91,10 @@ class OnDeviceModelFeatureAdapter final
   friend class base::RefCounted<OnDeviceModelFeatureAdapter>;
   ~OnDeviceModelFeatureAdapter();
 
-  // Redacts the content of current response, given the last executed message.
-  RedactResult Redact(MultimodalMessageReadView last_message,
-                      std::string& current_response) const;
 
-  // Returns the string that is used for checking redaction against.
-  std::string GetStringToCheckForRedacting(
-      MultimodalMessageReadView message) const;
 
   proto::OnDeviceModelExecutionFeatureConfig config_;
   TokenLimits token_limits_;
-  Redactor redactor_;
   std::unique_ptr<ResponseParser> parser_;
 };
 
