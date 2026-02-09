@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_line_resolver.h"
+#include "third_party/blink/renderer/core/style/grid_position.h"
 
 namespace blink {
 
@@ -154,6 +155,35 @@ void GridLanesNode::AdjustGridLanesItemSpans(
     AdjustGridLanesItemSpan(grid_lanes_item, line_resolver,
                             grid_axis_direction);
   }
+}
+
+// TODO(almaher): We may be able to optimize this by caching the largest span
+// size when children are added to `LayoutGridLanes`, but this would require
+// extra invalidation logic, which, given that we only need this in certain
+// scoped cases at the moment, would end up being more expensive in the total.
+wtf_size_t GridLanesNode::ComputeLargestChildSpanSize() const {
+  const ComputedStyle& style = Style();
+  const auto grid_axis_direction = style.GridLanesTrackSizingDirection();
+  wtf_size_t largest_span = 0;
+
+  // The largest span size may be inaccurate if it depends on line names or
+  // numbers, as the final span size requires knowing the full number of auto
+  // repeats. We use 1 auto repeat as a heuristic here to get a "reasonable"
+  // estimate.
+  const GridLineResolver temp_line_resolver(style, 1u);
+  for (auto child = FirstChild(); child; child = child.NextSibling()) {
+    if (child.IsOutOfFlowPositioned()) {
+      continue;
+    }
+
+    const ComputedStyle& child_style = child.Style();
+    GridSpan item_span = temp_line_resolver.ResolveGridPositionsFromStyle(
+        child_style, grid_axis_direction);
+
+    largest_span = std::max(largest_span, item_span.SpanSize());
+  }
+
+  return largest_span;
 }
 
 }  // namespace blink

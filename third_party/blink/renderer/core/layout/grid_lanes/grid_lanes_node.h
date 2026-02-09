@@ -50,6 +50,12 @@ class CORE_EXPORT GridLanesNode final : public BlockNode {
   // `line_resolver`.
   void AdjustGridLanesItemSpans(GridItems& grid_lanes_items,
                                 const GridLineResolver& line_resolver) const;
+
+  // Computes the largest span size among all children by examining their
+  // grid placement styles directly. Note that this may be an inaccurate value
+  // if any child's span size depends on line names or numbers, as the final
+  // span size requires knowing the full number of auto repeats.
+  wtf_size_t ComputeLargestChildSpanSize() const;
 };
 
 template <>

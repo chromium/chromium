@@ -156,7 +156,7 @@ wtf_size_t CalculateAutomaticRepetitions(
     LayoutUnit available_size,
     LayoutUnit min_available_size,
     LayoutUnit max_available_size,
-    const Vector<LayoutUnit>* intrinsic_repeat_track_sizes) {
+    const HashMap<GridTrackSize, LayoutUnit>* intrinsic_repeat_track_sizes) {
   DCHECK(track_list.HasAutoRepeater());
 
   if (available_size == kIndefiniteSize) {
@@ -202,8 +202,9 @@ wtf_size_t CalculateAutomaticRepetitions(
 
       LayoutUnit track_contribution;
       if (is_track_size_intrinsic) {
-        CHECK_EQ(intrinsic_repeat_track_sizes->size(), repeater_track_count);
-        track_contribution = (*intrinsic_repeat_track_sizes)[i];
+        auto it = intrinsic_repeat_track_sizes->find(track_size);
+        CHECK_NE(it, intrinsic_repeat_track_sizes->end());
+        track_contribution = it->value;
       } else if (fixed_max_track_breadth && fixed_min_track_breadth) {
         track_contribution =
             std::max(*fixed_max_track_breadth, *fixed_min_track_breadth);

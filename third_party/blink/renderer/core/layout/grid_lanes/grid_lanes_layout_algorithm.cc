@@ -98,7 +98,7 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
     if (needs_intrinsic_track_size) {
       CHECK(collapsed_track_indexes.empty());
 
-      Vector<LayoutUnit> intrinsic_repeat_track_sizes =
+      HashMap<GridTrackSize, LayoutUnit> intrinsic_repeat_track_sizes =
           GetIntrinsicRepeaterTrackSizes(!grid_lanes_items.IsEmpty(),
                                          track_collection);
       track_collection = ComputeGridAxisTracks(
@@ -185,7 +185,7 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   if (needs_intrinsic_track_size) {
     CHECK(collapsed_track_indexes.empty());
 
-    Vector<LayoutUnit> intrinsic_repeat_track_sizes =
+    HashMap<GridTrackSize, LayoutUnit> intrinsic_repeat_track_sizes =
         GetIntrinsicRepeaterTrackSizes(!grid_lanes_items.IsEmpty(),
                                        track_collection);
     track_collection = ComputeGridAxisTracks(
@@ -745,11 +745,6 @@ GridItems GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
   const auto grid_axis_direction = style.GridLanesTrackSizingDirection();
   const bool is_for_columns = grid_axis_direction == kForColumns;
 
-  const LayoutUnit grid_axis_gap =
-      GridTrackSizingAlgorithm::CalculateGutterSize(
-          style, grid_lanes_available_size_,
-          is_for_columns ? kForColumns : kForRows);
-
   wtf_size_t max_end_line;
   GridItems virtual_items;
 
@@ -847,24 +842,9 @@ GridItems GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
               space, /*subgrid_minmax_sizes=*/MinMaxSizesResult(), &item_data,
               maybe_clamp);
 
-      // Add the margin sum to all contribution sizes, and adjust each
-      // if we are running an initial track sizing pass for intrinsic
-      // auto repeats.
-      const LayoutUnit total_gap_spanned = grid_axis_gap * (span_size - 1);
+      // Add the margin sum to all contribution sizes.
       auto AdjustItemContribution = [&](LayoutUnit& contribution_size) {
         contribution_size += margin_sum;
-
-        // We have a repeat() track definition with an intrinsic sized track(s).
-        // The current track sizing pass is used to find the track size to apply
-        // to the intrinsic sized track(s). If the current item spans more than
-        // one track, treat it as if it spans one track per the intrinsic
-        // tracks and repeat algorithm [1].
-        //
-        // [1] https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
-        if (needs_intrinsic_track_size && span_size > 1) {
-          contribution_size -= total_gap_spanned;
-          contribution_size /= LayoutUnit(span_size);
-        }
       };
       AdjustItemContribution(min_max_contribution.min_size);
       AdjustItemContribution(min_max_contribution.max_size);
@@ -902,38 +882,62 @@ GridItems GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
     //
     // [1] https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
     if (span.IsIndefinite() || needs_intrinsic_track_size) {
-      // For groups of items that are auto-placed, we need to create copies of
-      // the virtual item and place them at each possible start line. At the end
-      // of the loop below, `span` will be located at the last start line, which
-      // should be the position of the last copy appended to `virtual_items`.
-      if (needs_intrinsic_track_size) {
-        span = GridSpan::TranslatedDefiniteGridSpan(0, 1);
-      } else {
-        span =
-            GridSpan::TranslatedDefiniteGridSpan(0, span.IndefiniteSpanSize());
-      }
+      auto PlaceItemInEveryPosition = [&](GridSpan& item_span) {
+        while (item_span.EndLine() < max_end_line) {
+          auto* item_copy = MakeGarbageCollected<GridItemData>(*virtual_item);
+          item_copy->resolved_position.SetSpan(item_span, grid_axis_direction);
+          virtual_items.Append(std::move(item_copy));
 
-      while (span.EndLine() < max_end_line) {
-        auto* item_copy = MakeGarbageCollected<GridItemData>(*virtual_item);
-        item_copy->resolved_position.SetSpan(span, grid_axis_direction);
-        virtual_items.Append(std::move(item_copy));
+          // `Translate` will move the span to the start and end of the next
+          // line, allowing us to "slide" over the entire implicit grid.
+          item_span.Translate(1);
 
-        // `Translate` will move the span to the start and end of the next line,
-        // allowing us to "slide" over the entire implicit grid.
-        span.Translate(1);
-
-        // Per the auto-fit heuristic, don't add auto placed items to tracks
-        // within the auto-fit range that are greater than the total span count
-        // of auto placed items.
-        //
-        // https://drafts.csswg.org/css-grid-3/#repeat-auto-fit
-        if (!auto_fit_span.IsIndefinite()) {
-          while (span.Intersects(auto_fit_span) &&
-                 span.EndLine() > unplaced_item_span_count) {
-            span.Translate(1);
+          // Per the auto-fit heuristic, don't add auto placed items to
+          // tracks within the auto-fit range that are greater than the
+          // total span count of auto placed items.
+          //
+          // https://drafts.csswg.org/css-grid-3/#repeat-auto-fit
+          if (!auto_fit_span.IsIndefinite()) {
+            while (item_span.Intersects(auto_fit_span) &&
+                   item_span.EndLine() > unplaced_item_span_count) {
+              item_span.Translate(1);
+            }
           }
         }
+      };
+
+      // If `needs_intrinsic_track_size` is true, that means we have a repeat()
+      // track definition with an intrinsic sized track(s). The current track
+      // sizing pass is used to find the track size to apply to the intrinsic
+      // sized track(s). During this pass, we need to use the growth limit as
+      // the track size for intrinsic tracks. However, the growth limit is
+      // stored within a Grid set. To enable this look up, we create a
+      // single-span virtual item that has zero contribution sizes, and place it
+      // in every position. This guarantees we have one track per set, allowing
+      // us to look up the growth limit for each track quickly and accurately.
+      //
+      // [1] https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
+      if (needs_intrinsic_track_size && virtual_items.IsEmpty()) {
+        auto* item_copy = MakeGarbageCollected<GridItemData>(*virtual_item);
+        GridSpan single_span = GridSpan::TranslatedDefiniteGridSpan(0, 1);
+        virtual_item->ClearContributionSizes();
+        PlaceItemInEveryPosition(single_span);
+
+        if (single_span.EndLine() <= max_end_line) {
+          virtual_item->resolved_position.SetSpan(single_span,
+                                                  grid_axis_direction);
+          virtual_items.Append(virtual_item);
+        }
+        virtual_item = item_copy;
       }
+
+      // For groups of items that are auto-placed, we need to create
+      // copies of the virtual item and place them at each possible start
+      // line. At the end of the loop below, `span` will be located at the
+      // last start line, which should be the position of the last copy
+      // appended to `virtual_items`.
+      span = GridSpan::TranslatedDefiniteGridSpan(0, span.SpanSize());
+      PlaceItemInEveryPosition(span);
     }
 
     DCHECK(span.IsTranslatedDefinite());
@@ -1043,7 +1047,7 @@ GridLanesLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren() {
       if (needs_intrinsic_track_size) {
         CHECK(collapsed_track_indexes.empty());
 
-        Vector<LayoutUnit> intrinsic_repeat_track_sizes =
+        HashMap<GridTrackSize, LayoutUnit> intrinsic_repeat_track_sizes =
             GetIntrinsicRepeaterTrackSizes(!grid_lanes_items.IsEmpty(),
                                            track_collection);
         track_collection = ComputeGridAxisTracks(
@@ -1113,7 +1117,7 @@ LayoutUnit GridLanesLayoutAlgorithm::ComputeGridLanesItemBlockContribution(
 
 GridSizingTrackCollection GridLanesLayoutAlgorithm::ComputeGridAxisTracks(
     const SizingConstraint sizing_constraint,
-    const Vector<LayoutUnit>* intrinsic_repeat_track_sizes,
+    const HashMap<GridTrackSize, LayoutUnit>* intrinsic_repeat_track_sizes,
     const bool should_apply_inline_size_containment,
     GridItems& grid_lanes_items,
     Vector<wtf_size_t>& collapsed_track_indexes,
@@ -1160,17 +1164,17 @@ GridSizingTrackCollection GridLanesLayoutAlgorithm::BuildGridAxisTracks(
       sizing_constraint, line_resolver.AutoRepetitions(grid_axis_direction),
       start_offset);
 
-  // Cache data for DevTools inspector highlighting.
-  if (!needs_intrinsic_track_size) {
-    GridPlacementData placement_data(line_resolver);
-    if (grid_axis_direction == kForColumns) {
-      placement_data.column_start_offset = start_offset;
-    } else {
-      placement_data.row_start_offset = start_offset;
-    }
-    To<LayoutGridLanes>(Node().GetLayoutBox())
-        ->SetCachedPlacementData(std::move(placement_data));
+  // Cache placement data. This is used for DevTools inspector highlighting and
+  // also to access the computed auto repetitions in
+  // GetIntrinsicRepeaterTrackSizes.
+  GridPlacementData placement_data(line_resolver);
+  if (grid_axis_direction == kForColumns) {
+    placement_data.column_start_offset = start_offset;
+  } else {
+    placement_data.row_start_offset = start_offset;
   }
+  To<LayoutGridLanes>(Node().GetLayoutBox())
+      ->SetCachedPlacementData(std::move(placement_data));
 
   auto BuildRanges = [&]() {
     GridRangeBuilder range_builder(
@@ -1233,50 +1237,78 @@ GridSizingTrackCollection GridLanesLayoutAlgorithm::BuildGridAxisTracks(
   return track_collection;
 }
 
-Vector<LayoutUnit> GridLanesLayoutAlgorithm::GetIntrinsicRepeaterTrackSizes(
+HashMap<GridTrackSize, LayoutUnit>
+GridLanesLayoutAlgorithm::GetIntrinsicRepeaterTrackSizes(
     bool has_items,
     const GridSizingTrackCollection& track_collection) const {
-  CHECK_NE(track_collection.GetIntrinsicSizedRepeaterSetIndex(), kNotFound);
   const ComputedStyle& style = Style();
-  const bool is_for_columns =
-      style.GridLanesTrackSizingDirection() == kForColumns;
+  GridTrackSizingDirection grid_axis_direction =
+      style.GridLanesTrackSizingDirection();
+  const bool is_for_columns = grid_axis_direction == kForColumns;
+
+  HashMap<GridTrackSize, LayoutUnit> intrinsic_repeat_track_sizes;
 
   const GridTrackList& track_list =
       is_for_columns ? style.GridTemplateColumns().GetTrackList()
                      : style.GridTemplateRows().GetTrackList();
-  const wtf_size_t repeat_track_count = track_list.AutoRepeatTrackCount();
 
-  Vector<LayoutUnit> intrinsic_repeat_track_sizes(repeat_track_count);
+  // `repeat_size` is the number of tracks within the auto repeat definition,
+  // and `repeat_track_count` is the total number of tracks when the
+  // auto repeat is expanded.
+  const wtf_size_t repeat_size = track_list.AutoRepeatTrackCount();
+  const wtf_size_t repeat_track_count =
+      Node().CachedPlacementData().line_resolver.AutoRepeatTrackCount(
+          grid_axis_direction);
 
-  if (!has_items) {
-    // If there are no items, the size of the intrinsic tracks within an auto
-    // repeat are zero.
-    return intrinsic_repeat_track_sizes;
+  const wtf_size_t auto_repeat_index = track_list.AutoRepeatTrackIndex();
+  const wtf_size_t track_count_before_auto_repeat =
+      track_list.TrackCountBeforeAutoRepeat();
+
+  // Index of the auto repeat definition we are currently processing.
+  wtf_size_t intrinsic_repeat_track_index = 0;
+  for (wtf_size_t i = track_count_before_auto_repeat;
+       i < track_count_before_auto_repeat + repeat_track_count - 1; ++i) {
+    LayoutUnit track_size;
+    if (has_items) {
+      // We guarantee that during the track sizing pass to determine intrinsic
+      // repeat track sizes, we have at least one single-span virtual item per
+      // track, which guarantees one track per set.
+      GridSet current_set = track_collection.GetSetAt(i);
+      CHECK_EQ(current_set.track_count, 1U);
+      track_size = current_set.GrowthLimit();
+    }
+
+    const GridTrackSize& track_definition = track_list.RepeatTrackSize(
+        auto_repeat_index, intrinsic_repeat_track_index);
+
+    auto track_size_it = intrinsic_repeat_track_sizes.find(track_definition);
+    if (track_size_it == intrinsic_repeat_track_sizes.end()) {
+      intrinsic_repeat_track_sizes.Set(track_definition, track_size);
+    } else {
+      // If multiple tracks of the same definition within the repeat() resolve
+      // to different sizes, we take the largest size to use when calculating
+      // the final number of auto repetitions to create.
+      track_size_it->value = max(track_size_it->value, track_size);
+    }
+
+    if (intrinsic_repeat_track_index == repeat_size - 1) {
+      // If there are no items, we only need to account for the track
+      // definitions in one full repeat() expansion.
+      if (!has_items) {
+        break;
+      }
+      intrinsic_repeat_track_index = 0;
+    } else {
+      ++intrinsic_repeat_track_index;
+    }
   }
 
-  for (wtf_size_t i = 0; i < repeat_track_count; ++i) {
-    GridSet current_set = track_collection.GetSetAt(
-        track_collection.GetIntrinsicSizedRepeaterSetIndex() + i);
-
-    // During the first pass to calculate the intrinsic repeater track
-    // sizes, we consolidate all spanners to a single span and place
-    // the largest contribution in every track position, which will
-    // guarantee that each set will have a single track.
-    CHECK_EQ(current_set.track_count, 1U);
-
-    // Note that when `needs_intrinsic_track_size` is true, we skip the
-    // steps to distribute free space during track sizing. This means that
-    // the base track size at this point represents the size of the
-    // intrinsic track without free space distribution and hasn't taken the
-    // growth limit into account.
-    intrinsic_repeat_track_sizes[i] = current_set.GrowthLimit();
-  }
   return intrinsic_repeat_track_sizes;
 }
 
 // https://drafts.csswg.org/css-grid-2/#auto-repeat
 wtf_size_t GridLanesLayoutAlgorithm::ComputeAutomaticRepetitions(
-    const Vector<LayoutUnit>* intrinsic_repeat_track_sizes,
+    const HashMap<GridTrackSize, LayoutUnit>* intrinsic_repeat_track_sizes,
     bool& needs_intrinsic_track_size) const {
   const ComputedStyle& style = Style();
   GridTrackSizingDirection grid_axis_direction =
@@ -1292,15 +1324,24 @@ wtf_size_t GridLanesLayoutAlgorithm::ComputeAutomaticRepetitions(
   }
 
   // To determine an intrinsic track size within a repeat, we need to expand
-  // them out once, and run track sizing to get the actual size [1]. Then we
-  // will run this again with the actual intrinsic track size within a final
-  // track sizing pass based on this size.
+  // them out to capture all possible automatic placements of each item, and
+  // run track sizing to get the actual size [1]. Then we will run this again
+  // with the actual intrinsic track size within a final track sizing pass
+  // based on this size.
   //
-  // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
+  // According to the spec [1], the total number of tracks to expand to is
+  // '2 + (largest span - 2)/(number of tracks in repeat())' rounded down.
+  //
+  // [1] https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
   if (track_list.HasIntrinsicSizedRepeater() && !intrinsic_repeat_track_sizes) {
     CHECK(!needs_intrinsic_track_size);
+    CHECK_GT(track_list.AutoRepeatTrackCount(), 0u);
     needs_intrinsic_track_size = true;
-    return 1;
+
+    const wtf_size_t largest_span = Node().ComputeLargestChildSpanSize();
+    return 2 + (largest_span > 2
+                    ? (largest_span - 2) / track_list.AutoRepeatTrackCount()
+                    : 0);
   }
 
   // TODO(almaher): We will need special computation of automatic repetitions

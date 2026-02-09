@@ -33,6 +33,8 @@
 
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
 namespace blink {
 
@@ -108,6 +110,21 @@ class GridTrackSize {
     CacheMinMaxTrackBreadthTypes();
   }
 
+  static GridTrackSize DeletedTrackSize() {
+    GridTrackSize size(Length::Auto());
+    size.is_deleted_ = true;
+    return size;
+  }
+
+  static GridTrackSize EmptyTrackSize() {
+    GridTrackSize size(Length::Auto());
+    size.is_empty_ = true;
+    return size;
+  }
+
+  bool IsDeletedValue() const { return is_deleted_; }
+  bool IsEmptyValue() const { return is_empty_; }
+
   const Length& FitContentTrackBreadth() const {
     DCHECK(type_ == kFitContentTrackSizing);
     return fit_content_track_breadth_;
@@ -151,7 +168,8 @@ class GridTrackSize {
     return type_ == other.type_ &&
            min_track_breadth_ == other.min_track_breadth_ &&
            max_track_breadth_ == other.max_track_breadth_ &&
-           fit_content_track_breadth_ == other.fit_content_track_breadth_;
+           fit_content_track_breadth_ == other.fit_content_track_breadth_ &&
+           is_deleted_ == other.is_deleted_ && is_empty_ == other.is_empty_;
   }
 
   void CacheMinMaxTrackBreadthTypes() {
@@ -249,6 +267,35 @@ class GridTrackSize {
   bool min_track_breadth_is_min_content_ : 1;
   bool max_track_breadth_is_min_content_ : 1;
   bool track_size_definition_is_intrinsic_ : 1;
+  bool is_deleted_ : 1 = false;
+  bool is_empty_ : 1 = false;
+};
+
+template <>
+struct HashTraits<GridTrackSize> : GenericHashTraits<GridTrackSize> {
+  STATIC_ONLY(HashTraits);
+
+  static unsigned GetHash(const GridTrackSize& key) {
+    unsigned type_hash = HashInt(static_cast<unsigned>(key.GetType()));
+    unsigned min_breadth_hash = key.MinTrackBreadth().GetHash();
+    unsigned max_breadth_hash = key.MaxTrackBreadth().GetHash();
+    unsigned fit_content_hash =
+        key.IsFitContent() ? key.FitContentTrackBreadth().GetHash() : 0;
+    unsigned intrinsic_hash =
+        HashInt(static_cast<unsigned>(key.IsTrackDefinitionIntrinsic()));
+
+    return HashInts(
+        HashInts(type_hash, min_breadth_hash),
+        HashInts(HashInts(max_breadth_hash, fit_content_hash), intrinsic_hash));
+  }
+
+  static constexpr bool kEmptyValueIsZero = false;
+
+  static GridTrackSize EmptyValue() { return GridTrackSize::EmptyTrackSize(); }
+
+  static GridTrackSize DeletedValue() {
+    return GridTrackSize::DeletedTrackSize();
+  }
 };
 
 }  // namespace blink

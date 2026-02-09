@@ -1149,32 +1149,6 @@ void GridSizingTrackCollection::BuildSets(
               TrackSpanProperties::kIsDependentOnAvailableSize);
         }
 
-        if (intrinsic_sized_repeater_set_index_ == kNotFound &&
-            range.IsAutoRepeat() &&
-            set_track_size.IsTrackDefinitionIntrinsic()) {
-          // This is not yet supported in Grid, only Grid-lanes.
-          CHECK(is_grid_lanes);
-
-          // Get the index of the first set of the intrinsic auto repeat. For
-          // example, if the track definition was repeat(auto-fill, 50px auto),
-          // we want the index of the set that holds 50px.
-          wtf_size_t repeater_offset = range.repeater_offset;
-
-          // Use the size since that will be the index of the current set once
-          // it is added.
-          wtf_size_t set_index = sets_.size();
-
-          // If this range/set doesn't start the intrinsic auto repeat, walk the
-          // sets backward until we hit the first track in the repeat.
-          while (repeater_offset > 0) {
-            set_index--;
-            CHECK_LT(set_index, sets_.size());
-            repeater_offset -= sets_[set_index].track_count;
-          }
-          CHECK_EQ(repeater_offset, 0U);
-          intrinsic_sized_repeater_set_index_ = set_index;
-        }
-
         CacheSetProperties(sets_.emplace_back(set_track_count, set_track_size,
                                               is_available_size_indefinite));
       }

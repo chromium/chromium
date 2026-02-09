@@ -278,6 +278,12 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
         std::max(contribution_sizes->min_clamp_size, min_clamp_size);
   }
 
+  // Clear all contribution sizes stored on a virtual item so that they are set
+  // back to their default values.
+  void ClearContributionSizes() {
+    contribution_sizes = VirtualItemContributions();
+  }
+
   void Trace(Visitor* visitor) const { visitor->Trace(node); }
 
   BlockNode node{nullptr};

@@ -113,7 +113,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // that were collapsed as a result of auto-fit.
   GridSizingTrackCollection ComputeGridAxisTracks(
       const SizingConstraint sizing_constraint,
-      const Vector<LayoutUnit>* intrinsic_repeat_track_sizes,
+      const HashMap<GridTrackSize, LayoutUnit>* intrinsic_repeat_track_sizes,
       const bool should_apply_inline_size_containment,
       GridItems& grid_lanes_items,
       Vector<wtf_size_t>& collapsed_track_indexes,
@@ -133,7 +133,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // that has intrinsic track size(s). This method assumes that such an auto
   // repeat exists in `track_collection`. `has_items` indicates whether there
   // are any grid-lanes items in the grid-lanes container.
-  Vector<LayoutUnit> GetIntrinsicRepeaterTrackSizes(
+  HashMap<GridTrackSize, LayoutUnit> GetIntrinsicRepeaterTrackSizes(
       bool has_items,
       const GridSizingTrackCollection& track_collection) const;
 
@@ -145,7 +145,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // track sizing pass will be required once we've computed the intrinsic track
   // size.
   wtf_size_t ComputeAutomaticRepetitions(
-      const Vector<LayoutUnit>* intrinsic_repeat_track_sizes,
+      const HashMap<GridTrackSize, LayoutUnit>* intrinsic_repeat_track_sizes,
       bool& needs_intrinsic_track_size) const;
 
   // From https://drafts.csswg.org/css-grid-3/#track-sizing-performance:

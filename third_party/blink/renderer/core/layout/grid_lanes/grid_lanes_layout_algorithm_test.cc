@@ -41,7 +41,7 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     if (needs_intrinsic_track_size) {
       CHECK(collapsed_track_indexes_.empty());
 
-      Vector<LayoutUnit> intrinsic_repeat_track_sizes =
+      HashMap<GridTrackSize, LayoutUnit> intrinsic_repeat_track_sizes =
           algorithm.GetIntrinsicRepeaterTrackSizes(!grid_lanes_items.IsEmpty(),
                                                    grid_axis_tracks_.value());
       grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(

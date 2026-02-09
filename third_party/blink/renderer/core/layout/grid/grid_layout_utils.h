@@ -6,8 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_LAYOUT_UTILS_H_
 
 #include "third_party/blink/renderer/core/style/grid_enums.h"
+#include "third_party/blink/renderer/core/style/grid_track_size.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
@@ -65,7 +67,8 @@ wtf_size_t CalculateAutomaticRepetitions(
     LayoutUnit available_size,
     LayoutUnit min_available_size,
     LayoutUnit max_available_size,
-    const Vector<LayoutUnit>* intrinsic_repeat_track_sizes = nullptr);
+    const HashMap<GridTrackSize, LayoutUnit>* intrinsic_repeat_track_sizes =
+        nullptr);
 
 // Common out-of-flow positioning utilities shared between grid and grid-lanes.
 
