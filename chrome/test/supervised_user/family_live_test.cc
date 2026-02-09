@@ -31,6 +31,7 @@
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/test_support/account_repository.h"
 #include "components/supervised_user/test_support/family_link_settings_state_management.h"
+#include "components/sync/base/data_type.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -76,24 +77,35 @@ bool HasAuthError(syncer::SyncServiceImpl* service) {
 
 class SyncSetupChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit SyncSetupChecker(syncer::SyncServiceImpl* service)
-      : SingleClientStatusChangeChecker(service) {}
+  SyncSetupChecker(syncer::SyncServiceImpl* service,
+                   bool is_browser_user_supervised)
+      : SingleClientStatusChangeChecker(service),
+        is_browser_user_supervised_(is_browser_user_supervised) {}
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting for sync setup to complete";
     if (service()->GetTransportState() ==
-            syncer::SyncService::TransportState::ACTIVE &&
-        service()->IsSyncFeatureActive()) {
-      return true;
+        syncer::SyncService::TransportState::ACTIVE) {
+      if (!is_browser_user_supervised_) {
+        return true;
+      } else if (service()->GetActiveDataTypes().Has(
+                     syncer::SUPERVISED_USER_SETTINGS)) {
+        // For supervised user we wait until the sync service is active and the
+        // data type used for Family Link settings is active (i.e. can be
+        // received from the sync server).
+        return true;
+      }
     }
     // Sync is blocked by an auth error.
     if (HasAuthError(service())) {
       return true;
     }
-
     // Still waiting on sync setup.
     return false;
   }
+
+ private:
+  bool is_browser_user_supervised_ = false;
 };
 
 test_accounts::FamilyMember CreateTestAccountFromCredentialsSwitch(
@@ -152,13 +164,13 @@ BrowserUser& FamilyLiveTest::rpc_issuer() const {
   NOTREACHED();
 }
 
-void FamilyLiveTest::TurnOnSync() {
-  TurnOnSyncFor(*head_of_household_);
-  TurnOnSyncFor(*child_);
+void FamilyLiveTest::SigninToBrowser() {
+  SigninToBrowserFor(*head_of_household_);
+  SigninToBrowserFor(*child_);
 }
 
-void FamilyLiveTest::TurnOnSyncFor(BrowserUser& browser_user) {
-  browser_user.TurnOnSync();
+void FamilyLiveTest::SigninToBrowserFor(BrowserUser& browser_user) {
+  browser_user.SignInToBrowser();
   browser_user.browser().tab_strip_model()->CloseWebContentsAt(
       2, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
   browser_user.browser().tab_strip_model()->CloseWebContentsAt(
@@ -171,13 +183,18 @@ void FamilyLiveTest::TurnOnSyncFor(BrowserUser& browser_user) {
   }
 
   if (IsSwitchEnabled(kWaitForSyncInvalidationReadySwitch)) {
-    // After turning the sync on, wait until this is fully initialized.
+    // After signing in the browser, wait until:
+    // the sync engine has started and it can listen for changed and
+    // receive parental controls synced data types for supervised user.
     LOG(INFO) << "Waiting for sync service to set up invalidations.";
     syncer::SyncServiceImpl* service =
         SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
             &browser_user.profile());
     service->SetInvalidationsForSessionsEnabled(true);
-    CHECK(SyncSetupChecker(service).Wait()) << "SyncSetupChecker timed out.";
+    bool is_supervised_user = (&browser_user == child_.get());
+
+    CHECK(SyncSetupChecker(service, is_supervised_user).Wait())
+        << "SyncSetupChecker timed out.";
     CHECK(InvalidationsStatusChecker(service, /*expected_status=*/true).Wait())
         << "Invalidation checker timed out.";
     LOG(INFO) << "Invalidations ready.";

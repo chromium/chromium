@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_P(KidsProfileUiTest, DisplayInterstitialInPendingState) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                       kInterstitialDisplayed);
 
-  TurnOnSync();
+  SigninToBrowser();
   child().SignOutFromWeb();
 
   GURL url_with_youtube_iframes =

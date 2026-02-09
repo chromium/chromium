@@ -36,7 +36,7 @@ class BrowserUser {
               const NewTabCallback add_tab_function);
   ~BrowserUser();
 
-  void TurnOnSync();
+  void SignInToBrowser();
   void SignOutFromWeb();
   void SignInFromWeb();
 

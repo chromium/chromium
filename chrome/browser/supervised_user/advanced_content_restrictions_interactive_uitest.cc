@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserFamilyLinkSwitchTest,
                        SwitchToggleReceivedByChromeTest) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
                                       kDefineStateObserverId);
-  TurnOnSync();
+  SigninToBrowser();
 
   // Set the cookies switch on FL confirm the setting is received by Chrome.
   RunTestSequence(WaitForStateSeeding(

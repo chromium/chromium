@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoModeInSupervisedContextUiTest,
                        IncognitoModeIsNotAvailableToSupervisedUser) {
   ASSERT_TRUE(
       IncognitoModePrefs::IsIncognitoAllowed(child().browser().profile()));
-  TurnOnSyncFor(child());
+  SigninToBrowserFor(child());
 
   ASSERT_FALSE(
       IncognitoModePrefs::IsIncognitoAllowed(child().browser().profile()));
@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoModeInSupervisedContextUiTest,
 // TODO(https://crbug.com/367205684): SelectMenuItem unsupported
 IN_PROC_BROWSER_TEST_F(IncognitoModeInSupervisedContextUiTest,
                        IncognitoModeIsAvailableToHeadOfHousehold) {
-  TurnOnSyncFor(head_of_household());
+  SigninToBrowserFor(head_of_household());
   ASSERT_TRUE(IncognitoModePrefs::IsIncognitoAllowed(
       head_of_household().browser().profile()));
 

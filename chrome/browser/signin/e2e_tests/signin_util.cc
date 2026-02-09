@@ -24,8 +24,12 @@
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "google_apis/gaia/gaia_urls.h"
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 namespace signin::test {
 
 signin::IdentityManager* identity_manager(Browser* browser) {
@@ -83,6 +87,65 @@ void SignInFunctions::SignInFromSettings(
     SignInFromCurrentPage(gaia_login_tab, test_account,
                           previously_signed_in_accounts);
   }
+}
+
+void SignInFunctions::SignInFromSettingsWithSyncChoice(
+    const TestAccountSigninCredentials& test_account,
+    int previously_signed_in_accounts,
+    SyncChoice sync_choice) {
+#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
+  NOTREACHED();
+#else
+  SignInTestObserver observer(identity_manager(browser_.Run()),
+                              account_reconcilor(browser_.Run()),
+                              ConsentLevel::kSignin);
+
+  std::unique_ptr<content::TestNavigationObserver> sync_confirmation_observer =
+      std::make_unique<content::TestNavigationObserver>(
+          AppendSyncConfirmationQueryParams(
+              GURL("chrome://sync-confirmation"),
+              SyncConfirmationStyle::kDefaultModal,
+              /*is_sync_promo=*/true));
+  std::unique_ptr<content::TestNavigationObserver> history_sync_observer =
+      std::make_unique<content::TestNavigationObserver>(
+          HistorySyncOptinUI::AppendHistorySyncOptinQueryParams(
+              GURL("chrome://history-sync-optin"),
+              HistorySyncOptinLaunchContext::kModal));
+  sync_confirmation_observer->StartWatchingNewWebContents();
+  history_sync_observer->StartWatchingNewWebContents();
+
+  SignInFromSettings(test_account, previously_signed_in_accounts,
+                     /*complete_signin_operation=*/true);
+  observer.WaitForAccountChanges(previously_signed_in_accounts + 1,
+                                 PrimaryAccountWait::kWaitForAdded);
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    history_sync_observer->Wait();
+    switch (sync_choice) {
+      case SyncChoice::kAcceptAllOptionalDataTypesSync:
+        EXPECT_TRUE(login_ui_test_utils::ConfirmHistorySyncOptinDialog(
+            browser_.Run(), kDialogTimeout));
+        break;
+      case SyncChoice::kRejectOptionalDateTypesSync:
+        EXPECT_TRUE(login_ui_test_utils::RejectHistorySyncOptinDialog(
+            browser_.Run(), kDialogTimeout));
+        break;
+    }
+  } else {
+    sync_confirmation_observer->Wait();
+    switch (sync_choice) {
+      case SyncChoice::kAcceptAllOptionalDataTypesSync:
+        EXPECT_TRUE(login_ui_test_utils::ConfirmSyncConfirmationDialog(
+            browser_.Run(), kDialogTimeout));
+        break;
+      case SyncChoice::kRejectOptionalDateTypesSync:
+        EXPECT_TRUE(login_ui_test_utils::CancelSyncConfirmationDialog(
+            browser_.Run(), kDialogTimeout));
+        break;
+    }
+  }
+#endif  // BUILDFLAG(!ENABLE_DICE_SUPPORT)
 }
 
 void SignInFunctions::SignInFromCurrentPage(

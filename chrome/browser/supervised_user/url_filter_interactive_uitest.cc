@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
                                       kResetStateObserverId);
 
-  TurnOnSync();
+  SigninToBrowser();
 
   // Child activity is happening in this tab.
   int tab_index = 0;
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ClearFamilyLinkSettings) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver, kObserverId);
 
-  TurnOnSync();
+  SigninToBrowser();
 
   // Clear all existing filters.
   RunTestSequence(WaitForStateSeeding(kObserverId, child(),
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
                                       kResetStateObserverId);
 
-  TurnOnSync();
+  SigninToBrowser();
 
   // Child activity is happening in this tab.
   int tab_index = 0;
@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
                                       kResetStateObserverId);
 
-  TurnOnSync();
+  SigninToBrowser();
 
   // Child and parent activity is happening in these tabs.
   int child_tab_index = 0;
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, DesktopLocalWebApprovalGranted) {
   int tab_index = 0;
   GURL mature_site_url(GetRoutedUrl("https://bestgore.com"));
 
-  TurnOnSync();
+  SigninToBrowser();
   RunTestSequence(InAnyContext(Steps(
       WaitForStateSeeding(kResetStateObserverId, child(),
                           FamilyLinkSettingsState::Reset()),
@@ -428,7 +428,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
   int tab_index = 0;
   GURL mature_site_url(GetRoutedUrl("https://bestgore.com"));
 
-  TurnOnSync();
+  SigninToBrowser();
 
   RunTestSequence(InAnyContext(
       Steps(WaitForStateSeeding(kResetStateObserverId, child(),
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
   int tab_index = 0;
   GURL mature_site_url(GetRoutedUrl("https://bestgore.com"));
 
-  TurnOnSync();
+  SigninToBrowser();
   RunTestSequence(InAnyContext(Steps(
       WaitForStateSeeding(kResetStateObserverId, child(),
                           FamilyLinkSettingsState::Reset()),
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
                                       kResetStateObserverId);
 
-  TurnOnSync();
+  SigninToBrowser();
   RunTestSequence(WaitForStateSeeding(kResetStateObserverId, child(),
                                       FamilyLinkSettingsState::Reset()));
 

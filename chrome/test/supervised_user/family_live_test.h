@@ -62,13 +62,13 @@ class FamilyLiveTest : public signin::test::LiveTest {
 
   ~FamilyLiveTest() override;
 
-  // Turns on sync for eligible users depending on the ::rpc_mode_
-  // (see ::TurnOnSyncFor).
-  void TurnOnSync();
-
-  // Turns on sync and waits for the sync subsystem to start. Manages the list
-  // of open service tabs.
-  void TurnOnSyncFor(BrowserUser& browser_user);
+  // Signs in the user to the browser for eligible users depending on the
+  // ::rpc_mode_ (see ::SigninToBrowserFor).
+  void SigninToBrowser();
+  // Sings in the user to the browser and waits for the sync subsystem available
+  // to signed-in users to start.
+  // Manages the list of open service tabs.
+  void SigninToBrowserFor(BrowserUser& browser_user);
 
  protected:
   void SetUp() override;

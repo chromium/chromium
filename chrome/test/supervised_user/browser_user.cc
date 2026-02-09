@@ -21,6 +21,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/test_support/account_repository.h"
 #include "components/supervised_user/test_support/family_link_settings_state_management.h"
+#include "components/sync/base/features.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/page_transition_types.h"
@@ -46,9 +47,11 @@ BrowserUser::BrowserUser(
                          add_tab_function) {}
 BrowserUser::~BrowserUser() = default;
 
-void BrowserUser::TurnOnSync() {
-  sign_in_functions_.TurnOnSync({credentials_.username, credentials_.password},
-                                /*previously_signed_in_accounts=*/0);
+void BrowserUser::SignInToBrowser() {
+  sign_in_functions_.SignInFromSettingsWithSyncChoice(
+      {credentials_.username, credentials_.password},
+      /*previously_signed_in_accounts=*/0,
+      signin::test::SignInFunctions::SyncChoice::kRejectOptionalDateTypesSync);
 }
 
 void BrowserUser::SignOutFromWeb() {

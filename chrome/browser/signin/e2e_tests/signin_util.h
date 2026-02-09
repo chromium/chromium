@@ -36,6 +36,17 @@ AccountReconcilor* account_reconcilor(Browser* browser);
 
 class SignInFunctions {
  public:
+  // Depending on the feature `syncer::kReplaceSyncPromosWithSignInPromos`,
+  // at sign-in, the user is presented with the choice to sync all the optional
+  // data types. When the feature is enabled the only optional data types are
+  // history and tabs, while then the feature is disabled all user configurable
+  // data types are available. This class represents either accepting or
+  // rejecting syncing of all available data types.
+  enum class SyncChoice : int {
+    kAcceptAllOptionalDataTypesSync = 0,
+    kRejectOptionalDateTypesSync = 1,
+  };
+
   SignInFunctions(
       const base::RepeatingCallback<Browser*()> browser,
       const base::RepeatingCallback<bool(int, const GURL&, ui::PageTransition)>
@@ -49,6 +60,11 @@ class SignInFunctions {
   void SignInFromSettings(const TestAccountSigninCredentials& test_account,
                           int previously_signed_in_accounts,
                           bool complete_signin_operation = true);
+
+  void SignInFromSettingsWithSyncChoice(
+      const TestAccountSigninCredentials& test_account,
+      int previously_signed_in_accounts,
+      SyncChoice sync_choice);
 
   void SignInFromCurrentPage(content::WebContents* web_contents,
                              const TestAccountSigninCredentials& test_account,

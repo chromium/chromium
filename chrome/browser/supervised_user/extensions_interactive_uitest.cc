@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
   const bool should_be_enabled =
       GetExtensionsSwitchTargetState() == FamilyLinkToggleState::kEnabled;
 
-  TurnOnSync();
+  SigninToBrowser();
 
   // Set the FL switch in the value that require parent approvals for
   // extension installation.
