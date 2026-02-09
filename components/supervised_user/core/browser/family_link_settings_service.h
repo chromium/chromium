@@ -266,6 +266,9 @@ class FamilyLinkSettingsService : public KeyedService,
 
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
 
+  // TODO(crbug.com/480137930): remove once issue is resolved.
+  bool wait_until_ready_to_sync_trap_ = false;
+
   base::WeakPtrFactory<FamilyLinkSettingsService> weak_ptr_factory_{this};
 };
 

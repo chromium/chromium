@@ -12,6 +12,8 @@
 #include <string_view>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -88,13 +90,18 @@ bool SyncChangeIsNewWebsiteApproval(const std::string& name,
     }
   }
 }
-
 }  // namespace
 
 FamilyLinkSettingsService::FamilyLinkSettingsService()
     : active_(false), initialization_failed_(false) {}
 
-FamilyLinkSettingsService::~FamilyLinkSettingsService() = default;
+FamilyLinkSettingsService::~FamilyLinkSettingsService() {
+  if (wait_until_ready_to_sync_trap_) {
+    SCOPED_CRASH_KEY_STRING32("SupervisedUser", "RaceInFLSSShutdown",
+                              "InDestructor");
+    base::debug::DumpWithoutCrashing();
+  }
+}
 
 void FamilyLinkSettingsService::Init(
     base::FilePath profile_path,
@@ -261,6 +268,13 @@ SyncData FamilyLinkSettingsService::CreateSyncDataForSetting(
 }
 
 void FamilyLinkSettingsService::Shutdown() {
+  if (wait_until_ready_to_sync_trap_) {
+    SCOPED_CRASH_KEY_STRING32("SupervisedUser", "RaceInFLSSShutdown",
+                              "InShutdown");
+    base::debug::DumpWithoutCrashing();
+    wait_until_ready_to_sync_trap_ = false;
+  }
+
   // Allow calling `Shutdown()` even if `Init(...)` was never
   // invoked on the service.
   if (store_) {
@@ -476,10 +490,12 @@ void FamilyLinkSettingsService::OnInitializationCompleted(bool success) {
   DCHECK(IsReady());
 
   if (wait_until_ready_to_sync_cb_) {
+    wait_until_ready_to_sync_trap_ = true;
     std::move(wait_until_ready_to_sync_cb_).Run();
   }
 
   InformSubscribers();
+  wait_until_ready_to_sync_trap_ = false;
 }
 
 const base::DictValue& FamilyLinkSettingsService::LocalSettingsForTest() const {
@@ -554,6 +570,9 @@ base::DictValue FamilyLinkSettingsService::GetSettingsWithDefault() const {
 }
 
 void FamilyLinkSettingsService::InformSubscribers() {
+  SCOPED_CRASH_KEY_STRING32("SupervisedUser", "RaceInFLSSShutdown",
+                            "InInformSubscribers");
+
   if (!IsReady()) {
     return;
   }
@@ -579,9 +598,9 @@ void FamilyLinkSettingsService::InformSubscribers() {
 WebFilterType FamilyLinkSettingsService::GetWebFilterType() const {
   // When the service is inactive or failed to initialize, we consider the web
   // filter to be disabled to not interfere with regular browsing experience.
-  // Otherwise, we try to infer the filter type from the settings: block always
-  // takes precedence regardless the safe sites setting. Then, safe sites value
-  // determines the remaining allow or try-to-block verdict.
+  // Otherwise, we try to infer the filter type from the settings: block
+  // always takes precedence regardless the safe sites setting. Then, safe
+  // sites value determines the remaining allow or try-to-block verdict.
 
   // LINT.IfChange(GetWebFilterType)
   if (!active_ || initialization_failed_) {
@@ -604,8 +623,8 @@ FilteringBehavior FamilyLinkSettingsService::GetDefaultFilteringBehavior()
 
 FilteringBehavior FamilyLinkSettingsService::GetDefaultFilteringBehavior(
     const base::DictValue& settings) const {
-  // The default value for the default filtering behavior is "allow", including
-  // malformed data from remote.
+  // The default value for the default filtering behavior is "allow",
+  // including malformed data from remote.
   int value = settings.FindInt(kContentPackDefaultFilteringBehavior)
                   .value_or(static_cast<int>(FilteringBehavior::kAllow));
 
