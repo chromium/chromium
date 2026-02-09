@@ -388,12 +388,11 @@ id<GREYMatcher> identityDiscMatcher() {
   WaitForEnterpriseOnboardingScreen();
 
   // Tap on Continue button to acknowledge signing in with a managed account.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              grey_text(l10n_util::GetNSString(
-                  IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL)),
-              grey_interactable(), nil)] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_text(l10n_util::GetNSString(
+                                IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE)),
+                            grey_interactable(), nil)]
+      performAction:grey_tap()];
 
   // Dismiss the history sync screen.
   [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
@@ -432,12 +431,11 @@ id<GREYMatcher> identityDiscMatcher() {
   WaitForEnterpriseOnboardingScreen();
 
   // Tap on Continue button to acknowledge signing in with a managed account.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              grey_text(l10n_util::GetNSString(
-                  IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL)),
-              grey_interactable(), nil)] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_text(l10n_util::GetNSString(
+                                IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE)),
+                            grey_interactable(), nil)]
+      performAction:grey_tap()];
 
   // Dismiss the history sync screen.
   [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];

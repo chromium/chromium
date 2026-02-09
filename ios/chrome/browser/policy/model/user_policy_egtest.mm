@@ -302,7 +302,7 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Complete the sign-in flow by completing the confirmation dialog.
   id<GREYMatcher> acceptButton = [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:
-          IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL];
+          IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE];
   [ChromeEarlGrey waitForMatcher:acceptButton];
   [[EarlGrey selectElementWithMatcher:acceptButton] performAction:grey_tap()];
 

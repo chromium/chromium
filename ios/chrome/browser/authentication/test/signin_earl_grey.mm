@@ -299,7 +299,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   // complete the sign-in flow if present.
   id<GREYMatcher> acceptButton =
       chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
-          IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL);
+          IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE);
   GREYWaitForAppToIdle(@"App failed to idle");
   BOOL hasDialog =
       [ChromeEarlGrey testUIElementAppearanceWithMatcher:acceptButton];

@@ -221,8 +221,10 @@ AlertCoordinator* ManagedConfirmationDialogContentForHostedDomain(
   NSString* subtitle =
       l10n_util::GetNSStringF(IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE,
                               base::SysNSStringToUTF16(hosted_domain));
-  NSString* accept_label = l10n_util::GetNSString(
-      IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL);
+  // If we ever use this method in a test where migration was forced, the button
+  // should be IDS_IOS_ENTERPRISE_PROFILE_CREATION_GOTIT.
+  NSString* accept_label =
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE);
   NSString* cancel_label = l10n_util::GetNSString(IDS_CANCEL);
 
   AlertCoordinator* managed_confirmation_alert_coordinator =
