@@ -128,11 +128,6 @@
 
 namespace {
 
-// Timeout for the fadeout animation. This is purposely set to be twice the
-// duration of the fade out animation on the WebUI JS because there is a delay
-// between us notifying the WebUI, and the WebUI receiving our event.
-constexpr base::TimeDelta kFadeoutAnimationTimeout = base::Milliseconds(300);
-
 // The amount of time to wait after the side panel opens before showing the
 // mobile promo.
 constexpr base::TimeDelta kMobilePromoShowDelay = base::Seconds(4);
@@ -146,28 +141,6 @@ std::vector<lens::mojom::OverlayObjectPtr> CopyObjects(
       objects.begin(), objects.end(), objects_copy.begin(),
       [](const lens::mojom::OverlayObjectPtr& obj) { return obj->Clone(); });
   return objects_copy;
-}
-
-// Given a BGR bitmap, converts into a RGB bitmap instead. Returns empty bitmap
-// if creation fails.
-SkBitmap CreateRgbBitmap(const SkBitmap& bgr_bitmap) {
-  // Convert bitmap from color type `kBGRA_8888_SkColorType` into a new Bitmap
-  // with color type `kRGBA_8888_SkColorType` which will allow the bitmap to
-  // render properly in the WebUI.
-  sk_sp<SkColorSpace> srgb_color_space =
-      bgr_bitmap.colorSpace()->makeSRGBGamma();
-  SkImageInfo rgb_info = bgr_bitmap.info()
-                             .makeColorType(kRGBA_8888_SkColorType)
-                             .makeColorSpace(SkColorSpace::MakeSRGB());
-  SkBitmap rgb_bitmap;
-  rgb_bitmap.setInfo(rgb_info);
-  rgb_bitmap.allocPixels(rgb_info);
-  if (rgb_bitmap.writePixels(bgr_bitmap.pixmap())) {
-    return rgb_bitmap;
-  }
-
-  // Bitmap creation failed.
-  return SkBitmap();
 }
 
 // Converts a JSON string array to a vector.
@@ -337,24 +310,6 @@ LensOverlayController* LensOverlayController::FromTabWebContents(
     content::WebContents* tab_web_contents) {
   return GetLensOverlayControllerFromTabInterface(
       tabs::TabInterface::GetFromContents(tab_web_contents));
-}
-
-void LensOverlayController::TriggerOverlayFadeOutAnimation(
-    base::OnceClosure callback) {
-  if (state_ == State::kOff || IsOverlayClosing()) {
-    return;
-  }
-  state_ = State::kHiding;
-
-  // Notify the overlay so it can do any animations or cleanup. The page_ is not
-  // guaranteed to exist if CloseUIAsync is called during the setup process.
-  if (page_) {
-    page_->NotifyOverlayClosing();
-  }
-
-  // Set a short 200ms timeout to give the fade out time to transition.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, std::move(callback), kFadeoutAnimationTimeout);
 }
 
 void LensOverlayController::CloseUI() {
@@ -770,20 +725,7 @@ void LensOverlayController::FetchSupportedLanguages(
 }
 
 void LensOverlayController::FinishReshowOverlay() {
-  if (state_ != State::kIsReshowing) {
-    return;
-  }
-
-  if (lens_overlay_blur_layer_delegate_) {
-    content::RenderWidgetHost* live_page_widget_host =
-        tab_->GetContents()
-            ->GetPrimaryMainFrame()
-            ->GetRenderViewHost()
-            ->GetWidget();
-    lens_overlay_blur_layer_delegate_->Show(live_page_widget_host);
-  }
-  SetOverlayWebViewOpacity(1.0f);
-  state_ = State::kOverlay;
+  FinishReshowOverlayImpl();
 }
 
 void LensOverlayController::TryShowTranslateFeaturePromo(
@@ -1534,6 +1476,14 @@ bool LensOverlayController::UseOverlayBlur() {
   return lens::features::GetLensOverlayUseBlur();
 }
 
+void LensOverlayController::NotifyOverlayClosing() {
+  // Notify the overlay so it can do any animations or cleanup. The page_ is not
+  // guaranteed to exist if CloseUIAsync is called during the setup process.
+  if (page_) {
+    page_->NotifyOverlayClosing();
+  }
+}
+
 bool LensOverlayController::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
@@ -2075,9 +2025,7 @@ void LensOverlayController::HandlePageContentUploadProgress(uint64_t position,
 }
 
 void LensOverlayController::ReshowOverlay() {
-  // The overlay must be in the kHidden state to be restored properly.
-  CHECK(state_ == State::kHidden);
-  state_ = State::kIsReshowing;
+  OverlayBaseController::ReshowOverlay();
   use_aim_for_visual_search_ = true;
 
   // Clear any previous selections to ensure a clean state.
@@ -2363,63 +2311,17 @@ void LensOverlayController::OnScreenshotTaken(
 }
 
 void LensOverlayController::ReshowOverlayPart2() {
-  if (state_ != State::kIsReshowing) {
-    return;
-  }
-
-  // Create the new RGB bitmap asynchronously to prevent the main thread from
-  // blocking on the encoding.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&CreateRgbBitmap,
-                     GetContextualizationController()->viewport_screenshot()),
-      base::BindOnce(&LensOverlayController::ReshowOverlayPart3,
-                     weak_factory_.GetWeakPtr()));
+  ReshowScreenshot(GetContextualizationController()->viewport_screenshot(),
+                   base::BindOnce(&LensOverlayController::ReshowOverlayPart3,
+                                  weak_factory_.GetWeakPtr()));
 }
 
-void LensOverlayController::ReshowOverlayPart3(const SkBitmap& rgb_screenshot) {
-  if (state_ != State::kIsReshowing) {
-    return;
-  }
-
-  if (rgb_screenshot.drawsNothing()) {
-    lens_search_controller_->CloseLensSync(
-        lens::LensOverlayDismissalSource::kErrorScreenshotEncodingFailed);
-    return;
-  }
+void LensOverlayController::ReshowOverlayPart3(SkBitmap rgb_screenshot) {
   CHECK(initialization_data_);
   initialization_data_->initial_rgb_screenshot_ = rgb_screenshot;
   CHECK(page_);
   page_->OnOverlayReshown(rgb_screenshot);
-
-  if (lens_overlay_blur_layer_delegate_) {
-    lens_overlay_blur_layer_delegate_->Hide();
-  }
-
-  // Set the overlay web view opacity to near-zero instead of using
-  // `SetVisible(false)`. Setting visibility to false prevents animation frames
-  // in the WebUI, which causes ghosting of the old screenshot when the view is
-  // reshown. Setting opacity instead allows for animation frames in the WebUI
-  // to properly hide the background image canvas until the new screenshot can
-  // be rendered. The web view opacity is set to 1.0f in
-  // `FinishReshowOverlay()`. Note that opacity is set just above `0.f` to pass
-  // a DCHECK that exists in `aura::Window` that might otherwise be tripped when
-  // setting opacity to 0.f.
-  SetOverlayWebViewOpacity(std::nextafter(0.f, 1.f));
-  ShowOverlay();
   base::UmaHistogramBoolean("Lens.Overlay.Shown", true);
-}
-
-void LensOverlayController::SetOverlayWebViewOpacity(float opacity) {
-  if (!overlay_web_view_) {
-    return;
-  }
-
-  // The web views' holder layer is needed to hide the actual web contents.
-  ui::Layer* layer = overlay_web_view_->holder()->GetUILayer();
-  if (layer) {
-    layer->SetOpacity(opacity);
-  }
 }
 
 bool LensOverlayController::IsResultsSidePanelShowing() {

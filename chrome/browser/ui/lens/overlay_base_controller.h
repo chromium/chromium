@@ -159,6 +159,14 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // another side panel opens.
   void OnSidePanelDidOpen();
 
+  // The screenshot is ready for reshow, continue showing the overlay.
+  void ReshowScreenshotReady(base::OnceCallback<void(SkBitmap)> callback,
+                             SkBitmap rgb_screenshot);
+
+  // Sets the opacity of the overlay web view. No-op if the web view does not
+  // exist.
+  void SetOverlayWebViewOpacity(float opacity);
+
  protected:
   // Whether the side panel is showing.
   virtual bool IsResultsSidePanelShowing() = 0;
@@ -204,6 +212,9 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // Whether we should blur the host view.
   virtual bool UseOverlayBlur() = 0;
 
+  // Notification that the overlay is closing soon.
+  virtual void NotifyOverlayClosing() = 0;
+
   // If the side panel was closed, we wait for the reflow before beginning
   // the screenshot flow.
   virtual void FinishedWaitingForReflow(base::TimeTicks reflow_start_time);
@@ -214,12 +225,34 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // Close the UI.
   virtual void CloseUI();
 
+  // Reshow the overlay using the current viewport screenshot and page context
+  // on the live page. The callee should call `ReshowScreenshot` when the
+  // screenshot is ready.
+  virtual void ReshowOverlay();
+
+  // This is callwed when the webUI acknowledges the intent to reshow the
+  // overlay. Since it already is showing an old screenshot the opacity is set
+  // to 0 of the layer when the screenshot is first available to the webUI.
+  // After it has produced a frame it should call this FinishReshowOverlayImpl
+  // method to change the opacity back to 1.
+  void FinishReshowOverlayImpl();
+
+  // Plays the overlay close animation and then invokes the callback.
+  void TriggerOverlayFadeOutAnimation(base::OnceClosure callback);
+
   // Process the bitmap and creates all necessary data to initialize the
   // overlay. Happens on a separate thread to prevent main thread from hanging.
   // Callback is called after creating the RGB bitmap and we are back on the
   // main thread.
   void InitializeScreenshot(const SkBitmap& screenshot,
                             base::OnceCallback<void(SkBitmap)> callback);
+
+  // Similar to `InitializeScreenshot` this prepares
+  // the screenshot for the webUI. However this is only called when the UI is in
+  // reshowing state and since the WebUI is rendered it needs to be careful not
+  // to cause a flash.
+  void ReshowScreenshot(const SkBitmap& screenshot,
+                        base::OnceCallback<void(SkBitmap)> callback);
 
   // Initialize the overlay.
   void InitializeOverlayImpl();

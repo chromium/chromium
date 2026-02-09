@@ -346,9 +346,6 @@ class LensOverlayController : public OverlayBaseController,
       lens::mojom::CenterRotatedBoxPtr region,
       const SkBitmap& region_bitmap);
 
-  // Plays the overlay close animation and then invokes the callback.
-  void TriggerOverlayFadeOutAnimation(base::OnceClosure callback);
-
   // Closes the overlay UI and sets state to kOff. This method is the final
   // cleanup of closing the overlay UI. This resets all state internal to the
   // LensOverlayController.
@@ -436,7 +433,7 @@ class LensOverlayController : public OverlayBaseController,
   // Should only be called when the overlay is in kHidden state. This will
   // reshow the overlay using the current viewport screenshot and page context
   // on the live page.
-  void ReshowOverlay();
+  void ReshowOverlay() override;
 
  private:
   // Data class for constructing overlay and storing overlay state for
@@ -613,6 +610,7 @@ class LensOverlayController : public OverlayBaseController,
   void FinishedWaitingForReflow(base::TimeTicks reflow_start_time) override;
   bool ShouldShowPreselectionBubble() override;
   bool UseOverlayBlur() override;
+  void NotifyOverlayClosing() override;
 
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
@@ -777,17 +775,13 @@ class LensOverlayController : public OverlayBaseController,
   void ReshowOverlayPart2();
   // Part 3 of reshowing the overlay. Called after the RGB bitmap has been
   // created.
-  void ReshowOverlayPart3(const SkBitmap& rgb_bitmap);
+  void ReshowOverlayPart3(SkBitmap rgb_bitmap);
 
   // Starts the query flow.
   void StartQueryFlow();
 
   // Fetches the partial PDF text if the page is a PDF.
   void FetchPdfTextIfEligible();
-
-  // Sets the opacity of the overlay web view. No-op if the web view does not
-  // exist.
-  void SetOverlayWebViewOpacity(float opacity);
 
   // For the current session only, grants the permissions needed for
   // contextualization if the non-blocking privacy notice is being used and the

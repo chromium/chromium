@@ -661,6 +661,8 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       ->HandleLensButtonClick();
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsResultsSidePanelShowing(); }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return overlay_controller->state() == State::kOverlay; }));
 }
 
 IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,

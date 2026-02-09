@@ -29,6 +29,11 @@
 
 namespace {
 
+// Timeout for the fadeout animation. This is purposely set to be twice the
+// duration of the fade out animation on the WebUI JS because there is a delay
+// between us notifying the WebUI, and the WebUI receiving our event.
+constexpr base::TimeDelta kFadeoutAnimationTimeout = base::Milliseconds(300);
+
 // The amount of time to wait for a reflow after closing the side panel before
 // taking a screenshot.
 constexpr base::TimeDelta kReflowWaitTimeout = base::Milliseconds(200);
@@ -268,6 +273,96 @@ void OverlayBaseController::InitializeScreenshot(
   ShowOverlay();
 
   state_ = State::kStartingWebUI;
+}
+
+void OverlayBaseController::ReshowScreenshot(
+    const SkBitmap& bitmap,
+    base::OnceCallback<void(SkBitmap)> callback) {
+  if (state_ != State::kIsReshowing) {
+    return;
+  }
+  // The following two methods happen async to parallelize the two bottlenecks
+  // in our invocation flow.
+  // Create the new RGB bitmap async to prevent the main thread from blocking on
+  // the encoding.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&CreateRgbBitmap, bitmap),
+      base::BindOnce(&OverlayBaseController::ReshowScreenshotReady,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void OverlayBaseController::ReshowScreenshotReady(
+    base::OnceCallback<void(SkBitmap)> callback,
+    SkBitmap rgb_screenshot) {
+  if (state_ != State::kIsReshowing) {
+    return;
+  }
+
+  if (rgb_screenshot.drawsNothing()) {
+    RequestSyncClose(DismissalSource::kErrorScreenshotCreationFailed);
+    return;
+  }
+  std::move(callback).Run(std::move(rgb_screenshot));
+
+  if (lens_overlay_blur_layer_delegate_) {
+    lens_overlay_blur_layer_delegate_->Hide();
+  }
+
+  // Set the overlay web view opacity to near-zero instead of using
+  // `SetVisible(false)`. Setting visibility to false prevents animation frames
+  // in the WebUI, which causes ghosting of the old screenshot when the view is
+  // reshown. Setting opacity instead allows for animation frames in the WebUI
+  // to properly hide the background image canvas until the new screenshot can
+  // be rendered. The web view opacity is set to 1.0f in
+  // `FinishReshowOverlay()`. Note that opacity is set just above `0.f` to pass
+  // a DCHECK that exists in `aura::Window` that might otherwise be tripped when
+  // setting opacity to 0.f.
+  SetOverlayWebViewOpacity(std::nextafter(0.f, 1.f));
+  ShowOverlay();
+}
+
+void OverlayBaseController::FinishReshowOverlayImpl() {
+  if (state_ != State::kIsReshowing) {
+    return;
+  }
+
+  if (lens_overlay_blur_layer_delegate_) {
+    content::RenderWidgetHost* live_page_widget_host =
+        tab_->GetContents()
+            ->GetPrimaryMainFrame()
+            ->GetRenderViewHost()
+            ->GetWidget();
+    lens_overlay_blur_layer_delegate_->Show(live_page_widget_host);
+  }
+  SetOverlayWebViewOpacity(1.0f);
+  state_ = State::kOverlay;
+}
+
+void OverlayBaseController::SetOverlayWebViewOpacity(float opacity) {
+  if (!overlay_web_view_) {
+    return;
+  }
+
+  // The web views' holder layer is needed to hide the actual web contents.
+  ui::Layer* layer = overlay_web_view_->holder()->GetUILayer();
+  if (layer) {
+    layer->SetOpacity(opacity);
+  }
+}
+
+void OverlayBaseController::TriggerOverlayFadeOutAnimation(
+    base::OnceClosure callback) {
+  if (state_ == State::kOff || IsOverlayClosing()) {
+    return;
+  }
+  state_ = State::kHiding;
+
+  NotifyOverlayClosing();
+
+  // Set a short 200ms timeout to give the fade out time to transition.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, std::move(callback), kFadeoutAnimationTimeout);
 }
 
 void OverlayBaseController::SetLiveBlurImpl(bool enabled) {
@@ -555,6 +650,12 @@ void OverlayBaseController::CloseUI() {
 
   NotifyIsOverlayShowing(false);
   state_ = State::kOff;
+}
+
+void OverlayBaseController::ReshowOverlay() {
+  // The overlay must be in the kHidden state to be restored properly.
+  CHECK(state_ == State::kHidden);
+  state_ = State::kIsReshowing;
 }
 
 void OverlayBaseController::MaybeHideSharedOverlayView() {
