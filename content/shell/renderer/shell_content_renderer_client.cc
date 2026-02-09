@@ -19,6 +19,7 @@
 #include "base/types/pass_key.h"
 #include "components/cdm/renderer/external_clear_key_key_system_info.h"
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
+#include "components/surface_embed/buildflags/buildflags.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
 #include "content/common/pseudonymization_salt.h"
 #include "content/public/common/content_switches.h"
@@ -50,6 +51,10 @@
 #include "base/feature_list.h"
 #include "media/base/media_switches.h"
 #endif
+
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+#include "components/surface_embed/renderer/create_plugin.h"
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
@@ -318,6 +323,19 @@ void ShellContentRendererClient::RenderFrameCreated(RenderFrame* render_frame) {
   // browser tests. If we only create that for browser tests then the override
   // of this method in WebTestContentRendererClient would not be needed.
   new ShellRenderFrameObserver(render_frame);
+}
+
+bool ShellContentRendererClient::OverrideCreatePlugin(
+    RenderFrame* render_frame,
+    const blink::WebPluginParams& params,
+    blink::WebPlugin** plugin) {
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+  if (surface_embed::MaybeCreatePlugin(render_frame, params, plugin)) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
+
+  return false;
 }
 
 void ShellContentRendererClient::PrepareErrorPage(
