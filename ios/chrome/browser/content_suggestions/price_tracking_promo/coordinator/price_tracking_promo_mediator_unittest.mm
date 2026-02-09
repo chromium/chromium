@@ -65,7 +65,7 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity_);
 
-    auth_service_->SignIn(identity_, signin_metrics::AccessPoint::kUnknown);
+    auth_service_->SignIn(identity_, signin_metrics::AccessPoint::kStartPage);
 
     shopping_service_ = std::make_unique<commerce::MockShoppingService>();
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
