@@ -110,6 +110,10 @@
 
 namespace {
 
+// Kill switch to disable remote tab resumption.
+BASE_FEATURE(kIOSRemoteTabResumptionKillSwitch,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // A command line flag to override the default sync threshold.
 const char kTabResumptionThresholdParameter[] = "tab-resumption-sync-threshold";
 
@@ -856,7 +860,8 @@ class TabResumptionMediatorProxy {
     return;
   }
 
-  if (lastSyncedTabSyncedTime > mostRecentTabOpenedTime) {
+  if (lastSyncedTabSyncedTime > mostRecentTabOpenedTime &&
+      !base::FeatureList::IsEnabled(kIOSRemoteTabResumptionKillSwitch)) {
     [self fetchLastSyncedTabItemFromLastActiveDistantTab:tab session:session];
     _sessionTag = session->tag;
     _tabId = tab->tab_id;
