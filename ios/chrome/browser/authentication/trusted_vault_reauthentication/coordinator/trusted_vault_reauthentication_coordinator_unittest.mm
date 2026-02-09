@@ -52,7 +52,7 @@ class TrustedVaultReauthenticationCoordinatorTest : public PlatformTest {
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForProfile(profile_.get());
     authentication_service->SignIn(identity,
-                                   signin_metrics::AccessPoint::kUnknown);
+                                   signin_metrics::AccessPoint::kStartPage);
 
     browser_ = std::make_unique<TestBrowser>(profile_.get());
   }

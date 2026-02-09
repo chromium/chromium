@@ -150,7 +150,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
         ->MakePersonalProfileManagedWithGaiaID(managed_identity_.gaiaId);
 
     authentication_service()->SignIn(managed_identity_,
-                                     signin_metrics::AccessPoint::kUnknown);
+                                     signin_metrics::AccessPoint::kStartPage);
 
     GetApplicationContext()
         ->GetProfileManager()
@@ -189,7 +189,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
 TEST_F(SignoutActionSheetCoordinatorTest,
        ShouldNotShowActionSheetIfNoUnsyncedData) {
   authentication_service()->SignIn(identity_,
-                                   signin_metrics::AccessPoint::kUnknown);
+                                   signin_metrics::AccessPoint::kStartPage);
 
   CreateCoordinator();
   // Mock returning no unsynced datatype.
@@ -213,7 +213,7 @@ TEST_F(SignoutActionSheetCoordinatorTest,
 
 TEST_F(SignoutActionSheetCoordinatorTest, ShouldShowActionSheetIfUnsyncedData) {
   authentication_service()->SignIn(identity_,
-                                   signin_metrics::AccessPoint::kUnknown);
+                                   signin_metrics::AccessPoint::kStartPage);
 
   CreateCoordinator();
   // Mock returning unsynced datatypes.
@@ -294,7 +294,7 @@ TEST_F(SignoutActionSheetCoordinatorTest,
 TEST_F(SignoutActionSheetCoordinatorTest,
        ShouldShowActionSheetIfBookmarksLimitExceeded) {
   authentication_service()->SignIn(identity_,
-                                   signin_metrics::AccessPoint::kUnknown);
+                                   signin_metrics::AccessPoint::kStartPage);
 
   CreateCoordinator();
   // Mock returning no unsynced datatype.

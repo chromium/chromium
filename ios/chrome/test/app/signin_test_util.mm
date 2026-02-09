@@ -205,7 +205,7 @@ void SignIn(id<SystemIdentity> identity) {
   __block AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:browser
                       identity:identity
-                   accessPoint:signin_metrics::AccessPoint::kUnknown
+                   accessPoint:signin_metrics::AccessPoint::kStartPage
           precedingHistorySync:NO
              postSignInActions:PostSignInActionSet()
       presentingViewController:viewController

@@ -205,7 +205,8 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   void SigninFakeIdentity(bool has_history_sync_opt_in) {
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForProfile(profile_.get());
-    auth_service->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
+    auth_service->SignIn(fake_identity_,
+                         signin_metrics::AccessPoint::kStartPage);
     syncer::SyncService* sync_service =
         SyncServiceFactory::GetForProfile(profile_.get());
     sync_service->GetUserSettings()->SetSelectedType(

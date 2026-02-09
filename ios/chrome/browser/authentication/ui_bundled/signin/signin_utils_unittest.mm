@@ -497,7 +497,7 @@ TEST_F(SigninUtilsTest, TestWillShowIfSignedInWithoutHistoryOptIn) {
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile_.get());
   authentication_service->SignIn(identity,
-                                 signin_metrics::AccessPoint::kUnknown);
+                                 signin_metrics::AccessPoint::kStartPage);
 
   const base::Version version_1_0("1.0");
   signin::RecordFullscreenSigninPromoStarted(
@@ -520,7 +520,7 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfSignedInWithHistoryOptIn) {
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile_.get());
   authentication_service->SignIn(identity,
-                                 signin_metrics::AccessPoint::kUnknown);
+                                 signin_metrics::AccessPoint::kStartPage);
   const base::Version version_1_0("1.0");
   signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);

@@ -178,7 +178,7 @@ TEST_F(FullscreenSigninPromoSceneAgentTest,
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kTabs, YES);
   authentication_service_->SignIn(fake_identity1,
-                                  signin_metrics::AccessPoint::kUnknown);
+                                  signin_metrics::AccessPoint::kStartPage);
   EXPECT_TRUE(authentication_service_->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
 }
@@ -213,7 +213,7 @@ TEST_F(FullscreenSigninPromoSceneAgentTest,
               DeregisterPromo(promos_manager::Promo::FullscreenSignin))
       .Times(1);
   authentication_service_->SignIn(fake_identity1,
-                                  signin_metrics::AccessPoint::kUnknown);
+                                  signin_metrics::AccessPoint::kStartPage);
   EXPECT_TRUE(authentication_service_->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
 }
