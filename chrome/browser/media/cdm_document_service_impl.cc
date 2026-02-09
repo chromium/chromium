@@ -390,8 +390,10 @@ void DeleteMediaFoundationCdmData(
 
     DVLOG(2) << __func__ << ": Processing: " << file_path;
     std::optional<url::Origin> origin = std::nullopt;
-    if (origin_id_mapping.count(origin_id_string) != 0)
-      origin = origin_id_mapping.at(origin_id_string);
+    if (auto it = origin_id_mapping.find(origin_id_string);
+        it != origin_id_mapping.end()) {
+      origin = it->second;
+    }
 
     // If we couldn't find the origin, this mean the origin was not present in
     // the PrefService and we should also delete the folder.
