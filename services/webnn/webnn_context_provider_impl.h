@@ -169,6 +169,22 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       bool is_incognito);
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
+#if BUILDFLAG(WEBNN_USE_LITERT)
+  void CreateLiteRtContext(
+      ScopedTrace scoped_trace,
+      mojom::CreateContextOptionsPtr options,
+      mojo::ScopedDataPipeProducerHandle write_tensor_producer,
+      mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+      mojo::ScopedDataPipeProducerHandle read_tensor_producer,
+      mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
+      gpu::CommandBufferId command_buffer_id,
+      std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      mojo::PendingRemote<mojom::WebNNContext> remote,
+      CreateWebNNContextCallback callback);
+#endif  // BUILDFLAG(WEBNN_USE_LITERT)
+
 #if BUILDFLAG(IS_WIN)
   void OnOrtEnvCreated(ScopedTrace scoped_trace,
                        mojom::CreateContextOptionsPtr options,

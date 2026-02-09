@@ -19,13 +19,13 @@ namespace switches {
 inline constexpr char kWebNNCoreMlDumpModel[] = "webnn-coreml-dump-model";
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(WEBNN_USE_TFLITE)
+#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 // Save the generated TFLite model file to the folder specified by
 // --webnn-tflite-dump-model. Note, the folder needs to be accessible from the
 // GPU process sandbox or --no-sandbox must be used.
 // Usage: --no-sandbox --webnn-tflite-dump-model=/tmp/tflite_models
 inline constexpr char kWebNNTfliteDumpModel[] = "webnn-tflite-dump-model";
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE)
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
 #if BUILDFLAG(IS_WIN)
 // Configure the logging severity level of ONNX Runtime.

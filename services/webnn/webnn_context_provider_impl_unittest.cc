@@ -29,7 +29,8 @@ namespace webnn {
 //
 // For platforms using TFLite, `tflite::ContextImplTflite` is always available.
 
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(WEBNN_USE_TFLITE)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(WEBNN_USE_TFLITE) && \
+    !BUILDFLAG(WEBNN_USE_LITERT)
 
 class WebNNContextProviderImplTest : public testing::Test {
  public:

@@ -100,7 +100,7 @@ void WebNNTensorImplBackendTest::SetUp() {
 
   GTEST_SKIP() << "WebNNTensor not implemented on macOS";
 }
-#elif BUILDFLAG(WEBNN_USE_TFLITE)
+#elif BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 class WebNNTensorImplBackendTest : public testing::Test {
  public:
   WebNNTensorImplBackendTest()
@@ -120,7 +120,7 @@ class WebNNTensorImplBackendTest : public testing::Test {
   WebNNTestEnvironment webnn_test_environment_;
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote_;
 };
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE)
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
 void WebNNTensorImplBackendTest::TearDown() {
   base::RunLoop().RunUntilIdle();
