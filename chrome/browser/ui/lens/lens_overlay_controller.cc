@@ -502,19 +502,6 @@ uint64_t LensOverlayController::GetInvocationTimeSinceEpoch() {
   return invocation_time_since_epoch_.InMillisecondsSinceUnixEpoch();
 }
 
-lens::LensOverlayBlurLayerDelegate*
-LensOverlayController::GetLensOverlayBlurLayerDelegateForTesting() {
-  return lens_overlay_blur_layer_delegate_.get();
-}
-
-views::View* LensOverlayController::GetOverlayViewForTesting() {
-  return overlay_view_.get();
-}
-
-views::WebView* LensOverlayController::GetOverlayWebViewForTesting() {
-  return overlay_web_view_.get();
-}
-
 void LensOverlayController::SendText(lens::mojom::TextPtr text) {
   if (!page_) {
     // Store the text to send once the page is bound.
@@ -1463,26 +1450,8 @@ void LensOverlayController::InitializeOverlay(
 
   InitializeOverlayUI(*initialization_data_);
   base::UmaHistogramBoolean("Lens.Overlay.Shown", true);
+  InitializeOverlayImpl();
 
-  // Show the preselection overlay now that the overlay is initialized and ready
-  // to be shown.
-  if (!pending_region_ && !IsResultsSidePanelShowing()) {
-    ShowPreselectionBubble();
-  }
-
-  // Create the blur delegate so it is ready to blur once the view is visible.
-  if (lens::features::GetLensOverlayUseBlur()) {
-    content::RenderWidgetHost* live_page_widget_host =
-        tab_->GetContents()
-            ->GetPrimaryMainFrame()
-            ->GetRenderViewHost()
-            ->GetWidget();
-    lens_overlay_blur_layer_delegate_ =
-        std::make_unique<lens::LensOverlayBlurLayerDelegate>(
-            live_page_widget_host);
-  }
-
-  state_ = State::kOverlay;
   lens_search_controller_->NotifyOverlayOpened();
 
   // Update the entry points state to ensure that the entry points are disabled
@@ -1597,6 +1566,14 @@ SidePanelEntry::PanelType LensOverlayController::GetSidePanelType() {
 
 bool LensOverlayController::ShouldCloseSidePanel() {
   return true;
+}
+
+bool LensOverlayController::ShouldShowPreselectionBubble() {
+  return !pending_region_ && !IsResultsSidePanelShowing();
+}
+
+bool LensOverlayController::UseOverlayBlur() {
+  return lens::features::GetLensOverlayUseBlur();
 }
 
 bool LensOverlayController::HandleContextMenu(

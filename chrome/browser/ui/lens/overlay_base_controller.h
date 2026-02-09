@@ -118,6 +118,16 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // this overlay controller.
   tabs::TabInterface* GetTabInterface();
 
+  // Testing helper method for checking the blur layer delegate.
+  lens::LensOverlayBlurLayerDelegate*
+  GetLensOverlayBlurLayerDelegateForTesting();
+
+  // Testing helper method for checking view housing our overlay.
+  views::View* GetOverlayViewForTesting();
+
+  // Testing helper method for checking web view.
+  views::WebView* GetOverlayWebViewForTesting();
+
  private:
   // ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
@@ -188,6 +198,12 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // class has prepared the screenshot `InitializeScreenshot` should be called.
   virtual void StartScreenshotFlow() = 0;
 
+  // Whether the presselection bubble should be shown.
+  virtual bool ShouldShowPreselectionBubble() = 0;
+
+  // Whether we should blur the host view.
+  virtual bool UseOverlayBlur() = 0;
+
   // If the side panel was closed, we wait for the reflow before beginning
   // the screenshot flow.
   virtual void FinishedWaitingForReflow(base::TimeTicks reflow_start_time);
@@ -201,6 +217,9 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // main thread.
   void InitializeScreenshot(const SkBitmap& screenshot,
                             base::OnceCallback<void(SkBitmap)> callback);
+
+  // Initialize the overlay.
+  void InitializeOverlayImpl();
 
   // Enable/Disable live blur.
   void SetLiveBlurImpl(bool enabled);

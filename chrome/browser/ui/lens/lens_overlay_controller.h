@@ -90,11 +90,6 @@ namespace ui {
 class TrackedElement;
 }  // namespace ui
 
-namespace views {
-class View;
-class WebView;
-}  // namespace views
-
 class LensSearchController;
 class PrefService;
 enum class SidePanelEntryHideReason;
@@ -161,16 +156,6 @@ class LensOverlayController : public OverlayBaseController,
   // Returns invocation time since epoch. Used to set up html source for metric
   // logging.
   uint64_t GetInvocationTimeSinceEpoch();
-
-  // Testing helper method for checking the blur layer delegate.
-  lens::LensOverlayBlurLayerDelegate*
-  GetLensOverlayBlurLayerDelegateForTesting();
-
-  // Testing helper method for checking view housing our overlay.
-  views::View* GetOverlayViewForTesting();
-
-  // Testing helper method for checking web view.
-  views::WebView* GetOverlayWebViewForTesting();
 
   // Send text data to the WebUI, or stores it to be sent when the WebUI is
   // ready.
@@ -626,6 +611,8 @@ class LensOverlayController : public OverlayBaseController,
   bool ShouldCloseSidePanel() override;
   void StartScreenshotFlow() override;
   void FinishedWaitingForReflow(base::TimeTicks reflow_start_time) override;
+  bool ShouldShowPreselectionBubble() override;
+  bool UseOverlayBlur() override;
 
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,

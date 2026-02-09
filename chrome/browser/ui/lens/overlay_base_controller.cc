@@ -89,6 +89,19 @@ tabs::TabInterface* OverlayBaseController::GetTabInterface() {
   return tab_;
 }
 
+lens::LensOverlayBlurLayerDelegate*
+OverlayBaseController::GetLensOverlayBlurLayerDelegateForTesting() {
+  return lens_overlay_blur_layer_delegate_.get();
+}
+
+views::View* OverlayBaseController::GetOverlayViewForTesting() {
+  return overlay_view_.get();
+}
+
+views::WebView* OverlayBaseController::GetOverlayWebViewForTesting() {
+  return overlay_web_view_.get();
+}
+
 void OverlayBaseController::OnViewBoundsChanged(views::View* observed_view) {
   CHECK(observed_view == overlay_view_);
 
@@ -472,6 +485,28 @@ void OverlayBaseController::HideOverlay() {
   HidePreselectionBubble();
 
   NotifyIsOverlayShowing(false);
+}
+
+void OverlayBaseController::InitializeOverlayImpl() {
+  // Show the preselection overlay now that the overlay is initialized and ready
+  // to be shown.
+  if (ShouldShowPreselectionBubble()) {
+    ShowPreselectionBubble();
+  }
+
+  // Create the blur delegate so it is ready to blur once the view is visible.
+  if (UseOverlayBlur()) {
+    content::RenderWidgetHost* live_page_widget_host =
+        tab_->GetContents()
+            ->GetPrimaryMainFrame()
+            ->GetRenderViewHost()
+            ->GetWidget();
+    lens_overlay_blur_layer_delegate_ =
+        std::make_unique<lens::LensOverlayBlurLayerDelegate>(
+            live_page_widget_host);
+  }
+
+  state_ = State::kOverlay;
 }
 
 void OverlayBaseController::MaybeHideSharedOverlayView() {
