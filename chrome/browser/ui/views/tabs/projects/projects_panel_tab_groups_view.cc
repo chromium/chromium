@@ -24,7 +24,7 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-constexpr gfx::Insets kNoTabsInteriorMargins = gfx::Insets::TLBR(0, 8, 0, 0);
+constexpr gfx::Insets kNoTabsInteriorMargins = gfx::Insets::VH(0, 8);
 constexpr int kSpacingBetweenChildren = 2;
 
 class ProjectsPanelNewTabGroupButton : public views::LabelButton {

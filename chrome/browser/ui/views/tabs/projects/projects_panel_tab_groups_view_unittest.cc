@@ -63,7 +63,7 @@ class ProjectsPanelTabGroupsViewTest : public views::ViewsTestBase {
     EXPECT_EQ(2u, tab_groups_view_->children().size());
     // Index 0 is the "Create new tab group" button.
     views::Label* no_tabs_label = static_cast<views::Label*>(
-        tab_groups_view_->no_tab_groups_view_for_testing()->children()[0]);
+        tab_groups_view_->no_tab_groups_view_for_testing()->children()[1]);
     EXPECT_EQ(
         u"Organize your tabs by grouping them together and label them with a "
         u"custom name and color",
