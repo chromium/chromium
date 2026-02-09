@@ -162,8 +162,6 @@ static_library("safe_browsing") {
       "cloud_content_scanning/file_analysis_request.h",
       "cloud_content_scanning/file_opening_job.cc",
       "cloud_content_scanning/file_opening_job.h",
-      "cloud_content_scanning/resumable_uploader.cc",
-      "cloud_content_scanning/resumable_uploader.h",
       "delayed_warning_navigation_throttle.cc",
       "delayed_warning_navigation_throttle.h",
       "download_protection/check_client_download_request.cc",

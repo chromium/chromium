@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_H_
-#define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_H_
+#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_H_
+#define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_H_
 
 #include <memory>
 #include <string>
@@ -31,6 +31,8 @@ namespace safe_browsing {
 
 // This class encapsulates the upload of a file with metadata using the
 // resumable protocol. This class is neither movable nor copyable.
+//
+// TODO(crbug.com/481674868): Combine resumabled uploader base class with this.
 class ResumableUploadRequest
     : public enterprise_connectors::ResumableUploadRequestBase {
  public:
@@ -58,7 +60,8 @@ class ResumableUploadRequest
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       VerdictReceivedCallback verdict_received_callback,
       ContentUploadedCallback content_uploaded_callback,
-      bool force_sync_upload);
+      bool force_sync_upload,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   // Creates a ResumableUploadRequest, which will upload the `metadata` of the
   // page to the given `base_url`, and then the content of `page_region` if
@@ -73,7 +76,8 @@ class ResumableUploadRequest
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       VerdictReceivedCallback verdict_received_callback,
       ContentUploadedCallback content_uploaded_callback,
-      bool force_sync_upload);
+      bool force_sync_upload,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   // Creates a ResumableUploadRequest, which will upload the `metadata` of a
   // pasted image to the given `base_url`, and then the `data` if necessary.
@@ -87,7 +91,8 @@ class ResumableUploadRequest
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       VerdictReceivedCallback verdict_received_callback,
       ContentUploadedCallback content_uploaded_callback,
-      bool force_sync_upload);
+      bool force_sync_upload,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   ResumableUploadRequest(const ResumableUploadRequest&) = delete;
   ResumableUploadRequest& operator=(const ResumableUploadRequest&) = delete;
@@ -107,7 +112,8 @@ class ResumableUploadRequest
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       VerdictReceivedCallback verdict_received_callback,
       ContentUploadedCallback content_uploaded_callback,
-      bool force_sync_upload);
+      bool force_sync_upload,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   static std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
   CreateFileRequest(
@@ -122,7 +128,8 @@ class ResumableUploadRequest
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       VerdictReceivedCallback verdict_received_callback,
       ContentUploadedCallback content_uploaded_callback,
-      bool force_sync_upload);
+      bool force_sync_upload,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   static std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
   CreatePageRequest(
@@ -135,9 +142,10 @@ class ResumableUploadRequest
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       VerdictReceivedCallback verdict_received_callback,
       ContentUploadedCallback content_uploaded_callback,
-      bool force_sync_upload);
+      bool force_sync_upload,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 };
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_H_
+#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_H_

@@ -23,9 +23,9 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/resumable_uploader.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/resumable_uploader.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -511,7 +511,8 @@ void CloudBinaryUploadService::OnGetRequestData(
                       : enterprise_connectors::ConnectorUploadRequest::STRING,
                   histogram_suffix, std::move(traffic_annotation),
                   std::move(verdict_received_callback),
-                  std::move(content_uploaded_callback), force_sync_upload)
+                  std::move(content_uploaded_callback), force_sync_upload,
+                  content::GetUIThreadTaskRunner({}))
             : MultipartUploadRequest::CreateStringRequest(
                   url_loader_factory_, url, metadata, data.contents,
                   histogram_suffix, std::move(traffic_annotation),
@@ -524,7 +525,8 @@ void CloudBinaryUploadService::OnGetRequestData(
                   data.size, data.is_obfuscated, histogram_suffix,
                   std::move(traffic_annotation),
                   std::move(verdict_received_callback),
-                  std::move(content_uploaded_callback), force_sync_upload)
+                  std::move(content_uploaded_callback), force_sync_upload,
+                  content::GetUIThreadTaskRunner({}))
             : MultipartUploadRequest::CreateFileRequest(
                   url_loader_factory_, url, metadata, data.path, data.size,
                   data.is_obfuscated, histogram_suffix,
@@ -538,7 +540,8 @@ void CloudBinaryUploadService::OnGetRequestData(
                   std::move(data.page), histogram_suffix,
                   std::move(traffic_annotation),
                   std::move(verdict_received_callback),
-                  std::move(content_uploaded_callback), force_sync_upload)
+                  std::move(content_uploaded_callback), force_sync_upload,
+                  content::GetUIThreadTaskRunner({}))
             : MultipartUploadRequest::CreatePageRequest(
                   url_loader_factory_, url, metadata, std::move(data.page),
                   histogram_suffix, std::move(traffic_annotation),
