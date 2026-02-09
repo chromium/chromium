@@ -1455,9 +1455,6 @@ bool InlineNode::IsNGShapeCacheAllowed(const String& text_content,
   if (items.size() != 1) {
     return false;
   }
-  if (text_content.length() > NGShapeCache::kMaxTextLengthOfEntries) {
-    return false;
-  }
   const InlineItem& single_item = *items[0];
   if (!(single_item.Type() == InlineItem::kText &&
         single_item.StartOffset() == 0 &&

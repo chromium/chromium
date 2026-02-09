@@ -1722,31 +1722,6 @@ TEST_F(InlineNodeTest, FontFeaturesInitial) {
   EXPECT_FALSE(is_initial("no-kern"));
 }
 
-TEST_F(InlineNodeTest, ShapeCacheLongString) {
-  for (const unsigned text_length :
-       {NGShapeCache::kMaxTextLengthOfEntries - 1,
-        NGShapeCache::kMaxTextLengthOfEntries,
-        NGShapeCache::kMaxTextLengthOfEntries + 1}) {
-    StringBuilder builder;
-    builder.Append("<div id=t>");
-    for (unsigned i = 0; i < text_length; ++i) {
-      builder.Append(static_cast<LChar>((i % 10) + '0'));
-    }
-    builder.Append("</div>");
-
-    SetupHtml("t", builder.ToString());
-    InlineNodeForTest node = CreateInlineNode();
-    node.CollectInlines();
-
-    const String& text_content(node.Text().c_str());
-    InlineItems& items = node.Items();
-    ShapeResultSpacing spacing(text_content, node.IsSvgText());
-
-    EXPECT_EQ(node.IsNGShapeCacheAllowed(text_content, nullptr, items, spacing),
-              text_length <= NGShapeCache::kMaxTextLengthOfEntries);
-  }
-}
-
 TEST_F(InlineNodeTest, ShapeCacheMultiItems) {
   SetupHtml("t", "<div id=t>abc<span>def</span>ghi</div>");
   InlineNodeForTest node = CreateInlineNode();
