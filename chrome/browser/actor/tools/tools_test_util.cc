@@ -182,6 +182,10 @@ ExecutionEngine& ActorToolsTest::execution_engine() {
   return actor_task().GetExecutionEngine();
 }
 
+ActorKeyedService& ActorToolsTest::actor_keyed_service() const {
+  return *ActorKeyedService::Get(GetProfile());
+}
+
 ActorTask& ActorToolsTest::actor_task() const {
   CHECK(task_id_);
   return *ActorKeyedService::Get(GetProfile())->GetTask(task_id_);

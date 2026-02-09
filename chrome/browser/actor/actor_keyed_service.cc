@@ -536,10 +536,13 @@ void ActorKeyedService::StopTask(TaskId task_id,
                        .Add("stop_reason", stop_reason)
                        .Build());
 
-  auto task = active_tasks_.extract(task_id);
-  if (!task.empty()) {
-    task.mapped()->Stop(stop_reason);
+  auto task_itr = active_tasks_.find(task_id);
+  if (task_itr == active_tasks_.end()) {
+    return;
   }
+
+  task_itr->second->Stop(stop_reason);
+  active_tasks_.erase(task_itr);
 }
 
 ActorTask* ActorKeyedService::GetTask(TaskId task_id) {
