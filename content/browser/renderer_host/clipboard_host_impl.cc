@@ -659,11 +659,18 @@ void ClipboardHostImpl::ReadAvailableCustomAndStandardFormats(
     return;
   }
 
-  std::vector<std::u16string> format_types =
-      ui::Clipboard::GetForCurrentThread()
-          ->ReadAvailableStandardAndCustomFormatNames(
-              ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint().get());
-  std::move(callback).Run(format_types);
+  auto data_endpoint = CreateDataEndpoint();
+  auto* data_endpoint_ptr = data_endpoint.get();
+  ui::Clipboard::GetForCurrentThread()
+      ->ReadAvailableStandardAndCustomFormatNames(
+          ui::ClipboardBuffer::kCopyPaste, data_endpoint_ptr,
+          base::BindOnce(
+              [](std::unique_ptr<ui::DataTransferEndpoint> data_endpoint,
+                 ReadAvailableCustomAndStandardFormatsCallback callback,
+                 std::vector<std::u16string> format_types) {
+                std::move(callback).Run(std::move(format_types));
+              },
+              std::move(data_endpoint), std::move(callback)));
 }
 
 void ClipboardHostImpl::ReadUnsanitizedCustomFormat(
@@ -686,12 +693,23 @@ void ClipboardHostImpl::ReadUnsanitizedCustomFormat(
   // corresponding to the MIME type.
   std::string format_name = base::UTF16ToASCII(format);
   auto data_endpoint = CreateDataEndpoint();
-  std::map<std::string, std::string> custom_format_names =
-      ui::Clipboard::GetForCurrentThread()->ExtractCustomPlatformNames(
-          ui::ClipboardBuffer::kCopyPaste, data_endpoint.get());
+  auto* data_endpoint_ptr = data_endpoint.get();
+  ui::Clipboard::GetForCurrentThread()->ExtractCustomPlatformNames(
+      ui::ClipboardBuffer::kCopyPaste, data_endpoint_ptr,
+      base::BindOnce(&ClipboardHostImpl::OnExtractCustomPlatformNames,
+                     weak_ptr_factory_.GetWeakPtr(), format_name,
+                     std::move(data_endpoint), std::move(callback)));
+}
+
+void ClipboardHostImpl::OnExtractCustomPlatformNames(
+    const std::string& format_name,
+    std::unique_ptr<ui::DataTransferEndpoint> data_endpoint,
+    ReadUnsanitizedCustomFormatCallback callback,
+    std::map<std::string, std::string> custom_format_names) {
   std::string web_custom_format_string;
-  if (custom_format_names.find(format_name) != custom_format_names.end()) {
-    web_custom_format_string = custom_format_names[format_name];
+  auto it = custom_format_names.find(format_name);
+  if (it != custom_format_names.end()) {
+    web_custom_format_string = it->second;
   }
   if (web_custom_format_string.empty()) {
     std::move(callback).Run(mojo_base::BigBuffer());

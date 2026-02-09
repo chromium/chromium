@@ -224,6 +224,12 @@ class CONTENT_EXPORT ClipboardHostImpl
       ReadUnsanitizedCustomFormatCallback callback,
       std::string data);
 
+  void OnExtractCustomPlatformNames(
+      const std::string& format_name,
+      std::unique_ptr<ui::DataTransferEndpoint> data_endpoint,
+      ReadUnsanitizedCustomFormatCallback callback,
+      std::map<std::string, std::string> custom_format_names);
+
   void OnReadAvailableTypesForUpdate(absl::uint128 change_id,
                                      std::vector<std::u16string> types);
 

@@ -68,6 +68,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   using ReadBookmarkCallback =
       base::OnceCallback<void(std::u16string title, GURL url)>;
   using ReadDataCallback = base::OnceCallback<void(std::string result)>;
+  using ExtractCustomPlatformNamesCallback =
+      base::OnceCallback<void(std::map<std::string, std::string>)>;
+  using ReadAvailableStandardAndCustomFormatNamesCallback =
+      base::OnceCallback<void(std::vector<std::u16string>)>;
 
   // This enum is used to specify different privacy types of the clipboard
   // data. If a password is copied to the clipboard, based on platform support,
@@ -295,13 +299,15 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // MIME type to custom format name and fetches the list of custom MIME types.
   // e.g. on Windows, the mapping is represented as "text/html":"Web Custom
   // Format(0-99)".
-  std::map<std::string, std::string> ExtractCustomPlatformNames(
+  void ExtractCustomPlatformNames(
       ClipboardBuffer buffer,
-      const DataTransferEndpoint* data_dst) const;
+      const DataTransferEndpoint* data_dst,
+      ExtractCustomPlatformNamesCallback callback) const;
 
-  std::vector<std::u16string> ReadAvailableStandardAndCustomFormatNames(
+  void ReadAvailableStandardAndCustomFormatNames(
       ClipboardBuffer buffer,
-      const DataTransferEndpoint* data_dst) const;
+      const DataTransferEndpoint* data_dst,
+      ReadAvailableStandardAndCustomFormatNamesCallback callback) const;
 
   // Add an observer for text pasted to clipboard with a URL source.
   void AddObserver(ClipboardWriteObserver* observer);
