@@ -62,6 +62,12 @@
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#else
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #endif
 
 namespace actor {
@@ -1107,6 +1113,37 @@ void BuildActionsResultWithObservations(
       window_observation->add_tab_ids(tab->GetHandle().raw_value());
     }
   }
+#else
+  // TODO(b/482430429): Use the same implementation in Desktop and Android once
+  // ProfileBrowserCollection is implemented on Android.
+  GlobalBrowserCollection* browser_collection =
+      GlobalBrowserCollection::GetInstance();
+  browser_collection->ForEach(
+      [&response, &profile](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile) {
+          return true;
+        }
+
+        apc::WindowObservation* window_observation = response->add_windows();
+        window_observation->set_id(browser->GetSessionID().id());
+        // Treat the first window as active.
+        window_observation->set_active(response->windows_size() == 1);
+
+        if (TabModel* tab_model =
+                static_cast<TabModel*>(TabListInterface::From(browser))) {
+          if (tabs::TabInterface* active_tab = tab_model->GetActiveTab()) {
+            window_observation->set_activated_tab_id(
+                active_tab->GetHandle().raw_value());
+          }
+
+          for (const tabs::TabInterface* tab : tab_model->GetAllTabs()) {
+            window_observation->add_tab_ids(tab->GetHandle().raw_value());
+          }
+        }
+
+        return true;
+      },
+      BrowserCollection::Order::kActivation);
 #endif
 
   absl::flat_hash_map<tabs::TabInterface*, apc::TabObservation*> tabs_to_fetch;
