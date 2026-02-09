@@ -60,12 +60,4 @@ NSString* const kSendTabPromoViewID = @"kSendTabPromoViewID";
   [self.audience didSelectSendTabPromo];
 }
 
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone*)zone {
-  SendTabPromoItem* copy = [super copyWithZone:zone];
-  copy.audience = self.audience;
-  return copy;
-}
-
 @end

@@ -21,7 +21,7 @@ enum class ContentSuggestionsModuleType;
 
 // Base object for all Magic Stack modules configs. Subclass this class when
 // creating a new module config.
-@interface MagicStackModule : NSObject <NSCopying>
+@interface MagicStackModule : NSObject
 
 // The type of the module config.
 @property(nonatomic, assign, readonly) ContentSuggestionsModuleType type;

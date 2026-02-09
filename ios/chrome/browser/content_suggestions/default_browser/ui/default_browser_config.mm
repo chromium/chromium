@@ -14,12 +14,4 @@
   return ContentSuggestionsModuleType::kDefaultBrowser;
 }
 
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone*)zone {
-  DefaultBrowserConfig* copy = [[super copyWithZone:zone] init];
-  copy.defaultBrowserHandler = self.defaultBrowserHandler;
-  return copy;
-}
-
 @end

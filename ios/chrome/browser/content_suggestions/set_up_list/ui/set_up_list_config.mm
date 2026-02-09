@@ -19,15 +19,4 @@
   return SetUpListModuleTypeForSetUpListType(setUpListItem.type);
 }
 
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone*)zone {
-  SetUpListConfig* copy = [[super copyWithZone:zone] init];
-  copy.setUpListItems = self.setUpListItems;
-  copy.shouldShowCompactModule = self.shouldShowCompactModule;
-  copy.setUpListConsumerSource = self.setUpListConsumerSource;
-  copy.commandHandler = self.commandHandler;
-  return copy;
-}
-
 @end

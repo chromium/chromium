@@ -48,21 +48,4 @@
   return ContentSuggestionsModuleType::kSafetyCheck;
 }
 
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone*)zone {
-  SafetyCheckState* copy =
-      [[super copyWithZone:zone] initWithUpdateChromeState:_updateChromeState
-                                             passwordState:_passwordState
-                                         safeBrowsingState:_safeBrowsingState
-                                              runningState:_runningState];
-  copy.weakPasswordsCount = self.weakPasswordsCount;
-  copy.reusedPasswordsCount = self.reusedPasswordsCount;
-  copy.compromisedPasswordsCount = self.compromisedPasswordsCount;
-  copy.lastRunTime = self.lastRunTime;
-  copy.safetyCheckConsumerSource = self.safetyCheckConsumerSource;
-  copy.audience = self.audience;
-  return copy;
-}
-
 @end

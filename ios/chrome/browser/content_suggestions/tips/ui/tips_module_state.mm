@@ -32,15 +32,4 @@ using segmentation_platform::TipIdentifier;
   return ContentSuggestionsModuleType::kTips;
 }
 
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone*)zone {
-  TipsModuleState* copy =
-      [[super copyWithZone:zone] initWithIdentifier:_identifier];
-  copy.productImageData = self.productImageData;
-  copy.audience = self.audience;
-  copy.consumerSource = self.consumerSource;
-  return copy;
-}
-
 @end

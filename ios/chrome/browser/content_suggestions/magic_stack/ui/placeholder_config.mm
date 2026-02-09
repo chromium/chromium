@@ -14,10 +14,4 @@
   return ContentSuggestionsModuleType::kPlaceholder;
 }
 
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone*)zone {
-  return [[super copyWithZone:zone] init];
-}
-
 @end

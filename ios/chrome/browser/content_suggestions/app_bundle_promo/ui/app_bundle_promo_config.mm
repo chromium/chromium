@@ -26,13 +26,4 @@
   return ContentSuggestionsModuleType::kAppBundlePromo;
 }
 
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone*)zone {
-  AppBundlePromoConfig* copy =
-      [[super copyWithZone:zone] initWithImageNamed:_imageName];
-  copy.audience = self.audience;
-  return copy;
-}
-
 @end

@@ -30,14 +30,4 @@
   return self.type != config.type;
 }
 
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone*)zone {
-  MagicStackModule* copy = [[[self class] allocWithZone:zone] init];
-  copy.shouldShowSeeMore = self.shouldShowSeeMore;
-  copy.showNotificationsOptIn = self.showNotificationsOptIn;
-  copy.delegate = self.delegate;
-  return copy;
-}
-
 @end

@@ -48,15 +48,4 @@
   return kPriceTrackingPromoViewID;
 }
 
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone*)zone {
-  PriceTrackingPromoItem* copy = [super copyWithZone:zone];
-  copy.priceTrackingPromoHandler = self.priceTrackingPromoHandler;
-  copy.productImageData = self.productImageData;
-  copy.priceTrackingPromoFaviconConsumerSource =
-      self.priceTrackingPromoFaviconConsumerSource;
-  return copy;
-}
-
 @end
