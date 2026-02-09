@@ -4,8 +4,6 @@
 
 #include "chrome/browser/browsing_data/counters/site_settings_counter.h"
 
-#include <set>
-
 #include "base/json/values_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
@@ -19,6 +17,7 @@
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/url_matcher/url_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/host_zoom_map.h"
@@ -52,7 +51,7 @@ const char* SiteSettingsCounter::GetPrefName() const {
 }
 
 void SiteSettingsCounter::Count() {
-  std::set<std::string> hosts;
+  absl::flat_hash_set<std::string> hosts;
   int empty_host_pattern = 0;
   base::Time period_start = GetPeriodStart();
   base::Time period_end = GetPeriodEnd();
