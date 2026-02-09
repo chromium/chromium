@@ -16,7 +16,12 @@
 class WebUIContentsPreloadState
     : public content::WebContentsUserData<WebUIContentsPreloadState> {
  public:
-  // Whether the WebUI is (or was) preloaded.
+  // True if the associated WebUI contents is currently in a preloaded state,
+  // owned by the WebUIContentsPreloadManager.
+  bool pending_request = false;
+
+  // Whether the WebUI is (or was) preloaded, used primarily for logging
+  // metrics related to preload performance.
   bool preloaded = false;
 
   // Whether the WebUI is ready to be shown. This is set to true when the WebUI

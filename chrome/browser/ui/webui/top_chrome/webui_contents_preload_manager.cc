@@ -399,8 +399,10 @@ void WebUIContentsPreloadManager::SetPreloadedContents(
     webui_controller_embedder_stub_->AttachTo(preloaded_web_contents_.get());
     profile_observation_.Observe(Profile::FromBrowserContext(
         preloaded_web_contents_->GetBrowserContext()));
-    WebUIContentsPreloadState::FromWebContents(preloaded_web_contents_.get())
-        ->preloaded = true;
+    auto* preload_state = WebUIContentsPreloadState::FromWebContents(
+        preloaded_web_contents_.get());
+    preload_state->preloaded = true;
+    preload_state->pending_request = true;
   }
 }
 
@@ -458,6 +460,7 @@ RequestResult WebUIContentsPreloadManager::Request(
       WebUIContentsPreloadState::FromWebContents(web_contents_ret.get());
   CHECK(preload_state);
   preload_state->request_time = request_time;
+  preload_state->pending_request = false;
   // Non-preloaded WebUIs are logged by WebUIMainFrameObserver.
   if (preload_state->preloaded) {
     webui::LogWebUIShown(web_contents_ret->GetSiteInstance()->GetSiteURL());

@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/user_education/tutorial_identifiers.h"
@@ -1525,7 +1526,10 @@ void TabSearchPageHandler::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
+  const auto* preload_state =
+      WebUIContentsPreloadState::FromWebContents(web_ui_->GetWebContents());
   if (!IsWebContentsVisible() ||
+      (preload_state && preload_state->pending_request) ||
       browser_tab_strip_tracker_.is_processing_initial_browsers()) {
     return;
   }
