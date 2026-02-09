@@ -21,10 +21,6 @@
   }
 }
 
-raw-event-details {
-  margin-top: 4px;
-}
-
 .filter-bar-container {
   display: flex;
   align-items: center;
@@ -61,8 +57,15 @@ filter-bar {
 }
 
 .event-count {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
   padding: 8px 0;
   font-style: italic;
   color: var(--cr-fallback-color-on-surface-subtle);
+}
+
+.event-count > span {
+  margin: 0 4px;
 }

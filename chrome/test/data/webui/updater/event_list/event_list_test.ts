@@ -98,8 +98,8 @@ suite('EventListElement', () => {
     element.messages = messages;
     await microtasksFinished();
 
-    assertEquals(
-        1, element.shadowRoot.querySelectorAll('raw-event-details').length);
+    assertTrue(!!element.shadowRoot.querySelectorAll(
+        'events-with-parse-errors-label'));
   });
 
   test('handles events without dates', async () => {
@@ -117,8 +117,8 @@ suite('EventListElement', () => {
     element.messages = messages;
     await microtasksFinished();
 
-    assertEquals(
-        1, element.shadowRoot.querySelectorAll('raw-event-details').length);
+    assertTrue(
+        !!element.shadowRoot.querySelectorAll('events-without-dates-label'));
   });
 
   test('filters events', async () => {

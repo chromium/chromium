@@ -22,7 +22,19 @@ export function getHtml(this: EventListElement) {
   </div>
 </div>
 <div class="event-count">
-  ${this.numDisplayedEventsLabel}
+  <span>${this.numDisplayedEventsLabel}</span>
+  ${this.eventsWithoutDatesLabel ? html`
+    <span>&bull;</span>
+    <span class="events-without-dates-label">
+      ${this.eventsWithoutDatesLabel}
+    </span>
+  ` : ''}
+  ${this.eventsWithParseErrorsLabel ? html`
+    <span>&bull;</span>
+    <span class="events-with-parse-errors-label">
+      ${this.eventsWithParseErrorsLabel}
+    </span>
+  ` : ''}
 </div>
 <cr-infinite-list class="event-list" .items="${this.events}" item-size="36"
     chunk-size="100" role="grid" aria-rowcount="${this.events.length}"
@@ -35,19 +47,6 @@ export function getHtml(this: EventListElement) {
         </event-list-item>
       </div>`}">
 </cr-infinite-list>
-${this.eventsWithoutDates.length > 0 ? html`
-  <div>
-    <div>${this.eventsWithoutDatesLabel}</div>
-    <raw-event-details .events="${this.eventsWithoutDates}"></raw-event-details>
-  </div>
-` : ''}
-${this.eventsWithParseErrors.length > 0 ? html`
-  <div>
-    <div>${this.eventsWithParseErrorsLabel}</div>
-    <raw-event-details .events="${this.eventsWithParseErrors}">
-    </raw-event-details>
-  </div>
-` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

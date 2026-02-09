@@ -4,7 +4,6 @@
 
 import './event_list_item.js';
 import './filter_bar.js';
-import './raw_event_details.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 
@@ -104,8 +103,6 @@ export class EventListElement extends CrLitElement {
   protected accessor scrollTarget: HTMLElement = document.documentElement;
 
   protected processMap: UpdaterProcessMap|undefined = undefined;
-  protected eventsWithParseErrors: Array<Record<string, unknown>> = [];
-  protected eventsWithoutDates: Array<HistoryEvent|MergedHistoryEvent> = [];
   protected sortedEventsWithDates: Array<HistoryEvent|MergedHistoryEvent> = [];
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -119,18 +116,14 @@ export class EventListElement extends CrLitElement {
           processMap.sortEventsByDate(unpaired, paired);
 
       this.processMap = processMap;
-      this.eventsWithParseErrors = invalid;
-      this.eventsWithoutDates = unsortedEventsWithoutDates;
       this.sortedEventsWithDates = sortedEventsWithDates;
 
       const pluralStringProxy = PluralStringProxyImpl.getInstance();
 
       pluralStringProxy
-          .getPluralString('undatedEvents', this.eventsWithoutDates.length)
+          .getPluralString('undatedEvents', unsortedEventsWithoutDates.length)
           .then(label => this.eventsWithoutDatesLabel = label);
-      pluralStringProxy
-          .getPluralString(
-              'parseErrorEvents', this.eventsWithParseErrors.length)
+      pluralStringProxy.getPluralString('parseErrorEvents', invalid.length)
           .then(label => this.eventsWithParseErrorsLabel = label);
     }
 
