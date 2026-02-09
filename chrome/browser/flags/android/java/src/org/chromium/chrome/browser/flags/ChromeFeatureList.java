@@ -1305,7 +1305,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sAndroidPinnedTabsTabletTabStrip =
             newMutableFlagWithSafeDefault(ANDROID_PINNED_TABS_TABLET_TAB_STRIP, false);
     public static final MutableFlagWithSafeDefault sAndroidTabHighlighting =
-            newMutableFlagWithSafeDefault(ANDROID_TAB_HIGHLIGHTING, false);
+            newMutableFlagWithSafeDefault(ANDROID_TAB_HIGHLIGHTING, true);
     public static final MutableFlagWithSafeDefault sAndroidTipsNotifications =
             newMutableFlagWithSafeDefault(ANDROID_TIPS_NOTIFICATIONS, false);
     public static final MutableFlagWithSafeDefault sAndroidTipsNotificationsV2 =
