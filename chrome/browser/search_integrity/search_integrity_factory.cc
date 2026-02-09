@@ -6,13 +6,14 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/search_integrity/search_integrity.h"
 
 namespace search_integrity {
 
 // static
 SearchIntegrity* SearchIntegrityFactory::GetForProfile(Profile* profile) {
-  // TODO(481450191): Return SearchIntegrity once the class is defined.
-  return nullptr;
+  return static_cast<SearchIntegrity*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 // static
@@ -36,9 +37,9 @@ SearchIntegrityFactory::~SearchIntegrityFactory() = default;
 std::unique_ptr<KeyedService>
 SearchIntegrityFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  // TODO(481450191): Return std::make_unique<SearchIntegrity>(...) once the
-  // class is defined.
-  return nullptr;
+  Profile* profile = Profile::FromBrowserContext(context);
+  return std::make_unique<SearchIntegrity>(
+      TemplateURLServiceFactory::GetForProfile(profile), profile->GetPath());
 }
 
 }  // namespace search_integrity

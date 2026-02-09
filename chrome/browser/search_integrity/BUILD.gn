@@ -1,4 +1,4 @@
-# Copyright 2024 The Chromium Authors
+# Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,6 +6,8 @@ import("//build/config/chromeos/ui_mode.gni")
 
 static_library("search_integrity") {
   sources = [
+    "search_integrity.cc",
+    "search_integrity.h",
     "search_integrity_factory.cc",
     "search_integrity_factory.h",
   ]
@@ -14,6 +16,7 @@ static_library("search_integrity") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
+    "//chrome/common:constants",
     "//components/keyed_service/core",
     "//components/search_engines",
   ]

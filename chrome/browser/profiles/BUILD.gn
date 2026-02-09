@@ -446,7 +446,10 @@ source_set("profiles_extra_parts_impl") {
   }
 
   if (is_win || is_mac || is_linux) {
-    deps += [ "//chrome/browser/browser_switcher" ]
+    deps += [
+      "//chrome/browser/browser_switcher",
+      "//chrome/browser/search_integrity",
+    ]
   }
 
   if (enable_extensions_core) {

@@ -453,6 +453,7 @@
 #include "chrome/browser/enterprise/signin/profile_token_web_signin_interceptor_factory.h"
 #include "chrome/browser/enterprise/signin/user_policy_oidc_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/profile_token_policy_web_signin_service_factory.h"
+#include "chrome/browser/search_integrity/search_integrity_factory.h"
 #include "chrome/browser/signin/accounts_policy_manager_factory.h"
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -672,6 +673,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   autofill::AccountSettingServiceFactory::GetInstance();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   AccountsPolicyManagerFactory::GetInstance();
+  search_integrity::SearchIntegrityFactory::GetInstance();
 #endif
 #if BUILDFLAG(ENABLE_GLIC)
   actor::ActorKeyedServiceFactory::GetInstance();
