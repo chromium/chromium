@@ -108,4 +108,7 @@
     desc="Title for the AI Mode zero state welcome message in the Lens tab.">
     What's on your mind?
   </message>
+  <message name="IDS_CONTEXTUAL_TASKS_COMPOSEBOX_PLACEHOLDER_TEXT" desc="Placeholder text shown on the compose box of the contextual task page.">
+    Ask anything
+  </message>
 </grit-part>

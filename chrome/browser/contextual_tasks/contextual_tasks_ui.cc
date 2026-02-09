@@ -97,6 +97,16 @@ void AddContextMenuItemEligibilityLoadTimeData(content::WebUIDataSource* source,
   source->AddBoolean("composeboxShowPdfUpload",
                      aim_eligibility_service &&
                          aim_eligibility_service->IsPdfUploadEligible());
+  if (aim_eligibility_service &&
+      aim_eligibility_service->GetSearchboxConfig()->has_hint_text()) {
+    source->AddString(
+        "searchboxComposePlaceholder",
+        aim_eligibility_service->GetSearchboxConfig()->hint_text());
+  } else {
+    source->AddLocalizedString(
+        "searchboxComposePlaceholder",
+        IDS_CONTEXTUAL_TASKS_COMPOSEBOX_PLACEHOLDER_TEXT);
+  }
 }
 
 BrowserWindowInterface* FromWebContents(content::WebContents* web_contents) {
@@ -225,7 +235,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       /* composeDeepSearchPlaceholder and
        * composeCreateImagePlaceholder are defined by searchbox_handler.cc.
        */
-      {"composeboxPlaceholderText", IDS_NTP_COMPOSE_PLACEHOLDER_TEXT},
       {"onboardingTitle", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_TITLE},
       {"onboardingBody", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_DESCRIPTION},
       {"onboardingLink", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_LEARN_MORE},
@@ -306,10 +315,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean(
       "enableThumbnailSizingTweaks",
       lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
-  source->AddString("searchboxComposePlaceholder",
-                    ntp_composebox::FeatureConfig::Get()
-                        .config.composebox()
-                        .input_placeholder_text());
   source->AddBoolean("composeboxSmartComposeEnabled",
                      contextual_tasks::GetEnableContextualTasksSmartCompose());
   source->AddBoolean("enableNativeZeroStateSuggestions",
