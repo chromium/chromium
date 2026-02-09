@@ -3,17 +3,17 @@
 These design principles make it easier to write, debug, and maintain code in
 `//chrome/browser`.
 
-## Disclaimer:
-* These are recommendations, not requirements.
+## Disclaimer
 * These are not intended to be static. If you think a
   principle doesn't make sense, reach out to `//chrome/OWNERS`.
-* These are intended to apply to new code and major refactors. We do not expect
-  existing features to be refactored, except as need arises.
+* These are intended to apply to new code and major refactors. Project Bedrock
+  is refactoring the most pressing problems. Feature teams should not feel
+  obliged to refactor existing code.
 * To better understand the relationship between `//chrome/browser` and the rest
   of the code base, see [Google internal
   documentation](http://go/anatomy-of-the-browser).
 
-## Architecture
+## Core primitives
 
 There are 4 major conceptual primitives: profile, browser window, tab, and
 `WebContents`.
