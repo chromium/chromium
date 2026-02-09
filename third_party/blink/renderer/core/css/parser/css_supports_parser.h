@@ -65,6 +65,9 @@ class CORE_EXPORT CSSSupportsParser {
   // <supports-at-rule-fn> = at-rule( <at-rule> [ ; <descriptor> : <value> ]? )
   bool ConsumeAtRuleFn(CSSParserTokenStream& stream);
 
+  // <supports-named-feature-fn> = named-feature( <ident> )
+  bool ConsumeNamedFeatureFn(CSSParserTokenStream& stream);
+
   // <supports-decl> = ( <declaration> )
   bool ConsumeSupportsDecl(CSSParserTokenStream&);
 

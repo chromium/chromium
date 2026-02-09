@@ -2098,5 +2098,9 @@
 
     // counter-reset
     "reversed",
+
+    // https://drafts.csswg.org/css-conditional-5/#typedef-supports-named-feature-fn
+    "named-feature",
+    "align-content-on-display-block",
   ],
 }

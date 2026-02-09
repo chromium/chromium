@@ -123,6 +123,10 @@ bool CSSSupportsParser::ConsumeSupportsFeature(CSSParserTokenStream& stream) {
   if (ConsumeAtRuleFn(stream)) {
     return true;
   }
+  // <supports-named-feature-fn>
+  if (ConsumeNamedFeatureFn(stream)) {
+    return true;
+  }
   if (parser_.GetMode() == CSSParserMode::kUASheetMode) {
     if (ConsumeBlinkFeatureFn(stream)) {
       return true;
@@ -215,6 +219,37 @@ bool CSSSupportsParser::ConsumeAtRuleFn(CSSParserTokenStream& stream) {
 
   // @charset is accepted in parsing but is not a valid at-rule.
   return guard.Release() && at_rule_id != CSSAtRuleID::kCSSAtRuleCharset;
+}
+
+namespace {
+bool IsSupportedNamedFeature(CSSValueID id) {
+  // When this list becomes longer we should use an algorithm better than
+  // linear search.
+  return id == CSSValueID::kAlignContentOnDisplayBlock;
+}
+}  // namespace
+
+bool CSSSupportsParser::ConsumeNamedFeatureFn(CSSParserTokenStream& stream) {
+  if (!RuntimeEnabledFeatures::CSSSupportsNamedFeatureFunctionEnabled()) {
+    return false;
+  }
+
+  if (stream.Peek().FunctionId() != CSSValueID::kNamedFeature) {
+    return false;
+  }
+
+  CSSParserTokenStream::RestoringBlockGuard guard(stream);
+  stream.ConsumeWhitespace();
+
+  CSSIdentifierValue* consumed_value = css_parsing_utils::ConsumeIdent(stream);
+
+  if (consumed_value && IsSupportedNamedFeature(consumed_value->GetValueID()) &&
+      guard.Release()) {
+    stream.ConsumeWhitespace();
+    return true;
+  }
+
+  return false;
 }
 
 // <supports-decl> = ( <declaration> )

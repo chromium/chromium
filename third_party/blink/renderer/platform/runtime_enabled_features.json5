@@ -1741,6 +1741,15 @@
       status: "stable",
     },
     {
+      // https://chromestatus.com/feature/5153932394102784
+      name: "CSSSupportsNamedFeatureFunction",
+      // TODO(https://crbug.com/353715317): Before shipping this feature, we
+      // should decide whether to remove the "align-content-on-display-block"
+      // named feature (which is so far the only CSSWG-resolved feature name)
+      // since it's probably too late for it to be useful.
+      status: "experimental",
+    },
+    {
       // Allows the CSS "accent-color" property to support the system accent color as the default option.
       name: "CSSSystemAccentColor",
       status: {
