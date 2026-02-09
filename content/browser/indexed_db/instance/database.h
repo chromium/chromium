@@ -54,9 +54,7 @@ class CONTENT_EXPORT Database {
   // null.
   using ErrorCallback = base::RepeatingCallback<void(Status, const char*)>;
 
-  Database(uint32_t id_for_locks,
-           const std::u16string& name,
-           BucketContext& bucket_context);
+  Database(const std::u16string& name, BucketContext& bucket_context);
 
   Database(const Database&) = delete;
   Database& operator=(const Database&) = delete;
@@ -325,9 +323,6 @@ class CONTENT_EXPORT Database {
   const blink::IndexedDBObjectStoreMetadata& GetObjectStoreMetadata(
       int64_t object_store_id) const;
 
-  // This ID uniquely identifies this database within this process. It's not
-  // persisted anywhere. Only used when the backing store is SQLite.
-  uint32_t id_for_locks_;
   std::u16string name_;
 
   // The object that owns `this`.

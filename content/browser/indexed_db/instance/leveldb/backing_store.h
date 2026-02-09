@@ -473,8 +473,10 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
   // BackingStore:
   bool CanOpportunisticallyClose() const override;
-  void TearDown(base::WaitableEvent* signal_on_destruction) override;
-  void InvalidateBlobReferences() override;
+  void SignalWhenDestructionComplete(
+      base::WaitableEvent* signal_on_destruction) &&
+      override;
+  void OnForceClosing() override;
   void StartPreCloseTasks(base::OnceClosure on_done) override;
   void StopPreCloseTasks() override;
   StatusOr<std::unique_ptr<indexed_db::BackingStore::Database>>

@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
 #include "base/test/bind.h"
@@ -20,6 +21,9 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
@@ -91,8 +95,10 @@ class DatabaseConnectionTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     // Create a mock backing store for testing
-    backing_store_ =
-        std::make_unique<BackingStoreImpl>(temp_dir_.GetPath(), blob_context_);
+    backing_store_ = std::make_unique<BackingStoreImpl>(
+        temp_dir_.GetPath(), blob_context_,
+        base::BindRepeating(&DatabaseConnectionTest::AcquireDatabaseLocks,
+                            base::Unretained(this)));
   }
 
   void TearDown() override { backing_store_.reset(); }
@@ -120,6 +126,18 @@ class DatabaseConnectionTest : public testing::Test {
     return temp_dir_.GetPath().Append(DatabaseNameToFileName(name));
   }
 
+  std::vector<PartitionedLock> AcquireDatabaseLocks(
+      const std::u16string& name) {
+    base::RunLoop loop;
+    PartitionedLockHolder locks_receiver;
+    lock_manager_.AcquireLocks(
+        {{{0, DatabaseNameToFileName(name).MaybeAsASCII()},
+          PartitionedLockManager::LockType::kExclusive}},
+        locks_receiver, loop.QuitClosure());
+    loop.Run();
+    return std::move(locks_receiver.locks);
+  }
+
   // Create an object store with one record in it.
   void InitializeDbWithOneRecord(BackingStore::Database& db) {
     auto vc =
@@ -143,6 +161,7 @@ class DatabaseConnectionTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   MockBlobStorageContext blob_context_;
+  PartitionedLockManager lock_manager_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<BackingStore> backing_store_;
 };
@@ -153,7 +172,7 @@ TEST_F(DatabaseConnectionTest, TooNew) {
   base::HistogramTester histograms;
 
   // Create DB.
-  const std::u16string_view kDbName{u"test db"};
+  const std::u16string kDbName{u"test db"};
   auto connection = OpenDb(kDbName);
   ASSERT_NO_FATAL_FAILURE(InitializeDbWithOneRecord(*connection));
   connection.reset();
@@ -169,6 +188,8 @@ TEST_F(DatabaseConnectionTest, TooNew) {
                                                     .set_wal_mode(true)
                                                     .set_enable_triggers(true),
                                                 sql::test::kTestTag);
+  // Wait for the earlier database to close fully before reopening.
+  AcquireDatabaseLocks(kDbName);
   ASSERT_TRUE(sql_db->Open(db_path));
   ASSERT_TRUE(sql::MetaTable::DoesTableExist(sql_db.get()));
   int original_version, original_compat_version;
@@ -202,6 +223,7 @@ TEST_F(DatabaseConnectionTest, TooNew) {
       "IndexedDB.SQLite.SpecificEvent.OnDisk",
       DatabaseConnection::SpecificEvent::kDatabaseHadSqlError, 0);
 
+  AcquireDatabaseLocks(kDbName);
   ASSERT_TRUE(sql_db->Open(db_path));
   ASSERT_TRUE(sql::MetaTable::DoesTableExist(sql_db.get()));
   {
@@ -270,7 +292,7 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
   void VerifyCorruptionHandling(
       base::RepeatingCallback<StatusOr<IndexedDBValue>(
           BackingStore::Transaction&)> read_value_callback) {
-    const std::u16string_view kDbName{u"test db"};
+    const std::u16string kDbName{u"test db"};
 
     auto db = OpenDb(kDbName);
     ASSERT_NO_FATAL_FAILURE(InitializeDbWithOneRecord(*db));
@@ -297,6 +319,7 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
     // Close the database and then corrupt it.
     db.reset();
     const base::FilePath db_path = GetDatabasePath(kDbName);
+    AcquireDatabaseLocks(kDbName);
     ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path, "records_by_key"));
 
     // Reopen the database. The corruption isn't detected until the index is
@@ -309,6 +332,7 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
 
     // Closing the database should run the recovery routine.
     db.reset();
+    AcquireDatabaseLocks(kDbName);
     db = OpenDb(kDbName);
 
     auto verify_recovery = [&]() {
@@ -341,6 +365,7 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
     // first opened. This verifies that such corruptions will be detected and
     // handled on startup.
     db.reset();
+    AcquireDatabaseLocks(kDbName);
     ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path));
     db = OpenDb(kDbName);
     verify_recovery();

@@ -148,6 +148,7 @@ class BackingStoreSqliteTest : public BackingStoreTestBase {
   // standalone files, as if they had been migrated from a LevelDB store.
   std::vector<base::FilePath> ConvertInlinedBlobsToLegacyFileBlobs(
       std::u16string_view name) {
+    AcquireDatabaseLocks(std::u16string(name));
     base::FilePath db_path = GetDatabasePath(name);
     sql::Database db(sql::DatabaseOptions()
                          .set_exclusive_locking(true)
@@ -206,6 +207,7 @@ TEST_F(BackingStoreSqliteTest, BlobBasics) {
 TEST_F(BackingStoreSqliteTest, LegacyBlobBasics) {
   base::HistogramTester histogram_tester;
 
+  const std::u16string db_name(u"name");
   const int64_t object_store_id = 1;
   const std::string payload("payload");
   const IndexedDBKey key1(u"key1");
@@ -215,7 +217,7 @@ TEST_F(BackingStoreSqliteTest, LegacyBlobBasics) {
   // Setup: write two blobs into a database.
   {
     ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
-                         backing_store()->CreateOrOpenDatabase(u"name"));
+                         backing_store()->CreateOrOpenDatabase(db_name));
 
     std::unique_ptr<BackingStore::Transaction> transaction =
         CreateAndBeginTransaction(
@@ -242,7 +244,7 @@ TEST_F(BackingStoreSqliteTest, LegacyBlobBasics) {
   // Test hack: convert these blobs to standalone files, as if they'd been
   // migrated from a LevelDB store.
   std::vector<base::FilePath> blob_files =
-      ConvertInlinedBlobsToLegacyFileBlobs(u"name");
+      ConvertInlinedBlobsToLegacyFileBlobs(db_name);
   ASSERT_EQ(blob_files.size(), 3U);
   EXPECT_TRUE(base::PathExists(blob_files[0]));
   EXPECT_TRUE(base::PathExists(blob_files[1]));
@@ -250,7 +252,7 @@ TEST_F(BackingStoreSqliteTest, LegacyBlobBasics) {
 
   {
     ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
-                         backing_store()->CreateOrOpenDatabase(u"name"));
+                         backing_store()->CreateOrOpenDatabase(db_name));
     // Verify that one of these blobs can be read correctly.
     EXPECT_EQ(ReadBlobContents(*db, object_store_id, key2), payload);
     // Verify that the blob was served from a legacy file.
@@ -281,16 +283,20 @@ TEST_F(BackingStoreSqliteTest, LegacyBlobBasics) {
     EXPECT_TRUE(base::PathExists(blob_files[2]));
   }
 
+  // Let the cleanup complete, which releases database locks.
+  AcquireDatabaseLocks(db_name);
+
   // Re-create a blob file, as if it had failed to be deleted at some point.
   // It will be cleaned up when the database is opened then closed again.
   EXPECT_TRUE(base::WriteFile(blob_files[0], "some bytes"));
   {
     ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
-                         backing_store()->CreateOrOpenDatabase(u"name"));
+                         backing_store()->CreateOrOpenDatabase(db_name));
     // Currently cleanup only occurs if there happens to be a Put.
     IndexedDBValue value_without_blob("non_blob_payload", {});
     PutRecord(*db, object_store_id, key2, value_without_blob);
     db.reset();
+    AcquireDatabaseLocks(db_name);
     // The artificially resurrected blob is now gone.
     EXPECT_FALSE(base::PathExists(blob_files[0]));
     // The blob that was not resurrected is still gone.
@@ -302,6 +308,7 @@ TEST_F(BackingStoreSqliteTest, LegacyBlobBasics) {
 
 // Tests that legacy blob files are cleaned up when the database is deleted.
 TEST_F(BackingStoreSqliteTest, DeleteDatabaseCleansUpLegacyBlobs) {
+  const std::u16string db_name(u"name");
   const int64_t object_store_id = 1;
   const std::string payload("payload");
   const IndexedDBKey key(u"key");
@@ -309,7 +316,7 @@ TEST_F(BackingStoreSqliteTest, DeleteDatabaseCleansUpLegacyBlobs) {
   // Setup: write a blob into a database.
   {
     ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
-                         backing_store()->CreateOrOpenDatabase(u"name"));
+                         backing_store()->CreateOrOpenDatabase(db_name));
 
     std::unique_ptr<BackingStore::Transaction> transaction =
         CreateAndBeginTransaction(
@@ -332,18 +339,19 @@ TEST_F(BackingStoreSqliteTest, DeleteDatabaseCleansUpLegacyBlobs) {
   // Convert this blob to a standalone file, as if it had been migrated from a
   // LevelDB store.
   std::vector<base::FilePath> blob_files =
-      ConvertInlinedBlobsToLegacyFileBlobs(u"name");
+      ConvertInlinedBlobsToLegacyFileBlobs(db_name);
   ASSERT_EQ(blob_files.size(), 1U);
   EXPECT_TRUE(base::PathExists(blob_files[0]));
 
   // Delete the database.
   {
     ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
-                         backing_store()->CreateOrOpenDatabase(u"name"));
-    base::RunLoop run_loop;
+                         backing_store()->CreateOrOpenDatabase(db_name));
     EXPECT_TRUE(
-        db->DeleteDatabase(CreateDummyLock(), run_loop.QuitClosure()).ok());
-    run_loop.Run();
+        db->DeleteDatabase(AcquireDatabaseLocks(db_name), base::DoNothing())
+            .ok());
+    // Wait for the delete operation to release locks.
+    AcquireDatabaseLocks(db_name);
   }
 
   // The legacy blob file should be deleted.

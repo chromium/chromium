@@ -84,6 +84,13 @@ class CONTENT_EXPORT DatabaseConnection {
     return legacy_blob_files_to_move_;
   }
 
+  // Prepares the connection for destruction by moving out the `sql::Database`.
+  // Returns a closure that performs cleanup (close, vacuum, recovery, etc.).
+  // Callers are free to run the closure synchronously or on a background
+  // thread as appropriate. Some "optional" cleanup steps are skipped if the
+  // backing store is `force_closing`.
+  base::OnceClosure DestroySoon(bool force_closing) &&;
+
   // Gets the version of the database that is actually committed. This can be
   // different from the version in `metadata_` during a version change
   // transaction.
@@ -223,7 +230,8 @@ class CONTENT_EXPORT DatabaseConnection {
   // Called when the IDB database associated with this connection is deleted.
   // This should drop all data with the exception of active blobs, which may
   // keep `this` alive.
-  void DeleteIdbDatabase(base::PassKey<BackingStoreDatabaseImpl>);
+  void DeleteIdbDatabase(base::PassKey<BackingStoreDatabaseImpl>,
+                         std::vector<PartitionedLock> locks);
 
   // These are exposed for cursors to access `Statement` resources associated
   // with `db_`.
@@ -265,6 +273,14 @@ class CONTENT_EXPORT DatabaseConnection {
  private:
   friend class BackingStoreSqliteTest;
   FRIEND_TEST_ALL_PREFIXES(DatabaseConnectionTest, TooNew);
+
+  static void CloseDatabase(
+      std::unique_ptr<sql::Database> db,
+      const base::FilePath& db_path,
+      const base::FilePath& legacy_blob_directory,
+      bool should_delete,
+      bool should_attempt_recovery,
+      std::optional<std::set<int64_t>> known_legacy_blob_ids);
 
   DatabaseConnection(base::FilePath path, BackingStoreImpl& backing_store);
 

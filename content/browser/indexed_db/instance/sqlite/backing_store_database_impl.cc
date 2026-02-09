@@ -43,7 +43,7 @@ BackingStoreDatabaseImpl::CreateTransaction(
 Status BackingStoreDatabaseImpl::DeleteDatabase(
     std::vector<PartitionedLock> locks,
     base::OnceClosure on_complete) {
-  db_->DeleteIdbDatabase(PassKey());
+  db_->DeleteIdbDatabase(PassKey(), std::move(locks));
   CHECK(!db_);
   std::move(on_complete).Run();
   return Status::OK();

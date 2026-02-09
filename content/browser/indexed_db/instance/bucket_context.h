@@ -185,13 +185,9 @@ class CONTENT_EXPORT BucketContext
   // (i.e., had relaxed durability).
   uint64_t GetUsage(bool write_in_progress);
 
-  bool IsClosing() const {
-    return closing_stage_ != ClosingState::kNotClosing;
-  }
+  bool IsClosing() const { return closing_stage_ != ClosingState::kNotClosing; }
 
-  ClosingState closing_stage() const {
-    return closing_stage_;
-  }
+  ClosingState closing_stage() const { return closing_stage_; }
 
   void ReportOutstandingBlobs(bool blobs_outstanding);
 
@@ -216,24 +212,14 @@ class CONTENT_EXPORT BucketContext
   storage::BucketLocator bucket_locator() {
     return bucket_info_.ToBucketLocator();
   }
-  BackingStore* backing_store() {
-    return backing_store_.get();
-  }
-  const DBMap& GetDatabasesForTesting() const {
-    return databases_;
-  }
-  PartitionedLockManager& lock_manager() {
-    return *lock_manager_;
-  }
-  const PartitionedLockManager& lock_manager() const {
-    return *lock_manager_;
-  }
+  BackingStore* backing_store() { return backing_store_.get(); }
+  const DBMap& GetDatabasesForTesting() const { return databases_; }
+  PartitionedLockManager& lock_manager() { return *lock_manager_; }
+  const PartitionedLockManager& lock_manager() const { return *lock_manager_; }
 
   Delegate& delegate() { return delegate_; }
 
-  base::OneShotTimer* close_timer() {
-    return &close_timer_;
-  }
+  base::OneShotTimer* close_timer() { return &close_timer_; }
 
   base::WeakPtr<BucketContext> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -416,7 +402,6 @@ class CONTENT_EXPORT BucketContext
   // Databases in the backing store which are already loaded/represented by
   // Database objects. The backing store may have other databases which
   // have not yet been loaded.
-  uint32_t next_database_id_for_locks_ = 0;
   DBMap databases_;
   // This is the refcount for the number of BucketContextHandle's given out for
   // this bucket context using OpenReference. This is used as closing criteria

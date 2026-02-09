@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <compare>
 #include <cstdint>
+#include <functional>
 #include <list>
 #include <memory>
 #include <optional>
@@ -255,6 +256,9 @@ void BucketContext::ForceClose(bool doom, const std::string& message) {
   {
     // This handle keeps `this` from closing until it goes out of scope.
     BucketContextHandle handle(*this);
+    if (backing_store()) {
+      backing_store()->OnForceClosing();
+    }
     for (auto iter = databases_.begin(); iter != databases_.end();
          iter = databases_.erase(iter)) {
       // The result is irrelevant as the database and backing store are already
@@ -264,13 +268,6 @@ void BucketContext::ForceClose(bool doom, const std::string& message) {
     CHECK(databases_.empty());
     has_blobs_outstanding_ = false;
     close_timer_.Stop();
-    if (backing_store()) {
-      backing_store()->InvalidateBlobReferences();
-      // Don't run the preclosing tasks after a ForceClose, whether or not we've
-      // started them.  Compaction in particular can run long and cannot be
-      // interrupted, so it can cause shutdown hangs.
-      backing_store()->StopPreCloseTasks();
-    }
     skip_closing_sequence_ = true;
   }
 
@@ -736,8 +733,7 @@ void BucketContext::BindMockFailureSingletonForTesting(
 
 Database* BucketContext::CreateAndAddDatabase(const std::u16string& name) {
   CHECK(!databases_.contains(name));
-  auto database =
-      std::make_unique<Database>(next_database_id_for_locks_++, name, *this);
+  auto database = std::make_unique<Database>(name, *this);
   return databases_.emplace(name, std::move(database)).first->second.get();
 }
 
@@ -1028,7 +1024,24 @@ BucketContext::InitBackingStore(bool create_if_missing) {
 
   if (ShouldUseSqlite()) {
     backing_store_ = std::make_unique<sqlite::BackingStoreImpl>(
-        database_path, *blob_storage_context_);
+        database_path, *blob_storage_context_,
+        base::BindRepeating(
+            [](PartitionedLockManager& lock_manager,
+               const std::u16string& name) {
+              // TODO(crbug.com/436880909): Deduplicate with
+              // `BuildLockRequestsForSqlite()`.
+              std::string key = DatabaseNameToFileName(name).MaybeAsASCII();
+              constexpr int kMetadataLockPartition = 0;
+              PartitionedLockHolder lock_holder;
+              lock_manager.AcquireLocks(
+                  {{{kMetadataLockPartition, key},
+                    PartitionedLockManager::LockType::kExclusive}},
+                  lock_holder, base::DoNothing());
+              // Locks should be granted synchronously.
+              CHECK_EQ(lock_holder.locks.size(), 1U);
+              return std::move(lock_holder.locks);
+            },
+            std::ref(*lock_manager)));
   } else {
     std::unique_ptr<BackingStore> backing_store;
     bool disk_full = false;
@@ -1098,16 +1111,17 @@ void BucketContext::ResetBackingStore() {
   weak_factory_.InvalidateWeakPtrs();
 
   if (backing_store_) {
-    base::WaitableEvent leveldb_destruct_event;
-    backing_store_->TearDown(&leveldb_destruct_event);
+    base::WaitableEvent destruct_event;
+    std::move(*backing_store_).SignalWhenDestructionComplete(&destruct_event);
+    backing_store_.reset();
+    destruct_event.Wait();
     if (!GetTeardownExtraStepForTesting().is_null()) {
       std::move(GetTeardownExtraStepForTesting()).Run();
     }
-    backing_store_.reset();
-    leveldb_destruct_event.Wait();
   }
 
   if (is_doomed_) {
+    // TODO(crbug.com/436887363): Log if deletion fails.
     if (ShouldUseLegacyFilePath(bucket_locator())) {
       if (ShouldUseSqlite()) {
         base::DeletePathRecursively(

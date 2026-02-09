@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/uuid.h"
+#include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/instance/backing_store_util.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_impl.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -170,6 +171,19 @@ std::vector<PartitionedLock> BackingStoreTestBase::CreateDummyLock() {
   return std::move(locks_receiver.locks);
 }
 
+std::vector<PartitionedLock> BackingStoreTestBase::AcquireDatabaseLocks(
+    const std::u16string& name) {
+  // TODO(crbug.com/436880909): Deduplicate with `BuildLockRequestsForSqlite()`.
+  base::RunLoop loop;
+  PartitionedLockHolder locks_receiver;
+  bucket_context_->lock_manager().AcquireLocks(
+      {{{0, DatabaseNameToFileName(name).MaybeAsASCII()},
+        PartitionedLockManager::LockType::kExclusive}},
+      locks_receiver, loop.QuitClosure());
+  loop.Run();
+  return std::move(locks_receiver.locks);
+}
+
 void BackingStoreTestBase::CreateObjectStore(BackingStore::Database& db) {
   std::unique_ptr<BackingStore::Transaction> transaction =
       CreateAndBeginTransaction(
@@ -287,6 +301,9 @@ void BackingStoreTestBase::MigrateAndVerifyBackingStore() {
                   other_bucket_context->backing_store())
                   ->MigrateFrom(*backing_store())
                   .ok());
+
+  // Flush all cleanup tasks.
+  other_bucket_context->FlushBackingStoreForTesting();
 
   auto original_names_and_versions =
       backing_store()->GetDatabaseNamesAndVersions();

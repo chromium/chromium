@@ -7711,6 +7711,8 @@ data/image.jpg
 data/indexeddb/blobs_use_quota.html
 data/indexeddb/blocked_explicit_commit.html
 data/indexeddb/blocked_explicit_commit.js
+data/indexeddb/bucket_deletion_during_cleanup.html
+data/indexeddb/bucket_deletion_during_cleanup.js
 data/indexeddb/bucket_durability_override.html
 data/indexeddb/bucket_durability_relaxed.html
 data/indexeddb/bucket_durability_strict.html

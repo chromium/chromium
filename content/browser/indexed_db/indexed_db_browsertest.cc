@@ -1584,6 +1584,12 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, LargeValueIsWrapped) {
   }
 }
 
+// Tests that bucket deletion succeeds during opportunistic cleanup of recently
+// closed databases.
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, BucketDeletionDuringCleanup) {
+  SimpleTest(GetTestUrl("indexeddb", "bucket_deletion_during_cleanup.html"));
+}
+
 // The blob key corruption test runs in a separate class to avoid corrupting
 // an IDB store that other tests use.
 // This test is for https://crbug.com/1039446.

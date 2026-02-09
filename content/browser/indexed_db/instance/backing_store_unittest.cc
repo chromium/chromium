@@ -381,6 +381,9 @@ TEST_P(BackingStoreTest, CreateDatabase) {
     CommitTransactionAndVerify(*transaction);
   }
 
+  // Wait for the database to be unlocked before reopening it.
+  AcquireDatabaseLocks(database_name);
+
   {
     ASSERT_OK_AND_ASSIGN(auto db1,
                          backing_store()->CreateOrOpenDatabase(database_name));

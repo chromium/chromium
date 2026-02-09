@@ -58,6 +58,8 @@ class BackingStoreTestBase : public testing::Test {
 
   std::vector<PartitionedLock> CreateDummyLock();
 
+  std::vector<PartitionedLock> AcquireDatabaseLocks(const std::u16string& name);
+
   void CreateObjectStore(BackingStore::Database& db);
 
   void DestroyFactoryAndBackingStore();

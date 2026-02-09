@@ -264,8 +264,12 @@ class BackingStore {
   // very little memory to be reclaimed by deleting the SQLite BackingStore.
   virtual bool CanOpportunisticallyClose() const = 0;
 
-  virtual void TearDown(base::WaitableEvent* signal_on_destruction) = 0;
-  virtual void InvalidateBlobReferences() = 0;
+  // Called when `BucketContext` begins force-closing.
+  virtual void OnForceClosing() = 0;
+  // Called just before `this` is destroyed to enable callers to wait for
+  // background work (running on other threads/sequences) before proceeding.
+  virtual void SignalWhenDestructionComplete(
+      base::WaitableEvent* signal_on_destruction) && = 0;
   // Get tasks to be run after a BackingStore no longer has any connections.
   virtual void StartPreCloseTasks(base::OnceClosure on_done) = 0;
   virtual void StopPreCloseTasks() = 0;

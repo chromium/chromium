@@ -22,7 +22,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected_macros.h"
@@ -31,6 +30,7 @@
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom.h"
+#include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
@@ -50,6 +50,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
@@ -102,14 +103,14 @@ BuildLockRequestsForLevelDb(const std::u16string& database_name,
 }
 
 std::vector<PartitionedLockManager::PartitionedLockRequest>
-BuildLockRequestsForSqlite(uint32_t database_id,
+BuildLockRequestsForSqlite(const std::u16string& database_name,
                            blink::mojom::IDBTransactionMode mode,
                            const std::set<int64_t>& scope) {
-  // TODO(crbug.com/427608926): Refactor `PartitionedLockId` to not need `key`
-  // to be a string.
+  // Using the file name of the database reduces the number of comparisons
+  // when computing whether locks can be granted since it is a hash.
+  std::string key = DatabaseNameToFileName(database_name).MaybeAsASCII();
   constexpr int kMetadataLockPartition = 0;
-  PartitionedLockId metadata_lock_id{kMetadataLockPartition,
-                                     base::StringPrintf("%u", database_id)};
+  PartitionedLockId metadata_lock_id{kMetadataLockPartition, key};
   if (mode == blink::mojom::IDBTransactionMode::VersionChange) {
     return {{std::move(metadata_lock_id),
              PartitionedLockManager::LockType::kExclusive}};
@@ -119,8 +120,7 @@ BuildLockRequestsForSqlite(uint32_t database_id,
   if (mode == blink::mojom::IDBTransactionMode::ReadWrite) {
     constexpr int kWriteOperationsLockPartition = 1;
     lock_requests.emplace_back(
-        PartitionedLockId{kWriteOperationsLockPartition,
-                          base::StringPrintf("%u", database_id)},
+        PartitionedLockId{kWriteOperationsLockPartition, key},
         PartitionedLockManager::LockType::kExclusive);
   }
   lock_requests.reserve(lock_requests.size() + scope.size());
@@ -131,9 +131,8 @@ BuildLockRequestsForSqlite(uint32_t database_id,
           : PartitionedLockManager::LockType::kExclusive;
   for (int64_t object_store_id : scope) {
     lock_requests.emplace_back(
-        PartitionedLockId{
-            kObjectStoreLockPartition,
-            base::StringPrintf("%u|%lld", database_id, object_store_id)},
+        PartitionedLockId{kObjectStoreLockPartition,
+                          absl::StrFormat("%lld|%s", object_store_id, key)},
         object_store_lock_type);
   }
   return lock_requests;
@@ -192,11 +191,8 @@ blink::mojom::IDBErrorPtr CreateIDBErrorPtr(blink::mojom::IDBException code,
 Database::OpenCursorOperationParams::OpenCursorOperationParams() = default;
 Database::OpenCursorOperationParams::~OpenCursorOperationParams() = default;
 
-Database::Database(uint32_t id_for_locks,
-                   const std::u16string& name,
-                   BucketContext& bucket_context)
-    : id_for_locks_(id_for_locks),
-      name_(name),
+Database::Database(const std::u16string& name, BucketContext& bucket_context)
+    : name_(name),
       bucket_context_(bucket_context),
       connection_coordinator_(this, bucket_context) {}
 
@@ -242,7 +238,7 @@ Database::BuildLockRequestsForTransaction(
     blink::mojom::IDBTransactionMode mode,
     const std::set<int64_t>& scope) const {
   return bucket_context_->ShouldUseSqlite()
-             ? BuildLockRequestsForSqlite(id_for_locks_, mode, scope)
+             ? BuildLockRequestsForSqlite(name_, mode, scope)
              : BuildLockRequestsForLevelDb(name_, backing_store_db_.get(), mode,
                                            scope);
 }
