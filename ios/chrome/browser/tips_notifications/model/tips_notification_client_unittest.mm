@@ -294,7 +294,7 @@ class TipsNotificationClientTest : public PlatformTest {
         AuthenticationServiceFactory::GetForProfile(profile_.get());
     identity_manager->AddIdentity([FakeSystemIdentity fakeIdentity1]);
     authentication_service->SignIn([FakeSystemIdentity fakeIdentity1],
-                                   signin_metrics::AccessPoint::kUnknown);
+                                   signin_metrics::AccessPoint::kStartPage);
   }
 
   web::WebTaskEnvironment task_environment_;

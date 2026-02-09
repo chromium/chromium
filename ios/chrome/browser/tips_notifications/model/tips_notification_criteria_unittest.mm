@@ -102,7 +102,7 @@ class TipsNotificationCriteriaTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(fake_identity);
     GetAuthService()->SignIn(fake_identity,
-                             signin_metrics::AccessPoint::kUnknown);
+                             signin_metrics::AccessPoint::kStartPage);
   }
 
   void SetIsGoogleDefaultSearchEngine(bool is_google) {

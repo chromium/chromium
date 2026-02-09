@@ -118,7 +118,7 @@ class SettingsTableViewControllerTest
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(fake_identity_);
     auth_service_->SignIn(fake_identity_,
-                          signin_metrics::AccessPoint::kUnknown);
+                          signin_metrics::AccessPoint::kStartPage);
     sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
     // Make sure there is no pre-existing policy present.
@@ -241,7 +241,8 @@ TEST_F(SettingsTableViewControllerTest, SigninDisabled) {
 // Verifies that for a signed-in user, the account section shows 2 items: the
 // one with the name/email, and the "Google Services" one.
 TEST_F(SettingsTableViewControllerTest, AccountSectionIfSignedIn) {
-  auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
+  auth_service_->SignIn(fake_identity_,
+                        signin_metrics::AccessPoint::kStartPage);
   sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
   CreateController();
@@ -288,7 +289,8 @@ TEST_F(SettingsTableViewControllerTest, SigninDisabledByPolicy) {
 // error.
 TEST_F(SettingsTableViewControllerTest, HoldAccountStorageErrorWhenEligible) {
   // Set account error.
-  auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
+  auth_service_->SignIn(fake_identity_,
+                        signin_metrics::AccessPoint::kStartPage);
   sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_->GetUserSettings()->SetPassphraseRequired();
 
@@ -311,7 +313,8 @@ TEST_F(SettingsTableViewControllerTest, HoldAccountStorageErrorWhenEligible) {
 // error is resolved. Triggers the model update by firing a Sync State change.
 TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
   // Set account error to resolve.
-  auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
+  auth_service_->SignIn(fake_identity_,
+                        signin_metrics::AccessPoint::kStartPage);
   sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
   const char kSyncPassphrase[] = "passphrase";
   sync_service_->GetUserSettings()->SetPassphraseRequired(kSyncPassphrase);
@@ -351,7 +354,8 @@ TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
 // Storage error when there is no error.
 TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenNoError) {
   // Set no account error state.
-  auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
+  auth_service_->SignIn(fake_identity_,
+                        signin_metrics::AccessPoint::kStartPage);
   sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
   CreateController();
