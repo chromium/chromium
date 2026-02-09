@@ -87,7 +87,9 @@ class FakeServerValuableMetadataChecker
   const Matcher matcher_;
 };
 
-class SingleClientValuableMetadataSyncTest : public SyncTest {
+class SingleClientValuableMetadataSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientValuableMetadataSyncTest() : SyncTest(SINGLE_CLIENT) {
     feature_list_.InitWithFeatures({syncer::kSyncAutofillValuableMetadata,
@@ -97,6 +99,10 @@ class SingleClientValuableMetadataSyncTest : public SyncTest {
   }
 
   ~SingleClientValuableMetadataSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
 
   EntityDataManager* GetEntityDataManager() {
     return AutofillEntityDataManagerFactory::GetForProfile(
@@ -151,10 +157,15 @@ class SingleClientValuableMetadataSyncTest : public SyncTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientValuableMetadataSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
 // Verifies that when valuable data (e.g., a vehicle) and its metadata are
 // already on the server, the client correctly downloads and associates them
 // during the initial sync.
-IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest, InitialSync) {
+IN_PROC_BROWSER_TEST_P(SingleClientValuableMetadataSyncTest, InitialSync) {
   EntityInstance server_vehicle = CreateServerVehicleEntityInstance();
   EntityInstance::EntityMetadata server_metadata =
       EntityInstance::EntityMetadata{
@@ -182,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest, InitialSync) {
 // Checks the incremental update scenario, ensuring that if metadata for a
 // valuable entity arrives from the server before the entity itself, the client
 // correctly associates them once the entity arrives.
-IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientValuableMetadataSyncTest,
                        IncrementalUpdatesMetadataArrivesFirst) {
   EntityInstance server_vehicle = CreateServerVehicleEntityInstance();
   EntityInstance::EntityMetadata server_metadata =
@@ -211,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
 
 // Verifies that when a new valuable entity with metadata is created on the
 // client, its metadata is correctly uploaded to the sync server.
-IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientValuableMetadataSyncTest,
                        UploadMetadataForNewEntries) {
   ASSERT_TRUE(SetupSync());
   const EntityInstance vehicle = CreateServerVehicleEntityInstance({
@@ -234,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
 // Ensures that when a user interacts with a valuable entity, the client updates
 // the entity's metadata (e.g., `use_count`, `use_date`) and uploads these
 // changes to the sync server.
-IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientValuableMetadataSyncTest,
                        UploadRecordEntityUsed) {
   ASSERT_TRUE(SetupSync());
   const EntityInstance vehicle = CreateServerVehicleEntityInstance({
@@ -275,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
 // the client correctly removes the corresponding entity and its metadata
 // locally. It also confirms that the metadata for the deleted entity is removed
 // from the server.
-IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientValuableMetadataSyncTest,
                        DeleteMetadataFromSyncedEntitiesInIncrementalChanges) {
   const EntityInstance vehicle1 = CreateServerVehicleEntityInstance();
   const EntityInstance vehicle2 = CreateServerVehicleEntityInstance();
@@ -318,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
 // Ensures that metadata for local-only entities (not synced from the server) is
 // not uploaded to the sync server, even when these entities are used or
 // modified.
-IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientValuableMetadataSyncTest,
                        LocalEntityInstanceMetadataIsNotUploaded) {
   ASSERT_TRUE(SetupSync());
   const EntityInstance local_vehicle = GetVehicleEntityInstanceWithRandomGuid();
@@ -337,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
 #if !BUILDFLAG(IS_CHROMEOS)
 // Verifies that signing out of the primary account clears all valuable entity
 // data and metadata from the local database. This test is disabled on ChromeOS.
-IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest, ClearOnSignOut) {
+IN_PROC_BROWSER_TEST_P(SingleClientValuableMetadataSyncTest, ClearOnSignOut) {
   const EntityInstance server_vehicle = CreateServerVehicleEntityInstance();
   InjectEntitiesToServer({server_vehicle});
 
@@ -353,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest, ClearOnSignOut) {
 
 // Ensures that disabling the "Payments" sync toggle clears all valuable entity
 // data and metadata from the local database.
-IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientValuableMetadataSyncTest,
                        ClearOnDisablePaymentsSync) {
   const EntityInstance vehicle = CreateServerVehicleEntityInstance();
   InjectEntitiesToServer({vehicle});
@@ -373,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
 
 // Tests that in case of a metadata conflict, the client's changes are preserved
 // (client wins).
-IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientValuableMetadataSyncTest,
                        ConflictResolutionClientWins) {
   const EntityInstance vehicle = CreateServerVehicleEntityInstance(
       {.date_modified = base::Time::FromSecondsSinceUnixEpoch(400),
@@ -413,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
 
 // Verifies that re-enabling the "Payments" sync toggle correctly re-downloads
 // valuable entity data and metadata.
-IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientValuableMetadataSyncTest,
                        ReenablingPaymentsSyncDownloadsData) {
   const EntityInstance vehicle = CreateServerVehicleEntityInstance(
       {.date_modified = base::Time::FromSecondsSinceUnixEpoch(400),
@@ -447,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
 
 // Verifies that the client correctly processes a metadata-only update from the
 // server for an existing valuable entity.
-IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientValuableMetadataSyncTest,
                        ServerInitiatedMetadataUpdate) {
   const EntityInstance vehicle = CreateServerVehicleEntityInstance();
   EntityInstance::EntityMetadata initial_metadata =
