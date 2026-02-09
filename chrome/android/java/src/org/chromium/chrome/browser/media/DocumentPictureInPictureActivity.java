@@ -230,14 +230,14 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         }
         ContentView contentView = ContentView.createContentView(this, mWebContents);
         mThinWebView = ThinWebViewFactory.create(this, new ThinWebViewConstraints(), windowAndroid);
-        mThinWebView.attachWebContents(
-                mWebContents, contentView, new DocumentPictureInPictureWebContentsDelegate());
         mWebContents.setDelegates(
                 VersionInfo.getProductVersion(),
                 ViewAndroidDelegate.createBasicDelegate(contentView),
                 contentView,
                 windowAndroid,
                 WebContents.createDefaultInternalsHolder());
+        mThinWebView.attachWebContents(
+                mWebContents, contentView, new DocumentPictureInPictureWebContentsDelegate());
 
         View rootLayout =
                 getLayoutInflater().inflate(R.layout.document_picture_in_picture_main_layout, null);

@@ -33,7 +33,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -42,11 +41,8 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.WebContentsUtils;
-import org.chromium.ui.base.ViewAndroidDelegate;
 
 /** Tests for DocumentPictureInPictureActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -79,16 +75,6 @@ public class DocumentPictureInPictureActivityTest {
                                             mTab.getProfile(),
                                             /* initiallyHidden= */ false,
                                             /* initializeRenderer= */ true));
-                    ContentView cv =
-                            ContentView.createContentView(
-                                    mActivityTestRule.getActivity(), mWebContents);
-                    mWebContents.setDelegates(
-                            VersionInfo.getProductVersion(),
-                            ViewAndroidDelegate.createBasicDelegate(cv),
-                            cv,
-                            null,
-                            WebContents.createDefaultInternalsHolder());
-                    WebContentsUtils.createSelectionPopupController(mWebContents);
                     doReturn(mParentWebContents)
                             .when(mWebContents)
                             .getDocumentPictureInPictureOpener();
