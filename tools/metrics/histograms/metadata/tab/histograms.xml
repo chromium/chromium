@@ -442,15 +442,15 @@ chromium-metrics-reviews@google.com.
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
-    Number of open tabs in each incognito window. Recorded once a new tab is
-    opened in an incognito window and adds one to the bucket of number of tabs
-    in that particular window (it does not count the total number of tabs in all
-    open incognito windows). Please note that this metric double counts the
-    lower numbers, meaning that if user opens three tabs (without closing any in
-    between), then buckets 1, 2, and 3 will all be incremented in turn. The
-    metric also overcounts the tabs that are moved from one window to another as
-    they are recorded both when they are created in the first window and when
-    they are added to the second window.
+    Number of open incognito tabs in each window. Recorded once a new incognito
+    tab is opened in a window and adds one to the bucket of number of incognito
+    tabs in that particular window (it does not count the total number of
+    incognito tabs in all open windows). Please note that this metric double
+    counts the lower numbers, meaning that if user opens three tabs (without
+    closing any in between), then buckets 1, 2, and 3 will all be incremented in
+    turn. The metric also overcounts the tabs that are moved from one window to
+    another as they are recorded both when they are created in the first window
+    and when they are added to the second window.
   </summary>
 </histogram>
 
