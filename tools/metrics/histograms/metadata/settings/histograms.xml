@@ -821,7 +821,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram
     name="Settings.SafetyHub.DisruptiveNotificationRevocations.DailyDistribution.{RevocationState}.SiteEngagement"
-    units="EngagementScore" expires_after="2026-02-26">
+    units="EngagementScore" expires_after="2026-08-26">
   <owner>olesiamarukhnno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <summary>
@@ -901,7 +901,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram
     name="Settings.SafetyHub.DisruptiveNotificationRevocations.FalsePositive.NotificationClickCount"
-    units="count" expires_after="2026-02-26">
+    units="count" expires_after="2026-08-26">
   <owner>olesiamarukhnno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <summary>
@@ -964,7 +964,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram
     name="Settings.SafetyHub.DisruptiveNotificationRevocations.NotDisruptiveAnymore.DaysSinceProposedRevocation"
-    units="count" expires_after="2026-02-26">
+    units="count" expires_after="2026-08-26">
   <owner>olesiamarukhnno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <summary>
@@ -977,7 +977,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram
     name="Settings.SafetyHub.DisruptiveNotificationRevocations.NotDisruptiveAnymore.NotificationCountDecreased"
-    units="count" expires_after="2026-02-26">
+    units="count" expires_after="2026-08-26">
   <owner>olesiamarukhnno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <summary>
@@ -1013,7 +1013,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram
     name="Settings.SafetyHub.DisruptiveNotificationRevocations.RevocationResult"
-    enum="DisruptiveNotificationRevocationResult" expires_after="2026-02-26">
+    enum="DisruptiveNotificationRevocationResult" expires_after="2026-08-26">
   <owner>olesiamarukhnno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <summary>
@@ -1026,7 +1026,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram
     name="Settings.SafetyHub.DisruptiveNotificationRevocations.Revoke.DaysSinceProposedRevocation"
-    units="count" expires_after="2026-02-26">
+    units="count" expires_after="2026-08-26">
   <owner>olesiamarukhnno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <summary>
