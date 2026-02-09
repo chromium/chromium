@@ -1318,7 +1318,7 @@
 
     },
     'glic_api': {
-      'filepath': 'chrome/browser/resources/glic/glic_api',
+      'filepath': 'chrome/browser/resources/glic/glic_api/',
     },
     'global_media_controls': {
       'filepath': 'chrome/browser/ui/global_media_controls|'\
