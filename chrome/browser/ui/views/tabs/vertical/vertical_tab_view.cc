@@ -202,6 +202,11 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
   GetViewAccessibility().SetName(
       std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 
+  ax_name_changed_subscription_ =
+      GetViewAccessibility().AddStringAttributeChangedCallback(
+          ax::mojom::StringAttribute::kName,
+          base::BindRepeating(&VerticalTabView::OnAXNameChanged,
+                              base::Unretained(this)));
   node_destroyed_subscription_ =
       collection_node_->RegisterWillDestroyCallback(base::BindOnce(
           &VerticalTabView::ResetCollectionNode, base::Unretained(this)));
@@ -619,6 +624,13 @@ void VerticalTabView::UpdateAccessibleName() {
   } else {
     GetViewAccessibility().SetName(
         std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
+}
+
+void VerticalTabView::OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                                      const std::optional<std::string>& name) {
+  if (GetWidget() && active_) {
+    GetWidget()->UpdateAccessibleNameForRootView();
   }
 }
 

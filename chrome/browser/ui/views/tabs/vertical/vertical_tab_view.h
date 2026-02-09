@@ -129,6 +129,8 @@ class VerticalTabView : public views::View,
   void ResetCollectionNode();
 
   void UpdateAccessibleName();
+  void OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                       const std::optional<std::string>& name);
   void OnDataChanged();
   void SetSelection(bool selected);
   void UpdateTabData(tabs::TabInterface* tab);
@@ -182,6 +184,8 @@ class VerticalTabView : public views::View,
   float hover_opacity_min_;
   float hover_opacity_max_;
   float radial_highlight_opacity_;
+
+  base::CallbackListSubscription ax_name_changed_subscription_;
 
   base::WeakPtrFactory<VerticalTabView> weak_ptr_factory_{this};
 };
