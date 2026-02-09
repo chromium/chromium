@@ -9,7 +9,11 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/webui/skills/skills.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/skills/internal/skills_downloader.h"
@@ -27,7 +31,50 @@ namespace skills {
 namespace {
 
 using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::ReturnRef;
 using ::testing::StrictMock;
+
+// TODO(crbug.com/482376816): Separate into its own file.
+class MockSkillsService : public SkillsService {
+ public:
+  MOCK_METHOD(void, LoadInitialSkills, (std::vector<std::unique_ptr<Skill>>));
+  MOCK_METHOD(const Skill*, GetSkillById, (std::string_view), (const));
+  MOCK_METHOD(const std::vector<std::unique_ptr<Skill>>&,
+              GetSkills,
+              (),
+              (const));
+  MOCK_METHOD(const SkillsMap&, Get1PSkills, (), (const));
+  MOCK_METHOD(const Skill*,
+              AddSkill,
+              (const std::string&, const std::string&, const std::string&));
+  MOCK_METHOD(const Skill*,
+              AddOrUpdateSkillFromSync,
+              (std::string_view,
+               std::string_view,
+               std::string_view,
+               std::string_view,
+               std::string_view,
+               base::Time,
+               base::Time,
+               sync_pb::SkillSource));
+  MOCK_METHOD(
+      const Skill*,
+      UpdateSkill,
+      (std::string_view, std::string_view, std::string_view, std::string_view));
+  MOCK_METHOD(bool, IsInitialized, (), (const));
+  MOCK_METHOD(ServiceStatus, GetServiceStatus, (), (const));
+  MOCK_METHOD(void, DeleteSkill, (std::string_view, UpdateSource));
+  MOCK_METHOD(void, FetchDiscoverySkills, ());
+  MOCK_METHOD(void, Handle1pSkillsMap, (std::unique_ptr<SkillsMap>));
+  MOCK_METHOD(void, AddObserver, (Observer*));
+  MOCK_METHOD(void, RemoveObserver, (Observer*));
+  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
+              GetControllerDelegate,
+              ());
+  MOCK_METHOD(void, SyncStatusChanged, ());
+  MOCK_METHOD(void, SetServiceStatusForTesting, (ServiceStatus));
+};
 
 class MockSkillsPage : public skills::mojom::SkillsPage {
  public:
@@ -50,6 +97,13 @@ class MockSkillsPage : public skills::mojom::SkillsPage {
 class SkillsPageHandlerTest : public testing::Test {
  public:
   void SetUp() override {
+    SkillsServiceFactory::GetInstance()->SetTestingFactory(
+        &profile_,
+        base::BindLambdaForTesting([](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+          return std::make_unique<NiceMock<MockSkillsService>>();
+        }));
+
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(&profile_));
     web_ui_.set_web_contents(web_contents_.get());
@@ -60,7 +114,8 @@ class SkillsPageHandlerTest : public testing::Test {
   }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   content::TestWebUI web_ui_;
@@ -102,6 +157,43 @@ TEST_F(SkillsPageHandlerTest, OnDiscoverySkillsUpdated) {
   handler_->OnDiscoverySkillsUpdated(skills_map.get());
 
   run_loop.Run();
+}
+
+TEST_F(SkillsPageHandlerTest, MaybeSave1PSkill_Success) {
+  base::test::TestFuture<bool> future;
+  // Make a save skill request
+  handler_->MaybeSave1PSkill("skill_id", future.GetCallback());
+
+  // Manually trigger map update with valid map
+  skills::proto::Skill skill_proto;
+  skill_proto.set_id("skill_id");
+  SkillsDownloader::SkillsMap skills_map = {{"skill_id", skill_proto}};
+  handler_->OnDiscoverySkillsUpdated(&skills_map);
+  EXPECT_TRUE(future.Get());
+  EXPECT_FALSE(handler_->Is1PDownloadTimerRunning());
+}
+
+TEST_F(SkillsPageHandlerTest, MaybeSave1PSkill_NotFound) {
+  base::test::TestFuture<bool> future;
+  // Make a save skill request with invalid skill id
+  handler_->MaybeSave1PSkill("nonexistent_skill_id", future.GetCallback());
+
+  // Manually trigger map update with valid map
+  skills::proto::Skill skill_proto;
+  skill_proto.set_id("skill_id");
+  SkillsDownloader::SkillsMap skills_map = {{"skill_id", skill_proto}};
+  handler_->OnDiscoverySkillsUpdated(&skills_map);
+  EXPECT_FALSE(future.Get());
+  EXPECT_FALSE(handler_->Is1PDownloadTimerRunning());
+}
+
+TEST_F(SkillsPageHandlerTest, MaybeSave1PSkill_Timeout) {
+  base::test::TestFuture<bool> future;
+  handler_->MaybeSave1PSkill("skill_id", future.GetCallback());
+  // Fast forward past the timeout
+  task_environment_.FastForwardBy(base::Seconds(30));
+  EXPECT_FALSE(future.Get());
+  EXPECT_FALSE(handler_->Is1PDownloadTimerRunning());
 }
 
 }  // namespace

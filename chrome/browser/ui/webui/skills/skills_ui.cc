@@ -48,6 +48,7 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
        IDS_SKILL_PAGE_FIRST_PARTY_ADD_SKILL_ERROR_TOAST},
       {"emptyStateTitle", IDS_SKILL_PAGE_EMPTY_STATE_TITLE},
       {"emptyStateDescription", IDS_SKILL_PAGE_EMPTY_STATE_DESCRIPTION},
+      {"invalidSkillToastText", IDS_SKILL_PAGE_INVALID_SKILL_TOAST},
       {"userSkillsTitle", IDS_SKILL_PAGE_USER_SKILLS_TITLE},
       {"userSkillsDescription", IDS_SKILL_PAGE_USER_SKILLS_DESCRIPTION},
       {"searchBarPlaceholderText", IDS_SKILL_PAGE_SEARCH_BAR_PLACEHOLDER_TEXT},

@@ -76,6 +76,7 @@ source_set("unit_tests") {
   deps = [
     ":skills",
     "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/skills",
     "//chrome/test:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/skills/public:mojo_bindings",

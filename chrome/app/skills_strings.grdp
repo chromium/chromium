@@ -66,6 +66,9 @@
   <message name="IDS_SKILL_PAGE_USER_SKILLS_COPY_INSTRUCTIONS" desc="Text for the description of the copy button in the chrome://skills/user-skills page." translateable="false">
     Copy instructions
   </message>
+  <message name="IDS_SKILL_PAGE_INVALID_SKILL_TOAST" desc="Text for the invalid skill toast on the chrome://skills/user-skills page." translateable="false">
+    Unable to add skill
+  </message>
 
   <!-- chrome://skills/dialog -->
   <message name="IDS_SKILLS_DIALOG_ADD_SKILL_HEADER" desc="Header for the add skill dialog" translateable="false">

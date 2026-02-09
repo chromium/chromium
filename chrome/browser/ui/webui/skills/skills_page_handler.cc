@@ -41,6 +41,17 @@ bool isServiceReady(const SkillsService* service) {
 
 }  // namespace
 
+// PendingSave1PRequest struct definitions:
+PendingSave1PRequest::PendingSave1PRequest(
+    std::string id,
+    SkillsPageHandler::MaybeSave1PSkillCallback cb)
+    : skill_id(std::move(id)), callback(std::move(cb)) {}
+PendingSave1PRequest::~PendingSave1PRequest() = default;
+PendingSave1PRequest::PendingSave1PRequest(PendingSave1PRequest&&) = default;
+PendingSave1PRequest& PendingSave1PRequest::operator=(PendingSave1PRequest&&) =
+    default;
+
+// SkillsPageHandler class definitions:
 SkillsPageHandler::SkillsPageHandler(
     mojo::PendingReceiver<skills::mojom::PageHandler> receiver,
     mojo::PendingRemote<skills::mojom::SkillsPage> page,
@@ -114,13 +125,22 @@ void SkillsPageHandler::OnSkillUpdated(
 }
 
 void SkillsPageHandler::OnSkillsServiceShuttingDown() {
+  first_party_download_timer_.Stop();
+  On1PDownloadTimeout();
   service_observation_.Reset();
 }
 
 void SkillsPageHandler::Request1PSkills() {
+  // If there is a download already running then don't process a new request.
+  if (Is1PDownloadTimerRunning()) {
+    return;
+  }
+
   if (auto* service =
           SkillsServiceFactory::GetForProfile(base::to_address(profile_))) {
     service->FetchDiscoverySkills();
+    first_party_download_timer_.Start(FROM_HERE, kMax1PDownloadTimeout, this,
+                                      &SkillsPageHandler::On1PDownloadTimeout);
   }
 }
 
@@ -138,14 +158,35 @@ void SkillsPageHandler::GetInitial1PSkills(
 
 void SkillsPageHandler::OnDiscoverySkillsUpdated(
     const SkillsService::SkillsMap* skills_map) {
-  // TODO(b/479029101): Handle the discover skill save error state.
-  if (!skills_map) {
-    return;
+  first_party_download_timer_.Stop();
+  if (pending_save_1p_request_.has_value()) {
+    auto request = std::exchange(pending_save_1p_request_, std::nullopt);
+    bool valid_skill = !skills_map || skills_map->contains(request->skill_id);
+    std::move(request->callback).Run(valid_skill);
   }
 
   // If the map exists (even if empty) that means we have an updated list of
   // skills.
-  page_->Update1PMap(Translate1PSkillsMap(*skills_map));
+  if (skills_map) {
+    page_->Update1PMap(Translate1PSkillsMap(*skills_map));
+  }
+}
+
+void SkillsPageHandler::MaybeSave1PSkill(const std::string& skill_id,
+                                         MaybeSave1PSkillCallback callback) {
+  if (pending_save_1p_request_.has_value()) {
+    receiver_.ReportBadMessage("Save call in progress");
+    return;
+  }
+  pending_save_1p_request_.emplace(skill_id, std::move(callback));
+  Request1PSkills();
+}
+
+void SkillsPageHandler::On1PDownloadTimeout() {
+  if (pending_save_1p_request_.has_value()) {
+    auto request = std::exchange(pending_save_1p_request_, std::nullopt);
+    std::move(request->callback).Run(false);
+  }
 }
 
 }  // namespace skills

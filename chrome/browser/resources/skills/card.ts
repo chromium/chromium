@@ -86,7 +86,7 @@ export class SkillCardElement extends CrLitElement {
   }
 
   protected onSaveButtonClick_() {
-    this.fire('save-button-click');
+    this.fire('save-button-click', this.skill);
   }
 
   protected onMoreButtonClick_(event: MouseEvent) {

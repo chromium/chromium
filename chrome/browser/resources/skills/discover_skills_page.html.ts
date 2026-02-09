@@ -36,6 +36,9 @@ ${this.topSkills_().length > 0 ? html`
         .saveDisabled="${this.is1PSkillSaving_}">
     </skill-card>`)}
 </div>
+<cr-toast id="invalidSkillToast">
+  <div>$i18n{invalidSkillToastText}</div>
+</cr-toast>
 <!--_html_template_end_-->`;
   // clang-format on
 }

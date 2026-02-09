@@ -5,19 +5,29 @@
 import '//resources/cr_elements/cr_chip/cr_chip.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/cr_toast/cr_toast.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
 import './card.js';
 
+import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './discover_skills_page.css.js';
 import {getHtml} from './discover_skills_page.html.js';
 import type {Skill} from './skill.mojom-webui.js';
+import {SkillsDialogType} from './skills.mojom-webui.js';
 import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
 
 
 // The category name for top skills.
 const kTopPickCategoryString: string = 'Top Pick';
+
+export interface DiscoverSkillsPageElement {
+  $: {
+    invalidSkillToast: CrToastElement,
+  };
+}
 
 export class DiscoverSkillsPageElement extends CrLitElement {
   static get is() {
@@ -48,7 +58,6 @@ export class DiscoverSkillsPageElement extends CrLitElement {
   private listenerIds_: number[] = [];
   private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
   private eventTracker_: EventTracker = new EventTracker();
-  private resetSaveTimeoutId_: number|undefined;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -61,7 +70,8 @@ export class DiscoverSkillsPageElement extends CrLitElement {
     ];
     // Listen for save button clicks.
     this.eventTracker_.add(
-        document, 'save-button-click', () => this.onSkillSave_());
+        document, 'save-button-click',
+        (e: CustomEvent<Skill>) => this.onSkillSave_(e.detail));
   }
 
   override disconnectedCallback() {
@@ -70,20 +80,19 @@ export class DiscoverSkillsPageElement extends CrLitElement {
         id => this.proxy_.callbackRouter.removeListener(id));
     this.listenerIds_ = [];
     this.eventTracker_.removeAll();
-    if (this.resetSaveTimeoutId_) {
-      clearTimeout(this.resetSaveTimeoutId_);
-      this.resetSaveTimeoutId_ = undefined;
-    }
     this.is1PSkillSaving_ = false;
   }
 
-  protected onSkillSave_() {
+  protected onSkillSave_(savedSkill: Skill) {
     this.is1PSkillSaving_ = true;
-    // TODO(b/479029101): Remove this timeout when save logic is implemented.
-    this.resetSaveTimeoutId_ = setTimeout(() => {
+    this.proxy_.handler.maybeSave1PSkill(savedSkill.id).then(({success}) => {
+      if (success) {
+        this.proxy_.handler.openSkillsDialog(SkillsDialogType.kAdd, savedSkill);
+      } else {
+        this.$.invalidSkillToast.show();
+      }
       this.is1PSkillSaving_ = false;
-      this.resetSaveTimeoutId_ = undefined;
-    }, 1000);
+    });
   }
 
   protected update1PMap_(skillMap: {[key: string]: Skill[]}) {

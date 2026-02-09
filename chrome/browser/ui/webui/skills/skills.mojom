@@ -56,6 +56,11 @@ interface PageHandler {
 
   // Called when the user wants to delete a skill.
   DeleteSkill(string skill_id);
+
+  // Called whenever the user wants to save a 1P skill.
+  // `success` is true if the skill still exists, false if it was deleted.
+  // If fetching the new set of 1P skills fails, `success` will be false.
+  MaybeSave1PSkill(string skill_id) => (bool success);
 };
 
 // Called from C++ side of chrome://skills (Browser -> Renderer)
