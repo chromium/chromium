@@ -92,15 +92,7 @@ void LargestContentfulPaintCalculator::MaybeFlushCandidates() {
 
 void LargestContentfulPaintCalculator::
     UpdateWebExposedLargestContentfulPaintIfNeeded() {
-  // If UseLargestPaintedImageForLCPCandidate is enabled, use
-  // `largest_painted_image_` rather than `LargestPaintedOrPendingImage()` for
-  // the web-exposed entry, which matches the spec and ensures the entry is
-  // emitted if the `largest_pending_image_` gets removed.
-  ImageRecord* largest_image =
-      RuntimeEnabledFeatures::UseLargestPaintedImageForLCPCandidateEnabled()
-          ? largest_painted_image_.Get()
-          : LargestPaintedOrPendingImage();
-
+  ImageRecord* largest_image = LargestPaintedOrPendingImage();
   uint64_t text_size = largest_text_ ? largest_text_->RecordedSize() : 0u;
   uint64_t image_size = largest_image ? largest_image->RecordedSize() : 0u;
   if (image_size > text_size) {
