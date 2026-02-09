@@ -29,6 +29,10 @@
 #include "ui/gfx/android/android_surface_control_compat.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#endif
+
 namespace features {
 namespace {
 
@@ -237,6 +241,18 @@ void GetANGLEFeaturesFromCommandLineAndFinch(
     SplitAndAppendANGLEFeatureList(kForcedANGLEDisabledFeaturesFP.Get(),
                                    disabled_angle_features);
   }
+}
+
+bool ShouldFallbackToSWIfGLES3NotSupported() {
+#if BUILDFLAG(IS_CHROMEOS)
+  static bool is_enabled =
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kRevenBranding) &&
+      base::FeatureList::IsEnabled(kFallbackToSWIfGLES3NotSupported);
+  return is_enabled;
+#else   // !BUILDFLAG(IS_CHROMEOS)
+  return base::FeatureList::IsEnabled(kFallbackToSWIfGLES3NotSupported);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 #if BUILDFLAG(ENABLE_SWIFTSHADER)

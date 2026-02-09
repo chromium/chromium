@@ -406,6 +406,10 @@ component("gl") {
   if (is_linux || is_chromeos) {
     deps += [ "//third_party/angle:angle_gpu_info_util" ]
   }
+
+  if (is_chromeos) {
+    deps += [ "//ash/constants" ]
+  }
 }
 
 if (is_mac) {

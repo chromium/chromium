@@ -45,6 +45,9 @@ specific_include_rules = {
     "+third_party/angle/include/EGL/egl.h",
     "+third_party/angle/include/EGL/eglext.h",
   ],
+  "gl_features.cc": [
+    "+ash/constants/ash_switches.h",
+  ],
   "gl_fence_win_unittest.cc": [
     "+media/base/win/d3d11_mocks.h",
   ],

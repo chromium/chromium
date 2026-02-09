@@ -45,6 +45,8 @@ GL_EXPORT void GetANGLEFeaturesFromCommandLineAndFinch(
     std::vector<std::string>& enabled_angle_features,
     std::vector<std::string>& disabled_angle_features);
 
+GL_EXPORT bool ShouldFallbackToSWIfGLES3NotSupported();
+
 #if BUILDFLAG(ENABLE_SWIFTSHADER)
 GL_EXPORT BASE_DECLARE_FEATURE(kAllowSwiftShaderFallback);
 #endif
