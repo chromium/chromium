@@ -208,6 +208,10 @@ BASE_FEATURE(kAutofillAiIgnorePrivatePassGeoIpRestrictions,
 BASE_FEATURE(kAutofillAiIgnoresWhetherAddressPrefIsEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Autofill AI will use a new update prompt on Desktop that shows
+// both the previous and the new value of an updated entity attribute.
+BASE_FEATURE(kAutofillAiNewUpdatePrompt, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, AutofillAi requires re-auth when filling/viewing sensitive
 // fields. As part of this feature sensitive fields are also obfuscated during
 // suggestion generation time.

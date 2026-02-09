@@ -8,9 +8,11 @@
 #include <ostream>
 #include <ranges>
 
+#include "base/feature_list.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -111,6 +113,10 @@ EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
       details.emplace_back(attribute.type().GetNameForI18n(), attribute_value,
                            old_attribute_value, update_type);
     }
+  }
+
+  if (base::FeatureList::IsEnabled(features::kAutofillAiNewUpdatePrompt)) {
+    return details;
   }
 
   // Move new entity values that were either added or updated to the top.
