@@ -68,6 +68,14 @@ class IsolatedWebAppInstallerBrowserTest : public WebAppBrowserTestBase {
     WebAppBrowserTestBase::SetUp();
   }
 
+  void SetUpOnMainThread() override {
+    WebAppBrowserTestBase::SetUpOnMainThread();
+#if BUILDFLAG(IS_CHROMEOS)
+    profile()->GetPrefs()->SetBoolean(ash::prefs::kIsolatedWebAppsEnabled,
+                                      true);
+#endif
+  }
+
  protected:
   web_app::FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
 
@@ -92,10 +100,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
   });
 
   base::test::TestFuture<void> on_closed_future;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  profile()->GetPrefs()->SetBoolean(ash::prefs::kIsolatedWebAppsEnabled, true);
-#endif
 
   IsolatedWebAppInstallerCoordinator* coordinator =
       IsolatedWebAppInstallerCoordinator::CreateAndStart(
@@ -145,6 +149,56 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
 
   // Installer closed.
   ASSERT_TRUE(on_closed_future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
+                       FailsWhenNotOnAllowlist) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+
+  base::test::TestFuture<void> on_closed_future;
+
+  IsolatedWebAppInstallerCoordinator* coordinator =
+      IsolatedWebAppInstallerCoordinator::CreateAndStart(
+          profile(), app->path(), on_closed_future.GetCallback());
+
+  IsolatedWebAppInstallerModel* model = coordinator->GetModelForTesting();
+  ASSERT_TRUE(model);
+
+  IsolatedWebAppInstallerViewController* controller =
+      coordinator->GetControllerForTesting();
+  ASSERT_TRUE(controller);
+
+  TestIsolatedWebAppInstallerModelObserver model_observer(model);
+
+  model_observer.WaitForStepChange(
+      IsolatedWebAppInstallerModel::Step::kGetMetadata);
+
+  // The "Not Allowlisted" dialog should appear during the kGetMetadata step.
+  // We need to wait for the child widget to appear.
+  views::Widget* child_widget = nullptr;
+  while (!child_widget) {
+    child_widget = controller->GetChildWidgetForTesting();
+    base::RunLoop().RunUntilIdle();
+  }
+  ASSERT_TRUE(child_widget);
+
+  ASSERT_TRUE(model->has_dialog());
+  ASSERT_TRUE(
+      std::holds_alternative<IsolatedWebAppInstallerModel::
+                                 BundleNotAllowlistedForUserInstallationDialog>(
+          model->dialog()));
+
+  views::test::CancelDialog(child_widget);
+  ASSERT_TRUE(on_closed_future.Wait());
+
+  EXPECT_EQ(model->step(), IsolatedWebAppInstallerModel::Step::kGetMetadata);
+
+  webapps::AppId app_id =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(app->web_bundle_id())
+          .app_id();
+  ASSERT_FALSE(
+      provider().registrar_unsafe().GetInstallState(app_id).has_value());
 }
 
 class IsolatedWebAppInstallerDisabledBrowserTest
