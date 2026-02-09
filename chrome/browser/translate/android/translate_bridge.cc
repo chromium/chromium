@@ -8,6 +8,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/adapters.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
@@ -27,6 +28,7 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -240,7 +242,7 @@ void TranslateBridge::PrependToAcceptLanguagesIfNecessary(
       base::SplitString(locales + "," + *accept_languages, ",",
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  std::set<std::string> seen_tags;
+  absl::flat_hash_set<std::string> seen_tags;
   std::vector<std::pair<std::string, std::string>> unique_locale_list;
   for (const std::string& locale_str : locale_list) {
     char locale_ID[ULOC_FULLNAME_CAPACITY] = {};
@@ -275,10 +277,10 @@ void TranslateBridge::PrependToAcceptLanguagesIfNecessary(
     std::string country_code(country_code_buffer);
     std::string language_tag(language_code + "-" + country_code);
 
-    if (seen_tags.find(language_tag) != seen_tags.end())
+    if (bool inserted = seen_tags.insert(language_tag).second; !inserted) {
       continue;
+    }
 
-    seen_tags.insert(language_tag);
     unique_locale_list.push_back(std::make_pair(language_code, country_code));
   }
 
@@ -288,16 +290,15 @@ void TranslateBridge::PrependToAcceptLanguagesIfNecessary(
   // This will work with the IDS_ACCEPT_LANGUAGE localized strings bundled
   // with Chrome but may fail on arbitrary lists of language tags due to
   // differences in case and whitespace.
-  std::set<std::string> seen_languages;
+  absl::flat_hash_set<std::string> seen_languages;
   std::vector<std::string> output_list;
   for (const auto& [language_code, country_code] :
        base::Reversed(unique_locale_list)) {
-    if (seen_languages.find(language_code) == seen_languages.end()) {
+    if (seen_languages.insert(language_code).second) {
       output_list.push_back(language_code);
-      seen_languages.insert(language_code);
     }
     if (!country_code.empty())
-      output_list.push_back(language_code + "-" + country_code);
+      output_list.push_back(base::StrCat({language_code, "-", country_code}));
   }
 
   std::ranges::reverse(output_list);
