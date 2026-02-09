@@ -164,6 +164,9 @@ GeminiViewState GetCurrentGeminiViewState();
 // Requests a UI change for a specific element type.
 void RequestUIChange(GeminiUIElementType ui_element_type);
 
+// Attaches an image to the Gemini floaty.
+void AttachImage(UIImage* image);
+
 }  // namespace ios::provider
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_BWG_BWG_API_H_

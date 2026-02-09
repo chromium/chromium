@@ -52,4 +52,6 @@ GeminiViewState GetCurrentGeminiViewState() {
 
 void RequestUIChange(GeminiUIElementType ui_element_type) {}
 
+void AttachImage(UIImage* image) {}
+
 }  // namespace ios::provider
