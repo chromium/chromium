@@ -306,8 +306,8 @@ const views::View& CustomCornersBackground::GetView() const {
 }
 
 void CustomCornersBackground::OnBrowserPaintAsActiveChanged() {
-  if (std::holds_alternative<FrameColor>(primary_color_) ||
-      std::holds_alternative<FrameColor>(corner_color_)) {
+  if (std::holds_alternative<FrameTheme>(primary_color_) ||
+      std::holds_alternative<FrameTheme>(corner_color_)) {
     view_->SchedulePaint();
   }
 }

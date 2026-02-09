@@ -245,8 +245,8 @@ void ToolbarView::Init() {
   if (display_mode_ == DisplayMode::kNormal) {
     SetBackground(std::make_unique<CustomCornersBackground>(
         *this, *browser_view_,
-        /*primary_color=*/CustomCornersBackground::TopContainerTheme(),
-        /*corner_color=*/CustomCornersBackground::FrameColor()));
+        /*primary_color=*/CustomCornersBackground::ToolbarTheme(),
+        /*corner_color=*/CustomCornersBackground::FrameTheme()));
   } else if (display_mode_ == DisplayMode::kCustomTab) {
     custom_tab_bar_ =
         AddChildView(std::make_unique<CustomTabBarView>(browser_view_, this));

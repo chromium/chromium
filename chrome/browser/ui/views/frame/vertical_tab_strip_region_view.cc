@@ -123,8 +123,8 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
 
   SetBackground(std::make_unique<CustomCornersBackground>(
       *this, *browser_view,
-      /*primary_color=*/CustomCornersBackground::FrameColor(),
-      /*corner_color=*/CustomCornersBackground::TopContainerTheme()));
+      /*primary_color=*/CustomCornersBackground::FrameTheme(),
+      /*corner_color=*/CustomCornersBackground::ToolbarTheme()));
 
   UpdateColors();
 }

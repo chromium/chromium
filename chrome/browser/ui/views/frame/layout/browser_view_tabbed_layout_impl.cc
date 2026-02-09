@@ -1049,7 +1049,7 @@ void BrowserViewTabbedLayoutImpl::ConfigureTopContainerBackground(
   // The top container always draws an opaque background when in vertical
   // tabstrip mode.
   background->SetVisible(true);
-  background->SetPrimaryColor(CustomCornersBackground::TopContainerTheme());
+  background->SetPrimaryColor(CustomCornersBackground::ToolbarTheme());
 
   // Rounded corners are drawn when not maximized or fullscreen.
   CustomCornersBackground::Corners corners;

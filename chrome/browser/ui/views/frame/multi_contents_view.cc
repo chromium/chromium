@@ -115,7 +115,7 @@ MultiContentsView::MultiContentsView(
       AddChildView(std::make_unique<CustomFloatingCorner>(
           *browser_view_, CustomFloatingCorner::CornerOrientation::kTopLeading,
           views::ShapeContextTokens::kContentSeparatorRadius,
-          CustomFloatingCorner::TopContainerTheme(),
+          CustomFloatingCorner::ToolbarTheme(),
           kColorToolbarContentAreaSeparator));
   contents_separators_.corner_separator->SetProperty(
       views::kElementIdentifierKey, kContentsSeparatorTopCornerElementId);

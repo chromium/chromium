@@ -19,16 +19,15 @@ class BrowserView;
 class CustomCorners : public views::ViewObserver {
  public:
   // Designates that the current frame color (either active or inactive) should
-  // be used. If you want to force e.g. active color, use `kColorFrameActive`
-  // instead.
-  using FrameColor = base::StrongAlias<class FrameColorTag, std::monostate>;
+  // be used. If a theme is present, then that takes precedence. If you want to
+  // force e.g. active color, use `kColorFrameActive` instead.
+  using FrameTheme = base::StrongAlias<class FrameThemeTag, std::monostate>;
 
-  // Designates that the top container theme background should be used.
-  using TopContainerTheme =
-      base::StrongAlias<class TopContainerThemeTag, std::monostate>;
+  // Designates that the toolbar theme background should be used.
+  using ToolbarTheme = base::StrongAlias<class ToolbarThemeTag, std::monostate>;
 
   // Specifies which color to be used for the background.
-  using ColorChoice = std::variant<FrameColor, TopContainerTheme, ui::ColorId>;
+  using ColorChoice = std::variant<FrameTheme, ToolbarTheme, ui::ColorId>;
 
   CustomCorners(const CustomCorners&) = delete;
   void operator=(const CustomCorners&) = delete;

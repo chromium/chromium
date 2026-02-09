@@ -11,8 +11,8 @@ MainBackgroundRegionView::MainBackgroundRegionView(BrowserView& browser_view) {
   SetCanProcessEventsWithinSubtree(false);
   SetVisible(false);
   SetBackground(std::make_unique<CustomCornersBackground>(
-      *this, browser_view, CustomCornersBackground::TopContainerTheme(),
-      CustomCornersBackground::FrameColor()));
+      *this, browser_view, CustomCornersBackground::ToolbarTheme(),
+      CustomCornersBackground::FrameTheme()));
 }
 
 MainBackgroundRegionView::~MainBackgroundRegionView() = default;
