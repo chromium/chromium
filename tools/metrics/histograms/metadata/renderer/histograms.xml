@@ -366,8 +366,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Images.HasOverfetchedCappedPixels" enum="Boolean"
-    expires_after="2026-03-03">
-  <owner>iclelland@chromium.org</owner>
+    expires_after="2027-03-03">
+  <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Boolean indicating that OverfetchedCappedPixels was a positive integer.
@@ -376,8 +376,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Images.HasOverfetchedPixels" enum="Boolean"
-    expires_after="2026-03-03">
-  <owner>iclelland@chromium.org</owner>
+    expires_after="2027-03-03">
+  <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Boolean indicating that OverfetchedPixels was a positive integer. Reported
@@ -386,8 +386,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Images.HasSizesAttributeMiss" enum="Boolean"
-    expires_after="2026-03-03">
-  <owner>iclelland@chromium.org</owner>
+    expires_after="2027-03-03">
+  <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Boolean indicating that SizesAttributeMiss was a positive integer. Only set
@@ -397,8 +397,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Images.OverfetchedCappedPixels" units="px^2"
-    expires_after="2026-03-03">
-  <owner>iclelland@chromium.org</owner>
+    expires_after="2027-03-03">
+  <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The amount of HTMLImageElement image pixels squared (width * height) that
@@ -410,8 +410,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Images.OverfetchedPixels" units="px^2"
-    expires_after="2026-03-03">
-  <owner>iclelland@chromium.org</owner>
+    expires_after="2027-03-03">
+  <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The amount of HTMLImageElement image pixels squared (width * height) that
@@ -423,8 +423,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Images.SizesAttributeMiss" units="px"
-    expires_after="2026-03-03">
-  <owner>iclelland@chromium.org</owner>
+    expires_after="2027-03-03">
+  <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The amount of HTMLImageElement pixels by which the eventual layout width was
