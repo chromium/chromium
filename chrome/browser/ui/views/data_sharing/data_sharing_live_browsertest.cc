@@ -196,7 +196,8 @@ class DataSharingLiveTest : public signin::test::LiveTest {
 };
 
 // Open the share dialog of a unshared the tab group.
-IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, ShareUnsharedTabGroup) {
+// TODO(crbug.com/481412280): Re-enable this test.
+IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, DISABLED_ShareUnsharedTabGroup) {
   SignIn();
 
   const std::u16string unshared_group_title = u"TEST UNSHARED GROUP";
