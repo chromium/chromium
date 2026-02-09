@@ -23,6 +23,8 @@ struct EnumTraits<skills::mojom::SkillSource, sync_pb::SkillSource> {
         return skills::mojom::SkillSource::kFirstParty;
       case sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED:
         return skills::mojom::SkillSource::kUserCreated;
+      case sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY:
+        return skills::mojom::SkillSource::kDerivedFromFirstParty;
     }
     NOTREACHED();
   }
@@ -39,6 +41,9 @@ struct EnumTraits<skills::mojom::SkillSource, sync_pb::SkillSource> {
       case skills::mojom::SkillSource::kUserCreated:
         *out = sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED;
         return true;
+      case skills::mojom::SkillSource::kDerivedFromFirstParty:
+        *out = sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY;
+        return true;
     }
     NOTREACHED();
   }
@@ -52,6 +57,9 @@ struct StructTraits<skills::mojom::SkillDataView, skills::Skill> {
   }
   static const std::string& icon(const skills::Skill& skill) {
     return skill.icon;
+  }
+  static const std::string& source_skill_id(const skills::Skill& skill) {
+    return skill.source_skill_id;
   }
   static const std::string& prompt(const skills::Skill& skill) {
     return skill.prompt;

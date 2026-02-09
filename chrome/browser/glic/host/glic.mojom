@@ -607,10 +607,12 @@ enum SkillSource {
   kFirstParty = 1,
   // Skill created by an end-user.
   kUserCreated = 2,
+  // Skill derived from a first party skill.
+  [MinVersion=1] kDerivedFromFirstParty = 3,
 };
-
-// LINT.ThenChange(//depot/chromium/components/skills/public/skill.mojom:SkillSource,
-// //depot/chromium/components/sync/protocol/skill_specifics.proto:SkillSource)
+// clang-format off
+// LINT.ThenChange(//components/skills/public/skill.mojom:SkillSource, //components/sync/protocol/skill_specifics.proto:SkillSource)
+// clang-format on
 
 // LINT.IfChange(Skill)
 // A single skill preview.
@@ -633,10 +635,13 @@ struct Skill {
   SkillPreview preview;
   // The prompt of the skill.
   string prompt;
+  // The id of the source skill this skill is derived from. This is only present
+  // if the SkillSource is kDerivedFromFirstParty.
+  string? source_skill_id;
 };
-
-// LINT.ThenChange(//depot/chromium/components/skills/public/skill.mojom:Skill,
-// //depot/chromium/components/skills/public/skill.h:Skill)
+// clang-format off
+// LINT.ThenChange(//components/skills/public/skill.mojom:Skill, //components/skills/public/skill.h:Skill, //chrome/browser/resources/glic/glic_api/glic_api.ts:Skill)
+// clang-format on
 
 // Request to create a skill.
 struct CreateSkillRequest {

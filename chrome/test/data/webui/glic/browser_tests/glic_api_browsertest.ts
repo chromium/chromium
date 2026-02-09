@@ -2727,18 +2727,26 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     assertEquals(actualSkill.preview.name, 'test_skill_1');
     assertEquals(actualSkill.preview.icon, 'test_icon_1');
     assertEquals(actualSkill.prompt, 'test_prompt_1');
+    assertEquals(actualSkill.sourceSkillId, 'source_id_1');
   }
 
   async testGetSkillPreviewsSuccess() {
     assertDefined(this.host.getSkillPreviews);
+    assertDefined(this.host.getSkill);
     const skillPreviewsSequence = observeSequence(this.host.getSkillPreviews());
     const skills = await skillPreviewsSequence.waitFor(s => s.length === 2);
     const skill1 = skills.find(s => s.name === 'test_skill_1');
     assertDefined(skill1);
     assertEquals('test_icon_1', skill1.icon);
+    const actualSkill1 = await this.host.getSkill(skill1.id);
+    assertDefined(actualSkill1);
+    assertEquals(actualSkill1.sourceSkillId, 'source_id_1');
     const skill2 = skills.find(s => s.name === 'test_skill_2');
     assertDefined(skill2);
     assertEquals('test_icon_2', skill2.icon);
+    const actualSkill2 = await this.host.getSkill(skill2.id);
+    assertDefined(actualSkill2);
+    assertEquals(actualSkill2.sourceSkillId, 'source_id_2');
   }
 
   async testShowManageSkillsUi() {

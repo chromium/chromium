@@ -36,6 +36,7 @@ suite('DiscoverSkillsPage', function() {
   function createSkill(overrides: Partial<Skill> = {}): Skill {
     return {
       id: '1',
+      sourceSkillId: null,
       name: 'Default Skill',
       icon: '',
       prompt: '',

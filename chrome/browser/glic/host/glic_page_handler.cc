@@ -198,6 +198,8 @@ mojom::SkillSource ToMojomSkillSource(sync_pb::SkillSource source) {
       return mojom::SkillSource::kFirstParty;
     case sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED:
       return mojom::SkillSource::kUserCreated;
+    case sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY:
+      return mojom::SkillSource::kDerivedFromFirstParty;
   }
 }
 
@@ -218,6 +220,8 @@ sync_pb::SkillSource FromMojomSkillSource(mojom::SkillSource source) {
       return sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY;
     case mojom::SkillSource::kUserCreated:
       return sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED;
+    case mojom::SkillSource::kDerivedFromFirstParty:
+      return sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY;
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -2326,7 +2330,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (!skill) {
       return nullptr;
     }
-    return mojom::Skill::New(ToMojomSkillPreview(skill), skill->prompt);
+    // We should only set the source_skill_id if the skill was derived from
+    // another skill.
+    return mojom::Skill::New(
+        ToMojomSkillPreview(skill), skill->prompt,
+        skill->source ==
+                sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY
+            ? skill->source_skill_id
+            : std::string());
 #else
     return nullptr;
 #endif  //  !BUILDFLAG(IS_ANDROID)

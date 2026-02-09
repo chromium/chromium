@@ -97,7 +97,8 @@ class SkillsService : public KeyedService {
   // Generates a unique ID for the skill.
   // Returns a const pointer to the newly added skill or nullptr in case of
   // failure (e.g. service is not in kReady state).
-  virtual const Skill* AddSkill(const std::string& name,
+  virtual const Skill* AddSkill(const std::string& source_skill_id,
+                                const std::string& name,
                                 const std::string& icon,
                                 const std::string& prompt) = 0;
 
@@ -107,6 +108,7 @@ class SkillsService : public KeyedService {
   // when the service is in kReady state.
   virtual const Skill* AddOrUpdateSkillFromSync(
       std::string_view skill_id,
+      std::string_view source_skill_id,
       std::string_view name,
       std::string_view icon,
       std::string_view prompt,

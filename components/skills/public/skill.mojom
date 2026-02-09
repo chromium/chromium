@@ -13,10 +13,12 @@ enum SkillSource {
   kFirstParty = 1,
   // Skill created by an end-user.
   kUserCreated = 2,
+  // Skill derived from a first party skill.
+  kDerivedFromFirstParty = 3,
 };
-
-// LINT.ThenChange(//depot/chromium/components/sync/protocol/skill_specifics.proto:SkillSource,
-// //depot/chromium/chrome/browser/glic/host/glic.mojom:SkillSource)
+// clang-format off
+// LINT.ThenChange(//components/sync/protocol/skill_specifics.proto:SkillSource, //chrome/browser/glic/host/glic.mojom:SkillSource)
+// clang-format on
 
 // LINT.IfChange(Skill)
 // Represents a single skill.
@@ -24,6 +26,10 @@ struct Skill {
   // A unique identifier for the skill. It's GUID now but can be other IDs in
   // the future.
   string id;
+
+  // The source skill id that this skill is derived from. This field is only
+  // present if the SkillSource is kDerivedFromFirstParty.
+  string? source_skill_id;
 
   // The user-facing name of the skill.
   string name;
@@ -46,6 +52,6 @@ struct Skill {
   // The Time when the skill was last updated.
   mojo_base.mojom.Time last_update_time;
 };
-
-// LINT.ThenChange(//depot/chromium/components/skills/public/skill.h:Skill,
-// //depot/chromium/chrome/browser/glic/host/glic.mojom:Skill)
+// clang-format off
+// LINT.ThenChange(//components/skills/public/skill.h:Skill, //chrome/browser/glic/host/glic.mojom:Skill)
+// clang-format on

@@ -421,6 +421,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     return {
       skill: {
         ...mojoSkill,
+        sourceSkillId: optionalFromClient(mojoSkill.sourceSkillId) || undefined,
         preview: {
           ...mojoSkill.preview,
           source: mojoSkill.preview.source as number as SkillSource,

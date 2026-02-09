@@ -45,6 +45,7 @@ sync_pb::SkillSpecifics SkillToSpecifics(
     sync_pb::SkillSpecifics base_specifics) {
   sync_pb::SkillSpecifics specifics = std::move(base_specifics);
   specifics.set_guid(skill.id);
+  specifics.set_source_skill_id(skill.source_skill_id);
   specifics.set_name(skill.name);
   specifics.set_icon(skill.icon);
   specifics.mutable_simple_skill()->set_prompt(skill.prompt);
@@ -68,6 +69,9 @@ std::unique_ptr<Skill> SpecificsToSkill(
       /*icon=*/specifics.icon(),
       /*prompt=*/specifics.simple_skill().prompt(),
       /*description=*/specifics.simple_skill().description());
+  if (!specifics.source_skill_id().empty()) {
+    skill->source_skill_id = specifics.source_skill_id();
+  }
 
   skill->creation_time =
       FromWindowsEpochMicros(specifics.creation_time_windows_epoch_micros());
@@ -156,8 +160,9 @@ std::optional<syncer::ModelError> SkillsSyncBridge::ApplyIncrementalSyncChanges(
         }
 
         const Skill* skill = skills_service_->AddOrUpdateSkillFromSync(
-            skill_specifics.guid(), skill_specifics.name(),
-            skill_specifics.icon(), skill_specifics.simple_skill().prompt(),
+            skill_specifics.guid(), skill_specifics.source_skill_id(),
+            skill_specifics.name(), skill_specifics.icon(),
+            skill_specifics.simple_skill().prompt(),
             skill_specifics.simple_skill().description(),
             FromWindowsEpochMicros(
                 skill_specifics.creation_time_windows_epoch_micros()),
@@ -273,6 +278,7 @@ SkillsSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   trimmed_specifics.clear_last_update_time_windows_epoch_micros();
   trimmed_specifics.clear_schema_version();
   trimmed_specifics.clear_skill_source();
+  trimmed_specifics.clear_source_skill_id();
 
   if (trimmed_specifics.has_simple_skill()) {
     trimmed_specifics.mutable_simple_skill()->clear_prompt();

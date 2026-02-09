@@ -44,24 +44,35 @@ MATCHER_P(HasSimpleSkill, matcher, "") {
                                      result_listener);
 }
 
-MATCHER_P4(HasSkill, name, icon, prompt, description, "") {
-  return arg.name == name && arg.icon == icon && arg.prompt == prompt &&
+MATCHER_P5(HasSkill, source_skill_id, name, icon, prompt, description, "") {
+  return arg.source_skill_id == source_skill_id && arg.name == name &&
+         arg.icon == icon && arg.prompt == prompt &&
          arg.description == description;
 }
 
-MATCHER_P5(HasSkillSpecifics, guid, name, icon, prompt, description, "") {
-  return arg.guid() == guid && arg.name() == name && arg.icon() == icon &&
+MATCHER_P6(HasSkillSpecifics,
+           guid,
+           source_skill_id,
+           name,
+           icon,
+           prompt,
+           description,
+           "") {
+  return arg.guid() == guid && arg.source_skill_id() == source_skill_id &&
+         arg.name() == name && arg.icon() == icon &&
          arg.simple_skill().prompt() == prompt &&
          arg.simple_skill().description() == description;
 }
 
 sync_pb::SkillSpecifics CreateSkillSpecifics(std::string guid,
+                                             std::string source_skill_id,
                                              std::string name,
                                              std::string icon,
                                              std::string prompt,
                                              std::string description) {
   sync_pb::SkillSpecifics specifics;
   specifics.set_guid(std::move(guid));
+  specifics.set_source_skill_id(std::move(source_skill_id));
   specifics.set_name(std::move(name));
   specifics.set_icon(std::move(icon));
   specifics.mutable_simple_skill()->set_prompt(std::move(prompt));
@@ -210,7 +221,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
                        PRE_ShouldLoadDataOnRestart) {
   ASSERT_TRUE(SetupSync());
 
-  GetSkillsService().AddSkill(/*name=*/"test_skill", /*icon=*/"icon",
+  GetSkillsService().AddSkill(/*source_skill_id=*/"source_skill_id",
+                              /*name=*/"test_skill",
+                              /*icon=*/"icon",
                               /*prompt=*/"prompt");
 }
 
@@ -220,74 +233,81 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest, ShouldLoadDataOnRestart) {
 
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::SKILL));
   EXPECT_THAT(GetSkillsService().GetSkills(),
-              Contains(Pointee(HasSkill("test_skill", "icon", "prompt",
+              Contains(Pointee(HasSkill("source_skill_id", "test_skill", "icon",
+                                        "prompt",
                                         /*description=*/""))));
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest, ShouldApplyRemoteUpdates) {
   ASSERT_TRUE(SetupSync());
 
-  const skills::Skill* skill1 =
-      GetSkillsService().AddSkill(/*name=*/"skill1", /*icon=*/"icon1",
-                                  /*prompt=*/"prompt1");
-  const skills::Skill* skill_to_update =
-      GetSkillsService().AddSkill(/*name=*/"skill2 to update", /*icon=*/"icon2",
-                                  /*prompt=*/"prompt2");
-  const skills::Skill* skill_to_delete =
-      GetSkillsService().AddSkill(/*name=*/"skill3 to delete", /*icon=*/"icon3",
-                                  /*prompt=*/"prompt3");
+  const skills::Skill* skill1 = GetSkillsService().AddSkill(
+      /*source_skill_id=*/"source_skill_id", /*name=*/"skill1",
+      /*icon=*/"icon1",
+      /*prompt=*/"prompt1");
+  const skills::Skill* skill_to_update = GetSkillsService().AddSkill(
+      /*source_skill_id=*/"", /*name=*/"skill2 to update",
+      /*icon=*/"icon2",
+      /*prompt=*/"prompt2");
+  const skills::Skill* skill_to_delete = GetSkillsService().AddSkill(
+      /*source_skill_id=*/"", /*name=*/"skill3 to delete",
+      /*icon=*/"icon3",
+      /*prompt=*/"prompt3");
   const std::string skill_id_to_add =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   ASSERT_TRUE(
       ServerSkillsMatchChecker(
           UnorderedElementsAre(
-              HasSkillSpecifics(skill1->id, "skill1", "icon1", "prompt1",
+              HasSkillSpecifics(skill1->id, "source_skill_id", "skill1",
+                                "icon1", "prompt1",
                                 /*description=*/""),
-              HasSkillSpecifics(skill_to_update->id, "skill2 to update",
+              HasSkillSpecifics(skill_to_update->id, "", "skill2 to update",
                                 "icon2", "prompt2", /*description=*/""),
-              HasSkillSpecifics(skill_to_delete->id, "skill3 to delete",
+              HasSkillSpecifics(skill_to_delete->id, "", "skill3 to delete",
                                 "icon3", "prompt3", /*description=*/"")))
           .Wait());
 
-  InjectSpecificsToFakeServer(
-      CreateSkillSpecifics(skill_to_update->id, "updated name", "updated icon",
-                           "updated prompt", "updated description"));
-  InjectSpecificsToFakeServer(
-      CreateSkillSpecifics(skill_id_to_add, "new_skill_name", "new_skill_icon",
-                           "new_skill_prompt", "new_skill_description"));
+  InjectSpecificsToFakeServer(CreateSkillSpecifics(
+      skill_to_update->id, "", "updated name", "updated icon", "updated prompt",
+      "updated description"));
+  InjectSpecificsToFakeServer(CreateSkillSpecifics(
+      skill_id_to_add, "new_source_skill_id", "new_skill_name",
+      "new_skill_icon", "new_skill_prompt", "new_skill_description"));
   InjectTombstoneToFakeServer(skill_to_delete->id);
 
   EXPECT_TRUE(
       SkillsServiceChecker(
           GetSkillsService(),
           UnorderedElementsAre(
-              Pointee(
-                  HasSkill("skill1", "icon1", "prompt1", /*description=*/"")),
-              Pointee(HasSkill("updated name", "updated icon", "updated prompt",
-                               "updated description")),
-              Pointee(HasSkill("new_skill_name", "new_skill_icon",
-                               "new_skill_prompt", "new_skill_description"))))
+              Pointee(HasSkill("source_skill_id", "skill1", "icon1", "prompt1",
+                               /*description=*/"")),
+              Pointee(HasSkill("", "updated name", "updated icon",
+                               "updated prompt", "updated description")),
+              Pointee(HasSkill("new_source_skill_id", "new_skill_name",
+                               "new_skill_icon", "new_skill_prompt",
+                               "new_skill_description"))))
           .Wait());
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest, ShouldMergeRemoteData) {
-  InjectSpecificsToFakeServer(
-      CreateSkillSpecifics(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                           "skill1", "icon1", "prompt1", "description1"));
-  InjectSpecificsToFakeServer(
-      CreateSkillSpecifics(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                           "skill2", "icon2", "prompt2", "description2"));
+  InjectSpecificsToFakeServer(CreateSkillSpecifics(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), "source_skill_id1",
+      "skill1", "icon1", "prompt1", "description1"));
+  InjectSpecificsToFakeServer(CreateSkillSpecifics(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), "source_skill_id2",
+      "skill2", "icon2", "prompt2", "description2"));
 
   ASSERT_TRUE(SetupSync());
 
-  EXPECT_TRUE(
-      SkillsServiceChecker(
-          GetSkillsService(),
-          UnorderedElementsAre(
-              Pointee(HasSkill("skill1", "icon1", "prompt1", "description1")),
-              Pointee(HasSkill("skill2", "icon2", "prompt2", "description2"))))
-          .Wait());
+  EXPECT_TRUE(SkillsServiceChecker(
+                  GetSkillsService(),
+                  UnorderedElementsAre(
+                      Pointee(HasSkill("source_skill_id1", "skill1", "icon1",
+                                       "prompt1", "description1")),
+                      Pointee(HasSkill("source_skill_id2", "skill2", "icon2",
+                                       "prompt2", "description2"))))
+                  .Wait());
 }
 
 // TODO(crbug.com/471795213): add a test to verify that skills can't be created
@@ -297,8 +317,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
                        ShouldPreserveUnknownFields) {
   const std::string kSkillId =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
-  sync_pb::SkillSpecifics specifics_with_unknown_fields =
-      CreateSkillSpecifics(kSkillId, "name", "icon", "prompt", "description");
+  sync_pb::SkillSpecifics specifics_with_unknown_fields = CreateSkillSpecifics(
+      kSkillId, "source_skill_id", "name", "icon", "prompt", "description");
 
   // Add unknown fields that should be preserved by the client.
   syncer::test::AddUnknownFieldToProto(
@@ -310,11 +330,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
   InjectSpecificsToFakeServer(specifics_with_unknown_fields);
 
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(
-      SkillsServiceChecker(GetSkillsService(),
-                           UnorderedElementsAre(Pointee(HasSkill(
-                               "name", "icon", "prompt", "description"))))
-          .Wait());
+  ASSERT_TRUE(SkillsServiceChecker(GetSkillsService(),
+                                   UnorderedElementsAre(Pointee(HasSkill(
+                                       "source_skill_id", "name", "icon",
+                                       "prompt", "description"))))
+                  .Wait());
 
   // Update the skill on the client.
   const skills::Skill* skill = GetSkillsService().UpdateSkill(
@@ -326,8 +346,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
   EXPECT_TRUE(
       ServerSkillsMatchChecker(
           UnorderedElementsAre(AllOf(
-              HasSkillSpecifics(kSkillId, "updated name", "updated icon",
-                                "updated prompt", /*description=*/""),
+              HasSkillSpecifics(kSkillId, "source_skill_id", "updated name",
+                                "updated icon", "updated prompt",
+                                /*description=*/""),
               HasUnknownField("specifics_unknown_field"),
               HasSimpleSkill(HasUnknownField("simple_skill_unknown_field")))))
           .Wait());
@@ -337,20 +358,21 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
                        ShouldDeleteAllDataOnDisableSync) {
-  InjectSpecificsToFakeServer(
-      CreateSkillSpecifics(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                           "skill1", "icon1", "prompt1", "description1"));
-  InjectSpecificsToFakeServer(
-      CreateSkillSpecifics(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                           "skill2", "icon2", "prompt2", "description2"));
+  InjectSpecificsToFakeServer(CreateSkillSpecifics(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), "source_skill_id1",
+      "skill1", "icon1", "prompt1", "description1"));
+  InjectSpecificsToFakeServer(CreateSkillSpecifics(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), "source_skill_id2",
+      "skill2", "icon2", "prompt2", "description2"));
 
   ASSERT_TRUE(SetupSync());
 
-  ASSERT_THAT(
-      GetSkillsService().GetSkills(),
-      UnorderedElementsAre(
-          Pointee(HasSkill("skill1", "icon1", "prompt1", "description1")),
-          Pointee(HasSkill("skill2", "icon2", "prompt2", "description2"))));
+  ASSERT_THAT(GetSkillsService().GetSkills(),
+              UnorderedElementsAre(
+                  Pointee(HasSkill("source_skill_id1", "skill1", "icon1",
+                                   "prompt1", "description1")),
+                  Pointee(HasSkill("source_skill_id2", "skill2", "icon2",
+                                   "prompt2", "description2"))));
 
   // Sign out the primary account to disable sync and verify that all data was
   // deleted.
@@ -361,13 +383,14 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
   // Sign in again to re-enable sync and verify that the data was re-synced.
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
-  EXPECT_TRUE(
-      SkillsServiceChecker(
-          GetSkillsService(),
-          UnorderedElementsAre(
-              Pointee(HasSkill("skill1", "icon1", "prompt1", "description1")),
-              Pointee(HasSkill("skill2", "icon2", "prompt2", "description2"))))
-          .Wait());
+  EXPECT_TRUE(SkillsServiceChecker(
+                  GetSkillsService(),
+                  UnorderedElementsAre(
+                      Pointee(HasSkill("source_skill_id1", "skill1", "icon1",
+                                       "prompt1", "description1")),
+                      Pointee(HasSkill("source_skill_id2", "skill2", "icon2",
+                                       "prompt2", "description2"))))
+                  .Wait());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

@@ -52,6 +52,7 @@ suite('SkillsDialogAppPage', function() {
         'getSignedInEmail', Promise.resolve({email: ''}));
     const emptySkill: Skill = {
       id: '',
+      sourceSkillId: '',
       name: '',
       icon: '',
       prompt: '',
@@ -98,6 +99,7 @@ suite('SkillsDialogAppPage', function() {
   test('SkillsDialogPrepopulatesInitialSkill', async function() {
     const testSkill: Skill = {
       id: '123',
+      sourceSkillId: '',
       name: 'test skill',
       icon: '',
       prompt: 'test prompt',
@@ -116,6 +118,7 @@ suite('SkillsDialogAppPage', function() {
   test('AddingFirstPartySkill', async function() {
     const testSkill: Skill = {
       id: 'first-party-skill',
+      sourceSkillId: '',
       name: 'test skill',
       icon: '',
       prompt: 'test prompt',
@@ -132,6 +135,7 @@ suite('SkillsDialogAppPage', function() {
   test('EditingUserCreatedSkill', async function() {
     const testSkill: Skill = {
       id: '123',
+      sourceSkillId: '',
       name: 'test skill',
       icon: '',
       prompt: 'test prompt',
@@ -183,6 +187,7 @@ suite('SkillsDialogAppPage', function() {
   test('SubmitsRemixedSkill', async function() {
     const firstPartySkill: Skill = {
       id: 'first-party-skill',
+      sourceSkillId: 'sourceSkillId',
       name: 'test skill',
       icon: '',
       prompt: 'test prompt',
@@ -203,14 +208,16 @@ suite('SkillsDialogAppPage', function() {
     skillsDialogApp.$.saveButton.click();
     const submittedSkill = await dialogHandler.whenCalled('submitSkill');
     assertEquals('', submittedSkill.id);
+    assertEquals(firstPartySkill.id, submittedSkill.sourceSkillId);
     assertEquals(remixedName, submittedSkill.name);
     assertEquals(remixedPrompt, submittedSkill.prompt);
-    assertEquals(SkillSource.kUserCreated, submittedSkill.source);
+    assertEquals(SkillSource.kDerivedFromFirstParty, submittedSkill.source);
   });
 
   test('SubmitsEditedSkill', async function() {
     const userCreatedSkill: Skill = {
       id: 'user-created-skill',
+      sourceSkillId: '',
       name: 'test skill',
       icon: '',
       prompt: 'test prompt',
@@ -438,6 +445,7 @@ suite('SkillsDialogAppPage', function() {
     resolver.resolve({
       refinedSkill: {
         id: '',
+        sourceSkillId: '',
         name: '',
         icon: '',
         prompt: 'Done',
@@ -490,6 +498,7 @@ suite('SkillsDialogAppPage', function() {
     resolver.resolve({
       refinedSkill: {
         id: '',
+        sourceSkillId: '',
         name: '',
         icon: '',
         prompt: 'Late Response',

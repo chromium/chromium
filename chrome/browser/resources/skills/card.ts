@@ -62,6 +62,7 @@ export class SkillCardElement extends CrLitElement {
 
   accessor skill: Skill = {
     id: '',
+    sourceSkillId: '',
     name: '',
     icon: '',
     prompt: '',

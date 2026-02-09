@@ -51,11 +51,13 @@ class SkillsServiceImpl : public SkillsService {
       std::vector<std::unique_ptr<Skill>> initial_skills) override;
   // TODO(crbug.com/475863107) Add strong typing to help caller avoid swapping
   // order of arguments.
-  const Skill* AddSkill(const std::string& name,
+  const Skill* AddSkill(const std::string& source_skill_id,
+                        const std::string& name,
                         const std::string& icon,
                         const std::string& prompt) override;
 
   const Skill* AddOrUpdateSkillFromSync(std::string_view skill_id,
+                                        std::string_view source_skill_id,
                                         std::string_view name,
                                         std::string_view icon,
                                         std::string_view prompt,

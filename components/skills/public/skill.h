@@ -19,6 +19,9 @@ struct Skill {
   // the future.
   std::string id;
 
+  // The ID of the source skill this skill is derived from.
+  std::string source_skill_id;
+
   // The user-facing name of the skill.
   std::string name;
 
@@ -54,8 +57,8 @@ struct Skill {
   Skill& operator=(Skill&&);
   ~Skill();
 };
-// LINT.ThenChange(//depot/chromium/components/skills/public/skill.mojom:Skill,
-// //depot/chromium/chrome/browser/glic/host/glic.mojom:Skill)
+// LINT.ThenChange(//components/skills/public/skill.mojom:Skill,
+// //chrome/browser/glic/host/glic.mojom:Skill)
 
 }  // namespace skills
 

@@ -92,6 +92,7 @@ export class SkillsDialogAppElement extends CrLitElement {
   /** The object will be manipulated by submitSkill(). */
   protected accessor skill_: Skill = {
     id: '',
+    sourceSkillId: '',
     name: '',
     icon: DEFAULT_EMOJI,
     prompt: '',
@@ -269,15 +270,18 @@ export class SkillsDialogAppElement extends CrLitElement {
 
   /** Submits skill and closes the dialog. */
   protected submitSkill_(): void {
-    // Remixing a first party skill, so clear the ID
+    // Remixing a first party skill, set the parent and clear the ID.
+    let skillSource = SkillSource.kUserCreated;
     if (this.skill_.source === SkillSource.kFirstParty) {
-      this.skill_ = {...this.skill_, id: ''};
+      const sourceSkillId = this.skill_.id;
+      this.skill_ = {...this.skill_, id: '', sourceSkillId: sourceSkillId};
+      skillSource = SkillSource.kDerivedFromFirstParty;
     }
 
     SkillsDialogBrowserProxy.getInstance().handler.submitSkill({
       ...this.skill_,
       prompt: this.skill_.prompt.substring(0, MAX_PROMPT_CHAR_COUNT),
-      source: SkillSource.kUserCreated,
+      source: skillSource,
     });
   }
 

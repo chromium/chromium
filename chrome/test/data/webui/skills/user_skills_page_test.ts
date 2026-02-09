@@ -59,6 +59,7 @@ suite('UserSkillsPage', function() {
   test('UpdateSkillUpdatesPage', async function() {
     const testSkill = {
       id: '123',
+      sourceSkillId: null,
       name: 'Test Skill',
       icon: 'icon',
       prompt: 'prompt',
@@ -80,6 +81,7 @@ suite('UserSkillsPage', function() {
   test('RemoveSkillUpdatesPage', async function() {
     const testSkill = {
       id: '123',
+      sourceSkillId: null,
       name: 'Test Skill',
       icon: 'icon',
       prompt: 'prompt',
@@ -105,6 +107,7 @@ suite('UserSkillsPage', function() {
   test('UpdatesAndRemovalsShowCorrectly', async function() {
     const skillA = {
       id: '123',
+      sourceSkillId: null,
       name: 'A',
       icon: '',
       prompt: '',
@@ -115,6 +118,7 @@ suite('UserSkillsPage', function() {
     };
     const skillB = {
       id: '234',
+      sourceSkillId: null,
       name: 'B',
       icon: '',
       prompt: '',
@@ -160,6 +164,7 @@ suite('UserSkillsPage', function() {
   test('SkillsFilteredBySearchTerm', async function() {
     const skillA = {
       id: '1',
+      sourceSkillId: null,
       name: 'Apple',
       icon: '',
       prompt: 'A tasty fruit',
@@ -170,6 +175,7 @@ suite('UserSkillsPage', function() {
     };
     const skillB = {
       id: '2',
+      sourceSkillId: null,
       name: 'Banana',
       icon: '',
       prompt: 'Yellow fruit',
@@ -180,6 +186,7 @@ suite('UserSkillsPage', function() {
     };
     const skillC = {
       id: '3',
+      sourceSkillId: null,
       name: 'Carrot',
       icon: '',
       prompt: 'Orange vegetable',
@@ -218,6 +225,7 @@ suite('UserSkillsPage', function() {
   test('SkillDeletedFromCardMenu', async function() {
     const skillA = {
       id: '1',
+      sourceSkillId: null,
       name: 'Apple',
       icon: '',
       prompt: 'A tasty fruit',
@@ -228,6 +236,7 @@ suite('UserSkillsPage', function() {
     };
     const skillB = {
       id: '2',
+      sourceSkillId: null,
       name: 'Banana',
       icon: '',
       prompt: 'Yellow fruit',
@@ -238,6 +247,7 @@ suite('UserSkillsPage', function() {
     };
     const skillC = {
       id: '3',
+      sourceSkillId: null,
       name: 'Carrot',
       icon: '',
       prompt: 'Orange vegetable',
@@ -269,6 +279,7 @@ suite('UserSkillsPage', function() {
   test('CopySkillInstructionsToClipboard', async function() {
     const skillA = {
       id: '1',
+      sourceSkillId: null,
       name: 'Mister Tony Bark',
       icon: '',
       prompt: 'Describe a good dog',

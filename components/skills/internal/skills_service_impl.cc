@@ -62,7 +62,8 @@ void SkillsServiceImpl::NotifySkillChanged(std::string_view skill_id,
   }
 }
 
-const Skill* SkillsServiceImpl::AddSkill(const std::string& name,
+const Skill* SkillsServiceImpl::AddSkill(const std::string& source_skill_id,
+                                         const std::string& name,
                                          const std::string& icon,
                                          const std::string& prompt) {
   if (GetServiceStatus() != ServiceStatus::kReady) {
@@ -71,11 +72,17 @@ const Skill* SkillsServiceImpl::AddSkill(const std::string& name,
 
   auto skill = std::make_unique<Skill>(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), name, icon, prompt);
+  skill->source_skill_id = source_skill_id;
+  // If the skill has a source skill id, it is a derived skill.
+  if (!source_skill_id.empty()) {
+    skill->source = sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY;
+  }
   return AddSkillImpl(std::move(skill), UpdateSource::kLocal);
 }
 
 const Skill* SkillsServiceImpl::AddOrUpdateSkillFromSync(
     std::string_view skill_id,
+    std::string_view source_skill_id,
     std::string_view name,
     std::string_view icon,
     std::string_view prompt,
@@ -95,6 +102,7 @@ const Skill* SkillsServiceImpl::AddOrUpdateSkillFromSync(
   auto skill = std::make_unique<Skill>(std::string(skill_id), std::string(name),
                                        std::string(icon), std::string(prompt),
                                        std::string(description));
+  skill->source_skill_id = source_skill_id;
   // Use the creation and last update time from sync to keep them in sync with
   // other clients.
   skill->creation_time = creation_time;

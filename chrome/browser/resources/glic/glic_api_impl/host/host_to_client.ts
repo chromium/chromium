@@ -230,6 +230,7 @@ export class WebClientImpl implements WebClientInterface {
               ...skill.preview,
               source: skill.preview.source as number as SkillSource,
             },
+            sourceSkillId: optionalToClient(skill.sourceSkillId),
           },
         });
   }

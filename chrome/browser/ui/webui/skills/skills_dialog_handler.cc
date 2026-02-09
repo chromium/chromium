@@ -56,7 +56,8 @@ void SkillsDialogHandler::SubmitSkill(const skills::Skill& skill) {
           SkillsServiceFactory::GetForProfile(base::to_address(profile_))) {
     const Skill* response =
         skill.id.empty()
-            ? skills_service->AddSkill(skill.name, skill.icon, skill.prompt)
+            ? skills_service->AddSkill(skill.source_skill_id, skill.name,
+                                       skill.icon, skill.prompt)
             : skills_service->UpdateSkill(skill.id, skill.name, skill.icon,
                                           skill.prompt);
     if (response && delegate_) {

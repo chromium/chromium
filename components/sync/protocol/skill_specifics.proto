@@ -19,9 +19,11 @@ enum SkillSource {
   SKILL_SOURCE_UNKNOWN = 0;
   SKILL_SOURCE_FIRST_PARTY = 1;
   SKILL_SOURCE_USER_CREATED = 2;
+  SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY = 3;
 }
-// LINT.ThenChange(//depot/chromium/components/skills/public/skill.mojom:SkillSource,
-// //depot/chromium/chrome/browser/glic/host/glic.mojom:SkillSource)
+// clang-format off
+// LINT.ThenChange(//components/skills/public/skill.mojom:SkillSource, //chrome/browser/glic/host/glic.mojom:SkillSource)
+// clang-format on
 
 // LINT.IfChange(SkillSpecifics)
 // Skills stored by the user.
@@ -48,6 +50,11 @@ message SkillSpecifics {
 
   // The source of the skill.
   optional SkillSource skill_source = 8;
+
+  // If set, the parent 1p skill that this skill is derived from. This field is
+  // only present if the `skill_source` is
+  // `SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY`.
+  optional string source_skill_id = 9;
 }
 
 // Represents a simple skill, primarily defined by a natural language prompt.

@@ -3804,17 +3804,25 @@ class GlicApiTestWithSkills : public GlicApiTest {
 };
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills, testGetSkillSuccess) {
-  SkillsService()->AddSkill(/*name=*/"test_skill_1", /*icon=*/"test_icon_1",
+  SkillsService()->AddSkill(/*source_skill_id=*/"source_id_1",
+                            /*name=*/"test_skill_1",
+                            /*icon=*/"test_icon_1",
                             /*prompt=*/"test_prompt_1");
-  SkillsService()->AddSkill(/*name=*/"test_skill_2", /*icon=*/"test_icon_2",
+  SkillsService()->AddSkill(/*source_skill_id=*/"source_id_2",
+                            /*name=*/"test_skill_2",
+                            /*icon=*/"test_icon_2",
                             /*prompt=*/"test_prompt_2");
   ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills, testGetSkillPreviewsSuccess) {
-  SkillsService()->AddSkill(/*name=*/"test_skill_1", /*icon=*/"test_icon_1",
+  SkillsService()->AddSkill(/*source_skill_id=*/"source_id_1",
+                            /*name=*/"test_skill_1",
+                            /*icon=*/"test_icon_1",
                             /*prompt=*/"test_prompt_1");
-  SkillsService()->AddSkill(/*name=*/"test_skill_2", /*icon=*/"test_icon_2",
+  SkillsService()->AddSkill(/*source_skill_id=*/"source_id_2",
+                            /*name=*/"test_skill_2",
+                            /*icon=*/"test_icon_2",
                             /*prompt=*/"test_prompt_2");
   ExecuteJsTest();
 }
@@ -3849,9 +3857,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills, testShowManageSkillsUi) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills,
                        testSendingContextualSkillsToGlic) {
-  SkillsService()->AddSkill(/*name=*/"user_skill_1", /*icon=*/"user_icon_1",
+  SkillsService()->AddSkill(/*source_skill_id=*/"", /*name=*/"user_skill_1",
+                            /*icon=*/"user_icon_1",
                             /*prompt=*/"test_prompt_1");
-  SkillsService()->AddSkill(/*name=*/"user_skill_2", /*icon=*/"user_icon_2",
+  SkillsService()->AddSkill(/*source_skill_id=*/"", /*name=*/"user_skill_2",
+                            /*icon=*/"user_icon_2",
                             /*prompt=*/"user_prompt_2");
 
   ExecuteJsTest();

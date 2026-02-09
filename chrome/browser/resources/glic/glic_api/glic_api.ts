@@ -2068,6 +2068,7 @@ export declare interface SuggestionContent {
   suggestion: string;
 }
 
+// LINT.IfChange(Skill)
 /** Represents a single skill preview. */
 export declare interface SkillPreview {
   /** A unique identifier for the skill. */
@@ -2088,7 +2089,13 @@ export declare interface Skill {
   preview: SkillPreview;
   /** The underlying LLM prompt for the skill. */
   prompt: string;
+  /**
+   * The id of the source skill this skill is derived from. This is only
+   * present if the SkillSource is DERIVED_FROM_FIRST_PARTY.
+   */
+  sourceSkillId?: string;
 }
+// LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:Skill)
 
 export declare interface CreateSkillRequest {
   /**
@@ -2513,6 +2520,8 @@ export enum SkillSource {
   FIRST_PARTY = 1,
   // Skill created by an end-user.
   USER_CREATED = 2,
+  // Skill derived from a first party skill.
+  DERIVED_FROM_FIRST_PARTY = 3,
 }
 
 ///////////////////////////////////////////////
