@@ -240,8 +240,20 @@ bool ToolBase::EnsureTargetInView() {
   WebElement node = GetNodeFromIdIncludingPopup(frame_.get(), dom_node_id)
                         .DynamicTo<WebElement>();
   if (node && node.VisibleBoundsInWidget().IsEmpty()) {
+    gfx::Rect bounds_before = node.BoundsInWidget();
     node.RevealAutoExpandableAncestors();
     node.ScrollIntoViewIfNeeded();
+
+    journal_->Log(task_id_, "ScrollIntoView",
+                  JournalDetailsBuilder()
+                      .Add("target", node)
+                      .Add("CurBounds", bounds_before)
+                      .Add("NewBounds", node.BoundsInWidget())
+                      .Add("NewBoundsVisible", node.VisibleBoundsInWidget())
+                      .Add("ViewportBounds",
+                           node.GetDocument().GetFrame()->VisibleContentRect())
+                      .Build());
+
     return true;
   }
 
