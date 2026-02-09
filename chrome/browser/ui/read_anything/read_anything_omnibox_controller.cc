@@ -58,7 +58,7 @@ void ReadAnythingOmniboxController::TabWillDetach(
 }
 
 void ReadAnythingOmniboxController::OnTabForegrounded(tabs::TabInterface* tab) {
-  CheckIfShouldSuggestReadingMode();
+  DebounceCheckSuggestion();
 }
 
 void ReadAnythingOmniboxController::OnTabBackgrounded(tabs::TabInterface* tab) {
@@ -108,19 +108,18 @@ void ReadAnythingOmniboxController::PrimaryPageChanged(content::Page& page) {
 }
 
 void ReadAnythingOmniboxController::DidStopLoading() {
-  // DidStopLoading can be called multiple times during page load; debounce the
-  // calls to CheckIfShouldSuggestReadingMode since it's a CPU-intensive
-  // operation.
-  if (check_suggestion_debouncer_ && check_suggestion_debouncer_->IsRunning()) {
-    check_suggestion_debouncer_->Reset();
-  } else {
+  DebounceCheckSuggestion();
+}
+
+void ReadAnythingOmniboxController::DebounceCheckSuggestion() {
+  if (!check_suggestion_debouncer_) {
     check_suggestion_debouncer_ = std::make_unique<base::OneShotTimer>();
-    check_suggestion_debouncer_->Start(
-        FROM_HERE, base::Seconds(kDebounceDelaySecs),
-        base::BindOnce(
-            &ReadAnythingOmniboxController::CheckIfShouldSuggestReadingMode,
-            weak_factory_.GetWeakPtr()));
   }
+  check_suggestion_debouncer_->Start(
+      FROM_HERE, base::Seconds(kDebounceDelaySecs),
+      base::BindOnce(
+          &ReadAnythingOmniboxController::CheckIfShouldSuggestReadingMode,
+          weak_factory_.GetWeakPtr()));
 }
 
 void ReadAnythingOmniboxController::CheckIfShouldSuggestReadingMode() {

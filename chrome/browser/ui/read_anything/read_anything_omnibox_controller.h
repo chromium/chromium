@@ -39,6 +39,13 @@ class ReadAnythingOmniboxController : public content::WebContentsObserver,
     candidate_check_triggered_time_ms_ = test_time;
   }
 
+ protected:
+  // Runs a heuristic to check if the current tab's contents are a good
+  // candidate for distillation in Reading mode. The result is returned in the
+  // OnReadabilityResult call below, and is used to determine whether or not to
+  // show the omnibox entrypoint for RM.
+  virtual void CheckIfShouldSuggestReadingMode();
+
  private:
   // The amount of time the user must spend on the previous page before it seems
   // they are ignoring the omnibox entry point.
@@ -56,11 +63,9 @@ class ReadAnythingOmniboxController : public content::WebContentsObserver,
   void OnTabBackgrounded(tabs::TabInterface* tab);
   void OnTabForegrounded(tabs::TabInterface* tab);
 
-  // Runs a heuristic to check if the current tab's contents are a good
-  // candidate for distillation in Reading mode. The result is returned in the
-  // OnReadabilityResult call below, and is used to determine whether or not to
-  // show the omnibox entrypoint for RM.
-  void CheckIfShouldSuggestReadingMode();
+  // Runs CheckIfShouldSuggestReadingMode after a delay to debounce multiple
+  // calls to it during page or tab load.
+  void DebounceCheckSuggestion();
 
   // Called with the results of CheckIfShouldSuggestReadingMode.
   void OnShouldSuggestReadingModeResult(bool should_show);
