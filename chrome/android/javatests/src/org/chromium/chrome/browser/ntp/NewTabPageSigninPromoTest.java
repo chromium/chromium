@@ -39,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -59,6 +60,7 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Integration tests for {@link SigninPromoCoordinator} launched from {@link NewTabPage} entry
@@ -165,6 +167,8 @@ public class NewTabPageSigninPromoTest {
                 + ":seamless-signin-promo-type/twoButtons"
                 + "/seamless-signin-string-type/signinButton"
     })
+    // TODO(crbug.com/483105856): Test is flaky on desktop bots.
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testSigninPromoLoadingState() {
         openNewTabPage();
         // An account with an unknown hosted domain emulates a long sign-in. This way the loading
