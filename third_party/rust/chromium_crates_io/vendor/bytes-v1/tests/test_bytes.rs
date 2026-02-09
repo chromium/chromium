@@ -1707,3 +1707,16 @@ fn bytes_mut_put_bytes_specialization() {
     // If allocation is reused, capacity should be equal to original vec capacity.
     assert_eq!(bytes_mut.capacity(), capacity);
 }
+
+#[test]
+#[should_panic]
+fn bytes_mut_reserve_overflow() {
+    let mut a = BytesMut::from(&b"hello world"[..]);
+    let mut b = a.split_off(5);
+    // Ensure b becomes the unique owner of the backing storage
+    drop(a);
+    // Trigger overflow in new_cap + offset inside reserve
+    b.reserve(usize::MAX - 6);
+    // This call relies on the corrupted cap and may cause UB & HBO
+    b.put_u8(b'h');
+}

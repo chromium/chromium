@@ -695,9 +695,15 @@ impl BytesMut {
 
                 let offset = self.ptr.as_ptr().offset_from(ptr) as usize;
 
+                let new_cap_plus_offset = match new_cap.checked_add(offset) {
+                    Some(new_cap_plus_offset) => new_cap_plus_offset,
+                    None if !allocate => return false,
+                    None => panic!("overflow"),
+                };
+
                 // Compare the condition in the `kind == KIND_VEC` case above
                 // for more details.
-                if v_capacity >= new_cap + offset {
+                if v_capacity >= new_cap_plus_offset {
                     self.cap = new_cap;
                     // no copy is necessary
                 } else if v_capacity >= new_cap && offset >= len {
@@ -713,14 +719,12 @@ impl BytesMut {
                     if !allocate {
                         return false;
                     }
-                    // calculate offset
-                    let off = (self.ptr.as_ptr() as usize) - (v.as_ptr() as usize);
 
                     // new_cap is calculated in terms of `BytesMut`, not the underlying
                     // `Vec`, so it does not take the offset into account.
                     //
                     // Thus we have to manually add it here.
-                    new_cap = new_cap.checked_add(off).expect("overflow");
+                    new_cap = new_cap_plus_offset;
 
                     // The vector capacity is not sufficient. The reserve request is
                     // asking for more than the initial buffer capacity. Allocate more
@@ -742,13 +746,13 @@ impl BytesMut {
                     // the unused capacity of the vector is copied over to the new
                     // allocation, so we need to ensure that we don't have any data we
                     // care about in the unused capacity before calling `reserve`.
-                    debug_assert!(off + len <= v.capacity());
-                    v.set_len(off + len);
+                    debug_assert!(offset + len <= v.capacity());
+                    v.set_len(offset + len);
                     v.reserve(new_cap - v.len());
 
                     // Update the info
-                    self.ptr = vptr(v.as_mut_ptr().add(off));
-                    self.cap = v.capacity() - off;
+                    self.ptr = vptr(v.as_mut_ptr().add(offset));
+                    self.cap = v.capacity() - offset;
                 }
 
                 return true;

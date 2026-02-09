@@ -1,3 +1,7 @@
+# 1.11.1 (February 3rd, 2026)
+
+- Fix integer overflow in `BytesMut::reserve`
+
 # 1.11.0 (November 14th, 2025)
 
 - Bump MSRV to 1.57 (#788)
