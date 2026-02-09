@@ -176,7 +176,7 @@ TEST_F(IOSChromeSyncedTabDelegateTest,
       ->MoveManagedAccountToPersonalProfileForTesting(identity.gaiaId);
 
   authentication_service->SignIn(identity,
-                                 signin_metrics::AccessPoint::kUnknown);
+                                 signin_metrics::AccessPoint::kStartPage);
 
   // Create a navigation entry (so that there's something to sync).
   auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
