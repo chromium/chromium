@@ -61,12 +61,8 @@ CanvasNon2DSnapshotProviderBitmap::ImageProviderImpl::GetRasterContent(
 std::unique_ptr<CanvasNon2DSnapshotProviderBitmap>
 CanvasNon2DSnapshotProviderBitmap::Create(
     const CanvasSnapshotProvider::Info& info) {
-  auto provider = base::WrapUnique<CanvasNon2DSnapshotProviderBitmap>(
+  return base::WrapUnique<CanvasNon2DSnapshotProviderBitmap>(
       new CanvasNon2DSnapshotProviderBitmap(info));
-  if (provider->IsValid()) {
-    return provider;
-  }
-  return nullptr;
 }
 
 CanvasNon2DSnapshotProviderBitmap::CanvasNon2DSnapshotProviderBitmap(
@@ -75,17 +71,7 @@ CanvasNon2DSnapshotProviderBitmap::CanvasNon2DSnapshotProviderBitmap(
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
       recorder_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
-                                                       /*client=*/nullptr)) {
-  const bool can_use_lcd_text = info_.alpha_type == kOpaque_SkAlphaType;
-  const auto props =
-      skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
-  surface_ = SkSurfaces::Raster(
-      SkImageInfo::Make(info_.size.width(), info_.size.height(),
-                        viz::ToClosestSkColorType(info_.format),
-                        kPremul_SkAlphaType,
-                        info_.color_space.ToSkColorSpace()),
-      &props);
-}
+                                                       /*client=*/nullptr)) {}
 
 CanvasNon2DSnapshotProviderBitmap::~CanvasNon2DSnapshotProviderBitmap() =
     default;
@@ -95,17 +81,30 @@ bool CanvasNon2DSnapshotProviderBitmap::IsGpuContextLost() const {
 }
 
 bool CanvasNon2DSnapshotProviderBitmap::IsValid() const {
-  return surface_.get();
+  // This class doesn't attempt to create an SkSurface until
+  // DoExternalDrawAndSnapshot() is invoked; it will detect failure to create
+  // the surface at that point and return nullptr.
+  return true;
 }
 
 scoped_refptr<StaticBitmapImage>
 CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
     base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
     ImageOrientation orientation /*= ImageOrientationEnum::kDefault*/) {
-  // The static creation method returns nullptr if `IsValid()` is false on the
-  // created instance, and once `surface_` is created, it is never destroyed
-  // until the instance itself is destroyed.
-  CHECK(surface_);
+  if (!surface_) {
+    const bool can_use_lcd_text = info_.alpha_type == kOpaque_SkAlphaType;
+    const auto props =
+        skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
+    surface_ = SkSurfaces::Raster(
+        SkImageInfo::Make(info_.size.width(), info_.size.height(),
+                          viz::ToClosestSkColorType(info_.format),
+                          kPremul_SkAlphaType,
+                          info_.color_space.ToSkColorSpace()),
+        &props);
+    if (!surface_) {
+      return nullptr;
+    }
+  }
 
   draw_callback(recorder_->getRecordingCanvas());
 
