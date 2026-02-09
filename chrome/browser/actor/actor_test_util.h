@@ -204,12 +204,7 @@ std::vector<std::unique_ptr<ToolRequest>> ToRequestList(T&& first,
   std::vector<std::unique_ptr<ToolRequest>> items;
   items.reserve(1 + sizeof...(rest));
   items.push_back(std::move(first));
-
-  // This is a hack to push_back each item from the pack using pack expansion.
-  // Fold expressions would make this cleaner but aren't yet allowed in
-  // Chromium.
-  int dummy[] = {0, (items.push_back(std::move(rest)), 0)...};
-  (void)dummy;
+  (items.push_back(std::move(rest)), ...);
 
   return items;
 }
