@@ -260,9 +260,9 @@ GPUCanvasContext::PaintRenderingResultsToSnapshot(
     SkColor4f color = alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
                           ? SkColors::kBlack
                           : SkColors::kTransparent;
-    resource_provider->Canvas().clear(color);
-    resource_provider->FlushCanvas();
-    return resource_provider->Snapshot();
+    return resource_provider->DoExternalDrawAndSnapshot(
+        [color](MemoryManagedPaintCanvas& canvas) { canvas.clear(color); },
+        ImageOrientationEnum::kDefault);
   }
 
   wgpu::Texture texture;
