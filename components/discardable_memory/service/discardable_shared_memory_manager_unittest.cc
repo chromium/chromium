@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/simple_thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace discardable_memory {
@@ -251,9 +252,18 @@ TEST_F(DiscardableSharedMemoryManagerTest,
   memory2.Unlock(0, 0);
 }
 
-TEST_F(DiscardableSharedMemoryManagerTest, OnMemoryPressure) {
-  // Flush to ensure MemoryPressureListener is created so that memory pressure
-  // notifications are received..
+// Memory pressure listeners are disabled on Windows and Mac, so this test
+// is disabled on those platforms as it relies on receiving notifications.
+//
+// TODO(crbug.com/483018445): Check the kSuppressMemoryMonitor feature flag
+// instead of buildflags once the feature is exposed publicly or moved to base.
+// Currently, it is internal to components/memory_pressure.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_OnMemoryPressure DISABLED_OnMemoryPressure
+#else
+#define MAYBE_OnMemoryPressure OnMemoryPressure
+#endif
+TEST_F(DiscardableSharedMemoryManagerTest, MAYBE_OnMemoryPressure) {
   task_environment_.RunUntilIdle();
 
   const base::MemoryPressureLevel pressure_levels[] = {

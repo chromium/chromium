@@ -20,13 +20,24 @@ namespace {
 
 MemoryPressureListenerRegistry* g_memory_pressure_listener_registry = nullptr;
 
-BASE_FEATURE(kSuppressMemoryListeners, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSuppressMemoryListeners,
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+             FEATURE_ENABLED_BY_DEFAULT
+#else
+             FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE_PARAM(std::string,
                    kSuppressMemoryListenersMask,
                    &kSuppressMemoryListeners,
                    "suppress_memory_listeners_mask",
-                   "");
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+                   "0200200202220200020020020002020020000002000000020"
+#else
+                   ""
+#endif
+);
 }  // namespace
 
 // static

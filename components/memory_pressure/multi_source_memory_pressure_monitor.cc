@@ -19,13 +19,24 @@
 
 namespace memory_pressure {
 namespace {
-BASE_FEATURE(kSuppressMemoryMonitor, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSuppressMemoryMonitor,
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE_PARAM(std::string,
                    kSuppressMemoryMonitorMask,
                    &kSuppressMemoryMonitor,
                    "suppress_memory_monitor_mask",
-                   "");
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+                   "00020000020020"
+#else
+                   ""
+#endif
+);
 }  // namespace
 
 MultiSourceMemoryPressureMonitor::MultiSourceMemoryPressureMonitor()
