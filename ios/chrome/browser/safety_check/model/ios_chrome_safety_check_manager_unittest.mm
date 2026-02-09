@@ -90,7 +90,8 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
     system_identity_manager->AddIdentity(fake_identity);
     // Signing in at `kSignin` level (default for `SignIn()`).
     // This triggers `IdentityManager` observers.
-    auth_service_->SignIn(fake_identity, signin_metrics::AccessPoint::kUnknown);
+    auth_service_->SignIn(fake_identity,
+                          signin_metrics::AccessPoint::kStartPage);
   }
 
   // Helper method to sign out.

@@ -436,7 +436,7 @@ TEST_F(SyncedSetUpMediatorTest, TestConsumerUpdatesOnSignedInState) {
       GetApplicationContext()->GetSystemIdentityManager())
       ->AddIdentity(fake_identity_);
   authentication_service_->SignIn(fake_identity_,
-                                  signin_metrics::AccessPoint::kUnknown);
+                                  signin_metrics::AccessPoint::kStartPage);
 
   NSString* expectedTitle = l10n_util::GetNSStringF(
       IDS_IOS_SYNCED_SET_UP_WELCOME_MESSAGE_WITH_USER_NAME_TITLE,
@@ -518,7 +518,7 @@ TEST_F(SyncedSetUpMediatorTest, TestConsumerUpdatesOnSignIn) {
       GetApplicationContext()->GetSystemIdentityManager())
       ->AddIdentity(fake_identity_);
   authentication_service_->SignIn(fake_identity_,
-                                  signin_metrics::AccessPoint::kUnknown);
+                                  signin_metrics::AccessPoint::kStartPage);
 
   EXPECT_OCMOCK_VERIFY(consumer_mock_);
 }
@@ -532,7 +532,7 @@ TEST_F(SyncedSetUpMediatorTest, TestConsumerUpdatesOnAccountInfoUpdated) {
           GetApplicationContext()->GetSystemIdentityManager());
   system_identity_manager->AddIdentity(fake_identity_);
   authentication_service_->SignIn(fake_identity_,
-                                  signin_metrics::AccessPoint::kUnknown);
+                                  signin_metrics::AccessPoint::kStartPage);
 
   NSString* signedInTitle = l10n_util::GetNSStringF(
       IDS_IOS_SYNCED_SET_UP_WELCOME_MESSAGE_WITH_USER_NAME_TITLE,
