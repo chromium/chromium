@@ -7,6 +7,7 @@
 #include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_service_factory.h"
+#include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skill.mojom.h"
 #include "components/tabs/public/tab_interface.h"
@@ -105,7 +106,6 @@ void SkillsPageHandler::DeleteSkill(const std::string& skill_id) {
     return;
   }
   service->DeleteSkill(skill_id, SkillsService::UpdateSource::kLocal);
-  // TODO: b/481441891 - Call OnSkillDeleted() to show toast verification.
 }
 
 void SkillsPageHandler::OnSkillUpdated(
@@ -120,6 +120,16 @@ void SkillsPageHandler::OnSkillUpdated(
     } else {
       // If the skill no longer exists, this means the skill was deleted.
       page_->RemoveSkill(std::string(skill_id));
+
+      // Show a toast to the user that the skill was deleted and if the deletion
+      // was triggered from the UI.
+      auto* tabs = tabs::TabInterface::GetFromContents(&web_contents_.get());
+      auto* browser_window_interface = tabs->GetBrowserWindowInterface();
+      if (browser_window_interface &&
+          update_source == SkillsService::UpdateSource::kLocal) {
+        SkillsUiWindowController::From(browser_window_interface)
+            ->OnSkillDeleted();
+      }
     }
   }
 }
