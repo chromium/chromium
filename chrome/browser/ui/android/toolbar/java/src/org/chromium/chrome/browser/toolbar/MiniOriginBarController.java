@@ -205,7 +205,9 @@ public class MiniOriginBarController implements Observer {
                                     : MiniOriginEvent.KEYBOARD_DISAPPEARED);
                 };
 
-        mIsFormFieldFocusedSupplier.getObservable().addObserver(mIsFormFieldFocusedObserver);
+        mIsFormFieldFocusedSupplier
+                .getObservable()
+                .addSyncObserverAndPostIfNonNull(mIsFormFieldFocusedObserver);
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityObserver);
 
         mTouchEventObserver =
@@ -229,7 +231,8 @@ public class MiniOriginBarController implements Observer {
                                 showing
                                         ? MiniOriginEvent.ACCESSORY_SHEET_APPEARED
                                         : MiniOriginEvent.ACCESSORY_SHEET_DISAPPEARED);
-        mIsKeyboardAccessorySheetShowing.addObserver(mAccessorySheetShowingObserver);
+        mIsKeyboardAccessorySheetShowing.addSyncObserverAndPostIfNonNull(
+                mAccessorySheetShowingObserver);
     }
 
     private void updateMiniOriginBarState(@MiniOriginEvent int event) {

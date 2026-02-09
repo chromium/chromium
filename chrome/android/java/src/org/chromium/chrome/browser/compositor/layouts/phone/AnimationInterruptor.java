@@ -109,7 +109,8 @@ class AnimationInterruptor implements Destroyable {
         mContextMenuVisibilitySupplier.addSyncObserver(mScrimVisibilityObserver);
 
         if (isRegularNtp) {
-            mNtpSearchBoxTransitionPercentageSupplier.addObserver(mNtpSearchBoxTransitionObserver);
+            mNtpSearchBoxTransitionPercentageSupplier.addSyncObserverAndPostIfNonNull(
+                    mNtpSearchBoxTransitionObserver);
         }
     }
 

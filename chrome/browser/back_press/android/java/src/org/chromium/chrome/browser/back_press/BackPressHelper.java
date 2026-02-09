@@ -106,7 +106,8 @@ public final class BackPressHelper {
         if (handler.getHandleBackPressChangedSupplier().get() != null) {
             callback.setEnabled(handler.getHandleBackPressChangedSupplier().get());
         }
-        handler.getHandleBackPressChangedSupplier().addObserver(callback::setEnabled);
+        handler.getHandleBackPressChangedSupplier()
+                .addSyncObserverAndPostIfNonNull(callback::setEnabled);
         dispatcher.addCallback(lifecycleOwner, callback);
 
         return (keyCode, event) -> {

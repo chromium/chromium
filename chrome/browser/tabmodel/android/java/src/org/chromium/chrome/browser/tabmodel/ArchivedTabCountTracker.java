@@ -70,7 +70,8 @@ public class ArchivedTabCountTracker implements Destroyable {
             TabModel archivedTabModel, @Nullable TabGroupSyncService tabGroupSyncService) {
         mArchivedTabModel = archivedTabModel;
         mArchivedTabModelTabCountSupplier = mArchivedTabModel.getTabCountSupplier();
-        mArchivedTabModelTabCountSupplier.addObserver(mArchivedTabModelTabCountObserver);
+        mArchivedTabModelTabCountSupplier.addSyncObserverAndPostIfNonNull(
+                mArchivedTabModelTabCountObserver);
         mTabGroupSyncService = tabGroupSyncService;
 
         if (mTabGroupSyncService != null) {

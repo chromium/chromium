@@ -50,7 +50,9 @@ public class ApplicationViewportInsetTrackerTest {
 
         mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
         mWindowApplicationInsetSupplier.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
-        mWindowApplicationInsetSupplier.getSupplier().addObserver(mInsetObserver);
+        mWindowApplicationInsetSupplier
+                .getSupplier()
+                .addSyncObserverAndPostIfNonNull(mInsetObserver);
 
         // Clear the observer initially so tests can check whether it was called.
         mInsetObserver.onResult(null);

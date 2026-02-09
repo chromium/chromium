@@ -278,7 +278,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
             mTabListOnScrollListener
                     .getYOffsetNonZeroSupplier()
-                    .addObserver(
+                    .addSyncObserverAndPostIfNonNull(
                             (showHairline) ->
                                     mModel.set(
                                             TabGridDialogProperties.HAIRLINE_VISIBILITY,

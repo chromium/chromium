@@ -1193,7 +1193,7 @@ public class ReadAloudControllerUnitTest {
 
         NonNullObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
                 mController.getPlaybackModeSelectionEnabled();
-        observable.addObserver(mPlaybackModeSelectionEnabledCallback);
+        observable.addSyncObserverAndPostIfNonNull(mPlaybackModeSelectionEnabledCallback);
 
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
@@ -1241,7 +1241,7 @@ public class ReadAloudControllerUnitTest {
 
         NonNullObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
                 mController.getPlaybackModeSelectionEnabled();
-        observable.addObserver(mPlaybackModeSelectionEnabledCallback);
+        observable.addSyncObserverAndPostIfNonNull(mPlaybackModeSelectionEnabledCallback);
 
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
@@ -1294,7 +1294,7 @@ public class ReadAloudControllerUnitTest {
 
         NonNullObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
                 mController.getPlaybackModeSelectionEnabled();
-        observable.addObserver(mPlaybackModeSelectionEnabledCallback);
+        observable.addSyncObserverAndPostIfNonNull(mPlaybackModeSelectionEnabledCallback);
 
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
@@ -1351,7 +1351,7 @@ public class ReadAloudControllerUnitTest {
 
         NonNullObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
                 mController.getPlaybackModeSelectionEnabled();
-        observable.addObserver(mPlaybackModeSelectionEnabledCallback);
+        observable.addSyncObserverAndPostIfNonNull(mPlaybackModeSelectionEnabledCallback);
 
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
@@ -1408,7 +1408,7 @@ public class ReadAloudControllerUnitTest {
 
         NonNullObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
                 mController.getPlaybackModeSelectionEnabled();
-        observable.addObserver(mPlaybackModeSelectionEnabledCallback);
+        observable.addSyncObserverAndPostIfNonNull(mPlaybackModeSelectionEnabledCallback);
 
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
@@ -1462,7 +1462,7 @@ public class ReadAloudControllerUnitTest {
 
         NonNullObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
                 mController.getPlaybackModeSelectionEnabled();
-        observable.addObserver(mPlaybackModeSelectionEnabledCallback);
+        observable.addSyncObserverAndPostIfNonNull(mPlaybackModeSelectionEnabledCallback);
 
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();

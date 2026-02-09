@@ -127,7 +127,8 @@ public class SnackbarTest {
                                     null,
                                     ((BlankUiTestActivity) sActivity).getModalDialogManager());
                     mManager.isShowingSupplier()
-                            .addObserver((showing) -> mShowingHelper.notifyCalled());
+                            .addSyncObserverAndPostIfNonNull(
+                                    (showing) -> mShowingHelper.notifyCalled());
                     mManager.dismissAllSnackbars();
                     AccessibilityState.setIsPerformGesturesEnabledForTesting(false);
                 });

@@ -473,7 +473,7 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
             mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
             mEdgeToEdgeControllerSupplier.addObserver(mControllerChangedCallback);
             mKeyboardInsetSupplier = keyboardInsetSupplier;
-            mKeyboardInsetSupplier.addObserver(mKeyboardInsetChangedCallback);
+            mKeyboardInsetSupplier.addSyncObserverAndPostIfNonNull(mKeyboardInsetChangedCallback);
         }
 
         @Override

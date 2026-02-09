@@ -453,7 +453,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 mForceCleanup = true;
                 mOnAnimationStatusChange.onResult(false);
             } else {
-                mIsAnimatingSupplier.addObserver(mOnAnimationStatusChange);
+                mIsAnimatingSupplier.addSyncObserverAndPostIfNonNull(mOnAnimationStatusChange);
             }
         }
 

@@ -82,7 +82,7 @@ public class HubColorMixerImpl implements HubColorMixer {
         mAnimatorSetBuilder = animatorSetHelper;
         mIsTablet = isTablet;
 
-        mHubVisibilitySupplier.addObserver(mOnHubVisibilityObserver);
+        mHubVisibilitySupplier.addSyncObserverAndPostIfNonNull(mOnHubVisibilityObserver);
         mFocusedPaneSupplier.addObserver(mOnFocusedPaneObserver);
 
         mOverviewColorAlpha = 1f;

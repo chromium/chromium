@@ -56,7 +56,9 @@ public class KeyboardAccessoryStateSupplier {
 
     private void onManualFillingComponentAvailable(ManualFillingComponent manualFillingComponent) {
         mManualFillingComponent = manualFillingComponent;
-        mManualFillingComponent.getBottomInsetSupplier().addObserver(mInsetChangeCallback);
+        mManualFillingComponent
+                .getBottomInsetSupplier()
+                .addSyncObserverAndPostIfNonNull(mInsetChangeCallback);
         mManualFillingComponentSupplier.removeObserver(mManualFillingAvailableCallback);
     }
 

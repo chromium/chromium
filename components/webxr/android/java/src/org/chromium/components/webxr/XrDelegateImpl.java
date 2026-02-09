@@ -25,7 +25,8 @@ public class XrDelegateImpl implements XrDelegate {
             ObservableSuppliers.createNonNull(false);
 
     public XrDelegateImpl() {
-        XrSessionCoordinator.getActiveSessionTypeSupplier().addObserver(this::setActiveSessionType);
+        XrSessionCoordinator.getActiveSessionTypeSupplier()
+                .addSyncObserverAndPostIfNonNull(this::setActiveSessionType);
     }
 
     private void setActiveSessionType(@SessionType int sessionType) {

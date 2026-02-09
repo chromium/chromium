@@ -238,7 +238,7 @@ public class ArchivedTabsMessageService
         assert mTabArchiveSettings != null;
 
         mArchivedTabModel = archivedTabModel;
-        mTabCountSupplier.addObserver(mTabCountObserver);
+        mTabCountSupplier.addSyncObserverAndPostIfNonNull(mTabCountObserver);
 
         mModel.set(ICON_HIGHLIGHTED, mShowTwoStepIph);
     }

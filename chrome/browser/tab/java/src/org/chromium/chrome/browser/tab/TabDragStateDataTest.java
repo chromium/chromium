@@ -61,7 +61,7 @@ public class TabDragStateDataTest {
     @Test
     public void testObserverNotification() {
         TabDragStateData data = TabDragStateData.getOrCreateForTab(mTab);
-        data.getIsDraggingSupplier().addObserver(mCallback);
+        data.getIsDraggingSupplier().addSyncObserverAndPostIfNonNull(mCallback);
 
         data.setIsDragging(true);
         verify(mCallback).onResult(true);

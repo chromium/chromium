@@ -213,10 +213,10 @@ public class TabSwitcherPaneMediator
                 tabGridDialogController -> {
                     tabGridDialogController
                             .getHandleBackPressChangedSupplier()
-                            .addObserver(mNotifyBackPressedCallback);
+                            .addSyncObserverAndPostIfNonNull(mNotifyBackPressedCallback);
                     tabGridDialogController
                             .getShowingOrAnimationSupplier()
-                            .addObserver(mOnDialogShowingOrAnimatingCallback);
+                            .addSyncObserverAndPostIfNonNull(mOnDialogShowingOrAnimatingCallback);
                 });
 
         mContainerViewModel = containerViewModel;
@@ -228,9 +228,9 @@ public class TabSwitcherPaneMediator
         mOnTabSwitcherShown = onTabSwitcherShown;
 
         mIsVisibleSupplier = isVisibleSupplier;
-        isVisibleSupplier.addObserver(mOnVisibilityChanged);
+        isVisibleSupplier.addSyncObserverAndPostIfNonNull(mOnVisibilityChanged);
         mIsAnimatingSupplier = isAnimatingSupplier;
-        isAnimatingSupplier.addObserver(mOnAnimatingChanged);
+        isAnimatingSupplier.addSyncObserverAndPostIfNonNull(mOnAnimatingChanged);
         mBottomSheetController = bottomSheetController;
         mBottomSheetController.addObserver(mBottomSheetObserver);
         mAddOnLayoutChangedAfterInitialScrollListener =
@@ -397,7 +397,8 @@ public class TabSwitcherPaneMediator
         mCurrentTabListEditorControllerBackSupplier =
                 tabListEditorControllerSupplier.createTransitiveNonNull(
                         false, BackPressHandler::getHandleBackPressChangedSupplier);
-        mCurrentTabListEditorControllerBackSupplier.addObserver(mNotifyBackPressedCallback);
+        mCurrentTabListEditorControllerBackSupplier.addSyncObserverAndPostIfNonNull(
+                mNotifyBackPressedCallback);
     }
 
     void hideDialogs() {

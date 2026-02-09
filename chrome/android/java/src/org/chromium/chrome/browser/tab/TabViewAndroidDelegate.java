@@ -61,7 +61,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
 
         mCurrentInsetSupplier =
                 tab.getWindowAndroidChecked().getApplicationBottomInsetTracker().getSupplier();
-        mCurrentInsetSupplier.addObserver(mInsetObserver);
+        mCurrentInsetSupplier.addSyncObserverAndPostIfNonNull(mInsetObserver);
 
         mTab.addObserver(
                 new EmptyTabObserver() {
@@ -77,7 +77,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
                                     tab.getWindowAndroidChecked()
                                             .getApplicationBottomInsetTracker()
                                             .getSupplier();
-                            mCurrentInsetSupplier.addObserver(mInsetObserver);
+                            mCurrentInsetSupplier.addSyncObserverAndPostIfNonNull(mInsetObserver);
                         }
                         updateVisualViewportBottomInset();
                     }

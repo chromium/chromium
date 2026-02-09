@@ -224,7 +224,7 @@ public class TabModelSelectorImplTest {
     public void testCurrentModelTabCountSupplier() {
         mTabModelSelector
                 .getCurrentModelTabCountSupplier()
-                .addObserver(mTabCountSupplierObserverMock);
+                .addSyncObserverAndPostIfNonNull(mTabCountSupplierObserverMock);
         assertEquals(0, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
         ShadowLooper.runUiThreadTasks();
         verify(mTabCountSupplierObserverMock).onResult(0);

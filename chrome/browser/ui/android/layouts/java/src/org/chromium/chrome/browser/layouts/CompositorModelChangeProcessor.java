@@ -63,7 +63,7 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
                 ChromeFeatureList.sMvcUpdateViewWhenModelChanged.isEnabled()
                         ? this::onNewFrameUpdateWhenOutdated
                         : this::onNewFrame;
-        mFrameSupplier.addObserver(mNewFrameCallback);
+        mFrameSupplier.addSyncObserverAndPostIfNonNull(mNewFrameCallback);
         mExclusions = exclusions;
 
         if (performInitialBind) {

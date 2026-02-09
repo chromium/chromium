@@ -244,11 +244,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mKeyboardVisibilityListener =
                 (showing) -> updateCurrentPosition(/* prefStateChanged= */ false);
 
-        mIsNtpWithFakeboxShowingSupplier.addObserver(mIsNtpShowingObserver);
-        mIsTabSwitcherFinishedShowingSupplier.addObserver(mIsTabSwitcherFinishedShowingObserver);
-        mIsOmniboxFocusedSupplier.addObserver(mIsOmniboxFocusedObserver);
-        mIsFormFieldFocusedSupplier.addObserver(mIsFormFieldFocusedObserver);
-        mIsFindInPageShowingSupplier.addObserver(mIsFindInPageShowingObserver);
+        mIsNtpWithFakeboxShowingSupplier.addSyncObserverAndPostIfNonNull(mIsNtpShowingObserver);
+        mIsTabSwitcherFinishedShowingSupplier.addSyncObserverAndPostIfNonNull(
+                mIsTabSwitcherFinishedShowingObserver);
+        mIsOmniboxFocusedSupplier.addSyncObserverAndPostIfNonNull(mIsOmniboxFocusedObserver);
+        mIsFormFieldFocusedSupplier.addSyncObserverAndPostIfNonNull(mIsFormFieldFocusedObserver);
+        mIsFindInPageShowingSupplier.addSyncObserverAndPostIfNonNull(mIsFindInPageShowingObserver);
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
         mSharedPreferences = sharedPreferences;
         mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
@@ -358,15 +359,19 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mControlContainerHeightSupplier.addSyncObserverAndCallIfNonNull(
                 mControlContainerHeightCallback);
 
-        mKeyboardAccessoryHeightSupplier.addObserver(mKeyboardAccessoryHeightObserver);
-        mKeyboardAccessoryHeightSupplier.addObserver(mKeyboardHeightProgressBarCallback);
+        mKeyboardAccessoryHeightSupplier.addSyncObserverAndPostIfNonNull(
+                mKeyboardAccessoryHeightObserver);
+        mKeyboardAccessoryHeightSupplier.addSyncObserverAndPostIfNonNull(
+                mKeyboardHeightProgressBarCallback);
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(
                 mKeyboardVisibilityViewOffsetCallback);
-        mIsFormFieldFocusedSupplier.addObserver(mFormFieldViewOffsetCallback);
-        mIsIncognitoNtpShowingSupplier.addObserver(mIncognitoNtpShowingViewOffsetCallback);
-        mControlContainerTranslationSupplier.addObserver(mControlContainerTranslationCallback);
-        mKeyboardHeightSupplier.addObserver(mKeyboardHeightToolbarCallback);
-        mKeyboardHeightSupplier.addObserver(mKeyboardHeightProgressBarCallback);
+        mIsFormFieldFocusedSupplier.addSyncObserverAndPostIfNonNull(mFormFieldViewOffsetCallback);
+        mIsIncognitoNtpShowingSupplier.addSyncObserverAndPostIfNonNull(
+                mIncognitoNtpShowingViewOffsetCallback);
+        mControlContainerTranslationSupplier.addSyncObserverAndPostIfNonNull(
+                mControlContainerTranslationCallback);
+        mKeyboardHeightSupplier.addSyncObserverAndPostIfNonNull(mKeyboardHeightToolbarCallback);
+        mKeyboardHeightSupplier.addSyncObserverAndPostIfNonNull(mKeyboardHeightProgressBarCallback);
 
         // Set up observer to handle edge-to-edge changes.
         mTopInsetProviderObserver = this::onToEdgeChange;

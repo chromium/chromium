@@ -97,7 +97,7 @@ public class BookmarkBarVisibilityProvider {
         mProfileSupplierObserver = this::processProfileChange;
         mProfileSupplier.addObserver(mProfileSupplierObserver);
 
-        mXrSpaceModeObservableSupplier.addObserver(mXrSpaceModeObserver);
+        mXrSpaceModeObservableSupplier.addSyncObserverAndPostIfNonNull(mXrSpaceModeObserver);
 
         // On tablets we use local device prefs.
         if (!DeviceInfo.isDesktop()) {

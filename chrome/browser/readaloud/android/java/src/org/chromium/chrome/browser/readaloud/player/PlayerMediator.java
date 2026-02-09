@@ -213,8 +213,10 @@ class PlayerMediator implements InteractionHandler {
 
         mDelegate.getCurrentLanguageVoicesSupplier().addObserver(mVoiceListObserver);
         mDelegate.getVoiceIdSupplier().addObserver(mVoiceIdObserver);
-        mDelegate.getPlaybackModeSelectionEnabled().addObserver(mPlaybackModeSelectionEnabledObserver);
-        mDelegate.getFeedbackTypeSupplier().addObserver(mFeedbackTypeObserver);
+        mDelegate
+                .getPlaybackModeSelectionEnabled()
+                .addSyncObserverAndPostIfNonNull(mPlaybackModeSelectionEnabledObserver);
+        mDelegate.getFeedbackTypeSupplier().addSyncObserverAndPostIfNonNull(mFeedbackTypeObserver);
     }
 
     void destroy() {

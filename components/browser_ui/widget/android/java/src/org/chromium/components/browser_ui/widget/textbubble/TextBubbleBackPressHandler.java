@@ -20,7 +20,7 @@ public class TextBubbleBackPressHandler implements BackPressHandler {
     private final Callback<Integer> mCallback = (count) -> mSupplier.set(count != 0);
 
     public TextBubbleBackPressHandler() {
-        TextBubble.getCountSupplier().addObserver(mCallback);
+        TextBubble.getCountSupplier().addSyncObserverAndPostIfNonNull(mCallback);
     }
 
     @Override

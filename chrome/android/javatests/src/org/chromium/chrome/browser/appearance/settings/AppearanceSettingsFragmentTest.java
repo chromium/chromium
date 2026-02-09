@@ -107,7 +107,7 @@ public class AppearanceSettingsFragmentTest {
 
         // Update bookmark bar setting and notify observers when supplier changes.
         mBookmarkBarSettingSupplier = ObservableSuppliers.createNonNull(false);
-        mBookmarkBarSettingSupplier.addObserver(
+        mBookmarkBarSettingSupplier.addSyncObserverAndPostIfNonNull(
                 enabled -> {
                     BookmarkBarUtils.setSettingEnabledForTesting(enabled);
                     // Safely call onPreferenceChange only on non-null observers (since tablets

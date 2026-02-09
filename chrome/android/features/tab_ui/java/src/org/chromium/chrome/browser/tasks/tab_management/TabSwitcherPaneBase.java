@@ -174,7 +174,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
         mMenuButtonVisible = true;
         mFactory = factory;
         mIsIncognito = isIncognito;
-        mIsVisibleSupplier.addObserver(mVisibilityObserver);
+        mIsVisibleSupplier.addSyncObserverAndPostIfNonNull(mVisibilityObserver);
         mUserEducationHelper = userEducationHelper;
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;

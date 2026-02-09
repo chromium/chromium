@@ -655,7 +655,9 @@ public class CompositorViewHolder extends FrameLayout
         mApplicationBottomInsetSupplier = supplier;
         mApplicationBottomInsetSupplier.setVirtualKeyboardMode(mVirtualKeyboardMode);
         mOnViewportInsetsChanged = (unused) -> handleWindowInsetChanged();
-        mApplicationBottomInsetSupplier.getSupplier().addObserver(mOnViewportInsetsChanged);
+        mApplicationBottomInsetSupplier
+                .getSupplier()
+                .addSyncObserverAndPostIfNonNull(mOnViewportInsetsChanged);
     }
 
     // This method is called when any viewport insets change but is needed to watch for keyboard

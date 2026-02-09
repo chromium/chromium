@@ -195,7 +195,8 @@ public class SharedGroupObserverUnitTest {
                         mDataSharingService,
                         mCollaborationService);
 
-        observer.getGroupSharedStateSupplier().addObserver(mOnSharedGroupStateChanged);
+        observer.getGroupSharedStateSupplier()
+                .addSyncObserverAndPostIfNonNull(mOnSharedGroupStateChanged);
         ShadowLooper.runUiThreadTasks();
         verify(mOnSharedGroupStateChanged).onResult(GroupSharedState.NOT_SHARED);
         assertNull(observer.getGroupMembersSupplier().get());

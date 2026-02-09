@@ -44,7 +44,7 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
         mPersistentModeSupplier = ObservableSuppliers.createNonNull(false);
 
         mDelegate = new BrowserStateBrowserControlsVisibilityDelegate(mPersistentModeSupplier);
-        mDelegate.addObserver(mCallback);
+        mDelegate.addSyncObserverAndPostIfNonNull(mCallback);
         Mockito.reset(mCallback);
     }
 

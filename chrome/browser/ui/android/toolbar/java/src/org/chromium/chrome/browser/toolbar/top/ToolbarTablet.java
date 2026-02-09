@@ -150,7 +150,8 @@ public class ToolbarTablet extends ToolbarLayout {
         mLocationBar = locationBarCoordinator;
         mLocationBar
                 .getFuseboxStateSupplier()
-                .addObserver(mCallbackController.makeCancelable(mFuseboxStateObserver));
+                .addSyncObserverAndPostIfNonNull(
+                        mCallbackController.makeCancelable(mFuseboxStateObserver));
         final @ColorInt int color = SemanticColorUtils.getColorSurfaceContainer(getContext());
         mLocationBar.getTabletCoordinator().tintBackground(color);
 

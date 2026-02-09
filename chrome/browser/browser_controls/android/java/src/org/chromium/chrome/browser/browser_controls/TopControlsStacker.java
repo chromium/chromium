@@ -171,7 +171,8 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
 
         mBrowserControlsSizer.addObserver(this);
-        mBrowserControlsVisibilityDelegate.addObserver(mBrowserControlsStateCallback);
+        mBrowserControlsVisibilityDelegate.addSyncObserverAndPostIfNonNull(
+                mBrowserControlsStateCallback);
     }
 
     /**

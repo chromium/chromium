@@ -46,7 +46,7 @@ public class CustomTabCount implements Destroyable {
     private void onTabModelSelectorAvailable(TabModelSelector tabModelSelector) {
         mTabModelSelectorSupplier.removeObserver(mTabModelSelectorObserver);
         mTabModelSelectorTabCountSupplier = tabModelSelector.getCurrentModelTabCountSupplier();
-        mTabModelSelectorTabCountSupplier.addObserver(mTabCountObserver);
+        mTabModelSelectorTabCountSupplier.addSyncObserverAndPostIfNonNull(mTabCountObserver);
     }
 
     private void onUpdateTabCount(int tabCount) {

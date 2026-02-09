@@ -130,7 +130,9 @@ class WebAppHeaderLayoutMediator
                     }
                 };
         mScrimManager = scrimManager;
-        mScrimManager.getScrimVisibilitySupplier().addObserver(mScrimVisibilityObserver);
+        mScrimManager
+                .getScrimVisibilitySupplier()
+                .addSyncObserverAndPostIfNonNull(mScrimVisibilityObserver);
 
         mModel = model;
         // View should notify us about initial width.

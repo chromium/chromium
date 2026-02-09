@@ -55,7 +55,7 @@ public class TabSwitcherPaneDrawableMediator {
 
     private void onTabStateInitializedInternal(TabModelSelector tabModelSelector) {
         mTabCountSupplier = tabModelSelector.getModel(false).getTabCountSupplier();
-        mTabCountSupplier.addObserver(mTabCountSupplierObserver);
+        mTabCountSupplier.addSyncObserverAndPostIfNonNull(mTabCountSupplierObserver);
     }
 
     private void updateNotificationDot(TabModelDotInfo tabModelDotInfo) {

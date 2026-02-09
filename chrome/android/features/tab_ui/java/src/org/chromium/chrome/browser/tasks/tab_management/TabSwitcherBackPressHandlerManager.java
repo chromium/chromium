@@ -45,7 +45,8 @@ public class TabSwitcherBackPressHandlerManager implements BackPressHandler {
     public void addHandler(TabSwitcherDragHandler handler) {
         mHandlers.add(handler);
         Callback<Boolean> observerCallback = (t) -> onStatusChanged();
-        handler.getHandleBackPressChangedSupplier().addObserver(observerCallback);
+        handler.getHandleBackPressChangedSupplier()
+                .addSyncObserverAndPostIfNonNull(observerCallback);
     }
 
     public void removeHandler(TabSwitcherDragHandler handler) {

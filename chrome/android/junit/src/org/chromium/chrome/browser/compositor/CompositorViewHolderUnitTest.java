@@ -294,7 +294,8 @@ public class CompositorViewHolderUnitTest {
         List<EventSource> eventSequence = new ArrayList<>();
         mCompositorViewHolder
                 .getInMotionSupplier()
-                .addObserver((inMotion) -> eventSequence.add(EventSource.IN_MOTION));
+                .addSyncObserverAndPostIfNonNull(
+                        (inMotion) -> eventSequence.add(EventSource.IN_MOTION));
         // This touch observer is used as a proxy for when ViewGroup#dispatchTouchEvent is called,
         // which is when the touch is propagated to children.
         mCompositorViewHolder.addTouchEventObserver(

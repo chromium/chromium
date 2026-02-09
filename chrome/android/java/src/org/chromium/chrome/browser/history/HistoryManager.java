@@ -296,7 +296,7 @@ public class HistoryManager
         mRootView.addView(mContentView);
         mSelectableListLayout
                 .getHandleBackPressChangedSupplier()
-                .addObserver((x) -> onBackPressStateChanged());
+                .addSyncObserverAndPostIfNonNull((x) -> onBackPressStateChanged());
 
         onBackPressStateChanged(); // Initialize back press State.
         mContentManager.maybeQueryApps();

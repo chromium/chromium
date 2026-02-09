@@ -273,7 +273,8 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
         mHandlers[type] = handler;
         Callback<Boolean> observerCallback = (t) -> backPressStateChanged();
         mObserverCallbacks[type] = observerCallback;
-        handler.getHandleBackPressChangedSupplier().addObserver(observerCallback);
+        handler.getHandleBackPressChangedSupplier()
+                .addSyncObserverAndPostIfNonNull(observerCallback);
         backPressStateChanged();
     }
 

@@ -878,7 +878,7 @@ public class NewTabAnimationLayout extends Layout {
                 };
 
         if (visibilitySupplier.get()) {
-            visibilitySupplier.addObserver(mVisibilityObserver);
+            visibilitySupplier.addSyncObserverAndPostIfNonNull(mVisibilityObserver);
             mHandler.postDelayed(mTimeoutRunnable, ANIMATION_TIMEOUT_MS);
         } else {
             setRunOnNextLayout(mBackgroundHostView, mAnimationRunnable);

@@ -595,7 +595,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         }
 
         mOnTabSelectingListener = onTabSelectingListener;
-        mArchivedTabModelOrchestrator.getTabCountSupplier().addObserver(mTabCountObserver);
+        mArchivedTabModelOrchestrator
+                .getTabCountSupplier()
+                .addSyncObserverAndPostIfNonNull(mTabCountObserver);
 
         TabListEditorController controller = mTabListEditorCoordinator.getController();
         controller.setLifecycleObserver(mTabListEditorLifecycleObserver);

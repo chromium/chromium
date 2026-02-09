@@ -248,7 +248,9 @@ public class IncognitoTabModelTest {
     public void testTabCountSupplierAddedBefore() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mIncognitoTabModel.getTabCountSupplier().addObserver(mTabCountSupplierObserver);
+                    mIncognitoTabModel
+                            .getTabCountSupplier()
+                            .addSyncObserverAndPostIfNonNull(mTabCountSupplierObserver);
                 });
         verify(mTabCountSupplierObserver, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .onResult(0);
@@ -266,7 +268,9 @@ public class IncognitoTabModelTest {
         createTabOnUiThread();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mIncognitoTabModel.getTabCountSupplier().addObserver(mTabCountSupplierObserver);
+                    mIncognitoTabModel
+                            .getTabCountSupplier()
+                            .addSyncObserverAndPostIfNonNull(mTabCountSupplierObserver);
                 });
         verify(mTabCountSupplierObserver, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .onResult(1);

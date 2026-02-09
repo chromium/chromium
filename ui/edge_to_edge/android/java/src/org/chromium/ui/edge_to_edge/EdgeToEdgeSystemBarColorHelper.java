@@ -57,7 +57,7 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
         mNavBarColor = mWindowColorHelper.getNavigationBarColor();
         mNavBarDividerColor = mWindowColorHelper.getNavigationBarDividerColor();
 
-        mDoesContentFitWindowSupplier.addObserver(mOnEdgeToEdgeChanged);
+        mDoesContentFitWindowSupplier.addSyncObserverAndPostIfNonNull(mOnEdgeToEdgeChanged);
         mEdgeToEdgeDelegateHelperSupplier.onAvailable(this::onDelegateColorHelperChanged);
     }
 

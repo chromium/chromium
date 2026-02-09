@@ -94,7 +94,9 @@ public class SelectionPopupBackPressHandler extends EmptyTabObserver
         if (webContents == null) return;
         tab.addObserver(this);
         mPopupController = SelectionPopupController.fromWebContents(webContents);
-        mPopupController.isSelectActionBarShowingSupplier().addObserver(mCallback);
+        mPopupController
+                .isSelectActionBarShowingSupplier()
+                .addSyncObserverAndPostIfNonNull(mCallback);
     }
 
     private void onActionBarShowingChanged(boolean isShowing) {

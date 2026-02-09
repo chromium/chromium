@@ -519,7 +519,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             } else {
                 mTabListOnScrollListener
                         .getYOffsetNonZeroSupplier()
-                        .addObserver(this::setHairlineVisibility);
+                        .addSyncObserverAndPostIfNonNull(this::setHairlineVisibility);
             }
 
             recyclerView.setVisibility(View.VISIBLE);
@@ -626,7 +626,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                 mTabGroupLabeller = null;
             }
 
-            mOnVisibilityChanged.onResult(isVisibleSupplier.addObserver(mOnVisibilityChanged));
+            mOnVisibilityChanged.onResult(
+                    isVisibleSupplier.addSyncObserverAndPostIfNonNull(mOnVisibilityChanged));
             mTabGroupModelFilterSupplier.addObserver(mOnFilterChange);
 
             mDragObserver =
@@ -644,7 +645,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                         }
                     };
 
-            mIsContextMenuFocusableSupplier.addObserver(mOnContextMenuFocusableChanged);
+            mIsContextMenuFocusableSupplier.addSyncObserverAndPostIfNonNull(
+                    mOnContextMenuFocusableChanged);
             tabListCoordinator.addDragObserver(mDragObserver);
 
             if (ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled()) {

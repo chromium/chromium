@@ -118,7 +118,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
 
     @Override
     public OmniboxAlignment addAlignmentObserver(Callback<OmniboxAlignment> obs) {
-        return assertNonNull(mOmniboxAlignmentSupplier.addObserver(obs));
+        return assertNonNull(mOmniboxAlignmentSupplier.addSyncObserverAndPostIfNonNull(obs));
     }
 
     @Override

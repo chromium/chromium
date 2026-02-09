@@ -184,7 +184,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                 assumeNonNull(mTab.getDelegateFactory())
                         .createBrowserControlsVisibilityDelegate(mTab);
         if (mVisibilityDelegate != null) {
-            mVisibilityDelegate.addObserver(mConstraintsChangedCallback);
+            mVisibilityDelegate.addSyncObserverAndPostIfNonNull(mConstraintsChangedCallback);
         }
     }
 

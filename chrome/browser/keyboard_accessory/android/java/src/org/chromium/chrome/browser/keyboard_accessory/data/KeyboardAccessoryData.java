@@ -75,7 +75,7 @@ public class KeyboardAccessoryData {
          * @param callback The observer that will be notified of the icon change.
          */
         public void addIconObserver(Callback<Integer> callback) {
-            mIconIdSupplier.addObserver(callback);
+            mIconIdSupplier.addSyncObserverAndPostIfNonNull(callback);
         }
 
         /**

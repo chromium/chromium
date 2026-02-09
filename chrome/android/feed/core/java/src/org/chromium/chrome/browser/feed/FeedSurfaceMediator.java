@@ -734,7 +734,8 @@ public class FeedSurfaceMediator
                     headerModel.set(SectionHeaderProperties.UNREAD_CONTENT_KEY, hasUnreadContent);
                     mHasContentListener.hasContentChanged(stream.getStreamKind(), hasUnreadContent);
                 };
-        Boolean hasUnreadContent = stream.hasUnreadContent().addObserver(callback);
+        Boolean hasUnreadContent =
+                stream.hasUnreadContent().addSyncObserverAndPostIfNonNull(callback);
         callback.onResult(hasUnreadContent);
     }
 

@@ -270,7 +270,7 @@ public class ToolbarControlContainerTest {
                 .getLayoutParams();
         mBrowserStateBrowserControlsVisibilityDelegate.set(BrowserControlsState.BOTH);
         mCompositorInMotionSupplier.set(false);
-        mBrowserStateBrowserControlsVisibilityDelegate.addObserver(
+        mBrowserStateBrowserControlsVisibilityDelegate.addSyncObserverAndPostIfNonNull(
                 result -> {
                     if (!mHasTestConstraintsOverride) {
                         mConstraintsSupplier.set(result);

@@ -79,7 +79,7 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mTabStripHeightChangeCallback =
                 newHeight -> mScrimModel.set(ScrimProperties.TOP_MARGIN, newHeight);
-        mTabStripHeightSupplier.addObserver(mTabStripHeightChangeCallback);
+        mTabStripHeightSupplier.addSyncObserverAndPostIfNonNull(mTabStripHeightChangeCallback);
     }
 
     @Override

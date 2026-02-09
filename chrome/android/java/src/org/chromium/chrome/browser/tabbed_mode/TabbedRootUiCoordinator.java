@@ -1645,7 +1645,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (!BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()) {
             mToolbarManager
                     .getTabStripHeightSupplier()
-                    .addObserver(mOnTabStripHeightChangedCallback);
+                    .addSyncObserverAndPostIfNonNull(mOnTabStripHeightChangedCallback);
         }
     }
 

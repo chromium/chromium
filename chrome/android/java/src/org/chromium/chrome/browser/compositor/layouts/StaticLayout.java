@@ -183,7 +183,7 @@ public class StaticLayout extends Layout {
         mModel.set(LayoutTab.CONTENT_OFFSET, mBrowserControlsStateProvider.getContentOffset());
 
         mUpdateOffsetTagsCallback = (ignored) -> updateOffsetTag();
-        mNeedsOffsetTag.addObserver(mUpdateOffsetTagsCallback);
+        mNeedsOffsetTag.addSyncObserverAndPostIfNonNull(mUpdateOffsetTagsCallback);
 
         mBrowserControlsStateProviderObserver =
                 new BrowserControlsStateProvider.Observer() {

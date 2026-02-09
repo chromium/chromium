@@ -250,7 +250,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
                     drawDialogWindowEdgeToEdge();
                     applyWindowInsets();
                 };
-        mEdgeToEdgeStateSupplier.addObserver(mEdgeToEdgeStateObserver);
+        mEdgeToEdgeStateSupplier.addSyncObserverAndPostIfNonNull(mEdgeToEdgeStateObserver);
     }
 
     /**

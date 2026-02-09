@@ -81,9 +81,12 @@ class ScrimMediator implements TouchEventDelegate {
         mScrimHiddenRunnable = scrimHiddenRunnable;
         mDefaultScrimColor = defaultScrimColor;
 
-        mFullScrimColorSupplier.addObserver((ignored) -> updateCompositeSuppliers());
-        mStatusBarScrimFractionSupplier.addObserver((ignored) -> updateCompositeSuppliers());
-        mNavigationBarScrimFractionSupplier.addObserver((ignored) -> updateCompositeSuppliers());
+        mFullScrimColorSupplier.addSyncObserverAndPostIfNonNull(
+                (ignored2) -> updateCompositeSuppliers());
+        mStatusBarScrimFractionSupplier.addSyncObserverAndPostIfNonNull(
+                (ignored1) -> updateCompositeSuppliers());
+        mNavigationBarScrimFractionSupplier.addSyncObserverAndPostIfNonNull(
+                (ignored) -> updateCompositeSuppliers());
     }
 
     private void updateCompositeSuppliers() {

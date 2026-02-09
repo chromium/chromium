@@ -157,7 +157,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
         }
 
         mNotificationDotSupplier = tabModelNotificationDotSupplier;
-        mNotificationDotSupplier.addObserver(mNotificationDotObserver);
+        mNotificationDotSupplier.addSyncObserverAndPostIfNonNull(mNotificationDotObserver);
 
         mToggleTabStackButton.setOnClickListener(onClickListener);
         mToggleTabStackButton.setOnLongClickListener(onLongClickListener);
@@ -165,7 +165,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
 
         mArchivedTabCountSupplier = archivedTabCountSupplier;
         if (mArchivedTabCountSupplier != null) {
-            mArchivedTabCountSupplier.addObserver(mArchivedTabCountObserver);
+            mArchivedTabCountSupplier.addSyncObserverAndPostIfNonNull(mArchivedTabCountObserver);
             mArchivedTabsIphShownCallback = archivedTabsIphShownCallback;
             mArchivedTabsIphDismissedCallback = archivedTabsIphDismissedCallback;
         }

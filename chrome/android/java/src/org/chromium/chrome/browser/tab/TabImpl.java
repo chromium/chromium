@@ -1499,7 +1499,7 @@ class TabImpl implements Tab {
                             TabImplJni.get().onDraggingStateChanged(mNativeTabAndroid, isDragging);
                         }
                     };
-            getIsDraggingSupplier().addObserver(mIsDraggingObserver);
+            getIsDraggingSupplier().addSyncObserverAndPostIfNonNull(mIsDraggingObserver);
 
             if (tabState != null) {
                 restoreFieldsFromState(tabState);
@@ -1661,7 +1661,9 @@ class TabImpl implements Tab {
         }
 
         if (windowAndroid != null) {
-            windowAndroid.getOcclusionSupplier().addObserver(mOcclusionCallback);
+            windowAndroid
+                    .getOcclusionSupplier()
+                    .addSyncObserverAndPostIfNonNull(mOcclusionCallback);
         }
 
         // updateIsDetachedFromActivity will also update the web contents visibility if the

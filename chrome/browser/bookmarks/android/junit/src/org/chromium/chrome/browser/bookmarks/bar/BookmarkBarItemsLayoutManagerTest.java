@@ -180,7 +180,9 @@ public class BookmarkBarItemsLayoutManagerTest {
     @SmallTest
     @Features.EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR_FAST_FOLLOW)
     public void testLayout_overflows() {
-        mLayoutManager.getItemsOverflowSupplier().addObserver(mItemsOverflowSupplierObserver);
+        mLayoutManager
+                .getItemsOverflowSupplier()
+                .addSyncObserverAndPostIfNonNull(mItemsOverflowSupplierObserver);
         Robolectric.flushForegroundThreadScheduler();
         clearInvocations(mItemsOverflowSupplierObserver);
 
@@ -237,7 +239,9 @@ public class BookmarkBarItemsLayoutManagerTest {
     public void testItemsOverflowChangeCallback() {
         // Bind observer and verify initial event propagation.
         verify(mItemsOverflowSupplierObserver, never()).onResult(any());
-        mLayoutManager.getItemsOverflowSupplier().addObserver(mItemsOverflowSupplierObserver);
+        mLayoutManager
+                .getItemsOverflowSupplier()
+                .addSyncObserverAndPostIfNonNull(mItemsOverflowSupplierObserver);
         Robolectric.flushForegroundThreadScheduler();
         verify(mItemsOverflowSupplierObserver).onResult(false);
         clearInvocations(mItemsOverflowSupplierObserver);

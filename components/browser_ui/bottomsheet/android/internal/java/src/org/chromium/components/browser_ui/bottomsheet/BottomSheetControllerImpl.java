@@ -664,7 +664,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
             mKeyboardVisibilityDelegate.hideKeyboard(mBottomSheetContainer);
             nextContent
                     .getBackPressStateChangedSupplier()
-                    .addObserver(mContentBackPressStateChangedObserver);
+                    .addSyncObserverAndPostIfNonNull(mContentBackPressStateChangedObserver);
         }
         mBottomSheet.showContent(nextContent);
         mBottomSheet.setSheetState(mBottomSheet.getOpeningState(), animate);

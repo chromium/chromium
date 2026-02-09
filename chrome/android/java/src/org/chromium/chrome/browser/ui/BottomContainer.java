@@ -61,7 +61,7 @@ public class BottomContainer extends FrameLayout
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
         mViewportInsetSupplier = viewportInsetSupplier;
-        mViewportInsetSupplier.addObserver(mInsetObserver);
+        mViewportInsetSupplier.addSyncObserverAndPostIfNonNull(mInsetObserver);
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         setTranslationY(mBaseYOffset);
     }

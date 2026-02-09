@@ -201,7 +201,7 @@ public class TabGroupUiMediator implements BackPressHandler {
         mOnSnapshotTokenChange = onSnapshotTokenChange;
         mChildTokenSupplier = childTokenSupplier;
         mChildTokenSupplier.addObserver(mOnTokenComponentChange);
-        mWidthPxSupplier.addObserver(mOnTokenComponentChange);
+        mWidthPxSupplier.addSyncObserverAndPostIfNonNull(mOnTokenComponentChange);
 
         onThemeColorChanged(mThemeColorProvider.getThemeColor(), false);
         ColorStateList tintList = mThemeColorProvider.getTint();
@@ -342,7 +342,7 @@ public class TabGroupUiMediator implements BackPressHandler {
                 .addTabGroupObserver(mTabGroupModelFilterObserver);
 
         mOmniboxFocusObserver = isFocus -> resetTabStrip();
-        mOmniboxFocusStateSupplier.addObserver(mOmniboxFocusObserver);
+        mOmniboxFocusStateSupplier.addSyncObserverAndPostIfNonNull(mOmniboxFocusObserver);
 
         tabModelSelector.addTabGroupModelFilterObserver(mTabModelObserver);
         mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
@@ -366,7 +366,8 @@ public class TabGroupUiMediator implements BackPressHandler {
                     controller -> {
                         controller
                                 .getHandleBackPressChangedSupplier()
-                                .addObserver(mHandleBackPressChangedSupplier::set);
+                                .addSyncObserverAndPostIfNonNull(
+                                        mHandleBackPressChangedSupplier::set);
                     });
         }
     }

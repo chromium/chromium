@@ -274,8 +274,8 @@ public class NewTabPage
             mRestoringState = restoringState;
 
             // Fallback added for metric records only.
-            restoringState.addObserver(
-                    new Callback<>() {
+            restoringState.addSyncObserverAndPostIfNonNull(
+                    new Callback<Integer>() {
                         long mStart;
 
                         @Override
@@ -311,7 +311,7 @@ public class NewTabPage
                             onEnd.run();
                         }
                     });
-            mRestoringState.addObserver(mOnScrollStateChanged);
+            mRestoringState.addSyncObserverAndPostIfNonNull(mOnScrollStateChanged);
             mHandler.postDelayed(
                     mFallback, BackPressMetrics.MAX_FALLBACK_DELAY_NTP_SMOOTH_TRANSITION);
         }

@@ -1373,7 +1373,8 @@ public class LayoutManagerImpl
                 mCachedWindowViewport.height() * mPxToDp,
                 mCachedVisibleViewport.top,
                 getOrientation());
-        overlay.getHandleBackPressChangedSupplier().addObserver((v) -> onBackPressStateChanged());
+        overlay.getHandleBackPressChangedSupplier()
+                .addSyncObserverAndPostIfNonNull((v) -> onBackPressStateChanged());
     }
 
     void setSceneOverlayOrderForTesting(Map<Class, Integer> order) {

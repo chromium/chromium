@@ -31,7 +31,9 @@ public class HubBottomToolbarMediator {
         mPropertyModel = propertyModel;
         mDelegate = delegate;
 
-        mDelegate.getBottomToolbarVisibilitySupplier().addObserver(mOnVisibilityChange);
+        mDelegate
+                .getBottomToolbarVisibilitySupplier()
+                .addSyncObserverAndPostIfNonNull(mOnVisibilityChange);
     }
 
     /** Cleans up observers and unregisters callbacks. */

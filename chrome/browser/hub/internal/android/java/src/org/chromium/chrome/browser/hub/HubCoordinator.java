@@ -112,7 +112,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, OnPa
                         .getFocusedPaneSupplier()
                         .createTransitiveNonNull(
                                 false, BackPressHandler::getHandleBackPressChangedSupplier);
-        mFocusedPaneHandleBackPressSupplier.addObserver(
+        mFocusedPaneHandleBackPressSupplier.addSyncObserverAndPostIfNonNull(
                 castCallback(mBackPressStateChangeCallback));
 
         mContainerView = containerView;
@@ -195,7 +195,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, OnPa
         mPaneBackStackHandler = new PaneBackStackHandler(paneManager);
         mPaneBackStackHandler
                 .getHandleBackPressChangedSupplier()
-                .addObserver(castCallback(mBackPressStateChangeCallback));
+                .addSyncObserverAndPostIfNonNull(castCallback(mBackPressStateChangeCallback));
 
         mCurrentTabSupplier = currentTabSupplier;
         setCurrentTabSupplierObserver();

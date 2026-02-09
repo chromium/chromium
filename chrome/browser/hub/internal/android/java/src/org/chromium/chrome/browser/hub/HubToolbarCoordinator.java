@@ -93,7 +93,8 @@ public class HubToolbarCoordinator {
                         exitHubRunnable);
 
         // Set up bottom toolbar visibility observer
-        mBottomToolbarVisibilitySupplier.addObserver(mBottomToolbarVisibilityObserver);
+        mBottomToolbarVisibilitySupplier.addSyncObserverAndPostIfNonNull(
+                mBottomToolbarVisibilityObserver);
 
         mMenuButton = hubToolbarView.findViewById(R.id.menu_button_wrapper);
         ImageButton imageButton = mMenuButton.getImageButton();

@@ -27,7 +27,8 @@ public class CustomTabBrowserControlsVisibilityDelegate extends BrowserControlsV
     public CustomTabBrowserControlsVisibilityDelegate(
             Supplier<BrowserControlsVisibilityManager> controlsVisibilityManager) {
         mBrowserControlsVisibilityManager = controlsVisibilityManager;
-        getDefaultVisibilityDelegate().addObserver((constraints) -> updateVisibilityConstraints());
+        getDefaultVisibilityDelegate()
+                .addSyncObserverAndPostIfNonNull((constraints) -> updateVisibilityConstraints());
         updateVisibilityConstraints();
     }
 

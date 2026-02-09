@@ -177,7 +177,7 @@ public class HubToolbarMediator {
                 paneManager
                         .getFocusedPaneSupplier()
                         .createTransitiveNonNull(false, Pane::getHairlineVisibilitySupplier);
-        mHairlineVisibilitySupplier.addObserver(mOnHairlineVisibilityChange);
+        mHairlineVisibilitySupplier.addSyncObserverAndPostIfNonNull(mOnHairlineVisibilityChange);
         MonotonicObservableSupplier<Pane> focusedPaneSupplier =
                 paneManager.getFocusedPaneSupplier();
         focusedPaneSupplier.addObserver(mOnFocusedPaneChange);
@@ -186,14 +186,16 @@ public class HubToolbarMediator {
                 paneManager
                         .getFocusedPaneSupplier()
                         .createTransitiveNonNull(false, Pane::getManualSearchBoxAnimationSupplier);
-        mManualSearchBoxAnimationSupplier.addObserver(mOnManualSearchBoxAnimationChange);
+        mManualSearchBoxAnimationSupplier.addSyncObserverAndPostIfNonNull(
+                mOnManualSearchBoxAnimationChange);
 
         mSearchBoxVisibilityFractionSupplier =
                 paneManager
                         .getFocusedPaneSupplier()
                         .createTransitiveNonNull(
                                 0.0f, Pane::getSearchBoxVisibilityFractionSupplier);
-        mSearchBoxVisibilityFractionSupplier.addObserver(mOnSearchBoxVisibilityFractionChange);
+        mSearchBoxVisibilityFractionSupplier.addSyncObserverAndPostIfNonNull(
+                mOnSearchBoxVisibilityFractionChange);
 
         rebuildPaneSwitcherButtonData();
 

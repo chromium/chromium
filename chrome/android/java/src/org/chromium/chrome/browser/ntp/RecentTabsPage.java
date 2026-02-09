@@ -137,7 +137,7 @@ public class RecentTabsPage
                                 newHeight,
                                 mView.getPaddingRight(),
                                 mView.getPaddingBottom());
-        mTabStripHeightSupplier.addObserver(mTabStripHeightChangeCallback);
+        mTabStripHeightSupplier.addSyncObserverAndPostIfNonNull(mTabStripHeightChangeCallback);
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
         mPadAdjuster =
                 EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(

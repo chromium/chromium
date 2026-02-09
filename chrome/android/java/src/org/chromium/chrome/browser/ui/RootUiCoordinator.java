@@ -2421,13 +2421,13 @@ public class RootUiCoordinator
 
     /** Initialize logic for hiding page zoom slider when snackbar is showing */
     private void initSnackbarObserver() {
+        // On show snackbar, hide page zoom dialog
         mSnackbarManagerSupplier
                 .get()
                 .isShowingSupplier()
-                .addObserver(
+                .addSyncObserverAndPostIfNonNull(
                         (Boolean isShowing) -> {
                             if (isShowing && mPageZoomBarCoordinator != null) {
-                                // On show snackbar, hide page zoom dialog
                                 mPageZoomBarCoordinator.hide();
                             }
                         });

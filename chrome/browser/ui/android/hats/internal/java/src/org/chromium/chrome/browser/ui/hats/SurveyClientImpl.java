@@ -208,7 +208,8 @@ class SurveyClientImpl implements SurveyClient {
                         mUiDelegate.dismiss();
                     }
                 };
-        mCrashUploadPermissionSupplier.addObserver(mOnCrashUploadPermissionChangeCallback);
+        mCrashUploadPermissionSupplier.addSyncObserverAndPostIfNonNull(
+                mOnCrashUploadPermissionChangeCallback);
 
         // TODO(crbug.com/418075247): Ensure mTabModelSelector is never null.
         if (mTabModelSelector != null) {

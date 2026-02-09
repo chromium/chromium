@@ -198,7 +198,7 @@ public class OfflineIndicatorControllerV2 {
                         mOnUrlBarUnfocusedRunnable = null;
                     }
                 };
-        mIsUrlBarFocusedSupplier.addObserver(mOnUrlBarFocusChanged);
+        mIsUrlBarFocusedSupplier.addSyncObserverAndPostIfNonNull(mOnUrlBarFocusChanged);
 
         mUpdateStatusIndicatorDelayedRunnable =
                 () -> {

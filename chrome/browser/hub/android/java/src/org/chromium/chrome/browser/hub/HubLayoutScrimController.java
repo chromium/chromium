@@ -60,7 +60,7 @@ public class HubLayoutScrimController implements ScrimController {
 
         mPropertyModel = scrimPropertiesBuilder.build();
         assert mPropertyModel != null;
-        mIsIncognitoSupplier.addObserver(mOnIncognitoChange);
+        mIsIncognitoSupplier.addSyncObserverAndPostIfNonNull(mOnIncognitoChange);
         mScrimManager.showScrim(mPropertyModel);
     }
 

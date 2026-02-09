@@ -290,7 +290,7 @@ public class StatusBarColorController
         if (mDesktopWindowStateManager != null) {
             mIsTopResumedActivity = !mDesktopWindowStateManager.isInUnfocusedDesktopWindow();
         }
-        mOverviewColorSupplier.addObserver(mOverviewColorObserver);
+        mOverviewColorSupplier.addSyncObserverAndPostIfNonNull(mOverviewColorObserver);
     }
 
     /**

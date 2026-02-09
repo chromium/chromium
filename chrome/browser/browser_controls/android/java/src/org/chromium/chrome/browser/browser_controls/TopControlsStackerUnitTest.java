@@ -352,7 +352,8 @@ public class TopControlsStackerUnitTest {
         // Simulate a browser controls state change without offset tag update.
         reset(mBrowserControlsSizer);
 
-        verify(mVisibilityDelegate).addObserver(mVisibilityCallbackCaptor.capture());
+        verify(mVisibilityDelegate)
+                .addSyncObserverAndPostIfNonNull(mVisibilityCallbackCaptor.capture());
         mVisibilityCallbackCaptor.getValue().onResult(BrowserControlsState.SHOWN);
         assertControlsHeight(100, 100);
         toolbar.assertHasNoOffsetTags();

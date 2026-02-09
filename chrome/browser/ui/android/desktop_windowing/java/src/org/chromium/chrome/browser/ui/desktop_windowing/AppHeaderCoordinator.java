@@ -149,7 +149,7 @@ public class AppHeaderCoordinator
 
         mDesktopWindowTopResumedActivitySupplier =
                 ObservableSuppliers.createNonNull(!mIsInUnfocusedDesktopWindow);
-        mDesktopWindowTopResumedActivitySupplier.addObserver(
+        mDesktopWindowTopResumedActivitySupplier.addSyncObserverAndPostIfNonNull(
                 (isFocused) -> {
                     mObservers.forEach(
                             (observer) -> observer.onActivityFocusStateChanged(isFocused));

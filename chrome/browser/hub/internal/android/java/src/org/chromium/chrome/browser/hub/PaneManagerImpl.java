@@ -45,7 +45,7 @@ public class PaneManagerImpl implements PaneManager {
         mPanes = paneListBuilder.build();
         mHubVisibilitySupplier = hubVisibilitySupplier;
         mHubVisibilityObserver = this::onHubVisibilityChanged;
-        mHubVisibilitySupplier.addObserver(mHubVisibilityObserver);
+        mHubVisibilitySupplier.addSyncObserverAndPostIfNonNull(mHubVisibilityObserver);
         mPaneTransitionHelper = new PaneTransitionHelper(this);
         mPaneOrderController = paneListBuilder.getPaneOrderController();
         mDefaultPaneId = defaultPaneId;

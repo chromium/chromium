@@ -350,7 +350,8 @@ class LocationBarMediator
 
         mFuseboxCoordinator
                 .getFuseboxStateSupplier()
-                .addObserver(mCallbackController.makeCancelable(this::onFuseboxStateChanged));
+                .addSyncObserverAndPostIfNonNull(
+                        mCallbackController.makeCancelable(this::onFuseboxStateChanged));
         mFuseboxCoordinator.addAttachmentChangeListener(this);
         mOmniboxChipManager = omniboxChipManager;
     }

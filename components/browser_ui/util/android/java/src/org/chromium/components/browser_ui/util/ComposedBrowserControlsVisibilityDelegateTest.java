@@ -116,7 +116,7 @@ public class ComposedBrowserControlsVisibilityDelegateTest {
     @Test
     public void testObserver() {
         Callback<Integer> callback = Mockito.mock(Callback.class);
-        mComposedDelegate.addObserver(callback);
+        mComposedDelegate.addSyncObserverAndPostIfNonNull(callback);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Mockito.verify(callback).onResult(BrowserControlsState.BOTH);
         Mockito.reset(callback);
@@ -159,7 +159,7 @@ public class ComposedBrowserControlsVisibilityDelegateTest {
         WeakReference delegate = new WeakReference(mDelegate1);
 
         Callback<Integer> callback = (value) -> {};
-        mComposedDelegate.addObserver(callback);
+        mComposedDelegate.addSyncObserverAndPostIfNonNull(callback);
         Assert.assertTrue(mComposedDelegate.hasObservers());
 
         mComposedDelegate.removeObserver(callback);

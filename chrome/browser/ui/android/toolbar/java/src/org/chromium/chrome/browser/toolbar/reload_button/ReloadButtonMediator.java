@@ -113,7 +113,7 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
         mNtpLoadingSupplier.addObserver(mNtpLoadingObserver);
 
         mEnabledObserver = (isEnabled) -> mModel.set(ReloadButtonProperties.IS_ENABLED, isEnabled);
-        mEnabledSupplier.addObserver(mEnabledObserver);
+        mEnabledSupplier.addSyncObserverAndPostIfNonNull(mEnabledObserver);
 
         mTabObserver =
                 new TabSupplierObserver(tabSupplier, /* shouldTrigger= */ true) {

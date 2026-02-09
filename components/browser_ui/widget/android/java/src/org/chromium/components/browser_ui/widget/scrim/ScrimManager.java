@@ -129,7 +129,7 @@ public class ScrimManager {
     /** Temporary alternative to {@link #getScrimVisibilitySupplier()} to make migration easier. */
     @Deprecated
     public void addObserver(ScrimCoordinator.Observer observer) {
-        mScrimVisibilitySupplier.addObserver(observer);
+        mScrimVisibilitySupplier.addSyncObserverAndPostIfNonNull(observer);
     }
 
     /** Temporary alternative to {@link #getScrimVisibilitySupplier()} to make migration easier. */
@@ -188,8 +188,12 @@ public class ScrimManager {
         coordinator.showScrim(model, animate);
 
         coordinator.addObserver(mOnScrimVisibilityChanged);
-        coordinator.getStatusBarColorSupplier().addObserver(mOnStatusBarColorChanged);
-        coordinator.getNavigationBarColorSupplier().addObserver(mOnNavBarColorChanged);
+        coordinator
+                .getStatusBarColorSupplier()
+                .addSyncObserverAndPostIfNonNull(mOnStatusBarColorChanged);
+        coordinator
+                .getNavigationBarColorSupplier()
+                .addSyncObserverAndPostIfNonNull(mOnNavBarColorChanged);
 
         if (mDisableAnimationForTesting) {
             coordinator.disableAnimationForTesting(mDisableAnimationForTesting);

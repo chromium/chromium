@@ -111,7 +111,7 @@ class WebContentsViewRectProvider extends RectProvider {
         }
         mBottomInsetSupplier = supplier;
         if (mBottomInsetSupplier != null) {
-            mBottomInsetSupplier.addObserver(mOnBottomInsetChanged);
+            mBottomInsetSupplier.addSyncObserverAndPostIfNonNull(mOnBottomInsetChanged);
         }
         updateVisibleRectForPopup(
                 SupplierUtils.getOrNull(mBottomInsetSupplier),

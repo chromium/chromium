@@ -125,7 +125,7 @@ public class EngagementSignalsHandler {
                 };
         PrivacyPreferencesManagerImpl.getInstance()
                 .getUsageAndCrashReportingPermittedObservableSupplier()
-                .addObserver(mPrivacyPreferencesObserver);
+                .addSyncObserverAndPostIfNonNull(mPrivacyPreferencesObserver);
         mTabObserverRegistrar.registerActivityTabObserver(
                 new CustomTabTabObserver() {
                     @Override

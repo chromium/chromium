@@ -539,7 +539,8 @@ public class StripLayoutHelperManager
                     mEventFilter.setEventArea(
                             state == StripVisibilityState.VISIBLE ? mStripFilterArea : null);
                 };
-        mStripVisibilityStateSupplier.addObserver(mStripVisibilityStateObserver);
+        mStripVisibilityStateSupplier.addSyncObserverAndPostIfNonNull(
+                mStripVisibilityStateObserver);
 
         if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             StripLayoutViewOnClickHandler selectorClickHandler =

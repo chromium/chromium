@@ -705,7 +705,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                     new ConstraintsChecker(this, constraintsSupplier, Looper.getMainLooper());
             mTabSupplier = tabSupplier;
             mCompositorInMotionSupplier = compositorInMotionSupplier;
-            mCompositorInMotionSupplier.addObserver(mOnCompositorInMotionChange);
+            mCompositorInMotionSupplier.addSyncObserverAndPostIfNonNull(
+                    mOnCompositorInMotionChange);
             mBrowserStateBrowserControlsVisibilityDelegate =
                     browserStateBrowserControlsVisibilityDelegate;
             mControlContainerIsVisibleSupplier = controlContainerIsVisibleSupplier;

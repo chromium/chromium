@@ -479,7 +479,7 @@ public class FeedSurfaceCoordinator
                                 newHeight,
                                 mRootView.getPaddingRight(),
                                 mRootView.getPaddingBottom());
-        mTabStripHeightSupplier.addObserver(mTabStripHeightChangeCallback);
+        mTabStripHeightSupplier.addSyncObserverAndPostIfNonNull(mTabStripHeightChangeCallback);
 
         mUiConfig = new UiConfig(mRootView);
         mRecyclerView = setUpView();

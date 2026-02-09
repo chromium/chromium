@@ -265,7 +265,8 @@ public abstract class FullscreenHtmlApiHandlerBase
             MultiWindowModeStateDispatcher multiWindowDispatcher) {
         mActivity = activity;
         mAreControlsHidden = areControlsHidden;
-        mAreControlsHidden.addObserver(this::maybeEnterFullscreenFromPendingState);
+        mAreControlsHidden.addSyncObserverAndPostIfNonNull(
+                this::maybeEnterFullscreenFromPendingState);
 
         mFullscreenManagerDelegate =
                 new FullscreenManagerDelegate() {

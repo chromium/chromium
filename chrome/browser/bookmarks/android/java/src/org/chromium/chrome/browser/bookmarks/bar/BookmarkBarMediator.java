@@ -170,7 +170,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         mBookmarkBarItemsLayoutManager = bookmarkBarItemsLayoutManager;
         mItemsOverflowSupplier = mBookmarkBarItemsLayoutManager.getItemsOverflowSupplier();
         mItemsOverflowSupplierObserver = this::onItemsOverflowChange;
-        mItemsOverflowSupplier.addObserver(mItemsOverflowSupplierObserver);
+        mItemsOverflowSupplier.addSyncObserverAndPostIfNonNull(mItemsOverflowSupplierObserver);
 
         mModel = model;
         mModel.set(

@@ -97,7 +97,7 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
 
         mEnabledSupplier = enabledSupplier;
         mEnabledObserver = (isEnabled) -> updateButtonEnabledState();
-        mEnabledSupplier.addObserver(mEnabledObserver);
+        mEnabledSupplier.addSyncObserverAndPostIfNonNull(mEnabledObserver);
 
         // From web_contents_impl.cc and browser.cc back button's enabled state is updated based on
         // the InvalidateType.{TAB, LOAD, and URL} flags that are mapped to the callbacks below.

@@ -1161,7 +1161,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     NonNullObservableSupplier<Integer> hubOverviewColorSupplier =
                             hubManager.getHubOverviewColorSupplier();
                     Callback<Integer> hubOverviewColorObserver = overviewColorSupplier::set;
-                    hubOverviewColorSupplier.addObserver(hubOverviewColorObserver);
+                    hubOverviewColorSupplier.addSyncObserverAndPostIfNonNull(
+                            hubOverviewColorObserver);
 
                     mCleanUpHubOverviewColorObserver =
                             () -> hubOverviewColorSupplier.removeObserver(hubOverviewColorObserver);

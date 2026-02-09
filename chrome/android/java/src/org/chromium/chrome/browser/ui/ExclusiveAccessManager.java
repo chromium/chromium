@@ -9,7 +9,6 @@ import android.os.Bundle;
 
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -86,20 +85,13 @@ public class ExclusiveAccessManager
                                         tab.getWebContents());
                     }
                 };
+        // Exclusive Access Manager always follows the fullscreen state. We subscribe to the FS
+        // state supplier in case when the fullscreen is delayed. Thanks to that EAM stat supplier
+        // will update on all FS enter and exit events. Exiting fullscreen should unlock all other
+        // locks.
         mFullscreenManager
                 .getPersistentFullscreenModeSupplier()
-                .addObserver(
-                        new Callback<Boolean>() {
-                            @Override
-                            public void onResult(Boolean result) {
-                                // Exclusive Access Manager always follows the fullscreen state. We
-                                // subscribe to the FS state supplier in case when the fullscreen is
-                                // delayed. Thanks to that EAM stat supplier will update on all FS
-                                // enter and exit events.
-                                // Exiting fullscreen should unlock all other locks.
-                                mExclusiveAccessState.set(result);
-                            }
-                        });
+                .addSyncObserverAndPostIfNonNull(mExclusiveAccessState::set);
     }
 
     public void initialize(

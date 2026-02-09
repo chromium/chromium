@@ -231,7 +231,9 @@ public class TabItemPickerCoordinator {
                     .addCallback(componentActivity, mBackPressCallback);
         }
 
-        controller.getHandleBackPressChangedSupplier().addObserver(mBackPressEnabledObserver);
+        controller
+                .getHandleBackPressChangedSupplier()
+                .addSyncObserverAndPostIfNonNull(mBackPressEnabledObserver);
 
         Tab currentTab = mTabModelSelector.getCurrentTab();
         int currentTabIndex = 0;

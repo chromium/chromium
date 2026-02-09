@@ -425,7 +425,7 @@ public class FeedStream implements Stream {
 
             DoneWatcher(Runnable runnable) {
                 mDelegate = runnable;
-                mWorkPending.addObserver(this);
+                mWorkPending.addSyncObserverAndPostIfNonNull(this);
             }
 
             @Override
