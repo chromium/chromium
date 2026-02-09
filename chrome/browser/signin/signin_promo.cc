@@ -18,6 +18,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
@@ -142,22 +143,18 @@ content::StoragePartition* GetSigninPartition(
   return browser_context->GetStoragePartition(signin_partition_config);
 }
 
-signin_metrics::AccessPoint GetAccessPointForEmbeddedPromoURL(const GURL& url) {
+std::optional<signin_metrics::AccessPoint> GetAccessPointForEmbeddedPromoURL(
+    const GURL& url) {
   std::string value;
   if (!net::GetValueForKeyInQuery(url, kSignInPromoQueryKeyAccessPoint,
                                   &value)) {
     return signin_metrics::AccessPoint::kUnknown;
   }
 
-  int access_point = -1;
-  base::StringToInt(value, &access_point);
-  if (access_point <
-          static_cast<int>(signin_metrics::AccessPoint::kStartPage) ||
-      access_point > static_cast<int>(signin_metrics::AccessPoint::kMaxValue)) {
-    return signin_metrics::AccessPoint::kUnknown;
-  }
+  int access_point_value = -1;
+  base::StringToInt(value, &access_point_value);
 
-  return static_cast<signin_metrics::AccessPoint>(access_point);
+  return signin_metrics::AccessPointFromInt(access_point_value);
 }
 
 signin_metrics::Reason GetSigninReasonForEmbeddedPromoURL(const GURL& url) {

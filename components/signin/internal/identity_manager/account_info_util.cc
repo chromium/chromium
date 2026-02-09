@@ -302,10 +302,12 @@ std::optional<AccountInfo> DeserializeAccountInfo(const base::DictValue& dict) {
           dict.FindBool(local::kAdvancedProtectionAccountStatusKey)) {
     builder.SetIsUnderAdvancedProtection(*is_under_advanced_protection);
   }
-  if (std::optional<int> access_point =
+  if (std::optional<int> access_point_value =
           dict.FindInt(local::kAccountAccessPoint)) {
-    builder.SetLastAuthenticationAccessPoint(
-        static_cast<signin_metrics::AccessPoint>(*access_point));
+    if (std::optional<signin_metrics::AccessPoint> access_point =
+            signin_metrics::AccessPointFromInt(*access_point_value)) {
+      builder.SetLastAuthenticationAccessPoint(*access_point);
+    }
   }
   builder.SetIsChildAccount(
       ParseTribool(dict.FindInt(local::kAccountChildAttributeKey)));

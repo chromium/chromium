@@ -257,6 +257,13 @@ TEST_F(SigninMetricsTest, RecordSigninImpressionUserAction) {
   }
 }
 
+TEST_F(SigninMetricsTest, AccessPointFromInt) {
+  EXPECT_EQ(AccessPoint::kStartPage, AccessPointFromInt(0));
+  EXPECT_EQ(std::optional<AccessPoint>(), AccessPointFromInt(-1));
+  // Deprecated access point kNtpLink.
+  EXPECT_EQ(std::optional<AccessPoint>(), AccessPointFromInt(1));
+}
+
 TEST(LogSyncOptInOfferedTest, RecordsHistogram) {
   base::HistogramTester histogram_tester;
   const AccessPoint access_point =

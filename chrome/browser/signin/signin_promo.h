@@ -125,7 +125,8 @@ content::StoragePartition* GetSigninPartition(
     content::BrowserContext* browser_context);
 
 // Gets the access point from the query portion of the sign in promo URL.
-signin_metrics::AccessPoint GetAccessPointForEmbeddedPromoURL(const GURL& url);
+std::optional<signin_metrics::AccessPoint> GetAccessPointForEmbeddedPromoURL(
+    const GURL& url);
 
 // Gets the sign in reason from the query portion of the sign in promo URL.
 signin_metrics::Reason GetSigninReasonForEmbeddedPromoURL(const GURL& url);

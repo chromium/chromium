@@ -61,6 +61,90 @@ std::string_view ReauthFlowEventToHistogramSuffix(ReauthFlowEvent event) {
 
 }  // namespace
 
+std::optional<AccessPoint> AccessPointFromInt(int value) {
+  AccessPoint access_point = static_cast<AccessPoint>(value);
+  switch (access_point) {
+    case AccessPoint::kStartPage:
+    case AccessPoint::kMenu:
+    case AccessPoint::kSettings:
+    case AccessPoint::kExtensionInstallBubble:
+    case AccessPoint::kExtensions:
+    case AccessPoint::kBookmarkBubble:
+    case AccessPoint::kBookmarkManager:
+    case AccessPoint::kAvatarBubbleSignIn:
+    case AccessPoint::kUserManager:
+    case AccessPoint::kFullscreenSigninPromo:
+    case AccessPoint::kRecentTabs:
+    case AccessPoint::kUnknown:
+    case AccessPoint::kPasswordBubble:
+    case AccessPoint::kAutofillDropdown:
+    case AccessPoint::kResigninInfobar:
+    case AccessPoint::kMachineLogon:
+    case AccessPoint::kForcedSignin:
+    case AccessPoint::kWebSignin:
+    case AccessPoint::kSafetyCheck:
+    case AccessPoint::kSigninInterceptFirstRunExperience:
+    case AccessPoint::kSendTabToSelfPromo:
+    case AccessPoint::kNtpFeedTopPromo:
+    case AccessPoint::kSettingsSyncOffRow:
+    case AccessPoint::kPostDeviceRestoreSigninPromo:
+    case AccessPoint::kPostDeviceRestoreBackgroundSignin:
+    case AccessPoint::kNtpSignedOutIcon:
+    case AccessPoint::kNtpFeedCardMenuPromo:
+    case AccessPoint::kNtpFeedBottomPromo:
+    case AccessPoint::kDesktopSigninManager:
+    case AccessPoint::kForYouFre:
+    case AccessPoint::kCreatorFeedFollow:
+    case AccessPoint::kReadingList:
+    case AccessPoint::kReauthInfoBar:
+    case AccessPoint::kAccountConsistencyService:
+    case AccessPoint::kSetUpList:
+    case AccessPoint::kSaveToPhotosIos:
+    case AccessPoint::kChromeSigninInterceptBubble:
+    case AccessPoint::kRestorePrimaryAccountOnProfileLoad:
+    case AccessPoint::kTabOrganization:
+    case AccessPoint::kSaveToDriveIos:
+    case AccessPoint::kTipsNotification:
+    case AccessPoint::kNotificationsOptInScreenContentToggle:
+    case AccessPoint::kSigninChoiceRemembered:
+    case AccessPoint::kProfileMenuSignoutConfirmationPrompt:
+    case AccessPoint::kSettingsSignoutConfirmationPrompt:
+    case AccessPoint::kOidcRedirectionInterception:
+    case AccessPoint::kWebauthnModalDialog:
+    case AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case AccessPoint::kAccountMenuSwitchAccount:
+    case AccessPoint::kProductSpecifications:
+    case AccessPoint::kAccountMenuSwitchAccountFailed:
+    case AccessPoint::kAddressBubble:
+    case AccessPoint::kCctAccountMismatchNotification:
+    case AccessPoint::kDriveFilePickerIos:
+    case AccessPoint::kCollaborationShareTabGroup:
+    case AccessPoint::kGlicLaunchButton:
+    case AccessPoint::kHistoryPage:
+    case AccessPoint::kCollaborationJoinTabGroup:
+    case AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
+    case AccessPoint::kWidget:
+    case AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
+    case AccessPoint::kHistorySyncEducationalTip:
+    case AccessPoint::kManagedProfileAutoSigninIos:
+    case AccessPoint::kNonModalSigninPasswordPromo:
+    case AccessPoint::kNonModalSigninBookmarkPromo:
+    case AccessPoint::kUserManagerWithPrefilledEmail:
+    case AccessPoint::kEnterpriseManagementDisclaimerAtStartup:
+    case AccessPoint::kEnterpriseManagementDisclaimerAfterBrowserFocus:
+    case AccessPoint::kEnterpriseManagementDisclaimerAfterSignin:
+    case AccessPoint::kNtpFeaturePromo:
+    case AccessPoint::kEnterpriseDialogAfterSigninInterception:
+    case AccessPoint::kSettingsYourSavedInfo:
+    case AccessPoint::kCredentialExchangeImport:
+    case AccessPoint::kSetSyncConsentFromSyncInternals:
+    case AccessPoint::kIosChromeWebView:
+      return access_point;
+  }
+
+  return std::nullopt;
+}
+
 // These intermediate macros are necessary when we may emit to different
 // histograms from the same logical place in the code. The base histogram macros
 // expand in a way that can only work for a single histogram name, so these

@@ -655,6 +655,8 @@ enum class ReauthAccessPoint : int {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ReauthAccessPoint)
 #endif  // BUILDFLAG(IS_IOS)
 
+std::optional<AccessPoint> AccessPointFromInt(int access_point);
+
 // -----------------------------------------------------------------------------
 // Histograms
 // -----------------------------------------------------------------------------
