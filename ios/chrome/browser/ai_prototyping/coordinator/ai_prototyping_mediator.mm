@@ -7,6 +7,7 @@
 #import <string>
 
 #import "base/functional/bind.h"
+#import "base/json/json_reader.h"
 #import "base/logging.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/stringprintf.h"
@@ -14,6 +15,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/optimization_guide/proto/features/enhanced_calendar.pb.h"
@@ -25,7 +27,10 @@
 #import "ios/chrome/browser/ai_prototyping/model/tab_organization_service_impl.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
+#import "ios/chrome/browser/ai_prototyping/utils/json_action_parser.h"
 #import "ios/chrome/browser/ai_prototyping/utils/page_context_util.h"
+#import "ios/chrome/browser/intelligence/actuation/model/actuation_service.h"
+#import "ios/chrome/browser/intelligence/actuation/model/actuation_service_factory.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_service_impl.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/ios_smart_tab_grouping_request_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -530,6 +535,86 @@
     NSLog(@"[AIPrototypingMediator] Successfully saved serialized page context "
           @"to: %@",
           base::SysUTF8ToNSString(result.file_path.value()));
+  }
+}
+
+- (void)executeActuationWithParams:(NSDictionary*)params {
+  ActuationService* actuationService =
+      ActuationServiceFactory::GetForProfile(ProfileIOS::FromBrowserState(
+          _webStateList->GetActiveWebState()->GetBrowserState()));
+
+  if (!actuationService) {
+    [self.consumer updateQueryResult:@"Error: ActuationService not available."
+                          forFeature:AIPrototypingFeature::kActuationTools];
+    return;
+  }
+
+  optimization_guide::proto::Action action;
+  NSString* jsonString = params[@"json"];
+  if (jsonString.length == 0) {
+    [self.consumer updateQueryResult:@"Error: No JSON provided."
+                          forFeature:AIPrototypingFeature::kActuationTools];
+    return;
+  }
+  std::optional<base::Value> jsonVal = base::JSONReader::Read(
+      base::SysNSStringToUTF8(jsonString), base::JSON_PARSE_RFC);
+
+  if (!jsonVal || !jsonVal->is_dict()) {
+    [self.consumer updateQueryResult:@"Error: Invalid JSON."
+                          forFeature:AIPrototypingFeature::kActuationTools];
+    return;
+  }
+
+  // Try to parse the JSON to a known action optimization_guide::proto::Action.
+  if (!ai_prototyping::ParseActionFromDict(jsonVal->GetDict(), &action)) {
+    [self.consumer updateQueryResult:@"Error: Unknown action type in JSON."
+                          forFeature:AIPrototypingFeature::kActuationTools];
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  actuationService->ExecuteAction(
+      action, base::BindOnce(^(
+                  base::expected<void, ActuationTool::ActuationError> result) {
+        NSLog(@"[AIPrototypingMediator] Actuation callback executed.");
+        if (result.has_value()) {
+          [weakSelf.consumer
+              updateQueryResult:@"Action executed successfully."
+                     forFeature:AIPrototypingFeature::kActuationTools];
+        } else {
+          NSString* errorMsg =
+              [NSString stringWithFormat:@"Action failed: %s",
+                                         result.error().message.c_str()];
+          NSLog(@"[AIPrototypingMediator] %@", errorMsg);
+          [weakSelf.consumer
+              updateQueryResult:errorMsg
+                     forFeature:AIPrototypingFeature::kActuationTools];
+        }
+      }));
+}
+
+- (void)listTabs {
+  NSMutableArray<NSDictionary*>* tabs = [NSMutableArray array];
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    return;
+  }
+
+  for (int i = 0; i < _webStateList->count(); ++i) {
+    web::WebState* webState = _webStateList->GetWebStateAt(i);
+    NSString* title = base::SysUTF16ToNSString(webState->GetTitle());
+    int32_t tabID = webState->GetUniqueIdentifier().identifier();
+    NSString* url = base::SysUTF8ToNSString(webState->GetVisibleURL().spec());
+    [tabs addObject:@{
+      @"id" : @(tabID),
+      @"title" : title ?: @"",
+      @"url" : url ?: @"",
+      @"active" : @(webState == activeWebState)
+    }];
+  }
+
+  if ([self.consumer respondsToSelector:@selector(updateTabList:)]) {
+    [self.consumer updateTabList:tabs];
   }
 }
 

@@ -8,11 +8,15 @@
 enum class AIPrototypingFeature : NSInteger;
 
 // Consumer protocol for the mediator to interact with the view controller.
-@protocol AIPrototypingConsumer
+@protocol AIPrototypingConsumer <NSObject>
 
 // Updates the result of a query that was previously executed on a model.
 - (void)updateQueryResult:(NSString*)result
                forFeature:(AIPrototypingFeature)feature;
+
+// Updates the list of available tabs.
+// tabs: Array of dictionaries with keys "id", "title", "url".
+- (void)updateTabList:(NSArray<NSDictionary*>*)tabs;
 
 @end
 

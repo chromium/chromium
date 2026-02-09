@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_view_controller.h"
 
+#import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_actuation_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_calendar_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_freeform_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_tab_organization_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -20,6 +22,9 @@
 
   // The controller allowing for navigation between the menu sheets.
   UIPageViewController* _pageController;
+
+  // The view controller for the actuation tools page.
+  AIPrototypingActuationViewController* _actuationViewController;
 }
 
 @end
@@ -29,6 +34,8 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
+    _actuationViewController = [[AIPrototypingActuationViewController alloc]
+        initForFeature:AIPrototypingFeature::kActuationTools];
     _menuPages = [NSArray
         arrayWithObjects:
             [[AIPrototypingFreeformViewController alloc]
@@ -37,7 +44,7 @@
                 initForFeature:AIPrototypingFeature::kSmartTabGrouping],
             [[AIPrototypingCalendarViewController alloc]
                 initForFeature:AIPrototypingFeature::kEnhancedCalendar],
-            nil];
+            _actuationViewController, nil];
   }
   return self;
 }
@@ -79,6 +86,10 @@
       break;
     }
   }
+}
+
+- (void)updateTabList:(NSArray<NSDictionary*>*)tabs {
+  [_actuationViewController updateTabList:tabs];
 }
 
 #pragma mark - UIPageViewControllerDataSource

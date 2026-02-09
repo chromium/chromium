@@ -46,7 +46,12 @@ enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
 
 - (void)executeFreeformOnDeviceQuery:
     (optimization_guide::proto::StringValue)request;
-;
+
+// Executes an actuation request with the given parameters.
+- (void)executeActuationWithParams:(NSDictionary*)params;
+
+// Requests a list of current tabs.
+- (void)listTabs;
 
 @end
 

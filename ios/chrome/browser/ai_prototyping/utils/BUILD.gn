@@ -6,6 +6,8 @@ source_set("utils") {
   sources = [
     "ai_prototyping_constants.h",
     "ai_prototyping_constants.mm",
+    "json_action_parser.h",
+    "json_action_parser.mm",
     "page_context_util.h",
     "page_context_util.mm",
   ]
