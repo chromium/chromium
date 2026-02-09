@@ -19,9 +19,7 @@
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_state.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_view.h"
-#import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_audience.h"
 #import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_item.h"
-#import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_view.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/coordinator/set_up_list_mediator.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/public/set_up_list_constants.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/public/set_up_list_utils.h"
@@ -214,9 +212,10 @@
 }
 
 - (UIView*)sendTabPromoViewForConfig:(SendTabPromoItem*)sendTabPromoItem {
-  SendTabPromoView* view =
-      [[SendTabPromoView alloc] initWithConfig:sendTabPromoItem];
-  view.audience = sendTabPromoItem.audience;
+  StandaloneModuleView* view =
+      [[StandaloneModuleView alloc] initWithFrame:CGRectZero];
+  [view configureView:sendTabPromoItem];
+  view.tapDelegate = sendTabPromoItem;
   return view;
 }
 

@@ -4,16 +4,21 @@
 
 #import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_item.h"
 
+#import "base/check_op.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
+#import "ios/chrome/browser/content_suggestions/send_tab_to_self/ui/send_tab_promo_audience.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using l10n_util::GetNSString;
+
 namespace {
 
+// Size of the `fallbackSymbolImage` for the Send Tab Promo card.
 const CGFloat kSymbolSize = 10;
 
-// `SendTabPromoView` accessibility ID.
+// Accessibility ID for the view containing the Send Tab Promo card.
 NSString* const kSendTabPromoViewID = @"kSendTabPromoViewID";
 
 }  // namespace
@@ -33,19 +38,26 @@ NSString* const kSendTabPromoViewID = @"kSendTabPromoViewID";
 }
 
 - (NSString*)titleText {
-  return l10n_util::GetNSString(IDS_IOS_SEND_TAB_PROMO_TITLE);
+  return GetNSString(IDS_IOS_SEND_TAB_PROMO_TITLE);
 }
 
 - (NSString*)bodyText {
-  return l10n_util::GetNSString(IDS_IOS_SEND_TAB_PROMO_BODY);
+  return GetNSString(IDS_IOS_SEND_TAB_PROMO_BODY);
 }
 
 - (NSString*)buttonText {
-  return l10n_util::GetNSString(IDS_IOS_SEND_TAB_PROMO_ALLOW_BUTTON);
+  return GetNSString(IDS_IOS_SEND_TAB_PROMO_ALLOW_BUTTON);
 }
 
 - (NSString*)accessibilityIdentifier {
   return kSendTabPromoViewID;
+}
+
+#pragma mark - StandaloneModuleViewTapDelegate
+
+- (void)buttonTappedForModuleType:(ContentSuggestionsModuleType)moduleType {
+  CHECK_EQ(self.type, moduleType);
+  [self.audience didSelectSendTabPromo];
 }
 
 @end

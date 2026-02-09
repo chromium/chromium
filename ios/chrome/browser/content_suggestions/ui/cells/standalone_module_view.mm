@@ -76,6 +76,7 @@ const CGFloat kSeparatorHeight = 0.5;
   UIImageView* _faviconImageView;
   UIView* _faviconImageContainer;
   UIView* _gradientOverlay;
+  UIView* _iconContainerView;
 }
 
 #pragma mark - Public
@@ -150,9 +151,11 @@ const CGFloat kSeparatorHeight = 0.5;
   if (colorPalette) {
     [_button setTitleColor:colorPalette.tintColor
                   forState:UIControlStateNormal];
+    _iconContainerView.backgroundColor = colorPalette.tertiaryColor;
   } else {
     [_button setTitleColor:[UIColor colorNamed:kBlueColor]
                   forState:UIControlStateNormal];
+    _iconContainerView.backgroundColor = [UIColor colorNamed:kGrey100Color];
   }
 }
 
@@ -262,19 +265,19 @@ const CGFloat kSeparatorHeight = 0.5;
   faviconImageView.layer.cornerRadius = kMediumCornerRadius;
   faviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  UIView* iconContainerView = [[UIView alloc] init];
-  iconContainerView.backgroundColor = [UIColor colorNamed:kGrey100Color];
-  iconContainerView.layer.cornerRadius = kLargeCornerRadius;
-  iconContainerView.layer.masksToBounds = NO;
-  iconContainerView.clipsToBounds = YES;
-  [iconContainerView addSubview:faviconImageView];
-  AddSameCenterConstraints(faviconImageView, iconContainerView);
+  _iconContainerView = [[UIView alloc] init];
+  _iconContainerView.layer.cornerRadius = kLargeCornerRadius;
+  _iconContainerView.layer.masksToBounds = NO;
+  _iconContainerView.clipsToBounds = YES;
+  [_iconContainerView addSubview:faviconImageView];
+  AddSameCenterConstraints(faviconImageView, _iconContainerView);
   [NSLayoutConstraint activateConstraints:@[
-    [iconContainerView.widthAnchor constraintEqualToConstant:kImageWidthHeight],
-    [iconContainerView.widthAnchor
-        constraintEqualToAnchor:iconContainerView.heightAnchor],
+    [_iconContainerView.widthAnchor
+        constraintEqualToConstant:kImageWidthHeight],
+    [_iconContainerView.widthAnchor
+        constraintEqualToAnchor:_iconContainerView.heightAnchor],
   ]];
-  return iconContainerView;
+  return _iconContainerView;
 }
 
 // Creates the icon view using the `fallbackSymbolImage` from the config.
