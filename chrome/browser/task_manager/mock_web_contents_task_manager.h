@@ -5,13 +5,7 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_MOCK_WEB_CONTENTS_TASK_MANAGER_H_
 #define CHROME_BROWSER_TASK_MANAGER_MOCK_WEB_CONTENTS_TASK_MANAGER_H_
 
-#include <algorithm>
-#include <iterator>
-#include <string>
-#include <vector>
-
 #include "base/memory/raw_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/task_manager/providers/task_provider_observer.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_task_provider.h"
@@ -38,14 +32,6 @@ class MockWebContentsTaskManager : public TaskProviderObserver {
 
   const std::vector<raw_ptr<Task, VectorExperimental>>& tasks() const {
     return tasks_;
-  }
-
-  std::vector<std::string> TaskTitles() {
-    std::vector<std::string> task_titles;
-    std::ranges::transform(
-        tasks_, std::back_inserter(task_titles),
-        [&](const auto& task) { return base::UTF16ToUTF8(task->title()); });
-    return task_titles;
   }
 
  private:
