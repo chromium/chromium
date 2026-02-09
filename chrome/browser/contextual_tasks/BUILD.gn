@@ -40,6 +40,7 @@ source_set("contextual_tasks") {
     "//chrome/browser/passage_embeddings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_list_interface",
     "//components/contextual_tasks/public",
     "//components/keyed_service/core",
     "//components/passage_embeddings/content",
@@ -57,6 +58,7 @@ source_set("impl") {
   ]
 
   sources = [
+    "active_task_context_provider_impl.cc",
     "ai_mode_context_library_converter.cc",
     "contextual_tasks_context_scoring_utils.cc",
     "contextual_tasks_context_scoring_utils.h",
@@ -75,13 +77,14 @@ source_set("impl") {
       "android/contextual_tasks_bridge.cc",
       "android/contextual_tasks_bridge.h",
     ]
-  } else {
-    sources += [ "active_task_context_provider_impl.cc" ]
   }
 
   deps = [
     ":contextual_tasks",
+    ":ui",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/contextual_search",
     "//chrome/browser/favicon",
     "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
@@ -90,6 +93,7 @@ source_set("impl") {
     "//chrome/browser/passage_embeddings",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
+    "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_list_interface",
     "//chrome/browser/ui/tabs:tabs_public",
@@ -101,10 +105,13 @@ source_set("impl") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/omnibox/browser",
+    "//components/optimization_guide/core:model_execution",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/core",
     "//components/sessions:session_id",
     "//components/sync/model",
     "//components/tabs:public",
+    "//components/url_deduplication",
     "//components/visited_url_ranking/public",
     "//content/public/browser",
     "//third_party/lens_server_proto:lens_overlay_proto",
@@ -112,19 +119,6 @@ source_set("impl") {
 
   if (is_android) {
     deps += [ ":jni_headers" ]
-  } else {
-    deps += [
-      ":ui",
-      "//chrome/browser:browser_public_dependencies",
-      "//chrome/browser/contextual_search",
-      "//chrome/browser/ui",
-      "//chrome/browser/ui:browser_list",
-      "//chrome/browser/ui/tabs:tab_list_interface",
-      "//chrome/browser/ui/tabs:tab_strip",
-      "//components/optimization_guide/core:model_execution",
-      "//components/optimization_guide/proto:optimization_guide_proto",
-      "//components/url_deduplication",
-    ]
   }
 }
 

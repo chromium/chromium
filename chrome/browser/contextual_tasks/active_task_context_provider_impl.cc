@@ -9,6 +9,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
@@ -80,15 +81,19 @@ ActiveTaskContextProviderImpl::ActiveTaskContextProviderImpl(
                                 *this) {
   CHECK(contextual_tasks_service_);
   contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
-  active_tab_change_subscription_ = browser_window_->RegisterActiveTabDidChange(
-      base::BindRepeating(&ActiveTaskContextProviderImpl::OnActiveTabChanged,
-                          base::Unretained(this)));
-
-  // Observe the active tab's WebContents on startup.
-  OnActiveTabChanged(browser_window);
+  auto* tab_list_interface = TabListInterface::From(browser_window_);
+  if (tab_list_interface) {
+    tab_list_interface->AddTabListInterfaceObserver(this);
+    // Observe the active tab's WebContents on startup.
+    OnActiveTabChanged(tab_list_interface->GetActiveTab());
+  }
 }
 
-ActiveTaskContextProviderImpl::~ActiveTaskContextProviderImpl() = default;
+ActiveTaskContextProviderImpl::~ActiveTaskContextProviderImpl() {
+  if (auto* tab_list_interface = TabListInterface::From(browser_window_)) {
+    tab_list_interface->RemoveTabListInterfaceObserver(this);
+  }
+}
 
 void ActiveTaskContextProviderImpl::AddObserver(
     ActiveTaskContextProvider::Observer* observer) {
@@ -106,9 +111,8 @@ void ActiveTaskContextProviderImpl::SetSessionHandleGetter(
 }
 
 void ActiveTaskContextProviderImpl::OnActiveTabChanged(
-    BrowserWindowInterface* browser_window_interface) {
+    tabs::TabInterface* active_tab) {
   // Start observing the new active tab's WebContents.
-  tabs::TabInterface* active_tab = browser_window_->GetActiveTabInterface();
   Observe(active_tab ? active_tab->GetContents() : nullptr);
 
   // Update the context based on the new active tab.
