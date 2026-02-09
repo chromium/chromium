@@ -43,6 +43,21 @@ namespace actor {
 
 namespace {
 
+void MaybeRunLater(base::OnceClosure task) {
+  // TODO(b/461256502): This killswitch-guarded change made it so the doesn't
+  // re-post the reply from Act() but this means (to ensure consistent async
+  // behavior) we need to PostTask the cases where we would otherwise run the
+  // callback synchronously. Once this killswitch is removed this function can
+  // be renamed to RunLater.
+  if (base::FeatureList::IsEnabled(
+          actor::kGlicPerformActionsReturnsBeforeStateChange)) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(task));
+  } else {
+    std::move(task).Run();
+  }
+}
+
 bool IsStateActorControlledAndNotWaiting(ActorTask::State state) {
   return (state == ActorTask::State::kCreated ||
           state == ActorTask::State::kActing ||
@@ -257,19 +272,7 @@ void ActorTask::SetState(State new_state) {
         ui::UiEventDispatcher::ChangeTaskState{
             .task_id = id_, .old_state = old_state, .new_state = new_state});
   }
-  if (base::FeatureList::IsEnabled(
-          actor::kGlicPerformActionsReturnsBeforeStateChange)) {
-    // The callback_for_act_ is posted before calling SetState. We want that to
-    // invoke before the client sees the state change so post that as well.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ActorKeyedService::NotifyTaskStateChanged,
-                       actor::ActorKeyedService::Get(profile_)->GetWeakPtr(),
-                       id_, state_));
-  } else {
-    actor::ActorKeyedService::Get(profile_)->NotifyTaskStateChanged(id_,
-                                                                    state_);
-  }
+  actor::ActorKeyedService::Get(profile_)->NotifyTaskStateChanged(id_, state_);
 
   // If the state is to be finished/cancelled record a histogram.
   if (state_ == kFinished || state_ == kCancelled || state_ == kFailed) {
@@ -288,15 +291,17 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
   if (IsUnderUserControl()) {
     journal_->Log(GURL(), id(), "ActorTask::Act",
                   JournalDetailsBuilder().AddError("Task is paused").Build());
-    std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskPaused),
-                            std::nullopt, {});
+    MaybeRunLater(base::BindOnce(
+        std::move(callback), MakeResult(mojom::ActionResultCode::kTaskPaused),
+        std::nullopt, std::vector<ActionResultWithLatencyInfo>()));
     return;
   }
   if (IsCompleted()) {
     journal_->Log(GURL(), id(), "ActorTask::Act",
                   JournalDetailsBuilder().AddError("Task is Stopped").Build());
-    std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskWentAway),
-                            std::nullopt, {});
+    MaybeRunLater(base::BindOnce(
+        std::move(callback), MakeResult(mojom::ActionResultCode::kTaskWentAway),
+        std::nullopt, std::vector<ActionResultWithLatencyInfo>()));
     return;
   }
 
@@ -304,9 +309,10 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
     journal_->Log(
         GURL(), id(), "ActorTask::Act",
         JournalDetailsBuilder().AddError("Task is Waiting for User").Build());
-    std::move(callback).Run(
+    MaybeRunLater(base::BindOnce(
+        std::move(callback),
         MakeResult(mojom::ActionResultCode::kInvalidTaskStateForAct),
-        std::nullopt, {});
+        std::nullopt, std::vector<ActionResultWithLatencyInfo>()));
     return;
   }
 

@@ -507,8 +507,15 @@ void ActorKeyedService::OnActionsFinished(
   TRACE_EVENT0("actor", "ActorKeyedService::OnActionsFinished");
   // If the result if Ok then we must not have a failed action.
   CHECK(!IsOk(*result) || !index_of_failed_action);
-  RunLater(base::BindOnce(std::move(callback), result->code,
-                          index_of_failed_action, std::move(action_results)));
+
+  if (base::FeatureList::IsEnabled(
+          actor::kGlicPerformActionsReturnsBeforeStateChange)) {
+    std::move(callback).Run(result->code, index_of_failed_action,
+                            std::move(action_results));
+  } else {
+    RunLater(base::BindOnce(std::move(callback), result->code,
+                            index_of_failed_action, std::move(action_results)));
+  }
 }
 
 void ActorKeyedService::StopAllTasks(ActorTask::StoppedReason stop_reason) {
