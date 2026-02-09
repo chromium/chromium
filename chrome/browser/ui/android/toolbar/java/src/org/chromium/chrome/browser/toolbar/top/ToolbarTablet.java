@@ -695,13 +695,8 @@ public class ToolbarTablet extends ToolbarLayout {
             }
 
             int width = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-            if (availableWidth >= width) {
-                setOptionalButtonVisibility(true);
-                return width;
-            } else {
-                setOptionalButtonVisibility(false);
-                return 0;
-            }
+            setOptionalButtonVisibility(availableWidth >= width);
+            return Math.min(availableWidth, width);
         }
 
         @Override

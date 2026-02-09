@@ -47,12 +47,7 @@ public abstract class ToolbarChildButton extends ToolbarChild {
         assert isToolbarTabletResizeRefactorEnabled();
 
         int width = mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-        if (availableWidth >= width) {
-            setHasSpaceToShow(true);
-            return width;
-        } else {
-            setHasSpaceToShow(false);
-            return 0;
-        }
+        setHasSpaceToShow(availableWidth >= width);
+        return Math.min(availableWidth, width);
     }
 }
