@@ -221,9 +221,9 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
   }
 #endif
   manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSync,
-                                  AccessPoint::kUnknown);
-  CheckSigninMetrics(
-      {.sign_in = AccessPoint::kUnknown, .sync_opt_in = AccessPoint::kUnknown});
+                                  AccessPoint::kStartPage);
+  CheckSigninMetrics({.sign_in = AccessPoint::kStartPage,
+                      .sync_opt_in = AccessPoint::kStartPage});
 
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
   EXPECT_EQ(1, num_successful_signouts_);
@@ -232,8 +232,8 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
       manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email.empty());
   EXPECT_TRUE(manager_->GetPrimaryAccountId(ConsentLevel::kSync).empty());
   EXPECT_TRUE(manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin).IsEmpty());
-  CheckSigninMetrics({.sign_in = AccessPoint::kUnknown,
-                      .sync_opt_in = AccessPoint::kUnknown,
+  CheckSigninMetrics({.sign_in = AccessPoint::kStartPage,
+                      .sync_opt_in = AccessPoint::kStartPage,
                       .sign_out = signin_metrics::ProfileSignout::kTest,
                       .turn_off_sync = signin_metrics::ProfileSignout::kTest});
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -266,16 +266,16 @@ TEST_F(PrimaryAccountManagerTest, SignOutRevoke) {
   token_service_->UpdateCredentials(other_account_id, "token");
   manager_->SetPrimaryAccountInfo(
       account_tracker()->GetAccountInfo(main_account_id), ConsentLevel::kSync,
-      AccessPoint::kUnknown);
-  CheckSigninMetrics(
-      {.sign_in = AccessPoint::kUnknown, .sync_opt_in = AccessPoint::kUnknown});
+      AccessPoint::kStartPage);
+  CheckSigninMetrics({.sign_in = AccessPoint::kStartPage,
+                      .sync_opt_in = AccessPoint::kStartPage});
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_EQ(main_account_id,
             manager_->GetPrimaryAccountId(ConsentLevel::kSync));
 
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
-  CheckSigninMetrics({.sign_in = AccessPoint::kUnknown,
-                      .sync_opt_in = AccessPoint::kUnknown,
+  CheckSigninMetrics({.sign_in = AccessPoint::kStartPage,
+                      .sync_opt_in = AccessPoint::kStartPage,
                       .sign_out = signin_metrics::ProfileSignout::kTest,
                       .turn_off_sync = signin_metrics::ProfileSignout::kTest});
 
@@ -296,25 +296,25 @@ TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
       AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com");
   manager_->SetPrimaryAccountInfo(
       account_tracker()->GetAccountInfo(main_account_id), ConsentLevel::kSync,
-      AccessPoint::kUnknown);
-  CheckSigninMetrics(
-      {.sign_in = AccessPoint::kUnknown, .sync_opt_in = AccessPoint::kUnknown});
+      AccessPoint::kStartPage);
+  CheckSigninMetrics({.sign_in = AccessPoint::kStartPage,
+                      .sync_opt_in = AccessPoint::kStartPage});
 
   signin_client()->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
   EXPECT_EQ(0, num_successful_signouts_);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  CheckSigninMetrics(
-      {.sign_in = AccessPoint::kUnknown, .sync_opt_in = AccessPoint::kUnknown});
+  CheckSigninMetrics({.sign_in = AccessPoint::kStartPage,
+                      .sync_opt_in = AccessPoint::kStartPage});
 
   signin_client()->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::ALLOW);
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
   EXPECT_EQ(1, num_successful_signouts_);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  CheckSigninMetrics({.sign_in = AccessPoint::kUnknown,
-                      .sync_opt_in = AccessPoint::kUnknown,
+  CheckSigninMetrics({.sign_in = AccessPoint::kStartPage,
+                      .sync_opt_in = AccessPoint::kStartPage,
                       .sign_out = signin_metrics::ProfileSignout::kTest,
                       .turn_off_sync = signin_metrics::ProfileSignout::kTest});
 }
@@ -330,22 +330,22 @@ TEST_F(PrimaryAccountManagerTest, UnconsentedSignOutWhileProhibited) {
       AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com");
   CoreAccountInfo account_info = account_tracker()->GetAccountInfo(account_id);
   manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSignin,
-                                  AccessPoint::kUnknown);
+                                  AccessPoint::kStartPage);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  CheckSigninMetrics({.sign_in = AccessPoint::kUnknown});
+  CheckSigninMetrics({.sign_in = AccessPoint::kStartPage});
 
   signin_client()->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
-  CheckSigninMetrics({.sign_in = AccessPoint::kUnknown});
+  CheckSigninMetrics({.sign_in = AccessPoint::kStartPage});
 
   signin_client()->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::ALLOW);
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
-  CheckSigninMetrics({.sign_in = AccessPoint::kUnknown,
+  CheckSigninMetrics({.sign_in = AccessPoint::kStartPage,
                       .sign_out = signin_metrics::ProfileSignout::kTest});
 }
 #endif
@@ -361,16 +361,16 @@ TEST_F(PrimaryAccountManagerTest, RevokeSyncConsentAllowedSignoutProhibited) {
       AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com");
   manager_->SetPrimaryAccountInfo(
       account_tracker()->GetAccountInfo(main_account_id), ConsentLevel::kSync,
-      AccessPoint::kUnknown);
+      AccessPoint::kStartPage);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  CheckSigninMetrics(
-      {.sign_in = AccessPoint::kUnknown, .sync_opt_in = AccessPoint::kUnknown});
+  CheckSigninMetrics({.sign_in = AccessPoint::kStartPage,
+                      .sync_opt_in = AccessPoint::kStartPage});
 
   signin_client()->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
   manager_->RevokeSyncConsent(signin_metrics::ProfileSignout::kTest);
-  CheckSigninMetrics({.sign_in = AccessPoint::kUnknown,
-                      .sync_opt_in = AccessPoint::kUnknown,
+  CheckSigninMetrics({.sign_in = AccessPoint::kStartPage,
+                      .sync_opt_in = AccessPoint::kStartPage,
                       .turn_off_sync = signin_metrics::ProfileSignout::kTest});
 
   // Unconsented primary account not changed.
@@ -383,8 +383,8 @@ TEST_F(PrimaryAccountManagerTest, RevokeSyncConsentAllowedSignoutProhibited) {
 #if !BUILDFLAG(IS_CHROMEOS)
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
-  CheckSigninMetrics({.sign_in = AccessPoint::kUnknown,
-                      .sync_opt_in = AccessPoint::kUnknown,
+  CheckSigninMetrics({.sign_in = AccessPoint::kStartPage,
+                      .sync_opt_in = AccessPoint::kStartPage,
                       .turn_off_sync = signin_metrics::ProfileSignout::kTest});
 #endif
 }
@@ -398,7 +398,7 @@ TEST_F(PrimaryAccountManagerTest, NoopSignOutDoesNotNotifyObservers) {
       AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com");
   CoreAccountInfo account_info = account_tracker()->GetAccountInfo(account_id);
   manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSignin,
-                                  AccessPoint::kUnknown);
+                                  AccessPoint::kStartPage);
   EXPECT_EQ(1, num_unconsented_account_changed_);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
@@ -707,7 +707,7 @@ TEST_F(PrimaryAccountManagerTest, RevokeSyncConsent) {
   CoreAccountId account_id =
       AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com");
   manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
-                                  ConsentLevel::kSync, AccessPoint::kUnknown);
+                                  ConsentLevel::kSync, AccessPoint::kStartPage);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
   manager_->RevokeSyncConsent(signin_metrics::ProfileSignout::kTest);
@@ -724,7 +724,7 @@ TEST_F(PrimaryAccountManagerTest, ClearPrimaryAccount) {
   CoreAccountId account_id =
       AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com");
   manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
-                                  ConsentLevel::kSync, AccessPoint::kUnknown);
+                                  ConsentLevel::kSync, AccessPoint::kStartPage);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
