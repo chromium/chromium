@@ -334,7 +334,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(fake_identity);
     AuthenticationServiceFactory::GetForProfile(GetProfile())
-        ->SignIn(fake_identity, signin_metrics::AccessPoint::kUnknown);
+        ->SignIn(fake_identity, signin_metrics::AccessPoint::kStartPage);
   }
 
   web::WebTaskEnvironment task_environment_;
