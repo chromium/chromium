@@ -31,7 +31,9 @@ TEST_P(FendCoreParamTest, Test) {
   EXPECT_EQ(result, GetParam().expected);
 }
 
-// Tests which should NOT break from a fend-core roll.
+// Tests which should NEVER break from a fend-core roll.
+// These tests should only test very basic functionality of the crate, or any
+// logic inside `fend_core_ffi_glue.rs`.
 INSTANTIATE_TEST_SUITE_P(
     , FendCoreParamTest,
     testing::ValuesIn<FendCoreTestCase>({
@@ -41,9 +43,10 @@ INSTANTIATE_TEST_SUITE_P(
             .expected = "2",
         },
         {
+            // This must not be affected by rounding changes.
             .name = "NoApproxString",
-            .query = "1/3",
-            .expected = "0.33",
+            .query = "1/9",
+            .expected = "0.11",
         },
 
         {
@@ -67,6 +70,36 @@ INSTANTIATE_TEST_SUITE_P(
             .expected = std::nullopt,
         },
 
+        // Queries which could be interpreted as a partial non-math query.
+        {
+            .name = "PartialC",
+            .query = "c",
+            .expected = std::nullopt,
+        },
+        {
+            .name = "PartialM",
+            .query = "m",
+            .expected = std::nullopt,
+        },
+        {
+            .name = "PartialPi",
+            .query = "pi",
+            .expected = std::nullopt,
+        },
+
+    }),
+    [](const testing::TestParamInfo<FendCoreTestCase> &info) {
+      return info.param.name;
+    });
+
+// Tests which SHOULDN'T break from a fend-core roll.
+// These tests are disabled as these should be caught by upstream tests, and we
+// do not mind upstream changing the behaviour of these tests.
+// See https://crbug.com/481248245 for more details.
+// These tests can be run with `--gtest_also_run_disabled_tests`.
+INSTANTIATE_TEST_SUITE_P(
+    DISABLED_MayFail, FendCoreParamTest,
+    testing::ValuesIn<FendCoreTestCase>({
         {
             .name = "UnitConversion",
             .query = "2 miles in meters",
@@ -151,23 +184,6 @@ INSTANTIATE_TEST_SUITE_P(
             .name = "UppercaseSin",
             .query = "SIN pi",
             .expected = "0",
-        },
-
-        // Queries which could be interpreted as a partial non-math query.
-        {
-            .name = "PartialC",
-            .query = "c",
-            .expected = std::nullopt,
-        },
-        {
-            .name = "PartialM",
-            .query = "m",
-            .expected = std::nullopt,
-        },
-        {
-            .name = "PartialPi",
-            .query = "pi",
-            .expected = std::nullopt,
         },
 
         {
