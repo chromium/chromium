@@ -376,7 +376,7 @@ namespace {
 
 bool ShouldEnableFeatureOnProcess(
     features::internal::PAFeatureEnabledProcesses enabled_processes,
-    const std::string& process_type) {
+    std::string_view process_type) {
   switch (enabled_processes) {
     case features::internal::PAFeatureEnabledProcesses::kBrowserOnly:
       return process_type.empty();
@@ -465,7 +465,7 @@ std::optional<DanglingPointerFreeInfo> TakeDanglingPointerFreeInfo(
 // Extract from the StackTrace output, the signature of the pertinent caller.
 // This function is meant to be used only by Chromium developers, to list what
 // are all the dangling raw_ptr occurrences in a table.
-std::string ExtractDanglingPtrSignature(std::string stacktrace) {
+std::string ExtractDanglingPtrSignature(std::string_view stacktrace) {
   std::vector<std::string_view> lines = SplitStringPiece(
       stacktrace, "\r\n", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY);
 
@@ -822,7 +822,7 @@ void InstallUnretainedDanglingRawPtrChecks() {
   }
 }
 
-void ReconfigurePartitionForKnownProcess(const std::string& process_type) {
+void ReconfigurePartitionForKnownProcess(std::string_view process_type) {
   DCHECK_NE(process_type, switches::kZygoteProcess);
   // TODO(keishi): Move the code to enable BRP back here after Finch
   // experiments.
@@ -894,7 +894,7 @@ void PartitionAllocSupport::ReconfigureForTests() {
 
 // static
 bool PartitionAllocSupport::ShouldEnableMemoryTagging(
-    const std::string& process_type) {
+    std::string_view process_type) {
   // Check kPartitionAllocMemoryTagging first so the Feature is activated even
   // when mte bootloader flag is disabled.
   if (!base::FeatureList::IsEnabled(
@@ -920,7 +920,7 @@ bool PartitionAllocSupport::ShouldEnableMemoryTaggingInRendererProcess() {
 
 // static
 bool PartitionAllocSupport::ShouldEnablePartitionAllocWithAdvancedChecks(
-    const std::string& process_type) {
+    std::string_view process_type) {
 #if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return false;
 #else
@@ -937,7 +937,7 @@ bool PartitionAllocSupport::ShouldEnablePartitionAllocWithAdvancedChecks(
 
 // static
 PartitionAllocSupport::BrpConfiguration
-PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
+PartitionAllocSupport::GetBrpConfiguration(std::string_view process_type) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
     !PA_BUILDFLAG(FORCE_DISABLE_BACKUP_REF_PTR_FEATURE)
@@ -969,8 +969,7 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   };
 }
 
-void PartitionAllocSupport::ReconfigureEarlyish(
-    const std::string& process_type) {
+void PartitionAllocSupport::ReconfigureEarlyish(std::string_view process_type) {
   {
     base::AutoLock scoped_lock(lock_);
 
@@ -1015,7 +1014,7 @@ void PartitionAllocSupport::ReconfigureEarlyish(
 }
 
 void PartitionAllocSupport::ReconfigureAfterZygoteFork(
-    const std::string& process_type) {
+    std::string_view process_type) {
   {
     base::AutoLock scoped_lock(lock_);
     // TODO(bartekn): Switch to DCHECK once confirmed there are no issues.
@@ -1043,9 +1042,8 @@ void PartitionAllocSupport::ReconfigureAfterZygoteFork(
 }
 
 void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
-    const std::string& process_type,
-    bool configure_dangling_pointer_detector,
-    bool is_in_death_test_child) {
+    std::string_view process_type,
+    FeatureListConfiguration config) {
 #if !BUILDFLAG(IS_WIN)
   // TODO(mikt): Fix failure on `DelayloadsTest.ChromeElfDllLoadSanityTest`.
   CHECK(process_type == GetProcessType());
@@ -1054,11 +1052,11 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   // In Death Tests, `FeatureList` is never initialized. Even in these cases
   // we call this method to finalize the allocator configuration.
   // TODO(https://crbug.com/432019338): Remove this param once fixed.
-  if (!is_in_death_test_child) {
+  if (!config.is_in_death_test_child) {
     CHECK(base::FeatureList::GetInstance());
   }
 
-  if (configure_dangling_pointer_detector) {
+  if (config.configure_dangling_pointer_detector) {
     base::allocator::InstallDanglingRawPtrChecks();
   }
   base::allocator::InstallUnretainedDanglingRawPtrChecks();
@@ -1329,7 +1327,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 }
 
 void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
-    const std::string& process_type) {
+    std::string_view process_type) {
   {
     base::AutoLock scoped_lock(lock_);
 
@@ -1485,7 +1483,7 @@ void PartitionAllocSupport::OnBackgrounded() {
 
 #if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 std::string PartitionAllocSupport::ExtractDanglingPtrSignatureForTests(
-    std::string stacktrace) {
+    std::string_view stacktrace) {
   return ExtractDanglingPtrSignature(stacktrace);
 }
 #endif

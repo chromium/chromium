@@ -61,7 +61,7 @@ constexpr char kKeyMaxQuarantineSize[] = "max-quarantine-size";
 
 ::partition_alloc::internal::SchedulerLoopQuarantineConfig
 GetSchedulerLoopQuarantineConfiguration(
-    const std::string& process_type,
+    std::string_view process_type,
     SchedulerLoopQuarantineBranchType branch_type) {
   ::partition_alloc::internal::SchedulerLoopQuarantineConfig config = {};
 

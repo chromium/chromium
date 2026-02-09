@@ -78,12 +78,14 @@ FuzzerEnvironment::FuzzerEnvironment(int argc, const char* const* argv)
   // feature in the future, after evaluating the amount of code to be updated.
   // It would be interesting, because MojoLPM would highlight area lacking
   // proper testing.
-  const bool check_dangling_pointers = true;
+  base::allocator::FeatureListConfiguration config{
+      .configure_dangling_pointer_detector = true,
+  };
 
   // Among other things, this will install the hooks to determine the
   // `MiraclePtr Status`, and some additional memory safety checks.
   base::allocator::PartitionAllocSupport::Get()
-      ->ReconfigureAfterFeatureListInit("", check_dangling_pointers);
+      ->ReconfigureAfterFeatureListInit("", config);
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 }
 

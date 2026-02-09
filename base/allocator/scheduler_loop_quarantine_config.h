@@ -31,7 +31,7 @@ enum class SchedulerLoopQuarantineBranchType {
 // Returns quarantine configuration for `process_name` and `branch_type`.
 BASE_EXPORT ::partition_alloc::internal::SchedulerLoopQuarantineConfig
 GetSchedulerLoopQuarantineConfiguration(
-    const std::string& process_type,
+    std::string_view process_type,
     SchedulerLoopQuarantineBranchType branch_type);
 
 }  // namespace base::allocator

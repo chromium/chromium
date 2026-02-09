@@ -54,6 +54,12 @@ BASE_EXPORT void MakeFreeNoOp();
 BASE_EXPORT void ReconfigureSchedulerLoopQuarantineBranch(
     SchedulerLoopQuarantineBranchType branch_type);
 
+// Configuration for `ReconfigureAfterFeatureListInit()`.
+struct BASE_EXPORT FeatureListConfiguration {
+  bool configure_dangling_pointer_detector = true;
+  bool is_in_death_test_child = false;
+};
+
 // Allows to re-configure PartitionAlloc at run-time.
 class BASE_EXPORT PartitionAllocSupport {
  public:
@@ -90,13 +96,11 @@ class BASE_EXPORT PartitionAllocSupport {
   //
   // *AfterTaskRunnerInit() may be called more than once.
   void ReconfigureForTests();
-  void ReconfigureEarlyish(const std::string& process_type);
-  void ReconfigureAfterZygoteFork(const std::string& process_type);
-  void ReconfigureAfterFeatureListInit(
-      const std::string& process_type,
-      bool configure_dangling_pointer_detector = true,
-      bool is_in_death_test_child = false);
-  void ReconfigureAfterTaskRunnerInit(const std::string& process_type);
+  void ReconfigureEarlyish(std::string_view process_type);
+  void ReconfigureAfterZygoteFork(std::string_view process_type);
+  void ReconfigureAfterFeatureListInit(std::string_view process_type,
+                                       FeatureListConfiguration config = {});
+  void ReconfigureAfterTaskRunnerInit(std::string_view process_type);
 
   // |has_main_frame| tells us if the renderer contains a main frame.
   // The default value is intended for other process types, where the parameter
@@ -106,16 +110,16 @@ class BASE_EXPORT PartitionAllocSupport {
 
 #if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
   static std::string ExtractDanglingPtrSignatureForTests(
-      std::string stacktrace);
+      std::string_view stacktrace);
 #endif
 
   static PartitionAllocSupport* Get();
 
-  static BrpConfiguration GetBrpConfiguration(const std::string& process_type);
+  static BrpConfiguration GetBrpConfiguration(std::string_view process_type);
 
   // Returns true if memory tagging should be enabled if available for the given
   // process type. May be called multiple times per process.
-  static bool ShouldEnableMemoryTagging(const std::string& process_type);
+  static bool ShouldEnableMemoryTagging(std::string_view process_type);
 
   // For calling from within third_party/blink/.
   static bool ShouldEnableMemoryTaggingInRendererProcess();
@@ -123,7 +127,7 @@ class BASE_EXPORT PartitionAllocSupport {
   // Returns true if PA advanced checks should be enabled if available for the
   // given process type. May be called multiple times per process.
   static bool ShouldEnablePartitionAllocWithAdvancedChecks(
-      const std::string& process_type);
+      std::string_view process_type);
 
  private:
   PartitionAllocSupport();
