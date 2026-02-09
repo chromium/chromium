@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/local_network_access/local_network_access_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/url_constants.h"
@@ -34,6 +37,23 @@ std::string QueryPermissionScript(std::string_view permission) {
   return content::JsReplace(
       "navigator.permissions.query({ name: $1 }).then((result) => "
       "result.state)",
+      permission);
+}
+
+std::string WaitForPermissionScript(std::string_view permission) {
+  return content::JsReplace(
+      R"(
+        (async () => {
+          const status = await navigator.permissions.query({name: $1});
+          if (status.state !== 'prompt') return status.state;
+          await new Promise(resolve => {
+            status.onchange = () => {
+              resolve();
+            };
+          });
+          return status.state;
+        })()
+      )",
       permission);
 }
 
@@ -623,5 +643,136 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
               "document.featurePolicy.allowsFeature('loopback-network')"))
           .ExtractBool());
 }
+
+struct WebRtcTestParam {
+  std::string_view test_name;
+  std::string_view candidate_ip;
+  bool accept_permission;
+  std::string_view expected_loopback_state;
+  std::string_view expected_local_state;
+  std::string_view expected_deprecated_state;
+};
+
+constexpr WebRtcTestParam kWebRtcTestParams[] = {
+    {
+        .test_name = "LoopbackGranted",
+        .candidate_ip = "127.0.0.1",
+        .accept_permission = true,
+        .expected_loopback_state = "granted",
+        .expected_local_state = "prompt",
+        .expected_deprecated_state = "granted",
+    },
+    {
+        .test_name = "LoopbackDenied",
+        .candidate_ip = "127.0.0.1",
+        .accept_permission = false,
+        .expected_loopback_state = "denied",
+        .expected_local_state = "prompt",
+        .expected_deprecated_state = "denied",
+    },
+    {
+        .test_name = "LocalGranted",
+        .candidate_ip = "192.168.1.1",
+        .accept_permission = true,
+        .expected_loopback_state = "prompt",
+        .expected_local_state = "granted",
+        .expected_deprecated_state = "granted",
+    },
+    {
+        .test_name = "LocalDenied",
+        .candidate_ip = "192.168.1.1",
+        .accept_permission = false,
+        .expected_loopback_state = "prompt",
+        .expected_local_state = "denied",
+        .expected_deprecated_state = "denied",
+    },
+};
+
+class LocalNetworkAccessSplitPermissionWebRtcBrowserTest
+    : public LocalNetworkAccessSplitPermissionOnBrowserTest,
+      public testing::WithParamInterface<WebRtcTestParam> {
+ public:
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return std::string(info.param.test_name);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      network::features::kLocalNetworkAccessChecksWebRTC};
+};
+
+IN_PROC_BROWSER_TEST_P(LocalNetworkAccessSplitPermissionWebRtcBrowserTest,
+                       SetRemoteDescription) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_public_server().GetURL("a.com", kTreatAsPublicAddressPath)));
+
+  // Configure the permission request response.
+  bubble_factory()->set_response_type(
+      GetParam().accept_permission
+          ? permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL
+          : permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
+
+  const std::string remote_description = base::StringPrintf(
+      R"(v=0
+o=- 3988109818200882900 2 IN IP4 0.0.0.0
+s=-
+t=0 0
+a=msid-semantic: WMS
+m=application 9 UDP/DTLS/SCTP webrtc-datachannel
+c=IN IP4 0.0.0.0
+a=mid:0
+a=ice-ufrag:someRemoteUfrag
+a=ice-pwd:someRemotePasswordGeneratedString
+a=sctpmap:5000 webrtc-datachannel 1024
+a=fingerprint:sha-256 11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00
+a=candidate:1 1 UDP 2130706431 %s 12345 typ host generation 0
+)",
+      GetParam().candidate_ip);
+
+  std::string script = R"(
+    (async () => {
+      const pc = new RTCPeerConnection();
+      const dataChannel = pc.createDataChannel("myWebRTCChannel");
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      await pc.setRemoteDescription({
+        type: 'answer',
+        sdp: $1
+      });
+    })()
+  )";
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace(script, remote_description)));
+
+  // Verify permission states. WebRTC asks for permission asynchronously, so we
+  // wait for the permission state to switch from "prompt" before we check it.
+  if (GetParam().expected_loopback_state != "prompt") {
+    EXPECT_EQ(GetParam().expected_loopback_state,
+              content::EvalJs(web_contents(),
+                              WaitForPermissionScript("loopback-network")));
+    EXPECT_EQ("prompt", content::EvalJs(web_contents(), QueryPermissionScript(
+                                                            "local-network")));
+  } else {
+    EXPECT_EQ(GetParam().expected_local_state,
+              content::EvalJs(web_contents(),
+                              WaitForPermissionScript("local-network")));
+    EXPECT_EQ("prompt",
+              content::EvalJs(web_contents(),
+                              QueryPermissionScript("loopback-network")));
+  }
+
+  EXPECT_EQ(GetParam().expected_deprecated_state,
+            content::EvalJs(web_contents(),
+                            QueryPermissionScript("local-network-access")));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    LocalNetworkAccessSplitPermissionWebRtcBrowserTest,
+    testing::ValuesIn(kWebRtcTestParams),
+    LocalNetworkAccessSplitPermissionWebRtcBrowserTest::DescribeParams);
 
 }  // namespace local_network_access

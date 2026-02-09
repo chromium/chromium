@@ -11,7 +11,7 @@
   "use strict";
 
   promise_test(async t => {
-    await test_driver.set_permission({ name: 'local-network-access' }, "denied");
+    await test_driver.set_permission({ name: 'loopback-network' }, "denied");
 
     const pc = new RTCPeerConnection();
     const dataChannel = await pc.createDataChannel("myWebRTCChannel");
@@ -31,7 +31,7 @@
   }, 'setRemoteDescription() doesn\'t crash with denied permission and local address.');
 
   promise_test(async t => {
-    await test_driver.set_permission({ name: 'local-network-access' }, "granted");
+    await test_driver.set_permission({ name: 'loopback-network' }, "granted");
 
     const pc = new RTCPeerConnection();
     const dataChannel = await pc.createDataChannel("myWebRTCChannel");
@@ -48,7 +48,7 @@
   }, 'setRemoteDescription() doesn\'t crash with granted permission and local address.');
 
   promise_test(async t => {
-    await test_driver.set_permission({ name: 'local-network-access' }, "denied");
+    await test_driver.set_permission({ name: 'loopback-network' }, "denied");
 
     const pc = new RTCPeerConnection();
     const dataChannel = await pc.createDataChannel("myWebRTCChannel");
@@ -74,7 +74,7 @@
   }, 'addIceCandidate() doesn\'t crash with denied permission and local address.');
 
   promise_test(async t => {
-    await test_driver.set_permission({ name: 'local-network-access' }, "granted");
+    await test_driver.set_permission({ name: 'loopback-network' }, "granted");
 
     const pc = new RTCPeerConnection();
     const dataChannel = await pc.createDataChannel("myWebRTCChannel");
@@ -99,7 +99,7 @@
   for (const serverType of ['turn', 'stun']) {
     for (const permissionStatus of ['granted', 'denied']) {
       promise_test(async t => {
-        await test_driver.set_permission({ name: 'local-network-access' },
+        await test_driver.set_permission({ name: 'loopback-network' },
           permissionStatus);
 
         const pc = new RTCPeerConnection({

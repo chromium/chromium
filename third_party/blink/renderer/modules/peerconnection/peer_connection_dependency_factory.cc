@@ -280,10 +280,22 @@ class LocalNetworkAccessPermission final
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     CHECK(RuntimeEnabledFeatures::LocalNetworkAccessWebRTCEnabled());
 
+    mojom::blink::PermissionName permission_name =
+        mojom::blink::PermissionName::LOCAL_NETWORK_ACCESS;
+    if (base::FeatureList::IsEnabled(
+            network::features::kLocalNetworkAccessChecksSplitPermissions)) {
+      network::mojom::IPAddressSpace target_address_space =
+          FromSocketAddress(candidate_address);
+      if (target_address_space == network::mojom::IPAddressSpace::kLoopback) {
+        permission_name = mojom::blink::PermissionName::LOOPBACK_NETWORK;
+      } else {
+        permission_name = mojom::blink::PermissionName::LOCAL_NETWORK;
+      }
+    }
+
     callback_ = std::move(callback);
     permission_service_->RequestPermission(
-        CreatePermissionDescriptor(
-            mojom::blink::PermissionName::LOCAL_NETWORK_ACCESS),
+        CreatePermissionDescriptor(permission_name),
         /*user_gesture=*/false,
         BindRepeating(
             &LocalNetworkAccessPermission::OnPermissionRequested,
