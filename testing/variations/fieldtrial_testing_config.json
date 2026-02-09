@@ -9492,27 +9492,6 @@
             ]
         }
     ],
-    "DeviceBoundSessionCredentials2": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20251014",
-                    "params": {
-                        "OriginTrialFeedback": "true",
-                        "SchemaVersion": "2"
-                    },
-                    "enable_features": [
-                        "DeviceBoundSessions",
-                        "DeviceBoundSessionsFederatedRegistration",
-                        "PersistDeviceBoundSessions"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeviceBoundSessionCredentialsMac": [
         {
             "platforms": [
@@ -9555,6 +9534,27 @@
                         "DeviceBoundSessionsForRestrictedSitesExperimentId",
                         "EnableOAuthMultiloginStandardCookiesBinding",
                         "UseUnexportableKeyServiceInBrowserProcess"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DeviceBoundSessionsStandardLaunch": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260130",
+                    "params": {
+                        "RequireOriginTrialTokens": "false",
+                        "SchemaVersion": "3"
+                    },
+                    "enable_features": [
+                        "DeviceBoundSessions",
+                        "DeviceBoundSessionsFederatedRegistration",
+                        "PersistDeviceBoundSessions"
                     ]
                 }
             ]
