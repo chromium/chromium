@@ -1536,6 +1536,7 @@ public class ManualFillingControllerTest {
         final int topBound = 20;
         final int rightBound = 30;
         final int bottomBound = 40;
+        final int horizontalMargin = 20;
 
         updateConfiguration(/* widthDp= */ 1600, /* heightDp= */ 2560);
         addBrowserTab(mMediator, 1111, null);
@@ -1550,6 +1551,9 @@ public class ManualFillingControllerTest {
                 .thenReturn(barHeight);
         when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height))
                 .thenReturn(paddingForNotch);
+        when(mMockResources.getDimensionPixelSize(
+                        R.dimen.keyboard_accessory_bar_dynamic_positioning_horizontal_margin))
+                .thenReturn(horizontalMargin);
 
         mController.show(
                 /* waitForKeyboard= */ true, /* isCredentialFieldOrHasAutofillSuggestions= */ true);
@@ -1563,7 +1567,7 @@ public class ManualFillingControllerTest {
         assertEquals(KeyboardAccessoryStyle.NotchPosition.TOP, style.getNotchPosition());
 
         assertEquals(bottomBound * density, style.getVerticalOffset());
-        assertEquals(leftBound * density, style.getHorizontalOffset());
+        assertEquals(leftBound * density + horizontalMargin, style.getHorizontalOffset());
     }
 
     @Test
@@ -1575,6 +1579,7 @@ public class ManualFillingControllerTest {
         final int topBound = 20;
         final int rightBound = 30;
         final int bottomBound = 40;
+        final int horizontalMargin = 20;
 
         updateConfiguration(/* widthDp= */ 1600, /* heightDp= */ 2560);
         addBrowserTab(mMediator, 1111, null);
@@ -1589,6 +1594,9 @@ public class ManualFillingControllerTest {
                 .thenReturn(barHeight);
         when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height))
                 .thenReturn(paddingForNotch);
+        when(mMockResources.getDimensionPixelSize(
+                        R.dimen.keyboard_accessory_bar_dynamic_positioning_horizontal_margin))
+                .thenReturn(horizontalMargin);
 
         mController.show(
                 /* waitForKeyboard= */ true, /* isCredentialFieldOrHasAutofillSuggestions= */ true);
@@ -1602,7 +1610,7 @@ public class ManualFillingControllerTest {
         assertEquals(KeyboardAccessoryStyle.NotchPosition.BOTTOM, style.getNotchPosition());
 
         assertEquals(topBound * density - paddingForNotch - barHeight, style.getVerticalOffset());
-        assertEquals(leftBound * density, style.getHorizontalOffset());
+        assertEquals(leftBound * density + horizontalMargin, style.getHorizontalOffset());
     }
 
     @Test
