@@ -284,15 +284,6 @@ void WorkerThread::Terminate() {
       CrossThreadBindOnce(&WorkerThread::PrepareForShutdownOnWorkerThread,
                           CrossThreadUnretained(this)));
 
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWorkerThreadSequentialShutdown)) {
-    PostCrossThreadTask(
-        *task_runner, FROM_HERE,
-        CrossThreadBindOnce(&WorkerThread::PerformShutdownOnWorkerThread,
-                            CrossThreadUnretained(this)));
-    return;
-  }
-
   bool perform_shutdown = false;
   {
     base::AutoLock locker(lock_);
@@ -450,19 +441,14 @@ void WorkerThread::ChildThreadStartedOnWorkerThreadLegacy(WorkerThread* child) {
   {
     base::AutoLock locker(lock_);
     DCHECK_EQ(ThreadState::kRunning, thread_state_);
-    if (base::FeatureList::IsEnabled(
-            blink::features::kWorkerThreadSequentialShutdown)) {
-      CHECK_EQ(TerminationProgress::kNotRequested, termination_progress_);
-      ++num_child_threads_;
-      CHECK_EQ(child_threads_.size(), num_child_threads_);
-    }
+    CHECK_EQ(TerminationProgress::kNotRequested, termination_progress_);
+    ++num_child_threads_;
+    CHECK_EQ(child_threads_.size(), num_child_threads_);
   }
 }
 
 bool WorkerThread::ChildThreadStartedOnWorkerThread(WorkerThread* child) {
   DCHECK(IsCurrentThread());
-  CHECK(base::FeatureList::IsEnabled(
-      blink::features::kWorkerThreadSequentialShutdown));
   CHECK(base::FeatureList::IsEnabled(
       blink::features::kWorkerThreadRespectTermRequest));
   {
@@ -483,13 +469,6 @@ bool WorkerThread::ChildThreadStartedOnWorkerThread(WorkerThread* child) {
 void WorkerThread::ChildThreadTerminatedOnWorkerThread(WorkerThread* child) {
   DCHECK(IsCurrentThread());
   child_threads_.erase(child);
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWorkerThreadSequentialShutdown)) {
-    if (child_threads_.empty() && IsRequestedToTerminate()) {
-      PerformShutdownOnWorkerThread();
-    }
-    return;
-  }
 
   bool perform_shutdown = false;
   {
@@ -848,32 +827,16 @@ void WorkerThread::PerformShutdownOnWorkerThread() {
   DCHECK(IsCurrentThread());
   {
     base::AutoLock locker(lock_);
-    if (!base::FeatureList::IsEnabled(
-            blink::features::kWorkerThreadSequentialShutdown)) {
-      DCHECK_NE(TerminationProgress::kNotRequested, termination_progress_);
-    } else {
-      DCHECK_EQ(TerminationProgress::kPerforming, termination_progress_);
-    }
+    DCHECK_EQ(TerminationProgress::kPerforming, termination_progress_);
     DCHECK_EQ(ThreadState::kReadyToShutdown, thread_state_);
     if (exit_code_ == ExitCode::kNotTerminated)
       SetExitCode(ExitCode::kGracefullyTerminated);
   }
 
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWorkerThreadSequentialShutdown)) {
-    // When child workers are present, wait for them to shutdown before shutting
-    // down this thread. ChildThreadTerminatedOnWorkerThread() is responsible
-    // for completing shutdown on the worker thread after the last child shuts
-    // down.
-    if (!child_threads_.empty()) {
-      return;
-    }
-  } else {
-    // Child workers must not exist when `PerformShutdownOnWorkerThread()`
-    // is called because it has already been checked before calling the
-    // function.
-    CHECK(child_threads_.empty());
-  }
+  // Child workers must not exist when `PerformShutdownOnWorkerThread()`
+  // is called because it has already been checked before calling the
+  // function.
+  CHECK(child_threads_.empty());
 
   inspector_task_runner_->Dispose();
   if (worker_inspector_controller_) {
