@@ -38,22 +38,15 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 
 }  // namespace
 
-class BookmarksSyncPerfTest
-    : public SyncTest,
-      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
+class BookmarksSyncPerfTest : public SyncTest {
  public:
-  BookmarksSyncPerfTest() : SyncTest(TWO_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  BookmarksSyncPerfTest() : SyncTest(TWO_CLIENT) {}
 
   BookmarksSyncPerfTest(const BookmarksSyncPerfTest&) = delete;
   BookmarksSyncPerfTest& operator=(const BookmarksSyncPerfTest&) = delete;
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
-    return GetParam();
+    return SyncTest::SetupSyncMode::kSyncTransportOnly;
   }
 
   // Adds |num_urls| new unique bookmarks to the bookmark bar for |profile|.
@@ -68,16 +61,7 @@ class BookmarksSyncPerfTest
   // Returns the number of bookmarks stored in the bookmark bar for |profile|.
   size_t GetURLCount(int profile);
 
- protected:
-  StoreType GetStoreType() const {
-    return GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly
-               ? StoreType::kAccountStore
-               : StoreType::kLocalOrSyncableStore;
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   // Returns a new unique bookmark URL.
   std::string NextIndexedURL();
 
@@ -91,25 +75,30 @@ class BookmarksSyncPerfTest
 void BookmarksSyncPerfTest::AddURLs(int profile, size_t num_urls) {
   for (size_t i = 0; i < num_urls; ++i) {
     ASSERT_TRUE(AddURL(profile, 0, NextIndexedURLTitle(),
-                       GURL(NextIndexedURL()), GetStoreType()) != nullptr);
+                       GURL(NextIndexedURL()),
+                       StoreType::kAccountStore) != nullptr);
   }
 }
 
 void BookmarksSyncPerfTest::UpdateURLs(int profile) {
   for (const std::unique_ptr<bookmarks::BookmarkNode>& child :
-       GetBookmarkBarNode(profile, GetStoreType())->children()) {
+       GetBookmarkBarNode(profile, StoreType::kAccountStore)->children()) {
     ASSERT_TRUE(SetURL(profile, child.get(), GURL(NextIndexedURL())));
   }
 }
 
 void BookmarksSyncPerfTest::RemoveURLs(int profile) {
-  while (!GetBookmarkBarNode(profile, GetStoreType())->children().empty()) {
-    Remove(profile, GetBookmarkBarNode(profile, GetStoreType()), 0);
+  while (!GetBookmarkBarNode(profile, StoreType::kAccountStore)
+              ->children()
+              .empty()) {
+    Remove(profile, GetBookmarkBarNode(profile, StoreType::kAccountStore), 0);
   }
 }
 
 size_t BookmarksSyncPerfTest::GetURLCount(int profile) {
-  return GetBookmarkBarNode(profile, GetStoreType())->children().size();
+  return GetBookmarkBarNode(profile, StoreType::kAccountStore)
+      ->children()
+      .size();
 }
 
 std::string BookmarksSyncPerfTest::NextIndexedURL() {
@@ -120,12 +109,7 @@ std::u16string BookmarksSyncPerfTest::NextIndexedURLTitle() {
   return IndexedURLTitle(url_title_number_++);
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         BookmarksSyncPerfTest,
-                         GetSyncTestModes(),
-                         testing::PrintToStringParamName());
-
-IN_PROC_BROWSER_TEST_P(BookmarksSyncPerfTest, P0) {
+IN_PROC_BROWSER_TEST_F(BookmarksSyncPerfTest, P0) {
   ASSERT_TRUE(SetupSync());
 
   perf_test::PerfResultReporter reporter =
