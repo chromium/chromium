@@ -32,8 +32,10 @@ constexpr std::string_view kSeparator = "|";
 // false otherwise.
 bool AutofillProfileMatchesAccountInfo(const AutofillProfile& profile,
                                        const AccountInfo& info) {
-  return profile.GetRawInfo(NAME_FULL) == base::UTF8ToUTF16(info.full_name) &&
-         profile.GetRawInfo(EMAIL_ADDRESS) == base::UTF8ToUTF16(info.email);
+  return profile.GetRawInfo(NAME_FULL) ==
+             base::UTF8ToUTF16(info.GetFullName().value_or("")) &&
+         profile.GetRawInfo(EMAIL_ADDRESS) ==
+             base::UTF8ToUTF16(info.GetEmail());
 }
 
 void RemoveNickname(std::string& name) {
@@ -128,9 +130,9 @@ void AccountNameEmailStore::MaybeUpdateOrCreateAccountNameEmail(
     return;
   }
 
-  AccountInfo info;
-  info.full_name = account_name;
-  info.email = email;
+  AccountInfo info = AccountInfo::Builder(GaiaId("dummy"), email)
+                         .SetFullName(account_name)
+                         .Build();
   UpdateOrCreateAccountNameEmail(info);
 }
 #endif
@@ -210,15 +212,18 @@ void AccountNameEmailStore::RemoveAccountNameEmail(bool is_soft_removal) {
       /*non_permanent_account_profile_removal=*/is_soft_removal);
 }
 
-void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(AccountInfo& info) {
-  // During signin the `OnExtendedAccountInfoUpdated` method might call this
-  // method with an empty `info.full_name` since not all data arrives all at
-  // once and `AccountInfo` is updated multiple times. The kAccountNameEmail
-  // profile and hash signature require non-empty full_name value.
-  if (info.IsEmpty() || info.full_name.empty()) {
+void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(
+    const AccountInfo& info) {
+  // During signin, `OnExtendedAccountInfoUpdated()` might call this method with
+  // `info.GetFullName()` being equal to std::nullopt since not all data arrives
+  // all at once and `AccountInfo` is updated multiple times. The
+  // kAccountNameEmail profile and hash signature require non-empty full name
+  // value.
+  if (info.IsEmpty() || !info.GetFullName().has_value()) {
     return;
   }
-  CHECK(!info.email.empty());
+  CHECK(!info.GetEmail().empty());
+  std::string full_name = std::string(*info.GetFullName());
 
   // The account name can contain nicknames in one of the following styles:
   // 1. John Smith (JJ)
@@ -226,9 +231,12 @@ void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(AccountInfo& info) {
   // where the JJ is the nickname added to the account data (either by the user
   // itself or as a result of the account being managed by a separate app).
   // The nickname shouldn't be added to the AutofillProfile and is removed.
-  RemoveNickname(info.full_name);
+  RemoveNickname(full_name);
 
-  const std::string new_hash = HashAccountInfo(info);
+  AccountInfo updated_info =
+      AccountInfo::Builder(info).SetFullName(full_name).Build();
+
+  const std::string new_hash = HashAccountInfo(updated_info);
   const bool hashes_different =
       new_hash !=
       pref_service_->GetString(prefs::kAutofillNameAndEmailProfileSignature);
@@ -247,16 +255,17 @@ void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(AccountInfo& info) {
       address_data_manager_->GetProfilesByRecordType(
           AutofillProfile::RecordType::kAccountNameEmail);
   const bool account_name_email_exists = !account_name_email_profiles.empty();
-  if (account_name_email_exists && AutofillProfileMatchesAccountInfo(
-                                       *account_name_email_profiles[0], info)) {
+  if (account_name_email_exists &&
+      AutofillProfileMatchesAccountInfo(*account_name_email_profiles[0],
+                                        updated_info)) {
     // A valid kAccountNameEmail profile already exists. This function was
     // called as a side effect of the other, unrelated flow.
     return;
   }
 
-  // If the name not available, the `info.full_name` can default to the
-  // `info.email`. In this case, don't create the profile.
-  if (info.full_name == info.email) {
+  // If the name not available, the full name can default to the email. In this
+  // case, don't create the profile.
+  if (full_name == updated_info.GetEmail()) {
     // If the account info was updated, make sure any prior profile is removed.
     RemoveAccountNameEmail(/*is_soft_removal=*/false);
     // Ensure that the hash reflects the current values of the account info.
@@ -269,7 +278,7 @@ void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(AccountInfo& info) {
     RemoveAccountNameEmail(/*is_soft_removal=*/true);
   }
 
-  address_data_manager_->AddProfile(AutofillProfile{info});
+  address_data_manager_->AddProfile(AutofillProfile{updated_info});
   if (hashes_different) {
     pref_service_->SetString(prefs::kAutofillNameAndEmailProfileSignature,
                              new_hash);
@@ -280,8 +289,8 @@ void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(AccountInfo& info) {
 
 std::string AccountNameEmailStore::HashAccountInfo(
     const AccountInfo& info) const {
-  return base::NumberToString(base::PersistentHash(
-      base::StrCat({info.full_name, kSeparator, info.email})));
+  return base::NumberToString(base::PersistentHash(base::StrCat(
+      {info.GetFullName().value_or(""), kSeparator, info.GetEmail()})));
 }
 
 std::optional<AccountNameEmailStore::ProfileUpdateBlockReason>

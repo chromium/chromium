@@ -147,9 +147,10 @@ AutofillProfile KatakanaProfile2() {
 }
 
 AutofillProfile AccountNameEmailProfile() {
-  AccountInfo info;
-  info.full_name = "George Washington";
-  info.email = "george.washington@gmail.com";
+  AccountInfo info =
+      AccountInfo::Builder(GaiaId("dummy"), "george.washington@gmail.com")
+          .SetFullName("George Washington")
+          .Build();
   return AutofillProfile{info};
 }
 

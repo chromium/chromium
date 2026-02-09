@@ -53,17 +53,19 @@ class AccountNameEmailStoreCoreTest : public testing::Test {
         store_(test_adm_, *identity_manager_, sync_service_, *prefs_) {}
 
   void CreatePrimaryAccount(std::string_view name, std::string_view email) {
-    // Calling `MakePrimaryAccountAvailable` registers the account with the
+    // Calling `MakePrimaryAccountAvailable()` registers the account with the
     // `AccountTrackerService`. This is a prerequisite for the next call, which
     // would otherwise crash when trying to update an unknown account.
     //
-    // This initial call uses an `AccountInfo` with an empty `full_name`, so the
-    // full profile update is deferred to the `UpdateAccountInfoForAccount`
-    // call.
+    // This initial call creates an `AccountInfo` with an std::nullopt full
+    // name, so the full profile update is deferred to the
+    // `UpdateAccountInfoForAccount()` call if non-empty `name` is provided.
     AccountInfo info = identity_test_env().MakePrimaryAccountAvailable(
         email.data(), signin::ConsentLevel::kSignin);
-    info.full_name = name;
-    identity_test_env().UpdateAccountInfoForAccount(info);
+    if (!name.empty()) {
+      info = AccountInfo::Builder(info).SetFullName(name).Build();
+      identity_test_env().UpdateAccountInfoForAccount(info);
+    }
   }
 
   AccountInfo GetPrimaryAccountInfo() {
@@ -179,7 +181,7 @@ TEST_F(AccountNameEmailStoreTest, NameUpdatedToEmailAddress) {
 
   // Update the name to an email address.
   AccountInfo info = GetPrimaryAccountInfo();
-  info.full_name = kTestEmailAddress1;
+  info = AccountInfo::Builder(info).SetFullName(kTestEmailAddress1).Build();
   OnAccountUpdated(info);
 
   // The old profile should be removed and nothing should be created.
@@ -187,7 +189,7 @@ TEST_F(AccountNameEmailStoreTest, NameUpdatedToEmailAddress) {
 
   // Update the name to a valid value.
   info = GetPrimaryAccountInfo();
-  info.full_name = kTestName2;
+  info = AccountInfo::Builder(info).SetFullName(kTestName2).Build();
   OnAccountUpdated(info);
 
   // A profile with a valid name should be created.
@@ -283,8 +285,10 @@ TEST_F(AccountNameEmailStoreTest, OnExtendedAccountInfoUpdated_UpdatePath) {
                   base::UTF8ToUTF16(kTestEmailAddress2)))));
 
   AccountInfo info = GetPrimaryAccountInfo();
-  info.full_name = kTestName2;
-  info.email = kTestEmailAddress2;
+  info = AccountInfo::Builder(info)
+             .SetFullName(kTestName2)
+             .SetEmail(kTestEmailAddress2)
+             .Build();
   // This call should trigger OnExtendedAccountInfoUpdated and update the
   // `kAccountNameEmail` profile with new info.
   OnAccountUpdated(info);
@@ -382,13 +386,13 @@ TEST_F(AccountNameEmailStoreTest, ProfileReappearsAfterNameChange) {
             features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get());
 
   AccountInfo info = GetPrimaryAccountInfo();
-  info.full_name = kTestName2;
+  info = AccountInfo::Builder(info).SetFullName(kTestName2).Build();
   OnAccountUpdated(info);
 
-  EXPECT_THAT(
-      address_data_manager().GetProfiles(),
-      ElementsAre(IsCorrectAccountNameEmail(base::UTF8ToUTF16(info.full_name),
-                                            base::UTF8ToUTF16(info.email))));
+  EXPECT_THAT(address_data_manager().GetProfiles(),
+              ElementsAre(IsCorrectAccountNameEmail(
+                  base::UTF8ToUTF16(*info.GetFullName()),
+                  base::UTF8ToUTF16(info.GetEmail()))));
 
   EXPECT_EQ(pref_service().GetInteger(
                 prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
@@ -622,7 +626,7 @@ TEST_F(AccountNameEmailStoreTest,
                            AutofillProfile::RecordType::kAccountNameEmail)));
 
   AccountInfo info = GetPrimaryAccountInfo();
-  info.full_name = kTestName2;
+  info = AccountInfo::Builder(info).SetFullName(kTestName2).Build();
 
   // Set the hash pref to the updated value before the actual autofill profile
   // data changes.
@@ -633,10 +637,10 @@ TEST_F(AccountNameEmailStoreTest,
   // Try recreating the profile.
   OnAccountUpdated(info);
 
-  EXPECT_THAT(
-      address_data_manager().GetProfiles(),
-      ElementsAre(IsCorrectAccountNameEmail(base::UTF8ToUTF16(info.full_name),
-                                            base::UTF8ToUTF16(info.email))));
+  EXPECT_THAT(address_data_manager().GetProfiles(),
+              ElementsAre(IsCorrectAccountNameEmail(
+                  base::UTF8ToUTF16(*info.GetFullName()),
+                  base::UTF8ToUTF16(info.GetEmail()))));
 }
 
 #if BUILDFLAG(IS_IOS)

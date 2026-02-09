@@ -247,7 +247,8 @@ CreditCardMerchantBenefit GetActiveCreditCardMerchantBenefit();
 base::flat_set<url::Origin> GetOriginsForMerchantBenefit();
 
 // Prevents kAccountNameEmail profile from being created.
-void HideAccountNameEmailProfile(PrefService* pref_service, AccountInfo info);
+void HideAccountNameEmailProfile(PrefService* pref_service,
+                                 const AccountInfo& info);
 
 // Adds `card` with a set `issuer_id`, `benefit` and `benefit_source` to
 // `personal_data`. Also configures a category benefit with the

@@ -758,7 +758,8 @@ base::flat_set<url::Origin> GetOriginsForMerchantBenefit() {
           url::Origin::Create(GURL("http://www.example3.com"))};
 }
 
-void HideAccountNameEmailProfile(PrefService* pref_service, AccountInfo info) {
+void HideAccountNameEmailProfile(PrefService* pref_service,
+                                 const AccountInfo& info) {
   // Sets the `kAutofillNameAndEmailProfileNotSelectedCounter` and
   // `kAutofillNameAndEmailProfileSignature` prefs in `pref_service`, such that
   // the kAccountNameEmail profile that matches `info` will be removed.
@@ -767,8 +768,8 @@ void HideAccountNameEmailProfile(PrefService* pref_service, AccountInfo info) {
       features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get() + 1);
   pref_service->SetString(
       prefs::kAutofillNameAndEmailProfileSignature,
-      base::NumberToString(base::PersistentHash(
-          base::StrCat({info.full_name, "|", info.email}))));
+      base::NumberToString(base::PersistentHash(base::StrCat(
+          {info.GetFullName().value_or(""), "|", info.GetEmail()}))));
 }
 
 void SetUpCreditCardAndBenefitData(

@@ -228,8 +228,8 @@ AutofillProfile::AutofillProfile(AddressCountryCode country_code)
 AutofillProfile::AutofillProfile(const AccountInfo& info)
     : AutofillProfile(RecordType::kAccountNameEmail,
                       i18n_model_definition::kLegacyHierarchyCountryCode) {
-  SetRawInfo(NAME_FULL, base::UTF8ToUTF16(info.full_name));
-  SetRawInfo(EMAIL_ADDRESS, base::UTF8ToUTF16(info.email));
+  SetRawInfo(NAME_FULL, base::UTF8ToUTF16(info.GetFullName().value_or("")));
+  SetRawInfo(EMAIL_ADDRESS, base::UTF8ToUTF16(info.GetEmail()));
   FinalizeAfterImport();
 }
 

@@ -112,7 +112,7 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
 
   // Updates the kAccountNameEmail autofill profile with the account `info`. If
   // the kAccountNameEmail profile doesn't exist, it is created.
-  void UpdateOrCreateAccountNameEmail(AccountInfo& info);
+  void UpdateOrCreateAccountNameEmail(const AccountInfo& info);
 
   // Hashes concatenated full_name and email_address delimited by |.
   std::string HashAccountInfo(const AccountInfo& info) const;
