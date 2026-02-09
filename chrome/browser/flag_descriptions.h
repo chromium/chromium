@@ -1596,11 +1596,10 @@ inline constexpr char kDesktopPWAsTabStripCustomizationsDescription[] =
     "Enable PWAs to customize their tab strip when in tabbed mode by adding "
     "the `tab_strip` manifest field.";
 
-inline constexpr char kSubAppsName[] = "Desktop PWA Sub Apps";
+inline constexpr char kSubAppsName[] = "Sub Apps for Isolated Web Apps";
 inline constexpr char kSubAppsDescription[] =
-    "Enable installed PWAs to create shortcuts by installing their sub apps. "
-    "Prototype implementation of: "
-    "https://github.com/ivansandrk/multi-apps/blob/main/explainer.md";
+    "Enable IWAs to install sub apps that have their own manifest and can "
+    "integrate with the OS, in many ways as if it were a separate app.";
 
 inline constexpr char kDevToolsIndividualRequestThrottlingName[] =
     "Enable individual request throttling in DevTools";
