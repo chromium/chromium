@@ -9621,3 +9621,8 @@ crbug.com/479874917 external/wpt/navigation-api/scroll-behavior/manual-scroll-fr
 
 # Gardener 2026-02-06
 crbug.com/482449299 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/scatterND.https.any.html?gpu [ Failure ]
+
+# Flakily times out when initial navigation commits before about:blank on headless.
+crbug.com/40615943 [ Linux ] external/wpt/html/browsers/the-window-object/navigate-to-about-blank-while-initial-load-pending.html [ Pass Timeout ]
+crbug.com/40615943 [ Mac ] external/wpt/html/browsers/the-window-object/navigate-to-about-blank-while-initial-load-pending.html [ Pass Timeout ]
+

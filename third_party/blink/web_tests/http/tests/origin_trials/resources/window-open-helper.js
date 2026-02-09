@@ -17,7 +17,7 @@ receiveMessageFromTarget = (event) => {
   if (MESSAGE_RESULT in event.data) {
     test(function() {
       assert_true(event.data.result, event.data.description);
-    }, 'Trial is enabled in document after window.open');
+    }, 'Trial is enabled in document after window.open ' + event.data.description);
   }
 }
 
