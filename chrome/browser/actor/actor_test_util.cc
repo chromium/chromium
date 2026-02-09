@@ -411,12 +411,6 @@ Actions MakeWait(std::optional<base::TimeDelta> duration,
   return actions;
 }
 
-Actions MakeAttemptLogin() {
-  Actions actions;
-  actions.add_actions()->mutable_attempt_login();
-  return actions;
-}
-
 Actions MakeScriptTool(content::RenderFrameHost& rfh,
                        const std::string& name,
                        const std::string& input_arguments) {

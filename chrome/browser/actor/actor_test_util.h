@@ -129,7 +129,6 @@ optimization_guide::proto::Actions MakeDragAndRelease(
 optimization_guide::proto::Actions MakeWait(
     std::optional<base::TimeDelta> duration = std::nullopt,
     std::optional<tabs::TabHandle> observe_tab_handle = std::nullopt);
-optimization_guide::proto::Actions MakeAttemptLogin();
 optimization_guide::proto::Actions MakeScriptTool(
     content::RenderFrameHost& rfh,
     const std::string& name,
