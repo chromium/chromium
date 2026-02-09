@@ -30,6 +30,8 @@ class WalletHttpClient {
   using UpsertPublicPassCallback = base::OnceCallback<void(
       const base::expected<std::string, WalletRequestError>&)>;
 
+  // Callback for UpsertPrivatePass requests. On success, it returns the
+  // `PrivatePass` as it is stored in the Wallet backend.
   using UpsertPrivatePassCallback = base::OnceCallback<void(
       const base::expected<PrivatePass, WalletRequestError>&)>;
 
