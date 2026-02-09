@@ -32,6 +32,10 @@ class MockAutofillClient : public TestAutofillClient {
  public:
   MOCK_METHOD(void, CloseEntityImportBubble, (), (override));
   MOCK_METHOD(void, ShowAutofillAiLocalSaveNotification, (), (override));
+  MOCK_METHOD(void,
+              ShowAutofillAiFailureNotification,
+              (std::u16string message),
+              (override));
 };
 
 class AutofillAiWalletUtilsTest : public ::testing::Test {
@@ -148,11 +152,12 @@ TEST_F(AutofillAiWalletUtilsTest, HandleWalletUpdateResponseSuccess) {
 
 // Tests that the import data bubble is closed and we fall back to a local save
 // if the prompt type is `kSave`.
-TEST_F(AutofillAiWalletUtilsTest, HandleWalletUpsertResponseFailureSave) {
+TEST_F(AutofillAiWalletUtilsTest, HandleWalletSaveResponseFailure) {
   {
     InSequence s;
-    EXPECT_CALL(autofill_client(), CloseEntityImportBubble());
-    EXPECT_CALL(autofill_client(), ShowAutofillAiLocalSaveNotification());
+    EXPECT_CALL(autofill_client(), CloseEntityImportBubble);
+    EXPECT_CALL(autofill_client(), ShowAutofillAiLocalSaveNotification);
+    EXPECT_CALL(autofill_client(), ShowAutofillAiFailureNotification).Times(0);
   }
 
   EntityInstance passport =
@@ -167,12 +172,16 @@ TEST_F(AutofillAiWalletUtilsTest, HandleWalletUpsertResponseFailureSave) {
               UnorderedElementsAre(passport.CopyWithNewRecordType(kLocal)));
 }
 
-// Tests that the import data bubble is closed after a failed Wallet upsert
-// response when the prompt type is `kUpdate`.
-TEST_F(AutofillAiWalletUtilsTest, HandleWalletUpsertResponseFailurepdate) {
-  EXPECT_CALL(autofill_client(), CloseEntityImportBubble());
-  EXPECT_CALL(autofill_client(), ShowAutofillAiLocalSaveNotification())
-      .Times(0);
+// Tests that the import data bubble is closed and an error message is shown
+// after a failed Wallet upsert response when the prompt type is `kUpdate`.
+TEST_F(AutofillAiWalletUtilsTest, HandleWalletUpdateResponseFailure) {
+  {
+    InSequence s;
+    EXPECT_CALL(autofill_client(), CloseEntityImportBubble);
+    EXPECT_CALL(autofill_client(), ShowAutofillAiLocalSaveNotification)
+        .Times(0);
+    EXPECT_CALL(autofill_client(), ShowAutofillAiFailureNotification);
+  }
 
   EntityInstance passport =
       GetPassportEntityInstance({.record_type = kServerWallet});
@@ -182,12 +191,16 @@ TEST_F(AutofillAiWalletUtilsTest, HandleWalletUpsertResponseFailurepdate) {
       /*wallet_response=*/std::nullopt);
 }
 
-// Tests that the import data bubble is closed after a failed Wallet upsert
-// response when the prompt type is `kMigrate`.
-TEST_F(AutofillAiWalletUtilsTest, HandleWalletUpsertResponseFailureMigrate) {
-  EXPECT_CALL(autofill_client(), CloseEntityImportBubble());
-  EXPECT_CALL(autofill_client(), ShowAutofillAiLocalSaveNotification())
-      .Times(0);
+// Tests that the import data bubble is closed and an error message is shown
+// after a failed Wallet upsert response when the prompt type is `kMigrate`.
+TEST_F(AutofillAiWalletUtilsTest, HandleWalletMigrateResponseFailure) {
+  {
+    InSequence s;
+    EXPECT_CALL(autofill_client(), CloseEntityImportBubble());
+    EXPECT_CALL(autofill_client(), ShowAutofillAiLocalSaveNotification())
+        .Times(0);
+    EXPECT_CALL(autofill_client(), ShowAutofillAiFailureNotification);
+  }
 
   EntityInstance passport =
       GetPassportEntityInstance({.record_type = kServerWallet});

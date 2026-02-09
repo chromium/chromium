@@ -9,6 +9,8 @@
 
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -32,7 +34,8 @@ void UpdateUi(base::WeakPtr<AutofillClient> client, UiAction action) {
       client->ShowAutofillAiLocalSaveNotification();
       break;
     case UiAction::kUpdateOrMigrateFailureNotification:
-      // TODO(crbug.com/477845712): Implement.
+      client->ShowAutofillAiFailureNotification(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_WALLET_UPDATE_OR_MIGRATE_FAILURE_NOTIFICATION));
       break;
     case UiAction::kNoNotification:
       break;

@@ -697,6 +697,9 @@ class AutofillClient {
   // an upload request to the Wallet server was unsuccessful.
   virtual void ShowAutofillAiLocalSaveNotification();
 
+  // Notifies the user that an Autofill AI operation failed.
+  virtual void ShowAutofillAiFailureNotification(std::u16string message);
+
   virtual void ShowEmailVerifiedToast();
 
   // May return null on platforms where OTPs are not supported.

@@ -308,6 +308,10 @@ void AutofillClient::ShowAutofillAiLocalSaveNotification() {
   NOTIMPLEMENTED();
 }
 
+void AutofillClient::ShowAutofillAiFailureNotification(std::u16string message) {
+  NOTIMPLEMENTED();
+}
+
 void AutofillClient::ShowEmailVerifiedToast() {
   NOTIMPLEMENTED();
 }
