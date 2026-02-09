@@ -1746,10 +1746,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     std::string,
     kServiceWorkerSyntheticResponseDeniedUrlParams);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    std::string,
-    kServiceWorkerSyntheticResponseIgnoredHeaders);
-
 enum class ServiceWorkerSyntheticResponseProcessingMode {
   kDefault,
   kBackgroundThread,

@@ -2261,13 +2261,6 @@ BASE_FEATURE_PARAM(std::string,
                    "denied_url_params",
                    "");
 
-// The comma-separated list of headers to be ignored for the consistency check.
-BASE_FEATURE_PARAM(std::string,
-                   kServiceWorkerSyntheticResponseIgnoredHeaders,
-                   &kServiceWorkerSyntheticResponse,
-                   "ignored_headers",
-                   "date,alt-svc,p3p,strict-transport-security");
-
 // If true, the response data processing is handled in the background thread.
 const base::FeatureParam<ServiceWorkerSyntheticResponseProcessingMode>::Option
     kServiceWorkerSyntheticResponseOffMainThreadOptions[] = {
