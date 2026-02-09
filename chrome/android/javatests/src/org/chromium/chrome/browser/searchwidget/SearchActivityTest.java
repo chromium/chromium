@@ -283,8 +283,7 @@ public class SearchActivityTest {
         LocationBarCoordinator locationBarCoordinator =
                 searchActivity.getLocationBarCoordinatorForTesting();
         locationBarCoordinator.setVoiceRecognitionHandlerForTesting(mHandler);
-        locationBar.beginQuery(
-                IntentOrigin.SEARCH_WIDGET, SearchType.VOICE, /* optionalText= */ null, null);
+        locationBar.beginQuery(IntentOrigin.SEARCH_WIDGET, SearchType.VOICE, null);
         verify(mHandler, times(0))
                 .startVoiceRecognition(
                         VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET);

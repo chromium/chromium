@@ -82,8 +82,15 @@ class UrlBarViewBinder {
                 } catch (IllegalArgumentException rangesDoNotOverlap) {
                     selectionRange = Range.create(textLength, textLength);
                 }
-
                 view.setSelection(selectionRange.getLower(), selectionRange.getUpper());
+                // Post the selection to counter the OS "I-know-better" click to focus override.
+                // The OS forcibly places cursor at the point of click, clearing any
+                // selection preference.
+                // The OS technically supports only two variants when focusing the url bar:
+                // "where user clicked" or "select everything". The variant restoring the
+                // focus is only permitted when focus is requested by software.
+                final var postedRange = selectionRange;
+                view.post(() -> view.setSelection(postedRange.getLower(), postedRange.getUpper()));
                 // Move the accessibility focus to the Omnibox.
                 // This ensures the updated field is announced to the user, especially when the user
                 // recently interacted with Refine button.
