@@ -68,6 +68,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
+#include "media/base/media_switches.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -81,6 +82,7 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_occlusion_notifier.h"
 #include "chrome/browser/glic/host/glic_region_capture_controller.h"
+#include "chrome/browser/glic/media/glic_media_integration.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #endif
@@ -266,6 +268,12 @@ GlicKeyedService::GlicKeyedService(
 
   // This is only used by automation for tests.
   glic_profile_manager->MaybeAutoOpenGlicPanel();
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(media::kHeadlessCaptionEarlyStart)) {
+    GlicMediaIntegration::GetFor(profile_);
+  }
+#endif
 }
 
 GlicKeyedService::~GlicKeyedService() {

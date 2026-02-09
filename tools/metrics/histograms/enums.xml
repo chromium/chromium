@@ -11559,6 +11559,7 @@ from previous Chrome versions.
   <int value="-983087919"
       label="PrioritizeCompositingAfterDelayTrials:enabled"/>
   <int value="-982588611" label="ShimlessRMAOsUpdate:disabled"/>
+  <int value="-982586837" label="HeadlessCaptionEarlyStart:enabled"/>
   <int value="-981993135"
       label="DesktopPWAsAdditionalWindowingControls:enabled"/>
   <int value="-981354827" label="SupportSearchSuggestionForPrerender2:enabled"/>
@@ -18836,6 +18837,7 @@ from previous Chrome versions.
   <int value="1515472077" label="VirtualKeyboardRoundCorners:disabled"/>
   <int value="1515517391" label="TabGroupDeferRemoteNavigations:disabled"/>
   <int value="1515587927" label="FencedFramesM120FeaturesPart2:disabled"/>
+  <int value="1517243374" label="HeadlessCaptionEarlyStart:disabled"/>
   <int value="1517756684"
       label="account-storage-prefs-themes-search-engines:enabled"/>
   <int value="1517863401" label="history-entry-requires-user-gesture"/>

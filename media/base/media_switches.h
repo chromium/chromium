@@ -492,6 +492,9 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kPauseMutedBackgroundAudio);
 // Enable experimental headless captions.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kHeadlessLiveCaption);
 
+// If enabled, Glic will start captioning as soon as a profile is loaded.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kHeadlessCaptionEarlyStart);
+
 // Enable site-specific media link helpers.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaLinkHelpers);
 

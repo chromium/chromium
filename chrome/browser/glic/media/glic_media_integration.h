@@ -11,11 +11,13 @@
 #include "base/functional/callback.h"
 #include "url/origin.h"
 
-namespace optimization_guide {
-namespace proto {
+class Profile;
+
+
+namespace optimization_guide::proto {
 class ContentNode;
-}  // namespace proto
-}  // namespace optimization_guide
+} // namespace optimization_guide::proto
+
 
 namespace content {
 class RenderFrameHost;
@@ -33,6 +35,7 @@ class GlicMediaIntegration {
 
   // May return null if no integration is needed.
   static GlicMediaIntegration* GetFor(content::WebContents*);
+  static GlicMediaIntegration* GetFor(Profile*);
 
   // Use `context_root` to store our context information.  `context_root` will
   // be overwritten.  This selects a frame that has a transcript, if any.
@@ -54,6 +57,9 @@ class GlicMediaIntegration {
   // Set the possibly empty list of origins to exclude from transcription.
   virtual void SetExcludedOrigins(
       const std::vector<url::Origin>& excluded_origins) = 0;
+
+  // Returns true if the integration has been initialized.
+  virtual bool IsInitializedForTesting() const = 0;
 };
 
 }  // namespace glic

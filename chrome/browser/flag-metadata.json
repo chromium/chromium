@@ -3425,7 +3425,12 @@
   {
     "name": "enable-headless-live-caption",
     "owners": [ "liberato@chromium.org", "media-dev@chromium.org" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
+  },
+  {
+    "name": "enable-headless-live-caption-early-start",
+    "owners": [ "liberato@chromium.org", "media-dev@chromium.org" ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-heatmap-palm-detection",

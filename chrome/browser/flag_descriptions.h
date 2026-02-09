@@ -5851,6 +5851,11 @@ inline constexpr char kEnableHeadlessLiveCaptionDescription[] =
     "Enable features related to headless captions exploration. These are "
     "very likely unstable.";
 
+inline constexpr char kHeadlessCaptionEarlyStartName[] =
+    "Headless Caption Early Start";
+inline constexpr char kHeadlessCaptionEarlyStartDescription[] =
+    "Start headless captioning as soon as a profile is loaded.";
+
 inline constexpr char kEnableMediaLinkHelpersName[] = "Media Link Helpers";
 inline constexpr char kEnableMediaLinkHelpersDescription[] =
     "Enable customized per-site media link processing.";
