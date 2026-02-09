@@ -1370,7 +1370,7 @@ BASE_FEATURE(kWebauthnDisabledOnAuto,
 
 // Enables Exclusive Access Manager on Android platform
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kEnableExclusiveAccessManager, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableExclusiveAccessManager, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

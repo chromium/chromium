@@ -909,7 +909,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEnableAndroidSidePanel =
             newCachedFlag(ENABLE_ANDROID_SIDE_PANEL, false);
     public static final CachedFlag sEnableExclusiveAccessManager =
-            newCachedFlag(ENABLE_EXCLUSIVE_ACCESS_MANAGER, false, true);
+            newCachedFlag(ENABLE_EXCLUSIVE_ACCESS_MANAGER, true);
     public static final CachedFlag sEnableFullscreenToAnyScreenAndroid =
             newCachedFlag(ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID, false, true);
     public static final CachedFlag sEnableXAxisActivityTransition =
