@@ -538,6 +538,30 @@
             ]
         }
     ],
+    "AdjustPreconnectRetryInterval": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Multiplier1.2WithZeroDelays",
+                    "params": {
+                        "kPreconnectBackoffMultiplier": "1.2",
+                        "kPreconnectInitialRetryInterval": "0ms",
+                        "kPreconnectNetworkChangeInterval": "0ms"
+                    },
+                    "enable_features": [
+                        "AdjustPreconnectRetryInterval"
+                    ]
+                }
+            ]
+        }
+    ],
     "AggressiveShaderCacheLimits": [
         {
             "platforms": [
