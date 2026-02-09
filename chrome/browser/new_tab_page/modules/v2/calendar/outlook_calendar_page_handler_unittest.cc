@@ -995,7 +995,7 @@ TEST_F(OutlookCalendarPageHandlerTest, NoAttachmentUrlOnRequestFailure) {
       future.Get();
 
   EXPECT_EQ(events2.size(), 3u);
-  EXPECT_EQ(events[0]->attachments.size(), 1u);
+  EXPECT_EQ(events2[0]->attachments.size(), 1u);
 
   ntp::calendar::mojom::AttachmentPtr attachment2 =
       std::move(events2[0]->attachments[0]);

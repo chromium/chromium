@@ -11,6 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -113,8 +114,9 @@ namespace base::test {
 //
 // `GetRepeatingCallback()` allows you to use a single `TestFuture` in code
 // that invokes the callback multiple times.
-// Your test must take care to consume each value before the next value
-// arrives. You can consume the value by calling either `Take()` or `Clear()`.
+// In single value mode, your test must take care to consume each value before
+// the next value arrives. You can consume the value by calling either `Take()`
+// or `Clear()`.
 //
 //   Example for reusing a `TestFuture`:
 //
@@ -151,6 +153,22 @@ namespace base::test {
 //       EXPECT_EQ(future.Get<int>(), 2);
 //     }
 //
+//   `TestFuture` can also operate in a queued mode by passing `Mode::Queue` to
+//   the constructor. In this mode, all values must be consumed before the
+//   `TestFuture` object is destroyed.
+//
+//     TEST_F(MyTestFixture, MyQueueTest) {
+//       TestFuture<int> future(TestFutureMode::kQueue);
+//
+//       // Assume TriggerEvents calls the callback 3 times synchronously or
+//       // asynchronously.
+//       object_under_test.TriggerEvents(future.GetRepeatingCallback());
+//
+//       EXPECT_EQ(future.Take(), 1);
+//       EXPECT_EQ(future.Take(), 2);
+//       EXPECT_EQ(future.Take(), 3);
+//     }
+//
 // Finally, `TestFuture` also supports no-args callbacks:
 //
 //   Example for no-args callbacks:
@@ -168,6 +186,26 @@ namespace base::test {
 // All access to this class and its callbacks must be made from the sequence on
 // which the `TestFuture` was constructed.
 //
+// Used to configure the behavior of `TestFuture`.
+enum class TestFutureMode {
+  // In this mode, the future holds at most one value.
+  //
+  // Methods like `SetValue` will check that the previous value has been
+  // consumed.
+  kSingle,
+
+  // In this mode, the future queues values.
+  //
+  // New values are appended to the queue. `Get` and `Take` access the
+  // front of the queue.
+  //
+  // `Wait` waits until at least one value is available.
+  //
+  // The future tracks all stored values and checks that they are all
+  // consumed before destruction.
+  kQueue,
+};
+
 template <typename... Types>
 class TestFuture {
  public:
@@ -176,7 +214,9 @@ class TestFuture {
   static_assert(std::tuple_size_v<TupleType> > 0,
                 "Don't use TestFuture<> but use TestFuture<void> instead");
 
-  TestFuture() = default;
+  TestFuture() : impl_(std::make_unique<Impl>(TestFutureMode::kSingle)) {}
+  explicit TestFuture(TestFutureMode mode)
+      : impl_(std::make_unique<Impl>(mode)) {}
   TestFuture(TestFuture&&) = default;
   TestFuture(const TestFuture&) = delete;
   TestFuture& operator=(TestFuture&&) = default;
@@ -198,7 +238,7 @@ class TestFuture {
     CheckNotUsedAfterMove();
     DCHECK_CALLED_ON_VALID_SEQUENCE(impl_->sequence_checker);
 
-    if (impl_->values) {
+    if (!impl_->values.empty()) {
       return true;
     }
 
@@ -215,7 +255,7 @@ class TestFuture {
   bool IsReady() const {
     CheckNotUsedAfterMove();
     DCHECK_CALLED_ON_VALID_SEQUENCE(impl_->sequence_checker);
-    return impl_->values.has_value();
+    return !impl_->values.empty();
   }
 
   // Waits for the value to arrive, and returns the I-th value.
@@ -279,9 +319,9 @@ class TestFuture {
   // values, and unblock any waiters. The callback must be invoked on the
   // sequence the TestFuture was created on.
   //
-  // You must take care that the stored value is consumed before the callback
-  // is invoked a second time. You can consume the value by calling either
-  // `Take()` or `Clear()`.
+  // In single value mode, you must take care that the stored value is consumed
+  // before the callback is invoked a second time. You can consume the value by
+  // calling either `Take()` or `Clear()`.
   //
   // Example usage:
   //
@@ -358,9 +398,9 @@ class TestFuture {
   // invoked it will post a task to the sequence the TestFuture was created on,
   // to store all the argument values, and unblock any waiters.
   //
-  // You must take care that the stored value is consumed before the callback
-  // is invoked a second time. You can consume the value by calling either
-  // `Take()` or `Clear()`.
+  // In single value mode, you must take care that the stored value is consumed
+  // before the callback is invoked a second time. You can consume the value by
+  // calling either `Take()` or `Clear()`.
   //
   // Example usage:
   //
@@ -407,7 +447,7 @@ class TestFuture {
   //
   // All outstanding callbacks issued through `GetCallback()` remain valid.
   void Clear() {
-    if (IsReady()) {
+    while (IsReady()) {
       std::ignore = Take();
     }
   }
@@ -460,15 +500,28 @@ class TestFuture {
   // Nested struct, used together with std::unique_ptr to make TestFuture
   // movable.
   struct Impl {
-    Impl() = default;
-    ~Impl() = default;
+    explicit Impl(TestFutureMode mode) : mode(mode) {}
+    ~Impl() {
+      if (mode == TestFutureMode::kQueue) {
+        EXPECT_TRUE(values.empty())
+            << "TestFuture(TestFutureMode::kQueue) destroyed with "
+            << values.size()
+            << " unconsumed values. This likely means that the test "
+               "did not wait for all expected callbacks.";
+      }
+    }
+
+    Impl(const Impl&) = delete;
+    Impl& operator=(const Impl&) = delete;
 
     SEQUENCE_CHECKER(sequence_checker);
+
+    const TestFutureMode mode;
 
     base::RepeatingClosure ready_signal GUARDED_BY_CONTEXT(sequence_checker) =
         base::DoNothing();
 
-    std::optional<TupleType> values GUARDED_BY_CONTEXT(sequence_checker);
+    base::queue<TupleType> values GUARDED_BY_CONTEXT(sequence_checker);
 
     WeakPtrFactory<Impl> weak_ptr_factory{this};
   };
@@ -478,12 +531,14 @@ class TestFuture {
 
     auto new_values = std::make_tuple(std::forward<Types>(values)...);
 
-    EXPECT_FALSE(impl.values.has_value())
-        << "Received new value " << ToString(new_values) << " before old value "
-        << ToString(impl.values.value())
-        << " was consumed through Take() or Clear().";
+    if (impl.mode == TestFutureMode::kSingle) {
+      EXPECT_TRUE(impl.values.empty())
+          << "Received new value " << ToString(new_values)
+          << " before old value " << ToString(impl.values.front())
+          << " was consumed through Take() or Clear().";
+    }
 
-    impl.values = std::move(new_values);
+    impl.values.push(std::move(new_values));
 
     impl.ready_signal.Run();
   }
@@ -499,7 +554,7 @@ class TestFuture {
     DCHECK_CALLED_ON_VALID_SEQUENCE(impl_->sequence_checker);
     bool success = Wait();
     CHECK(success) << "Waiting for value timed out.";
-    return impl_->values.value();
+    return impl_->values.front();
   }
 
   [[nodiscard]] TupleType TakeTuple() {
@@ -508,10 +563,12 @@ class TestFuture {
     bool success = Wait();
     CHECK(success) << "Waiting for value timed out.";
 
-    return std::exchange(impl_->values, {}).value();
+    auto value = std::move(impl_->values.front());
+    impl_->values.pop();
+    return value;
   }
 
-  std::unique_ptr<Impl> impl_ = std::make_unique<Impl>();
+  std::unique_ptr<Impl> impl_;
 };
 
 // Specialization so you can use `TestFuture` to wait for a no-args callback.
@@ -521,6 +578,9 @@ class TestFuture {
 template <>
 class TestFuture<void> {
  public:
+  TestFuture() : implementation_(TestFutureMode::kSingle) {}
+  explicit TestFuture(TestFutureMode mode) : implementation_(mode) {}
+
   // Waits until the callback or `SetValue()` is invoked.
   //
   // Fails your test if a timeout happens, but you can check the return value

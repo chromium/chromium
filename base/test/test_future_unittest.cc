@@ -785,4 +785,37 @@ TEST_F(TestFutureTest,
   EXPECT_EQ(expected_value, new_future.Get());
 }
 
+TEST_F(TestFutureTest, QueueModeShouldAllowMultipleValues) {
+  TestFuture<int> future(TestFutureMode::kQueue);
+
+  future.SetValue(1);
+  future.SetValue(2);
+  future.SetValue(3);
+
+  EXPECT_EQ(1, future.Take());
+  EXPECT_EQ(2, future.Take());
+  EXPECT_EQ(3, future.Take());
+  EXPECT_FALSE(future.IsReady());
+}
+
+TEST_F(TestFutureTest, QueueModeDestructorShouldFailIfUnconsumed) {
+  EXPECT_NONFATAL_FAILURE(
+      {
+        TestFuture<int> future(TestFutureMode::kQueue);
+        future.SetValue(1);
+      },
+      "TestFuture(TestFutureMode::kQueue) destroyed with 1 unconsumed values");
+}
+
+TEST_F(TestFutureTest, QueueModeClearShouldRemoveAllValues) {
+  TestFuture<int> future(TestFutureMode::kQueue);
+  future.SetValue(1);
+  future.SetValue(2);
+  future.SetValue(3);
+
+  future.Clear();
+
+  EXPECT_FALSE(future.IsReady());
+}
+
 }  // namespace base::test
