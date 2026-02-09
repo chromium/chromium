@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/audio_codecs/audio_format.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
@@ -470,9 +471,10 @@ webrtc::SdpAudioFormat ToSdpAudioFormat(
   // rate is not the same as the sample rate.
   const int clockrate_hz =
       configuration->hasSamplerate() ? configuration->samplerate() : 0;
-  const size_t channels = configuration->hasChannels()
-                              ? configuration->channels().ToUIntStrict()
-                              : 0;
+  const size_t channels =
+      configuration->hasChannels()
+          ? StringToUintStrict(configuration->channels()).value_or(0)
+          : 0;
   return {codec_name.Utf8(), clockrate_hz, channels};
 }
 

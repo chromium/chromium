@@ -464,7 +464,7 @@ class WTF_EXPORT String {
   //  - leading '+'
   //  - leading Unicode whitespace
   //  - trailing Unicode whitespace
-  //  - no "-0" (ToUIntStrict and ToUInt64Strict)
+  //  - no "-0" (ToUInt64Strict)
   //  - no out-of-range numbers which the resultant type can't represent
   //
   // If the input string is not acceptable, 0 is returned and |*ok| becomes
@@ -473,8 +473,6 @@ class WTF_EXPORT String {
   // We can use these functions to implement a Web Platform feature only if the
   // input string is already valid according to the specification of the
   // feature.
-  int ToIntStrict(bool* ok = nullptr) const;
-  unsigned ToUIntStrict(bool* ok = nullptr) const;
   unsigned HexToUIntStrict(bool* ok) const;
   uint64_t HexToUInt64Strict(bool* ok) const;
   int64_t ToInt64Strict(bool* ok = nullptr) const;

@@ -444,31 +444,24 @@ SMILTime SVGSMILElement::ParseClockValue(const String& data) {
     return SMILTime::Indefinite();
 
   double result = 0;
-  bool ok;
   wtf_size_t double_point_one = parse.find(':');
   wtf_size_t double_point_two = parse.find(':', double_point_one + 1);
   if (double_point_one == 2 && double_point_two == 5 && parse.length() >= 8) {
-    result += parse.Substring(0, 2).ToUIntStrict(&ok) * 60 * 60;
-    if (!ok)
-      return SMILTime::Unresolved();
-    result += parse.Substring(3, 2).ToUIntStrict(&ok) * 60;
-    if (!ok)
-      return SMILTime::Unresolved();
-    auto parsed = StringToDouble(StringView(parse, 6));
-    if (!parsed) {
+    auto parsed_hour = StringToUintStrict(parse.Substring(0, 2));
+    auto parsed_min = StringToUintStrict(parse.Substring(3, 2));
+    auto parsed_sec = StringToDouble(StringView(parse, 6));
+    if (!parsed_hour || !parsed_min || !parsed_sec) {
       return SMILTime::Unresolved();
     }
-    result += *parsed;
+    result += *parsed_hour * 60 * 60 + *parsed_min * 60 + *parsed_sec;
   } else if (double_point_one == 2 && double_point_two == kNotFound &&
              parse.length() >= 5) {
-    result += parse.Substring(0, 2).ToUIntStrict(&ok) * 60;
-    if (!ok)
-      return SMILTime::Unresolved();
-    auto parsed = StringToDouble(StringView(parse, 3));
-    if (!parsed) {
+    auto parsed_min = StringToUintStrict(parse.Substring(0, 2));
+    auto parsed_sec = StringToDouble(StringView(parse, 3));
+    if (!parsed_min || !parsed_sec) {
       return SMILTime::Unresolved();
     }
-    result += *parsed;
+    result += *parsed_min * 60 + *parsed_sec;
   } else {
     return ParseOffsetValue(parse);
   }
@@ -481,7 +474,6 @@ bool SVGSMILElement::ParseCondition(const String& value,
   String parse_string = value.StripWhiteSpace();
 
   bool is_negated = false;
-  bool ok;
   wtf_size_t pos = parse_string.find('+');
   if (pos == kNotFound) {
     pos = parse_string.find('-');
@@ -518,10 +510,12 @@ bool SVGSMILElement::ParseCondition(const String& value,
   Condition::Type type;
   int repeat = -1;
   if (name_string.StartsWith("repeat(") && name_string.EndsWith(')')) {
-    repeat =
-        name_string.Substring(7, name_string.length() - 8).ToUIntStrict(&ok);
-    if (!ok)
+    auto parsed =
+        StringToUintStrict(name_string.Substring(7, name_string.length() - 8));
+    if (!parsed) {
       return false;
+    }
+    repeat = *parsed;
     name_string = "repeat";
     type = Condition::kSyncBase;
   } else if (name_string == "begin" || name_string == "end") {

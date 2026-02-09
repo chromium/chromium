@@ -1256,11 +1256,10 @@ TEST_P(FrameFetchContextHintsTest, MonitorAllHints) {
 
   // Value of network quality client hints may vary, so only check if the
   // header is present and the values are non-negative/non-empty.
-  bool conversion_ok = false;
-  int rtt_header_value = GetHeaderValue("https://www.example.com/1.gif", "rtt")
-                             .ToIntStrict(&conversion_ok);
-  EXPECT_TRUE(conversion_ok);
-  EXPECT_LE(0, rtt_header_value);
+  auto rtt_header_value =
+      StringToIntStrict(GetHeaderValue("https://www.example.com/1.gif", "rtt"));
+  EXPECT_TRUE(rtt_header_value.has_value());
+  EXPECT_LE(0, *rtt_header_value);
 
   auto downlink_header_value = StringToFloat(
       GetHeaderValue("https://www.example.com/1.gif", "downlink"));
@@ -1348,11 +1347,10 @@ TEST_P(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
 
   // Value of network quality client hints may vary, so only check if the
   // header is present and the values are non-negative/non-empty.
-  bool conversion_ok = false;
-  int rtt_header_value = GetHeaderValue("https://www.example.com/1.gif", "rtt")
-                             .ToIntStrict(&conversion_ok);
-  EXPECT_TRUE(conversion_ok);
-  EXPECT_LE(0, rtt_header_value);
+  auto rtt_header_value =
+      StringToIntStrict(GetHeaderValue("https://www.example.com/1.gif", "rtt"));
+  EXPECT_TRUE(rtt_header_value.has_value());
+  EXPECT_LE(0, *rtt_header_value);
 
   auto downlink_header_value = StringToFloat(
       GetHeaderValue("https://www.example.com/1.gif", "downlink"));

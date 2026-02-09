@@ -277,24 +277,6 @@ String String::NumberToStringFixedWidth(double number,
   return String(converter.ToStringWithFixedWidth(number, decimal_places));
 }
 
-int String::ToIntStrict(bool* ok) const {
-  if (!impl_) {
-    if (ok)
-      *ok = false;
-    return 0;
-  }
-  return impl_->ToInt(NumberParsingOptions::Strict(), ok);
-}
-
-unsigned String::ToUIntStrict(bool* ok) const {
-  if (!impl_) {
-    if (ok)
-      *ok = false;
-    return 0;
-  }
-  return impl_->ToUInt(NumberParsingOptions::Strict(), ok);
-}
-
 unsigned String::HexToUIntStrict(bool* ok) const {
   if (!impl_) {
     if (ok)

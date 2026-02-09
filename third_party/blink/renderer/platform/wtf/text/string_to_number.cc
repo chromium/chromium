@@ -319,6 +319,24 @@ float CharactersToFloat(base::span<const UChar> data, size_t& parsed_length) {
       ToDoubleType<UChar, kAllowTrailingJunk>(data, nullptr, parsed_length));
 }
 
+std::optional<int32_t> StringToIntStrict(const StringView& input) {
+  bool ok = false;
+  constexpr NumberParsingOptions kOption = NumberParsingOptions::Strict();
+  int32_t value = input.Is8Bit()
+                      ? CharactersToInt(input.Span8(), kOption, &ok)
+                      : CharactersToInt(input.Span16(), kOption, &ok);
+  return ok ? std::optional<int32_t>(value) : std::nullopt;
+}
+
+std::optional<uint32_t> StringToUintStrict(const StringView& input) {
+  bool ok = false;
+  constexpr NumberParsingOptions kOption = NumberParsingOptions::Strict();
+  uint32_t value = input.Is8Bit()
+                       ? CharactersToUInt(input.Span8(), kOption, &ok)
+                       : CharactersToUInt(input.Span16(), kOption, &ok);
+  return ok ? std::optional<uint32_t>(value) : std::nullopt;
+}
+
 std::optional<int32_t> StringToInt(const StringView& input) {
   bool ok = false;
   NumberParsingOptions option = NumberParsingOptions::Loose();

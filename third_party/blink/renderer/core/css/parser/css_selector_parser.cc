@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 
@@ -2164,9 +2165,9 @@ bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenStream& stream,
   }
 
   if (n_string.length() > 2) {
-    bool valid;
-    result.second = n_string.Substring(1).ToIntStrict(&valid);
-    return valid;
+    auto parsed = StringToIntStrict(n_string.Substring(1));
+    result.second = parsed.value_or(0);
+    return parsed.has_value();
   }
 
   NumericSign sign = n_string.length() == 1 ? kNoSign : kMinusSign;

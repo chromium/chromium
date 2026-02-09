@@ -426,8 +426,6 @@ class WTF_EXPORT StringImpl {
 
   bool ContainsOnlyWhitespaceOrEmpty();
 
-  int ToInt(NumberParsingOptions, bool* ok) const;
-  wtf_size_t ToUInt(NumberParsingOptions, bool* ok) const;
   int64_t ToInt64(NumberParsingOptions, bool* ok) const;
   uint64_t ToUInt64(NumberParsingOptions, bool* ok) const;
 

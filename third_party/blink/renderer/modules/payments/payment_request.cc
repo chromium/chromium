@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace {
@@ -412,12 +413,11 @@ void SetAndroidPayMethodData(v8::Isolate* isolate,
   // 0 means the merchant did not specify or it was an invalid value
   output->min_google_play_services_version = 0;
   if (android_pay->hasMinGooglePlayServicesVersion()) {
-    bool ok = false;
-    int min_google_play_services_version =
-        android_pay->minGooglePlayServicesVersion().ToIntStrict(&ok);
-    if (ok) {
+    auto min_google_play_services_version =
+        StringToIntStrict(android_pay->minGooglePlayServicesVersion());
+    if (min_google_play_services_version) {
       output->min_google_play_services_version =
-          min_google_play_services_version;
+          *min_google_play_services_version;
     }
   }
 

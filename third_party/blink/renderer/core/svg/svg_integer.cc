@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 
@@ -52,10 +53,9 @@ SVGParsingError SVGInteger::SetValueAsString(const String& string) {
   if (string.empty())
     return SVGParseStatus::kNoError;
 
-  bool valid = true;
-  value_ = StripLeadingAndTrailingHTMLSpaces(string).ToIntStrict(&valid);
-  // toIntStrict returns 0 if valid == false.
-  return valid ? SVGParseStatus::kNoError : SVGParseStatus::kExpectedInteger;
+  auto parsed = StringToIntStrict(StripLeadingAndTrailingHtmlSpaces(string));
+  value_ = parsed.value_or(0);
+  return parsed ? SVGParseStatus::kNoError : SVGParseStatus::kExpectedInteger;
 }
 
 void SVGInteger::Add(const SVGPropertyBase* other, const SVGElement*) {

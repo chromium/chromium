@@ -711,18 +711,6 @@ scoped_refptr<StringImpl> StringImpl::SimplifyWhiteSpace(
   });
 }
 
-int StringImpl::ToInt(NumberParsingOptions options, bool* ok) const {
-  if (Is8Bit())
-    return CharactersToInt(Span8(), options, ok);
-  return CharactersToInt(Span16(), options, ok);
-}
-
-wtf_size_t StringImpl::ToUInt(NumberParsingOptions options, bool* ok) const {
-  if (Is8Bit())
-    return CharactersToUInt(Span8(), options, ok);
-  return CharactersToUInt(Span16(), options, ok);
-}
-
 wtf_size_t StringImpl::HexToUIntStrict(bool* ok) {
   constexpr auto kStrict = NumberParsingOptions::Strict();
   if (Is8Bit()) {
