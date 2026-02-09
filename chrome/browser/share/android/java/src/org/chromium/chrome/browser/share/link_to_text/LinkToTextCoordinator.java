@@ -217,8 +217,8 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         LinkToTextHelper.requestCanonicalUrl(
                 mTab,
                 (canonicalUrl) -> {
-                    if (!canonicalUrl.isEmpty()) {
-                        mShareUrl = canonicalUrl;
+                    if (canonicalUrl != null && !canonicalUrl.isEmpty()) {
+                        mShareUrl = canonicalUrl.getSpec();
                     }
                     reshareRequestCompleted(selectors);
                 });
@@ -284,8 +284,8 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             LinkToTextHelper.requestCanonicalUrl(
                     mTab,
                     (canonicalUrl) -> {
-                        if (!canonicalUrl.isEmpty()) {
-                            mShareUrl = canonicalUrl;
+                        if (canonicalUrl != null && !canonicalUrl.isEmpty()) {
+                            mShareUrl = canonicalUrl.getSpec();
                         }
                         completeRemoteRequestWithSuccess(selector);
                     });

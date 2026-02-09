@@ -11,6 +11,7 @@ import android.net.Uri;
 import org.chromium.base.Callback;
 import org.chromium.blink.mojom.TextFragmentReceiver;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -71,23 +72,15 @@ public class LinkToTextHelper {
      * Fetch the canonical url for sharing
      *
      * @param tab The tab to fetch the canonical url from.
-     * @param callback The {@link Callback} to return the tab's canonical url or an empty string
+     * @param callback The {@link Callback} to return the tab's canonical url or null.
      */
-    public static void requestCanonicalUrl(Tab tab, Callback<String> callback) {
+    public static void requestCanonicalUrl(Tab tab, Callback<@Nullable GURL> callback) {
         if (!shouldRequestCanonicalUrl(tab)) {
-            callback.onResult("");
+            callback.onResult(null);
             return;
         }
 
-        assumeNonNull(tab.getWebContents())
-                .getMainFrame()
-                .getCanonicalUrlForSharing(
-                        new Callback<>() {
-                            @Override
-                            public void onResult(GURL result) {
-                                callback.onResult(result.getSpec());
-                            }
-                        });
+        assumeNonNull(tab.getWebContents()).getMainFrame().getCanonicalUrlForSharing(callback);
     }
 
     private static boolean shouldRequestCanonicalUrl(Tab tab) {
