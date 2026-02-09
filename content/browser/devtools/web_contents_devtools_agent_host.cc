@@ -193,7 +193,7 @@ void WebContentsDevToolsAgentHost::InnerDetach() {
   auto_attacher_->SetWebContents(nullptr);
   GetAgentHostInstances().erase(web_contents());
   Observe(nullptr);
-  // We may or may not be destruced here, depending on embedders
+  // We may or may not be destructed here, depending on embedders
   // potentially retaining references.
   Release();
 }
@@ -384,10 +384,18 @@ DevToolsSession::Mode WebContentsDevToolsAgentHost::GetSessionMode() {
 }
 
 bool WebContentsDevToolsAgentHost::AttachSession(DevToolsSession* session) {
-  if (web_contents() && !RenderFrameDevToolsAgentHost::ShouldAllowSession(
-                            web_contents()->GetPrimaryMainFrame(), session)) {
+  auto* wc = web_contents();
+  if (wc && !RenderFrameDevToolsAgentHost::ShouldAllowSession(
+                wc->GetPrimaryMainFrame(), session)) {
     return false;
   }
+  // Force WebContents to render if it does not have a live renderer.
+  // This is a sign that the page is backgrounded and unloaded
+  // from memory usually when re-opening a saved browser session.
+  if (wc && !wc->GetPrimaryMainFrame()->IsRenderFrameLive()) {
+    wc->GetController().LoadIfNecessary();
+  }
+
   session->SetBrowserOnly(true);
   const bool may_attach_to_browser = session->GetClient()->IsTrusted();
   session->CreateAndAddHandler<protocol::TargetHandler>(

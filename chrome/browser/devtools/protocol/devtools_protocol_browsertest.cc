@@ -80,7 +80,17 @@
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/resource_coordinator/tab_manager.h"
+#include "chrome/browser/sessions/session_restore_test_helper.h"
+#include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
@@ -89,6 +99,9 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/test/browser_test_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -365,6 +378,166 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CreateTargetWithFocus) {
       *error()->FindString("message"));
   EXPECT_EQ(4, browser()->tab_strip_model()->count());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// On ChromeOS, the tabs are not backgrounded and unloaded in the same way as
+// on other platforms.
+#define MAYBE_AutoAttachToUnloadedTab DISABLED_AutoAttachToUnloadedTab
+#else
+#define MAYBE_AutoAttachToUnloadedTab AutoAttachToUnloadedTab
+#endif
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, MAYBE_AutoAttachToUnloadedTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  GURL url2 = embedded_test_server()->GetURL("/title2.html");
+
+  // 1. Create two tabs.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
+
+  content::WebContents* background_tab =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  content::WebContents* active_tab =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+
+  // 2. Restore session without loading background tabs.
+  Profile* profile = browser()->profile();
+  SessionStartupPref::SetStartupPref(
+      profile, SessionStartupPref(SessionStartupPref::LAST));
+  SessionServiceTestHelper(profile).SetForceBrowserNotAliveWithNoWindows(true);
+
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+  CloseBrowserSynchronously(browser());
+
+  ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
+  SessionRestoreTestHelper restore_observer;
+
+  chrome::NewEmptyWindow(profile);
+
+  Browser* new_browser = chrome::FindBrowserWithTab(tab_waiter.Wait());
+
+  memory_pressure::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor;
+  fake_memory_pressure_monitor.SetAndNotifyMemoryPressure(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  // Wait for async memory notifications to be delivered to Performance
+  // Manager on the main thread.
+  // TODO(crbug.com/436324601): Remove once memory pressure notifications
+  // are synchronous.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  keep_alive.reset();
+  profile_keep_alive.reset();
+
+  // The new browser should have 2 tabs.
+  ASSERT_EQ(2, new_browser->tab_strip_model()->count());
+  ASSERT_EQ(1, new_browser->tab_strip_model()->active_index());
+
+  background_tab = new_browser->tab_strip_model()->GetWebContentsAt(0);
+  active_tab = new_browser->tab_strip_model()->GetWebContentsAt(1);
+
+  // Background tab should not have a renderer.
+  EXPECT_FALSE(background_tab->GetPrimaryMainFrame()->IsRenderFrameLive());
+  ASSERT_TRUE(content::WaitForLoadStop(active_tab));
+  EXPECT_TRUE(active_tab->GetPrimaryMainFrame()->IsRenderFrameLive());
+
+  // Attach to the browser target.
+  AttachToBrowserTarget();
+  // Send Target.setAutoAttach with autoAttach=true, flatten=true.
+  base::DictValue set_auto_attach_params;
+  set_auto_attach_params.Set("autoAttach", true);
+  set_auto_attach_params.Set("waitForDebuggerOnStart", false);
+  set_auto_attach_params.Set("flatten", true);
+  base::ListValue filter;
+  // Include tab target.
+  base::DictValue page_filter;
+  page_filter.Set("type", "page");
+  page_filter.Set("exclude", true);
+  filter.Append(std::move(page_filter));
+  filter.Append(base::DictValue());
+  set_auto_attach_params.Set("filter", std::move(filter));
+  SendCommandSync("Target.setAutoAttach", std::move(set_auto_attach_params));
+
+  // Verify that two attachedToTarget tab target events are received.
+  const base::DictValue& attached_tab1_notif =
+      WaitForNotification("Target.attachedToTarget", true);
+  const std::string& session_id1 =
+      *attached_tab1_notif.FindStringByDottedPath("sessionId");
+  ASSERT_EQ("tab",
+            *attached_tab1_notif.FindStringByDottedPath("targetInfo.type"));
+
+  base::DictValue set_auto_attach_params_for_tab;
+  set_auto_attach_params_for_tab.Set("autoAttach", true);
+  set_auto_attach_params_for_tab.Set("waitForDebuggerOnStart", false);
+  set_auto_attach_params_for_tab.Set("flatten", true);
+  SendSessionCommand("Target.setAutoAttach",
+                     set_auto_attach_params_for_tab.Clone(), session_id1,
+                     false);
+
+  const base::DictValue& attached_tab2_notif =
+      WaitForNotification("Target.attachedToTarget", true);
+  const std::string& session_id2 =
+      *attached_tab2_notif.FindStringByDottedPath("sessionId");
+  ASSERT_EQ("tab",
+            *attached_tab2_notif.FindStringByDottedPath("targetInfo.type"));
+
+  SendSessionCommand("Target.setAutoAttach",
+                     std::move(set_auto_attach_params_for_tab), session_id2,
+                     false);
+
+  // Verify two attachedToTarget events for page targets are received.
+  base::DictValue attached_page1_notif =
+      WaitForNotification("Target.attachedToTarget", true);
+  base::DictValue attached_page2_notif =
+      WaitForNotification("Target.attachedToTarget", true);
+
+  // The notifications can arrive in any order. The active tab is eagerly
+  // loaded, so it should have a URL. The background tab may not.
+  if (const std::string* url =
+          attached_page1_notif.FindStringByDottedPath("targetInfo.url");
+      url && *url == url2.spec()) {
+    std::swap(attached_page1_notif, attached_page2_notif);
+  }
+  // The background tab's URL may not be available yet.
+  ASSERT_THAT(attached_page2_notif.FindStringByDottedPath("targetInfo.url"),
+              testing::Pointee(url2.spec()));
+
+  const std::string& page_session_id1 =
+      *attached_page1_notif.FindStringByDottedPath("sessionId");
+  ASSERT_EQ("page",
+            *attached_page1_notif.FindStringByDottedPath("targetInfo.type"));
+
+  const std::string& page_session_id2 =
+      *attached_page2_notif.FindStringByDottedPath("sessionId");
+  ASSERT_EQ("page",
+            *attached_page2_notif.FindStringByDottedPath("targetInfo.type"));
+
+  // Send Runtime.evaluate to both page targets and verify script result is
+  // received for both.
+  EXPECT_TRUE(background_tab->GetPrimaryMainFrame()->IsRenderFrameLive());
+  EXPECT_TRUE(active_tab->GetPrimaryMainFrame()->IsRenderFrameLive());
+
+  base::DictValue evaluate_params;
+  evaluate_params.Set("expression", "1 + 2");
+  const base::DictValue* evaluate_result1 = SendSessionCommand(
+      "Runtime.evaluate", evaluate_params.Clone(), page_session_id1, true);
+  ASSERT_EQ(3, evaluate_result1->FindIntByDottedPath("result.value"));
+
+  const base::DictValue* evaluate_result2 = SendSessionCommand(
+      "Runtime.evaluate", std::move(evaluate_params), page_session_id2, true);
+  ASSERT_EQ(3, evaluate_result2->FindIntByDottedPath("result.value"));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
