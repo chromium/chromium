@@ -276,7 +276,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     metricsReporter.measure('ResultChanged')
         .then(
             duration => metricsReporter.umaReportTime(
-                'WebUIOmnibox.ResultChangedToRepaintLatency.ToPaint', duration))
+                loadTimeData.getString('resultChangedToPaintMetricName'),
+                duration))
         .then(() => metricsReporter.clearMark('ResultChanged'))
         // Ignore silently if mark 'ResultChanged' is missing.
         .catch(() => {});

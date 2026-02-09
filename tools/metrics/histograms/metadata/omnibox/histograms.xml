@@ -4520,6 +4520,21 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.WebUI.ResultChangedToRepaintLatency.ToPaint"
+    units="ms" expires_after="2026-12-22">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>kylixrd@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    between AutocompleteController::Observer's OnResultChanged and the time when
+    the &lt;cr-searchbox-dropdown&gt; is ready to render the results. If there
+    are multiple calls to OnResultChanged before the results are rendered, logs
+    the time since the earliest. This does not take into account the time the
+    DOM change task spends in the message loop nor its duration.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.ZeroSuggest.AllResults" units="units"
     expires_after="2026-11-12">
   <owner>pnoland@chromium.org</owner>

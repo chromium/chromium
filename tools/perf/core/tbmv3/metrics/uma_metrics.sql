@@ -272,6 +272,61 @@ SELECT UMAMetrics(
       SELECT RepeatedField(sample)
       FROM histogram_samples
       WHERE histogram_name = 'Omnibox.QueryTime2.2'
+    ),
+    'web_ui_char_typed_to_repaint_latency_to_paint', (
+      SELECT RepeatedField(sample)
+      FROM histogram_samples
+      WHERE histogram_name = 'Omnibox.WebUI.CharTypedToRepaintLatency.ToPaint'
+    ),
+    'popup_web_ui_construction_to_first_shown_duration', (
+      SELECT RepeatedField(sample)
+      FROM histogram_samples
+      WHERE histogram_name = 'Omnibox.Popup.WebUI.ConstructionToFirstShownDuration'
+    ),
+    'popup_web_ui_crash_recovery', (
+      SELECT RepeatedField(sample)
+      FROM histogram_samples
+      WHERE histogram_name = 'Omnibox.Popup.WebUI.CrashRecovery'
+    ),
+    'popup_web_ui_page_remote_is_bound_on_first_call', (
+      SELECT RepeatedField(sample)
+      FROM histogram_samples
+      WHERE histogram_name = 'Omnibox.Popup.WebUI.PageRemoteIsBoundOnFirstCall'
+    ),
+    'popup_web_ui_presenter_show_latency_to_paint', (
+      SELECT RepeatedField(sample)
+      FROM histogram_samples
+      WHERE histogram_name = 'Omnibox.Popup.WebUI.PresenterShowLatency.ToPaint'
+    ),
+    'popup_web_ui_renderer_process_gone_status', (
+      SELECT RepeatedField(sample)
+      FROM histogram_samples
+      WHERE histogram_name = 'Omnibox.Popup.WebUI.RendererProcessGoneStatus'
+    ),
+    'popup_web_ui_result_changed_to_repaint_latency_to_paint', (
+      SELECT RepeatedField(sample)
+      FROM histogram_samples
+      WHERE histogram_name = 'Omnibox.Popup.WebUI.ResultChangedToRepaintLatency.ToPaint'
+    ),
+    'popup_aim_construction_to_first_shown_duration', (
+      SELECT RepeatedField(sample)
+      FROM histogram_samples
+      WHERE histogram_name = 'Omnibox.Popup.Aim.ConstructionToFirstShownDuration'
+    ),
+    'popup_aim_crash_recovery', (
+      SELECT RepeatedField(sample)
+      FROM histogram_samples
+      WHERE histogram_name = 'Omnibox.Popup.Aim.CrashRecovery'
+    ),
+    'popup_aim_presenter_show_latency_to_paint', (
+      SELECT RepeatedField(sample)
+      FROM histogram_samples
+      WHERE histogram_name = 'Omnibox.Popup.Aim.PresenterShowLatency.ToPaint'
+    ),
+    'popup_aim_renderer_process_gone_status', (
+      SELECT RepeatedField(sample)
+      FROM histogram_samples
+      WHERE histogram_name = 'Omnibox.Popup.Aim.RendererProcessGoneStatus'
     )
   ),
   'page_load', UMAMetrics_PageLoad(
