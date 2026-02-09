@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/actor.mojom-shared.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor/task_id.h"
@@ -311,10 +312,40 @@ void ExperimentalActorPerformActionsFunction::OnActionsFinished(
   auto* actor_service = actor::ActorKeyedService::Get(browser_context());
   actor::ActorTask* task = actor_service->GetTask(task_id);
 
-  // Task is checked when calling PerformActions and it cannot be removed once
-  // added (a stopped task is no longer active but will still be retrieved by
-  // GetTask).
-  CHECK(task);
+  // TODO(b/471210832): Error handling here is duplicated with
+  // GlicActorTaskManager.
+  if (!task) {
+    auto response = std::make_unique<optimization_guide::proto::ActionsResult>(
+        actor::BuildErrorActionsResult(
+            actor::mojom::ActionResultCode::kTaskWentAway, std::nullopt));
+
+    // Note: the arguments in this function are mostly unused other than the
+    // response proto.
+    OnObservationResult(start_time,
+                        actor::mojom::ActionResultCode::kTaskWentAway,
+                        index_of_failed_action, action_results, task_id,
+                        skip_async_observation_information, std::move(response),
+                        /*journal_entry=*/nullptr);
+    return;
+  }
+
+  // If the task went away it must have been handled in the !task branch above.
+  DCHECK_NE(result_code, actor::mojom::ActionResultCode::kTaskWentAway);
+
+  if (result_code == actor::mojom::ActionResultCode::kTaskPaused) {
+    auto response = std::make_unique<optimization_guide::proto::ActionsResult>(
+        actor::BuildErrorActionsResult(
+            actor::mojom::ActionResultCode::kTaskPaused, std::nullopt));
+
+    // Note: the arguments in this function are mostly unused other than the
+    // response proto.
+    OnObservationResult(start_time,
+                        actor::mojom::ActionResultCode::kTaskWentAway,
+                        index_of_failed_action, action_results, task_id,
+                        skip_async_observation_information, std::move(response),
+                        /*journal_entry=*/nullptr);
+    return;
+  }
 
   actor::BuildActionsResultWithObservations(
       *browser_context(), start_time, result_code, index_of_failed_action,
