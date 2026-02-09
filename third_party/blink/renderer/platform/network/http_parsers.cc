@@ -529,19 +529,27 @@ bool ParseHTTPRefresh(const String& refresh,
   }
   SkipWhiteSpace(refresh, pos, matcher);
 
-  wtf_size_t url_start_pos = pos;
-  if (refresh.FindIgnoringASCIICase("url", url_start_pos) == url_start_pos) {
-    url_start_pos += 3;
-    SkipWhiteSpace(refresh, url_start_pos, matcher);
-    if (refresh[url_start_pos] == '=') {
-      ++url_start_pos;
-      SkipWhiteSpace(refresh, url_start_pos, matcher);
-    } else {
-      url_start_pos = pos;  // e.g. "Refresh: 0; url.html"
+  StringView refresh_url(refresh, pos);
+  // Check for a form like:
+  //
+  //   "Refresh: 0; url=someurl.html"
+  //
+  // If no '=' is found, we assume it's likely something like:
+  //
+  //   "Refresh: 0; url.html"
+  //
+  // in which case we let the URL be the entire string.
+  if (EqualIgnoringASCIICase(refresh_url.substr(0, 3), "url")) {
+    const wtf_size_t prefix_start = pos;
+    pos += 3;
+    SkipWhiteSpace(refresh, pos, matcher);
+    if (refresh[pos] == '=') {
+      ++pos;
+      SkipWhiteSpace(refresh, pos, matcher);
+      refresh_url.remove_prefix(pos - prefix_start);
     }
   }
 
-  StringView refresh_url(refresh, url_start_pos);
   if (refresh_url.starts_with('"') || refresh_url.starts_with('\'')) {
     const UChar quotation_mark = refresh_url[0];
     refresh_url.remove_prefix(1);
