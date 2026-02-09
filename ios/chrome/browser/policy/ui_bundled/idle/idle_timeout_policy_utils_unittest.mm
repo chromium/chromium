@@ -62,7 +62,7 @@ class IdleTimeoutPolicyUtilsTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
     authentication_service_->SignIn(identity,
-                                    signin_metrics::AccessPoint::kUnknown);
+                                    signin_metrics::AccessPoint::kStartPage);
   }
 
   web::WebTaskEnvironment task_environment_;
