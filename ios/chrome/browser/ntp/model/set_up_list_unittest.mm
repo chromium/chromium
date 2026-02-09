@@ -90,7 +90,7 @@ class SetUpListTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
-    auth_service_->SignIn(identity, signin_metrics::AccessPoint::kUnknown);
+    auth_service_->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
 
     profile_manager_.GetProfileAttributesStorage()
         ->UpdateAttributesForProfileWithName(
