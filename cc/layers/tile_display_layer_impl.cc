@@ -204,14 +204,16 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
       continue;
     }
 
-    const gfx::Rect offset_geometry_rect = geometry_rect + quad_offset;
-    const gfx::Rect offset_visible_geometry_rect =
-        visible_geometry_rect + quad_offset;
-    const bool needs_blending = !contents_opaque();
+    gfx::Rect offset_geometry_rect = geometry_rect;
+    offset_geometry_rect.Offset(quad_offset);
+    gfx::Rect offset_visible_geometry_rect = visible_geometry_rect;
+    offset_visible_geometry_rect.Offset(quad_offset);
 
-    const uint64_t visible_geometry_area =
-        visible_geometry_rect.size().Area64();
+    bool needs_blending = !contents_opaque();
+
+    uint64_t visible_geometry_area = visible_geometry_rect.size().Area64();
     append_quads_data->visible_layer_area += visible_geometry_area;
+
     bool has_draw_quad = false;
     if (*iter) {
       if (auto resource = iter->resource()) {
