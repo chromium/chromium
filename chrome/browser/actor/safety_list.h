@@ -40,6 +40,18 @@ class SafetyList {
 
   bool ContainsUrlPair(const GURL& source, const GURL& destination) const;
 
+  // SafetyList may contain rules intended to block actor from visiting a
+  // blocked site. These rules have a {source, destination} pair where `source`
+  // is always wildcard. If a rule forbids self-navigation, the origin is
+  // assumed to be off limits altogether.
+  //
+  // Just in case, to prevent rules which do not have wildcard in their
+  // `source` from erroneously applying, we still pass `url` as the `source`
+  // argument for ContainsUrlPair.
+  bool ContainsPatternMatchingSelfNavigation(const GURL& url) const {
+    return ContainsUrlPair(url, url);
+  }
+
   static SafetyList ParsePatternListFromJson(
       const base::Value::List& list_data);
 
