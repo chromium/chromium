@@ -673,7 +673,7 @@ BASE_FEATURE(kSkipRedundantNavigationStateNotification,
 // keeps navigation cancellation behavior by reusing the requester
 // NavigationClient.
 BASE_FEATURE(kSkipRendererCancellationThrottle,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, ensure high-rank processes are on the LRU list while app is in
