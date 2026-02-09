@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import android.app.Activity;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -197,7 +195,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                         mSnackbarManagerSupplier,
                         () -> mBottomSheetController,
                         mMultiInstanceManager),
-                assertNonNull(mShareDelegateSupplier.get()),
+                mShareDelegateSupplier,
                 ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
                 /* customContentActions= */ List.of());
     }
