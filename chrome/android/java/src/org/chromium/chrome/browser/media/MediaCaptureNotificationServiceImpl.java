@@ -132,7 +132,8 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                 final int tabId = getTabIdFromNotificationId(notificationId);
                 final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(tabId);
                 if (tab != null) {
-                    MediaCaptureDevicesDispatcherAndroid.notifyStopped(tab.getWebContents());
+                    MediaCaptureDevicesDispatcherAndroid.notifyDisplayMediaStopped(
+                            tab.getWebContents());
                 }
             }
         }

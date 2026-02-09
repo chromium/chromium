@@ -77,4 +77,15 @@ static void JNI_MediaCaptureDevicesDispatcherAndroid_NotifyStopped(
                         MediaStreamCaptureIndicator::MediaType::kDisplayMedia);
 }
 
+static void JNI_MediaCaptureDevicesDispatcherAndroid_NotifyDisplayMediaStopped(
+    JNIEnv* env,
+    const JavaRef<jobject>& java_web_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(java_web_contents);
+  const auto& indicator = MediaCaptureDevicesDispatcher::GetInstance()
+                              ->GetMediaStreamCaptureIndicator();
+  indicator->StopMediaCapturing(
+      web_contents, MediaStreamCaptureIndicator::MediaType::kDisplayMedia);
+}
+
 DEFINE_JNI(MediaCaptureDevicesDispatcherAndroid)
