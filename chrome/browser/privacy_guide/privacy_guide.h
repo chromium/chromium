@@ -65,7 +65,7 @@ enum class PrivacyGuideInteractions {
   kSWAACompletionLink = 8,
   kPrivacySandboxCompletionLink = 9,
   kSearchSuggestionsNextButton = 10,
-  kTrackingProtectionCompletionLink = 11,
+  // kTrackingProtectionCompletionLink = 11, // Obsolete
   kAdTopicsNextButton = 12,
   kAiSettingsCompletionLink = 13,
   kMaxValue = kAiSettingsCompletionLink,
