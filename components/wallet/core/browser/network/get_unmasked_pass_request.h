@@ -9,6 +9,7 @@
 
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "components/wallet/core/browser/network/wallet_request.h"
+#include "components/wallet/core/browser/proto/private_pass.pb.h"
 
 namespace wallet {
 

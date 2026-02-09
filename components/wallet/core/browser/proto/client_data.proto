@@ -6,17 +6,9 @@ syntax = "proto2";
 
 package wallet;
 
+import "common.proto";
+
 option optimize_for = LITE_RUNTIME;
-
-// This is a copy of google.protobuf.Any.
-message Any {
-  // A URL/resource name that uniquely identifies the type of the serialized
-  // protocol buffer message.
-  optional string type_url = 1;
-
-  // Must be a valid serialized protocol buffer of the above specified type.
-  optional bytes value = 2;
-}
 
 // Client data for the pass.
 message ClientData {

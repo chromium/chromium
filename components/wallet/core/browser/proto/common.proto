@@ -1,0 +1,26 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package wallet;
+
+option optimize_for = LITE_RUNTIME;
+
+// This is a copy of google.protobuf.Any.
+message Any {
+  // A URL/resource name that uniquely identifies the type of the serialized
+  // protocol buffer message.
+  optional string type_url = 1;
+
+  // Must be a valid serialized protocol buffer of the above specified type.
+  optional bytes value = 2;
+}
+
+// This forks google.rpc.Status.
+message RpcStatus {
+  optional int32 code = 1;
+  optional string message = 2;
+  repeated Any details = 3;
+}

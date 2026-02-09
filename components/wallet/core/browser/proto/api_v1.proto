@@ -9,10 +9,41 @@ syntax = "proto2";
 package wallet.api;
 
 import "client_info.proto";
+import "common.proto";
 import "pass.proto";
 import "private_pass.proto";
 
 option optimize_for = LITE_RUNTIME;
+
+// Request to get private passes.
+message GetPrivatePassesRequest {
+  // The identifier of the private passes to get.
+  repeated string pass_ids = 1;
+
+  // Information about the client making the request.
+  optional ClientInfo client_info = 2;
+}
+
+// The result of getting a private pass request.
+message GetPrivatePassResult {
+  // The identifier of the private pass.
+  optional string pass_id = 1;
+
+  // The result of the get private pass. Either a pass or an error.
+  oneof result {
+    // The private pass if the request succeeded.
+    PrivatePass private_pass = 2;
+
+    // The error if we failed to get the private pass.
+    RpcStatus error = 3;
+  }
+}
+
+// Response to get private passes request.
+message GetPrivatePassesResponse {
+  // The results of the get private passes request.
+  repeated GetPrivatePassResult results = 1;
+}
 
 // Request for the UpsertPrivatePass RPC.
 message UpsertPrivatePassRequest {

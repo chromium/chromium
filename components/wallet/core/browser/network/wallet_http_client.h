@@ -36,10 +36,9 @@ class WalletHttpClient {
       const base::expected<PrivatePass, WalletRequestError>&)>;
 
   // Callback for GetUnmaskedPass requests. On success, it returns the
-  // `WalletPass` corresponding to the requested `pass_id`.
-  // TODO(crbug.com/478783796): Update to use protos.
+  // `PrivatePass` corresponding to the requested `pass_id`.
   using GetUnmaskedPassCallback = base::OnceCallback<void(
-      const base::expected<WalletPass, WalletRequestError>&)>;
+      const base::expected<PrivatePass, WalletRequestError>&)>;
 
   using HttpResponse = base::expected<std::string, WalletRequestError>;
 
