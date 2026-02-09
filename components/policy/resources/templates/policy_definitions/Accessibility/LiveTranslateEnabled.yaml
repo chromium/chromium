@@ -31,5 +31,6 @@ schema:
   type: boolean
 supported_on:
 - chrome.*:133-
+- chrome_os:145-
 tags: []
 type: main
