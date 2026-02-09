@@ -245,6 +245,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
     @Override
     public void cleanupInstance(int instanceId) {
+        super.cleanupInstance(instanceId);
         assertCreated();
         mTabPersistentStore.cleanupStateFile(instanceId);
         if (mShadowTabPersistentStore != null) {

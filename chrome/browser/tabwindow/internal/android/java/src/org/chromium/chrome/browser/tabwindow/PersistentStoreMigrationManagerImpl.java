@@ -4,33 +4,59 @@
 
 package org.chromium.chrome.browser.tabwindow;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_SHADOW_WRITTEN_STORE;
+import static org.chromium.chrome.browser.tab.TabStateStorageFlagHelper.allowFullMigration;
+import static org.chromium.chrome.browser.tab.TabStateStorageFlagHelper.isStorageAuthoritative;
+import static org.chromium.chrome.browser.tab.TabStateStorageFlagHelper.isTabStorageEnabled;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 
 @NullMarked
 public class PersistentStoreMigrationManagerImpl implements PersistentStoreMigrationManager {
+    private final String mCurrentAuthoritativeStoreKey;
     private final String mShadowWrittenStoreKey;
     private @StoreType int mShadowStoreType = StoreType.INVALID;
 
     public PersistentStoreMigrationManagerImpl(String windowTag) {
+        mCurrentAuthoritativeStoreKey =
+                TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE.createKey(windowTag);
         mShadowWrittenStoreKey = TAB_PERSISTENCE_SHADOW_WRITTEN_STORE.createKey(windowTag);
     }
 
     @Override
     public @StoreType int getAuthoritativeStoreType() {
+        if (!isTabStorageEnabled()) return StoreType.LEGACY;
+
+        if (getShadowWrittenStore() == StoreType.LEGACY && !isStorageAuthoritative()) {
+            return StoreType.LEGACY;
+        }
+
+        @StoreType
+        int currentAuthoritativeStore =
+                getPrefs().readInt(mCurrentAuthoritativeStoreKey, StoreType.INVALID);
+
+        if (currentAuthoritativeStore != StoreType.INVALID) return currentAuthoritativeStore;
+        if (isStorageAuthoritative()) return StoreType.TAB_STATE_STORE;
         return StoreType.LEGACY;
     }
 
     @Override
     public @StoreType int getShadowStoreType() {
-        return TabStateStorageFlagHelper.isTabStorageEnabled()
-                ? StoreType.TAB_STATE_STORE
-                : StoreType.INVALID;
+        @StoreType int currentAuthoritativeStoreType = getAuthoritativeStoreType();
+        if (isTabStorageEnabled() && currentAuthoritativeStoreType == StoreType.LEGACY) {
+            return StoreType.TAB_STATE_STORE;
+        } else if (!allowFullMigration()
+                && currentAuthoritativeStoreType == StoreType.TAB_STATE_STORE) {
+            return StoreType.LEGACY;
+        }
+
+        // Raze the shadow store since we will no longer be in a 'caught up' state.
+        onShadowStoreRazed();
+        return StoreType.INVALID;
     }
 
     @Override
@@ -42,7 +68,18 @@ public class PersistentStoreMigrationManagerImpl implements PersistentStoreMigra
     @Override
     public void onShadowStoreCaughtUp() {
         assert mShadowStoreType != StoreType.INVALID;
-        setShadowWrittenStore(mShadowStoreType);
+        @StoreType int shadowWrittenStore = getShadowWrittenStore();
+        @StoreType int currentAuthoritativeStoreType = getAuthoritativeStoreType();
+
+        if (shadowWrittenStore == StoreType.INVALID) {
+            shadowWrittenStore = mShadowStoreType;
+            if (!maybePerformMigrationSwap(currentAuthoritativeStoreType, shadowWrittenStore)) {
+                setShadowWrittenStore(shadowWrittenStore);
+                return;
+            }
+        }
+
+        maybePerformMigrationSwap(currentAuthoritativeStoreType, shadowWrittenStore);
     }
 
     @Override
@@ -58,6 +95,31 @@ public class PersistentStoreMigrationManagerImpl implements PersistentStoreMigra
     @Override
     public void onAllShadowStoresRazed() {
         getPrefs().removeKeysWithPrefix(TAB_PERSISTENCE_SHADOW_WRITTEN_STORE);
+    }
+
+    @Override
+    public void onWindowCleared() {
+        getPrefs().removeKey(mCurrentAuthoritativeStoreKey);
+        getPrefs().removeKey(mShadowWrittenStoreKey);
+    }
+
+    private boolean maybePerformMigrationSwap(
+            @StoreType int currentAuthoritativeStoreType, @StoreType int shadowWrittenStoreType) {
+        boolean storageAuthoritative = isStorageAuthoritative();
+        boolean isAlreadyLegacy =
+                !storageAuthoritative || currentAuthoritativeStoreType != StoreType.LEGACY;
+        boolean isAlreadyTabStateStore =
+                storageAuthoritative || currentAuthoritativeStoreType != StoreType.TAB_STATE_STORE;
+        if (isAlreadyLegacy && isAlreadyTabStateStore) {
+            return false;
+        }
+        setCurrentAuthoritativeStore(shadowWrittenStoreType);
+        setShadowWrittenStore(currentAuthoritativeStoreType);
+        return true;
+    }
+
+    private void setCurrentAuthoritativeStore(@StoreType int storeType) {
+        getPrefs().writeInt(mCurrentAuthoritativeStoreKey, storeType);
     }
 
     private @StoreType int getShadowWrittenStore() {

@@ -60,6 +60,9 @@ public class TabPersistentStoreFactory {
 
                 @Override
                 public void onAllShadowStoresRazed() {}
+
+                @Override
+                public void onWindowCleared() {}
             };
 
     /**
