@@ -107,6 +107,7 @@ export default defineConfig([
         },
       ],
 
+      'no-useless-assignment': 'off',
       'no-implicit-coercion': 'error',
       'no-negated-condition': 'error',
       'no-undef': 'error',
@@ -167,7 +168,7 @@ export default defineConfig([
       ],
 
       '@typescript-eslint/array-type': 'warn',
-      '@typescript-eslint/consistent-generic-constructors': 'warn',
+      '@typescript-eslint/consistent-generic-constructors': 'off',
 
       '@typescript-eslint/consistent-type-imports': [
         'warn',
