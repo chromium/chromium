@@ -168,11 +168,10 @@ public class FullscreenSigninPromoLauncherTest {
                 .thenReturn(mSigninIntent);
 
         Assert.assertTrue(
-                FullscreenSigninPromoLauncher.launchPromoIfNeeded(
-                        mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
+                FullscreenSigninPromoLauncher.launchPromoIfForced(
+                        mContext, mProfile, mFullscreenSigninLauncherMock));
 
         verify(mContext).startActivity(mSigninIntent);
-        assertSigninPromoNextShowTimeInRange();
     }
 
     @Test
@@ -188,11 +187,10 @@ public class FullscreenSigninPromoLauncherTest {
                 .thenReturn(mSigninIntent);
 
         Assert.assertTrue(
-                FullscreenSigninPromoLauncher.launchPromoIfNeeded(
-                        mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
+                FullscreenSigninPromoLauncher.launchPromoIfForced(
+                        mContext, mProfile, mFullscreenSigninLauncherMock));
 
         verify(mContext).startActivity(mSigninIntent);
-        assertSigninPromoNextShowTimeInRange();
     }
 
     @Test

@@ -53,6 +53,45 @@ public final class FullscreenSigninPromoLauncher {
             return false;
         }
 
+        if (!createAndLaunchActivity(context, profile, signinAndHistorySyncActivityLauncher)) {
+            return false;
+        }
+
+        prefManager.setSigninPromoNextShowTime(
+                TimeUtils.currentTimeMillis()
+                        + TimeUnit.DAYS.toMillis(getDurationBetweenPromoTriggers()));
+        prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
+        var accounts =
+                AccountUtils.getAccountsIfFulfilledOrEmpty(
+                        AccountManagerFacadeProvider.getInstance().getAccounts());
+        prefManager.setSigninPromoLastAccountEmails(
+                new HashSet<>(AccountUtils.toAccountEmails(accounts)));
+        return true;
+    }
+
+    /**
+     * Launches the {@link SigninAndHistoryOptInActivity} when forcing the display.
+     *
+     * @param context The {@link Context} to launch the {@link SigninAndHistorySyncActivity}.
+     * @param profile The active user profile.
+     * @param signinAndHistorySyncActivityLauncher launcher used to launch the {@link
+     *     SigninAndHistorySyncActivity}.
+     * @return Whether the signin promo is shown.
+     */
+    public static boolean launchPromoIfForced(
+            Context context,
+            Profile profile,
+            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher) {
+        if (!SigninFeatureMap.isEnabled(SigninFeatures.FORCE_STARTUP_SIGNIN_PROMO)) {
+            return false;
+        }
+        return createAndLaunchActivity(context, profile, signinAndHistorySyncActivityLauncher);
+    }
+
+    private static boolean createAndLaunchActivity(
+            Context context,
+            Profile profile,
+            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher) {
         FullscreenSigninAndHistorySyncConfig config =
                 new FullscreenSigninAndHistorySyncConfig.Builder(
                                 context.getString(R.string.signin_fre_title),
@@ -67,26 +106,12 @@ public final class FullscreenSigninPromoLauncher {
         if (intent == null) {
             return false;
         }
-
         context.startActivity(intent);
-        prefManager.setSigninPromoNextShowTime(
-                TimeUtils.currentTimeMillis()
-                        + TimeUnit.DAYS.toMillis(getDurationBetweenPromoTriggers()));
-        prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
-        var accounts =
-                AccountUtils.getAccountsIfFulfilledOrEmpty(
-                        AccountManagerFacadeProvider.getInstance().getAccounts());
-        prefManager.setSigninPromoLastAccountEmails(
-                new HashSet<>(AccountUtils.toAccountEmails(accounts)));
         return true;
     }
 
     private static boolean shouldLaunchPromo(
             Profile profile, SigninPreferencesManager prefManager, final int currentMajorVersion) {
-        if (SigninFeatureMap.isEnabled(SigninFeatures.FORCE_STARTUP_SIGNIN_PROMO)) {
-            return true;
-        }
-
         if (DeviceInfo.isAutomotive()) {
             return false;
         }

@@ -1963,6 +1963,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // Any promo that has a force-show feature flag should be added to this list (and of course
         // any promo that you want to trigger at every startup (temporarily for debugging and/or
         // development).
+        if (FullscreenSigninPromoLauncher.launchPromoIfForced(
+                mActivity, profile, SigninAndHistorySyncActivityLauncherImpl.get())) return true;
         if (PwaRestorePromoUtils.maybeForceShowPromo(profile, mWindowAndroid)) return true;
 
         return false;
