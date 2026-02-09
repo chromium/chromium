@@ -113,7 +113,7 @@ void PlatformAppNavigationRedirector::MaybeCreateAndAdd(
 
   // Redirect URLs to apps only in regular mode. Technically, apps are not
   // supported in incognito and guest modes, but that may change in future.
-  // See crbug.com/240879, which tracks incognito support for v2 apps.
+  // See crbug.com/41012403, which tracks incognito support for v2 apps.
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (profile->IsOffTheRecord()) {
     DVLOG(1) << "Skip redirection: unsupported in incognito and guest modes";

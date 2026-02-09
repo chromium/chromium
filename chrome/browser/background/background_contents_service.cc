@@ -113,7 +113,7 @@ class CrashNotificationDelegate : public message_center::NotificationDelegate {
                           bool is_platform_app,
                           std::string extension_id,
                           Profile* profile) {
-    // http://crbug.com/247790 involves a crash notification balloon being
+    // http://crbug.com/41016660 involves a crash notification balloon being
     // clicked while the extension isn't in the TERMINATED state. In that case,
     // any of the "reload" methods called below can unload the extension, which
     // indirectly destroys the CrashNotificationDelegate, invalidating all its

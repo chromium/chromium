@@ -295,7 +295,7 @@ void NotificationUIManagerImpl::RemoveProfileNotification(
   // a) A reentrant call to this class. Because every method in this class
   //    touches |profile_notifications_|, |profile_notifications_| must always
   //    be in a self-consistent state in moments where re-entrance might happen.
-  // b) A crash like https://crbug.com/649971 because it can trigger
+  // b) A crash like https://crbug.com/41277292 because it can trigger
   //    shutdown process while we're still inside the call stack from UI
   //    framework.
   content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,

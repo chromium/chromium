@@ -2126,7 +2126,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFaviconsForever) {
 // history. Expiring the favicon causes the bookmark's favicon to be updated
 // when the user next visits the bookmarked page. Expiring the bookmark's
 // favicon is useful when the bookmark's favicon becomes incorrect (See
-// crbug.com/474421 for a sample bug which causes this).
+// crbug.com/40412723 for a sample bug which causes this).
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, ExpireBookmarkFavicons) {
   GURL bookmarked_page("http://a");
 

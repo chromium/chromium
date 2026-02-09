@@ -216,7 +216,7 @@ class MediaGalleriesPlatformAppBrowserTest : public PlatformAppBrowserTest {
   int test_jpg_size_;
 };
 
-// Test is flaky. See crbug.com/354425.
+// Test is flaky. See crbug.com/41095977.
 IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest,
                        DISABLED_MediaGalleriesNoAccess) {
   MakeSingleFakeGallery(nullptr);
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest,
       << message_;
 }
 
-// Test is flaky. See crbug.com/354425.
+// Test is flaky. See crbug.com/41095977.
 IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest,
                        DISABLED_MediaGalleriesCopyTo) {
   RemoveAllGalleries();

@@ -28,7 +28,7 @@ using AppWindowFrameBrowserTest = PlatformAppBrowserTest;
 #endif
 
 // Verifies that the NativeAppWindows implement GetFrameInsets() correctly.
-// See http://crbug.com/346115
+// See http://crbug.com/40352783
 IN_PROC_BROWSER_TEST_F(AppWindowFrameBrowserTest,
                        MAYBE_FrameInsetsForDefaultFrame) {
   AppWindow* app_window = CreateTestAppWindow("{}");
@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowFrameBrowserTest,
 }
 
 // Verifies that the NativeAppWindows implement GetFrameInsets() correctly.
-// See http://crbug.com/346115
+// See http://crbug.com/40352783
 IN_PROC_BROWSER_TEST_F(AppWindowFrameBrowserTest, FrameInsetsForColoredFrame) {
   AppWindow* app_window =
       CreateTestAppWindow("{ \"frame\": { \"color\": \"#ffffff\" } }");

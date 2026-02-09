@@ -52,7 +52,7 @@ class ChromeWorkerBrowserTest : public InProcessBrowserTest {
  protected:
   // Tests worker script fetch (always same-origin) is not affected by the
   // third-party cookie blocking configuration.
-  // This is the regression test for https://crbug.com/933287.
+  // This is the regression test for https://crbug.com/41442073.
   void TestWorkerScriptFetchWithThirdPartyCookieBlocking(
       content_settings::CookieControlsMode cookie_controls_mode,
       const std::string& test_url) {

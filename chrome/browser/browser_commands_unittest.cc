@@ -138,7 +138,7 @@ TEST_F(BrowserCommandsTest, DuplicateTab) {
   EXPECT_FALSE(controller.GetPendingEntry());
 }
 
-// Tests IDC_VIEW_SOURCE (See http://crbug.com/138140).
+// Tests IDC_VIEW_SOURCE (See http://crbug.com/40245175).
 TEST_F(BrowserCommandsTest, ViewSource) {
   GURL url1("http://foo/1");
   GURL url1_subframe("http://foo/subframe");

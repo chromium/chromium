@@ -94,7 +94,7 @@ TEST_F(NotificationUIManagerTest, UpdateNotification) {
   base::RunLoop().RunUntilIdle();
 }
 
-// Regression test for crbug.com/767868
+// Regression test for crbug.com/41346105
 TEST_F(NotificationUIManagerTest, GetAllIdsReturnsOriginalId) {
   EXPECT_TRUE(message_center()->NotificationCount() == 0);
   notification_manager()->Add(GetANotification("test"), profile());

@@ -209,7 +209,7 @@ ShouldUpdateHistoryResult ShouldUpdateHistory(
   // Chrome will write the http response data to a temporary file, and later
   // rename it. If Chrome is killed before committing the history here,
   // that temporary file will still get permanently left.
-  // See http://crbug.com/664677.
+  // See http://crbug.com/40493321.
   if (previous == nullptr || previous->current_path != current.current_path) {
     return ShouldUpdateHistoryResult::UPDATE_IMMEDIATELY;
   }

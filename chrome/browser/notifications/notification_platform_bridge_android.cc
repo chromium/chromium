@@ -69,7 +69,7 @@ namespace {
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.notifications
 enum NotificationActionType {
-  // NB. Making this a one-line enum breaks code generation! crbug.com/657847
+  // NB. Making this a one-line enum breaks code generation! crbug.com/41282083
   BUTTON,
   TEXT
 };

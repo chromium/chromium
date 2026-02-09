@@ -2523,7 +2523,7 @@ void DevToolsUIBindings::FilePathsChanged(
   size_t added_index = 0;
   size_t removed_index = 0;
   // Dispatch limited amount of file paths in a time to avoid
-  // IPC max message size limit. See https://crbug.com/797817.
+  // IPC max message size limit. See https://crbug.com/41362454.
   while (changed_index < changed_paths.size() ||
          added_index < added_paths.size() ||
          removed_index < removed_paths.size()) {

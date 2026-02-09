@@ -13,7 +13,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
-// Regression test for https://crbug.com/840105
+// Regression test for https://crbug.com/40575053
 TEST(NotificationPlatformBridgeChromeOsTest, Update) {
   message_center::MessageCenter::Initialize();
   content::BrowserTaskEnvironment task_environment;

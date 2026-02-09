@@ -2049,7 +2049,7 @@ bool ChromeDownloadManagerDelegate::IsOpenInBrowserPreferredForFile(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(ENABLE_PLUGINS)
   // TODO(asanka): Consider other file types and MIME types.
-  // http://crbug.com/323561
+  // http://crbug.com/41076988
   if (path.MatchesExtension(FILE_PATH_LITERAL(".pdf")) ||
       path.MatchesExtension(FILE_PATH_LITERAL(".htm")) ||
       path.MatchesExtension(FILE_PATH_LITERAL(".html")) ||

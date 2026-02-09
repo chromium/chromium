@@ -379,7 +379,7 @@ int MultiNavigationObserver::NumNavigationsForTab(
 // to a captive portal, which will then cause them to reload.
 // MultiNavigationObserver is insufficient for this because there may or may not
 // be a DidStopLoading event between the timeout and the reload.
-// See bug http://crbug.com/133227
+// See bug http://crbug.com/40227640
 class FailLoadsAfterLoginObserver : public LoadObserver::Observer {
  public:
   FailLoadsAfterLoginObserver();
@@ -3135,7 +3135,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, ReloadTimeout) {
 
 // Checks the case where there are two windows, and there's an SSL timeout in
 // the background one.
-// Disabled:  http://crbug.com/134357
+// Disabled:  http://crbug.com/40852453
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, DISABLED_TwoWindows) {
   Browser* browser2 =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));

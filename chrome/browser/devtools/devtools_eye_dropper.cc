@@ -50,7 +50,7 @@ DevToolsEyeDropper::~DevToolsEyeDropper() {
 
 void DevToolsEyeDropper::AttachToHost(content::RenderFrameHost* frame_host) {
   DCHECK(frame_host->IsRenderFrameLive());
-  // Historically, (see https://crbug.com/847363) this code handled the
+  // Historically, (see https://crbug.com/41391521) this code handled the
   // RenderWidgetHostView being null, but now it is listening to creation of the
   // frame which includes creation of the widget so it is implied that
   // RenderWidgetHostView exists.

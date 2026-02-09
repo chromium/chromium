@@ -1244,7 +1244,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
      BUILDFLAG(IS_ANDROID))
   // Create directory for user-level Native Messaging manifest files. This
   // makes it less likely that the directory will be created by third-party
-  // software with incorrect owner or permission. See crbug.com/725513 .
+  // software with incorrect owner or permission. See crbug.com/41321051 .
   base::FilePath user_native_messaging_dir;
   CHECK(base::PathService::Get(chrome::DIR_USER_NATIVE_MESSAGING,
                                &user_native_messaging_dir));

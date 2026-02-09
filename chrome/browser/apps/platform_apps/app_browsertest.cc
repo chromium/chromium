@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
             observer.tabs()[kExpectedNumberOfTabs - 2]->GetURL());
 }
 
-// Failing on some Win and Linux buildbots.  See crbug.com/354425.
+// Failing on some Win and Linux buildbots.  See crbug.com/41095977.
 // TODO(crbug.com/40846460): Fix flakiness on macOS and re-enable this test.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DISABLED_Isolation) {
       << message_;
 }
 
-// See crbug.com/248441
+// See crbug.com/40321301
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ExtensionWindowingApis DISABLED_ExtensionWindowingApis
 #else
@@ -1194,7 +1194,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, ComponentAppBackgroundPage) {
   ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
 }
 
-// Disabled due to flakiness. http://crbug.com/468609
+// Disabled due to flakiness. http://crbug.com/41163518
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
                        DISABLED_ComponentExtensionRuntimeReload) {
   // Ensure that we wait until the background page is run (to register the
@@ -1239,7 +1239,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, Messaging) {
 }
 
 // This test depends on focus and so needs to be in interactive_ui_tests.
-// http://crbug.com/227041
+// http://crbug.com/41004007
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DISABLED_WebContentsHasFocus) {
   LoadAndLaunchPlatformApp("minimal", "Launched");
 
@@ -1261,7 +1261,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   print_observer.WaitUntilPreviewIsReady();
 }
 
-// This test verifies that http://crbug.com/297179 is fixed.
+// This test verifies that http://crbug.com/40334084 is fixed.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
                        DISABLED_ClosingWindowWhilePrintingShouldNotCrash) {
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
@@ -1300,7 +1300,7 @@ class PlatformAppIncognitoBrowserTest : public PlatformAppBrowserTest,
   std::set<std::string> opener_app_ids_;
 };
 
-// Seen to fail repeatedly; crbug.com/774011.
+// Seen to fail repeatedly; crbug.com/41349411.
 IN_PROC_BROWSER_TEST_F(PlatformAppIncognitoBrowserTest,
                        DISABLED_IncognitoComponentApp) {
   // Get the file manager app.

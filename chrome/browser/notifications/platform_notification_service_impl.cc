@@ -599,7 +599,7 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
       web_app_id);
 
   // TODO(peter): Handle different screen densities instead of always using the
-  // 1x bitmap - crbug.com/585815.
+  // 1x bitmap - crbug.com/41238973.
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       notification_data.title, notification_data.body,
@@ -632,7 +632,7 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
     notification.SetSmallImage(gfx::Image(web_app_icon_and_title->icon));
 
   // TODO(peter): Handle different screen densities instead of always using the
-  // 1x bitmap - crbug.com/585815.
+  // 1x bitmap - crbug.com/41238973.
   if (const SkBitmap& badge = notification_resources.badge; !badge.isNull()) {
     notification.SetSmallImage(gfx::Image::CreateFrom1xBitmap(badge));
 #if BUILDFLAG(IS_CHROMEOS)
@@ -647,7 +647,7 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
     const auto& action = notification_data.actions[i];
     message_center::ButtonInfo button(action->title);
     // TODO(peter): Handle different screen densities instead of always using
-    // the 1x bitmap - crbug.com/585815.
+    // the 1x bitmap - crbug.com/41238973.
     const SkBitmap& action_icon = notification_resources.action_icons[i];
     button.icon = gfx::Image::CreateFrom1xBitmap(action_icon);
 #if BUILDFLAG(IS_CHROMEOS)

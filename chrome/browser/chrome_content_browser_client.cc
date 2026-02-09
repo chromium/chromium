@@ -1784,7 +1784,7 @@ std::optional<GURL> ChromeContentBrowserClient::GetEffectiveURL(
   // If the input |url| should be assigned to the Instant renderer, make its
   // effective URL distinct from other URLs on the search provider's domain.
   // This needs to happen even if |url| corresponds to an isolated origin; see
-  // https://crbug.com/755595.
+  // https://crbug.com/41339429.
   if (search::ShouldAssignURLToInstantRenderer(url, profile)) {
     return search::GetEffectiveURLForInstant(url, profile);
   }
@@ -4511,7 +4511,7 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
 
 // Fill font preferences. These are not registered on Android unless we're built
 // with extensions (the chrome.fontSettings API can change these).
-// - http://crbug.com/308033, http://crbug.com/696364.
+// - http://crbug.com/40337093, http://crbug.com/41304476.
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   // Enabling the FontFamilyCache needs some KeyedService that might not be
   // available for some irregular profiles, like the System Profile.
@@ -5133,7 +5133,7 @@ void ChromeContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
 std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
     sandbox::mojom::Sandbox sandbox_type,
     AppContainerFlags flags) {
-  // TODO(wfh): Add support for more process types here. crbug.com/499523
+  // TODO(wfh): Add support for more process types here. crbug.com/41182255
   switch (sandbox_type) {
     case sandbox::mojom::Sandbox::kRenderer:
       if (flags & AppContainerFlags::kAppContainerFlagDisableAppContainer) {
@@ -8385,7 +8385,7 @@ bool ChromeContentBrowserClient::DoesGaiaOriginRequireDedicatedProcess() {
   return true;
 #else
   // Sign-in process isolation is not strictly needed on Android, see
-  // https://crbug.com/739418. On Android, it's more optional but it does
+  // https://. On Android, it's more optional but it does
   // improve security generally and specifically it allows the exposure of
   // certain optional privileged APIs.
 

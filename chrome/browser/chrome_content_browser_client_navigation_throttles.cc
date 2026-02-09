@@ -284,7 +284,7 @@ void CreateAndAddChromeThrottlesForNavigation(
 
 #if BUILDFLAG(IS_ANDROID)
   // TODO(davidben): This is insufficient to integrate with prerender properly.
-  // https://crbug.com/370595
+  // https://crbug.com/40364296
   prerender::NoStatePrefetchContents* no_state_prefetch_contents =
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           handle.GetWebContents());

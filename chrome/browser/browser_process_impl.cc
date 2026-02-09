@@ -827,7 +827,7 @@ void BrowserProcessImpl::EndSession() {
 
   // This wait is legitimate and necessary on Windows, since the process will
   // be terminated soon.
-  // http://crbug.com/125207
+  // http://crbug.com/40198606
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
 
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
@@ -863,7 +863,7 @@ void BrowserProcessImpl::EndSession() {
   // blocking the message loop attempting to re-establish a connection to the
   // GPU process synchronously. Because the system may not be allowing
   // processes to launch, this can result in a hang. See
-  // http://crbug.com/318527.
+  // http://crbug.com/40341017.
   rundown_counter->TimedWait(kEndSessionTimeout);
 #else
   NOTIMPLEMENTED();
@@ -1048,7 +1048,7 @@ void BrowserProcessImpl::CreateDevToolsAutoOpener() {
 
 bool BrowserProcessImpl::IsShuttingDown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO (crbug.com/560486): Fix the tests that make the check of
+  // TODO (crbug.com/41222012): Fix the tests that make the check of
   // |tearing_down_| necessary here.
   // TODO (crbug/1155597): Maybe use browser_shutdown::HasShutdownStarted here.
   return shutting_down_ || tearing_down_;
@@ -1693,7 +1693,7 @@ void BrowserProcessImpl::CreateSubresourceFilterRulesetService() {
 // Android's GCMDriver currently makes the assumption that it's a singleton.
 // Until this gets fixed, instantiating multiple Java GCMDrivers will throw an
 // exception, but because they're only initialized on demand these crashes
-// would be very difficult to triage. See http://crbug.com/437827.
+// would be very difficult to triage. See http://crbug.com/41145548.
 void BrowserProcessImpl::CreateGCMDriver() {
   DCHECK(!gcm_driver_);
 

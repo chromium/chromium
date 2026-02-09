@@ -76,7 +76,7 @@ void ScheduleTask(std::unique_ptr<AfterStartupTask> queued_task) {
 void QueueTask(std::unique_ptr<AfterStartupTask> queued_task) {
   DCHECK(queued_task);
 
-  // Use CHECK instead of DCHECK to crash earlier. See http://crbug.com/711167
+  // Use CHECK instead of DCHECK to crash earlier. See http://crbug.com/40515428
   // for details.
   CHECK(queued_task->task);
 

@@ -101,7 +101,7 @@ class PersistentNotificationHandler : public NotificationHandler {
     // Makes sure we keep the browser alive while the event in being processed.
     // As we have no control on the click handling, the notification could be
     // closed before a browser is brought up, thus terminating Chrome if it was
-    // the last KeepAlive (see crbug.com/612815). We also need to wait until
+    // the last KeepAlive (see crbug.com/41254465). We also need to wait until
     // close events got handled as we need to access the profile when removing
     // notifications from the NotificationDatabase (see crbug.com/1221601).
     std::unique_ptr<ScopedKeepAlive> event_dispatch_keep_alive_;

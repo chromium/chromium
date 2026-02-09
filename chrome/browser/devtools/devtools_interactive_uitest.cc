@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsManagerDelegateTest, NormalWindowChangeBounds) {
 }
 
 #if BUILDFLAG(IS_MAC)
-// MacViews does not yet implement maximized windows: https://crbug.com/836327
+// MacViews does not yet implement maximized windows: https://crbug.com/41385204
 #define MAYBE_NormalToMaximizedWindow DISABLED_NormalToMaximizedWindow
 #else
 #define MAYBE_NormalToMaximizedWindow NormalToMaximizedWindow
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsManagerDelegateTest, NormalToFullscreenWindow) {
 }
 
 #if BUILDFLAG(IS_MAC)
-// MacViews does not yet implement maximized windows: https://crbug.com/836327
+// MacViews does not yet implement maximized windows: https://crbug.com/41385204
 #define MAYBE_MaximizedToMinimizedWindow DISABLED_MaximizedToMinimizedWindow
 #else
 #define MAYBE_MaximizedToMinimizedWindow MaximizedToMinimizedWindow
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsManagerDelegateTest,
 }
 
 #if BUILDFLAG(IS_MAC)
-// MacViews does not yet implement maximized windows: https://crbug.com/836327
+// MacViews does not yet implement maximized windows: https://crbug.com/41385204
 #define MAYBE_MaximizedToFullscreenWindow DISABLED_MaximizedToFullscreenWindow
 #else
 #define MAYBE_MaximizedToFullscreenWindow MaximizedToFullscreenWindow
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsManagerDelegateTest, ShowMinimizedWindow) {
 }
 
 #if BUILDFLAG(IS_MAC)
-// MacViews does not yet implement maximized windows: https://crbug.com/836327
+// MacViews does not yet implement maximized windows: https://crbug.com/41385204
 #define MAYBE_RestoreMaximizedWindow DISABLED_RestoreMaximizedWindow
 #else
 #define MAYBE_RestoreMaximizedWindow RestoreMaximizedWindow

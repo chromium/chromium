@@ -1158,7 +1158,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
         EXPECT_EQ(980, value);
 #endif
 #if BUILDFLAG(IS_ANDROID)
-        // TODO(tbansal): https://crbug.com/825892: Viewport width on main
+        // TODO(tbansal): https://crbug.com/41378979: Viewport width on main
         // frame requests may be incorrect when the Chrome window is not
         // maximized.
         if (main_frame_viewport_width_observed_deprecated_ > 0) {
@@ -1176,7 +1176,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
         EXPECT_EQ(980, value);
 #endif
 #if BUILDFLAG(IS_ANDROID)
-        // TODO(tbansal): https://crbug.com/825892: Viewport width on main
+        // TODO(tbansal): https://crbug.com/41378979: Viewport width on main
         // frame requests may be incorrect when the Chrome window is not
         // maximized.
         if (main_frame_viewport_width_observed_ > 0) {
@@ -1263,10 +1263,10 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
 
     EXPECT_FALSE(request.headers.find("ect")->second.empty());
 
-    // TODO(tbansal): https://crbug.com/819244: When network servicification is
-    // enabled, the renderer processes do not receive notifications on
-    // change in the network quality. Hence, the network quality client hints
-    // are not set to the correct value on subresources.
+    // TODO(tbansal): https://crbug.com/40565882: When network servicification
+    // is enabled, the renderer processes do not receive notifications on change
+    // in the network quality. Hence, the network quality client hints are not
+    // set to the correct value on subresources.
     bool is_main_frame_navigation =
         request.GetURL().spec().find(".html") != std::string::npos;
     if (is_main_frame_navigation) {

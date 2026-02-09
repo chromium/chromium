@@ -210,7 +210,7 @@ bool ShouldAddCloseButton(const std::string& server_name,
   // notifications, which are stay-on-screen, this can lead to a situation where
   // the only way to dismiss a notification is to click on it, which would
   // create an unwanted web navigation.  For this reason, manually add a close
-  // button (https://crbug.com/804637).  Cinnamon 3.8.0 adds a close button
+  // button (https://crbug.com/40559305).  Cinnamon 3.8.0 adds a close button
   // (https://github.com/linuxmint/Cinnamon/blob/8717fa/debian/changelog#L1075),
   // so exclude versions that provide one already.
   return server_name == "cinnamon" && server_version.IsValid() &&

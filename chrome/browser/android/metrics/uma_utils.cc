@@ -46,7 +46,7 @@ static void JNI_UmaUtils_RecordMetricsReportingDefaultOptIn(JNIEnv* env,
   PrefService* local_state = g_browser_process->local_state();
 
   // Users can easily accept ToS multiple times by using the back button, only
-  // report the first time. See https://crbug.com/741003.
+  // report the first time. See https://crbug.com/40529487.
   if (metrics::GetMetricsReportingDefaultState(local_state) ==
       metrics::EnableMetricsDefault::DEFAULT_UNKNOWN) {
     metrics::RecordMetricsReportingDefaultState(

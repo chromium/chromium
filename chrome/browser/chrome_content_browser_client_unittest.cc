@@ -244,7 +244,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, OpenURL) {
     // TODO(peter): We should have more in-depth browser tests for the window
     // opening functionality, which also covers Android. This test can currently
     // only be ran on platforms where OpenURL is implemented synchronously.
-    // See https://crbug.com/457667.
+    // See https://crbug.com/41156995.
     content::WebContents* web_contents = nullptr;
     scoped_refptr<content::SiteInstance> site_instance =
         content::SiteInstance::Create(browser()->profile());

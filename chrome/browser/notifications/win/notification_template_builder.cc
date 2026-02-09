@@ -352,7 +352,7 @@ void AddContextMenu(XmlWriter* xml_writer,
 // Ensures that every reminder has at least one button, as the Action Center
 // does not respect the Reminder setting on notifications with no buttons, so we
 // must add a Dismiss button to the notification for those cases. For more
-// details, see issue https://crbug.com/781792.
+// details, see issue https://crbug.com/40548271.
 void EnsureReminderHasButton(XmlWriter* xml_writer,
                              const message_center::Notification& notification,
                              NotificationLaunchId copied_launch_id) {

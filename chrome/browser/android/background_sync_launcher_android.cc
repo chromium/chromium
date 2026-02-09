@@ -32,7 +32,7 @@ base::LazyInstance<BackgroundSyncLauncherAndroid>::DestructorAtExit
 
 // Disables the Play Services version check for testing on Chromium build bots.
 // TODO(iclelland): Remove this once the bots have their play services package
-// updated before every test run. (https://crbug.com/514449)
+// updated before every test run. (https://crbug.com/40428648)
 bool disable_play_services_version_check_for_tests = false;
 
 // Returns 0 to create a ONE_SHOT_SYNC_CHROME_WAKE_UP task, or 1 to create a

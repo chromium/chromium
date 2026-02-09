@@ -325,7 +325,7 @@ void WidevineCdmComponentInstallerPolicy::ComponentReady(
   }
 
   // Widevine CDM affects encrypted media playback, hence USER_VISIBLE.
-  // See http://crbug.com/900169 for the context.
+  // See http://crbug.com/41423424 for the context.
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&WidevineCdmComponentInstallerPolicy::UpdateCdmPath,

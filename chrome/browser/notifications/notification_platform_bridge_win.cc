@@ -431,7 +431,7 @@ class NotificationPlatformBridgeWinImpl
                std::unique_ptr<message_center::Notification> notification,
                std::unique_ptr<NotificationCommon::Metadata> metadata) {
     // TODO(finnur): Move this to a RoInitialized thread, as per
-    // crbug.com/761039.
+    // crbug.com/40538006.
     DCHECK(notification_task_runner_->RunsTasksInCurrentSequence());
 
     const std::wstring app_user_model_id = GetAppIdForNotification(
@@ -1187,7 +1187,7 @@ bool NotificationPlatformBridgeWin::SystemNotificationEnabled() {
   // Version::WIN10_RS4), causing endless loops in displaying
   // notifications. It significantly amplified the memory and CPU usage.
   // Therefore, we enable Windows 10 system notification only for build 17134
-  // and later. See crbug.com/882622 and crbug.com/878823 for more details.
+  // and later. See crbug.com/41412934 and crbug.com/41410683 for more details.
   return base::win::GetVersion() >= base::win::Version::WIN10_RS4 && enabled;
 }
 

@@ -34,7 +34,7 @@ std::vector<ash::NotifierMetadata> ExtensionNotifierController::GetNotifierList(
   // the icon doesn't exist for the specified size, and in that case it falls
   // back to the default icon. The fetched icon will be resized in the
   // settings dialog. See chrome/browser/extensions/extension_icon_image.cc
-  // and crbug.com/222931
+  // and crbug.com/41001667
   app_icon_loader_ = std::make_unique<extensions::ChromeAppIconLoader>(
       profile, extension_misc::EXTENSION_ICON_SMALL, this);
   for (extensions::ExtensionSet::const_iterator iter = extension_set.begin();

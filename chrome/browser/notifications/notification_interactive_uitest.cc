@@ -116,7 +116,7 @@ const char kExpectedIconUrl[] = "/notifications/no_such_file.png";
 
 }  // namespace
 
-// Flaky on Windows, Mac, Linux: http://crbug.com/437414.
+// Flaky on Windows, Mac, Linux: http://crbug.com/40395983.
 IN_PROC_BROWSER_TEST_F(NotificationsTest, DISABLED_TestUserGestureInfobar) {
   ASSERT_TRUE(embedded_test_server()->Start());
 

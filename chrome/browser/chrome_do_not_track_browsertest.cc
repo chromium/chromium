@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDoNotTrackTest, FetchFromNestedWorker) {
 // Checks that the DNT header is preserved when fetching from a shared worker.
 //
 // Disabled on Android since a shared worker is not available on Android:
-// crbug.com/869745.
+// crbug.com/41405311.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_FetchFromSharedWorker DISABLED_FetchFromSharedWorker
 #else

@@ -60,7 +60,7 @@ BackgroundFetchPermissionContext::GetContentSettingStatusInternal(
       requesting_origin, requesting_origin,
       ContentSettingsType::AUTOMATIC_DOWNLOADS);
 
-  // Due to privacy concerns as outlined in https://crbug.com/896311 the most
+  // Due to privacy concerns as outlined in https://crbug.com/41421247 the most
   // permissive state BGF can be in for non top level frames or service workers
   // is ASK. This causes background fetches that do not originate in a main
   // frame to start paused.

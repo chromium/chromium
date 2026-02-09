@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileWithEmailInOtherFieldNotSaved) {
 // 'Address Line 1' and 'City' data match. When two profiles are merged, any
 // remaining address fields are expected to be overwritten. Any non-address
 // fields should accumulate multi-valued data.
-// DISABLED: http://crbug.com/281541
+// DISABLED: http://crbug.com/41043304
 IN_PROC_BROWSER_TEST_F(AutofillTest,
                        DISABLED_MergeAggregatedProfilesWithSameAddress) {
   AggregateProfilesIntoAutofillPrefs("dataset_same_address.txt");
@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
 
 // Test Autofill ability to merge duplicate profiles and throw away junk.
 // TODO(isherman): this looks redundant, consider removing.
-// DISABLED: http://crbug.com/281541
+// DISABLED: http://crbug.com/41043304
 // This tests opens and submits over 240 forms which does not finish within the
 // allocated time of browser_tests. This should be converted into a unittest.
 IN_PROC_BROWSER_TEST_F(AutofillTest,

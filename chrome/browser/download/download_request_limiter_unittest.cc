@@ -724,7 +724,7 @@ TEST_F(DownloadRequestLimiterTest, DownloadRequestLimiter_ResetOnUserGesture) {
 }
 
 TEST_F(DownloadRequestLimiterTest, ResetOnReload) {
-  // This is a regression test for https://crbug.com/110707.
+  // This is a regression test for https://crbug.com/40140715.
   NavigateAndCommit(kTestURL);
   LoadCompleted();
   EXPECT_EQ(DownloadRequestLimiter::ALLOW_ONE_DOWNLOAD,

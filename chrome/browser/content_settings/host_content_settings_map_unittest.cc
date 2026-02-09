@@ -1843,7 +1843,7 @@ TEST_F(HostContentSettingsMapTest, GuestProfileDefaultSetting) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(HostContentSettingsMapTest, InvalidPattern) {
-  // This is a regression test for crbug.com/618529, which fixed a memory leak
+  // This is a regression test for crbug.com/40472343, which fixed a memory leak
   // when a website setting was set under a URL that mapped to an invalid
   // pattern.
   TestingProfile profile;

@@ -487,7 +487,7 @@ void TabAndroid::DestroyWebContents() {
   // process shuts down itself when ref count becomes 0.
   // This helps the render process exit quickly which avoids some issues
   // during shutdown. See https://codereview.chromium.org/146693011/
-  // and http://crbug.com/338709 for details.
+  // and http://crbug.com/41086630 for details.
   content::RenderProcessHost* process =
       web_contents()->GetPrimaryMainFrame()->GetProcess();
   if (process) {

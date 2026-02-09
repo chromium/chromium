@@ -227,7 +227,7 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
   base::ScopedTempDir service_worker_dir_;
 };
 
-// http://crbug.com/368570
+// http://crbug.com/40363335
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
                        CanShutDownWithRegisteredServiceWorker) {
   WriteFile(FILE_PATH_LITERAL("service_worker.js"), "");
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   // do that.
 }
 
-// http://crbug.com/419290
+// http://crbug.com/40387150
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
                        CanCloseIncognitoWindowWithServiceWorkerController) {
   WriteFile(FILE_PATH_LITERAL("service_worker.js"), "");
@@ -645,7 +645,7 @@ class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
         // control the timing of the request. If the request is sent after
         // clients.claim() is called, fetch event for the default favicon
         // request is triggered and the tests become flaky. See
-        // https://crbug.com/912543.
+        // https://crbug.com/41430391.
         "  if (event.request.url.endsWith('/favicon.ico')) {"
         "    return;"
         "  }"
@@ -1431,7 +1431,7 @@ class ChromeServiceWorkerNavigationPreloadTest : public InProcessBrowserTest {
 // Tests navigation preload during a navigation in the top-level frame
 // when third-party cookies are blocked. The navigation preload request
 // should be sent with cookies as normal. Regression test for
-// https://crbug.com/913220.
+// https://crbug.com/40605694.
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationPreloadTest,
                        TopFrameWithThirdPartyBlocking) {
   // Enable third-party cookie blocking.

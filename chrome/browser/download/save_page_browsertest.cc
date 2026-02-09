@@ -555,7 +555,7 @@ class DelayingDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
   }
 };
 
-// Disabled on multiple platforms due to flakiness. crbug.com/580766
+// Disabled on multiple platforms due to flakiness. crbug.com/41236339
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, DISABLED_SaveHTMLOnlyTabDestroy) {
   GURL url = NavigateToMockURL("a");
   auto delaying_delegate =
@@ -588,8 +588,8 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, DISABLED_SaveHTMLOnlyTabDestroy) {
 }
 
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveViewSourceHTMLOnly) {
-  // TODO(lukasza): https://crbug.com/971811: Disallow renderer crashes once the
-  // bug is fixed.
+  // TODO(lukasza): https://crbug.com/40631088: Disallow renderer crashes once
+  // the bug is fixed.
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
 
   GURL mock_url = embedded_test_server()->GetURL("/save_page/a.htm");
@@ -609,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveViewSourceHTMLOnly) {
   EXPECT_TRUE(base::ContentsEqual(GetTestDirFile("a.htm"), full_file_name));
 }
 
-// Regression test for https://crbug.com/974312 (saving a page that was served
+// Regression test for https://crbug.com/40632177 (saving a page that was served
 // with `Cross-Origin-Resource-Policy: same-origin` http response header).
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveCompleteHTML) {
   GURL url = NavigateToMockURL("b");
@@ -955,7 +955,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveDownloadableIFrame) {
 }
 
 // Test that file: URI won't be saved when referred to from an HTTP page.
-// See also https://crbug.com/616429.
+// See also https://crbug.com/40084438.
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveUnauthorizedResource) {
   GURL url = NavigateToMockURL("unauthorized-access");
 
@@ -982,7 +982,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveUnauthorizedResource) {
 
   // We should not save resource that the web page didn't have access to.
   // (because executing a resource request can have side effects - for example
-  // after https://crbug.com/590714 a website from the internet should not be
+  // after https://crbug.com/40083783 a website from the internet should not be
   // able to issue a resource request to an intranet website and trigger
   // server-side actions in the internet;  this test uses a file: URI as a
   // canary for detecting whether a website can access restricted resources).
@@ -1037,7 +1037,7 @@ class SavePageSitePerProcessBrowserTest : public SavePageBrowserTest {
   }
 };
 
-// Test for crbug.com/526786.
+// Test for crbug.com/40433720.
 IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest, SaveAsCompleteHtml) {
   GURL url(
       embedded_test_server()->GetURL("a.com", "/save_page/frames-xsite.htm"));
@@ -1097,7 +1097,7 @@ IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest, SaveAsCompleteHtml) {
               HasSubstr("b.htm: 3a35f7fa-96a9-4487-9f18-4470263907fa"));
 }
 
-// Test for crbug.com/538766.
+// Test for crbug.com/40438557.
 // Disabled on Mac due to excessive flakiness. https://crbug.com/1271741
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SaveAsMHTML DISABLED_SaveAsMHTML
@@ -1154,7 +1154,7 @@ IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest,
   EXPECT_EQ(1, count) << "Verify number of image/png parts in the mhtml output";
 }
 
-// Test for crbug.com/541342 - handling of dead renderer processes.
+// Test for crbug.com/40439413 - handling of dead renderer processes.
 IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest,
                        CompleteHtmlWhenRendererIsDead) {
   GURL url(
@@ -1256,7 +1256,7 @@ class SavePageOriginalVsSavedComparisonTest
     }
 
     // Check that we're able to navigate away and come back, as well.
-    // See https://crbug.com/948246.
+    // See https://crbug.com/41450468.
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,foo")));
     chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -1295,7 +1295,7 @@ class SavePageOriginalVsSavedComparisonTest
         // loaded before continuing with the test.
     };
 
-    // TODO(lukasza): crbug.com/553478: Enable <object> testing of MHTML.
+    // TODO(lukasza): crbug.com/41216547: Enable <object> testing of MHTML.
     if (save_page_type == content::SAVE_PAGE_TYPE_AS_MHTML)
       return;
 
@@ -1374,9 +1374,9 @@ class SavePageOriginalVsSavedComparisonTest
 };
 
 // Test coverage for:
-// - crbug.com/526786: OOPIFs support for CompleteHtml
-// - crbug.com/538766: OOPIFs support for MHTML
-// - crbug.com/539936: Subframe gets redirected.
+// - crbug.com/40433720: OOPIFs support for CompleteHtml
+// - crbug.com/40438557: OOPIFs support for MHTML
+// - crbug.com/40438945: Subframe gets redirected.
 // Test compares original-vs-saved for a page with cross-site frames
 // (subframes get redirected to a different domain - see frames-xsite.htm).
 IN_PROC_BROWSER_TEST_P(SavePageOriginalVsSavedComparisonTest, CrossSite) {
@@ -1395,7 +1395,7 @@ IN_PROC_BROWSER_TEST_P(SavePageOriginalVsSavedComparisonTest, CrossSite) {
 }
 
 // Test compares original-vs-saved for a page with <object> elements.
-// (see crbug.com/553478).
+// (see crbug.com/41216547).
 // crbug.com/1070886: disabled because of flakiness.
 IN_PROC_BROWSER_TEST_P(SavePageOriginalVsSavedComparisonTest,
                        DISABLED_ObjectElementsViaHttp) {
@@ -1406,7 +1406,7 @@ IN_PROC_BROWSER_TEST_P(SavePageOriginalVsSavedComparisonTest,
 }
 
 // Tests that saving a page from file: URI works.
-// TODO(lukasza): https://crbug.com/964364: Re-enable the test.
+// TODO(lukasza): https://crbug.com/40627967: Re-enable the test.
 IN_PROC_BROWSER_TEST_P(SavePageOriginalVsSavedComparisonTest,
                        DISABLED_ObjectElementsViaFile) {
   base::FilePath test_data_dir;
@@ -1446,7 +1446,7 @@ IN_PROC_BROWSER_TEST_P(SavePageOriginalVsSavedComparisonTest,
 
 // Test compares original-vs-saved for a page with nested frames.
 // Two levels of nesting are especially good for verifying correct
-// link rewriting for subframes-vs-main-frame (see crbug.com/554666).
+// link rewriting for subframes-vs-main-frame (see crbug.com/40444391).
 IN_PROC_BROWSER_TEST_P(SavePageOriginalVsSavedComparisonTest, NestedFrames) {
   content::SavePageType save_page_type = GetParam();
 
@@ -1462,7 +1462,7 @@ IN_PROC_BROWSER_TEST_P(SavePageOriginalVsSavedComparisonTest, NestedFrames) {
   TestOriginalVsSavedPage(save_page_type, url, 3, 3, expected_substrings);
 }
 
-// Test for crbug.com/106364 and crbug.com/538188.
+// Test for crbug.com/40123384 and crbug.com/40438320.
 // Test frames have the same uri ...
 //   subframe1 and subframe2 - both have src=b.htm
 //   subframe3 and subframe4 - about:blank (no src, only srcdoc attribute).
@@ -1515,8 +1515,8 @@ IN_PROC_BROWSER_TEST_P(SavePageOriginalVsSavedComparisonTest, Encoding) {
   GURL url(embedded_test_server()->GetURL("a.com",
                                           "/save_page/frames-encodings.htm"));
 
-  // TODO(lukasza): crbug.com/541699: MHTML needs to handle multi-byte encodings
-  // by either:
+  // TODO(lukasza): crbug.com/40439547: MHTML needs to handle multi-byte
+  // encodings by either:
   // 1. Continuing to preserve the original encoding, but starting to round-trip
   //    the encoding declaration (in Content-Type MIME/MHTML header?)
   // 2. Saving html docs in UTF8.
@@ -1527,7 +1527,7 @@ IN_PROC_BROWSER_TEST_P(SavePageOriginalVsSavedComparisonTest, Encoding) {
   TestOriginalVsSavedPage(save_page_type, url, 6, 6, expected_substrings);
 }
 
-// Test for saving style element and attribute (see also crbug.com/568293).
+// Test for saving style element and attribute (see also crbug.com/40448527).
 #if BUILDFLAG(IS_MAC)
 // TODO(crbug.com/40202613): Fails on dcheck-enabled builds on 11.0.
 #define MAYBE_Style DISABLED_Style
@@ -1550,8 +1550,8 @@ IN_PROC_BROWSER_TEST_P(SavePageOriginalVsSavedComparisonTest, MAYBE_Style) {
 }
 
 // Test for saving a page with broken subresources:
-// - Broken, undecodable image (see also https://crbug.com/586680)
-// - Broken link, to unresolvable host (see also https://crbug.com/594219)
+// - Broken, undecodable image (see also https://crbug.com/40456883)
+// - Broken link, to unresolvable host (see also https://crbug.com/41243783)
 IN_PROC_BROWSER_TEST_P(SavePageOriginalVsSavedComparisonTest, BrokenImage) {
   content::SavePageType save_page_type = GetParam();
 

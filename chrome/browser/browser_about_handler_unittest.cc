@@ -149,7 +149,7 @@ TEST_F(BrowserAboutHandlerTest,
 
 // Ensure that minor BrowserAboutHandler fixup to a URL does not cause us to
 // keep a separate virtual URL, which would not be updated on redirects.
-// See https://crbug.com/449829.
+// See https://crbug.com/40081211.
 TEST_F(BrowserAboutHandlerTest, NoVirtualURLForFixup) {
   GURL url("view-source:http://.foo");
 

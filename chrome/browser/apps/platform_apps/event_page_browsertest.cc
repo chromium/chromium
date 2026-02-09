@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(AppEventPageTest, OnSuspendNoApiUse) {
 
 // Tests that an app's event page will eventually be unloaded. The onSuspend
 // event handler of this app calls a chrome.storage API function.
-// See: http://crbug.com/296834
+// See: http://crbug.com/40333980
 IN_PROC_BROWSER_TEST_F(AppEventPageTest, OnSuspendUseStorageApi) {
   TestUnloadEventPage("event_page/suspend_storage_api");
 }

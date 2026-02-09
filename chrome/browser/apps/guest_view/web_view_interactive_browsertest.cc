@@ -560,7 +560,7 @@ class WebViewPointerLockInteractiveTest : public WebViewInteractiveTest {};
 
 // The following class of tests do not work for OOPIF <webview>.
 // TODO(ekaramad): Make this tests work with OOPIF and replace the test classes
-// with WebViewInteractiveTest (see crbug.com/582562).
+// with WebViewInteractiveTest (see crbug.com/40454567).
 class DISABLED_WebViewPopupInteractiveTest : public WebViewInteractiveTest {};
 
 // Timeouts flakily: crbug.com/1003345
@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest, MAYBE_PointerLock) {
   }
 }
 
-// flaky http://crbug.com/412086
+// flaky http://crbug.com/40383431
 #if defined(SUPPORTS_SYNC_MOUSE_UTILS) && !BUILDFLAG(IS_CHROMEOS) && \
     !BUILDFLAG(IS_MAC) && defined(NDEBUG)
 #define MAYBE_PointerLockFocus PointerLockFocus
@@ -714,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
   ASSERT_TRUE(next_step_listener.WaitUntilSatisfied());
 }
 
-// Flaky on Mac and Linux - https://crbug.com/707648
+// Flaky on Mac and Linux - https://crbug.com/40513691
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Focus_FocusTracksEmbedder DISABLED_Focus_FocusTracksEmbedder
 #else
@@ -901,7 +901,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, EditCommandsNoMenu) {
 // There is a problem of missing keyup events with the command key after
 // the NSEvent is sent to NSApplication in ui/base/test/ui_controls_mac.mm .
 // This test is disabled on only the Mac until the problem is resolved.
-// See http://crbug.com/425859 for more information.
+// See http://crbug.com/40390352 for more information.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_NewWindow_OpenInNewTab DISABLED_NewWindow_OpenInNewTab
 #else
@@ -941,7 +941,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_WebViewPopupInteractiveTest,
   // make sure we keep rendering popups correct in webview.
 }
 
-// Flaky on ChromeOS and Linux: http://crbug.com/526886
+// Flaky on ChromeOS and Linux: http://crbug.com/40433775
 // TODO(crbug.com/40560638): Flaky on Mac.
 // TODO(crbug.com/41369000): Flaky on Windows.
 // Tests that moving browser plugin (without resize/UpdateRects) correctly
@@ -1147,7 +1147,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_Focus_InputMethod) {
     ASSERT_TRUE(next_step_listener.WaitUntilSatisfied());
   }
 
-  // TODO(lazyboy): http://crbug.com/457007, Add a step or a separate test to
+  // TODO(lazyboy): http://crbug.com/40404982, Add a step or a separate test to
   // check the following, currently it turns this test to be flaky:
   // If we move the focus from the first <input> to the second one after we
   // have some composition text set but *not* committed (by calling
@@ -1156,7 +1156,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_Focus_InputMethod) {
   // <webview>, not the second one.
 
   // Tests ExtendSelectionAndDelete message works in <webview>.
-  // https://crbug.com/971985
+  // https://crbug.com/41463750
   {
     next_step_listener.Reset();
 
@@ -1310,8 +1310,8 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, WordLookupShadowDom) {
 }
 #endif
 
-// Flaky on Mac: http://crbug.com/811893
-// Flaky on Linux/ChromeOS/Windows: http://crbug.com/845638
+// Flaky on Mac: http://crbug.com/41370441
+// Flaky on Linux/ChromeOS/Windows: http://crbug.com/41390528
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_WIN)
 #define MAYBE_FocusAndVisibility DISABLED_FocusAndVisibility
@@ -1334,7 +1334,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, MAYBE_FocusAndVisibility) {
       "WebViewInteractiveTest.KeyUp");
 #if BUILDFLAG(IS_MAC)
   // On mac, the event listener seems one key event behind and deadlocks. Send
-  // an extra tab to get things unblocked. See http://crbug.com/685281 when
+  // an extra tab to get things unblocked. See http://crbug.com/41297477 when
   // fixed, this can be removed.
   SendKeyPressToPlatformApp(ui::VKEY_TAB);
 #endif
@@ -1377,8 +1377,8 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, MAYBE_FocusAndVisibility) {
   EXPECT_TRUE(webview_button_not_focused_listener.WaitUntilSatisfied());
 }
 
-// Flaky timeouts on Linux. https://crbug.com/709202
-// Flaky timeouts on Win. https://crbug.com/846695
+// Flaky timeouts on Linux. https://crbug.com/40514419
+// Flaky timeouts on Win. https://crbug.com/40577991
 // Flaky timeouts on Mac. https://crbug.com/1520415
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, DISABLED_KeyboardFocusSimple) {
   TestHelper("testKeyboardFocusSimple", "web_view/focus", NO_TEST_SERVER);
@@ -1416,10 +1416,10 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, DISABLED_KeyboardFocusSimple) {
 // Ensures that input is routed to the webview after the containing window loses
 // and regains focus. Additionally, the webview does not process keypresses sent
 // while another window is focused.
-// http://crbug.com/660044.
-// Flaky on MacOSX, crbug.com/817067.
-// Flaky on linux, crbug.com/706830.
-// Flaky on Windows, crbug.com/847201.
+// http://crbug.com/40490947.
+// Flaky on MacOSX, crbug.com/41373673.
+// Flaky on linux, crbug.com/40513300.
+// Flaky on Windows, crbug.com/40578243.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
 #define MAYBE_KeyboardFocusWindowCycle DISABLED_KeyboardFocusWindowCycle

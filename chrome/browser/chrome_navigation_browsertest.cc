@@ -277,7 +277,7 @@ class CtrlClickProcessTest : public ChromeNavigationBrowserTest {
 
 // Tests that verify that ctrl-click results 1) open up in a new renderer
 // process (https://crbug.com/23815) and 2) are in a new BrowsingInstance (e.g.
-// cannot find the opener's window by name - https://crbug.com/658386).
+// cannot find the opener's window by name - https://crbug.com/40490152).
 class CtrlClickShouldEndUpInNewProcessTest : public CtrlClickProcessTest {
  protected:
   void VerifyProcessExpectations(content::WebContents* main_contents,
@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(CtrlClickShouldEndUpInNewProcessTest, SubframeTarget) {
 
 // Similar to the tests above, but verifies that the new WebContents ends up in
 // the same process as the opener when it is exceeding the process limit.
-// See https://crbug.com/774723.
+// See https://crbug.com/40544799.
 class CtrlClickShouldEndUpInSameProcessTest : public CtrlClickProcessTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(CtrlClickShouldEndUpInSameProcessTest, SubframeTarget) {
 }
 
 // Test to verify that spoofing a URL via a redirect from a slightly malformed
-// URL doesn't work.  See also https://crbug.com/657720.
+// URL doesn't work.  See also https://crbug.com/40085742.
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
                        ContextMenuNavigationToInvalidUrl) {
   GURL initial_url = embedded_test_server()->GetURL("/title1.html");
@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 }
 
 // Ensure that URL transformations do not let a webpage populate the Omnibox
-// with a javascript: URL.  See https://crbug.com/850824 and
+// with a javascript: URL.  See https://crbug.com/40091605 and
 // https://crbug.com/1116280.
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
                        ClearInvalidPendingURLOnFail) {
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   const char* kTestUrls[] = {
-      // https://crbug.com/850824
+      // https://crbug.com/40091605
       "o.o:@javascript:foo()",
 
       // https://crbug.com/1116280
@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 
 // Check that if a page has an iframe that loads an error page, that error page
 // does not inherit the Content Security Policy from the parent frame.  See
-// https://crbug.com/703801.  This test is in chrome/ because error page
+// https://crbug.com/40511850.  This test is in chrome/ because error page
 // behavior is only fully defined in chrome/.
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
                        ErrorPageDoesNotInheritCSP) {
@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   }
 }
 
-// Test for https://crbug.com/866549#c2. It verifies that about:blank does not
+// Test for https://crbug.com/40586222#c2. It verifies that about:blank does not
 // commit in the error page process when it is redirected to.
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
                        RedirectErrorPageReloadToAboutBlank) {
@@ -1539,7 +1539,7 @@ class SignInIsolationBrowserTest : public ChromeNavigationBrowserTest {
 // This test ensures that the sign-in origin requires a dedicated process.  It
 // only ensures that the sign-in origin is added as an isolated origin at
 // chrome/ layer; IsolatedOriginTest provides the main test coverage of origins
-// whitelisted for process isolation.  See https://crbug.com/739418.
+// whitelisted for process isolation.  See https://.
 IN_PROC_BROWSER_TEST_F(SignInIsolationBrowserTest, NavigateToSignInPage) {
   const GURL first_url =
       embedded_test_server()->GetURL("google.com", "/title1.html");
@@ -1621,7 +1621,7 @@ class WebstoreIsolationBrowserTest : public ChromeNavigationBrowserTest {
 // Tests that Chrome Web Store URL used by the hosted app in production
 // (chrome.google.com/webstore/) is isolated from the rest of google.com and
 // other chrome.google.com pages not in the /webstore/ path. See
-// https://crbug.com/939108.
+// https://crbug.com/40094229.
 IN_PROC_BROWSER_TEST_F(WebstoreIsolationBrowserTest, WebstorePopupIsIsolated) {
   const GURL first_url("https://google.com/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
@@ -1731,7 +1731,7 @@ class WebstoreOverrideIsolationBrowserTest
 
 // Make sure that Chrome Web Store origins are isolated from the rest of their
 // site when overriding the URL from the command line. See
-// https://crbug.com/939108.
+// https://crbug.com/40094229.
 IN_PROC_BROWSER_TEST_F(WebstoreOverrideIsolationBrowserTest,
                        WebstorePopupIsIsolated) {
   const GURL first_url("https://foo.com/title1.html");
@@ -1770,7 +1770,7 @@ IN_PROC_BROWSER_TEST_F(WebstoreOverrideIsolationBrowserTest,
 }
 
 // Check that it's possible to navigate to a chrome scheme URL from a crashed
-// tab. See https://crbug.com/764641.
+// tab. See https://crbug.com/41344263.
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest, ChromeSchemeNavFromSadTab) {
   // Kill the renderer process.
   content::RenderProcessHost* process = browser()
@@ -1840,7 +1840,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTestWithMobileEmulation,
 }
 
 // Check that clicking on a link doesn't carry the transient user activation
-// from the original page to the navigated page (crbug.com/865243).
+// from the original page to the navigated page (crbug.com/41402563).
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
                        WindowOpenBlockedAfterClickNavigation) {
   // Navigate to a test page with links.
@@ -1964,7 +1964,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 }
 
 // Test which verifies that a noopener link/window.open() properly focus the
-// newly opened tab. See https://crbug.com/912348.
+// newly opened tab. See https://crbug.com/41430290.
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
                        NoopenerCorrectlyFocusesNewTab) {
   content::WebContents* main_contents =
@@ -2324,7 +2324,7 @@ IN_PROC_BROWSER_TEST_F(NavigationConsumingTest,
   EXPECT_EQ(false, content::EvalJs(contents, different_document_script));
 }
 
-// Regression test for https://crbug.com/856779, where a navigation to a
+// Regression test for https://crbug.com/41396970, where a navigation to a
 // top-level, same process frame in another tab fails to focus that tab.
 IN_PROC_BROWSER_TEST_F(NavigationConsumingTest, TargetNavigationFocus) {
   content::WebContents* opener =
@@ -2709,7 +2709,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForPasswordSitesBrowserTest,
   //
   // TODO(alexmos): This might change in the future if we decide to inherit
   // main profile's isolated origins in incognito. See
-  // https://crbug.com/905513.
+  // https://crbug.com/40602510.
   Browser* incognito = CreateIncognitoBrowser();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito, saved_url));
   content::WebContents* contents =

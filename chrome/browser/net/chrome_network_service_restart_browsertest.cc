@@ -33,7 +33,7 @@ class ChromeNetworkServiceRestartBrowserTest : public InProcessBrowserTest {
 
   GURL GetTestURL() const {
     // Use '/echoheader' instead of '/echo' to avoid a disk_cache bug.
-    // See https://crbug.com/792255.
+    // See https://crbug.com/40553335.
     return embedded_test_server()->GetURL("/echoheader");
   }
 };

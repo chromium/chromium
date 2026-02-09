@@ -206,7 +206,7 @@ void ChromeAshMessageCenterClient::GetNotifiers() {
             base::BindOnce(&ChromeAshMessageCenterClient::GetNotifiers,
                            weak_ptr_.GetWeakPtr()));
     LOG(ERROR) << "GetNotifiers called before profile fully loaded, see "
-                  "https://crbug.com/968825";
+                  "https://crbug.com/40629978";
     return;
   }
 

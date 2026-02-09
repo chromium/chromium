@@ -37,7 +37,7 @@ using content::OpenURLParams;
 using content::Referrer;
 using content::WebContents;
 
-// TODO(jam): http://crbug.com/350550
+// TODO(jam): http://crbug.com/40354951
 #if !(BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER))
 
 namespace {
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, MAYBE_LoadInNewTab) {
 }
 
 // Tests that reloads of navigation errors behave correctly after a crash.
-// Regression test for http://crbug.com/348918
+// Regression test for http://crbug.com/40354123
 IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, DoubleReloadWithError) {
   GURL url(content::GetWebUIURL("bogus"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

@@ -97,8 +97,8 @@ const std::string& TestMessageCenterObserver::last_displayed_id() const {
 }
 
 NotificationsTest::NotificationsTest() {
-// Temporary change while the whole support class is changed to deal
-// with system notifications. crbug.com/714679
+  // Temporary change while the whole support class is changed to deal
+  // with system notifications. crbug.com/40517059
   feature_list_.InitWithFeatures(
       {}, {features::kNativeNotifications, features::kSystemNotifications});
 }

@@ -416,7 +416,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         HistoryServiceFactory::GetForProfile(
             profile_, ServiceAccessType::EXPLICIT_ACCESS);
     if (history_service) {
-      // TODO(dmurph): Support all backends with filter (crbug.com/113621).
+      // TODO(dmurph): Support all backends with filter (crbug.com/40152186).
       base::RecordAction(UserMetricsAction("ClearBrowsingData_History"));
       history_service->DeleteLocalAndRemoteHistoryBetween(
           WebHistoryServiceFactory::GetForProfile(profile_), delete_begin_,
@@ -437,7 +437,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     // The extension activity log contains details of which websites extensions
     // were active on. It therefore indirectly stores details of websites a
     // user has visited so best clean from here as well.
-    // TODO(msramek): Support all backends with filter (crbug.com/589586).
+    // TODO(msramek): Support all backends with filter (crbug.com/40458377).
     extensions::ActivityLog::GetInstance(profile_)->RemoveURLs(
         std::set<GURL>());
 
@@ -469,7 +469,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
             profile_);
     if (no_state_prefetch_manager) {
-      // TODO(dmurph): Support all backends with filter (crbug.com/113621).
+      // TODO(dmurph): Support all backends with filter (crbug.com/40152186).
       no_state_prefetch_manager->ClearData(
           prerender::NoStatePrefetchManager::CLEAR_PRERENDER_CONTENTS |
           prerender::NoStatePrefetchManager::CLEAR_PRERENDER_HISTORY);
@@ -1036,7 +1036,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
   //////////////////////////////////////////////////////////////////////////////
   // DATA_TYPE_FORM_DATA
-  // TODO(dmurph): Support all backends with filter (crbug.com/113621).
+  // TODO(dmurph): Support all backends with filter (crbug.com/40152186).
   if (remove_mask & constants::DATA_TYPE_FORM_DATA) {
     base::RecordAction(UserMetricsAction("ClearBrowsingData_Autofill"));
     scoped_refptr<autofill::AutofillWebDataService> web_data_service =

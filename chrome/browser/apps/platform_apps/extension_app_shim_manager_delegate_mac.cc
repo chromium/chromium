@@ -229,7 +229,7 @@ void ExtensionAppShimManagerDelegate::LaunchShim(
   DCHECK(extension);
   // Only force recreation of shims when RemoteViews is in use (that is, for
   // PWAs). Otherwise, shims may be created unexpectedly.
-  // https://crbug.com/941160
+  // https://crbug.com/41446487
   if (web_app::RecreateShimsRequested(update_behavior) &&
       AppUsesRemoteCocoa(profile, app_id)) {
     // Load the resources needed to build the app shim (icons, etc), and then

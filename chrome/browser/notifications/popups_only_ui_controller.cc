@@ -14,7 +14,7 @@ PopupsOnlyUiController::PopupsOnlyUiController()
 
   // Initialize collection after calling message_center_->AddObserver to ensure
   // the correct order of observers. (PopupsOnlyUiController has to be called
-  // before MessagePopupCollection, see crbug.com/901350)
+  // before MessagePopupCollection, see crbug.com/41424101)
   popup_collection_ =
       std::make_unique<message_center::DesktopMessagePopupCollection>();
 }

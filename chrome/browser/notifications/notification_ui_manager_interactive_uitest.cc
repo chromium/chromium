@@ -96,7 +96,7 @@ class NotificationUIManagerInteractiveUITest : public InProcessBrowserTest {
 };
 
 // Make sure that clicks go through on web notifications. Regression test for
-// crbug.com/767868
+// crbug.com/41346105
 IN_PROC_BROWSER_TEST_F(NotificationUIManagerInteractiveUITest,
                        CloseDisplayedPersistentNotification) {
   GrantNotificationPermissionForTest();

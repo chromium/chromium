@@ -161,7 +161,7 @@ class ChromeContentBrowserClientBrowserTest : public InProcessBrowserTest {
 
 // Test that a basic navigation works in --site-per-process mode.  This prevents
 // regressions when that mode calls out into the ChromeContentBrowserClient,
-// such as http://crbug.com/164223.
+// such as http://crbug.com/40956638.
 IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientBrowserTest,
                        SitePerProcessNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -204,7 +204,7 @@ class IsolatedOriginNTPBrowserTest : public InProcessBrowserTest,
 // Verifies that when the remote NTP URL has an origin which is also marked as
 // an isolated origin (i.e., requiring a dedicated process), the NTP URL
 // still loads successfully, and the resulting process is marked as an Instant
-// process.  See https://crbug.com/755595.
+// process.  See https://crbug.com/41339429.
 IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
                        IsolatedOriginDoesNotInterfereWithNTP) {
   GURL base_url =
@@ -266,7 +266,7 @@ class OpenWindowFromNTPBrowserTest : public InProcessBrowserTest,
 };
 
 // Test checks that navigations from NTP tab to URLs with same host as NTP but
-// different path do not reuse NTP SiteInstance. See https://crbug.com/859062
+// different path do not reuse NTP SiteInstance. See https://crbug.com/40583115
 // for details.
 IN_PROC_BROWSER_TEST_F(OpenWindowFromNTPBrowserTest,
                        TransferFromNTPCreateNewTab) {
@@ -817,7 +817,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, MAYBE_CustomHandler) {
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
 
-// This is a regression test for crbug.com/969177.
+// This is a regression test for crbug.com/41462097.
 IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, HandlersIgnoredWhenDisabled) {
   AddProtocolHandler("bitcoin", "https://abc.xyz/?url=%s");
   protocol_handler_registry()->Disable();
@@ -833,7 +833,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, HandlersIgnoredWhenDisabled) {
 #if BUILDFLAG(IS_CHROMEOS)
 // Tests that if a protocol handler is registered for a scheme, an external
 // program (another Chrome tab in this case) is not launched to handle the
-// navigation. This is a regression test for crbug.com/963133.
+// navigation. This is a regression test for crbug.com/40627419.
 IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, ExternalProgramNotLaunched) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("mailto:bob@example.com")));

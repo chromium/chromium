@@ -219,7 +219,7 @@ void ChromeKioskAppInstaller::MaybeCheckExtensionUpdate() {
   // Enforce an immediate version update check for all extensions before
   // launching the primary app. After the chromeos is updated, the shared
   // module (e.g. ARC runtime) may need to be updated to a newer version
-  // compatible with the new chromeos. See crbug.com/555083.
+  // compatible with the new chromeos. See crbug.com/41217680.
   update_checker_ =
       std::make_unique<StartupAppLauncherUpdateChecker>(&profile_.get());
   if (!update_checker_->Run(base::BindOnce(

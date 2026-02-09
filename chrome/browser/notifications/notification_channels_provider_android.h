@@ -125,7 +125,7 @@ class NotificationChannelsProviderAndroid
       content_settings::ProviderInterface* pref_provider);
 
   // Deletes any existing blocked site channels, unless this one-off deletion
-  // already occurred. See https://crbug.com/835232.
+  // already occurred. See https://crbug.com/41384604.
   void ClearBlockedChannelsIfNecessary(
       TemplateURLService* template_url_service);
 

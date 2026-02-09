@@ -31,7 +31,7 @@ enum class UnsuccessfulUploadListState {
 };
 
 // TODO(isherman): This is a temporary histogram for debugging
-// [ https://crbug.com/772159 ] and should be removed once that bug is closed.
+// [ https://crbug.com/40543462 ] and should be removed once that bug is closed.
 void RecordUnsuccessfulUploadListState(UnsuccessfulUploadListState state) {
   LOCAL_HISTOGRAM_ENUMERATION(
       "Debug.Crash.Android.LoadUnsuccessfulUploadListState", state,

@@ -1319,7 +1319,7 @@ IN_PROC_BROWSER_TEST_P(WebViewSizeTest, AutoSize) {
       << message_;
 }
 
-// Test for http://crbug.com/419611.
+// Test for http://crbug.com/40387324.
 IN_PROC_BROWSER_TEST_P(WebViewTest, DisplayNoneSetSrc) {
   LoadAndLaunchPlatformApp("web_view/display_none_set_src",
                            "WebViewTest.LAUNCHED");
@@ -1384,7 +1384,7 @@ IN_PROC_BROWSER_TEST_P(WebViewSizeTest, Shim_TestAutosizeRemoveAttributes) {
   TestHelper("testAutosizeRemoveAttributes", "web_view/shim", NO_TEST_SERVER);
 }
 
-// This test is disabled due to being flaky. http://crbug.com/282116
+// This test is disabled due to being flaky. http://crbug.com/40331071
 IN_PROC_BROWSER_TEST_P(WebViewSizeTest,
                        DISABLED_Shim_TestAutosizeWithPartialAttributes) {
   TestHelper("testAutosizeWithPartialAttributes",
@@ -1609,7 +1609,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestExecuteScript) {
   TestHelper("testExecuteScript", "web_view/shim", NO_TEST_SERVER);
 }
 
-// Flaky and likely not testing the right assertion. https://crbug.com/703727
+// Flaky and likely not testing the right assertion. https://crbug.com/41308624
 IN_PROC_BROWSER_TEST_P(
     WebViewTest,
     DISABLED_Shim_TestExecuteScriptIsAbortedWhenWebViewSourceIsChanged) {
@@ -1657,7 +1657,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestNestedCrossOriginSubframes) {
 }
 
 #if BUILDFLAG(IS_MAC)
-// Flaky on Mac. See https://crbug.com/674904.
+// Flaky on Mac. See https://crbug.com/40498473.
 #define MAYBE_Shim_TestNestedSubframes DISABLED_Shim_TestNestedSubframes
 #else
 #define MAYBE_Shim_TestNestedSubframes Shim_TestNestedSubframes
@@ -1906,7 +1906,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_WebRequest) {
 }
 
 // A custom elements bug needs to be addressed to enable this test:
-// See http://crbug.com/282477 for more information.
+// See http://crbug.com/40331117 for more information.
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
                        DISABLED_NewWindow_WebRequestCloseWindow) {
   TestHelper("testNewWindowWebRequestCloseWindow", "web_view/newwindow",
@@ -2194,7 +2194,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestRemoveWebviewOnExit) {
 }
 
 // Remove <webview> immediately after navigating it.
-// This is a regression test for http://crbug.com/276023.
+// This is a regression test for http://crbug.com/40077958.
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestRemoveWebviewAfterNavigation) {
   TestHelper("testRemoveWebviewAfterNavigation",
              "web_view/shim",
@@ -2322,7 +2322,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 
 // Test makes sure that an interstitial is shown in `<webview>` with an SSL
 // error.
-// Flaky on Win dbg: crbug.com/779973
+// Flaky on Win dbg: crbug.com/40547388
 #if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 #define MAYBE_ShowInterstitialForSSLError DISABLED_ShowInterstitialForSSLError
 #else
@@ -2423,7 +2423,7 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, NavigateThroughSSLError) {
 
 // Test makes sure that the interstitial is registered in the
 // `RenderWidgetHostInputEventRouter` when inside a `<webview>`.
-// Flaky on Win dbg: crbug.com/779973
+// Flaky on Win dbg: crbug.com/40547388
 #if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 #define MAYBE_InterstitialPageRouteEvents DISABLED_InterstitialPageRouteEvents
 #else
@@ -2447,7 +2447,7 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_InterstitialPageRouteEvents) {
 
 // Test makes sure that the browser does not crash when a `<webview>` navigates
 // out of an interstitial caused by a SSL error.
-// Flaky on Win dbg: crbug.com/779973
+// Flaky on Win dbg: crbug.com/40547388
 #if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 #define MAYBE_InterstitialPageDetach DISABLED_InterstitialPageDetach
 #else
@@ -2463,7 +2463,7 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_InterstitialPageDetach) {
 
 // This test makes sure the browser process does not crash if app is closed
 // while an interstitial is being shown in guest.
-// Flaky on Win dbg: crbug.com/779973
+// Flaky on Win dbg: crbug.com/40547388
 #if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 #define MAYBE_InterstitialTearDown DISABLED_InterstitialTearDown
 #else
@@ -2836,10 +2836,10 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, DOMStorageIsolation) {
 
 // This tests how guestviews should or should not be able to find each other
 // depending on whether they are in the same storage partition or not.
-// This is a regression test for https://crbug.com/794079 (where two guestviews
-// in the same storage partition stopped being able to find each other).
-// This is also a regression test for https://crbug.com/802278 (setting of
-// a guestview as an opener should not leak any memory).
+// This is a regression test for https://crbug.com/40554274 (where two
+// guestviews in the same storage partition stopped being able to find each
+// other). This is also a regression test for https://crbug.com/40558308
+// (setting of a guestview as an opener should not leak any memory).
 IN_PROC_BROWSER_TEST_P(WebViewTest, FindabilityIsolation) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -3338,7 +3338,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, GeolocationAPIEmbedderHasAccessDeny) {
 }
 
 // GeolocationAPI* test 3 of 3.
-// Currently disabled until crbug.com/526788 is fixed.
+// Currently disabled until crbug.com/40082773 is fixed.
 IN_PROC_BROWSER_TEST_P(WebViewTest,
                        GeolocationAPIEmbedderHasAccessMultipleBridgeIdAllow) {
   TestHelper("testMultipleBridgeIdAllow",
@@ -3746,7 +3746,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ClearPersistentCookies) {
       << message_;
 }
 
-// Regression test for https://crbug.com/615429.
+// Regression test for https://crbug.com/40470992.
 IN_PROC_BROWSER_TEST_P(WebViewTest, ClearDataTwice) {
   ASSERT_TRUE(StartEmbeddedTestServer());  // For serving guest pages.
   ASSERT_TRUE(RunExtensionTest(
@@ -3757,7 +3757,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ClearDataTwice) {
 
 #if BUILDFLAG(IS_WIN)
 // Test is disabled on Windows because it fails often (~9% time)
-// http://crbug.com/489088
+// http://crbug.com/40418521
 #define MAYBE_ClearDataCache DISABLED_ClearDataCache
 #else
 #define MAYBE_ClearDataCache ClearDataCache
@@ -4317,7 +4317,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestFindAPI) {
   TestHelper("testFindAPI", "web_view/shim", NO_TEST_SERVER);
 }
 
-// crbug.com/710486
+// crbug.com/40515060
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_Shim_TestFindAPI_findupdate DISABLED_Shim_TestFindAPI_findupdate
 #else
@@ -4808,7 +4808,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestWebViewInsideFrame) {
 }
 
 // <webview> screenshot capture fails with ubercomp.
-// See http://crbug.com/327035.
+// See http://crbug.com/40344255.
 IN_PROC_BROWSER_TEST_P(WebViewCaptureTest, DISABLED_Shim_ScreenshotCapture) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
 
@@ -4816,7 +4816,7 @@ IN_PROC_BROWSER_TEST_P(WebViewCaptureTest, DISABLED_Shim_ScreenshotCapture) {
 }
 
 // Test is disabled because it times out often.
-// http://crbug.com/403325
+// http://crbug.com/41125724
 IN_PROC_BROWSER_TEST_P(WebViewTest, DISABLED_WebViewInBackgroundPage) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
 
@@ -4939,7 +4939,7 @@ IN_PROC_BROWSER_TEST_P(WebViewPdfTest, PdfContainerBounds) {
 }
 
 // Test that context menu Back/Forward items in a WebView affect the embedder
-// WebContents. See crbug.com/587355.
+// WebContents. See crbug.com/41239773.
 IN_PROC_BROWSER_TEST_P(WebViewPdfTest, ContextMenuNavigationInWebView) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
 
@@ -5029,7 +5029,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestRemoveBeforeAttach) {
 }
 
 // Tests that the embedder can create a blob URL and navigate a WebView to it.
-// See https://crbug.com/652077.
+// See https://crbug.com/41278508.
 // Also tests that the embedder can't navigate to a blob URL created by a
 // WebView. See https://crbug.com/1106890.
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestBlobURL) {
@@ -5079,7 +5079,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
 }
 
 // Tests that a WebView can reload a WebView accessible resource. See
-// https://crbug.com/691941.
+// https://crbug.com/41301708.
 IN_PROC_BROWSER_TEST_P(WebViewTest, ReloadWebviewAccessibleResource) {
   TestHelper("testReloadWebviewAccessibleResource",
              "web_view/load_webview_accessible_resource", NEEDS_TEST_SERVER);
@@ -5210,7 +5210,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, BlobInWebviewAccessibleResource) {
 }
 
 // Tests that a WebView cannot load a webview-inaccessible resource. See
-// https://crbug.com/640072.
+// https://crbug.com/40481659.
 IN_PROC_BROWSER_TEST_P(WebViewTest, LoadWebviewInaccessibleResource) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
 
@@ -5307,7 +5307,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 // the iframe is detached.
 // We need to disable DomAutomationController because it forces the creation of
 // a script context. We want to test that we handle the case where there is no
-// script context for the iframe. See crbug.com/788914
+// script context for the iframe. See crbug.com/40551760
 IN_PROC_BROWSER_TEST_P(WebViewTestNoDomAutomationController,
                        LoadWebviewInsideIframe) {
   TestHelper("testLoadWebviewInsideIframe",
@@ -5678,7 +5678,7 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest,
   // implicit wait on frame submission. InputEventAckWaiter needs to be updated
   // to support VizDisplayCompositor, when it is, it should be tied to frame
   // tokens which will allow for synchronizing with frame submission for further
-  // verifying metadata (crbug.com/812012)
+  // verifying metadata (crbug.com/40562802)
   guest_frame_observer.WaitForScrollOffset(default_offset);
 
   // Now we switch directions and scroll down. The guest can scroll in this
@@ -5843,7 +5843,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
                   .empty());
 }
 
-// This verifies the fix for http://crbug.com/667708.
+// This verifies the fix for http://crbug.com/41287549.
 IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
                        ClosingChromeSignInShouldNotCrash) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
@@ -5861,7 +5861,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
 // WebContents. The test verifies this by triggering a find-in-page request on a
 // page with both an attached and an unattached <webview> and verifies that,
 // unlike the attached guest, no find requests are sent for the unattached
-// guest. For more context see https://crbug.com/897465.
+// guest. For more context see https://crbug.com/41421893.
 IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
                        NoFindInPageForUnattachedGuest) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
@@ -5985,7 +5985,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 // Test isolated origins inside a WebView, and make sure that loading an
 // isolated origin in a regular tab's subframe doesn't reuse a WebView process
 // that had loaded it previously, which would result in renderer kills. See
-// https://crbug.com/751916 and https://crbug.com/751920.
+// https://crbug.com/41337414 and https://crbug.com/41337417.
 IN_PROC_BROWSER_TEST_P(IsolatedOriginWebViewTest, IsolatedOriginInWebview) {
   LoadAppWithGuest("web_view/simple");
   guest_view::GuestViewBase* guest = GetGuestView();
@@ -6054,7 +6054,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedOriginWebViewTest, IsolatedOriginInWebview) {
 // origin in a <webview> subframe *after* loading the same isolated origin in a
 // regular tab's subframe.  The isolated origin's subframe in the <webview>
 // subframe should not reuse the regular tab's subframe process.  See
-// https://crbug.com/751916 and https://crbug.com/751920.
+// https://crbug.com/41337414 and https://crbug.com/41337417.
 IN_PROC_BROWSER_TEST_P(IsolatedOriginWebViewTest,
                        LoadIsolatedOriginInWebviewAfterLoadingInRegularTab) {
   LoadAppWithGuest("web_view/simple");

@@ -714,7 +714,7 @@ class NetworkContextConfigurationBrowserTest
 
     // Make sure |network_context()| is working as expected. Use '/echoheader'
     // instead of '/echo' to avoid a disk_cache bug.
-    // See https://crbug.com/792255.
+    // See https://crbug.com/40553335.
     auto request = std::make_unique<network::ResourceRequest>();
     request->url = embedded_test_server()->GetURL("/echoheader");
     request->load_flags = net::LOAD_BYPASS_PROXY;
@@ -1246,7 +1246,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, Hsts) {
     return;
   // The network service must be cleanly shut down to guarantee HSTS information
   // is flushed to disk, but that currently generally doesn't happen. See
-  // https://crbug.com/820996.
+  // https://crbug.com/40566707.
   if (GetHttpCacheType() == StorageType::kDisk) {
     return;
   }

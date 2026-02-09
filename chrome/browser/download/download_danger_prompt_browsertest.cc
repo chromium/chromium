@@ -190,7 +190,7 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
   std::string expected_serialized_report_;
 };
 
-// Disabled for flaky timeouts on Windows. crbug.com/446696
+// Disabled for flaky timeouts on Windows. crbug.com/41150887
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_TestAll DISABLED_TestAll
 #else

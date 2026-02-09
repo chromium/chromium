@@ -1282,7 +1282,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnSelectOptionFromDatalist) {
 
 // Test that an <input> field with a <datalist> has a working drop down even if
 // it was dynamically changed to <input type="password"> temporarily. This is a
-// regression test for crbug.com/918351.
+// regression test for crbug.com/41433560.
 IN_PROC_BROWSER_TEST_F(
     AutofillInteractiveTest,
     OnSelectOptionFromDatalistTurningToPasswordFieldAndBack) {
@@ -1309,8 +1309,8 @@ IN_PROC_BROWSER_TEST_F(
       content::ExecJs(GetWebContents(),
                       "document.getElementById('firstname').type = 'search';"));
 
-  // Regression test for crbug.com/918351 whether the datalist becomes available
-  // again.
+  // Regression test for crbug.com/41433560 whether the datalist becomes
+  // available again.
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
                            {.num_profile_suggestions = 0, .target_index = 1}));
   // Pressing the down arrow preselects the first item. Pressing it again
@@ -2060,7 +2060,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 
 // Test that Chrome doesn't crash when autocomplete is disabled while the user
 // is interacting with the form.  This is a regression test for
-// http://crbug.com/160476
+// http://crbug.com/40293849
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        DisableAutocompleteWhileFilling) {
   CreateTestProfile();
@@ -3188,7 +3188,7 @@ class AutofillInteractiveTestChromeVox
   void TearDownOnMainThread() override {
     chromevox_test_utils_.reset();
     // Unload the ChromeVox extension so the browser doesn't try to respond to
-    // in-flight requests during test shutdown. https://crbug.com/923090
+    // in-flight requests during test shutdown. https://crbug.com/41436231
     ash::AccessibilityManager::Get()->EnableSpokenFeedback(false);
     AutomationManagerAura::GetInstance()->Disable();
     AutofillInteractiveTestBase::TearDownOnMainThread();

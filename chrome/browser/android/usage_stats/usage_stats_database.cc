@@ -220,7 +220,7 @@ void UsageStatsDatabase::DeleteEventsInRange(base::Time startTime,
   }
 
   // If leveldb_proto adds a DeleteEntriesInRange function, these two proto_db_
-  // calls could be consolidated into a single call (crbug.com/939136).
+  // calls could be consolidated into a single call (crbug.com/40616989).
 
   // Load all WebsiteEvents where the timestamp is in the specified range.
   // Function accepts a half-open range [startTime, endTime) as input, but the

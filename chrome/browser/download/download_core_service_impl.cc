@@ -180,7 +180,7 @@ void DownloadCoreServiceImpl::Shutdown() {
     // goes away and BrowserContext's destructor runs. But that would be too
     // late for us since we need to use the profile (indirectly through history
     // code) when the DownloadManager is shutting down. So we shut it down
-    // manually earlier. See http://crbug.com/131692
+    // manually earlier. See http://crbug.com/40222377
     profile_->GetDownloadManager()->Shutdown();
   }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

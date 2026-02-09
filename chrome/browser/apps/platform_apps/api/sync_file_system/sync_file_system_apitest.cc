@@ -105,14 +105,14 @@ struct ReturnWithFakeFileAddedStatusFunctor {
 
 }  // namespace
 
-// Flaky on Win, OS X, and Linux: http://crbug.com/417330.
+// Flaky on Win, OS X, and Linux: http://crbug.com/41133822.
 IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, DISABLED_GetFileStatus) {
   ASSERT_TRUE(RunExtensionTest("sync_file_system/get_file_status",
                                {.launch_as_platform_app = true}))
       << message_;
 }
 
-// http://crbug.com/417330
+// http://crbug.com/41133822
 IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, DISABLED_GetFileStatuses) {
   // Mocking to return IsConflicting() == true only for the path "Conflicting".
   base::FilePath conflicting = base::FilePath::FromUTF8Unsafe("Conflicting");

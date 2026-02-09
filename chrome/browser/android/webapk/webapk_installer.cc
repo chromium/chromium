@@ -414,7 +414,7 @@ void WebApkInstaller::OnURLLoaderComplete(
   base::StringToInt(response->version(), &webapk_version_);
   const std::string& token = response->token();
   if (task_type_ == UPDATE && token.empty()) {
-    // https://crbug.com/680131. The server sends an empty URL if the server
+    // https://crbug.com/40501010. The server sends an empty URL if the server
     // does not have a newer WebAPK to update to.
     relax_updates_ = response->relax_updates();
     OnResult(webapps::WebApkInstallResult::SUCCESS);

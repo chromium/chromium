@@ -1084,7 +1084,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
   EXPECT_FALSE(HasDataForType(type));
 }
 
-// Test that session storage is not counted until crbug.com/772337 is fixed.
+// Test that session storage is not counted until crbug.com/41348517 is fixed.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, SessionStorageCounting) {
   EXPECT_EQ(0, GetSiteDataCount());
   ExpectTotalModelCount(0);
@@ -1247,7 +1247,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // created. Deleting licenses checks for any file within the time range
   // specified in order to delete all the files for the domain, so this may
   // cause problems (especially with Macs that use second granularity).
-  // http://crbug.com/909829.
+  // http://crbug.com/40604237.
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
   SetDataForType(kMediaLicenseType);

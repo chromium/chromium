@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest,
 }
 
 #if BUILDFLAG(IS_MAC) || defined(THREAD_SANITIZER) || BUILDFLAG(IS_LINUX)
-// http://crbug.com/404081
+// http://crbug.com/41126120
 // http://crbug.com/1263448 (tsan)
 // http://crbug.com/1263661 (linux)
 #define MAYBE_TestInnerBounds DISABLED_TestInnerBounds
@@ -335,12 +335,12 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest,
 }
 
 // This test does not work on Linux Aura because ShowInactive() is not
-// implemented. See http://crbug.com/325142
+// implemented. See http://crbug.com/40343495
 // It also does not work on MacOS because ::ShowInactive() ends up behaving like
-// ::Show() because of Cocoa conventions. See http://crbug.com/326987
+// ::Show() because of Cocoa conventions. See http://crbug.com/40344232
 // Those tests should be disabled on Linux GTK when they are enabled on the
-// other platforms, see http://crbug.com/328829.
-// Flaky failures on Windows; see https://crbug.com/788283.
+// other platforms, see http://crbug.com/41080386.
+// Flaky failures on Windows; see https://crbug.com/40551480.
 #if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_AURA)) || \
     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_TestCreate DISABLED_TestCreate
@@ -353,13 +353,13 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, MAYBE_TestCreate) {
 }
 
 // This test does not work on Linux Aura because ShowInactive() is not
-// implemented. See http://crbug.com/325142
+// implemented. See http://crbug.com/40343495
 // It also does not work on Windows because of the document being focused even
-// though the window is not activated. See http://crbug.com/326986
+// though the window is not activated. See http://crbug.com/40344231
 // It also does not work on MacOS because ::ShowInactive() ends up behaving like
-// ::Show() because of Cocoa conventions. See http://crbug.com/326987
+// ::Show() because of Cocoa conventions. See http://crbug.com/40344232
 // Those tests should be disabled on Linux GTK when they are enabled on the
-// other platforms, see http://crbug.com/328829
+// other platforms, see http://crbug.com/41080386
 #if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_AURA)) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_TestShow DISABLED_TestShow
@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, TestCreateHidden) {
   }
 }
 
-// http://crbug.com/502516
+// http://crbug.com/40423704
 #define MAYBE_TestFullscreen DISABLED_TestFullscreen
 IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, MAYBE_TestFullscreen) {
   ASSERT_TRUE(RunAppWindowInteractiveTest("testFullscreen")) << message_;

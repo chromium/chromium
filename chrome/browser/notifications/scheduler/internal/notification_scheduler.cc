@@ -53,7 +53,7 @@ class InitHelper {
             InitCallback callback) {
     // TODO(xingliu): Initialize the databases in parallel, we currently
     // initialize one by one to work around a shared db issue. See
-    // https://crbug.com/978680.
+    // https://crbug.com/41467860.
     context_ = context;
     callback_ = std::move(callback);
 

@@ -1065,7 +1065,7 @@ void BookmarkBridge::DeleteBookmarkImpl(const BookmarkNode* node, int type) {
 
   // TODO(crbug.com/40063642): Switch back to a D/CHECK after debugging
   // why this is called with an uneditable node.
-  // See https://crbug.com/981172.
+  // See https://crbug.com/41469228.
   if (!IsEditable(node)) {
     NOTREACHED() << "Deleting non editable bookmark, type:" << type;
   }

@@ -959,7 +959,7 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
   // TODO(eroman): Figure out why this doesn't work in single-process mode,
   // or if it does work, now.
   // Should be possible now that a private isolate is used.
-  // http://crbug.com/474654
+  // http://crbug.com/41166927
   if (!command_line.HasSwitch(switches::kWinHttpProxyResolver)) {
     if (command_line.HasSwitch(switches::kSingleProcess)) {
       LOG(ERROR) << "Cannot use V8 Proxy resolver in single process mode.";
