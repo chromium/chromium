@@ -308,6 +308,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/password_manager/core/browser/password_manager_metrics_util.h:BrowserAssistedLoginType) -->
 
+<enum name="ChangePasswordFormFinderError">
+  <int value="0" label="Failed to capture page content"/>
+  <int value="1" label="Failed to parse response"/>
+  <int value="2" label="No button to click"/>
+  <int value="3" label="Interruption detected (OTP, etc.)"/>
+  <int value="4" label="Failed to click button"/>
+  <int value="5" label="Form not found"/>
+</enum>
+
 <enum name="CharacterClassPresenceChange">
   <int value="0" label="No change"/>
   <int value="1" label="Character class was absent and is added"/>

@@ -34,25 +34,46 @@ class ChangePasswordFormFinder {
   // Maximum waiting time for a change password form to appear.
   static constexpr base::TimeDelta kFormWaitingTimeout = base::Seconds(30);
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ErrorCase)
+  enum ErrorCase {
+    kFailedToCapturePageContent = 0,
+    kFailedToParseResponse = 1,
+    kNoButtonToClick = 2,
+    kInterruptionDetected = 3,
+    kFailedToClickButton = 4,
+    kFormNotFound = 5,
+    kMaxValue = kFormNotFound,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:ChangePasswordFormFinderError)
+
+  using FailureCallback = base::OnceCallback<void(ErrorCase)>;
+
   ChangePasswordFormFinder(
       content::WebContents* web_contents,
       password_manager::PasswordManagerClient* client,
       ModelQualityLogsUploader* logs_uploader,
-      ChangePasswordFormWaiter::PasswordFormFoundCallback callback);
+      ChangePasswordFormWaiter::PasswordFormFoundCallback success_callback,
+      FailureCallback failure_callback);
 
   ChangePasswordFormFinder(
       base::PassKey<class ChangePasswordFormFinderTest>,
       content::WebContents* web_contents,
       password_manager::PasswordManagerClient* client,
       ModelQualityLogsUploader* logs_uploader,
-      ChangePasswordFormWaiter::PasswordFormFoundCallback callback,
+      ChangePasswordFormWaiter::PasswordFormFoundCallback success_callback,
+      FailureCallback failure_callback,
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
           capture_annotated_page_content);
 
   ~ChangePasswordFormFinder();
 
 #if defined(UNIT_TEST)
-  void RespondWithFormNotFound() { std::move(callback_).Run(nullptr); }
+  void RespondWithFormNotFound() {
+    std::move(failure_callback_).Run(ErrorCase::kFormNotFound);
+  }
 
   ChangePasswordFormWaiter* form_waiter() { return form_waiter_.get(); }
   ButtonClickHelper* click_helper() { return click_helper_.get(); }
@@ -86,7 +107,8 @@ class ChangePasswordFormFinder {
   const raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
   raw_ptr<ModelQualityLogsUploader> logs_uploader_ = nullptr;
 
-  ChangePasswordFormWaiter::PasswordFormFoundCallback callback_;
+  FailureCallback failure_callback_;
+  ChangePasswordFormWaiter::PasswordFormFoundCallback success_callback_;
 
   base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
       capture_annotated_page_content_;
