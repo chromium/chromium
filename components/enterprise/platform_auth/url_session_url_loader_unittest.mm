@@ -79,12 +79,13 @@ class URLSessionURLLoaderTest : public testing::Test {
   // anonymous namespace for details.
   void StartRequest(const std::string& url,
                     ResponseConfig&& response_config,
+                    std::string_view method = "POST",
                     base::TimeDelta timeout = base::TimeDelta::Max()) {
     CreateURLSessionURLLoader(std::move(response_config));
 
     network::ResourceRequest request;
     request.url = GURL(url);
-    request.method = "POST";
+    request.method = method;
 
     url_loader_->Start(request, loader_remote_.BindNewPipeAndPassReceiver(),
                        std::move(client_remote_), timeout);
@@ -117,6 +118,8 @@ class URLSessionURLLoaderTest : public testing::Test {
           URLSessionURLLoader::SSORequestFailReason::kResponseTooBig;
   static constexpr URLSessionURLLoader::SSORequestFailReason
       kFailReasonOSError = URLSessionURLLoader::SSORequestFailReason::kOsError;
+  static constexpr URLSessionURLLoader::SSORequestFailReason kFailReasonOther =
+      URLSessionURLLoader::SSORequestFailReason::kOther;
 
  private:
   void CreateURLSessionURLLoader(ResponseConfig&& response_config) {
@@ -349,13 +352,34 @@ TEST_F(URLSessionURLLoaderTest, Timeout) {
                                net::ERR_TIMED_OUT)))
       .Times(1);
 
-  StartRequest(kSsoRequestURL, std::move(config), base::Seconds(1));
+  StartRequest(kSsoRequestURL, std::move(config), "POST", base::Seconds(1));
   WaitForLoaderToDisconnectAndDestroy();
 
   histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, false, 1);
   histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 0);
   histogram_tester_.ExpectUniqueSample(kOktaFailureReasonHistogram,
                                        kFailReasonTimeout, 1);
+  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 1);
+}
+
+TEST_F(URLSessionURLLoaderTest, FailsForNonSSORequests) {
+  ResponseConfig config;
+
+  MockClient& mock_client = GetMockClient();
+  EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _)).Times(0);
+  EXPECT_CALL(mock_client, OnComplete(testing::Field(
+                               &network::URLLoaderCompletionStatus::error_code,
+                               net::ERR_FAILED)))
+      .Times(1);
+
+  // Using GET method to signify this is an invalid request.
+  StartRequest(kSsoRequestURL, std::move(config), "GET");
+  WaitForLoaderToDisconnectAndDestroy();
+
+  histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, false, 1);
+  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(kOktaFailureReasonHistogram,
+                                       kFailReasonOther, 1);
   histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 1);
 }
 

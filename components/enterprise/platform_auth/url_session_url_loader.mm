@@ -74,9 +74,6 @@ void URLSessionURLLoader::Start(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client_info_remote,
     base::TimeDelta timeout) {
-  DCHECK(url_session_helper::IsOktaSSORequest(request))
-      << "URLSessionURLLoader is meant to be used only for Okta SSO.";
-
   VLOG_POLICY(2, EXTENSIBLE_SSO)
       << "[OktaEnterpriseSSO] Starting a URLSession request to "
       << request.url.spec();
@@ -91,6 +88,13 @@ void URLSessionURLLoader::Start(
       &URLSessionURLLoader::OnClientDisconnect, base::Unretained(this)));
 
   request_start_ = base::TimeTicks::Now();
+
+  if (!url_session_helper::IsOktaSSORequest(request)) {
+    LOG_POLICY(WARNING, EXTENSIBLE_SSO)
+        << "URLSessionURLLoader started for a non Okta SSO request.";
+    OnRequestFailed(SSORequestFailReason::kOther);
+    return;
+  }
 
   NSURLRequest* ns_request =
       url_session_helper::ConvertResourceRequest(request, timeout);
