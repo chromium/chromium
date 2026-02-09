@@ -21,7 +21,7 @@ class WalletHttpClient {
   enum class WalletRequestError {
     kGenericError = 1,
     kAccessTokenFetchFailed = 2,
-    kParseResponseFailed = 2,
+    kParseResponseFailed = 3,
     // TODO(crbug.com/468915960): Add more error codes.
   };
 
