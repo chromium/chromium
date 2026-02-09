@@ -710,7 +710,7 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
   --cr-icon-button-icon-size: 20px;
 }
 
-:host([searchbox-layout-mode]) contextual-entrypoint-and-carousel::part(cr-composebox-file-carousel) {
+:host([searchbox-next-enabled]) contextual-entrypoint-and-carousel::part(cr-composebox-file-carousel) {
   margin-top: 16px;
 }
 
