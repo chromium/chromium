@@ -1607,9 +1607,6 @@ BASE_FEATURE(kPreferConstantFrameRate, base::FEATURE_DISABLED_BY_DEFAULT);
 // flag and pref configured to facilitate. See b/323421684 for more information.
 BASE_FEATURE(kPrintPreviewCrosApp, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to enable Projector for managed users.
-BASE_FEATURE(kProjectorManagedUser, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the Projector app launches in debug mode, with more detailed
 // error messages.
 BASE_FEATURE(kProjectorAppDebug, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3059,10 +3056,6 @@ bool IsPinAutosubmitBackfillFeatureEnabled() {
 
 bool IsPrinterPreviewCrosAppEnabled() {
   return base::FeatureList::IsEnabled(kPrintPreviewCrosApp);
-}
-
-bool IsProjectorManagedUserEnabled() {
-  return base::FeatureList::IsEnabled(kProjectorManagedUser);
 }
 
 bool IsProjectorAppDebugMode() {
