@@ -53,10 +53,14 @@ struct NavigateParams;
 namespace content {
 class RenderFrameHost;
 class WebContents;
-}
+}  // namespace content
 
 namespace gfx {
 class Rect;
+}
+
+namespace task_manager {
+class WebContentsTag;
 }
 
 namespace views {
@@ -377,6 +381,14 @@ void GetCookies(const GURL& url,
                 content::WebContents* contents,
                 int* value_size,
                 std::string* value);
+
+// Get all tags from the `WebContentsTagsManager`.
+const std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>>&
+GetAllTrackedTags();
+
+// Helper to get the titles of all tags. Can be used with
+// `EXPECT_THAT(GetAllTrackedTagWebContentTitles(), ElementsAre(...))`.
+const std::vector<std::string> GetAllTrackedTagWebContentTitles();
 
 // Utility class to watch all existing and added tabs, until some interesting
 // thing has happened.  Subclasses get to decide what they consider to be

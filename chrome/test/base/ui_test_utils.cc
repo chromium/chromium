@@ -6,7 +6,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+#include <iterator>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -30,6 +35,8 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
+#include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -716,6 +723,20 @@ void GetCookies(const GURL& url,
     *value = net::CanonicalCookie::BuildCookieLine(cookie_list);
     *value_size = static_cast<int>(value->size());
   }
+}
+
+const std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>>&
+GetAllTrackedTags() {
+  return task_manager::WebContentsTagsManager::GetInstance()->tracked_tags();
+}
+
+const std::vector<std::string> GetAllTrackedTagWebContentTitles() {
+  std::vector<std::string> titles;
+  std::ranges::transform(
+      GetAllTrackedTags(), std::back_inserter(titles), [&](const auto& tag) {
+        return base::UTF16ToUTF8(tag->web_contents()->GetTitle());
+      });
+  return titles;
 }
 
 // It would be nice to `AddAllBrowsers()` here, but we have to wait until our
