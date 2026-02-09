@@ -115,7 +115,8 @@ class DownloadManagerTabHelperTest : public PlatformTest {
     system_identity_manager->AddIdentity(fake_identity);
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForProfile(profile_.get());
-    auth_service->SignIn(fake_identity, signin_metrics::AccessPoint::kUnknown);
+    auth_service->SignIn(fake_identity,
+                         signin_metrics::AccessPoint::kStartPage);
   }
 
   web::WebTaskEnvironment task_environment_;
