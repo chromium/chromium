@@ -287,10 +287,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:self.defaultModeItem
       toSectionWithIdentifier:SectionIdentifierSettings];
 
-  if (IsAddressDetectionEnabled()) {
-    [model addItem:[self detectAddressItem]
-        toSectionWithIdentifier:SectionIdentifierSettings];
-  }
+  [model addItem:[self detectAddressItem]
+      toSectionWithIdentifier:SectionIdentifierSettings];
 
   if (base::FeatureList::IsEnabled(web::features::kEnableMeasurements)) {
     [model addItem:[self detectUnitItem]
