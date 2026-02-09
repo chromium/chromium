@@ -434,6 +434,7 @@ class AutocompleteMediator
      */
     void beginInput(AutocompleteInput input) {
         boolean alreadyInInput = mAutocompleteInput != null;
+        cancelAutocompleteRequests();
         setAutocompleteInput(input);
 
         if (!alreadyInInput) {
