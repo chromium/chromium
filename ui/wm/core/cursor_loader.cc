@@ -183,8 +183,8 @@ void CursorLoader::ApplyColorAndLargeSize(
 scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
     CursorType type) {
   // An image cursor is loaded for this type.
-  if (image_cursors_.count(type))
-    return image_cursors_[type];
+  if (auto it = image_cursors_.find(type); it != image_cursors_.end())
+    return it->second;
 
   // Check if there's a default platform cursor available.
   // For the none cursor, we also need to use the platform factory to take
