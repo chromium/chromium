@@ -232,7 +232,7 @@ class GlicInstanceImpl : public GlicInstance,
   void NotifyPanelStateChanged() override;
   // Opens the floating UI for this instance
   void Detach(tabs::TabInterface& tab) override;
-  void Attach(tabs::TabInterface& tab) override;
+  void Attach(tabs::TabHandle tab) override;
 
   // Host::InstanceInterface:
   mojom::PanelState GetPanelState() override;
@@ -339,6 +339,9 @@ class GlicInstanceImpl : public GlicInstance,
   void MaybeShowShortcutToastPromo();
 
   void MaybeShowShortcutSnoozePromo();
+
+  // Updates the floating panel can attach state.
+  void UpdateFloatingPanelCanAttach();
 
   using StateChangeCallbackList =
       base::RepeatingCallbackList<void(bool, mojom::CurrentView view)>;

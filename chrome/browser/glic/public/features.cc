@@ -8,4 +8,6 @@ namespace features {
 
 BASE_FEATURE(kGlicTabRestoration, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicOrphanedReattachment, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

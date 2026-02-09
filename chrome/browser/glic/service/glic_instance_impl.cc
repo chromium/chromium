@@ -32,6 +32,7 @@
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
@@ -346,13 +347,30 @@ void GlicInstanceImpl::Detach(tabs::TabInterface& tab) {
              base::FeatureList::IsEnabled(kGlicSuppressAnimationsOnDetach)});
 }
 
-void GlicInstanceImpl::Attach(tabs::TabInterface& tab) {
-  if (auto* contents = tab.GetContents()) {
+void GlicInstanceImpl::Attach(tabs::TabHandle tab) {
+  tabs::TabInterface* tab_to_attach_to = tab.Get();
+  if (base::FeatureList::IsEnabled(features::kGlicOrphanedReattachment) &&
+      !tab_to_attach_to) {
+    // No source tab given. Activate the first side panel embedder.
+    for (const auto& [key, entry] : embedders_) {
+      if (auto* const* tab_ptr = std::get_if<tabs::TabInterface*>(&key)) {
+        tab_to_attach_to = *tab_ptr;
+        break;
+      }
+    }
+  }
+
+  if (!tab_to_attach_to) {
+    DLOG(ERROR) << "Attach called with no valid tab and no fallback available.";
+    return;
+  }
+
+  if (auto* contents = tab_to_attach_to->GetContents()) {
     if (auto* delegate = contents->GetDelegate()) {
       delegate->ActivateContents(contents);
     }
   }
-  Show(ShowOptions::ForSidePanel(tab));
+  Show(ShowOptions::ForSidePanel(*tab_to_attach_to));
 }
 
 void GlicInstanceImpl::Close(EmbedderKey key, const CloseOptions& options) {
@@ -639,6 +657,8 @@ void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
   MaybeDeactivateEmbedder(key);
   embedders_.erase(key);
 
+  UpdateFloatingPanelCanAttach();
+
   // Remove the instance if all embedders are gone.
   if (embedders_.empty() && coordinator_delegate_) {
     // This call will delete `this`.
@@ -901,6 +921,10 @@ void GlicInstanceImpl::MaybeShowShortcutSnoozePromo() {
 #endif
 }
 
+void GlicInstanceImpl::UpdateFloatingPanelCanAttach() {
+  host().FloatingPanelCanAttachChanged(embedders_.size() > 1);
+}
+
 void GlicInstanceImpl::MaybeShowHostUi(
     GlicUiEmbedder* embedder,
     std::optional<std::string> prompt_suggestion) {
@@ -1026,6 +1050,8 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
     // Auto-pin on bind.
     sharing_manager().PinTabs({tab->GetHandle()}, pin_trigger);
   }
+
+  UpdateFloatingPanelCanAttach();
 
   return new_entry;
 }

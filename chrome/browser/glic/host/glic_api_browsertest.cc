@@ -1277,6 +1277,28 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                               GURL(GetGooglePasswordManagerSubPageURLStr())));
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
+                       testCanAttachPanelToFallbackEmbedder) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Attached only supported with multi-instance.";
+  }
+
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
+                  CheckTabCount(1));
+
+  // Runs the JS test until the first `advanceToNextStep()`.
+  ExecuteJsTest();
+
+  // The JS test is now paused.
+  auto* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  tab->Close();
+
+  // Continue the JS test to verify canAttachPanel is still true since it will
+  // now attach to the fallback embedder.
+  ContinueJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPanelStateAttached) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Attached only supported with multi-instance.";

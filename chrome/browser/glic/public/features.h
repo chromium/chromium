@@ -11,6 +11,8 @@ namespace features {
 
 BASE_DECLARE_FEATURE(kGlicTabRestoration);
 
+BASE_DECLARE_FEATURE(kGlicOrphanedReattachment);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

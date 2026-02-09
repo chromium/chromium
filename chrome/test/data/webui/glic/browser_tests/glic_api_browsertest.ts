@@ -213,6 +213,35 @@ class ApiTests extends ApiTestFixtureBase {
     this.host.openPasswordManagerSettingsPage();
   }
 
+  async testCanAttachPanelToFallbackEmbedder() {
+    assertDefined(this.host.getFocusedTabStateV2);
+    assertDefined(this.host.getPinnedTabs);
+    assertDefined(this.host.getPanelState);
+    assertDefined(this.host.detachPanel);
+    assertDefined(this.host.canAttachPanel);
+    const link = document.createElement('a');
+    link.setAttribute('href', 'https://www.chromium.org');
+    link.setAttribute('target', '_blank');
+    document.body.appendChild(link);
+    link.click();
+    // The opened tab should be pinned.
+    await observeSequence(this.host.getPinnedTabs())
+        .waitFor(tabs => tabs.length === 2);
+
+    // Detach panel
+    const panelStates = observeSequence(this.host.getPanelState());
+    await panelStates.waitFor(state => state.kind === PanelStateKind.ATTACHED);
+
+    this.host.detachPanel();
+    await panelStates.waitFor(state => state.kind === PanelStateKind.DETACHED);
+
+    // Wait for C++ to close the tab.
+    await this.advanceToNextStep();
+
+    // The panel should still be attachable.
+    await observeSequence(this.host.canAttachPanel()).waitForValue(true);
+  }
+
   async testGetPanelStateAttached() {
     assertDefined(this.host.getPanelState);
     // getPanelState and notifyPanelWillOpen should signal the ATTACHED state.

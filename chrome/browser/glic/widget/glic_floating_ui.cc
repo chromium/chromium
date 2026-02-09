@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/common/application_hotkey_delegate.h"
 #include "chrome/browser/glic/common/glic_panel_hotkey_delegate.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/glic/widget/glic_inactive_floating_ui.h"
@@ -58,10 +59,12 @@ GlicFloatingUi::GlicFloatingUi(Profile* profile,
       delegate_(delegate),
       instance_metrics_(instance_metrics),
       source_tab_(source_tab) {
-  if (auto* helper = GlicInstanceHelper::From(source_tab_.Get())) {
-    source_tab_destruction_subscription_ =
-        helper->SubscribeToDestruction(base::BindRepeating(
-            &GlicFloatingUi::OnSourceTabDestroyed, base::Unretained(this)));
+  if (!base::FeatureList::IsEnabled(features::kGlicOrphanedReattachment)) {
+    if (auto* helper = GlicInstanceHelper::From(source_tab_.Get())) {
+      source_tab_destruction_subscription_ =
+          helper->SubscribeToDestruction(base::BindRepeating(
+              &GlicFloatingUi::OnSourceTabDestroyed, base::Unretained(this)));
+    }
   }
   application_hotkey_manager_ =
       MakeApplicationHotkeyManager(weak_ptr_factory_.GetWeakPtr());
@@ -266,11 +269,9 @@ void GlicFloatingUi::Attach() {
   if (!base::FeatureList::IsEnabled(kGlicFloatingUiReattachment)) {
     return;
   }
-  if (!source_tab_.Get()) {
-    return;
-  }
+
   // NOTE: `this` will be destroyed after this call.
-  delegate_->Attach(*source_tab_.Get());
+  delegate_->Attach(source_tab_);
 }
 
 void GlicFloatingUi::Detach() {
