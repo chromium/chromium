@@ -126,6 +126,11 @@ constexpr ::google_apis::DefaultApiKeys GetDefaultApiKeysFromDefinedValues() {
       .allow_unset_values =
           !BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_FUCHSIA),
       .allow_override_via_environment = !BUILDFLAG(GOOGLE_CHROME_BRANDING),
+#if defined(USE_OFFICIAL_GOOGLE_API_KEYS)
+      .is_using_google_chrome_keys = true,
+#else
+      .is_using_google_chrome_keys = false,
+#endif
       .google_api_key = GOOGLE_API_KEY,
       .google_metrics_signing_key = GOOGLE_METRICS_SIGNING_KEY,
 #if BUILDFLAG(IS_ANDROID)

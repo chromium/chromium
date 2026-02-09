@@ -132,7 +132,9 @@ static std::string CalculateKeyValue(
 
 BASE_FEATURE(kOverrideAPIKeyFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 
-ApiKeyCache::ApiKeyCache(const DefaultApiKeys& default_api_keys) {
+ApiKeyCache::ApiKeyCache(const DefaultApiKeys& default_api_keys)
+    : is_initialized_using_google_chrome_keys_(
+          default_api_keys.is_using_google_chrome_keys) {
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   GaiaConfig* gaia_config = GaiaConfig::GetInstance();
@@ -328,6 +330,10 @@ bool ApiKeyCache::HasOAuthClientConfigured() const {
   };
   return std::ranges::none_of(client_ids_, is_unset) &&
          std::ranges::none_of(client_secrets_, is_unset);
+}
+
+bool ApiKeyCache::IsGoogleChromeAPIKeyUsed() const {
+  return is_initialized_using_google_chrome_keys_;
 }
 
 }  // namespace google_apis

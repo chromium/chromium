@@ -154,8 +154,12 @@ const std::string& GetOAuth2ClientID(OAuth2Client client);
 COMPONENT_EXPORT(GOOGLE_APIS)
 const std::string& GetOAuth2ClientSecret(OAuth2Client client);
 
-// Returns if the API key using in the current build is the one for official
-// Google Chrome.
+// Returns true if the current build was built with official Google Chrome API
+// keys.
+//
+// This is a build-time check and does not verify whether the keys were
+// overridden at runtime (e.g. through environment variables, command-line
+// switches or a Gaia config file).
 COMPONENT_EXPORT(GOOGLE_APIS) bool IsGoogleChromeAPIKeyUsed();
 
 #if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)

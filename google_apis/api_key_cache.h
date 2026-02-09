@@ -56,6 +56,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) ApiKeyCache {
 
   bool HasAPIKeyConfigured() const;
   bool HasOAuthClientConfigured() const;
+  bool IsGoogleChromeAPIKeyUsed() const;
 
 #if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
   void set_api_key(const std::string& api_key) { api_key_ = api_key; }
@@ -83,6 +84,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) ApiKeyCache {
   std::string metrics_key_;
   std::array<std::string, CLIENT_NUM_ITEMS> client_ids_;
   std::array<std::string, CLIENT_NUM_ITEMS> client_secrets_;
+
+  const bool is_initialized_using_google_chrome_keys_;
 };
 
 }  // namespace google_apis

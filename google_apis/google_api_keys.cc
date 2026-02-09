@@ -140,11 +140,7 @@ const std::string& GetOAuth2ClientSecret(OAuth2Client client) {
 }
 
 bool IsGoogleChromeAPIKeyUsed() {
-#if defined(USE_OFFICIAL_GOOGLE_API_KEYS)
-  return true;
-#else
-  return false;
-#endif
+  return GetApiKeyCacheInstance().IsGoogleChromeAPIKeyUsed();
 }
 
 #if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
