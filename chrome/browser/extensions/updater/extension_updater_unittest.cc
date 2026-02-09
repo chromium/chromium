@@ -348,7 +348,7 @@ class TestDownloaderFactory {
       ExtensionDownloaderDelegate* delegate) {
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     account_info_ = identity_test_env_->MakePrimaryAccountAvailable(
-        "bobloblaw@lawblog.example.com", signin::ConsentLevel::kSync);
+        "bobloblaw@lawblog.example.com", signin::ConsentLevel::kSignin);
 
     std::unique_ptr<ExtensionDownloader> downloader(
         CreateExtensionDownloader(delegate));
