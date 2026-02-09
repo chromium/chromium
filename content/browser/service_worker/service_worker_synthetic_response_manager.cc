@@ -22,6 +22,7 @@
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/synthetic_response_util.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -79,9 +80,23 @@ bool IsServiceWorkerSyntheticResponseOffMainThread() {
 }
 
 bool IsServiceWorkerSyntheticResponseNetworkService() {
-  return blink::features::kServiceWorkerSyntheticResponseOffMainThread.Get() ==
-         blink::features::ServiceWorkerSyntheticResponseProcessingMode::
-             kNetworkService;
+  bool is_network_service =
+      blink::features::kServiceWorkerSyntheticResponseOffMainThread.Get() ==
+      blink::features::ServiceWorkerSyntheticResponseProcessingMode::
+          kNetworkService;
+  if (!is_network_service) {
+    return false;
+  }
+
+  // The `kNetworkService` mode relies on the network service to accept the
+  // response body stream provided by the browser process. If
+  // `kURLLoaderUseProvidedResponseBodyStream` is disabled, the network service
+  // will ignore the provided stream, and the browser process will crash in
+  // `OnReceiveResponse()` because the body handle is still valid.
+  CHECK(base::FeatureList::IsEnabled(
+      network::features::kURLLoaderUseProvidedResponseBodyStream));
+
+  return is_network_service;
 }
 
 bool IsServiceWorkerSyntheticResponseSkipUnnecessaryBuffering() {

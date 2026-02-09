@@ -24814,9 +24814,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithNetworkServiceDelegation",
+                    "params": {
+                        "off_main_thread": "network_service"
+                    },
                     "enable_features": [
-                        "ServiceWorkerSyntheticResponse"
+                        "ServiceWorkerSyntheticResponse",
+                        "URLLoaderUseProvidedResponseBodyStream"
                     ]
                 }
             ]
