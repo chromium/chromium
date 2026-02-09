@@ -5865,6 +5865,12 @@
       base_feature: "none",
     },
     {
+      // If enabled, form controls will only render the OS accent color in a
+      // web app context.
+      name: "WebAppScopeSystemAccentColor",
+      status: "experimental",
+    },
+    {
       name: "WebAppTabStrip",
       status: {
         "ChromeOS": "stable",
