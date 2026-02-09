@@ -15,7 +15,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
@@ -79,7 +78,7 @@ public interface SigninAndHistorySyncActivityLauncher {
      * @param delegate The {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate} to be
      *     notified of flow completion for instance.
      * @param deviceLockActivityLauncher The launcher for the device lock challenge.
-     * @param profileSupplier The supplier of the {@link ProfileProvider}.
+     * @param profileSupplier The supplier of the {@link Profile}.
      * @param bottomSheetController The {@link BottomSheetController} to show the sign-in bottom
      *     sheet.
      * @param modalDialogManagerSupplier The supplier of the {@link ModalDialogManager}.
@@ -94,7 +93,7 @@ public interface SigninAndHistorySyncActivityLauncher {
                     ActivityResultTracker activityResultTracker,
                     BottomSheetSigninAndHistorySyncCoordinator.Delegate delegate,
                     DeviceLockActivityLauncher deviceLockActivityLauncher,
-                    OneshotSupplier<ProfileProvider> profileSupplier,
+                    OneshotSupplier<Profile> profileSupplier,
                     Supplier<BottomSheetController> bottomSheetController,
                     Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
                     SnackbarManager snackbarManager,

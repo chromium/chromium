@@ -77,7 +77,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     private final @Nullable ActivityDelegate mActivityDelegate;
     private final Delegate mDelegate;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
-    private final OneshotSupplier<ProfileProvider> mProfileSupplier;
+    private final @Nullable OneshotSupplier<Profile> mProfileSupplier;
     private final Supplier<BottomSheetController> mBottomSheetController;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final @Nullable SnackbarManager mSnackbarManager;
@@ -163,7 +163,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             ActivityResultTracker activityResultTracker,
             BottomSheetSigninAndHistorySyncCoordinator.Delegate delegate,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
-            OneshotSupplier<ProfileProvider> profileSupplier,
+            OneshotSupplier<Profile> profileSupplier,
             Supplier<BottomSheetController> bottomSheetController,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             SnackbarManager snackbarManager,
@@ -188,7 +188,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             ActivityResultTracker activityResultTracker,
             Delegate delegate,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
-            OneshotSupplier<ProfileProvider> profileSupplier,
+            OneshotSupplier<Profile> profileSupplier,
             Supplier<BottomSheetController> bottomSheetController,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             SnackbarManager snackbarManager,
@@ -242,7 +242,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             ActivityDelegate activityDelegate,
             Delegate delegate,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
-            OneshotSupplier<ProfileProvider> profileSupplier,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
             BottomSheetController bottomSheetController,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             BottomSheetSigninAndHistorySyncConfig config,
@@ -253,14 +253,16 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         mActivityDelegate = activityDelegate;
         mDelegate = delegate;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
-        mProfileSupplier = profileSupplier;
+        mProfileSupplier = null;
         mBottomSheetController = SupplierUtils.of(bottomSheetController);
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mSigninAccessPoint = signinAccessPoint;
         mConfig = config;
         mSnackbarManager = null;
-        mProfileSupplier.onAvailable(this::onProfileAvailable);
         mIsLegacyFlow = true;
+
+        profileProviderSupplier.onAvailable(
+                profileProvider -> onProfileAvailable(profileProvider.getOriginalProfile()));
 
         // TODO(crbug.com/41493768): Implement the loading state UI.
     }
@@ -284,7 +286,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
 
         mConfig = config;
         mDidShowSigninStep = false;
-        mProfileSupplier.runSyncOrOnAvailable(this::onProfileAvailable);
+        assumeNonNull(mProfileSupplier).runSyncOrOnAvailable(this::onProfileAvailable);
     }
 
     /**
@@ -475,9 +477,9 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         return assertNonNull(mRegisteredActivityKey);
     }
 
-    private void onProfileAvailable(ProfileProvider profileProvider) {
-        mProfile = assumeNonNull(profileProvider.getOriginalProfile());
-        validateProfile(mProfile);
+    private void onProfileAvailable(Profile profile) {
+        validateProfile(profile);
+        mProfile = profile;
         AccountManagerFacadeProvider.getInstance()
                 .getAccounts()
                 .then(

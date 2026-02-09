@@ -65,14 +65,12 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
@@ -1172,6 +1170,10 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         ChromeTabbedActivity baseActivity = mBaseActivityTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    Profile profile =
+                            baseActivity.getProfileProviderSupplier().get().getOriginalProfile();
+                    OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
+                    profileSupplier.set(profile);
                     mCoordinator =
                             BottomSheetSigninAndHistorySyncCoordinator
                                     .createAndObserveAddAccountResult(
@@ -1181,7 +1183,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                                                     .getActivityResultTracker(),
                                             /* delegate= */ mDelegate,
                                             DeviceLockActivityLauncherImpl.get(),
-                                            baseActivity.getProfileProviderSupplier(),
+                                            profileSupplier,
                                             this::getBottomSheetController,
                                             baseActivity.getModalDialogManagerSupplier(),
                                             baseActivity.getSnackbarManager(),
@@ -1246,25 +1248,11 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                                         .getProfileProviderSupplier()
                                         .get()
                                         .getOrCreateOffTheRecordProfile());
-
-        ProfileProvider incognitoProfileProvider =
-                new ProfileProvider() {
-                    @Override
-                    public Profile getOriginalProfile() {
-                        return incognitoProfile;
-                    }
-
-                    @Override
-                    public @Nullable Profile getOffTheRecordProfile(boolean createIfNeeded) {
-                        return null;
-                    }
-                };
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    OneshotSupplierImpl<ProfileProvider> incognitoProfileSupplier =
+                    OneshotSupplierImpl<Profile> incognitoProfileSupplier =
                             new OneshotSupplierImpl<>();
-                    incognitoProfileSupplier.set(incognitoProfileProvider);
+                    incognitoProfileSupplier.set(incognitoProfile);
                     mCoordinator =
                             BottomSheetSigninAndHistorySyncCoordinator
                                     .createAndObserveAddAccountResult(
@@ -1327,6 +1315,10 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         ChromeTabbedActivity baseActivity = mBaseActivityTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    Profile profile =
+                            baseActivity.getProfileProviderSupplier().get().getOriginalProfile();
+                    OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
+                    profileSupplier.set(profile);
                     mCoordinator =
                             BottomSheetSigninAndHistorySyncCoordinator
                                     .createAndObserveAddAccountResult(
@@ -1336,7 +1328,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                                                     .getActivityResultTracker(),
                                             /* delegate= */ mDelegate,
                                             DeviceLockActivityLauncherImpl.get(),
-                                            baseActivity.getProfileProviderSupplier(),
+                                            profileSupplier,
                                             this::getBottomSheetController,
                                             baseActivity.getModalDialogManagerSupplier(),
                                             baseActivity.getSnackbarManager(),

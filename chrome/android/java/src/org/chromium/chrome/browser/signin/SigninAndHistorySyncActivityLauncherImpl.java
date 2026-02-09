@@ -18,7 +18,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
@@ -118,7 +117,7 @@ public final class SigninAndHistorySyncActivityLauncherImpl
                     ActivityResultTracker activityResultTracker,
                     BottomSheetSigninAndHistorySyncCoordinator.Delegate delegate,
                     DeviceLockActivityLauncher deviceLockActivityLauncher,
-                    OneshotSupplier<ProfileProvider> profileSupplier,
+                    OneshotSupplier<Profile> profileSupplier,
                     Supplier<BottomSheetController> bottomSheetController,
                     Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
                     SnackbarManager snackbarManager,
