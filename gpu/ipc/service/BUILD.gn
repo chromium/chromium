@@ -9,6 +9,7 @@ import("//testing/test.gni")
 if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
 }
+import("//services/on_device_model/on_device_model.gni")
 import("//third_party/dawn/scripts/dawn_features.gni")
 import("//ui/gl/features.gni")
 
@@ -83,6 +84,7 @@ component("service") {
     "//gpu/config",
     "//gpu/vulkan:buildflags",
     "//mojo/public/cpp/bindings",
+    "//services/on_device_model:ml_internal_buildflags",
     "//ui/base:ozone_buildflags",
   ]
   libs = []
@@ -98,6 +100,10 @@ component("service") {
       "dcomp.lib",
       "dxguid.lib",
     ]
+
+    if (enable_ml_internal) {
+      deps += [ "//services/webnn/public/mojom:features" ]
+    }
   }
   if (is_apple) {
     sources += [
