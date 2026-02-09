@@ -9,10 +9,10 @@ if(is_mac) {
 group("all") {
     public_deps = [
         ":common",
-        ":hfs_library",
         ":dmg_library",
-        ":hfs_tool",
         ":dmg_tool",
+        ":hfs_library",
+        ":hfs_tool",
     ]
 }
 
@@ -20,9 +20,11 @@ source_set("common") {
     sources = [
         "src/common/abstractfile.c",
         "src/common/base64.c",
+        "src/common/parse_data_param.c",
         "src/common/sizedbuf.c",
         "src/includes/abstractfile.h",
         "src/includes/common.h",
+        "src/includes/parse_data_param.h",
         "src/includes/sizedbuf.h",
     ]
 

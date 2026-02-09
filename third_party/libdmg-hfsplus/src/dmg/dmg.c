@@ -6,6 +6,7 @@
 
 #include "dmg/dmg.h"
 #include "dmg/filevault.h"
+#include "parse_data_param.h"
 #include "sizedbuf.h"
 
 char endianness;
@@ -35,12 +36,19 @@ int buildInOut(const char* source, const char* dest, AbstractFile** in, Abstract
 }
 
 void usage(const char *name) {
+	char dataFormats[256] = {0};
+	size_t needed = dataParamFormats(dataFormats, 256);
+	if (needed > 256) {
+		fprintf(stderr, "warning: data format list truncated, needed %zu bytes", needed);
+	}
 	printf("usage: %s [OPTIONS] [extract|build|build2048|res|iso|dmg|attribute] <in> <out> (partition)\n", name);
 	printf("OPTIONS:\n");
 	printf("\t--key, -k           key\n");
 	printf("\t--compression, -c   compressor name (%s)\n", compressionNames());
 	printf("\t--level, -l         compression level\n");
 	printf("\t--run-sectors, -r   run size (in sectors)\n");
+	printf("\t--data-format, -d   encoding format for attribution or sentinel data (attribute command only)\n");
+	printf("\t                      supported formats: %s\n", dataFormats);
 	exit(2);
 }
 
@@ -54,16 +62,18 @@ int main(int argc, char* argv[]) {
 	Compressor comp = {.level = COMPRESSION_LEVEL_DEFAULT };
 	int ret;
 	int runSectors = DEFAULT_SECTORS_AT_A_TIME;
+	DataParamParserPtr data_param_parser = dataParamParserForFormat("literal");
 
 	TestByteOrder();
 	initDefaultCompressor(&comp);
 
-	const char *optstring = "k:c:l:r:";
+	const char *optstring = "k:c:l:r:d:";
 	const struct option longopts[] = {
 		{"key", required_argument, NULL, 'k'},
 		{"compression", required_argument, NULL, 'c'},
 		{"level", required_argument, NULL, 'l'},
 		{"run-sectors", required_argument, NULL, 'r'},
+		{"data-format", required_argument, NULL, 'd'},
 		{NULL, 0, NULL, 0},
 	};
 
@@ -88,6 +98,9 @@ int main(int argc, char* argv[]) {
 					fprintf(stderr, "Run size must be at least %d sectors\n", DEFAULT_SECTORS_AT_A_TIME);
 					return 2;
 				}
+				break;
+			case 'd':
+				data_param_parser = dataParamParserForFormat(optarg);
 				break;
 			default:
 				usage(argv[0]);
@@ -133,8 +146,8 @@ int main(int argc, char* argv[]) {
 			printf("Not enough arguments: attribute <in> <out> <sentinel> <string>");
 			return 2;
 		}
-		SizedBuf* anchorBuf = AllocBufCopyString(argv[optind++]);
-		SizedBuf* dataBuf = AllocBufCopyString(argv[optind++]);
+		SizedBuf* anchorBuf = data_param_parser(argv[optind++]);
+		SizedBuf* dataBuf = data_param_parser(argv[optind++]);
 		updateAttributionFromBufs(in, out, anchorBuf, dataBuf);
 		free(dataBuf);
 		free(anchorBuf);

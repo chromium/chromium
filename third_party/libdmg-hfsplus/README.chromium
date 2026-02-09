@@ -94,3 +94,11 @@ Local modifications:
       paves the way for such an implementation.
     * Backwards-compatible: existing string-based function signatures remain
       in place, as wrappers that call the SizedBuf APIs.
+  * patches/2026-02-05-data-format-flag.patch
+    * Adds `parse_data_param.[h|c]` to abstract over parsing C-strings to
+      SizedBuf, using some encoding looked up by name.
+    * Adds `--data-format` flag to `dmg`, used in `dmg attribute`, to specify
+      which data param parser should parse the "sentinel" and "attribution"
+      positional parameters. Default is the `literal` parser, matching existing
+      behavior.
+    * Implements only the `literal` parser.

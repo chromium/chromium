@@ -1,0 +1,198 @@
+diff --git a/third_party/libdmg-hfsplus/src/common/parse_data_param.c b/third_party/libdmg-hfsplus/src/common/parse_data_param.c
+new file mode 100644
+index 0000000000000..93facc069ade9
+--- /dev/null
++++ b/third_party/libdmg-hfsplus/src/common/parse_data_param.c
+@@ -0,0 +1,66 @@
++#include "parse_data_param.h"
++
++#include <stddef.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++
++#include "common.h"
++#include "sizedbuf.h"
++
++const DataParamParseFormat kParseFormats[] = {
++    {.name = "literal", .parser = AllocBufCopyString}};
++
++DataParamParserPtr dataParamParserForFormat(const char* format_flag) {
++  size_t format_count =
++      sizeof(kParseFormats) / sizeof(DataParamParseFormat);
++
++  for (size_t i = 0; i < format_count; ++i) {
++    if (strcmp(format_flag, kParseFormats[i].name) == 0) {
++      return kParseFormats[i].parser;
++    }
++  }
++
++  fprintf(stderr, "Unrecognized data format: %s\n", format_flag);
++  exit(2);
++}
++
++size_t dataParamFormats(char* out_buf, size_t out_len) {
++  size_t format_count =
++      sizeof(kParseFormats) / sizeof(DataParamParseFormat);
++  if (!out_buf) {
++    ASSERT(out_len == 0, "dataParamFormats: NULL out_buf with nonzero out_len");
++  }
++  size_t total_len = 0;
++  size_t written_len = 0;
++  char* write_ptr = out_buf;
++
++  // Character output limit, accounting for a null terminator and for counting
++  // but not actually writing a ", " before the first item. (Pre-refunding
++  // reduces conditional logic in the loop.)
++  size_t remain = out_len + 2 - 1;
++
++  for (size_t i = 0; i < format_count; ++i) {
++    size_t next_len = strlen(kParseFormats[i].name) + 2;
++    total_len += next_len;
++    if (remain >= next_len) {
++      if (write_ptr != out_buf) {
++        write_ptr = stpcpy(write_ptr, ", ");
++      }
++      write_ptr = stpcpy(write_ptr, kParseFormats[i].name);
++      remain -= next_len;
++    }
++  }
++
++  // If we never wrote any output, make out_buf an empty string if possible.
++  if (write_ptr == out_buf && out_len > 0) {
++    *out_buf = '\0';
++  }
++
++  // Adjust total_len for the null terminator and the extra ", " for the same
++  // reason as `remain` (but in the opposite direction). The overcount for ", "
++  // only applies if at least one format existed, but the format list is a
++  // constant, so it would be very strange for it to be empty.
++  ASSERT(total_len > 1, "dataParamFormats knew no formats. Seems like a bug.");
++  return total_len - 2 + 1;
++}
+diff --git a/third_party/libdmg-hfsplus/src/dmg/dmg.c b/third_party/libdmg-hfsplus/src/dmg/dmg.c
+index 411d8df2734e3..edeae37d65b1c 100644
+--- a/third_party/libdmg-hfsplus/src/dmg/dmg.c
++++ b/third_party/libdmg-hfsplus/src/dmg/dmg.c
+@@ -6,6 +6,7 @@
+ 
+ #include "dmg/dmg.h"
+ #include "dmg/filevault.h"
++#include "parse_data_param.h"
+ #include "sizedbuf.h"
+ 
+ char endianness;
+@@ -35,12 +36,19 @@ int buildInOut(const char* source, const char* dest, AbstractFile** in, Abstract
+ }
+ 
+ void usage(const char *name) {
++	char dataFormats[256] = {0};
++	size_t needed = dataParamFormats(dataFormats, 256);
++	if (needed > 256) {
++		fprintf(stderr, "warning: data format list truncated, needed %zu bytes", needed);
++	}
+ 	printf("usage: %s [OPTIONS] [extract|build|build2048|res|iso|dmg|attribute] <in> <out> (partition)\n", name);
+ 	printf("OPTIONS:\n");
+ 	printf("\t--key, -k           key\n");
+ 	printf("\t--compression, -c   compressor name (%s)\n", compressionNames());
+ 	printf("\t--level, -l         compression level\n");
+ 	printf("\t--run-sectors, -r   run size (in sectors)\n");
++	printf("\t--data-format, -d   encoding format for attribution or sentinel data (attribute command only)\n");
++	printf("\t                      supported formats: %s\n", dataFormats);
+ 	exit(2);
+ }
+ 
+@@ -54,16 +62,18 @@ int main(int argc, char* argv[]) {
+ 	Compressor comp = {.level = COMPRESSION_LEVEL_DEFAULT };
+ 	int ret;
+ 	int runSectors = DEFAULT_SECTORS_AT_A_TIME;
++	DataParamParserPtr data_param_parser = dataParamParserForFormat("literal");
+ 
+ 	TestByteOrder();
+ 	initDefaultCompressor(&comp);
+ 
+-	const char *optstring = "k:c:l:r:";
++	const char *optstring = "k:c:l:r:d:";
+ 	const struct option longopts[] = {
+ 		{"key", required_argument, NULL, 'k'},
+ 		{"compression", required_argument, NULL, 'c'},
+ 		{"level", required_argument, NULL, 'l'},
+ 		{"run-sectors", required_argument, NULL, 'r'},
++		{"data-format", required_argument, NULL, 'd'},
+ 		{NULL, 0, NULL, 0},
+ 	};
+ 
+@@ -89,6 +99,9 @@ int main(int argc, char* argv[]) {
+ 					return 2;
+ 				}
+ 				break;
++			case 'd':
++				data_param_parser = dataParamParserForFormat(optarg);
++				break;
+ 			default:
+ 				usage(argv[0]);
+ 		}
+@@ -133,8 +146,8 @@ int main(int argc, char* argv[]) {
+ 			printf("Not enough arguments: attribute <in> <out> <sentinel> <string>");
+ 			return 2;
+ 		}
+-		SizedBuf* anchorBuf = AllocBufCopyString(argv[optind++]);
+-		SizedBuf* dataBuf = AllocBufCopyString(argv[optind++]);
++		SizedBuf* anchorBuf = data_param_parser(argv[optind++]);
++		SizedBuf* dataBuf = data_param_parser(argv[optind++]);
+ 		updateAttributionFromBufs(in, out, anchorBuf, dataBuf);
+ 		free(dataBuf);
+ 		free(anchorBuf);
+diff --git a/third_party/libdmg-hfsplus/src/includes/parse_data_param.h b/third_party/libdmg-hfsplus/src/includes/parse_data_param.h
+new file mode 100644
+index 0000000000000..876d670b8b273
+--- /dev/null
++++ b/third_party/libdmg-hfsplus/src/includes/parse_data_param.h
+@@ -0,0 +1,47 @@
++#ifndef _LIBDMG_HFSPLUS_PARSE_DATA_PARAM_H
++#define _LIBDMG_HFSPLUS_PARSE_DATA_PARAM_H
++
++#include "sizedbuf.h"
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++// `DataParamParserPtr` points to some function for interpreting a C string
++// (typically provided via `argv`) as some byte sequence. Unlike a raw C string,
++// the decoded version may contain bytes with value 0.
++//
++// Ownership of the returned `SizedBuf` is transfered to the caller.
++//
++// A `DataParamParser` never returns `NULL`. If it receives an unparseable
++// encoding or a `NULL` pointer, the program exits with a nonzero return value.
++typedef SizedBuf* (*DataParamParserPtr)(const char*);
++
++// `DataParamParseFormat` is a named algorithm for parsing C strings into byte
++// sequences.
++typedef struct {
++  const char* name;
++  const DataParamParserPtr parser;
++} DataParamParseFormat;
++
++// Scans kLibdmgHfsplusDataParseFormats for the parser matching the name
++// provided. If it can't find one, the program exits with return value 2.
++DataParamParserPtr dataParamParserForFormat(const char* format_flag);
++
++// Writes a C string containing a comma-delimited printable list of known data
++// format names into the provided buffer of the specified length. If not all
++// names fit, it writes as many complete names as it can. If `out_len` is
++// nonzero, `out_buf` will be the head of a valid C string when this function
++// returns, regardless of whether all formats were named. (If no names at all
++// fit, this string will be empty.)
++//
++// If `out_len` is 0, `*out_buf` is not evaluated. It is valid to provide a
++// NULL pointer for `out_buf`, provided that `out_len` is 0, to ask how large
++// a buffer would be required to capture all names.
++size_t dataParamFormats(char* out_buf, size_t out_len);
++
++#ifdef __cplusplus
++}  // extern "C"
++#endif
++
++#endif  // _LIBDMG_HFSPLUS_PARSE_DATA_PARAM_H
