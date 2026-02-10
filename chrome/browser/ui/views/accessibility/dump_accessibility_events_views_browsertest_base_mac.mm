@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
@@ -66,7 +67,7 @@ class ViewsAXPlatformTreeManagerMacForTesting
 
 // Static instance to keep the stub manager alive for the duration of the test.
 // Only used when ViewsAX is disabled.
-std::unique_ptr<ViewsAXPlatformTreeManagerMacForTesting>
+base::NoDestructor<std::unique_ptr<ViewsAXPlatformTreeManagerMacForTesting>>
     g_stub_views_manager_for_testing;
 
 }  // namespace
@@ -85,16 +86,16 @@ std::unique_ptr<ui::AXEventRecorder> CreateViewsAXEventRecorderMac(
   } else {
     // ViewsAX is disabled - use our stub manager that can fire the sentinel
     // event.
-    g_stub_views_manager_for_testing =
+    *g_stub_views_manager_for_testing =
         std::make_unique<ViewsAXPlatformTreeManagerMacForTesting>(root_element);
-    manager = g_stub_views_manager_for_testing->GetWeakPtr();
+    manager = (*g_stub_views_manager_for_testing)->GetWeakPtr();
   }
 
   return std::make_unique<ui::AXEventRecorderMac>(manager, pid, selector);
 }
 
 void CleanupViewsAXEventRecorderMac() {
-  g_stub_views_manager_for_testing.reset();
+  g_stub_views_manager_for_testing->reset();
 }
 
 }  // namespace views
