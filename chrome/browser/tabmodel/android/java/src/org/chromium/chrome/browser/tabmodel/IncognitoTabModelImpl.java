@@ -199,6 +199,13 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
+    public void dissociateWithBrowserWindow() {
+        assert mNativeAndroidBrowserWindow != 0;
+        mDelegateModel.dissociateWithBrowserWindow();
+        mNativeAndroidBrowserWindow = 0;
+    }
+
+    @Override
     public boolean isIncognito() {
         return true;
     }

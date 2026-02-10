@@ -48,6 +48,7 @@ class TabModelJniBridge : public TabModel {
 
   void AssociateWithBrowserWindow(JNIEnv* env,
                                   long native_android_browser_window);
+  void DissociateWithBrowserWindow(JNIEnv* env);
   void TabAddedToModel(JNIEnv* env, TabAndroid* tab);
   TabAndroid* DuplicateTab(JNIEnv* env, TabAndroid* tab);
   void MoveTabToWindowForTesting(JNIEnv* env,

@@ -141,6 +141,14 @@ void TabModelJniBridge::AssociateWithBrowserWindow(
 #endif
 }
 
+void TabModelJniBridge::DissociateWithBrowserWindow(JNIEnv* env) {
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  CHECK(scoped_unowned_user_data_ != nullptr);
+  scoped_unowned_user_data_.reset();
+  SetSessionId(SessionID::InvalidValue());
+#endif
+}
+
 void TabModelJniBridge::TabAddedToModel(JNIEnv* env,
                                         TabAndroid* tab) {
   // Tab#initialize() should have been called by now otherwise we can't push
