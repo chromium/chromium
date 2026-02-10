@@ -45,6 +45,7 @@ export class DiscoverSkillsPageElement extends CrLitElement {
   static override get properties() {
     return {
       skills_: {type: Object},
+      searchTerm_: {type: String},
       selectedCategory_: {type: String},
       is1PSkillSaving_: {type: Boolean},
     };
@@ -55,6 +56,7 @@ export class DiscoverSkillsPageElement extends CrLitElement {
   protected accessor selectedCategory_: string = '';
   // Determines if a 1P skill is in the process of being saved.
   protected accessor is1PSkillSaving_: boolean = false;
+  protected accessor searchTerm_: string = '';
   private listenerIds_: number[] = [];
   private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
   private eventTracker_: EventTracker = new EventTracker();
@@ -106,18 +108,38 @@ export class DiscoverSkillsPageElement extends CrLitElement {
     return this.selectedCategory_ === category;
   }
 
+  onSearchChanged(searchTerm: string) {
+    this.searchTerm_ = searchTerm.toLowerCase();
+  }
+
+  protected filter_(skills: Skill[]) {
+    const term = this.searchTerm_.toLowerCase();
+
+    if (!term) {
+      return skills;
+    }
+
+    return skills.filter(
+        skill => skill.name.toLowerCase().includes(term) ||
+            skill.prompt.toLowerCase().includes(term));
+  }
+
   protected topSkills_(): Skill[] {
-    return this.skills_.get(kTopPickCategoryString) || [];
+    return this.filter_(this.skills_.get(kTopPickCategoryString) || []);
   }
 
   protected getSelectedSkills_(): Skill[] {
-    return this.skills_.get(this.selectedCategory_) || [];
+    return this.filter_(this.skills_.get(this.selectedCategory_) || []);
   }
 
   // Gets all categories that are not tagged top skills.
   protected getOtherCategories_(): string[] {
     return Array.from(this.skills_.keys())
-        .filter(category => category !== kTopPickCategoryString);
+        .filter(category => category !== kTopPickCategoryString)
+        .filter(category => {
+          const skills = this.skills_.get(category) || [];
+          return this.filter_(skills).length > 0;
+        });
   }
 
   protected onCategoryClick_(e: Event) {

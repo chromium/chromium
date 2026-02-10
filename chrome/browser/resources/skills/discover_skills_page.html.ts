@@ -19,6 +19,7 @@ ${this.topSkills_().length > 0 ? html`
         .saveDisabled="${this.is1PSkillSaving_}">
     </skill-card>`)}
 </div>` : ''}
+${this.getOtherCategories_().length > 0 ? html`
 <h1 class="page-title">$i18n{browseSkillsTitle}</h1>
 <div id="discoverCategories">
   ${this.getOtherCategories_().map(category => html`
@@ -35,7 +36,7 @@ ${this.topSkills_().length > 0 ? html`
     <skill-card .skill="${skill}" .cardType="${CardType.DISCOVER_SKILL_CARD}"
         .saveDisabled="${this.is1PSkillSaving_}">
     </skill-card>`)}
-</div>
+</div>` : ''}
 <cr-toast id="invalidSkillToast">
   <div>$i18n{invalidSkillToastText}</div>
 </cr-toast>
