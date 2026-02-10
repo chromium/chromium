@@ -275,6 +275,12 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   // as a stand-in during delegateless operation.
   base::stack<std::optional<base::MessagePump::Delegate::ScopedDoWorkItem>>
       stack_;
+
+  // Tracks the nesting levels that have called PreWaitObserver (and thus popped
+  // the work item scope) but have not yet called AfterWaitObserver (to push a
+  // new scope). This is used to suppress spurious AfterWaitObserver calls that
+  // can happen when a nested loop starts inside PreWaitObserver.
+  base::stack<int> sleeping_nesting_levels_;
 };
 
 class BASE_EXPORT MessagePumpCFRunLoop : public MessagePumpCFRunLoopBase {

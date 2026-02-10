@@ -5,6 +5,7 @@
 #include "base/test/run_until.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -119,6 +120,29 @@ TEST_F(RunUntilTest, ShouldReturnFalseIfTimeoutHappens) {
       { success = RunUntil([] { return false; }); }, "timed out");
 
   EXPECT_FALSE(success);
+}
+
+TEST(RunUntilNestedLoopTest, NestedRunLoopInCondition) {
+  test::SingleThreadTaskEnvironment environment(
+      test::TaskEnvironment::MainThreadType::UI);
+
+  bool done = false;
+
+  EXPECT_TRUE(RunUntil([&] {
+    if (!done) {
+      // Start a nested RunLoop. This tests that RunUntil works correctly
+      // when the condition check triggers a nested loop (which can happen
+      // e.g. when capturing a view snapshot).
+      base::RunLoop nested_loop;
+      // Quit the nested loop after a short delay so that we return to
+      // the outer loop's idle notification.
+      SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, nested_loop.QuitClosure(), base::Milliseconds(10));
+      nested_loop.Run();
+      done = true;
+    }
+    return done;
+  }));
 }
 
 // Tests that RunUntil supports MOCK_TIME when used with a delayed task posted

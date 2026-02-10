@@ -5,8 +5,10 @@
 #include "base/message_loop/message_pump_apple.h"
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/callback_list.h"
 #include "base/cancelable_callback.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -143,6 +145,54 @@ TEST(MessagePumpAppleTest, QuitWithModalWindow) {
       }));
 
   EXPECT_NO_FATAL_FAILURE(run_loop.Run());
+}
+
+// Regression test for a crash where a nested run loop started from a
+// PreWaitObserver callback (e.g. DoIdleWork) caused an imbalance in the work
+// item scope stack. The crash happened because the nested loop's Entry/Exit
+// observers pushed/popped scopes correctly, but the nested loop's
+// AfterWaitObserver (if triggered) would push a scope that wasn't popped by a
+// corresponding PreWaitObserver (because the outer PreWaitObserver popped the
+// outer scope, not the nested one). The fix involves tracking which nesting
+// levels have actually slept.
+TEST(MessagePumpAppleTest, DirectNestedRunInIdleWork) {
+  auto pump = MessagePump::Create(MessagePumpType::UI);
+
+  class NestedDelegate : public MessagePump::Delegate {
+   public:
+    explicit NestedDelegate(MessagePump* pump) : pump_(pump) {}
+
+    void BeforeWait() override {}
+    void BeginNativeWorkBeforeDoWork() override {}
+    int RunDepth() override { return is_nested_ ? 2 : 1; }
+    void OnBeginWorkItem() override {}
+    void OnEndWorkItem(int) override {}
+
+    NextWorkInfo DoWork() override {
+      if (is_nested_) {
+        pump_->Quit();
+      }
+      return NextWorkInfo{TimeTicks::Max()};
+    }
+
+    void DoIdleWork() override {
+      if (!was_nested_) {
+        was_nested_ = true;
+        is_nested_ = true;
+        pump_->Run(this);
+        is_nested_ = false;
+        pump_->Quit();
+      }
+    }
+
+    raw_ptr<MessagePump> pump_;
+    bool was_nested_ = false;
+    bool is_nested_ = false;
+  } delegate(pump.get());
+
+  pump->Run(&delegate);
+
+  EXPECT_TRUE(delegate.was_nested_);
 }
 
 }  // namespace base

@@ -22,6 +22,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_policy.h"
 #include "base/memory/stack_allocated.h"
@@ -541,6 +542,8 @@ void MessagePumpCFRunLoopBase::PreWaitObserver(CFRunLoopObserverRef observer,
     // amount of matching Pop/Push in between when running work items).
     self->PopWorkItemScope();
 
+    self->sleeping_nesting_levels_.push(self->nesting_level_);
+
     // Attempt to do some idle work before going to sleep.
     self->RunIdleWork();
 
@@ -565,6 +568,11 @@ void MessagePumpCFRunLoopBase::AfterWaitObserver(CFRunLoopObserverRef observer,
     // Emerging from sleep, any work happening after this (outside of a
     // RunWork()) should be considered native work. Matching PopWorkItemScope()
     // is in BeforeWait().
+    if (self->sleeping_nesting_levels_.empty() ||
+        self->sleeping_nesting_levels_.top() != self->nesting_level_) {
+      return;
+    }
+    self->sleeping_nesting_levels_.pop();
     self->PushWorkItemScope();
   });
 }
@@ -628,6 +636,12 @@ void MessagePumpCFRunLoopBase::EnterExitObserver(CFRunLoopObserverRef observer,
 
       // Current work item tracking needs to go away since execution will stop.
       self->PopWorkItemScope();
+
+      // If the loop is exiting, it can't be sleeping anymore.
+      if (!self->sleeping_nesting_levels_.empty() &&
+          self->sleeping_nesting_levels_.top() == self->nesting_level_) {
+        self->sleeping_nesting_levels_.pop();
+      }
 
       --self->nesting_level_;
       break;
