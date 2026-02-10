@@ -122,15 +122,7 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 
 // Tests that the history opt-in promo is shown if the user is signed in to
 // an account without history sync.
-// TODO(crbug.com/346537324): Test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testHistoryOptInPromoUserSignedIn \
-  testHistoryOptInPromoUserSignedIn
-#else
-#define MAYBE_testHistoryOptInPromoUserSignedIn \
-  DISABLED_testHistoryOptInPromoUserSignedIn
-#endif
-- (void)MAYBE_testHistoryOptInPromoUserSignedIn {
+- (void)testHistoryOptInPromoUserSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:NO];
@@ -165,13 +157,7 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 
 // Tests that the sign-in promo is visible at start-up for regular user, and
 // followed by the history sync opt-in.
-// TODO(crbug.com/346537324): Test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testStartupSigninPromoShown testStartupSigninPromoShown
-#else
-#define MAYBE_testStartupSigninPromoShown DISABLED_testStartupSigninPromoShown
-#endif
-- (void)MAYBE_testStartupSigninPromoShown {
+- (void)testStartupSigninPromoShown {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 

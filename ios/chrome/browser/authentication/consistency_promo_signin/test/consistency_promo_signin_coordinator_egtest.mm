@@ -92,15 +92,7 @@
 // Removes the only identity while the error dialog is opened. Once the identity
 // is removed, the web sign-in dialog needs to update itself to show the version
 // with no identity.
-// TODO(crbug.com/346537324): Test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testRemoveLastIdentityWithSigninErrorDialogNoDismiss \
-  testRemoveLastIdentityWithSigninErrorDialogNoDismiss
-#else
-#define MAYBE_testRemoveLastIdentityWithSigninErrorDialogNoDismiss \
-  DISABLED_testRemoveLastIdentityWithSigninErrorDialogNoDismiss
-#endif
-- (void)MAYBE_testRemoveLastIdentityWithSigninErrorDialogNoDismiss {
+- (void)testRemoveLastIdentityWithSigninErrorDialogNoDismiss {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
@@ -130,15 +122,7 @@
 }
 
 // Display an error dialog and then dismiss the web sign-in dialog.
-// TODO(crbug.com/346537324): Test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testGetErrorDialogAndSkipWebSigninDialog \
-  testGetErrorDialogAndSkipWebSigninDialog
-#else
-#define MAYBE_testGetErrorDialogAndSkipWebSigninDialog \
-  DISABLED_testGetErrorDialogAndSkipWebSigninDialog
-#endif
-- (void)MAYBE_testGetErrorDialogAndSkipWebSigninDialog {
+- (void)testGetErrorDialogAndSkipWebSigninDialog {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
