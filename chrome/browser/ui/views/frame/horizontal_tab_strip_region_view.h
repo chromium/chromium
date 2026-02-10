@@ -26,6 +26,7 @@ class LabelButton;
 class NewTabButton;
 class TabStripActionContainer;
 class TabSearchButton;
+class TabStripComboButton;
 class TabStrip;
 class TabStripScrollContainer;
 class TabSearchPositionMetricsLogger;
@@ -153,6 +154,7 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   raw_ptr<views::View> reserved_grab_handle_space_ = nullptr;
   raw_ptr<TabStrip> tab_strip_ = nullptr;
   raw_ptr<TabStripScrollContainer> tab_strip_scroll_container_ = nullptr;
+  raw_ptr<TabStripComboButton> combo_button_ = nullptr;
   raw_ptr<views::Button> new_tab_button_ = nullptr;
   raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
   raw_ptr<TabStripControlButton> unfocus_button_ = nullptr;

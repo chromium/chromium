@@ -21,6 +21,8 @@ BASE_FEATURE(kTabSelectionByPointer, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProjectsPanel, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHorizontalTabStripComboButton, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<bool> kProjectsPanelWithThreads{
     &kProjectsPanel, "include_threads_in_projects_panel", false};
 
