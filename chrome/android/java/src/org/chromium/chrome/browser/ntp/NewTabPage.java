@@ -220,6 +220,7 @@ public class NewTabPage
     private final boolean mCanSupportEdgeToEdgeForCustomizedTheme;
     private final TopInsetProvider mTopInsetProvider;
     private TopInsetProvider.@Nullable Observer mTopInsetChangeObserver;
+    private boolean mIsUseEdgeToEdgeForCustomizedTheme;
 
     private NtpCustomizationConfigManager.@org.chromium.build.annotations.Nullable
             HomepageStateListener
@@ -691,6 +692,7 @@ public class NewTabPage
         // The listener to observe custom background changes are added in all form factors as long
         // as the feature is enabled.
         if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
+            setIsUseEdgeToEdgeForCustomizedTheme();
             initHomepageStateListener();
         }
 
@@ -868,6 +870,8 @@ public class NewTabPage
     }
 
     private void onBackgroundChangedImpl(boolean applyWhiteBackgroundOnSearchBox) {
+        setIsUseEdgeToEdgeForCustomizedTheme();
+
         if (!mIsTablet) {
             mUseLightIconTint = applyWhiteBackgroundOnSearchBox;
         }
@@ -1259,11 +1263,7 @@ public class NewTabPage
 
     @Override
     public boolean supportsEdgeToEdgeOnTop() {
-        return mCanSupportEdgeToEdgeForCustomizedTheme
-                && !mIsTablet
-                && isInSingleUrlBarMode()
-                && NtpCustomizationConfigManager.getInstance().getBackgroundType()
-                        != NtpBackgroundType.DEFAULT;
+        return mIsUseEdgeToEdgeForCustomizedTheme;
     }
 
     @Override
@@ -1514,6 +1514,15 @@ public class NewTabPage
             // Updates the mHomeSurfaceTracker since the Tab of the NTP is closed.
             mHomeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(null, null);
         }
+    }
+
+    /** Sets whether the NTP is currently set as edge-to-edge. */
+    private void setIsUseEdgeToEdgeForCustomizedTheme() {
+        mIsUseEdgeToEdgeForCustomizedTheme =
+                mCanSupportEdgeToEdgeForCustomizedTheme
+                        && !mIsTablet
+                        && NtpCustomizationConfigManager.getInstance().getBackgroundType()
+                                != NtpBackgroundType.DEFAULT;
     }
 
     public boolean isSingleTabCardVisibleForTesting() {
