@@ -325,7 +325,7 @@ const base::FeatureParam<bool> kShowRecentTabChip(
 const base::FeatureParam<bool> kShowSmartCompose(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ShowSmartCompose",
-    true);
+    false);
 const base::FeatureParam<bool> kShowSubmit(&internal::kWebUIOmniboxAimPopup,
                                            "ShowSubmit",
                                            true);
@@ -349,10 +349,12 @@ const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox(
     &internal::kWebUIOmniboxAimPopup,
     "ShowVoiceSearchInExpandedComposebox",
     true);
+// TODO(b/481079194): Remove `kAutoSubmitVoiceSearchQuery` and the code that
+// respects its disabled state.
 const base::FeatureParam<bool> kAutoSubmitVoiceSearchQuery(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_AutoSubmitVoiceSearchQuery",
-    false);
+    true);
 const base::FeatureParam<bool> kEnableContextDragAndDrop(
     &internal::kWebUIOmniboxAimPopup,
     "EnableContextDragAndDrop",

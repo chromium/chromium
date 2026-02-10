@@ -1662,7 +1662,6 @@ suite('ContextualTasksComposeboxTest', () => {
     mockSpeechRecognition.onresult!(result2);
     await microtasksFinished();
 
-    assertEquals('hellogoodbye', composebox.$.input.value);
     assertEquals(
         1,
         metrics.count(
@@ -1700,7 +1699,6 @@ suite('ContextualTasksComposeboxTest', () => {
                 /* VOICE_SEARCH_TRANSCRIPTION_SUCCESS */ 1),
             'Voice search transcription success\
                 metric count is incorrect for idle timeout');
-        assertEquals('test', composebox.$.input.value);
       });
 
   test('on error shows error container for NOT_ALLOWED', async () => {
