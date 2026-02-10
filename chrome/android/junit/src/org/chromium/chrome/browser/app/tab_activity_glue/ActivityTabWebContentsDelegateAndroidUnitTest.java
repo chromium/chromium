@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -93,6 +94,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         private final TabGroupModelFilter mTabGroupModelFilter;
         private Map<WebContents, Tab> mTabMap;
         private boolean mIsPopup;
+        private boolean mIsDocumentPictureInPictureEnabled;
 
         public TestActivityTabWebContentsDelegateAndroid(
                 Tab tab,
@@ -136,6 +138,16 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
         public void setIsPopup(boolean isPopup) {
             mIsPopup = isPopup;
+        }
+
+        @Override
+        protected boolean isDocumentPictureInPictureEnabled() {
+            return mIsDocumentPictureInPictureEnabled;
+        }
+
+        public void setIsDocumentPictureInPictureEnabled(
+                boolean isDocumentPictureInPictureEnabled) {
+            mIsDocumentPictureInPictureEnabled = isDocumentPictureInPictureEnabled;
         }
     }
 
@@ -418,6 +430,74 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
         verify(mActivity).getSystemService(Context.ACTIVITY_SERVICE);
         verify(mActivityManager).moveTaskToFront(taskId, 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API)
+    public void testAddNewContents_DocumentPictureInPicture_Enabled() {
+        mTabWebContentsDelegateAndroid.setIsDocumentPictureInPictureEnabled(true);
+        PopupCreator.setMoveToNewDocumentPiPWindowResultForTesting(true);
+
+        WebContents newWebContents = mock(WebContents.class);
+        PictureInPictureWindowOptions options =
+                new PictureInPictureWindowOptions(new Rect(0, 0, 100, 100), false);
+
+        boolean result =
+                mTabWebContentsDelegateAndroid.addNewContents(
+                        mWebContents,
+                        newWebContents,
+                        new GURL("https://foo.com"),
+                        WindowOpenDisposition.NEW_PICTURE_IN_PICTURE,
+                        new WindowFeatures(),
+                        true,
+                        options);
+
+        assertTrue(result);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API)
+    public void testAddNewContents_DocumentPictureInPicture_Disabled() {
+        mTabWebContentsDelegateAndroid.setIsDocumentPictureInPictureEnabled(false);
+
+        WebContents newWebContents = mock(WebContents.class);
+        PictureInPictureWindowOptions options =
+                new PictureInPictureWindowOptions(new Rect(0, 0, 100, 100), false);
+
+        boolean result =
+                mTabWebContentsDelegateAndroid.addNewContents(
+                        mWebContents,
+                        newWebContents,
+                        new GURL("https://foo.com"),
+                        WindowOpenDisposition.NEW_PICTURE_IN_PICTURE,
+                        new WindowFeatures(),
+                        true,
+                        options);
+
+        assertFalse(result);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API)
+    public void testAddNewContents_DocumentPictureInPicture_Enabled_LaunchFailed() {
+        mTabWebContentsDelegateAndroid.setIsDocumentPictureInPictureEnabled(true);
+        PopupCreator.setMoveToNewDocumentPiPWindowResultForTesting(false);
+
+        WebContents newWebContents = mock(WebContents.class);
+        PictureInPictureWindowOptions options =
+                new PictureInPictureWindowOptions(new Rect(0, 0, 100, 100), false);
+
+        boolean result =
+                mTabWebContentsDelegateAndroid.addNewContents(
+                        mWebContents,
+                        newWebContents,
+                        new GURL("https://foo.com"),
+                        WindowOpenDisposition.NEW_PICTURE_IN_PICTURE,
+                        new WindowFeatures(),
+                        true,
+                        options);
+
+        assertFalse(result);
     }
 
     @Test

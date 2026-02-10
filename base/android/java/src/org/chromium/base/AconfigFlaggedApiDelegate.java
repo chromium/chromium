@@ -448,6 +448,15 @@ public interface AconfigFlaggedApiDelegate {
         return promise;
     }
 
+    /**
+     * Checks whether the {@link android.app.ActivityManager.AppTask#requestWindowingLayer(AppTask,
+     * AppTask.WINDOWING_LAYER_PINNED, Executor, OutcomeReceiver<Integer, Exception>)} method is
+     * supported.
+     */
+    default boolean isRequestPinnedWindowingLayerSupported() {
+        return false;
+    }
+
     /** Gets an Android SerialManager wrapped in an intermediary object. */
     default @Nullable SerialManager getSerialManager() {
         return null;

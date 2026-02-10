@@ -17,6 +17,9 @@ import android.media.AudioManager;
 import android.view.KeyEvent;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
@@ -253,6 +256,10 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API)
                 && disposition == WindowOpenDisposition.NEW_PICTURE_IN_PICTURE) {
             assertNonNull(pictureInPictureWindowOptions);
+            if (!isDocumentPictureInPictureEnabled()) {
+                return false;
+            }
+
             return PopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
                     webContents, pictureInPictureWindowOptions);
         }
@@ -629,6 +636,21 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         return mActivity != null
                 ? PictureInPicture.isEnabled(mActivity.getApplicationContext())
                 : false;
+    }
+
+    /**
+     * Checks if Document Picture-in-Picture is enabled. This is true if we both have the permission
+     * to enter Picture-in-Picture mode and the Android API to go into pinned mode is supported.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    protected boolean isDocumentPictureInPictureEnabled() {
+        final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        if (delegate == null) {
+            Log.w(TAG, "isDocumentPictureInPictureEnabled: AconfigFlaggedApiDelegate is null");
+            return false;
+        }
+
+        return isPictureInPictureEnabled() && delegate.isRequestPinnedWindowingLayerSupported();
     }
 
     @Override
