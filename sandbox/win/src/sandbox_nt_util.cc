@@ -9,6 +9,8 @@
 
 #include "sandbox/win/src/sandbox_nt_util.h"
 
+#include <winternl.h>
+
 #include <ntstatus.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -151,7 +153,6 @@ void InitGlobalNt() {
   INIT_NT(ProtectVirtualMemory);
   INIT_NT(QueryAttributesFile);
   INIT_NT(QueryFullAttributesFile);
-  INIT_NT(QueryInformationProcess);
   INIT_NT(QueryObject);
   INIT_NT(QuerySection);
   INIT_NT(QueryVirtualMemory);
@@ -336,9 +337,9 @@ NTSTATUS GetProcessId(HANDLE process, DWORD* process_id) {
   PROCESS_BASIC_INFORMATION proc_info;
   ULONG bytes_returned;
 
-  NTSTATUS ret = GetNtExports()->QueryInformationProcess(
-      process, ProcessBasicInformation, &proc_info, sizeof(proc_info),
-      &bytes_returned);
+  NTSTATUS ret =
+      ::NtQueryInformationProcess(process, ProcessBasicInformation, &proc_info,
+                                  sizeof(proc_info), &bytes_returned);
   if (!NT_SUCCESS(ret) || sizeof(proc_info) != bytes_returned)
     return ret;
 

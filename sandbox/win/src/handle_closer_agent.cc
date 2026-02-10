@@ -5,6 +5,7 @@
 #include "sandbox/win/src/handle_closer_agent.h"
 
 #include <Windows.h>
+#include <winternl.h>
 
 #include <stddef.h>
 #include <winnls.h>
@@ -18,7 +19,6 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_handle_util.h"
 #include "sandbox/win/src/heap_helper.h"
-#include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
@@ -170,7 +170,7 @@ bool HandleCloserAgent::CloseHandles() {
   // margin of error of an additional 1000 handles.
   auto handles = base::HeapArray<uint32_t>::WithSize(handle_count + 1000);
   DWORD return_length;
-  NTSTATUS status = GetNtExports()->QueryInformationProcess(
+  NTSTATUS status = ::NtQueryInformationProcess(
       ::GetCurrentProcess(), static_cast<PROCESSINFOCLASS>(ProcessHandleTable),
       handles.data(), static_cast<ULONG>(handles.size() * sizeof(uint32_t)),
       &return_length);

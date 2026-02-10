@@ -45,20 +45,12 @@ typedef struct _PROCESS_BASIC_INFORMATION {
 } PROCESS_BASIC_INFORMATION;
 
 ProcessId GetParentProcessId(ProcessHandle process) {
-  HINSTANCE ntdll = GetModuleHandle(L"ntdll.dll");
-  decltype(NtQueryInformationProcess)* nt_query_information_process =
-      reinterpret_cast<decltype(NtQueryInformationProcess)*>(
-          GetProcAddress(ntdll, "NtQueryInformationProcess"));
-  if (!nt_query_information_process) {
-    return 0u;
-  }
-
   PROCESS_BASIC_INFORMATION pbi = {};
   // TODO(zijiehe): To match other platforms, -1 (UINT32_MAX) should be returned
   // if the parent process id cannot be found.
   ProcessId pid = 0u;
-  if (NT_SUCCESS(nt_query_information_process(process, ProcessBasicInformation,
-                                              &pbi, sizeof(pbi), nullptr))) {
+  if (NT_SUCCESS(::NtQueryInformationProcess(process, ProcessBasicInformation,
+                                             &pbi, sizeof(pbi), nullptr))) {
     pid = static_cast<ProcessId>(pbi.InheritedFromUniqueProcessId);
   }
 

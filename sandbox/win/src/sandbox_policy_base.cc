@@ -9,6 +9,8 @@
 
 #include "sandbox/win/src/sandbox_policy_base.h"
 
+#include <winternl.h>
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -113,9 +115,9 @@ bool ReplacePackageSidInDacl(HANDLE token,
 bool ApplyZeroAppShimToSuspendedProcess(HANDLE process) {
   PROCESS_BASIC_INFORMATION proc_info{};
   ULONG bytes_returned = 0;
-  NTSTATUS ret = GetNtExports()->QueryInformationProcess(
-      process, ProcessBasicInformation, &proc_info, sizeof(proc_info),
-      &bytes_returned);
+  NTSTATUS ret =
+      ::NtQueryInformationProcess(process, ProcessBasicInformation, &proc_info,
+                                  sizeof(proc_info), &bytes_returned);
   if (!NT_SUCCESS(ret) || sizeof(proc_info) != bytes_returned) {
     return false;
   }

@@ -25,7 +25,6 @@ struct NtExports {
   NtProtectVirtualMemoryFunction         ProtectVirtualMemory;
   NtQueryAttributesFileFunction          QueryAttributesFile;
   NtQueryFullAttributesFileFunction      QueryFullAttributesFile;
-  NtQueryInformationProcessFunction      QueryInformationProcess;
   NtQueryObjectFunction                  QueryObject;
   NtQuerySectionFunction                 QuerySection;
   NtQueryVirtualMemoryFunction           QueryVirtualMemory;

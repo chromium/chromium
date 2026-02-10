@@ -174,13 +174,6 @@ static_assert(offsetof(NT_PEB, Ldr) == offsetof(PEB, Ldr));
 static_assert(offsetof(NT_PEB, ProcessParameters) ==
               offsetof(PEB, ProcessParameters));
 
-typedef NTSTATUS(WINAPI* NtQueryInformationProcessFunction)(
-    IN HANDLE ProcessHandle,
-    IN PROCESSINFOCLASS ProcessInformationClass,
-    OUT PVOID ProcessInformation,
-    IN ULONG ProcessInformationLength,
-    OUT PULONG ReturnLength OPTIONAL);
-
 typedef NTSTATUS(WINAPI* NtOpenThreadTokenFunction)(IN HANDLE ThreadHandle,
                                                     IN ACCESS_MASK
                                                         DesiredAccess,
