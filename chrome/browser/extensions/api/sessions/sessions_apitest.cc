@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/browser_created_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/sessions/content/content_live_tab.h"
@@ -87,6 +88,7 @@ constexpr int kActiveTabId = kTabIDs[kActiveTabIndex];
 
 // Observes the global list of BrowserWindowInterfaces and waits for a specified
 // browser to close.
+// TODO(crbug.com/405219627): Move this to its own file.
 class BrowserCloseWaiter : public BrowserCollectionObserver {
  public:
   explicit BrowserCloseWaiter(BrowserWindowInterface* browser)
@@ -356,6 +358,77 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetDevicesListEmpty) {
 
   EXPECT_TRUE(devices.empty());
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/405219627): Fix sessions API on desktop Android and port this
+// test. On Android, closed window state is stored in the Java layer, only
+// accessible through RecentlyClosedEntriesManager.
+IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreMostRecentlyClosedWindow) {
+  // Open a second window.
+  BrowserWindowInterface* browser2 =
+      CreateBrowserWindowWithType(BrowserWindowInterface::TYPE_NORMAL);
+
+  // Ensure a tabs exists.
+  auto* tab_list2 = TabListInterface::From(browser2);
+  ASSERT_TRUE(tab_list2);
+  // Platforms like Win/Mac/Linux create browsers with no tabs, whereas Android
+  // creates browsers with a single tab.
+  if (tab_list2->GetTabCount() == 0) {
+    tab_list2->OpenTab(GURL("about:blank"), /*index=*/-1);
+  }
+  ASSERT_EQ(1, tab_list2->GetTabCount());
+
+  // Navigate the tab, otherwise window close does not persist it in the tab
+  // restore service.
+  content::WebContents* contents = tab_list2->GetTab(0)->GetContents();
+  ASSERT_TRUE(NavigateToURL(contents, GURL("chrome://version/")));
+
+  // Close the second window and wait for it to close.
+  BrowserCloseWaiter close_waiter(browser2);
+  browser2->GetWindow()->Close();
+  close_waiter.Wait();
+
+  // Get ready for a browser to be created.
+  BrowserCreatedWaiter browser_waiter;
+
+  // Run chrome.sessions.restore() with no arguments.
+  std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
+      CreateFunction<SessionsRestoreFunction>(true).get(), "[]", GetProfile());
+
+  // The result is a session dictionary.
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_dict());
+  const base::DictValue* session_dict = result->GetIfDict();
+  ASSERT_TRUE(session_dict);
+
+  // The session contains a window.
+  const base::DictValue* window_dict = session_dict->FindDict("window");
+  ASSERT_TRUE(window_dict) << "Window information is missing from the session.";
+
+  // The window contains a tab.
+  const base::ListValue* tabs = window_dict->FindList("tabs");
+  ASSERT_TRUE(tabs);
+  EXPECT_EQ(1u, tabs->size());
+
+  // The tab is chrome://version/.
+  const base::DictValue* tab = (*tabs)[0].GetIfDict();
+  ASSERT_TRUE(tab);
+  const std::string* url = tab->FindString("url");
+  ASSERT_TRUE(url);
+  EXPECT_EQ("chrome://version/", *url);
+
+  // Wait for the browser to be created (it may be asynchronous).
+  BrowserWindowInterface* browser3 = browser_waiter.Wait();
+  ASSERT_TRUE(browser3);
+
+  // The restored browser has one tab at chrome://version/.
+  auto* tab_list3 = TabListInterface::From(browser3);
+  ASSERT_TRUE(tab_list3);
+  EXPECT_EQ(1, tab_list3->GetTabCount());
+  EXPECT_EQ(GURL("chrome://version/"),
+            tab_list3->GetTab(0)->GetContents()->GetVisibleURL());
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreForeignSessionWindow) {
   CreateSessionModels();

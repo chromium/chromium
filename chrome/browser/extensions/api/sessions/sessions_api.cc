@@ -628,6 +628,9 @@ SessionsRestoreFunction::RestoreMostRecentlyClosed(
   const sessions::TabRestoreService::Entries& entries =
       tab_restore_service->entries();
 
+  // TODO(crbug.com/405219627): Android hits this empty condition even when
+  // windows have been closed. Add JNI to the Java RecentlyClosedEntriesManager
+  // to check for closed windows there.
   if (entries.empty()) {
     return Error(kNoRecentlyClosedSessionsError);
   }
