@@ -223,7 +223,6 @@ void ExpectErrorResult(ActResultFuture& future,
 void ExpectOkResult(PerformActionsFuture& future);
 void ExpectErrorResult(PerformActionsFuture& future,
                        mojom::ActionResultCode expected_code);
-void PrintTo(const mojom::ActionResultCode& code, std::ostream* os);
 
 // Sets up GLIC_ACTION_PAGE_BLOCK to block the given host via component updater.
 bool SetUpOptimizationGuideComponentBlocklist(const base::FilePath& path,

@@ -655,10 +655,6 @@ void ExpectErrorResult(PerformActionsFuture& future,
   EXPECT_EQ(actual_code, expected_code);
 }
 
-void PrintTo(const mojom::ActionResultCode& code, std::ostream* os) {
-  *os << std::to_underlying(code);
-}
-
 bool SetUpOptimizationGuideComponentBlocklist(const base::FilePath& path,
                                               const std::string& blocked_host) {
   base::ScopedAllowBlockingForTesting allow_blocking;
