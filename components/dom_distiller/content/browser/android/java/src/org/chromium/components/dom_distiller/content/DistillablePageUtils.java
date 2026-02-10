@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -38,6 +39,13 @@ public final class DistillablePageUtils {
                 boolean isMobileOptimized);
     }
 
+    /**
+     * Sets the delegate to receive distillability updates.
+     *
+     * @param webContents The web contents to set the delegate for.
+     * @param delegate The delegate to set. It will only be held by a weak reference in C++ so it is
+     *     assumed that the delegate will be owned by another object in Java.
+     */
     public static void setDelegate(WebContents webContents, PageDistillableDelegate delegate) {
         DistillablePageUtilsJni.get().setDelegate(webContents, delegate);
     }
@@ -45,7 +53,7 @@ public final class DistillablePageUtils {
     @CalledByNative
     private static void callOnIsPageDistillableUpdate(
             PageDistillableDelegate delegate,
-            GURL url,
+            @JniType("GURL") GURL url,
             boolean isDistillable,
             boolean isLast,
             boolean isLongArticle,
@@ -59,6 +67,8 @@ public final class DistillablePageUtils {
     @NativeMethods
     @VisibleForTesting
     public interface Natives {
-        void setDelegate(WebContents webContents, PageDistillableDelegate delegate);
+        void setDelegate(
+                @JniType("content::WebContents*") WebContents webContents,
+                PageDistillableDelegate delegate);
     }
 }
