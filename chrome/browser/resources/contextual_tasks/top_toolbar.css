@@ -27,7 +27,8 @@
 .top-toolbar-title {
   overflow: hidden;
   align-items: center;
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: 500;
   flex: 1;
   text-overflow: ellipsis;
   white-space: nowrap;
