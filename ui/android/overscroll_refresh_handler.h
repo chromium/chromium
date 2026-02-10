@@ -5,6 +5,7 @@
 #ifndef UI_ANDROID_OVERSCROLL_REFRESH_HANDLER_H_
 #define UI_ANDROID_OVERSCROLL_REFRESH_HANDLER_H_
 
+#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "ui/android/overscroll_refresh.h"
 #include "ui/android/ui_android_export.h"
@@ -40,7 +41,14 @@ class UI_ANDROID_EXPORT OverscrollRefreshHandler {
   virtual void PullReset();
 
  private:
-  base::android::ScopedJavaGlobalRef<jobject> j_overscroll_refresh_handler_;
+  base::android::ScopedJavaLocalRef<jobject> GetRefreshHandlerChecked(
+      JNIEnv* env) const;
+
+  // Weak reference to the Java object. The only implementation is
+  // SwipeRefreshHandler which strongly referenced by UserData on the
+  // corresponding WebContents so a weak reference is safe. This is used instead
+  // of a ScopedJavaGlobalRef to avoid an entry per tab in the global ref table.
+  JavaObjectWeakGlobalRef j_overscroll_refresh_handler_;
 };
 
 }  // namespace ui

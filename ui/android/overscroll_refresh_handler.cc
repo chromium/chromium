@@ -14,14 +14,15 @@
 #include "ui/events/back_gesture_event.h"
 
 using base::android::AttachCurrentThread;
+using base::android::JavaRef;
+using base::android::ScopedJavaLocalRef;
 
 namespace ui {
 
 OverscrollRefreshHandler::OverscrollRefreshHandler(
-    const base::android::JavaRef<jobject>& j_overscroll_refresh_handler) {
-  j_overscroll_refresh_handler_.Reset(AttachCurrentThread(),
-                                      j_overscroll_refresh_handler);
-}
+    const JavaRef<jobject>& j_overscroll_refresh_handler)
+    : j_overscroll_refresh_handler_(AttachCurrentThread(),
+                                    j_overscroll_refresh_handler) {}
 
 OverscrollRefreshHandler::~OverscrollRefreshHandler() {}
 
@@ -30,26 +31,35 @@ bool OverscrollRefreshHandler::PullStart(
     std::optional<BackGestureEventSwipeEdge> initiating_edge) {
   CHECK_EQ(type == OverscrollAction::kHistoryNavigation,
            initiating_edge.has_value());
+  auto* env = AttachCurrentThread();
   return Java_OverscrollRefreshHandler_start(
-      AttachCurrentThread(), j_overscroll_refresh_handler_,
-      std::to_underlying(type),
+      env, GetRefreshHandlerChecked(env), std::to_underlying(type),
       static_cast<int>(initiating_edge ? initiating_edge.value()
                                        : BackGestureEventSwipeEdge::RIGHT));
 }
 
 void OverscrollRefreshHandler::PullUpdate(float x_delta, float y_delta) {
-  Java_OverscrollRefreshHandler_pull(
-      AttachCurrentThread(), j_overscroll_refresh_handler_, x_delta, y_delta);
+  auto* env = AttachCurrentThread();
+  Java_OverscrollRefreshHandler_pull(env, GetRefreshHandlerChecked(env),
+                                     x_delta, y_delta);
 }
 
 void OverscrollRefreshHandler::PullRelease(bool allow_refresh) {
-  Java_OverscrollRefreshHandler_release(
-      AttachCurrentThread(), j_overscroll_refresh_handler_, allow_refresh);
+  auto* env = AttachCurrentThread();
+  Java_OverscrollRefreshHandler_release(env, GetRefreshHandlerChecked(env),
+                                        allow_refresh);
 }
 
 void OverscrollRefreshHandler::PullReset() {
-  Java_OverscrollRefreshHandler_reset(AttachCurrentThread(),
-                                      j_overscroll_refresh_handler_);
+  auto* env = AttachCurrentThread();
+  Java_OverscrollRefreshHandler_reset(env, GetRefreshHandlerChecked(env));
+}
+
+ScopedJavaLocalRef<jobject> OverscrollRefreshHandler::GetRefreshHandlerChecked(
+    JNIEnv* env) const {
+  auto refresh_handler = j_overscroll_refresh_handler_.get(env);
+  DCHECK(!refresh_handler.is_null());
+  return refresh_handler;
 }
 
 }  // namespace ui
