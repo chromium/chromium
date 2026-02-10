@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
 
@@ -14,8 +15,9 @@ class OmniboxPopupTest : public WebUIMochaBrowserTest {
  protected:
   OmniboxPopupTest() {
     set_test_loader_host(chrome::kChromeUIOmniboxPopupHost);
-    scoped_feature_list_.InitWithFeatures({omnibox::kWebUIOmniboxPopup},
-                                          {omnibox::kWebUIOmniboxFullPopup});
+    scoped_feature_list_.InitWithFeatures(
+        {omnibox::kWebUIOmniboxPopup},
+        {omnibox::kWebUIOmniboxFullPopup, omnibox::kAimUsePecApi});
   }
 
  private:

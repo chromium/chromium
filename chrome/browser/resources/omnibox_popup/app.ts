@@ -98,6 +98,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       tabSuggestions_: {type: Array},
       inputState_: {type: Object},
       showModelPicker_: {type: Boolean},
+      usePecApi_: {type: Boolean},
     };
   }
 
@@ -123,6 +124,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor inputState_: InputState|null = null;
   protected accessor showModelPicker_: boolean =
       loadTimeData.getBoolean('contextualMenuShowModelPicker');
+  protected accessor usePecApi_: boolean =
+      loadTimeData.getBoolean('contextualMenuUsePecApi');
 
   private callbackRouter_: PageCallbackRouter;
   private eventTracker_ = new EventTracker();

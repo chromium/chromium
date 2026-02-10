@@ -34,6 +34,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_client.h"
@@ -437,6 +438,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
           composebox_config.entry_point().num_page_load_animations());
   source->AddBoolean("contextualMenuShowModelPicker",
                      ntp_composebox::kShowModelPicker.Get());
+  source->AddBoolean("contextualMenuUsePecApi",
+                     base::FeatureList::IsEnabled(omnibox::kAimUsePecApi));
   source->AddBoolean("ShowContextMenuHeaders",
                      ntp_composebox::kShowContextMenuHeaders.Get());
 }
