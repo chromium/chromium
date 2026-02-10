@@ -1403,16 +1403,13 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
     return nullptr;
   }
 
-  // Get the SharedImage backing this canvas resource, signaling that an
-  // external write will occur. This call will ensure that a copy occurs if
-  // needed for CopyOnWrite or for creation of a SharedImage with WebGPU usage
-  // and will end the canvas access.
+  // Get the SharedImage backing this canvas resource for transfer to WebGPU.
+  // This call will ensure that a copy occurs if needed for CopyOnWrite or for
+  // creation of a SharedImage with WebGPU usage and will end the canvas access.
   gpu::SyncToken canvas_access_sync_token;
   bool performed_copy = false;
   scoped_refptr<gpu::ClientSharedImage> client_si =
       provider->GetBackingClientSharedImageForTransferToWebGPU(
-          gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-              gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,
           canvas_access_sync_token, &performed_copy);
   if (access_options->requireZeroCopy() && performed_copy) {
     exception_state.ThrowDOMException(
