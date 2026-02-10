@@ -4,14 +4,16 @@
 
 #include "components/ui_devtools/views/page_agent_views.h"
 
-#include <unordered_set>
+#include <iterator>
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "components/ui_devtools/agent_util.h"
 #include "components/ui_devtools/ui_element.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace ui_devtools {
 
@@ -27,17 +29,18 @@ void PaintRectVector(
   }
 }
 
-std::unordered_set<std::string> GetSources(UIElement* root) {
-  std::unordered_set<std::string> ret;
+absl::flat_hash_set<std::string> GetSources(UIElement* root) {
+  absl::flat_hash_set<std::string> ret;
 
   for (auto& source : root->GetSources()) {
-    ret.insert(source.path_ + "?l=" + base::NumberToString(source.line_));
+    ret.insert(base::StrCat(
+        {source.path_, "?l=", base::NumberToString(source.line_)}));
   }
 
   for (ui_devtools::UIElement* child : root->children()) {
-    for (auto& child_source : GetSources(child)) {
-      ret.insert(child_source);
-    }
+    absl::flat_hash_set<std::string> child_sources = GetSources(child);
+    ret.insert(std::make_move_iterator(child_sources.begin()),
+               std::make_move_iterator(child_sources.end()));
   }
 
   return ret;
@@ -46,7 +49,7 @@ std::unordered_set<std::string> GetSources(UIElement* root) {
 void AddFrameResources(
     std::unique_ptr<protocol::Array<protocol::Page::FrameResource>>&
         frame_resources,
-    const std::unordered_set<std::string>& all_sources) {
+    const absl::flat_hash_set<std::string>& all_sources) {
   for (const auto& source : all_sources) {
     frame_resources->emplace_back(
         protocol::Page::FrameResource::create()
@@ -84,7 +87,7 @@ protocol::Response PageAgentViews::getResourceTree(
     dom_agent_->getDocument(&node);
   }
 
-  std::unordered_set<std::string> all_sources =
+  absl::flat_hash_set<std::string> all_sources =
       GetSources(dom_agent_->element_root());
 
   AddFrameResources(subresources, all_sources);
@@ -102,20 +105,21 @@ protocol::Response PageAgentViews::getResourceContent(
     const protocol::String& in_url,
     protocol::String* out_content,
     bool* out_base64Encoded) {
-  auto split_url = base::SplitStringUsingSubstr(
+  std::vector<std::string_view> split_url = base::SplitStringPieceUsingSubstr(
       in_url, "src/", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (split_url.size() != 2)
     return protocol::Response::ServerError("Invalid URL");
 
-  auto split_path = base::SplitStringUsingSubstr(
+  std::vector<std::string_view> split_path = base::SplitStringPieceUsingSubstr(
       split_url[1], "?l=", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (split_path.size() != 2)
     return protocol::Response::ServerError("Invalid URL");
 
-  if (GetSourceCode(split_path[0], out_content))
+  if (GetSourceCode(std::string(split_path[0]), out_content)) {
     return protocol::Response::Success();
-  else
-    return protocol::Response::ServerError("Could not read source file");
+  }
+
+  return protocol::Response::ServerError("Could not read source file");
 }
 
 }  // namespace ui_devtools
