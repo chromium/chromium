@@ -2551,6 +2551,18 @@ suite('NewTabPageComposeboxTest', () => {
         assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
         assertEquals(
             voiceQuery, searchboxHandler.getArgs('queryAutocomplete')[0][0]);
+
+        // Mock an autocomplete result so that submitQuery assertion passes.
+        const matches =
+            [createSearchMatchForTesting({allowedToBeDefaultMatch: true})];
+        searchboxCallbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              input: voiceQuery,
+              matches,
+            }));
+        await searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
         assertFalse(composeboxElement.$.input.hidden);
         assertEquals(
             composeboxElement.shadowRoot.activeElement,
@@ -2560,13 +2572,16 @@ suite('NewTabPageComposeboxTest', () => {
         composeboxElement.$.submitContainer.dispatchEvent(
             new FocusEvent('focusin'));
         composeboxElement.$.submitContainer.click();
-        await searchboxHandler.whenCalled('submitQuery');
+
+        // Since a match is selected, openAutocompleteMatch is called instead of
+        // submitQuery.
+        await searchboxHandler.whenCalled('openAutocompleteMatch');
         await microtasksFinished();
 
-        assertEquals(searchboxHandler.getCallCount('submitQuery'), 1);
-        assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
-        const query = searchboxHandler.getArgs('submitQuery')[0][0];
-        assertEquals(query, voiceQuery);
+        assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
+        assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 1);
+        const [index] = searchboxHandler.getArgs('openAutocompleteMatch')[0];
+        assertEquals(index, 0);
       });
 
   test(

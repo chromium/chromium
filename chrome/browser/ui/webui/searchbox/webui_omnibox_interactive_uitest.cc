@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimNoAutoSubmitVoiceTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxAimNoAutoSubmitVoiceTest,
-                       VoiceTextDiscardsOnDismiss) {
+                       TextTransfersOnDismiss) {
   RunTestSequence(
       // Open the AIM popup.
       OpenAimPopupInNewTab(),
@@ -431,13 +431,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimNoAutoSubmitVoiceTest,
       TriggerAimVoiceSearch("foo bar"),
       // Close the popup by removing focus from it.
       RemoveFocusFromPopup(),
-      // Ensure text didn't transfer to the Omnibox.
+      // Ensure text transfers to the Omnibox.
       WaitForViewProperty(kOmniboxElementId, views::Textfield, Text,
-                          std::u16string()));
+                          u"foo bar"));
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxAimNoAutoSubmitVoiceTest,
-                       VoiceTextDiscardsOnEscape) {
+IN_PROC_BROWSER_TEST_F(OmniboxAimNoAutoSubmitVoiceTest, TextTransfersOnEscape) {
   RunTestSequence(
       // Open the AIM popup.
       OpenAimPopupInNewTab(),
@@ -447,9 +446,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimNoAutoSubmitVoiceTest,
       SendKeyPress(kOmniboxElementId, ui::VKEY_ESCAPE),
       InAnyContext(
           WaitForHide(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
-      // Ensure text didn't transfer to the Omnibox.
+      // Ensure text transfers to the Omnibox.
       WaitForViewProperty(kOmniboxElementId, views::Textfield, Text,
-                          std::u16string()));
+                          u"foo bar baz"));
 }
 
 struct AimSearchParam {
