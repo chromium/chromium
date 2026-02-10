@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import type {Container} from './tab_strip_internals.mojom-webui.js';
+import {DataModelAdapter, type ModelNode} from './tab_strip_internals_adapter.js';
 import {TabStripInternalsApiProxyImpl} from './tab_strip_internals_api_proxy.js';
 import type {TabStripInternalsApiProxy} from './tab_strip_internals_api_proxy.js';
 
@@ -31,7 +32,7 @@ export class TabStripInternalsViewModel {
 
   // View state
   /** Represents the root node of the navigation pane hierarchy. */
-  private root_!: any;
+  private root_!: ModelNode;
   /** Error message exposed to the View. */
   private errorMessage_: string|null = null;
   /** Observers registered to be notified when ViewModel state changes. */
@@ -119,7 +120,7 @@ export class TabStripInternalsViewModel {
   private buildModelHierarchy_(data: Container) {
     // TODO(crbug.com/427204855): Implement logic to adapt given mojo data into
     // a type suitable for displaying tab hierarchy on the navigation pane.
-    this.root_ = data;
+    this.root_ = DataModelAdapter.build(data);
     this.notifyObservers_(ViewModelChange.CONTENT);
   }
 

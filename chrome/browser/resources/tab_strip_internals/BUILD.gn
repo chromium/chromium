@@ -14,6 +14,7 @@ build_webui("build") {
   static_files = [ "tab_strip_internals.html" ]
   ts_files = [
     "tab_strip_internals.ts",
+    "tab_strip_internals_adapter.ts",
     "tab_strip_internals_api_proxy.ts",
     "tab_strip_internals_view.ts",
     "tab_strip_internals_viewmodel.ts",
