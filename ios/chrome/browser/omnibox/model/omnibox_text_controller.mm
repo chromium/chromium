@@ -573,7 +573,16 @@ const char kOmniboxFocusResultedInNavigation[] =
 
   if ([textInput isPreEditing]) {
     [textInput setClearingPreEditText:YES];
-    [textInput exitPreEditState];
+    if (IsComposeboxIOSEnabled() &&
+        _presentationContext == OmniboxPresentationContext::kComposebox) {
+      // Clear pre-edit text manually instead of relying on clearsOnInsertion.
+      // clearsOnInsertion calls selectAll: which can can crash when called on
+      // begin editing (crbug.com/479185287).
+      [self removePreEditText];
+    } else {
+      [textInput exitPreEditState];
+    }
+
     // Reset `range` to be of zero-length at location zero, as the input will be
     // now cleared.
     range = NSMakeRange(0, 0);
