@@ -1,0 +1,30 @@
+diff --git a/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-flac-v0_5/src/decoder.rs b/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-flac-v0_5/src/decoder.rs
+index 3f72b51b1e4f5..38af16eb61d41 100644
+--- a/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-flac-v0_5/src/decoder.rs
++++ b/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-flac-v0_5/src/decoder.rs
+@@ -334,11 +334,10 @@ fn read_subframe<B: ReadBitsLtr>(bs: &mut B, frame_bps: u32, buf: &mut [i32]) ->
+     // Bit 7 of the sub-frame header designates if there are any dropped (wasted in FLAC terms)
+     // bits per sample in the audio sub-block. If the bit is set, unary decode the number of
+     // dropped bits per sample.
+-    let dropped_bps = if bs.read_bool()? {
+-        bs.read_unary_zeros()? + 1
+-    } else {
+-        0
+-    };
++    let dropped_bps = if bs.read_bool()? { bs.read_unary_zeros()? + 1 } else { 0 };
++    if dropped_bps > frame_bps {
++        return decode_error("flac: dropped bits per sample is greater than the frame bits per sample");
++    }
+ 
+     // The bits per sample stated in the frame header is for the decoded audio sub-block samples.
+     // However, it is likely that the lower order bits of all the samples are simply 0. Therefore,
+@@ -419,6 +418,10 @@ fn decode_fixed_linear<B: ReadBitsLtr>(
+ }
+ 
+ fn decode_linear<B: ReadBitsLtr>(bs: &mut B, bps: u32, order: u32, buf: &mut [i32]) -> Result<()> {
++    if order as usize > buf.len() {
++        return decode_error("flac: predictor order is greater than the block size");
++    }
++
+     // The order of the Linear Predictor should be between 1 and 32.
+     debug_assert!(order > 0 && order <= 32);
