@@ -10,12 +10,12 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -80,9 +80,8 @@ TEST_F(AndroidBnplUiDelegateTest, ShowProgressUi) {
   EXPECT_CALL(payments_autofill_client(),
               ShowTouchToFillProgress(testing::An<base::OnceClosure>()));
 
-  delegate_->ShowProgressUi(
-      AutofillProgressDialogType::kBnplFetchVcnProgressDialog,
-      /*cancel_callback=*/base::DoNothing());
+  delegate_->ShowProgressUi(AutofillProgressUiType::kBnplFetchVcnProgressUi,
+                            /*cancel_callback=*/base::DoNothing());
 }
 
 // Tests that CloseProgressUi calls the client's HideTouchToFillPaymentMethod

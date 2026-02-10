@@ -19,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -30,6 +29,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
@@ -599,14 +599,14 @@ class AutofillMetrics {
   static void LogScanCreditCardPromptMetric(ScanCreditCardPromptMetric metric);
   static void LogProgressDialogResultMetric(
       bool is_canceled_by_user,
-      AutofillProgressDialogType autofill_progress_dialog_type);
+      AutofillProgressUiType autofill_progress_dialog_type);
   static void LogProgressDialogShown(
-      AutofillProgressDialogType autofill_progress_dialog_type);
+      AutofillProgressUiType autofill_progress_dialog_type);
 
-  // Returns a string representation of the given AutofillProgressDialogType for
+  // Returns a string representation of the given AutofillProgressUiType for
   // constructing subhistogram paths.
   static std::string_view GetDialogTypeStringForLogging(
-      AutofillProgressDialogType autofill_progress_dialog_type);
+      AutofillProgressUiType autofill_progress_dialog_type);
 
   // Should be called when credit card scan is finished. |duration| should be
   // the time elapsed between launching the credit card scanner and getting back

@@ -32,7 +32,7 @@ class AutofillDriver;
 struct AutofillErrorDialogContext;
 class AutofillOfferData;
 class AutofillOfferManager;
-enum class AutofillProgressDialogType;
+enum class AutofillProgressUiType;
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSaveIbanBottomSheetBridge;
 class BnplIssuer;
@@ -451,7 +451,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Show/dismiss the progress dialog which contains a throbber and a text
   // message indicating that something is in progress.
   virtual void ShowAutofillProgressDialog(
-      AutofillProgressDialogType autofill_progress_dialog_type,
+      AutofillProgressUiType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) = 0;
   virtual void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing,

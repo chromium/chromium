@@ -11,7 +11,6 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/notimplemented.h"
-#import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #import "components/autofill/core/browser/payments/bnpl_util.h"
@@ -24,6 +23,7 @@
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
+#import "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -154,7 +154,7 @@ void IOSWebViewPaymentsAutofillClient::IbanUploadCompleted(
     bool hit_max_strikes) {}
 
 void IOSWebViewPaymentsAutofillClient::ShowAutofillProgressDialog(
-    autofill::AutofillProgressDialogType autofill_progress_dialog_type,
+    autofill::AutofillProgressUiType autofill_progress_dialog_type,
     base::OnceClosure cancel_callback) {
   [bridge_ showAutofillProgressDialogOfType:autofill_progress_dialog_type
                              cancelCallback:std::move(cancel_callback)];

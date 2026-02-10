@@ -18,7 +18,6 @@
 #include "base/containers/to_vector.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"

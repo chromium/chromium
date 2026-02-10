@@ -7,8 +7,8 @@
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
-#import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
+#import "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_action.h"
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_consumer.h"
@@ -59,10 +59,10 @@ class AutofillProgressDialogMediatorTest : public PlatformTest {
     consumer_ = OCMProtocolMock(@protocol(AlertConsumer));
     delegate_ =
         OCMProtocolMock(@protocol(AutofillProgressDialogMediatorDelegate));
-    model_controller_ = std::make_unique<
-        autofill::AutofillProgressDialogControllerImpl>(
-        autofill::AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog,
-        base::DoNothing());
+    model_controller_ =
+        std::make_unique<autofill::AutofillProgressDialogControllerImpl>(
+            autofill::AutofillProgressUiType::kVirtualCardUnmaskProgressUi,
+            base::DoNothing());
     mediator_ = std::make_unique<AutofillProgressDialogMediator>(
         model_controller_.get(), delegate_);
   }

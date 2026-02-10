@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/payments/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 
@@ -127,7 +128,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       PaymentsAutofillClient::SaveIbanPromptCallback callback) override;
   void IbanUploadCompleted(bool iban_saved, bool hit_max_strikes) override;
   void ShowAutofillProgressDialog(
-      AutofillProgressDialogType autofill_progress_dialog_type,
+      AutofillProgressUiType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) override;
   void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing,
@@ -302,7 +303,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
            !legal_message_lines_.empty();
   }
 
-  AutofillProgressDialogType autofill_progress_dialog_type() const {
+  AutofillProgressUiType autofill_progress_dialog_type() const {
     return autofill_progress_dialog_type_;
   }
 
@@ -373,8 +374,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
 
   bool is_tab_model_popup_ = false;
 
-  AutofillProgressDialogType autofill_progress_dialog_type_ =
-      AutofillProgressDialogType::kServerCardUnmaskProgressDialog;
+  AutofillProgressUiType autofill_progress_dialog_type_ =
+      AutofillProgressUiType::kServerCardUnmaskProgressUi;
 
   LegalMessageLines legal_message_lines_;
 

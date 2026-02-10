@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/payments_window_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
@@ -25,6 +24,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/payments_window_manager_util.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/browser/ui/payments/payments_window_user_consent_dialog_controller_impl.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -274,7 +274,7 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
             flow_state_->vcn_3ds_popup_shown_timestamp.value(),
         /*success=*/true);
     client_->GetPaymentsAutofillClient()->ShowAutofillProgressDialog(
-        AutofillProgressDialogType::k3dsFetchVcnProgressDialog,
+        AutofillProgressUiType::k3dsFetchVcnProgressUi,
         base::BindOnce(&DesktopPaymentsWindowManager::
                            OnVcn3dsAuthenticationProgressDialogCancelled,
                        weak_ptr_factory_.GetWeakPtr()));

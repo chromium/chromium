@@ -18,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
@@ -43,6 +42,7 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments/webauthn_callback_types.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -1224,9 +1224,8 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
     payments_autofill_client().ShowAutofillProgressDialog(
         card_->card_info_retrieval_enrollment_state() ==
                 CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled
-            ? AutofillProgressDialogType::
-                  kCardInfoRetrievalEnrolledUnmaskProgressDialog
-            : AutofillProgressDialogType::kServerCardUnmaskProgressDialog,
+            ? AutofillProgressUiType::kCardInfoRetrievalEnrolledUnmaskProgressUi
+            : AutofillProgressUiType::kServerCardUnmaskProgressUi,
         /*cancel_callback=*/base::BindOnce(
             &CreditCardRiskBasedAuthenticator::OnUnmaskCancelled,
             payments_autofill_client()
@@ -1287,7 +1286,7 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
 void CreditCardAccessManager::FetchVirtualCard() {
   is_authentication_in_progress_ = true;
   payments_autofill_client().ShowAutofillProgressDialog(
-      AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog,
+      AutofillProgressUiType::kVirtualCardUnmaskProgressUi,
       base::BindOnce(&CreditCardAccessManager::OnVirtualCardUnmaskCancelled,
                      GetWeakPtr()));
   payments_autofill_client().GetRiskBasedAuthenticator()->Authenticate(

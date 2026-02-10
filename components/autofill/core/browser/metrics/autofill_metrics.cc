@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -277,7 +278,7 @@ void AutofillMetrics::LogScanCreditCardCompleted(base::TimeDelta duration,
 // static
 void AutofillMetrics::LogProgressDialogResultMetric(
     bool is_canceled_by_user,
-    AutofillProgressDialogType autofill_progress_dialog_type) {
+    AutofillProgressUiType autofill_progress_dialog_type) {
   base::UmaHistogramBoolean(base::StrCat({"Autofill.ProgressDialog.",
                                           GetDialogTypeStringForLogging(
                                               autofill_progress_dialog_type),
@@ -286,7 +287,7 @@ void AutofillMetrics::LogProgressDialogResultMetric(
 }
 
 void AutofillMetrics::LogProgressDialogShown(
-    AutofillProgressDialogType autofill_progress_dialog_type) {
+    AutofillProgressUiType autofill_progress_dialog_type) {
   base::UmaHistogramBoolean(base::StrCat({"Autofill.ProgressDialog.",
                                           GetDialogTypeStringForLogging(
                                               autofill_progress_dialog_type),
@@ -295,24 +296,23 @@ void AutofillMetrics::LogProgressDialogShown(
 }
 
 std::string_view AutofillMetrics::GetDialogTypeStringForLogging(
-    AutofillProgressDialogType autofill_progress_dialog_type) {
+    AutofillProgressUiType autofill_progress_dialog_type) {
   switch (autofill_progress_dialog_type) {
-    case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
+    case AutofillProgressUiType::kVirtualCardUnmaskProgressUi:
       return "VirtualCardUnmask";
-    case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
+    case AutofillProgressUiType::kServerCardUnmaskProgressUi:
       return "ServerCardUnmask";
-    case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
+    case AutofillProgressUiType::kServerIbanUnmaskProgressUi:
       return "ServerIbanUnmask";
-    case AutofillProgressDialogType::
-        kCardInfoRetrievalEnrolledUnmaskProgressDialog:
+    case AutofillProgressUiType::kCardInfoRetrievalEnrolledUnmaskProgressUi:
       return "CardInfoRetrievalEnrolledUnmask";
-    case AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
+    case AutofillProgressUiType::k3dsFetchVcnProgressUi:
       return "3dsFetchVirtualCard";
-    case AutofillProgressDialogType::kBnplFetchVcnProgressDialog:
+    case AutofillProgressUiType::kBnplFetchVcnProgressUi:
       return "BnplFetchVirtualCard";
-    case AutofillProgressDialogType::kBnplAmountExtractionProgressUi:
+    case AutofillProgressUiType::kBnplAmountExtractionProgressUi:
     // TODO(crbug.com/430575808): Implement Logging for progress screen.
-    case AutofillProgressDialogType::kUnspecified:
+    case AutofillProgressUiType::kUnspecified:
       NOTREACHED();
   }
 }

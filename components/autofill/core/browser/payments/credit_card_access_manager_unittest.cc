@@ -41,6 +41,7 @@
 #include "components/autofill/core/browser/payments/test/mock_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1982,7 +1983,7 @@ TEST_F(CreditCardAccessManagerTest,
       CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
 }
 
-// Ensures the `kCardInfoRetrievalEnrolledUnmaskProgressDialog` is set if
+// Ensures the `kCardInfoRetrievalEnrolledUnmaskProgressUi` is set if
 // `card_info_retrieval_enrollment_state` is enrolled.
 TEST_F(CreditCardAccessManagerTest, CardInfoRetrievalEnrolledCardUnmasking) {
   base::test::ScopedFeatureList scoped_feature_list{
@@ -2001,11 +2002,10 @@ TEST_F(CreditCardAccessManagerTest, CardInfoRetrievalEnrolledCardUnmasking) {
   EXPECT_EQ(autofill_client()
                 .GetPaymentsAutofillClient()
                 ->autofill_progress_dialog_type(),
-            AutofillProgressDialogType::
-                kCardInfoRetrievalEnrolledUnmaskProgressDialog);
+            AutofillProgressUiType::kCardInfoRetrievalEnrolledUnmaskProgressUi);
 }
 
-// Ensures the `kCardInfoRetrievalEnrolledUnmaskProgressDialog` is not set, even
+// Ensures the `kCardInfoRetrievalEnrolledUnmaskProgressUi` is not set, even
 // if `kAutofillEnableCardInfoRuntimeRetrieval` is enabled, but
 // `card_info_retrieval_enrollment_state` is not enrolled.
 TEST_F(CreditCardAccessManagerTest,

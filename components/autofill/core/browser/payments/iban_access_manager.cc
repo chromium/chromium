@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -76,7 +77,7 @@ void IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
   }
 
   GetPaymentsAutofillClient().ShowAutofillProgressDialog(
-      AutofillProgressDialogType::kServerIbanUnmaskProgressDialog,
+      AutofillProgressUiType::kServerIbanUnmaskProgressUi,
       base::BindOnce(&IbanAccessManager::OnServerIbanUnmaskCancelled,
                      weak_ptr_factory_.GetWeakPtr()));
 

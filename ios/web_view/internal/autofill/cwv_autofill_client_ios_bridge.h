@@ -9,7 +9,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
@@ -17,6 +16,7 @@
 #include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #import "components/autofill/ios/browser/autofill_client_ios_bridge.h"
 
@@ -64,8 +64,7 @@ class CreditCard;
                                    AddressProfileSavePromptCallback)callback;
 
 // Bridge for PaymentsAutofillClient's method `ShowAutofillProgressDialog`.
-- (void)showAutofillProgressDialogOfType:
-            (autofill::AutofillProgressDialogType)type
+- (void)showAutofillProgressDialogOfType:(autofill::AutofillProgressUiType)type
                           cancelCallback:(base::OnceClosure)cancelCallback;
 
 // Bridge for PaymentsAutofillClient's method `CloseAutofillProgressDialog`.

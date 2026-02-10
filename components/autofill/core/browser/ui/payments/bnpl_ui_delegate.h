@@ -13,7 +13,7 @@
 namespace autofill {
 
 struct AutofillErrorDialogContext;
-enum class AutofillProgressDialogType;
+enum class AutofillProgressUiType;
 class BnplIssuer;
 
 namespace payments {
@@ -60,7 +60,7 @@ class BnplUiDelegate {
   // determines the specific UI of the progress dialog shown. `cancel_callback`
   // is run when the user cancels the progress dialog.
   virtual void ShowProgressUi(
-      AutofillProgressDialogType autofill_progress_dialog_type,
+      AutofillProgressUiType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) = 0;
 
   // Closes the progress UI. `credit_card_fetched_successfully` is true if the

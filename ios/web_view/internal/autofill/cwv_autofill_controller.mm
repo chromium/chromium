@@ -26,6 +26,7 @@
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
+#import "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_util.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
@@ -94,24 +95,24 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 namespace {
 // Helper function to map C++ enum to Objective-C enum
 CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
-    autofill::AutofillProgressDialogType type) {
+    autofill::AutofillProgressUiType type) {
   switch (type) {
-    case autofill::AutofillProgressDialogType::kUnspecified:
+    case autofill::AutofillProgressUiType::kUnspecified:
       return CWVAutofillProgressDialogTypeUnspecified;
-    case autofill::AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
+    case autofill::AutofillProgressUiType::kVirtualCardUnmaskProgressUi:
       return CWVAutofillProgressDialogTypeVirtualCardUnmask;
-    case autofill::AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
+    case autofill::AutofillProgressUiType::kServerCardUnmaskProgressUi:
       return CWVAutofillProgressDialogTypeServerCardUnmask;
-    case autofill::AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
+    case autofill::AutofillProgressUiType::kServerIbanUnmaskProgressUi:
       return CWVAutofillProgressDialogTypeIbanUnmask;
-    case autofill::AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
+    case autofill::AutofillProgressUiType::k3dsFetchVcnProgressUi:
       return CWVAutofillProgressDialogType3DSFetchVCN;
-    case autofill::AutofillProgressDialogType::
-        kCardInfoRetrievalEnrolledUnmaskProgressDialog:
+    case autofill::AutofillProgressUiType::
+        kCardInfoRetrievalEnrolledUnmaskProgressUi:
       return CWVAutofillProgressDialogTypeCardInfoRetrievalEnrolledUnmask;
-    case autofill::AutofillProgressDialogType::kBnplFetchVcnProgressDialog:
+    case autofill::AutofillProgressUiType::kBnplFetchVcnProgressUi:
       return CWVAutofillProgressDialogTypeBNPLFetchVCN;
-    case autofill::AutofillProgressDialogType::kBnplAmountExtractionProgressUi:
+    case autofill::AutofillProgressUiType::kBnplAmountExtractionProgressUi:
       return CWVAutofillProgressDialogTypeBNPLAmountExtraction;
   }
   return CWVAutofillProgressDialogTypeUnspecified;
@@ -700,8 +701,7 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   }
 }
 
-- (void)showAutofillProgressDialogOfType:
-            (autofill::AutofillProgressDialogType)type
+- (void)showAutofillProgressDialogOfType:(autofill::AutofillProgressUiType)type
                           cancelCallback:(base::OnceClosure)cancelCallback {
   if ([_delegate respondsToSelector:@selector
                  (autofillController:showProgressDialogOfType:cancelAction:)]) {

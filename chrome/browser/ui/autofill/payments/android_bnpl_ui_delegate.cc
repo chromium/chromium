@@ -9,11 +9,11 @@
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
-#include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/grit/components_scaled_resources.h"
 
 namespace autofill::payments {
@@ -86,7 +86,7 @@ void AndroidBnplUiDelegate::RemoveBnplTosOrProgressUi() {
 }
 
 void AndroidBnplUiDelegate::ShowProgressUi(
-    AutofillProgressDialogType autofill_progress_dialog_type,
+    AutofillProgressUiType autofill_progress_dialog_type,
     base::OnceClosure cancel_callback) {
   client_->ShowTouchToFillProgress(std::move(cancel_callback));
 }

@@ -46,6 +46,7 @@ class AutofillMessageController;
 #endif
 class AutofillOfferData;
 class AutofillOfferManager;
+enum class AutofillProgressUiType;
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSaveIbanBottomSheetBridge;
 class BnplIssuer;
@@ -154,7 +155,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
                                 SaveIbanPromptCallback callback) override;
   void IbanUploadCompleted(bool iban_saved, bool hit_max_strikes) override;
   void ShowAutofillProgressDialog(
-      AutofillProgressDialogType autofill_progress_dialog_type,
+      AutofillProgressUiType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) override;
   void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing,

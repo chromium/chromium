@@ -15,7 +15,7 @@
 namespace autofill {
 
 struct AutofillErrorDialogContext;
-enum class AutofillProgressDialogType;
+enum class AutofillProgressUiType;
 class BnplIssuer;
 class BnplTosControllerImpl;
 class ContentAutofillClient;
@@ -49,7 +49,7 @@ class DesktopBnplUiDelegate : public BnplUiDelegate {
                      base::OnceClosure accept_callback,
                      base::OnceClosure cancel_callback) override;
   void RemoveBnplTosOrProgressUi() override;
-  void ShowProgressUi(AutofillProgressDialogType autofill_progress_dialog_type,
+  void ShowProgressUi(AutofillProgressUiType autofill_progress_dialog_type,
                       base::OnceClosure cancel_callback) override;
   void CloseProgressUi(bool credit_card_fetched_successfully) override;
   void ShowAutofillErrorUi(AutofillErrorDialogContext context) override;

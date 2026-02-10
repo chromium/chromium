@@ -24,6 +24,7 @@ class WebState;
 namespace autofill {
 
 class AutofillProgressDialogController;
+enum class AutofillProgressUiType;
 class BnplIssuer;
 class CardUnmaskOtpInputDialogController;
 class CardUnmaskPromptController;
@@ -100,7 +101,7 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
                                 SaveIbanPromptCallback callback) override;
   void IbanUploadCompleted(bool iban_saved, bool hit_max_strikes) override;
   void ShowAutofillProgressDialog(
-      AutofillProgressDialogType autofill_progress_dialog_type,
+      AutofillProgressUiType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) override;
   void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing,

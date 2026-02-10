@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
@@ -169,7 +170,7 @@ void BnplManager::OnDidAcceptBnplSuggestion(
         // disabled state and not clickable.
         CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
             .ShowProgressUi(
-                AutofillProgressDialogType::kBnplAmountExtractionProgressUi,
+                AutofillProgressUiType::kBnplAmountExtractionProgressUi,
                 /*cancel_callback=*/base::BindOnce(&BnplManager::Reset,
                                                    weak_factory_.GetWeakPtr()));
       }
@@ -370,7 +371,7 @@ void BnplManager::FetchVcnDetails(GURL url) {
       ongoing_flow_state_->issuer->issuer_id());
 
   CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
-      .ShowProgressUi(AutofillProgressDialogType::kBnplFetchVcnProgressDialog,
+      .ShowProgressUi(AutofillProgressUiType::kBnplFetchVcnProgressUi,
                       /*cancel_callback=*/base::BindOnce(
                           [](base::WeakPtr<BnplManager> manager) {
                             if (manager) {

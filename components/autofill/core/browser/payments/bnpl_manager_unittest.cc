@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller.h"
@@ -201,7 +202,7 @@ class MockBnplUiDelegate : public BnplUiDelegate {
   MOCK_METHOD(void, RemoveBnplTosOrProgressUi, (), (override));
   MOCK_METHOD(void,
               ShowProgressUi,
-              (AutofillProgressDialogType autofill_progress_dialog_type,
+              (AutofillProgressUiType autofill_progress_dialog_type,
                base::OnceClosure cancel_callback),
               (override));
   MOCK_METHOD(void,
@@ -971,9 +972,9 @@ TEST_F(BnplManagerTest, FetchVcnDetails_ShowProgressUi) {
           kBillingCustomerNumber, kRiskData, kContextToken, kRedirectUrl,
           test::GetTestLinkedBnplIssuer());
 
-  EXPECT_CALL(GetBnplUiDelegate(),
-              ShowProgressUi(
-                  AutofillProgressDialogType::kBnplFetchVcnProgressDialog, _));
+  EXPECT_CALL(
+      GetBnplUiDelegate(),
+      ShowProgressUi(AutofillProgressUiType::kBnplFetchVcnProgressUi, _));
 
   test_api(*bnpl_manager_).FetchVcnDetails(kPopupUrl);
 }
@@ -989,9 +990,9 @@ TEST_F(BnplManagerTest, FetchVcnDetails_Reset) {
 
   EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 
-  EXPECT_CALL(GetBnplUiDelegate(),
-              ShowProgressUi(
-                  AutofillProgressDialogType::kBnplFetchVcnProgressDialog, _));
+  EXPECT_CALL(
+      GetBnplUiDelegate(),
+      ShowProgressUi(AutofillProgressUiType::kBnplFetchVcnProgressUi, _));
 
   test_api(*bnpl_manager_).FetchVcnDetails(kPopupUrl);
 
@@ -2569,10 +2570,9 @@ TEST_F(BnplManagerTest,
                         /*price_higher_bound_in_micros=*/200'000'000,
                         IssuerId::kBnplAffirm,
                         /*instrument_id=*/4);
-  EXPECT_CALL(
-      GetBnplUiDelegate(),
-      ShowProgressUi(
-          AutofillProgressDialogType::kBnplAmountExtractionProgressUi, _));
+  EXPECT_CALL(GetBnplUiDelegate(),
+              ShowProgressUi(
+                  AutofillProgressUiType::kBnplAmountExtractionProgressUi, _));
   bnpl_manager_->OnDidAcceptBnplSuggestion(
       /*final_checkout_amount=*/std::nullopt,
       /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
@@ -2598,10 +2598,9 @@ TEST_F(BnplManagerTest,
                         /*price_higher_bound_in_micros=*/200'000'000,
                         IssuerId::kBnplAffirm,
                         /*instrument_id=*/4);
-  EXPECT_CALL(
-      GetBnplUiDelegate(),
-      ShowProgressUi(
-          AutofillProgressDialogType::kBnplAmountExtractionProgressUi, _));
+  EXPECT_CALL(GetBnplUiDelegate(),
+              ShowProgressUi(
+                  AutofillProgressUiType::kBnplAmountExtractionProgressUi, _));
   bnpl_manager_->OnDidAcceptBnplSuggestion(
       /*final_checkout_amount=*/std::nullopt,
       /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
@@ -2628,10 +2627,9 @@ TEST_F(BnplManagerTest,
                         /*price_higher_bound_in_micros=*/3'000'000'000,
                         IssuerId::kBnplAffirm,
                         /*instrument_id=*/1);
-  EXPECT_CALL(
-      GetBnplUiDelegate(),
-      ShowProgressUi(
-          AutofillProgressDialogType::kBnplAmountExtractionProgressUi, _));
+  EXPECT_CALL(GetBnplUiDelegate(),
+              ShowProgressUi(
+                  AutofillProgressUiType::kBnplAmountExtractionProgressUi, _));
   bnpl_manager_->OnDidAcceptBnplSuggestion(
       /*final_checkout_amount=*/std::nullopt,
       /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
@@ -2673,10 +2671,9 @@ TEST_F(BnplManagerTest,
                         /*price_higher_bound_in_micros=*/3'000'000'000,
                         IssuerId::kBnplAffirm,
                         /*instrument_id=*/1);
-  EXPECT_CALL(
-      GetBnplUiDelegate(),
-      ShowProgressUi(
-          AutofillProgressDialogType::kBnplAmountExtractionProgressUi, _));
+  EXPECT_CALL(GetBnplUiDelegate(),
+              ShowProgressUi(
+                  AutofillProgressUiType::kBnplAmountExtractionProgressUi, _));
   bnpl_manager_->OnDidAcceptBnplSuggestion(
       /*final_checkout_amount=*/std::nullopt,
       /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
@@ -2731,10 +2728,9 @@ TEST_F(
     BnplManagerTest,
     OnDidAcceptBnplSuggestion_WhenAmountIsNotSet_ShowProgressUiNotSelectionUi) {
   EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi).Times(0);
-  EXPECT_CALL(
-      GetBnplUiDelegate(),
-      ShowProgressUi(
-          AutofillProgressDialogType::kBnplAmountExtractionProgressUi, _))
+  EXPECT_CALL(GetBnplUiDelegate(),
+              ShowProgressUi(
+                  AutofillProgressUiType::kBnplAmountExtractionProgressUi, _))
       .WillOnce(base::test::RunOnceCallback<1>());
 
   bnpl_manager_->OnDidAcceptBnplSuggestion(

@@ -53,8 +53,8 @@ typedef NS_OPTIONS(NSInteger, CWVPasswordLeakType) {
 };
 
 // All possible types of progress dialogs shown during an Autofill operation.
-// This is kept up to date with autofill::AutofillProgressDialogType in
-// components/autofill/core/browser/ui/autofill_progress_dialog_type.h.
+// This is kept up to date with autofill::AutofillProgressUiType in
+// components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h.
 typedef NS_ENUM(NSInteger, CWVAutofillProgressDialogType) {
   // An invalid or unspecified type.
   CWVAutofillProgressDialogTypeUnspecified = 0,
