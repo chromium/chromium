@@ -21,6 +21,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/file_util_icu.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -369,6 +370,8 @@ bool OsIntegrationTestOverrideImpl::IsRunOnOsLoginEnabled(
 #if BUILDFLAG(IS_LINUX)
   std::string shortcut_filename =
       "chrome-" + app_id + "-" + profile->GetBaseName().value() + ".desktop";
+  base::i18n::ReplaceIllegalCharactersInPath(&shortcut_filename, '_');
+  base::ReplaceChars(shortcut_filename, " ", "_", &shortcut_filename);
   return base::PathExists(startup().Append(shortcut_filename));
 #elif BUILDFLAG(IS_WIN)
   base::FilePath startup_shortcut_path =
@@ -541,6 +544,8 @@ base::FilePath OsIntegrationTestOverrideImpl::GetShortcutPath(
 #elif BUILDFLAG(IS_LINUX)
   std::string shortcut_filename =
       "chrome-" + app_id + "-" + profile->GetBaseName().value() + ".desktop";
+  base::i18n::ReplaceIllegalCharactersInPath(&shortcut_filename, '_');
+  base::ReplaceChars(shortcut_filename, " ", "_", &shortcut_filename);
   base::FilePath shortcut_path = shortcut_dir.Append(shortcut_filename);
   if (base::PathExists(shortcut_path)) {
     return shortcut_path;
