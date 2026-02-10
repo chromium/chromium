@@ -1008,9 +1008,9 @@ const char kGlicResetMultiInstanceEnabledByTier[] =
 // multi-instance enablement. Intended for manual testing only.
 const char kGlicForceG1StatusForMultiInstance[] = "glic-force-g1-for-mi";
 
-// Configure preset guest URLs for manual testing. These are saved to profile
-// prefs and can be selected to override the default glic guest URL through
-// corresponding entries in chrome://flags.
+// Configure preset guest URLs for manual testing. These are saved to local
+// state prefs and can be selected to override the default glic guest URL
+// through corresponding entries in chrome://flags.
 const char kGlicGuestUrlPresetAutopush[] = "glic-guest-url-preset-autopush";
 const char kGlicGuestUrlPresetPreprod[] = "glic-guest-url-preset-preprod";
 const char kGlicGuestUrlPresetProd[] = "glic-guest-url-preset-prod";
