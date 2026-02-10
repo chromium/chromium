@@ -57,9 +57,8 @@ namespace {
 void GetFormEncoding(const HTMLFormElement& form, TextEncoding* encoding) {
   String str(form.FastGetAttribute(html_names::kAcceptCharsetAttr));
   str.Replace(',', ' ');
-  Vector<String> charsets;
-  str.Split(' ', charsets);
-  for (const String& charset : charsets) {
+  Vector<StringView> charsets = StringView(str).SplitSkippingEmpty(' ');
+  for (const auto& charset : charsets) {
     *encoding = TextEncoding(charset);
     if (encoding->IsValid())
       return;

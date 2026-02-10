@@ -39,9 +39,8 @@ LinkRelAttribute::LinkRelAttribute(const String& rel) : LinkRelAttribute() {
     return;
   String rel_copy = rel;
   rel_copy.Replace('\n', ' ');
-  Vector<String> list;
-  rel_copy.Split(' ', list);
-  for (const String& link_type : list) {
+  Vector<StringView> list = StringView(rel_copy).SplitSkippingEmpty(' ');
+  for (const StringView& link_type : list) {
     if (EqualIgnoringASCIICase(link_type, "stylesheet")) {
       is_style_sheet_ = true;
     } else if (EqualIgnoringASCIICase(link_type, "alternate")) {

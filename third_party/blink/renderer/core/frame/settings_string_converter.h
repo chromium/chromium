@@ -42,8 +42,7 @@ struct FromString<double> {
 template <>
 struct FromString<gfx::Size> {
   gfx::Size operator()(const String& s) {
-    Vector<String> fields;
-    s.Split(',', fields);
+    Vector<StringView> fields = StringView(s).SplitSkippingEmpty(',');
     return gfx::Size(
         fields.size() > 0 ? StringToInt(fields[0]).value_or(0) : 0,
         fields.size() > 1 ? StringToInt(fields[1]).value_or(0) : 0);

@@ -1048,8 +1048,8 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
   mojom::blink::DelegatedCapability delegated_capability =
       mojom::blink::DelegatedCapability::kNone;
   if (options->hasDelegate()) {
-    Vector<String> capability_list;
-    options->delegate().Split(' ', capability_list);
+    Vector<StringView> capability_list =
+        StringView(options->delegate()).SplitSkippingEmpty(' ');
     if (capability_list.Contains("payment")) {
       delegated_capability = mojom::blink::DelegatedCapability::kPaymentRequest;
     } else if (capability_list.Contains("fullscreen")) {

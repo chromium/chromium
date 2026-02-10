@@ -1516,9 +1516,9 @@ GCedHeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
     String attribute_value = getAttribute(attr).GetString();
 
     // 4.3. Let tokens be contentAttributeValue, split on ASCII whitespace.
-    Vector<String> tokens;
     attribute_value = attribute_value.SimplifyWhiteSpace();
-    attribute_value.Split(' ', tokens);
+    Vector<StringView> tokens =
+        StringView(attribute_value).SplitSkippingEmpty(' ');
 
     for (const auto& id : tokens) {
       // 4.3.1. Let candidate be the first element, in tree order, that meets

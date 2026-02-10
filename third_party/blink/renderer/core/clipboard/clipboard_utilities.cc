@@ -59,14 +59,13 @@ void ReplaceNBSPWithSpace(String& str) {
   str.Replace(uchar::kNoBreakSpace, uchar::kSpace);
 }
 
-String ConvertURIListToURL(const String& uri_list) {
-  Vector<String> items;
+String ConvertURIListToURL(const StringView& uri_list) {
   // Line separator is \r\n per RFC 2483 - however, for compatibility
   // reasons we allow just \n here.
-  uri_list.Split('\n', items);
+  Vector<StringView> items = uri_list.SplitSkippingEmpty('\n');
   // Process the input and return the first valid URL. In case no URLs can
   // be found, return an empty string. This is in line with the HTML5 spec.
-  for (String& line : items) {
+  for (StringView line : items) {
     line = line.StripWhiteSpace();
     if (line.empty())
       continue;
