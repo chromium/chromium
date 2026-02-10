@@ -10,12 +10,12 @@
 #include <delayimp.h>
 #include <stddef.h>
 
-#include <set>
 #include <string>
 
 #include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/win/current_module.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace base {
 namespace win {
@@ -540,7 +540,8 @@ bool PEImage::EnumDelayImportChunks(EnumDelayImportChunksFunction callback,
         // Use the module_name as retrieved from the IAT because this method
         // is case sensitive.
         if (module_ == CURRENT_MODULE() && !LDR_IS_RESOURCE(module_)) {
-          static base::NoDestructor<std::set<std::string>> loaded_dlls;
+          static base::NoDestructor<absl::flat_hash_set<std::string>>
+              loaded_dlls;
           // pair.second is true if this is a new element
           if (loaded_dlls.get()->emplace(module_name).second) {
             ::__HrLoadAllImportsForDll(module_name);
