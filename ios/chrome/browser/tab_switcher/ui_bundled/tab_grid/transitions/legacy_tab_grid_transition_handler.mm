@@ -221,21 +221,16 @@ const CGFloat kToTabGroupAnimationDuration = 0.25;
       [self.layoutProvider transitionLayout:activePage];
 
   // Get the frame for the snapshotted content of the active tab.
-  UIView* tabContentView = browserLayoutViewController.view;
-  UIView* browserViewControllerView =
-      browserLayoutViewController.currentBVC.view;
+  NamedGuide* contentAreaGuide = [browserLayoutViewController contentAreaGuide];
+  UIView* tabContentView = contentAreaGuide.owningView;
 
-  CGRect contentArea = [NamedGuide guideWithName:kContentAreaGuide
-                                            view:browserViewControllerView]
-                           .layoutFrame;
-  contentArea = [browserViewControllerView convertRect:contentArea
-                                                toView:tabContentView];
+  CGRect contentArea = contentAreaGuide.layoutFrame;
 
   [layout.activeItem populateWithSnapshotsFromView:tabContentView
                                         middleRect:contentArea];
   layout.expandedRect = [[self.layoutProvider animationViewsContainer]
       convertRect:tabContentView.frame
-         fromView:tabContentView.superview];
+         fromView:browserLayoutViewController.view];
 
   return layout;
 }
@@ -292,6 +287,7 @@ const CGFloat kToTabGroupAnimationDuration = 0.25;
         // `finished` to NO on official builds. For now, the animation not
         // finishing isn't handled anywhere.
         tab.clipsToBounds = oldClipsToBounds;
+        tab.transform = CGAffineTransformIdentity;
         if (completion) {
           completion();
         }
