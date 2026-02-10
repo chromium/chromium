@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_utils.h"
@@ -943,6 +944,8 @@ void WaylandEventSource::ReleasePressedPointerButtons(
   for (const auto& [button, name] : kMouseButtonToStringMap) {
     if (button & pointer_flags_) {
       VLOG(1) << "Synthesizing pointer release for: " << name;
+      TRACE_EVENT_INSTANT("wayland.debug", "SynthesizePointerRelease", "button",
+                          name);
       OnPointerButtonEvent(EventType::kMouseReleased, button, timestamp, window,
                            wl::EventDispatchPolicy::kImmediate,
                            /*allow_release_of_unpressed_button=*/false,

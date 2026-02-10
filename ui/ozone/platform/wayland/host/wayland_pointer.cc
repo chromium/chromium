@@ -11,6 +11,7 @@
 
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -81,6 +82,8 @@ void WaylandPointer::OnEnter(void* data,
   self->connection_->serial_tracker().UpdateSerial(wl::SerialType::kMouseEnter,
                                                    serial);
   WaylandWindow* window = wl::RootWindowFromWlSurface(surface);
+  TRACE_EVENT_INSTANT("wayland.debug", "WaylandPointer::OnEnter", "window",
+                      window ? window->GetBoundsInDIP().ToString() : "null");
   if (!window) {
     return;
   }
@@ -100,6 +103,10 @@ void WaylandPointer::OnLeave(void* data,
   const auto timestamp = EventTimeForNow();
   auto* self = static_cast<WaylandPointer*>(data);
 
+  WaylandWindow* window = wl::RootWindowFromWlSurface(surface);
+  TRACE_EVENT_INSTANT("wayland.debug", "WaylandPointer::OnLeave", "window",
+                      window ? window->GetBoundsInDIP().ToString() : "null");
+
   self->connection_->serial_tracker().ResetSerial(wl::SerialType::kMouseEnter);
   self->delegate_->OnPointerFocusChanged(nullptr,
                                          self->delegate_->GetPointerLocation(),
@@ -113,6 +120,8 @@ void WaylandPointer::OnMotion(void* data,
                               wl_fixed_t surface_x,
                               wl_fixed_t surface_y) {
   auto* self = static_cast<WaylandPointer*>(data);
+  TRACE_EVENT_INSTANT("wayland.debug", "WaylandPointer::OnMotion", "x",
+                      surface_x, "y", surface_y);
 
   self->delegate_->OnPointerMotionEvent(
       gfx::PointF(wl_fixed_to_double(surface_x), wl_fixed_to_double(surface_y)),
@@ -127,6 +136,8 @@ void WaylandPointer::OnButton(void* data,
                               uint32_t time,
                               uint32_t button,
                               uint32_t state) {
+  TRACE_EVENT_INSTANT("wayland.debug", "WaylandPointer::OnButton", "button",
+                      button, "state", state);
   auto* self = static_cast<WaylandPointer*>(data);
   int changed_button;
   switch (button) {
