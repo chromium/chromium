@@ -145,6 +145,10 @@ found in the LICENSE file.
     <style name="TextAppearance.TextMedium.Primary.Baseline.Light" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_light_list</item>
     </style>
+    <style name="TextAppearance.TextMedium.Primary.OnAccent1Container.Baseline.Light"
+        parent="TextAppearance.TextMedium" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_on_accent1_container_baseline_light_list</item>
+    </style>
     <style name="TextAppearance.TextSmall.Primary.Baseline.Light" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_light_list</item>
     </style>

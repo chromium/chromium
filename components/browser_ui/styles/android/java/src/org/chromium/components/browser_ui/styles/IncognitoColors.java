@@ -103,6 +103,16 @@ public class IncognitoColors {
                 : R.style.TextAppearance_TextMedium_Primary;
     }
 
+    /**
+     * Returns the correct text appearance style res for primary colored medium text on an accent 1
+     * container.
+     */
+    public static @StyleRes int getTextMediumPrimaryOnAccent1Container(boolean isIncognito) {
+        return isIncognito
+                ? R.style.TextAppearance_TextMedium_Primary_OnAccent1Container_Baseline_Light
+                : R.style.TextAppearance_TextMedium_Primary_OnAccent1Container;
+    }
+
     /** Returns the correct text appearance style res for TODO colored TODO text. */
     public static @StyleRes int getTextMediumThickPrimary(boolean isIncognito) {
         return isIncognito

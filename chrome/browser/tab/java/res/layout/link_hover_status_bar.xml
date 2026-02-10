@@ -15,7 +15,7 @@ found in the LICENSE file.
   android:layout_marginBottom="@dimen/link_hover_status_bar_margin"
   android:background="@drawable/link_status_bar_background"
   android:padding="8dp"
-  android:textAppearance="@style/TextAppearance.TextMedium.Primary.OnAccent1"
+  android:textAppearance="@style/TextAppearance.TextMedium.Primary.OnAccent1Container"
   android:visibility="gone"
   android:maxLines="1"
   android:maxWidth="@dimen/link_hover_status_bar_max_width"

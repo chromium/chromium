@@ -8,7 +8,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,7 +15,7 @@ import android.view.ViewPropertyAnimator;
 import android.view.ViewStub;
 import android.widget.TextView;
 
-import androidx.appcompat.content.res.AppCompatResources;
+import androidx.annotation.ColorInt;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import org.chromium.base.Callback;
@@ -30,10 +29,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.ui.base.DeviceInput;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 /** Coordinator for the link hover status bar. */
@@ -48,7 +46,6 @@ public class LinkHoverStatusBarCoordinator extends EmptyTabObserver
     private final CurrentTabObserver mCurrentTabObserver;
     private final TextView mLinkHoverStatusBar;
     private final Context mContext;
-    private final Drawable mBackgroundDrawable;
     private final int mInitialMaxWidth;
     private final int mMargin;
     private final int mMousePadding;
@@ -80,9 +77,6 @@ public class LinkHoverStatusBarCoordinator extends EmptyTabObserver
         tabProvider.addObserver(mTabSupplierObserver);
 
         mLinkHoverStatusBar = (TextView) statusBarStub.inflate();
-        mBackgroundDrawable =
-                AppCompatResources.getDrawable(mContext, R.drawable.link_status_bar_background)
-                        .mutate();
         mInitialMaxWidth =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.link_hover_status_bar_max_width);
@@ -136,18 +130,17 @@ public class LinkHoverStatusBarCoordinator extends EmptyTabObserver
 
         if (!url.isEmpty() && DeviceInput.supportsPrecisionPointer()) {
             mLinkHoverStatusBar.setText(mCurrentUrl.getSpec());
+
             boolean isIncognito = tab.isIncognitoBranded();
-            boolean isNightMode = ColorUtils.inNightMode(mContext);
-            if (isIncognito || isNightMode) {
-                mBackgroundDrawable.setTint(SemanticColorUtils.getDefaultBgColor(mContext));
-                mLinkHoverStatusBar.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
-            } else {
-                mBackgroundDrawable.setTint(
-                        SemanticColorUtils.getDefaultControlColorActive(mContext));
-                mLinkHoverStatusBar.setTextAppearance(
-                        R.style.TextAppearance_TextMedium_Primary_OnAccent1);
-            }
-            mLinkHoverStatusBar.setBackground(mBackgroundDrawable);
+            @ColorInt
+            int backgroundColor =
+                    IncognitoColors.getColorPrimaryContainer(
+                            mContext, /* isIncognito= */ isIncognito);
+            mLinkHoverStatusBar.getBackground().setTint(backgroundColor);
+
+            mLinkHoverStatusBar.setTextAppearance(
+                    IncognitoColors.getTextMediumPrimaryOnAccent1Container(isIncognito));
+
             mLinkHoverStatusBar.setMaxWidth(mInitialMaxWidth);
 
             // TODO(crbug.com/454446656): Move the status bar to avoid the cursor.

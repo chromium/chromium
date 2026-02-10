@@ -56,7 +56,7 @@ public class ChromeColors {
      * Returns the large text primary style based on the given parameter.
      *
      * @param forceLightTextColor When true, returns the light-mode large text primary style;
-     *         otherwise returns adaptive large text primary style.
+     *     otherwise returns adaptive large text primary style.
      * @return The large text primary style.
      */
     public static int getLargeTextPrimaryStyle(boolean forceLightTextColor) {
