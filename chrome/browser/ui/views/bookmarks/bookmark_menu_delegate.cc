@@ -1344,6 +1344,36 @@ void BookmarkMenuDelegate::BuildOtherNodeMenuHeader(MenuItemView* menu) {
   }
 }
 
+void BookmarkMenuDelegate::InsertOpenAllCommandItems(
+    views::MenuItemView* menu,
+    const BookmarkParentFolder& folder,
+    int open_count) {
+  CHECK_GT(open_count, 0);
+  size_t index = 0;
+  menu->AddMenuItemAt(index++, IDC_BOOKMARK_BAR_OPEN_ALL,
+                      l10n_util::GetPluralStringFUTF16(
+                          IDS_BOOKMARK_BAR_OPEN_ALL_COUNT, open_count),
+                      std::u16string(), std::u16string(), ui::ImageModel(),
+                      ui::ImageModel(), MenuItemView::Type::kNormal,
+                      ui::NORMAL_SEPARATOR);
+
+  menu->AddMenuItemAt(
+      index++, IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP,
+      l10n_util::GetPluralStringFUTF16(
+          IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_TAB_GROUP, open_count),
+      std::u16string(), std::u16string(), ui::ImageModel(), ui::ImageModel(),
+      MenuItemView::Type::kNormal, ui::NORMAL_SEPARATOR);
+
+  menu_id_to_node_map_.insert_or_assign(IDC_BOOKMARK_BAR_OPEN_ALL,
+                                        BookmarkFolderOrURL(folder));
+  menu_id_to_node_map_.insert_or_assign(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP,
+                                        BookmarkFolderOrURL(folder));
+
+  menu->AddSeparatorAt(index);
+  menu->GetSubmenu()->children()[index]->SetProperty(
+      views::kElementIdentifierKey, kOpenAllCommandSeperator);
+}
+
 void BookmarkMenuDelegate::MaybeAppendOpenAllCommandItems(
     views::MenuItemView* menu,
     const BookmarkParentFolder& folder) {
@@ -1353,34 +1383,18 @@ void BookmarkMenuDelegate::MaybeAppendOpenAllCommandItems(
   int count = bookmarks::OpenCount(node);
 
   if (count > 0) {
-    menu->AppendMenuItem(IDC_BOOKMARK_BAR_OPEN_ALL,
-                         l10n_util::GetPluralStringFUTF16(
-                             IDS_BOOKMARK_BAR_OPEN_ALL_COUNT, count));
-
-    menu->AppendMenuItem(
-        IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP,
-        l10n_util::GetPluralStringFUTF16(
-            IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_TAB_GROUP, count));
-
-    menu_id_to_node_map_.insert_or_assign(IDC_BOOKMARK_BAR_OPEN_ALL,
-                                          BookmarkFolderOrURL(folder));
-    menu_id_to_node_map_.insert_or_assign(
-        IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP, BookmarkFolderOrURL(folder));
-
-    menu->AppendSeparator();
-
-    menu->GetSubmenu()->children().back()->SetProperty(
-        views::kElementIdentifierKey, kOpenAllCommandSeperator);
+    InsertOpenAllCommandItems(menu, folder, count);
   }
 }
 
 void BookmarkMenuDelegate::UpdateOpenAllCommands(
     MenuItemView* menu,
     const BookmarkParentFolder& folder) {
+  const bookmarks::BookmarkNode* node =
+      GetBookmarkMergedSurfaceService()->GetUnderlyingNodes(folder)[0];
+  int open_count = bookmarks::OpenCount(node);
+
   if (GetOpenAllCommandsOffset(menu) > 0) {
-    const bookmarks::BookmarkNode* node =
-        GetBookmarkMergedSurfaceService()->GetUnderlyingNodes(folder)[0];
-    int open_count = bookmarks::OpenCount(node);
     std::vector<MenuItemView*> menu_items = menu->GetSubmenu()->GetMenuItems();
     bool enable_items = open_count > 0;
 
@@ -1394,5 +1408,13 @@ void BookmarkMenuDelegate::UpdateOpenAllCommands(
 
     menu_items[0]->SetEnabled(enable_items);
     menu_items[1]->SetEnabled(enable_items);
+  } else if (open_count > 0 && parent_menu_item_ == nullptr) {
+    // "Open all" commands should be created for direct children of the
+    // bookmark bar, but not when embedded in the App menu.
+    const BookmarkNode* folder_node = folder.as_non_permanent_folder();
+    if (folder_node && folder_node->parent() &&
+        folder_node->parent()->type() == BookmarkNode::Type::BOOKMARK_BAR) {
+      InsertOpenAllCommandItems(menu, folder, open_count);
+    }
   }
 }

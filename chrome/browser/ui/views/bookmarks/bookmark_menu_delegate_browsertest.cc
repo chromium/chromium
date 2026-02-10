@@ -1254,3 +1254,39 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateOpenAllTest,
   ASSERT_NE(open_all_item, nullptr);
   EXPECT_EQ(open_all_item->title(), GetExpectedOpenAllTitle(2));
 }
+
+// Tests that "Open all" commands are created when a URL is moved into a folder
+// that previously had no direct URL children (only subfolders).
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateOpenAllTest,
+                       OpenAllCreatedWhenUrlMovedIntoFolderWithOnlySubfolders) {
+  // Create a folder F3 on the bookmark bar that contains only a subfolder.
+  const BookmarkNode* bb_node = model()->bookmark_bar_node();
+  const BookmarkNode* f3 = model()->AddFolder(bb_node, 0, u"F3");
+  model()->AddFolder(f3, 0, u"F3Sub");
+
+  // Create a URL in other folder to move later (same storage type as F3).
+  const BookmarkNode* url_to_move =
+      model()->AddURL(model()->other_node(), 0, u"url_to_move",
+                      GURL("file:///c:/tmp/url_to_move"));
+
+  NewDelegate();
+  bookmark_menu_delegate_->SetActiveMenu(
+      BookmarkParentFolder::FromFolderNode(f3), 0);
+  views::MenuItemView* f3_menu = menu();
+  LoadAllMenus(f3_menu);
+
+  // Initially, F3 has no direct URL children, so "Open all" should not exist.
+  EXPECT_FALSE(HasOpenAllItems(f3_menu));
+
+  // Move the URL into F3.
+  bookmark_service()->Move(url_to_move,
+                           BookmarkParentFolder::FromFolderNode(f3), 0,
+                           /*browser=*/nullptr);
+
+  // Now F3 has a direct URL child, so "Open all" should be created.
+  views::MenuItemView* open_all_item =
+      GetDirectChildByCommandId(f3_menu, IDC_BOOKMARK_BAR_OPEN_ALL);
+  ASSERT_NE(open_all_item, nullptr);
+  EXPECT_TRUE(open_all_item->GetEnabled());
+  EXPECT_EQ(open_all_item->title(), GetExpectedOpenAllTitle(1));
+}
