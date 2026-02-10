@@ -69,7 +69,7 @@ bool ShouldShowTabGroupInGridForSceneState(SceneState* scene_state) {
     return false;
   }
   if (scene_state.presentingModalOverlay ||
-      scene_state.startupHadExternalIntent || scene_state.pendingUserActivity) {
+      scene_state.startupHadExternalIntent) {
     return false;
   }
   return true;
@@ -83,7 +83,7 @@ bool ShouldShowStartSurfaceForSceneState(SceneState* scene_state) {
     return false;
   }
   if (scene_state.presentingModalOverlay ||
-      scene_state.startupHadExternalIntent || scene_state.pendingUserActivity ||
+      scene_state.startupHadExternalIntent ||
       scene_state.incognitoState.incognitoContentVisible) {
     return false;
   }
