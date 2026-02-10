@@ -28,11 +28,6 @@ steps:
       - "be_cmd chromium-build -- node buildLinux.mjs"
       - "be_cmd upload-artifacts -- node replay_build_scripts/upload_build_artifacts.mjs"
     env:
-      RBE_service: simpsonite.cluster.engflow.com:443
-      RBE_service_no_auth: true
-      RBE_use_application_default_credentials: true
-      RBE_tls_client_auth_cert: /home/ubuntu/chromium/engflow.crt
-      RBE_tls_client_auth_key: /home/ubuntu/chromium/engflow.key
       RECORD_REPLAY_BACKEND_DIR: /home/ubuntu/chromium/backend
     agents:
       - "runtimeType=chromiumbuild"
