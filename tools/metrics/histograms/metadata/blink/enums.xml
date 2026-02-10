@@ -6955,18 +6955,18 @@ Called by update_permissions_policy_enum.py.-->
   <int value="6" label="ManifestHttpNotFound"/>
   <int value="7" label="ManifestNoResponse"/>
   <int value="8" label="ManifestInvalidResponse"/>
-  <int value="9" label="ClientMetadataHttpNotFound"/>
-  <int value="10" label="ClientMetadataNoResponse"/>
-  <int value="11" label="ClientMetadataInvalidResponse"/>
+  <int value="9" label="(Obsolete) ClientMetadataHttpNotFound"/>
+  <int value="10" label="(Obsolete) ClientMetadataNoResponse"/>
+  <int value="11" label="(Obsolete) ClientMetadataInvalidResponse"/>
   <int value="12" label="AccountsHttpNotFound"/>
   <int value="13" label="AccountsNoResponse"/>
   <int value="14" label="AccountsInvalidResponse"/>
   <int value="15" label="IdTokenHttpNotFound"/>
   <int value="16" label="IdTokenNoResponse"/>
   <int value="17" label="IdTokenInvalidResponse"/>
-  <int value="18" label="IdTokenInvalidRequest"/>
-  <int value="19" label="ClientMetadataMissingPrivacyPolicyUrl"/>
-  <int value="20" label="ThirdPartyCookiesBlocked"/>
+  <int value="18" label="(Obsolete) IdTokenInvalidRequest"/>
+  <int value="19" label="(Obsolete) ClientMetadataMissingPrivacyPolicyUrl"/>
+  <int value="20" label="(Obsolete) ThirdPartyCookiesBlocked"/>
   <int value="21" label="DisabledInSettings"/>
   <int value="22" label="DisabledInFlags"/>
   <int value="23" label="ManifestListHttpNotFound"/>
@@ -6975,7 +6975,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="26" label="ManifestNotInManifestList"/>
   <int value="27" label="ManifestListTooBig"/>
   <int value="28" label="DisabledEmbargo"/>
-  <int value="29" label="UserInterfaceTimedOut"/>
+  <int value="29" label="(Obsolete) UserInterfaceTimedOut"/>
   <int value="30" label="RpPageNotVisible"/>
   <int value="31" label="ShouldEmbargo"/>
   <int value="32" label="NotSignedInWithIdp"/>
@@ -6994,7 +6994,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="45" label="ContinuationPopupClosedByUser"/>
   <int value="46" label="SuccessUsingIdentityProviderResolve"/>
   <int value="47" label="ContinuationPopupClosedByIdentityProviderClose"/>
-  <int value="48" label="InvalidFieldsSpecified"/>
+  <int value="48" label="(Obsolete) InvalidFieldsSpecified"/>
   <int value="49" label="RpOriginIsOpaque"/>
   <int value="50" label="ConfigNotMatchingType"/>
   <int value="51" label="LoginPopupClosedWithoutSignin"/>

@@ -218,20 +218,6 @@ std::string GetConsoleErrorMessageFromResult(
       return "Provider's FedCM config file content type must be a JSON content "
              "type.";
     }
-    case FederatedAuthRequestResult::kClientMetadataHttpNotFound: {
-      return "The provider's client metadata endpoint cannot be found.";
-    }
-    case FederatedAuthRequestResult::kClientMetadataNoResponse: {
-      return "The provider's client metadata fetch resulted in an error "
-             "response code.";
-    }
-    case FederatedAuthRequestResult::kClientMetadataInvalidResponse: {
-      return "Provider's client metadata is invalid.";
-    }
-    case FederatedAuthRequestResult::kClientMetadataInvalidContentType: {
-      return "Provider's client metadata content type must be a JSON content "
-             "type.";
-    }
     case FederatedAuthRequestResult::kAccountsHttpNotFound: {
       return "The provider's accounts list endpoint cannot be found.";
     }
@@ -284,13 +270,6 @@ std::string GetConsoleErrorMessageFromResult(
       return "Silent mediation was requested, but the conditions to achieve it "
              "were not met.";
     }
-    case FederatedAuthRequestResult::kThirdPartyCookiesBlocked: {
-      return "Third party cookies are blocked. Right now the Chromium "
-             "implementation of FedCM API requires third party cookies and "
-             "this restriction will be removed soon. In the interim, to test "
-             "FedCM without third-party cookies, enable the "
-             "#fedcm-without-third-party-cookies flag.";
-    }
     case FederatedAuthRequestResult::kMissingTransientUserActivation: {
       return "FedCM active mode requires transient user activation.";
     }
@@ -299,9 +278,6 @@ std::string GetConsoleErrorMessageFromResult(
     }
     case FederatedAuthRequestResult::kNotSignedInWithIdp: {
       return "Not signed in with the identity provider.";
-    }
-    case FederatedAuthRequestResult::kInvalidFieldsSpecified: {
-      return "Invalid 'fields' were specified in the FedCM call.";
     }
     case FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque: {
       return "FedCM is not supported on an opaque origin.";

@@ -500,10 +500,6 @@ experimental domain Audits
       ConfigNoResponse
       ConfigInvalidResponse
       ConfigInvalidContentType
-      ClientMetadataHttpNotFound
-      ClientMetadataNoResponse
-      ClientMetadataInvalidResponse
-      ClientMetadataInvalidContentType
       IdpNotPotentiallyTrustworthy
       DisabledInSettings
       DisabledInFlags
@@ -525,11 +521,9 @@ experimental domain Audits
       Canceled
       RpPageNotVisible
       SilentMediationFailure
-      ThirdPartyCookiesBlocked
       NotSignedInWithIdp
       MissingTransientUserActivation
       ReplacedByActiveMode
-      InvalidFieldsSpecified
       RelyingPartyOriginIsOpaque
       TypeNotMatching
       UiDismissedNoEmbargo

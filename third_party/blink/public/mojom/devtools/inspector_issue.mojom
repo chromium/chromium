@@ -212,8 +212,8 @@ struct LowTextContrastIssue {
 
 // Represents the fetch result from a federated authentication request. Should
 // be updated alongside FederatedAuthRequestIssueReason in
-// third_party/blink/public/devtools_protocol/browser_protocol.pdl, which
-// includes all cases except for kSuccess.
+// third_party/blink/public/devtools_protocol/domains/Audits.pdl, which includes
+// all cases except for kSuccess.
 enum FederatedAuthRequestResult {
   kSuccess,
   kShouldEmbargo,
@@ -232,10 +232,6 @@ enum FederatedAuthRequestResult {
   kConfigNoResponse,
   kConfigInvalidResponse,
   kConfigInvalidContentType,
-  kClientMetadataHttpNotFound,
-  kClientMetadataNoResponse,
-  kClientMetadataInvalidResponse,
-  kClientMetadataInvalidContentType,
   kAccountsHttpNotFound,
   kAccountsNoResponse,
   kAccountsInvalidResponse,
@@ -250,11 +246,9 @@ enum FederatedAuthRequestResult {
   kCanceled,
   kRpPageNotVisible,
   kSilentMediationFailure,
-  kThirdPartyCookiesBlocked,
   kNotSignedInWithIdp,
   kMissingTransientUserActivation,
   kReplacedByActiveMode,
-  kInvalidFieldsSpecified,
   kRelyingPartyOriginIsOpaque,
   kTypeNotMatching,
   kError,
@@ -274,7 +268,6 @@ struct FederatedAuthRequestIssueDetails {
 // Do not modify or reorder existing values, as this is used in metrics
 // recording.
 // LINT.IfChange(FederatedAuthUserInfoRequestResult)
-
 enum FederatedAuthUserInfoRequestResult {
   kSuccess = 0,
   kNotSameOrigin = 1,
@@ -290,7 +283,6 @@ enum FederatedAuthUserInfoRequestResult {
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmUserInfoStatus)
-
 struct FederatedAuthUserInfoRequestIssueDetails {
   FederatedAuthUserInfoRequestResult status;
 };

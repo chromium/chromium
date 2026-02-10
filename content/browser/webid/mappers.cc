@@ -78,10 +78,6 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kConfigNoResponse:
     case FederatedAuthRequestResult::kConfigInvalidResponse:
     case FederatedAuthRequestResult::kConfigInvalidContentType:
-    case FederatedAuthRequestResult::kClientMetadataHttpNotFound:
-    case FederatedAuthRequestResult::kClientMetadataNoResponse:
-    case FederatedAuthRequestResult::kClientMetadataInvalidResponse:
-    case FederatedAuthRequestResult::kClientMetadataInvalidContentType:
     case FederatedAuthRequestResult::kAccountsHttpNotFound:
     case FederatedAuthRequestResult::kAccountsNoResponse:
     case FederatedAuthRequestResult::kAccountsInvalidResponse:
@@ -95,11 +91,9 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kIdTokenInvalidContentType:
     case FederatedAuthRequestResult::kRpPageNotVisible:
     case FederatedAuthRequestResult::kSilentMediationFailure:
-    case FederatedAuthRequestResult::kThirdPartyCookiesBlocked:
     case FederatedAuthRequestResult::kNotSignedInWithIdp:
     case FederatedAuthRequestResult::kMissingTransientUserActivation:
     case FederatedAuthRequestResult::kReplacedByActiveMode:
-    case FederatedAuthRequestResult::kInvalidFieldsSpecified:
     case FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque:
     case FederatedAuthRequestResult::kTypeNotMatching:
     case FederatedAuthRequestResult::kUiDismissedNoEmbargo:
@@ -120,7 +114,6 @@ MetricsEndpointErrorCode FederatedAuthRequestResultToMetricsEndpointErrorCode(
     case FederatedAuthRequestResult::kTooManyRequests:
     case FederatedAuthRequestResult::kMissingTransientUserActivation:
     case FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque:
-    case FederatedAuthRequestResult::kInvalidFieldsSpecified:
     case FederatedAuthRequestResult::kCanceled: {
       return MetricsEndpointErrorCode::kRpFailure;
     }
@@ -140,7 +133,6 @@ MetricsEndpointErrorCode FederatedAuthRequestResultToMetricsEndpointErrorCode(
     case FederatedAuthRequestResult::kUiDismissedNoEmbargo:
     case FederatedAuthRequestResult::kDisabledInFlags:
     case FederatedAuthRequestResult::kDisabledInSettings:
-    case FederatedAuthRequestResult::kThirdPartyCookiesBlocked:
     case FederatedAuthRequestResult::kRpPageNotVisible:
     case FederatedAuthRequestResult::kReplacedByActiveMode:
     case FederatedAuthRequestResult::kNotSignedInWithIdp: {
@@ -150,8 +142,6 @@ MetricsEndpointErrorCode FederatedAuthRequestResultToMetricsEndpointErrorCode(
     case FederatedAuthRequestResult::kWellKnownNoResponse:
     case FederatedAuthRequestResult::kConfigHttpNotFound:
     case FederatedAuthRequestResult::kConfigNoResponse:
-    case FederatedAuthRequestResult::kClientMetadataHttpNotFound:
-    case FederatedAuthRequestResult::kClientMetadataNoResponse:
     case FederatedAuthRequestResult::kAccountsHttpNotFound:
     case FederatedAuthRequestResult::kAccountsNoResponse:
     case FederatedAuthRequestResult::kIdTokenHttpNotFound:
@@ -165,10 +155,8 @@ MetricsEndpointErrorCode FederatedAuthRequestResultToMetricsEndpointErrorCode(
     case FederatedAuthRequestResult::kWellKnownListEmpty:
     case FederatedAuthRequestResult::kWellKnownInvalidResponse:
     case FederatedAuthRequestResult::kConfigInvalidResponse:
-    case FederatedAuthRequestResult::kClientMetadataInvalidResponse:
     case FederatedAuthRequestResult::kWellKnownInvalidContentType:
-    case FederatedAuthRequestResult::kConfigInvalidContentType:
-    case FederatedAuthRequestResult::kClientMetadataInvalidContentType: {
+    case FederatedAuthRequestResult::kConfigInvalidContentType: {
       return MetricsEndpointErrorCode::kIdpServerInvalidResponse;
     }
     case FederatedAuthRequestResult::kIdpNotPotentiallyTrustworthy:
@@ -390,12 +378,6 @@ FederatedLoginResult FederatedAuthRequestResultToFederatedLoginResult(
     case blink::mojom::FederatedAuthRequestResult::kConfigNoResponse:
     case blink::mojom::FederatedAuthRequestResult::kConfigInvalidResponse:
     case blink::mojom::FederatedAuthRequestResult::kConfigInvalidContentType:
-    case blink::mojom::FederatedAuthRequestResult::kClientMetadataHttpNotFound:
-    case blink::mojom::FederatedAuthRequestResult::kClientMetadataNoResponse:
-    case blink::mojom::FederatedAuthRequestResult::
-        kClientMetadataInvalidResponse:
-    case blink::mojom::FederatedAuthRequestResult::
-        kClientMetadataInvalidContentType:
     case blink::mojom::FederatedAuthRequestResult::kAccountsHttpNotFound:
     case blink::mojom::FederatedAuthRequestResult::kAccountsNoResponse:
     case blink::mojom::FederatedAuthRequestResult::kAccountsInvalidResponse:
@@ -405,7 +387,6 @@ FederatedLoginResult FederatedAuthRequestResultToFederatedLoginResult(
     case blink::mojom::FederatedAuthRequestResult::kIdTokenNoResponse:
     case blink::mojom::FederatedAuthRequestResult::kIdTokenInvalidResponse:
     case blink::mojom::FederatedAuthRequestResult::kIdTokenInvalidContentType:
-    case blink::mojom::FederatedAuthRequestResult::kInvalidFieldsSpecified:
     case blink::mojom::FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque:
     case blink::mojom::FederatedAuthRequestResult::kTypeNotMatching:
     case blink::mojom::FederatedAuthRequestResult::kError:
@@ -436,7 +417,6 @@ FederatedLoginResult FederatedAuthRequestResultToFederatedLoginResult(
     case blink::mojom::FederatedAuthRequestResult::kDisabledInSettings:
     case blink::mojom::FederatedAuthRequestResult::kDisabledInFlags:
     case blink::mojom::FederatedAuthRequestResult::kTooManyRequests:
-    case blink::mojom::FederatedAuthRequestResult::kThirdPartyCookiesBlocked:
     case blink::mojom::FederatedAuthRequestResult::
         kMissingTransientUserActivation:
     case blink::mojom::FederatedAuthRequestResult::kReplacedByActiveMode:

@@ -81,7 +81,7 @@ enum class RequestIdTokenStatus {
   kContinuationPopupClosedByUser = 45,
   kSuccessUsingIdentityProviderResolve = 46,
   kContinuationPopupClosedByIdentityProviderClose = 47,
-  kInvalidFieldsSpecified = 48,
+  kInvalidFieldsSpecified = 48,  // obsolete
   kRpOriginIsOpaque = 49,
   kConfigNotMatchingType = 50,
   kLoginPopupClosedWithoutSignin = 51,
