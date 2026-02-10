@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -274,6 +275,9 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 }
 
 - (void)showAccountMenuFromWebWithURL:(const GURL&)URL {
+  if (![self isTabAvailableToPresentViewController]) {
+    return;
+  }
   if (_accountMenuCoordinator) {
     return;
   }
@@ -325,6 +329,11 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 
 - (void)showWebSigninPromoFromViewController:(UIViewController*)viewController
                                          URL:(const GURL&)URL {
+  // Do not display the web sign-in promo if there is any UI on the screen.
+  if (viewController.presentedViewController ||
+      ![self isTabAvailableToPresentViewController]) {
+    return;
+  }
   if (!signin::ShouldPresentWebSignin(_regularBrowser->GetProfile())) {
     return;
   }
@@ -690,6 +699,23 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 
 - (void)closePresentedViews {
   [self closePresentedViews:YES completion:nil];
+}
+
+- (void)closePresentedViewsAndOpenURL:(OpenNewTabCommand*)command {
+  DCHECK([command fromChrome]);
+  UrlLoadParams params = UrlLoadParams::InNewTab([command URL]);
+  params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
+  id<TabOpening> tabOpener = _tabOpener;
+  ProceduralBlock completion = ^{
+    ApplicationModeForTabOpening mode =
+        [self isIncognitoForced] ? ApplicationModeForTabOpening::INCOGNITO
+                                 : ApplicationModeForTabOpening::NORMAL;
+    [tabOpener dismissModalsAndMaybeOpenSelectedTabInMode:mode
+                                        withUrlLoadParams:params
+                                           dismissOmnibox:YES
+                                               completion:nil];
+  };
+  [self closePresentedViews:YES completion:completion];
 }
 
 - (void)closePresentedViews:(BOOL)animated
@@ -1312,6 +1338,11 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 // Returns YES if incognito mode is disabled.
 - (BOOL)isIncognitoModeDisabled {
   return IsIncognitoModeDisabled(_regularBrowser->GetProfile()->GetPrefs());
+}
+
+// Returns whether incognito is forced by policy.
+- (BOOL)isIncognitoForced {
+  return IsIncognitoModeForced(_incognitoBrowser->GetProfile()->GetPrefs());
 }
 
 // Stops the account menu coordinator.

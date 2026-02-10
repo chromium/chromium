@@ -1685,19 +1685,7 @@ void OnListFamilyMembersResponse(
 }
 
 - (void)closePresentedViewsAndOpenURL:(OpenNewTabCommand*)command {
-  DCHECK([command fromChrome]);
-  UrlLoadParams params = UrlLoadParams::InNewTab([command URL]);
-  params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
-  ProceduralBlock completion = ^{
-    ApplicationModeForTabOpening mode =
-        [self isIncognitoForced] ? ApplicationModeForTabOpening::INCOGNITO
-                                 : ApplicationModeForTabOpening::NORMAL;
-    [self dismissModalsAndMaybeOpenSelectedTabInMode:mode
-                                   withUrlLoadParams:params
-                                      dismissOmnibox:YES
-                                          completion:nil];
-  };
-  [self closePresentedViews:YES completion:completion];
+  [self.mainCoordinator closePresentedViewsAndOpenURL:command];
 }
 
 - (void)closePresentedViews {
@@ -1973,20 +1961,12 @@ using UserFeedbackDataCallback =
 }
 
 - (void)showAccountMenuFromWebWithURL:(const GURL&)url {
-  if (![self isTabAvailableToPresentViewController]) {
-    return;
-  }
   [self.mainCoordinator showAccountMenuFromWebWithURL:url];
 }
 
 - (void)showWebSigninPromoFromViewController:
             (UIViewController*)baseViewController
                                          URL:(const GURL&)URL {
-  // Do not display the web sign-in promo if there is any UI on the screen.
-  if (baseViewController.presentedViewController ||
-      ![self isTabAvailableToPresentViewController]) {
-    return;
-  }
   [self.mainCoordinator showWebSigninPromoFromViewController:baseViewController
                                                          URL:URL];
 }

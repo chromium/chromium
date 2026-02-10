@@ -20,6 +20,7 @@ enum class SafariDataImportEntryPoint;
 @protocol SafariDataImportUIHandler;
 @protocol SceneCommands;
 @class BrowserLayoutViewController;
+@class OpenNewTabCommand;
 @class SceneCoordinator;
 @class SettingsNavigationController;
 @class ShowSigninCommand;
@@ -191,6 +192,9 @@ enum class WarningType;
 
 // Shows the settings UI for price tracking notifications.
 - (void)showPriceTrackingNotificationsSettings;
+
+// Closes presented views and opens `command`.
+- (void)closePresentedViewsAndOpenURL:(OpenNewTabCommand*)command;
 
 // Closes presented views.
 - (void)closePresentedViews;
