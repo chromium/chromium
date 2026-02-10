@@ -19,7 +19,7 @@ enum class TipIdentifier;
 @interface TipsModuleState : MagicStackModule
 
 // Initializes a `TipsModuleState` with `identifier`.
-- (instancetype)initWithIdentifier:
+- (instancetype)initWithTipIdentifier:
     (segmentation_platform::TipIdentifier)identifier;
 
 // Unique identifier for the given tip.

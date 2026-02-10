@@ -14,4 +14,14 @@
   return ContentSuggestionsModuleType::kShortcuts;
 }
 
+#pragma mark - NSCopying
+
+- (id)copyWithZone:(NSZone*)zone {
+  ShortcutsConfig* copy = [[super copyWithZone:zone] init];
+  copy.shortcutItems = self.shortcutItems;
+  copy.consumerSource = self.consumerSource;
+  copy.commandHandler = self.commandHandler;
+  return copy;
+}
+
 @end

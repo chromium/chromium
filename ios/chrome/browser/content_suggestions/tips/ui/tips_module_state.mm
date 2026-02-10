@@ -13,7 +13,7 @@ using segmentation_platform::TipIdentifier;
 
 @implementation TipsModuleState
 
-- (instancetype)initWithIdentifier:(TipIdentifier)identifier {
+- (instancetype)initWithTipIdentifier:(TipIdentifier)identifier {
   if ((self = [super init])) {
     _identifier = identifier;
   }
@@ -30,6 +30,17 @@ using segmentation_platform::TipIdentifier;
   }
 
   return ContentSuggestionsModuleType::kTips;
+}
+
+#pragma mark - NSCopying
+
+- (id)copyWithZone:(NSZone*)zone {
+  TipsModuleState* copy =
+      [[super copyWithZone:zone] initWithTipIdentifier:_identifier];
+  copy.productImageData = self.productImageData;
+  copy.audience = self.audience;
+  copy.consumerSource = self.consumerSource;
+  return copy;
 }
 
 @end

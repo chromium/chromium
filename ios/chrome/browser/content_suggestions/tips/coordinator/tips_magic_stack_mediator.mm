@@ -77,7 +77,7 @@ using segmentation_platform::TipIdentifier;
     CHECK(imageFetcher);
 
     _profilePrefService = profilePrefService;
-    _state = [[TipsModuleState alloc] initWithIdentifier:identifier];
+    _state = [[TipsModuleState alloc] initWithTipIdentifier:identifier];
     _state.audience = self;
     _state.consumerSource = self;
     _shoppingService = shoppingService;
@@ -110,7 +110,7 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)reconfigureWithTipIdentifier:(TipIdentifier)identifier {
-  _state = [[TipsModuleState alloc] initWithIdentifier:identifier];
+  _state = [[TipsModuleState alloc] initWithTipIdentifier:identifier];
   _state.audience = self;
   _state.consumerSource = self;
 

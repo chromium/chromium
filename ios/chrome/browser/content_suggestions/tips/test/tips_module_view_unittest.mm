@@ -103,7 +103,7 @@ class TipsModuleViewTest : public PlatformTest {
 // correct module state is displayed.
 TEST_F(TipsModuleViewTest, DisplaysModuleWithDefaultState) {
   TipsModuleState* state = [[TipsModuleState alloc]
-      initWithIdentifier:TipIdentifier::kLensTranslate];
+      initWithTipIdentifier:TipIdentifier::kLensTranslate];
 
   TipsModuleView* view = [[TipsModuleView alloc] initWithState:state];
 
@@ -142,7 +142,7 @@ TEST_F(TipsModuleViewTest, DisplaysCorrectAccessibilityIdentifier) {
 
   for (size_t i = 0; i < tips.size(); ++i) {
     TipsModuleState* state =
-        [[TipsModuleState alloc] initWithIdentifier:tips[i]];
+        [[TipsModuleState alloc] initWithTipIdentifier:tips[i]];
 
     TipsModuleView* view = [[TipsModuleView alloc] initWithState:state];
 
@@ -166,7 +166,8 @@ TEST_F(TipsModuleViewTest, DisplaysCorrectNumberOfSubviews) {
   };
 
   for (TipIdentifier tip : tips) {
-    TipsModuleState* state = [[TipsModuleState alloc] initWithIdentifier:tip];
+    TipsModuleState* state =
+        [[TipsModuleState alloc] initWithTipIdentifier:tip];
 
     TipsModuleView* view = [[TipsModuleView alloc] initWithState:state];
 
