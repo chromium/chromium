@@ -12,37 +12,41 @@ FakeInvalidationListener::FakeInvalidationListener()
 FakeInvalidationListener::FakeInvalidationListener(int64_t project_number)
     : project_number_(project_number) {}
 
+FakeInvalidationListener::~FakeInvalidationListener() = default;
+
 void FakeInvalidationListener::Shutdown() {
   invalidations_state_ = invalidation::InvalidationsExpected::kMaybe;
-  if (observer_) {
-    observer_->OnExpectationChanged(invalidations_state_);
+  for (auto& observer : observers_) {
+    observer.OnExpectationChanged(invalidations_state_);
   }
 }
 
 void FakeInvalidationListener::FireInvalidation(
     const invalidation::DirectInvalidation& invalidation) {
-  if (observer_ && observer_->GetType() == invalidation.type()) {
-    observer_->OnInvalidationReceived(invalidation);
+  for (auto& observer : observers_) {
+    if (observer.GetType() == invalidation.type()) {
+      observer.OnInvalidationReceived(invalidation);
+    }
   }
 }
 
 void FakeInvalidationListener::AddObserver(Observer* handler) {
-  observer_ = handler;
-  observer_->OnExpectationChanged(invalidations_state_);
+  observers_.AddObserver(handler);
+  handler->OnExpectationChanged(invalidations_state_);
 }
 
 bool FakeInvalidationListener::HasObserver(const Observer* handler) const {
-  return observer_ == handler;
+  return observers_.HasObserver(handler);
 }
 
 void FakeInvalidationListener::RemoveObserver(const Observer* handler) {
-  observer_ = nullptr;
+  observers_.RemoveObserver(handler);
 }
 
 void FakeInvalidationListener::Start(invalidation::RegistrationTokenHandler*) {
   invalidations_state_ = invalidation::InvalidationsExpected::kYes;
-  if (observer_) {
-    observer_->OnExpectationChanged(invalidations_state_);
+  for (auto& observer : observers_) {
+    observer.OnExpectationChanged(invalidations_state_);
   }
 }
 

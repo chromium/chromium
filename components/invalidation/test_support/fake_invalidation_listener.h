@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/observer_list.h"
 #include "components/invalidation/invalidation_listener.h"
 
 namespace invalidation {
@@ -17,7 +18,7 @@ class FakeInvalidationListener : public invalidation::InvalidationListener {
 
   FakeInvalidationListener();
   explicit FakeInvalidationListener(int64_t project_number);
-  ~FakeInvalidationListener() override = default;
+  ~FakeInvalidationListener() override;
 
   FakeInvalidationListener(const FakeInvalidationListener&) = delete;
   FakeInvalidationListener& operator=(const FakeInvalidationListener&) = delete;
@@ -44,7 +45,8 @@ class FakeInvalidationListener : public invalidation::InvalidationListener {
 
   invalidation::InvalidationsExpected invalidations_state_ =
       invalidation::InvalidationsExpected::kMaybe;
-  raw_ptr<Observer> observer_ = nullptr;
+
+  base::ObserverList<Observer, true> observers_;
 
   const int64_t project_number_;
 };
