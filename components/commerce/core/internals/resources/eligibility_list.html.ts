@@ -6,9 +6,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {EligibilityListElement} from './eligibility_list.js';
 
-const CHECKMARK_HTML = html`<span class="green">&#10004;</span>`;
-const CROSSMARK_HTML = html`<span class="red">&#10006;</span>`;
-
 export function getHtml(this: EligibilityListElement) {
   // clang-format off
   return html`
@@ -19,8 +16,7 @@ export function getHtml(this: EligibilityListElement) {
     ${this.details_.map(detail => html`
       <li>
         <b>${detail.name}</b>: ${detail.value}
-        ${detail.value === detail.expectedValue ? CHECKMARK_HTML :
-            CROSSMARK_HTML}
+        <span class="${this.getColor_(detail)}">${this.getMark_(detail)}</span>
       </li>`)}
   </ul>`;
   // clang-format on

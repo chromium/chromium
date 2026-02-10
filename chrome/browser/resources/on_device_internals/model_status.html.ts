@@ -7,9 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OnDeviceInternalsModelStatusElement} from './model_status.js';
 
 export function getHtml(this: OnDeviceInternalsModelStatusElement) {
-  const baseModel = this.pageData_.baseModel;
-  const baseInfo = this.pageData_.baseModel.info;
-  const criteria = this.pageData_.baseModel.registrationCriteria;
   // clang-format off
   return html`<!--_html_template_start_-->
 <div class="cr-centered-card-container">
@@ -19,29 +16,31 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
       <div class="cr-padded-text">
         <div>
           Foundational model state:
-          <span class="value">${baseModel.state}</span>
+          <span class="value">${this.pageData_.baseModel.state}</span>
         </div>
-      ${baseInfo ? html`
+      ${this.pageData_.baseModel.info ? html`
         <div>
           <div>
             Model Name:
-            <span class="value">${baseInfo.name}</value>
+            <span class="value">${this.pageData_.baseModel.info.name}</span>
           </div>
           <div>
             Version:
-            <span class="value">${baseInfo.version}</value>
+            <span class="value">${this.pageData_.baseModel.info.version}</span>
           </div>
           <div>
-            Backend Type: <span class="value">${baseInfo.backendType}</value>
+            Backend Type: <span class="value"><!-- Comment to prevent space.
+            -->${this.pageData_.baseModel.info.backendType}</span>
           </div>
           <div>
             File path:
-            <span class="value">${baseInfo.filePath}</value>
+            <span class="value">${this.pageData_.baseModel.info.filePath}<!--
+           Comment to prevent space. --></span>
           </div>
           <div>
             Folder size:
             <span class="value">
-              ${(Number(baseInfo.fileSize) / 1024 / 1024).
+              ${(Number(this.pageData_.baseModel.info.fileSize) / 1024 / 1024).
                 toLocaleString('en-US', {maximumFractionDigits : 2})} MiB
             </value>
           </div>
@@ -70,7 +69,7 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
     </div>
   </div>
   <h3>Foundational model criteria</h3>
-  ${(Object.keys(criteria).length === 0) ?
+  ${(Object.keys(this.pageData_.baseModel.registrationCriteria).length === 0) ?
     html`
       <div class="card">
         <div class="cr-row first">
@@ -90,10 +89,11 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
             </tr>
           </thead>
           <tbody>
-            ${Object.keys(criteria).map(key => html`
+            ${Object.keys(this.pageData_.baseModel.registrationCriteria).map(
+                key => html`
               <tr>
                 <td>${key}</td>
-                <td>${criteria[key]}</td>
+                <td>${this.pageData_.baseModel.registrationCriteria[key]}</td>
               </tr>`)}
             <tr>
               <td>Detected VRAM (MiB)</td>

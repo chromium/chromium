@@ -66,6 +66,14 @@ export class EligibilityListElement extends CrLitElement {
     this.locale_ = details.locale;
     this.details_ = details.details;
   }
+
+  protected getColor_(detail: EligibilityDetail): string {
+    return detail.value === detail.expectedValue ? 'green' : 'red';
+  }
+
+  protected getMark_(detail: EligibilityDetail): string {
+    return detail.value === detail.expectedValue ? '✔' : '✖';
+  }
 }
 
 declare global {

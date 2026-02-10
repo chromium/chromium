@@ -23,7 +23,7 @@ import {getHtml} from './skills_dialog_app.html.js';
 import {SkillsDialogBrowserProxy} from './skills_dialog_browser_proxy.js';
 
 const DEFAULT_EMOJI: string = '⚡';
-const MAX_PROMPT_CHAR_COUNT = 20000;
+export const MAX_PROMPT_CHAR_COUNT = 20000;
 const REFINE_SKILL_TIMEOUT_MS = 5000;
 
 let windowProxyInstance: WindowProxy|null = null;

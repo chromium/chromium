@@ -739,6 +739,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
           this.lineFocusController_.getCurrentLineFocusType());
     }
   }
+
+  protected getImmersiveClass_(): string {
+    return this.isImmersiveEnabled_ ? 'immersive' : '';
+  }
 }
 
 declare global {

@@ -5,9 +5,9 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SkillsDialogAppElement} from './skills_dialog_app.js';
+import {MAX_PROMPT_CHAR_COUNT} from './skills_dialog_app.js';
 
 export function getHtml(this: SkillsDialogAppElement) {
-  const MAX_PROMPT_CHAR_COUNT = 20000;
   // clang-format off
   return html`<!--_html_template_start_-->
 ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
