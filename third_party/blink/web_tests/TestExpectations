@@ -340,7 +340,6 @@ crbug.com/40946176 [ Mac ] virtual/threaded/external/wpt/css/css-view-transition
 crbug.com/40946176 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/snapshot-containing-block-includes-scrollbar-gutter.html [ Failure Pass ]
 crbug.com/40946176 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/snapshot-containing-block-includes-scrollbar-gutter.html [ Failure Pass ]
 
-
 crbug.com/619103 paint/invalidation/background/background-resize-width.html [ Failure Pass ]
 
 crbug.com/784956 fast/history/frameset-repeated-name.html [ Failure Pass ]
