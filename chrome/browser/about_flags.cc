@@ -4510,6 +4510,16 @@ const FeatureEntry::FeatureVariation
     kDefaultBrowserPromoEntryPointVariations[] = {
         {"(Settings Only - No App Menu)",
          kDefaultBrowserPromoEntryPointSettingsOnly, nullptr}};
+const FeatureEntry::FeatureParam kDefaultBrowserPromoFrePrimerNoInstructions[] =
+    {{"fre_promo_arm", "primer_no_instructions"}};
+const FeatureEntry::FeatureParam
+    kDefaultBrowserPromoFrePrimerWithPromotionalText[] = {
+        {"fre_promo_arm", "primer_with_promotional_text"}};
+const FeatureEntry::FeatureVariation kDefaultBrowserPromoFreVariations[] = {
+    {"(Primer - no instructions)", kDefaultBrowserPromoFrePrimerNoInstructions,
+     nullptr},
+    {"(Primer - with promotional text)",
+     kDefaultBrowserPromoFrePrimerWithPromotionalText, nullptr}};
 const FeatureEntry::FeatureParam kAndroidDesktopZoomScalingFactorSmall[] = {
     {"desktop-zoom-scaling-factor", "109"},
     {"monitor-zoom-scaling-factor", "120"}};
@@ -10873,6 +10883,13 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kDefaultBrowserPromoEntryPoint,
          kDefaultBrowserPromoEntryPointVariations,
          "DefaultBrowserPromoEntryPoint")},
+
+    {"default-browser-promo-fre",
+     flag_descriptions::kDefaultBrowserPromoFreName,
+     flag_descriptions::kDefaultBrowserPromoFreDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kDefaultBrowserPromoFre,
+                                    kDefaultBrowserPromoFreVariations,
+                                    "DefaultBrowserPromoFre")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"happy-eyeballs-v3", flag_descriptions::kHappyEyeballsV3Name,

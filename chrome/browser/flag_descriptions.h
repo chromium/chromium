@@ -5240,6 +5240,10 @@ inline constexpr char kDefaultBrowserPromoEntryPointDescription[] =
     "Shows the default browser promo menu item in Settings, and depending on "
     "the params, in App Menu.";
 
+inline constexpr char kDefaultBrowserPromoFreName[] = "DefaultBrowserPromoFre";
+inline constexpr char kDefaultBrowserPromoFreDescription[] =
+    "Enables the Default Browser Promo during the First Run Experience (FRE).";
+
 inline constexpr char kDeprecatedExternalPickerFunctionName[] =
     "Use deprecated External Picker method";
 inline constexpr char kDeprecatedExternalPickerFunctionDescription[] =

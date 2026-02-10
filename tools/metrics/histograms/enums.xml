@@ -10902,6 +10902,7 @@ from previous Chrome versions.
   <int value="-1197245070" label="CookieDeprecationMessages:disabled"/>
   <int value="-1197035323" label="ZeroSuggestRedirectToChrome:disabled"/>
   <int value="-1196814719" label="TrafficCountersEnabled:disabled"/>
+  <int value="-1196557993" label="DefaultBrowserPromoFre:disabled"/>
   <int value="-1195749534" label="Sparky:disabled"/>
   <int value="-1195194959" label="XGEOVisibleNetworks:disabled"/>
   <int value="-1195034892" label="ContinuousSearch:disabled"/>
@@ -15395,6 +15396,7 @@ from previous Chrome versions.
   <int value="350399958" label="ModuleScriptsImportMetaUrl:disabled"/>
   <int value="350611185" label="SharingDesktopScreenshotsEdit:enabled"/>
   <int value="350635266" label="TabGroupsContinuationAndroid:enabled"/>
+  <int value="350824690" label="DefaultBrowserPromoFre:enabled"/>
   <int value="351005753" label="enable-experimental-accessibility-autoclick"/>
   <int value="351231040" label="OptimizeDataUrls:enabled"/>
   <int value="351849511"
