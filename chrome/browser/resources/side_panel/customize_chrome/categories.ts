@@ -124,11 +124,6 @@ export class CategoriesElement extends CategoriesElementBase {
         this.setThemeListenerId_!);
   }
 
-  override firstUpdated() {
-    this.registerHelpBubble(
-        CHANGE_CHROME_THEME_CLASSIC_ELEMENT_ID, '#classicChromeTile');
-  }
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -139,6 +134,11 @@ export class CategoriesElement extends CategoriesElementBase {
         this.selectedCategory_.type === CategoryType.LOCAL;
     this.isWallpaperSearchSelected_ =
         this.selectedCategory_.type === CategoryType.WALLPAPER_SEARCH;
+  }
+
+  override firstUpdated() {
+    this.registerHelpBubble(
+        CHANGE_CHROME_THEME_CLASSIC_ELEMENT_ID, '#classicChromeTile');
   }
 
   override updated(changedProperties: PropertyValues<this>) {

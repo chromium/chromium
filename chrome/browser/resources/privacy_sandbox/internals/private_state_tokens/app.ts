@@ -82,20 +82,20 @@ export class PrivateStateTokensAppElement extends CrLitElement {
         'narrow-changed', this.onNarrowChanged_ as EventListener);
   }
 
-  override firstUpdated() {
-    window.addEventListener(
-        'navigate-to-metadata',
-        this.handleNavigationToMetadata_ as EventListener);
-    window.addEventListener(
-        'navigate-to-container', this.handleNavigationToList_ as EventListener);
-  }
-
   override disconnectedCallback() {
     this.removeEventListener(
         'cr-toolbar-menu-click', this.onMenuButtonClick_ as EventListener);
     this.removeEventListener(
         'narrow-changed', this.onNarrowChanged_ as EventListener);
     super.disconnectedCallback();
+  }
+
+  override firstUpdated() {
+    window.addEventListener(
+        'navigate-to-metadata',
+        this.handleNavigationToMetadata_ as EventListener);
+    window.addEventListener(
+        'navigate-to-container', this.handleNavigationToList_ as EventListener);
   }
 
   private async updateIssuerTokenCounts_() {

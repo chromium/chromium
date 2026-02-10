@@ -35,6 +35,36 @@ const BUTTON_RIGHT = 2;
 const LONG_PRESS_TIMER_THRESHOLD_MS = 500;
 
 export class ReloadButtonAppElement extends CrLitElement {
+  static get is() {
+    return 'reload-button-app';
+  }
+
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
+    return {
+      isLoading_: {state: true, type: Boolean},
+      isMenuOpen: {type: Boolean, reflect: true},
+      tooltip_: {state: true, type: String},
+    };
+  }
+
+  protected accessor isLoading_: boolean = false;
+  protected accessor isMenuOpen: boolean = false;
+  protected accessor tooltip_: string =
+      loadTimeData.getString(RELOAD_BUTTON_TOOLTIP_RELOAD);
+  protected accName_: string =
+      loadTimeData.getString(RELOAD_BUTTON_ACC_NAME_RELOAD);
+  private isLongPressed_: boolean = false;
+  private longPressTimer_: number = 0;
+  protected isMenuEnabled_: boolean = false;
+
   private browserProxy_: BrowserProxy;
   private metricsRecorder_: MetricsRecorder;
 
@@ -77,44 +107,6 @@ export class ReloadButtonAppElement extends CrLitElement {
     ColorChangeUpdater.forDocument().start();
   }
 
-  static get is() {
-    return 'reload-button-app';
-  }
-
-  static override get styles() {
-    return getCss();
-  }
-
-  override render() {
-    return getHtml.bind(this)();
-  }
-
-  static override get properties() {
-    return {
-      isLoading_: {state: true, type: Boolean},
-      isMenuOpen: {type: Boolean, reflect: true},
-      tooltip_: {state: true, type: String},
-    };
-  }
-
-  protected accessor isLoading_: boolean = false;
-  protected accessor isMenuOpen: boolean = false;
-  protected accessor tooltip_: string =
-      loadTimeData.getString(RELOAD_BUTTON_TOOLTIP_RELOAD);
-  protected accName_: string =
-      loadTimeData.getString(RELOAD_BUTTON_ACC_NAME_RELOAD);
-  private isLongPressed_: boolean = false;
-  private longPressTimer_: number = 0;
-  protected isMenuEnabled_: boolean = false;
-
-  private updateTooltip_() {
-    this.tooltip_ = loadTimeData.getString(
-        this.isLoading_ ?
-            RELOAD_BUTTON_TOOLTIP_STOP :
-            (this.isMenuEnabled_ ? RELOAD_BUTTON_TOOLTIP_RELOAD_WITH_MENU :
-                                   RELOAD_BUTTON_TOOLTIP_RELOAD));
-  }
-
   /**
    * Sets up event listeners and the PerformanceObserver when the element is
    * added to the DOM.
@@ -133,6 +125,14 @@ export class ReloadButtonAppElement extends CrLitElement {
     super.disconnectedCallback();
 
     this.metricsRecorder_.stopObserving();
+  }
+
+  private updateTooltip_() {
+    this.tooltip_ = loadTimeData.getString(
+        this.isLoading_ ?
+            RELOAD_BUTTON_TOOLTIP_STOP :
+            (this.isMenuEnabled_ ? RELOAD_BUTTON_TOOLTIP_RELOAD_WITH_MENU :
+                                   RELOAD_BUTTON_TOOLTIP_RELOAD));
   }
 
   /**

@@ -65,15 +65,6 @@ export class ExtensionsSectionElement extends CrLitElement {
   private updateHeightInterval_: number = 0;
   private collapseAnimationDuration_: number = 0;
 
-  override firstUpdated() {
-    // Compute the animation duration/intervals once on startup.
-    this.collapseAnimationDuration_ =
-        parseInt(getComputedStyle(this).getPropertyValue(
-            '--iron-collapse-transition-duration'));
-    this.updateHeightInterval_ =
-        this.collapseAnimationDuration_ / UPDATE_REQUEST_COUNT;
-  }
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -87,6 +78,15 @@ export class ExtensionsSectionElement extends CrLitElement {
               'extensionsSectionTooltip', this.accountExtensions.length)
           .then(tooltip => this.tooltip_ = tooltip);
     }
+  }
+
+  override firstUpdated() {
+    // Compute the animation duration/intervals once on startup.
+    this.collapseAnimationDuration_ =
+        parseInt(getComputedStyle(this).getPropertyValue(
+            '--iron-collapse-transition-duration'));
+    this.updateHeightInterval_ =
+        this.collapseAnimationDuration_ / UPDATE_REQUEST_COUNT;
   }
 
   checked(): boolean {

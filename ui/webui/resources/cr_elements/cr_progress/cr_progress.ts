@@ -79,13 +79,6 @@ export class CrProgressElement extends CrLitElement {
   accessor indeterminate: boolean = false;
   accessor disabled: boolean = false;
 
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-    if (!this.hasAttribute('role')) {
-      this.setAttribute('role', 'progressbar');
-    }
-  }
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -95,6 +88,13 @@ export class CrProgressElement extends CrLitElement {
       const previous = changedProperties.get('value') || 0;
       const clampedValue = this.clampValue_(this.value);
       this.value = Number.isNaN(clampedValue) ? previous : clampedValue;
+    }
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    if (!this.hasAttribute('role')) {
+      this.setAttribute('role', 'progressbar');
     }
   }
 

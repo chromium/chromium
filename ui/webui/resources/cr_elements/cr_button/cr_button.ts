@@ -85,6 +85,12 @@ export class CrButtonElement extends CrButtonElementBase {
     this.ensureRippleOnPointerdown();
   }
 
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.timeoutIds_.forEach(clearTimeout);
+    this.timeoutIds_.clear();
+  }
+
   override firstUpdated() {
     if (!this.hasAttribute('role')) {
       this.setAttribute('role', 'button');
@@ -103,12 +109,6 @@ export class CrButtonElement extends CrButtonElementBase {
       this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
       this.disabledChanged_(this.disabled, changedProperties.get('disabled'));
     }
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.timeoutIds_.forEach(clearTimeout);
-    this.timeoutIds_.clear();
   }
 
   private setTimeout_(fn: () => void, delay?: number) {

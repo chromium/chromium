@@ -164,20 +164,9 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
   protected accessor uploadUrl_: string = '';
   private dragCount: number = 0;
 
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
-    if (changedPrivateProperties.has('dialogState_')) {
-      this.isHidden_ = this.computeIsHidden_();
-      this.isNormalOrError_ = this.computeIsNormalOrError_();
-      this.isDragging_ = this.computeIsDragging_();
-      this.isLoading_ = this.computeIsLoading_();
-      this.isError_ = this.computeIsError_();
-      this.isOffline_ = this.computeIsOffline_();
-    }
+  override connectedCallback() {
+    super.connectedCallback();
+    this.openDialog();
   }
 
   private computeIsHidden_(): boolean {
@@ -205,14 +194,25 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     return this.dialogState_ === DialogState.OFFLINE;
   }
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.openDialog();
-  }
-
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.detachOutsideHandler_();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('dialogState_')) {
+      this.isHidden_ = this.computeIsHidden_();
+      this.isNormalOrError_ = this.computeIsNormalOrError_();
+      this.isDragging_ = this.computeIsDragging_();
+      this.isLoading_ = this.computeIsLoading_();
+      this.isError_ = this.computeIsError_();
+      this.isOffline_ = this.computeIsOffline_();
+    }
   }
 
   openDialog() {

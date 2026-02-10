@@ -113,17 +113,17 @@ export class HistoryItemElement extends HistoryItemElementBase {
     });
   }
 
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker_.remove(this.$.checkbox, 'keydown');
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has('item')) {
       this.itemChanged_();
       this.fire('iron-resize');
     }
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.eventTracker_.remove(this.$.checkbox, 'keydown');
   }
 
   focusOnMenuButton() {

@@ -68,6 +68,10 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
     }
   }
 
+  override firstUpdated() {
+    this.$.scrollable.addEventListener('scroll', this.updateScroll_.bind(this));
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
@@ -78,10 +82,6 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
     if (changedProperties.has('session')) {
       this.updateScroll_();
     }
-  }
-
-  override firstUpdated() {
-    this.$.scrollable.addEventListener('scroll', this.updateScroll_.bind(this));
   }
 
   focusInput() {

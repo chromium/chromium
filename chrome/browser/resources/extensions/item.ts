@@ -175,17 +175,17 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
       undefined;
   protected accessor enableToggleTooltipPosition_ = TooltipPosition.LEFT;
 
-  override firstUpdated() {
-    this.enableToggleTooltipPosition_ =
-        isRTL() ? TooltipPosition.RIGHT : TooltipPosition.LEFT;
-  }
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('data')) {
       this.firstInspectView_ = this.computeFirstInspectView_();
     }
+  }
+
+  override firstUpdated() {
+    this.enableToggleTooltipPosition_ =
+        isRTL() ? TooltipPosition.RIGHT : TooltipPosition.LEFT;
   }
 
   /** @return The "Details" button. */

@@ -201,11 +201,6 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     return this.metricsReporter_;
   }
 
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-    this.listItemSize_ = this.getStylePropertyPixelValue_('--mwb-item-height');
-  }
-
   override connectedCallback() {
     super.connectedCallback();
 
@@ -240,6 +235,11 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
         'visibilitychange', this.documentVisibilityChangedListener_);
 
     this.elementVisibilityChangedListener_.disconnect();
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.listItemSize_ = this.getStylePropertyPixelValue_('--mwb-item-height');
   }
 
   override updated(changedProperties: PropertyValues<this>) {

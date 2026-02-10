@@ -177,59 +177,6 @@ export class FlagsAppElement extends CrLitElement {
     return el;
   }
 
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
-    if (changedPrivateProperties.has('data')) {
-      const defaultFeatures: Feature[] = [];
-      const nonDefaultFeatures: Feature[] = [];
-
-      this.data.supportedFeatures.forEach(
-          f => (f.is_default ? defaultFeatures : nonDefaultFeatures).push(f));
-
-      this.defaultFeatures = defaultFeatures;
-      this.nonDefaultFeatures = nonDefaultFeatures;
-
-      // Maintain 'true' state if it was previously set, as
-      // `this.data.needsRestart` only matters on page load.
-      this.needsRestart = this.needsRestart || this.data.needsRestart;
-    }
-  }
-
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-    this.flagSearch = new FlagSearch(this);
-
-    this.$.search.focus();
-  }
-
-  override async updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    if (this.defaultFeatures.length === 0 &&
-        // <if expr="not is_ios">
-        this.data.unsupportedFeatures.length === 0 &&
-        // </if>
-        this.nonDefaultFeatures.length === 0) {
-      // Return early if this update corresponds to the initial dummy data, to
-      // avoid triggering `featuresResolver` prematurely in tests.
-      return;
-    }
-
-    await this.highlightReferencedFlag();
-    this.featuresResolver.resolve();
-  }
-
-  // <if expr="not is_ios">
-  private getRestartButton(): HTMLButtonElement {
-    return this.getRequiredElement<HTMLButtonElement>(
-        '#experiment-restart-button');
-  }
-  // </if>
-
   override connectedCallback() {
     super.connectedCallback();
 
@@ -295,6 +242,59 @@ export class FlagsAppElement extends CrLitElement {
     this.eventTracker_.removeAll();
     this.eventTracker_ = null;
   }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('data')) {
+      const defaultFeatures: Feature[] = [];
+      const nonDefaultFeatures: Feature[] = [];
+
+      this.data.supportedFeatures.forEach(
+          f => (f.is_default ? defaultFeatures : nonDefaultFeatures).push(f));
+
+      this.defaultFeatures = defaultFeatures;
+      this.nonDefaultFeatures = nonDefaultFeatures;
+
+      // Maintain 'true' state if it was previously set, as
+      // `this.data.needsRestart` only matters on page load.
+      this.needsRestart = this.needsRestart || this.data.needsRestart;
+    }
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.flagSearch = new FlagSearch(this);
+
+    this.$.search.focus();
+  }
+
+  override async updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (this.defaultFeatures.length === 0 &&
+        // <if expr="not is_ios">
+        this.data.unsupportedFeatures.length === 0 &&
+        // </if>
+        this.nonDefaultFeatures.length === 0) {
+      // Return early if this update corresponds to the initial dummy data, to
+      // avoid triggering `featuresResolver` prematurely in tests.
+      return;
+    }
+
+    await this.highlightReferencedFlag();
+    this.featuresResolver.resolve();
+  }
+
+  // <if expr="not is_ios">
+  private getRestartButton(): HTMLButtonElement {
+    return this.getRequiredElement<HTMLButtonElement>(
+        '#experiment-restart-button');
+  }
+  // </if>
 
   setAnnounceStatusDelayMsForTesting(delay: number) {
     this.announceStatusDelayMs = delay;

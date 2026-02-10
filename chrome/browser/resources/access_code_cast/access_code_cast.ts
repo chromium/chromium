@@ -118,6 +118,11 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
     });
   }
 
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.listenerIds.forEach(id => this.router.removeListener(id));
+  }
+
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this.setState(PageState.CODE_INPUT);
@@ -146,11 +151,6 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
         this.$.errorMessage.setNoError();
       }
     }
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.listenerIds.forEach(id => this.router.removeListener(id));
   }
 
   cancelButtonPressed() {

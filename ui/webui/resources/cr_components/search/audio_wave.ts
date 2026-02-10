@@ -257,6 +257,12 @@ export class AudioWaveElement extends CrLitElement {
     }
   }
 
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.onStopListen_();
+    this.resizeObserver.disconnect();
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has('isListening')) {
@@ -288,12 +294,6 @@ export class AudioWaveElement extends CrLitElement {
     if (changedProperties.has('transcript')) {
       this.handleNewWords_();
     }
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.onStopListen_();
-    this.resizeObserver.disconnect();
   }
 
   protected onStartListen_() {

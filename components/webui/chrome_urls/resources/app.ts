@@ -58,17 +58,6 @@ export class ChromeUrlsAppElement extends CrLitElement {
   protected loadUrlsTimeout_: number|null = null;
   // </if>
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('internalUrlInfos_') &&
-        this.internalUrlInfos_.length > 0) {
-      this.onHashChanged_(CrRouter.getInstance().getHash());
-    }
-  }
-
   override connectedCallback() {
     super.connectedCallback();
 
@@ -97,6 +86,17 @@ export class ChromeUrlsAppElement extends CrLitElement {
       this.loadUrlsTimeout_ = null;
     }
     // </if>
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('internalUrlInfos_') &&
+        this.internalUrlInfos_.length > 0) {
+      this.onHashChanged_(CrRouter.getInstance().getHash());
+    }
   }
 
   // <if expr="is_ios">

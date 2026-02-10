@@ -122,31 +122,6 @@ export class HistorySyncedDeviceManagerElement extends
   accessor searchTerm: string = '';
   accessor sessionList: ForeignSession[]|null = null;
 
-  override firstUpdated() {
-    this.addEventListener('synced-device-card-open-menu', this.onOpenMenu_);
-    this.addEventListener('update-focus-grid', this.updateFocusGrid_);
-  }
-
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
-    if (changedProperties.has('sessionList')) {
-      this.updateSyncedDevices_();
-    }
-    if (changedProperties.has('searchTerm')) {
-      this.searchTermChanged_();
-    }
-    if (changedPrivateProperties.has('historyIdentityState_')) {
-      this.onIdentityStateChanged_(
-          (changedPrivateProperties.get('historyIdentityState_') || null) as
-              HistoryIdentityState |
-          null);
-    }
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     this.focusGrid_ = new FocusGrid();
@@ -188,6 +163,31 @@ export class HistorySyncedDeviceManagerElement extends
         this.onAccountInfoDataReceivedListenerId_);
     this.onAccountInfoDataReceivedListenerId_ = null;
     // </if>
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedProperties.has('sessionList')) {
+      this.updateSyncedDevices_();
+    }
+    if (changedProperties.has('searchTerm')) {
+      this.searchTermChanged_();
+    }
+    if (changedPrivateProperties.has('historyIdentityState_')) {
+      this.onIdentityStateChanged_(
+          (changedPrivateProperties.get('historyIdentityState_') || null) as
+              HistoryIdentityState |
+          null);
+    }
+  }
+
+  override firstUpdated() {
+    this.addEventListener('synced-device-card-open-menu', this.onOpenMenu_);
+    this.addEventListener('update-focus-grid', this.updateFocusGrid_);
   }
 
   configureSignInForTest(data: {

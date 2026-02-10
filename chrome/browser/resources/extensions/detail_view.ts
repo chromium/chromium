@@ -137,10 +137,6 @@ export class ExtensionsDetailViewElement extends
   private accessor mv2ExperimentStage_: Mv2ExperimentStage =
       getMv2ExperimentStage(loadTimeData.getInteger('MV2ExperimentStage'));
 
-  override firstUpdated() {
-    this.addEventListener('view-enter-start', this.onViewEnterStart_);
-  }
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -152,6 +148,10 @@ export class ExtensionsDetailViewElement extends
     if (changedProperties.has('data') || changedProperties.has('delegate')) {
       this.onItemIdChanged_();
     }
+  }
+
+  override firstUpdated() {
+    this.addEventListener('view-enter-start', this.onViewEnterStart_);
   }
 
   override updated(changedProperties: PropertyValues<this>) {

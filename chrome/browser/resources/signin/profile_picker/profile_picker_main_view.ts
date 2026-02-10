@@ -119,10 +119,6 @@ export class ProfilePickerMainViewElement extends
 
   private eventTracker_: EventTracker = new EventTracker();
 
-  override firstUpdated() {
-    this.addEventListener('view-enter-finish', this.onViewEnterFinish_);
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     this.addResizeObserver_();
@@ -141,10 +137,25 @@ export class ProfilePickerMainViewElement extends
     this.manageProfilesBrowserProxy_.initializeMainView();
   }
 
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+    }
+
+    if (this.dragDelegate_) {
+      this.dragDelegate_.clearListeners();
+    }
+  }
+
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
     this.hideAskOnStartup_ = this.computeHideAskOnStartup_();
+  }
+
+  override firstUpdated() {
+    this.addEventListener('view-enter-finish', this.onViewEnterFinish_);
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -166,17 +177,6 @@ export class ProfilePickerMainViewElement extends
     if (changedPrivateProperties.has('shouldShowOpenAllProfilesButton_') &&
         this.shouldShowOpenAllProfilesButton_) {
       this.manageProfilesBrowserProxy_.recordOpenAllProfilesButtonShown();
-    }
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this.resizeObserver_) {
-      this.resizeObserver_.disconnect();
-    }
-
-    if (this.dragDelegate_) {
-      this.dragDelegate_.clearListeners();
     }
   }
 

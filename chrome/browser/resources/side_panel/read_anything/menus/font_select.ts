@@ -63,6 +63,11 @@ export class FontSelectElement extends FontSelectElementBase {
 
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
+  constructor() {
+    super();
+    this.addEventListener('keydown', this.onKeyDown_.bind(this));
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has('pageLanguage') ||
@@ -73,11 +78,6 @@ export class FontSelectElement extends FontSelectElementBase {
       this.$.select.selectedIndex =
           getIndexOrDefault(this.options, chrome.readingMode.fontName);
     }
-  }
-
-  constructor() {
-    super();
-    this.addEventListener('keydown', this.onKeyDown_.bind(this));
   }
 
   protected onFontSelectValueChange_(event: Event) {

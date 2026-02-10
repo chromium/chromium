@@ -163,14 +163,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.isImmersiveEnabled_ = chrome.readingMode.isImmersiveEnabled;
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    // Even though disconnectedCallback isn't always called reliably in prod,
-    // it is called in tests, and the speech extension timeout can cause
-    // flakiness.
-    this.voiceLanguageController_.stopWaitingForSpeechExtension();
-  }
-
   override connectedCallback() {
     super.connectedCallback();
 
@@ -327,6 +319,14 @@ export class AppElement extends AppElementBase implements SpeechListener,
     chrome.readingMode.onPinStateReceived = (pinState: boolean) => {
       this.$.toolbar.isReadAnythingPinned = pinState;
     };
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    // Even though disconnectedCallback isn't always called reliably in prod,
+    // it is called in tests, and the speech extension timeout can cause
+    // flakiness.
+    this.voiceLanguageController_.stopWaitingForSpeechExtension();
   }
 
   private onWindowResize_() {

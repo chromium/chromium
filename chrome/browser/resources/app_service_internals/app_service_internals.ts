@@ -42,13 +42,6 @@ export class AppServiceInternalsElement extends CrLitElement {
 
   private eventTracker_: EventTracker = new EventTracker();
 
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-    const remote = AppServiceInternalsPageHandler.getRemote();
-    remote.getDebugInfo().then(
-        response => this.initializeUi_(response.debugInfo));
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     this.eventTracker_.add(window, 'hashchange', () => this.onHashChanged_());
@@ -57,6 +50,13 @@ export class AppServiceInternalsElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    const remote = AppServiceInternalsPageHandler.getRemote();
+    remote.getDebugInfo().then(
+        response => this.initializeUi_(response.debugInfo));
   }
 
   private async initializeUi_(debugInfo: DebugInfo|null) {

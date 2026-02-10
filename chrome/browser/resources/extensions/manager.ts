@@ -208,6 +208,25 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
    */
   private navigationListener_: number|null = null;
 
+  override connectedCallback() {
+    super.connectedCallback();
+
+    document.documentElement.classList.remove('loading');
+    // https://github.com/microsoft/TypeScript/issues/13569
+    (document as any).fonts.load('bold 12px Roboto');
+
+    this.navigationListener_ = navigation.addListener(newPage => {
+      this.changePage_(newPage);
+    });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    assert(this.navigationListener_);
+    assert(navigation.removeListener(this.navigationListener_));
+    this.navigationListener_ = null;
+  }
+
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
 
@@ -256,25 +275,6 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
       // sidebar or menu when it's about to disappear when `this.narrow_`
       // changes.
     }
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-
-    document.documentElement.classList.remove('loading');
-    // https://github.com/microsoft/TypeScript/issues/13569
-    (document as any).fonts.load('bold 12px Roboto');
-
-    this.navigationListener_ = navigation.addListener(newPage => {
-      this.changePage_(newPage);
-    });
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    assert(this.navigationListener_);
-    assert(navigation.removeListener(this.navigationListener_));
-    this.navigationListener_ = null;
   }
 
   /**

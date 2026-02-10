@@ -61,14 +61,6 @@ export class AppElement extends AppElementBase {
   protected accessor iconUrl_: string = '';
   protected accessor showSearch_: boolean = false;
 
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-
-    if ((changedProperties as Map<PropertyKey, unknown>).has('app_')) {
-      this.iconUrl_ = getAppIcon(this.app_);
-    }
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     this.apps_ = {};
@@ -109,6 +101,14 @@ export class AppElement extends AppElementBase {
     const callbackRouter = BrowserProxy.getInstance().callbackRouter;
     callbackRouter.onAppChanged.addListener(this.onAppChanged_.bind(this));
     callbackRouter.onAppRemoved.addListener(this.onAppRemoved_.bind(this));
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if ((changedProperties as Map<PropertyKey, unknown>).has('app_')) {
+      this.iconUrl_ = getAppIcon(this.app_);
+    }
   }
 
   private onAppChanged_(app: App) {

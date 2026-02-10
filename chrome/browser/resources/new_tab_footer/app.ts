@@ -144,10 +144,6 @@ export class NewTabFooterAppElement extends NewTabFooterAppElementBase {
         WindowProxy.getInstance().url.searchParams.get(CUSTOMIZE_URL_PARAM);
   }
 
-  override firstUpdated() {
-    ColorChangeUpdater.forDocument().start();
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     this.setNtpExtensionNameListenerId_ =
@@ -228,6 +224,10 @@ export class NewTabFooterAppElement extends NewTabFooterAppElementBase {
       this.showBackgroundAttribution_ =
           this.computeShowBackgroundAttribution_();
     }
+  }
+
+  override firstUpdated() {
+    ColorChangeUpdater.forDocument().start();
   }
 
   override updated(changedProperties: PropertyValues<this>) {

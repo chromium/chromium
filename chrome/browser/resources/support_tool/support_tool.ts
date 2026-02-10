@@ -85,17 +85,6 @@ export class SupportToolElement extends SupportToolElementBase {
       SupportToolPageIndex.ISSUE_DETAILS;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
-    if (changedPrivateProperties.has('selectedPage_')) {
-      this.onSelectedPageChange_();
-    }
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     this.addWebUiListener(
@@ -108,6 +97,17 @@ export class SupportToolElement extends SupportToolElementBase {
         'support-data-export-started', this.onDataExportStarted_.bind(this));
     this.addWebUiListener(
         'data-export-completed', this.onDataExportCompleted_.bind(this));
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('selectedPage_')) {
+      this.onSelectedPageChange_();
+    }
   }
 
   protected onDataExportStarted_() {

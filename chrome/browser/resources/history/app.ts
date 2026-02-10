@@ -304,26 +304,16 @@ export class HistoryAppElement extends HistoryAppElementBase {
     // </if>
   }
 
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-    this.addEventListener('cr-toolbar-menu-click', this.onCrToolbarMenuClick_);
-    this.addEventListener('delete-selected', this.deleteSelected);
-    this.addEventListener('open-selected', this.openSelected);
-    this.addEventListener('history-checkbox-select', this.checkboxSelected);
-    this.addEventListener('history-close-drawer', this.closeDrawer_);
-    this.addEventListener('history-view-changed', this.historyViewChanged_);
-    this.addEventListener('unselect-all', this.unselectAll);
-
-    if (loadTimeData.getBoolean('maybeShowEmbeddingsIph')) {
-      this.registerHelpBubble(
-          'kHistorySearchInputElementId', this.$.toolbar.searchField);
-      // TODO(crbug.com/40075330): There might be a race condition if the call
-      //    to show the help bubble comes immediately after registering the
-      //    anchor.
-      setTimeout(() => {
-        HistoryEmbeddingsBrowserProxyImpl.getInstance().maybeShowFeaturePromo();
-      }, 1000);
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker_.removeAll();
+    if (this.historyEmbeddingsResizeObserver_) {
+      this.historyEmbeddingsResizeObserver_.disconnect();
+      this.historyEmbeddingsResizeObserver_ = null;
     }
+    assert(this.onHasOtherFormsChangedListenerId_);
+    this.callbackRouter_.removeListener(this.onHasOtherFormsChangedListenerId_);
+    this.onHasOtherFormsChangedListenerId_ = null;
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -365,26 +355,25 @@ export class HistoryAppElement extends HistoryAppElementBase {
     }
   }
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('selectedTab_')) {
-      this.pageHandler_.setLastSelectedTab(this.selectedTab_);
-    }
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.addEventListener('cr-toolbar-menu-click', this.onCrToolbarMenuClick_);
+    this.addEventListener('delete-selected', this.deleteSelected);
+    this.addEventListener('open-selected', this.openSelected);
+    this.addEventListener('history-checkbox-select', this.checkboxSelected);
+    this.addEventListener('history-close-drawer', this.closeDrawer_);
+    this.addEventListener('history-view-changed', this.historyViewChanged_);
+    this.addEventListener('unselect-all', this.unselectAll);
 
-    if (changedPrivateProperties.has('selectedPage_')) {
-      this.selectedPageChanged_(
-          changedPrivateProperties.get('selectedPage_') as string);
-    }
-
-    if (changedPrivateProperties.has('hasDrawer_')) {
-      this.hasDrawerChanged_();
-    }
-
-    if (changedPrivateProperties.has('enableHistoryEmbeddings_') &&
-        this.enableHistoryEmbeddings_) {
-      this.onHistoryEmbeddingsContainerShown_();
+    if (loadTimeData.getBoolean('maybeShowEmbeddingsIph')) {
+      this.registerHelpBubble(
+          'kHistorySearchInputElementId', this.$.toolbar.searchField);
+      // TODO(crbug.com/40075330): There might be a race condition if the call
+      //    to show the help bubble comes immediately after registering the
+      //    anchor.
+      setTimeout(() => {
+        HistoryEmbeddingsBrowserProxyImpl.getInstance().maybeShowFeaturePromo();
+      }, 1000);
     }
   }
 
@@ -412,16 +401,27 @@ export class HistoryAppElement extends HistoryAppElementBase {
     }
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.eventTracker_.removeAll();
-    if (this.historyEmbeddingsResizeObserver_) {
-      this.historyEmbeddingsResizeObserver_.disconnect();
-      this.historyEmbeddingsResizeObserver_ = null;
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('selectedTab_')) {
+      this.pageHandler_.setLastSelectedTab(this.selectedTab_);
     }
-    assert(this.onHasOtherFormsChangedListenerId_);
-    this.callbackRouter_.removeListener(this.onHasOtherFormsChangedListenerId_);
-    this.onHasOtherFormsChangedListenerId_ = null;
+
+    if (changedPrivateProperties.has('selectedPage_')) {
+      this.selectedPageChanged_(
+          changedPrivateProperties.get('selectedPage_') as string);
+    }
+
+    if (changedPrivateProperties.has('hasDrawer_')) {
+      this.hasDrawerChanged_();
+    }
+
+    if (changedPrivateProperties.has('enableHistoryEmbeddings_') &&
+        this.enableHistoryEmbeddings_) {
+      this.onHistoryEmbeddingsContainerShown_();
+    }
   }
 
   private fire_(eventName: string, detail?: any) {

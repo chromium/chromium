@@ -114,11 +114,6 @@ export class CrTooltipElement extends CrLitElement {
     this.resetHideTimeout_();
   }
 
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-    this.addEventListener('animationend', () => this.onAnimationEnd_());
-  }
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -126,6 +121,11 @@ export class CrTooltipElement extends CrLitElement {
       this.style.setProperty(
           '--paper-tooltip-delay-in', `${this.animationDelay}ms`);
     }
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.addEventListener('animationend', () => this.onAnimationEnd_());
   }
 
   override updated(changedProperties: PropertyValues<this>) {

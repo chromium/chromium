@@ -123,11 +123,6 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
   private accessor selectedStackFrame_: chrome.developerPrivate.StackFrame|
       null = null;
 
-  override firstUpdated() {
-    this.addEventListener('view-enter-start', this.onViewEnterStart_);
-    FocusOutlineManager.forDocument(document);
-  }
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -140,6 +135,11 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
       this.selectedEntry_ = this.entries_.length > 0 ? 0 : -1;
       this.onSelectedErrorChanged_();
     }
+  }
+
+  override firstUpdated() {
+    this.addEventListener('view-enter-start', this.onViewEnterStart_);
+    FocusOutlineManager.forDocument(document);
   }
 
   override updated(changedProperties: PropertyValues<this>) {

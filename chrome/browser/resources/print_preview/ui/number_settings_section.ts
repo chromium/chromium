@@ -72,10 +72,6 @@ export class PrintPreviewNumberSettingsSectionElement extends
   accessor maxValue: number|undefined;
   protected accessor errorMessage_: string = '';
 
-  override firstUpdated() {
-    this.addEventListener('input-change', e => this.onInputChangeEvent_(e));
-  }
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -83,6 +79,10 @@ export class PrintPreviewNumberSettingsSectionElement extends
         changedProperties.has('inputValid')) {
       this.errorMessage_ = this.inputValid ? '' : this.hintMessage;
     }
+  }
+
+  override firstUpdated() {
+    this.addEventListener('input-change', e => this.onInputChangeEvent_(e));
   }
 
   override updated(changedProperties: PropertyValues<this>) {

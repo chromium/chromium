@@ -53,16 +53,6 @@ export class RelatedWebsiteSetsListItemElement extends CrLitElement {
   accessor managedByEnterprise: boolean = false;
   accessor query: string = '';
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    if (changedProperties.has('expanded')) {
-      this.dispatchEvent(new CustomEvent(
-          'expanded-toggled',
-          {detail: {id: this.primarySite, expanded: this.expanded}}));
-    }
-  }
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -75,6 +65,16 @@ export class RelatedWebsiteSetsListItemElement extends CrLitElement {
       } else {
         this.expanded = false;
       }
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('expanded')) {
+      this.dispatchEvent(new CustomEvent(
+          'expanded-toggled',
+          {detail: {id: this.primarySite, expanded: this.expanded}}));
     }
   }
 

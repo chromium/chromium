@@ -637,27 +637,6 @@ export class AppElement extends AppElementBase {
     this.eventTracker_.removeAll();
   }
 
-  override firstUpdated() {
-    this.pageHandler_.onAppRendered(WindowProxy.getInstance().now());
-    // Let the browser breathe and then render remaining elements.
-    WindowProxy.getInstance().waitForLazyRender().then(() => {
-      ensureLazyLoaded();
-      this.lazyRender_ = true;
-    });
-    this.printPerformance_();
-    performance.measure('app-creation', 'app-creation-start');
-
-    if (!this.modulesEnabled_) {
-      this.recordBrowserPromoMetrics_();
-    }
-
-    if (this.ntpRealboxNextEnabled_ && this.realboxLayoutMode_ !== '') {
-      this.registerHelpBubble(
-          CONTEXTUAL_ENTRYPOINT_ELEMENT_ID,
-          ['#searchbox', '#context', '#contextEntrypoint'], {fixed: true});
-    }
-  }
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -726,6 +705,27 @@ export class AppElement extends AppElementBase {
        */
       this.showScrim_ = this.showComposebox_ || this.showLensUploadDialog_ ||
           this.containerFocused_;
+    }
+  }
+
+  override firstUpdated() {
+    this.pageHandler_.onAppRendered(WindowProxy.getInstance().now());
+    // Let the browser breathe and then render remaining elements.
+    WindowProxy.getInstance().waitForLazyRender().then(() => {
+      ensureLazyLoaded();
+      this.lazyRender_ = true;
+    });
+    this.printPerformance_();
+    performance.measure('app-creation', 'app-creation-start');
+
+    if (!this.modulesEnabled_) {
+      this.recordBrowserPromoMetrics_();
+    }
+
+    if (this.ntpRealboxNextEnabled_ && this.realboxLayoutMode_ !== '') {
+      this.registerHelpBubble(
+          CONTEXTUAL_ENTRYPOINT_ELEMENT_ID,
+          ['#searchbox', '#context', '#contextEntrypoint'], {fixed: true});
     }
   }
 

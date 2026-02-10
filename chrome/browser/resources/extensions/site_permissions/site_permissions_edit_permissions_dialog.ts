@@ -127,6 +127,14 @@ export class SitePermissionsEditPermissionsDialogElement extends
   private unsavedExtensionsIdToHostAccess_:
       Map<string, chrome.developerPrivate.HostAccess> = new Map();
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('extensions')) {
+      this.onExtensionsUpdated_();
+    }
+  }
+
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
 
@@ -138,14 +146,6 @@ export class SitePermissionsEditPermissionsDialogElement extends
     assert(
         !this.matchesSubdomains_() ||
         this.originalSiteSet === EXTENSION_SPECIFIED);
-  }
-
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-
-    if (changedProperties.has('extensions')) {
-      this.onExtensionsUpdated_();
-    }
   }
 
   private onExtensionsUpdated_() {

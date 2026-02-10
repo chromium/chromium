@@ -115,15 +115,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     }
   }
 
-  override firstUpdated() {
-    FocusOutlineManager.forDocument(document);
-
-    // <if expr="is_macosx">
-    this.$.sidebar.addEventListener(
-        'open-pdf-in-preview', this.onOpenPdfInPreview_.bind(this));
-    // </if>
-  }
-
   override connectedCallback() {
     super.connectedCallback();
 
@@ -156,6 +147,15 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
       this.controlsManaged_ =
           this.destinationsManaged_ || this.settingsManaged_;
     }
+  }
+
+  override firstUpdated() {
+    FocusOutlineManager.forDocument(document);
+
+    // <if expr="is_macosx">
+    this.$.sidebar.addEventListener(
+        'open-pdf-in-preview', this.onOpenPdfInPreview_.bind(this));
+    // </if>
   }
 
   override updated(changedProperties: PropertyValues<this>) {

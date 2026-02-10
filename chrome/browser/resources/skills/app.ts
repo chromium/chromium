@@ -69,15 +69,6 @@ export class SkillsAppElement extends CrLitElement {
   private eventTracker_: EventTracker = new EventTracker();
   private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
 
-  override updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties as PropertyValues<this>);
-
-    if (changedProperties.has('selectedPage_') &&
-        this.selectedPage_ === Page.DISCOVER_SKILLS) {
-      this.proxy_.handler.request1PSkills();
-    }
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     ColorChangeUpdater.forDocument().start();
@@ -104,6 +95,15 @@ export class SkillsAppElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+  }
+
+  override updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties as PropertyValues<this>);
+
+    if (changedProperties.has('selectedPage_') &&
+        this.selectedPage_ === Page.DISCOVER_SKILLS) {
+      this.proxy_.handler.request1PSkills();
+    }
   }
 
   // Called when the page is narrow & the menu button appears.

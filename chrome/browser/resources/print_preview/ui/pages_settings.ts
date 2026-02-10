@@ -199,10 +199,6 @@ export class PrintPreviewPagesSettingsElement extends
    */
   private restorationValue_: PagesValue = PagesValue.ALL;
 
-  override firstUpdated() {
-    this.addEventListener('input-change', e => this.onInputChange_(e));
-  }
-
   /**
    * Initialize |selectedValue| in connectedCallback() since this doesn't
    * observe settings.pages, because settings.pages is not sticky.
@@ -239,6 +235,10 @@ export class PrintPreviewPagesSettingsElement extends
         changedPrivateProperties.has('rangesToPrint_')) {
       this.onRangeChange_();
     }
+  }
+
+  override firstUpdated() {
+    this.addEventListener('input-change', e => this.onInputChange_(e));
   }
 
   override updated(changedProperties: PropertyValues<this>) {

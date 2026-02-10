@@ -44,27 +44,6 @@ export class SignInPromoElement extends SignInPromoElementBase {
     return 'sign-in-promo';
   }
 
-  constructor() {
-    super();
-    this.benefitCards_ = [
-      {
-        title: this.i18n('devicesCardTitle'),
-        description: this.i18n('devicesCardDescription'),
-        iconId: 'devices',
-      },
-      {
-        title: this.i18n('securityCardTitle'),
-        description: this.i18n('securityCardDescription'),
-        iconId: 'security',
-      },
-      {
-        title: this.i18n('backupCardTitle'),
-        description: this.i18n('backupCardDescription'),
-        iconId: 'cloud-upload',
-      },
-    ];
-  }
-
   static override get styles() {
     return getCss();
   }
@@ -85,6 +64,27 @@ export class SignInPromoElement extends SignInPromoElementBase {
       anyButtonClicked_: {type: Boolean},
       usePrimaryAndTonalButtons_: {type: Boolean},
     };
+  }
+
+  constructor() {
+    super();
+    this.benefitCards_ = [
+      {
+        title: this.i18n('devicesCardTitle'),
+        description: this.i18n('devicesCardDescription'),
+        iconId: 'devices',
+      },
+      {
+        title: this.i18n('securityCardTitle'),
+        description: this.i18n('securityCardDescription'),
+        iconId: 'security',
+      },
+      {
+        title: this.i18n('backupCardTitle'),
+        description: this.i18n('backupCardDescription'),
+        iconId: 'cloud-upload',
+      },
+    ];
   }
 
   private browserProxy_: IntroBrowserProxy =

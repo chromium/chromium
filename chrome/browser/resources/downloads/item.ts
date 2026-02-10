@@ -119,11 +119,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   protected accessor shouldLinkFilename_: boolean = true;
   override overrideCustomEquivalent: boolean = true;
 
-  override firstUpdated() {
-    this.setAttribute('role', 'row');
-    this.mojoHandler_ = BrowserProxy.getInstance().handler;
-  }
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -140,6 +135,11 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       this.showOpenAnyway_ = this.computeShowOpenAnyway_();
       this.displayType_ = this.computeDisplayType_();
     }
+  }
+
+  override firstUpdated() {
+    this.setAttribute('role', 'row');
+    this.mojoHandler_ = BrowserProxy.getInstance().handler;
   }
 
   override updated(changedProperties: PropertyValues<this>) {

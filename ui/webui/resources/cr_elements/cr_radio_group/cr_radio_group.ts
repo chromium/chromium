@@ -63,15 +63,6 @@ export class CrRadioGroupElement extends CrLitElement {
   private isRtl_: boolean = false;
   private populateBound_: (() => void)|null = null;
 
-  override firstUpdated() {
-    this.addEventListener('keydown', e => this.onKeyDown_(e));
-    this.addEventListener('click', e => this.onClick_(e));
-
-    if (!this.hasAttribute('role')) {
-      this.setAttribute('role', 'radiogroup');
-    }
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     this.isRtl_ = this.matches(':host-context([dir=rtl]) cr-radio-group');
@@ -106,6 +97,15 @@ export class CrRadioGroupElement extends CrLitElement {
     if (changedProperties.has('selectableElements')) {
       const tags = this.selectableElements.split(', ').join('|');
       this.selectableRegExp_ = new RegExp(`^(${tags})$`, 'i');
+    }
+  }
+
+  override firstUpdated() {
+    this.addEventListener('keydown', e => this.onKeyDown_(e));
+    this.addEventListener('click', e => this.onClick_(e));
+
+    if (!this.hasAttribute('role')) {
+      this.setAttribute('role', 'radiogroup');
     }
   }
 

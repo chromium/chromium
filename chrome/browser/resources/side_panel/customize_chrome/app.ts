@@ -96,13 +96,6 @@ export class AppElement extends AppElementBase {
     };
   }
 
-  override firstUpdated() {
-    ColorChangeUpdater.forDocument().start();
-    this.registerHelpBubble(
-        CHANGE_CHROME_THEME_BUTTON_ELEMENT_ID,
-        ['#appearanceElement', '#editThemeButton']);
-  }
-
   protected accessor page_: CustomizeChromePage = CustomizeChromePage.OVERVIEW;
   protected accessor modulesEnabled_: boolean =
       loadTimeData.getBoolean('modulesEnabled');
@@ -250,6 +243,13 @@ export class AppElement extends AppElementBase {
         changedPrivateProperties.has('extensionPolicyEnabled_')) {
       this.showFooter_ = this.computeShowFooter_();
     }
+  }
+
+  override firstUpdated() {
+    ColorChangeUpdater.forDocument().start();
+    this.registerHelpBubble(
+        CHANGE_CHROME_THEME_BUTTON_ELEMENT_ID,
+        ['#appearanceElement', '#editThemeButton']);
   }
 
   protected computeShowFooter_(): boolean {

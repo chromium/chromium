@@ -105,6 +105,15 @@ export class ActivityLogStreamElement extends CrLitElement {
   private listenerInstance_:
       (type: chrome.activityLogPrivate.ExtensionActivity) => void = () => {};
 
+  override connectedCallback() {
+    super.connectedCallback();
+
+    // Since this component is not restamped, this will only be called once
+    // in its lifecycle.
+    this.listenerInstance_ = this.extensionActivityListener_.bind(this);
+    this.startStream();
+  }
+
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -114,15 +123,6 @@ export class ActivityLogStreamElement extends CrLitElement {
         changedPrivateProperties.has('lastSearch_')) {
       this.filteredActivityStream_ = this.computeFilteredActivityStream_();
     }
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-
-    // Since this component is not restamped, this will only be called once
-    // in its lifecycle.
-    this.listenerInstance_ = this.extensionActivityListener_.bind(this);
-    this.startStream();
   }
 
   clearStream() {

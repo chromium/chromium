@@ -66,13 +66,6 @@ export class ExtensionsSidebarElement extends ExtensionsSidebarElementBase {
    */
   private navigationListener_: number|null = null;
 
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-
-    this.setAttribute('role', 'navigation');
-    this.computeSelectedPath_(navigation.getCurrentPage().page);
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     this.navigationListener_ = navigation.addListener(newPage => {
@@ -85,6 +78,13 @@ export class ExtensionsSidebarElement extends ExtensionsSidebarElementBase {
     assert(this.navigationListener_);
     assert(navigation.removeListener(this.navigationListener_));
     this.navigationListener_ = null;
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+
+    this.setAttribute('role', 'navigation');
+    this.computeSelectedPath_(navigation.getCurrentPage().page);
   }
 
   private computeSelectedPath_(page: Page) {

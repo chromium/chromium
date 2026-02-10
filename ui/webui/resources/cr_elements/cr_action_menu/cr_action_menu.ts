@@ -175,16 +175,16 @@ export class CrActionMenuElement extends CrLitElement {
   private anchorElement_: HTMLElement|null = null;
   private lastConfig_: ShowAtPositionConfig|null = null;
 
-  override firstUpdated() {
-    this.addEventListener('keydown', this.onKeyDown_.bind(this));
-    this.addEventListener('mouseover', this.onMouseover_);
-    this.addEventListener('click', this.onClick_);
-  }
-
   override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.removeListeners_();
+  }
+
+  override firstUpdated() {
+    this.addEventListener('keydown', this.onKeyDown_.bind(this));
+    this.addEventListener('mouseover', this.onMouseover_);
+    this.addEventListener('click', this.onClick_);
   }
 
   /**

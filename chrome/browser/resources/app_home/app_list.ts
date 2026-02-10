@@ -65,12 +65,6 @@ export class AppListElement extends CrLitElement {
     this.boundContextMenuListener_ = this.closeCurrentAppMenu.bind(this);
   }
 
-  override firstUpdated() {
-    this.addEventListener('on-menu-open-triggered', this.switchActiveMenu_);
-    this.addEventListener('on-menu-closed', this.clearActiveMenu_);
-    recordUserAction(AppHomeUserAction.APP_HOME_INIT);
-  }
-
   override connectedCallback() {
     super.connectedCallback();
 
@@ -91,6 +85,12 @@ export class AppListElement extends CrLitElement {
     this.listenerIds_ = [];
     document.removeEventListener('contextmenu', this.boundContextMenuListener_);
     document.removeEventListener('keydown', this.boundKeydownListener_);
+  }
+
+  override firstUpdated() {
+    this.addEventListener('on-menu-open-triggered', this.switchActiveMenu_);
+    this.addEventListener('on-menu-closed', this.clearActiveMenu_);
+    recordUserAction(AppHomeUserAction.APP_HOME_INIT);
   }
 
   private handleKeyDown(e: KeyboardEvent) {

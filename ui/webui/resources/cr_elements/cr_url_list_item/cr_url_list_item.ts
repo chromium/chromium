@@ -142,12 +142,9 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   accessor forceHover: boolean = false;
   accessor descriptionMeta: string = '';
 
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-    FocusOutlineManager.forDocument(document);
-    this.addEventListener('pointerdown', () => this.setActiveState_(true));
-    this.addEventListener('pointerup', () => this.setActiveState_(false));
-    this.addEventListener('pointerleave', () => this.setActiveState_(false));
+  override connectedCallback() {
+    super.connectedCallback();
+    this.resetFirstImageLoaded_();
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -167,17 +164,20 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
     }
   }
 
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    FocusOutlineManager.forDocument(document);
+    this.addEventListener('pointerdown', () => this.setActiveState_(true));
+    this.addEventListener('pointerup', () => this.setActiveState_(false));
+    this.addEventListener('pointerleave', () => this.setActiveState_(false));
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
     if (changedProperties.has('imageUrls')) {
       this.resetFirstImageLoaded_();
     }
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-    this.resetFirstImageLoaded_();
   }
 
   override focus() {

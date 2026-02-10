@@ -68,23 +68,6 @@ export class CrToggleElement extends CrToggleElementBase {
   private handledInPointerMove_: boolean = false;
   private pointerDownX_: number = 0;
 
-  override firstUpdated() {
-    if (!this.hasAttribute('role')) {
-      this.setAttribute('role', 'button');
-    }
-    if (!this.hasAttribute('tabindex')) {
-      this.setAttribute('tabindex', '0');
-    }
-    this.setAttribute('aria-pressed', this.checked ? 'true' : 'false');
-    this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
-
-    this.addEventListener('click', this.onClick_.bind(this));
-    this.addEventListener('keydown', this.onKeyDown_.bind(this));
-    this.addEventListener('keyup', this.onKeyUp_.bind(this));
-    this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
-    this.addEventListener('pointerup', this.onPointerUp_.bind(this));
-  }
-
   override connectedCallback() {
     super.connectedCallback();
 
@@ -108,6 +91,23 @@ export class CrToggleElement extends CrToggleElementBase {
         this.toggleState_(/* fromKeyboard= */ false);
       }
     };
+  }
+
+  override firstUpdated() {
+    if (!this.hasAttribute('role')) {
+      this.setAttribute('role', 'button');
+    }
+    if (!this.hasAttribute('tabindex')) {
+      this.setAttribute('tabindex', '0');
+    }
+    this.setAttribute('aria-pressed', this.checked ? 'true' : 'false');
+    this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
+
+    this.addEventListener('click', this.onClick_.bind(this));
+    this.addEventListener('keydown', this.onKeyDown_.bind(this));
+    this.addEventListener('keyup', this.onKeyUp_.bind(this));
+    this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
+    this.addEventListener('pointerup', this.onPointerUp_.bind(this));
   }
 
   override updated(changedProperties: PropertyValues<this>) {

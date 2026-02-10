@@ -72,11 +72,6 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   protected accessor isSelectedFolder_: boolean = false;
   protected accessor hasChildFolder_: boolean = false;
 
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-    this.addEventListener('keydown', e => this.onKeydown_(e));
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     this.updateFromStore();
@@ -116,6 +111,11 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
       this.hasChildFolder_ =
           hasChildFolders(this.itemId, this.getState().nodes);
     }
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.addEventListener('keydown', e => this.onKeydown_(e));
   }
 
   override updated(changedProperties: PropertyValues<this>) {

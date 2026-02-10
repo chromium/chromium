@@ -112,15 +112,6 @@ export class DataSectionElement extends DataSectionElementBase {
     }
   }
 
-  override firstUpdated() {
-    // Compute the animation duration/intervals once on startup.
-    this.collapseAnimationDuration_ =
-        parseInt(getComputedStyle(this).getPropertyValue(
-            '--collapse-transition-duration'));
-    this.intervalDurationOfUpdateHeightRequests_ =
-        this.collapseAnimationDuration_ / UPDATE_REQUEST_COUNT;
-  }
-
   override async willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -157,6 +148,15 @@ export class DataSectionElement extends DataSectionElementBase {
         }
       }
     }
+  }
+
+  override firstUpdated() {
+    // Compute the animation duration/intervals once on startup.
+    this.collapseAnimationDuration_ =
+        parseInt(getComputedStyle(this).getPropertyValue(
+            '--collapse-transition-duration'));
+    this.intervalDurationOfUpdateHeightRequests_ =
+        this.collapseAnimationDuration_ / UPDATE_REQUEST_COUNT;
   }
 
   // Initializes the output variable based on the input.

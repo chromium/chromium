@@ -72,18 +72,6 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
   // This is always false if `SyncEnableBookmarksInTransportMode` is disabled.
   protected accessor canUploadAsAccountBookmark_: boolean = false;
 
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-    this.addEventListener('click', e => this.onClick_(e));
-    this.addEventListener('dblclick', e => this.onDblClick_(e));
-    this.addEventListener('contextmenu', e => this.onContextMenu_(e));
-    this.addEventListener('keydown', e => this.onKeydown_(e));
-    this.addEventListener('auxclick', e => this.onMiddleClick_(e));
-    this.addEventListener('mousedown', e => this.cancelMiddleMouseBehavior_(e));
-    this.addEventListener('mouseup', e => this.cancelMiddleMouseBehavior_(e));
-    this.addEventListener('touchstart', e => this.onTouchStart_(e));
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     this.updateFromStore();
@@ -108,6 +96,18 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
           loadTimeData.getString('folderLabel');
       this.updateCanUploadAsAccountBookmark_();
     }
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.addEventListener('click', e => this.onClick_(e));
+    this.addEventListener('dblclick', e => this.onDblClick_(e));
+    this.addEventListener('contextmenu', e => this.onContextMenu_(e));
+    this.addEventListener('keydown', e => this.onKeydown_(e));
+    this.addEventListener('auxclick', e => this.onMiddleClick_(e));
+    this.addEventListener('mousedown', e => this.cancelMiddleMouseBehavior_(e));
+    this.addEventListener('mouseup', e => this.cancelMiddleMouseBehavior_(e));
+    this.addEventListener('touchstart', e => this.onTouchStart_(e));
   }
 
   override updated(changedProperties: PropertyValues<this>) {

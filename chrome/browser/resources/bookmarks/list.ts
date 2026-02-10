@@ -70,12 +70,23 @@ export class BookmarksListElement extends BookmarksListElementBase {
   private accessor selectedItems_: Set<string> = new Set();
   protected accessor shouldShowPromoCard_: boolean = false;
 
-  override firstUpdated() {
-    this.addEventListener('click', () => this.deselectItems_());
-    this.addEventListener('contextmenu', e => this.onContextMenu_(e));
-    this.addEventListener(
-        'open-command-menu',
-        e => this.onOpenCommandMenu_(e as CustomEvent<OpenCommandMenuDetail>));
+  override connectedCallback() {
+    super.connectedCallback();
+    this.updateFromStore();
+
+    this.eventTracker_.add(
+        document, 'highlight-items',
+        (e: Event) => this.onHighlightItems_(e as CustomEvent<string[]>));
+    this.eventTracker_.add(
+        document, 'import-began', () => this.onImportBegan_());
+    this.eventTracker_.add(
+        document, 'import-ended', () => this.onImportEnded_());
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    this.eventTracker_.remove(document, 'highlight-items');
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -89,6 +100,14 @@ export class BookmarksListElement extends BookmarksListElementBase {
         this.focusedIndex_ = 0;
       }
     }
+  }
+
+  override firstUpdated() {
+    this.addEventListener('click', () => this.deselectItems_());
+    this.addEventListener('contextmenu', e => this.onContextMenu_(e));
+    this.addEventListener(
+        'open-command-menu',
+        e => this.onOpenCommandMenu_(e as CustomEvent<OpenCommandMenuDetail>));
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -119,25 +138,6 @@ export class BookmarksListElement extends BookmarksListElementBase {
           changedPrivateProperties.get('displayedIds_') as string[],
           lastSelection);
     }
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-    this.updateFromStore();
-
-    this.eventTracker_.add(
-        document, 'highlight-items',
-        (e: Event) => this.onHighlightItems_(e as CustomEvent<string[]>));
-    this.eventTracker_.add(
-        document, 'import-began', () => this.onImportBegan_());
-    this.eventTracker_.add(
-        document, 'import-ended', () => this.onImportEnded_());
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-
-    this.eventTracker_.remove(document, 'highlight-items');
   }
 
   override onStateChanged(state: BookmarksPageState) {

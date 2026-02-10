@@ -111,13 +111,6 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   private pointerStart_: {x: number, y: number}|null = null;
   private startPosition_: TextBoxRect|null = null;
 
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-    this.setAttribute('tabindex', '0');
-    this.addEventListener('focus', e => this.onFocus_(e));
-    document.addEventListener('keydown', e => this.onDocumentKeyDown_(e));
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     this.eventTracker_.add(
@@ -169,6 +162,13 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
       this.textRotations_ =
           (this.viewportRotations_ + this.textOrientation_) % 4;
     }
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.setAttribute('tabindex', '0');
+    this.addEventListener('focus', e => this.onFocus_(e));
+    document.addEventListener('keydown', e => this.onDocumentKeyDown_(e));
   }
 
   override updated(changedProperties: PropertyValues<this>) {

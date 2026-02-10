@@ -67,6 +67,17 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
   private bubbles_: Map<HTMLElement, number> = new Map();
   private metrics_: MetricsContext = MetricsContext.printSettingsUi();
 
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.metrics_.record(PrintSettingsUiBucket.ADVANCED_SETTINGS_DIALOG_SHOWN);
+    this.$.dialog.showModal();
+  }
+
+  override firstUpdated() {
+    this.addEventListener('keydown', e => this.onKeydown_(e));
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
@@ -78,17 +89,6 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
       // the hasMatching_ value, so needs to be done in updated().
       this.hasMatching_ = this.computeHasMatching_();
     }
-  }
-
-  override firstUpdated() {
-    this.addEventListener('keydown', e => this.onKeydown_(e));
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-
-    this.metrics_.record(PrintSettingsUiBucket.ADVANCED_SETTINGS_DIALOG_SHOWN);
-    this.$.dialog.showModal();
   }
 
   private onKeydown_(e: KeyboardEvent) {

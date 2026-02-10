@@ -104,25 +104,6 @@ export class UserEducationInternalsElement extends
     this.handler_ = UserEducationInternalsPageHandler.getRemote();
   }
 
-  override updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties as PropertyValues<this>);
-
-    // There is a self-referential demo IPH for showing a help bubble in a
-    // WebUI (specifically, this WebUI). Because of that, the target anchor for
-    // the help bubble needs to be registered.
-    //
-    // However, because we want to attach the help bubble to an element
-    // dynamically created, we have to wait until after the element is
-    // populated to register the anchor element.
-    if (changedProperties.has('featurePromos_')) {
-      if (this.shadowRoot.querySelector('#IPH_WebUiHelpBubbleTest')) {
-        this.registerHelpBubble(
-            'kWebUIIPHDemoElementIdentifier',
-            ['#IPH_WebUiHelpBubbleTest', '#launch']);
-      }
-    }
-  }
-
   override firstUpdated() {
     ColorChangeUpdater.forDocument().start();
 
@@ -157,6 +138,25 @@ export class UserEducationInternalsElement extends
     this.handler_.getNtpPromoPreferences().then(({ntpPromoPreferences}) => {
       this.ntpPromoPreferences_ = ntpPromoPreferences;
     });
+  }
+
+  override updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties as PropertyValues<this>);
+
+    // There is a self-referential demo IPH for showing a help bubble in a
+    // WebUI (specifically, this WebUI). Because of that, the target anchor for
+    // the help bubble needs to be registered.
+    //
+    // However, because we want to attach the help bubble to an element
+    // dynamically created, we have to wait until after the element is
+    // populated to register the anchor element.
+    if (changedProperties.has('featurePromos_')) {
+      if (this.shadowRoot.querySelector('#IPH_WebUiHelpBubbleTest')) {
+        this.registerHelpBubble(
+            'kWebUIIPHDemoElementIdentifier',
+            ['#IPH_WebUiHelpBubbleTest', '#launch']);
+      }
+    }
   }
 
   protected onSearchChanged_(e: CustomEvent<string>) {

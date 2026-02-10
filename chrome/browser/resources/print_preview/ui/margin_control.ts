@@ -109,6 +109,10 @@ export class PrintPreviewMarginControlElement extends
     }
   }
 
+  override firstUpdated() {
+    this.addEventListener('input-change', e => this.onInputChange_(e));
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
@@ -126,10 +130,6 @@ export class PrintPreviewMarginControlElement extends
         changedProperties.has('pageSize') || changedProperties.has('side')) {
       this.updatePosition_();
     }
-  }
-
-  override firstUpdated() {
-    this.addEventListener('input-change', e => this.onInputChange_(e));
   }
 
   /** @return The input element for InputBehavior. */

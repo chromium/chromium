@@ -188,16 +188,6 @@ export class CrSliderElement extends CrSliderElementBase {
   private deltaKeyMap_: Map<string, number>|null = null;
   private draggingEventTracker_: EventTracker|null = null;
 
-  override firstUpdated() {
-    this.setAttribute('role', 'slider');
-
-    this.addEventListener('blur', this.hideRipple_);
-    this.addEventListener('focus', this.showRipple_);
-    this.addEventListener('keydown', this.onKeyDown_);
-    this.addEventListener('keyup', this.onKeyUp_);
-    this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     this.draggingEventTracker_ = new EventTracker();
@@ -228,6 +218,16 @@ export class CrSliderElement extends CrSliderElementBase {
         this.min = 0;
       }
     }
+  }
+
+  override firstUpdated() {
+    this.setAttribute('role', 'slider');
+
+    this.addEventListener('blur', this.hideRipple_);
+    this.addEventListener('focus', this.showRipple_);
+    this.addEventListener('keydown', this.onKeyDown_);
+    this.addEventListener('keyup', this.onKeyUp_);
+    this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
   }
 
   override updated(changedProperties: PropertyValues<this>) {

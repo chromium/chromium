@@ -115,6 +115,11 @@ export class ThemesElement extends ThemesElementBase {
     }
   }
 
+  override firstUpdated() {
+    this.registerHelpBubble(
+        CHROME_THEME_BACK_ELEMENT_ID, this.$.heading.getBackButton());
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
@@ -124,11 +129,6 @@ export class ThemesElement extends ThemesElementBase {
     if (changedPrivateProperties.has('themes_') && this.themes_.length > 0) {
       this.onThemesRendered_();
     }
-  }
-
-  override firstUpdated() {
-    this.registerHelpBubble(
-        CHROME_THEME_BACK_ELEMENT_ID, this.$.heading.getBackButton());
   }
 
   focusOnBackButton() {

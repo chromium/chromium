@@ -225,6 +225,14 @@ export class ModulesElement extends CrLitElement {
     this.eventTracker_.removeAll();
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('moduleInstances_') ||
+        changedProperties.has('disabledModules_')) {
+      this.updateContainerAndChildrenStyles_(this.availableWidth_);
+    }
+  }
+
   override firstUpdated() {
     this.style.setProperty('--container-gap', `${CONTAINER_GAP_WIDTH}px`);
 
@@ -238,14 +246,6 @@ export class ModulesElement extends CrLitElement {
     super.updated(changedProperties);
     this.availableWidth_ = Math.min(
         document.body.clientWidth - 2 * MARGIN_WIDTH, this.containerMaxWidth_);
-  }
-
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-    if (changedProperties.has('moduleInstances_') ||
-        changedProperties.has('disabledModules_')) {
-      this.updateContainerAndChildrenStyles_(this.availableWidth_);
-    }
   }
 
   get pageHandler_(): PageHandlerRemote {

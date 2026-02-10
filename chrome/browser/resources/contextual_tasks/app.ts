@@ -193,32 +193,6 @@ export class ContextualTasksAppElement extends CrLitElement {
   private forceBasicModeIfOpeningThreadHistory_: boolean =
       loadTimeData.getBoolean('forceBasicModeIfOpeningThreadHistory');
 
-  override firstUpdated() {
-    this.postMessageHandler_ =
-        new PostMessageHandler(this.$.threadFrame, this.browserProxy_);
-  }
-
-  protected async onNewThreadClick_() {
-    chrome.metricsPrivate.recordUserAction(
-        'ContextualTasks.WebUI.UserAction.OpenNewThread');
-    chrome.metricsPrivate.recordBoolean(
-        'ContextualTasks.WebUI.UserAction.OpenNewThread', true);
-    const {url} = await this.browserProxy_.handler.getThreadUrl();
-    const newThreadUrl = new URL(url);
-    const currentUrl = new URL(this.$.threadFrame.src);
-    const source = currentUrl.searchParams.get('source');
-    if (source) {
-      newThreadUrl.searchParams.set('source', source);
-    }
-    const aep = currentUrl.searchParams.get('aep');
-    if (aep) {
-      newThreadUrl.searchParams.set('aep', aep);
-    }
-    this.$.threadFrame.src = newThreadUrl.href;
-    this.$.composebox.startExpandAnimation();
-    this.$.composebox.clearInputAndFocus();
-  }
-
   override async connectedCallback() {
     super.connectedCallback();
 
@@ -384,6 +358,11 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.eventTracker_.removeAll();
   }
 
+  override firstUpdated() {
+    this.postMessageHandler_ =
+        new PostMessageHandler(this.$.threadFrame, this.browserProxy_);
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
@@ -395,6 +374,27 @@ export class ContextualTasksAppElement extends CrLitElement {
     if (changedPrivateProperties.has('isShownInTab_')) {
       this.updateCommonSearchParams();
     }
+  }
+
+  protected async onNewThreadClick_() {
+    chrome.metricsPrivate.recordUserAction(
+        'ContextualTasks.WebUI.UserAction.OpenNewThread');
+    chrome.metricsPrivate.recordBoolean(
+        'ContextualTasks.WebUI.UserAction.OpenNewThread', true);
+    const {url} = await this.browserProxy_.handler.getThreadUrl();
+    const newThreadUrl = new URL(url);
+    const currentUrl = new URL(this.$.threadFrame.src);
+    const source = currentUrl.searchParams.get('source');
+    if (source) {
+      newThreadUrl.searchParams.set('source', source);
+    }
+    const aep = currentUrl.searchParams.get('aep');
+    if (aep) {
+      newThreadUrl.searchParams.set('aep', aep);
+    }
+    this.$.threadFrame.src = newThreadUrl.href;
+    this.$.composebox.startExpandAnimation();
+    this.$.composebox.clearInputAndFocus();
   }
 
   // Conditionally update the provided thread URL so it restores an existing

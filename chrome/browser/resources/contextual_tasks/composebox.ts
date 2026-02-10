@@ -240,6 +240,20 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
     }
   }
 
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.clearTooltipImpressionTimer_();
+    this.stopObservingResize_();
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+      this.resizeObserver_ = null;
+    }
+    this.eventTracker_.removeAll();
+    this.searchboxListenerIds_.forEach(
+        id => assert(this.searchboxCallbackRouter_.removeListener(id)));
+    this.searchboxListenerIds_ = [];
+  }
+
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     // Get zero state autocomplete matches. If `composeboxShowZps` is true
@@ -325,20 +339,6 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
       clearTimeout(this.tooltipImpressionTimer_);
       this.tooltipImpressionTimer_ = null;
     }
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.clearTooltipImpressionTimer_();
-    this.stopObservingResize_();
-    if (this.resizeObserver_) {
-      this.resizeObserver_.disconnect();
-      this.resizeObserver_ = null;
-    }
-    this.eventTracker_.removeAll();
-    this.searchboxListenerIds_.forEach(
-        id => assert(this.searchboxCallbackRouter_.removeListener(id)));
-    this.searchboxListenerIds_ = [];
   }
 
   clearInputAndFocus(querySubmitted: boolean = false): void {

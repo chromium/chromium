@@ -211,6 +211,48 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // connectedCallback has finished executing.
   private isSetupComplete_: boolean = false;
 
+  constructor() {
+    super();
+    this.constructorTime_ = Date.now();
+    this.logger_.logTimeFrom(
+        TimeFrom.TOOLBAR, this.startTime_, this.constructorTime_);
+    this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
+    this.isImmersiveEnabled_ = chrome.readingMode.isImmersiveEnabled;
+
+    // Only add the button to the toolbar if the feature is enabled.
+    if (chrome.readingMode.imagesFeatureEnabled) {
+      this.textStyleToggles_.push({
+        id: IMAGES_TOGGLE_BUTTON_ID,
+        icon: chrome.readingMode.imagesEnabled ? IMAGES_ENABLED_ICON :
+                                                 IMAGES_DISABLED_ICON,
+        title: chrome.readingMode.imagesEnabled ?
+            loadTimeData.getString('disableImagesLabel') :
+            loadTimeData.getString('enableImagesLabel'),
+      });
+    }
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.windowResizeCallback_ = this.maybeUpdateMoreOptions_.bind(this);
+    window.addEventListener('resize', this.windowResizeCallback_);
+
+    this.loadFontsStylesheet();
+    this.initializeMenuButtons_();
+    this.isSetupComplete_ = true;
+  }
+
+  override disconnectedCallback() {
+    if (this.windowResizeCallback_) {
+      window.removeEventListener('resize', this.windowResizeCallback_);
+    }
+    if (this.spinnerDebouncerCallbackHandle_ !== undefined) {
+      clearTimeout(this.spinnerDebouncerCallbackHandle_);
+    }
+    super.disconnectedCallback();
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has('isSpeechActive') ||
@@ -302,48 +344,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     element.classList.remove('hidden', 'visibility-hidden');
   }
 
-
-  constructor() {
-    super();
-    this.constructorTime_ = Date.now();
-    this.logger_.logTimeFrom(
-        TimeFrom.TOOLBAR, this.startTime_, this.constructorTime_);
-    this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
-    this.isImmersiveEnabled_ = chrome.readingMode.isImmersiveEnabled;
-
-    // Only add the button to the toolbar if the feature is enabled.
-    if (chrome.readingMode.imagesFeatureEnabled) {
-      this.textStyleToggles_.push({
-        id: IMAGES_TOGGLE_BUTTON_ID,
-        icon: chrome.readingMode.imagesEnabled ? IMAGES_ENABLED_ICON :
-                                                 IMAGES_DISABLED_ICON,
-        title: chrome.readingMode.imagesEnabled ?
-            loadTimeData.getString('disableImagesLabel') :
-            loadTimeData.getString('enableImagesLabel'),
-      });
-    }
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-
-    this.windowResizeCallback_ = this.maybeUpdateMoreOptions_.bind(this);
-    window.addEventListener('resize', this.windowResizeCallback_);
-
-    this.loadFontsStylesheet();
-    this.initializeMenuButtons_();
-    this.isSetupComplete_ = true;
-  }
-
-  override disconnectedCallback() {
-    if (this.windowResizeCallback_) {
-      window.removeEventListener('resize', this.windowResizeCallback_);
-    }
-    if (this.spinnerDebouncerCallbackHandle_ !== undefined) {
-      clearTimeout(this.spinnerDebouncerCallbackHandle_);
-    }
-    super.disconnectedCallback();
-  }
 
   private initializeMenuButtons_() {
     const fontSizeElement = {

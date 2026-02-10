@@ -91,6 +91,10 @@ export class DeclutterPageElement extends CrLitElement {
         'visibilitychange', this.visibilityChangedListener_);
   }
 
+  override firstUpdated() {
+    this.maybeAddScrollListener_();
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
@@ -104,10 +108,6 @@ export class DeclutterPageElement extends CrLitElement {
       this.maybeAddScrollListener_();
       this.updateScroll_();
     }
-  }
-
-  override firstUpdated() {
-    this.maybeAddScrollListener_();
   }
 
   override focus() {

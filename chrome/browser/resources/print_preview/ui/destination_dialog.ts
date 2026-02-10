@@ -63,8 +63,10 @@ export class PrintPreviewDestinationDialogElement extends CrLitElement {
   private tracker_: EventTracker = new EventTracker();
   private initialized_: boolean = false;
 
-  override firstUpdated() {
-    this.addEventListener('keydown', (e: KeyboardEvent) => this.onKeydown_(e));
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    this.tracker_.removeAll();
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -75,10 +77,8 @@ export class PrintPreviewDestinationDialogElement extends CrLitElement {
     }
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-
-    this.tracker_.removeAll();
+  override firstUpdated() {
+    this.addEventListener('keydown', (e: KeyboardEvent) => this.onKeydown_(e));
   }
 
   private onKeydown_(e: KeyboardEvent) {

@@ -109,21 +109,6 @@ export class CrDialogElement extends CrLitElement {
   private mutationObserver_: MutationObserver|null = null;
   private boundKeydown_: ((e: KeyboardEvent) => void)|null = null;
 
-  override firstUpdated() {
-    // If the active history entry changes (i.e. user clicks back button),
-    // all open dialogs should be cancelled.
-    window.addEventListener('popstate', () => {
-      if (!this.ignorePopstate && this.$.dialog.open) {
-        this.cancel();
-      }
-    });
-
-    if (!this.ignoreEnterKey) {
-      this.addEventListener('keypress', this.onKeypress_.bind(this));
-    }
-    this.addEventListener('pointerdown', e => this.onPointerdown_(e));
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     const mutationObserverCallback = () => {
@@ -155,6 +140,21 @@ export class CrDialogElement extends CrLitElement {
       this.mutationObserver_.disconnect();
       this.mutationObserver_ = null;
     }
+  }
+
+  override firstUpdated() {
+    // If the active history entry changes (i.e. user clicks back button),
+    // all open dialogs should be cancelled.
+    window.addEventListener('popstate', () => {
+      if (!this.ignorePopstate && this.$.dialog.open) {
+        this.cancel();
+      }
+    });
+
+    if (!this.ignoreEnterKey) {
+      this.addEventListener('keypress', this.onKeypress_.bind(this));
+    }
+    this.addEventListener('pointerdown', e => this.onPointerdown_(e));
   }
 
   private addKeydownListener_() {
