@@ -2199,9 +2199,7 @@ bool DrawingBuffer::IsSharedImageFormatMappable(viz::SharedImageFormat format) {
 #if BUILDFLAG(IS_MAC)
     return true;
 #else
-    return caps.texture_half_float_linear &&
-           !ContextProvider()->GetGpuFeatureInfo().IsWorkaroundEnabled(
-               gpu::DISABLE_HALF_FLOAT_FOR_GMB);
+    return caps.texture_half_float_linear;
 #endif
   }
   return false;

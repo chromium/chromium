@@ -1803,18 +1803,6 @@
       ]
     },
     {
-      "id": 311,
-      "cr_bugs": [998038],
-      "description": "Don't use IOSurface backed GMBs for half float textures with swiftshader",
-      "os": {
-        "type" : "macosx"
-      },
-      "gl_renderer": "Google SwiftShader*",
-      "features": [
-          "disable_half_float_for_gmb"
-      ]
-    },
-    {
       "id": 312,
       "cr_bugs": [991869],
       "description": "Crash on Mali-T8x when using glTexImage2D",
