@@ -13,18 +13,12 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
-#include "extensions/browser/api/device_permissions_prompt.h"
 #include "extensions/browser/api/hid/hid_device_manager.h"
-#include "extensions/shell/browser/shell_extensions_api_client.h"
 #include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "services/device/public/cpp/hid/hid_report_descriptor.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/mojom/hid.mojom.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -86,73 +80,19 @@ constexpr uint16_t kTestProductId = 0x58F0;
 
 }  // namespace
 
-class TestDevicePermissionsPrompt
-    : public DevicePermissionsPrompt,
-      public DevicePermissionsPrompt::Prompt::Observer {
- public:
-  explicit TestDevicePermissionsPrompt(content::WebContents* web_contents)
-      : DevicePermissionsPrompt(web_contents) {}
-
-  ~TestDevicePermissionsPrompt() override { prompt()->SetObserver(nullptr); }
-
-  void ShowDialog() override { prompt()->SetObserver(this); }
-
-  void OnDevicesInitialized() override {
-    if (prompt()->multiple()) {
-      for (size_t i = 0; i < prompt()->GetDeviceCount(); ++i) {
-        prompt()->GrantDevicePermission(i);
-      }
-      prompt()->Dismissed();
-    } else {
-      for (size_t i = 0; i < prompt()->GetDeviceCount(); ++i) {
-        // Always choose the device whose serial number is "A".
-        if (prompt()->GetDeviceSerialNumber(i) == u"A") {
-          prompt()->GrantDevicePermission(i);
-          prompt()->Dismissed();
-          return;
-        }
-      }
-    }
-  }
-
-  void OnDeviceAdded(size_t index, const std::u16string& device_name) override {
-  }
-
-  void OnDeviceRemoved(size_t index,
-                       const std::u16string& device_name) override {}
-};
-
-class TestExtensionsAPIClient : public ShellExtensionsAPIClient {
- public:
-  TestExtensionsAPIClient() : ShellExtensionsAPIClient() {}
-
-  std::unique_ptr<DevicePermissionsPrompt> CreateDevicePermissionsPrompt(
-      content::WebContents* web_contents) const override {
-    return std::make_unique<TestDevicePermissionsPrompt>(web_contents);
-  }
-};
-
 class HidApiTest : public ShellApiTest {
  public:
   HidApiTest() {
-#if BUILDFLAG(IS_CHROMEOS)
-    // Required for DevicePermissionsPrompt:
-    chromeos::PermissionBrokerClient::InitializeFake();
-#endif
     // Because Device Service also runs in this process (browser process), we
     // can set our binder to intercept requests for HidManager interface to it.
     fake_hid_manager_ = std::make_unique<FakeHidManager>();
     auto binder = base::BindRepeating(
         &FakeHidManager::Bind, base::Unretained(fake_hid_manager_.get()));
     HidDeviceManager::OverrideHidManagerBinderForTesting(binder);
-    DevicePermissionsPrompt::OverrideHidManagerBinderForTesting(binder);
   }
 
   ~HidApiTest() override {
     HidDeviceManager::OverrideHidManagerBinderForTesting(base::NullCallback());
-#if BUILDFLAG(IS_CHROMEOS)
-    chromeos::PermissionBrokerClient::Shutdown();
-#endif
   }
 
   void SetUpOnMainThread() override {

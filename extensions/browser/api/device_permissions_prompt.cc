@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -22,10 +21,7 @@
 #include "extensions/browser/api/device_permissions_manager.h"
 #include "extensions/browser/api/usb/usb_device_manager.h"
 #include "extensions/common/extension.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/device/public/cpp/hid/hid_device_filter.h"
-#include "services/device/public/cpp/hid/hid_report_utils.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,7 +30,6 @@
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-using device::HidDeviceFilter;
 using device::mojom::UsbDeviceFilterPtr;
 
 namespace extensions {
@@ -187,195 +182,6 @@ class UsbDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
       manager_observation_{this};
 };
 
-class HidDeviceInfo : public DevicePermissionsPrompt::Prompt::DeviceInfo {
- public:
-  explicit HidDeviceInfo(device::mojom::HidDeviceInfoPtr device)
-      : device_(std::move(device)) {
-    name_ = DevicePermissionsManager::GetPermissionMessage(
-        device_->vendor_id, device_->product_id,
-        u"",  // HID devices include manufacturer in product name.
-        base::UTF8ToUTF16(device_->product_name),
-        u"",  // Serial number is displayed separately.
-        false);
-    serial_number_ = base::UTF8ToUTF16(device_->serial_number);
-  }
-
-  ~HidDeviceInfo() override {}
-
-  device::mojom::HidDeviceInfoPtr& device() { return device_; }
-
- private:
-  device::mojom::HidDeviceInfoPtr device_;
-};
-
-DevicePermissionsPrompt::HidManagerBinder& GetHidManagerBinderOverride() {
-  static base::NoDestructor<DevicePermissionsPrompt::HidManagerBinder> binder;
-  return *binder;
-}
-
-class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
-                                   public device::mojom::HidManagerClient {
- public:
-  HidDevicePermissionsPrompt(
-      const Extension* extension,
-      content::BrowserContext* context,
-      bool multiple,
-      const std::vector<HidDeviceFilter>& filters,
-      DevicePermissionsPrompt::HidDevicesCallback callback)
-      : Prompt(extension, context, multiple),
-        initialized_(false),
-        filters_(filters),
-        callback_(std::move(callback)) {}
-
- private:
-  ~HidDevicePermissionsPrompt() override {}
-
-  // DevicePermissionsPrompt::Prompt implementation:
-  void SetObserver(
-      DevicePermissionsPrompt::Prompt::Observer* observer) override {
-    DevicePermissionsPrompt::Prompt::SetObserver(observer);
-
-    if (observer)
-      LazyInitialize();
-  }
-
-  void LazyInitialize() {
-    if (initialized_) {
-      return;
-    }
-
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    auto receiver = hid_manager_.BindNewPipeAndPassReceiver();
-    const auto& binder = GetHidManagerBinderOverride();
-    if (binder) {
-      binder.Run(std::move(receiver));
-    } else {
-      content::GetDeviceService().BindHidManager(std::move(receiver));
-    }
-
-    hid_manager_->GetDevicesAndSetClient(
-        receiver_.BindNewEndpointAndPassRemote(),
-        base::BindOnce(&HidDevicePermissionsPrompt::OnDevicesEnumerated, this));
-
-    initialized_ = true;
-  }
-
-  void Dismissed() override {
-    DevicePermissionsManager* permissions_manager =
-        DevicePermissionsManager::Get(browser_context());
-    std::vector<device::mojom::HidDeviceInfoPtr> devices;
-    for (const auto& device : devices_) {
-      if (device->granted()) {
-        HidDeviceInfo* hid_device = static_cast<HidDeviceInfo*>(device.get());
-        if (permissions_manager) {
-          DCHECK(hid_device->device());
-          permissions_manager->AllowHidDevice(extension()->id(),
-                                              *hid_device->device());
-        }
-        devices.push_back(std::move(hid_device->device()));
-      }
-    }
-    DCHECK(multiple() || devices.size() <= 1);
-    std::move(callback_).Run(std::move(devices));
-  }
-
-  // device::mojom::HidManagerClient implementation:
-  void DeviceAdded(device::mojom::HidDeviceInfoPtr device) override {
-    MaybeAddDevice(std::move(device), /*initial_enumeration=*/false);
-  }
-
-  void DeviceRemoved(device::mojom::HidDeviceInfoPtr device) override {
-    for (auto it = devices_.begin(); it != devices_.end(); ++it) {
-      HidDeviceInfo* entry = static_cast<HidDeviceInfo*>(it->get());
-      if (entry->device()->guid == device->guid) {
-        if (observer()) {
-          size_t index = it - devices_.begin();
-          const std::u16string& device_name = entry->name();
-          observer()->OnDeviceRemoved(index, device_name);
-        }
-        devices_.erase(it);
-        return;
-      }
-    }
-  }
-
-  void DeviceChanged(device::mojom::HidDeviceInfoPtr device) override {
-    for (const auto& device_info : devices_) {
-      auto* hid_device_info =
-          reinterpret_cast<HidDeviceInfo*>(device_info.get());
-      if (hid_device_info->device()->guid == device->guid) {
-        // The device is already present in |devices_|. Update its device
-        // information.
-        hid_device_info->device() = std::move(device);
-        return;
-      }
-    }
-
-    // The device was not previously added to |devices_|, possibly due to
-    // filters or protected collections. Try adding it again.
-    MaybeAddDevice(std::move(device), /*initial_enumeration=*/false);
-  }
-
-  void OnDevicesEnumerated(
-      std::vector<device::mojom::HidDeviceInfoPtr> devices) {
-    for (auto& device : devices) {
-      MaybeAddDevice(std::move(device), /*initial_enumeration=*/true);
-    }
-  }
-
-  // Returns true if `device` contains at least one unprotected report in any
-  // collection.
-  bool HasUnprotectedReports(const device::mojom::HidDeviceInfo& device) {
-    return std::ranges::any_of(device.collections, [](const auto& collection) {
-      return device::CollectionHasUnprotectedReports(*collection);
-    });
-  }
-
-  void MaybeAddDevice(device::mojom::HidDeviceInfoPtr device,
-                      bool initial_enumeration) {
-    if (!HasUnprotectedReports(*device) ||
-        (!filters_.empty() &&
-         !HidDeviceFilter::MatchesAny(*device, filters_))) {
-      return;
-    }
-
-    if (initial_enumeration) {
-      remaining_initial_devices_++;
-    }
-
-    auto device_info = std::make_unique<HidDeviceInfo>(std::move(device));
-#if BUILDFLAG(IS_CHROMEOS)
-    chromeos::PermissionBrokerClient::Get()->CheckPathAccess(
-        device_info.get()->device()->device_node,
-        base::BindOnce(&HidDevicePermissionsPrompt::AddCheckedDevice, this,
-                       std::move(device_info), initial_enumeration));
-#else
-    AddCheckedDevice(std::move(device_info), initial_enumeration,
-                     /*allowed=*/true);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  }
-
-  void AddCheckedDevice(std::unique_ptr<HidDeviceInfo> device_info,
-                        bool initial_enumeration,
-                        bool allowed) {
-    if (allowed) {
-      AddDevice(std::move(device_info));
-    }
-
-    if (initial_enumeration && --remaining_initial_devices_ == 0 &&
-        observer()) {
-      observer()->OnDevicesInitialized();
-    }
-  }
-
-  bool initialized_;
-  std::vector<HidDeviceFilter> filters_;
-  size_t remaining_initial_devices_ = 0;
-  mojo::Remote<device::mojom::HidManager> hid_manager_;
-  DevicePermissionsPrompt::HidDevicesCallback callback_;
-  mojo::AssociatedReceiver<device::mojom::HidManagerClient> receiver_{this};
-};
-
 }  // namespace
 
 DevicePermissionsPrompt::Prompt::DeviceInfo::DeviceInfo() {
@@ -450,26 +256,6 @@ void DevicePermissionsPrompt::AskForUsbDevices(
   ShowDialog();
 }
 
-void DevicePermissionsPrompt::AskForHidDevices(
-    const Extension* extension,
-    content::BrowserContext* context,
-    bool multiple,
-    const std::vector<HidDeviceFilter>& filters,
-    HidDevicesCallback callback) {
-  prompt_ = base::MakeRefCounted<HidDevicePermissionsPrompt>(
-      extension, context, multiple, filters, std::move(callback));
-  ShowDialog();
-}
-
-// static
-scoped_refptr<DevicePermissionsPrompt::Prompt>
-DevicePermissionsPrompt::CreateHidPromptForTest(const Extension* extension,
-                                                bool multiple) {
-  return base::MakeRefCounted<HidDevicePermissionsPrompt>(
-      extension, nullptr, multiple, std::vector<HidDeviceFilter>(),
-      base::DoNothing());
-}
-
 // static
 scoped_refptr<DevicePermissionsPrompt::Prompt>
 DevicePermissionsPrompt::CreateUsbPromptForTest(const Extension* extension,
@@ -477,12 +263,6 @@ DevicePermissionsPrompt::CreateUsbPromptForTest(const Extension* extension,
   return base::MakeRefCounted<UsbDevicePermissionsPrompt>(
       extension, nullptr, multiple, std::vector<UsbDeviceFilterPtr>(),
       base::DoNothing());
-}
-
-// static
-void DevicePermissionsPrompt::OverrideHidManagerBinderForTesting(
-    HidManagerBinder binder) {
-  GetHidManagerBinderOverride() = std::move(binder);
 }
 
 }  // namespace extensions

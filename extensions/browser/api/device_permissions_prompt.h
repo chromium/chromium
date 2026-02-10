@@ -15,17 +15,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/device/public/mojom/hid.mojom.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
 
 namespace content {
 class BrowserContext;
 class WebContents;
-}
-
-namespace device {
-class HidDeviceFilter;
 }
 
 namespace extensions {
@@ -38,8 +33,6 @@ class DevicePermissionsPrompt {
  public:
   using UsbDevicesCallback =
       base::OnceCallback<void(std::vector<device::mojom::UsbDeviceInfoPtr>)>;
-  using HidDevicesCallback =
-      base::OnceCallback<void(std::vector<device::mojom::HidDeviceInfoPtr>)>;
 
   // Context information available to the UI implementation.
   class Prompt : public base::RefCounted<Prompt> {
@@ -142,23 +135,9 @@ class DevicePermissionsPrompt {
                         std::vector<device::mojom::UsbDeviceFilterPtr> filters,
                         UsbDevicesCallback callback);
 
-  void AskForHidDevices(const Extension* extension,
-                        content::BrowserContext* context,
-                        bool multiple,
-                        const std::vector<device::HidDeviceFilter>& filters,
-                        HidDevicesCallback callback);
-
-  static scoped_refptr<Prompt> CreateHidPromptForTest(
-      const Extension* extension,
-      bool multiple);
   static scoped_refptr<Prompt> CreateUsbPromptForTest(
       const Extension* extension,
       bool multiple);
-
-  // Allows tests to override how the HidManager interface is bound.
-  using HidManagerBinder = base::RepeatingCallback<void(
-      mojo::PendingReceiver<device::mojom::HidManager> receiver)>;
-  static void OverrideHidManagerBinderForTesting(HidManagerBinder binder);
 
  protected:
   virtual void ShowDialog() = 0;
