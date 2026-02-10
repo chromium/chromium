@@ -56,10 +56,12 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -541,19 +543,21 @@ SiteConfig GetSiteConfigurationFromAppName(const std::string& app_name) {
 }
 #endif
 
-class BrowserAddedWaiter final : public BrowserListObserver {
+class BrowserAddedWaiter final : public BrowserCollectionObserver {
  public:
-  BrowserAddedWaiter() { BrowserList::AddObserver(this); }
-  ~BrowserAddedWaiter() override { BrowserList::RemoveObserver(this); }
+  BrowserAddedWaiter() {
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
+  }
 
   void Wait(const base::Location& location = base::Location::Current()) {
     run_loop_.Run(location);
   }
 
-  // BrowserListObserver
-  void OnBrowserAdded(Browser* browser) override {
-    browser_added_ = browser;
-    BrowserList::RemoveObserver(this);
+  // BrowserCollectionObserver
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
+    browser_added_ = browser->GetBrowserForMigrationOnly();
+    browser_collection_observation_.Reset();
     // Post a task to ensure the Remove event has been dispatched to all
     // observers.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -564,6 +568,8 @@ class BrowserAddedWaiter final : public BrowserListObserver {
  private:
   base::RunLoop run_loop_;
   raw_ptr<Browser> browser_added_ = nullptr;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 BrowserWindowInterface* GetAppBrowserForAppId(const Profile* profile,
@@ -604,7 +610,7 @@ content::WebContents* GetAnyWebContentsForAppId(const webapps::AppId& app_id) {
   return result;
 }
 
-class UninstallCompleteWaiter final : public BrowserListObserver,
+class UninstallCompleteWaiter final : public BrowserCollectionObserver,
                                       public WebAppInstallManagerObserver {
  public:
   explicit UninstallCompleteWaiter(
@@ -614,17 +620,13 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
       : profile_(profile),
         app_id_(app_id),
         app_unregistration_waiter_(profile, app_id, readiness) {
-    BrowserList::AddObserver(this);
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
     WebAppProvider* provider = WebAppProvider::GetForTest(profile);
-    observation_.Observe(&provider->install_manager());
+    install_manager_observation_.Observe(&provider->install_manager());
     uninstall_complete_ =
         provider->registrar_unsafe().GetAppById(app_id) == nullptr;
     MaybeFinishWaiting();
-  }
-
-  ~UninstallCompleteWaiter() override {
-    BrowserList::RemoveObserver(this);
-    observation_.Reset();
   }
 
   void Wait() {
@@ -632,8 +634,8 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
     run_loop_.Run();
   }
 
-  // BrowserListObserver
-  void OnBrowserRemoved(Browser* browser) override {
+  // BrowserCollectionObserver
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
     if (WebAppBrowserController::IsForWebApp(browser, app_id_)) {
       LOG(INFO) << base::StringPrintf("App browser closed: %p", browser);
       MaybeFinishWaiting();
@@ -669,8 +671,8 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
       return;
     }
 
-    BrowserList::RemoveObserver(this);
-    observation_.Reset();
+    browser_collection_observation_.Reset();
+    install_manager_observation_.Reset();
     // Post a task to ensure the Remove event has been dispatched to all
     // observers.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -684,8 +686,10 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
   base::RunLoop run_loop_;
   apps::AppReadinessWaiter app_unregistration_waiter_;
 
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
-      observation_{this};
+      install_manager_observation_{this};
 };
 
 std::optional<ProfileState> GetStateForProfile(StateSnapshot* state_snapshot,

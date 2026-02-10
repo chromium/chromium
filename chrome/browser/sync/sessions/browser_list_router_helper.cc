@@ -6,8 +6,9 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
@@ -17,30 +18,25 @@ BrowserListRouterHelper::BrowserListRouterHelper(
     SyncSessionsWebContentsRouter* router,
     Profile* profile)
     : router_(router), profile_(profile) {
-  BrowserList* browser_list = BrowserList::GetInstance();
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this](BrowserWindowInterface* browser) {
         if (browser->GetProfile() == profile_) {
+          // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
           browser->GetTabStripModel()->AddObserver(this);
         }
         return true;
       });
-  browser_list->AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 }
 
-BrowserListRouterHelper::~BrowserListRouterHelper() {
-  BrowserList::GetInstance()->RemoveObserver(this);
-}
+BrowserListRouterHelper::~BrowserListRouterHelper() = default;
 
-void BrowserListRouterHelper::OnBrowserAdded(Browser* browser) {
-  if (browser->profile() == profile_) {
-    browser->tab_strip_model()->AddObserver(this);
-  }
-}
-
-void BrowserListRouterHelper::OnBrowserRemoved(Browser* browser) {
-  if (browser->profile() == profile_) {
-    browser->tab_strip_model()->RemoveObserver(this);
+void BrowserListRouterHelper::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
+  if (browser->GetProfile() == profile_) {
+    // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
+    browser->GetTabStripModel()->AddObserver(this);
   }
 }
 

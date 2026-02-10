@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -72,39 +71,6 @@ void BrowserActivationWaiter::OnWidgetActivationChanged(views::Widget* widget,
 
   observed_ = true;
   widget->RemoveObserver(this);
-  if (run_loop_.running()) {
-    run_loop_.Quit();
-  }
-}
-
-BrowserDeactivationWaiter::BrowserDeactivationWaiter(const Browser* browser)
-    : browser_(browser->AsWeakPtr()) {
-  if (chrome::FindLastActive() != browser && !browser->window()->IsActive()) {
-    observed_ = true;
-    return;
-  }
-  BrowserList::AddObserver(this);
-}
-
-BrowserDeactivationWaiter::~BrowserDeactivationWaiter() = default;
-
-void BrowserDeactivationWaiter::WaitForDeactivation() {
-  if (observed_) {
-    return;
-  }
-  DCHECK(!run_loop_.running()) << "WaitForDeactivation() can be called at most "
-                                  "once. Construct a new "
-                                  "BrowserDeactivationWaiter instead.";
-  run_loop_.Run();
-}
-
-void BrowserDeactivationWaiter::OnBrowserNoLongerActive(Browser* browser) {
-  if (browser != browser_.get()) {
-    return;
-  }
-
-  observed_ = true;
-  BrowserList::RemoveObserver(this);
   if (run_loop_.running()) {
     run_loop_.Quit();
   }
