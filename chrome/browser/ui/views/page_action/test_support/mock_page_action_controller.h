@@ -25,7 +25,7 @@ class MockPageActionController : public PageActionController {
   }
   MOCK_METHOD(void,
               ShowSuggestionChip,
-              (actions::ActionId, SuggestionChipConfig),
+              (actions::ActionId, const SuggestionChipConfig&),
               (override));
   MOCK_METHOD(void, HideSuggestionChip, (actions::ActionId), (override));
   MOCK_METHOD(void,

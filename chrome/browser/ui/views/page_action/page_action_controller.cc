@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/views/page_action/chip_selector.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
@@ -93,6 +94,11 @@ void PageActionControllerImpl::Initialize(
   tab_deactivated_callback_subscription_ = tab_interface.RegisterWillDeactivate(
       base::BindRepeating(&PageActionControllerImpl::OnTabWillDeactivate,
                           base::Unretained(this)));
+  chip_selector_ = CreateChipSelector(
+      base::BindRepeating(&PageActionControllerImpl::DoShowSuggestionChip,
+                          base::Unretained(this)),
+      base::BindRepeating(&PageActionControllerImpl::DoHideSuggestionChip,
+                          base::Unretained(this)));
 
   page_metrics_recorder_ = CreatePageMetricsRecorder(
       tab_interface,
@@ -154,14 +160,26 @@ void PageActionControllerImpl::ShowSuggestionChip(actions::ActionId action_id) {
   ShowSuggestionChip(action_id, SuggestionChipConfig());
 }
 
-void PageActionControllerImpl::ShowSuggestionChip(actions::ActionId action_id,
-                                                  SuggestionChipConfig config) {
+void PageActionControllerImpl::ShowSuggestionChip(
+    actions::ActionId action_id,
+    const SuggestionChipConfig& config) {
+  chip_selector_->RequestChipShow(action_id, config);
+}
+
+void PageActionControllerImpl::DoShowSuggestionChip(
+    actions::ActionId action_id,
+    const SuggestionChipConfig& config) {
   PageActionModelInterface& model = FindPageActionModel(action_id);
   model.SetSuggestionChipConfig(PassKey(), config);
   model.SetShouldShowSuggestionChip(PassKey(), /*show=*/true);
 }
 
 void PageActionControllerImpl::HideSuggestionChip(actions::ActionId action_id) {
+  chip_selector_->RequestChipHide(action_id);
+}
+
+void PageActionControllerImpl::DoHideSuggestionChip(
+    actions::ActionId action_id) {
   FindPageActionModel(action_id).SetShouldShowSuggestionChip(PassKey(),
                                                              /*show=*/false);
 }

@@ -19,6 +19,7 @@
 #include "base/scoped_observation.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/views/page_action/chip_selector.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
@@ -46,6 +47,7 @@ class PageActionModelInterface;
 class PageActionModelObserver;
 class PageActionMetricsRecorderFactory;
 class PageActionMetricsRecorderInterface;
+class ChipSelector;
 
 // Indicates the source used to color the page action icon.
 enum class PageActionColorSource {
@@ -114,7 +116,7 @@ class PageActionController {
   // the framework may choose to display only one chip at a time, despite
   // requests from multiple features).
   virtual void ShowSuggestionChip(actions::ActionId action_id,
-                                  SuggestionChipConfig config) = 0;
+                                  const SuggestionChipConfig& config) = 0;
   virtual void ShowSuggestionChip(actions::ActionId action_id) = 0;
   virtual void HideSuggestionChip(actions::ActionId action_id) = 0;
 
@@ -229,7 +231,7 @@ class PageActionControllerImpl : public PageActionController,
   void Hide(actions::ActionId action_id) override;
   void ShowSuggestionChip(actions::ActionId action_id) override;
   void ShowSuggestionChip(actions::ActionId action_id,
-                          SuggestionChipConfig config) override;
+                          const SuggestionChipConfig& config) override;
   void HideSuggestionChip(actions::ActionId action_id) override;
   void OverrideText(actions::ActionId action_id,
                     const std::u16string& override_text) override;
@@ -325,6 +327,10 @@ class PageActionControllerImpl : public PageActionController,
   // are ephemeral.
   int GetVisibleEphemeralPageActionsCount() const;
 
+  void DoShowSuggestionChip(actions::ActionId action_id,
+                            const SuggestionChipConfig& config);
+  void DoHideSuggestionChip(actions::ActionId action_id);
+
   const raw_ptr<PageActionModelFactory> page_action_model_factory_ = nullptr;
   const raw_ptr<PageActionMetricsRecorderFactory>
       page_action_metrics_recorder_factory_ = nullptr;
@@ -352,6 +358,7 @@ class PageActionControllerImpl : public PageActionController,
 
   base::OnceCallbackList<void(PageActionController&)>
       on_will_destroy_callback_list_;
+  std::unique_ptr<ChipSelector> chip_selector_;
 
   base::WeakPtrFactory<PageActionControllerImpl> weak_factory_{this};
 };

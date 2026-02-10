@@ -33,6 +33,7 @@ source_set("page_action") {
   ]
 
   sources = [
+    "chip_selector.h",
     "page_action_enums.h",
     "page_action_metrics_recorder.h",
     "page_action_metrics_recorder_interface.h",
@@ -69,6 +70,7 @@ source_set("page_action") {
 
 source_set("impl") {
   sources = [
+    "chip_selector.cc",
     "collaboration_messaging_page_action_icon_view.cc",
     "page_action_container_view.cc",
     "page_action_controller.cc",
@@ -162,6 +164,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "chip_selector_unittest.cc",
     "page_action_container_view_unittest.cc",
     "page_action_controller_unittest.cc",
     "page_action_icon_view_unittest.cc",
