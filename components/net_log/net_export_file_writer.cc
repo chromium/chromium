@@ -22,6 +22,11 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/path_utils.h"
+#endif
+
 #include "components/net_log/chrome_net_log.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -80,7 +85,14 @@ NetExportFileWriter::NetExportFileWriter()
       log_exists_(false),
       log_capture_mode_known_(false),
       log_capture_mode_(net::NetLogCaptureMode::kDefault),
-      default_log_base_dir_getter_(base::BindRepeating(&base::GetTempDir)) {}
+      default_log_base_dir_getter_(
+#if BUILDFLAG(IS_ANDROID)
+          base::BindRepeating(&base::android::GetDownloadsDirectory)
+#else
+          base::BindRepeating(&base::GetTempDir)
+#endif
+      ) {
+}
 
 NetExportFileWriter::~NetExportFileWriter() {
   if (net_log_exporter_) {
