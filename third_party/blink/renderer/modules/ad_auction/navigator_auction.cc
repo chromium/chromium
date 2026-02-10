@@ -3973,14 +3973,16 @@ namespace {
 String CombineAuctionNonce(base::Uuid base_auction_nonce,
                            uint32_t auction_nonce_counter) {
   CHECK(base_auction_nonce.is_valid());
-  String base_nonce_string(base_auction_nonce.AsLowercaseString());
-  auto base_nonce_suffix = HexStringToUint(base_nonce_string.Right(6),
+  const std::string& base_nonce_string = base_auction_nonce.AsLowercaseString();
+  auto [base_nonce_prefix_string, base_nonce_suffix_string] =
+      base::as_byte_span(base_nonce_string).split_at<30>();
+  auto base_nonce_suffix = HexStringToUint(StringView(base_nonce_suffix_string),
                                            NumberParsingOptions::Strict());
   CHECK(base_nonce_suffix) << "Unexpected: invalid base auction nonce.";
   uint32_t nonce_suffix = *base_nonce_suffix + auction_nonce_counter;
 
   StringBuilder nonce_builder;
-  nonce_builder.Append(base_nonce_string.Left(30));
+  nonce_builder.Append(base_nonce_prefix_string);
   nonce_builder.AppendFormat("%06x", nonce_suffix & 0x00FFFFFF);
   return nonce_builder.ReleaseString();
 }
