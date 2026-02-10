@@ -3815,8 +3815,6 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(startX + dragDistance, 0f, dragDistance);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testTabClosed() {
         // Initialize with 10 tabs.
@@ -3845,7 +3843,7 @@ public class StripLayoutHelperTest {
                 "Tab strip should match tab model.",
                 expectedNumTabs,
                 mStripLayoutHelper.getStripLayoutTabsForTesting().length);
-        verify(mUpdateHost, times(9)).requestUpdate();
+        verify(mUpdateHost, times(6)).requestUpdate();
         verify(mUpdateHost, times(4)).requestUpdate(any());
     }
 

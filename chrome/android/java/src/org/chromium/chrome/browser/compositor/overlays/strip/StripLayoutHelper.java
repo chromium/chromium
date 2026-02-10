@@ -2768,10 +2768,11 @@ public class StripLayoutHelper
         mUpdateHost.requestUpdate();
     }
 
-    /** Called in post delay task in q#onDown to clear tab hover state. */
+    /** Clears the tab hover state and requests a UI update if a tab was being hovered. */
     protected void clearTabHoverState() {
-        clearLastHoveredTab();
-        mUpdateHost.requestUpdate();
+        if (clearLastHoveredTab()) {
+            mUpdateHost.requestUpdate();
+        }
     }
 
     /** Check whether model selector button or new tab button is being hovered. */
@@ -2841,9 +2842,9 @@ public class StripLayoutHelper
         ResettersForTesting.register(() -> mTabStripContextMenuCoordinator = null);
     }
 
-    private void clearLastHoveredTab() {
+    private boolean clearLastHoveredTab() {
         if (mLastHoveredTab == null) {
-            return;
+            return false;
         }
         mTabDelegate.setIsTabHovered(mLastHoveredTab, false);
         mLastHoveredTab = null;
@@ -2856,6 +2857,7 @@ public class StripLayoutHelper
             }
             mTabHoverCardView.hide();
         }
+        return true;
     }
 
     @VisibleForTesting
