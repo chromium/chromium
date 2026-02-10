@@ -112,7 +112,17 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::Start(
 void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
     OnSessionCreated(base::TimeTicks session_creation_start_time,
                      std::unique_ptr<ModelExecutorSession> session) {
-  CHECK(session) << "model broker client should not create a null session.";
+  bool is_model_available = session != nullptr;
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.IsOnDeviceModelAvailableOnSessionCreation",
+      is_model_available);
+  if (!is_model_available) {
+    std::move(callback_).Run(IntelligentScanResult::Failure(
+        IntelligentScanResult::kModelVersionUnavailable,
+        ModelType::kNotSupportedOnDevice,
+        IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE));
+    return;
+  }
   client_side_detection::LogOnDeviceModelSessionCreationTime(
       session_creation_start_time);
   session_ = std::move(session);
@@ -301,8 +311,14 @@ ClientSideDetectionIntelligentScanDelegateAndroid::GetIntelligentScanModelType(
   if (!model_broker_client_) {
     return ModelType::kNotSupportedOnDevice;
   }
-  // The HasSubscriber check is required because GetSubscriber may start model
-  // download.
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionOnDeviceModelLazyDownloadAndroid)) {
+    // When the lazy download flag is enabled, we will check model availability
+    // at inquiry time.
+    return ModelType::kOnDevice;
+  }
+  // The HasSubscriber check is required because GetSubscriber will start model
+  // download if this is the first time the subscriber is requested.
   if (!model_broker_client_->HasSubscriber(kScamDetection)) {
     return ModelType::kNotSupportedOnDevice;
   }
@@ -423,9 +439,11 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::OnPrefsUpdated() {
     ResetAllInquiries();
     return;
   }
-  // No need to download the on-device model if we are using the server
-  // model.
-  if (!is_server_model_enabled_) {
+  // No need to download the on-device model at startup if we are using the
+  // server model or the lazy download flag is enabled.
+  if (!is_server_model_enabled_ &&
+      !base::FeatureList::IsEnabled(
+          kClientSideDetectionOnDeviceModelLazyDownloadAndroid)) {
     StartModelDownload();
   }
 }

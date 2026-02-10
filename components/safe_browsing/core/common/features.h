@@ -119,6 +119,11 @@ BASE_DECLARE_FEATURE(kClientSideDetectionKillswitch);
 BASE_DECLARE_FEATURE(
     kClientSideDetectionLlamaForcedTriggerInfoForScamDetection);
 
+#if BUILDFLAG(IS_ANDROID)
+// Instead of starting model download on startup, do it lazily during inference.
+BASE_DECLARE_FEATURE(kClientSideDetectionOnDeviceModelLazyDownloadAndroid);
+#endif
+
 // Killswitch for force request redirect chain check.
 BASE_DECLARE_FEATURE(kClientSideDetectionRedirectChainKillswitch);
 

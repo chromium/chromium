@@ -910,6 +910,16 @@ useful for Chirp alerts (go/crca-alerts). -->
       variants="ClientSideDetectionIntelligentScanRequestType"/>
 </histogram>
 
+<histogram name="SBClientPhishing.IsOnDeviceModelAvailableOnSessionCreation"
+    enum="BooleanSuccess" expires_after="2026-08-06">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the on device model is available at the time of session
+    creation.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.LlamaForcedTriggerInfo.IntelligentScan"
     enum="BooleanEnabled" expires_after="2026-07-05">
   <owner>andysjlim@chromium.org</owner>
