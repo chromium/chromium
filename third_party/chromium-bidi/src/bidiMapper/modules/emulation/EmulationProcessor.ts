@@ -500,7 +500,7 @@ export class EmulationProcessor {
   }
 
   async setClientHintsOverride(
-    params: UAClientHints.Emulation.SetClientHintsOverrideParameters,
+    params: UAClientHints.UserAgentClientHints.SetClientHintsOverrideCommand['params'],
   ): Promise<EmptyResult> {
     const clientHints = params.clientHints ?? null;
 

@@ -27,25 +27,30 @@
 import z from 'zod';
 
 export const UserAgentClientHintsCommandSchema = z.lazy(
-  () => Emulation.SetClientHintsOverrideCommandSchema,
+  () => UserAgentClientHints.SetClientHintsOverrideCommandSchema,
 );
-export namespace Emulation {
+export namespace UserAgentClientHints {
   export const SetClientHintsOverrideCommandSchema = z.lazy(() =>
     z.object({
-      method: z.literal('emulation.setClientHintsOverride'),
+      method: z.literal('userAgentClientHints.setClientHintsOverride'),
       params: z.object({
-        clientHints: z.union([Emulation.ClientHintsMetadataSchema, z.null()]),
+        clientHints: z.union([
+          UserAgentClientHints.ClientHintsMetadataSchema,
+          z.null(),
+        ]),
         contexts: z.array(z.string()).min(1).optional(),
         userContexts: z.array(z.string()).min(1).optional(),
       }),
     }),
   );
 }
-export namespace Emulation {
+export namespace UserAgentClientHints {
   export const ClientHintsMetadataSchema = z.lazy(() =>
     z.object({
-      brands: z.array(Emulation.BrandVersionSchema).optional(),
-      fullVersionList: z.array(Emulation.BrandVersionSchema).optional(),
+      brands: z.array(UserAgentClientHints.BrandVersionSchema).optional(),
+      fullVersionList: z
+        .array(UserAgentClientHints.BrandVersionSchema)
+        .optional(),
       platform: z.string().optional(),
       platformVersion: z.string().optional(),
       architecture: z.string().optional(),
@@ -57,7 +62,7 @@ export namespace Emulation {
     }),
   );
 }
-export namespace Emulation {
+export namespace UserAgentClientHints {
   export const BrandVersionSchema = z.lazy(() =>
     z.object({
       brand: z.string(),
@@ -65,6 +70,6 @@ export namespace Emulation {
     }),
   );
 }
-export namespace Emulation {
+export namespace UserAgentClientHints {
   export const SetClientHintsOverrideResultSchema = z.lazy(() => z.object({}));
 }

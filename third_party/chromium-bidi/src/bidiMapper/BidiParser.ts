@@ -125,7 +125,7 @@ export interface BidiCommandParameterParser {
   // keep-sorted start block=yes
   parseSetClientHintsOverrideParams(
     params: unknown,
-  ): UAClientHints.Emulation.SetClientHintsOverrideParameters;
+  ): UAClientHints.UserAgentClientHints.SetClientHintsOverrideCommand['params'];
   parseSetForcedColorsModeThemeOverrideParams(
     params: unknown,
   ): Emulation.SetForcedColorsModeThemeOverrideParameters;

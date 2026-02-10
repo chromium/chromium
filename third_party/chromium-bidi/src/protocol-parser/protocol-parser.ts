@@ -350,7 +350,8 @@ export namespace Emulation {
   export function parseSetClientHintsOverrideParams(params: unknown) {
     const SetClientHintsOverrideParametersSchema = z.object({
       clientHints: z.union([
-        WebDriverBidiUAClientHints.Emulation.ClientHintsMetadataSchema,
+        WebDriverBidiUAClientHints.UserAgentClientHints
+          .ClientHintsMetadataSchema,
         z.null(),
       ]),
       contexts: z.array(z.string()).min(1).optional(),
@@ -359,7 +360,7 @@ export namespace Emulation {
     return parseObject(
       params,
       SetClientHintsOverrideParametersSchema,
-    ) as Protocol.UAClientHints.Emulation.SetClientHintsOverrideParameters;
+    ) as Protocol.UAClientHints.UserAgentClientHints.SetClientHintsOverrideCommand['params'];
   }
   export function parseSetForcedColorsModeThemeOverrideParams(params: unknown) {
     return parseObject(

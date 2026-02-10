@@ -907,7 +907,7 @@ export class CdpTarget {
   async setUserAgentAndAcceptLanguage(
     userAgent: string | null | undefined,
     acceptLanguage: string | null | undefined,
-    clientHints?: UAClientHints.Emulation.ClientHintsMetadata | null,
+    clientHints?: UAClientHints.UserAgentClientHints.ClientHintsMetadata | null,
   ): Promise<void> {
     const userAgentMetadata = clientHints
       ? {

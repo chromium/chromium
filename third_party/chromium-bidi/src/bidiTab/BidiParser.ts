@@ -190,7 +190,7 @@ export class BidiParser implements BidiCommandParameterParser {
   // keep-sorted start block=yes
   parseSetClientHintsOverrideParams(
     params: unknown,
-  ): UAClientHints.Emulation.SetClientHintsOverrideParameters {
+  ): UAClientHints.UserAgentClientHints.SetClientHintsOverrideCommand['params'] {
     return Parser.Emulation.parseSetClientHintsOverrideParams(params);
   }
   parseSetForcedColorsModeThemeOverrideParams(

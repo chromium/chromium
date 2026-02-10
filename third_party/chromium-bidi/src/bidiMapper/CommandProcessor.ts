@@ -322,10 +322,6 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
 
       // Emulation module
       // keep-sorted start block=yes
-      case 'emulation.setClientHintsOverride':
-        return await this.#emulationProcessor.setClientHintsOverride(
-          this.#parser.parseSetClientHintsOverrideParams(command.params),
-        );
       case 'emulation.setForcedColorsModeThemeOverride':
         this.#parser.parseSetForcedColorsModeThemeOverrideParams(
           command.params,
@@ -368,6 +364,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       case 'emulation.setUserAgentOverride':
         return await this.#emulationProcessor.setUserAgentOverrideParams(
           this.#parser.parseSetUserAgentOverrideParams(command.params),
+        );
+      case 'userAgentClientHints.setClientHintsOverride':
+        return await this.#emulationProcessor.setClientHintsOverride(
+          this.#parser.parseSetClientHintsOverrideParams(command.params),
         );
       // keep-sorted end
 

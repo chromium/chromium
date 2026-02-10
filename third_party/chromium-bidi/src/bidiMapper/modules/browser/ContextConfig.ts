@@ -33,7 +33,7 @@ import type {
 export class ContextConfig {
   // keep-sorted start block=yes
   acceptInsecureCerts?: boolean;
-  clientHints?: UAClientHints.Emulation.ClientHintsMetadata | null;
+  clientHints?: UAClientHints.UserAgentClientHints.ClientHintsMetadata | null;
   devicePixelRatio?: number | null;
   disableNetworkDurableMessages?: true;
   downloadBehavior?: Browser.DownloadBehavior | null;

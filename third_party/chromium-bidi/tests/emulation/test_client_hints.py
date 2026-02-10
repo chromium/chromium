@@ -211,7 +211,7 @@ async def test_client_hints_override_global(websocket, context_id,
     # Set global override
     await execute_command(
         websocket, {
-            'method': 'emulation.setClientHintsOverride',
+            'method': 'userAgentClientHints.setClientHintsOverride',
             'params': {
                 'clientHints': SOME_CLIENT_HINTS
             }
@@ -243,7 +243,7 @@ async def test_client_hints_override_global(websocket, context_id,
     # Clear override
     await execute_command(
         websocket, {
-            'method': 'emulation.setClientHintsOverride',
+            'method': 'userAgentClientHints.setClientHintsOverride',
             'params': {
                 'clientHints': None
             }
@@ -261,7 +261,7 @@ async def test_client_hints_override_per_context(websocket, context_id,
                                                  get_network_client_hints):
     await execute_command(
         websocket, {
-            'method': 'emulation.setClientHintsOverride',
+            'method': 'userAgentClientHints.setClientHintsOverride',
             'params': {
                 'clientHints': SOME_CLIENT_HINTS,
                 'contexts': [context_id]
@@ -271,7 +271,7 @@ async def test_client_hints_override_per_context(websocket, context_id,
     new_context_id = await create_context()
     await execute_command(
         websocket, {
-            'method': 'emulation.setClientHintsOverride',
+            'method': 'userAgentClientHints.setClientHintsOverride',
             'params': {
                 'clientHints': ANOTHER_CLIENT_HINTS,
                 'contexts': [new_context_id]
@@ -313,7 +313,7 @@ async def test_client_hints_override_per_user_context(
     # Set override for the user context
     await execute_command(
         websocket, {
-            'method': 'emulation.setClientHintsOverride',
+            'method': 'userAgentClientHints.setClientHintsOverride',
             'params': {
                 'clientHints': SOME_CLIENT_HINTS,
                 'userContexts': [user_context]

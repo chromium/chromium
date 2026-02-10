@@ -1958,7 +1958,10 @@ export class BrowsingContextImpl {
   async setUserAgentAndAcceptLanguage(
     userAgent: string | null | undefined,
     acceptLanguage: string | null | undefined,
-    clientHints: UAClientHints.Emulation.ClientHintsMetadata | null | undefined,
+    clientHints:
+      | UAClientHints.UserAgentClientHints.ClientHintsMetadata
+      | null
+      | undefined,
   ) {
     await Promise.all(
       this.#getAllRelatedCdpTargets().map(
