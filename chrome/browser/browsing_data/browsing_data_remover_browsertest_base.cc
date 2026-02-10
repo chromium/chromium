@@ -270,12 +270,15 @@ Profile* BrowsingDataRemoverBrowserTestBase::GetProfile() {
 #endif
 }
 
+// static
 bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
     const std::string& hostname,
     const std::vector<std::string>& ignore_file_patterns,
-    bool check_leveldb_content) {
-  base::FilePath user_data_dir =
-      g_browser_process->profile_manager()->user_data_dir();
+    bool check_leveldb_content,
+    base::FilePath user_data_dir) {
+  if (user_data_dir.empty()) {
+    user_data_dir = g_browser_process->profile_manager()->user_data_dir();
+  }
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FileEnumerator enumerator(
       user_data_dir, true /* recursive */,

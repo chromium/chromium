@@ -83,10 +83,15 @@ class BrowsingDataRemoverBrowserTestBase : public PlatformBrowserTest {
   // If `check_leveldb_content` is true, also tries to open LevelDB files and
   // look for the `hostname` inside them. If LevelDB files are locked and cannot
   // be opened, they are ignored.
-  bool CheckUserDirectoryForString(
+  // If `user_data_dir` is not provided, this will check the user data directory
+  // of the current browser process. (Alternatively, this can be specified
+  // explicitly since the browser process may no longer exist by the time this
+  // is called.)
+  static bool CheckUserDirectoryForString(
       const std::string& hostname,
       const std::vector<std::string>& ignore_file_patterns,
-      bool check_leveldb_content);
+      bool check_leveldb_content,
+      base::FilePath user_data_dir = {});
 
   // Returns the browsing data model for the browser.
   std::unique_ptr<BrowsingDataModel> GetBrowsingDataModel(Profile* profile);

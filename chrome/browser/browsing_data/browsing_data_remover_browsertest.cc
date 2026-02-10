@@ -23,6 +23,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/browsing_data_remover_browsertest_base.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/media/clear_key_cdm_test_helper.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -167,17 +169,21 @@ class BrowsingDataRemoverBrowserTest
     InitFeatureLists(std::move(enabled_features), std::move(disabled_features));
   }
 
+  ~BrowsingDataRemoverBrowserTest() override = default;
+
   void SetUpOnMainThread() override {
     BrowsingDataRemoverBrowserTestBase::SetUpOnMainThread();
     host_resolver()->AddRule(kExampleHost, "127.0.0.1");
-
-    // Explicitly disable session restore. Otherwise tests that restart the
-    // browser can get tab data persisted across sessions when we thought we
-    // deleted it.
-    SessionStartupPref::SetStartupPref(
-        GetProfile()->GetPrefs(),
-        SessionStartupPref(SessionStartupPref::DEFAULT));
   }
+
+  void TearDown() override {
+    BrowsingDataRemoverBrowserTestBase::TearDown();
+
+    if (verify_after_shutdown_) {
+      std::move(verify_after_shutdown_).Run();
+    }
+  }
+
   void RemoveAndWait(uint64_t remove_mask) {
     RemoveAndWait(remove_mask, TimeEnum::kDefault, TimeEnum::kMax);
   }
@@ -308,6 +314,9 @@ class BrowsingDataRemoverBrowserTest
         /*callback=*/loop.QuitClosure());
     loop.Run();
   }
+
+  // If non null, this will be run after `TearDown()` completes.
+  base::OnceClosure verify_after_shutdown_;
 
  private:
   void OnCacheSizeResult(
@@ -1328,7 +1337,7 @@ const std::vector<std::string> kStorageTypes{
 
 // Test that storage doesn't leave any traces on disk.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
-                       PRE_PRE_StorageRemovedFromDisk) {
+                       PRE_StorageRemovedFromDisk) {
   // Checking leveldb content fails in most cases. See
   // https://crbug.com/1238325.
   ASSERT_EQ(0, CheckUserDirectoryForString(kLocalHost, {},
@@ -1358,12 +1367,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 
 // Restart after creating the data to ensure that everything was written to
 // disk.
-//
-// This depends on session restore being explicitly disabled by the test harness
-// above. Otherwise, we'll restore the tabs, delete the data on disk, and the
-// still-open tabs can get re-persisted.
-IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
-                       PRE_StorageRemovedFromDisk) {
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, StorageRemovedFromDisk) {
   EXPECT_EQ(1, GetSiteDataCount());
   ExpectTotalModelCount(1);
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
@@ -1372,25 +1376,28 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                 chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS);
   EXPECT_EQ(0, GetSiteDataCount());
   ExpectTotalModelCount(0);
-}
 
-// Check if any data remains after a deletion and a Chrome restart to force
-// all writes to be finished.
-IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, StorageRemovedFromDisk) {
-  // Deletions should remove all traces of browsing data from disk
-  // but there are a few bugs that need to be fixed.
-  // Any addition to this list must have an associated TODO.
-  static const std::vector<std::string> ignore_file_patterns = {
+  // Check if any data remains after a deletion and a Chrome shutown to force
+  // all writes to be finished.
+  verify_after_shutdown_ = base::BindOnce(
+      [](base::FilePath user_data_dir) {
+        // Deletions should remove all traces of browsing data from disk
+        // but there are a few bugs that need to be fixed.
+        // Any addition to this list must have an associated TODO.
+        static const std::vector<std::string> ignore_file_patterns = {
 #if BUILDFLAG(IS_CHROMEOS)
-      // TODO(crbug.com/40577815): Many leveldb files remain on ChromeOS. I
-      // couldn't reproduce this in manual testing, so it might be a timing
-      // issue when Chrome is closed after the second test?
-      "[0-9]{6}",
+            // TODO(crbug.com/40577815): Many leveldb files remain on ChromeOS.
+            // We don't know why and can't reproduce locally. ChromeOS behavior
+            // of aborting shutdown before finishing is suspected.
+            "[0-9]{6}",
 #endif
-  };
-  int found = CheckUserDirectoryForString(kLocalHost, ignore_file_patterns,
-                                          /*check_leveldb_content=*/false);
-  EXPECT_EQ(0, found) << "A non-ignored file contains the hostname.";
+        };
+        int found = CheckUserDirectoryForString(
+            kLocalHost, ignore_file_patterns,
+            /*check_leveldb_content=*/false, user_data_dir);
+        EXPECT_EQ(0, found) << "A non-ignored file contains the hostname.";
+      },
+      g_browser_process->profile_manager()->user_data_dir());
 }
 
 const std::vector<std::string> kSessionOnlyStorageTestTypes{
