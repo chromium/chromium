@@ -6,13 +6,13 @@
 
 #include <mach/mach.h>
 
+#include <array>
 #include <utility>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/mach_logging.h"
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/mac/process_requirement.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -193,7 +193,7 @@ TEST_P(MachPortRendezvousServerTest, CleanupIfNoRendezvous) {
 }
 
 TEST_P(MachPortRendezvousServerTest, DestroyRight) {
-  const struct {
+  struct TestCase {
     // How to create the port.
     bool insert_send_right;
 
@@ -203,20 +203,22 @@ TEST_P(MachPortRendezvousServerTest, DestroyRight) {
     // After calling DestroyRight.
     bool is_dead_name;
     mach_port_urefs_t send_rights;
-  } kCases[] = {
-      {true, MACH_MSG_TYPE_MOVE_RECEIVE, true, 0},
-      {true, MACH_MSG_TYPE_MOVE_SEND, false, 0},
-      {true, MACH_MSG_TYPE_COPY_SEND, false, 1},
-      {true, MACH_MSG_TYPE_MAKE_SEND, false, 1},
-      {false, MACH_MSG_TYPE_MAKE_SEND, false, 0},
-      {true, MACH_MSG_TYPE_MAKE_SEND_ONCE, false, 1},
+  };
+
+  const std::array kCases = {
+      TestCase{true, MACH_MSG_TYPE_MOVE_RECEIVE, true, 0},
+      TestCase{true, MACH_MSG_TYPE_MOVE_SEND, false, 0},
+      TestCase{true, MACH_MSG_TYPE_COPY_SEND, false, 1},
+      TestCase{true, MACH_MSG_TYPE_MAKE_SEND, false, 1},
+      TestCase{false, MACH_MSG_TYPE_MAKE_SEND, false, 0},
+      TestCase{true, MACH_MSG_TYPE_MAKE_SEND_ONCE, false, 1},
       // It's not possible to test MOVE_SEND_ONCE since one cannot
       // insert_right MAKE_SEND_ONCE.
   };
 
   for (size_t i = 0; i < std::size(kCases); ++i) {
     SCOPED_TRACE(base::StringPrintf("case %zu", i).c_str());
-    const auto& test = UNSAFE_TODO(kCases[i]);
+    const auto& test = kCases[i];
 
     // This test deliberately leaks Mach port rights.
     mach_port_t port;

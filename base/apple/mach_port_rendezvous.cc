@@ -12,8 +12,8 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/mach_logging.h"
 #include "base/bits.h"
-#include "base/compiler_specific.h"
 #include "base/containers/buffer_iterator.h"
+#include "base/containers/heap_array.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
@@ -136,9 +136,9 @@ void MachPortRendezvousServerBase::HandleRequest() {
   std::vector<uint8_t> additional_data =
       AdditionalDataForReply(request.msgh_id);
 
-  std::unique_ptr<uint8_t[]> response = CreateReplyMessage(
+  base::HeapArray<uint8_t> response = CreateReplyMessage(
       request.msgh_remote_port, *ports_to_send, std::move(additional_data));
-  auto* header = reinterpret_cast<mach_msg_header_t*>(response.get());
+  auto* header = reinterpret_cast<mach_msg_header_t*>(response.data());
 
   mr = mach_msg(header, MACH_SEND_MSG, header->msgh_size, 0, MACH_PORT_NULL,
                 MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
@@ -150,16 +150,15 @@ void MachPortRendezvousServerBase::HandleRequest() {
   }
 }
 
-std::unique_ptr<uint8_t[]> MachPortRendezvousServerBase::CreateReplyMessage(
+base::HeapArray<uint8_t> MachPortRendezvousServerBase::CreateReplyMessage(
     mach_port_t reply_port,
     const MachPortsForRendezvous& ports,
     std::vector<uint8_t> additional_data) {
   const size_t port_count = ports.size();
   const size_t buffer_size =
       CalculateResponseSize(port_count, additional_data.size());
-  auto buffer = std::make_unique<uint8_t[]>(buffer_size);
-  auto iterator =
-      UNSAFE_TODO(BufferIterator<uint8_t>(buffer.get(), buffer_size));
+  auto buffer = base::HeapArray<uint8_t>::WithSize(buffer_size);
+  auto iterator = BufferIterator<uint8_t>(buffer);
 
   auto* message = iterator.MutableObject<mach_msg_base_t>();
   message->header.msgh_bits =
@@ -197,7 +196,6 @@ std::unique_ptr<uint8_t[]> MachPortRendezvousServerBase::CreateReplyMessage(
   return buffer;
 }
 
-
 MachPortRendezvousClient::MachPortRendezvousClient() = default;
 
 MachPortRendezvousClient::~MachPortRendezvousClient() = default;
@@ -232,9 +230,8 @@ bool MachPortRendezvousClient::SendRequest(
       CalculateResponseSize(internal::kMaximumRendezvousPorts,
                             additional_response_data_size) +
       sizeof(mach_msg_audit_trailer_t);
-  auto buffer = std::make_unique<uint8_t[]>(buffer_size);
-  auto iterator =
-      UNSAFE_TODO(BufferIterator<uint8_t>(buffer.get(), buffer_size));
+  auto buffer = base::HeapArray<uint8_t>::WithSize(buffer_size);
+  auto iterator = BufferIterator<uint8_t>(buffer);
 
   // Perform a send and receive mach_msg.
   auto* message = iterator.MutableObject<mach_msg_base_t>();
