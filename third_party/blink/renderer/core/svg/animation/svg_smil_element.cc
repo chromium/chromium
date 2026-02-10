@@ -566,9 +566,8 @@ void SVGSMILElement::ParseBeginOrEnd(const String& parse_string,
   // events etc. as well if those conditions are no longer in the attribute.
   time_list.RemoveWithOrigin(SMILTimeOrigin::kAttribute);
 
-  Vector<String> split_string;
-  parse_string.Split(';', split_string);
-  for (const auto& item : split_string) {
+  Vector<StringView> times = StringView(parse_string).SplitSkippingEmpty(';');
+  for (const auto& item : times) {
     SMILTime value = ParseClockValue(item);
     if (value.IsUnresolved()) {
       ParseCondition(item, begin_or_end);
