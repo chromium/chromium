@@ -403,8 +403,6 @@ TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_KeyFetchUrlChanged) {
 }
 
 TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_MissingKeyFetchUrlInPrefs) {
-  // TODO(crbug.com/461955661): Change this test to not expect a key once we
-  // remove kHardCodedKeyFetchUrl from OhttpKeyService::PopulateKeyFromPref().
   pref_service_.SetString(prefs::kSafeBrowsingHashRealTimeOhttpKey,
                           kEncodedTestOhttpKey);
   pref_service_.SetTime(prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime,
@@ -418,9 +416,7 @@ TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_MissingKeyFetchUrlInPrefs) {
 
   std::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
       ohttp_key_service->get_ohttp_key_for_testing();
-  EXPECT_TRUE(ohttp_key.has_value());
-  EXPECT_EQ(ohttp_key.value().expiration, base::Time::Now() + base::Days(10));
-  EXPECT_EQ(ohttp_key.value().key, kTestOhttpKey);
+  EXPECT_FALSE(ohttp_key.has_value());
 }
 
 TEST_F(OhttpKeyServiceTest, AsyncFetch) {

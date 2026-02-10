@@ -415,18 +415,6 @@ void OhttpKeyService::PopulateKeyFromPref() {
   std::string key_fetch_url = pref_service_->GetString(
       prefs::kSafeBrowsingHashRealTimeOhttpKeyFetchUrl);
   if (!key.empty() && expiration_time > base::Time::Now() &&
-      key_fetch_url.empty()) {
-    // If the key fetch URL is empty, it means the key was saved by a version
-    // of Chrome that used a hardcoded URL. Treat it as such to avoid
-    // unnecessary key fetches.
-    static constexpr char kHardCodedKeyFetchUrl[] =
-        "https://safebrowsingohttpgateway.googleapis.com/v1/ohttp/"
-        "hpkekeyconfig";
-    key_fetch_url = kHardCodedKeyFetchUrl;
-    // TODO(crbug.com/461955661): Remove this entire if statement once the URL
-    // has been saved to preferences for one full Chrome milestone.
-  }
-  if (!key.empty() && expiration_time > base::Time::Now() &&
       key_fetch_url == kHashPrefixRealTimeLookupsKeyFetchUrl.Get()) {
     std::string decoded_key;
     base::Base64Decode(key, &decoded_key);
