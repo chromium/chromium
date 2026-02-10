@@ -20,7 +20,9 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.LocationBarBackgroundDrawable;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
+import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
+import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
@@ -113,12 +115,14 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
      *
      * @param origin The SearchActivity requestor.
      * @param searchType The type of search to invoke.
+     * @param optionalText Prepopulate with a query, this may be null.
      * @param windowAndroid WindowAndroid context.
      */
     @VisibleForTesting
     public void beginQuery(
             @IntentOrigin int origin,
             @SearchType int searchType,
+            @Nullable String optionalText,
             @Nullable WindowAndroid windowAndroid) {
 
         // TODO(crbug.com/372036449): Move setting the hint text from the layout to using the URL
@@ -135,6 +139,14 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         } else {
             mUrlBar.setHint(R.string.omnibox_empty_hint);
         }
+
+        // Clear the text regardless of the promo decision.  This allows the user to enter text
+        // before native has been initialized and have it not be cleared one the delayed beginQuery
+        // logic is performed.
+        mUrlCoordinator.setUrlBarData(
+                UrlBarData.forNonUrlText(optionalText == null ? "" : optionalText),
+                UrlBar.ScrollType.NO_SCROLL,
+                UrlBarData.SELECT_END);
 
         if (mPendingSearchPromoDecision || (searchType != SearchType.TEXT && !mNativeInitialized)) {
             mPendingBeginQuery = true;

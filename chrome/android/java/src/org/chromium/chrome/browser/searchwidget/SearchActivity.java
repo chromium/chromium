@@ -83,7 +83,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.S
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
-import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -651,10 +650,7 @@ public class SearchActivity extends AsyncInitializationActivity
         RecordHistogram.recordBooleanHistogram(
                 HISTOGRAM_LAUNCHED_WITH_QUERY, !TextUtils.isEmpty(query));
 
-        mLocationBarCoordinator.setUrlBarFocus(
-                new AutocompleteInput().setUserText(query).setSelection(0, Integer.MAX_VALUE));
-
-        mSearchBox.beginQuery(mIntentOrigin, mSearchType, getWindowAndroid());
+        mSearchBox.beginQuery(mIntentOrigin, mSearchType, query, getWindowAndroid());
     }
 
     @SuppressWarnings("NullAway")
