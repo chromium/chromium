@@ -55,6 +55,8 @@ export class DiscoverSkillsPageElement extends CrLitElement {
 
   /* key: category, value: skill */
   protected accessor skills_: Map<string, Skill[]> = new Map();
+  // Skills that are pending removal and can't be saved.
+  protected skillsPendingRemoval_: Set<string> = new Set();
   protected accessor selectedCategory_: string = '';
   // Determines if a 1P skill is in the process of being saved.
   protected accessor is1PSkillSaving_: boolean = false;
@@ -94,12 +96,21 @@ export class DiscoverSkillsPageElement extends CrLitElement {
         this.proxy_.handler.openSkillsDialog(SkillsDialogType.kAdd, savedSkill);
       } else {
         this.$.invalidSkillToast.show();
+        this.skillsPendingRemoval_ =
+            new Set([...this.skillsPendingRemoval_, savedSkill.id]);
       }
       this.is1PSkillSaving_ = false;
     });
   }
 
+  protected shouldDisableSave_(skill: Skill): boolean {
+    return this.is1PSkillSaving_ || this.skillsPendingRemoval_.has(skill.id);
+  }
+
   protected update1PMap_(skillMap: {[key: string]: Skill[]}) {
+    // Getting a new set of 1p skills, so we can remove any prior skills that
+    // were pending removal.
+    this.skillsPendingRemoval_ = new Set();
     this.skills_ = new Map(Object.entries(skillMap));
     const otherCategories = this.getOtherCategories_();
     this.selectedCategory_ =

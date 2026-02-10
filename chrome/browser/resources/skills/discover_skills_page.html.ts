@@ -16,7 +16,7 @@ ${this.topSkills_().length > 0 ? html`
 <div class="skill-cards-container">
   ${this.topSkills_().map(skill => html`
     <skill-card .skill="${skill}" .cardType="${CardType.DISCOVER_SKILL_CARD}"
-        .saveDisabled="${this.is1PSkillSaving_}">
+        .saveDisabled="${this.shouldDisableSave_(skill)}">
     </skill-card>`)}
 </div>` : ''}
 ${this.getOtherCategories_().length > 0 ? html`
@@ -34,7 +34,7 @@ ${this.getOtherCategories_().length > 0 ? html`
 <div class="skill-cards-container">
   ${this.getSelectedSkills_().map(skill => html`
     <skill-card .skill="${skill}" .cardType="${CardType.DISCOVER_SKILL_CARD}"
-        .saveDisabled="${this.is1PSkillSaving_}">
+        .saveDisabled="${this.shouldDisableSave_(skill)}">
     </skill-card>`)}
 </div>` : ''}
 <cr-toast id="invalidSkillToast">

@@ -105,7 +105,7 @@ void SkillsDownloader::OnUrlDownloadComplete(
   std::unique_ptr<network::SimpleURLLoader> request =
       std::move(pending_request_);
 
-  if (!request || request->NetError() != net::OK) {
+  if (!request) {
     return;
   }
 

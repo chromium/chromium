@@ -227,6 +227,7 @@ suite('DiscoverSkillsPage', function() {
 
     const toast = page.shadowRoot.querySelector('#invalidSkillToast');
     assertTrue((toast as CrToastElement).open, 'Toast should be visible');
+    assertTrue(saveButton1.disabled);
   });
 
   test('SkillsFilteredBySearchTerm', async function() {
