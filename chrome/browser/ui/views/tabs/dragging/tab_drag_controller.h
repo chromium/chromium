@@ -283,6 +283,18 @@ class TabDragController : public views::WidgetObserver,
   // in an attempt to detach a tab.
   enum class DetachBehavior { kDetachable, kNotDetachable };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(TabDraggingDestination)
+  enum TabDraggingDestination {
+    kSameWindow = 0,
+    kNewWindow = 1,
+    kExistingWindow = 2,
+    kAbandoned = 3,
+    kMaxValue = kAbandoned
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabDraggingDestination)
+
   // Overridden from views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
@@ -549,6 +561,8 @@ class TabDragController : public views::WidgetObserver,
   void ResetDragTarget();
 
   static void SetTabDragPointResolver(TabDragPointResolver& resolver);
+
+  const char* GetTabStripMode() const;
 
   DragState current_state_ = DragState::kNotStarted;
 

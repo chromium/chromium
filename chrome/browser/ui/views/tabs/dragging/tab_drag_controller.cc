@@ -745,14 +745,11 @@ void TabDragController::EndDrag(EndDragReason reason) {
   }
 
   if (reason == EndDragReason::kComplete && drag_start_time_.has_value()) {
-    BrowserView* browser_view = GetBrowserViewForContext(attached_context_);
-    CHECK(browser_view);
     // If we support a mixture of dragging between VT and HT, then update this
     // metric accordingly.
-    base::UmaHistogramTimes(browser_view->ShouldDrawVerticalTabStrip()
-                                ? "TabStrip.VerticalTabStrip.TabDragDuration"
-                                : "TabStrip.HorizontalTabStrip.TabDragDuration",
-                            base::TimeTicks::Now() - drag_start_time_.value());
+    base::UmaHistogramTimes(
+        absl::StrFormat("TabStrip.%s.TabDragDuration", GetTabStripMode()),
+        base::TimeTicks::Now() - drag_start_time_.value());
   }
   drag_start_time_.reset();
 
@@ -1862,6 +1859,12 @@ void TabDragController::RevertDrag() {
   base::AutoReset<bool> is_mutating_setter(&is_mutating_, true);
   base::AutoReset<bool> is_removing_last_tab_setter(&is_moving_last_tab_, true);
 
+  // If we support a mixture of dragging between VT and HT, then update this
+  // metric accordingly.
+  base::UmaHistogramEnumeration(
+      absl::StrFormat("TabStrip.%s.TabDragDestination", GetTabStripMode()),
+      TabDraggingDestination::kAbandoned);
+
   if (attached_context_ != source_context_) {
     for (TabDragData& tab_datum : drag_data_.tab_drag_data_) {
       tab_datum.attached_view->set_detached();
@@ -2166,6 +2169,18 @@ void TabDragController::RevertTabAt(size_t drag_index) {
 void TabDragController::CompleteDrag() {
   CHECK_NE(current_state_, DragState::kNotStarted);
   CHECK(attached_context_);
+
+  TabDraggingDestination destination = TabDraggingDestination::kExistingWindow;
+  if (is_dragging_new_browser_) {
+    destination = TabDraggingDestination::kNewWindow;
+  } else if (source_context_ == attached_context_) {
+    destination = TabDraggingDestination::kSameWindow;
+  }
+  // If we support a mixture of dragging between VT and HT, then update this
+  // metric accordingly.
+  base::UmaHistogramEnumeration(
+      absl::StrFormat("TabStrip.%s.TabDragDestination", GetTabStripMode()),
+      destination);
 
   if (current_drag_target_ && current_drag_target_->CanDropTab()) {
     current_drag_target_->HandleTabDrop(*this);
@@ -2940,4 +2955,12 @@ void TabDragController::UpdateBrowserViewsForDragEnd() {
         ash::kTabDraggingSourceWindowKey);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+const char* TabDragController::GetTabStripMode() const {
+  BrowserView* browser_view = GetBrowserViewForContext(attached_context_);
+  CHECK(browser_view);
+
+  return browser_view->ShouldDrawVerticalTabStrip() ? "VerticalTabStrip"
+                                                    : "HorizontalTabStrip";
 }
