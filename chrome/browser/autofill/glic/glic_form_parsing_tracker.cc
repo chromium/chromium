@@ -43,4 +43,30 @@ void GlicFormParsingTracker::OnBeforeFormsSeen(
   }
 }
 
+void GlicFormParsingTracker::OnFieldTypesDetermined(
+    autofill::AutofillManager& manager,
+    autofill::FormGlobalId form_id,
+    FieldTypeSource source,
+    bool small_forms_were_parsed) {
+  if (!small_forms_were_parsed) {
+    return;
+  }
+  // Parsing might finish after the form got removed from the DOM.
+  if (!form_parsing_status_.contains(form_id)) {
+    return;
+  }
+
+  switch (source) {
+    case FieldTypeSource::kHeuristicsOrAutocomplete:
+      form_parsing_status_[form_id].heuristic_parsed_in_actor_mode = true;
+      break;
+    case FieldTypeSource::kAutofillServer:
+      form_parsing_status_[form_id].server_parsed_in_actor_mode = true;
+      break;
+    case FieldTypeSource::kAutofillAiModel:
+      // Not supported by GLIC.
+      break;
+  }
+}
+
 }  // namespace autofill

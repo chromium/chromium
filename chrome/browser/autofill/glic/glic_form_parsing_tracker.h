@@ -20,11 +20,13 @@ class GlicFormParsingTracker final : public AutofillManager::Observer {
   explicit GlicFormParsingTracker(AutofillClient* client);
   ~GlicFormParsingTracker() override;
 
- private:
   struct FormParsingStatus {
     bool server_parsed_in_actor_mode = false;
     bool heuristic_parsed_in_actor_mode = false;
   };
+
+ private:
+  friend class GlicFormParsingTrackerTestApi;
 
   // AutofillManager::Observer:
   void OnAutofillManagerStateChanged(
@@ -34,6 +36,10 @@ class GlicFormParsingTracker final : public AutofillManager::Observer {
   void OnBeforeFormsSeen(AutofillManager& manager,
                          base::span<const FormGlobalId> updated_forms,
                          base::span<const FormGlobalId> removed_forms) override;
+  void OnFieldTypesDetermined(autofill::AutofillManager& manager,
+                              autofill::FormGlobalId form_id,
+                              FieldTypeSource source,
+                              bool small_forms_were_parsed) override;
 
   // Keeps track of all of the forms in the current tab and their parsing
   // status.
