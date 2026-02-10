@@ -2744,6 +2744,9 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="21" label="WM Mode Button"/>
   <int value="22" label="Video Conferencing Tray"/>
   <int value="23" label="Focus Mode Tray"/>
+  <int value="24" label="Pods Overflow"/>
+  <int value="25" label="Mouse Keys, Status Area"/>
+  <int value="26" label="Chrome Custom"/>
 </enum>
 
 <enum name="VideoConferenceAppType">
