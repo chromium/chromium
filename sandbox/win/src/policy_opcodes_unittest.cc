@@ -60,53 +60,6 @@ TEST(PolicyEngineTest, OpcodeConstraints) {
   EXPECT_TRUE(__is_trivially_copyable(PolicyOpcode));
 }
 
-TEST(PolicyEngineTest, TrueFalseOpcodes) {
-  void* dummy = nullptr;
-  ParameterSet ppb1 = ParamPickerMake(dummy);
-  char memory[kOpcodeMemory];
-  OpcodeFactory opcode_maker(memory, sizeof(memory));
-
-  // This opcode always evaluates to true.
-  PolicyOpcode* op1 = opcode_maker.MakeOpAlwaysFalse(kPolNone);
-  ASSERT_NE(nullptr, op1);
-  EXPECT_EQ(EVAL_FALSE, op1->Evaluate(&ppb1, 1, nullptr));
-  EXPECT_FALSE(op1->IsAction());
-
-  // This opcode always evaluates to false.
-  PolicyOpcode* op2 = opcode_maker.MakeOpAlwaysTrue(kPolNone);
-  ASSERT_NE(nullptr, op2);
-  EXPECT_EQ(EVAL_TRUE, op2->Evaluate(&ppb1, 1, nullptr));
-
-  // Nulls not allowed on the params.
-  EXPECT_EQ(EVAL_ERROR, op2->Evaluate(nullptr, 0, nullptr));
-  EXPECT_EQ(EVAL_ERROR, op2->Evaluate(nullptr, 1, nullptr));
-
-  // True and False opcodes do not 'require' a number of parameters
-  EXPECT_EQ(EVAL_TRUE, op2->Evaluate(&ppb1, 0, nullptr));
-  EXPECT_EQ(EVAL_TRUE, op2->Evaluate(&ppb1, 1, nullptr));
-
-  // Test Inverting the logic. Note that inversion is done outside
-  // any particular opcode evaluation so no need to repeat for all
-  // opcodes.
-  PolicyOpcode* op3 = opcode_maker.MakeOpAlwaysFalse(kPolNegateEval);
-  ASSERT_NE(nullptr, op3);
-  EXPECT_EQ(EVAL_TRUE, op3->Evaluate(&ppb1, 1, nullptr));
-  PolicyOpcode* op4 = opcode_maker.MakeOpAlwaysTrue(kPolNegateEval);
-  ASSERT_NE(nullptr, op4);
-  EXPECT_EQ(EVAL_FALSE, op4->Evaluate(&ppb1, 1, nullptr));
-
-  // Test that we clear the match context
-  PolicyOpcode* op5 = opcode_maker.MakeOpAlwaysTrue(kPolClearContext);
-  ASSERT_NE(nullptr, op5);
-  MatchContext context;
-  context.position = 1;
-  context.options = kPolUseOREval;
-  EXPECT_EQ(EVAL_TRUE, op5->Evaluate(&ppb1, 1, &context));
-  EXPECT_EQ(0u, context.position);
-  MatchContext context2;
-  EXPECT_EQ(context2.options, context.options);
-}
-
 TEST(PolicyEngineTest, OpcodeMakerCase1) {
   // Testing that the opcode maker does not overrun the
   // supplied buffer. It should only be able to make 'count' opcodes.
@@ -118,12 +71,12 @@ TEST(PolicyEngineTest, OpcodeMakerCase1) {
   size_t count = sizeof(memory) / sizeof(PolicyOpcode);
 
   for (size_t ix = 0; ix != count; ++ix) {
-    PolicyOpcode* op = opcode_maker.MakeOpAlwaysFalse(kPolNone);
+    PolicyOpcode* op = opcode_maker.MakeOpAction(ASK_BROKER, 0U);
     ASSERT_NE(nullptr, op);
-    EXPECT_EQ(EVAL_FALSE, op->Evaluate(&ppb1, 1, nullptr));
+    EXPECT_EQ(ASK_BROKER, op->Evaluate(&ppb1, 1, nullptr));
   }
   // There should be no room more another opcode:
-  PolicyOpcode* op1 = opcode_maker.MakeOpAlwaysFalse(kPolNone);
+  PolicyOpcode* op1 = opcode_maker.MakeOpAction(ASK_BROKER, 0U);
   ASSERT_EQ(nullptr, op1);
 }
 
@@ -175,16 +128,6 @@ TEST(PolicyEngineTest, IntegerOpcodes) {
   EXPECT_EQ(EVAL_TRUE, op_m42->Evaluate(&pp_num1, 1, nullptr));
   EXPECT_EQ(EVAL_FALSE, op_m42->Evaluate(&pp_num2, 1, nullptr));
   EXPECT_EQ(EVAL_ERROR, op_m42->Evaluate(&pp_wrong1, 1, nullptr));
-
-  // Test basic match for void pointers.
-  const void* vp = nullptr;
-  ParameterSet pp_num3 = ParamPickerMake(vp);
-  PolicyOpcode* op_vp_null =
-      opcode_maker.MakeOpVoidPtrMatch(0, nullptr, kPolNone);
-  ASSERT_NE(nullptr, op_vp_null);
-  EXPECT_EQ(EVAL_TRUE, op_vp_null->Evaluate(&pp_num3, 1, nullptr));
-  EXPECT_EQ(EVAL_FALSE, op_vp_null->Evaluate(&pp_num1, 1, nullptr));
-  EXPECT_EQ(EVAL_ERROR, op_vp_null->Evaluate(&pp_wrong1, 1, nullptr));
 }
 
 TEST(PolicyEngineTest, LogicalOpcodes) {

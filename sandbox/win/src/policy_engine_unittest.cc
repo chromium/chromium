@@ -20,12 +20,10 @@ TEST(PolicyEngineTest, Rules1) {
   //
   // #1
   // If the path is c:\\documents and settings\\* AND
-  // If the creation mode is 'open existing' AND
-  // If the security descriptor is null THEN
+  // If the creation mode is 'open existing' THEN
   // Ask the broker.
   //
   // #2
-  // If the security descriptor is null AND
   // If the path ends with *.txt AND
   // If the creation mode is not 'create new' THEN
   // return constant (uintptr_t)-1.
@@ -33,8 +31,7 @@ TEST(PolicyEngineTest, Rules1) {
   enum FileCreateArgs {
     FileNameArg,
     CreationDispositionArg,
-    FlagsAndAttributesArg,
-    SecurityAttributes
+    FlagsAndAttributesArg
   };
 
   const size_t policy_sz = 1024;
@@ -46,7 +43,6 @@ TEST(PolicyEngineTest, Rules1) {
                                   0, kPolNone, false);
   opcode_maker.MakeOpNumberMatch(CreationDispositionArg, OPEN_EXISTING,
                                  kPolNone);
-  opcode_maker.MakeOpVoidPtrMatch(SecurityAttributes, nullptr, kPolNone);
   opcode_maker.MakeOpAction(ASK_BROKER, 0U);
 
   // Add rule set #2
@@ -56,19 +52,17 @@ TEST(PolicyEngineTest, Rules1) {
                                  kPolNegateEval);
   constexpr uintptr_t kConstantValue = static_cast<uintptr_t>(-1);
   opcode_maker.MakeOpAction(RETURN_CONST, kConstantValue);
-  policy->opcode_count = 7;
+  policy->opcode_count = 6;
 
   std::wstring_view filename =
       L"c:\\Documents and Settings\\Microsoft\\BLAH.txt";
   uint32_t creation_mode = OPEN_EXISTING;
   uint32_t flags = FILE_ATTRIBUTE_NORMAL;
-  void* security_descriptor = nullptr;
 
   POLPARAMS_BEGIN(eval_params)
     POLPARAM(filename)
     POLPARAM(creation_mode)
     POLPARAM(flags)
-    POLPARAM(security_descriptor)
   POLPARAMS_END;
 
   PolicyResult pr;

@@ -242,22 +242,9 @@ std::string GetPolicyOpcode(const PolicyOpcode* opcode, bool continuation) {
     condition += "!(";
 
   switch (opcode->GetID()) {
-    case OP_ALWAYS_FALSE:
-      condition += "false";
-      break;
-    case OP_ALWAYS_TRUE:
-      condition += "true";
-      break;
     case OP_NUMBER_MATCH:
-      opcode->GetArgument(1, &args[1]);
-      if (args[1] == UINT32_TYPE) {
-        opcode->GetArgument(0, &args[0]);
-        condition += base::StringPrintf("p[%d] == %x", param, args[0]);
-      } else {
-        const void* match_ptr = nullptr;
-        opcode->GetArgument(0, &match_ptr);
-        condition += base::StringPrintf("p[%d] == %p", param, match_ptr);
-      }
+      opcode->GetArgument(0, &args[0]);
+      condition += base::StringPrintf("p[%d] == %x", param, args[0]);
       break;
     case OP_NUMBER_AND_MATCH:
       opcode->GetArgument(0, &args[0]);

@@ -72,8 +72,6 @@ enum EvalResult {
 
 // The following are the implemented opcodes. uint16_t purely to pack nicely.
 enum OpcodeID : uint16_t {
-  OP_ALWAYS_FALSE,        // Evaluates to false (EVAL_FALSE).
-  OP_ALWAYS_TRUE,         // Evaluates to true (EVAL_TRUE).
   OP_NUMBER_MATCH,        // Match a 32-bit integer as n == a.
   OP_NUMBER_AND_MATCH,    // Match using bitwise AND; as in: n & a != 0.
   OP_WSTRING_MATCH,       // Match a string for equality.
@@ -282,12 +280,6 @@ class OpcodeFactory {
   // Returns the available memory to make opcodes.
   size_t memory_size() const;
 
-  // Creates an OpAlwaysFalse opcode.
-  PolicyOpcode* MakeOpAlwaysFalse(uint32_t options);
-
-  // Creates an OpAlwaysFalse opcode.
-  PolicyOpcode* MakeOpAlwaysTrue(uint32_t options);
-
   // Creates an OpAction opcode.
   // action: The action to return when Evaluate() is called.
   // constant: The constant to return if action is RETURN_CONST.
@@ -300,14 +292,6 @@ class OpcodeFactory {
   PolicyOpcode* MakeOpNumberMatch(uint8_t selected_param,
                                   uint32_t match,
                                   uint32_t options);
-
-  // Creates an OpNumberMatch opcode (void pointers are cast to numbers).
-  // selected_param: index of the input argument. It must be an void* or the
-  // evaluation result will generate a EVAL_ERROR.
-  // match: the pointer numeric value to compare against selected_param.
-  PolicyOpcode* MakeOpVoidPtrMatch(uint8_t selected_param,
-                                   const void* match,
-                                   uint32_t options);
 
   // Creates an OpWStringMatch opcode using the raw memory passed in the ctor.
   // selected_param: index of the input argument. It must be a wide string
