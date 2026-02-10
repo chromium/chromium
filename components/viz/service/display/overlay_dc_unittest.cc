@@ -3015,16 +3015,7 @@ INSTANTIATE_TEST_SUITE_P(
     &OverlayProcessorWinSurfacePlaneTest::GetParamName);
 
 class OverlayProcessorWinSurfacePlaneFullScreenTest
-    : public OverlayProcessorWinSurfacePlaneTest {
- public:
-  OverlayProcessorWinSurfacePlaneFullScreenTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kEarlyFullScreenVideoOptimization);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+    : public OverlayProcessorWinSurfacePlaneTest {};
 
 // Check that we can correctly mark a full screen video (that has a background
 // mat) as "full screen".
@@ -3345,9 +3336,8 @@ class OverlayProcessorWinFullScreenTest
     : public OverlayProcessorWinDelegatedCompositingTest {
  public:
   OverlayProcessorWinFullScreenTest() {
-    feature_list_.InitWithFeatures(
-        {features::kEarlyFullScreenVideoOptimization},
-        {features::kDirectCompositionLetterboxVideoOptimization});
+    feature_list_.InitAndDisableFeature(
+        features::kDirectCompositionLetterboxVideoOptimization);
   }
 
   void SetUp() override {
@@ -3711,10 +3701,8 @@ class OverlayProcessorWinFullScreenWithAdjustmentTest
     : public OverlayProcessorWinDelegatedCompositingTest {
  public:
   OverlayProcessorWinFullScreenWithAdjustmentTest() {
-    feature_list_.InitWithFeatures(
-        {features::kEarlyFullScreenVideoOptimization,
-         features::kDirectCompositionLetterboxVideoOptimization},
-        {});
+    feature_list_.InitAndEnableFeature(
+        features::kDirectCompositionLetterboxVideoOptimization);
   }
 
   void SetUp() override {

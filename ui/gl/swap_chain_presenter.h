@@ -45,15 +45,8 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   // Indicates the modification overlay position required to display the swap
   // chain image.
-  //
-  // Note this can be removed once we migrate fully to
-  // `EarlyFullScreenVideoOptimization` since we will only need adjustment in
-  // the full screen optimization case and we know the intended on-screen rect
-  // in this case (i.e. the monitor rect).
   struct OverlayPositionAdjustment {
-    gfx::Transform transform;
-    gfx::Rect quad_rect;
-    gfx::Rect clip_rect;
+    gfx::Size monitor_size;
   };
 
   // Take and present `overlay.overlay_image` to this swap chain and return a
@@ -132,9 +125,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // `visual_clip_rect` that should be used instead of the ones on `overlay`.
   //
   // Returns true on success.
-  bool SetupPresentToSwapChain(DCLayerOverlayParams& overlay,
-                               gfx::Transform* visual_transform,
-                               gfx::Rect* visual_clip_rect);
+  bool SetupPresentToSwapChain(DCLayerOverlayParams& overlay);
 
   // Attempt to disable the desktop primary plane by expanding the video swap
   // chain to fill `monitor_size`, fully occluding any content behind it with
@@ -180,69 +171,8 @@ class SwapChainPresenter : public base::PowerStateObserver {
       std::optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata,
       bool use_vp_auto_hdr);
 
-  // Get the size of the monitor on which the window handle is displayed.
-  gfx::Size GetMonitorSize() const;
-
-  // Update the |visual_transform| and |visual_clip_rect| accordingly after
-  // succeeded presentation with letterboxing for overaly scenario. This will
-  // make sure the video full screen letterboxing take the whole monitor area,
-  // and DWM will take care of the letterboxing info setup automatically.
-  void SetTargetToFullScreen(gfx::Transform* visual_transform,
-                             gfx::Rect* visual_clip_rect,
-                             const std::optional<gfx::Rect>& target_rect);
-
-  // Takes in input DC layer params and the video overlay quad. The swap chain
-  // backbuffer size will be rounded to the monitor size if it is within a close
-  // margin. The |visual_transform| will be calculated by what scaling factor is
-  // needed to scale the swap chain backbuffer to the monitor size.
-  // The |visual_clip_rect| will be adjusted to the monitor size for full screen
-  // mode, and to the video overlay quad for letterboxing mode.
-  // The returned optional |dest_size| and |target_rect| have the same meaning
-  // as in AdjustTargetForFullScreenLetterboxing.
-  void AdjustTargetToOptimalSizeIfNeeded(
-      const DCLayerOverlayParams& params,
-      const gfx::RectF& overlay_onscreen_rect,
-      gfx::SizeF* swap_chain_size,
-      gfx::Transform* visual_transform,
-      gfx::RectF* visual_clip_rect,
-      std::optional<gfx::SizeF>* dest_size,
-      std::optional<gfx::RectF>* target_rect) const;
-
-  // If the swap chain size is very close to the screen size but not exactly the
-  // same, the swap chain should be adjusted to fit the screen size in order to
-  // get the full screen DWM optimizations.
-  bool AdjustTargetToFullScreenSizeIfNeeded(
-      const gfx::SizeF& monitor_size,
-      const DCLayerOverlayParams& params,
-      const gfx::RectF& overlay_onscreen_rect,
-      gfx::SizeF* swap_chain_size,
-      gfx::Transform* visual_transform,
-      gfx::RectF* visual_clip_rect) const;
-
-  // If the returned optional |dest_size| and |target_rect| contain valid
-  // values, it means this is a good overlay for full screen letterboxing after
-  // some necessary adjustment or no size adjustment required. Otherwise, it's
-  // either not a letterboxing video or not a case for further optimizations for
-  // full screen letterboxing. |swap_chain_| will then run SetDestSize to
-  // |dest_size| and SetTargetRect to |target_rect| in order to make sure
-  // Desktop Window Manager(DWM) take over the letterboxing/positioning job, and
-  // turn off the topmost desktop plane at the same time.
-  void AdjustTargetForFullScreenLetterboxing(
-      const gfx::SizeF& monitor_size,
-      const DCLayerOverlayParams& params,
-      const gfx::RectF& overlay_onscreen_rect,
-      gfx::SizeF* swap_chain_size,
-      gfx::Transform* visual_transform,
-      gfx::RectF* visual_clip_rect,
-      std::optional<gfx::SizeF>* dest_size,
-      std::optional<gfx::RectF>* target_rect) const;
-
   // Returns optimal swap chain size for given layer.
-  gfx::Size CalculateSwapChainSize(const DCLayerOverlayParams& params,
-                                   gfx::Transform* visual_transform,
-                                   gfx::Rect* visual_clip_rect,
-                                   std::optional<gfx::Size>* dest_size,
-                                   std::optional<gfx::Rect>* target_rect) const;
+  gfx::Size CalculateSwapChainSize(const DCLayerOverlayParams& params) const;
 
   // Try presenting to a decode swap chain based on various conditions such as
   // global state (e.g. finch, NV12 support), texture flags, and transform.
@@ -254,9 +184,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
       const gfx::Rect& content_rect,
       const gfx::Size& swap_chain_size,
       DXGI_FORMAT swap_chain_format,
-      const gfx::Transform& transform_to_root,
-      const std::optional<gfx::Size> dest_size,
-      const std::optional<gfx::Rect> target_rect);
+      const gfx::Transform& transform_to_root);
 
   // Present to a decode swap chain created from compatible video decoder
   // buffers using given |texture|.
@@ -267,9 +195,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
                                 unsigned array_slice,
                                 const gfx::ColorSpace& color_space,
                                 const gfx::Rect& content_rect,
-                                const gfx::Size& swap_chain_size,
-                                const std::optional<gfx::Size> dest_size,
-                                const std::optional<gfx::Rect> target_rect);
+                                const gfx::Size& swap_chain_size);
 
   // Records presentation statistics in UMA and traces (for pixel tests) for the
   // current swap chain which could either be a regular flip swap chain or a
@@ -293,9 +219,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
   Microsoft::WRL::ComPtr<IDXGISwapChainMedia> GetSwapChainMedia() const;
 
   // Present the Direct Composition surface from MediaFoundationRenderer.
-  bool PresentDCOMPSurface(DCLayerOverlayParams& overlay,
-                           gfx::Transform* visual_transform,
-                           gfx::Rect* visual_clip_rect);
+  bool PresentDCOMPSurface(DCLayerOverlayParams& overlay);
 
   // Release resources related to `PresentDCOMPSurface()`.
   void ReleaseDCOMPSurfaceResourcesIfNeeded();
@@ -366,8 +290,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   // Overlay image that was presented in the last frame.
   std::optional<DCLayerOverlayImage> last_overlay_image_;
-  // Desktop plane removal status from the presentation of last frame.
-  bool last_desktop_plane_removed_ = false;
 
   // NV12 staging texture used for software decoded YUV buffers.  Mapped to CPU
   // for copying from YUV buffers.  Texture usage is DYNAMIC or STAGING.

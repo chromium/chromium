@@ -1308,17 +1308,17 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
         overlay.content_rect = gfx::RectF(overlay.overlay_image->size());
 
         if (overlay_position_adjustment) {
-          overlay.transform = overlay_position_adjustment->transform;
-          overlay.quad_rect = overlay_position_adjustment->quad_rect;
+          overlay.transform.MakeIdentity();
+          overlay.quad_rect =
+              gfx::Rect(overlay_position_adjustment->monitor_size);
           if (overlay.clip_rect) {
-            overlay.clip_rect = overlay_position_adjustment->clip_rect;
+            overlay.clip_rect =
+                gfx::Rect(overlay_position_adjustment->monitor_size);
           }
         }
 
         if (overlay.video_params.is_full_screen_video &&
-            !overlay_position_adjustment &&
-            base::FeatureList::IsEnabled(
-                features::kEarlyFullScreenVideoOptimization)) {
+            !overlay_position_adjustment) {
           // If we failed to disable the desktop plane, we need to manually add
           // a solid color layer to act as the video background mat.
           need_background_layer = true;

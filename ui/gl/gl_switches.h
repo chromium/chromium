@@ -101,7 +101,6 @@ namespace features {
 GL_EXPORT BASE_DECLARE_FEATURE(kDCompDebugVisualization);
 GL_EXPORT BASE_DECLARE_FEATURE(kDCompTripleBufferVideoSwapChain);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionSoftwareOverlays);
-GL_EXPORT BASE_DECLARE_FEATURE(kEarlyFullScreenVideoOptimization);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionLetterboxVideoOptimization);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionUnlimitedOverlays);
 GL_EXPORT BASE_DECLARE_FEATURE(kDesktopPlaneRemovalForMFFullScreenLetterbox);

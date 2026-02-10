@@ -87,12 +87,6 @@ struct GL_EXPORT DCLayerOverlayParams {
     // SDR.
     bool is_p010_content = false;
 
-    // Indication of the overlay to be detected as possible full screen
-    // letterboxing.
-    // Go to viz::OverlayCandidate::possible_video_fullscreen_letterboxing for
-    // the details.
-    bool possible_video_fullscreen_letterboxing = false;
-
     // This overlay represents a full screen, letterboxed, or pillarboxed video.
     // This means all pixels behind the video can be assumed to be solid black.
     bool is_full_screen_video = false;

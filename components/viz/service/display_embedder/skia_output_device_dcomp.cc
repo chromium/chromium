@@ -334,8 +334,6 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
     params.video_params.hdr_metadata = dc_layer.hdr_metadata;
     params.video_params.is_p010_content =
         (dc_layer.format == MultiPlaneFormat::kP010);
-    params.video_params.possible_video_fullscreen_letterboxing =
-        dc_layer.possible_video_fullscreen_letterboxing;
     params.video_params.is_full_screen_video =
         dc_layer.overlay_type == gfx::OverlayType::kFullScreen;
   }

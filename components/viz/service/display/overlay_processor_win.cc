@@ -221,9 +221,7 @@ void OverlayProcessorWin::ProcessForOverlays(
   // Sort back-to-front to make the subsequent operations easier.
   std::ranges::sort(*candidates, {}, &OverlayCandidate::plane_z_order);
 
-  if (is_page_fullscreen_mode_ &&
-      base::FeatureList::IsEnabled(
-          features::kEarlyFullScreenVideoOptimization)) {
+  if (is_page_fullscreen_mode_) {
     TryPromoteFullScreenVideo(*render_passes->back(), *candidates,
                               *root_damage_rect);
   }
