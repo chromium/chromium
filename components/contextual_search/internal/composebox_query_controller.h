@@ -20,6 +20,7 @@
 #include "components/lens/lens_overlay_request_id_generator.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/lens_server_proto/added_inputs.pb.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
@@ -106,6 +107,10 @@ class ComposeboxQueryController
   // different from the request id.
   virtual lens::LensOverlayRequestId GetRequestIdForViewportImage(
       const base::UnguessableToken& file_token);
+
+  // Creates the AddedInputs proto for the given file tokens.
+  lens::AddedInputs CreateAddedInputs(
+      const std::vector<base::UnguessableToken>& file_tokens);
 
   // Enum for testing to track the state of the query controller.
   enum class QueryControllerState {
