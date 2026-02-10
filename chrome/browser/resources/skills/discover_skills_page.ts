@@ -123,17 +123,15 @@ export class DiscoverSkillsPageElement extends CrLitElement {
         return 'skills:grid';
       case 'Fun':
         return 'skills:celebration';
-      case 'Learn':
+      case 'Learning':
         return 'skills:book';
-      case 'Protect':
-        return 'cr:add';
       case 'Research':
         return 'skills:search';
-      case 'Shop':
+      case 'Shopping':
         return 'skills:shopping';
       case 'Understand':
         return 'skills:lightbulb';
-      case 'Write':
+      case 'Writing':
         return 'skills:write';
       default:
         return 'cr:add';
