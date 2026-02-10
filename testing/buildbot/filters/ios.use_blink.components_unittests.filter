@@ -360,3 +360,11 @@
 # introduced in https://crrev.com/c/7269665 relies on that function, it is
 # skipped on iOS.
 -PageSpecificContentSettingsTestWithApproximateLocation.GeolocationWithOptions
+
+# TODO(crbug.com/482088890): These tests have been failing since
+# https://crrev.com/c/7543054.
+-LocalStorageImplTest.Basic/LevelDB
+-LocalStorageImplTest.Basic/SQLite
+-LocalStorageImplTest.OpeningWrappersPurgesInactiveWrappers/LevelDB
+-LocalStorageImplTest.OpeningWrappersPurgesInactiveWrappers/SQLite
+-LocalStorageImplTest.WrapperOutlivesMojoConnection/SQLite
