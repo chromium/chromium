@@ -64,12 +64,6 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      */
     void associateWithBrowserWindow(long nativeAndroidBrowserWindow);
 
-    /**
-     * Dissociates this tab model from a browser window. This should be called before the browser
-     * window is destroyed.
-     */
-    void dissociateWithBrowserWindow();
-
     /** Returns the matching tab that has the given id, or null if there is none. */
     @Nullable Tab getTabById(@TabId int tabId);
 

@@ -319,13 +319,11 @@ public class ChromeAndroidTaskImplUnitTest {
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
         var activityScopedObjects1 = chromeAndroidTaskWithMockDeps.mActivityScopedObjects;
         var activityScopedObjects2 = createActivityScopedObjects(taskId);
-        var tabModel1 = activityScopedObjects1.mTabModelSelector.getCurrentModel();
 
         // Act.
         chromeAndroidTask.addActivityScopedObjects(activityScopedObjects2);
 
         // Assert.
-        verify(tabModel1).dissociateWithBrowserWindow();
         assertListenersUnregisteredForActivity(chromeAndroidTask, activityScopedObjects1);
         assertListenersRegisteredForActivity(chromeAndroidTask, activityScopedObjects2);
     }
@@ -529,8 +527,6 @@ public class ChromeAndroidTaskImplUnitTest {
                 activityScopedObjects2,
                 /* expectedNumberOfInvocations= */ 1);
 
-        var tabModel2 = activityScopedObjects2.mTabModelSelector.getCurrentModel();
-
         // Act: Remove activityScopedObjects2, which represents the top Activity.
         chromeAndroidTask.removeActivityScopedObjects(
                 activityScopedObjects2.mActivityWindowAndroid);
@@ -538,7 +534,6 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert:
         // (1) Unregister listeners for the previous top Activity (activityScopedObjects2);
         // (2) Re-register listeners for the Activity that's moved to top (activityScopedObjects1).
-        verify(tabModel2).dissociateWithBrowserWindow();
         assertListenersUnregisteredForActivity(
                 chromeAndroidTask,
                 activityScopedObjects2,
@@ -852,16 +847,12 @@ public class ChromeAndroidTaskImplUnitTest {
                 assertNonNull(chromeAndroidTaskWithMockDeps.mMockAndroidBrowserWindowNatives);
         long nativeAndroidBrowserWindowPtr =
                 chromeAndroidTask.getOrCreateNativeBrowserWindowPtr(profile);
-        var mockTabModel =
-                chromeAndroidTaskWithMockDeps.mActivityScopedObjects.mTabModelSelector
-                        .getCurrentModel();
 
         // Act.
         chromeAndroidTask.destroy();
 
         // Assert.
         verify(mockAndroidBrowserWindowNatives, times(1)).destroy(nativeAndroidBrowserWindowPtr);
-        verify(mockTabModel).dissociateWithBrowserWindow();
     }
 
     @Test
@@ -2881,7 +2872,6 @@ public class ChromeAndroidTaskImplUnitTest {
         ProfileManager.onProfileDestroyed(incognitoProfile);
 
         // Assert
-        verify(incognitoTabModel).dissociateWithBrowserWindow();
         assertNull(
                 "Browser window for destroyed profile should be removed.",
                 chromeAndroidTask.getSessionIdForTesting(incognitoProfile));

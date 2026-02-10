@@ -71,9 +71,6 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public void associateWithBrowserWindow(long nativeAndroidBrowserWindow) {}
 
     @Override
-    public void dissociateWithBrowserWindow() {}
-
-    @Override
     public boolean isIncognito() {
         return mIsIncognito;
     }

@@ -133,19 +133,11 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     public void associateWithBrowserWindow(long nativeAndroidBrowserWindow) {
         // Ensure this isn't set multiple times.
         assert mNativeAndroidBrowserWindow == 0;
-        assert nativeAndroidBrowserWindow != 0;
-
         mNativeAndroidBrowserWindow = nativeAndroidBrowserWindow;
+
+        assert nativeAndroidBrowserWindow != 0;
         TabModelJniBridgeJni.get()
                 .associateWithBrowserWindow(mNativeTabModelJniBridge, nativeAndroidBrowserWindow);
-    }
-
-    @Override
-    public void dissociateWithBrowserWindow() {
-        assert mNativeAndroidBrowserWindow != 0;
-
-        TabModelJniBridgeJni.get().dissociateWithBrowserWindow(mNativeTabModelJniBridge);
-        mNativeAndroidBrowserWindow = 0;
     }
 
     @CalledByNative
@@ -700,8 +692,6 @@ public abstract class TabModelJniBridge implements TabModelInternal {
 
         void associateWithBrowserWindow(
                 long nativeTabModelJniBridge, long nativeAndroidBrowserWindow);
-
-        void dissociateWithBrowserWindow(long nativeTabModelJniBridge);
 
         void setMuteSetting(
                 long nativeTabModelJniBridge,
