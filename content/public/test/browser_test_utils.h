@@ -2322,6 +2322,13 @@ int LoadBasicRequest(network::mojom::NetworkContext* network_context,
 // hosts the |frame|).
 int LoadBasicRequest(RenderFrameHost* frame, const GURL& url);
 
+// Wait until the network context has/doesn't have preloaded shared dictionary
+// info. Returns true if the expected value was observed within the timeout,
+// false otherwise.
+bool WaitUntilHasPreloadSharedDictionaryInfo(
+    network::mojom::NetworkContext* network_context,
+    bool expected_value);
+
 // Ensures that all StoragePartitions for the given BrowserContext have their
 // cookies flushed to disk.
 void EnsureCookiesFlushed(BrowserContext* browser_context);

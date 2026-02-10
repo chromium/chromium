@@ -20,6 +20,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 namespace {
@@ -40,13 +41,17 @@ class AutocompleteDictionaryPreloadBrowserTest
   }
 
  protected:
-  bool HasPreloadedSharedDictionaryInfo() {
-    base::test::TestFuture<bool> future;
-    browser()
+  network::mojom::NetworkContext* GetTargetNetworkContext() {
+    return browser()
         ->profile()
         ->GetDefaultStoragePartition()
-        ->GetNetworkContext()
-        ->HasPreloadedSharedDictionaryInfoForTesting(future.GetCallback());
+        ->GetNetworkContext();
+  }
+
+  bool HasPreloadedSharedDictionaryInfo() {
+    base::test::TestFuture<bool> future;
+    GetTargetNetworkContext()->HasPreloadedSharedDictionaryInfoForTesting(
+        future.GetCallback());
     return future.Get();
   }
 
@@ -111,6 +116,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteDictionaryPreloadBrowserTest,
   autocomplete_result.AppendMatches({autocomplete_match});
   SendMemoryPressureToNetworkService();
   dictionary_preload_service->MaybePreload(autocomplete_result);
+  content::FlushNetworkServiceInstanceForTesting();
   EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
 }
 
@@ -127,5 +133,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteDictionaryPreloadBrowserTest,
   dictionary_preload_service->MaybePreload(autocomplete_result);
   EXPECT_TRUE(HasPreloadedSharedDictionaryInfo());
   SendMemoryPressureToNetworkService();
-  EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
+  content::FlushNetworkServiceInstanceForTesting();
+  EXPECT_TRUE(content::WaitUntilHasPreloadSharedDictionaryInfo(
+      GetTargetNetworkContext(), /*expected_value=*/false));
 }
