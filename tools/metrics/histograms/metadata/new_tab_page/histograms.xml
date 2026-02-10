@@ -107,6 +107,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.ActionChips.AnyShown" enum="Boolean"
+    expires_after="2026-07-05">
+  <owner>shomizoe@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logged on the Desktop New Tab Page load. Records true if any Action Chips
+    are shown, and false otherwise. In particular, this is incremented in the
+    following way: - when the user is not eligible for action chips or has
+    disabled them, this is incremented with false. - when the user is eligible
+    for action chips, this is incremented if more than 0 action chips are shown.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.ActionChips.Click" enum="ChipType"
     expires_after="2026-07-05">
   <owner>giannich@chromium.org</owner>

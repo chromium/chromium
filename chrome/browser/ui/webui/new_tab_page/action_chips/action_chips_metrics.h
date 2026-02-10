@@ -33,6 +33,9 @@ void RecordActionChipsRequestStatus(
 void RecordImpressionMetrics(
     const std::vector<action_chips::mojom::ActionChipPtr>& chips);
 
+// Records whether any action chips were shown.
+void RecordActionChipsAnyShown(bool any_shown);
+
 // Records latency metrics for action chips retrieval.
 void RecordActionChipsRetrievalLatencyMetrics(base::TimeDelta latency);
 

@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_handler.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_metrics.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
@@ -733,6 +734,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   bool show_action_chips =
       action_chips_eligible &&
       profile->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible);
+  if (!show_action_chips) {
+    action_chips::RecordActionChipsAnyShown(false);
+  }
   source->AddBoolean("actionChipsEnabled", show_action_chips);
   source->AddBoolean("addTabUploadDelayOnActionChipClick",
                      ntp_features::kAddTabUploadDelayOnActionChipClick.Get());
