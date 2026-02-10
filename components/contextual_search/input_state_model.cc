@@ -336,12 +336,14 @@ void InputStateModel::UpdateDisabledModels() {
     bool incompatible_with_tool =
         state_.active_tool != omnibox::ToolMode::TOOL_MODE_UNSPECIFIED &&
         (!model_rule ||
-         !IsItemAllowed(state_.active_tool, model_rule->allowed_tools()));
+         (!model_rule->allow_all_tools() &&
+          !IsItemAllowed(state_.active_tool, model_rule->allowed_tools())));
 
     bool incompatible_with_inputs =
         (!model_rule ||
-         !AreItemsAllowed(GetCurrentInputTypes(session_handle_.get()),
-                          model_rule->allowed_input_types()));
+         (!model_rule->allow_all_input_types() &&
+          !AreItemsAllowed(GetCurrentInputTypes(session_handle_.get()),
+                           model_rule->allowed_input_types())));
 
     if (incompatible_with_tool || incompatible_with_inputs) {
       state_.disabled_models.push_back(model);
