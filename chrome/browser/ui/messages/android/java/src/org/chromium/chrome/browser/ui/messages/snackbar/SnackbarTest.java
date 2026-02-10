@@ -27,7 +27,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.ui.messages.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -136,8 +135,8 @@ public class SnackbarTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/439617848")
     public void testStackQueuePersistentOrder() {
+        SnackbarManager.setDurationForTesting(100);
         final Snackbar stackbar =
                 Snackbar.make(
                         "stack",
@@ -195,8 +194,8 @@ public class SnackbarTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/458057621")
     public void testPersistentQueueStackOrder() {
+        SnackbarManager.setDurationForTesting(100);
         final Snackbar stackbar =
                 Snackbar.make(
                         "stack",
