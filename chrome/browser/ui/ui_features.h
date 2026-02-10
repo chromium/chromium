@@ -368,6 +368,8 @@ bool IsWebUIReloadButtonEnabled();
 
 bool IsWebUIHomeButtonEnabled();
 
+bool IsWebUIBackForwardButtonEnabled();
+
 bool IsWebUISplitTabsButtonEnabled();
 
 bool IsWebUILocationBarEnabled();

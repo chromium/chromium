@@ -1908,6 +1908,11 @@ BASE_FEATURE(kWebUISplitTabsButton, base::FEATURE_DISABLED_BY_DEFAULT);
 // chrome://webui-toolbar.top-chrome.
 // crbug.com/470039765
 BASE_FEATURE(kWebUIHomeButton, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the back/forward buttons will be replaced with WebUI loaded
+// from chrome://webui-toolbar.top-chrome.
+// crbug.com/470038385
+BASE_FEATURE(kWebUIBackForwardButton, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables the User-Agent override fix for SearchPrefetch. This will work only
