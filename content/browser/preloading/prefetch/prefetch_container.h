@@ -552,8 +552,8 @@ class CONTENT_EXPORT PrefetchContainer {
       const network::mojom::URLResponseHead& head);
   void NotifyPrefetchRequestComplete(
       const network::URLLoaderCompletionStatus& completion_status);
-  std::optional<mojo::PendingRemote<network::mojom::DevToolsObserver>>
-  MakeSelfOwnedNetworkServiceDevToolsObserver();
+  mojo::PendingRemote<network::mojom::DevToolsObserver>
+  MaybeMakeSelfOwnedNetworkServiceDevToolsObserver();
 
   bool is_in_dtor() const { return is_in_dtor_; }
 

@@ -1601,11 +1601,8 @@ void PrefetchContainer::MakeResourceRequest() {
   }();
 
   mojo::PendingRemote<network::mojom::DevToolsObserver>
-      devtools_observer_remote;
-  if (std::optional<mojo::PendingRemote<network::mojom::DevToolsObserver>>
-          devtools_observer = MakeSelfOwnedNetworkServiceDevToolsObserver()) {
-    devtools_observer_remote = std::move(devtools_observer.value());
-  }
+      devtools_observer_remote =
+          MaybeMakeSelfOwnedNetworkServiceDevToolsObserver();
 
   // If we ever implement prefetching for subframes, this value should be
   // reconsidered, as this causes us to reset the site for cookies on cross-site
@@ -2164,23 +2161,23 @@ void PrefetchContainer::NotifyPrefetchRequestComplete(
                                                       completion_status);
 }
 
-std::optional<mojo::PendingRemote<network::mojom::DevToolsObserver>>
-PrefetchContainer::MakeSelfOwnedNetworkServiceDevToolsObserver() {
+mojo::PendingRemote<network::mojom::DevToolsObserver>
+PrefetchContainer::MaybeMakeSelfOwnedNetworkServiceDevToolsObserver() {
   if (IsDecoy()) {
-    return std::nullopt;
+    return mojo::NullRemote();
   }
 
   auto* renderer_initiator_info = request().GetRendererInitiatorInfo();
   if (!renderer_initiator_info) {
     // Don't emit CDP events if the trigger is not speculation rules.
-    return std::nullopt;
+    return mojo::NullRemote();
   }
 
   auto* ftn =
       FrameTreeNode::From(renderer_initiator_info->GetRenderFrameHost());
   if (!ftn) {
     // Don't emit CDP events if the initiator document isn't alive.
-    return std::nullopt;
+    return mojo::NullRemote();
   }
 
   return NetworkServiceDevToolsObserver::MakeSelfOwned(ftn);
