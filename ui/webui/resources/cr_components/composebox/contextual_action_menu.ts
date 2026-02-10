@@ -116,7 +116,7 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
         ModelMode.kGeminiRegular,
         {
           id: 'geminiModelRegular',
-          icon: 'composebox:geminiModelRegular',
+          icon: 'composebox:regularModel',
         },
       ],
       [
