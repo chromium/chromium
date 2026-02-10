@@ -365,7 +365,15 @@ struct PerfHistoryTestParams {
 // test start.
 class VideoDecodePerfHistoryParamTest
     : public testing::WithParamInterface<PerfHistoryTestParams>,
-      public VideoDecodePerfHistoryTest {};
+      public VideoDecodePerfHistoryTest {
+ protected:
+  bool IsPowerEfficientWhenNoStats(const PerfHistoryTestParams& params) {
+    bool is_encrypted = !params.key_system.empty();
+    bool is_hw_secure = params.use_hw_secure_codecs;
+    bool is_sw_secure_decode = is_encrypted && !is_hw_secure;
+    return !is_sw_secure_decode;
+  }
+};
 
 TEST_P(VideoDecodePerfHistoryParamTest, GetPerfInfo_Smooth) {
   // NOTE: The when the DB initialization is deferred, All EXPECT_CALLs are then
@@ -423,13 +431,16 @@ TEST_P(VideoDecodePerfHistoryParamTest, GetPerfInfo_Smooth) {
       base::BindOnce(&VideoDecodePerfHistoryParamTest::MockGetPerfInfoCB,
                      base::Unretained(this)));
 
-  // Verify perf history optimistically returns is_smooth = true when no entry
-  // can be found with the given configuration.
+  // Verify perf history optimistically returns is_smooth = true. For power
+  // efficiency, it should be optimistic for clear content and pessimistic for
+  // encrypted content.
   const VideoCodecProfile kUnknownProfile = VP9PROFILE_PROFILE2;
-  EXPECT_CALL(*this, MockGetPerfInfoCB(kIsSmooth, kIsPowerEfficient));
+  EXPECT_CALL(
+      *this, MockGetPerfInfoCB(kIsSmooth, IsPowerEfficientWhenNoStats(params)));
   perf_history_->GetPerfInfo(
-      MakeFeaturesPtr(kUnknownProfile, kKownSize, kNotSmoothFrameRate),
-      base::BindOnce(&VideoDecodePerfHistoryTest::MockGetPerfInfoCB,
+      MakeFeaturesPtr(kUnknownProfile, kKownSize, kNotSmoothFrameRate,
+                      params.key_system, params.use_hw_secure_codecs),
+      base::BindOnce(&VideoDecodePerfHistoryParamTest::MockGetPerfInfoCB,
                      base::Unretained(this)));
 
   // Complete successful deferred DB initialization (see comment at top of test)
@@ -520,11 +531,12 @@ TEST_P(VideoDecodePerfHistoryParamTest, GetPerfInfo_PowerEfficient) {
       base::BindOnce(&VideoDecodePerfHistoryTest::MockGetPerfInfoCB,
                      base::Unretained(this)));
 
-  // Verify perf history optimistically returns is_smooth = true and
-  // is_power_efficient = true when no entry can be found with the given
-  // configuration.
+  // Verify perf history optimistically returns is_smooth = true. For power
+  // efficiency, it should be optimistic for clear content and pessimistic for
+  // encrypted content.
   const VideoCodecProfile kUnknownProfile = VP9PROFILE_PROFILE2;
-  EXPECT_CALL(*this, MockGetPerfInfoCB(kIsSmooth, kIsPowerEfficient));
+  EXPECT_CALL(
+      *this, MockGetPerfInfoCB(kIsSmooth, IsPowerEfficientWhenNoStats(params)));
   perf_history_->GetPerfInfo(
       MakeFeaturesPtr(kUnknownProfile, kKownSize, kNotSmoothFrameRate,
                       params.key_system, params.use_hw_secure_codecs),
@@ -610,8 +622,11 @@ TEST_P(VideoDecodePerfHistoryParamTest, AppendAndDestroyStats) {
   // Verify record we added above is no longer present.
   // SUBTLE: The PerfHistory will optimistically respond kIsSmooth when no data
   // is found. So the signal that the entry was removed is the CB now claims
-  // "smooth" when it claimed NOT smooth just moments before.
-  EXPECT_CALL(*this, MockGetPerfInfoCB(kIsSmooth, kIsPowerEfficient));
+  // "smooth" when it claimed NOT smooth just moments before. For power
+  // efficiency, it should be optimistic for clear content and pessimistic for
+  // encrypted content.
+  EXPECT_CALL(
+      *this, MockGetPerfInfoCB(kIsSmooth, IsPowerEfficientWhenNoStats(params)));
   perf_history_->GetPerfInfo(
       MakeFeaturesPtr(kProfile, kSize, kFrameRate, params.key_system,
                       params.use_hw_secure_codecs),
@@ -646,9 +661,9 @@ TEST_P(VideoDecodePerfHistoryParamTest, GetVideoDecodeStatsDB) {
         EXPECT_EQ(GetFakeDB(), db_ptr);
       });
 
-  perf_history_->GetVideoDecodeStatsDB(
-      base::BindOnce(&VideoDecodePerfHistoryTest::MockGetVideoDecodeStatsDBCB,
-                     base::Unretained(this)));
+  perf_history_->GetVideoDecodeStatsDB(base::BindOnce(
+      &VideoDecodePerfHistoryParamTest::MockGetVideoDecodeStatsDBCB,
+      base::Unretained(this)));
 
   task_environment_.RunUntilIdle();
 
@@ -725,13 +740,16 @@ TEST_P(VideoDecodePerfHistoryParamTest, FailedDatabaseGetForAppend) {
       MakeTargets(kFramesDecoded, kFramesDropped, kFramesPowerEfficient),
       kPlayerId);
 
-  // Verify perf history still returns is_smooth = power_efficient = true since
-  // no data was successfully saved for the given configuration.
-  EXPECT_CALL(*this, MockGetPerfInfoCB(kIsSmooth, kIsPowerEfficient));
+  // Verify perf history still returns is_smooth = true since no data was
+  // successfully saved for the given configuration. For power efficiency, it
+  // should be optimistic for clear content and pessimistic for encrypted
+  // content.
+  EXPECT_CALL(
+      *this, MockGetPerfInfoCB(kIsSmooth, IsPowerEfficientWhenNoStats(params)));
   perf_history_->GetPerfInfo(
       MakeFeaturesPtr(kProfile, kSize, kFrameRate, params.key_system,
                       params.use_hw_secure_codecs),
-      base::BindOnce(&VideoDecodePerfHistoryTest::MockGetPerfInfoCB,
+      base::BindOnce(&VideoDecodePerfHistoryParamTest::MockGetPerfInfoCB,
                      base::Unretained(this)));
 
   // Complete successful deferred DB initialization (see comment at top of test)
@@ -777,13 +795,16 @@ TEST_P(VideoDecodePerfHistoryParamTest, FailedDatabaseAppend) {
       MakeTargets(kFramesDecoded, kFramesDropped, kFramesPowerEfficient),
       kPlayerId);
 
-  // Verify perf history still returns is_smooth = power_efficient = true since
-  // no data was successfully saved for the given configuration.
-  EXPECT_CALL(*this, MockGetPerfInfoCB(kIsSmooth, kIsPowerEfficient));
+  // Verify perf history still returns is_smooth = true since no data was
+  // successfully saved for the given configuration. For power efficiency, it
+  // should be optimistic for clear content and pessimistic for encrypted
+  // content.
+  EXPECT_CALL(
+      *this, MockGetPerfInfoCB(kIsSmooth, IsPowerEfficientWhenNoStats(params)));
   perf_history_->GetPerfInfo(
       MakeFeaturesPtr(kProfile, kSize, kFrameRate, params.key_system,
                       params.use_hw_secure_codecs),
-      base::BindOnce(&VideoDecodePerfHistoryTest::MockGetPerfInfoCB,
+      base::BindOnce(&VideoDecodePerfHistoryParamTest::MockGetPerfInfoCB,
                      base::Unretained(this)));
 
   // Complete successful deferred DB initialization (see comment at top of test)
@@ -1028,12 +1049,48 @@ const PerfHistoryTestParams kPerfHistoryTestParams[] = {
     {true, "", false},
     {false, "", false},
     {true, "com.widevine.alpha", false},
+    {false, "com.widevine.alpha", false},
     {true, "com.widevine.alpha", true},
+    {false, "com.widevine.alpha", true},
 };
 
 INSTANTIATE_TEST_SUITE_P(VaryDBInitTiming,
                          VideoDecodePerfHistoryParamTest,
                          ::testing::ValuesIn(kPerfHistoryTestParams));
+
+TEST_P(VideoDecodePerfHistoryParamTest, GetPerfInfo_NoStatsPowerEfficiency) {
+  PerfHistoryTestParams params = GetParam();
+  testing::InSequence dummy;
+
+  if (!params.defer_initialize) {
+    PreInitializeDB(true);
+  }
+
+  const VideoCodecProfile kUnknownProfile = VP9PROFILE_PROFILE2;
+  const gfx::Size kSize(100, 200);
+  const int kFrameRate = 30;
+
+  // With no stats, smoothness is optimistic (returns true).
+  // Power efficiency is optimistic, unless we have encrypted content with
+  // software secure codecs.
+  bool expected_power_efficient = IsPowerEfficientWhenNoStats(params);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*this, MockGetPerfInfoCB(kIsSmooth, expected_power_efficient))
+      .WillOnce(testing::InvokeWithoutArgs([&]() { run_loop.Quit(); }));
+
+  perf_history_->GetPerfInfo(
+      MakeFeaturesPtr(kUnknownProfile, kSize, kFrameRate, params.key_system,
+                      params.use_hw_secure_codecs),
+      base::BindOnce(&VideoDecodePerfHistoryParamTest::MockGetPerfInfoCB,
+                     base::Unretained(this)));
+
+  if (params.defer_initialize) {
+    GetFakeDB()->CompleteInitialize(true);
+  }
+
+  run_loop.Run();
+}
 
 //
 // The following test are not parameterized. They instead always hard code

@@ -162,9 +162,14 @@ void VideoDecodePerfHistory::AssessStats(
   /// smooth. If lower resolutions/frames are known to be janky, we can assume
   // this will be janky.
 
-  // No stats? Lets be optimistic.
+  // No stats? Lets be optimistic for clear content, but pessimistic for
+  // encrypted content that uses sw secure codecs in regards to power
+  // efficiency. An empty key system means that it is clear content.
   if (!stats || stats->frames_decoded == 0) {
-    *is_power_efficient = true;
+    bool is_encrypted = !key.key_system.empty();
+    bool is_hw_secure = key.use_hw_secure_codecs;
+    bool is_sw_secure_decode = is_encrypted && !is_hw_secure;
+    *is_power_efficient = !is_sw_secure_decode;
     *is_smooth = true;
     return;
   }
