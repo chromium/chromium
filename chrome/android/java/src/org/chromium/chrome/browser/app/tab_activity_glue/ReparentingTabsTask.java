@@ -9,11 +9,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Browser;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -28,6 +28,8 @@ import java.util.List;
 public class ReparentingTabsTask {
     private final List<Tab> mTabs;
 
+    private static @Nullable ReparentingTabsTask sReparentingTaskForTesting;
+
     /**
      * Creates a new task to reparent a list of tabs.
      *
@@ -35,6 +37,9 @@ public class ReparentingTabsTask {
      * @return A new {@link ReparentingTabsTask} object.
      */
     public static ReparentingTabsTask from(List<Tab> tabs) {
+        if (sReparentingTaskForTesting != null) {
+            return sReparentingTaskForTesting;
+        }
         return new ReparentingTabsTask(tabs);
     }
 
@@ -104,5 +109,10 @@ public class ReparentingTabsTask {
 
         IntentHandler.setMultiTabMetadata(intent, MultiTabMetadata.create(mTabs));
         IntentUtils.addTrustedIntentExtras(intent);
+    }
+
+    public static void setReparentingTabsTaskForTesting(ReparentingTabsTask task) {
+        sReparentingTaskForTesting = task;
+        ResettersForTesting.register(() -> sReparentingTaskForTesting = null);
     }
 }

@@ -4,11 +4,25 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import android.content.Context;
+import android.util.Pair;
 
-
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
+import org.chromium.chrome.browser.tabwindow.WindowId;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Test util methods for multi-window/instance support */
 public class MultiWindowTestUtils {
@@ -43,5 +57,39 @@ public class MultiWindowTestUtils {
     /** Enabled multi instance. */
     public static void enableMultiInstance() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+    }
+
+    /* package */ static void setupTabModelSelectorFactory(
+            Profile regularProfile, Profile incognitoProfile) {
+        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
+        TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
+                new TabModelSelectorFactory() {
+                    @Override
+                    public TabModelSelector buildTabbedSelector(
+                            Context context,
+                            ModalDialogManager modalDialogManager,
+                            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+                            TabCreatorManager tabCreatorManager,
+                            NextTabPolicySupplier nextTabPolicySupplier,
+                            MultiInstanceManager multiInstanceManager) {
+                        return new MockTabModelSelector(
+                                regularProfile, incognitoProfile, 0, 0, null);
+                    }
+
+                    @Override
+                    public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
+                            @WindowId int windowId,
+                            Profile profile,
+                            PersistentStoreMigrationManager migrationManager) {
+                        return Pair.create(
+                                new MockTabModelSelector(
+                                        regularProfile,
+                                        incognitoProfile,
+                                        /* tabCount= */ 0,
+                                        /* incognitoTabCount= */ 0,
+                                        /* delegate= */ null),
+                                () -> {});
+                    }
+                });
     }
 }

@@ -53,7 +53,8 @@ public class MultiInstanceManagerFactory {
                     activityLifecycleDispatcher,
                     modalDialogManagerSupplier,
                     menuOrKeyboardActionController,
-                    desktopWindowStateManagerSupplier);
+                    desktopWindowStateManagerSupplier,
+                    new TabReparentingDelegate(activity, tabModelOrchestratorSupplier));
         } else {
             return new MultiInstanceManagerImpl(
                     activity,

@@ -10,6 +10,7 @@ import android.provider.Browser;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
@@ -27,12 +28,17 @@ import java.util.List;
 public class ReparentingTabGroupTask {
     private final TabGroupMetadata mTabGroupMetadata;
 
+    private static @Nullable ReparentingTabGroupTask sReparentingTaskForTesting;
+
     /**
      * @param tabGroupMetadata {@link TabGroupMetadata} object contains the tab group properties.
      * @return {@link ReparentingTabGroupTask} object initialized with the specified tab group
      *     metadata and grouped tabs.
      */
     public static ReparentingTabGroupTask from(TabGroupMetadata tabGroupMetadata) {
+        if (sReparentingTaskForTesting != null) {
+            return sReparentingTaskForTesting;
+        }
         return new ReparentingTabGroupTask(tabGroupMetadata);
     }
 
@@ -97,5 +103,10 @@ public class ReparentingTabGroupTask {
         // 5. Store tab group metadata into intent and add trusted intent extras.
         IntentHandler.setTabGroupMetadata(intent, mTabGroupMetadata);
         IntentUtils.addTrustedIntentExtras(intent);
+    }
+
+    public static void setReparentingTabGroupTaskForTesting(ReparentingTabGroupTask task) {
+        sReparentingTaskForTesting = task;
+        ResettersForTesting.register(() -> sReparentingTaskForTesting = null);
     }
 }
