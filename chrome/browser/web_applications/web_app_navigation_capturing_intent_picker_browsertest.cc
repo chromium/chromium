@@ -343,8 +343,14 @@ class IsolatedWebAppNavigationCapturingIntentPickerBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/481793608): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_LaunchParams DISABLED_LaunchParams
+#else
+#define MAYBE_LaunchParams LaunchParams
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppNavigationCapturingIntentPickerBrowserTest,
-                       LaunchParams) {
+                       MAYBE_LaunchParams) {
   ManifestBuilder::ClientMode client_mode = GetParam();
   IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp(client_mode);
 
