@@ -186,8 +186,12 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
     const Occlusion& scaled_occlusion,
     const gfx::Vector2d& quad_offset,
     float max_contents_scale) {
-  // TODO(crbug.com/40902346): Use CalculateScaledCullRect() to set
-  // append_quads_data->checkerboarded_needs_record as PictureLayerImpl does.
+  // NOTE: Currently it is not necessary to compute
+  // append_quads_data->checkerboarded_needs_recorded on the Viz side, as it is
+  // consumed only on the client side. However, it will become necessary when we
+  // introduce frames driven entirely by Viz. At that point, we should dedupe
+  // the relevant code into TileBasedLayerImpl.
+  // See crbug.com/482862751.
 
   const float ideal_scale_key = GetIdealContentsScaleKey();
   const gfx::Rect scaled_recorded_bounds =
