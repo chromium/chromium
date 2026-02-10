@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/omnibox/composebox/composebox_query.mojom-forward.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
@@ -42,6 +43,24 @@ struct EnumTraits<composebox_query::mojom::InputType, omnibox::InputType> {
   static composebox_query::mojom::InputType ToMojom(omnibox::InputType input);
   static bool FromMojom(composebox_query::mojom::InputType input,
                         omnibox::InputType* output);
+};
+
+template <>
+struct EnumTraits<composebox_query::mojom::FileUploadStatus,
+                  contextual_search::FileUploadStatus> {
+  static composebox_query::mojom::FileUploadStatus ToMojom(
+      contextual_search::FileUploadStatus input);
+  static bool FromMojom(composebox_query::mojom::FileUploadStatus input,
+                        contextual_search::FileUploadStatus* output);
+};
+
+template <>
+struct EnumTraits<composebox_query::mojom::FileUploadErrorType,
+                  contextual_search::FileUploadErrorType> {
+  static composebox_query::mojom::FileUploadErrorType ToMojom(
+      contextual_search::FileUploadErrorType input);
+  static bool FromMojom(composebox_query::mojom::FileUploadErrorType input,
+                        contextual_search::FileUploadErrorType* output);
 };
 
 template <>

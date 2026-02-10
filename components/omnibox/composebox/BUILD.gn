@@ -41,10 +41,19 @@ mojom("mojo_bindings") {
           mojom = "composebox_query.mojom.InputState"
           cpp = "::omnibox::InputState"
         },
+        {
+          mojom = "composebox_query.mojom.FileUploadStatus"
+          cpp = "::contextual_search::FileUploadStatus"
+        },
+        {
+          mojom = "composebox_query.mojom.FileUploadErrorType"
+          cpp = "::contextual_search::FileUploadErrorType"
+        },
       ]
       traits_headers = [ "contextual_search_mojom_traits.h" ]
       traits_sources = [ "contextual_search_mojom_traits.cc" ]
       traits_deps = [
+        "//components/contextual_search:types",
         "//components/omnibox/common",
         "//third_party/omnibox_proto",
       ]

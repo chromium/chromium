@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/omnibox/test_omnibox_edit_model.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
@@ -69,8 +70,8 @@ class MockSearchboxPage : public searchbox::mojom::Page {
   MOCK_METHOD(void,
               OnContextualInputStatusChanged,
               (const base::UnguessableToken&,
-               composebox_query::mojom::FileUploadStatus,
-               std::optional<composebox_query::mojom::FileUploadErrorType>));
+               contextual_search::FileUploadStatus,
+               std::optional<contextual_search::FileUploadErrorType>));
   MOCK_METHOD(void, OnTabStripChanged, ());
   MOCK_METHOD(void,
               OnInputStateChanged,
