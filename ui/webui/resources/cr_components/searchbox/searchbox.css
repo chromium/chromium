@@ -73,19 +73,6 @@
   box-shadow: none;
 }
 
-:host([match-searchbox]) {
-  box-shadow: none;
-}
-
-:host([match-searchbox]:not([dropdown-is-visible]):hover) {
-  border: 1px solid transparent;
-  box-shadow: var(--cr-searchbox-shadow);
-}
-
-:host([match-searchbox]:not([is-dark]):not([dropdown-is-visible]):not(:hover)) {
-  border: 1px solid var(--color-searchbox-border);
-}
-
 #inputWrapper {
   background-color: var(--color-searchbox-background);
   border-radius: var(--cr-searchbox-border-radius);
