@@ -170,7 +170,7 @@ void SystemClock::OnSystemPrefChanged() {
 void SystemClock::OnUserPrefChanged() {
   // It apparently sometimes takes a while after login before the current user
   // is recognized as the owner. Make sure that the system-wide clock setting
-  // is updated when the recognition eventually happens (crbug.com/278601).
+  // is updated when the recognition eventually happens (crbug.com/41040754).
   // This also works for enterprise-managed devices because they never have
   // a local owner.
   const AccountId* user_id =

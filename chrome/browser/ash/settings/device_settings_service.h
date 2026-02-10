@@ -209,7 +209,7 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
 
   // Checks whether we have the private owner key.
   //
-  // DEPRECATED (ygorshenin@, crbug.com/433840): this method should
+  // DEPRECATED (ygorshenin@, crbug.com/41143265): this method should
   // not be used since private key is a profile-specific resource and
   // should be checked and used in a profile-aware manner, through
   // OwnerSettingsService.
@@ -218,7 +218,7 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   // Sets the identity of the user that's interacting with the service. This is
   // relevant only for writing settings through SignAndStore().
   //
-  // TODO (ygorshenin@, crbug.com/433840): get rid of the method when
+  // TODO (ygorshenin@, crbug.com/41143265): get rid of the method when
   // write path for device settings will be removed from
   // DeviceSettingsProvider and all existing clients will be switched
   // to OwnerSettingsServiceAsh.

@@ -43,7 +43,7 @@ class OwnerKeyLoader;
 // loaded only for the owner.
 //
 // TODO (ygorshenin@): move write path for device settings here
-// (crbug.com/230018).
+// (crbug.com/41006153).
 class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
                                 public ProfileManagerObserver,
                                 public SessionManagerClient::Observer,

@@ -502,7 +502,7 @@ void ArcPackageSyncableService::UninstallPackage(const ArcSyncItem* sync_item) {
   // Make a copy of the package name string instead of handing out a reference
   // to |sync_item->package_name|. The reason is that |sync_item| may get
   // destroyed as a result of this call, making any references to it invalid.
-  // See crbug.com/970063.
+  // See crbug.com/41462644.
   std::string package_name = sync_item->package_name;
   instance->UninstallPackage(package_name);
 }

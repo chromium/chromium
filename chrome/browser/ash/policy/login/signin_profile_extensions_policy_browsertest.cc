@@ -561,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsAutoUpdatePolicyTest,
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsAutoUpdatePolicyTest, PRE_Test) {
   // Let the extensions system load the previously fetched version before
   // starting to serve the newer version, to avoid hitting flaky DCHECKs in the
-  // extensions system internals (see https://crbug.com/810799).
+  // extensions system internals (see https://crbug.com/41369768).
   WaitForTestExtensionLoaded();
   EXPECT_EQ(GetTestExtensionVersion(),
             base::Version(kNoImmediateUpdateExtensionOlderVersion));

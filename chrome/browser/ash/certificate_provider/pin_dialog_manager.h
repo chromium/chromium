@@ -25,7 +25,7 @@ namespace chromeos {
 
 // Manages the state of the dialog that requests the PIN from user. Used by the
 // extensions that need to request the PIN. Implemented as requirement for
-// crbug.com/612886
+// crbug.com/41254507
 class PinDialogManager final {
  public:
   enum class RequestPinResult {

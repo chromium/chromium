@@ -19,7 +19,7 @@ namespace ash::startup_settings_cache {
 // ~20 bytes and this approach performs better than other approaches (passing a
 // resource bundle file descriptor to zygote on renderer fork, or pre-load the
 // local state file on startup). On coral (dual core Celeron N3350 1.1 GHz) the
-// file read takes < 2.5 ms and the write takes < 1 ms. https://crbug.com/510455
+// file read takes < 2.5 ms and the write takes < 1 ms. crbug.com/41188654
 std::string ReadAppLocale();
 
 // Writes the locale string to a JSON file on disk. See above.

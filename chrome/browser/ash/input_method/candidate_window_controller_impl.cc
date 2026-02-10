@@ -112,7 +112,7 @@ void CandidateWindowControllerImpl::HideLookupTable() {
   if (infolist_window_) {
     infolist_window_->HideImmediately();
   }
-  // TODO(nona): Introduce unittests for crbug.com/170036.
+  // TODO(nona): Introduce unittests for crbug.com/40959898.
   latest_infolist_entries_.clear();
 }
 

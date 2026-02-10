@@ -79,7 +79,7 @@ void DeviceLocalAccountPolicyStore::LoadImmediately() {
   // the user has flags configured in about:flags.
   // However, on those paths we must load policy synchronously so that the
   // Profile initialization never sees unmanaged prefs, which would lead to
-  // data loss. http://crbug.com/263061
+  // data loss. http://crbug.com/40326003
 
   // Cancel all running async loads.
   weak_factory_.InvalidateWeakPtrs();

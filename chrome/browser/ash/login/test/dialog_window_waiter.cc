@@ -18,7 +18,7 @@ DialogWindowWaiter::~DialogWindowWaiter() {
   aura::Env::GetInstance()->RemoveObserver(this);
   window_observations_.RemoveAllObservations();
   // Explicitly close any help app dialogs still open to prevent flaky errors in
-  // browser tests. Remove when crbug.com/951828 is fixed.
+  // browser tests. Remove when crbug.com/40622717 is fixed.
   for (aura::Window* dialog_window : dialog_windows_)
     views::Widget::GetWidgetForNativeView(dialog_window)->CloseNow();
 }

@@ -200,7 +200,7 @@ scoped_refptr<network::SharedURLLoaderFactory> GetSigninURLLoaderFactory() {
   content::StoragePartition* signin_partition = GetSigninPartition();
 
   // Special case for unit tests. There's no LoginDisplayHost thus no
-  // webview instance. See http://crbug.com/477402
+  // webview instance. See http://crbug.com/41168501
   if (!signin_partition && !LoginDisplayHost::default_host())
     return ProfileHelper::GetSigninProfile()->GetURLLoaderFactory();
 

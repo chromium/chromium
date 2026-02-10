@@ -88,7 +88,7 @@ void OnGetFileInfo(storage::FileSystemOperation::GetMetadataFieldSet fields,
           storage::FileSystemOperation::GetMetadataField::kLastModified)) {
     file_info.last_modified = *metadata->modification_time;
     // TODO(mtomasz): Add support for last modified time and creation time.
-    // See: crbug.com/388540.
+    // See: crbug.com/41116994.
     file_info.last_accessed = *metadata->modification_time;  // Not supported.
     file_info.creation_time = *metadata->modification_time;  // Not supported.
   }

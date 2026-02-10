@@ -312,7 +312,7 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
 
  private:
   // Note: `scoped_feature_list_` should be destroyed after `task_environment_`
-  // (see crbug.com/846380).
+  // (see crbug.com/40577856).
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   InProcessDataDecoder in_process_data_decoder_;

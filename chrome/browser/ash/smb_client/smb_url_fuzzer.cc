@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/smb_client/smb_url.h"
 
-// This is a workaround for https://crbug.com/778929.
+// This is a workaround for https://crbug.com/40546867.
 struct IcuEnvironment {
   IcuEnvironment() {
     logging::SetMinLogLevel(logging::LOGGING_FATAL);

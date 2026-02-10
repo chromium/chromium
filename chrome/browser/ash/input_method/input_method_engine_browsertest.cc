@@ -1256,7 +1256,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
   }
   {
     SCOPED_TRACE("changeInputMethod with uncommited text test");
-    // For http://crbug.com/529999.
+    // For http://crbug.com/41200541.
 
     mock_input_context->Reset();
     mock_candidate_window->Reset();

@@ -35,7 +35,7 @@ class HIDDetectionScreen : public BaseScreen,
   static std::string GetResultString(Result result);
 
   // The HID detection screen is only allowed for form factors without built-in
-  // inputs: Chromebases, Chromebits, and Chromeboxes (crbug.com/965765).
+  // inputs: Chromebases, Chromebits, and Chromeboxes (crbug.com/207038438).
   // Also different testing flags might forcefully skip the screen
   static bool CanShowScreen();
 

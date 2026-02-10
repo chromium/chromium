@@ -105,7 +105,7 @@ class EnrollmentIdUploadManager : public DeviceSettingsService::Observer {
 
   // Used to remember we uploaded an empty identifier this session for
   // devices that can't obtain the identifier until they are powerwashed or
-  // updated and rebooted (see http://crbug.com/867724).
+  // updated and rebooted (see http://crbug.com/40586711).
   bool did_upload_empty_eid_ = false;
 
   // Callbacks for the enrollment ID upload that is in progress.

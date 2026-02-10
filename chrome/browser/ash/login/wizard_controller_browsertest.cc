@@ -1064,9 +1064,9 @@ class WizardControllerDeviceStateTest : public WizardControllerFlowTest {
 
     // Initialize the FakeShillManagerClient. This does not happen
     // automatically because of the `DBusThreadManager::Initialize`
-    // call in `SetUpInProcessBrowserTestFixture`. See https://crbug.com/847422.
+    // call in `SetUpInProcessBrowserTestFixture`. See crbug.com/40578322.
     // TODO(pmarko): Find a way for FakeShillManagerClient to be initialized
-    // automatically (https://crbug.com/847422).
+    // automatically (https://crbug.com/40578322).
     ShillManagerClient::Get()->GetTestInterface()->SetupDefaultEnvironment();
   }
 
@@ -2798,13 +2798,13 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowWithAutoEnrollmentCheckForcedTest,
 // TODO(nkostylev): Add test for WebUI accelerators http://crosbug.com/22571
 
 // TODO(merkulova): Add tests for bluetooth HID detection screen variations when
-// UI and logic is ready. http://crbug.com/127016
+// UI and logic is ready. http://crbug.com/40205279
 
 // TODO(khmel): Add tests for ARC OptIn flow.
-// http://crbug.com/651144
+// http://crbug.com/41277995
 
 // TODO(fukino): Add tests for encryption migration UI.
-// http://crbug.com/706017
+// http://crbug.com/41309925
 
 // TODO(alemate): Add tests for Sync Consent UI.
 

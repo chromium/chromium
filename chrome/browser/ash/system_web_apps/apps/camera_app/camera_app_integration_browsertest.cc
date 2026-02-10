@@ -38,8 +38,8 @@ IN_PROC_BROWSER_TEST_P(CameraAppIntegrationTest, MainUrlNavigation) {
 IN_PROC_BROWSER_TEST_P(CameraAppIntegrationTest, OtherPageUrlNavigation) {
   WaitForTestSystemAppInstall();
 
-  // TODO(crbug.com/980846): Change it to test page once the corresponding CL is
-  // merged.
+  // TODO(crbug.com/172345161): Change it to test page once the corresponding CL
+  // is merged.
   GURL other_page_camera_app_url("chrome://camera-app/js/main.js");
   ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
 

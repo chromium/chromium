@@ -20,7 +20,7 @@ namespace arc {
 // interface completely. We omit some details which Files app doesn't care.
 // This is for simpicity, but results in layering violation. We should
 // complement the implementations to prepare for general usage in the future.
-// crbug.com/946329.
+// crbug.com/206362799.
 class ArcDocumentsProviderAsyncFileUtil : public storage::AsyncFileUtil {
  public:
   ArcDocumentsProviderAsyncFileUtil();

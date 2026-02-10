@@ -10,7 +10,7 @@
 namespace ash {
 
 // TODO(jdufault): Remove Network prefix from NetworkError associated classes.
-// See crbug.com/672142
+// See crbug.com/40497015
 class NetworkError {
  public:
   enum UIState {

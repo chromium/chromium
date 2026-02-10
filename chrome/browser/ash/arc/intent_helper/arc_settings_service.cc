@@ -615,7 +615,7 @@ void ArcSettingsServiceImpl::SyncBootTimeSettings() const {
   SyncUse24HourClock();
 
   // Reset the values to default in case the user had a custom value.
-  // https://crbug.com/955071
+  // https://crbug.com/40624102
   ResetFontScaleToDefault();
   ResetPageZoomToDefault();
 }

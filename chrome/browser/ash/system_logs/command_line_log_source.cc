@@ -47,7 +47,7 @@ void ExecuteCommandLines(system_logs::SystemLogsResponse* response) {
 #if 0
   // This command hangs as of R39. TODO(alhli): Make cras_test_client more
   // robust or add a wrapper script that times out, and fix this or remove
-  // this code. crbug.com/419523
+  // this code. crbug.com/41135003
   command_line =
       base::CommandLine((base::FilePath("/usr/bin/cras_test_client")));
   command_line.AppendArg("--loopback_file");

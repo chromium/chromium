@@ -43,7 +43,7 @@ net::IPAddress CalculateBroadcastAddress(
 }
 
 // TODO(baileyberro): Some devices' wifi interface has CONNECTION_UNKNOWN as
-// type rather than CONNECTION_WIFI. https://crbug.com/872665
+// type rather than CONNECTION_WIFI. https://crbug.com/40588714
 bool ShouldUseInterface(const net::NetworkInterface& interface) {
   return interface.address.IsIPv4() &&
          interface.prefix_length < (net::IPAddress::kIPv4AddressSize * 8) &&

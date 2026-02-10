@@ -337,7 +337,7 @@ void EncryptionMigrationScreen::OnRequestRestartOnFailure() {
 void EncryptionMigrationScreen::OnOpenFeedbackDialog() {
   RecordUserChoice(UserChoice::USER_CHOICE_REPORT_AN_ISSUE);
   const std::string description = base::StringPrintf(
-      "Auto generated feedback for http://crbug.com/719266.\n"
+      "Auto generated feedback for http://crbug.com/40519275.\n"
       "(uniquifier:%s)",
       base::NumberToString(base::Time::Now().ToInternalValue()).c_str());
   login_feedback_ = std::make_unique<LoginFeedback>(Profile::FromWebUI(

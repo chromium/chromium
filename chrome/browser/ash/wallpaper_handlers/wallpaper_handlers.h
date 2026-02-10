@@ -149,7 +149,7 @@ class BackdropSurpriseMeImageFetcher {
 
   // An opaque token returned by a previous image info fetch request. It is used
   // to prevent duplicate images from being returned. It's intentional
-  // that this field is always empty. See (https://crbug.com/843537#c13).
+  // that this field is always empty. See (https://crbug.com/41389292#c13).
   const std::string resume_token_;
 
   // The callback upon completion of downloading and deserializing the surprise

@@ -526,7 +526,7 @@ TEST_F(SmartLockServiceTest, AuthenticateWithSmartLock) {
       feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
 }
 
-// Regression test for crbug.com/974410.
+// Regression test for crbug.com/207066378.
 // The "SmartLock.AuthResult" Failure bucket is incorrectly emitted to during
 // this test. See crbug.com/1255964 for more info.
 TEST_F(SmartLockServiceTest, AuthenticateWithSmartLockMultipleTimes) {

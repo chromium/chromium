@@ -165,7 +165,7 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
   if (!authenticate_by_pin_) {
     user_context.SetLocalPasswordInput(LocalPasswordInput{password});
     // Save the user's plaintext password for possible authentication to a
-    // network. See https://crbug.com/386606 for details.
+    // network. See https://crbug.com/40371326 for details.
     user_context.SetPasswordKey(Key(password));
   }
   user_context.SetIsUsingPin(authenticate_by_pin_);

@@ -1748,7 +1748,7 @@ void ArcAppListPrefs::AddAppAndShortcut(
   }
 
   std::string updated_name = name;
-  // Add "(beta)" string to Play Store. See crbug.com/644576 for details.
+  // Add "(beta)" string to Play Store. See crbug.com/40483829 for details.
   if (app_id == arc::kPlayStoreAppId)
     updated_name = l10n_util::GetStringUTF8(IDS_ARC_PLAYSTORE_ICON_TITLE_BETA);
 

@@ -154,7 +154,7 @@ void LoggedInSpokenFeedbackTest::TearDownOnMainThread() {
   chromevox_test_utils_.reset();
   AccessibilityManager::SetBrailleControllerForTest(nullptr);
   // Unload the ChromeVox extension so the browser doesn't try to respond to
-  // in-flight requests during test shutdown. https://crbug.com/923090
+  // in-flight requests during test shutdown. https://crbug.com/41436231
   AccessibilityManager::Get()->EnableSpokenFeedback(false);
   AutomationManagerAura::GetInstance()->Disable();
 }
@@ -1301,7 +1301,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenSettingsFromPanel) {
 }
 #endif  // !defined(MEMORY_SANITIZER)
 
-// Fails on ASAN. See http://crbug.com/776308. (Note MAYBE_ doesn't work well
+// Fails on ASAN. See http://crbug.com/40545616. (Note MAYBE_ doesn't work well
 // with parameterized tests).
 #if !defined(ADDRESS_SANITIZER)
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {

@@ -342,7 +342,7 @@ class UserSelectionScreen::DircryptoMigrationChecker {
       std::optional<user_data_auth::NeedsDircryptoMigrationReply> reply) {
     if (!reply.has_value()) {
       LOG(ERROR) << "Failed to call cryptohome NeedsDircryptoMigration.";
-      // Hide the banner to avoid confusion in http://crbug.com/721948.
+      // Hide the banner to avoid confusion in http://crbug.com/41319246.
       // Cache is not updated so that cryptohome call will still be attempted.
       UpdateUI(account_id, false);
       return;

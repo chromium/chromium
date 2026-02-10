@@ -44,7 +44,7 @@ const char kNotifierId[] = "arc_boot_error";
 
 void ShowLowDiskSpaceErrorNotification(content::BrowserContext* context) {
   // We suppress the low-disk notification when there are multiple users on an
-  // enterprise managed device. crbug.com/656788.
+  // enterprise managed device. crbug.com/40489355.
   if (ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
       user_manager::UserManager::Get()->GetPersistedUsers().size() > 1) {
     LOG(WARNING) << "ARC booting is aborted due to low disk space, but the "

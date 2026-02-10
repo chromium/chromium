@@ -506,7 +506,7 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayouts) {
 }
 
 TEST_F(InputMethodManagerImplTest, TestEnableLayoutsAndCurrentInputMethod) {
-  // For http://crbug.com/329061
+  // For http://crbug.com/41080524
   std::vector<std::string> keyboard_layouts;
   keyboard_layouts.push_back(ImeIdFromEngineId("xkb:se::swe"));
 

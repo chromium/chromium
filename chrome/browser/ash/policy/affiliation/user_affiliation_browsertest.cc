@@ -159,7 +159,7 @@ class UserAffiliationBrowserTest
       // Wait for the login manager UI to be available before continuing.
       // This is a workaround for chrome crashing when running with DCHECKS when
       // it exits while the login manager is being loaded.
-      // TODO(pmarko): Remove this when https://crbug.com/869272 is fixed.
+      // TODO(pmarko): Remove this when https://crbug.com/40587277 is fixed.
       login_ui_visible_waiter_->Wait();
     }
   }

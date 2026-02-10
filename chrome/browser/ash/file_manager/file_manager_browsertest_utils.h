@@ -74,7 +74,7 @@ struct TestCase {
   // the apps platform, and it's a bug that these tests do so.
   // FindRuntimeContext() in select_file_dialog_extension.cc will use the last
   // active browser in this case, which requires a Browser to be present. See
-  // https://crbug.com/736930.
+  // https://crbug.com/40527613.
   TestCase& WithBrowser();
 
   TestCase& EnableDlp();

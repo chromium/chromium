@@ -319,7 +319,7 @@ class WallpaperPolicyTest : public LoginManagerTest,
 // user.  Also verifies that after the policy has been cleared, the wallpaper
 // reverts to default.
 //
-// Disabled due to flakiness: https://crbug.com/873908.
+// Disabled due to flakiness: https://crbug.com/258749432.
 IN_PROC_BROWSER_TEST_F(WallpaperPolicyTest, DISABLED_SetResetClear) {
   SetSystemSalt();
   LoginUser(login_manager_.users()[0].account_id);

@@ -535,7 +535,7 @@ TEST_F(DeviceSettingsServiceTest, Observer) {
 // Test that DeviceSettingsService defers load operations until after
 // OwnerSettingsService finishes loading the private key and invokes
 // DeviceSettingsService::InitOwner to set the owner info.
-// See http://crbug.com/706820 for more details.
+// See http://crbug.com/40513293 for more details.
 TEST_F(DeviceSettingsServiceTest, LoadDeferredDuringOwnershipEstablishment) {
   owner_key_util_->Clear();
 

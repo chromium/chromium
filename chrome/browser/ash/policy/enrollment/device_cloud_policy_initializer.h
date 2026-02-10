@@ -39,7 +39,7 @@ class DeviceManagementService;
 //
 // It is expected that the |DeviceCloudPolicyInitializer| will be
 // destroyed soon after it called |StartConnection|, but see
-// crbug.com/705758 for complications.
+// crbug.com/41309774 for complications.
 class DeviceCloudPolicyInitializer
     : public CloudPolicyStore::Observer,
       public DeviceCloudPolicyManagerAsh::Observer {

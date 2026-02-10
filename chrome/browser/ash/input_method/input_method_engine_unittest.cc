@@ -344,7 +344,7 @@ TEST_F(InputMethodEngineTest, TestInvalidCompositionReturnsFalse) {
             false);
 }
 
-// See https://crbug.com/980437.
+// See https://crbug.com/40634497.
 TEST_F(InputMethodEngineTest, TestDisableAfterSetCompositionRange) {
   CreateEngine(true);
   Focus(ui::TEXT_INPUT_TYPE_TEXT);

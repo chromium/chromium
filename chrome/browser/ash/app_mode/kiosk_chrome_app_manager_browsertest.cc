@@ -184,7 +184,7 @@ class ChromeAppKioskAppManagerTest : public InProcessBrowserTest {
     extensions::WebstoreDataFetcher::SetLogResponseCodeForTesting(true);
 
     // Don't spin up the IO thread yet since no threads are allowed while
-    // spawning sandbox host process. See crbug.com/322732.
+    // spawning sandbox host process. See crbug.com/41076404.
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, UpdateAppDataFromProfile) {
   CheckAppData("app_1", "Updated App1 Name", "1234");
 }
 
-// Flaky; https://crbug.com/783450
+// Flaky; https://crbug.com/41354525
 IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, UpdateAppDataFromCrx) {
   const char kAppId[] = "iiigpodgfihagabpagjehoocpakbnclp";
   const char kAppName[] = "Test Kiosk App";

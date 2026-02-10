@@ -469,7 +469,7 @@ class PolicyProvidedCertsPublicSessionTest
   }
 };
 
-// TODO(https://crbug.com/874831): Re-enable this after the source of the
+// TODO(https://crbug.com/263306980): Re-enable this after the source of the
 // flakiness has been identified.
 IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsPublicSessionTest,
                        DISABLED_AllowedInPublicSession) {

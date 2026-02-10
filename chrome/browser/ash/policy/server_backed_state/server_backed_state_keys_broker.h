@@ -55,7 +55,7 @@ class ServerBackedStateKeysBroker {
   // there's a problem determining the state keys, the passed vector will be
   // empty. If |this| gets destroyed before the callback happens or if the time
   // sync fails / the network is not established, then the |callback| is never
-  // invoked. See http://crbug.com/649422 for more context.
+  // invoked. See http://crbug.com/40486047 for more context.
   virtual void RequestStateKeys(StateKeysCallback callback);
 
   static base::TimeDelta GetPollIntervalForTesting();

@@ -3804,7 +3804,7 @@ TEST_P(EventRewriterTest, MouseEventMaintainNativeEvent) {
   }
 }
 
-// Tests edge cases of key event rewriting (see https://crbug.com/913209).
+// Tests edge cases of key event rewriting (see https://crbug.com/40605692).
 TEST_P(EventRewriterTest, KeyEventRewritingEdgeCases) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
 

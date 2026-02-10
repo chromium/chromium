@@ -52,7 +52,7 @@ void ShowSyncSetup(Profile* profile) {
   LoginUIService* login_ui = LoginUIServiceFactory::GetForProfile(profile);
   if (login_ui->current_login_ui()) {
     // TODO(michaelpg): The LoginUI might be on an inactive desktop.
-    // See crbug.com/354280.
+    // See crbug.com/41095891.
     login_ui->current_login_ui()->FocusUI();
     return;
   }

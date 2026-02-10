@@ -225,7 +225,7 @@ void AutoEnrollmentController::UpdateState(AutoEnrollmentState new_state) {
 
 void AutoEnrollmentController::StartCleanupForcedReEnrollment() {
   // D-Bus services may not be available yet, so we call
-  // WaitForServiceToBeAvailable. See https://crbug.com/841627.
+  // WaitForServiceToBeAvailable. See https://crbug.com/40575725.
   ash::InstallAttributesClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(
           &AutoEnrollmentController::StartRemoveFirmwareManagementParameters,
@@ -260,7 +260,7 @@ void AutoEnrollmentController::OnFirmwareManagementParametersRemoved(
   }
 
   // D-Bus services may not be available yet, so we call
-  // WaitForServiceToBeAvailable. See https://crbug.com/841627.
+  // WaitForServiceToBeAvailable. See https://crbug.com/40575725.
   ash::SessionManagerClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&AutoEnrollmentController::StartClearBlockDevmodeVpd,
                      weak_ptr_factory_.GetWeakPtr()));

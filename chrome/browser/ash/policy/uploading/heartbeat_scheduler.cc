@@ -323,7 +323,7 @@ void HeartbeatScheduler::OnRegistrationComplete(
 
   if (cloud_policy_client_) {
     // TODO(binjin): Avoid sending the same GCM id to the server.
-    // See http://crbug.com/516375
+    // See http://crbug.com/41192031
     cloud_policy_client_->UpdateGcmId(
         registration_id,
         base::BindOnce(&HeartbeatScheduler::OnGcmIdUpdateRequestSent,
@@ -421,7 +421,7 @@ void HeartbeatScheduler::ShutdownHandler() {
 
 void HeartbeatScheduler::OnStoreReset() {
   // TODO(crbug.com/40491756): Tell server that |registration_id_| is no longer
-  // valid. See also crbug.com/516375.
+  // valid. See also crbug.com/41192031.
   if (!registration_helper_) {
     ShutdownGCM();
     RefreshHeartbeatSettings();

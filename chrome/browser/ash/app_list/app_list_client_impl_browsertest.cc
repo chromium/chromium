@@ -337,7 +337,7 @@ class SelfDestroyAppItem : public ChromeAppListItem {
 };
 
 // Verifies that activating an app item which destroys itself during activation
-// will not cause crash (see https://crbug.com/990282).
+// will not cause crash (see https://crbug.com/41474255).
 IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ActivateSelfDestroyApp) {
   AppListClientImpl* client = AppListClientImpl::GetInstance();
   client->UpdateProfile();

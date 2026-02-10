@@ -229,7 +229,8 @@ void ArcContentFileSystemFileStreamReader::ConsumeFileContents(
   }
   auto num_bytes_to_read = std::min(
       static_cast<int64_t>(temporary_buffer->size()), num_bytes_to_consume);
-  // TODO(hashimoto): This may block the worker thread forever. crbug.com/673222
+  // TODO(hashimoto): This may block the worker thread forever.
+  // crbug.com/206350834
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ReadFile, file_.get(), temporary_buffer,

@@ -72,7 +72,7 @@ std::unique_ptr<network::SimpleURLLoader> CreateUrlLoader(const GURL& url) {
 
   auto url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
-  // TODO(https://crbug.com/971954): Allow the client to specify the timeout.
+  // TODO(https://crbug.com/162559903): Allow the client to specify the timeout.
   url_loader->SetTimeoutDuration(base::Minutes(10));
   return url_loader;
 }

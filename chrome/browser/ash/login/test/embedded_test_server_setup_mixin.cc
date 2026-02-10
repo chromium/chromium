@@ -21,7 +21,7 @@ void EmbeddedTestServerSetupMixin::SetUp() {
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_);
   embedded_test_server_->ServeFilesFromDirectory(test_data_dir_);
   // Don't spin up the IO thread yet since no threads are allowed while
-  // spawning sandbox host process. See crbug.com/322732.
+  // spawning sandbox host process. See crbug.com/41076404.
   CHECK(embedded_test_server_->InitializeAndListen());
 }
 

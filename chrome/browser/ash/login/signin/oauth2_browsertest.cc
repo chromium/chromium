@@ -263,7 +263,7 @@ class OAuth2Test : public OobeBaseTest {
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_);
 
     // Disable sync since we don't really need this for these tests and it also
-    // makes OAuth2Test.MergeSession test flaky http://crbug.com/408867.
+    // makes OAuth2Test.MergeSession test flaky http://crbug.com/41129041.
     command_line->AppendSwitch(syncer::kDisableSync);
     // Skip post login screens.
     command_line->AppendSwitch(switches::kOobeSkipPostLogin);
@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, DISABLED_OverlappingContinueSessionRestore) {
   SimulateNetworkOnline();
 
   // Blocks database thread to control TokenService::LoadCredentials timing.
-  // TODO(achuith): Fix this. crbug.com/753615.
+  // TODO(achuith): Fix this. crbug.com/260078930.
   auto thread_blocker = std::make_unique<ThreadBlocker>(nullptr);
 
   // Signs in as the existing user created in pre test.
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, DISABLED_OverlappingContinueSessionRestore) {
 
 // Tests that user session is terminated if merge session fails for an online
 // sign-in. This is necessary to prevent policy exploit.
-// See http://crbug.com/677312
+// See http://crbug.com/41292933
 IN_PROC_BROWSER_TEST_F(OAuth2Test, TerminateOnBadMergeSessionAfterOnlineAuth) {
   SimulateNetworkOnline();
   WaitForGaiaPageLoad();

@@ -169,7 +169,7 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // - just too many moving pieces to be confident there are no bugs. If
   // something goes wrong, the timer will ensure that a decision gets made
   // eventually, which is crucial to not block OOBE forever. See
-  // http://crbug.com/433634 for background.
+  // http://crbug.com/41143154 for background.
   // The timer is expected to run during the state determination. The controller
   // is considered idle and can be restarted when the timer is not running.
   base::OneShotTimer safeguard_timer_;

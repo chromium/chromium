@@ -21,7 +21,7 @@ class ArcBridgeService;
 
 // Proxy to ArcMetricsService for functionalities that depend on code under
 // chrome/browser. Should be merged into ArcMetricsService once dependency
-// issues are cleared. TODO(crbug.com/903048): Remove the proxy.
+// issues are cleared. TODO(crbug.com/206361184): Remove the proxy.
 class ArcMetricsServiceProxy : public KeyedService,
                                public ArcAppListPrefs::Observer,
                                public ArcSessionManagerObserver,

@@ -296,7 +296,7 @@ base::FilePath::StringType GetFileNameForDocument(
     // as some extensions (eg. 3gp) are typed differently by Android. Only
     // append the suggested extension if the lookup fails (i.e. no valid mime
     // type returned), or the returned mime type is of a different category.
-    // TODO(crbug.com/878221): Fix discrepancy in MIME types and extensions
+    // TODO(crbug.com/255484230): Fix discrepancy in MIME types and extensions
     // between the hard coded map and the Android content provider.
     std::string missed_possible_mime_type =
         FindArcMimeTypeFromExtension(extension);

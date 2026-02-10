@@ -648,7 +648,7 @@ bool AccessibilityManager::ShouldShowAccessibilityMenu() {
   // enforced to always show the menu - we return true to show the menu.
   // NOTE: This includes the login screen profile, so if a feature is turned on
   // at the login screen the menu will show even if the user has no features
-  // enabled inside the session. http://crbug.com/755631
+  // enabled inside the session. http://crbug.com/41339453
 
   if (IsAnyAccessibilityFeatureEnabled(CHECK_DEREF(user_prefs::UserPrefs::Get(
           BrowserContextHelper::Get()->GetSigninBrowserContext())))) {
@@ -2124,7 +2124,7 @@ void AccessibilityManager::OnShutdown(extensions::ExtensionRegistry* registry) {
 
 void AccessibilityManager::PostLoadChromeVox() {
   // In browser_tests loading the ChromeVox extension can race with shutdown.
-  // http://crbug.com/801700
+  // http://crbug.com/41364580
   if (app_terminating_)
     return;
 

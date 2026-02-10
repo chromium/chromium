@@ -628,7 +628,7 @@ TEST_F(AdaptiveScreenBrightnessManagerTest, UserEventCounts) {
   EXPECT_EQ(4, features.activity_data().num_recent_stylus_events());
 }
 
-// Test is flaky. See https://crbug.com/938055.
+// Test is flaky. See https://crbug.com/41444814.
 TEST_F(AdaptiveScreenBrightnessManagerTest, DISABLED_SingleBrowser) {
   std::unique_ptr<Browser> browser =
       CreateTestBrowser(true /* is_visible */, true /* is_focused */);
@@ -650,7 +650,7 @@ TEST_F(AdaptiveScreenBrightnessManagerTest, DISABLED_SingleBrowser) {
   tab_strip_model->CloseAllTabs();
 }
 
-// Test is flaky. See https://crbug.com/944325.
+// Test is flaky. See https://crbug.com/172225977.
 TEST_F(AdaptiveScreenBrightnessManagerTest,
        DISABLED_MultipleBrowsersWithActive) {
   // Simulates three browsers:

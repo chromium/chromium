@@ -48,7 +48,7 @@ class TouchExplorationTest : public InProcessBrowserTest {
     // SetUp. The creation involves sending a resize message to the renderer
     // process. Here we wait for the resize ack to be received, because
     // currently WindowEventDispatcher has code to hold touch and mouse
-    // move events until resize is complete (crbug.com/384342) which
+    // move events until resize is complete (crbug.com/41114337) which
     // interferes with this test.
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -77,7 +77,7 @@ class TouchExplorationTest : public InProcessBrowserTest {
 
 // This test turns the touch exploration mode off and confirms that events
 // aren't modified.
-// Disabled: crbug.com/422943
+// Disabled: crbug.com/41137027
 IN_PROC_BROWSER_TEST_F(TouchExplorationTest,
                        DISABLED_NoRewritingEventsWhenOff) {
   SwitchTouchExplorationMode(false);
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(TouchExplorationTest,
 
 // This test turns the touch exploration mode on and confirms that events get
 // rewritten.
-// Disabling due to failing over 10% of the time. (crbug.com/469119)
+// Disabling due to failing over 10% of the time. (crbug.com/40410441)
 IN_PROC_BROWSER_TEST_F(TouchExplorationTest, DISABLED_RewritesEventsWhenOn) {
   SwitchTouchExplorationMode(true);
   ui::test::EventGenerator generator(root_window_);
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(TouchExplorationTest, DISABLED_RewritesEventsWhenOn) {
 // This test makes sure that after the user clicks with split tap,
 // they continue to touch exploration mode if the original touch exploration
 // finger is still on the screen.
-// Disabled due to failing upwards of 50% of the time (crbug.com/475923)
+// Disabled due to failing upwards of 50% of the time (crbug.com/172341302)
 IN_PROC_BROWSER_TEST_F(TouchExplorationTest, DISABLED_SplitTapExplore) {
   SwitchTouchExplorationMode(true);
   ui::test::EventGenerator generator(root_window_);

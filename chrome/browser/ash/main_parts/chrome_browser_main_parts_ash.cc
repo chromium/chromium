@@ -1199,7 +1199,7 @@ void GuestLanguageSetCallbackData::Callback(
       manager->GetActiveIMEState();
   // For guest mode, we should always use the first login input methods.
   // This is to keep consistency with UserSessionManager::SetFirstLoginPrefs().
-  // See crbug.com/530808.
+  // See crbug.com/40435445.
   std::vector<std::string> input_methods;
   manager->GetInputMethodUtil()->GetFirstLoginInputMethodIds(
       result.loaded_locale, ime_state->GetCurrentInputMethod(), &input_methods);
@@ -1597,7 +1597,7 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
 // NOTE: This may get called without PreProfileInit() (or other
 // PreMainMessageLoopRun sub-stages) getting called, so be careful with
 // shutdown calls and test |pre_profile_init_called_| if necessary. See
-// crbug.com/702403 for details.
+// crbug.com/40511182 for details.
 void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   video_conference_manager_client_.reset();
 
@@ -1708,7 +1708,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   // Let the UserManager unregister itself as an observer of the CrosSettings
   // singleton before it is destroyed. This also ensures that the UserManager
-  // has no URLRequest pending (see http://crbug.com/276659).
+  // has no URLRequest pending (see http://crbug.com/41039243).
   g_browser_process->platform_part()->ShutdownUserManager();
 
   // Let the DeviceDisablingManager unregister itself as an observer of the

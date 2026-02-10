@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, CredentialPassingAPI) {
   // Login should finish login and a session should start.
   test::WaitForPrimaryUserSessionStart();
 
-  // Regression test for http://crbug.com/490737: Verify that the user's actual
+  // Regression test for crbug.com/41176305: Verify that the user's actual
   // password was used, not the contents of the first type=password input field
   // found on the page.
   Key key("actual_password");
@@ -926,7 +926,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, PasswordConfirmFlow) {
 
 // Verifies that when the login flow redirects from one host to another, the
 // notice shown to the user is updated. This guards against regressions of
-// http://crbug.com/447818.
+// http://crbug.com/41151519.
 IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, NoticeUpdatedOnRedirect) {
   // Start another https server at `kAdditionalIdPHost`.
   net::EmbeddedTestServer saml_https_server(
@@ -1002,7 +1002,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, HTTPRedirectDisallowed) {
 
 // Verifies that when GAIA attempts to redirect to a page served over http, not
 // https, via an HTML meta refresh, the redirect is blocked and an error message
-// is shown. This guards against regressions of http://crbug.com/359515.
+// is shown. This guards against regressions of http://crbug.com/40359062.
 IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, MetaRefreshToHTTPDisallowed) {
   const GURL url = embedded_test_server()->base_url().Resolve("/SSO");
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_instant_meta_refresh.html");

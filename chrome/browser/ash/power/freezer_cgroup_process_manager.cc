@@ -108,7 +108,7 @@ class FreezerCgroupProcessManager::FileWorker {
 
     // TODO(derat): For now, lie and report success if thawing failed but
     // freezing also failed previously. Remove after weird EBADF and ENOENT
-    // problems tracked at http://crbug.com/661310 are fixed.
+    // problems tracked at http://crbug.com/172221050 are fixed.
     if (!result && !froze_successfully_)
       result = true;
 

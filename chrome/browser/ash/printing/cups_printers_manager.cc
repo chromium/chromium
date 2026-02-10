@@ -861,7 +861,7 @@ class CupsPrintersManagerImpl
   }
 
   // TODO(baileyberro): Remove the need for this function by pushing additional
-  // logic into PrintersMap. https://crbug.com/956172
+  // logic into PrintersMap. https://crbug.com/216048433
   void ResetNearbyPrintersLists() {
     printers_.Clear(PrinterClass::kAutomatic);
     printers_.Clear(PrinterClass::kDiscovered);

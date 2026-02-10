@@ -241,7 +241,7 @@ void CopyFileLocalOnUIThread(const storage::FileSystemURL& src_url,
     return;
   }
   if (src_root != dest_root) {
-    // TODO(fukino): We should fall back to a stream copy. crbug.com/945695.
+    // TODO(fukino): We should fall back to a stream copy. crbug.com/40620037.
     OnStatusCallbackOnUIThread(std::move(callback),
                                base::File::FILE_ERROR_INVALID_OPERATION);
     return;
@@ -277,7 +277,7 @@ void MoveFileLocalOnUIThread(const storage::FileSystemURL& src_url,
     return;
   }
   if (src_root != dest_root) {
-    // TODO(fukino): We should fall back to a stream move. crbug.com/945695.
+    // TODO(fukino): We should fall back to a stream move. crbug.com/40620037.
     OnStatusCallbackOnUIThread(std::move(callback),
                                base::File::FILE_ERROR_INVALID_OPERATION);
     return;

@@ -42,7 +42,7 @@ class EnableDebuggingScreen : public BaseScreen {
   void HandleLearnMore();
   void HandleRemoveRootFSProtection();
 
-  // Wait for cryptohomed before checking debugd. See http://crbug.com/440506
+  // Wait for cryptohomed before checking debugd. See http://crbug.com/41147106
   void WaitForCryptohome();
 
   // Callback for UserDataAuthClient::WaitForServiceToBeAvailable

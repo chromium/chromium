@@ -189,7 +189,7 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
   // LoggedInSpokenFeedbackTest:
   void SetUp() override {
     // Do not run expand arrow hinting animation to avoid msan test crash.
-    // (See https://crbug.com/926038)
+    // (See https://crbug.com/41437765)
     zero_duration_mode_ =
         std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
             gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);

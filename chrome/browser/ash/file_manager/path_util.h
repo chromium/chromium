@@ -102,9 +102,9 @@ base::FilePath GetShareCacheFilePath(Profile* profile);
 // *Updated in M73 to handle /home/chronos/user to
 // /home/chronos/u-{hash}/MyFiles/Downloads
 //
-// M27: crbug.com/229304, for supporting {offline, recent, shared} folders
+// M27: crbug.com/41005746, for supporting {offline, recent, shared} folders
 //   in Drive. Migration code for this is removed in M34.
-// M34-35: crbug.com/313539, 356322, for supporting multi profiles.
+// M34-35: crbug.com/41069846, 356322, for supporting multi profiles.
 //   Migration code is removed in M40.
 bool MigratePathFromOldFormat(Profile* profile,
                               const base::FilePath& old_base,
@@ -194,7 +194,7 @@ bool ConvertPathInsideVMToFileSystemURL(
 // While this function can convert paths under Downloads, /media/removable
 // and /special/drive, this CANNOT convert paths under ARC media directories
 // (/special/arc-documents-provider).
-// TODO(crbug.com/811679): Migrate all callers and remove this.
+// TODO(crbug.com/206356402): Migrate all callers and remove this.
 // |*requires_sharing_out| will be set to true if |path| needs to be made
 // available to ARCVM by sharing via Seneschal.
 // Precondition: arc_url_out != nullptr

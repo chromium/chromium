@@ -105,7 +105,7 @@ class ScopedFileOpener::Runner
       // This is not good, as callers, such as file stream readers may expect
       // aborting to *always* work, and leave the file opened permanently.
       // The problem will go away once we remove the dialog to abort slow
-      // operations. See: crbug.com/475355.
+      // operations. See: crbug.com/41167314.
       CallOpenCallbackOnce(file_handle, base::File::FILE_OK);
       return;
     }

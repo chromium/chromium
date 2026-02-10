@@ -1265,7 +1265,7 @@ TEST_F(UserActivityManagerTest, TwoScreenDimImminentWithoutEventInBetween) {
   EqualModelPrediction(expected_prediction2, events[0].model_prediction());
 }
 
-// Test is flaky. See https://crbug.com/938055.
+// Test is flaky. See https://crbug.com/41444814.
 TEST_F(UserActivityManagerTest, DISABLED_BasicTabs) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kUserActivityPrediction);
@@ -1298,7 +1298,7 @@ TEST_F(UserActivityManagerTest, DISABLED_BasicTabs) {
   tab_strip_model->CloseAllTabs();
 }
 
-// Test is flaky. See https://crbug.com/938141.
+// Test is flaky. See https://crbug.com/41444870.
 TEST_F(UserActivityManagerTest, DISABLED_MultiBrowsersAndTabs) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kUserActivityPrediction);

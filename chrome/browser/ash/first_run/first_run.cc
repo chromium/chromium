@@ -116,7 +116,7 @@ class AppLauncher final : public ProfileObserver {
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // This preference used to be syncable, change it to non-syncable so new
   // users will always see the welcome app on a new device.
-  // See crbug.com/752361
+  // See crbug.com/41337695
   registry->RegisterBooleanPref(prefs::kFirstRunTutorialShown, false);
   registry->RegisterBooleanPref(prefs::kHelpAppShouldShowGetStarted, false);
   registry->RegisterBooleanPref(prefs::kHelpAppShouldShowParentalControl,

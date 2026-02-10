@@ -265,7 +265,7 @@ PrintSessionImpl::PrintSessionImpl(
   custom_tab_->Attach(window);
   window->Show();
 
-  // TODO(http://crbug.com/636642): Handle this correctly once the bug is
+  // TODO(http://crbug.com/172225872): Handle this correctly once the bug is
   // resolved. Until then, give the PDF plugin time to load.
   VLOG(1) << "Waiting for PDF plugin to load.";
   StartPrintAfterPluginIsLoaded();
@@ -389,8 +389,8 @@ void PrintSessionImpl::StartPrintAfterPluginIsLoaded() {
   // the PDF plugin to load and create its document structure.  If StartPrint()
   // is called too soon, it won't find this structure and will attach to the
   // top-level frame instead of the correct PDF element.  The PDF plugin doesn't
-  // have a way to notify the browser when it's ready (crbug.com/636642), so we
-  // need to poll for the PDF frame to "look ready" before we start printing.
+  // have a way to notify the browser when it's ready (crbug.com/172225872), so
+  // we need to poll for the PDF frame to "look ready" before we start printing.
   if (!IsPdfPluginLoaded(web_contents_.get())) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,

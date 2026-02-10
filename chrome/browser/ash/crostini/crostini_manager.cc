@@ -3765,7 +3765,7 @@ void CrostiniManager::SuspendImminent(
     return;
   }
 
-  // Block suspend and try to unmount sshfs (https://crbug.com/968060).
+  // Block suspend and try to unmount sshfs (https://crbug.com/40629613).
   auto token = base::UnguessableToken::Create();
   chromeos::PowerManagerClient::Get()->BlockSuspend(token, "CrostiniManager");
   crostini_sshfs_->UnmountCrostiniFiles(
@@ -3775,7 +3775,7 @@ void CrostiniManager::SuspendImminent(
 }
 
 void CrostiniManager::SuspendDone(base::TimeDelta sleep_duration) {
-  // https://crbug.com/968060.  Sshfs is unmounted before suspend,
+  // https://crbug.com/40629613.  Sshfs is unmounted before suspend,
   // call RestartCrostini to force remount if container is running.
   guest_os::GuestId container_id = DefaultContainerId();
   guest_os::GuestOsSessionTracker* tracker =

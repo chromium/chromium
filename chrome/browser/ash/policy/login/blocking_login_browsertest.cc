@@ -83,7 +83,8 @@ struct BlockingLoginTestParam {
 // when we made an entirely different set of network calls on startup. As a
 // result it generates random failures in startup network requests, then waits
 // to see if the profile finishes loading which is not at all what it is
-// intended to test. We need to fix this test or remove it (crbug.com/580537).
+// intended to test. We need to fix this test or remove it
+// (crbug.com/274707332).
 class BlockingLoginTest
     : public ash::OobeBaseTest,
       public ProfileManagerObserver,
@@ -310,7 +311,7 @@ const BlockingLoginTestParam kBlockinLoginTestCases[] = {
 };
 
 // TODO(poromov): Disabled because it has become flaky due to incorrect mock
-// network requests - re-enable this when https://crbug.com/580537 is fixed.
+// network requests - re-enable this when https://crbug.com/274707332 is fixed.
 INSTANTIATE_TEST_SUITE_P(DISABLED_BlockingLoginTestInstance,
                          BlockingLoginTest,
                          testing::ValuesIn(kBlockinLoginTestCases));

@@ -41,7 +41,7 @@ TetherService* TetherService::Get(Profile* profile) {
   // Tether networks are only available for the primary user; thus, no
   // TetherService object should be created for secondary users. If multiple
   // instances were created for each user, inconsistencies could lead to browser
-  // crashes. See https://crbug.com/809357.
+  // crashes. See https://crbug.com/40561561.
   if (!ProfileHelper::Get()->IsPrimaryProfile(profile)) {
     return nullptr;
   }
@@ -583,8 +583,8 @@ void TetherService::RecordTetherFeatureState() {
   DCHECK(tether_feature_state != TetherFeatureState::TETHER_FEATURE_STATE_MAX);
 
   // If the feature is shut down, there is no need to log a metric. Since this
-  // state occurs every time the user logs out (as of crbug.com/782879), logging
-  // a metric here does not provide any value since it does not indicate
+  // state occurs every time the user logs out (as of crbug.com/40548859),
+  // logging a metric here does not provide any value since it does not indicate
   // anything about how the user utilizes Instant Tethering and would dilute the
   // contributions of meaningful states.
   if (tether_feature_state == TetherFeatureState::SHUT_DOWN) {

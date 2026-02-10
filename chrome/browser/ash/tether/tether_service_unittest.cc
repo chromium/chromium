@@ -356,7 +356,7 @@ class TetherServiceTest : public testing::Test {
     ShutdownTetherService();
 
     if (tether_service_) {
-      // As of crbug.com/798605, SHUT_DOWN should not be logged since it does
+      // As of crbug.com/40556536, SHUT_DOWN should not be logged since it does
       // not contribute meaningful data.
       histogram_tester_.ExpectBucketCount(
           "InstantTethering.FeatureState",

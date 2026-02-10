@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_P(SiteIsolationFlagHandlingTest, PRE_FlagHandlingTest) {
 
 IN_PROC_BROWSER_TEST_P(SiteIsolationFlagHandlingTest, FlagHandlingTest) {
   // Skip tests where expected_request_restart is true.
-  // See crbug.com/990817 for more details.
+  // See crbug.com/40638974 for more details.
   if (GetParam().expected_request_restart)
     return;
 

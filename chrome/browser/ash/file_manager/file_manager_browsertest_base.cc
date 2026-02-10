@@ -781,7 +781,7 @@ class FileManagerTestMessageListener : public extensions::TestApiObserver {
   }
   bool OnTestMessage(extensions::TestSendMessageFunction* function,
                      const std::string& message) override {
-    // crbug.com/668680
+    // crbug.com/41288101
     EXPECT_FALSE(test_complete_) << "LATE MESSAGE: " << message;
     QueueMessage({Message::Completion::kNone, message, function});
     return true;
@@ -2320,7 +2320,7 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     base::CommandLine* command_line) {
   const Options options = GetOptions();
 
-  // Use a fake audio stream crbug.com/835626
+  // Use a fake audio stream crbug.com/40572966
   command_line->AppendSwitch(switches::kDisableAudioOutput);
 
   if (!options.browser) {
@@ -2709,7 +2709,7 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
           : net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
 
   // The test resources are setup: enable and add default ChromeOS component
-  // extensions now and not before: crbug.com/831074, crbug.com/804413
+  // extensions now and not before: crbug.com/41382159, crbug.com/40559198
   test::AddDefaultComponentExtensionsOnMainThread(profile());
 
   // For tablet mode tests, enable the Ash virtual keyboard.

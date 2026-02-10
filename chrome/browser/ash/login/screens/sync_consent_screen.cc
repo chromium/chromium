@@ -329,7 +329,7 @@ SyncConsentScreen::SyncScreenBehavior SyncConsentScreen::GetSyncScreenBehavior(
   }
 
   // Skip if the sync consent screen is disabled by policy, for example, in
-  // education scenarios. https://crbug.com/841156
+  // education scenarios. https://crbug.com/41387934
   if (!profile_->GetPrefs()->GetBoolean(::prefs::kEnableSyncConsent))
     return SyncScreenBehavior::kSkipAndEnableScreenPolicy;
 

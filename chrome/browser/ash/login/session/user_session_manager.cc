@@ -845,7 +845,7 @@ void UserSessionManager::RestoreAuthenticationSession(Profile* user_profile) {
     // Even if we're online we should wait till initial
     // OnConnectionTypeChanged() call. Otherwise starting fetchers too early may
     // end up canceling all request when initial network connection type is
-    // processed. See http://crbug.com/121643.
+    // processed. See http://crbug.com/40184809.
     pending_signin_restore_sessions_.insert(user->GetAccountId());
   }
 }
@@ -927,8 +927,8 @@ bool UserSessionManager::RespectLocalePreference(
     Profile* profile,
     const user_manager::User* user,
     locale_util::SwitchLanguageCallback callback) const {
-  // TODO(alemate): http://crbug.com/288941 : Respect preferred language list in
-  // the Google user profile.
+  // TODO(alemate): http://crbug.com/260016091 : Respect preferred language list
+  // in the Google user profile.
   if (g_browser_process == nullptr)
     return false;
 
@@ -1129,7 +1129,7 @@ void UserSessionManager::OnSessionRestoreStateChanged(
   }
 
   // We should not be clearing existing token state if that was a connection
-  // error. http://crbug.com/295245
+  // error. http://crbug.com/40333700
   if (!connection_error) {
     // We are in one of "done" states here.
     user_manager::UserManager::Get()->SaveUserOAuthStatus(
@@ -1142,7 +1142,7 @@ void UserSessionManager::OnSessionRestoreStateChanged(
   // Terminate user session if merge session fails for an online sign-in.
   // Otherwise, auth token dependent code would be in an invalid state.
   // Important piece such as policy code might be broken because of this and
-  // subject to an exploit. See http://crbug.com/677312.
+  // subject to an exploit. See http://crbug.com/41292933.
   if (IsOnlineSignin(user_context_) &&
       state == OAuth2LoginManager::SESSION_RESTORE_FAILED) {
     SYSLOG(ERROR)
@@ -1194,7 +1194,7 @@ void UserSessionManager::OnProfilePrepared(Profile* profile,
   if (!IsRunningTest()) {
     // Did not log in (we crashed or are debugging), need to restore Sync.
     // TODO(nkostylev): Make sure that OAuth state is restored correctly for all
-    // users once it is fully multi-profile aware. http://crbug.com/238987
+    // users once it is fully multi-profile aware. http://crbug.com/41011298
     // For now if we have other user pending sessions they'll override OAuth
     // session restore for previous users.
     RestoreAuthenticationSession(profile);
@@ -1526,8 +1526,8 @@ void UserSessionManager::InitProfilePreferences(
       // old Device Account tokens (`revoke_old_token` = `false`), otherwise
       // Gaia will revoke all tokens associated to this user's device id,
       // including `refresh_token_` and the user will be stuck performing an
-      // online auth with Gaia at every login. See https://crbug.com/952570 and
-      // https://crbug.com/865189 for context.
+      // online auth with Gaia at every login. See https://crbug.com/40623046
+      // and https://crbug.com/40585591 for context.
       account_manager->UpsertAccount(account_key,
                                      user->GetDisplayEmail() /* raw_email */,
                                      user_context.GetRefreshToken());
@@ -2637,7 +2637,7 @@ void UserSessionManager::SetSwitchesForUser(
     CommandLineSwitchesType switches_type,
     const std::vector<std::string>& switches) {
   // TODO(pmarko): Introduce a CHECK that `account_id` is the primary user
-  // (https://crbug.com/832857).
+  // (https://crbug.com/276837931).
   // Early out so that switches for secondary users are not applied to the whole
   // session. This could be removed when things like flags UI of secondary users
   // are fixed properly and TODO above to add CHECK() is done.

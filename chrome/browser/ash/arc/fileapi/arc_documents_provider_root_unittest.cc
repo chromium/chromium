@@ -750,7 +750,7 @@ TEST_F(ArcDocumentsProviderRootTest, DeleteFileNonDeletable) {
                           // handling it.
                           // TODO(fukino): Handle this failure in the
                           // ArcDocumentsProviderRoot class to avoid unnecessary
-                          // Mojo calls. crbug.com/956852.
+                          // Mojo calls. crbug.com/41455227.
                           EXPECT_EQ(base::File::FILE_ERROR_FAILED, error);
                         },
                         &run_loop));
@@ -909,7 +909,7 @@ TEST_F(ArcDocumentsProviderRootTest, CreateFileInReadOnlyDirectory) {
                           // handling it.
                           // TODO(fukino): Handle this failure in the
                           // ArcDocumentsProviderRoot class to avoid unnecessary
-                          // Mojo calls. crbug.com/956852.
+                          // Mojo calls. crbug.com/41455227.
                           EXPECT_EQ(base::File::FILE_ERROR_FAILED, error);
                         },
                         &run_loop));
@@ -1256,7 +1256,7 @@ TEST_F(ArcDocumentsProviderRootTest, RenameFileNotRenamable) {
             // This operation fails not because of the tested class but because
             // the FakeFileSystemInstance is handling it.
             // TODO(fukino): Handle this failure in the ArcDocumentsProviderRoot
-            // class to avoid unnecessary Mojo calls. crbug.com/956852.
+            // class to avoid unnecessary Mojo calls. crbug.com/41455227.
             EXPECT_EQ(base::File::FILE_ERROR_FAILED, error);
           },
           &run_loop));

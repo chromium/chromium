@@ -106,7 +106,7 @@ TEST_F(ExternalFileURLUtilTest, VirtualPathToExternalFileURL) {
   // potentially used for URL spoofing. Those are blocklisted from unescaping
   // when a URL is displayed, but this should not prevent it from being
   // unescaped when converting a URL to a virtual file path. See
-  // crbug.com/585422 for detail.
+  // crbug.com/40456191 for detail.
   ExpectVirtualPathRoundtrip(FILE_PATH_LITERAL("foo/bar/space\u3000lock🔒.zip"),
                              "foo/bar/space%E3%80%80lock%F0%9F%94%92.zip");
 }

@@ -190,7 +190,7 @@ bool TouchpadSettings::Update(const TouchpadSettings& settings) {
   }
   UpdateIfHasValue(settings.natural_scroll_, &natural_scroll_);
   // Always send natural scrolling to the shell command, as a workaround.
-  // See crbug.com/406480
+  // See crbug.com/41127558
   if (natural_scroll_.has_value())
     updated = true;
   return updated;

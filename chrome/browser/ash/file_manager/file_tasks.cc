@@ -1050,7 +1050,7 @@ void ChooseAndSetDefaultTask(Profile* profile,
 
   // Check for an explicit file extension match (without MIME match) in the
   // extension manifest and pick that over the fallback handlers below (see
-  // crbug.com/803930)
+  // crbug.com/41365945)
   for (FullTaskDescriptor& task : tasks) {
     if (task.is_file_extension_match && !task.is_generic_file_handler &&
         !IsFallbackFileHandler(task)) {

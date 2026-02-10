@@ -189,7 +189,7 @@ void StartUserSession(user_manager::UserManager* user_manager,
     const user_manager::User* user = user_manager->GetActiveUser();
     if (!user) {
       // This is possible if crash occured after profile removal
-      // (see crbug.com/178290 for some more info).
+      // (see crbug.com/40303043 for some more info).
       LOG(ERROR) << "Could not get active user after crash.";
       return;
     }

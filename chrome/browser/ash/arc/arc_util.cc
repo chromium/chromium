@@ -138,7 +138,7 @@ bool g_disallow_for_testing = false;
 // during test runs. Doesn't affect public session.
 bool g_arc_blocked_due_to_incompatible_filesystem_for_testing = false;
 
-// TODO(kinaba): Temporary workaround for crbug.com/729034.
+// TODO(kinaba): Temporary workaround for crbug.com/41322910.
 //
 // Some type of accounts don't have user prefs. As a short-term workaround,
 // store the compatibility info from them on memory, ignoring the defect that
@@ -276,7 +276,7 @@ ArcStatus GetArcStatusForProfile(const Profile* profile,
   // Play Store requires an appropriate application install mechanism. Normal
   // users do this through GAIA, but Kiosk users use a different application
   // install mechanism. ARC is not allowed otherwise (e.g. in public sessions,
-  // as described in crbug.com/605545).
+  // as described in crbug.com/40466164).
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!IsArcAllowedForUser(user)) {

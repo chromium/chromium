@@ -1072,7 +1072,7 @@ class NetworkPolicyApplicationEphemeralActionsEnabledUnenrolledTest
 // This test applies a global network policy with
 // AllowOnlyPolicyNetworksToAutoconnect set to true. It then performs a user
 // log-in and simulates that user policy application is slow. This is a
-// regression test for https://crbug.com/936677.
+// regression test for https://crbug.com/41444046.
 // Specifically, it simulates that:
 // 1. ash-chrome applies device network policy in shill.
 //    The device policy mandates that only policy configured networks may
@@ -1157,7 +1157,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
   // Sign-in a user and apply user ONC policy. Simulate that shill takes a while
   // to reflect the changes back to chrome by holding back service property
-  // updates (regression test for https://crbug.com/936677).
+  // updates (regression test for https://crbug.com/41444046).
   shill_service_client_test_->SetHoldBackServicePropertyUpdates(true);
 
   LoginUser(test_account_id_);
@@ -1233,7 +1233,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   ASSERT_TRUE(wifi2_service);
   // This service is still connected. This is an important check in this
   // regression test:
-  // In https://crbug.com/936677, AutoConnectHandler was already running
+  // In https://crbug.com/41444046, AutoConnectHandler was already running
   // (because OnPoliciesApplied was already triggered) when the NetworkState
   // for a policy-managed network was not marked managed yet (because shill
   // has not reflected the property changes yet). As a consequence,

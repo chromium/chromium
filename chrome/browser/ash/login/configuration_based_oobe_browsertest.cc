@@ -91,7 +91,7 @@ class OobeConfigurationTest : public OobeBaseTest {
   void SetUpOnMainThread() override {
     // Set up fake networks.
     // TODO(pmarko): Find a way for FakeShillManagerClient to be initialized
-    // automatically (https://crbug.com/847422).
+    // automatically (https://crbug.com/40578322).
     ShillManagerClient::Get()->GetTestInterface()->SetupDefaultEnvironment();
 
     OobeBaseTest::SetUpOnMainThread();

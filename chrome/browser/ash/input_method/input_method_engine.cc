@@ -666,7 +666,7 @@ void InputMethodEngine::AssistiveWindowChanged(
 ui::VirtualKeyboardController* InputMethodEngine::GetVirtualKeyboardController()
     const {
   // Callers expect a nullptr when the keyboard is disabled. See
-  // https://crbug.com/850020.
+  // https://crbug.com/41393003.
   if (!keyboard::KeyboardUIController::HasInstance() ||
       !keyboard::KeyboardUIController::Get()->IsEnabled()) {
     return nullptr;

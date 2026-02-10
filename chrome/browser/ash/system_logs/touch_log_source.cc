@@ -25,7 +25,7 @@ using content::BrowserThread;
 
 namespace {
 
-// The prefix "hack-33025" was historically chosen in http://crbug.com/139715.
+// The prefix "hack-33025" was historically chosen in http://crbug.com/40249554.
 // We continue to go with it in order to be compatible with the existing touch
 // log processing toolchain.
 const char kDeviceStatusLogDataKey[] = "hack-33025-touchpad";

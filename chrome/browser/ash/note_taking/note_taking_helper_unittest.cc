@@ -741,7 +741,7 @@ TEST_F(NoteTakingHelperTest, AddProfileWithPlayStoreEnabled) {
   // Add a second profile with the ARC-enabled pref already set. The Play Store
   // should be immediately regarded as being enabled and the observer should be
   // notified, since OnArcPlayStoreEnabledChanged() apparently isn't called in
-  // this case: http://crbug.com/700554
+  // this case: http://crbug.com/41306817
   auto prefs = std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
   RegisterUserProfilePrefs(prefs->registry());
   prefs->SetBoolean(arc::prefs::kArcEnabled, true);
@@ -754,7 +754,7 @@ TEST_F(NoteTakingHelperTest, AddProfileWithPlayStoreEnabled) {
 
   // TODO(derat|hidehiko): Check that NoteTakingHelper adds itself as an
   // observer of the ArcIntentHelperBridge corresponding to the new profile:
-  // https://crbug.com/748763
+  // https://crbug.com/41335664
 
   // Notification of updated intent filters should result in the apps being
   // refreshed.

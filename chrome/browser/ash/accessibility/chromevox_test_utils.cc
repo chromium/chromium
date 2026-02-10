@@ -77,7 +77,7 @@ void ChromeVoxTestUtils::GlobalizeModule(const std::string& name) {
 void ChromeVoxTestUtils::DisableEarcons() {
   // Playing earcons from within a test is not only annoying if you're
   // running the test locally, but seems to cause crashes
-  // (http://crbug.com/396507). Work around this by just telling
+  // (http://crbug.com/40375935). Work around this by just telling
   // ChromeVox to not ever play earcons (prerecorded sound effects).
   std::string script(R"JS(
     ChromeVox.earcons.playEarcon = function() {};

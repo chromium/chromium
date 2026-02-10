@@ -825,7 +825,7 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
   // after ApplyPreferences().
   // As InputMethodManager only holds the active state for the active user,
   // SetState() is only called if the preferences belongs to the active user.
-  // See https://crbug.com/841112.
+  // See https://crbug.com/40575497.
   if (user->is_active()) {
     input_method_manager_->SetState(ime_state_);
   }

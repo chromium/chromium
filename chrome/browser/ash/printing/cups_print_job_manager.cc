@@ -76,7 +76,7 @@ void CupsPrintJobManager::NotifyJobDone(base::WeakPtr<CupsPrintJob> job) {
     observer.OnPrintJobDone(job);
 }
 
-// TODO(http://crbug.com/883966): In some instances, Chrome doesn't receive an
+// TODO(http://crbug.com/40593629): In some instances, Chrome doesn't receive an
 // error state from the printer. For that reason, the job duration is currently
 // recorded for done and cancelled print jobs without accounting for the added
 // time a job may spend in a suspended or error state.

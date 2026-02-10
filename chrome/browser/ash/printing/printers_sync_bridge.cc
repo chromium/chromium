@@ -225,10 +225,10 @@ std::optional<syncer::ModelError> PrintersSyncBridge::MergeFullSyncData(
     for (const auto& entry : all_data_) {
       const std::string& local_entity_id = entry.first;
 
-      // Migrate old schema to new combined one (crbug.com/737809).
+      // Migrate old schema to new combined one (crbug.com/172216087).
       bool migrated = MigrateMakeAndModel(entry.second.get());
 
-      // Clean up invalid ppd references (crbug.com/987869).
+      // Clean up invalid ppd references (crbug.com/172225630).
       bool resolved = ResolveInvalidPpdReference(entry.second.get());
 
       if (migrated || resolved || !sync_entity_ids.contains(local_entity_id)) {

@@ -538,7 +538,7 @@ std::unique_ptr<DeviceCloudPolicyValidator> EnrollmentHandler::CreateValidator(
   // domain from the username field in the policy itself to do key validation.
   // TODO(mnissler): Plumb the enrolling user's username into this object so we
   // can validate the username on the resulting policy, and use the domain from
-  // that username to validate the key below (http://crbug.com/343074).
+  // that username to validate the key below (http://crbug.com/41089303).
   validator->ValidateInitialKey(domain);
   return validator;
 }

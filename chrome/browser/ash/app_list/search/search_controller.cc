@@ -235,7 +235,7 @@ void SearchController::AppListViewChanging(bool is_visible) {
 
 void SearchController::OpenResult(ChromeSearchResult* result, int event_flags) {
   // This can happen in certain circumstances due to races. See
-  // https://crbug.com/534772
+  // https://crbug.com/41203486
   if (!result) {
     return;
   }

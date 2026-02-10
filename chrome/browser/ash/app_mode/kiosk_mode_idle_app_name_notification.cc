@@ -82,7 +82,7 @@ void KioskModeIdleAppNameNotification::OnUserActivity(const ui::Event* event) {
     // The widget only appears on internal displays because the intent is to
     // avoid an app spoofing a password screen on a Chromebook. Customers using
     // external monitors for kiosk don't want this notification to show.
-    // See https://crbug.com/369118
+    // See https://crbug.com/41104867
     if (display.IsInternal()) {
       base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
       const std::string app_id =

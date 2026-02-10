@@ -245,7 +245,7 @@ class AppListClientImpl
   // In multi-profile mode, mojo callings from the Ash process to access the app
   // list items should be dealt with the correct AppListModelUpdater instance.
   // Otherwise data race may happen, like the issue 939755
-  // (https://crbug.com/939755).
+  // (https://crbug.com/40617296).
   // TODO: Replace the mojo interface functions provided by AppListClient with
   // callbacks.
   std::map<int, raw_ptr<AppListModelUpdater, CtnExperimental>>

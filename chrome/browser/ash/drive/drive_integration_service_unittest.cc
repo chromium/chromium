@@ -33,7 +33,7 @@ class DriveIntegrationServiceTest : public testing::Test {
 };
 
 // This test is flaky on chromeos.
-// https://crbug.com/943376
+// https://crbug.com/41447641
 TEST_F(DriveIntegrationServiceTest, DISABLED_ServiceInstanceIdentity) {
   TestingProfile* user1 = profile_manager_.CreateTestingProfile("user1");
 

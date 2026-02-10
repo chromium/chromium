@@ -176,7 +176,7 @@ void SwitchLanguage(ApplicationLocaleStorage* application_locale_storage,
     }
   }
 
-  // USER_BLOCKING because it blocks startup on ChromeOS. crbug.com/968554
+  // USER_BLOCKING because it blocks startup on ChromeOS. crbug.com/40629861
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&SwitchLanguageDoReloadLocale, std::move(data)),

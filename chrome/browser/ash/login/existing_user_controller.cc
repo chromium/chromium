@@ -479,7 +479,8 @@ void ExistingUserController::HttpAuthDialogSupplied(
   // just after the UI is closed but before the new credentials were stored
   // in the profile. Therefore we have to give it some time to make sure it
   // has been updated before we copy it.
-  // TODO(pmarko): Find a better way to do this, see https://crbug.com/796512.
+  // TODO(pmarko): Find a better way to do this, see
+  // https://crbug.com/274707331.
   VLOG(1) << "Authentication was entered manually, possibly for proxyauth.";
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&TransferHttpAuthCaches),
@@ -957,7 +958,7 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
                << "Session started, the profile is ready ";
 
   // Inform `auth_status_consumers_` about successful login.
-  // TODO(nkostylev): Pass UserContext back crbug.com/424550
+  // TODO(nkostylev): Pass UserContext back crbug.com/41137922
   for (auto& auth_status_consumer : auth_status_consumers_) {
     auth_status_consumer.OnAuthSuccess(user_context);
   }
@@ -1104,7 +1105,7 @@ void ExistingUserController::ReportOnAuthSuccessMetrics() {
 
 void ExistingUserController::DeviceSettingsChanged() {
   // If login was already completed, we should avoid any signin screen
-  // transitions, see http://crbug.com/461604 for example.
+  // transitions, see http://crbug.com/40407129 for example.
   if (!profile_prepared_ && !is_signin_completed_) {
     // Signed settings or user list changed. Notify views and update them.
     const user_manager::UserList& users =

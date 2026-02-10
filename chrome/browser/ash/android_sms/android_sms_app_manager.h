@@ -18,7 +18,7 @@ namespace android_sms {
 // Manages setup and cookies for the Messages PWA. If the URL of the installed
 // PWA changes, observers are notified of the change.
 //
-// TODO(https://crbug.com/920781): Delete
+// TODO(https://crbug.com/208931309): Delete
 // multidevice_setup::AndroidSmsAppHelperDelegate and move its functions to this
 // class instead, then remove virtual inheritance here.
 class AndroidSmsAppManager

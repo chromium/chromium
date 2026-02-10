@@ -414,7 +414,7 @@ bool FileSystemBackend::HasInplaceCopyImplementation(
     case storage::kFileSystemTypeDriveFs:
       return true;
     // TODO(fukino): Support in-place copy for DocumentsProvider.
-    // crbug.com/953603.
+    // crbug.com/189883198.
     case storage::kFileSystemTypeArcDocumentsProvider:
     case storage::kFileSystemTypeLocal:
     case storage::kFileSystemTypeArcContent:

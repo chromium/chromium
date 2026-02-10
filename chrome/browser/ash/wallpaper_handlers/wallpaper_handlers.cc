@@ -66,7 +66,7 @@ constexpr std::string_view kCustomizationIdFilteringPrefix =
     "chromebook_customization_id_";
 
 // Returns the corresponding test url if |kTestWallpaperServer| is present,
-// otherwise returns |url| as is. See https://crbug.com/914144.
+// otherwise returns |url| as is. See https://crbug.com/40606096.
 std::string MaybeConvertToTestUrl(std::string url) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kTestWallpaperServer)) {

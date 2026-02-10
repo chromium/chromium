@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   }
 }
 
-// Flaky on chromeos.  http://crbug.com/391582
+// Flaky on chromeos.  http://crbug.com/40373506
 IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
                        DISABLED_OpenNewTabOnloadTest) {
   TextInputTestHelper helper(GetInputMethod());
