@@ -97,7 +97,9 @@ class ServiceWorkerContextAdapterImpl
                           content::ServiceWorkerContextObserver>
       scoped_underlying_context_observation_{this};
 
-  base::ObserverList<content::ServiceWorkerContextObserver, true, false>::
+  base::ObserverList<content::ServiceWorkerContextObserver,
+                     true,
+                     base::ObserverListReentrancyPolicy::kDisallowReentrancy>::
       Unchecked observer_list_;
 
   // For each running service worker, tracks when their render process exits.

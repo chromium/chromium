@@ -161,13 +161,13 @@ class FCMHandlerImpl : public FCMHandler, public gcm::GCMAppHandler {
   // method.
   base::ObserverList<InvalidationsListener,
                      /*check_empty=*/true,
-                     /*allow_reentrancy=*/false>
+                     base::ObserverListReentrancyPolicy::kDisallowReentrancy>
       listeners_;
 
   // Contains all FCM token observers to notify about each token change.
   base::ObserverList<FCMRegistrationTokenObserver,
                      /*check_empty=*/true,
-                     /*allow_reentrancy=*/false>
+                     base::ObserverListReentrancyPolicy::kDisallowReentrancy>
       token_observers_;
 
   bool initialized_ = false;

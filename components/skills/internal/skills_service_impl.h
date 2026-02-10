@@ -122,7 +122,9 @@ class SkillsServiceImpl : public SkillsService {
   SkillsMap first_party_skills_map_;
 
   // The list of observers to be notified on changes.
-  base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>
+  base::ObserverList<Observer,
+                     /*check_empty=*/true,
+                     base::ObserverListReentrancyPolicy::kDisallowReentrancy>
       observers_;
 
   // Sync bridge for skills.

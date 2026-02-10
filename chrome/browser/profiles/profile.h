@@ -552,7 +552,7 @@ class Profile : public content::BrowserContext {
 
   base::ObserverList<ProfileObserver,
                      /*check_empty=*/true,
-                     /*allow_reentrancy=*/false>
+                     base::ObserverListReentrancyPolicy::kDisallowReentrancy>
       observers_;
 
   class ChromeVariationsClient;

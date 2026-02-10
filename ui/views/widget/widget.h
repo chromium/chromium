@@ -1611,9 +1611,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // through the |native_widget_| weak ptr.
   std::unique_ptr<internal::NativeWidgetPrivate> owned_native_widget_;
 
+  // A WidgetObserver handles an event that invokes other events, therefore is
+  // inherently reentrant.
   base::ObserverList<WidgetObserver,
                      /*check_empty=*/false,
-                     /*allow_reentrancy=*/true>
+                     base::ObserverListReentrancyPolicy::kAllowReentrancy>
       observers_;
 
   base::ObserverList<WidgetRemovalsObserver>::Unchecked removals_observers_;

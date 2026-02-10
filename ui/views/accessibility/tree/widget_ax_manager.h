@@ -186,7 +186,7 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
 
   base::ObserverList<WidgetAXManagerObserver,
                      /*check_empty=*/true,
-                     /*allow_reentrancy=*/false>
+                     base::ObserverListReentrancyPolicy::kDisallowReentrancy>
       observers_;
 
 #if BUILDFLAG(IS_WIN)
