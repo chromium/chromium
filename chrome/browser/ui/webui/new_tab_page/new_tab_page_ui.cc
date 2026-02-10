@@ -96,6 +96,8 @@
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/history_clusters/core/features.h"
+#include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/ntp_tiles/features.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/pref_names.h"
@@ -208,6 +210,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       base::NumberToString(omnibox::DESKTOP_CHROME_NTP_THREADS_ENTRY_POINT));
   threads_url =
       net::AppendQueryParameter(threads_url, "atvm", kAIMThreadsVisibilityMode);
+  threads_url = lens::AppendInvocationSourceParamToURL(
+      threads_url, lens::LensOverlayInvocationSource::kNtpContextualQuery,
+      /*is_contextual_tasks=*/true);
   source->AddString("threadsUrl", threads_url.spec());
 
   source->AddInteger(
