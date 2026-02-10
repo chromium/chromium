@@ -33,7 +33,9 @@
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -413,18 +415,27 @@ PaymentMethodAccessoryControllerImpl::PaymentMethodAccessoryControllerImpl(
     content::WebContents* web_contents)
     : content::WebContentsUserData<PaymentMethodAccessoryControllerImpl>(
           *web_contents) {
-  if (PersonalDataManager* pdm =
-          PersonalDataManagerFactory::GetForBrowserContext(
-              web_contents->GetBrowserContext())) {
-    paydm_observation_.Observe(&pdm->payments_data_manager());
+  ContentAutofillClient* client =
+      ContentAutofillClient::FromWebContents(web_contents);
+  if (!client) {
+    return;
   }
+  paydm_observation_.Observe(
+      &client->GetPersonalDataManager().payments_data_manager());
   if (ValuablesDataManager* valuables_data_manager =
-          ValuablesDataManagerFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
+          client->GetValuablesDataManager()) {
     valuables_data_manager_observation_.Observe(valuables_data_manager);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillTouchToFillShowManualFillForVcnFix)) {
+    autofill_managers_observation_.Observe(
+        client, ScopedAutofillManagersObservation::InitializationPolicy::
+                    kObservePreexistingManagers);
   }
 }
 
+// TODO(crbug.com/481734563): Use TestContentAutofillClient for manager setup
+// and initialize testing members via test api.
 PaymentMethodAccessoryControllerImpl::PaymentMethodAccessoryControllerImpl(
     content::WebContents* web_contents,
     base::WeakPtr<ManualFillingController> mf_controller,
@@ -442,6 +453,15 @@ PaymentMethodAccessoryControllerImpl::PaymentMethodAccessoryControllerImpl(
   }
   if (valuables_data_manager) {
     valuables_data_manager_observation_.Observe(valuables_data_manager);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillTouchToFillShowManualFillForVcnFix)) {
+    if (ContentAutofillClient* client =
+            ContentAutofillClient::FromWebContents(web_contents)) {
+      autofill_managers_observation_.Observe(
+          client, ScopedAutofillManagersObservation::InitializationPolicy::
+                      kObservePreexistingManagers);
+    }
   }
 }
 
@@ -541,16 +561,24 @@ PaymentMethodAccessoryControllerImpl::GetAutofillManager() const {
 
 BrowserAutofillManager*
 PaymentMethodAccessoryControllerImpl::GetAutofillManager() {
-  DCHECK(GetWebContents().GetFocusedFrame());
-  if (af_manager_for_testing_)
-    return af_manager_for_testing_;
-  ContentAutofillDriver* driver = ContentAutofillDriver::GetForRenderFrameHost(
-      GetWebContents().GetFocusedFrame());
-  // This cast is always safe in Chrome - only WebView has a different
-  // AutofillManager implementation.
-  return driver ? static_cast<BrowserAutofillManager*>(
-                      &driver->GetAutofillManager())
-                : nullptr;
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillTouchToFillShowManualFillForVcnFix) &&
+      browser_autofill_manager_) {
+    return browser_autofill_manager_.get();
+  } else {
+    DCHECK(GetWebContents().GetFocusedFrame());
+    if (af_manager_for_testing_) {
+      return af_manager_for_testing_;
+    }
+    ContentAutofillDriver* driver =
+        ContentAutofillDriver::GetForRenderFrameHost(
+            GetWebContents().GetFocusedFrame());
+    // This cast is always safe in Chrome - only WebView has a different
+    // AutofillManager implementation.
+    return driver ? static_cast<BrowserAutofillManager*>(
+                        &driver->GetAutofillManager())
+                  : nullptr;
+  }
 }
 
 content::WebContents& PaymentMethodAccessoryControllerImpl::GetWebContents()
@@ -611,6 +639,20 @@ bool PaymentMethodAccessoryControllerImpl::FetchIfIban(
 
 void PaymentMethodAccessoryControllerImpl::OnValuablesDataChanged() {
   RefreshSuggestions();
+}
+
+void PaymentMethodAccessoryControllerImpl::OnFillOrPreviewForm(
+    AutofillManager& autofill_manager,
+    FormGlobalId,
+    mojom::ActionPersistence action_persistence,
+    const base::flat_set<FieldGlobalId>&,
+    const FillingPayload& filling_payload) {
+  if (action_persistence == mojom::ActionPersistence::kFill &&
+      std::holds_alternative<const CreditCard*>(filling_payload)) {
+    browser_autofill_manager_ =
+        static_cast<BrowserAutofillManager*>(&autofill_manager)
+            ->GetBrowserAutofillManagerWeakPtr();
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PaymentMethodAccessoryControllerImpl);
