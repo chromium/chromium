@@ -1,2 +1,1 @@
-# This filter excludes focus-related events, resulting in no output.
-@AURALINUX-DENY:focus-event*
+# No events expected — focus events are filtered out by the test.

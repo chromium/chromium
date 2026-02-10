@@ -1,1 +1,1 @@
-# WIP: Surely there's a bug here, will fix while working on https://crbug.com/40672441.
+STATE-CHANGE:CHECKED:TRUE role=ROLE_PUSH_BUTTON name='Test Button' CHECKED,ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE,CHECKABLE

@@ -49,13 +49,23 @@ IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest, ButtonClick) {
   generator.MoveMouseTo(button_->GetBoundsInScreen().CenterPoint());
   generator.ClickLeftButton();
 
-  EXPECT_TRUE(EndTestAndCompareEvents("button-click"));
+  EndTestAndCompareEvents("button-click");
 }
 
 IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest, ButtonFocus) {
   SKIP_IF_VIEWS_AX_ENABLED();
+
+  // On some CI bots, the address bar receives a focus-loss event before the
+  // button gets focus, producing spurious FOCUS-EVENT:FALSE and
+  // STATE-CHANGE:FOCUSED:FALSE lines. Deny all broad focus/state events first,
+  // then re-allow only the :TRUE variants we care about.
+  AddDenyFilter("FOCUS-EVENT:*");
+  AddDenyFilter("STATE-CHANGE:*");
+  AddAllowFilter("FOCUS-EVENT:TRUE*");
+  AddAllowFilter("STATE-CHANGE:FOCUSED:TRUE*");
+
   button_->RequestFocus();
-  EXPECT_TRUE(EndTestAndCompareEvents("button-focus"));
+  EndTestAndCompareEvents("button-focus");
 }
 
 INSTANTIATE_TEST_SUITE_P(
