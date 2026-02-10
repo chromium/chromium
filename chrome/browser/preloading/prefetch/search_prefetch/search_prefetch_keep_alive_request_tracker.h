@@ -7,6 +7,10 @@
 
 #include "content/public/browser/keep_alive_request_tracker.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace network {
 struct ResourceRequest;
 }  // namespace network
@@ -19,18 +23,20 @@ class SearchPrefetchKeepAliveRequestTracker
     : public content::KeepAliveRequestTracker {
  public:
   static std::unique_ptr<SearchPrefetchKeepAliveRequestTracker>
-  MaybeCreateKeepAliveRequestTracker(const network::ResourceRequest& request);
+  MaybeCreateKeepAliveRequestTracker(const network::ResourceRequest& request,
+                                     content::BrowserContext* browser_context);
 
   ~SearchPrefetchKeepAliveRequestTracker() override;
 
  protected:
-  // TODO(https://crbug.com/413557424): Implement this method to record metrics
-  // for search prefetch keep alive requests.
-  void AddStageMetrics(const RequestStage& stage) override {}
+  void AddStageMetrics(const RequestStage& stage) override;
 
  private:
   explicit SearchPrefetchKeepAliveRequestTracker(
       const network::ResourceRequest& request);
+
+  // Track the final stage of a keep alive request.
+  RequestStageType current_stage_ = RequestStageType::kLoaderCreated;
 };
 
 #endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_KEEP_ALIVE_REQUEST_TRACKER_H_

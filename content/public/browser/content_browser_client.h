@@ -3302,6 +3302,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   MaybeCreateKeepAliveRequestTracker(
       const network::ResourceRequest& request,
       std::optional<ukm::SourceId> ukm_source_id,
+      content::BrowserContext* browser_context,
       KeepAliveRequestTracker::IsContextDetachedCallback
           is_context_detached_callback);
 

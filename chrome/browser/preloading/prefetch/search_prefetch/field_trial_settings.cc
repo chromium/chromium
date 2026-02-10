@@ -9,11 +9,32 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
+#include "content/public/browser/browser_context.h"
 #include "net/base/features.h"
+#include "net/base/url_util.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 size_t g_cache_size_for_testing = 0;
+
+GURL GetDefaultSearchEngineUrl(content::BrowserContext* browser_context) {
+  auto* template_url_service = TemplateURLServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context));
+  if (!template_url_service) {
+    return GURL();
+  }
+
+  const TemplateURL* default_search_engine =
+      template_url_service->GetDefaultSearchProvider();
+  return default_search_engine ? default_search_engine->GenerateSearchURL(
+                                     template_url_service->search_terms_data())
+                               : GURL();
+}
 }  // namespace
 
 BASE_FEATURE(kSearchPrefetchServicePrefetching,
@@ -126,9 +147,36 @@ bool CacheAliasLoaderDryRunModeEnabled() {
   return base::FeatureList::IsEnabled(kCacheAliasLoaderDryRunMode);
 }
 
+// Debugging feature flag to verify the keep alive request's success rate.
 BASE_FEATURE(kSearchPrefetchBeaconLogging, base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsSearchPrefetchBeaconLoggingEnabled(const GURL& url) {
-  return base::FeatureList::IsEnabled(kSearchPrefetchBeaconLogging);
+
+// This parameter is supposed to be empty, and UA will use the default search
+// engine's URL. It will be set in case that search engine provider uses a
+// different host to classify activated traffic, or for testing.
+const base::FeatureParam<std::string> kSearchPrefetchBeaconHost{
+    &kSearchPrefetchBeaconLogging, "search_prefetch_beacon_host", ""};
+
+bool IsSearchPrefetchBeaconLoggingEnabled(
+    const GURL& url,
+    content::BrowserContext* browser_context) {
+  if (!base::FeatureList::IsEnabled(kSearchPrefetchBeaconLogging)) {
+    return false;
+  }
+  const std::string& host = kSearchPrefetchBeaconHost.Get();
+  if (!host.empty()) {
+    if (url.GetHost() != host) {
+      return false;
+    }
+  } else if (!url::IsSameOriginWith(
+                 url, GetDefaultSearchEngineUrl(browser_context))) {
+    return false;
+  }
+  std::string value;
+  if (!net::GetValueForKeyInQuery(url, "pf", &value)) {
+    return false;
+  }
+  return value == kNavigationPrefetchParam.Get() ||
+         value == kSuggestPrefetchParam.Get();
 }
 
 bool IsPrefetchIncognitoEnabled() {
