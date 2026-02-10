@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/test/views_test_base.h"
@@ -15,17 +17,17 @@ class TabStripComboButtonTest : public views::ViewsTestBase {
   ~TabStripComboButtonTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({tabs::kProjectsPanel}, {});
+
     views::ViewsTestBase::SetUp();
-
-    auto start_button = std::make_unique<TabStripFlatEdgeButton>();
-    auto end_button = std::make_unique<TabStripFlatEdgeButton>();
-
-    combo_button_ = std::make_unique<TabStripComboButton>(
-        std::move(start_button), std::move(end_button));
+    combo_button_ = std::make_unique<TabStripComboButton>(nullptr);
   }
 
  protected:
   std::unique_ptr<TabStripComboButton> combo_button_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TabStripComboButtonTest, UpdateStylesOnOrientationChange) {

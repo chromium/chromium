@@ -5,25 +5,55 @@
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 
 #include "base/i18n/rtl.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/actions/action_view_controller.h"
+#include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
-TabStripComboButton::TabStripComboButton(
-    std::unique_ptr<TabStripFlatEdgeButton> start_button,
-    std::unique_ptr<TabStripFlatEdgeButton> end_button) {
+TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser)
+    : browser_(browser),
+      action_view_controller_(std::make_unique<views::ActionViewController>()) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       GetLayoutConstant(
           LayoutConstant::kVerticalTabStripFlatEdgeButtonPadding)));
 
+  std::unique_ptr<TabStripFlatEdgeButton> start_button;
+  if (tabs::IsProjectsPanelFeatureEnabled()) {
+    start_button = CreateFlatEdgeButtonFor(
+        kActionToggleProjectsPanel, kVerticalTabStripProjectsButtonElementId);
+  } else if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
+                 browser_->GetProfile())) {
+    start_button = CreateFlatEdgeButtonFor(kActionTabGroupsMenu,
+                                           kSavedTabGroupButtonElementId);
+
+    auto controller = std::make_unique<views::MenuButtonController>(
+        start_button.get(),
+        base::BindRepeating(&TabStripComboButton::ShowEverythingMenu,
+                            base::Unretained(this)),
+        std::make_unique<views::Button::DefaultButtonControllerDelegate>(
+            start_button.get()));
+    everything_menu_controller_ = controller.get();
+    start_button->SetButtonController(std::move(controller));
+  }
+
   if (start_button) {
     start_button_ = AddChildView(std::move(start_button));
   }
-  if (end_button) {
-    end_button_ = AddChildView(std::move(end_button));
-  }
+
+  end_button_ = AddChildView(
+      CreateFlatEdgeButtonFor(kActionTabSearch, kTabSearchButtonElementId));
+
   UpdateStyles();
 }
 
@@ -45,6 +75,39 @@ void TabStripComboButton::SetOrientation(views::LayoutOrientation orientation) {
 
 void TabStripComboButton::ChildVisibilityChanged(views::View* child) {
   UpdateStyles();
+}
+
+void TabStripComboButton::ShowEverythingMenu() {
+  if (everything_menu_ && everything_menu_->IsShowing()) {
+    return;
+  }
+
+  everything_menu_ = std::make_unique<tab_groups::STGEverythingMenu>(
+      everything_menu_controller_, browser_->GetBrowserForMigrationOnly(),
+      tab_groups::STGEverythingMenu::MenuContext::kVerticalTabStrip);
+
+  everything_menu_->RunMenu();
+}
+
+std::unique_ptr<TabStripFlatEdgeButton>
+TabStripComboButton::CreateFlatEdgeButtonFor(actions::ActionId action_id,
+                                             ui::ElementIdentifier element_id) {
+  auto button = std::make_unique<TabStripFlatEdgeButton>();
+  if (!browser_ || !browser_->GetActions()) {
+    return button;
+  }
+  actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+      action_id, browser_->GetActions()->root_action_item());
+  CHECK(action_item);
+  action_view_controller_->CreateActionViewRelationship(
+      button.get(), action_item->GetAsWeakPtr());
+  button->SetProperty(views::kElementIdentifierKey, element_id);
+
+  const int raw_button_size = GetLayoutConstant(
+      LayoutConstant::kVerticalTabStripTopContainerButtonSize);
+  button->SetPreferredSize(gfx::Size(raw_button_size, raw_button_size));
+
+  return button;
 }
 
 void TabStripComboButton::UpdateStyles() {

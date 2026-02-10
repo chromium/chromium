@@ -41,46 +41,18 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
           &VerticalTabStripTopContainer::OnCollapsedStateChanged,
           base::Unretained(this)));
 
-  collapse_button_ =
-      AddTopContainerChildButtonFor(kActionToggleCollapseVertical);
+  collapse_button_ = AddChildButtonFor(kActionToggleCollapseVertical);
   collapse_button_->SetProperty(views::kElementIdentifierKey,
                                 kVerticalTabStripCollapseButtonElementId);
 
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
-    unfocus_button_ = AddTopContainerChildButtonFor(kActionUnfocusTabGroup);
+    unfocus_button_ = AddChildButtonFor(kActionUnfocusTabGroup);
     unfocus_button_->SetProperty(views::kElementIdentifierKey,
                                  kUnfocusTabGroupButtonElementId);
     unfocus_button_->SetVisible(false);
   }
 
-  std::unique_ptr<TabStripFlatEdgeButton> tab_group_button;
-  if (tabs::IsProjectsPanelFeatureEnabled()) {
-    tab_group_button = CreateFlatEdgeButtonFor(kActionToggleProjectsPanel);
-    tab_group_button->SetProperty(views::kElementIdentifierKey,
-                                  kVerticalTabStripProjectsButtonElementId);
-  } else if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
-                 browser_->GetProfile())) {
-    tab_group_button = CreateFlatEdgeButtonFor(kActionTabGroupsMenu);
-    // Creating MenuButtonController because tab_group_button is a LabelButton.
-    auto controller = std::make_unique<views::MenuButtonController>(
-        tab_group_button.get(),
-        base::BindRepeating(&VerticalTabStripTopContainer::ShowEverythingMenu,
-                            base::Unretained(this)),
-        std::make_unique<views::Button::DefaultButtonControllerDelegate>(
-            tab_group_button.get()));
-    everything_menu_controller_ = controller.get();
-
-    tab_group_button->SetButtonController(std::move(controller));
-    tab_group_button->SetProperty(views::kElementIdentifierKey,
-                                  kSavedTabGroupButtonElementId);
-  }
-
-  auto tab_search_button = CreateFlatEdgeButtonFor(kActionTabSearch);
-  tab_search_button->SetProperty(views::kElementIdentifierKey,
-                                 kTabSearchButtonElementId);
-
-  combo_button_ = AddChildView(std::make_unique<TabStripComboButton>(
-      std::move(tab_group_button), std::move(tab_search_button)));
+  combo_button_ = AddChildView(std::make_unique<TabStripComboButton>(browser_));
   combo_button_->SetOrientation(state_controller->IsCollapsed()
                                     ? views::LayoutOrientation::kVertical
                                     : views::LayoutOrientation::kHorizontal);
@@ -244,7 +216,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
   return layout;
 }
 
-views::LabelButton* VerticalTabStripTopContainer::AddTopContainerChildButtonFor(
+views::LabelButton* VerticalTabStripTopContainer::AddChildButtonFor(
     actions::ActionId action_id) {
   std::unique_ptr<TopContainerButton> container_button =
       std::make_unique<TopContainerButton>();
@@ -259,26 +231,6 @@ views::LabelButton* VerticalTabStripTopContainer::AddTopContainerChildButtonFor(
       AddChildView(std::move(container_button));
 
   return container_button_ptr;
-}
-
-std::unique_ptr<TabStripFlatEdgeButton>
-VerticalTabStripTopContainer::CreateFlatEdgeButtonFor(
-    actions::ActionId action_id) {
-  std::unique_ptr<TabStripFlatEdgeButton> container_button =
-      std::make_unique<TabStripFlatEdgeButton>();
-  actions::ActionItem* action_item =
-      actions::ActionManager::Get().FindAction(action_id, root_action_item_);
-  CHECK(action_item);
-
-  action_view_controller_->CreateActionViewRelationship(
-      container_button.get(), action_item->GetAsWeakPtr());
-
-  const int raw_container_button_size = GetLayoutConstant(
-      LayoutConstant::kVerticalTabStripTopContainerButtonSize);
-  container_button->SetPreferredSize(
-      gfx::Size(raw_container_button_size, raw_container_button_size));
-
-  return container_button;
 }
 
 TabStripComboButton* VerticalTabStripTopContainer::GetComboButton() {
@@ -322,19 +274,6 @@ void VerticalTabStripTopContainer::SetCaptionButtonWidthForLayout(
   }
   caption_button_width_ = caption_button_width;
   InvalidateLayout();
-}
-
-void VerticalTabStripTopContainer::ShowEverythingMenu() {
-  if (everything_menu_ && everything_menu_->IsShowing()) {
-    return;
-  }
-
-  // Creating everything menu.
-  everything_menu_ = std::make_unique<tab_groups::STGEverythingMenu>(
-      everything_menu_controller_, browser_->GetBrowserForMigrationOnly(),
-      tab_groups::STGEverythingMenu::MenuContext::kVerticalTabStrip);
-
-  everything_menu_->RunMenu();
 }
 
 void VerticalTabStripTopContainer::OnCollapsedStateChanged(

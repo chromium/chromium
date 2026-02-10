@@ -20,14 +20,9 @@ namespace tabs {
 class VerticalTabStripStateController;
 }  // namespace tabs
 
-namespace tab_groups {
-class STGEverythingMenu;
-}
-
 namespace views {
 class ActionViewController;
 class LabelButton;
-class MenuButtonController;
 }  // namespace views
 
 // Top container of the vertical tab strip, manages the collapse and tab search
@@ -48,11 +43,7 @@ class VerticalTabStripTopContainer : public views::View,
       const views::SizeBounds& size_bounds) const override;
 
   // Creates a TopContainerButton (Collapse Button).
-  views::LabelButton* AddTopContainerChildButtonFor(
-      actions::ActionId action_id);
-  // Creates FlatEdgeButton (Tab Groups & Tab Search).
-  std::unique_ptr<TabStripFlatEdgeButton> CreateFlatEdgeButtonFor(
-      actions::ActionId action_id);
+  views::LabelButton* AddChildButtonFor(actions::ActionId action_id);
 
   TabStripComboButton* GetComboButton();
   TabStripFlatEdgeButton* GetTabSearchButton();
@@ -70,8 +61,6 @@ class VerticalTabStripTopContainer : public views::View,
   void SetCaptionButtonWidthForLayout(int caption_button_width);
 
  private:
-  void ShowEverythingMenu();
-
   void UpdateComboButtonVisibility();
 
   void OnCollapsedStateChanged(
@@ -84,10 +73,7 @@ class VerticalTabStripTopContainer : public views::View,
   raw_ptr<views::LabelButton> collapse_button_ = nullptr;
   raw_ptr<views::LabelButton> unfocus_button_ = nullptr;
 
-  raw_ptr<views::MenuButtonController> everything_menu_controller_ = nullptr;
-
   base::CallbackListSubscription collapsed_state_changed_subscription_;
-  std::unique_ptr<tab_groups::STGEverythingMenu> everything_menu_;
   std::unique_ptr<views::ActionViewController> action_view_controller_;
 
   // This represents the toolbar (element containing toolbar buttons, omnibox,

@@ -23,8 +23,12 @@ source_set("impl") {
   deps = [
     ":shared",
     "//base:i18n",
+    "//chrome/browser:primitives",
     "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/views/toolbar",
     "//ui/actions",
     "//ui/views",
