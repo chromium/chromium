@@ -754,11 +754,15 @@ CoreAccountId AccountTrackerService::PickAccountIdForAccount(
 CoreAccountId AccountTrackerService::SeedAccountInfo(
     const GaiaId& gaia,
     const std::string& email,
-    signin_metrics::AccessPoint access_point) {
+    std::optional<signin_metrics::AccessPoint> access_point) {
   AccountInfo account_info;
   account_info.gaia = gaia;
   account_info.email = email;
-  account_info.access_point = access_point;
+  if (access_point == signin_metrics::AccessPoint::kUnknown) {
+    account_info.access_point = std::optional<signin_metrics::AccessPoint>();
+  } else {
+    account_info.access_point = access_point;
+  }
   CoreAccountId account_id = SeedAccountInfo(account_info);
 
   DVLOG(1) << "AccountTrackerService::SeedAccountInfo"

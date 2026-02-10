@@ -181,8 +181,8 @@ std::optional<gfx::Image> AccountInfo::GetAvatarImage() const {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-signin_metrics::AccessPoint AccountInfo::GetLastAuthenticationAccessPoint()
-    const {
+std::optional<signin_metrics::AccessPoint>
+AccountInfo::GetLastAuthenticationAccessPoint() const {
   return access_point;
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -232,7 +232,7 @@ bool AccountInfo::UpdateWith(const AccountInfo& other) {
       UpdateField(&picture_url_, other.picture_url_, kNoPictureURLFound);
   modified |= UpdateField(&is_child_account_, other.is_child_account_);
   modified |= UpdateField(&access_point, other.access_point,
-                          signin_metrics::AccessPoint::kUnknown);
+                          std::optional<signin_metrics::AccessPoint>());
   modified |= UpdateField(&is_under_advanced_protection,
                           other.is_under_advanced_protection);
   modified |= capabilities.UpdateWith(other.capabilities);

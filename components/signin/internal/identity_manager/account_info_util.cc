@@ -220,26 +220,31 @@ base::DictValue SerializeAccountInfo(const AccountInfo& account_info) {
     avatar_url_to_set = avatar_url->empty() ? local::kNoPictureURLFound
                                             : std::string(*avatar_url);
   }
-  return base::DictValue()
-      .Set(local::kAccountIdKey, account_info.GetAccountId().ToString())
-      .Set(local::kAccountEmailKey, account_info.GetEmail())
-      .Set(local::kAccountGaiaKey, account_info.GetGaiaId().ToString())
-      .Set(local::kAccountHostedDomainKey, hosted_domain_to_set)
-      .Set(local::kAccountFullNameKey, account_info.GetFullName().value_or(""))
-      .Set(local::kAccountGivenNameKey,
-           account_info.GetGivenName().value_or(""))
-      .Set(local::kAccountLocaleKey, account_info.GetLocale().value_or(""))
-      .Set(local::kAccountPictureURLKey, avatar_url_to_set)
-      .Set(local::kAccountChildAttributeKey,
-           static_cast<int>(account_info.IsChildAccount()))
-      .Set(local::kAdvancedProtectionAccountStatusKey,
-           account_info.IsUnderAdvancedProtection())
-      .Set(local::kAccountAccessPoint,
-           static_cast<int>(account_info.access_point))
-      .Set(local::kLastDownloadedImageURLWithSizeKey,
-           account_info.GetLastDownloadedAvatarUrlWithSize().value_or(""))
-      .Set(local::kAccountCapabilitiesKey,
-           SerializeAccountCapabilities(account_info.GetAccountCapabilities()));
+  base::DictValue result;
+  result.Set(local::kAccountIdKey, account_info.GetAccountId().ToString());
+  result.Set(local::kAccountEmailKey, account_info.GetEmail());
+  result.Set(local::kAccountGaiaKey, account_info.GetGaiaId().ToString());
+  result.Set(local::kAccountHostedDomainKey, hosted_domain_to_set);
+  result.Set(local::kAccountFullNameKey,
+             account_info.GetFullName().value_or(""));
+  result.Set(local::kAccountGivenNameKey,
+             account_info.GetGivenName().value_or(""));
+  result.Set(local::kAccountLocaleKey, account_info.GetLocale().value_or(""));
+  result.Set(local::kAccountPictureURLKey, avatar_url_to_set);
+  result.Set(local::kAccountChildAttributeKey,
+             static_cast<int>(account_info.IsChildAccount()));
+  result.Set(local::kAdvancedProtectionAccountStatusKey,
+             account_info.IsUnderAdvancedProtection());
+  result.Set(local::kLastDownloadedImageURLWithSizeKey,
+             account_info.GetLastDownloadedAvatarUrlWithSize().value_or(""));
+  result.Set(
+      local::kAccountCapabilitiesKey,
+      SerializeAccountCapabilities(account_info.GetAccountCapabilities()));
+  if (account_info.access_point.has_value()) {
+    result.Set(local::kAccountAccessPoint,
+               static_cast<int>(account_info.access_point.value()));
+  }
+  return result;
 }
 
 std::optional<AccountInfo> DeserializeAccountInfo(const base::DictValue& dict) {

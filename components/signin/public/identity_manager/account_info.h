@@ -152,7 +152,8 @@ struct AccountInfo : public CoreAccountInfo {
   // Returns access point used to add the account, which is also updated on
   // reauth. The access point is not updated when signing in to Chrome, only
   // when the token is updated or refreshed.
-  signin_metrics::AccessPoint GetLastAuthenticationAccessPoint() const;
+  std::optional<signin_metrics::AccessPoint> GetLastAuthenticationAccessPoint()
+      const;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Returns the account capabilities.
@@ -223,8 +224,7 @@ struct AccountInfo : public CoreAccountInfo {
 
   // Deprecated: Use GetLastAuthenticationAccessPoint() instead.
   // The value is set consistently only on DICE platforms.
-  signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::kUnknown;
+  std::optional<signin_metrics::AccessPoint> access_point;
 
   // Deprecated: Use GetAccountCapabilities() instead.
   AccountCapabilities capabilities;

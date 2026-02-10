@@ -1094,7 +1094,7 @@ TEST_F(AccountTrackerServiceTest, SeedAccountInfo) {
   EXPECT_EQ(account_id, infos[0].account_id);
   EXPECT_EQ(gaia_id, infos[0].gaia);
   EXPECT_EQ(email, infos[0].email);
-  EXPECT_EQ(signin_metrics::AccessPoint::kUnknown, infos[0].access_point);
+  EXPECT_FALSE(infos[0].access_point.has_value());
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(UPDATED, account_id, gaia_id, email),
   }));

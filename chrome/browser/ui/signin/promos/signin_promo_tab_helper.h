@@ -64,8 +64,7 @@ class SigninPromoTabHelper
                             signin::IdentityManager::Observer>
         identity_manager_observation_;
     base::OnceClosure completed_callback_;
-    signin_metrics::AccessPoint access_point_ =
-        signin_metrics::AccessPoint::kUnknown;
+    std::optional<signin_metrics::AccessPoint> access_point_;
     base::Time initialization_time_;
     base::TimeDelta time_limit_;
     bool is_initialized_ = false;

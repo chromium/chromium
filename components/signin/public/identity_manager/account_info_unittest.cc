@@ -106,8 +106,7 @@ TEST_F(AccountInfoTest, UpdateWithNoModification) {
           .Build();
   EXPECT_EQ(other.IsChildAccount(), signin::Tribool::kUnknown);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  EXPECT_EQ(other.GetLastAuthenticationAccessPoint(),
-            signin_metrics::AccessPoint::kUnknown);
+  EXPECT_FALSE(other.GetLastAuthenticationAccessPoint().has_value());
 #endif
 
   EXPECT_FALSE(info.UpdateWith(other));
@@ -115,7 +114,8 @@ TEST_F(AccountInfoTest, UpdateWithNoModification) {
   EXPECT_EQ(info.GetEmail(), "test@example.com");
   EXPECT_EQ(info.GetLocale(), "en");
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  EXPECT_EQ(info.GetLastAuthenticationAccessPoint(),
+  EXPECT_TRUE(info.GetLastAuthenticationAccessPoint().has_value());
+  EXPECT_EQ(info.GetLastAuthenticationAccessPoint().value(),
             signin_metrics::AccessPoint::kSettings);
 #endif
   EXPECT_EQ(info.IsChildAccount(), signin::Tribool::kTrue);
@@ -150,7 +150,8 @@ TEST_F(AccountInfoTest, UpdateWithSuccessfulUpdate) {
   EXPECT_EQ(info.GetGivenName(), "test_name");
   EXPECT_EQ(info.GetLocale(), "fr");
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  EXPECT_EQ(info.GetLastAuthenticationAccessPoint(),
+  EXPECT_TRUE(info.GetLastAuthenticationAccessPoint().has_value());
+  EXPECT_EQ(info.GetLastAuthenticationAccessPoint().value(),
             signin_metrics::AccessPoint::kSettings);
 #endif
   EXPECT_EQ(info.IsChildAccount(), signin::Tribool::kTrue);
@@ -226,8 +227,7 @@ TEST_F(AccountInfoTest, GettersEmptyAccountInfo) {
   EXPECT_EQ(info.GetLastDownloadedAvatarUrlWithSize(), std::nullopt);
   EXPECT_EQ(info.GetAvatarImage(), std::nullopt);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  EXPECT_EQ(info.GetLastAuthenticationAccessPoint(),
-            signin_metrics::AccessPoint::kUnknown);
+  EXPECT_FALSE(info.GetLastAuthenticationAccessPoint().has_value());
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_FALSE(info.GetAccountCapabilities().AreAnyCapabilitiesKnown());
   EXPECT_EQ(info.IsChildAccount(), signin::Tribool::kUnknown);
@@ -262,7 +262,8 @@ TEST_F(AccountInfoTest, GettersPopulatedAccountInfo) {
   EXPECT_EQ(info.GetLastDownloadedAvatarUrlWithSize(), "picture_url_with_size");
   EXPECT_NE(info.GetAvatarImage(), std::nullopt);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  EXPECT_EQ(info.GetLastAuthenticationAccessPoint(),
+  EXPECT_TRUE(info.GetLastAuthenticationAccessPoint().has_value());
+  EXPECT_EQ(info.GetLastAuthenticationAccessPoint().value(),
             signin_metrics::AccessPoint::kSettings);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_TRUE(info.GetAccountCapabilities().AreAnyCapabilitiesKnown());

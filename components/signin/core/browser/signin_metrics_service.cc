@@ -426,7 +426,8 @@ void SigninMetricsService::HandleSigninErrors(
     AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
         identity_manager_->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSignin));
-    if (account_info.access_point != signin_metrics::AccessPoint::kUnknown) {
+    if (account_info.access_point.has_value() &&
+        (account_info.access_point != signin_metrics::AccessPoint::kUnknown)) {
       // Only record `Started` from WEB_SIGNIN, since there is no way to
       // know that a WebSignin resolution has started until it was
       // completed. Other access points are client access points which can
@@ -435,12 +436,11 @@ void SigninMetricsService::HandleSigninErrors(
           signin_metrics::AccessPoint::kWebSignin) {
         base::UmaHistogramEnumeration(
             "Signin.SigninPending.ResolutionSourceStarted",
-            account_info.access_point);
+            account_info.access_point.value());
       }
-
       base::UmaHistogramEnumeration(
           "Signin.SigninPending.ResolutionSourceCompleted",
-          account_info.access_point);
+          account_info.access_point.value());
     }
   }
 }
