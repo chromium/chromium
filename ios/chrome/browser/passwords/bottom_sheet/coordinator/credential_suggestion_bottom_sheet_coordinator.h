@@ -7,6 +7,7 @@
 
 #import <string>
 
+#import "components/webauthn/ios/ios_passkey_client.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_presenter.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
@@ -39,13 +40,14 @@ struct FormActivityParams;
 
 // Initializer for modal passkey requests, which will only show passkey
 // suggestions. `viewController` is the VC used to present the bottom sheet.
-// `requestID` comes from the PasskeyTabHelper and identifies the passkey
-// request which triggered this bottom sheet.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                 requestID:(std::string)requestID
-                                  delegate:
-                                      (id<PasswordControllerDelegate>)delegate
+// `requestInfo` comes from the PasskeyTabHelper and contains information on the
+// passkey request which triggered this bottom sheet.
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                   requestInfo:
+                       (webauthn::IOSPasskeyClient::RequestInfo)requestInfo
+                      delegate:(id<PasswordControllerDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

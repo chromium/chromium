@@ -16,6 +16,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/webauthn/ios/features.h"
+#import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "components/webauthn/ios/passkey_tab_helper.h"
 #import "components/webauthn/ios/passkey_types.h"
@@ -162,7 +163,7 @@ void IOSChromePasskeyClient::FetchKeys(webauthn::ReauthenticatePurpose purpose,
 
 void IOSChromePasskeyClient::ShowSuggestionBottomSheet(
     RequestInfo request_info) {
-  [command_handler_ showPasskeySuggestionBottomSheet:request_info.request_id];
+  [command_handler_ showPasskeySuggestionBottomSheet:request_info];
 
   // TODO(crbug.com/460485496): remove the code below and related dependencies
   // once the bottom sheet is implemented.

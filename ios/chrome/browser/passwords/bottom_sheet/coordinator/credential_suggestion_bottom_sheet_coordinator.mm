@@ -65,8 +65,8 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   // Form activity parameters giving the context around the sheet trigger.
   std::optional<autofill::FormActivityParams> _params;
 
-  // ID of the passkey request.
-  std::optional<std::string> _requestID;
+  // Information of the passkey request.
+  std::optional<webauthn::IOSPasskeyClient::RequestInfo> _requestInfo;
 }
 
 - (instancetype)
@@ -83,16 +83,17 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   return self;
 }
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                 requestID:(std::string)requestID
-                                  delegate:
-                                      (id<PasswordControllerDelegate>)delegate {
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                   requestInfo:
+                       (webauthn::IOSPasskeyClient::RequestInfo)requestInfo
+                      delegate:(id<PasswordControllerDelegate>)delegate {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _passwordControllerDelegate = delegate;
     _dismissing = NO;
-    _requestID = requestID;
+    _requestInfo = std::move(requestInfo);
   }
   return self;
 }
@@ -100,7 +101,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  if (!_params.has_value() && !_requestID.has_value()) {
+  if (!_params.has_value() && !_requestInfo.has_value()) {
     // Cleanup the coordinator if it couldn't be started.
     [self.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
     // Do not add any logic past this point in this specific context since the
@@ -148,9 +149,11 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
              engagementTracker:engagementTracker
                      presenter:self];
   } else {
-    CHECK(_requestID.has_value());
+    CHECK(_requestInfo.has_value());
+
     _mediator = [[PasskeySuggestionBottomSheetMediator alloc]
-        initWithRequestID:std::move(*_requestID)];
+        initWithWebStateList:webStateList
+                 requestInfo:std::move(*_requestInfo)];
   }
 
   _viewController = [[CredentialSuggestionBottomSheetViewController alloc]

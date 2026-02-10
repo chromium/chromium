@@ -44,6 +44,7 @@
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
+#import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_store_rating/model/features.h"
 #import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_coordinator.h"
@@ -2304,12 +2305,13 @@ const char kChromeAppStoreUrl[] =
   [_passkeyCreationBottomSheetCoordinator start];
 }
 
-- (void)showPasskeySuggestionBottomSheet:(const std::string&)requestID {
+- (void)showPasskeySuggestionBottomSheet:
+    (webauthn::IOSPasskeyClient::RequestInfo)requestInfo {
   self.credentialSuggestionBottomSheetCoordinator =
       [[CredentialSuggestionBottomSheetCoordinator alloc]
           initWithBaseViewController:self.viewController
                              browser:self.browser
-                           requestID:requestID
+                         requestInfo:std::move(requestInfo)
                             delegate:self];
   self.credentialSuggestionBottomSheetCoordinator
       .browserCoordinatorCommandsHandler =

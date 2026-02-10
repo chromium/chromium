@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/browser_view/ui_bundled/tab_lifecycle_mediator.h"
 
+#import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "components/webauthn/ios/passkey_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"

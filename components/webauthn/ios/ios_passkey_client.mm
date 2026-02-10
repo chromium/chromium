@@ -11,8 +11,12 @@ IOSPasskeyClient::RequestInfo::RequestInfo(std::string frame_id,
     : frame_id(std::move(frame_id)), request_id(std::move(request_id)) {}
 
 IOSPasskeyClient::RequestInfo::RequestInfo(const RequestInfo& other) = default;
+IOSPasskeyClient::RequestInfo& IOSPasskeyClient::RequestInfo::operator=(
+    const RequestInfo& other) = default;
 IOSPasskeyClient::RequestInfo::RequestInfo(
     IOSPasskeyClient::RequestInfo&& other) = default;
+IOSPasskeyClient::RequestInfo& IOSPasskeyClient::RequestInfo::operator=(
+    RequestInfo&& other) = default;
 IOSPasskeyClient::RequestInfo::~RequestInfo() = default;
 
 }  // namespace webauthn

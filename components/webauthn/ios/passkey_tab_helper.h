@@ -26,6 +26,8 @@ namespace web {
 class WebFrame;
 }  // namespace web
 
+@protocol IOSPasskeyClientCommands;
+
 namespace webauthn {
 
 // Handles script messages received from PasskeyJavaScriptFeature related to
