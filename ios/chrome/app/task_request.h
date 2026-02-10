@@ -49,19 +49,19 @@ using ShortcutCompletionHandler = void (^)(BOOL succeeded);
 // Scene session ID on which the task should be executed.
 @property(nonatomic, readonly) std::string_view sceneSessionID;
 
-// Initializers for the 4 OS calls.
-- (instancetype)initWithURLContexts:(NSSet<UIOpenURLContext*>*)URLContexts
-                         sceneState:(SceneState*)sceneState;
+// Initializers for the OS calls.
+- (instancetype)initWithURLContext:(UIOpenURLContext*)URLContext
+                        sceneState:(SceneState*)sceneState
+                        taskSource:(TaskSource)taskSource;
 
 - (instancetype)initWithUserActivity:(NSUserActivity*)userActivity
-                          sceneState:(SceneState*)sceneState;
+                          sceneState:(SceneState*)sceneState
+                          taskSource:(TaskSource)taskSource;
 
 - (instancetype)initWithShortcutItem:(UIApplicationShortcutItem*)shortcutItem
-                             handler:(ShortcutCompletionHandler)handler
-                          sceneState:(SceneState*)sceneState;
-
-- (instancetype)initWithConnectionOptions:(UISceneConnectionOptions*)options
-                               sceneState:(SceneState*)sceneState;
+                          sceneState:(SceneState*)sceneState
+                          taskSource:(TaskSource)taskSource
+                             handler:(ShortcutCompletionHandler)handler;
 
 // Executes the task.
 - (void)execute;

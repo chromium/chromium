@@ -49,12 +49,16 @@
   return _sceneSessionID;
 }
 
-- (instancetype)initWithURLContexts:(NSSet<UIOpenURLContext*>*)URLContexts
-                         sceneState:(SceneState*)sceneState {
+- (instancetype)initWithURLContext:(UIOpenURLContext*)URLContext
+                        sceneState:(SceneState*)sceneState
+                        taskSource:(TaskSource)taskSource {
   self = [super init];
   if (self) {
+    // TODO(crbug.com/462018636): Minimum stage can be different in this case,
+    // handle all scenarios based on the received options (check bookmarks
+    // feature).
     CHECK(IsEnableNewStartupFlowEnabled());
-    _source = TaskSource::TaskSourceContextURL;
+    _source = taskSource;
     _minimumStage = TaskExecutionStage::TaskExecutionUIReady;
     _sceneSessionID = sceneState.sceneSessionID;
   }
@@ -62,11 +66,12 @@
 }
 
 - (instancetype)initWithUserActivity:(NSUserActivity*)userActivity
-                          sceneState:(SceneState*)sceneState {
+                          sceneState:(SceneState*)sceneState
+                          taskSource:(TaskSource)taskSource {
   self = [super init];
   if (self) {
     CHECK(IsEnableNewStartupFlowEnabled());
-    _source = TaskSource::TaskSourceUserActivity;
+    _source = taskSource;
     _minimumStage = TaskExecutionStage::TaskExecutionUIReady;
     _sceneSessionID = sceneState.sceneSessionID;
   }
@@ -74,27 +79,13 @@
 }
 
 - (instancetype)initWithShortcutItem:(UIApplicationShortcutItem*)shortcutItem
-                             handler:(ShortcutCompletionHandler)handler
-                          sceneState:(SceneState*)sceneState {
+                          sceneState:(SceneState*)sceneState
+                          taskSource:(TaskSource)taskSource
+                             handler:(ShortcutCompletionHandler)handler {
   self = [super init];
   if (self) {
     CHECK(IsEnableNewStartupFlowEnabled());
-    _source = TaskSource::TaskSourceQuickAction;
-    _minimumStage = TaskExecutionStage::TaskExecutionUIReady;
-    _sceneSessionID = sceneState.sceneSessionID;
-  }
-  return self;
-}
-
-- (instancetype)initWithConnectionOptions:(UISceneConnectionOptions*)options
-                               sceneState:(SceneState*)sceneState {
-  self = [super init];
-  if (self) {
-    CHECK(IsEnableNewStartupFlowEnabled());
-    _source = TaskSource::TaskSourceColdStart;
-    // TODO(crbug.com/462018636): Minimum stage can be different in this case,
-    // handle all scenarios based on the received options (check bookmarks
-    // feature).
+    _source = taskSource;
     _minimumStage = TaskExecutionStage::TaskExecutionUIReady;
     _sceneSessionID = sceneState.sceneSessionID;
   }
