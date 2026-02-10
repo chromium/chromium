@@ -1,2 +1,0 @@
-ci/mac-skia-alt-arm64-rel-tests
-try/mac-skia-alt-arm64-blink-rel
