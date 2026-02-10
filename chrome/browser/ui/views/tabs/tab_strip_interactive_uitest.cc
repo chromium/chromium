@@ -105,11 +105,15 @@ class TestNewTabButtonContextMenu : public TabStripInteractiveUiTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO (crbug.com/447617263) rewrite these tests so that they work on mac and
-// enable them there so that it works on mac and re-enable it.
-#if !BUILDFLAG(IS_MAC)
+// TODO (crbug.com/447617263) rewrite these tests so that they work on mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_VerifyNewTabButtonContextMenu \
+  DISABLED_VerifyNewTabButtonContextMenu
+#else
+#define MAYBE_VerifyNewTabButtonContextMenu VerifyNewTabButtonContextMenu
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
-                       VerifyNewTabButtonContextMenu) {
+                       MAYBE_VerifyNewTabButtonContextMenu) {
   RunTestSequence(
       FinishTabstripAnimations(), EnsurePresent(kNewTabButtonElementId),
       MoveMouseTo(kNewTabButtonElementId),
@@ -123,8 +127,14 @@ IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
                           ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE))));
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NewTabButtonContextMenuSplitView \
+  DISABLED_NewTabButtonContextMenuSplitView
+#else
+#define MAYBE_NewTabButtonContextMenuSplitView NewTabButtonContextMenuSplitView
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
-                       NewTabButtonContextMenuSplitView) {
+                       MAYBE_NewTabButtonContextMenuSplitView) {
   RunTestSequence(FinishTabstripAnimations(),
                   EnsurePresent(kNewTabButtonElementId),
                   MoveMouseTo(kNewTabButtonElementId),
@@ -140,8 +150,15 @@ IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
   EXPECT_TRUE(browser_view->IsInSplitView());
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NewTabButtonContextMenuSplitViewDisabled \
+  DISABLED_NewTabButtonContextMenuSplitViewDisabled
+#else
+#define MAYBE_NewTabButtonContextMenuSplitViewDisabled \
+  NewTabButtonContextMenuSplitViewDisabled
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
-                       NewTabButtonContextMenuSplitViewDisabled) {
+                       MAYBE_NewTabButtonContextMenuSplitViewDisabled) {
   chrome::NewSplitTab(browser(),
                       split_tabs::SplitTabCreatedSource::kNewTabButton);
   RunTestSequence(
@@ -162,8 +179,16 @@ IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
   EXPECT_TRUE(browser_view->IsInSplitView());
 }
 
-IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
-                       NewTabButtonNewTabInGroupDisabledWhenNoOpenGroups) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_NewTabButtonNewTabInGroupDisabledWhenNoOpenGroups \
+  DISABLED_NewTabButtonNewTabInGroupDisabledWhenNoOpenGroups
+#else
+#define MAYBE_NewTabButtonNewTabInGroupDisabledWhenNoOpenGroups \
+  NewTabButtonNewTabInGroupDisabledWhenNoOpenGroups
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(
+    TestNewTabButtonContextMenu,
+    MAYBE_NewTabButtonNewTabInGroupDisabledWhenNoOpenGroups) {
   RunTestSequence(
       EnsurePresent(kNewTabButtonElementId),
       MoveMouseTo(kNewTabButtonElementId),
@@ -176,8 +201,15 @@ IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
                           ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE))));
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NewTabButtonNewTabInMostRecentGroup \
+  DISABLED_NewTabButtonNewTabInMostRecentGroup
+#else
+#define MAYBE_NewTabButtonNewTabInMostRecentGroup \
+  NewTabButtonNewTabInMostRecentGroup
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
-                       NewTabButtonNewTabInMostRecentGroup) {
+                       MAYBE_NewTabButtonNewTabInMostRecentGroup) {
   controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
   controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
   controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
@@ -208,5 +240,3 @@ IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
           },
           2));
 }
-
-#endif  // !BUILDFLAG(IS_MAC)
