@@ -20,6 +20,9 @@ class ContentRendererClient : public content::ContentRendererClient {
   // content::ContentRendererClient:
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
   void RenderThreadStarted() override;
+  bool OverrideCreatePlugin(content::RenderFrame* render_frame,
+                            const blink::WebPluginParams& params,
+                            blink::WebPlugin** plugin) override;
 };
 
 }  // namespace webui_examples

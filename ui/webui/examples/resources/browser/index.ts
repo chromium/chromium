@@ -7,9 +7,12 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import '/strings.m.js';
 
+const SURFACE_EMBED_MIME_TYPE = 'application/x-chromium-surface-embed';
+
 interface WebshellServices {
   allowWebviewElementRegistration(callback: ()=>void): void;
   attachIframeGuest(guestContentsId: string, contentWindow: Window|null): void
+  surfaceEmbedEnabled: boolean;
 }
 
 declare var webshell: WebshellServices;
@@ -36,24 +39,30 @@ class BrowserProxy {
   }
 }
 
-class WebviewElement extends HTMLElement {
-  public iframeElement: HTMLIFrameElement;
-  private guestContentsId: string;
+abstract class EmbeddableElement extends HTMLElement {
+  protected childElement: HTMLElement;
+  protected guestContentsId: string;
+  private attached: boolean = false;
 
-  constructor() {
+  constructor(childElement: HTMLElement) {
     super();
-    this.iframeElement = document.createElement('iframe');
-    this.iframeElement.style.border = '0px';
-    this.iframeElement.style.margin = "0";
-    this.iframeElement.style.padding = "0";
-    this.iframeElement.style.flex = '1';
-    this.appendChild(this.iframeElement);
+    this.childElement = childElement;
+    this.childElement.style.border = '0px';
+    this.childElement.style.margin = '0';
+    this.childElement.style.padding = '0';
+    this.childElement.style.flex = '1';
     this.guestContentsId = loadTimeData.getString('guest-contents-id');
-    console.log('guest-contents-id', this.guestContentsId);
-    const iframeContentWindow = this.iframeElement.contentWindow;
-    webshell.attachIframeGuest(this.guestContentsId,
-                               iframeContentWindow);
   }
+
+  connectedCallback() {
+    if (!this.attached) {
+      this.appendChild(this.childElement);
+      this.attached = true;
+      this.onAttached();
+    }
+  }
+
+  protected onAttached(): void {}
 
   navigate(src: string) {
     BrowserProxy.getInstance().navigate(this.guestContentsId, src);
@@ -68,58 +77,87 @@ class WebviewElement extends HTMLElement {
   }
 }
 
+class WebviewElement extends EmbeddableElement {
+  constructor() {
+    super(document.createElement('iframe'));
+    console.log('webview guest-contents-id', this.guestContentsId);
+  }
+
+  protected override onAttached(): void {
+    const iframe = this.childElement as HTMLIFrameElement;
+    webshell.attachIframeGuest(this.guestContentsId, iframe.contentWindow);
+  }
+}
+
+class SurfaceEmbedElement extends EmbeddableElement {
+  constructor() {
+    super(document.createElement('embed'));
+    console.log('surface-embed guest-contents-id', this.guestContentsId);
+    this.childElement.setAttribute('data-content-id', this.guestContentsId);
+    this.childElement.setAttribute('type', SURFACE_EMBED_MIME_TYPE);
+  }
+}
+
 webshell.allowWebviewElementRegistration(() => {
-  customElements.define("webview", WebviewElement);
+  customElements.define('webview', WebviewElement);
+  if (webshell.surfaceEmbedEnabled) {
+    customElements.define('surfaceembed', SurfaceEmbedElement);
+  }
 });
 
+let embeddedElement: EmbeddableElement | null = null;
+function attachElement(tagName: 'webview' | 'surfaceembed') {
+  if (embeddedElement) {
+    embeddedElement.remove();
+  }
+
+  embeddedElement = document.createElement(tagName) as EmbeddableElement;
+  document.body.appendChild(embeddedElement);
+}
+
+attachElement(webshell.surfaceEmbedEnabled ? 'surfaceembed' : 'webview');
+
 function navigateToAddressBarUrl() {
-  const webview = document.getElementById("webview") as WebviewElement;
-  const addressBar = document.getElementById("address") as HTMLInputElement;
-  if (webview && addressBar) {
+  const addressBar = document.getElementById('address') as HTMLInputElement;
+  if (embeddedElement && addressBar) {
     try {
       // Validate the URL before converting it to a Mojo URL to avoid a Mojo
       // validation error when sending this call to the browser. Successful
       // construction indicates a valid URL.
       const src = new URL(addressBar.value);
       const mojoSrc = src.toString();
-      webview.navigate(mojoSrc);
+      embeddedElement.navigate(mojoSrc);
     } catch (error) {
       console.error(error);
     }
   }
 }
 
-const goButton = document.getElementById("go");
+const goButton = document.getElementById('go');
 if (goButton) {
-  goButton.addEventListener("click", navigateToAddressBarUrl);
+  goButton.addEventListener('click', navigateToAddressBarUrl);
 }
 
-const addressBar = document.getElementById("address") as HTMLInputElement;
+const addressBar = document.getElementById('address') as HTMLInputElement;
 if (addressBar) {
-  addressBar.addEventListener("keypress", (event) => {
-    if (event.key === "Enter") {
+  addressBar.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') {
       event.preventDefault();
       navigateToAddressBarUrl();
     }
   });
 }
 
-const backButton = document.getElementById("back");
+const backButton = document.getElementById('back');
 if (backButton) {
-  backButton.addEventListener("click", ()=>{
-    const webview = document.getElementById("webview") as WebviewElement;
-    if (webview) {
-      webview.goBack();
-    }
+  backButton.addEventListener('click', ()=>{
+    embeddedElement?.goBack();
   });
 }
 
-const forwardButton = document.getElementById("forward");
+const forwardButton = document.getElementById('forward');
 if (forwardButton) {
-  forwardButton.addEventListener("click", ()=>{
-    const webview = document.getElementById("webview") as WebviewElement;
-    if (webview) {
-      webview.goForward();
-    }
+  forwardButton.addEventListener('click', ()=>{
+    embeddedElement?.goForward();
   });
 }

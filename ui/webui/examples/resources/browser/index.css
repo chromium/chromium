@@ -23,7 +23,8 @@ body {
   flex: 1;
 }
 
-webview {
+webview,
+surfaceembed {
   display: flex;
   flex-direction: column;
 
