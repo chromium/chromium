@@ -145,45 +145,47 @@ int AwPrefetchManager::StartPrefetchRequest(
   // the purpose of deduping prefetch requests on the application's behalf.
   // TODO(crbug.com/393344309): Apply deduping to all prefetch requests (not
   // just WebView).
-  if (!browser_context_->IsPrefetchDuplicate(pf_url, expected_no_vary_search)) {
-    // Make room for the new prefetch request by evicting the older ones.
-    if (all_prefetches_map_.size() >= max_prefetches_) {
-      int num_prefetches_to_evict =
-          all_prefetches_map_.size() - max_prefetches_ + 1;
-      auto it = all_prefetches_map_.begin();
-
-      while (num_prefetches_to_evict > 0 && it != all_prefetches_map_.end()) {
-        // Because the keys should be sequential based on when the prefetch
-        // associated with it was added, a standard iteration should always
-        // prioritize removing the oldest entry.
-        it = all_prefetches_map_.erase(it);
-        num_prefetches_to_evict--;
-      }
-    }
-
-    std::unique_ptr<content::PrefetchHandle> prefetch_handle =
-        browser_context_->StartBrowserPrefetchRequest(
-            pf_url, AW_PREFETCH_METRICS_SUFFIX,
-            GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
-            expected_no_vary_search,
-            base::FeatureList::IsEnabled(
-                ::features::kWebViewPrefetchHighestPrefetchPriority)
-                ? std::optional(content::PrefetchPriority::kHighest)
-                : std::nullopt,
-            additional_headers, std::move(request_status_listener),
-            base::Seconds(ttl_in_sec_),
-            /*should_append_variations_header=*/false,
-            base::FeatureList::IsEnabled(
-                kWebViewPrefetchDisableBlockUntilHeadTimeout),
-            should_bypass_http_cache);
-
-    if (prefetch_handle) {
-      return AddPrefetchHandle(std::move(prefetch_handle));
-    }
-  } else {
+  if (browser_context_->IsPrefetchDuplicate(pf_url, expected_no_vary_search)) {
     request_status_listener->OnPrefetchStartFailedDuplicate();
+    return NO_PREFETCH_KEY;
   }
-  return NO_PREFETCH_KEY;
+
+  // Make room for the new prefetch request by evicting the older ones.
+  if (all_prefetches_map_.size() >= max_prefetches_) {
+    int num_prefetches_to_evict =
+        all_prefetches_map_.size() - max_prefetches_ + 1;
+    auto it = all_prefetches_map_.begin();
+
+    while (num_prefetches_to_evict > 0 && it != all_prefetches_map_.end()) {
+      // Because the keys should be sequential based on when the prefetch
+      // associated with it was added, a standard iteration should always
+      // prioritize removing the oldest entry.
+      it = all_prefetches_map_.erase(it);
+      num_prefetches_to_evict--;
+    }
+  }
+
+  std::unique_ptr<content::PrefetchHandle> prefetch_handle =
+      browser_context_->StartBrowserPrefetchRequest(
+          pf_url, AW_PREFETCH_METRICS_SUFFIX,
+          GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
+          expected_no_vary_search,
+          base::FeatureList::IsEnabled(
+              ::features::kWebViewPrefetchHighestPrefetchPriority)
+              ? std::optional(content::PrefetchPriority::kHighest)
+              : std::nullopt,
+          additional_headers, std::move(request_status_listener),
+          base::Seconds(ttl_in_sec_),
+          /*should_append_variations_header=*/false,
+          base::FeatureList::IsEnabled(
+              kWebViewPrefetchDisableBlockUntilHeadTimeout),
+          should_bypass_http_cache);
+
+  if (prefetch_handle) {
+    return AddPrefetchHandle(std::move(prefetch_handle));
+  } else {
+    return NO_PREFETCH_KEY;
+  }
 }
 
 void AwPrefetchManager::CancelPrefetch(JNIEnv* env, int32_t prefetch_key) {
