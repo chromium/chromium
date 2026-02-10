@@ -15,6 +15,8 @@ ExpiringSubscription::ExpiringSubscription(
     base::WeakPtr<ExpiringSubscriptionManagerBase> manager)
     : handle_(std::move(handle)), manager_(std::move(manager)) {}
 
+// This delegates to the assignment operator, which correctly handles the
+// cancellation of any active subscription.
 ExpiringSubscription::ExpiringSubscription(ExpiringSubscription&& other) {
   *this = std::move(other);
 }
@@ -48,6 +50,8 @@ ExpiringSubscription& ExpiringSubscription::operator=(
   }
   handle_ = std::move(other.handle_);
   manager_ = other.manager_;
+  // Prevent that destructor of other cancels the subscription.
+  other.manager_ = nullptr;
   return *this;
 }
 
