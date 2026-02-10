@@ -33,7 +33,7 @@ EntityInstanceAndroid EntityInstanceAndroid::FromJavaEntityInstance(
       Java_EntityInstance_getEntityType(env, j_entity_instance);
 
   std::vector<AttributeInstanceAndroid> attributes =
-      Java_EntityInstance_getAttributeValues(env, j_entity_instance);
+      Java_EntityInstance_getAttributes(env, j_entity_instance);
 
   EntityMetadataAndroid metadata =
       EntityMetadataAndroid::FromJavaEntityMetadata(

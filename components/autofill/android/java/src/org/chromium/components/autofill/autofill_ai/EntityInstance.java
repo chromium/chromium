@@ -13,7 +13,9 @@ import org.chromium.build.annotations.Nullable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /** Java representation of an Autofill AI EntityInstance. */
@@ -23,7 +25,7 @@ public class EntityInstance {
     private final String mGUID;
     private final @RecordType int mRecordType;
     private final EntityType mEntityType;
-    private final List<AttributeInstance> mAttributeValues;
+    private final Map<Integer, AttributeInstance> mAttributes = new HashMap<>();
     private final EntityMetadata mMetadata;
 
     /** Builder for the {@link EntityInstance}. */
@@ -31,7 +33,7 @@ public class EntityInstance {
         private String mGUID = "";
         private @RecordType int mRecordType = RecordType.LOCAL;
         private final EntityType mEntityType;
-        private final List<AttributeInstance> mAttributeValues = new ArrayList<>();
+        private final List<AttributeInstance> mAttributes = new ArrayList<>();
         private @Nullable LocalDate mModifiedDate;
         private @Nullable Integer mUseCount;
 
@@ -49,8 +51,8 @@ public class EntityInstance {
             return this;
         }
 
-        public Builder addAttributeValue(AttributeInstance attributeValue) {
-            mAttributeValues.add(attributeValue);
+        public Builder addAttribute(AttributeInstance attribute) {
+            mAttributes.add(attribute);
             return this;
         }
 
@@ -77,7 +79,7 @@ public class EntityInstance {
                             mModifiedDate.getMonthValue(),
                             mModifiedDate.getYear(),
                             mUseCount);
-            return new EntityInstance(mGUID, mRecordType, mEntityType, mAttributeValues, metadata);
+            return new EntityInstance(mGUID, mRecordType, mEntityType, mAttributes, metadata);
         }
     }
 
@@ -87,13 +89,17 @@ public class EntityInstance {
             @RecordType int recordType,
             @JniType("autofill::EntityTypeAndroid") EntityType entityType,
             @JniType("std::vector<autofill::AttributeInstanceAndroid>")
-                    List<AttributeInstance> attributeValues,
+                    List<AttributeInstance> attributes,
             @JniType("autofill::EntityMetadataAndroid") EntityMetadata metadata) {
         mGUID = guid;
         mRecordType = recordType;
         mEntityType = entityType;
-        mAttributeValues = attributeValues;
         mMetadata = metadata;
+        for (AttributeInstance attribute : attributes) {
+            assert !mAttributes.containsKey(attribute.getAttributeType().getTypeName())
+                    : "Duplicate attribute: " + attribute.getAttributeType().getTypeName();
+            mAttributes.put(attribute.getAttributeType().getTypeName(), attribute);
+        }
     }
 
     @CalledByNative
@@ -113,8 +119,8 @@ public class EntityInstance {
 
     @CalledByNative
     public @JniType("std::vector<autofill::AttributeInstanceAndroid>") List<AttributeInstance>
-            getAttributeValues() {
-        return mAttributeValues;
+            getAttributes() {
+        return new ArrayList<>(mAttributes.values());
     }
 
     @CalledByNative
