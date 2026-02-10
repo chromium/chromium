@@ -302,7 +302,7 @@ TEST(VideoFrame, CreateZeroInitializedFrame) {
   scoped_refptr<VideoFrame> frame = VideoFrame::CreateZeroInitializedFrame(
       PIXEL_FORMAT_YV12, size, gfx::Rect(size), size, kTimestamp);
   ASSERT_TRUE(frame.get());
-  EXPECT_TRUE(frame->IsMappable());
+  EXPECT_TRUE(frame->HasDirectCpuAccess());
 
   // Verify that frame is initialized with zeros.
   // TODO(emircan): Check all the contents when we know the exact size of the
@@ -320,7 +320,7 @@ TEST(VideoFrame, CreateBlackFrame) {
   scoped_refptr<VideoFrame> frame =
       VideoFrame::CreateBlackFrame(gfx::Size(kWidth, kHeight));
   ASSERT_TRUE(frame.get());
-  EXPECT_TRUE(frame->IsMappable());
+  EXPECT_TRUE(frame->HasDirectCpuAccess());
 
   // Test basic properties.
   EXPECT_EQ(0, frame->timestamp().InMicroseconds());

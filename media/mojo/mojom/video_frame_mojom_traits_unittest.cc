@@ -88,7 +88,7 @@ class VideoFrameStructTraitsTest : public testing::Test,
   void EchoVideoFrame(const scoped_refptr<VideoFrame>& f,
                       EchoVideoFrameCallback callback) override {
     // Touch all data in the received frame to ensure that it is valid.
-    if (f && f->IsMappable()) {
+    if (f && f->HasDirectCpuAccess()) {
       VideoFrame::HexHashOfFrameForTesting(*f);
     }
 

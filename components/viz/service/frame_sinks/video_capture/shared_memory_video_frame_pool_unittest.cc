@@ -37,7 +37,7 @@ TEST(SharedMemoryVideoFramePoolTest, FramesConfiguredCorrectly) {
   ASSERT_EQ(kSize, frame->coded_size());
   ASSERT_EQ(gfx::Rect(kSize), frame->visible_rect());
   ASSERT_EQ(kSize, frame->natural_size());
-  ASSERT_TRUE(frame->IsMappable());
+  ASSERT_TRUE(frame->HasDirectCpuAccess());
 }
 
 TEST(SharedMemoryVideoFramePoolTest, UsesAvailableBuffersIfPossible) {

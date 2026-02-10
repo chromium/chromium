@@ -455,7 +455,7 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
     // the restriction is applied to the capturer.
     if (video_frame->HasMappableSharedImage()) {
       video_frame = ConvertToMemoryMappedFrame(video_frame);
-      if (!video_frame || !video_frame->IsMappable()) {
+      if (!video_frame || !video_frame->HasDirectCpuAccess()) {
         OnFrameDropped(media::VideoCaptureFrameDropReason::
                            kResolutionAdapterFrameIsNotMappable);
         return;

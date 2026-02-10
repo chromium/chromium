@@ -265,7 +265,7 @@ namespace blink {
 bool CanConvertToWebRtcVideoFrameBuffer(const media::VideoFrame* frame) {
   // Currently accept I420, I420A, NV12 formats in a mapped frame,
   // or a SharedImage-backed frame.
-  return (frame->IsMappable() &&
+  return (frame->HasDirectCpuAccess() &&
           std::ranges::contains(
               GetPixelFormatsMappableToWebRtcVideoFrameBuffer(),
               frame->format())) ||

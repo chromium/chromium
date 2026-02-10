@@ -253,7 +253,7 @@ NativePixmapFrameResource::AsNativePixmapFrameResource() const {
   return this;
 }
 
-bool NativePixmapFrameResource::IsMappable() const {
+bool NativePixmapFrameResource::HasDirectCpuAccess() const {
   return false;
 }
 

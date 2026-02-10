@@ -470,7 +470,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Returns true if |frame| is accessible and mapped in the VideoFrame memory
   // space. If false, clients should refrain from accessing data(),
   // visible_data() etc.
-  bool IsMappable() const;
+  bool HasDirectCpuAccess() const;
 
   // Returns true if the video frame uses ClientSharedImage.
   bool HasSharedImage() const;
@@ -551,8 +551,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   int columns(size_t plane) const;
 
   // Returns pointer to the buffer for a given plane, if this is an
-  // IsMappable() frame type. The memory is owned by VideoFrame object and must
-  // not be freed by the caller.
+  // HasDirectCpuAccess() frame type. The memory is owned by VideoFrame
+  // object and must not be freed by the caller.
   const uint8_t* data(size_t plane) const {
     auto span = data_span(plane);
     if (span.empty()) [[unlikely]] {
@@ -563,7 +563,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   base::span<const uint8_t> data_span(size_t plane) const {
     CHECK(IsValidPlane(format(), plane));
-    CHECK(IsMappable());
+    CHECK(HasDirectCpuAccess());
     return data_[plane];
   }
 
@@ -597,14 +597,14 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 #endif
 
   // Returns pointer to the data in the visible region of the frame, for
-  // IsMappable() storage types. The returned pointer is offset into the
-  // plane buffer specified by visible_rect().origin(). Memory is owned by
+  // HasDirectCpuAccess() storage types. The returned pointer is offset into
+  // the plane buffer specified by visible_rect().origin(). Memory is owned by
   // VideoFrame object and must not be freed by the caller.
   const uint8_t* visible_data(size_t plane) const;
   uint8_t* GetWritableVisibleData(size_t plane);
 
   // Returns spans of data in the visible region of the frame, for
-  // IsMappable() storage types. The returned span is offset into the
+  // HasDirectCpuAccess() storage types. The returned span is offset into the
   // plane buffer specified by visible_rect().origin().
   base::span<const uint8_t> GetVisiblePlaneData(size_t plane) const;
   base::span<uint8_t> GetWritableVisiblePlaneData(size_t plane);

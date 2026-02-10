@@ -6326,7 +6326,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     video_renderer = local_video_renderer.get();
   }
 
-  if (source_image_rect_is_default && media_video_frame->IsMappable() &&
+  if (source_image_rect_is_default && media_video_frame->HasDirectCpuAccess() &&
       media_video_frame->format() == media::PIXEL_FORMAT_Y16 &&
       unpack_color_space_is_srgb) {
     // Try using optimized CPU-GPU path for some formats: e.g. Y16 and Y8. It

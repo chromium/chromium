@@ -578,7 +578,7 @@ void VaapiVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
     // |frame| can be nullptr to indicate a flush.
     const bool is_expected_storage_type = native_input_mode_
                                               ? frame->HasMappableSharedImage()
-                                              : frame->IsMappable();
+                                              : frame->HasDirectCpuAccess();
     if (!is_expected_storage_type) {
       NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
                    "Unexpected storage: " +
@@ -683,7 +683,7 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForShmemEncoding(
     std::unique_ptr<ScopedVASurfaceWrapper>* reconstructed_surface) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK(!native_input_mode_);
-  DCHECK(frame.IsMappable());
+  DCHECK(frame.HasDirectCpuAccess());
   TRACE_EVENT0("media,gpu", "VAVEA::CreateSurfacesForShmem");
 
   if (expected_input_coded_size_ != frame.coded_size()) {

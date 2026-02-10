@@ -443,7 +443,7 @@ void V4L2MjpegDecodeAccelerator::Decode(BitstreamBuffer bitstream_buffer,
   }
 
   // Validate output video frame.
-  if (!video_frame->IsMappable() && !video_frame->HasDmaBufs()) {
+  if (!video_frame->HasDirectCpuAccess() && !video_frame->HasDmaBufs()) {
     VLOGF(1) << "Unsupported output frame storage type";
     PostNotifyError(bitstream_buffer.id(), INVALID_ARGUMENT);
     return;
@@ -499,7 +499,7 @@ void V4L2MjpegDecodeAccelerator::Decode(
   }
 
   // Validate output video frame.
-  if (!dst_frame->IsMappable() && !dst_frame->HasDmaBufs()) {
+  if (!dst_frame->HasDirectCpuAccess() && !dst_frame->HasDmaBufs()) {
     VLOGF(1) << "Unsupported output frame storage type";
     PostNotifyError(task_id, INVALID_ARGUMENT);
     return;

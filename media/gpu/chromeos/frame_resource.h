@@ -56,11 +56,11 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   using ID = ::base::IdTypeU64<class FrameResourceIdTag>;
   ID unique_id() const;
 
-  // If the instance IsMappable(), then frame data can be accessed by using
-  // data(), writable_data(), visible_data(), and GetWritableVisibleData()
+  // If the instance HasDirectCpuAccess(), then frame data can be accessed by
+  // using data(), writable_data(), visible_data(), and GetWritableVisibleData()
   // accessors. The memory is owned by the FrameResource object and must not be
   // freed by the caller.
-  virtual bool IsMappable() const = 0;
+  virtual bool HasDirectCpuAccess() const = 0;
 
   virtual const uint8_t* data(size_t plane) const = 0;
 

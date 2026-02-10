@@ -1023,7 +1023,7 @@ void PaintCanvasVideoRenderer::Paint(
   // the video does not need any transform and it is enough to draw the frame
   // directly into the skia canvas
   if (!need_transform && !params.reinterpret_as_srgb &&
-      video_frame->IsMappable() && flags.isOpaque() &&
+      video_frame->HasDirectCpuAccess() && flags.isOpaque() &&
       flags.getBlendMode() == SkBlendMode::kSrc &&
       flags.getFilterQuality() == cc::PaintFlags::FilterQuality::kLow &&
       !pixels.empty() && info.colorType() == kBGRA_8888_SkColorType) {
@@ -1280,7 +1280,7 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
     bool premultiply_alpha,
     FilterMode filter,
     bool disable_threading) {
-  if (!video_frame->IsMappable()) {
+  if (!video_frame->HasDirectCpuAccess()) {
     NOTREACHED() << "Cannot extract pixels from non-CPU frame formats.";
   }
 
@@ -1544,7 +1544,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   }
 #endif
 
-  if (!video_frame->IsMappable()) {
+  if (!video_frame->HasDirectCpuAccess()) {
     return false;
   }
 

@@ -457,7 +457,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     }
   }
 
-  if (!frame->IsMappable()) {
+  if (!frame->HasDirectCpuAccess()) {
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kInvalidInputFrame,
                       "Frame is not mappable")

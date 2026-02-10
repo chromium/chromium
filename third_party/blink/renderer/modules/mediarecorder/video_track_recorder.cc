@@ -482,7 +482,7 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   const bool is_format_supported =
       (video_frame->HasMappableSharedImage() &&
        video_frame->format() == media::PIXEL_FORMAT_NV12) ||
-      (video_frame->IsMappable() &&
+      (video_frame->HasDirectCpuAccess() &&
        (video_frame->format() == media::PIXEL_FORMAT_NV12 ||
         video_frame->format() == media::PIXEL_FORMAT_I420 ||
         video_frame->format() == media::PIXEL_FORMAT_I420A));
@@ -542,7 +542,8 @@ VideoTrackRecorderImpl::Encoder::MaybeProvideEncodableFrame(
   DVLOG(3) << __func__;
   scoped_refptr<media::VideoFrame> frame;
   const bool is_opaque = media::IsOpaque(video_frame->format());
-  if (media::IsRGB(video_frame->format()) && video_frame->IsMappable()) {
+  if (media::IsRGB(video_frame->format()) &&
+      video_frame->HasDirectCpuAccess()) {
     // It's a mapped RGB frame, no readback needed,
     // all we need is to convert RGB to I420
     auto visible_rect = video_frame->visible_rect();

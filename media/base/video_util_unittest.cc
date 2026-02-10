@@ -108,9 +108,10 @@ bool VerifyPlanCopyWithPadding(const uint8_t* src,
 
 bool VerifyCopyWithPadding(const media::VideoFrame& src_frame,
                            const media::VideoFrame& dst_frame) {
-  if (!src_frame.IsMappable() || !dst_frame.IsMappable() ||
-      src_frame.visible_rect().size() != dst_frame.visible_rect().size())
+  if (!src_frame.HasDirectCpuAccess() || !dst_frame.HasDirectCpuAccess() ||
+      src_frame.visible_rect().size() != dst_frame.visible_rect().size()) {
     return false;
+  }
 
   if (!VerifyPlanCopyWithPadding(
           src_frame.visible_data(media::VideoFrame::Plane::kY),

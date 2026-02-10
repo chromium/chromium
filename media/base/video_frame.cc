@@ -869,7 +869,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapVideoFrame(
   wrapping_frame->set_color_space(frame->ColorSpace());
   wrapping_frame->set_hdr_metadata(frame->hdr_metadata());
 
-  if (frame->IsMappable()) {
+  if (frame->HasDirectCpuAccess()) {
     for (size_t i = 0; i < new_plane_count; ++i) {
       wrapping_frame->data_[i] = frame->data_[i];
     }
@@ -1161,7 +1161,7 @@ void VideoFrame::BackWithOwnedSharedMemory(
   owned_shm_mapping_ = std::move(mapping);
 }
 
-bool VideoFrame::IsMappable() const {
+bool VideoFrame::HasDirectCpuAccess() const {
   return IsStorageTypeMappable(storage_type_);
 }
 
@@ -1280,7 +1280,7 @@ template <typename T>
 base::span<T> VideoFrame::GetVisibleDataInternal(base::span<T> data,
                                                  size_t plane) const {
   DCHECK(IsValidPlane(format(), plane));
-  DCHECK(IsMappable());
+  DCHECK(HasDirectCpuAccess());
   if (data.empty()) [[unlikely]] {
     return {};
   }

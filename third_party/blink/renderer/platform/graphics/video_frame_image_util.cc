@@ -134,7 +134,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
 
   // If the provider isn't accelerated, avoid GPU round trips to upload frame
   // data from GpuMemoryBuffer backed frames which aren't mappable.
-  if (frame->HasMappableSharedImage() && !frame->IsMappable() &&
+  if (frame->HasMappableSharedImage() && !frame->HasDirectCpuAccess() &&
       !snapshot_provider->IsAccelerated()) {
     frame = media::ConvertToMemoryMappedFrame(std::move(frame));
     if (!frame) {

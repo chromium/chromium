@@ -94,7 +94,7 @@ scoped_refptr<media::VideoFrame> CopyFrame(
           frame->visible_rect().size(), 0u, 0x80, 0x80, frame->timestamp());
     }
   } else {
-    DCHECK(frame->IsMappable());
+    DCHECK(frame->HasDirectCpuAccess());
     if (frame->format() != media::PIXEL_FORMAT_I420A &&
         frame->format() != media::PIXEL_FORMAT_I420 &&
         frame->format() != media::PIXEL_FORMAT_NV12 &&

@@ -230,7 +230,7 @@ EncoderStatus VideoFrameGLSurfaceRenderer::RenderVideoFrame(
     if (auto status = RenderSharedImageVideoFrame(frame); !status.is_ok()) {
       return status;
     }
-  } else if (frame->IsMappable()) {
+  } else if (frame->HasDirectCpuAccess()) {
     switch (frame->format()) {
       case PIXEL_FORMAT_I420:
       case PIXEL_FORMAT_NV12:
@@ -507,7 +507,7 @@ void VideoFrameGLSurfaceRenderer::UpdateTextures(const VideoFrame& frame) {
   }
 
   // Mappable frame
-  DCHECK(frame.IsMappable());
+  DCHECK(frame.HasDirectCpuAccess());
   const size_t num_textures = frame.layout().num_planes();
   if (num_textures == 0) {
     return;

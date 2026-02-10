@@ -436,7 +436,7 @@ void JpegClient::VideoFrameReady(int32_t buffer_id, size_t hw_encoded_size) {
         (*test_unaligned_images_)[buffer_id - test_aligned_images_->size()];
   }
 
-  if (hw_out_frame_ && !hw_out_frame_->IsMappable()) {
+  if (hw_out_frame_ && !hw_out_frame_->HasDirectCpuAccess()) {
     // |hw_out_frame_| should only be mapped once.
     auto mapper =
         media::GenericDmaBufVideoFrameMapper::Create(hw_out_frame_->format());

@@ -1890,7 +1890,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
     scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto input_sample = input.input_sample;
-  if (!frame->HasMappableSharedImage() && !frame->IsMappable() &&
+  if (!frame->HasMappableSharedImage() && !frame->HasDirectCpuAccess() &&
       !input.generate_sample_on_wait_sync_token) {
     LOG(ERROR) << "Unsupported video frame storage type";
     return MF_E_INVALID_STREAM_DATA;

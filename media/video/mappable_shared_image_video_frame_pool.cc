@@ -696,7 +696,7 @@ void MappableSharedImageVideoFramePool::PoolImpl::CreateHardwareFrame(
   }
 #endif
 
-  if (!video_frame->IsMappable()) {
+  if (!video_frame->HasDirectCpuAccess()) {
     // Already a hardware frame.
     passthrough = true;
   }

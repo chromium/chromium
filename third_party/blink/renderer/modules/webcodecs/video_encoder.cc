@@ -1094,7 +1094,8 @@ void VideoEncoder::ProcessEncode(Request* request) {
   request->StartTracingVideoEncode(encode_options.key_frame,
                                    frame->timestamp());
 
-  bool mappable = frame->IsMappable() || frame->HasMappableSharedImage();
+  bool mappable =
+      frame->HasDirectCpuAccess() || frame->HasMappableSharedImage();
   bool can_handle_shared_image =
       encoder_info_.DoesSupportGpuSharedImages(frame->format()) &&
       frame->HasSharedImage();

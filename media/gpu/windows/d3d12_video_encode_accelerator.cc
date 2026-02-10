@@ -695,7 +695,7 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
     LOG(ERROR) << "Unsupported frame storage type for mapping";
     return {};
   }
-  CHECK(frame.IsMappable());
+  CHECK(frame.HasDirectCpuAccess());
 
   D3D12_RESOURCE_DESC input_texture_desc = CD3DX12_RESOURCE_DESC::Tex2D(
       DXGI_FORMAT_NV12, config_.input_visible_size.width(),

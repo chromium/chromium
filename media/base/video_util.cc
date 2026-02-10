@@ -180,7 +180,7 @@ void LetterboxPlane(VideoFrame* frame,
                     const gfx::Rect& view_area_in_pixels,
                     uint8_t fill_byte) {
   base::span<uint8_t> plane_data;
-  if (frame->IsMappable()) {
+  if (frame->HasDirectCpuAccess()) {
     plane_data = frame->writable_span(plane);
   } else if (scoped_mapping) {
     plane_data = scoped_mapping->GetMemoryForPlane(plane);
@@ -627,8 +627,9 @@ scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
 }
 
 bool I420CopyWithPadding(const VideoFrame& src_frame, VideoFrame* dst_frame) {
-  if (!dst_frame || !dst_frame->IsMappable())
+  if (!dst_frame || !dst_frame->HasDirectCpuAccess()) {
     return false;
+  }
 
   DCHECK_GE(dst_frame->coded_size().width(), src_frame.visible_rect().width());
   DCHECK_GE(dst_frame->coded_size().height(),

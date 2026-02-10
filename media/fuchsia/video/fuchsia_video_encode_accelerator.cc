@@ -497,7 +497,7 @@ void FuchsiaVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
   DCHECK(config_);
   DCHECK_EQ(frame->format(), PIXEL_FORMAT_I420);
   DCHECK(!frame->coded_size().IsEmpty());
-  CHECK(frame->IsMappable());
+  CHECK(frame->HasDirectCpuAccess());
 
   // Fuchsia VEA ignores the frame's `visible_rect` and encodes the whole
   // `coded_size`. So we need to check that `coded_size` fits in the allocated

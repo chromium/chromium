@@ -428,7 +428,8 @@ const base::TimeDelta CanvasSnapshotProviderCache::kIdleTimeout =
 
 std::optional<media::VideoPixelFormat> CopyToFormat(
     const media::VideoFrame& frame) {
-  const bool mappable = frame.IsMappable() || frame.HasMappableSharedImage();
+  const bool mappable =
+      frame.HasDirectCpuAccess() || frame.HasMappableSharedImage();
   const bool texturable = frame.HasSharedImage();
   if (!(mappable || texturable)) {
     return std::nullopt;
@@ -1392,7 +1393,7 @@ ScriptPromise<IDLSequence<PlaneLayout>> VideoFrame::copyTo(
     }
     ConvertAndCopyToRGB(local_frame, src_rect, dest_layout, buffer,
                         target_color_space);
-  } else if (local_frame->IsMappable()) {
+  } else if (local_frame->HasDirectCpuAccess()) {
     CopyMappablePlanes(*local_frame, src_rect, dest_layout, buffer);
   } else if (local_frame->HasMappableSharedImage()) {
     auto mapped_frame = media::ConvertToMemoryMappedFrame(local_frame);

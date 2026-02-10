@@ -246,7 +246,7 @@ scoped_refptr<VideoFrame> RenderPerformanceMetricsOverlay(
   }
 
   // Can't read from unmappable memory (DmaBuf, CVPixelBuffer).
-  if (!source->IsMappable()) {
+  if (!source->HasDirectCpuAccess()) {
     DVLOG(2) << "Cannot render overlay: frame uses unmappable memory.";
     return source;
   }

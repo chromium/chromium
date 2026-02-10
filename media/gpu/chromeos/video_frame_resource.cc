@@ -44,7 +44,7 @@ VideoFrameResource* VideoFrameResource::AsVideoFrameResource() {
   return this;
 }
 
-bool VideoFrameResource::IsMappable() const {
+bool VideoFrameResource::HasDirectCpuAccess() const {
   return VideoFrame::IsStorageTypeMappable(storage_type());
 }
 

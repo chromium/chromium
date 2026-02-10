@@ -142,7 +142,7 @@ double ComputeSimilarity(const VideoFrame* frame1,
                          const VideoFrame* frame2,
                          SimilarityMetrics mode) {
   ASSERT_TRUE_OR_RETURN(
-      frame1->IsMappable() && frame2->IsMappable(),
+      frame1->HasDirectCpuAccess() && frame2->HasDirectCpuAccess(),
       static_cast<double>(std::numeric_limits<std::size_t>::max()));
   ASSERT_TRUE_OR_RETURN(
       frame1->visible_rect().size() == frame2->visible_rect().size(),
@@ -200,7 +200,7 @@ using DistributionTable =
 
 bool ComputeLogJointDistribution(const VideoFrame& frame,
                                  DistributionTable& log_joint_distribution) {
-  ASSERT_TRUE_OR_RETURN(frame.IsMappable(), false);
+  ASSERT_TRUE_OR_RETURN(frame.HasDirectCpuAccess(), false);
   ASSERT_TRUE_OR_RETURN(frame.format() == PIXEL_FORMAT_ARGB, false);
   ASSERT_TRUE_OR_RETURN(frame.BitDepth() == 8, false);
 
@@ -254,7 +254,7 @@ bool ComputeLogJointDistribution(const VideoFrame& frame,
 
 double ComputeLogProbability(const VideoFrame& frame,
                              DistributionTable& log_joint_distribution) {
-  ASSERT_TRUE_OR_RETURN(frame.IsMappable(), 0.0);
+  ASSERT_TRUE_OR_RETURN(frame.HasDirectCpuAccess(), 0.0);
   ASSERT_TRUE_OR_RETURN(frame.format() == PIXEL_FORMAT_ARGB, 0.0);
   ASSERT_TRUE_OR_RETURN(frame.BitDepth() == 8, 0.0);
 
@@ -282,8 +282,9 @@ constexpr double kMaxPsnr = 128.0;
 size_t CompareFramesWithErrorDiff(const VideoFrame& frame1,
                                   const VideoFrame& frame2,
                                   uint8_t tolerance) {
-  ASSERT_TRUE_OR_RETURN(frame1.IsMappable() && frame2.IsMappable(),
-                        std::numeric_limits<std::size_t>::max());
+  ASSERT_TRUE_OR_RETURN(
+      frame1.HasDirectCpuAccess() && frame2.HasDirectCpuAccess(),
+      std::numeric_limits<std::size_t>::max());
   ASSERT_TRUE_OR_RETURN(frame1.format() == frame2.format(),
                         std::numeric_limits<std::size_t>::max());
   ASSERT_TRUE_OR_RETURN(

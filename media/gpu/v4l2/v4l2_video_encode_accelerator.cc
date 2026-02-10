@@ -959,7 +959,7 @@ void V4L2VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
     const bool is_expected_storage_type =
         native_input_mode_
             ? frame->storage_type() == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
-            : frame->IsMappable();
+            : frame->HasDirectCpuAccess();
     if (!is_expected_storage_type) {
       SetErrorState({EncoderStatus::Codes::kInvalidInputFrame,
                      base::StrCat({"Unexpected storage: ",

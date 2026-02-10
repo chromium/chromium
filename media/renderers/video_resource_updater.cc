@@ -632,7 +632,7 @@ VideoResourceUpdater::CreateExternalResourceFromVideoFrame(
     scoped_refptr<VideoFrame> video_frame) {
   if (video_frame->format() == PIXEL_FORMAT_UNKNOWN)
     return VideoFrameExternalResource();
-  DCHECK(video_frame->HasSharedImage() || video_frame->IsMappable());
+  DCHECK(video_frame->HasSharedImage() || video_frame->HasDirectCpuAccess());
   if (video_frame->HasSharedImage()) {
     return CreateForHardwareFrame(std::move(video_frame));
   } else {

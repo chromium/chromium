@@ -610,7 +610,7 @@ void VaapiMjpegDecodeAccelerator::Decode(
   }
 
   // Validate output video frame.
-  if (!video_frame->IsMappable() && !video_frame->HasDmaBufs()) {
+  if (!video_frame->HasDirectCpuAccess() && !video_frame->HasDmaBufs()) {
     VLOGF(1) << "Unsupported output frame storage type";
     NotifyError(bitstream_buffer.id(), INVALID_ARGUMENT);
     return;
@@ -675,7 +675,7 @@ void VaapiMjpegDecodeAccelerator::Decode(int32_t task_id,
   }
 
   // Validate output video frame.
-  if (!dst_frame->IsMappable() && !dst_frame->HasDmaBufs()) {
+  if (!dst_frame->HasDirectCpuAccess() && !dst_frame->HasDmaBufs()) {
     VLOGF(1) << "Unsupported output frame storage type";
     NotifyError(task_id, INVALID_ARGUMENT);
     return;

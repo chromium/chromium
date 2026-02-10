@@ -31,7 +31,7 @@ class VideoFrameResource : public FrameResource {
 
   // FrameResource implementation.
   VideoFrameResource* AsVideoFrameResource() override;
-  bool IsMappable() const override;
+  bool HasDirectCpuAccess() const override;
   const uint8_t* data(size_t plane) const override;
   uint8_t* writable_data(size_t plane) override;
   const uint8_t* visible_data(size_t plane) const override;

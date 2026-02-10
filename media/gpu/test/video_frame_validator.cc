@@ -192,7 +192,7 @@ void VideoFrameValidator::ProcessVideoFrameTask(
   }
 #endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
-  ASSERT_TRUE(frame->IsMappable());
+  ASSERT_TRUE(frame->HasDirectCpuAccess());
 
   if (ShouldCrop())
     frame = CloneAndCropFrame(std::move(frame));
