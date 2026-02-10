@@ -16039,6 +16039,28 @@
             ]
         }
     ],
+    "Keychain2026CohortRollout": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260210",
+                    "params": {
+                        "cert_xml": "https://www.gstatic.com/cryptauthvault/v0/10020.cert.xml",
+                        "sig_xml": "https://www.gstatic.com/cryptauthvault/v0/10020.cert.sig.xml"
+                    },
+                    "enable_features": [
+                        "WebAuthenticationEnclaveTrustedVaultCohort"
+                    ]
+                }
+            ]
+        }
+    ],
     "KioskHeartbeatsViaERP": [
         {
             "platforms": [

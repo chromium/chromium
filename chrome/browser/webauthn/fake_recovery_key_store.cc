@@ -18,6 +18,7 @@
 #include "crypto/evp.h"
 #include "crypto/sha2.h"
 #include "device/fido/enclave/constants.h"
+#include "device/fido/enclave/enclave_authenticator.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
 #include "services/network/public/cpp/data_element.h"
@@ -312,11 +313,11 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
   }
 
   void set_cert_xml_url(std::string url) override {
-    cert_xml_url_ = std::move(url);
+    cert_xml_url_override_ = std::move(url);
   }
 
   void set_sig_xml_url(std::string url) override {
-    sig_xml_url_ = std::move(url);
+    sig_xml_url_override_ = std::move(url);
   }
 
   void break_cert_xml_file() override { break_cert_xml_file_ = true; }
@@ -442,14 +443,22 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
   MaybeResponse OnRequest(const network::ResourceRequest& request) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (request.url == cert_xml_url_) {
+    std::string cert_xml_url = cert_xml_url_override_;
+    if (cert_xml_url.empty()) {
+      cert_xml_url = device::enclave::kCertXmlUrlFeature.Get();
+    }
+    if (request.url == cert_xml_url) {
       if (break_cert_xml_file_) {
         return std::make_pair(net::HTTP_NOT_FOUND, "");
       }
       return std::make_pair(net::HTTP_OK, certs_xml_);
     }
 
-    if (request.url == sig_xml_url_) {
+    std::string sig_xml_url = sig_xml_url_override_;
+    if (sig_xml_url.empty()) {
+      sig_xml_url = device::enclave::kSigXmlUrlFeature.Get();
+    }
+    if (request.url == sig_xml_url) {
       if (break_sig_xml_file_) {
         return std::make_pair(net::HTTP_NOT_FOUND, "");
       }
@@ -504,8 +513,8 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
   std::string certs_xml_;
   std::string sig_xml_;
   std::vector<trusted_vault_pb::Vault> vaults_;
-  std::string cert_xml_url_ = device::enclave::kRecoveryKeyStoreCertFileURL;
-  std::string sig_xml_url_ = device::enclave::kRecoveryKeyStoreSigFileURL;
+  std::string cert_xml_url_override_;
+  std::string sig_xml_url_override_;
   bool break_cert_xml_file_ = false;
   bool break_sig_xml_file_ = false;
   int recovery_key_store_serial_number_ = 1;

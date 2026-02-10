@@ -931,6 +931,10 @@ TEST_F(EnclaveManagerTest, SetupWithPIN_InvalidSigXmlIsIgnored) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       device::enclave::kEnclaveTrustedVaultCohort, {{"sig_xml", "invalid"}});
 
+  // EnclaveManager should use the default if the Finch provided URL is invalid.
+  recovery_key_store_->set_sig_xml_url(
+      device::enclave::kSigXmlUrlFeature.default_value);
+
   BoolFuture setup_future;
   manager_.SetupWithPIN("123456", setup_future.GetCallback());
   EXPECT_TRUE(setup_future.Wait());
@@ -941,7 +945,11 @@ TEST_F(EnclaveManagerTest, SetupWithPIN_InvalidSigXmlIsIgnored) {
 TEST_F(EnclaveManagerTest, SetupWithPIN_InvalidCertXmlIsIgnored) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      device::enclave::kEnclaveTrustedVaultCohort, {{"sig_xml", "invalid"}});
+      device::enclave::kEnclaveTrustedVaultCohort, {{"cert_xml", "invalid"}});
+
+  // EnclaveManager should use the default if the Finch provided URL is invalid.
+  recovery_key_store_->set_cert_xml_url(
+      device::enclave::kCertXmlUrlFeature.default_value);
 
   BoolFuture setup_future;
   manager_.SetupWithPIN("123456", setup_future.GetCallback());
