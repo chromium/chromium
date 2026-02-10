@@ -121,14 +121,14 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace enclave = device::enclave;
+using trusted_vault::TrustedVaultKeyAndVersion;
 using webauthn_pb::EnclaveLocalState;
 
 // Holds the arguments to `StoreKeys` so that they can be processed when the
 // state machine is ready for them.
 struct EnclaveManager::StoreKeysArgs {
   GaiaId gaia_id;
-  std::vector<std::vector<uint8_t>> keys;
-  int last_key_version;
+  std::vector<TrustedVaultKeyAndVersion> keys;
 };
 
 struct EnclaveManager::PendingAction {
@@ -963,17 +963,9 @@ base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
     const EnclaveManager::StoreKeysArgs& args) {
   const auto& existing = user.wrapped_security_domain_secrets();
   base::flat_map<int32_t, std::vector<uint8_t>> new_secrets;
-  CHECK(args.keys.size() <= std::numeric_limits<int32_t>::max());
-
-  // Return previously unknown keys by version. Key version for the initial key
-  // was chosen at random, and increments with each new key. The caller provides
-  // all known keys, but only the version of the last one.
-  int32_t first_key_version = args.last_key_version - args.keys.size() + 1;
-  for (int32_t i = 0; i < static_cast<int32_t>(args.keys.size()); i++) {
-    int32_t current_key_version = first_key_version + i;
-    if (existing.find(current_key_version) == existing.end()) {
-      new_secrets.emplace(current_key_version,
-                          args.keys[args.keys.size() - i - 1]);
+  for (const TrustedVaultKeyAndVersion& key_with_version : args.keys) {
+    if (existing.find(key_with_version.version) == existing.end()) {
+      new_secrets.emplace(key_with_version.version, key_with_version.key);
     }
   }
   return new_secrets;
@@ -1585,11 +1577,11 @@ class EnclaveManager::StateMachine {
         store_keys_args_for_joining_->gaia_id = primary_account_info_->gaia;
         uint8_t security_domain_secret[32];
         crypto::RandBytes(security_domain_secret);
-        store_keys_args_for_joining_->keys.emplace_back(
-            std::begin(security_domain_secret),
-            std::end(security_domain_secret));
         // Zero is a special value that indicates that the epoch is unknown.
-        store_keys_args_for_joining_->last_key_version = 0;
+        store_keys_args_for_joining_->keys.emplace_back(
+            std::vector<uint8_t>(std::begin(security_domain_secret),
+                                 std::end(security_domain_secret)),
+            /*key_version=*/0);
       } else {
         CHECK(action_->store_keys_args);
         store_keys_args_for_joining_ = std::move(action_->store_keys_args);
@@ -2002,8 +1994,8 @@ class EnclaveManager::StateMachine {
 
     join_request_.reset();
 
-    manager_->SetSecret(store_keys_args_for_joining_->last_key_version,
-                        *store_keys_args_for_joining_->keys.rbegin());
+    manager_->SetSecret(store_keys_args_for_joining_->keys.back().version,
+                        store_keys_args_for_joining_->keys.back().key);
     store_keys_args_for_joining_.reset();
 
     CHECK(std::holds_alternative<JoinStatus>(event));
@@ -2324,7 +2316,7 @@ class EnclaveManager::StateMachine {
       wrapped_pin_proto_->set_wrapped_pin(BuildWrappedPIN(
           *hashed_pin_, ToSizedSpan<32>(wrapped_pin_proto_->claim_key()),
           *recovery_key_store_wrap_response_,
-          store_keys_args_for_joining_->keys.back()));
+          store_keys_args_for_joining_->keys.back().key));
     }
     const std::string& vault_public_key =
         recovery_key_store_wrap_response_->vault->application_keys()[0]
@@ -2355,9 +2347,7 @@ class EnclaveManager::StateMachine {
     CHECK_EQ(member_keys_source.has_value(),
              updating_pin_member || is_set_pin_);
     if (!member_keys_source) {
-      member_keys_source = trusted_vault::GetTrustedVaultKeysWithVersions(
-          store_keys_args_for_joining_->keys,
-          store_keys_args_for_joining_->last_key_version);
+      member_keys_source = store_keys_args_for_joining_->keys;
     }
     join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
         *primary_account_info_, std::move(*member_keys_source),
@@ -2393,7 +2383,7 @@ class EnclaveManager::StateMachine {
       return;
     }
 
-    store_keys_args_for_joining_->last_key_version = key_version;
+    store_keys_args_for_joining_->keys.back().version = key_version;
 
     if (!StoreWrappedSecrets(
             user_, GetNewSecretsToStore(*user_, *store_keys_args_for_joining_),
@@ -2633,10 +2623,7 @@ class EnclaveManager::StateMachine {
         trusted_vault::SecureBoxPublicKey::CreateByImport(
             base::as_byte_span(user_->member_public_key()));
     join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
-        *primary_account_info_,
-        trusted_vault::GetTrustedVaultKeysWithVersions(
-            store_keys_args_for_joining_->keys,
-            store_keys_args_for_joining_->last_key_version),
+        *primary_account_info_, store_keys_args_for_joining_->keys,
         *secure_box_pub_key, trusted_vault::LocalPhysicalDevice(),
         base::BindOnce(&StateMachine::OnJoinedSecurityDomain,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -2709,9 +2696,9 @@ class EnclaveManager::StateMachine {
 #if BUILDFLAG(IS_MAC)
   void JoinICloudKeychainToDomain(
       std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_recovery_key) {
-    std::vector<trusted_vault::TrustedVaultKeyAndVersion> member_keys_source =
-        trusted_vault::GetTrustedVaultKeysWithVersions(
-            {manager_->secret_}, manager_->secret_version_);
+    std::vector<trusted_vault::TrustedVaultKeyAndVersion> member_keys_source = {
+        TrustedVaultKeyAndVersion(manager_->secret_,
+                                  manager_->secret_version_)};
     join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
         *primary_account_info_, std::move(member_keys_source),
         icloud_recovery_key->key()->public_key(),
@@ -3706,15 +3693,14 @@ void EnclaveManager::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void EnclaveManager::StorePendingKeys(const GaiaId& gaia_id,
-                                      std::vector<std::vector<uint8_t>> keys,
-                                      int last_key_version) {
+void EnclaveManager::StorePendingKeys(
+    const GaiaId& gaia_id,
+    std::vector<TrustedVaultKeyAndVersion> keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   pending_keys_ = std::make_unique<StoreKeysArgs>();
   pending_keys_->gaia_id = gaia_id;
   pending_keys_->keys = std::move(keys);
-  pending_keys_->last_key_version = last_key_version;
 
   store_keys_count_++;
 
@@ -3725,12 +3711,10 @@ void EnclaveManager::StorePendingKeys(const GaiaId& gaia_id,
 
 void EnclaveManager::TemporarilyCachePendingOpportunisticKeys(
     const GaiaId& gaia_id,
-    std::vector<std::vector<uint8_t>> keys,
-    int last_key_version) {
+    std::vector<TrustedVaultKeyAndVersion> keys) {
   auto store_keys_args = std::make_unique<StoreKeysArgs>();
   store_keys_args->gaia_id = gaia_id;
   store_keys_args->keys = std::move(keys);
-  store_keys_args->last_key_version = last_key_version;
   if (opportunistic_pending_keys_) {
     // Some opportunistically retrieved key has already been cached. It will be
     // overwritten by the current key.
@@ -3764,8 +3748,7 @@ void EnclaveManager::TemporarilyCachePendingOpportunisticKeys(
 
 void EnclaveManager::StoreKeys(
     const GaiaId& gaia_id,
-    std::vector<std::vector<uint8_t>> keys,
-    int last_key_version,
+    std::vector<TrustedVaultKeyAndVersion> keys,
     std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
         user_action_trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -3779,7 +3762,7 @@ void EnclaveManager::StoreKeys(
       webauthn::metrics::RecordGPMRecoveryEvent(
           webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
               kStoreKeysFromExplicitFlowStarted);
-      StorePendingKeys(gaia_id, std::move(keys), last_key_version);
+      StorePendingKeys(gaia_id, std::move(keys));
     } else {
       CoreAccountInfo primary_account_info =
           identity_manager_->GetPrimaryAccountInfo(
@@ -3791,8 +3774,7 @@ void EnclaveManager::StoreKeys(
         // trusted vault access token, which can't be done if the account is
         // empty or has a different Gaia Id). Upon identity change we will
         // re-attempt to store these keys.
-        TemporarilyCachePendingOpportunisticKeys(gaia_id, std::move(keys),
-                                                 last_key_version);
+        TemporarilyCachePendingOpportunisticKeys(gaia_id, std::move(keys));
         webauthn::metrics::RecordGPMRecoveryEvent(
             webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
                 kStoreKeysFromOpportunisticFlowCachedKeysBecauseAccountDoesNotMatch);
@@ -3803,30 +3785,27 @@ void EnclaveManager::StoreKeys(
               kStoreKeysFromOpportunisticFlowStarted);
       // TODO(crbug.com/450851888): Refactor the logic related to storing the
       // keys from the out of context retrieval.
-      StoreKeysFromOutOfContextRetrieval(gaia_id, std::move(keys),
-                                         last_key_version);
+      StoreKeysFromOutOfContextRetrieval(gaia_id, std::move(keys));
     }
   } else {
     // Use the old implementation:
-    StorePendingKeys(gaia_id, std::move(keys), last_key_version);
+    StorePendingKeys(gaia_id, std::move(keys));
   }
 }
 
 void EnclaveManager::StoreKeysFromOutOfContextRetrieval(
     const GaiaId& gaia_id,
-    std::vector<std::vector<uint8_t>> keys,
-    int last_key_version) {
+    std::vector<TrustedVaultKeyAndVersion> keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!store_keys_lock_depth_);
 
   auto pending_keys = std::make_unique<StoreKeysArgs>();
   pending_keys->gaia_id = gaia_id;
   pending_keys->keys = std::move(keys);
-  pending_keys->last_key_version = last_key_version;
 
   if (IsRegistered()) {
     FIDO_LOG(EVENT) << "Redundant opportunistic keys provided for version "
-                    << last_key_version;
+                    << pending_keys->keys.back().version;
     NotifyObserversAboutOutOfContextRecoveryOutcome(
         OutOfContextRecoveryOutcome::
             kStoreKeysFromOpportunisticFlowIgnoredRedundant);
@@ -4116,7 +4095,6 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
       // the primary account was either empty or had a different Gaia Id. Now
       // the primary account is available so we can store them.
       StoreKeys(store_keys_arg->gaia_id, std::move(store_keys_arg->keys),
-                store_keys_arg->last_key_version,
                 /*user_action_trigger=*/std::nullopt);
       webauthn::metrics::RecordGPMCachedOpportunisticallyRetrievedKeyEvent(
           webauthn::metrics::

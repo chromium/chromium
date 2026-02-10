@@ -375,8 +375,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   // the keys will be stored only if a system UV is available).
   void StoreKeys(
       const GaiaId& gaia_id,
-      std::vector<std::vector<uint8_t>> keys,
-      int last_key_version,
+      std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys,
       std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
           user_action_trigger);
 
@@ -518,16 +517,15 @@ class EnclaveManager : public EnclaveManagerInterface {
 
   // Stores keys in the pending state (the keys will remain in this state until
   // `AddDeviceToAccount` is called).
-  void StorePendingKeys(const GaiaId& gaia_id,
-                        std::vector<std::vector<uint8_t>> keys,
-                        int last_key_version);
+  void StorePendingKeys(
+      const GaiaId& gaia_id,
+      std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys);
 
   // Stores keys and performs `AddDeviceToAccount` if the system UV or the GPM
   // PIN is available.
   void StoreKeysFromOutOfContextRetrieval(
       const GaiaId& gaia_id,
-      std::vector<std::vector<uint8_t>> keys,
-      int last_key_version);
+      std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys);
   // Used by `StoreKeysFromOutOfContextRetrieval`. Executed upon verification of
   // the system UV availability. If a system UV is available - stores the
   // opportunistically retrieved keys. If a system UV is not available -
@@ -554,8 +552,7 @@ class EnclaveManager : public EnclaveManagerInterface {
       OutOfContextRecoveryOutcome outcome);
   void TemporarilyCachePendingOpportunisticKeys(
       const GaiaId& gaia_id,
-      std::vector<std::vector<uint8_t>> keys,
-      int last_key_version);
+      std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys);
 
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;

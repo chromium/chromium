@@ -35,6 +35,22 @@
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
+// Convert a vector from TrustedVaultKey mojo structs to
+// TrustedVaultKeyAndVersion.
+std::vector<trusted_vault::TrustedVaultKeyAndVersion> ConvertFromMojomVaultKeys(
+    const std::vector<chrome::mojom::TrustedVaultKeyPtr>& keys) {
+  std::vector<trusted_vault::TrustedVaultKeyAndVersion> converted_keys;
+  converted_keys.reserve(keys.size());
+  std::ranges::transform(keys, std::back_inserter(converted_keys),
+                         [](const auto& key) {
+                           return trusted_vault::TrustedVaultKeyAndVersion(
+                               key->bytes, key->version);
+                         });
+  return converted_keys;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // EncryptionKeyApi represents the actual exposure of the Mojo API (i.e.
 // chrome::mojom::TrustedVaultEncryptionKeysExtension) to the renderer.
 // Instantiated only for allowed origins.
@@ -147,6 +163,14 @@ class EncryptionKeyApi
         "Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito",
         trusted_vault_service_ == nullptr);
 
+    if (security_domain == trusted_vault::SecurityDomainId::kPasskeys) {
+      if (enclave_manager_) {
+        enclave_manager_->StoreKeys(gaia_id, ConvertFromMojomVaultKeys(keys),
+                                    user_action_trigger_);
+      }
+      return;
+    }
+
     // Guard against incognito (where `trusted_vault_service_` is null).
     if (!trusted_vault_service_) {
       return;
@@ -157,14 +181,6 @@ class EncryptionKeyApi
     std::ranges::transform(keys, std::back_inserter(keys_as_bytes),
                            &chrome::mojom::TrustedVaultKey::bytes);
     const int32_t last_key_version = keys.back()->version;
-
-    if (security_domain == trusted_vault::SecurityDomainId::kPasskeys) {
-      if (enclave_manager_) {
-        enclave_manager_->StoreKeys(gaia_id, std::move(keys_as_bytes),
-                                    last_key_version, user_action_trigger_);
-      }
-      return;
-    }
 
     trusted_vault::TrustedVaultClient* trusted_vault_client =
         trusted_vault_service_->GetTrustedVaultClient(security_domain);

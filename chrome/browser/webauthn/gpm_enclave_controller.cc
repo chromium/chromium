@@ -924,9 +924,11 @@ void GPMEnclaveController::OnICloudKeysRetrievedForRecovery(
   FIDO_LOG(EVENT) << "Successful recovery from iCloud recovery key";
   recovered_with_icloud_keychain_ = true;
   store_keys_lock_ = enclave_manager_->GetStoreKeysLock();
-  enclave_manager_->StoreKeys(user_gaia_id_,
-                              {std::move(*security_domain_secret)},
-                              member_key_it->version, std::nullopt);
+  enclave_manager_->StoreKeys(
+      user_gaia_id_,
+      {trusted_vault::TrustedVaultKeyAndVersion(
+          std::move(*security_domain_secret), member_key_it->version)},
+      std::nullopt);
 }
 
 #endif  // BUILDFLAG(IS_MAC)
