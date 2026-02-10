@@ -836,9 +836,10 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
   // See https://crbug.com/845742.
   gfx::Size size = GetDrawingBuffer()->Size();
   // We are grabbing a snapshot that is generally not for compositing, so use a
-  // custom resource provider. This avoids consuming compositing-specific
-  // resources (e.g. GpuMemoryBuffer). We tag the SharedImage with display usage
-  // since there are uncommon paths which may use this snapshot for compositing.
+  // custom resource provider to specify only the minimal required set of
+  // usages, resulting in as lightweight a backing of the created SharedImage as
+  // possible. We tag the SharedImage with display usage since there are
+  // uncommon paths which may use this snapshot for compositing.
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
 
