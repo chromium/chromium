@@ -24,10 +24,6 @@ bool AuthenticatorRequestSheetModel::IsGpmSettingsButtonVisible() const {
   return false;
 }
 
-bool AuthenticatorRequestSheetModel::IsManageDevicesButtonVisible() const {
-  return false;
-}
-
 bool AuthenticatorRequestSheetModel::IsOtherMechanismButtonVisible() const {
   return false;
 }
@@ -46,8 +42,6 @@ std::u16string AuthenticatorRequestSheetModel::GetOtherMechanismButtonLabel()
 }
 
 void AuthenticatorRequestSheetModel::OnOpenGpmSettingsButtonPressed() {}
-
-void AuthenticatorRequestSheetModel::OnManageDevices() {}
 
 void AuthenticatorRequestSheetModel::OnForgotGPMPin() const {}
 

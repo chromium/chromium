@@ -65,7 +65,6 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
   void OnBack() override {}
   void OnAccept() override {}
   void OnCancel() override {}
-  void OnManageDevices() override {}
 };
 
 class TestSheetView : public AuthenticatorRequestSheetView {
