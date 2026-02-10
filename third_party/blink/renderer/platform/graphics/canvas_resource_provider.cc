@@ -420,6 +420,16 @@ void CanvasResourceProviderSharedImage::OnResourceRefReturned(
   }
 }
 
+scoped_refptr<gpu::ClientSharedImage> Canvas2DResourceProviderSharedImage::
+    GetBackingClientSharedImageForTransferToWebGPU(
+        gpu::SharedImageUsageSet required_shared_image_usages,
+        gpu::SyncToken& internal_access_sync_token,
+        bool* was_copy_performed) {
+  return GetBackingClientSharedImageForExternalWrite(
+      required_shared_image_usages, internal_access_sync_token,
+      was_copy_performed);
+}
+
 void Canvas2DResourceProviderSharedImage::SetResourceRecyclingEnabled(
     bool value) {
   resource_recycling_enabled_ = value;
