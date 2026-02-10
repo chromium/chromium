@@ -221,8 +221,9 @@ TEST_P(ContextualTasksUiServiceTestParameterized, GetAccessToken_NotSignedIn) {
   EXPECT_EQ(token_future.Get(), "");
 }
 
-// TODO(crbug.com/477018818): Flaky on Linux ASan.
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/477018818): Flaky on Linux ASan and Linux TSan.
+#if BUILDFLAG(IS_LINUX) && \
+    (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER))
 #define MAYBE_GetAccessToken_TransientError_Retries \
   DISABLED_GetAccessToken_TransientError_Retries
 #else
