@@ -50,7 +50,7 @@ const CGFloat kLeadingImageTrailingMarginLensOverlay = 9;
 const CGFloat kLeadingImageSizeAIM = 22;
 // The leading image margins when presented in composebox.
 const CGFloat kLeadingImageLeadingMarginAIM = 7;
-const CGFloat kLeadingImageTrailingMarginAIM = 11;
+const CGFloat kLeadingImageTrailingMarginAIM = 10;
 
 /// Space between the clear button and the edge of the omnibox.
 const CGFloat kTextInputViewClearButtonTrailingOffset = 4;

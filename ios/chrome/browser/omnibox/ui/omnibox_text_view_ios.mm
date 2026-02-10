@@ -49,7 +49,7 @@ namespace {
 const CGFloat kMinVerticalInset = 8.0;
 
 /// The placeholder leading padding.
-const CGFloat kPlaceholderLeadingPadding = 4.0;
+const CGFloat kPlaceholderLeadingPadding = 5.0;
 
 /// The vertical offset added to the text view. This is to align with the
 /// OmniboxTextFieldIOS that OmniboxTextViewIOS replaces.
