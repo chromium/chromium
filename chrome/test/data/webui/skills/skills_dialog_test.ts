@@ -369,16 +369,13 @@ suite('SkillsDialogAppPage', function() {
   });
 
   test('RefineShowsErrorOnFailure', async function() {
-    const instructionsInput = skillsDialogApp.$.instructionsText;
     const refineBtn = skillsDialogApp.$.iconRefine;
     // Query these elements dynamically in assertion to ensure freshness
     const textareaWrapper = skillsDialogApp.$.textareaWrapper;
     const errorMessage = skillsDialogApp.$.errorMessage;
 
     // 1. Setup Input
-    instructionsInput.value = 'Start text';
-    instructionsInput.dispatchEvent(new Event('input'));
-    await microtasksFinished();
+    await updateInstructions('Start text');
 
     // 2. Mock Failure
     dialogHandler.setPromiseRejectFor('refineSkill');
@@ -393,7 +390,6 @@ suite('SkillsDialogAppPage', function() {
   });
 
   test('TypingClearsRefineError', async function() {
-    const instructionsInput = skillsDialogApp.$.instructionsText;
     const refineBtn = skillsDialogApp.$.iconRefine;
 
     // Helper functions to get fresh DOM elements
@@ -401,9 +397,7 @@ suite('SkillsDialogAppPage', function() {
     const errorMessage = skillsDialogApp.$.errorMessage;
 
     // 1. Setup Input and Trigger Error
-    instructionsInput.value = 'Start';
-    instructionsInput.dispatchEvent(new Event('input'));
-    await microtasksFinished();
+    await updateInstructions('Start');
     dialogHandler.setPromiseRejectFor('refineSkill');
     refineBtn.click();
     await microtasksFinished();
@@ -413,10 +407,7 @@ suite('SkillsDialogAppPage', function() {
     assertTrue(textareaWrapper.hasAttribute('error'));
 
     // 2. Type in box
-    instructionsInput.value = 'Start Editing';
-    instructionsInput.dispatchEvent(new Event('input'));
-
-    await microtasksFinished();
+    await updateInstructions('Start Editing');
 
     // 3. Assert Error Cleared using fresh getters
     assertTrue(errorMessage.hidden);
@@ -427,9 +418,7 @@ suite('SkillsDialogAppPage', function() {
     const instructionsInput = skillsDialogApp.$.instructionsText;
     const refineBtn = skillsDialogApp.$.iconRefine;
 
-    instructionsInput.value = 'Start';
-    instructionsInput.dispatchEvent(new Event('input'));
-    await microtasksFinished();
+    await updateInstructions('Start');
 
     const resolver = new PromiseResolver<{refinedSkill: Skill}>();
     dialogHandler.refineSkill = () => resolver.promise;
@@ -470,9 +459,7 @@ suite('SkillsDialogAppPage', function() {
     const errorMessage = skillsDialogApp.$.errorMessage;
 
     // 1. Setup Initial State
-    instructionsInput.value = 'Original Text';
-    instructionsInput.dispatchEvent(new Event('input'));
-    await microtasksFinished();
+    await updateInstructions('Original Text');
 
     // 2. Mock hanging response
     const resolver = new PromiseResolver<{refinedSkill: Skill}>();
