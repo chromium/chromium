@@ -8,7 +8,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -18,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/test_extension_dir.h"
@@ -74,7 +74,7 @@ MATCHER_P(IsExpectedMessage, extensions, "") {
   std::u16string expected_title;
   if (extensions.size() == 1) {
     std::u16string fixed_up_name =
-        extensions::util::GetFixupExtensionNameForUIDisplay(
+        extensions::ui_util::GetFixupExtensionNameForUIDisplay(
             base::UTF8ToUTF16(extensions[0]->name()));
     expected_title = l10n_util::GetStringFUTF16(
         IDS_EXTENSION_RELOAD_PAGE_BUBBLE_ALLOW_SINGLE_EXTENSION_TITLE,

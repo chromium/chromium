@@ -81,14 +81,6 @@ std::vector<content::BrowserContext*> GetAllRelatedProfiles(
 // relevant subsystems.
 void SetDeveloperModeForProfile(Profile* profile, bool in_developer_mode);
 
-// Returns the extension name to be used in UI surfaces. Name will be truncated
-// if its very long, preventing extension name to spoof or break UI surfaces
-// (see crbug.com/40063885).
-std::u16string GetFixupExtensionNameForUIDisplay(
-    const std::u16string& extension_name);
-std::u16string GetFixupExtensionNameForUIDisplay(
-    const std::string& extension_name);
-
 // Registers miscellaneous chrome-level extension-related prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

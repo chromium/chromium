@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -17,6 +16,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/ui_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -43,7 +43,7 @@ void ForceInstalledDeprecatedAppsDialogView::CreateAndShowDialog(
       extensions::ExtensionRegistry::Get(browser_context)
           ->GetInstalledExtension(app_id);
   std::u16string app_name_for_display =
-      extensions::util::GetFixupExtensionNameForUIDisplay(extension->name());
+      extensions::ui_util::GetFixupExtensionNameForUIDisplay(extension->name());
   delegate->SetTitle(l10n_util::GetStringFUTF16(
       IDS_DEPRECATED_APPS_RENDERER_TITLE_WITH_APP_NAME, app_name_for_display));
   delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));

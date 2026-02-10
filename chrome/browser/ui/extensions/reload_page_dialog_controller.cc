@@ -10,7 +10,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/grit/generated_resources.h"
@@ -20,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_icon_placeholder.h"
 #include "extensions/browser/image_loader.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -38,6 +38,7 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
+namespace extensions {
 namespace {
 
 // Whether the dialog should be accepted without showing it on tests.
@@ -57,9 +58,8 @@ std::u16string GetTitle(
   }
 
   if (extensions_info.size() == 1) {
-    std::u16string extension_name =
-        extensions::util::GetFixupExtensionNameForUIDisplay(
-            base::UTF8ToUTF16(extensions_info[0].name));
+    std::u16string extension_name = ui_util::GetFixupExtensionNameForUIDisplay(
+        base::UTF8ToUTF16(extensions_info[0].name));
     return l10n_util::GetStringFUTF16(
         IDS_EXTENSION_RELOAD_PAGE_BUBBLE_ALLOW_SINGLE_EXTENSION_TITLE,
         extension_name);
@@ -70,8 +70,6 @@ std::u16string GetTitle(
 }
 
 }  // namespace
-
-namespace extensions {
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kReloadPageDialogOkButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kReloadPageDialogCancelButtonElementId);
@@ -213,7 +211,7 @@ void ReloadPageDialogController::Show() {
       for (auto extension_info : extensions_info_) {
         dialog_builder.AddMenuItem(
             ui::ImageModel::FromImage(extension_info.icon),
-            util::GetFixupExtensionNameForUIDisplay(extension_info.name),
+            ui_util::GetFixupExtensionNameForUIDisplay(extension_info.name),
             base::DoNothing(),
             ui::DialogModelMenuItem::Params().SetIsEnabled(false));
       }

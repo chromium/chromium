@@ -8,10 +8,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/constants.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -74,7 +75,7 @@ void ExtensionUninstallDialogImpl::Show() {
   dialog_builder.SetInternalName("ExtensionUninstallDialog")
       .SetTitle(l10n_util::GetStringFUTF16(
           IDS_EXTENSION_PROMPT_UNINSTALL_TITLE,
-          extensions::util::GetFixupExtensionNameForUIDisplay(
+          extensions::ui_util::GetFixupExtensionNameForUIDisplay(
               extension()->name())))
       .OverrideShowCloseButton(false)
       .SetDialogDestroyingCallback(
@@ -100,7 +101,7 @@ void ExtensionUninstallDialogImpl::Show() {
         ui::DialogModelLabel(
             l10n_util::GetStringFUTF16(
                 IDS_EXTENSION_PROMPT_UNINSTALL_TRIGGERED_BY_EXTENSION,
-                extensions::util::GetFixupExtensionNameForUIDisplay(
+                extensions::ui_util::GetFixupExtensionNameForUIDisplay(
                     triggering_extension()->name())))
             .set_is_secondary()
             .set_allow_character_break());
@@ -111,7 +112,7 @@ void ExtensionUninstallDialogImpl::Show() {
         triggering_extension()
             ? l10n_util::GetStringFUTF16(
                   IDS_EXTENSION_PROMPT_UNINSTALL_REPORT_ABUSE_FROM_EXTENSION,
-                  extensions::util::GetFixupExtensionNameForUIDisplay(
+                  extensions::ui_util::GetFixupExtensionNameForUIDisplay(
                       extension()->name()))
             : l10n_util::GetStringUTF16(
                   IDS_EXTENSION_PROMPT_UNINSTALL_REPORT_ABUSE);

@@ -7,10 +7,10 @@
 
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -81,7 +81,7 @@ void ShowDownloadOpenConfirmationDialog(
           .AddParagraph(ui::DialogModelLabel::CreateWithReplacements(
               IDS_DOWNLOAD_OPEN_CONFIRMATION_DIALOG_MESSAGE,
               {ui::DialogModelLabel::CreatePlainText(
-                   extensions::util::GetFixupExtensionNameForUIDisplay(
+                   extensions::ui_util::GetFixupExtensionNameForUIDisplay(
                        extension_name)),
                ui::DialogModelLabel::CreatePlainText(
                    file_path.BaseName().AsUTF16Unsafe())}))

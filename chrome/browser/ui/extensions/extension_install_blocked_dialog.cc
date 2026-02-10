@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
@@ -33,7 +33,8 @@ void ShowExtensionInstallBlockedDialog(
   dialog_builder
       .SetTitle(l10n_util::GetStringFUTF16(
           IDS_EXTENSION_BLOCKED_BY_POLICY_PROMPT_TITLE,
-          extensions::util::GetFixupExtensionNameForUIDisplay(extension_name),
+          extensions::ui_util::GetFixupExtensionNameForUIDisplay(
+              extension_name),
           base::UTF8ToUTF16(extension_id)))
       .SetIcon(ui::ImageModel::FromImageSkia(
           gfx::ImageSkiaOperations::CreateResizedImage(

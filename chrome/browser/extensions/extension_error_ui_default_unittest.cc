@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_error_ui_desktop.h"
-
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
-#include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/extension_error_ui_desktop.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,6 +16,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/mock_extension_system.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -114,9 +113,9 @@ TEST(ExtensionErrorUIDesktopTest, BubbleMessageWithLongNameExtension) {
 
   // Expected values of extension names in the returned messages.
   std::u16string truncated_name_a =
-      extensions::util::GetFixupExtensionNameForUIDisplay(long_name_a);
+      extensions::ui_util::GetFixupExtensionNameForUIDisplay(long_name_a);
   std::u16string truncated_name_b =
-      extensions::util::GetFixupExtensionNameForUIDisplay(long_name_b);
+      extensions::ui_util::GetFixupExtensionNameForUIDisplay(long_name_b);
 
   ASSERT_LT(truncated_name_a.size(), long_name_a.size());
   ASSERT_LT(truncated_name_b.size(), long_name_b.size());

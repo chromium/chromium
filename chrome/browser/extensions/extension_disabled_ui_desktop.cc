@@ -29,8 +29,8 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "extensions/browser/extension_util.h"
 #include "extensions/browser/image_loader.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/icons/extension_icon_set.h"
@@ -132,7 +132,7 @@ int ExtensionDisabledGlobalError::MenuItemCommandID() {
 
 std::u16string ExtensionDisabledGlobalError::MenuItemLabel() {
   std::u16string extension_name =
-      util::GetFixupExtensionNameForUIDisplay(extension_->name());
+      ui_util::GetFixupExtensionNameForUIDisplay(extension_->name());
   // Ampersands need to be escaped to avoid being treated like
   // mnemonics in the menu.
   base::ReplaceChars(extension_name, u"&", u"&&", &extension_name);
@@ -149,7 +149,7 @@ void ExtensionDisabledGlobalError::ExecuteMenuItem(Browser* browser) {
 
 std::u16string ExtensionDisabledGlobalError::GetBubbleViewTitle() {
   std::u16string extension_name =
-      util::GetFixupExtensionNameForUIDisplay(extension_->name());
+      ui_util::GetFixupExtensionNameForUIDisplay(extension_->name());
   return l10n_util::GetStringFUTF16(
       is_remote_install_ ? IDS_EXTENSION_DISABLED_REMOTE_INSTALL_ERROR_TITLE
                          : IDS_EXTENSION_DISABLED_ERROR_TITLE,

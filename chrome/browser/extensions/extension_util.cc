@@ -10,7 +10,6 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/shared_module_service.h"
@@ -41,8 +40,6 @@
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
-#include "ui/gfx/text_constants.h"
-#include "ui/gfx/text_elider.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -326,21 +323,6 @@ void SetDeveloperModeForProfile(Profile* profile, bool in_developer_mode) {
 
   user_script_manager->SetUserScriptSourceEnabledForExtensions(
       UserScript::Source::kDynamicUserScript, in_developer_mode);
-}
-
-std::u16string GetFixupExtensionNameForUIDisplay(
-    const std::u16string& extension_name) {
-  const size_t extension_name_char_limit =
-      75;  // Extension name char limit on CWS
-  gfx::BreakType break_type = gfx::BreakType::CHARACTER_BREAK;
-  std::u16string fixup_extension_name = gfx::TruncateString(
-      extension_name, extension_name_char_limit, break_type);
-  return fixup_extension_name;
-}
-
-std::u16string GetFixupExtensionNameForUIDisplay(
-    const std::string& extension_name) {
-  return GetFixupExtensionNameForUIDisplay(base::UTF8ToUTF16(extension_name));
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {

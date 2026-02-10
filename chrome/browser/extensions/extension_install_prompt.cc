@@ -30,6 +30,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/image_loader.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -150,7 +151,7 @@ std::u16string ExtensionInstallPrompt::Prompt::GetDialogTitle() const {
         return l10n_util::GetStringFUTF16(
             IDS_EXTENSION_EXTERNAL_INITIAL_INSTALL_PROMPT_TITLE_EXTENSION,
             initial_extensions_provider_name_,
-            extensions::util::GetFixupExtensionNameForUIDisplay(
+            extensions::ui_util::GetFixupExtensionNameForUIDisplay(
                 extension_->name()));
       } else {
         id = IDS_EXTENSION_EXTERNAL_INSTALL_PROMPT_TITLE_EXTENSION;
@@ -174,8 +175,8 @@ std::u16string ExtensionInstallPrompt::Prompt::GetDialogTitle() const {
   }
 
   return l10n_util::GetStringFUTF16(
-      id,
-      extensions::util::GetFixupExtensionNameForUIDisplay(extension_->name()));
+      id, extensions::ui_util::GetFixupExtensionNameForUIDisplay(
+              extension_->name()));
 }
 
 int ExtensionInstallPrompt::Prompt::GetDialogButtons() const {

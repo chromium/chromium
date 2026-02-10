@@ -7,7 +7,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,6 +15,7 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "components/search_engines/template_url_service.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/common/extension_builder.h"
 
 class SettingsOverriddenParamsProvidersUnitTest
@@ -102,7 +102,7 @@ TEST_F(SettingsOverriddenParamsProvidersUnitTest,
       u"This extension name should be longer than our truncation threshold "
       "to test that the bubble can handle long names";
   const std::u16string truncated_name =
-      extensions::util::GetFixupExtensionNameForUIDisplay(extension_name);
+      extensions::ui_util::GetFixupExtensionNameForUIDisplay(extension_name);
   ASSERT_LT(truncated_name.size(), extension_name.size());
 
   const extensions::Extension* ntp_extension =

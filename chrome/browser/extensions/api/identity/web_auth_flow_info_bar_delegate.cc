@@ -8,11 +8,11 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -52,7 +52,7 @@ WebAuthFlowInfoBarDelegate::GetIdentifier() const {
 std::u16string WebAuthFlowInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringFUTF16(
       IDS_EXTENSION_LAUNCH_WEB_AUTH_FLOW_TAB_INFO_BAR_TEXT,
-      util::GetFixupExtensionNameForUIDisplay(extension_name_));
+      ui_util::GetFixupExtensionNameForUIDisplay(extension_name_));
 }
 
 bool WebAuthFlowInfoBarDelegate::ShouldExpire(

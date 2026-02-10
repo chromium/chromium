@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -39,6 +38,7 @@
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
@@ -348,7 +348,8 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
 
   std::u16string dialog_message = l10n_util::GetStringFUTF16(
       IDS_EXTENSION_NTP_OVERRIDDEN_DIALOG_BODY_GENERIC,
-      extensions::util::GetFixupExtensionNameForUIDisplay(extension->name()));
+      extensions::ui_util::GetFixupExtensionNameForUIDisplay(
+          extension->name()));
 
   SettingsOverriddenDialogController::ShowParams show_params(
       std::move(dialog_title), std::move(dialog_message), icon);
@@ -446,7 +447,8 @@ void GetSearchOverriddenParamsThenRun(
     std::u16string dialog_title = l10n_util::GetStringUTF16(
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_TITLE_EXPLICIT_CHOICE);
     const std::u16string extension_name_for_ui =
-        extensions::util::GetFixupExtensionNameForUIDisplay(extension->name());
+        extensions::ui_util::GetFixupExtensionNameForUIDisplay(
+            extension->name());
     std::u16string dialog_message = l10n_util::GetStringFUTF16(
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_BODY_EXPLICIT_CHOICE,
         extension_name_for_ui, default_search->short_name());
@@ -511,7 +513,8 @@ void GetSearchOverriddenParamsThenRun(
   }
   std::u16string dialog_message = l10n_util::GetStringFUTF16(
       IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_BODY_GENERIC, formatted_search_url,
-      extensions::util::GetFixupExtensionNameForUIDisplay(extension->name()));
+      extensions::ui_util::GetFixupExtensionNameForUIDisplay(
+          extension->name()));
 
   SettingsOverriddenDialogController::ShowParams show_params(
       std::move(dialog_title), std::move(dialog_message), icon);

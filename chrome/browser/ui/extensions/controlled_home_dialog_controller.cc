@@ -9,7 +9,6 @@
 #include "base/auto_reset.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
@@ -25,6 +24,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -147,7 +147,8 @@ std::u16string ControlledHomeDialogController::GetBodyText() {
   std::u16string body;
   body = l10n_util::GetStringFUTF16(
       IDS_EXTENSIONS_CONTROLLED_HOME_DIALOG_DESCRIPTION,
-      extensions::util::GetFixupExtensionNameForUIDisplay(extension_->name()));
+      extensions::ui_util::GetFixupExtensionNameForUIDisplay(
+          extension_->name()));
 
   if (second_line_id) {
     body += l10n_util::GetStringUTF16(second_line_id);

@@ -4,7 +4,6 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "components/custom_handlers/protocol_handler.h"
@@ -13,6 +12,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/ui_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/window/dialog_client_view.h"
@@ -48,13 +48,14 @@ std::u16string GetMessageTextForOrigin(
   if (!origin || origin->opaque()) {
     return l10n_util::GetStringFUTF16(
         IDS_CONFIRM_PROTOCOL_HANDLER_MESSAGE,
-        extensions::util::GetFixupExtensionNameForUIDisplay(extension->name()),
+        extensions::ui_util::GetFixupExtensionNameForUIDisplay(
+            extension->name()),
         handler.GetProtocolDisplayName(),
         base::UTF8ToUTF16(handler.url().host()));
   }
   return l10n_util::GetStringFUTF16(
       IDS_CONFIRM_PROTOCOL_HANDLER_MESSAGE_WITH_INITIATING_ORIGIN,
-      extensions::util::GetFixupExtensionNameForUIDisplay(extension->name()),
+      extensions::ui_util::GetFixupExtensionNameForUIDisplay(extension->name()),
       base::UTF8ToUTF16(handler.protocol()),
       url_formatter::FormatOriginForSecurityDisplay(*origin),
       base::UTF8ToUTF16(handler.url().host()));

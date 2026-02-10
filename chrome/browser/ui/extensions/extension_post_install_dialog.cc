@@ -11,7 +11,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/browser/ui/extensions/extension_installed_watcher.h"
@@ -23,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -43,7 +43,7 @@ void ConfigurePostInstallDialogModel(
     ExtensionPostInstallDialogModel* model,
     base::RepeatingClosure manage_shortcuts_callback) {
   std::u16string extension_name =
-      extensions::util::GetFixupExtensionNameForUIDisplay(
+      extensions::ui_util::GetFixupExtensionNameForUIDisplay(
           model->extension_name());
   base::i18n::AdjustStringForLocaleDirection(&extension_name);
   dialog_model_builder

@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -26,6 +25,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/test_extension_dir.h"
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   const std::u16string extension_name =
       base::UTF8ToUTF16(search_extension->name());
   const std::u16string truncated_name =
-      extensions::util::GetFixupExtensionNameForUIDisplay(extension_name);
+      extensions::ui_util::GetFixupExtensionNameForUIDisplay(extension_name);
   ASSERT_LT(truncated_name.size(), extension_name.size());
 
   // The dialog message should contain the truncated name.

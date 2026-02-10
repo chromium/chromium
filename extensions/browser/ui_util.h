@@ -19,6 +19,14 @@ bool ShouldDisplayInExtensionSettings(Manifest::Type type,
 // Convenience method of the above taking an Extension object.
 bool ShouldDisplayInExtensionSettings(const Extension& extension);
 
+// Returns the extension name to be used in UI surfaces. Name will be truncated
+// if its very long, preventing extension name to spoof or break UI surfaces
+// (see crbug.com/40063885).
+std::u16string GetFixupExtensionNameForUIDisplay(
+    const std::u16string& extension_name);
+std::u16string GetFixupExtensionNameForUIDisplay(
+    const std::string& extension_name);
+
 }  // namespace ui_util
 }  // namespace extensions
 

@@ -10,7 +10,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -25,6 +24,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/permissions/permissions_updater.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -284,7 +284,7 @@ TEST_F(ControlledHomeDialogControllerTest, LongExtensionNameIsTruncated) {
       u"This extension name should be longer than our truncation threshold "
       "to test that the bubble can handle long names";
   const std::u16string truncated_name =
-      extensions::util::GetFixupExtensionNameForUIDisplay(long_name);
+      extensions::ui_util::GetFixupExtensionNameForUIDisplay(long_name);
   ASSERT_LT(truncated_name.size(), long_name.size());
 
   scoped_refptr<const extensions::Extension> extension =

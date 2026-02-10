@@ -4,7 +4,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -15,6 +14,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -49,7 +49,7 @@ void ShowUploadExtensionToAccountDialog(Profile* profile,
           .OverrideShowCloseButton(false)
           .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringFUTF16(
               IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE,
-              util::GetFixupExtensionNameForUIDisplay(extension.name()))))
+              ui_util::GetFixupExtensionNameForUIDisplay(extension.name()))))
           .AddMenuItem(
               ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
                   account_info.account_image, 16, 16, profiles::SHAPE_CIRCLE)),
