@@ -838,8 +838,12 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
   // We are grabbing a snapshot that is generally not for compositing, so use a
   // custom resource provider to specify only the minimal required set of
   // usages, resulting in as lightweight a backing of the created SharedImage as
-  // possible. We tag the SharedImage with display usage since there are
-  // uncommon paths which may use this snapshot for compositing.
+  // possible. This SharedImage will be the destination of a copy of the drawing
+  // buffer's contents made via the raster interface. In addition, we tag the
+  // SharedImage with display usage since there are uncommon paths which may use
+  // this snapshot for compositing.
+  auto shared_image_usages = gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
 
@@ -848,7 +852,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     resource_provider = CanvasNon2DResourceProviderSharedImage::Create(
         size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
         kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
-        RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+        RasterMode::kGPU, shared_image_usages);
 
     if (!resource_provider || !resource_provider->IsValid()) {
       return nullptr;
