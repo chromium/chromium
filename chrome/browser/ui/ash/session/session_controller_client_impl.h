@@ -29,6 +29,14 @@ namespace ash {
 enum class AddUserSessionPolicy;
 }
 
+namespace session_manager {
+class SessionManager;
+}
+
+namespace supervised_user {
+class SupervisedUserService;
+}
+
 namespace user_manager {
 class User;
 }
@@ -38,8 +46,8 @@ class User;
 // TODO(xiyuan): Update when UserSessionStateObserver is gone.
 class SessionControllerClientImpl
     : public ash::SessionControllerClient,
-      public user_manager::UserManager::UserSessionStateObserver,
       public user_manager::UserManager::Observer,
+      public user_manager::UserManager::UserSessionStateObserver,
       public session_manager::SessionManagerObserver,
       public SupervisedUserServiceObserver,
       public policy::off_hours::DeviceOffHoursController::Observer {
@@ -185,6 +193,22 @@ class SessionControllerClientImpl
   // Used to suppress duplicate calls to ash.
   std::unique_ptr<ash::SessionInfo> last_sent_session_info_;
   std::unique_ptr<ash::UserSession> last_sent_user_session_;
+
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      user_manager_observation_{this};
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::UserSessionStateObserver>
+      user_session_state_observation_{this};
+  base::ScopedObservation<policy::off_hours::DeviceOffHoursController,
+                          policy::off_hours::DeviceOffHoursController::Observer>
+      device_off_hours_controller_observation_{this};
+  base::ScopedObservation<supervised_user::SupervisedUserService,
+                          SupervisedUserServiceObserver>
+      supervised_user_service_observation_{this};
 
   base::WeakPtrFactory<SessionControllerClientImpl> weak_ptr_factory_{this};
 };
