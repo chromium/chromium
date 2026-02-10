@@ -140,6 +140,10 @@ class FakeSharingDeviceRegistration : public SharingDeviceRegistration {
     return false;
   }
 
+  bool IsOneTimeTokenBackendNotificationSupported() const override {
+    return false;
+  }
+
   void SetEnabledFeaturesForTesting(
       std::set<sync_pb::SharingSpecificFields_EnabledFeatures> enabled_features)
       override {}

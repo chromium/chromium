@@ -224,6 +224,11 @@ bool IOSSharingDeviceRegistrationImpl::IsRemoteCopySupported() const {
   return false;
 }
 
+bool IOSSharingDeviceRegistrationImpl::IsOneTimeTokenBackendNotificationSupported()
+    const {
+  return false;
+}
+
 bool IOSSharingDeviceRegistrationImpl::
     IsOptimizationGuidePushNotificationSupported() const {
   return optimization_guide::features::IsOptimizationHintsEnabled() &&

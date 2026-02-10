@@ -13,9 +13,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
+#include "components/sharing_message/sharing_device_registration.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync_device_info/device_info.h"
-#include "components/sharing_message/sharing_device_registration.h"
 
 class PrefService;
 
@@ -40,14 +40,15 @@ class SharingDeviceRegistrationImpl : public SharingDeviceRegistration {
       SharingDeviceRegistrationResult,
       std::optional<syncer::DeviceInfo::SharingTargetInfo>)>;
 
-  SharingDeviceRegistrationImpl(PrefService* pref_service,
-                            SharingSyncPreference* prefs,
-                            instance_id::InstanceIDDriver* instance_id_driver,
-                            syncer::SyncService* sync_service);
+  SharingDeviceRegistrationImpl(
+      PrefService* pref_service,
+      SharingSyncPreference* prefs,
+      instance_id::InstanceIDDriver* instance_id_driver,
+      syncer::SyncService* sync_service);
 
   SharingDeviceRegistrationImpl(const SharingDeviceRegistrationImpl&) = delete;
-  SharingDeviceRegistrationImpl& operator=(const SharingDeviceRegistrationImpl&) =
-      delete;
+  SharingDeviceRegistrationImpl& operator=(
+      const SharingDeviceRegistrationImpl&) = delete;
 
   ~SharingDeviceRegistrationImpl() override;
 
@@ -70,14 +71,18 @@ class SharingDeviceRegistrationImpl : public SharingDeviceRegistration {
   // Returns if device can handle receiving of remote copy contents.
   bool IsRemoteCopySupported() const override;
 
+  // Returns if device can handle receiving of notifications about new one time
+  // tokens.
+  bool IsOneTimeTokenBackendNotificationSupported() const override;
+
   // Returns if device can handle receiving of optimization guide push
   // notification.
   bool IsOptimizationGuidePushNotificationSupported() const override;
 
-    // For testing
+  // For testing
   void SetEnabledFeaturesForTesting(
-      std::set<sync_pb::SharingSpecificFields_EnabledFeatures>
-          enabled_features) override;
+      std::set<sync_pb::SharingSpecificFields_EnabledFeatures> enabled_features)
+      override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SharingDeviceRegistrationImplTest,

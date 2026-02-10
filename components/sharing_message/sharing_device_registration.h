@@ -48,6 +48,10 @@ class SharingDeviceRegistration {
   // notification.
   virtual bool IsOptimizationGuidePushNotificationSupported() const = 0;
 
+  // Returns if device can handle receiving notifications about new one time
+  // tokens.
+  virtual bool IsOneTimeTokenBackendNotificationSupported() const = 0;
+
   // For testing
   virtual void SetEnabledFeaturesForTesting(
       std::set<sync_pb::SharingSpecificFields_EnabledFeatures>

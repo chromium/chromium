@@ -150,6 +150,8 @@ message SharingSpecificFields {
     SHARED_CLIPBOARD_V2 = 8;
     // Supports optimization guide push notification.
     OPTIMIZATION_GUIDE_PUSH_NOTIFICATION = 9;
+    // Supports receiving notifications about new OneTimeTokens in the backend.
+    ONE_TIME_TOKEN_BACKEND_NOTIFICATION = 10;
   }
 
   // A list of enabled Sharing features.

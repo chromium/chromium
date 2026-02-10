@@ -222,6 +222,10 @@ SharingDeviceRegistrationImpl::GetEnabledFeatures() const {
 #if BUILDFLAG(ENABLE_DISCOVERY)
   enabled_features.insert(SharingSpecificFields::DISCOVERY);
 #endif
+  if (IsOneTimeTokenBackendNotificationSupported()) {
+    enabled_features.insert(
+        SharingSpecificFields::ONE_TIME_TOKEN_BACKEND_NOTIFICATION);
+  }
 
   return enabled_features;
 }
@@ -265,6 +269,11 @@ bool SharingDeviceRegistrationImpl::
     IsOptimizationGuidePushNotificationSupported() const {
   return optimization_guide::features::IsOptimizationHintsEnabled() &&
          optimization_guide::features::IsPushNotificationsEnabled();
+}
+
+bool SharingDeviceRegistrationImpl::IsOneTimeTokenBackendNotificationSupported()
+    const {
+  return false;
 }
 
 void SharingDeviceRegistrationImpl::SetEnabledFeaturesForTesting(

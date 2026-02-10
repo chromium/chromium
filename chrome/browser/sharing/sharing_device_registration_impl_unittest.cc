@@ -195,6 +195,12 @@ class SharingDeviceRegistrationImplTest : public testing::Test {
           sync_pb::SharingSpecificFields::OPTIMIZATION_GUIDE_PUSH_NOTIFICATION);
     }
 
+    if (sharing_device_registration_
+            .IsOneTimeTokenBackendNotificationSupported()) {
+      features.insert(
+          sync_pb::SharingSpecificFields::ONE_TIME_TOKEN_BACKEND_NOTIFICATION);
+    }
+
     return features;
   }
 

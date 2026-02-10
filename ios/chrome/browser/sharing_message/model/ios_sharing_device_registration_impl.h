@@ -61,6 +61,7 @@ class IOSSharingDeviceRegistrationImpl : public SharingDeviceRegistration {
   bool IsSmsFetcherSupported() const override;
   bool IsRemoteCopySupported() const override;
   bool IsOptimizationGuidePushNotificationSupported() const override;
+  bool IsOneTimeTokenBackendNotificationSupported() const override;
   void SetEnabledFeaturesForTesting(
       std::set<sync_pb::SharingSpecificFields_EnabledFeatures> enabled_features)
       override;
