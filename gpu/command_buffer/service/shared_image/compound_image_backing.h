@@ -435,6 +435,10 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   base::OnceCallback<void(bool)> pending_copy_to_gmb_callback_;
   scoped_refptr<SharedImageCopyManager> copy_manager_;
   bool has_shm_backing_ = false;
+  // Tracks the maximum number of SharedImageBacking elements that were
+  // allocated within this CompoundImageBacking instance during its lifetime.
+  // This value is recorded in a UMA histogram in the destructor.
+  size_t max_elements_allocated_ = 0;
 };
 
 }  // namespace gpu

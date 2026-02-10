@@ -506,6 +506,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.CompoundImageBacking.TotalElementsAllocated"
+    units="elements" expires_after="2027-02-09">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the maximum number of SharedImageBacking elements allocated within a
+    CompoundImageBacking instance during its lifetime. This metric is recorded
+    once in the destructor. It helps to track and fine tune peak memory
+    consumption by this backing.
+  </summary>
+</histogram>
+
 <histogram name="GPU.ContextLost.{ContextType}" enum="ContextLostReason"
     expires_after="2026-07-05">
   <owner>jonross@chromium.org</owner>

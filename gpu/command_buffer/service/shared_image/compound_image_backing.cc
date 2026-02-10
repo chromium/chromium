@@ -922,6 +922,7 @@ CompoundImageBacking::CompoundImageBacking(
                      base::Unretained(this), std::move(gpu_backing_factory),
                      std::move(debug_label));
   elements_.push_back(std::move(gpu_element));
+  max_elements_allocated_ = 2;
 }
 
 CompoundImageBacking::CompoundImageBacking(
@@ -973,9 +974,12 @@ CompoundImageBacking::CompoundImageBacking(
   element.content_id_ = latest_content_id_;
   elements_.push_back(std::move(element));
   CHECK_EQ(elements_.size(), 1u);
+  max_elements_allocated_ = 1;
 }
 
 CompoundImageBacking::~CompoundImageBacking() {
+  UMA_HISTOGRAM_COUNTS_100("GPU.CompoundImageBacking.TotalElementsAllocated",
+                           max_elements_allocated_);
   if (pending_copy_to_gmb_callback_) {
     std::move(pending_copy_to_gmb_callback_).Run(/*success=*/false);
   }
@@ -1520,6 +1524,9 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
                                       debug_label(), element.backing);
       if (element.backing) {
         elements_.push_back(std::move(element));
+        if (elements_.size() > max_elements_allocated_) {
+          max_elements_allocated_ = elements_.size();
+        }
         return elements_.back().GetBacking();
       }
     }
