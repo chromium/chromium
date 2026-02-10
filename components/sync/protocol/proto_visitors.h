@@ -629,6 +629,9 @@ VISIT_PROTO_FIELDS(const sync_pb::DeletionOrigin& proto) {
   VISIT(file_line_number);
   VISIT(file_name_possibly_truncated);
   VISIT(unique_source_tag_no_pii_possibly_truncated);
+  VISIT(google_play_services_deletion_origin_type);
+  VISIT(google_play_services_sdk_version);
+  VISIT_ENUM(google_play_services_device_form_factor);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::DeviceInfoSpecifics& proto) {

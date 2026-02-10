@@ -16,6 +16,8 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+import "components/sync/protocol/sync_enums.proto";
+
 // Represents a fingerprint-like token that identifies, or may help identity,
 // which piece of functionality is responsible for issuing a deletion that
 // propagates via Sync. It is sent to the Sync server as part of deletion
@@ -28,11 +30,7 @@ message DeletionOrigin {
   // greater (i.e. the browser was updated in between).
   optional string chromium_version = 1;
 
-  // Populated by Android Google Play Services with the version of the APK
-  // identifying the version that originally created the deletion. This should
-  // not be populated for DeletionOrigin instances that go through Google Play
-  // Services but were actually first triggered in chromium.
-  optional string google_play_services_apk_version_name = 2;
+  optional string google_play_services_apk_version_name = 2 [deprecated = true];
 
   // Hash of the filename in the source code where the deletion originated. The
   // precise hashing function is unspecified and may change over time. It may
@@ -57,4 +55,17 @@ message DeletionOrigin {
   // the beginning of the string rather than the end of it. This field must not
   // contain personally-identifiable information.
   optional string unique_source_tag_no_pii_possibly_truncated = 6;
+
+  // Google Play Services enum. Used only for deletions triggered internally.
+  // This field is not populated or used in Chromium.
+  optional int32 google_play_services_deletion_origin_type = 7;
+
+  // Android SDK version.
+  // This field is not populated or used in Chromium.
+  optional string google_play_services_sdk_version = 8;
+
+  // Form factor of the device.
+  // This field is not populated or used in Chromium.
+  optional SyncEnums.DeviceFormFactor google_play_services_device_form_factor =
+      9;
 }
