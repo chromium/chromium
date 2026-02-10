@@ -59,7 +59,6 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
   };
 
   std::optional<ImageProviderImpl> image_provider_impl_;
-  sk_sp<SkSurface> surface_;
 
   const CanvasSnapshotProvider::Info info_;
 

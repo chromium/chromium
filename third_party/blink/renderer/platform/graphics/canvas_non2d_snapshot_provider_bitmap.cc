@@ -91,19 +91,17 @@ scoped_refptr<StaticBitmapImage>
 CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
     base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
     ImageOrientation orientation /*= ImageOrientationEnum::kDefault*/) {
-  if (!surface_) {
-    const bool can_use_lcd_text = info_.alpha_type == kOpaque_SkAlphaType;
-    const auto props =
-        skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
-    surface_ = SkSurfaces::Raster(
-        SkImageInfo::Make(info_.size.width(), info_.size.height(),
-                          viz::ToClosestSkColorType(info_.format),
-                          kPremul_SkAlphaType,
-                          info_.color_space.ToSkColorSpace()),
-        &props);
-    if (!surface_) {
-      return nullptr;
-    }
+  const bool can_use_lcd_text = info_.alpha_type == kOpaque_SkAlphaType;
+  const auto props =
+      skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
+  sk_sp<SkSurface> surface = SkSurfaces::Raster(
+      SkImageInfo::Make(info_.size.width(), info_.size.height(),
+                        viz::ToClosestSkColorType(info_.format),
+                        kPremul_SkAlphaType,
+                        info_.color_space.ToSkColorSpace()),
+      &props);
+  if (!surface) {
+    return nullptr;
   }
 
   draw_callback(recorder_->getRecordingCanvas());
@@ -114,13 +112,13 @@ CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
     }
 
     cc::PlaybackParams params(&image_provider_impl_.value(),
-                              surface_->getCanvas()->getLocalToDevice());
-    recorder_->ReleaseMainRecording().Playback(surface_->getCanvas(), params);
+                              surface->getCanvas()->getLocalToDevice());
+    recorder_->ReleaseMainRecording().Playback(surface->getCanvas(), params);
   }
 
   cc::PaintImage paint_image;
 
-  auto sk_image = surface_->makeImageSnapshot();
+  auto sk_image = surface->makeImageSnapshot();
   if (sk_image) {
     auto last_snapshot_sk_image_id = snapshot_sk_image_id_;
     snapshot_sk_image_id_ = sk_image->uniqueID();
