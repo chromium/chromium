@@ -1189,6 +1189,9 @@
     <message name="IDS_AUTOFILL_AI_LOCAL_ENTITY_EDITOR_SOURCE_NOTICE" desc="The footer message in the editor dialog informing the user that their data will be stored locally on their device. 'To your device': helps the user understand that information is saved locally, not in the Cloud." translateable="false" formatter_data="android_java">
       Your info is saved only to your device. You'll have the chance to save it to Wallet the next time you fill a relevant form.
     </message>
+    <message name="IDS_AUTOFILL_AI_WALLET_ENTITY_EDITOR_SOURCE_NOTICE" desc="The footer message in the editor dialog informing the user that their data will be stored in the Google Wallet." translateable="false" formatter_data="android_java">
+      Your info gets saved to Google Wallet for <ph name="ACCOUNT">$1<ex>elisa.beckett@gmail.com</ex></ph>. You may use it across Google services to fill forms faster.
+    </message>
   </if>
 
   <!-- FFR Dialog -->

@@ -31,6 +31,9 @@ import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoor
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.RecordType;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -39,11 +42,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 class EntityEditorMediator {
     private final Context mContext;
     private final Delegate mDelegate;
+    private final IdentityManager mIdentityManager;
     private @Nullable PropertyModel mEditorModel;
 
-    EntityEditorMediator(Context context, Delegate delegate) {
+    EntityEditorMediator(Context context, Delegate delegate, IdentityManager identityManager) {
         mContext = context;
         mDelegate = delegate;
+        mIdentityManager = identityManager;
     }
 
     @EnsuresNonNull("mEditorModel")
@@ -107,9 +112,23 @@ class EntityEditorMediator {
     }
 
     private String getEntitySourceNotice(@RecordType int recordType) {
-        // TODO: crbug.com/476755159 - Add the Wallet source notice.
-        return recordType == RecordType.LOCAL
-                ? mContext.getString(R.string.autofill_ai_local_entity_editor_source_notice)
-                : "";
+        switch (recordType) {
+            case RecordType.LOCAL:
+                return mContext.getString(R.string.autofill_ai_local_entity_editor_source_notice);
+            case RecordType.SERVER_WALLET:
+                String email = getUserEmail();
+                return email == null
+                        ? ""
+                        : mContext.getString(
+                                        R.string.autofill_ai_wallet_entity_editor_source_notice)
+                                .replace("$1", email);
+        }
+        assert false : "Invalid entity record type: " + recordType;
+        return "";
+    }
+
+    private @Nullable String getUserEmail() {
+        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        return CoreAccountInfo.getEmailFrom(accountInfo);
     }
 }

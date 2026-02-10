@@ -8,7 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
@@ -38,10 +40,15 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
 import org.chromium.chrome.browser.autofill.editors.common.EditorDialogToolbar;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 import org.chromium.components.autofill.autofill_ai.RecordType;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -53,6 +60,7 @@ import java.time.ZoneId;
 @Config(manifest = Config.NONE)
 @Batch(Batch.UNIT_TESTS)
 public class EntityEditorModuleTest {
+    private static final String USER_EMAIL = "example@gmail.com";
     private static final EntityType PASSPORT_TYPE =
             new EntityType(
                     /* typeName= */ EntityTypeName.PASSPORT,
@@ -78,8 +86,13 @@ public class EntityEditorModuleTest {
                     .setUseCount(0)
                     .build();
 
+    private final CoreAccountInfo mAccountInfo =
+            CoreAccountInfo.createFromEmailAndGaiaId(USER_EMAIL, new GaiaId("gaia_id"));
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
     @Mock private Delegate mDelegate;
+    @Mock private Profile mProfile;
+    @Mock private IdentityManager mIdentityManager;
 
     private Activity mActivity;
     private EntityEditorCoordinator mCoordinator;
@@ -88,8 +101,11 @@ public class EntityEditorModuleTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManager);
+
         mActivity = Robolectric.setupActivity(TestActivity.class);
-        mCoordinator = new EntityEditorCoordinator(mActivity, mDelegate);
+        mCoordinator = new EntityEditorCoordinator(mActivity, mDelegate, mProfile);
         mContainerView = mCoordinator.getEntityEditorViewForTest().getContainerView();
     }
 
@@ -157,6 +173,20 @@ public class EntityEditorModuleTest {
         verifySourceNotice(
                 model.get(EntityEditorProperties.EDITOR_FIELDS),
                 mActivity.getString(R.string.autofill_ai_local_entity_editor_source_notice));
+    }
+
+    @Test
+    @SmallTest
+    public void testWalletEntitySourceNotice() {
+        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mAccountInfo);
+        mCoordinator.showEditorDialog(WALLET_PASSPORT);
+
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        verifySourceNotice(
+                model.get(EntityEditorProperties.EDITOR_FIELDS),
+                mActivity
+                        .getString(R.string.autofill_ai_wallet_entity_editor_source_notice)
+                        .replace("$1", USER_EMAIL));
     }
 
     private void verifySourceNotice(ListModel<EditorItem> editorFields, String expectedNoticeText) {

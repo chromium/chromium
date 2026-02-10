@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.autofill.editors.autofill_ai;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.VISIBLE;
 
 import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -31,8 +34,12 @@ public class EntityEditorCoordinator {
         default void onDelete(EntityInstance entityInstance) {}
     }
 
-    public EntityEditorCoordinator(Activity activity, Delegate delegate) {
-        mMediator = new EntityEditorMediator(activity, delegate);
+    public EntityEditorCoordinator(Activity activity, Delegate delegate, Profile profile) {
+        mMediator =
+                new EntityEditorMediator(
+                        activity,
+                        delegate,
+                        assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile)));
         mEditorView = new EntityEditorView(activity);
     }
 
