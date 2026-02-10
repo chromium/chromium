@@ -170,6 +170,10 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   private pointerEventCallback_: (e: Event) => void = () => {};
   private keyDownCallback_: (e: KeyboardEvent) => void = () => {};
 
+  // Used to check if focus is currently on the PreviewPlayButton of the
+  // VOICE_SELECTION submenu.
+  private isOnPreviewPlayButton = false;
+
   override connectedCallback() {
     super.connectedCallback();
     this.pointerEventCallback_ = this.onPointerEvent_.bind(this);
@@ -429,6 +433,9 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   // 1. Prevent interactions with elements outside the menu.
   // 2. Close the menu when clicking outside (simulating modal behavior).
   private onPointerEvent_(e: Event) {
+    // Whenever the user moves or clicks the mouse, reset state for
+    // isOnPreviewPlayButton.
+    this.isOnPreviewPlayButton = false;
     if (e.type === 'pointermove') {
       const menu = this.$.lazyMenu.get();
       if (menu.classList.contains(KEYBOARD_NAV_CLASS)) {
@@ -497,6 +504,12 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     // open submenu. We consume the event to stop further propagation.
     if (this.currentOpenId_ &&
         (key === 'Escape' || (isBackwardArrow(key) && !isVerticalArrow(key)))) {
+      // if backward horizontal arrow is pressed and focus is on the preview
+      // play button, let the VOICE_SELECTION submenu handle backwards arrow.
+      if (key !== 'Escape' && this.isOnPreviewPlayButton) {
+        this.isOnPreviewPlayButton = false;
+        return;
+      }
       e.stopPropagation();
       e.preventDefault();
       this.fire(
@@ -507,13 +520,21 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     }
 
     if (isForwardArrow(key) && !isVerticalArrow(key)) {
-      e.stopPropagation();
-      e.preventDefault();
-
       const focused = this.shadowRoot.activeElement as HTMLElement;
-      if (!focused || !focused.classList.contains('menu-row')) {
+      // If focus is null, do nothing.
+      if (!focused) {
         return;
       }
+      // If forward-horizontal arrow is pressed and we are on VOICE_SELECTION
+      // submenu, set isOnPreviewPlayButton to true to indicate current focus.
+      if (this.currentOpenId_ &&
+          this.currentOpenId_ === SettingsOption.VOICE_SELECTION &&
+          !focused?.classList.contains('menu-row')) {
+        this.isOnPreviewPlayButton = true;
+        return;
+      }
+      e.stopPropagation();
+      e.preventDefault();
 
       const index = Number.parseInt(focused.dataset['index']!);
       const item = this.options_[index];
