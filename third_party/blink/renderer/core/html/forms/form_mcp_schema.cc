@@ -176,9 +176,6 @@ bool FormMCPSchema::ValidateParameterData(const String& name,
   if (IsColor(*controls_for_name)) {
     return ValidateTextData(*controls_for_name, value);
   }
-  if (IsFile(*controls_for_name)) {
-    return ValidateFileData(*controls_for_name, value);
-  }
 
   return false;
 }
@@ -309,37 +306,6 @@ bool FormMCPSchema::ValidateSelectData(const ControlVector& controls_for_name,
   return true;
 }
 
-bool FormMCPSchema::ValidateFileData(const ControlVector& controls_for_name,
-                                     const JSONValue& value) {
-  if (controls_for_name.size() != 1u) {
-    return false;
-  }
-  auto* input = To<HTMLInputElement>(controls_for_name.front().Get());
-  CHECK(input);
-
-  auto is_absolute_path_string = [](const JSONValue& value) -> bool {
-    String path_string;
-    if (ToString(value, path_string)) {
-      return StringToFilePath(path_string).IsAbsolute();
-    }
-    return false;
-  };
-
-  if (input->Multiple()) {
-    const JSONArray* array = JSONArray::Cast(&value);
-    if (!array) {
-      return false;
-    }
-    for (const JSONValue& item : *array) {
-      if (!is_absolute_path_string(item)) {
-        return false;
-      }
-    }
-    return true;
-  }
-  return is_absolute_path_string(value);
-}
-
 void FormMCPSchema::FillParameterData(const String& name,
                                       const JSONValue& value) {
   auto it = name_to_controls_.find(name);
@@ -365,8 +331,6 @@ void FormMCPSchema::FillParameterData(const String& name,
     FillRadioData(*controls_for_name, value);
   } else if (IsColor(*controls_for_name)) {
     FillTextData(*controls_for_name, value);
-  } else if (IsFile(*controls_for_name)) {
-    FillFileData(*controls_for_name, value);
   }
 }
 
@@ -409,9 +373,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeParameterSchema(
   }
   if (IsColor(*controls_for_name)) {
     return ComputeColorParameterSchema(*controls_for_name, required);
-  }
-  if (IsFile(*controls_for_name)) {
-    return ComputeFileParameterSchema(*controls_for_name, required);
   }
 
   return nullptr;
@@ -677,27 +638,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeColorParameterSchema(
   return schema;
 }
 
-std::unique_ptr<JSONObject> FormMCPSchema::ComputeFileParameterSchema(
-    const ControlVector& controls_for_name,
-    bool& required) {
-  HTMLInputElement* element =
-      To<HTMLInputElement>(controls_for_name.front().Get());
-  CHECK(element);
-  auto schema = std::make_unique<JSONObject>();
-  if (element->Multiple()) {
-    schema->SetString("type", "array");
-    auto items_object = std::make_unique<JSONObject>();
-    items_object->SetString("type", "string");
-    schema->SetObject("items", std::move(items_object));
-  } else {
-    schema->SetString("type", "string");
-  }
-  AddTitle(*element, *schema);
-  AddDescription(*element, *schema);
-  required = element->IsRequired();
-  return schema;
-}
-
 // Note: Fill* functions may assume that the incoming value passed
 // the corresponding Validate* function.
 
@@ -804,33 +744,6 @@ void FormMCPSchema::FillSelectData(const ControlVector& controls_for_name,
   }
 
   select.SelectMultipleOptions(selected_indices);
-}
-
-void FormMCPSchema::FillFileData(const ControlVector& controls_for_name,
-                                 const JSONValue& value) {
-  // TODO(crbug.com/481211432): NEEDS PRIVACY REVIEW BEFORE SHIPPING
-  Vector<String> paths;
-  auto* file_input = To<HTMLInputElement>(controls_for_name.front().Get());
-  if (file_input->Multiple()) {
-    const JSONArray* array = JSONArray::Cast(&value);
-    if (!array) {
-      return;
-    }
-    for (const JSONValue& item : *array) {
-      String path;
-      if (!ToString(item, path)) {
-        return;
-      }
-      paths.push_back(path);
-    }
-  } else {
-    String path;
-    if (!ToString(value, path)) {
-      return;
-    }
-    paths.push_back(path);
-  }
-  file_input->SetFilesFromPaths(paths);
 }
 
 void FormMCPSchema::AddTitle(HTMLFormControlElement& control, JSONObject& obj) {
@@ -986,11 +899,6 @@ bool FormMCPSchema::IsColor(HTMLFormControlElement& control) const {
   return input && input->FormControlType() == FormControlType::kInputColor;
 }
 
-bool FormMCPSchema::IsFile(HTMLFormControlElement& control) const {
-  auto* input = DynamicTo<HTMLInputElement>(control);
-  return input && input->FormControlType() == FormControlType::kInputFile;
-}
-
 bool FormMCPSchema::IsText(const ControlVector& controls_for_name) const {
   return controls_for_name.size() == 1u && IsText(*controls_for_name.front());
 }
@@ -1037,10 +945,6 @@ bool FormMCPSchema::IsRadio(const ControlVector& controls_for_name) const {
 
 bool FormMCPSchema::IsColor(const ControlVector& controls_for_name) const {
   return controls_for_name.size() == 1u && IsColor(*controls_for_name.front());
-}
-
-bool FormMCPSchema::IsFile(const ControlVector& controls_for_name) const {
-  return controls_for_name.size() == 1u && IsFile(*controls_for_name.front());
 }
 
 }  // namespace blink
