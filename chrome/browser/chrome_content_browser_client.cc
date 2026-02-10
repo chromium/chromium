@@ -4321,10 +4321,13 @@ bool ChromeContentBrowserClient::CanCreateWindow(
     content::OpenURLParams url_params(
         target_url, referrer, disposition,
         ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL, true);
+    content::WebContents* responsible_web_contents =
+        web_contents->GetResponsibleWebContents();
+    bool is_from_embedded_page = web_contents != responsible_web_contents;
     if (contextual_tasks_ui_service &&
         contextual_tasks_ui_service->HandleNavigation(
-            std::move(url_params), web_contents,
-            /*is_from_embedded_page=*/false,
+            std::move(url_params), responsible_web_contents,
+            is_from_embedded_page,
             /*is_to_new_tab=*/true)) {
       return false;
     }

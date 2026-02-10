@@ -613,6 +613,12 @@ void ContextualTasksUiService::StartAccessTokenFetch() {
       signin::AccessTokenFetcher::Mode::kWaitUntilRefreshTokenAvailable);
 }
 
+void ContextualTasksUiService::OnShareUrlNavigation(const GURL& url) {
+  NavigateParams params(profile_, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+}
+
 bool ContextualTasksUiService::HandleNavigationImpl(
     content::OpenURLParams url_params,
     content::WebContents* source_contents,
@@ -656,6 +662,17 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   // unless it is the embedded page.
   if (is_from_embedded_page &&
       IsContextualTasksUrl(source_contents->GetLastCommittedURL())) {
+    if (IsShareUrl(url_params.url)) {
+      // Since the web content will no longer be hosted in the side panel, make
+      // sure to remove the param that makes the page render for it.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ContextualTasksUiService::OnShareUrlNavigation,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         lens::RemoveSidePanelURLParameters(url_params.url)));
+      return true;
+    }
+
     // Ignore navigation triggered by UI.
     if (!url_params.is_renderer_initiated) {
       return false;
@@ -1045,6 +1062,12 @@ bool ContextualTasksUiService::IsSearchResultsUrl(const GURL& url) {
 
   return true;
 }
+
+
+bool ContextualTasksUiService::IsShareUrl(const GURL& url) {
+  return url.query().find("https%3A%2F%2Fshare.google%2Faimode") != std::string::npos;
+}
+
 
 bool ContextualTasksUiService::IsValidSearchResultsPage(const GURL& url) {
   if (!IsSearchResultsUrl(url)) {
