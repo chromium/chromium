@@ -687,7 +687,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kResumption"/>
 </enum>
 
-<!-- LINT.ThenChange(//net/quic/quic_chromium_client_session.cc:MTCResult) -->
+<!-- LINT.ThenChange(//net/quic/quic_chromium_client_session.h:MTCResult) -->
 
 <!-- LINT.IfChange(MultiplexedSessionCreationInitiator) -->
 

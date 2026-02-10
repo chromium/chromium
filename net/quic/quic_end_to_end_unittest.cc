@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "crypto/keypair.h"
 #include "net/base/completion_once_callback.h"
@@ -382,6 +383,7 @@ TEST_F(QuicEndToEndMTCTest, SimpleConnection) {
 
   AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
 
+  base::HistogramTester histograms;
   TestTransactionConsumer consumer(DEFAULT_PRIORITY,
                                    transaction_factory_.get());
   consumer.Start(&request_, NetLogWithSource());
@@ -389,6 +391,38 @@ TEST_F(QuicEndToEndMTCTest, SimpleConnection) {
 
   EXPECT_EQ(consumer.response_info()->ssl_info.cert->signature_algorithm(),
             bssl::SignatureAlgorithm::kMtcProofDraftDavidben08);
+
+  // Not logged, since the test does not configure the client's MTC metadata or
+  // Trust Anchor IDs, we have no client MTC TAI, client_landmark, or metadata
+  // update time (this test is not yet representative of the real-world
+  // conditions where MTCs would be used).
+  // TODO(crbug.com/482083310): update the test setup to be more realistic, and
+  // add tests of other cases.
+  histograms.ExpectTotalCount("Net.QuicSession.MTCLandmarkDelta.OldClient", 0);
+  histograms.ExpectTotalCount("Net.QuicSession.MTCLandmarkDelta.CurrentClient",
+                              0);
+  histograms.ExpectTotalCount("Net.QuicSession.MTCMetadataAge", 0);
+
+  histograms.ExpectUniqueSample("Net.QuicSession.HasMTCMetadata", /*sample=*/0,
+                                /*expected_bucket_count=*/1);
+
+  histograms.ExpectUniqueSample("Net.QuicSession.MTCResult",
+                                /*sample=*/MTCResult::kValidMTC,
+                                /*expected_bucket_count=*/1);
+
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.CertVerificationResult.MTCAdvertised",
+      /*sample=*/-net::OK,
+      /*expected_bucket_count=*/1);
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.CertVerificationResult.MTCReceived",
+      /*sample=*/-net::OK,
+      /*expected_bucket_count=*/1);
+
+  // These should be logged, but we don't know what the exact value will be, so
+  // just check that a sample is present.
+  histograms.ExpectTotalCount("Net.QuicSession.HandshakeConfirmedTime.MTC", 1);
+  histograms.ExpectTotalCount("Net.QuicSession.TLSHandshakeBytes.MTC", 1);
 }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 

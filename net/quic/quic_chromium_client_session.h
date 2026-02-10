@@ -172,6 +172,21 @@ enum class EcnPermutations {
   kMaxValue = kNotEctEct1Ect0Ce,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(MTCResult)
+enum class MTCResult {
+  kValidMTC = 0,
+  kInvalidMTC = 1,
+  kClassicalCertExpectedMTC = 2,
+  kClassicalCertOldClient = 3,
+  kClassicalCertUnknownLandmarkDelta = 4,
+  kResumption = 5,
+  kMaxValue = kResumption,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:MTCResult)
+
 class NET_EXPORT_PRIVATE QuicChromiumClientSession
     : public quic::QuicSpdyClientSessionBase,
       public MultiplexedSession,

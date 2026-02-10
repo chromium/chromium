@@ -3040,21 +3040,6 @@ static std::vector<std::vector<uint8_t>> ServerTrustAnchorIDs(SSL* ssl) {
       UNSAFE_BUFFERS(base::span(peer_trust_anchors, peer_trust_anchors_len)));
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(MTCResult)
-enum class MTCResult {
-  kValidMTC = 0,
-  kInvalidMTC = 1,
-  kClassicalCertExpectedMTC = 2,
-  kClassicalCertOldClient = 3,
-  kClassicalCertUnknownLandmarkDelta = 4,
-  kResumption = 5,
-  kMaxValue = kResumption,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:MTCResult)
-
 constexpr uint8_t kMtcExperimentBaseId[] = {0x82, 0xda, 0x4b, 0x30, 0x07};
 
 // Logs the Net.QuicSession.MTCResult and Net.QuicSession.MTCLandmarkDelta
