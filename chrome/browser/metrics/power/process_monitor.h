@@ -36,16 +36,23 @@ enum MonitoredProcessType {
   kCount,
 };
 
-MonitoredProcessType
-GetMonitoredProcessTypeForNonRendererChildProcessForTesting(
-    const content::ChildProcessData& data);
-
 struct ProcessInfo {
-  ProcessInfo(MonitoredProcessType type,
-              std::unique_ptr<base::ProcessMetrics> process_metrics);
+  struct Key {
+    Key(MonitoredProcessType type, std::optional<std::string> subtype);
+    Key(const Key& other);
+    ~Key();
+
+    bool operator<(const Key& other) const;
+    bool operator==(const Key& other) const;
+
+    MonitoredProcessType type;
+    std::optional<std::string> subtype;
+  };
+
+  ProcessInfo(Key key, std::unique_ptr<base::ProcessMetrics> process_metrics);
   ~ProcessInfo();
 
-  MonitoredProcessType type;
+  Key key;
   std::unique_ptr<base::ProcessMetrics> process_metrics;
   // The time at which the first process sample was taken (i.e. When the
   // constructor is called). Used to distribute the calculated resource usage of
@@ -95,7 +102,7 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
     // Provides aggregated sampled metrics for all Chrome process of type
     // `type`. This is called once per process type whenever
     // `SampleAllProcesses` is called.
-    virtual void OnMetricsSampled(MonitoredProcessType type,
+    virtual void OnMetricsSampled(ProcessInfo::Key key,
                                   const Metrics& metrics) {}
 
     // Provides the aggregated sampled metrics from every Chrome process. This
@@ -158,7 +165,10 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
 
   // The metrics for the processes that exited during the last interval. Added
   // to the current interval's sample and then reset to zero.
-  std::array<Metrics, MonitoredProcessType::kCount> exited_processes_metrics_;
+  std::map<ProcessInfo::Key, Metrics> exited_processes_metrics_;
 };
+
+ProcessInfo::Key GetMonitoredProcessInfoKeyForNonRendererChildProcessForTesting(
+    const content::ChildProcessData& data);
 
 #endif  // CHROME_BROWSER_METRICS_POWER_PROCESS_MONITOR_H_
