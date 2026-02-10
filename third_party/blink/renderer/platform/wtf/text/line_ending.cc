@@ -157,6 +157,10 @@ void NormalizeLineEndingsToLF(const std::string& from, Vector<char>& result) {
   }
 }
 
+String NormalizeLineEndingsToLF(const String& src) {
+  return String(src).Replace("\r\n", "\n").Replace('\r', '\n');
+}
+
 String NormalizeLineEndingsToCRLF(const String& src) {
   wtf_size_t length = src.length();
   if (length == 0)

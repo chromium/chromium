@@ -94,6 +94,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -614,9 +615,7 @@ DocumentFragment* CreateFragmentFromText(const EphemeralRange& context,
   if (text.empty())
     return fragment;
 
-  String string = text;
-  string.Replace("\r\n", "\n");
-  string.Replace('\r', '\n');
+  String string = NormalizeLineEndingsToLF(text);
 
   if (!IsRichlyEditablePosition(context.StartPosition()) ||
       ShouldPreserveNewline(context)) {

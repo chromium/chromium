@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -86,11 +87,6 @@ static inline unsigned ComputeLengthForAPIValue(const String& text) {
       crlf_count++;
   }
   return text.length() - crlf_count;
-}
-
-static inline void ReplaceCRWithNewLine(String& text) {
-  text.Replace("\r\n", "\n");
-  text.Replace('\r', '\n');
 }
 
 HTMLTextAreaElement::HTMLTextAreaElement(Document& document)
@@ -514,8 +510,7 @@ void HTMLTextAreaElement::SetValueCommon(const String& new_value,
                                          WebAutofillState autofill_state) {
   // Code elsewhere normalizes line endings added by the user via the keyboard
   // or pasting.  We normalize line endings coming from JavaScript here.
-  String normalized_value = new_value;
-  ReplaceCRWithNewLine(normalized_value);
+  String normalized_value = NormalizeLineEndingsToLF(new_value);
 
   // Clear the suggested value. Use the base class version to not trigger a view
   // update.
@@ -794,9 +789,8 @@ HTMLElement* HTMLTextAreaElement::UpdatePlaceholderText() {
   } else {
     placeholder->RemoveInlineStyleProperty(CSSPropertyID::kUserSelect);
   }
-  String normalized_value = placeholder_text;
   // https://html.spec.whatwg.org/multipage/form-elements.html#attr-textarea-placeholder
-  ReplaceCRWithNewLine(normalized_value);
+  String normalized_value = NormalizeLineEndingsToLF(placeholder_text);
   placeholder->setTextContent(normalized_value);
   return placeholder;
 }

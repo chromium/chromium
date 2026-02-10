@@ -41,6 +41,9 @@ namespace blink {
 // Normalize all line-endings in the given string to CRLF.
 WTF_EXPORT String NormalizeLineEndingsToCRLF(const String& from);
 
+// Normalize all line-endings in the given string to LF.
+WTF_EXPORT String NormalizeLineEndingsToLF(const String& from);
+
 // Normalize all line-endings in the given string to LF and append the result to
 // the given buffer.
 WTF_EXPORT void NormalizeLineEndingsToLF(const std::string& from,
