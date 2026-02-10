@@ -148,10 +148,16 @@
 #include "components/search/ntp_features.h"
 #include "components/search/search.h"
 #include "content/public/common/content_constants.h"
+#include "extensions/common/extension_features.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_browser_window_helper.h"
-#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/search_engines/default_search_extension_controlled_controller.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/pdf/infobar/pdf_infobar_controller.h"
@@ -847,6 +853,16 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
       std::make_unique<WindowsTaskbarIconUpdater>(*browser_view);
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kSearchEngineExplicitChoiceDialog)) {
+    default_search_extension_controlled_controller_ =
+        GetUserDataFactory()
+            .CreateInstance<DefaultSearchExtensionControlledController>(
+                *browser_, *browser_, *browser_->GetProfile());
+  }
+#endif
+
   zoom_bubble_coordinator_ =
       GetUserDataFactory().CreateInstance<ZoomBubbleCoordinator>(*browser_,
                                                                  *browser_view);
@@ -896,6 +912,10 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   if (download_toolbar_ui_controller_) {
     download_toolbar_ui_controller_->TearDownPreBrowserWindowDestruction();
   }
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+  default_search_extension_controlled_controller_.reset();
 #endif
 
   zoom_bubble_coordinator_.reset();

@@ -129,6 +129,10 @@ class DownloadToolbarUIController;
 class OverscrollPrefManager;
 #endif  // defined(USE_AURA)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+class DefaultSearchExtensionControlledController;
+#endif
+
 namespace extensions {
 class BrowserExtensionWindowController;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -763,7 +767,12 @@ class BrowserWindowFeatures {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<extensions::ExtensionBrowserWindowHelper>
       extension_browser_window_helper_;
-#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  std::unique_ptr<DefaultSearchExtensionControlledController>
+      default_search_extension_controlled_controller_;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Listens for browser-related breadcrumb events to be added to crash reports.
   std::unique_ptr<BreadcrumbManagerBrowserAgent>

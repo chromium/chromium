@@ -51,11 +51,6 @@ ShownExtensionSet* GetShownExtensionSet(Profile* profile,
   return shown_set;
 }
 
-bool HasShownFor(Profile* profile, const ExtensionId& id) {
-  const ShownExtensionSet* shown_set = GetShownExtensionSet(profile, false);
-  return shown_set && shown_set->shown_ids.count(id) > 0;
-}
-
 void MarkShownFor(Profile* profile, const ExtensionId& id) {
   ShownExtensionSet* shown_set = GetShownExtensionSet(profile, true);
   DCHECK(shown_set);
@@ -96,6 +91,24 @@ void ExtensionSettingsOverriddenDialog::RegisterProfilePrefs(
                              base::Time());
 }
 
+// static
+bool ExtensionSettingsOverriddenDialog::HasShownFor(Profile* profile,
+                                                    const ExtensionId& id) {
+  const ShownExtensionSet* shown_set = GetShownExtensionSet(profile, false);
+  return shown_set && shown_set->shown_ids.count(id) > 0;
+}
+
+// static
+bool ExtensionSettingsOverriddenDialog::HasAcknowledgedExtension(
+    Profile* profile,
+    const ExtensionId& id,
+    const std::string& extension_acknowledged_preference_name) {
+  bool pref_state = false;
+  return extensions::ExtensionPrefs::Get(profile)->ReadPrefAsBoolean(
+             id, extension_acknowledged_preference_name, &pref_state) &&
+         pref_state;
+}
+
 bool ExtensionSettingsOverriddenDialog::ShouldShow() {
   if (params_.controlling_extension_id.empty()) {
     return false;
@@ -105,7 +118,9 @@ bool ExtensionSettingsOverriddenDialog::ShouldShow() {
     return false;
   }
 
-  if (HasAcknowledgedExtension(params_.controlling_extension_id)) {
+  if (HasAcknowledgedExtension(
+          profile_, params_.controlling_extension_id,
+          params_.extension_acknowledged_preference_name)) {
     return false;
   }
 
@@ -157,7 +172,9 @@ void ExtensionSettingsOverriddenDialog::OnDialogShown() {
 void ExtensionSettingsOverriddenDialog::HandleDialogResult(
     DialogResult result) {
   DCHECK(!params_.controlling_extension_id.empty());
-  DCHECK(!HasAcknowledgedExtension(params_.controlling_extension_id));
+  DCHECK(!HasAcknowledgedExtension(
+      profile_, params_.controlling_extension_id,
+      params_.extension_acknowledged_preference_name));
   DCHECK(HasShownFor(profile_, params_.controlling_extension_id));
 
   // It's possible the extension was removed or disabled while the dialog was
@@ -182,6 +199,13 @@ void ExtensionSettingsOverriddenDialog::HandleDialogResult(
   }
 
   base::UmaHistogramEnumeration(params_.dialog_result_histogram_name, result);
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kSearchEngineExplicitChoiceDialog)) {
+    CHECK(dialog_result_callback_);
+    std::move(dialog_result_callback_).Run(result);
+  }
+
   if (base::FeatureList::IsEnabled(
           features::kHappinessTrackingSurveysForDesktopSEHijacking)) {
     HatsService* hats_service = HatsServiceFactory::GetForProfile(
@@ -190,6 +214,13 @@ void ExtensionSettingsOverriddenDialog::HandleDialogResult(
       hats_service->LaunchDelayedSurvey(kHatsSurveyTriggerSEHijacking, 5000);
     }
   }
+}
+
+void ExtensionSettingsOverriddenDialog::SetDialogResultCallback(
+    DialogResultCallback callback) {
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kSearchEngineExplicitChoiceDialog));
+  dialog_result_callback_ = std::move(callback);
 }
 
 void ExtensionSettingsOverriddenDialog::DisableControllingExtension() {
@@ -202,14 +233,6 @@ void ExtensionSettingsOverriddenDialog::AcknowledgeControllingExtension() {
   extensions::ExtensionPrefs::Get(profile_)->UpdateExtensionPref(
       params_.controlling_extension_id,
       params_.extension_acknowledged_preference_name, base::Value(true));
-}
-
-bool ExtensionSettingsOverriddenDialog::HasAcknowledgedExtension(
-    const ExtensionId& id) {
-  bool pref_state = false;
-  return extensions::ExtensionPrefs::Get(profile_)->ReadPrefAsBoolean(
-             id, params_.extension_acknowledged_preference_name, &pref_state) &&
-         pref_state;
 }
 
 bool ExtensionSettingsOverriddenDialog::ShouldShowForSimpleOverrideExtension(

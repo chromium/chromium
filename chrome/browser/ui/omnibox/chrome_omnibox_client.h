@@ -48,6 +48,9 @@ class ChromeOmniboxClient final : public OmniboxClient {
   bool IsPasteAndGoEnabled() const override;
   bool IsDefaultSearchProviderEnabled() const override;
   SessionID GetSessionID() const override;
+  bool ShowConfirmationDialogIfDefaultSearchExtensionControlled(
+      const GURL& url,
+      base::OnceCallback<void(bool)> callback) override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;

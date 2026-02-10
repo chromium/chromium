@@ -124,6 +124,11 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/search_engines/default_search_extension_controlled_controller.h"
+#include "extensions/common/extension_features.h"
+#endif
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -222,6 +227,48 @@ bool ChromeOmniboxClient::IsDefaultSearchProviderEnabled() const {
 
 SessionID ChromeOmniboxClient::GetSessionID() const {
   return sessions::SessionTabHelper::IdForTab(location_bar_->GetWebContents());
+}
+
+bool ChromeOmniboxClient::
+    ShowConfirmationDialogIfDefaultSearchExtensionControlled(
+        const GURL& url,
+        base::OnceCallback<void(bool)> callback) {
+#if BUILDFLAG(ENABLE_EXTENSIONS) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kSearchEngineExplicitChoiceDialog));
+  if (!browser_) {
+    return false;
+  }
+
+  auto* controller = DefaultSearchExtensionControlledController::From(browser_);
+  if (!controller) {
+    return false;
+  }
+
+  if (!controller->ShouldRequestConfirmationForExtensionDse(url)) {
+    return false;
+  }
+
+  content::WebContents* web_contents = location_bar_->GetWebContents();
+  if (!web_contents) {
+    return false;
+  }
+
+  controller->ShowConfirmationDialog(
+      *web_contents,
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> client_callback,
+             SettingsOverriddenDialogController::DialogResult result) {
+            std::move(client_callback)
+                .Run(result == SettingsOverriddenDialogController::
+                                   DialogResult::kKeepNewSettings);
+          },
+          std::move(callback)));
+
+  return true;
+#else
+  return false;
+#endif
 }
 
 PrefService* ChromeOmniboxClient::GetPrefs() {
@@ -832,8 +879,16 @@ void ChromeOmniboxClient::OnAutocompleteAccept(
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kSearchEngineExplicitChoiceDialog)) {
+    extensions::MaybeShowExtensionControlledSearchNotification(
+        location_bar_->GetWebContents(), match_type);
+  }
+#else
   extensions::MaybeShowExtensionControlledSearchNotification(
       location_bar_->GetWebContents(), match_type);
+#endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (AutocompleteMatch::IsSearchType(match_type)) {

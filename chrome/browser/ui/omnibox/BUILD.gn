@@ -130,6 +130,7 @@ source_set("impl") {
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/search",
+      "//chrome/browser/ui/search_engines",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/webui:webui_util",

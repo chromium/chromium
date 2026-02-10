@@ -107,10 +107,9 @@ class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
 
   auto PerformSearchFromOmnibox() {
     return Do([this]() {
-      ui_test_utils::SendToOmniboxAndSubmit(browser(), "Penguin",
-                                            base::TimeTicks::Now());
-      content::WaitForLoadStop(
-          browser()->tab_strip_model()->GetActiveWebContents());
+      ui_test_utils::SendToOmniboxAndSubmit(
+          browser(), "Penguin", base::TimeTicks::Now(),
+          /*wait_for_autocomplete_done=*/false);
     });
   }
 

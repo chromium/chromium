@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 source_set("search_engines") {
   public = [
     "edit_search_engine_controller.h",
@@ -48,6 +50,20 @@ source_set("search_engines") {
     "//third_party/icu:icuuc_public",
     "//url",
   ]
+
+  if (is_win || is_mac) {
+    if (enable_extensions_core) {
+      public += [ "default_search_extension_controlled_controller.h" ]
+      sources += [ "default_search_extension_controlled_controller.cc" ]
+
+      deps += [
+        "//chrome/browser/extensions",
+        "//chrome/browser/ui/extensions",
+        "//chrome/browser/ui/tabs:tabs_public",
+        "//components/tabs:public",
+      ]
+    }
+  }
 }
 
 source_set("unit_tests") {
@@ -56,14 +72,28 @@ source_set("unit_tests") {
     "keyword_editor_controller_unittest.cc",
     "template_url_table_model_unittest.cc",
   ]
+
   deps = [
     ":search_engines",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/extensions",
     "//chrome/test:test_support",
     "//components/omnibox/common",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
   ]
+
+  if (is_win || is_mac) {
+    if (enable_extensions_core) {
+      sources +=
+          [ "default_search_extension_controlled_controller_unittest.cc" ]
+      deps += [
+        "//chrome/browser/search_engines",
+        "//chrome/browser/ui/tabs:test_support",
+        "//components/tabs:test_support",
+      ]
+    }
+  }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.

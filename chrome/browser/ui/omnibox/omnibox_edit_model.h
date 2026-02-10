@@ -643,6 +643,15 @@ class OmniboxEditModel {
                  const std::u16string& pasted_text,
                  base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
+  void OnDefaultSearchExtensionDialogDone(
+      OmniboxPopupSelection selection,
+      AutocompleteMatch match,
+      WindowOpenDisposition disposition,
+      const GURL& alternate_nav_url,
+      const std::u16string& pasted_text,
+      base::TimeTicks match_selection_timestamp,
+      bool proceed);
+
   // Updates the feedback type on the match at the given index and schedules a
   // repaint to update the suggestion view. On negative feedback, also shows the
   // feedback form.

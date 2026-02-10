@@ -46,6 +46,12 @@ bookmarks::BookmarkModel* OmniboxClient::GetBookmarkModel() {
   return nullptr;
 }
 
+bool OmniboxClient::ShowConfirmationDialogIfDefaultSearchExtensionControlled(
+    const GURL& url,
+    base::OnceCallback<void(bool)> callback) {
+  return false;
+}
+
 TemplateURLService* OmniboxClient::GetTemplateURLService() {
   return nullptr;
 }

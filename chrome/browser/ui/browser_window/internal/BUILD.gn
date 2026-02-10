@@ -120,6 +120,10 @@ source_set("internal") {
         "//chrome/browser/ui/pdf/infobar",
         "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar",
       ]
+
+      if (enable_extensions_core) {
+        deps += [ "//chrome/browser/ui/search_engines" ]
+      }
     }
 
     if (is_win || is_mac || is_linux) {

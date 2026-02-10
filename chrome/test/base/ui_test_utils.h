@@ -364,7 +364,8 @@ void WaitForBrowserSetLastActive(
 void SendToOmniboxAndSubmit(
     BrowserWindowInterface* browser,
     std::string_view input,
-    base::TimeTicks match_selection_timestamp = base::TimeTicks());
+    base::TimeTicks match_selection_timestamp = base::TimeTicks(),
+    bool wait_for_autocomplete_done = true);
 
 // Gets the first browser that is not in the specified set.
 Browser* GetBrowserNotInSet(
