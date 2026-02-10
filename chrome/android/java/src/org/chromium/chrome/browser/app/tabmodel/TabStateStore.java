@@ -14,7 +14,6 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.CombinedTabRestorer.CombinedTabRestorerDelegate;
-import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -28,7 +27,6 @@ import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageService.SharedStoreData;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab.WebContentsState;
-import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -46,10 +44,9 @@ public class TabStateStore implements TabPersistentStore {
     private static final String TAG = "TabStateStore";
 
     private @MonotonicNonNull TabStateStorageService mTabStateStorageService;
-    private final PersistentStoreMigrationManager mMigrationManager;
+    private final TabCreatorManager mTabCreatorManager;
     private final TabModelSelector mTabModelSelector;
     private final String mWindowTag;
-    private final TabCreatorManager mTabCreatorManager;
     private final TabPersistencePolicy mTabPersistencePolicy;
     private final @Nullable CipherFactory mCipherFactory;
     private final TabStateAttributes.Observer mAttributesObserver =
@@ -125,7 +122,6 @@ public class TabStateStore implements TabPersistentStore {
             };
 
     /**
-     * @param migrationManager The migration manager associated with the window.
      * @param tabModelSelector The {@link TabModelSelector} to observe changes in. Regardless of the
      *     mode this store is in, this will be the real selector with real models. This should be
      *     treated as a read only object, no modifications should go through it.
@@ -137,13 +133,11 @@ public class TabStateStore implements TabPersistentStore {
      *     possible to load/save off the record nodes.
      */
     public TabStateStore(
-            PersistentStoreMigrationManager migrationManager,
             TabModelSelector tabModelSelector,
             String windowTag,
             TabCreatorManager tabCreatorManager,
             TabPersistencePolicy tabPersistencePolicy,
             @Nullable CipherFactory cipherFactory) {
-        mMigrationManager = migrationManager;
         mTabModelSelector = tabModelSelector;
         mWindowTag = windowTag;
         mTabCreatorManager = tabCreatorManager;
@@ -176,8 +170,7 @@ public class TabStateStore implements TabPersistentStore {
             mHasCipherFactory = false;
         }
         mModelTrackingManager =
-                new ModelTrackingOrchestrator(
-                        mWindowTag, mMigrationManager, mTabModelSelector, mHasCipherFactory);
+                new ModelTrackingOrchestrator(mWindowTag, mTabModelSelector, mHasCipherFactory);
 
         mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
         TabModel incognitoModel = mTabModelSelector.getModel(true);
@@ -326,7 +319,6 @@ public class TabStateStore implements TabPersistentStore {
         assertInitialized();
         // Clearing the state globally is intentional.
         mTabStateStorageService.clearState();
-        mMigrationManager.onAllShadowStoresRazed();
     }
 
     private void cancelLoadingTabs(boolean incognito) {
@@ -386,12 +378,6 @@ public class TabStateStore implements TabPersistentStore {
         assert windowId != TabWindowManager.INVALID_WINDOW_ID;
         String windowTag = Integer.toString(windowId);
         mTabStateStorageService.clearWindow(windowTag);
-
-        PersistentStoreMigrationManager migrationManager =
-                TabWindowManagerSingleton.getInstance()
-                        .getPersistentStoreMigrationManagerById(windowId);
-        assert migrationManager != null;
-        migrationManager.onShadowStoreRazed();
     }
 
     @Override
@@ -542,7 +528,6 @@ public class TabStateStore implements TabPersistentStore {
                 sharedStoreData.onStoreRazed();
             } else {
                 mTabStateStorageService.clearWindow(mWindowTag);
-                mMigrationManager.onShadowStoreRazed();
             }
         }
     }
