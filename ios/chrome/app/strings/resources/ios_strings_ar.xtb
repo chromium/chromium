@@ -925,7 +925,7 @@
 <translation id="461440297010471931">‏البحث من خلال Google</translation>
 <translation id="4619564267100705184">إثبات هويّتك</translation>
 <translation id="4621768135601674446">فتح خيارات "وضع القراءة"</translation>
-<translation id="4627107755957573804">يمكن السماح للمواقع الإلكترونية والتطبيقات بترقية الحسابات الحالية لاستخدام مفاتيح المرور</translation>
+<translation id="4627107755957573804">للسماح للمواقع الإلكترونية والتطبيقات بترقية الحسابات الحالية لكي تستخدم مفاتيح المرور</translation>
 <translation id="4629065796475200039">لم يتم استيراد كلمة المرور</translation>
 <translation id="4630212057753624203">فقاعة معلوماتية</translation>
 <translation id="4631335160486397366">هناك <ph name="COUNT" /> كلمة مرور مستخدَمة لحساب آخر</translation>
@@ -1081,7 +1081,7 @@
 <translation id="514154868070499296">الخط: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">الخروج من "أداة التبديل بين علامات التبويب"</translation>
 <translation id="5148717509369231739">‏استيراد بيانات Safari</translation>
-<translation id="5152483358138813104">تسجيل الدخول بشكل أسرع على جميع أجهزتك</translation>
+<translation id="5152483358138813104">سجِّل الدخول بسرعة أكبر على جميع أجهزتك</translation>
 <translation id="5155502059906700593">يمكنك تبديل موضع شريط العناوين إلى أعلى الشاشة أو أسفلها.</translation>
 <translation id="5157638238828697074">حدث خطأ. تعذَّر فتح التطبيق.</translation>
 <translation id="5163417375525818870">‏ملفات PDF</translation>
@@ -1092,7 +1092,7 @@
 <translation id="5177141896043341906">لديك كلمات مرور ضعيفة يبلغ عددها <ph name="NUMBER_OF_PASSWORDS" /> ويمكن أن تعرّضك لمشاكل أمنية.</translation>
 <translation id="5181140330217080051">تنزيل</translation>
 <translation id="5186185447130319458">خاص</translation>
-<translation id="5189431381114029336">حفظ مفتاح المرور الأول</translation>
+<translation id="5189431381114029336">احفظ مفتاح المرور الأول</translation>
 <translation id="518997337573684769">جارٍ إرسال تقارير الأعطال…</translation>
 <translation id="519530786644929958">تعذّر تنزيل الملف ولا يمكن إعادة المحاولة.</translation>
 <translation id="5197255632782567636">الإنترنت</translation>
@@ -2031,7 +2031,7 @@
 <translation id="8571019948162152515">حذف <ph name="FILENAME" />؟</translation>
 <translation id="8571213806525832805">آخر 4 أسابيع</translation>
 <translation id="8577056989960190117">الملء التلقائي لسنة انتهاء الصلاحية <ph name="YEAR" /></translation>
-<translation id="8587001564479545614">إنشاء رقم تعريف شخصي لاسترداد الحساب</translation>
+<translation id="8587001564479545614">أنشئ رقم تعريف شخصي لاسترداد الحساب</translation>
 <translation id="8588404856427128947">غير مفعَّل</translation>
 <translation id="8590286732816598906">مجموعة علامات التبويب "<ph name="GROUP_TITLE" />"، القائمة.</translation>
 <translation id="8600272508328041907">التبديل إلى خيار "ترجمة الصفحة بأكملها"</translation>

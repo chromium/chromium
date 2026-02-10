@@ -538,7 +538,7 @@
 <translation id="3032704072014531631">您将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且<ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 将无法再在各项 Google 服务中与您互动</translation>
 <translation id="3034496853223708513"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，也不能再在各项 Google 服务中与您互动</translation>
 <translation id="3037177537145227281">正在跟踪价格</translation>
-<translation id="3038136505713492417">请验证您的身份，以便在此设备上使用您的通行密钥</translation>
+<translation id="3038136505713492417">如需在此设备上使用通行密钥，请先验证身份</translation>
 <translation id="3039671569659952257">删除文件夹</translation>
 <translation id="3053332585453689122">将您访问过的网址以及网页内容、下载内容、扩展程序活动和系统信息的少量样本发送至“Google 安全浏览”功能，以检查这些内容是否有害。</translation>
 <translation id="3055102495753300780">信息存储空间</translation>
@@ -1869,7 +1869,7 @@
 <translation id="797874245254030665">从任意应用中获取您的密码和通行密钥</translation>
 <translation id="7982789257301363584">网络</translation>
 <translation id="798299424881500862">橙色主题</translation>
-<translation id="7987685713885608670">为了提高安全性，请先在设备上对密码进行加密，然后再将其保存到 Google 密码管理工具中。</translation>
+<translation id="7987685713885608670">为提升安全性，请先在设备上将密码加密，然后再保存到 Google 密码管理工具中。</translation>
 <translation id="798991908416757345">标签页分组不可用</translation>
 <translation id="7993170188789685695">点按两次即可关闭此通知。</translation>
 <translation id="7996239959906074962">设置…</translation>

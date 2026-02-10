@@ -136,7 +136,7 @@
 <translation id="1492417797159476138">Você já salvou este nome de usuário para este site</translation>
 <translation id="1497590942294823549">Menu → Gerenciador de senhas</translation>
 <translation id="1498283581832036924">Sua conta de <ph name="WEBSITE" /> não será excluída.</translation>
-<translation id="1503814213414825943">Selecione as contas que você quer exportar para outro app.</translation>
+<translation id="1503814213414825943">Escolha quais contas serão exportadas para outro app.</translation>
 <translation id="1506061864768559482">Mecanismo de pesquisa</translation>
 <translation id="1506063256525392513">Esse app permite que você tire fotos, faça upload delas e leia QR codes</translation>
 <translation id="1508263560970797965">Continuar na navegação anônima</translation>
@@ -1677,7 +1677,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7311244614769792472">Nenhum resultado encontrado</translation>
 <translation id="7313347584264171202">Você verá suas guias anônimas aqui</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
-<translation id="7334364820047587268">Você já tem senhas dessas contas no Gerenciador de Senhas do Google. Se decidir importar uma das senhas abaixo, ela vai substituir a atual.</translation>
+<translation id="7334364820047587268">Você já tem senhas destas contas no Gerenciador de Senhas do Google. Se decidir importar uma das senhas abaixo, ela vai substituir a atual.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> por cento baixados</translation>
 <translation id="7345061034321640811">Importação não permitida</translation>
 <translation id="7352651011704765696">Algo deu errado</translation>
@@ -1869,7 +1869,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="797874245254030665">Acesse suas senhas e chaves de acesso em qualquer app</translation>
 <translation id="7982789257301363584">Rede</translation>
 <translation id="798299424881500862">Tema laranja</translation>
-<translation id="7987685713885608670">Para ter mais segurança, criptografe as senhas no dispositivo antes que elas sejam salvas no Gerenciador de senhas do Google.</translation>
+<translation id="7987685713885608670">Para ter mais segurança, criptografe as senhas no dispositivo antes que elas sejam salvas no Gerenciador de Senhas do Google.</translation>
 <translation id="798991908416757345">Os grupos de guias estão indisponíveis</translation>
 <translation id="7993170188789685695">Toque duas vezes para fechar a notificação.</translation>
 <translation id="7996239959906074962">Configurar…</translation>
