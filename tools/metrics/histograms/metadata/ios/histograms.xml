@@ -195,9 +195,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Allocator.ShimInstalled" enum="Boolean"
-    expires_after="2026-02-16">
-  <owner>rohitrao@chromium.org</owner>
+    expires_after="2027-02-10">
   <owner>justincohen@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Whether or not the allocator shim was installed successfully. False
     indicates an unexpected error at the OS level which merits investigation.
