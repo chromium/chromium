@@ -1,0 +1,221 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/web_applications/jobs/finalize_update_job.h"
+
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_origin_association_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/browser_thread.h"
+
+namespace web_app {
+
+FinalizeUpdateJob::FinalizeUpdateJob(WebAppProvider& provider,
+                                     WebAppInstallFinalizer& finalizer,
+                                     const WebAppInstallInfo& web_app_info)
+    : provider_(provider),
+      finalizer_(finalizer),
+      web_app_info_(web_app_info.Clone()),
+      app_id_(
+          GenerateAppIdFromManifestId(web_app_info_.manifest_id(),
+                                      web_app_info_.parent_app_manifest_id)) {}
+
+FinalizeUpdateJob::~FinalizeUpdateJob() = default;
+
+void FinalizeUpdateJob::Start(
+    WebAppInstallFinalizer::InstallFinalizedCallback callback) {
+  callback_ = std::move(callback);
+  webapps::ManifestId manifest_id = web_app_info_.manifest_id();
+  const WebApp* existing_web_app =
+      provider_->registrar_unsafe().GetAppById(app_id_);
+
+  if (!existing_web_app ||
+      existing_web_app->is_from_sync_and_pending_installation() ||
+      app_id_ != existing_web_app->app_id()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_), webapps::AppId(),
+                                  webapps::InstallResultCode::kWebAppDisabled));
+    return;
+  }
+
+  bool needs_scope_validation =
+      !web_app_info_.scope_extensions.empty() &&
+      !web_app_info_.validated_scope_extensions.has_value();
+  bool needs_migration_validation = !web_app_info_.migration_sources.empty();
+
+  // Remove this shortcut after the ManifestUpdateCheckCommand is deleted:
+  if (!needs_scope_validation && !needs_migration_validation) {
+    OnOriginAssociationValidatedForUpdate(OriginAssociations());
+    return;
+  }
+  OriginAssociations origin_associations;
+  if (needs_scope_validation) {
+    origin_associations.scope_extensions = web_app_info_.scope_extensions;
+  }
+  if (needs_migration_validation) {
+    origin_associations.migration_sources = web_app_info_.migration_sources;
+  }
+  provider_->origin_association_manager().GetWebAppOriginAssociations(
+      manifest_id, std::move(origin_associations),
+      base::BindOnce(&FinalizeUpdateJob::OnOriginAssociationValidatedForUpdate,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FinalizeUpdateJob::OnOriginAssociationValidatedForUpdate(
+    OriginAssociations validated_origin_associations) {
+  const WebApp* existing_web_app =
+      provider_->registrar_unsafe().GetAppById(app_id_);
+
+  if (!existing_web_app ||
+      existing_web_app->is_from_sync_and_pending_installation() ||
+      app_id_ != existing_web_app->app_id()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_), webapps::AppId(),
+                                  webapps::InstallResultCode::kWebAppDisabled));
+    return;
+  }
+
+  std::optional<WebAppScope> old_scope = existing_web_app->GetScope();
+
+  CommitCallback commit_callback =
+      base::BindOnce(&FinalizeUpdateJob::OnDatabaseCommitCompletedForUpdate,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     provider_->registrar_unsafe().GetAppShortName(app_id_),
+                     GetFileHandlerUpdateAction(), std::move(old_scope));
+
+  auto web_app = std::make_unique<WebApp>(*existing_web_app);
+  if (web_app->isolation_data().has_value()) {
+    const std::optional<IsolationData::PendingUpdateInfo>& pending_update_info =
+        web_app->isolation_data()->pending_update_info();
+    CHECK(pending_update_info.has_value())
+        << "Isolated Web Apps can only be updated if "
+           "`IsolationData::PendingUpdateInfo` is set.";
+    CHECK_EQ(web_app_info_.isolated_web_app_version(),
+             pending_update_info->version);
+    UpdateIsolationDataAndResetPendingUpdateInfo(
+        web_app.get(), pending_update_info->location,
+        pending_update_info->version, web_app_info_.iwa_update_manifest_url,
+        pending_update_info->integrity_block_data);
+  }
+
+  ScopeExtensions validated_scope_extensions =
+      web_app_info_.validated_scope_extensions.value_or(
+          validated_origin_associations.scope_extensions);
+  for (auto& scope_extension : validated_scope_extensions) {
+    // This is done to prune any queries or fragments from the scope URL which
+    // may have been skipped by WebAppOriginAssociationManager validation.
+    scope_extension = ScopeExtensionInfo::CreateForScope(
+        scope_extension.scope, scope_extension.has_origin_wildcard);
+  }
+  web_app->SetValidatedScopeExtensions(validated_scope_extensions);
+  web_app->SetValidatedMigrationSources(
+      validated_origin_associations.migration_sources);
+
+  // Prepare copy-on-write to update existing app.
+  // This is not reached unless the data obtained from the manifest
+  // update process is valid, so an invariant of the system is that
+  // icons are valid here.
+  finalizer_->SetWebAppManifestFieldsAndWriteData(
+      web_app_info_, std::move(web_app), std::move(commit_callback),
+      /*skip_icon_writes_on_download_failure=*/false);
+}
+
+void FinalizeUpdateJob::OnDatabaseCommitCompletedForUpdate(
+    std::string old_name,
+    FileHandlerUpdateAction file_handlers_need_os_update,
+    std::optional<WebAppScope> old_scope,
+    bool success) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!success) {
+    std::move(callback_).Run(webapps::AppId(),
+                             webapps::InstallResultCode::kWriteDataFailed);
+    return;
+  }
+
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id_);
+  if (old_scope.has_value() && old_scope.value() != web_app->GetScope()) {
+    provider_->registrar_unsafe().NotifyWebAppEffectiveScopeChanged(app_id_);
+  }
+
+  // OS integration should always be enabled on ChromeOS for manifest updates.
+  bool should_skip_os_integration_on_manifest_update = false;
+#if !BUILDFLAG(IS_CHROMEOS)
+  // If the app being updated was installed by default and not also manually
+  // installed by the user or an enterprise policy, disable os integration.
+  should_skip_os_integration_on_manifest_update =
+      provider_->registrar_unsafe().GetInstallState(app_id_) ==
+      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  if (should_skip_os_integration_on_manifest_update) {
+    OnUpdateHooksFinished();
+    return;
+  }
+
+  provider_->os_integration_manager().Synchronize(
+      app_id_, base::BindOnce(&FinalizeUpdateJob::OnUpdateHooksFinished,
+                              weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FinalizeUpdateJob::OnUpdateHooksFinished() {
+  provider_->install_manager().NotifyWebAppManifestUpdated(app_id_);
+  std::move(callback_).Run(
+      app_id_, webapps::InstallResultCode::kSuccessAlreadyInstalled);
+}
+
+FileHandlerUpdateAction FinalizeUpdateJob::GetFileHandlerUpdateAction() {
+  // TODO(crbug.com/411632946): Add test case: Update file handler in
+  // manifest for an already installed app + override user choice by
+  // adding the app to file handlers policy.
+  if (provider_->registrar_unsafe().GetAppFileHandlerUserApprovalState(
+          app_id_) == ApiApprovalState::kDisallowed) {
+    return FileHandlerUpdateAction::kNoUpdate;
+  }
+
+  // TODO(crbug.com/40176713): Consider trying to re-use the comparison
+  // results from the ManifestUpdateDataFetchCommand.
+  const apps::FileHandlers* old_handlers =
+      provider_->registrar_unsafe().GetAppFileHandlers(app_id_);
+  DCHECK(old_handlers);
+  if (*old_handlers == web_app_info_.file_handlers) {
+    return FileHandlerUpdateAction::kNoUpdate;
+  }
+
+  return FileHandlerUpdateAction::kUpdate;
+}
+
+void FinalizeUpdateJob::UpdateIsolationDataAndResetPendingUpdateInfo(
+    WebApp* web_app,
+    const IsolatedWebAppStorageLocation& location,
+    const IwaVersion& version,
+    const std::optional<GURL>& iwa_update_manifest_url,
+    std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data) {
+  IsolationData::Builder builder(location, version);
+
+  if (web_app->isolation_data()) {
+    builder.PersistFieldsForUpdate(*web_app->isolation_data());
+  }
+
+  if (iwa_update_manifest_url) {
+    builder.SetUpdateManifestUrl(*iwa_update_manifest_url);
+  }
+
+  if (integrity_block_data) {
+    builder.SetIntegrityBlockData(std::move(*integrity_block_data));
+  }
+
+  web_app->SetIsolationData(std::move(builder).Build());
+}
+
+}  // namespace web_app

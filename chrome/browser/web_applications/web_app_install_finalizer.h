@@ -45,6 +45,7 @@ namespace web_app {
 class IsolatedWebAppStorageLocation;
 class WebApp;
 class FinalizeInstallJob;
+class FinalizeUpdateJob;
 class WebAppProvider;
 
 // An finalizer for the installation process, represents the last step.
@@ -144,6 +145,7 @@ class WebAppInstallFinalizer {
 
  private:
   friend class FinalizeInstallJob;
+  friend class FinalizeUpdateJob;
 
   using CommitCallback = base::OnceCallback<void(bool success)>;
 
@@ -152,10 +154,10 @@ class WebAppInstallFinalizer {
                             const webapps::AppId& app_id,
                             webapps::InstallResultCode code);
 
-  void OnOriginAssociationValidatedForUpdate(
-      WebAppInstallInfo web_app_info,
-      InstallFinalizedCallback callback,
-      OriginAssociations validated_origin_associations);
+  void OnInstallUpdateJobFinished(FinalizeUpdateJob* job,
+                                  InstallFinalizedCallback callback,
+                                  const webapps::AppId& app_id,
+                                  webapps::InstallResultCode code);
 
   void SetWebAppManifestFieldsAndWriteData(
       const WebAppInstallInfo& web_app_info,
@@ -190,31 +192,12 @@ class WebAppInstallFinalizer {
                               webapps::AppId app_id);
   void NotifyWebAppInstalledWithOsHooks(webapps::AppId app_id);
 
-  void OnDatabaseCommitCompletedForUpdate(
-      InstallFinalizedCallback callback,
-      webapps::AppId app_id,
-      std::string old_name,
-      FileHandlerUpdateAction file_handlers_need_os_update,
-      const WebAppInstallInfo& web_app_info,
-      std::optional<WebAppScope> old_scope,
-      bool success);
-
-  void OnUpdateHooksFinished(InstallFinalizedCallback callback,
-                             webapps::AppId app_id);
-
-  // Returns a value indicating whether the file handlers registered with the OS
-  // should be updated. Used to avoid unnecessary updates. TODO(estade): why
-  // does this optimization exist when other OS hooks don't have similar
-  // optimizations?
-  FileHandlerUpdateAction GetFileHandlerUpdateAction(
-      const webapps::AppId& app_id,
-      const WebAppInstallInfo& new_web_app_info);
-
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> provider_ = nullptr;
   raw_ptr<base::Clock> clock_{base::DefaultClock::GetInstance()};
 
   absl::flat_hash_set<std::unique_ptr<FinalizeInstallJob>> install_jobs_;
+  absl::flat_hash_set<std::unique_ptr<FinalizeUpdateJob>> install_update_jobs_;
 
   bool started_ = false;
 

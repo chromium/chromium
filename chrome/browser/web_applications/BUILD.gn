@@ -190,6 +190,8 @@ source_set("web_applications") {
     "isolated_web_apps/window_management/window_management_content_setting_observer.h",
     "jobs/finalize_install_job.cc",
     "jobs/finalize_install_job.h",
+    "jobs/finalize_update_job.cc",
+    "jobs/finalize_update_job.h",
     "jobs/get_progressive_web_app_size_job.cc",
     "jobs/get_progressive_web_app_size_job.h",
     "jobs/install_from_info_job.cc",
