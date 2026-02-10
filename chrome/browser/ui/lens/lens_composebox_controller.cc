@@ -232,13 +232,13 @@ void LensComposeboxController::AddVisualSelectionContext(
 }
 
 void LensComposeboxController::ClearVisualSelectionContext() {
-  // If there is existing visual selection context, mark it as expired. There
+  // If there is existing visual selection context, mark it as replaced. There
   // should only be one visual selection context at a time. The UI should
   // appropriately remove the existing thumbnail.
   if (vsc_image_data_ && composebox_handler_) {
     composebox_handler_->OnContextualInputStatusChanged(
         vsc_image_data_->id,
-        contextual_search::FileUploadStatus::kUploadExpired, std::nullopt);
+        contextual_search::FileUploadStatus::kUploadReplaced, std::nullopt);
   }
   vsc_image_data_.reset();
 }
