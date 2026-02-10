@@ -32,6 +32,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/unzip/public/cpp/unzip.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
+#include "components/variations/variations_switches.h"
 #include "crypto/hash.h"
 #include "google_apis/common/api_key_request_util.h"
 #include "google_apis/google_api_keys.h"
@@ -197,7 +198,9 @@ bool PredictionModelDownloadManager::IsAvailableForDownloads() const {
 
 bool PredictionModelDownloadManager::ShouldFetchModels() const {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kDisableModelDownloadsForBenchmarking)) {
+          kDisableModelDownloadsForBenchmarking) ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          variations::switches::kEnableBenchmarking)) {
     return false;
   }
   return (switches::ShouldSkipGoogleApiKeyConfigurationCheck() ||
