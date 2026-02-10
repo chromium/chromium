@@ -12,7 +12,10 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -58,13 +61,18 @@ TEST_F(PackExtensionTest, ExtensionWithManagedStorage) {
                                     .AppendASCII("managed_storage")));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Android does not support packaged apps.
 TEST_F(PackExtensionTest, PackagedApp) {
   ASSERT_TRUE(TestPackExtension(test_data_dir_.AppendASCII("packaged_app")));
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
 TEST_F(PackExtensionTest, PlatformApp) {
   ASSERT_TRUE(TestPackExtension(test_data_dir_.AppendASCII("platform_apps")
                                               .AppendASCII("minimal")));
 }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 }  // namespace extensions
