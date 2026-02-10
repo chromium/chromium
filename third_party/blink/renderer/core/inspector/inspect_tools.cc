@@ -454,7 +454,8 @@ String PersistentTool::GetOverlayName() {
 bool PersistentTool::IsEmpty() {
   return !grid_node_highlights_.size() && !flex_container_configs_.size() &&
          !scroll_snap_configs_.size() && !container_query_configs_.size() &&
-         !isolated_element_configs_.size();
+         !isolated_element_configs_.size() &&
+         !green_dev_floaty_anchor_configs_.size();
 }
 
 void PersistentTool::SetGridConfigs(GridConfigs configs) {
@@ -477,8 +478,20 @@ void PersistentTool::SetIsolatedElementConfigs(IsolatedElementConfigs configs) {
   isolated_element_configs_ = std::move(configs);
 }
 
+void PersistentTool::SetGreenDevFloatyAnchorConfigs(
+    GreenDevFloatyAnchorConfigs configs) {
+  green_dev_floaty_anchor_configs_ = std::move(configs);
+}
+
+void PersistentTool::AddGreenDevFloatyAnchorConfig(
+    Node* node,
+    std::unique_ptr<InspectorGreenDevFloatyAnchorConfig> config) {
+  green_dev_floaty_anchor_configs_.insert(node, std::move(config));
+}
+
 bool PersistentTool::ForwardEventsToOverlay() {
-  return isolated_element_configs_.size();
+  return isolated_element_configs_.size() ||
+         green_dev_floaty_anchor_configs_.size();
 }
 
 bool PersistentTool::HideOnHideHighlight() {
@@ -529,6 +542,21 @@ void PersistentTool::Draw(float scale) {
     overlay_->EvaluateInOverlay("drawIsolatedElementHighlight",
                                 std::move(highlight));
   }
+  std::unique_ptr<protocol::ListValue> greendev_floaty_anchors =
+      protocol::ListValue::create();
+  for (auto& entry : green_dev_floaty_anchor_configs_) {
+    std::unique_ptr<protocol::Value> highlight =
+        InspectorGreenDevFloatyAnchorHighlight(entry.key, *(entry.value),
+                                               scale);
+    if (!highlight) {
+      continue;
+    }
+    greendev_floaty_anchors->pushValue(std::move(highlight));
+  }
+  if (greendev_floaty_anchors->size() > 0) {
+    overlay_->EvaluateInOverlay("drawGreenDevFloatyAnchors",
+                                std::move(greendev_floaty_anchors));
+  }
 }
 
 // Accepts a message of the following format:
@@ -558,6 +586,28 @@ void PersistentTool::Dispatch(const ScriptValue& message,
 
   if (exception_state.HadException())
     return;
+
+  if (highlight_type == "greenDevFloaty") {
+    String command =
+        dict.Get<IDLString>("command", exception_state).value_or("");
+    if (command == "debugMessage") {
+      String msg = dict.Get<IDLString>("message", exception_state).value_or("");
+      LOG(ERROR) << "GreenDevFloaty: " << msg;
+    } else if (command == "openDevTools") {
+      int backend_node_id =
+          dict.Get<IDLLong>("nodeId", exception_state).value_or(0);
+      if (backend_node_id) {
+        frontend_->inspectPanelShowRequested(backend_node_id);
+      }
+    } else if (command == "restoreFloaty") {
+      int backend_node_id =
+          dict.Get<IDLLong>("nodeId", exception_state).value_or(0);
+      if (backend_node_id) {
+        frontend_->inspectedElementWindowRestored(backend_node_id);
+      }
+    }
+    return;
+  }
 
   Element* element = nullptr;
   if (highlight_type == "isolatedElement") {
@@ -606,6 +656,7 @@ void PersistentTool::Trace(Visitor* visitor) const {
   visitor->Trace(scroll_snap_configs_);
   visitor->Trace(container_query_configs_);
   visitor->Trace(isolated_element_configs_);
+  visitor->Trace(green_dev_floaty_anchor_configs_);
 }
 
 // SourceOrderTool -----------------------------------------------------------

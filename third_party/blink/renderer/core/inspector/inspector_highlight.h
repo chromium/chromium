@@ -147,6 +147,14 @@ struct CORE_EXPORT InspectorIsolationModeHighlightConfig {
   int highlight_index = 0;
 };
 
+struct CORE_EXPORT InspectorGreenDevFloatyAnchorConfig {
+  USING_FAST_MALLOC(InspectorGreenDevFloatyAnchorConfig);
+
+ public:
+  InspectorGreenDevFloatyAnchorConfig() = default;
+  int node_id = 0;
+};
+
 struct CORE_EXPORT InspectorHighlightConfig {
   USING_FAST_MALLOC(InspectorHighlightConfig);
 
@@ -203,12 +211,13 @@ class InspectorHighlightBase {
   virtual std::unique_ptr<protocol::DictionaryValue> AsProtocolValue()
       const = 0;
 
- protected:
   static bool BuildNodeQuads(Node*,
                              gfx::QuadF* content,
                              gfx::QuadF* padding,
                              gfx::QuadF* border,
                              gfx::QuadF* margin);
+
+ protected:
   std::unique_ptr<protocol::ListValue> highlight_paths_;
   float scale_;
 };
@@ -299,6 +308,12 @@ std::unique_ptr<protocol::DictionaryValue> InspectorContainerQueryHighlight(
 std::unique_ptr<protocol::DictionaryValue> InspectorIsolatedElementHighlight(
     Element* element,
     const InspectorIsolationModeHighlightConfig& config);
+
+std::unique_ptr<protocol::DictionaryValue> CORE_EXPORT
+InspectorGreenDevFloatyAnchorHighlight(
+    Node* node,
+    const InspectorGreenDevFloatyAnchorConfig& config,
+    float scale);
 
 std::unique_ptr<protocol::DictionaryValue> CORE_EXPORT
 InspectorGridHighlight(Node*, const InspectorGridHighlightConfig& config);

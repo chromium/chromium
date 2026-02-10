@@ -16,6 +16,7 @@
 
 namespace blink {
 
+struct InspectorGreenDevFloatyAnchorConfig;
 class WebMouseEvent;
 class WebPointerEvent;
 
@@ -161,6 +162,9 @@ using ContainerQueryConfigs = HeapHashMap<
 using IsolatedElementConfigs =
     HeapHashMap<WeakMember<Element>,
                 std::unique_ptr<InspectorIsolationModeHighlightConfig>>;
+using GreenDevFloatyAnchorConfigs =
+    HeapHashMap<WeakMember<Node>,
+                std::unique_ptr<InspectorGreenDevFloatyAnchorConfig>>;
 
 class PersistentTool : public InspectTool {
   using InspectTool::InspectTool;
@@ -176,6 +180,10 @@ class PersistentTool : public InspectTool {
   void SetScrollSnapConfigs(ScrollSnapConfigs);
   void SetContainerQueryConfigs(ContainerQueryConfigs);
   void SetIsolatedElementConfigs(IsolatedElementConfigs);
+  void SetGreenDevFloatyAnchorConfigs(GreenDevFloatyAnchorConfigs);
+  void AddGreenDevFloatyAnchorConfig(
+      Node* node,
+      std::unique_ptr<InspectorGreenDevFloatyAnchorConfig> config);
 
   std::unique_ptr<protocol::DictionaryValue> GetGridInspectorHighlightsAsJson()
       const;
@@ -195,6 +203,7 @@ class PersistentTool : public InspectTool {
   ScrollSnapConfigs scroll_snap_configs_;
   ContainerQueryConfigs container_query_configs_;
   IsolatedElementConfigs isolated_element_configs_;
+  GreenDevFloatyAnchorConfigs green_dev_floaty_anchor_configs_;
 };
 
 // -----------------------------------------------------------------------------

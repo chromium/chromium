@@ -951,7 +951,40 @@ protocol::Response InspectorOverlayAgent::setShowIsolatedElements(
 protocol::Response InspectorOverlayAgent::setShowInspectedElementAnchor(
     std::unique_ptr<protocol::Overlay::InspectedElementAnchorConfig>
         inspected_element_anchor_config) {
-  LOG(ERROR) << "Not implemented yet";
+  if (!persistent_tool_) {
+    persistent_tool_ =
+        MakeGarbageCollected<PersistentTool>(this, GetFrontend());
+  }
+
+  if (inspected_element_anchor_config) {
+    std::optional<int> node_id;
+    if (inspected_element_anchor_config->hasNodeId()) {
+      node_id = inspected_element_anchor_config->getNodeId(0);
+    }
+    std::optional<int> backend_node_id;
+    if (inspected_element_anchor_config->hasBackendNodeId()) {
+      backend_node_id = inspected_element_anchor_config->getBackendNodeId(0);
+    }
+
+    Node* node = nullptr;
+    protocol::Response response =
+        dom_agent_->AssertNode(node_id, backend_node_id, std::nullopt, node);
+    if (!response.IsSuccess()) {
+      return response;
+    }
+
+    auto anchor_config =
+        std::make_unique<InspectorGreenDevFloatyAnchorConfig>();
+    anchor_config->node_id = node->GetDomNodeId();
+    persistent_tool_->AddGreenDevFloatyAnchorConfig(node,
+                                                    std::move(anchor_config));
+  } else {
+    persistent_tool_->SetGreenDevFloatyAnchorConfigs(
+        GreenDevFloatyAnchorConfigs());
+  }
+
+  PickTheRightTool();
+
   return protocol::Response::Success();
 }
 
