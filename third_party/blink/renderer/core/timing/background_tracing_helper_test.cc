@@ -32,6 +32,10 @@ class BackgroundTracingHelperTest : public testing::Test {
     return BackgroundTracingHelper::SplitMarkNameAndId(mark_name);
   }
 
+  static bool MarkNameIsTrigger(StringView mark_name) {
+    return BackgroundTracingHelper::MarkNameIsTrigger(mark_name);
+  }
+
   static SiteHashSet ParsePerformanceMarkSiteHashes(
       const std::string& allow_list) {
     return BackgroundTracingHelper::ParsePerformanceMarkSiteHashes(allow_list);
@@ -64,6 +68,15 @@ TEST_F(BackgroundTracingHelperTest, MD5Hash32) {
       "the quick fox jumps over the lazy brown dog";
   static constexpr uint32_t kQuickFoxHash = 0x01275c33;
   EXPECT_EQ(kQuickFoxHash, MD5Hash32(kQuickFox));
+}
+
+TEST_F(BackgroundTracingHelperTest, MarkNameIsTrigger) {
+  EXPECT_FALSE(MarkNameIsTrigger(""));
+  EXPECT_FALSE(MarkNameIsTrigger("a"));
+  EXPECT_FALSE(MarkNameIsTrigger("foo"));
+  EXPECT_FALSE(MarkNameIsTrigger("aaaaaaaaa"));
+  EXPECT_FALSE(MarkNameIsTrigger("trigger:"));
+  EXPECT_TRUE(MarkNameIsTrigger("trigger:foo"));
 }
 
 TEST_F(BackgroundTracingHelperTest, GetMarkHashAndSequenceNumber) {
