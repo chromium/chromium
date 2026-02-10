@@ -52,7 +52,6 @@ export class AimEligibilityAppElement extends CrLitElement {
     isServerEligibilityEnabled: false,
     lastUpdated: new Date(0),
     eligibilityResponseBase64Encoded: '',
-    eligibilityResponseBase64UrlEncoded: '',
     eligibilityResponseSource: '',
     searchboxConfigBase64UrlEncoded: '',
   };
@@ -97,7 +96,7 @@ export class AimEligibilityAppElement extends CrLitElement {
 
   protected onViewResponseClick_() {
     this.openWindowProxy_.openUrl(this.getProtoshopUrl_(
-        this.eligibilityState_.eligibilityResponseBase64UrlEncoded));
+        this.eligibilityState_.eligibilityResponseBase64Encoded));
   }
 
   protected onDraftResponseClick_() {
@@ -148,13 +147,13 @@ export class AimEligibilityAppElement extends CrLitElement {
     this.inputState_ = InputState.NONE;
   }
 
-  private getProtoshopUrl_(base64UrlProto: string): string {
+  private getProtoshopUrl_(base64Proto: string): string {
     const protoType = 'gws.searchbox.chrome.AimEligibilityResponse';
-    if (!base64UrlProto) {
+    if (!base64Proto) {
       return `http://protoshop/${protoType}`;
     }
     return `http://protoshop/embed?tabs=textproto&type=${
-        protoType}&protobytes=${base64UrlProto}`;
+        protoType}&protobytes=${encodeURIComponent(base64Proto)}`;
   }
 }
 

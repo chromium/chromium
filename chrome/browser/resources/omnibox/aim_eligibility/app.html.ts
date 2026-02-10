@@ -59,7 +59,7 @@ export function getHtml(this: AimEligibilityAppElement) {
               Request
             </cr-button>
             <cr-button
-                ?disabled="${!this.eligibilityState_.eligibilityResponseBase64UrlEncoded}"
+                ?disabled="${!this.eligibilityState_.eligibilityResponseBase64Encoded}"
                 @click="${this.onViewResponseClick_}">
               View
             </cr-button>
