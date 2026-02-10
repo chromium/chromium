@@ -2071,6 +2071,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4270541775497538019">Slagač 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Prikazuje se 0 recenzija. Prosječna ocjena je <ph name="STARS" /> zvjezdica/e.}=1{Prikazuje se 1 recenzija. Prosječna ocjena je <ph name="STARS" /> zvjezdica/e.}one{Prikazuje se # recenzija. Prosječna ocjena je <ph name="STARS" /> zvjezdica/e.}few{Prikazuju se sve # recenzije. Prosječna ocjena je <ph name="STARS" /> zvjezdica/e.}other{Prikazuje se svih # recenzija. Prosječna ocjena je <ph name="STARS" /> zvjezdica/e.}}</translation>
 <translation id="4271652479722040953">Kada se ekstenzije dodaju u Chrome, relevantni podaci o tim ekstenzijama se šalju trećim stranama radi analize i mogu biti vidljivi vašem administratoru. Podaci sadržavaju informacije o ekstenzijama kao što su naziv, vrijeme instaliranja, izvor instaliranja, kao i aktivnost povezana s tim ekstenzijama (npr. promjena kartica, kontaktiranje web lokacija ili pristup kolačićima). Ti podaci se prikupljaju za ekstenzije koje su instalirane iz Chrome Web trgovine, kao i za ekstenzije koje nisu iz trgovine.</translation>
+<translation id="4275788652681621337">Zatvori bočnu ploču</translation>
 <translation id="4275830172053184480">Ponovo pokrenite uređaj</translation>
 <translation id="4276974990916607331">Ne, hvala</translation>
 <translation id="4277028893293644418">Ponovo postavi lozinku</translation>

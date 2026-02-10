@@ -2071,6 +2071,7 @@
 <translation id="4270541775497538019">스태커 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{리뷰 0개 보기. 평균 평점은 별 <ph name="STARS" />개입니다.}=1{리뷰 1개 보기. 평균 평점은 별 <ph name="STARS" />개입니다.}other{리뷰 #개 모두 보기. 평균 평점은 별 <ph name="STARS" />개입니다.}}</translation>
 <translation id="4271652479722040953">Chrome에 확장 프로그램이 추가되면 확장 프로그램에 관한 관련 데이터가 분석을 위해 서드 파티로 전송되며, 관리자에게 표시될 수 있습니다. 이 데이터에는 이름, 설치 시간, 설치 소스와 같은 확장 프로그램 관련 정보와 탭 변경, 웹사이트 연결, 쿠키 액세스 등 확장 프로그램 관련 활동이 포함됩니다. Chrome 웹 스토어에서 설치한 확장 프로그램과 스토어 외부 확장 프로그램의 데이터가 수집됩니다.</translation>
+<translation id="4275788652681621337">측면 패널 닫기</translation>
 <translation id="4275830172053184480">기기 다시 시작</translation>
 <translation id="4276974990916607331">나중에</translation>
 <translation id="4277028893293644418">비밀번호 재설정</translation>

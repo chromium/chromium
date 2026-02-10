@@ -2071,6 +2071,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4270541775497538019">Empileur 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Afficher 0 avis. La note moyenne est de <ph name="STARS" /> étoiles.}=1{Afficher 1 avis. La note moyenne est de <ph name="STARS" /> étoiles.}one{Afficher # avis. La note moyenne est de <ph name="STARS" /> étoiles.}other{Afficher les # avis. La note moyenne est de <ph name="STARS" /> étoiles.}}</translation>
 <translation id="4271652479722040953">Lorsque des extensions sont ajoutées à Chrome, les données pertinentes les concernant sont envoyées à des tiers pour analyse et peuvent être visibles par votre administrateur. Ces données incluent des informations sur les extensions (nom, date d'installation, source d'installation, etc.) ainsi que l'activité associée à ces extensions (changement d'onglet, contact de sites Web, accès aux cookies, etc.). Ces données sont collectées pour les extensions installées à partir du Chrome Web Store et d'autres sources.</translation>
+<translation id="4275788652681621337">Fermer le panneau latéral</translation>
 <translation id="4275830172053184480">Redémarrer l'appareil</translation>
 <translation id="4276974990916607331">Non, merci</translation>
 <translation id="4277028893293644418">Réinitialiser le mot de passe</translation>

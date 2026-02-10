@@ -2068,6 +2068,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4270541775497538019">Fascicolatore 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Visualizza 0 recensioni. La valutazione media è di <ph name="STARS" /> stelle.}=1{Visualizza 1 recensione. La valutazione media è di <ph name="STARS" /> stelle.}other{Visualizza # recensioni. La valutazione media è di <ph name="STARS" /> stelle.}}</translation>
 <translation id="4271652479722040953">Quando vengono aggiunte estensioni a Chrome, i relativi dati pertinenti vengono inviati a terze parti a scopo di analisi e potrebbero essere visibili all'amministratore. I dati includono informazioni sulle estensioni, come nome, momento di installazione, origine dell'installazione, nonché l'attività associata a queste estensioni (ad esempio, cambio di schede, contatto con siti web o accesso ai cookie). Questi dati vengono raccolti per le estensioni installate dal Chrome Web Store e per le estensioni non disponibili nel negozio.</translation>
+<translation id="4275788652681621337">Chiudi riquadro laterale</translation>
 <translation id="4275830172053184480">Riavvia il dispositivo</translation>
 <translation id="4276974990916607331">No, grazie</translation>
 <translation id="4277028893293644418">Reimposta password</translation>
