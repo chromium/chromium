@@ -364,6 +364,11 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       base::JoinString(contextual_tasks::GetContextualTasksSignInDomains(),
                        ","));
 
+  // Expand button experiment state.
+  source->AddBoolean("expandButtonEnabled",
+                     base::FeatureList::IsEnabled(
+                         contextual_tasks::kContextualTasksExpandButton));
+
   // Set up chrome://contextual-tasks/internals debug UI.
   source->AddResourcePath(
       "internals",

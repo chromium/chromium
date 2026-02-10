@@ -59,6 +59,8 @@ BASE_FEATURE(kContextualTasksRemoveTasksWithoutThreadsOrTabAssociations,
 BASE_FEATURE(kEnableNotifyZeroStateRenderedCapability,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksExpandButton, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<bool> kContextualTasksBasicModeZOrder(
     &kContextualTasks,
     "ContextualTasksBasicModeZOrder",
@@ -373,6 +375,12 @@ const char kContextualTasksContextLibraryName[] =
     "Contextual Tasks Context Library";
 const char kContextualTasksContextLibraryDescription[] =
     "Enables integration with the server side context library.";
+
+const char kContextualTasksExpandButtonName[] =
+    "Contextual Tasks Expand Button";
+const char kContextualTasksExpandButtonDescription[] =
+    "Replace the overflow menu in the side panel with a button to move the "
+    "thread to a new tab.";
 
 const char kContextualTasksSuggestionsEnabledName[] =
     "Contextual Tasks Suggestions Enabled";
