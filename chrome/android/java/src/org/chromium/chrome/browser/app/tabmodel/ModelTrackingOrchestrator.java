@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
@@ -101,6 +102,7 @@ public class ModelTrackingOrchestrator {
     }
 
     private final String mWindowTag;
+    private final PersistentStoreMigrationManager mMigrationManager;
     private final TabModelSelector mTabModelSelector;
     private final Map<Token, Boolean> mGroupIncognitoStatus = new HashMap<>();
     private final IncognitoTabModelObserver mIncognitoTabModelObserver =
@@ -167,12 +169,17 @@ public class ModelTrackingOrchestrator {
 
     /**
      * @param windowTag The window tag to use for the window.
+     * @param migrationManager The migration manager for the window.
      * @param tabModelSelector The {@link TabModelSelector} to observe changes for.
      * @param hasCipherFactory Whether a cipher factory was provided for OTR data.
      */
     public ModelTrackingOrchestrator(
-            String windowTag, TabModelSelector tabModelSelector, boolean hasCipherFactory) {
+            String windowTag,
+            PersistentStoreMigrationManager migrationManager,
+            TabModelSelector tabModelSelector,
+            boolean hasCipherFactory) {
         mWindowTag = windowTag;
+        mMigrationManager = migrationManager;
         mTabModelSelector = tabModelSelector;
 
         if (hasCipherFactory) {
@@ -334,6 +341,7 @@ public class ModelTrackingOrchestrator {
         try (ScopedStorageBatch ignored = createBatch(profile)) {
             var profileAndCollection = getProfileAndCollection(mTabModelSelector, incognito);
             getSynchronizer(profileAndCollection, incognito).fullSave();
+            mMigrationManager.onShadowStoreCaughtUp();
         }
 
         initializeTrackingSuite(incognito);
