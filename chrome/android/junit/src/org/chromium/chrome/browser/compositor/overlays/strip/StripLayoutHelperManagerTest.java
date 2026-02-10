@@ -120,7 +120,8 @@ import java.util.List;
 @Config(manifest = Config.NONE, qualifiers = "sw600dp")
 @DisableFeatures({
     ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
-    ChromeFeatureList.DATA_SHARING
+    ChromeFeatureList.DATA_SHARING,
+    ChromeFeatureList.GLIC
 })
 public class StripLayoutHelperManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -1371,6 +1372,19 @@ public class StripLayoutHelperManagerTest {
         assertTrue(
                 "Strip motion event should be handled.",
                 motionEventHandled(SCREEN_WIDTH / 2, TAB_STRIP_HEIGHT_PX / 2f));
+    }
+
+    @Test
+    public void testGlicButtonDisabled() {
+        initializeTest();
+        assertNull("Glic button should not be created.", mStripLayoutHelperManager.getGlicButton());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void testGlicButtonEnabled() {
+        initializeTest();
+        assertNotNull("Glic button should be created.", mStripLayoutHelperManager.getGlicButton());
     }
 
     @Test

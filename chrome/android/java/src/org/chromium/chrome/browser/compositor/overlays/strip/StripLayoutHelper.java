@@ -201,7 +201,7 @@ public class StripLayoutHelper
     private static final boolean IS_DESKTOP_DENSITY = StripLayoutUtils.shouldApplyMoreDensity();
     private static final float NEW_TAB_BUTTON_CLICK_SLOP_DP =
             (BUTTON_TOUCH_TARGET_SIZE_DP - BUTTON_BACKGROUND_SIZE_DP) / 2;
-    private static final float NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING =
+    private static final float NEW_TAB_BUTTON_WITH_STRIP_BUTTON_PADDING =
             IS_DESKTOP_DENSITY ? 24.f : 8.f;
 
     private static final int MESSAGE_UPDATE_SPINNER = 1;
@@ -519,6 +519,7 @@ public class StripLayoutHelper
     private final Set<StripLayoutGroupTitle> mClosingGroupTitles = new HashSet<>();
 
     private final TintedCompositorButton mNewTabButton;
+    private final @Nullable TintedCompositorButton mGlicButton;
     private final @Nullable CompositorButton mModelSelectorButton;
 
     // Layout Constants
@@ -692,6 +693,7 @@ public class StripLayoutHelper
      * @param updateHost The parent {@link LayoutUpdateHost}.
      * @param renderHost The {@link LayoutRenderHost}.
      * @param incognito Whether or not this tab strip is incognito.
+     * @param glicButton The {@link TintedCompositorButton} used to toggle Glic in the sidepanel.
      * @param modelSelectorButton The {@link CompositorButton} used to toggle between regular and
      *     incognito models.
      * @param tabStripDragHandler The @{@link TabStripDragHandler} instance to initiate drag and
@@ -716,6 +718,7 @@ public class StripLayoutHelper
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
             boolean incognito,
+            @Nullable TintedCompositorButton glicButton,
             @Nullable CompositorButton modelSelectorButton,
             @Nullable TabStripDragHandler tabStripDragHandler,
             View toolbarContainerView,
@@ -730,6 +733,7 @@ public class StripLayoutHelper
         mGroupTitleDrawXOffset = TAB_OVERLAP_WIDTH_DP - FOLIO_FOOT_LENGTH_DP;
         mGroupTitleOverlapWidth = FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
         mNewTabButtonWidth = BUTTON_BACKGROUND_SIZE_DP;
+        mGlicButton = glicButton;
         mModelSelectorButton = modelSelectorButton;
         mToolbarContainerView = toolbarContainerView;
         mTabStripDragHandler = tabStripDragHandler;
@@ -1141,17 +1145,28 @@ public class StripLayoutHelper
     }
 
     /**
+     * @param glicTouchTargetSize The touch target size for the Glic button.
      * @param msbTouchTargetSize The touch target size for the model selector button.
      */
-    public void updateEndMarginForStripButtons(float msbTouchTargetSize) {
-        // When MSB is not visible we add strip end padding here. When MSB is visible strip end
-        // padding will be included in MSB margin, so just add padding between NTB and MSB here.
-        mReservedEndMargin =
-                msbTouchTargetSize
-                        + mNewTabButtonWidth
-                        + (mModelSelectorButton != null && mModelSelectorButton.isVisible()
-                                ? NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING
-                                : mFixedEndPadding);
+    // TODO(crbug.com/483119043): Fading assets only support 2 buttons (NTB and MSB)
+    // TODO(crbug.com/483140976): Align NTB, Glic, MSB when all 3 are showing
+    public void updateEndMarginForStripButtons(
+            float glicTouchTargetSize, float msbTouchTargetSize) {
+        // There are two additional tab strip buttons: Glic & MSB
+        // When both buttons are not visible we add strip end padding here.
+        // When either is visible, the strip end padding will be included in the visible button
+        // margin, so just add padding between NTB and visible button here. When both are visible,
+        // add additional padding between Glic and MSB.
+        float stripButtonsTouchTargetSize = glicTouchTargetSize + msbTouchTargetSize;
+        float padding =
+                stripButtonsTouchTargetSize > 0
+                        ? NEW_TAB_BUTTON_WITH_STRIP_BUTTON_PADDING
+                        : mFixedEndPadding;
+        padding +=
+                glicTouchTargetSize > 0 && msbTouchTargetSize > 0
+                        ? StripLayoutHelperManager.GLIC_MSB_BUTTON_PADDING_DP
+                        : 0;
+        mReservedEndMargin = stripButtonsTouchTargetSize + mNewTabButtonWidth + padding;
         updateMargins(true);
     }
 
@@ -4980,7 +4995,9 @@ public class StripLayoutHelper
     private float calculateDeltaToMakeViewVisible(@Nullable StripLayoutView view) {
         if (view == null) return 0.f;
         // These are always in view.
-        if (view.equals(mNewTabButton) || view.equals(mModelSelectorButton)) return 0.f;
+        if (view.equals(mNewTabButton)
+                || view.equals(mGlicButton)
+                || view.equals(mModelSelectorButton)) return 0.f;
         if (view instanceof StripLayoutTab tab && tab.getIsPinned()) return 0.f;
 
         // 1. Calculate the bounds to fully show the regular view on the left/right side of the
@@ -5068,6 +5085,16 @@ public class StripLayoutHelper
                         endOpacity,
                         ANIM_BUTTONS_FADE_MS)
                 .start();
+        if (mGlicButton != null) {
+            CompositorAnimator.ofFloatProperty(
+                            mUpdateHost.getAnimationHandler(),
+                            mGlicButton,
+                            CompositorButton.OPACITY,
+                            mGlicButton.getOpacity(),
+                            endOpacity,
+                            ANIM_BUTTONS_FADE_MS)
+                    .start();
+        }
         if (mModelSelectorButton != null) {
             CompositorAnimator.ofFloatProperty(
                             mUpdateHost.getAnimationHandler(),

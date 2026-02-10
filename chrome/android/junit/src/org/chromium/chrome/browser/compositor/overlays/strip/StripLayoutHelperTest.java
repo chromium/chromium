@@ -194,6 +194,7 @@ public class StripLayoutHelperTest {
     @Mock private LayoutManagerHost mManagerHost;
     @Mock private LayoutUpdateHost mUpdateHost;
     @Mock private LayoutRenderHost mRenderHost;
+    @Mock private TintedCompositorButton mGlicBtn;
     @Mock private CompositorButton mModelSelectorBtn;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabUngrouper mTabUngrouper;
@@ -4661,6 +4662,7 @@ public class StripLayoutHelperTest {
                 mUpdateHost,
                 mRenderHost,
                 incognito,
+                mGlicBtn,
                 mModelSelectorBtn,
                 mTabStripDragHandler,
                 mToolbarContainerView,
