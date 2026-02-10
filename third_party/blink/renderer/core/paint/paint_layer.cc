@@ -1294,7 +1294,7 @@ PaintLayer* PaintLayer::HitTestLayer(
   // there is an ongoing transition, since this may be too heavy of a check for
   // each hit test.
   if (auto* transition =
-          ViewTransitionUtils::TransitionForTaggedElement(layout_object)) {
+          ViewTransitionUtils::TransitionForParticipantOrScope(layout_object)) {
     // This means that the contents of the object are drawn elsewhere.
     if (transition->IsRepresentedViaPseudoElements(layout_object)) {
       return nullptr;

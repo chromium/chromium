@@ -1903,7 +1903,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       // phase, then the backdrop filter would have been lifted up. Only apply
       // backdrop in other cases.
       auto* transition =
-          ViewTransitionUtils::TransitionForTaggedElement(object_);
+          ViewTransitionUtils::TransitionForParticipantOrScope(object_);
       if (!RuntimeEnabledFeatures::
               ViewTransitionHoistBackdropFilterEffectEnabled() ||
           !transition || !transition->IsCapturing() ||
@@ -2127,7 +2127,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionEffect() {
 
     if (needs_view_transition_effect) {
       auto* transition =
-          ViewTransitionUtils::TransitionForTaggedElement(object_);
+          ViewTransitionUtils::TransitionForParticipantOrScope(object_);
       DCHECK(transition);
 
       EffectPaintPropertyNode::State state;
@@ -2194,7 +2194,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionClip() {
     if (full_context_.direct_compositing_reasons &
         CompositingReason::kViewTransitionElement) {
       auto* transition =
-          ViewTransitionUtils::TransitionForTaggedElement(object_);
+          ViewTransitionUtils::TransitionForParticipantOrScope(object_);
       DCHECK(transition);
 
       if (!transition->NeedsViewTransitionClipNode(object_)) {

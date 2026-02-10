@@ -52,9 +52,16 @@ class CORE_EXPORT ViewTransitionUtils {
 
   static ViewTransition* GetTransition(const Node& node);
 
-  // Returns the view transition that the element associated with the specified
-  // layout object is participating in, if one exists.
-  static ViewTransition* TransitionForTaggedElement(const LayoutObject&);
+  // Returns the view transition that the element is participating in, if any.
+  // Participants are only recognized when the transition is capturing or
+  // started (see ViewTransitionStyleTracker::IsTransitionElement).
+  static ViewTransition* TransitionForParticipant(const Element&);
+
+  // Like TransitionForParticipant, except that if you pass in the scope, we
+  // will return the transition for the scope regardless of whether the scope
+  // is self-participating, and regardless of the transition state. This
+  // corresponds to the element having a view transition effect node.
+  static ViewTransition* TransitionForParticipantOrScope(const LayoutObject&);
 
   // Calls the supplied function for every active transition (document-level or
   // element-scoped).

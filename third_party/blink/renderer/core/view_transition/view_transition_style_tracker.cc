@@ -72,6 +72,9 @@ namespace {
 const char* kDuplicateTagBaseError =
     "Unexpected duplicate view-transition-name: ";
 
+const char* kTagCollisionBaseError =
+    "Element cannot participate in multiple transitions: ";
+
 const CSSPropertyID kPropertiesToCapture[] = {
     CSSPropertyID::kBackdropFilter, CSSPropertyID::kColorScheme,
     CSSPropertyID::kMixBlendMode,   CSSPropertyID::kTextOrientation,
@@ -873,6 +876,19 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
       }
 
       AddConsoleError(message.ReleaseString(), std::move(nodes));
+      return false;
+    }
+
+    // TransitionForParticipant will not return our own transition, because
+    // VTST::IsTransitionElement() excludes kIdle and kCaptured states. So if
+    // it returns a transition, it is some other transition that is already
+    // using this element as a participant.
+    if (ViewTransitionUtils::TransitionForParticipant(*element)) {
+      StringBuilder message;
+      message.Append(kTagCollisionBaseError);
+      message.Append(name);
+      AddConsoleError(message.ReleaseString(),
+                      Vector<DOMNodeId>(element->GetDomNodeId()));
       return false;
     }
 

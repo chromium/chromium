@@ -183,7 +183,18 @@ ViewTransition* ViewTransitionUtils::GetTransition(const Node& node) {
   return GetTransition(node.GetDocument());
 }
 
-ViewTransition* ViewTransitionUtils::TransitionForTaggedElement(
+ViewTransition* ViewTransitionUtils::TransitionForParticipant(
+    const Element& element) {
+  ViewTransition* result = nullptr;
+  ForEachTransition(element.GetDocument(), [&](ViewTransition& transition) {
+    if (transition.IsTransitionElementExcludingRoot(element)) {
+      result = &transition;
+    }
+  });
+  return result;
+}
+
+ViewTransition* ViewTransitionUtils::TransitionForParticipantOrScope(
     const LayoutObject& layout_object) {
   ViewTransition* result = nullptr;
   // Note: an element can't participate in more than one transition at the same
