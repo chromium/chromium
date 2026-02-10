@@ -51,6 +51,7 @@
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -391,6 +392,20 @@ const gfx::Size ToolbarButton::GetTargetSize() const {
   const gfx::Insets target_insets = GetTargetInsets();
 
   return target_contents_size + target_insets.size();
+}
+
+void ToolbarButton::StateChanged(ButtonState old_state) {
+  LabelButton::StateChanged(old_state);
+  auto* const ink_drop = views::InkDrop::Get(this);
+
+  if (GetState() == STATE_DISABLED) {
+    ink_drop->SetMode(views::InkDropHost::InkDropMode::OFF);
+  } else if (old_state == STATE_DISABLED) {
+    ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
+    if (auto* impl = ink_drop->GetInkDrop()) {
+      impl->SetHovered(IsMouseHovered());
+    }
+  }
 }
 
 void ToolbarButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {

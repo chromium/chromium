@@ -121,6 +121,7 @@ class ToolbarButton : public views::LabelButton,
   void SetLayoutInsetDelta(const gfx::Insets& insets);
 
   // views::LabelButton:
+  void StateChanged(ButtonState old_state) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnThemeChanged() override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
