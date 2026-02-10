@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_INPUT_ANDROID_STATE_TRANSFER_HANDLER_H_
 #define COMPONENTS_VIZ_SERVICE_INPUT_ANDROID_STATE_TRANSFER_HANDLER_H_
 
+#include <deque>
 #include <optional>
 
 #include "base/containers/queue.h"
@@ -93,8 +94,8 @@ class VIZ_SERVICE_EXPORT AndroidStateTransferHandler
 
   // The list maintains sorted order by key `TouchTransferState.down_time_ms`.
   // Any state transfer received out of order is dropped.
-  base::queue<TransferState> pending_transferred_states_;
-  static constexpr int kMaxPendingTransferredStates = 3;
+  std::deque<TransferState> pending_transferred_states_;
+  static constexpr int kMaxPendingTransferredStates = 10;
 
   // Stores input events until we have received state from Browser for the
   // currently transferred touch sequence.

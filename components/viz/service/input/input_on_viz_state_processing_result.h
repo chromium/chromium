@@ -19,7 +19,8 @@ enum class InputOnVizStateProcessingResult {
   kDroppedUnusedOlderStates = 6,
   kTransferBackToBrowserSuccessfully = 7,
   kDroppedTransferBackToBrowserFailed = 8,
-  kMaxValue = kDroppedTransferBackToBrowserFailed,
+  kSpeculativeTransferStateReplaced = 9,
+  kMaxValue = kSpeculativeTransferStateReplaced,
 };
 
 void EmitStateProcessingResultHistogram(InputOnVizStateProcessingResult result);

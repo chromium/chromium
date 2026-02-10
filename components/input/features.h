@@ -23,6 +23,10 @@ extern const base::FeatureParam<bool> kTransferSequencesWithAbnormalDownTime;
 COMPONENT_EXPORT(INPUT)
 extern const base::FeatureParam<bool> kForwardEventsSeenOnBrowserToViz;
 
+// If enabled, the touch input state is speculatively transferred to Viz
+// before the synchronous Android system call to transfer the touch gesture.
+COMPONENT_EXPORT(INPUT) BASE_DECLARE_FEATURE(kInputVizardSpeculativeTransfer);
+
 // If enabled, Chrome will receive buffered/batched input from Android.
 // Specifically, Chrome will NOT call
 // https://developer.android.com/reference/kotlin/android/view/View#requestunbuffereddispatch.

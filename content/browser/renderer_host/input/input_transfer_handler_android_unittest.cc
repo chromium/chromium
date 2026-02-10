@@ -37,9 +37,11 @@ const int kSuccessfullyTransferred =
 // Arbitrary failure reason.
 const int kFailureTransferring = kSuccessfullyTransferred + 1;
 
-class FakeInputTransferHandlerClient final
+class FakeInputTransferHandlerClient
     : public InputTransferHandlerAndroidClient {
  public:
+  ~FakeInputTransferHandlerClient() override = default;
+
   gpu::SurfaceHandle GetRootSurfaceHandle() override {
     return gpu::kNullSurfaceHandle;
   }
@@ -147,7 +149,13 @@ class InputTransferHandlerTest : public RenderViewHostTestHarness {
     }
 
     input_transfer_handler_client_ =
-        std::make_unique<FakeInputTransferHandlerClient>();
+        std::make_unique<testing::NiceMock<FakeInputTransferHandlerClient>>();
+    // Speculative calls with browser_would_have_handled=false happen by default
+    // and can be ignored by tests unless they specifically want to verify them.
+    EXPECT_CALL(
+        *input_transfer_handler_client_,
+        SendStateOnTouchTransfer(_, /*browser_would_have_handled=*/false))
+        .Times(testing::AnyNumber());
     transfer_handler_ = std::make_unique<FakeInputTransferHandlerAndroid>(
         input_transfer_handler_client_.get());
 
@@ -187,9 +195,6 @@ TEST_F(InputTransferHandlerTest, ConsumeEventsIfSequenceTransferred) {
     transfer_handler_->SetIsTouchSequencePotentiallyActiveOnViz(true);
     return kSuccessfullyTransferred;
   });
-  EXPECT_CALL(*input_transfer_handler_client_,
-              SendStateOnTouchTransfer(_, /*browser_would_have_handled=*/false))
-      .Times(1);
   EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event));
 
   auto move_event = GetMotionEventAndroid(
@@ -413,16 +418,10 @@ TEST_F(InputTransferHandlerTest, RetryTransfer) {
       transfer_handler_->SetIsTouchSequencePotentiallyActiveOnViz(true);
       return kSuccessfullyTransferred;
     });
-    EXPECT_CALL(
-        *input_transfer_handler_client_,
-        SendStateOnTouchTransfer(_, /*browser_would_have_handled=*/false))
-        .Times(1);
     EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event));
     EXPECT_TRUE(transfer_handler_->OnTouchEvent(*cancel_event));
 
     testing::Mock::VerifyAndClearExpectations(mock_);
-    testing::Mock::VerifyAndClearExpectations(
-        input_transfer_handler_client_.get());
 
     event_time += base::Milliseconds(20);
     down_time = event_time;
@@ -439,6 +438,7 @@ TEST_F(InputTransferHandlerTest, RetryTransfer) {
         browser_handling_cases.end();
     EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
         .WillOnce(Return(static_cast<int>(transfer_result)));
+
     if (should_retransfer) {
       EXPECT_CALL(*mock_, TransferInputToViz(_)).WillOnce([&]() {
         transfer_handler_->SetIsTouchSequencePotentiallyActiveOnViz(true);
@@ -458,8 +458,6 @@ TEST_F(InputTransferHandlerTest, RetryTransfer) {
     transfer_handler_->SetIsTouchSequencePotentiallyActiveOnViz(false);
 
     testing::Mock::VerifyAndClearExpectations(mock_);
-    testing::Mock::VerifyAndClearExpectations(
-        input_transfer_handler_client_.get());
   }
 }
 
@@ -594,16 +592,10 @@ TEST_F(InputTransferHandlerTest, DoNotRetryTransferIfNoActiveSequence) {
       transfer_handler_->SetIsTouchSequencePotentiallyActiveOnViz(true);
       return kSuccessfullyTransferred;
     });
-    EXPECT_CALL(
-        *input_transfer_handler_client_,
-        SendStateOnTouchTransfer(_, /*browser_would_have_handled=*/false))
-        .Times(1);
     EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event));
     EXPECT_TRUE(transfer_handler_->OnTouchEvent(*cancel_event));
 
     testing::Mock::VerifyAndClearExpectations(mock_);
-    testing::Mock::VerifyAndClearExpectations(
-        input_transfer_handler_client_.get());
 
     // Reset the state since we've seen a TouchEnd on Viz.
     transfer_handler_->SetIsTouchSequencePotentiallyActiveOnViz(false);
@@ -621,17 +613,10 @@ TEST_F(InputTransferHandlerTest, DoNotRetryTransferIfNoActiveSequence) {
     EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
         .WillOnce(Return(static_cast<int>(transfer_result)));
     EXPECT_CALL(*mock_, TransferInputToViz(_)).Times(0);
+
     if (transfer_result == kSuccessfullyTransferred) {
       // Sequence successfully transferred to Viz, update the state.
       transfer_handler_->SetIsTouchSequencePotentiallyActiveOnViz(true);
-      EXPECT_CALL(
-          *input_transfer_handler_client_,
-          SendStateOnTouchTransfer(_, /*browser_would_have_handled=*/false))
-          .Times(1);
-    } else {
-      EXPECT_CALL(*input_transfer_handler_client_,
-                  SendStateOnTouchTransfer(_, _))
-          .Times(0);
     }
 
     const bool consume_sequence = transfer_result == kSuccessfullyTransferred;
@@ -642,8 +627,6 @@ TEST_F(InputTransferHandlerTest, DoNotRetryTransferIfNoActiveSequence) {
     transfer_handler_->SetIsTouchSequencePotentiallyActiveOnViz(false);
 
     testing::Mock::VerifyAndClearExpectations(mock_);
-    testing::Mock::VerifyAndClearExpectations(
-        input_transfer_handler_client_.get());
   }
 }
 
@@ -657,9 +640,6 @@ TEST_F(InputTransferHandlerTest, AcceptsNewSequenceAfterBrowserCancel) {
   EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).WillOnce([&]() {
     return kSuccessfullyTransferred;
   });
-  EXPECT_CALL(*input_transfer_handler_client_,
-              SendStateOnTouchTransfer(_, /*browser_would_have_handled=*/false))
-      .Times(1);
   EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event));
 
   event_time += base::Milliseconds(8);
@@ -688,9 +668,6 @@ TEST_F(InputTransferHandlerTest, AcceptsNewSequenceAfterBrowserCancel) {
   EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).WillOnce([&]() {
     return kSuccessfullyTransferred;
   });
-  EXPECT_CALL(*input_transfer_handler_client_,
-              SendStateOnTouchTransfer(_, /*browser_would_have_handled=*/false))
-      .Times(1);
 
   // If reset worked, this returns true because it's a new successful transfer,
   // NOT because it's "consuming events until cancel" from the old sequence.
@@ -728,6 +705,63 @@ TEST_F(InputTransferHandlerTest, DoNotResetOnVizCancel) {
       ui::MotionEvent::Action::MOVE, event_time, event_time, finger_pointer_);
   EXPECT_TRUE(transfer_handler_->OnTouchEvent(*move_event));
 }
+
+class InputTransferHandlerSpeculativeTransferTest
+    : public InputTransferHandlerTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  InputTransferHandlerSpeculativeTransferTest()
+      : InputTransferHandlerTest(/* init_feature= */ false) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    enabled_features.push_back(input::features::kInputOnViz);
+    if (GetParam()) {
+      enabled_features.push_back(
+          input::features::kInputVizardSpeculativeTransfer);
+    } else {
+      disabled_features.push_back(
+          input::features::kInputVizardSpeculativeTransfer);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+};
+
+TEST_P(InputTransferHandlerSpeculativeTransferTest,
+       SendStateOnTouchTransferTiming) {
+  base::TimeTicks event_time = base::TimeTicks::Now();
+  auto down_event = GetMotionEventAndroid(
+      ui::MotionEvent::Action::DOWN, event_time, event_time, finger_pointer_);
+
+  const bool speculative_transfer_enabled = GetParam();
+
+  if (speculative_transfer_enabled) {
+    // Expect speculative call BEFORE MaybeTransferInputToViz.
+    testing::InSequence s;
+    EXPECT_CALL(
+        *input_transfer_handler_client_,
+        SendStateOnTouchTransfer(_, /*browser_would_have_handled=*/false))
+        .Times(1);
+    EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
+        .WillOnce(Return(kSuccessfullyTransferred));
+  } else {
+    // Expect call AFTER MaybeTransferInputToViz, inside
+    // OnTouchTransferredSuccessfully.
+    testing::InSequence s;
+    EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
+        .WillOnce(Return(kSuccessfullyTransferred));
+    EXPECT_CALL(
+        *input_transfer_handler_client_,
+        SendStateOnTouchTransfer(_, /*browser_would_have_handled=*/false))
+        .Times(1);
+  }
+
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event));
+}
+
+INSTANTIATE_TEST_SUITE_P(InputTransferHandlerSpeculativeTransferTest,
+                         InputTransferHandlerSpeculativeTransferTest,
+                         ::testing::Bool());
 
 class DownTimeAfterEventTimeTest
     : public InputTransferHandlerTest,

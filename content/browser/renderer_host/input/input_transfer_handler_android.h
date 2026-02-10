@@ -21,6 +21,7 @@ namespace content {
 
 class InputTransferHandlerAndroidClient {
  public:
+  virtual ~InputTransferHandlerAndroidClient() = default;
   virtual gpu::SurfaceHandle GetRootSurfaceHandle() = 0;
   virtual void SendStateOnTouchTransfer(const ui::MotionEvent& event,
                                         bool browser_would_have_handled) = 0;

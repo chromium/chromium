@@ -24,6 +24,9 @@ const base::FeatureParam<bool> kTransferSequencesWithAbnormalDownTime{
 const base::FeatureParam<bool> kForwardEventsSeenOnBrowserToViz{
     &features::kInputOnViz,
     /*name=*/"forward_events_seen_on_browser_to_viz", false};
+
+BASE_FEATURE(kInputVizardSpeculativeTransfer,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kDispatchSingleEventIfNoPrediction,
