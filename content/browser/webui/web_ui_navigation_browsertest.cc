@@ -1063,6 +1063,39 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   TestWebUISubframeNewWindowToWebAllowed(kWebUIBindingsPolicySet);
 }
 
+// Verify that adding a sandboxed iframe to a WebUI page doesn't lead to a
+// CANNOT_COMMIT_URL failure when verifying the committing URL. See
+// https://crbug.com/382005745.
+IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, SandboxedFrameInWebUI) {
+  // Navigate to a WebUI page.
+  GURL chrome_url(GetWebUIURL("web-ui/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), chrome_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // Create sandboxed same-origin child frame with frame-ancestors that allows
+  // it to load.
+  GURL iframe_url(GetWebUIURL("web-ui/title1.html?frameancestors=" +
+                              GetWebUIURLString("web-ui")));
+  {
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.id = 'sandboxed_webui'; "
+        "frame.sandbox = ''; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        iframe_url.spec().c_str());
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+  FrameTreeNode* child = root->child_at(0);
+  scoped_refptr<SiteInstanceImpl> child_instance =
+      child->current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(child_instance->GetSiteInfo().is_sandboxed());
+  EXPECT_EQ(iframe_url, child->current_frame_host()->GetLastCommittedURL());
+}
+
 IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
                        WebUIOriginsRequireDedicatedProcess) {
   // chrome:// URLs should require a dedicated process.
