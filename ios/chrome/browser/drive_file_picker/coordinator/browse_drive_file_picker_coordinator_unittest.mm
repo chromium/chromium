@@ -92,7 +92,7 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
             .WithGaiaId(kPrimaryIdentity.gaiaId)
             .Build(base::SysNSStringToUTF8(kPrimaryIdentity.userEmail)));
     authentication_service->SignIn(kPrimaryIdentity,
-                                   signin_metrics::AccessPoint::kUnknown);
+                                   signin_metrics::AccessPoint::kStartPage);
     coordinator_ = [[BrowseDriveFilePickerCoordinator alloc]
         initWithBaseNavigationViewController:navigation_controller_
                                      browser:browser_.get()
