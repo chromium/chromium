@@ -2271,8 +2271,16 @@ class LocationBarMediator
         return mZoomButtonToolbarWidthConsumer;
     }
 
-    /* package */ @Nullable ToolbarWidthConsumer getOmniboxChipToolbarWidthConsumer() {
-        return mOmniboxChipManager;
+    /* package */ @Nullable ToolbarWidthConsumer getOmniboxChipCollapsedToolbarWidthConsumer() {
+        return mOmniboxChipManager != null
+                ? mOmniboxChipManager.getCollapsedToolbarWidthConsumer()
+                : null;
+    }
+
+    /* package */ @Nullable ToolbarWidthConsumer getOmniboxChipExpandedToolbarWidthConsumer() {
+        return mOmniboxChipManager != null
+                ? mOmniboxChipManager.getExpandedToolbarWidthConsumer()
+                : null;
     }
 
     private static class ButtonToolbarWidthConsumer implements ToolbarWidthConsumer {

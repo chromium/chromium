@@ -19,7 +19,7 @@ public abstract class OpenInAppEntryPoint
     private final TabSupplierObserver mTabSupplierObserver;
     private @Nullable Tab mCurrentTab;
     private @Nullable OpenInAppDelegate mOpenInAppDelegate;
-    private OpenInAppDelegate.@Nullable OpenInAppInfo mOpenInAppInfo;
+    protected OpenInAppDelegate.@Nullable OpenInAppInfo mOpenInAppInfo;
     protected final Context mContext;
 
     /**
@@ -49,10 +49,6 @@ public abstract class OpenInAppEntryPoint
                     }
                 };
         mContext = context;
-
-        if (mOpenInAppDelegate != null) {
-            mOpenInAppInfo = mOpenInAppDelegate.getCurrentOpenInAppInfo();
-        }
     }
 
     public void destroy() {
@@ -72,8 +68,6 @@ public abstract class OpenInAppEntryPoint
 
     @Override
     public OpenInAppDelegate.@Nullable OpenInAppInfo getOpenInAppInfoForMenuItem() {
-        // TODO(crbug.com/450253146): This should only return the info if the omnibox chip isn't
-        // being shown.
         return mOpenInAppInfo;
     }
 }

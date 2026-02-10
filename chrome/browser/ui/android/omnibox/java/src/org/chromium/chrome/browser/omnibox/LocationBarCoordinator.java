@@ -1156,6 +1156,22 @@ public class LocationBarCoordinator
     }
 
     /**
+     * Returns a {@link ToolbarWidthConsumer} that handles width on the toolbar allocated to showing
+     * the chip on the omnibox in its collapsed (icon only) state.
+     */
+    public @Nullable ToolbarWidthConsumer getOmniboxChipCollapsedToolbarWidthConsumer() {
+        return mLocationBarMediator.getOmniboxChipCollapsedToolbarWidthConsumer();
+    }
+
+    /**
+     * Returns a {@link ToolbarWidthConsumer} that handles width on the toolbar allocated to showing
+     * the chip on the omnibox in its expanded (icon + text) state.
+     */
+    public @Nullable ToolbarWidthConsumer getOmniboxChipExpandedToolbarWidthConsumer() {
+        return mLocationBarMediator.getOmniboxChipExpandedToolbarWidthConsumer();
+    }
+
+    /**
      * Apply the X translation to the LocationBar buttons to match the NTP fakebox -> omnibox
      * transition.
      *

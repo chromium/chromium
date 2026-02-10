@@ -12,10 +12,11 @@ found in the LICENSE file.
     <LinearLayout
         android:id="@+id/omnibox_chip_container"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/locationBarActionButtonHeight"
         android:orientation="horizontal"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/install_button"/>
 
     <!-- Fusebox/Omnibox top-stacked elements on Inactive Omnibox on NTP -->

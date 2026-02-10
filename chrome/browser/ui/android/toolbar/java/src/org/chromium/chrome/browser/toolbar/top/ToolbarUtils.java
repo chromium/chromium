@@ -43,10 +43,12 @@ public class ToolbarUtils {
                 ToolbarComponentId.FORWARD,
                 ToolbarComponentId.HOME,
                 ToolbarComponentId.OMNIBOX_BOOKMARK,
+                ToolbarComponentId.OMNIBOX_CHIP_COLLAPSED,
                 ToolbarComponentId.OMNIBOX_ZOOM,
                 ToolbarComponentId.OMNIBOX_INSTALL,
                 ToolbarComponentId.OMNIBOX_MIC,
                 ToolbarComponentId.OMNIBOX_LENS,
+                ToolbarComponentId.OMNIBOX_CHIP_EXPANDED
             };
 
     public static final @ToolbarComponentId int[] APP_MENU_ICON_ROW_COMPONENTS =
@@ -62,6 +64,8 @@ public class ToolbarUtils {
         ToolbarComponentId.FORWARD,
         ToolbarComponentId.RELOAD,
         ToolbarComponentId.LOCATION_BAR_MINIMUM,
+        ToolbarComponentId.OMNIBOX_CHIP_COLLAPSED,
+        ToolbarComponentId.OMNIBOX_CHIP_EXPANDED,
         ToolbarComponentId.OMNIBOX_BOOKMARK,
         ToolbarComponentId.OMNIBOX_ZOOM,
         ToolbarComponentId.OMNIBOX_INSTALL,
@@ -81,17 +85,20 @@ public class ToolbarUtils {
         int FORWARD = 2;
         int RELOAD = 3;
         int LOCATION_BAR_MINIMUM = 4;
-        int OMNIBOX_BOOKMARK = 5;
-        int OMNIBOX_ZOOM = 6;
-        int OMNIBOX_INSTALL = 7;
-        int OMNIBOX_MIC = 8;
-        int OMNIBOX_LENS = 9;
-        int ADAPTIVE_BUTTON = 10;
-        int INCOGNITO_INDICATOR = 11;
-        int TAB_SWITCHER = 12;
-        int MENU = 13;
-        int PADDING = 14;
-        int COUNT = 15;
+        int OMNIBOX_CHIP_COLLAPSED = 5;
+        int OMNIBOX_CHIP_EXPANDED = 6;
+        int OMNIBOX_BOOKMARK = 7;
+        int OMNIBOX_ZOOM = 8;
+        int OMNIBOX_INSTALL = 9;
+        int OMNIBOX_MIC = 10;
+        int OMNIBOX_LENS = 11;
+        int ADAPTIVE_BUTTON = 12;
+        int INCOGNITO_INDICATOR = 13;
+        int TAB_SWITCHER = 14;
+        int MENU = 15;
+        int PADDING = 16;
+
+        int COUNT = 17;
     }
 
     /**

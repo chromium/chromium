@@ -198,4 +198,10 @@ found in the LICENSE file.
     <dimen name="status_view_verbose_highlight_height">40dp</dimen>
     <dimen name="location_bar_status_icon_margin">4dp</dimen>
     <dimen name="omnibox_verbose_text_negative_start_margin">-4dp</dimen>
+
+    <!-- Omnibox chip. -->
+    <dimen name="omnibox_chip_min_expanded_width">80dp</dimen>
+    <dimen name="omnibox_chip_max_expanded_width">160dp</dimen>
+    <dimen name="omnibox_chip_padding">4dp</dimen>
+    <dimen name="omnibox_chip_padding_end">12dp</dimen>
 </resources>

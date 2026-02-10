@@ -85,4 +85,16 @@ found in the LICENSE file.
             @style/TextAppearance.TextSmall.Primary.Baseline.Light
         </item>
     </style>
+
+    <style name="OmniboxChipSizeOverlay" parent="SizeOverlay.Material3Expressive.Button.Xsmall">
+        <item name="containerPaddingStart">@dimen/omnibox_chip_padding</item>
+        <item name="containerPaddingEnd">@dimen/omnibox_chip_padding_end</item>
+        <item name="containerPaddingTop">@dimen/omnibox_chip_padding</item>
+        <item name="containerPaddingBottom">@dimen/omnibox_chip_padding</item>
+        <item name="containerInsetTop">@dimen/omnibox_chip_padding</item>
+        <item name="containerInsetBottom">@dimen/omnibox_chip_padding</item>
+        <item name="containerInsetLeft">@dimen/omnibox_chip_padding</item>
+        <item name="containerInsetRight">@dimen/omnibox_chip_padding</item>
+        <item name="containerIconSize">?attr/listItemIconSize</item>
+    </style>
 </resources>

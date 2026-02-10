@@ -1131,6 +1131,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/mandatory_reauth/android/internal:junit",
       "//chrome/browser/notifications:junit_tests",
       "//chrome/browser/ntp_customization:junit",
+      "//chrome/browser/open_in_app/android:junit",
       "//chrome/browser/page_image_service/android:junit",
       "//chrome/browser/partnerbookmarks:junit",
       "//chrome/browser/partnercustomizations:junit",

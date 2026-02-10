@@ -203,6 +203,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_mic_white_24dp.xml",
     "java/res/drawable/ic_music_note_24dp.xml",
     "java/res/drawable/ic_offline_pin_fill_24dp.xml",
+    "java/res/drawable/ic_open_in_new_20dp.xml",
     "java/res/drawable/ic_outline_email_24dp.xml",
     "java/res/drawable/ic_outline_sms_24dp.xml",
     "java/res/drawable/ic_password_manager_key.xml",

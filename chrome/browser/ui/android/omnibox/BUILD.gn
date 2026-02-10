@@ -33,7 +33,11 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarPhone.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarTablet.java",
     "java/src/org/chromium/chrome/browser/omnibox/NewTabPageDelegate.java",
+    "java/src/org/chromium/chrome/browser/omnibox/OmniboxChipCoordinator.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxChipManager.java",
+    "java/src/org/chromium/chrome/browser/omnibox/OmniboxChipMediator.java",
+    "java/src/org/chromium/chrome/browser/omnibox/OmniboxChipProperties.java",
+    "java/src/org/chromium/chrome/browser/omnibox/OmniboxChipViewBinder.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxMetrics.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxPrerender.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxStub.java",
@@ -390,6 +394,7 @@ android_library("unit_device_javatests") {
   resources_package = "org.chromium.chrome.browser.omnibox"
   testonly = true
   sources = [
+    "java/src/org/chromium/chrome/browser/omnibox/OmniboxChipViewBinderTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarUiUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/status/StatusViewRenderTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/status/StatusViewTest.java",
@@ -412,6 +417,7 @@ android_library("unit_device_javatests") {
     "//components/content_settings/android:content_settings_enums_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
@@ -437,6 +443,8 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarBackgroundDrawableUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarMediatorTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarTabletUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/OmniboxChipManagerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/OmniboxChipMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxSuggestionsDropdownEmbedderImplTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/OverrideUrlLoadingDelegateImplUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/SearchEngineUtilsUnitTest.java",

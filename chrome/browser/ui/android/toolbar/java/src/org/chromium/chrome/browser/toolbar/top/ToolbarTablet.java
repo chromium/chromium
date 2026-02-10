@@ -165,6 +165,10 @@ public class ToolbarTablet extends ToolbarLayout {
                 mLocationBar.getMicButtonToolbarWidthConsumer();
         mToolbarWidthConsumers[ToolbarComponentId.OMNIBOX_LENS] =
                 mLocationBar.getLensButtonToolbarWidthConsumer();
+        mToolbarWidthConsumers[ToolbarComponentId.OMNIBOX_CHIP_COLLAPSED] =
+                mLocationBar.getOmniboxChipCollapsedToolbarWidthConsumer();
+        mToolbarWidthConsumers[ToolbarComponentId.OMNIBOX_CHIP_EXPANDED] =
+                mLocationBar.getOmniboxChipExpandedToolbarWidthConsumer();
     }
 
     @Override
