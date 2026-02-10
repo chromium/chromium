@@ -48,7 +48,9 @@
 namespace syncer {
 namespace {
 
-using testing::Not;
+using ::testing::Eq;
+using ::testing::Not;
+using ::testing::Pointee;
 
 // Keep this file in sync with the .proto files in this directory.
 
@@ -377,25 +379,22 @@ TEST(ProtoValueConversionsTest, CompareSpecificsData) {
   base::DictValue value =
       ProductComparisonSpecificsToValue(specifics).TakeDict();
   EXPECT_FALSE(value.empty());
-  EXPECT_TRUE(value.FindString("uuid"));
-  EXPECT_STREQ("my_uuid", value.FindString("uuid")->c_str());
-  EXPECT_TRUE(value.FindString("creation_time_unix_epoch_millis"));
-  EXPECT_STREQ("1708532099",
-               value.FindString("creation_time_unix_epoch_millis")->c_str());
-  EXPECT_TRUE(value.FindString("update_time_unix_epoch_millis"));
-  EXPECT_STREQ("1708642103",
-               value.FindString("update_time_unix_epoch_millis")->c_str());
-  EXPECT_TRUE(value.FindString("name"));
-  EXPECT_STREQ("my_name", value.FindString("name")->c_str());
+
+  EXPECT_THAT(value.FindString("uuid"), Pointee(Eq("my_uuid")));
+  EXPECT_THAT(value.FindString("creation_time_unix_epoch_millis"),
+              Pointee(Eq("1708532099")));
+  EXPECT_THAT(value.FindString("update_time_unix_epoch_millis"),
+              Pointee(Eq("1708642103")));
+  EXPECT_THAT(value.FindString("name"), Pointee(Eq("my_name")));
+
   const base::ListValue* data_list = value.FindList("data");
-  EXPECT_TRUE(data_list);
+  ASSERT_TRUE(data_list);
   EXPECT_EQ(2u, data_list->size());
-  EXPECT_TRUE((*data_list)[0].GetDict().FindString("url"));
-  EXPECT_STREQ("https://www.foo.com",
-               (*data_list)[0].GetDict().FindString("url")->c_str());
-  EXPECT_TRUE((*data_list)[1].GetDict().FindString("url"));
-  EXPECT_STREQ("https://www.bar.com",
-               (*data_list)[1].GetDict().FindString("url")->c_str());
+
+  EXPECT_THAT((*data_list)[0].GetDict().FindString("url"),
+              Pointee(Eq("https://www.foo.com")));
+  EXPECT_THAT((*data_list)[1].GetDict().FindString("url"),
+              Pointee(Eq("https://www.bar.com")));
 }
 
 TEST(ProtoValueConversionsTest, GeminiThreadSpecificsToValue) {
@@ -406,10 +405,43 @@ TEST(ProtoValueConversionsTest, GeminiThreadSpecificsToValue) {
   base::DictValue value =
       GeminiThreadSpecificsToValue(gemini_specifics).TakeDict();
   EXPECT_FALSE(value.empty());
-  EXPECT_THAT(value.FindString("conversation_id"),
-              ::testing::Pointee(testing::Eq("my_id")));
-  EXPECT_THAT(value.FindString("title"),
-              ::testing::Pointee(testing::Eq("my_title")));
+  EXPECT_THAT(value.FindString("conversation_id"), Pointee(Eq("my_id")));
+  EXPECT_THAT(value.FindString("title"), Pointee(Eq("my_title")));
+}
+
+TEST(ProtoValueConversionsTest, ThemeSpecificsIosToValue) {
+  sync_pb::ThemeSpecificsIos specifics;
+
+  // Populate `UserColorTheme`.
+  auto* color_theme = specifics.mutable_user_color_theme();
+  color_theme->set_color(4278190080);
+  color_theme->set_browser_color_variant(sync_pb::UserColorTheme::TONAL_SPOT);
+
+  // Populate `NtpCustomBackground`.
+  auto* background = specifics.mutable_ntp_background();
+  background->set_url("https://example.com/image.png");
+  background->set_attribution_line_1("Photographer Name");
+  background->set_collection_id("nature_collection");
+  background->set_main_color(4278190080);
+
+  base::DictValue value = ThemeSpecificsIosToValue(specifics).TakeDict();
+  EXPECT_FALSE(value.empty());
+
+  const base::DictValue* color_dict = value.FindDict("user_color_theme");
+  ASSERT_TRUE(color_dict);
+  EXPECT_THAT(color_dict->FindString("color"), Pointee(Eq("4278190080")));
+  EXPECT_THAT(color_dict->FindString("browser_color_variant"),
+              Pointee(Eq("TONAL_SPOT")));
+
+  const base::DictValue* bg_dict = value.FindDict("ntp_background");
+  ASSERT_TRUE(bg_dict);
+  EXPECT_THAT(bg_dict->FindString("url"),
+              Pointee(Eq("https://example.com/image.png")));
+  EXPECT_THAT(bg_dict->FindString("attribution_line_1"),
+              Pointee(Eq("Photographer Name")));
+  EXPECT_THAT(bg_dict->FindString("collection_id"),
+              Pointee(Eq("nature_collection")));
+  EXPECT_THAT(bg_dict->FindString("main_color"), Pointee(Eq("4278190080")));
 }
 
 }  // namespace
