@@ -205,9 +205,7 @@ DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
     Profile* profile,
     content::NavigationHandle* navigation_handle,
     Callback callback) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      (!base::FeatureList::IsEnabled(kEnableSinglePageAppDataProtection) &&
-       navigation_handle->IsSameDocument())) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
     return nullptr;
   }
 

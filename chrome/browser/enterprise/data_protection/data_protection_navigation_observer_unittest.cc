@@ -927,19 +927,17 @@ TEST_P(DataProtectionWatermarkStringTest,
       GetParam().expected);
 }
 
-class SinglePageAppWatermarkTest : public DataProtectionNavigationObserverTest,
-                                   public testing::WithParamInterface<bool> {};
+class SinglePageAppWatermarkTest : public DataProtectionNavigationObserverTest {
+};
 
 class SameDocumentNavigationWebContentsObserver
     : public content::WebContentsObserver {
  public:
   explicit SameDocumentNavigationWebContentsObserver(
-      bool is_single_page_app_enabled,
       content::WebContents* web_contents,
       FakeRealTimeUrlLookupService* lookup_service,
       content::BrowserContext* browser_context)
       : content::WebContentsObserver(web_contents),
-        is_single_page_app_enabled_(is_single_page_app_enabled),
         lookup_service_(lookup_service),
         browser_context_(browser_context) {}
 
@@ -960,32 +958,21 @@ class SameDocumentNavigationWebContentsObserver
             &controller, Profile::FromBrowserContext(browser_context_),
             navigation_handle, future.GetCallback());
 
-    ASSERT_EQ(navigation_observer != nullptr, is_single_page_app_enabled_);
+    ASSERT_NE(navigation_observer, nullptr);
   }
 
  private:
-  bool is_single_page_app_enabled_;
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<FakeRealTimeUrlLookupService> lookup_service_;
   raw_ptr<content::BrowserContext> browser_context_;
 };
 
-TEST_P(SinglePageAppWatermarkTest,
+TEST_F(SinglePageAppWatermarkTest,
        CheckSameDocumentNavigation_CreateForNavigationIfNeeded) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  bool is_single_page_app_enabled = GetParam();
-  if (is_single_page_app_enabled) {
-    scoped_feature_list.InitAndEnableFeature(
-        enterprise_data_protection::kEnableSinglePageAppDataProtection);
-  } else {
-    scoped_feature_list.InitAndDisableFeature(
-        enterprise_data_protection::kEnableSinglePageAppDataProtection);
-  }
   SetContents(CreateTestWebContents());
   NavigateAndCommit(GURL("https://example.com"));
   SameDocumentNavigationWebContentsObserver observer(
-      is_single_page_app_enabled, web_contents(), &lookup_service_,
-      browser_context());
+      web_contents(), &lookup_service_, browser_context());
 
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://example.com#fragment"), main_rfh());
@@ -997,10 +984,6 @@ TEST_P(SinglePageAppWatermarkTest,
   EXPECT_CALL(observer, DidFinishNavigation);
   simulator->CommitSameDocument();
 }
-
-INSTANTIATE_TEST_SUITE_P(SinglePageAppWatermarkTest,
-                         SinglePageAppWatermarkTest,
-                         testing::Bool());
 
 class OrderedDataProtectionNavigationObserverTest
     : public DataProtectionNavigationObserverTest,

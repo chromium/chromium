@@ -89,7 +89,7 @@ void DataProtectionUrlLookupService::DoLookup(
       base::SequencedTaskRunner::GetCurrentDefault(),
       sessions::SessionTabHelper::IdForTab(web_contents),
       /*referring_app_info=*/std::nullopt, /*use_cache=*/
-      !base::FeatureList::IsEnabled(kEnableSinglePageAppDataProtection));
+      false);
 }
 
 void DataProtectionUrlLookupService::OnRealTimeLookupComplete(

@@ -83,11 +83,6 @@ class WatermarkBrowserTest
     : public UiBrowserTest,
       public testing::WithParamInterface<WatermarkTextParams> {
  public:
-  WatermarkBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        enterprise_data_protection::kEnableSinglePageAppDataProtection);
-  }
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
