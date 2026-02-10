@@ -20,12 +20,6 @@ import java.lang.annotation.RetentionPolicy;
 /** Utility methods for determining and working with mime types. */
 @NullMarked
 public class MimeTypeUtils {
-    /** The MIME type for a plain text objects dragged from Chrome. */
-    public static final String CHROME_MIMETYPE_TEXT = "chrome/text";
-
-    /** The MIME type for a link objects dragged from Chrome. */
-    public static final String CHROME_MIMETYPE_LINK = "chrome/link";
-
     /** The MIME type for a tab object dragged from Chrome. */
     public static final String CHROME_MIMETYPE_TAB = "chrome/tab";
 

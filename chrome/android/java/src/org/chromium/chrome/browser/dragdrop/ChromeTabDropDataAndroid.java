@@ -47,8 +47,7 @@ public class ChromeTabDropDataAndroid extends ChromeDropDataAndroid {
         return new String[] {
             MimeTypeUtils.CHROME_MIMETYPE_TAB,
             ClipDescription.MIMETYPE_TEXT_PLAIN,
-            ClipDescription.MIMETYPE_TEXT_INTENT,
-            MimeTypeUtils.CHROME_MIMETYPE_LINK
+            ClipDescription.MIMETYPE_TEXT_INTENT
         };
     }
 

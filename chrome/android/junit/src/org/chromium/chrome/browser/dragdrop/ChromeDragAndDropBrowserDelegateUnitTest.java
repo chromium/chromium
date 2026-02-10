@@ -273,9 +273,6 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
             assertTrue(
                     "The clip data should contain chrome/tab mimetype.",
                     data.getDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB));
-            assertTrue(
-                    "The clip data should contain chrome/link mimetype.",
-                    data.getDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_LINK));
         }
         assertTrue(
                 "The clip data should contain text/plain mimetype.",
