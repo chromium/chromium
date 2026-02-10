@@ -3097,6 +3097,17 @@ deps = {
   },
 # LINT.ThenChange(/components/cronet/gn2bp/copy.bara.sky)
 
+  'src/internal/tools/edit_monitor/cipd': {
+      'packages': [
+          {
+              'package': 'infra_internal/edit_monitor/linux-amd64',
+              'version': 'sE-qflD_YAk1sQecqSNkp3Yh6klQQbd2lR3-vCxwoJ4C',
+          },
+      ],
+      'condition': 'host_os == "linux" and (checkout_src_internal or checkout_src_internal_infra)',
+      'dep_type': 'cipd',
+  },
+
   'src/ash/ambient/resources': {
     'packages': [
       {
