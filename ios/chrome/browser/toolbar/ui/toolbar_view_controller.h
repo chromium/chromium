@@ -55,6 +55,14 @@
 // The location bar in this toolbar.
 @property(nonatomic, strong) UIViewController* locationBarViewController;
 
+// Initializer for the toolbar, in `incognito` or not.
+- (instancetype)initInIncognito:(BOOL)incognito NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+
 // Shows/Hides the location bar.
 - (void)setLocationBarHidden:(BOOL)hidden;
 

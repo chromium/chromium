@@ -23,10 +23,6 @@ using ToolbarButtonImageLoader = UIImage* (^)(void);
 // The `imageLoader` for this button.
 - (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader;
 
-// Updates the visibility of this button based on the current state and the
-// visibility mask.
-- (void)updateVisibility;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUTTONS_TOOLBAR_BUTTON_H_

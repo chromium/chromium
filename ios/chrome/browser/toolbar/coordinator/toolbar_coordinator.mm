@@ -1177,11 +1177,13 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
                                locationBar:(UIViewController*)locationBar {
   CHECK(IsChromeNextIaEnabled());
 
+  BOOL incognito = self.profile->IsOffTheRecord();
+
   Browser* browser = self.browser;
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
 
   ToolbarViewController* toolbarViewController =
-      [[ToolbarViewController alloc] init];
+      [[ToolbarViewController alloc] initInIncognito:incognito];
   toolbarViewController.buttonFactory = [[ToolbarButtonFactory alloc] init];
   toolbarViewController.mutator = mediator;
   toolbarViewController.browserCoordinatorHandler =
@@ -1195,7 +1197,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   toolbarViewController.toolbarHeightDelegate = self.toolbarHeightDelegate;
   toolbarViewController.locationBarViewController = locationBar;
 
-  if (self.profile->IsOffTheRecord()) {
+  if (incognito) {
     toolbarViewController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   }
 

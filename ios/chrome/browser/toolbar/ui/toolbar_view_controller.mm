@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_utils.h"
+#import "ios/chrome/browser/toolbar/ui/buttons/buttons_utils.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_visibility.h"
@@ -41,10 +42,27 @@ constexpr CGFloat kStackViewSpacing = 9;
   ToolbarButton* _shareButton;
   ToolbarButton* _tabGridButton;
   ToolbarButton* _toolsMenuButton;
-  UIStackView* _stackView;
+
+  // The stack views that hold the buttons on the leading side.
+  UIStackView* _leadingStackView;
+  // The container for the location bar, which is a pill shaped view.
+  UIView* _locationBarContainer;
+  // The stack views that hold the buttons on the trailing side.
+  UIStackView* _trailingStackView;
+
+  // Whether this toolbar is currently visible.
   BOOL _visible;
 
-  UIView* _locationBarContainer;
+  // Whether this toolbar is in incognito mode.
+  BOOL _incognito;
+}
+
+- (instancetype)initInIncognito:(BOOL)incognito {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _incognito = incognito;
+  }
+  return self;
 }
 
 - (void)viewDidLoad {
@@ -93,19 +111,7 @@ constexpr CGFloat kStackViewSpacing = 9;
 
   [self addChildViewController:_locationBarViewController];
   [_locationBarContainer addSubview:locationBarView];
-  [NSLayoutConstraint activateConstraints:@[
-    [locationBarView.centerXAnchor
-        constraintEqualToAnchor:_locationBarContainer.centerXAnchor],
-    [locationBarView.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:_locationBarContainer
-                                                 .leadingAnchor],
-    [locationBarView.trailingAnchor
-        constraintLessThanOrEqualToAnchor:_locationBarContainer.trailingAnchor],
-    [locationBarView.topAnchor
-        constraintEqualToAnchor:_locationBarContainer.topAnchor],
-    [locationBarView.bottomAnchor
-        constraintEqualToAnchor:_locationBarContainer.bottomAnchor],
-  ]];
+  AddSameConstraints(locationBarView, _locationBarContainer);
   [_locationBarViewController didMoveToParentViewController:self];
 }
 
@@ -222,19 +228,22 @@ constexpr CGFloat kStackViewSpacing = 9;
 
 // Returns a new location bar container.
 - (UIView*)createLocationBarContainer {
-  // TODO(crbug.com/472279443): Use real design.
   UIView* locationBarContainer = [[UIView alloc] init];
   locationBarContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  [locationBarContainer.heightAnchor
+      constraintEqualToConstant:kLocationBarHeight]
+      .active = YES;
+  locationBarContainer.layer.cornerRadius = kLocationBarHeight / 2.0;
+
+  locationBarContainer.backgroundColor =
+      ToolbarLocationBarBackgroundColor(_incognito);
+
   [locationBarContainer
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisHorizontal];
   [locationBarContainer
       setContentHuggingPriority:UILayoutPriorityDefaultLow
                         forAxis:UILayoutConstraintAxisHorizontal];
-  [locationBarContainer.heightAnchor
-      constraintEqualToConstant:kLocationBarHeight]
-      .active = YES;
-  locationBarContainer.backgroundColor = UIColor.redColor;
 
   return locationBarContainer;
 }
@@ -279,37 +288,64 @@ constexpr CGFloat kStackViewSpacing = 9;
              forControlEvents:UIControlEventTouchUpInside];
 }
 
-// Sets up the hierarchy of the buttons.
-- (void)setUpHierarchy {
-  _stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    _backButton, _forwardButton, _reloadButton, _stopButton,
-    _locationBarContainer, _shareButton, _tabGridButton, _toolsMenuButton
-  ]];
-  _stackView.translatesAutoresizingMaskIntoConstraints = NO;
-  _stackView.axis = UILayoutConstraintAxisHorizontal;
-  _stackView.distribution = UIStackViewDistributionFill;
-  _stackView.alignment = UIStackViewAlignmentCenter;
-  _stackView.spacing = kStackViewSpacing;
-
-  [self.view addSubview:_stackView];
-  AddSameConstraintsWithInsets(
-      _stackView, self.view.safeAreaLayoutGuide,
-      NSDirectionalEdgeInsetsMake(0, kStackViewSpacing, 0, kStackViewSpacing));
-
-  [self updateButtonVisibility];
-  [self
-      registerForTraitChanges:
-          @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
-                   withAction:@selector(updateButtonVisibility)];
+- (UIStackView*)makeStackViewWithButtons:(NSArray<UIButton*>*)buttons {
+  UIStackView* stackView =
+      [[UIStackView alloc] initWithArrangedSubviews:buttons];
+  stackView.translatesAutoresizingMaskIntoConstraints = NO;
+  stackView.axis = UILayoutConstraintAxisHorizontal;
+  stackView.distribution = UIStackViewDistributionFill;
+  stackView.alignment = UIStackViewAlignmentCenter;
+  stackView.spacing = kStackViewSpacing;
+  return stackView;
 }
 
-// Updates the visibility of the buttons based on the current size class and
-// loading state.
-- (void)updateButtonVisibility {
-  for (UIView* view in _stackView.arrangedSubviews) {
-    ToolbarButton* button = base::apple::ObjCCast<ToolbarButton>(view);
-    [button updateVisibility];
-  }
+// Sets up the hierarchy of the buttons.
+- (void)setUpHierarchy {
+  _leadingStackView = [self makeStackViewWithButtons:@[
+    _backButton,
+    _forwardButton,
+    _reloadButton,
+    _stopButton,
+  ]];
+  [self.view addSubview:_leadingStackView];
+
+  [self.view addSubview:_locationBarContainer];
+  NSLayoutConstraint* widthConstraint = [_locationBarContainer.widthAnchor
+      constraintEqualToAnchor:self.view.widthAnchor];
+  widthConstraint.priority = UILayoutPriorityRequired - 1;
+
+  _trailingStackView = [self makeStackViewWithButtons:@[
+    _shareButton, _tabGridButton, _toolsMenuButton
+  ]];
+  [self.view addSubview:_trailingStackView];
+
+  UILayoutGuide* safeAreaGuide = self.view.safeAreaLayoutGuide;
+  [NSLayoutConstraint activateConstraints:@[
+    [_leadingStackView.leadingAnchor
+        constraintEqualToAnchor:safeAreaGuide.leadingAnchor
+                       constant:kStackViewSpacing],
+    [_leadingStackView.trailingAnchor
+        constraintLessThanOrEqualToAnchor:_locationBarContainer.leadingAnchor
+                                 constant:-kStackViewSpacing],
+    [_leadingStackView.centerYAnchor
+        constraintEqualToAnchor:_locationBarContainer.centerYAnchor],
+
+    [_trailingStackView.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:_locationBarContainer
+                                                 .trailingAnchor
+                                    constant:kStackViewSpacing],
+    [_trailingStackView.trailingAnchor
+        constraintEqualToAnchor:safeAreaGuide.trailingAnchor
+                       constant:-kStackViewSpacing],
+    [_trailingStackView.centerYAnchor
+        constraintEqualToAnchor:_locationBarContainer.centerYAnchor],
+
+    [_locationBarContainer.centerYAnchor
+        constraintEqualToAnchor:safeAreaGuide.centerYAnchor],
+    [_locationBarContainer.centerXAnchor
+        constraintEqualToAnchor:safeAreaGuide.centerXAnchor],
+    widthConstraint,
+  ]];
 }
 
 // Handles back button tap.

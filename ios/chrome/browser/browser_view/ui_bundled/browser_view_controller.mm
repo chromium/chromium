@@ -1771,7 +1771,8 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 
 // Notifies or modifies BVC owned UI elements when a UITrait has been changed.
 - (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
-  if (base::FeatureList::IsEnabled(kEnableTraitCollectionWorkAround)) {
+  if (!IsChromeNextIaEnabled() &&
+      base::FeatureList::IsEnabled(kEnableTraitCollectionWorkAround)) {
     [self updateTraitsIfNeeded];
   }
 
