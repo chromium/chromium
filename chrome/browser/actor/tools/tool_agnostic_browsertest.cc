@@ -599,6 +599,38 @@ IN_PROC_BROWSER_TEST_F(ActorEarlyAddTaskTabsBrowserTest,
   EXPECT_TRUE(tabs_at_acting_start->contains(tab));
 }
 
+IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
+                       ActorTaskAvailableInStopStateCallback) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_EQ(actor_task().GetState(), ActorTask::State::kCreated);
+
+  TaskId task_at_created_state = actor_task().id();
+
+  std::optional<TaskId> task_at_finished_state;
+  auto subscription = actor_keyed_service().AddTaskStateChangedCallback(
+      base::BindLambdaForTesting([&](TaskId id, ActorTask::State state) {
+        if (id != actor_task().id()) {
+          return;
+        }
+        if (state == ActorTask::State::kFinished) {
+          // Get the ID from the ActorTask to ensure it's still live.
+          ActorTask* task = actor_keyed_service().GetTask(task_id_);
+          if (task) {
+            task_at_finished_state = task->id();
+          }
+        }
+      }));
+
+  actor_keyed_service().StopTask(task_id_,
+                                 ActorTask::StoppedReason::kTaskComplete);
+
+  ASSERT_TRUE(task_at_finished_state.has_value());
+  EXPECT_EQ(task_at_created_state, *task_at_finished_state);
+}
+
 // This test is for behavior guarded by a killswitch.
 class ActorToolAgnosticBrowserTestWithDeferWhileInterrupted
     : public ActorToolAgnosticBrowserTest {

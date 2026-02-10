@@ -27,6 +27,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/common/actor.mojom-shared.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
@@ -166,13 +167,10 @@ void GlicActorTaskManager::PerformActionsFinished(
     return;
   }
 
-  // If the task went away it must have been handled in the !task branch above.
-  DCHECK_NE(result_code, actor::mojom::ActionResultCode::kTaskWentAway);
-
-  if (result_code == actor::mojom::ActionResultCode::kTaskPaused) {
+  if (result_code == actor::mojom::ActionResultCode::kTaskPaused ||
+      result_code == actor::mojom::ActionResultCode::kTaskWentAway) {
     optimization_guide::proto::ActionsResult response =
-        actor::BuildErrorActionsResult(
-            actor::mojom::ActionResultCode::kTaskPaused, std::nullopt);
+        actor::BuildErrorActionsResult(result_code, std::nullopt);
     std::move(callback).Run(mojo_base::ProtoWrapper(response));
     return;
   }
