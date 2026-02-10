@@ -1,0 +1,16 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("mocks") {
+  testonly = true
+  sources = [
+    "mock_skills_service.cc",
+    "mock_skills_service.h",
+  ]
+
+  deps = [
+    "//components/skills/public",
+    "//testing/gmock",
+  ]
+}

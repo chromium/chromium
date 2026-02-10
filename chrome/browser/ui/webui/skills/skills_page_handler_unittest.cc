@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/skills/skills.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/skills/internal/skills_downloader.h"
+#include "components/skills/mocks/mock_skills_service.h"
 #include "components/skills/proto/skill.pb.h"
 #include "components/skills/public/skill.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -34,51 +35,6 @@ using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::ReturnRef;
 using ::testing::StrictMock;
-
-// TODO(crbug.com/482376816): Separate into its own file.
-class MockSkillsService : public SkillsService {
- public:
-  MOCK_METHOD(void, LoadInitialSkills, (std::vector<std::unique_ptr<Skill>>));
-  MOCK_METHOD(const Skill*, GetSkillById, (std::string_view), (const));
-  MOCK_METHOD(const std::vector<std::unique_ptr<Skill>>&,
-              GetSkills,
-              (),
-              (const));
-  MOCK_METHOD(const SkillsMap&, Get1PSkills, (), (const));
-  MOCK_METHOD(const Skill*,
-              AddSkill,
-              (const std::string&,
-               const std::string&,
-               const std::string&,
-               const std::string&));
-  MOCK_METHOD(const Skill*,
-              AddOrUpdateSkillFromSync,
-              (std::string_view,
-               std::string_view,
-               std::string_view,
-               std::string_view,
-               std::string_view,
-               std::string_view,
-               base::Time,
-               base::Time,
-               sync_pb::SkillSource));
-  MOCK_METHOD(
-      const Skill*,
-      UpdateSkill,
-      (std::string_view, std::string_view, std::string_view, std::string_view));
-  MOCK_METHOD(bool, IsInitialized, (), (const));
-  MOCK_METHOD(ServiceStatus, GetServiceStatus, (), (const));
-  MOCK_METHOD(void, DeleteSkill, (std::string_view, UpdateSource));
-  MOCK_METHOD(void, FetchDiscoverySkills, ());
-  MOCK_METHOD(void, Handle1pSkillsMap, (std::unique_ptr<SkillsMap>));
-  MOCK_METHOD(void, AddObserver, (Observer*));
-  MOCK_METHOD(void, RemoveObserver, (Observer*));
-  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
-              GetControllerDelegate,
-              ());
-  MOCK_METHOD(void, SyncStatusChanged, ());
-  MOCK_METHOD(void, SetServiceStatusForTesting, (ServiceStatus));
-};
 
 class MockSkillsPage : public skills::mojom::SkillsPage {
  public:
