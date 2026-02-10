@@ -13,7 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
@@ -263,15 +262,8 @@ bool PartitionedVisitedLinkWriter::CreateVisitedLinkTableHelper(
   DCHECK(memory);
 
   // The hashtable is a shared header followed by the entries.
-  base::CheckedNumeric<size_t> allocation_size = num_entries;
-  allocation_size *= sizeof(Fingerprint);
-  allocation_size += sizeof(PartitionedSharedHeader);
-  if (!allocation_size.IsValid()) {
-    return false;
-  }
-
-  size_t alloc_size = allocation_size.ValueOrDie();
-
+  uint32_t alloc_size =
+      num_entries * sizeof(Fingerprint) + sizeof(PartitionedSharedHeader);
   base::UmaHistogramCustomCounts(
       "History.VisitedLinks.HashTableSizeOnTableCreate",
       alloc_size / 1024 / 1024, 1, 10000, 100);

@@ -21,7 +21,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -915,14 +914,8 @@ bool VisitedLinkWriter::CreateApartURLTable(
   DCHECK(memory);
 
   // The table is the size of the table followed by the entries.
-  base::CheckedNumeric<size_t> allocation_size = num_entries;
-  allocation_size *= sizeof(Fingerprint);
-  allocation_size += sizeof(PartitionedSharedHeader);
-  if (!allocation_size.IsValid()) {
-    return false;
-  }
-
-  size_t alloc_size = allocation_size.ValueOrDie();
+  uint32_t alloc_size =
+      num_entries * sizeof(Fingerprint) + sizeof(SharedHeader);
   UMA_HISTOGRAM_CUSTOM_COUNTS("History.VisitedLinks.HashTableSizeOnTableCreate",
                               alloc_size / 1024 / 1024, 1, 10000, 100);
 

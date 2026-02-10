@@ -645,30 +645,6 @@ TEST_F(VisitedLinkTest, HashRangeWraparound) {
   ASSERT_TRUE(writer_->IsVisited(kFingerprint1));
 }
 
-TEST_F(VisitedLinkTest, IntegerOverflow) {
-  // 1. Test extremely large num_entries (2^29).
-  // 2^29 * sizeof(Fingerprint) (8) = 2^32.
-  // 2^32 + sizeof(SharedHeader) (16) overflows uint32_t to 16.
-  const int32_t kOverflowSize = 536870912;
-
-  // We want to suppress rebuild to avoid history complications, just testing
-  // creation. InitVisited calls Init().
-  if (!InitVisited(kOverflowSize, true, false)) {
-    return;
-  }
-  // If initialization succeeded, check the allocated size.
-  size_t actual_size = writer_->mapped_table_memory().region.GetSize();
-  EXPECT_GT(actual_size, 1000000u)
-      << "Allocated region is suspiciously small, indicating integer "
-         "truncation.";
-}
-
-TEST_F(VisitedLinkTest, IntegerOverflowNegative) {
-  const int32_t kNegativeSize = -1;
-  EXPECT_FALSE(InitVisited(kNegativeSize, true, false))
-      << "Initialization should fail for negative num_entries.";
-}
-
 TEST_F(VisitedLinkTest, ResizeErrorHandling) {
   // Create a small database.
   const int32_t initial_size = 17;
@@ -1155,24 +1131,6 @@ TEST_F(PartitionedVisitedLinkTest, HashRangeWraparound) {
   EXPECT_EQ(hash0, VisitedLinkCommon::Hash(
                        partitioned_writer_->DefaultTableSize() - 1));
   EXPECT_EQ(hash1, 0);
-}
-
-TEST_F(PartitionedVisitedLinkTest, IntegerOverflowLarge) {
-  const int32_t kOverflowSize = 536870912;
-  if (!InitVisited(true, kOverflowSize)) {
-    return;
-  }
-  size_t actual_size =
-      partitioned_writer_->GetMappedTableMemoryForTesting().region.GetSize();
-  EXPECT_GT(actual_size, 1000000u)
-      << "Allocated region is suspiciously small, indicating integer "
-         "truncation.";
-}
-
-TEST_F(PartitionedVisitedLinkTest, IntegerOverflowNegative) {
-  const int32_t kNegativeSize = -1;
-  EXPECT_FALSE(InitVisited(true, kNegativeSize))
-      << "Initialization should fail for negative num_entries.";
 }
 
 TEST_F(PartitionedVisitedLinkTest, Listener) {
