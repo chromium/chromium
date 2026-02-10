@@ -3002,9 +3002,12 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
 
   if (is_relayout_for_margin_end_trim_) {
     if (!pending_margin_end_trim_child_ ||
-        child == pending_margin_end_trim_child_) {
+        (child == pending_margin_end_trim_child_ && !is_self_collapsing)) {
       // We have entered the area (after the last non-self-collapsing child, if
-      // any) where all margins are to be trimmed.
+      // any) where all margins are to be trimmed. The `is_self_collapsing`
+      // check above is needed in case this is an inline formatting context with
+      // a block-in-inline, in which case there may be an empty self-collapsing
+      // line preceding the line with the block(s) inside.
       margin_strut = MarginStrut();
       pending_margin_end_trim_child_ = nullptr;
     }
