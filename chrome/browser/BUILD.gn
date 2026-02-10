@@ -2584,6 +2584,8 @@ static_library("browser") {
       "//chrome/browser/accessibility_annotator/content_annotator",
       "//chrome/browser/contextual_tasks:ui_impl",
       "//chrome/browser/legion",
+      "//chrome/browser/record_replay",
+      "//chrome/browser/record_replay:impl",
       "//chrome/browser/startup",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/webui/omnibox_popup/mojom",
@@ -8505,6 +8507,8 @@ static_library("browser_public_dependencies") {
     ]
   } else {
     public_deps += [
+      "//chrome/browser/record_replay",
+      "//chrome/common/record_replay:mojom",
       "//components/commerce/core:coupon_db_content_proto",
       "//components/commerce/core/mojom:mojo_bindings",
       "//extensions/buildflags",

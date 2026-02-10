@@ -613,8 +613,10 @@ if (!is_android) {
 
     if (!is_android) {
       deps += [
+        "//chrome/browser/record_replay:impl",
         "//chrome/browser/ui/views/js_optimization:impl",
         "//chrome/browser/ui/views/zoom",
+        "//chrome/common/record_replay",
       ]
     }
 

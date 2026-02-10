@@ -98,7 +98,9 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
+#include "chrome/browser/record_replay/chrome_record_replay_client.h"
 #include "chrome/browser/wallet/chrome_walletable_pass_client.h"
+#include "chrome/common/record_replay/record_replay_features.h"
 #endif
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
@@ -499,6 +501,14 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   tab_alert_controller_ =
       GetUserDataFactory().CreateInstance<TabAlertController>(tab, tab);
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          record_replay::features::kRecordReplayBase)) {
+    record_replay_client_ =
+        GetUserDataFactory().CreateInstance<ChromeRecordReplayClient>(tab, tab);
+  }
+#endif
 
   tab_contextualization_controller_ =
       GetUserDataFactory().CreateInstance<lens::TabContextualizationController>(

@@ -1,0 +1,71 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+static_library("record_replay") {
+  sources = [
+    "element_id.cc",
+    "element_id.h",
+    "record_replay_client.cc",
+    "record_replay_client.h",
+    "record_replay_driver.cc",
+    "record_replay_driver.h",
+    "record_replay_driver_factory.cc",
+    "record_replay_driver_factory.h",
+    "record_replay_manager.cc",
+    "record_replay_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common/record_replay",
+    "//chrome/common/record_replay:mojom",
+    "//components/autofill/core/browser",
+    "//content/public/browser",
+    "//third_party/blink/public/common",
+    "//url",
+  ]
+}
+
+static_library("impl") {
+  sources = [
+    "chrome_record_replay_client.cc",
+    "chrome_record_replay_client.h",
+  ]
+
+  deps = [
+    ":record_replay",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/tabs",
+    "//chrome/common/record_replay",
+    "//chrome/common/record_replay:mojom",
+    "//components/autofill/content/browser",
+    "//components/autofill/core/browser",
+    "//content/public/browser",
+    "//ui/base/unowned_user_data",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "chrome_record_replay_client_unittest.cc",
+    "record_replay_driver_factory_unittest.cc",
+  ]
+  deps = [
+    ":impl",
+    ":record_replay",
+    "//base/test:test_support",
+    "//chrome/common/record_replay",
+    "//chrome/test:test_support",
+    "//components/tabs:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

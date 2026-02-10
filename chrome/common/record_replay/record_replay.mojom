@@ -1,0 +1,27 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module record_replay.mojom;
+
+// There is one instance of this interface per RenderFrameHost in the browser
+// process. The events are initiated by the renderer process.
+//
+// Elements are identified in two ways:
+// - The DOM node ID uniquely identifieds the element for the lifetime of the
+//   HTML document. It is not stable across documents.
+// - The selector string is not guaranteed to uniquely identify the element, but
+//   attempts to be and is ideally stable across page load.
+//   Currently this is a CSS selector, but the browser should make no
+//   assumptions about the format.
+//   TODO(b/476101114): Generalize to multiple selectors.
+interface RecordReplayDriver {
+  // Fired when a left-click or tap on the given element happens.
+  OnClick(int64 dom_node_id, string element_selector);
+
+  // Fired when the value of a select element changes.
+  OnSelectChanged(int64 dom_node_id, string element_selector, string value);
+
+  // Fired when the text value of a text form control element changes.
+  OnTextChange(int64 dom_node_id, string element_selector, string text);
+};

@@ -142,6 +142,12 @@ namespace tab_groups {
 class CollaborationMessagingTabData;
 }  // namespace tab_groups
 
+#if !BUILDFLAG(IS_ANDROID)
+namespace record_replay {
+class RecordReplayClient;
+}  // namespace record_replay
+#endif
+
 namespace lens {
 class TabContextualizationController;
 }  // namespace lens
@@ -283,6 +289,12 @@ class TabFeatures {
 
   LensOverlayController* lens_overlay_controller();
   const LensOverlayController* lens_overlay_controller() const;
+
+#if !BUILDFLAG(IS_ANDROID)
+  record_replay::RecordReplayClient* record_replay_client() {
+    return record_replay_client_.get();
+  }
+#endif
 
   lens::TabContextualizationController* tab_contextualization_controller() {
     return tab_contextualization_controller_.get();
@@ -520,6 +532,10 @@ class TabFeatures {
       ask_before_http_dialog_controller_;
 
   std::unique_ptr<actor::ActorTabData> actor_tab_data_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<record_replay::RecordReplayClient> record_replay_client_;
+#endif
 
   std::unique_ptr<lens::TabContextualizationController>
       tab_contextualization_controller_;

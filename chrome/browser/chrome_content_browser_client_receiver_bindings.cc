@@ -104,7 +104,9 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/badging/badge_manager.h"
+#include "chrome/browser/record_replay/chrome_record_replay_client.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
+#include "chrome/common/record_replay/record_replay.mojom.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -433,6 +435,11 @@ void ChromeContentBrowserClient::
             BindPasswordManagerDriver(std::move(receiver), render_frame_host);
       },
       &render_frame_host));
+#if !BUILDFLAG(IS_ANDROID)
+  associated_registry.AddInterface<record_replay::mojom::RecordReplayDriver>(
+      base::BindRepeating(&ChromeRecordReplayClient::BindRecordReplayDriver,
+                          &render_frame_host));
+#endif
   associated_registry.AddInterface<chrome::mojom::NetworkDiagnostics>(
       base::BindRepeating(
           [](content::RenderFrameHost* render_frame_host,
