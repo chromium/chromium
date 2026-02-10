@@ -52,8 +52,14 @@ rust::Vec<uint8_t> ToRustVec(base::span<const uint8_t> data) {
 // Currently the Symphonia decoder only has FLAC audio support enabled. This
 // will be expanded in the future.
 SymphoniaAudioCodec ToSymphoniaCodec(AudioCodec codec) {
-  CHECK_EQ(AudioCodec::kFLAC, codec);
-  return SymphoniaAudioCodec::Flac;
+  switch (codec) {
+    case AudioCodec::kFLAC:
+      return SymphoniaAudioCodec::Flac;
+    case AudioCodec::kMP3:
+      return SymphoniaAudioCodec::Mp3;
+    default:
+      NOTREACHED();
+  }
 }
 
 // Helper to create a SymphoniaDecoderConfig from an AudioDecoderConfig.
@@ -251,8 +257,13 @@ void SymphoniaAudioDecoder::Reset(base::OnceClosure closure) {
 
 // static
 bool SymphoniaAudioDecoder::IsCodecSupported(AudioCodec codec) {
-  // Currently, only FLAC audio is supported.
-  return codec == AudioCodec::kFLAC;
+  if (codec == AudioCodec::kFLAC) {
+    return true;
+  }
+  if (codec == AudioCodec::kMP3) {
+    return base::FeatureList::IsEnabled(kSymphoniaMp3Decoding);
+  }
+  return false;
 }
 
 bool SymphoniaAudioDecoder::SymphoniaDecode(const DecoderBuffer& buffer) {

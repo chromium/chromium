@@ -62,6 +62,7 @@ pub mod ffi {
     #[derive(Debug, Clone, Copy)]
     enum SymphoniaAudioCodec {
         Flac,
+        Mp3
     }
 
     /// We currently only output interleaved data, and usually in F32. However,
@@ -373,6 +374,7 @@ fn to_symphonia_codec_type(
 ) -> Result<symphonia::core::codecs::CodecType, String> {
     match codec {
         ffi::SymphoniaAudioCodec::Flac => Ok(symphonia::core::codecs::CODEC_TYPE_FLAC),
+        ffi::SymphoniaAudioCodec::Mp3 => Ok(symphonia::core::codecs::CODEC_TYPE_MP3),
 
         // TODO(crbug.com/40074653): should support other formats.
         _ => Err(format!("Unsupported codec provided. codec={:?}", codec)),
