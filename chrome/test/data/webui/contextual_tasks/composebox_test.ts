@@ -50,7 +50,7 @@ function pressEnter(element: HTMLElement) {
 function checkIfCanFindSuggestionsContainer(
     contextualTasksApp: MockContextualTasksAppElement, canFind: boolean) {
   const suggestions = contextualTasksApp.$.composebox.shadowRoot.querySelector(
-      '#coBrSuggestionsContainer');
+      '#contextualTasksSuggestionsContainer');
 
   if (canFind) {
     assertTrue(!!suggestions, 'Suggestions container should be present in DOM');
@@ -1927,8 +1927,9 @@ suite('ContextualTasksComposeboxTest', () => {
         checkIfCanFindSuggestionsContainer(
             contextualTasksApp, /*canFind=*/ true);
         const firstMatch: any =
-            contextualTasksApp.$.composebox.$.coBrSuggestionsContainer
-                .shadowRoot.querySelector('#match0');
+            contextualTasksApp.$.composebox.$
+                .contextualTasksSuggestionsContainer.shadowRoot.querySelector(
+                    '#match0');
         assertTrue(
             !!firstMatch.$.textContainer,
             'First suggestion match should exist');
@@ -1940,8 +1941,8 @@ suite('ContextualTasksComposeboxTest', () => {
         (contextualTasksApp.$.composebox as any).isLoading_ = false;
         await contextualTasksApp.updateComplete;
         await contextualTasksApp.$.composebox.updateComplete;
-        await contextualTasksApp.$.composebox.$.coBrSuggestionsContainer
-            .updateComplete;
+        await contextualTasksApp.$.composebox.$
+            .contextualTasksSuggestionsContainer.updateComplete;
         await firstMatch.updateComplete;
         await microtasksFinished();
 
@@ -1955,7 +1956,8 @@ suite('ContextualTasksComposeboxTest', () => {
         await contextualTasksApp.$.composebox.updateComplete;
         await microtasksFinished();
         assertTrue(
-            contextualTasksApp.$.composebox.$.coBrSuggestionsContainer.hidden,
+            contextualTasksApp.$.composebox.$
+                .contextualTasksSuggestionsContainer.hidden,
             'Dropdown should be hidden when NOT in zero state');
       });
 
@@ -1983,11 +1985,12 @@ suite('ContextualTasksComposeboxTest', () => {
         (contextualTasksApp.$.composebox as any).isLoading_ = true;
         await contextualTasksApp.updateComplete;
         await contextualTasksApp.$.composebox.updateComplete;
-        await contextualTasksApp.$.composebox.$.coBrSuggestionsContainer
-            .updateComplete;
+        await contextualTasksApp.$.composebox.$
+            .contextualTasksSuggestionsContainer.updateComplete;
         const firstMatch: any =
-            contextualTasksApp.$.composebox.$.coBrSuggestionsContainer
-                .shadowRoot.querySelector('#match0');
+            contextualTasksApp.$.composebox.$
+                .contextualTasksSuggestionsContainer.shadowRoot.querySelector(
+                    '#match0');
         assertTrue(
             !!firstMatch.$.textContainer,
             'First suggestion match should exist');
@@ -2001,8 +2004,8 @@ suite('ContextualTasksComposeboxTest', () => {
         (contextualTasksApp.$.composebox as any).isLoading_ = false;
         await contextualTasksApp.updateComplete;
         await contextualTasksApp.$.composebox.updateComplete;
-        await contextualTasksApp.$.composebox.$.coBrSuggestionsContainer
-            .updateComplete;
+        await contextualTasksApp.$.composebox.$
+            .contextualTasksSuggestionsContainer.updateComplete;
         await firstMatch.updateComplete;
         await microtasksFinished();
 
@@ -2015,13 +2018,14 @@ suite('ContextualTasksComposeboxTest', () => {
 
         await contextualTasksApp.updateComplete;
         await contextualTasksApp.$.composebox.updateComplete;
-        await contextualTasksApp.$.composebox.$.coBrSuggestionsContainer
-            .updateComplete;
+        await contextualTasksApp.$.composebox.$
+            .contextualTasksSuggestionsContainer.updateComplete;
         await firstMatch.updateComplete;
 
         await microtasksFinished();
         assertTrue(
-            contextualTasksApp.$.composebox.$.coBrSuggestionsContainer.hidden,
+            contextualTasksApp.$.composebox.$
+                .contextualTasksSuggestionsContainer.hidden,
             'Dropdown should be hidden when NOT in zero state',
         );
       });

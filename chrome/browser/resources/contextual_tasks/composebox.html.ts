@@ -13,7 +13,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
   const suggestions = this.enableNativeZeroStateSuggestions ?
     html`
       <cr-composebox-dropdown
-          id="coBrSuggestionsContainer"
+          id="contextualTasksSuggestionsContainer"
           role="listbox"
           .result="${this.zeroStateSuggestions_}"
           .selectedMatchIndex="${-1}"
