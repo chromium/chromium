@@ -1012,6 +1012,7 @@ const char kGlicForceG1StatusForMultiInstance[] = "glic-force-g1-for-mi";
 // state prefs and can be selected to override the default glic guest URL
 // through corresponding entries in chrome://flags.
 const char kGlicGuestUrlPresetAutopush[] = "glic-guest-url-preset-autopush";
+const char kGlicGuestUrlPresetStaging[] = "glic-guest-url-preset-staging";
 const char kGlicGuestUrlPresetPreprod[] = "glic-guest-url-preset-preprod";
 const char kGlicGuestUrlPresetProd[] = "glic-guest-url-preset-prod";
 #endif

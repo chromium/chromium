@@ -3984,13 +3984,16 @@ const FeatureEntry::Choice kGlicSetG1ForMultiInstance[] = {
 
 const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypeAutopush[] = {
     {"glic-guest-url-preset-type", "0"}};
-const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypePreprod[] = {
+const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypeStaging[] = {
     {"glic-guest-url-preset-type", "1"}};
-const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypeProd[] = {
+const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypePreprod[] = {
     {"glic-guest-url-preset-type", "2"}};
+const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypeProd[] = {
+    {"glic-guest-url-preset-type", "3"}};
 
 const FeatureEntry::FeatureVariation kGlicGuestUrlPresetTypes[] = {
     {"Auto-push", kGlicGuestUrlPresetTypeAutopush, nullptr},
+    {"Staging", kGlicGuestUrlPresetTypeStaging, nullptr},
     {"Pre-prod", kGlicGuestUrlPresetTypePreprod, nullptr},
     {"Prod", kGlicGuestUrlPresetTypeProd, nullptr}};
 #endif  // BUILDFLAG(ENABLE_GLIC)

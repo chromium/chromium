@@ -37,6 +37,8 @@ inline constexpr char kGlicMultiInstanceEnabledBySubscriptionTier[] =
 // different environments.
 inline constexpr char kGlicGuestUrlPresetAutopush[] =
     "glic.guest_url_preset_autopush";
+inline constexpr char kGlicGuestUrlPresetStaging[] =
+    "glic.guest_url_preset_staging";
 inline constexpr char kGlicGuestUrlPresetPreprod[] =
     "glic.guest_url_preset_preprod";
 inline constexpr char kGlicGuestUrlPresetProd[] = "glic.guest_url_preset_prod";

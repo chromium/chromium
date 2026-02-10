@@ -119,9 +119,13 @@ GURL MaybeApplyPresetGuestUrl(GURL guest_url) {
       break;
     case 1:
       preset_url = GURL(g_browser_process->local_state()->GetString(
-          prefs::kGlicGuestUrlPresetPreprod));
+          prefs::kGlicGuestUrlPresetStaging));
       break;
     case 2:
+      preset_url = GURL(g_browser_process->local_state()->GetString(
+          prefs::kGlicGuestUrlPresetPreprod));
+      break;
+    case 3:
       preset_url = GURL(g_browser_process->local_state()->GetString(
           prefs::kGlicGuestUrlPresetProd));
       break;

@@ -163,6 +163,8 @@ void WriteGuestUrlPresetToPrefs(const char* switch_name,
 void SetupGuestUrlPresetPrefs() {
   WriteGuestUrlPresetToPrefs(::switches::kGlicGuestUrlPresetAutopush,
                              prefs::kGlicGuestUrlPresetAutopush);
+  WriteGuestUrlPresetToPrefs(::switches::kGlicGuestUrlPresetStaging,
+                             prefs::kGlicGuestUrlPresetStaging);
   WriteGuestUrlPresetToPrefs(::switches::kGlicGuestUrlPresetPreprod,
                              prefs::kGlicGuestUrlPresetPreprod);
   WriteGuestUrlPresetToPrefs(::switches::kGlicGuestUrlPresetProd,

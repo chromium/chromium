@@ -315,6 +315,7 @@ extern const char kGlicAlwaysShowWebActuationToggle[];
 extern const char kGlicResetMultiInstanceEnabledByTier[];
 extern const char kGlicForceG1StatusForMultiInstance[];
 extern const char kGlicGuestUrlPresetAutopush[];
+extern const char kGlicGuestUrlPresetStaging[];
 extern const char kGlicGuestUrlPresetPreprod[];
 extern const char kGlicGuestUrlPresetProd[];
 #endif

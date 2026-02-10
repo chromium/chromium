@@ -81,6 +81,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kGlicMultiInstanceEnabledBySubscriptionTier, false);
   registry->RegisterStringPref(prefs::kGlicGuestUrlPresetAutopush, "");
+  registry->RegisterStringPref(prefs::kGlicGuestUrlPresetStaging, "");
   registry->RegisterStringPref(prefs::kGlicGuestUrlPresetPreprod, "");
   registry->RegisterStringPref(prefs::kGlicGuestUrlPresetProd, "");
 }
