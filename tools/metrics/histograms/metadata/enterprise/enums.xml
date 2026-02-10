@@ -2363,6 +2363,7 @@ chromium-metrics-reviews@google.com.
   <int value="1430" label="LocalNetworkAccessPermissionsPolicyDefaultEnabled"/>
   <int value="1431" label="ForceForegroundPriorityForAllTabs"/>
   <int value="1432" label="WebRtcDiagnosticLogCollectionAllowedForOrigins"/>
+  <int value="1433" label="IsolatedWebAppUserInstallationEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -1,0 +1,28 @@
+caption: Controls the ability for a user to manually install Isolated Web Apps
+default: true
+desc: |
+  Controls the user's ability to manually install Isolated Web Apps (IWAs).
+
+  If this policy is set to false, IWA user installation is blocked.
+
+  If this policy is set to true, or if the policy is not set, IWA user installations are permitted.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+  - caption: Enable IWA user installation
+    value: true
+  - caption: Disable IWA user installation
+    value: false
+name: IsolatedWebAppUserInstallationEnabled
+owners:
+  - file://chrome/browser/web_applications/isolated_web_apps/OWNERS
+  - iwa-team@google.com
+  - mskarbinska@google.com
+schema:
+  type: boolean
+supported_on:
+  - chrome_os:146-
+tags: []
+type: main

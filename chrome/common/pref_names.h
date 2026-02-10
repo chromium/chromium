@@ -2822,6 +2822,11 @@ inline constexpr char kBasicAuthOverHttpEnabled[] =
 inline constexpr char kIsolatedWebAppInstallForceList[] =
     "profile.isolated_web_app.install.forcelist";
 
+// Boolean pref that specifies whether user installation of
+// Isolated Web Apps is permitted.
+inline constexpr char kIsolatedWebAppUserInstallationEnabled[] =
+    "profile.isolated_web_app.install.user_install_enabled";
+
 // An integer pref that remembers how many force install initializations are
 // pending. If more than `kIsolatedWebAppForceInstallMaxRetryTreshold`
 // initializations are pending, the initialization is delayed for

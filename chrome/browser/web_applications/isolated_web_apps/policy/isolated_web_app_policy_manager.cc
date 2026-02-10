@@ -186,6 +186,8 @@ void IsolatedWebAppPolicyManager::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kIsolatedWebAppInstallForceList);
   registry->RegisterIntegerPref(
       prefs::kIsolatedWebAppPendingInitializationCount, 0);
+  registry->RegisterBooleanPref(prefs::kIsolatedWebAppUserInstallationEnabled,
+                                true);
 }
 
 // static
