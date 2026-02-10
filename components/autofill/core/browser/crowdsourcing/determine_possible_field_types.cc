@@ -37,6 +37,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 
@@ -45,6 +46,37 @@ namespace autofill {
 using one_time_tokens::OneTimeToken;
 
 namespace {
+
+void LogAddressCountryVoteInformationMetric(FieldTypeSet possible_types,
+                                            const AutofillField& field) {
+  // Values are persisted in UMA logs. Enum entries should not be renumbered or
+  // reused.
+  enum class AddressCountryVoteType {
+    kSatisfiesLikelyAugmentedPhoneCountryCode = 0,
+    kAlsoHasPhoneCountryCodeVote = 1,
+    kIsTextField = 2,
+    kIsSelectField = 3,
+    kMaxValue = kIsSelectField,
+  };
+  if (!possible_types.contains(ADDRESS_HOME_COUNTRY)) {
+    return;
+  }
+  if (LikelyAugmentedPhoneCountryCode(
+          field, /*new_augmented_cc_regex_experiment_enabled=*/true)) {
+    base::UmaHistogramEnumeration(
+        "Autofill.Voting.AddressCountryVoteAnalysis",
+        AddressCountryVoteType::kSatisfiesLikelyAugmentedPhoneCountryCode);
+  }
+  if (possible_types.contains(PHONE_HOME_COUNTRY_CODE)) {
+    base::UmaHistogramEnumeration(
+        "Autofill.Voting.AddressCountryVoteAnalysis",
+        AddressCountryVoteType::kAlsoHasPhoneCountryCodeVote);
+  }
+  base::UmaHistogramEnumeration("Autofill.Voting.AddressCountryVoteAnalysis",
+                                field.IsSelectElement()
+                                    ? AddressCountryVoteType::kIsSelectField
+                                    : AddressCountryVoteType::kIsTextField);
+}
 
 // Returns a vector that contains all `{date, format}` for which `str` contains
 // `date` in `format`.
@@ -420,6 +452,9 @@ PossibleTypes GetPossibleTypes(
   }
   if (fields_that_match_state.contains(field.global_id())) {
     pt.types.insert(ADDRESS_HOME_STATE);
+  }
+  if (pt.types.contains(ADDRESS_HOME_COUNTRY)) {
+    LogAddressCountryVoteInformationMetric(pt.types, field);
   }
 
   for (const CreditCard& card : credit_cards) {

@@ -108,6 +108,12 @@ FormFieldData CreateFieldByRole(FieldType role) {
       field.set_label(u"Email or Frequent Flyer Number");
       field.set_name(u"email_or_frequentflyer");
       break;
+    case FieldType::PHONE_HOME_WHOLE_NUMBER:
+    case FieldType::PHONE_HOME_CITY_AND_NUMBER:
+    case FieldType::PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
+      field.set_label(u"Phone Number");
+      field.set_name(u"phone_number");
+      break;
     case FieldType::EMPTY_TYPE:
       break;
     default:

@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
@@ -1451,6 +1452,45 @@ INSTANTIATE_TEST_SUITE_P(
             .fields = {{"zip1", "79401", {ADDRESS_HOME_ZIP}},
                        {"zip2", "4321", {ADDRESS_HOME_ZIP_SUFFIX}}},
         }}));
+
+// Tests that phone country code select fields do not get assigned
+// ADDRESS_HOME_COUNTRY as votes, even if the label contains the country name.
+TEST_F(DeterminePossibleFieldTypesForUploadTest,
+       NoAddressCountryVotesOnPhoneCountrySelectFields) {
+  AutofillProfile profile = test::GetFullProfile();
+
+  FormData form = test::GetFormData({
+      .fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"},
+                 {.role = PHONE_HOME_COUNTRY_CODE,
+                  .autocomplete_attribute = "tel-country-code",
+                  .form_control_type = FormControlType::kSelectOne,
+                  .select_options =
+                      {
+                          {.value = u"US", .text = u"United States (+1)"},
+                          {.value = u"CA", .text = u"Canada (+1)"},
+                          {.value = u"FR", .text = u"France (+33)"},
+                          {.value = u"DE", .text = u"Germany (+49)"},
+                          {.value = u"LB", .text = u"Lebanon (+961)"},
+                      }},
+                 {.role = PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}},
+  });
+  test_api(form).field(1).set_value(u"US");
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+
+  std::vector<PossibleTypes> possible_types =
+      DeterminePossibleFieldTypesForUpload(
+          {profile}, /*credit_cards=*/{}, /*entities=*/{},
+          /*loyalty_cards=*/{},
+          /*fields_that_match_state=*/{},
+          /*last_unlocked_credit_card_cvc=*/u"", /*recent_otps=*/{}, "en-us",
+          form_structure->fields());
+
+  ASSERT_EQ(possible_types.size(), 3u);
+  EXPECT_TRUE(possible_types[1].types.contains(PHONE_HOME_COUNTRY_CODE));
+  EXPECT_FALSE(possible_types[1].types.contains(ADDRESS_HOME_COUNTRY));
+  EXPECT_EQ(possible_types[1].types.size(), 1u);
+}
 
 }  // namespace
 }  // namespace autofill
