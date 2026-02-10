@@ -161,9 +161,10 @@ void SystemPdhMetricsProvider::PdhQueryHandler::Sample() {
 
   base::UmaHistogramPercentage(
       kUserKernelRatioHistogram,
-      base::ClampRound<int, double>(base::ClampDiv(
-          user_value.doubleValue,
-          base::ClampAdd(user_value.doubleValue, kernel_value.doubleValue))));
+      base::ClampRound<int, double>(base::ClampMul(
+          100.0, base::ClampDiv(user_value.doubleValue,
+                                base::ClampAdd(user_value.doubleValue,
+                                               kernel_value.doubleValue)))));
 }
 
 bool SystemPdhMetricsProvider::PdhQueryHandler::VerifyPdhResult(
