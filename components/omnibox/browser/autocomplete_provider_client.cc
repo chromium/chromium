@@ -11,8 +11,8 @@ AutocompleteProviderClient::GetHistoryClustersService() {
   return nullptr;
 }
 
-history_embeddings::HistoryEmbeddingsService*
-AutocompleteProviderClient::GetHistoryEmbeddingsService() {
+history_embeddings::HistoryEmbeddingsSearch*
+AutocompleteProviderClient::GetHistoryEmbeddingsSearch() {
   return nullptr;
 }
 

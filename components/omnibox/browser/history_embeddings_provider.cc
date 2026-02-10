@@ -15,7 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_embeddings/history_embeddings_features.h"
-#include "components/history_embeddings/history_embeddings_service.h"
+#include "components/history_embeddings/history_embeddings_search.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -85,13 +85,13 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
     return;
   }
 
-  history_embeddings::HistoryEmbeddingsService* service =
-      client()->GetHistoryEmbeddingsService();
-  CHECK(service);
+  history_embeddings::HistoryEmbeddingsSearch* search =
+      client()->GetHistoryEmbeddingsSearch();
+  CHECK(search);
   done_ = false;
   client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
       metrics::OmniboxEventProto_Feature_HISTORY_EMBEDDINGS_FEATURE);
-  service->Search(
+  search->Search(
       nullptr, base::UTF16ToUTF8(input_.text()), {}, provider_max_matches_,
       /*skip_answering=*/false,
       base::BindRepeating(&HistoryEmbeddingsProvider::OnReceivedSearchResult,

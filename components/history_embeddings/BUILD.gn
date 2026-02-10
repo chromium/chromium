@@ -10,6 +10,8 @@ static_library("history_embeddings") {
     "answerer.h",
     "history_embeddings_features.cc",
     "history_embeddings_features.h",
+    "history_embeddings_search.cc",
+    "history_embeddings_search.h",
     "history_embeddings_service.cc",
     "history_embeddings_service.h",
     "intent_classifier.h",
@@ -49,20 +51,6 @@ static_library("history_embeddings") {
   ]
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "mock_history_embeddings_service.cc",
-    "mock_history_embeddings_service.h",
-  ]
-  deps = [
-    ":history_embeddings",
-    "//base/test:test_support",
-    "//components/history/core/browser",
-    "//components/passage_embeddings/core",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -80,7 +68,6 @@ source_set("unit_tests") {
   }
   deps = [
     ":history_embeddings",
-    ":test_support",
     "//base/test:test_support",
     "//components/history/core/browser",
     "//components/history/core/test",
