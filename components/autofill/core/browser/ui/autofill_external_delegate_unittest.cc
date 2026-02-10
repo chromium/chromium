@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <vector>
 
 #include "base/command_line.h"
@@ -113,11 +114,13 @@ using ::testing::Matcher;
 using ::testing::Mock;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
+using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::SizeIs;
 using ::testing::StartsWith;
+using ::testing::VariantWith;
 
 // Action `SaveArgElementsTo<k>(pointer)` saves the value pointed to by the
 // `k`th (0-based) argument of the mock function by moving it to `*pointer`.
@@ -149,11 +152,21 @@ auto PopupOpenArgsAre(SuggestionsMatcher suggestions_matcher,
                Field(&PopupOpenArgs::trigger_source, trigger_source));
 }
 
-MATCHER_P(OtpPayloadPointeeEq, expected_otp_payload, "") {
-  if (const auto* payload_ptr = std::get_if<const OtpFillData*>(&arg)) {
-    return *payload_ptr && **payload_ptr == expected_otp_payload;
+// Checks whether the filling payload of a suggestion matches `payload`.
+// `payload` can either be a pointer or a value (e.g., an `EntityInstance`).
+template <typename Payload>
+auto HasFillingPayload(Payload payload) {
+  using PayloadValue = std::conditional_t<std::is_pointer_v<Payload>,
+                                          std::remove_pointer_t<Payload>,
+                                          std::remove_reference_t<Payload>>;
+  using ConstPointer = std::add_pointer_t<std::add_const_t<PayloadValue>>;
+  Matcher<PayloadValue> inner_matcher;
+  if constexpr (std::is_pointer_v<Payload>) {
+    inner_matcher = Eq(*payload);
+  } else {
+    inner_matcher = Eq(payload);
   }
-  return false;
+  return VariantWith<ConstPointer>(Pointee(std::move(inner_matcher)));
 }
 
 class MockAutofillDriver : public TestAutofillDriver {
@@ -1657,7 +1670,7 @@ TEST_F(AutofillExternalDelegateTest, AcceptedOtpSuggestion) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                        IsQueriedFieldId(), OtpPayloadPointeeEq(otp_fill_data),
+                        IsQueriedFieldId(), HasFillingPayload(otp_fill_data),
                         DefaultTriggerSource()));
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kOneTimePasswordEntry,
