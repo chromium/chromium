@@ -7,6 +7,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/site_protection/site_familiarity_utils.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -26,6 +27,21 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(JsOptimizationsPageActionController,
                                       kBubbleBodyElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(JsOptimizationsPageActionController,
                                       kBubbleButtonElementId);
+
+namespace {
+JsOptimizationsPageActionController::BubbleCreatedCallback& GetTestCallback() {
+  static base::NoDestructor<
+      JsOptimizationsPageActionController::BubbleCreatedCallback>
+      callback;
+  return *callback;
+}
+}  // namespace
+
+// static
+void JsOptimizationsPageActionController::SetBubbleCreatedCallbackForTesting(
+    BubbleCreatedCallback callback) {
+  GetTestCallback() = std::move(callback);
+}
 
 JsOptimizationsPageActionController::JsOptimizationsPageActionController(
     tabs::TabInterface& tab_interface,
@@ -60,8 +76,13 @@ void JsOptimizationsPageActionController::ShowBubble(
 
 void JsOptimizationsPageActionController::OnBubbleHidden(
     actions::ActionItem* action_item) {
-  bubble_ = nullptr;
   action_item->SetIsShowingBubble(false);
+}
+
+void JsOptimizationsPageActionController::OnWidgetClosing(
+    views::Widget* widget) {
+  widget_observation_.Reset();
+  bubble_ = nullptr;
 }
 
 views::BubbleDialogModelHost* JsOptimizationsPageActionController::CreateBubble(
@@ -72,7 +93,7 @@ views::BubbleDialogModelHost* JsOptimizationsPageActionController::CreateBubble(
       .SetTitle(l10n_util::GetStringUTF16(IDS_JS_OPTIMIZATION_BUBBLE_TITLE))
       .SetDialogDestroyingCallback(base::BindOnce(
           &JsOptimizationsPageActionController::OnBubbleHidden,
-          base::Unretained(this), base::Unretained(action_item)));
+          weak_factory_.GetWeakPtr(), base::Unretained(action_item)));
   // When v8 optimizations are disabled by an enterprise policy, we don't give
   // the user the option to change it. Otherwise, we do.
   if (site_protection::GetJavascriptOptimizerSettingSource(web_contents()) ==
@@ -92,7 +113,7 @@ views::BubbleDialogModelHost* JsOptimizationsPageActionController::CreateBubble(
     dialog_model_builder.AddOkButton(
         base::BindOnce(
             &JsOptimizationsPageActionController::EnableV8Optimizations,
-            base::Unretained(this)),
+            weak_factory_.GetWeakPtr()),
         ui::DialogModel::Button::Params()
             .SetLabel(l10n_util::GetStringUTF16(
                 IDS_JS_OPTIMIZATION_BUBBLE_ENABLE_BUTTON))
@@ -104,9 +125,13 @@ views::BubbleDialogModelHost* JsOptimizationsPageActionController::CreateBubble(
   auto bubble_unique = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
   auto* bubble = bubble_unique.get();
+  if (GetTestCallback()) {
+    GetTestCallback().Run(bubble);
+  }
   // TODO(crbug.com/464011395): Refactor to use CLIENT_OWNS_WIDGET.
   views::Widget* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique));
+  widget_observation_.Observe(widget);
   widget->Show();
   return bubble;
 }

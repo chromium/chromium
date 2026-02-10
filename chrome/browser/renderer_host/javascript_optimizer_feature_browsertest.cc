@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/generated_javascript_optimizer_pref.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -11,15 +13,22 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/site_protection/site_familiarity_fetcher.h"
 #include "chrome/browser/site_protection/site_familiarity_utils.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/test/bind.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/js_optimization/js_optimizations_page_action_controller.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #include "chrome/common/chrome_features.h"
@@ -49,6 +58,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "url/origin.h"
 
 typedef site_protection::SiteFamiliarityFetcher::Verdict FamiliarityVerdict;
@@ -1223,6 +1233,30 @@ class JavascriptOptimizerOmnibarIconBrowserTest
     return view && view->GetVisible();
   }
 
+  // Returns true iff the JS Optimizations bubble is visible.
+  bool IsBubbleVisible() {
+    if (ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+            JsOptimizationsPageActionController::kBubbleBodyElementId,
+            browser()->GetBrowserView().GetElementContext()) == nullptr) {
+      return false;
+    }
+
+    actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+        kActionShowJsOptimizationsIcon,
+        browser()->browser_actions()->root_action_item());
+    return action_item && action_item->GetIsShowingBubble();
+  }
+
+  // Returns true iff the JS Optimizations bubble button is visible.
+  bool IsBubbleButtonVisible() {
+    if (!IsBubbleVisible()) {
+      return false;
+    }
+    return ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+               JsOptimizationsPageActionController::kBubbleButtonElementId,
+               browser()->GetBrowserView().GetElementContext()) != nullptr;
+  }
+
   using PageActionInteractiveTestMixin::WaitForPageActionButtonVisible;
 };
 
@@ -1367,40 +1401,76 @@ class JavascriptOptimizerBubbleBrowserTest
         {});
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+  }
+
+  void SetUpOnMainThread() override {
+    JavascriptOptimizerOmnibarIconBrowserTest::SetUpOnMainThread();
+    JsOptimizationsPageActionController::SetBubbleCreatedCallbackForTesting(
+        base::BindRepeating([](views::BubbleDialogModelHost* bubble) {
+          bubble->set_close_on_deactivate(false);
+        }));
+  }
+
+  void TearDownOnMainThread() override {
+    JsOptimizationsPageActionController::SetBubbleCreatedCallbackForTesting(
+        base::NullCallback());
+    JavascriptOptimizerOmnibarIconBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  void EnableEnterprisePolicy() {
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kDefaultJavaScriptOptimizerSetting,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                 base::Value(CONTENT_SETTING_BLOCK),
+                 /*external_data_fetcher=*/nullptr);
+    policy_provider_.UpdateChromePolicy(policies);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 // JS optimizations disabled by enterprise policy.
 class JavascriptOptimizerBubbleBrowserTest_EnterprisePolicy
     : public JavascriptOptimizerBubbleBrowserTest {};
 
-// TODO(crbug.com/462425975): Flaky test disabled
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest_EnterprisePolicy,
                        BubbleShowsOnClick) {
-  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
-  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
-                                ContentSetting::CONTENT_SETTING_BLOCK);
+  EnableEnterprisePolicy();
 
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_https_test_server().GetURL("/simple.html")));
   ASSERT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
   ASSERT_TRUE(IsOmnibarIconVisible());
 
-  // TODO(crbug.com/462425975): Complete implementation of this test.
   // Click on icon.
+  RunTestSequence(PressButton(kJsOptimizationsIconElementId));
   // Assert that bubble is visible.
+  RunTestSequence(
+      WaitForShow(JsOptimizationsPageActionController::kBubbleBodyElementId));
+  EXPECT_TRUE(IsBubbleVisible());
   // Assert that button is not visible.
+  RunTestSequence(
+      WaitForHide(JsOptimizationsPageActionController::kBubbleButtonElementId));
+  EXPECT_FALSE(IsBubbleButtonVisible());
 }
 
 // JS optimizations disabled not by enterprise policy.
 class JavascriptOptimizerBubbleBrowserTest_NotFromEnterprisePolicy
     : public JavascriptOptimizerBubbleBrowserTest {};
 
-// TODO(crbug.com/462425975): Flaky test disabled
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerBubbleBrowserTest_NotFromEnterprisePolicy,
-    DISABLED_BubbleShowsOnClick) {
+    BubbleShowsOnClick) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_BLOCK);
@@ -1410,10 +1480,16 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
   ASSERT_TRUE(IsOmnibarIconVisible());
 
-  // TODO(crbug.com/462425975): Complete implementation of this test.
   // Click on icon.
+  RunTestSequence(PressButton(kJsOptimizationsIconElementId));
   // Assert that bubble is visible.
+  RunTestSequence(
+      WaitForShow(JsOptimizationsPageActionController::kBubbleBodyElementId));
+  EXPECT_TRUE(IsBubbleVisible());
   // Assert that button is visible.
+  RunTestSequence(
+      WaitForShow(JsOptimizationsPageActionController::kBubbleButtonElementId));
+  EXPECT_TRUE(IsBubbleButtonVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1428,14 +1504,27 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
   ASSERT_TRUE(IsOmnibarIconVisible());
 
-  // TODO(crbug.com/462425975): Complete implementation of this test.
   // Click on icon.
+  RunTestSequence(PressButton(kJsOptimizationsIconElementId));
   // Assert that bubble is visible.
+  RunTestSequence(
+      WaitForShow(JsOptimizationsPageActionController::kBubbleBodyElementId));
+  EXPECT_TRUE(IsBubbleVisible());
   // Assert that button is visible.
+  RunTestSequence(
+      WaitForShow(JsOptimizationsPageActionController::kBubbleButtonElementId));
+  EXPECT_TRUE(IsBubbleButtonVisible());
   // Click on button.
+  RunTestSequence(
+      PressButton(JsOptimizationsPageActionController::kBubbleButtonElementId));
   // Open new tab and go to the same site.
-  // ASSERT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
-  // ASSERT_FALSE(IsOmnibarIconVisible());
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_https_test_server().GetURL("/simple.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  // Assert that the icon is not visible.
+  ASSERT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
+  ASSERT_FALSE(IsOmnibarIconVisible());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
