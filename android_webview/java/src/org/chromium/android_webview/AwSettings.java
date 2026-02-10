@@ -447,6 +447,13 @@ public class AwSettings {
             mHasCalledSetSpeculativeLoadingAllowedBefore = false;
             mBackForwardCacheEnabled = false;
             mHasCalledSetBackForwardCacheEnabledBefore = false;
+
+            if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_HYPERLINK_CONTEXT_MENU)) {
+                mHyperlinkContextMenuItems =
+                        HyperlinkContextMenuItems.COPY_LINK_ADDRESS
+                                | HyperlinkContextMenuItems.COPY_LINK_TEXT
+                                | HyperlinkContextMenuItems.OPEN_LINK;
+            }
         }
         // Defer initializing the native side until a native WebContents instance is set.
     }
