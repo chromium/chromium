@@ -1,0 +1,112 @@
+Tests that child ax nodes can be retrieved for a node that has been updated in a nodesUpdated event
+nodesUpdated [
+    [0] : {
+        backendDOMNodeId : <number 0>
+        childIds : <object 1>
+        chromeRole : {
+            type : internalRole
+            value : 88
+        }
+        ignored : false
+        name : {
+            sources : [
+                [0] : {
+                    attribute : aria-labelledby
+                    type : relatedElement
+                }
+                [1] : {
+                    attribute : aria-label
+                    type : attribute
+                }
+                [2] : {
+                    attribute : title
+                    type : attribute
+                }
+            ]
+            type : computedString
+            value :
+        }
+        nodeId : <string 2>
+        parentId : <string>
+        properties : [
+            [0] : {
+                name : live
+                value : {
+                    type : token
+                    value : polite
+                }
+            }
+            [1] : {
+                name : atomic
+                value : {
+                    type : boolean
+                    value : false
+                }
+            }
+            [2] : {
+                name : relevant
+                value : {
+                    type : tokenList
+                    value : additions text
+                }
+            }
+            [3] : {
+                name : focusable
+                value : {
+                    type : booleanOrUndefined
+                    value : true
+                }
+            }
+        ]
+        role : {
+            type : role
+            value : generic
+        }
+    }
+]
+childNodes [
+    [0] : {
+        backendDOMNodeId : <number 3>
+        childIds : <object 4>
+        chromeRole : {
+            type : internalRole
+            value : 166
+        }
+        ignored : false
+        name : {
+            sources : [
+                [0] : {
+                    attribute : aria-labelledby
+                    type : relatedElement
+                }
+                [1] : {
+                    attribute : aria-label
+                    type : attribute
+                }
+                [2] : {
+                    attribute : title
+                    attributeValue : {
+                        type : string
+                        value : Focus
+                    }
+                    type : attribute
+                    value : {
+                        type : computedString
+                        value : Focus
+                    }
+                }
+            ]
+            type : computedString
+            value : Focus
+        }
+        nodeId : <string 5>
+        parentId : <string>
+        properties : [
+        ]
+        role : {
+            type : role
+            value : tabpanel
+        }
+    }
+]
+

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scroll marker group type</title>
+<style>
+  body {
+    font-family: sans-serif;
+    margin: 2rem 10%;
+  }
+
+  /* Slides using tab scroll markers */
+  .slides {
+    scroll-marker-group: after tabs;
+    overflow: auto;
+    overscroll-behavior-x: contain;
+    aspect-ratio: 16 / 9;
+    border: 1px solid gray;
+    position: relative;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    display: flex;
+    flex-direction: row;
+
+    &::scroll-marker-group {
+      white-space: nowrap;
+      height: 1.5rem;
+      padding: 0.25rem;
+      overflow: auto;
+      overscroll-behavior-x: contain;
+      text-align: center;
+    }
+
+    &>* {
+      display: inline-block;
+      box-sizing: border-box;
+      min-height: 100%;
+      min-width: 100%;
+      padding: 2%;
+      scroll-snap-align: center;
+
+      &::scroll-marker {
+        content: "";
+        border-radius: 50%;
+        border: 1px solid #444;
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        margin: 0 0.1rem;
+      }
+
+      &::scroll-marker:target-current {
+        background: SelectedItem;
+      }
+    }
+  }
+</style>
+<h1>Scroll marker group type</h1>
+<h2>Tabs</h2>
+<div role="region">
+  <div class="slides" aria-live="polite">
+    <div title="Introduction">
+      <h3>Introduction</h3>
+      <p>Slides should follow the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/">tabs pattern</a>.</p>
+    </div>
+    <div title="Focus">
+      <h3>Focus</h3>
+      <p>There are a number of implicit focus behaviors:</p>
+      <ul>
+        <li>Only the active slide marker is a tab focus stop.</li>
+        <li>Pressing up/down/left/right will move focus between markers and scroll between slides.</li>
+        <li>
+          The marker is a <a href="https://html.spec.whatwg.org/#focus-navigation-scope-owner">focus navigation scope
+            owner</a> for its contents.
+          This means focus will move from the tab to its contents and vice versa.
+        </li>
+      </ul>
+    </div>
+    <div title="Roles">
+      <h3>Accessibility roles and behaviors</h3>
+      <p>
+        Tabs implicitly implement the expected tab semantics.
+        In particular,
+      </p>
+      <ul>
+        <li>The scroll marker group is a <code>role=tablist</code> containing <code>role=tab</code> elements</li>
+        <li>The minimum role of the contents is <code>role=tabpanel</code></li>
+        <li>Only the active tabpanel is in the accessibility tree.</li>
+      </ul>
+    </div>
+    <div title="Summary">
+      <h3>Conclusion</h3>
+      <p>
+        In summary, these implicit behaviors aim to align with the expectations of a <a
+          href="https://www.w3.org/WAI/ARIA/apg/patterns/carousel/examples/carousel-2-tablist/">carousel with
+          markers</a>.
+      </p>
+    </div>
+  </div>
+</div>
