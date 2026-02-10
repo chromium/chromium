@@ -68,11 +68,13 @@ void TitledUrlIndex::AddPath(const TitledUrlNode* node) {
 void TitledUrlIndex::RemovePath(const TitledUrlNode* node) {
   for (const std::u16string& term :
        ExtractQueryWords(Normalize(node->GetTitledUrlNodeTitle()))) {
-    // `path_index_.count(term)` should be > 0, since nodes can't be
+    // `path_index_ should contain `term`, since nodes can't be
     // removed/renamed if they didn't exist to begin with. But some tests don't
     // fully load bookmarks so it's not `DCHECK`ed.
-    if (path_index_.count(term) && !--path_index_[term])
-      path_index_.erase(term);
+    if (auto it = path_index_.find(term);
+        it != path_index_.end() && !--(it->second)) {
+      path_index_.erase(it);
+    }
   }
 }
 
