@@ -1142,7 +1142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.Babelorca.ReceivingStoppedReason"
-    enum="BabelOrcaReceivingStoppedReason" expires_after="2026-03-21">
+    enum="BabelOrcaReceivingStoppedReason" expires_after="2027-02-10">
   <owner>anasr@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -1153,7 +1153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.Babelorca.SendingStoppedReason"
-    enum="BabelOrcaSendingStoppedReason" expires_after="2026-05-24">
+    enum="BabelOrcaSendingStoppedReason" expires_after="2027-02-10">
   <owner>anasr@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -1164,14 +1164,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.Babelorca.StreamEndReason"
-    enum="BabelOrcaStreamEndReason" expires_after="2026-03-21">
+    enum="BabelOrcaStreamEndReason" expires_after="2027-02-10">
   <owner>anasr@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>Records why the captions receiving stream was ended.</summary>
 </histogram>
 
 <histogram name="Ash.Boca.Babelorca.{Request}.HttpResponseCodeOrNetError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-05-24">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-02-10">
   <owner>anasr@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -1187,7 +1187,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.Babelorca.{Scope}.OAuthFetchError"
-    enum="GoogleServiceAuthError" expires_after="2026-05-24">
+    enum="GoogleServiceAuthError" expires_after="2027-02-10">
   <owner>anasr@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
