@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_split_tab_view.h"
@@ -29,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/resize_area.h"
 #include "ui/views/controls/separator.h"
@@ -734,4 +736,30 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, TabStripEditableState) {
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, TabStripCloseableState) {
   // Default state should be closeable (no drag session).
   EXPECT_TRUE(region_view()->IsTabStripCloseable());
+}
+
+// Verifies that entering Touch UI mode with vertical tabs enabled doesn't
+// crash and correctly handles the vertical tab strip. This is a regression test
+// for crbug.com/479887003.
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       NoCrashOnTouchUiModeChange) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+
+  // Toggle Touch UI mode ON.
+  {
+    ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper(true);
+
+    // Verify that the tab strip view is still the vertical one.
+    // If it crashed, we won't reach here.
+    TabStripRegionView* touch_view = browser_view->tab_strip_view();
+    EXPECT_TRUE(views::IsViewClass<VerticalTabStripRegionView>(touch_view));
+    EXPECT_EQ(region_view(), touch_view);
+  }
+
+  // Toggle Touch UI mode OFF (happens when touch_ui_scoper goes out of scope).
+
+  // Verify it's still vertical.
+  TabStripRegionView* final_view = browser_view->tab_strip_view();
+  EXPECT_TRUE(views::IsViewClass<VerticalTabStripRegionView>(final_view));
+  EXPECT_EQ(region_view(), final_view);
 }
