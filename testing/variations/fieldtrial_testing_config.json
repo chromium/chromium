@@ -6747,6 +6747,7 @@
                     "params": {
                         "Decoders": "base32,base64",
                         "HCAcceptanceRate": "1",
+                        "IncludeFullPayload": "true",
                         "Loaders": "curl,wget,invoke-webrequest,iwr",
                         "MaxLength": "1000",
                         "MinLength": "50",

