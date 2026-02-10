@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/services/multidevice_setup/feature_state_manager.h"
 #include "chromeos/ash/services/multidevice_setup/host_status_provider.h"
 
@@ -75,6 +76,12 @@ class AndroidSmsAppInstallingStatusObserver
   raw_ptr<FeatureStateManager> feature_state_manager_;
   raw_ptr<AndroidSmsAppHelperDelegate> android_sms_app_helper_delegate_;
   raw_ptr<PrefService> pref_service_;
+
+  base::ScopedObservation<HostStatusProvider, HostStatusProvider::Observer>
+      host_status_observation_{this};
+  base::ScopedObservation<FeatureStateManager, FeatureStateManager::Observer>
+      feature_state_observation_{this};
+
   base::WeakPtrFactory<AndroidSmsAppInstallingStatusObserver> weak_ptr_factory_{
       this};
 };

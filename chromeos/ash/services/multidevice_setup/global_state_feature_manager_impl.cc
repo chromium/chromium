@@ -110,8 +110,8 @@ GlobalStateFeatureManagerImpl::GlobalStateFeatureManagerImpl(
       pref_service_(pref_service),
       device_sync_client_(device_sync_client),
       timer_(std::move(timer)) {
-  host_status_provider_->AddObserver(this);
-  device_sync_client_->AddObserver(this);
+  host_status_observation_.Observe(host_status_provider);
+  device_sync_observation_.Observe(device_sync_client);
 
   if (GetCurrentState() == CurrentState::kValidPendingRequest) {
     AttemptSetHostStateNetworkRequest(false /* is_retry */);
@@ -122,10 +122,7 @@ GlobalStateFeatureManagerImpl::GlobalStateFeatureManagerImpl(
   }
 }
 
-GlobalStateFeatureManagerImpl::~GlobalStateFeatureManagerImpl() {
-  host_status_provider_->RemoveObserver(this);
-  device_sync_client_->RemoveObserver(this);
-}
+GlobalStateFeatureManagerImpl::~GlobalStateFeatureManagerImpl() = default;
 
 void GlobalStateFeatureManagerImpl::OnHostStatusChange(
     const HostStatusProvider::HostStatusWithDevice& host_status_with_device) {

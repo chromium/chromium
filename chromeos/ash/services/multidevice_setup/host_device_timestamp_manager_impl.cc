@@ -68,9 +68,7 @@ void HostDeviceTimestampManagerImpl::RegisterPrefs(
                               kTimestampNotSet);
 }
 
-HostDeviceTimestampManagerImpl::~HostDeviceTimestampManagerImpl() {
-  host_status_provider_->RemoveObserver(this);
-}
+HostDeviceTimestampManagerImpl::~HostDeviceTimestampManagerImpl() = default;
 
 HostDeviceTimestampManagerImpl::HostDeviceTimestampManagerImpl(
     HostStatusProvider* host_status_provider,
@@ -79,7 +77,7 @@ HostDeviceTimestampManagerImpl::HostDeviceTimestampManagerImpl(
     : host_status_provider_(host_status_provider),
       pref_service_(pref_service),
       clock_(clock) {
-  host_status_provider_->AddObserver(this);
+  host_status_observation_.Observe(host_status_provider);
 }
 
 bool HostDeviceTimestampManagerImpl::WasHostSetFromThisChromebook() {

@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/feature_state_manager.h"
@@ -140,6 +141,15 @@ class FeatureStateManagerImpl : public FeatureStateManager,
   base::RepeatingTimer feature_state_metric_timer_;
 
   PrefChangeRegistrar registrar_;
+
+  base::ScopedObservation<HostStatusProvider, HostStatusProvider::Observer>
+      host_status_observation_{this};
+  base::ScopedObservation<device_sync::DeviceSyncClient,
+                          device_sync::DeviceSyncClient::Observer>
+      device_sync_observation_{this};
+  base::ScopedObservation<AndroidSmsPairingStateTracker,
+                          AndroidSmsPairingStateTracker::Observer>
+      android_sms_pairing_state_observation_{this};
 };
 
 }  // namespace multidevice_setup

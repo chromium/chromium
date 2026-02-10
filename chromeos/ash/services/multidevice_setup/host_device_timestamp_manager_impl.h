@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/multidevice_setup/host_device_timestamp_manager.h"
 #include "chromeos/ash/services/multidevice_setup/host_status_provider.h"
@@ -77,6 +78,9 @@ class HostDeviceTimestampManagerImpl : public HostDeviceTimestampManager,
   raw_ptr<HostStatusProvider> host_status_provider_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<base::Clock> clock_;
+
+  base::ScopedObservation<HostStatusProvider, HostStatusProvider::Observer>
+      host_status_observation_{this};
 };
 
 }  // namespace multidevice_setup

@@ -45,12 +45,6 @@ void AndroidSmsAppInstallingStatusObserver::Factory::SetFactoryForTesting(
 
 AndroidSmsAppInstallingStatusObserver::Factory::~Factory() = default;
 
-AndroidSmsAppInstallingStatusObserver::
-    ~AndroidSmsAppInstallingStatusObserver() {
-  host_status_provider_->RemoveObserver(this);
-  feature_state_manager_->RemoveObserver(this);
-}
-
 AndroidSmsAppInstallingStatusObserver::AndroidSmsAppInstallingStatusObserver(
     HostStatusProvider* host_status_provider,
     FeatureStateManager* feature_state_manager,
@@ -60,8 +54,8 @@ AndroidSmsAppInstallingStatusObserver::AndroidSmsAppInstallingStatusObserver(
       feature_state_manager_(feature_state_manager),
       android_sms_app_helper_delegate_(android_sms_app_helper_delegate),
       pref_service_(pref_service) {
-  host_status_provider_->AddObserver(this);
-  feature_state_manager_->AddObserver(this);
+  host_status_observation_.Observe(host_status_provider_);
+  feature_state_observation_.Observe(feature_state_manager_);
 
   // Wait until the app registry has been loaded before updating installation
   // status.
@@ -69,6 +63,9 @@ AndroidSmsAppInstallingStatusObserver::AndroidSmsAppInstallingStatusObserver(
       &AndroidSmsAppInstallingStatusObserver::UpdatePwaInstallationState,
       weak_ptr_factory_.GetWeakPtr()));
 }
+
+AndroidSmsAppInstallingStatusObserver::
+    ~AndroidSmsAppInstallingStatusObserver() = default;
 
 bool AndroidSmsAppInstallingStatusObserver::
     DoesFeatureStateAllowInstallation() {

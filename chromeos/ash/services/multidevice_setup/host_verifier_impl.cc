@@ -108,16 +108,13 @@ HostVerifierImpl::HostVerifierImpl(
       clock_(clock),
       retry_timer_(std::move(retry_timer)),
       sync_timer_(std::move(sync_timer)) {
-  host_backend_delegate_->AddObserver(this);
-  device_sync_client_->AddObserver(this);
+  host_backend_delegate_observation_.Observe(host_backend_delegate);
+  device_sync_observation_.Observe(device_sync_client);
 
   UpdateRetryState();
 }
 
-HostVerifierImpl::~HostVerifierImpl() {
-  host_backend_delegate_->RemoveObserver(this);
-  device_sync_client_->RemoveObserver(this);
-}
+HostVerifierImpl::~HostVerifierImpl() = default;
 
 bool HostVerifierImpl::IsHostVerified() {
   std::optional<multidevice::RemoteDeviceRef> current_host =

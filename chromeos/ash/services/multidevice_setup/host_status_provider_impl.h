@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_HOST_STATUS_PROVIDER_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
@@ -93,6 +94,14 @@ class HostStatusProviderImpl : public HostStatusProvider,
   raw_ptr<HostVerifier> host_verifier_;
   HostStatusWithDevice current_status_and_device_;
   base::RepeatingTimer host_status_metric_timer_;
+
+  base::ScopedObservation<EligibleHostDevicesProvider,
+                          EligibleHostDevicesProvider::Observer>
+      eligible_host_devices_observation_{this};
+  base::ScopedObservation<HostBackendDelegate, HostBackendDelegate::Observer>
+      host_backend_delegate_observation_{this};
+  base::ScopedObservation<HostVerifier, HostVerifier::Observer>
+      host_verifier_observation_{this};
 };
 
 }  // namespace multidevice_setup

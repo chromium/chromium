@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
@@ -156,6 +157,12 @@ class GlobalStateFeatureManagerImpl
   std::unique_ptr<base::OneShotTimer> timer_;
 
   bool network_request_in_flight_ = false;
+
+  base::ScopedObservation<HostStatusProvider, HostStatusProvider::Observer>
+      host_status_observation_{this};
+  base::ScopedObservation<device_sync::DeviceSyncClient,
+                          device_sync::DeviceSyncClient::Observer>
+      device_sync_observation_{this};
 
   base::WeakPtrFactory<GlobalStateFeatureManagerImpl> weak_ptr_factory_{this};
 };

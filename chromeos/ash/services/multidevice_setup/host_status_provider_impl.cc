@@ -62,9 +62,9 @@ HostStatusProviderImpl::HostStatusProviderImpl(
       host_verifier_(host_verifier),
       current_status_and_device_(mojom::HostStatus::kNoEligibleHosts,
                                  std::nullopt /* host_device */) {
-  host_backend_delegate_->AddObserver(this);
-  host_verifier_->AddObserver(this);
-  eligible_host_devices_provider_->AddObserver(this);
+  host_backend_delegate_observation_.Observe(host_backend_delegate);
+  host_verifier_observation_.Observe(host_verifier);
+  eligible_host_devices_observation_.Observe(eligible_host_devices_provider);
 
   CheckForUpdatedStatusAndNotifyIfChanged(
       /*force_notify_host_status_change=*/false);
@@ -76,11 +76,7 @@ HostStatusProviderImpl::HostStatusProviderImpl(
                           base::Unretained(this)));
 }
 
-HostStatusProviderImpl::~HostStatusProviderImpl() {
-  host_backend_delegate_->RemoveObserver(this);
-  host_verifier_->RemoveObserver(this);
-  eligible_host_devices_provider_->RemoveObserver(this);
-}
+HostStatusProviderImpl::~HostStatusProviderImpl() = default;
 
 HostStatusProvider::HostStatusWithDevice
 HostStatusProviderImpl::GetHostWithStatus() const {

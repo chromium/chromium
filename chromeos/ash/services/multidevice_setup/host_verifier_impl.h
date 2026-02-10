@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
@@ -106,6 +107,13 @@ class HostVerifierImpl : public HostVerifier,
   raw_ptr<base::Clock> clock_;
   std::unique_ptr<base::OneShotTimer> retry_timer_;
   std::unique_ptr<base::OneShotTimer> sync_timer_;
+
+  base::ScopedObservation<HostBackendDelegate, HostBackendDelegate::Observer>
+      host_backend_delegate_observation_{this};
+  base::ScopedObservation<device_sync::DeviceSyncClient,
+                          device_sync::DeviceSyncClient::Observer>
+      device_sync_observation_{this};
+
   base::WeakPtrFactory<HostVerifierImpl> weak_ptr_factory_{this};
 };
 
