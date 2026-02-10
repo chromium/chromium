@@ -51,9 +51,9 @@
     return;
   }
 
-  self.syncErrorDelegate->Accept();
-
-  [self dismissOverlay];
+  if (self.syncErrorDelegate->Accept()) {
+    [self dismissOverlay];
+  }
 }
 
 - (void)dismissInfobarBannerForUserInteraction:(BOOL)userInitiated {
