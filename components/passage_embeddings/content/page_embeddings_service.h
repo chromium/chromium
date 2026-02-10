@@ -61,12 +61,31 @@ class PageEmbeddingsService
     kBackground,
   };
 
+  // The observer's requirements for using embeddings. Ordered by increasing
+  // usage demands.
+  enum UsageMode {
+    // The embeddings are only required for one-off, on demand scenarios, based
+    // on the currently open pages. In this mode embeddings are still computed
+    // in the background for some WebContents, to avoid the latency and
+    // performance impacts of performing embeddings computations across many
+    // tabs when needed.
+    kOnDemand,
+
+    // The embeddings are required continouously for all page loads.
+    kContinuous,
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // Gets the default priority to use for computing embeddings.
     // Implementations are expected to return the same value over the entire
     // lifetime of the observer.
-    virtual Priority GetDefaultPriority() const = 0;
+    virtual Priority GetDefaultPriority() const;
+
+    // Gets the usage mode for the observer, which indicates how it will use the
+    // generated embeddings. Implementations are expected to return the same
+    // value over the entire lifetime of the observer.
+    virtual UsageMode GetUsageMode() const;
 
     // Invoked when embeddings become available or are updated for the
     // web_contents. The embeddings then can be queried via GetEmbeddings().
@@ -116,11 +135,11 @@ class PageEmbeddingsService
 
   ScopedPriority RaisePriority(Observer* observer, Priority priority);
 
-  // PageEmbeddingsService computes embeddings lazily for the active tab, on
-  // backgrounding. ProcessAllEmbeddings() forces the active tab's embeddings to
-  // be processed.
-  // Virtual for testing.
-  virtual void ProcessAllEmbeddings();
+  // In on demand mode PageEmbeddingsService computes embeddings lazily for the
+  // active tab, on backgrounding. ProcessEmbeddingsOnDemand() forces the active
+  // tab's embeddings to be processed for kOnDemand observers. Has no effect for
+  // kContinuous observers. Virtual for testing.
+  virtual void ProcessEmbeddingsOnDemand();
 
   // Retrieves the embeddings for web_content. Returns the empty vector if
   // embeddings have not yet been computed.
@@ -143,6 +162,7 @@ class PageEmbeddingsService
   class WebContentsEventsObserver;
 
   void ComputeEmbeddings(content::WebContents* web_contents);
+  void ComputeEmbeddingsOnHide(content::WebContents* web_contents);
 
   void OnEmbeddingsComputed(std::vector<PassageType> passage_types,
                             base::WeakPtr<content::WebContents> web_contents,
@@ -156,6 +176,9 @@ class PageEmbeddingsService
       const std::map<Observer*, Priority>& temporary_priority);
 
   void UpdateTaskPriorities(Priority priority);
+
+  static UsageMode GetActiveUsageMode(
+      const base::ObserverList<Observer>& observers);
 
   struct WebContentsState;
 
@@ -174,6 +197,8 @@ class PageEmbeddingsService
   std::map<Observer*, Priority> temporary_priority_;
 
   Priority current_priority_ = kDefault;
+
+  UsageMode current_usage_mode_ = kOnDemand;
 
   std::map<content::WebContents*, WebContentsState> web_contents_state_;
 

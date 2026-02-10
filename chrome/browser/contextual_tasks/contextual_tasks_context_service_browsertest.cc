@@ -113,7 +113,7 @@ class MockPageEmbeddingsService
               (content::WebContents * web_contents),
               (const override));
 
-  MOCK_METHOD(void, ProcessAllEmbeddings, (), (override));
+  MOCK_METHOD(void, ProcessEmbeddingsOnDemand, (), (override));
 
   MOCK_METHOD(void,
               AddObserver,

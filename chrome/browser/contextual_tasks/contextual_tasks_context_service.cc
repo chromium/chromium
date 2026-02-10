@@ -180,7 +180,7 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
   }
 
   // Force active tab embedding to be processed.
-  page_embeddings_service_->ProcessAllEmbeddings();
+  page_embeddings_service_->ProcessEmbeddingsOnDemand();
 
   AUTO_CONTEXT_LOG("Submitted query to embedder");
   // TODO: crbug.com/452036470 - De-couple embeddings and recency signal

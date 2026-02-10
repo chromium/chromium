@@ -53,7 +53,7 @@ class PageEmbeddingsService::WebContentsEventsObserver
 
   void OnVisibilityChanged(content::Visibility visibility) override {
     if (visibility == content::Visibility::HIDDEN) {
-      page_embeddings_service_->ComputeEmbeddings(web_contents());
+      page_embeddings_service_->ComputeEmbeddingsOnHide(web_contents());
     }
   }
 
@@ -86,6 +86,16 @@ struct PageEmbeddingsService::WebContentsState {
   // passage_embeddings is empty until embeddings are received.
   std::vector<PassageEmbedding> passage_embeddings;
 };
+
+PageEmbeddingsService::Priority
+PageEmbeddingsService::Observer::GetDefaultPriority() const {
+  return kDefault;
+}
+
+PageEmbeddingsService::UsageMode PageEmbeddingsService::Observer::GetUsageMode()
+    const {
+  return kOnDemand;
+}
 
 PageEmbeddingsService::ScopedPriority::ScopedPriority(
     PageEmbeddingsService* service,
@@ -164,6 +174,21 @@ void PageEmbeddingsService::AddObserver(Observer* observer) {
   }
 
   UpdateTaskPriorities(GetActivePriority(observers_, temporary_priority_));
+
+  if (const UsageMode next_usage_mode = observer->GetUsageMode();
+      next_usage_mode != current_usage_mode_) {
+    if (next_usage_mode == kContinuous) {
+      // Compute embeddings eagerly for all foreground tabs, to ensure that they
+      // are available.
+      for (const auto& [web_contents, web_contents_state] :
+           web_contents_state_) {
+        if (!web_contents_state.observer->IsWebContentsHidden()) {
+          ComputeEmbeddings(web_contents);
+        }
+      }
+    }
+    current_usage_mode_ = next_usage_mode;
+  }
 }
 
 void PageEmbeddingsService::RemoveObserver(Observer* observer) {
@@ -175,6 +200,7 @@ void PageEmbeddingsService::RemoveObserver(Observer* observer) {
   }
 
   UpdateTaskPriorities(GetActivePriority(observers_, temporary_priority_));
+  current_usage_mode_ = GetActiveUsageMode(observers_);
 }
 
 PageEmbeddingsService::ScopedPriority PageEmbeddingsService::RaisePriority(
@@ -183,12 +209,17 @@ PageEmbeddingsService::ScopedPriority PageEmbeddingsService::RaisePriority(
   return ScopedPriority(this, observer, priority);
 }
 
-void PageEmbeddingsService::ProcessAllEmbeddings() {
-  // For the computation of embeddings for all visible tabs, which are otherwise
-  // only lazily computed on being hidden.
+void PageEmbeddingsService::ProcessEmbeddingsOnDemand() {
+  if (current_usage_mode_ == kContinuous) {
+    // In continuous mode all tab embeddings are computed eagerly, so there's
+    // nothing to do.
+    return;
+  }
+
+  // Force the computation of embeddings for all visible tabs, which are
+  // otherwise only lazily computed on being hidden.
   for (const auto& [web_contents, web_contents_state] : web_contents_state_) {
-    if (!web_contents_state.observer->IsWebContentsHidden() &&
-        !web_contents_state.pending_passages.empty()) {
+    if (!web_contents_state.observer->IsWebContentsHidden()) {
       ComputeEmbeddings(web_contents);
     }
   }
@@ -218,7 +249,8 @@ void PageEmbeddingsService::OnPageContentExtracted(
   web_contents_state_[web_contents].pending_passages =
       candidates_generator_.Run(page_content, kMaxPassagesPerPage.Get());
 
-  if (web_contents_state_[web_contents].observer->IsWebContentsHidden()) {
+  if (current_usage_mode_ == kContinuous ||
+      web_contents_state_[web_contents].observer->IsWebContentsHidden()) {
     // The WebContents may have transitioned from visible to hidden by the time
     // we received the passages, so compute embeddings.
     ComputeEmbeddings(web_contents);
@@ -231,6 +263,10 @@ void PageEmbeddingsService::ComputeEmbeddings(
   if (state.active_task.has_value()) {
     embedder_->TryCancel(*state.active_task);
     state.active_task.reset();
+  }
+
+  if (state.pending_passages.empty()) {
+    return;
   }
 
   // Ensure that state.pending_passages is cleared before invoking
@@ -252,6 +288,15 @@ void PageEmbeddingsService::ComputeEmbeddings(
       base::BindOnce(&PageEmbeddingsService::OnEmbeddingsComputed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(passage_types),
                      web_contents->GetWeakPtr()));
+}
+
+void PageEmbeddingsService::ComputeEmbeddingsOnHide(
+    content::WebContents* web_contents) {
+  if (current_usage_mode_ != kOnDemand) {
+    return;
+  }
+
+  ComputeEmbeddings(web_contents);
 }
 
 void PageEmbeddingsService::OnEmbeddingsComputed(
@@ -332,6 +377,15 @@ void PageEmbeddingsService::UpdateTaskPriorities(Priority priority) {
   if (!tasks.empty()) {
     embedder_->ReprioritizeTasks(ConvertToPassagePriority(priority), tasks);
   }
+}
+
+// static
+PageEmbeddingsService::UsageMode PageEmbeddingsService::GetActiveUsageMode(
+    const base::ObserverList<Observer>& observers) {
+  return std::transform_reduce(
+      observers.begin(), observers.end(), kOnDemand,
+      [](UsageMode u1, UsageMode u2) { return std::max(u1, u2); },
+      [](const Observer& observer) { return observer.GetUsageMode(); });
 }
 
 PageEmbeddingsService::WebContentsState::WebContentsState() = default;
