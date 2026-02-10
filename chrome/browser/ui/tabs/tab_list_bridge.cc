@@ -99,8 +99,6 @@ int GetClosestValidIndexBetweenTabGroups(TabStripModel& tab_strip,
 
 }  // namespace
 
-DEFINE_USER_DATA(TabListBridge);
-
 TabListBridge::TabListBridge(TabStripModel& tab_strip_model,
                              ui::UnownedUserDataHost& unowned_user_data_host)
     : tab_strip_(tab_strip_model),
@@ -603,14 +601,6 @@ void TabListBridge::WillCloseAllTabs(TabStripModel* model) {
   for (auto& observer : observers_) {
     observer.OnAllTabsAreClosing(*this);
   }
-}
-
-// static
-// From //chrome/browser/ui/tabs/tab_list_interface.h
-TabListInterface* TabListInterface::From(
-    BrowserWindowInterface* browser_window_interface) {
-  return ui::ScopedUnownedUserData<TabListBridge>::Get(
-      browser_window_interface->GetUnownedUserDataHost());
 }
 
 // static

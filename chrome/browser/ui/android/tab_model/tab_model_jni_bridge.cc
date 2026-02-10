@@ -135,7 +135,7 @@ void TabModelJniBridge::AssociateWithBrowserWindow(
   CHECK(android_browser_window != nullptr);
 
   scoped_unowned_user_data_ =
-      std::make_unique<ui::ScopedUnownedUserData<TabModel>>(
+      std::make_unique<ui::ScopedUnownedUserData<TabListInterface>>(
           android_browser_window->GetUnownedUserDataHost(), *this);
   SetSessionId(android_browser_window->GetSessionID());
 #endif

@@ -176,7 +176,7 @@ class TabModelJniBridge : public TabModel {
   bool is_archived_tab_model_;
   // Cannot use a conventional member variable because this is initialized after
   // the constructor.
-  std::unique_ptr<ui::ScopedUnownedUserData<TabModel>>
+  std::unique_ptr<ui::ScopedUnownedUserData<TabListInterface>>
       scoped_unowned_user_data_;
 };
 
