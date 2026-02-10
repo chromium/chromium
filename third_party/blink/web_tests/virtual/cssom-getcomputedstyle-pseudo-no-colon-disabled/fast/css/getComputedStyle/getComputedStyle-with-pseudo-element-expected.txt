@@ -23,7 +23,7 @@ This should be at full opacity.
 PASS Expected 'rgb(165, 42, 42)' for color in the computed style for element with id testFirsts and pseudo-element :first-line and got 'rgb(165, 42, 42)'
 PASS Expected 'rgb(0, 0, 255)' for color in the computed style for element with id testFirsts and pseudo-element :first-letter and got 'rgb(0, 0, 255)'
 PASS Expected 'rgb(0, 0, 255)' for color in the computed style for element with id testFirsts and pseudo-element ::first-letter and got 'rgb(0, 0, 255)'
-PASS Expected 'rgb(0, 0, 0)' for color in the computed style for element with id testFirsts and pseudo-element first-letter and got 'rgb(0, 0, 0)'
+FAIL Expected 'rgb(0, 0, 0)' for color in the computed style for element with id testFirsts and pseudo-element first-letter but instead got 'rgb(0, 0, 255)'
 PASS Expected 'rgb(0, 0, 0)' for color in the computed style for element with id testFirsts and pseudo-element null and got 'rgb(0, 0, 0)'
 PASS Expected 'rgb(165, 42, 42)' for color in the computed style for element with id testBeforeAfter and pseudo-element :before and got 'rgb(165, 42, 42)'
 PASS Expected 'rgb(0, 0, 255)' for color in the computed style for element with id testBeforeAfter and pseudo-element :after and got 'rgb(0, 0, 255)'

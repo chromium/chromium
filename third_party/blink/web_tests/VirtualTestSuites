@@ -6095,5 +6095,18 @@
       "drott@chromium.org"
     ],
     "expires": "Nov 1, 2026"
+  },
+  {
+    "prefix": "cssom-getcomputedstyle-pseudo-no-colon-disabled",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/cssom/getComputedStyle-pseudo.html",
+      "fast/css/getComputedStyle/getComputedStyle-with-pseudo-element.html"
+    ],
+    "args": ["--disable-blink-features=CSSOMGetComputedStylePseudoElementRequiresColon"],
+    "owners": [
+      "helmut@januschka.com"
+    ],
+    "expires": "Feb 1, 2027"
   }
 ]

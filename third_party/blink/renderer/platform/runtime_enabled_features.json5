@@ -1578,6 +1578,11 @@
       status: "stable",
     },
     {
+      // https://drafts.csswg.org/cssom/#dom-window-getcomputedstyle
+      name: "CSSOMGetComputedStylePseudoElementRequiresColon",
+      status: "experimental",
+    },
+    {
       name: "CSSPaintAPIArguments",
       status: "experimental",
     },

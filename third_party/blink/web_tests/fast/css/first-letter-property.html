@@ -35,7 +35,7 @@ function testFirstLetterProperty(property, rule, expected, reason) {
   test(function() {
     style[property] = "";
     style[property] = rule;
-    assert_equals(getComputedStyle(target, 'first-letter')[property], expected);
+    assert_equals(getComputedStyle(target, '::first-letter')[property], expected);
     style[property] = "";
   }, reason);
 }

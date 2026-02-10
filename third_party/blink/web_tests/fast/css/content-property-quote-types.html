@@ -41,23 +41,23 @@
 <script>
 test(function () {
   assert_equals(getComputedStyle(simple_quotes).content, 'normal');
-  assert_equals(getComputedStyle(simple_quotes, 'before').content, 'open-quote "quoted A" close-quote');
+  assert_equals(getComputedStyle(simple_quotes, '::before').content, 'open-quote "quoted A" close-quote');
 
   assert_equals(getComputedStyle(simple_custom_quotes).content, 'normal');
-  assert_equals(getComputedStyle(simple_custom_quotes, 'before').content, 'open-quote "quoted A" close-quote');
+  assert_equals(getComputedStyle(simple_custom_quotes, '::before').content, 'open-quote "quoted A" close-quote');
 }, "Check that the content attribute includes quote keywords when quotes are used");
 
 test(function () {
   assert_equals(getComputedStyle(complex_quotes).content, 'normal');
-  assert_equals(getComputedStyle(complex_quotes, 'before').content, 'open-quote "quoted A" open-quote "quoted B" no-close-quote close-quote');
+  assert_equals(getComputedStyle(complex_quotes, '::before').content, 'open-quote "quoted A" open-quote "quoted B" no-close-quote close-quote');
 
   assert_equals(getComputedStyle(complex_custom_quotes).content, 'normal');
-  assert_equals(getComputedStyle(complex_custom_quotes, 'before').content, 'open-quote "quoted A" open-quote "quoted B" no-close-quote close-quote');
+  assert_equals(getComputedStyle(complex_custom_quotes, '::before').content, 'open-quote "quoted A" open-quote "quoted B" no-close-quote close-quote');
 }, "Check that the content attribute includes quote keywords when nested quotes are used");
 
 test(function () {
   assert_equals(getComputedStyle(both_sides_custom_quotes).content, 'normal');
-  assert_equals(getComputedStyle(both_sides_custom_quotes, 'before').content, 'open-quote "quoted A" open-quote "quoted B" no-close-quote close-quote');
-  assert_equals(getComputedStyle(both_sides_custom_quotes, 'after').content, 'open-quote "quoted C" no-open-quote "quoted D" close-quote no-close-quote');
+  assert_equals(getComputedStyle(both_sides_custom_quotes, '::before').content, 'open-quote "quoted A" open-quote "quoted B" no-close-quote close-quote');
+  assert_equals(getComputedStyle(both_sides_custom_quotes, '::after').content, 'open-quote "quoted C" no-open-quote "quoted D" close-quote no-close-quote');
 }, "Check that the content attribute includes quote keywords when quotes are used both :before and :after");
 </script>
