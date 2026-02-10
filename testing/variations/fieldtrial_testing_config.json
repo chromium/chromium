@@ -26814,6 +26814,24 @@
             ]
         }
     ],
+    "TextInputClientNestedLoop": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "use_nested_loop": "true"
+                    },
+                    "enable_features": [
+                        "TextInputClient"
+                    ]
+                }
+            ]
+        }
+    ],
     "TextInputHostMojoCapabilityControlWorkaround": [
         {
             "platforms": [
