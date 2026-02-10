@@ -136,7 +136,7 @@ TEST_F(ProfileDownloaderTest, AccountInfoNotReady) {
   ASSERT_EQ(kTestValidPictureURL, profile_downloader_.GetProfilePictureURL());
 }
 
-// Regression test for http://crbug.com/854907
+// Regression test for http://crbug.com/40581719
 TEST_F(ProfileDownloaderTest, AccountInfoNoPictureDoesNotCrash) {
   AccountInfo account_info =
       identity_test_env_.MakeAccountAvailable(kTestEmail);
@@ -153,7 +153,7 @@ TEST_F(ProfileDownloaderTest, AccountInfoNoPictureDoesNotCrash) {
             profile_downloader_.GetProfilePictureStatus());
 }
 
-// Regression test for http://crbug.com/854907
+// Regression test for http://crbug.com/40581719
 TEST_F(ProfileDownloaderTest, AccountInfoInvalidPictureURLDoesNotCrash) {
   AccountInfo account_info =
       identity_test_env_.MakeAccountAvailable(kTestEmail);

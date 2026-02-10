@@ -474,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
   EXPECT_FALSE(item.hidden);
 }
 
-// crbug.com/899935
+// crbug.com/41423263
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_NoSpellingServiceWhenOffTheRecord \
   DISABLED_NoSpellingServiceWhenOffTheRecord
@@ -529,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
   EXPECT_FALSE(item.hidden);
 }
 
-// crbug.com/899935
+// crbug.com/41423263
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_SuggestionsForceTopSeparator DISABLED_SuggestionsForceTopSeparator
 #else

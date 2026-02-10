@@ -90,13 +90,13 @@ javascript_dialogs::AppModalDialogView* GetNextDialog() {
 }
 
 // Note: call |PrepareForDialog| on the relevant WebContents or Browser before
-// trying to close it, to avoid flakiness. https://crbug.com/519646
+// trying to close it, to avoid flakiness. https://crbug.com/40430916
 void AcceptClose() {
   GetNextDialog()->AcceptAppModalDialog();
 }
 
 // Note: call |PrepareForDialog| on the relevant WebContents or Browser before
-// trying to close it, to avoid flakiness. https://crbug.com/519646
+// trying to close it, to avoid flakiness. https://crbug.com/40430916
 void CancelClose() {
   GetNextDialog()->CancelAppModalDialog();
 }
@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 }
 
 // Test that tabs that are slow to respond are not closed prematurely.
-// Regression for crbug.com/365052 caused some of tabs to be closed even if
+// Regression for crbug.com/40361681 caused some of tabs to be closed even if
 // user chose to cancel browser close.
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        TestUnloadMultipleSlowTabs) {
@@ -592,8 +592,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 // Test that tabs in different windows with a slow beforeunload event response
 // are treated the same as the user accepting the close, but do not close the
 // tab early.
-// Regression for crbug.com/365052 caused CHECK in tabstrip.
-// Flaky: https://crbug.com/819541
+// Regression for crbug.com/40361681 caused CHECK in tabstrip.
+// Flaky: https://crbug.com/41375143
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        DISABLED_TestBeforeUnloadMultipleSlowWindows) {
   const int kBrowserCount = 5;
@@ -1207,7 +1207,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   }
 }
 
-// Fails on ChromeOS and Linux, times out on Win. crbug.com/749098
+// Fails on ChromeOS and Linux, times out on Win. crbug.com/41335918
 // Test shutdown with downloads in progress and beforeunload handlers.
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        DISABLED_TestBeforeUnloadAndDownloads) {

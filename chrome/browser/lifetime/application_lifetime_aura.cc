@@ -33,7 +33,7 @@ void HandleAppExitingForPlatform() {
 #if BUILDFLAG(IS_CHROMEOS)
   if (ash::Shell::HasInstance()) {
     // Releasing the capture will close any menus that might be open:
-    // http://crbug.com/134472
+    // http://crbug.com/40853120
     aura::client::GetCaptureClient(ash::Shell::GetPrimaryRootWindow())
         ->SetCapture(nullptr);
   }

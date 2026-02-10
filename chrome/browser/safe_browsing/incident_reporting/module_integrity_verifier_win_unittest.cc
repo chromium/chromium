@@ -210,7 +210,7 @@ TEST_F(SafeBrowsingModuleVerifierWinTest, VerifyModuleUnmodified) {
   ASSERT_EQ(0, num_bytes_different);
 }
 
-// Flaky in debug builds; see https://crbug.com/877815.
+// Flaky in debug builds; see https://crbug.com/41410099.
 #if !defined(NDEBUG)
 #define MAYBE_VerifyModuleModified DISABLED_VerifyModuleModified
 #else
@@ -342,7 +342,7 @@ TEST_F(SafeBrowsingModuleVerifierWinTest, VerifyModuleRelocOverlap) {
             base::as_byte_span(state.modification(0).modified_bytes()));
 }
 
-// Flaky in debug builds; see https://crbug.com/877815.
+// Flaky in debug builds; see https://crbug.com/41410099.
 #if !defined(NDEBUG)
 #define MAYBE_VerifyModuleExportModified DISABLED_VerifyModuleExportModified
 #else

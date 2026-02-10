@@ -2712,7 +2712,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, BadHttpsFollowedByGoodHttps) {
   // connections to ensure a fresh connection (and certificate validation) for
   // the next navigation. See https://crbug.com/1150592. A deeper fix for this
   // issue would be to unify certificate bypass logic which is currently split
-  // between the net stack and content layer; see https://crbug.com/488043.
+  // between the net stack and content layer; see https://crbug.com/40418163.
   // See also: SSLUITest.BadCertFollowedByGoodCert.
   state->RevokeUserAllowExceptionsHard(http_url.GetHost());
 

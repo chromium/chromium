@@ -388,7 +388,8 @@ TEST_P(GetDetailsTest, GetDownloadDetails) {
   if (details_loaded_)
     RunAllTasks();
 
-  // In http://crbug.com/433928, open after removal during load caused a crash.
+  // In http://crbug.com/40394233, open after removal during load caused a
+  // crash.
   if (item_action_ == REMOVED)
     test_item_->NotifyObserversDownloadOpened();
 
@@ -540,7 +541,7 @@ TEST_P(SetRequestTest, SetRequest) {
     manager_.GetDownloadDetails(&profile_, details_getter.GetCallback());
   }
 
-  // In http://crbug.com/433928, open after SetRequest(nullpr) caused a crash.
+  // In http://crbug.com/40394233, open after SetRequest(nullpr) caused a crash.
   test_item_->NotifyObserversDownloadOpened();
 
   ShutdownDownloadManager();
@@ -648,7 +649,7 @@ TEST_F(DownloadMetadataManagerTestBase, ActiveDownloadWithRequest) {
   EXPECT_STREQ(kNewUrl, metadata->download().download().url().c_str());
 }
 
-// Regression test for http://crbug.com/504092: open an item with id==0 when
+// Regression test for http://crbug.com/40424289: open an item with id==0 when
 // there is no metadata loaded.
 TEST_F(DownloadMetadataManagerTestBase, OpenItemWithZeroId) {
   ASSERT_NO_FATAL_FAILURE(AddDownloadManager());

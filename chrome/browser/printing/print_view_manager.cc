@@ -285,7 +285,7 @@ bool PrintViewManager::PrintPreview(
     bool has_selection) {
   // Users can send print commands all they want and it is beyond
   // PrintViewManager's control. Just ignore the extra commands.
-  // See http://crbug.com/136842 for example.
+  // See http://crbug.com/40240300 for example.
   if (print_preview_state_ != NOT_PREVIEWING)
     return false;
 
@@ -408,7 +408,7 @@ void PrintViewManager::OnScriptedPrintPreviewCallback(
     return;
 
   // Running a dialog causes an exit to webpage-initiated fullscreen.
-  // http://crbug.com/728276
+  // http://crbug.com/41322524
   if (web_contents()->IsFullscreen())
     web_contents()->ExitFullscreen(true);
 

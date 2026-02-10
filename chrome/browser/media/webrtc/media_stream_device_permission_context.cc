@@ -66,7 +66,7 @@ MediaStreamDevicePermissionContext::GetContentSettingStatusInternal(
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
   // TODO(raymes): Merge this policy check into content settings
-  // crbug.com/244389.
+  // crbug.com/41014586.
   const char* policy_name = nullptr;
   const char* urls_policy_name = nullptr;
   if (content_settings_type_ == ContentSettingsType::MEDIASTREAM_MIC) {

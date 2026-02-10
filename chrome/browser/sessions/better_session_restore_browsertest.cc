@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
   CheckFormRestored(new_browser, false, false);
 }
 
-// Flaky on Mac: https://crbug.com/709504
+// Flaky on Mac: https://crbug.com/40514588
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SessionCookiesCloseAllBrowsers \
   DISABLED_SessionCookiesCloseAllBrowsers

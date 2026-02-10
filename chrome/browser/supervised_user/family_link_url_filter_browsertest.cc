@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_P(FamilyLinkUrlFilterTest, ClosingBlockedTabDoesNotCrash) {
       GetUrlFilteringService()->GetFilteringBehavior(test_url).IsBlocked());
 
   // Verify that there is no crash when closing the blocked tab
-  // (https://crbug.com/719708).
+  // (https://crbug.com/41317751).
   browser()->tab_strip_model()->CloseWebContentsAt(
       0, TabCloseTypes::CLOSE_USER_GESTURE);
 }

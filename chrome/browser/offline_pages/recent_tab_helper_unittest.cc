@@ -478,7 +478,7 @@ TEST_F(RecentTabHelperTest, TwoCapturesSamePageLoad) {
 // Triggers two last_n captures during a single page load, where the 2nd capture
 // fails. Should end up with one offline page (the 1st, successful snapshot
 // should be kept).
-// TODO(carlosk): re-enable once https://crbug.com/705079 is fixed.
+// TODO(carlosk): re-enable once https://crbug.com/40512489 is fixed.
 TEST_F(RecentTabHelperTest, DISABLED_TwoCapturesWhere2ndFailsSamePageLoad) {
   // Navigate and load until the 1st stage. Tab hidden should trigger a capture.
   const GURL kTestUrl("http://mystery.site/foo.html");

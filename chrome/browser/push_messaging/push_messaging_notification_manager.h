@@ -44,7 +44,7 @@ class WebContents;
 //
 // See the following document and bug for more context:
 // https://docs.google.com/document/d/13VxFdLJbMwxHrvnpDm8RXnU41W2ZlcP0mdWWe9zXQT8/edit
-// https://crbug.com/437277
+// https://crbug.com/40395913
 class PushMessagingNotificationManager {
  public:
   using EnforceRequirementsCallback =

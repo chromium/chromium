@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   // It is important that the MessageLoop not pump extra messages during
   // EndSession() as some of those may be tasks queued to attempt to revive
   // services and processes that were just intentionally killed. This is a
-  // regression blocker for https://crbug.com/318527.
+  // regression blocker for https://crbug.com/40341017.
   // Need to use this WeakPtr workaround as the browser test harness runs all
   // tasks until idle when tearing down.
   struct FailsIfCalledWhileOnStack {

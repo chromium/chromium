@@ -132,7 +132,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
 
   // Chrome's PDF Extension does not work properly in the face of a restrictive
   // Content-Security-Policy, and does not currently respect the policy anyway.
-  // Ignore CSP served on a PDF response. https://crbug.com/271452
+  // Ignore CSP served on a PDF response. https://crbug.com/40328564
   if (extension_id == extension_misc::kPdfExtensionId &&
       response_head->headers) {
     // We still want to honor the frame-ancestors directive in the

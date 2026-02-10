@@ -1186,7 +1186,7 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOtherPageOnDigestMismatch) {
   ExpectOfflinePageServed(offline_id1, kFileSize1);
 }
 
-// Disabled due to https://crbug.com/917113.
+// Disabled due to https://crbug.com/40607411.
 TEST_F(OfflinePageRequestHandlerTest, DISABLED_EmptyFile) {
   SimulateHasNetworkConnectivity(false);
 

@@ -112,8 +112,8 @@ TEST_F(TabManagerTest, IsInternalPage) {
       GURL(chrome::kChromeUISettingsURL).ReplaceComponents(replace_fake_path)));
 }
 
-// Data race on Linux. http://crbug.com/787842
-// Flaky on Mac and Windows: https://crbug.com/995682
+// Data race on Linux. http://crbug.com/41357022
+// Flaky on Mac and Windows: https://crbug.com/41477172
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
 #define MAYBE_DiscardTabWithNonVisibleTabs DISABLED_DiscardTabWithNonVisibleTabs

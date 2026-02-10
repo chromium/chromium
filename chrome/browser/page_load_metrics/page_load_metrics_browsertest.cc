@@ -1247,10 +1247,10 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NewPageInNewForegroundTab) {
   waiter->AddPageExpectation(TimingField::kLoadEvent);
   waiter->Wait();
 
-  // Due to crbug.com/725347, with browser side navigation enabled, navigations
-  // in new tabs were recorded as starting in the background. Here we verify
-  // that navigations initiated in a new tab are recorded as happening in the
-  // foreground.
+  // Due to crbug.com/40522104, with browser side navigation enabled,
+  // navigations in new tabs were recorded as starting in the background. Here
+  // we verify that navigations initiated in a new tab are recorded as happening
+  // in the foreground.
   histogram_tester_->ExpectTotalCount(internal::kHistogramLoad, 1);
   histogram_tester_->ExpectTotalCount(internal::kBackgroundHistogramLoad, 0);
 }
@@ -1646,8 +1646,8 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DISABLED_BadXhtml) {
   // When an XHTML page contains invalid XML, it causes a paint of the error
   // message without a layout. Page load metrics currently treats this as an
   // error. Eventually, we'll fix this by special casing the handling of
-  // documents with non-well-formed XML on the blink side. See crbug.com/627607
-  // for more.
+  // documents with non-well-formed XML on the blink side. See
+  // crbug.com/40476240 for more.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("/page_load_metrics/badxml.xhtml")));

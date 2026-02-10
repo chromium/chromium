@@ -61,7 +61,7 @@ void SpellcheckServiceFactory::RegisterProfilePrefs(
   user_prefs->RegisterListPref(
       spellcheck::prefs::kSpellCheckBlocklistedDictionaries);
   // Continue registering kSpellCheckDictionary for preference migration.
-  // TODO(estade): remove: crbug.com/751275
+  // TODO(estade): remove: crbug.com/41337174
   user_prefs->RegisterStringPref(
       spellcheck::prefs::kSpellCheckDictionary,
       l10n_util::GetStringUTF8(IDS_SPELLCHECK_DICTIONARY));

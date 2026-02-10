@@ -312,7 +312,7 @@ void ProfileDestroyer::DestroyOriginalProfileNow(
     DCHECK_EQ(profile_hosts_count, 0u);
 #if !BUILDFLAG(IS_CHROMEOS)
     // ChromeOS' system profile can be outlived by its off-the-record profile
-    // (see https://crbug.com/828479).
+    // (see https://crbug.com/40569888).
     DCHECK_EQ(off_the_record_profile_hosts_count, 0u);
 #endif
   }
@@ -368,7 +368,7 @@ ProfileDestroyer::~ProfileDestroyer() {
               });
   // Don't wait for pending registrations, if any, these hosts are buggy.
   // Note: this can happen, but if so, it's better to crash here than wait
-  // for the host to dereference a deleted Profile. http://crbug.com/248625
+  // for the host to dereference a deleted Profile. http://crbug.com/41017156
   UMA_HISTOGRAM_ENUMERATION("Profile.Destroyer.OffTheRecord",
                             observations_.IsObservingAnySource()
                                 ? ProfileDestructionType::kDelayedAndCrashed

@@ -525,7 +525,7 @@ void ExternalProtocolHandler::LaunchUrl(
   // TODO(mgiuca): This essentially amounts to "remove illegal characters from
   // the URL", something that probably should be done by the GURL constructor
   // itself. The GURL constructor does do it in some cases (e.g., mailto) but
-  // not in general. https://crbug.com/788244.
+  // not in general. https://crbug.com/40551459.
   std::string escaped_url_string = base::EscapeExternalHandlerValue(url.spec());
   GURL escaped_url(escaped_url_string);
 

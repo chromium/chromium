@@ -120,14 +120,14 @@ const char kSilentPushUnsupportedMessage[] =
 // have been blocked, and an exception will be thrown as well.
 const char kSenderIdRegistrationDisallowedMessage[] =
     "The provided application server key is not a VAPID key. Only VAPID keys "
-    "are supported. For more information check https://crbug.com/979235.";
+    "are supported. For more information check https://crbug.com/41468162.";
 
 // Message displayed in the console (as a warning) when a GCM Sender ID is used
 // to create a subscription, which will soon be unsupported.
 const char kSenderIdRegistrationDeprecatedMessage[] =
     "The provided application server key is not a VAPID key. Only VAPID keys "
     "will be supported in the future. For more information check "
-    "https://crbug.com/979235.";
+    "https://crbug.com/41468162.";
 
 #if BUILDFLAG(IS_ANDROID)
 // The serialized base::Time used for Notifications permission revocation grace
@@ -344,7 +344,7 @@ void PushMessagingServiceImpl::OnMessage(const std::string& app_id,
                                          const gcm::IncomingMessage& message) {
   // We won't have time to process and act on the message.
   // TODO(peter) This should be checked at the level of the GCMDriver, so that
-  // the message is not consumed. See https://crbug.com/612815
+  // the message is not consumed. See https://crbug.com/41254465
   if (g_browser_process->IsShuttingDown() || shutdown_started_) {
     return;
   }
@@ -598,7 +598,7 @@ void PushMessagingServiceImpl::DeliverMessageCallback(
 
   // TODO(mvanouwerkerk): Show a warning in the developer console of the
   // Service Worker corresponding to app_id (and/or on an internals page).
-  // See https://crbug.com/508516 for options.
+  // See https://crbug.com/40426050 for options.
   if (!push_messaging::WasPushSuccessful(status, unsubscribe_reason)) {
     base::ScopedClosureRunner completion_closure_runner(
         base::BindOnce(std::move(message_handled_callback),
@@ -1296,7 +1296,8 @@ void PushMessagingServiceImpl::DidClearPushSubscriptionId(
   // Delete the mapping for this app_id, to guarantee that no messages get
   // delivered in future (even if unregistration fails).
   // TODO(johnme): Instead of deleting these app ids, store them elsewhere, and
-  // retry unregistration if it fails due to network errors (crbug.com/465399).
+  // retry unregistration if it fails due to network errors
+  // (crbug.com/40408777).
   push_messaging::AppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByAppId(profile_, app_id);
   bool was_subscribed = !app_identifier.is_null();
@@ -1683,7 +1684,7 @@ void PushMessagingServiceImpl::DidGetSenderIdUnexpectedUnsubscribe(
   // are cleared for the origin. In that case for legacy GCM registrations on
   // Android, Unsubscribe will just delete the app identifier to block future
   // messages.
-  // TODO(johnme): Auto-unregister before SW DB is cleared (crbug.com/402458).
+  // TODO(johnme): Auto-unregister before SW DB is cleared (crbug.com/40378791).
   UnsubscribeInternal(reason, app_identifier.origin(),
                       app_identifier.service_worker_registration_id(),
                       app_identifier.app_id(), sender_id, std::move(callback));

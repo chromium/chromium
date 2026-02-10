@@ -156,7 +156,7 @@ std::u16string GetAuthenticatedUsername(Profile* profile) {
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
             .email;
 #if BUILDFLAG(IS_CHROMEOS)
-    // See https://crbug.com/994798 for details.
+    // See https://crbug.com/40640779 for details.
     user_manager::User* user =
         ash::ProfileHelper::Get()->GetUserByProfile(profile);
     // |user| may be null in tests.

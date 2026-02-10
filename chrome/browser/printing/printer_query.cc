@@ -422,7 +422,7 @@ void PrinterQuery::GetSettingsWithUI(uint32_t document_page_count,
 #endif
 
   // Running a dialog causes an exit to webpage-initiated fullscreen.
-  // http://crbug.com/728276
+  // http://crbug.com/41322524
   if (web_contents && web_contents->IsFullscreen()) {
     web_contents->ExitFullscreen(true);
   }

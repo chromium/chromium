@@ -878,7 +878,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestHTTPWithBrokenHTTPSResource) {
 
 // Tests that after loading mixed content and then making a same-document
 // navigation, the mixed content security indicator remains. See
-// https://crbug.com/959571.
+// https://crbug.com/40094866.
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestMixedContentWithSamePageNavigation) {
   ASSERT_TRUE(https_server_.Start());
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -939,7 +939,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrokenHTTPSWithInsecureContent) {
 
 // Tests that the NavigationEntry gets marked as active mixed content,
 // even if there is a certificate error. Regression test for
-// https://crbug.com/593950.
+// https://crbug.com/41243626.
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrokenHTTPSWithActiveInsecureContent) {
   ASSERT_TRUE(https_server_expired_.Start());
 
@@ -1030,7 +1030,7 @@ class SameDocumentNavigationObserver : public content::WebContentsObserver {
 
 // Tests that the mixed content flags are reset when going back to an existing
 // navigation entry that had mixed content. Regression test for
-// https://crbug.com/750649.
+// https://crbug.com/41336817.
 IN_PROC_BROWSER_TEST_F(SSLUITest, GoBackToMixedContent) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(https_server_.Start());
@@ -2385,7 +2385,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnsafeContents) {
 // Visits a page with insecure content loaded by JS (after the initial page
 // load).
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// flaky http://crbug.com/396462
+// flaky http://crbug.com/40375913
 #define MAYBE_TestDisplaysInsecureContentLoadedFromJS \
   DISABLED_TestDisplaysInsecureContentLoadedFromJS
 #else
@@ -2553,7 +2553,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestRunsCachedInsecureContent) {
 
 // This test ensures the CN invalid status does not 'stick' to a certificate
 // (see bug #1044942) and that it depends on the host-name.
-// Test if disabled due to flakiness http://crbug.com/368280 .
+// Test if disabled due to flakiness http://crbug.com/41104365 .
 IN_PROC_BROWSER_TEST_F(SSLUITest, DISABLED_TestCNInvalidStickiness) {
   ASSERT_TRUE(https_server_.Start());
   ASSERT_TRUE(https_server_mismatched_.Start());
@@ -3156,7 +3156,7 @@ class SSLUIWorkerFetchTest
     // RunMixedContentSettingsTest in a single test case to use different tabs
     // and thus different processes, bypassing a subtle race condition where
     // processes can get re-used under Site Isolation and retain their mixed
-    // content status (see crbug.com/890372). This ensures all error state is
+    // content status (see crbug.com/41417895). This ensures all error state is
     // cleared.
     chrome::NewTab(browser());
     WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -3811,7 +3811,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestInterstitialJavaScriptProceeds) {
 }
 
 // Verifies that the interstitial can go back, even if JavaScript is disabled.
-// http://crbug.com/322948
+// http://crbug.com/41076570
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestInterstitialJavaScriptGoesBack) {
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
       ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
@@ -3869,7 +3869,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestLearnMoreLinkContainsErrorCode) {
 }
 
 // Checks that interstitials are not used for subframe SSL errors. Regression
-// test for https://crbug.com/808797.
+// test for https://crbug.com/41368701.
 IN_PROC_BROWSER_TEST_F(SSLUITest, SubframeCertError) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(https_server_expired_.Start());
@@ -3930,7 +3930,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestHSTS, TestInterstitialOptionsNonOverridable) {
 }
 
 // Verifies that links in the interstitial open in a new tab.
-// https://crbug.com/717616
+// https://crbug.com/41316569
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestInterstitialLinksOpenInNewTab) {
   ASSERT_TRUE(https_server_.Start());
   ASSERT_TRUE(https_server_expired_.Start());
@@ -3979,7 +3979,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestInterstitialLinksOpenInNewTab) {
 
 // Verifies that switching tabs, while showing interstitial page, will not
 // affect the visibility of the interstitial.
-// https://crbug.com/381439
+// https://crbug.com/41112511
 IN_PROC_BROWSER_TEST_F(SSLUITest, InterstitialNotAffectedByHideShow) {
   ASSERT_TRUE(https_server_expired_.Start());
   ASSERT_TRUE(https_server_.Start());
@@ -4357,7 +4357,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByBlobUrl) {
 
 // Tests that the SSLStatus of a navigation entry for an SSL
 // interstitial matches the navigation entry once the interstitial is
-// clicked through. https://crbug.com/529456
+// clicked through. https://crbug.com/41200271
 IN_PROC_BROWSER_TEST_F(SSLUITest,
                        SSLStatusMatchesOnInterstitialAndAfterProceed) {
   ASSERT_TRUE(https_server_expired_.Start());
@@ -5190,7 +5190,7 @@ class SSLBlockingPageIDNTest
   }
 };
 
-// Flaky on mac OS and Windows: https://crbug.com/689846
+// Flaky on mac OS and Windows: https://crbug.com/41300407
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_SSLBlockingPageDecodesIDN DISABLED_SSLBlockingPageDecodesIDN
 #else
@@ -5284,7 +5284,7 @@ void SetupRestoredTabWithNavigation(
 }
 
 // Simulate a browser-initiated in-page navigation in a restored tab.
-// https://crbug.com/662267
+// https://crbug.com/41284602
 IN_PROC_BROWSER_TEST_F(SSLUITest,
                        BrowserInitiatedExistingPageAfterRestoreHasSSLState) {
   SetupRestoredTabWithNavigation(&https_server_, browser());
@@ -5337,7 +5337,7 @@ std::unique_ptr<net::test_server::HttpResponse> ChangingHandler(
 
 // Check that SSL state isn't stale when navigating to an existing page that
 // gives a different response. This covers the case of going from http to
-// https. http://crbug.com/792221
+// https. http://crbug.com/40089799
 IN_PROC_BROWSER_TEST_F(SSLUITest, ExistingPageHTTPToHTTPSSSLState) {
   ASSERT_TRUE(https_server_.Start());
   int count = 0;
@@ -5361,7 +5361,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, ExistingPageHTTPToHTTPSSSLState) {
 
 // Check that SSL state isn't stale when navigating to an existing page that
 // gives a different response. This covers the case of going from https to
-// http URL. http://crbug.com/792221
+// http URL. http://crbug.com/40089799
 IN_PROC_BROWSER_TEST_F(SSLUITest, ExistingPageHTTPSToHTTPSSLState) {
   ASSERT_TRUE(embedded_test_server()->Start());
   int count = 0;
@@ -5457,7 +5457,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, SameDocumentHasSSLState) {
 // Simulate the user revisiting a page without triggering a reload (e.g., when
 // clicking a bookmark with an anchor hash twice).  As this is a same document
 // navigation, the SSL state should be left intact despite not triggering a
-// network request. Regression test for https://crbug.com/877618.
+// network request. Regression test for https://crbug.com/41409992.
 IN_PROC_BROWSER_TEST_F(SSLUITest, SameDocumentHasSSLStateNoLoad) {
   ASSERT_TRUE(https_server_.Start());
 
@@ -5569,7 +5569,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, SameDocumentNavigationAfterLoadSSLState) {
 }
 
 // Checks that navigations after pushState maintain the SSL status.
-// Flaky, see https://crbug.com/872029 and https://crbug.com/872030.
+// Flaky, see https://crbug.com/41406728 and https://crbug.com/41406729.
 IN_PROC_BROWSER_TEST_F(SSLUITest, DISABLED_PushStateSSLState) {
   ASSERT_TRUE(https_server_.Start());
 
@@ -5660,7 +5660,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, SSLStateOnDifferentHttpResponses) {
   EXPECT_TRUE(entry->GetSSL().certificate);
 }
 
-// Regression test for http://crbug.com/635833 (crash when a window with no
+// Regression test for http://crbug.com/40479807 (crash when a window with no
 // NavigationEntry commits).
 IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreLocalhostCertErrors,
                        NoCrashOnLoadWithNoNavigationEntry) {
@@ -6379,10 +6379,10 @@ class SSLUIMITMSoftwareTest : public CertVerifierBrowserTest {
 
 // The SSLUIMITMSoftwareEnabled and Disabled test classes exist so that the
 // scoped feature list can be instantiated in the set up method of the class
-// rather than in the test itself. Bug crbug.com/713390 was causing some of the
-// tests in SSLUIMITMSoftwareTest to be flaky. Refactoring these tests so that
-// the scoped feature list initialization is done in the set up method fixes
-// this flakiness.
+// rather than in the test itself. Bug crbug.com/40516444 was causing some of
+// the tests in SSLUIMITMSoftwareTest to be flaky. Refactoring these tests so
+// that the scoped feature list initialization is done in the set up method
+// fixes this flakiness.
 
 class SSLUIMITMSoftwareEnabledTest : public SSLUIMITMSoftwareTest {
  public:
@@ -6744,7 +6744,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, NetworkErrorDoesntRevokeExemptions) {
 
 // Checks we don't attempt to show an interstitial (or crash) when visiting an
 // SSL error related page in chrome://network-errors. Regression test for
-// crbug.com/953812
+// crbug.com/41453481
 IN_PROC_BROWSER_TEST_F(SSLUITest,
                        NoInterstitialOnNetworkErrorPage) {
   GURL invalid_cert_url(blink::kChromeUINetworkErrorURL);

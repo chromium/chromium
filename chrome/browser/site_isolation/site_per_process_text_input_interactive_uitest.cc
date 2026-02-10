@@ -381,7 +381,7 @@ class SitePerProcessTextInputManagerTest : public InProcessBrowserTest {
 // creates a sequence of tab presses and verifies that after each key press, the
 // TextInputState.value reflects that of the focused input, i.e., the
 // TextInputManager is correctly tracking TextInputState across frames.
-// Flaky on ChromeOS, Linux, Mac, and Windows; https://crbug.com/704994.
+// Flaky on ChromeOS, Linux, Mac, and Windows; https://crbug.com/41309330.
 IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
                        DISABLED_TrackStateWhenSwitchingFocusedFrames) {
   CreateIframePage("a(a,b,c(a,b,d(e, f)),g)");
@@ -592,7 +592,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 #if defined(USE_AURA)
 // This test creates a blank page and adds an <input> to it. Then, the <input>
 // is focused, UI is focused, then the input is refocused. The test verifies
-// that selection bounds change with the refocus (see https://crbug.com/864563).
+// that selection bounds change with the refocus (see
+// https://crbug.com/41402146).
 IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
                        SelectionBoundsChangeAfterRefocusInput) {
   CreateIframePage("a()");
@@ -626,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 
 // This test verifies that if we have a focused <input> in the main frame and
 // the tab is closed, TextInputManager handles unregistering itself and
-// notifying the observers properly (see https://crbug.com/669375).
+// notifying the observers properly (see https://crbug.com/41288534).
 IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
                        ClosingTabWillNotCrash) {
   CreateIframePage("a()");
@@ -733,7 +734,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
     send_tab_set_composition_wait_for_bounds_change(view);
 }
 
-// Failing on Mac - http://crbug.com/852452
+// Failing on Mac - http://crbug.com/41394416
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TrackTextSelectionForAllFrames \
   DISABLED_TrackTextSelectionForAllFrames
@@ -796,8 +797,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 // on the page. Specifically, the test sends an IPC to the RenderWidget
 // corresponding to a focused frame with a focused <input> to commit some text.
 // Then, it verifies that the <input>'s value matches the committed text
-// (https://crbug.com/688842).
-// Flaky on Android and Linux http://crbug.com/852274
+// (https://crbug.com/41299742).
+// Flaky on Android and Linux http://crbug.com/149652556
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ImeCommitTextForAllFrames DISABLED_ImeCommitTextForAllFrames
 #else
@@ -846,7 +847,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 
 // TODO(ekaramad): Some of the following tests should be active on Android as
 // well. Enable them when the corresponding feature is implemented for Android
-// (https://crbug.com/602723).
+// (https://crbug.com/40464731).
 #if !BUILDFLAG(IS_ANDROID)
 // This test creates a page with multiple child frames and adds an <input> to
 // each frame. Then, sequentially, each <input> is focused by sending a tab key.
@@ -890,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 
 // This test makes sure browser correctly tracks focused editable element inside
 // each RenderFrameHost.
-// Test is flaky on chromeOS; https://crbug.com/705203.
+// Test is flaky on chromeOS; https://crbug.com/41309421.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TrackingFocusedElementForAllFrames \
   DISABLED_TrackingFocusedElementForAllFrames
@@ -938,7 +939,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 // focused. Then the <input> inside frame is both focused and blurred and  and
 // in both cases the test verifies that WebContents is aware whether or not a
 // focused editable element exists on the page.
-// Test is flaky on ChromeOS. crbug.com/705289
+// Test is flaky on ChromeOS. crbug.com/41309482
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TrackPageFocusEditableElement \
   DISABLED_TrackPageFocusEditableElement
@@ -981,7 +982,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 // WebContents knows about the focused editable element. Then it asks the
 // WebContents to clear focused element and verifies that there is no longer
 // a focused editable element on the page.
-// Test is flaky on ChromeOS; https://crbug.com/705203.
+// Test is flaky on ChromeOS; https://crbug.com/41309421.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ClearFocusedElementOnPage DISABLED_ClearFocusedElementOnPage
 #else
@@ -1013,7 +1014,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 
 // TODO(ekaramad): The following tests are specifically written for Aura and are
 // based on InputMethodObserver. Write similar tests for Mac/Android/Mus
-// (crbug.com/602723).
+// (crbug.com/40464731).
 #if defined(USE_AURA)
 // -----------------------------------------------------------------------------
 // Input Method Observer Tests
@@ -1024,7 +1025,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 // TODO(ekaramad): We only have coverage for some aura tests as the whole idea
 // of ui::TextInputClient/ui::InputMethod/ui::InputMethodObserver seems to be
 // only fit to aura (specifically, OS_CHROMEOS). Can we add more tests here for
-// aura as well as other platforms (https://crbug.com/602723)?
+// aura as well as other platforms (https://crbug.com/40464731)?
 
 // Observes current input method for state changes.
 class InputMethodObserverBase {
@@ -1086,7 +1087,7 @@ class InputMethodObserverForShowIme : public InputMethodObserverBase {
 };
 
 // TODO(ekaramad): This test is actually a unit test and should be moved to
-// somewhere more relevant (https://crbug.com/602723).
+// somewhere more relevant (https://crbug.com/40464731).
 // This test verifies that the IME for Aura is shown if and only if the current
 // client's |TextInputState.type| is not ui::TEXT_INPUT_TYPE_NONE and the flag
 // |TextInputState.show_ime_if_needed| is true. This should happen even when
@@ -1151,7 +1152,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 #endif  // USE_AURA
 
 // Ensure that a cross-process subframe can utilize keyboard edit commands.
-// See https://crbug.com/640706.  This test is Linux-specific, as it relies on
+// See https://crbug.com/41271772.  This test is Linux-specific, as it relies on
 // overriding ui::LinuxUi.
 #if BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
@@ -1269,7 +1270,7 @@ class ShowDefinitionForWordObserver
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-// Flakey (https:://crbug.com/874417).
+// Flakey (https:://crbug.com/41408166).
 // This test verifies that requests for dictionary lookup based on selection
 // range are routed to the focused RenderWidgetHost.
 IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
@@ -1340,7 +1341,7 @@ IN_PROC_BROWSER_TEST_F(
         // This runs before TextInputClientMac gets to handle the mojo message.
         // Then, by the time TextInputClientMac calls back into UI to show the
         // dictionary, the target RWH is already destroyed which will be a
-        // close enough repro for the crash in https://crbug.com/737032.
+        // close enough repro for the crash in https://crbug.com/41327401.
         ASSERT_TRUE(content::DestroyRenderWidgetHost(process_id, routing_id));
 
         // Quit the run loop on IO to make sure the message handler of
@@ -1408,7 +1409,7 @@ IN_PROC_BROWSER_TEST_F(
         // This runs before TextInputClientMac gets to handle the mojo message.
         // Then, by the time TextInputClientMac calls back into UI to show the
         // dictionary, the target RWH is already destroyed which will be a
-        // close enough repro for the crash in https://crbug.com/737032.
+        // close enough repro for the crash in https://crbug.com/41327401.
         ASSERT_TRUE(content::DestroyRenderWidgetHost(process_id, routing_id));
 
         // Quit the run loop on IO to make sure the message handler of

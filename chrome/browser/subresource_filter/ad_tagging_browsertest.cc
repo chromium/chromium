@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, VerifyCrossOriginWithoutNavigate) {
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // TODO(johnidel): Check that frame was reported properly. See
-  // crbug.com/914893.
+  // crbug.com/40606432.
 }
 
 // Ad script creates a frame and navigates it cross origin.
@@ -1535,7 +1535,7 @@ class AdTaggingEventFromSubframeBrowserTest
       public ::testing::WithParamInterface<
           std::tuple<bool /* cross_origin */, bool /* from_ad_frame */>> {};
 
-// crbug.com/997410. The test is flaky on multiple platforms.
+// crbug.com/41478023. The test is flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_P(AdTaggingEventFromSubframeBrowserTest,
                        DISABLED_WindowOpenFromSubframe) {
   auto [cross_origin, from_ad_frame] = GetParam();
@@ -1570,7 +1570,7 @@ class AdTaggingEventWithScriptInStackBrowserTest
     : public AdTaggingBrowserTest,
       public ::testing::WithParamInterface<bool /* from_ad_script */> {};
 
-// crbug.com/998405. The test is flaky on multiple platforms.
+// crbug.com/40642419. The test is flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_P(AdTaggingEventWithScriptInStackBrowserTest,
                        DISABLED_WindowOpenWithScriptInStack) {
   bool from_ad_script = GetParam();

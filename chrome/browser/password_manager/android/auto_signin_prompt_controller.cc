@@ -24,7 +24,7 @@ void ShowAutoSigninPrompt(content::WebContents* web_contents,
 
   JNIEnv* env = base::android::AttachCurrentThread();
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
-  // TODO(melandory): https://crbug.com/590838 Introduce proper fix.
+  // TODO(melandory): https://crbug.com/40459011 Introduce proper fix.
   if (tab == nullptr) {
     return;
   }

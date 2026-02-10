@@ -302,7 +302,7 @@ bool ProfileAttributesEntry::ShouldUpdateGAIAPicture(
     // |OnProfileAvatarChanged| notification is fired.
     // Updating from an empty image to a null image is a no-op and it is
     // important to avoid firing |OnProfileAvatarChanged| in this case.
-    // See http://crbug.com/900374
+    // See http://crbug.com/41423540
     DCHECK(!IsGAIAPictureLoaded());
     return false;
   }
@@ -813,7 +813,7 @@ void ProfileAttributesEntry::SetAvatarIconIndex(size_t icon_index) {
     // |OnProfileAvatarChanged| notification is fired.
     // As the current avatar icon is already set to |default_avatar_icon_url|,
     // it is important to avoid firing |OnProfileAvatarChanged| in this case.
-    // See http://crbug.com/900374
+    // See http://crbug.com/41423540
     base::FilePath profile_path = GetPath();
     if (!profile_attributes_storage_->GetDisableAvatarDownloadForTesting()) {
       profile_attributes_storage_->DownloadHighResAvatarIfNeeded(icon_index,

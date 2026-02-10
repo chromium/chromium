@@ -25,7 +25,7 @@ class RenderFrameHost;
 // permission in this case. This function should not be called when per-origin
 // provisioning is NOT supported, in which case per-device provisioning should
 // be used and is already covered by ProtectedMediaIdentifierPermissionContext.
-// For more details, see https://crbug.com/917527.
+// For more details, see https://crbug.com/41433110.
 
 // Requests permission to allow MediaDrmBridge to use per-device provisioning.
 // The |callback| is guaranteed to be called with whether the permission was

@@ -182,8 +182,7 @@ AccountConsistencyModeManager::GetAccountConsistencyMethod() {
 #else
   // The account consistency method should not change during the lifetime of a
   // profile. We always return the cached value, but still check that it did not
-  // change, in order to detect inconsistent states. See
-  // https://crbug.com/860471
+  // change, in order to detect inconsistent states. See crbug.com/40583741
   CHECK(account_consistency_initialized_);
   CHECK_EQ(ComputeAccountConsistencyMethod(profile_), account_consistency_);
   return account_consistency_;

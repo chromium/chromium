@@ -1088,7 +1088,7 @@ TEST_F(ClientSideDetectionHostTest,
 // This test doesn't work because it makes assumption about how
 // the message loop is run, and those assumptions are wrong when properly
 // simulating a navigation with browser-side navigations.
-// TODO(clamy): Fix the test and re-enable. See crbug.com/753357.
+// TODO(clamy): Fix the test and re-enable. See crbug.com/41338215.
 TEST_F(ClientSideDetectionHostTest,
        DISABLED_NavigationCancelsShouldClassifyUrl) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {

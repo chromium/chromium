@@ -209,11 +209,11 @@ bool MediaEngagementScore::UpdateScoreDict(bool force_update) {
                   double(last_media_playback_time_.ToInternalValue()));
   score_dict_.Set(kHasHighScoreKey, is_high_);
 
-  // visitsWithMediaTag was deprecated in https://crbug.com/998687 and should
+  // visitsWithMediaTag was deprecated in https://crbug.com/40642498 and should
   // be removed if we see it in |score_dict_|.
   score_dict_.Remove("visitsWithMediaTag");
 
-  // These keys were deprecated in https://crbug.com/998892 and should be
+  // These keys were deprecated in https://crbug.com/40642544 and should be
   // removed if we see it in |score_dict_|.
   score_dict_.Remove("audiblePlaybacks");
   score_dict_.Remove("significantPlaybacks");

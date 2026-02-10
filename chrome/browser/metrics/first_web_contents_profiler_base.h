@@ -29,7 +29,7 @@ enum class StartupProfilingFinishReason {
   kAbandonContentDestroyed = 3,
   // Abandon if the WebContents navigates away from its initial page, as it:
   //   (1) is no longer a fair timing; and
-  //   (2) can cause http://crbug.com/525209 where the first paint didn't fire
+  //   (2) can cause http://crbug.com/41197629 where the first paint didn't fire
   //       for the initial content but fires after a lot of idle time when the
   //       user finally navigates to another page that does trigger it.
   kAbandonNewNavigation = 4,

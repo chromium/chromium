@@ -69,7 +69,7 @@ UserNetworkConfigurationUpdaterFactory::BuildServiceInstanceForBrowserContext(
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   DCHECK(user);
   // Currently, only the network policy of the primary user is supported. See
-  // also http://crbug.com/310685 .
+  // also http://crbug.com/41067885 .
   if (user != user_manager::UserManager::Get()->GetPrimaryUser())
     return nullptr;
 

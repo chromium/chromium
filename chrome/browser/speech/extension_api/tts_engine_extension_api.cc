@@ -515,7 +515,7 @@ base::ListValue TtsExtensionEngine::BuildSpeakArgs(
 
   // Get the volume, pitch, and rate, but only if they weren't already in
   // the options. TODO(dmazzoni): these shouldn't be redundant.
-  // http://crbug.com/463264
+  // http://crbug.com/41160370
   if (!options.Find(constants::kRateKey)) {
     options.Set(constants::kRateKey, utterance->GetContinuousParameters().rate);
   }

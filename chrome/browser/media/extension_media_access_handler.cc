@@ -28,7 +28,7 @@ namespace {
 // 6. XKB input method component extension.
 // 7. M17n/T13n/CJK input method component extension.
 // 8. Accessibility Common extension (used for Dictation)
-// Once http://crbug.com/292856 is fixed, remove this allowlist.
+// Once http://crbug.com/40333126 is fixed, remove this allowlist.
 bool IsMediaRequestAllowedForExtension(const extensions::Extension* extension) {
   return extension->id() == extension_misc::kKeyboardExtensionId ||
          extension->id() == "jokbpnebhdcladagohdnfgjcpejggllo" ||

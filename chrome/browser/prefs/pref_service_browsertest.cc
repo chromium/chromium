@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(PreservedWindowPlacement, PRE_Test) {
 }
 
 // Fails on Chrome OS as the browser thinks it is restarting after a crash, see
-// http://crbug.com/168044
+// http://crbug.com/40297793
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Test DISABLED_Test
 #else

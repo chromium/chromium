@@ -48,7 +48,7 @@ void UiElementRenderer::DrawTexturedQuad(
     float corner_radius,
     bool blend) {
   TRACE_EVENT0("gpu", "UiElementRenderer::DrawTexturedQuad");
-  // TODO(vollick): handle drawing this degenerate situation crbug.com/768922
+  // TODO(vollick): handle drawing this degenerate situation crbug.com/41346685
   if (corner_radius * 2.0 > element_size.width() ||
       corner_radius * 2.0 > element_size.height()) {
     return;

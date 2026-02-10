@@ -56,7 +56,7 @@ void HistoryAwareSiteEngagementService::UpdateEngagementScores(
   for (const auto& origin_to_count : remaining_origins) {
     GURL origin = origin_to_count.first;
     // It appears that the history service occasionally sends bad URLs to us.
-    // See crbug.com/612881.
+    // See crbug.com/40469783.
     if (!origin.is_valid())
       continue;
 

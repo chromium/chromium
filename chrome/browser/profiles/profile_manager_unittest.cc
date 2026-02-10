@@ -495,8 +495,8 @@ TEST_P(ProfileManagerTest, UserProfileLoading) {
   user_manager->UserLoggedIn(account_id, user_id_hash);
 
   // Sign-in profile should be returned at this stage. Otherwise, login code
-  // ends up in an invalid state. Strange things as in http://crbug.com/728683
-  // and http://crbug.com/718734 happens.
+  // ends up in an invalid state. Strange things as in http://crbug.com/40523677
+  // and http://crbug.com/40519047 happens.
   EXPECT_TRUE(
       ProfileManager::GetActiveUserProfile()->IsSameOrParent(signin_profile));
   EXPECT_TRUE(

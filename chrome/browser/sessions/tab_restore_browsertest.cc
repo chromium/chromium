@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, DISABLED_BasicRestoreFromClosedWindow) {
 }
 
 #if BUILDFLAG(IS_WIN)
-// Flakily times out: http://crbug.com/171503
+// Flakily times out: http://crbug.com/40960786
 #define MAYBE_DontLoadRestoredTab DISABLED_DontLoadRestoredTab
 #else
 #define MAYBE_DontLoadRestoredTab DontLoadRestoredTab
@@ -998,7 +998,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandlerAccepted) {
 }
 
 // Open a window with two tabs, close both (closing the window), then restore
-// one by ID. Guards against regression of crbug.com/622752.
+// one by ID. Guards against regression of crbug.com/41260567.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabFromClosedWindowByID) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url1_, WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -1119,7 +1119,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWithExistingSiteInstance) {
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-// See crbug.com/248574
+// See crbug.com/40321364
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_RestoreCrossSiteWithExistingSiteInstance \
   DISABLED_RestoreCrossSiteWithExistingSiteInstance
@@ -1253,7 +1253,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindow_ActiveTabIndex) {
       RestoreTab(/*target_browser=*/nullptr, kActiveTabIndex));
 }
 
-// https://crbug.com/825305: Timeout flakiness on Mac10.13 Tests (dbg) and
+// https://crbug.com/40568506: Timeout flakiness on Mac10.13 Tests (dbg) and
 // PASS/FAIL flakiness on Linux Chromium OS ASan LSan Tests (1) bot.
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
     (!defined(NDEBUG) && !BUILDFLAG(IS_WIN))
@@ -1285,8 +1285,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, MAYBE_RestoreTabWithSpecialURL) {
       0);
 }
 
-// https://crbug.com/667932: Flakiness on linux_chromium_asan_rel_ng bot.
-// https://crbug.com/825305: Timeout flakiness on Mac10.13 Tests (dbg) bots.
+// https://crbug.com/41287668: Flakiness on linux_chromium_asan_rel_ng bot.
+// https://crbug.com/40568506: Timeout flakiness on Mac10.13 Tests (dbg) bots.
 // Also fails on Linux Tests (dbg).
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
     (!defined(NDEBUG) && !BUILDFLAG(IS_WIN))

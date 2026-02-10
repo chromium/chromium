@@ -470,7 +470,7 @@ void DialServiceImpl::SendNetworkList(
     // Binds a socket to each IPv4 network interface found. Note that
     // there may be duplicates in |networks|, so address family + interface
     // index is used to identify unique interfaces.
-    // TODO(mfoltz): Support IPV6 multicast.  http://crbug.com/165286
+    // TODO(mfoltz): Support IPV6 multicast.  http://crbug.com/40957231
     for (const auto& network : *networks) {
       net::AddressFamily addr_family = net::GetAddressFamily(network.address);
       if (addr_family == net::ADDRESS_FAMILY_IPV4) {

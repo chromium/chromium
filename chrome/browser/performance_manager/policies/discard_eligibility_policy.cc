@@ -269,7 +269,7 @@ CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
   }
 
   // Do not discard PDFs as they might contain entry that is not saved and they
-  // don't remember their scrolling positions. See crbug.com/547286 and
+  // don't remember their scrolling positions. See crbug.com/40441737 and
   // crbug.com/65244.
   if (page_node->GetContentsMimeType() == "application/pdf") {
     add_reason_and_update_result(CannotDiscardReason::kPdf,

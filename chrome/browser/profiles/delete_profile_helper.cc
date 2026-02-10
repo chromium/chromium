@@ -135,7 +135,7 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
   if (profile) {
     // Cancel all in-progress downloads before deleting the profile to prevent a
     // "Do you want to exit Google Chrome and cancel the downloads?" prompt
-    // (crbug.com/336725).
+    // (crbug.com/40348586).
     DownloadCoreService* service =
         DownloadCoreServiceFactory::GetForBrowserContext(profile);
     service->CancelDownloads(
@@ -150,7 +150,7 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
 
     // Close all browser windows before deleting the profile. If the user
     // cancels the closing of any tab in an OnBeforeUnload event, profile
-    // deletion is also cancelled. (crbug.com/289390)
+    // deletion is also cancelled. (crbug.com/40332478)
     chrome::CloseAllBrowsersWithProfile(
         profile,
         /*skip_beforeunload=*/false,

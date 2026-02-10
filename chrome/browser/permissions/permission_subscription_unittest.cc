@@ -196,7 +196,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PermissionSubscriptionGeolocationTest);
 TEST_P(PermissionSubscriptionGeolocationTest,
        SubscriptionDestroyedCleanlyWithoutUnsubscribe) {
   // Test that the PermissionManager shuts down cleanly with subscriptions that
-  // haven't been removed, crbug.com/720071.
+  // haven't been removed, crbug.com/40519661.
   content::SubscribeToPermissionResultChange(
       GetPermissionController(),
       content::PermissionDescriptorUtil::

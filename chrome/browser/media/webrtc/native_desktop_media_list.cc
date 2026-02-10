@@ -107,7 +107,7 @@ gfx::ImageSkia ScaleDesktopFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
   // TODO(sergeyu): Fix screen/window capturers to capture alpha channel and
   // remove this code. Currently screen/window capturers (at least some
   // implementations) only capture R, G and B channels and set Alpha to 0.
-  // crbug.com/264424
+  // crbug.com/41029106
   for (int y = 0; y < result.height(); ++y) {
     for (int x = 0; x < result.width(); ++x) {
       UNSAFE_TODO(

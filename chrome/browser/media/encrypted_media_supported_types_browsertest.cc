@@ -258,7 +258,7 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     invalid_codecs_.push_back("hvc1");
     invalid_codecs_.push_back("hvc1.");
 
-    // Profile 1 and 3 are not supported by EME. See https://crbug.com/898298.
+    // Profile 1 and 3 are not supported by EME. See https://crbug.com/41422352.
     invalid_codecs_.push_back("vp09.01.10.08");
     invalid_codecs_.push_back("vp09.03.10.10");
   }

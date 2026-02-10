@@ -516,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest,
 
 // TODO(crbug.com/41000594): Disabled because of flakiness and because for a
 // while history didn't support #q=searchTerm. Now that it does support these
-// type of URLs (crbug.com/619799), this test could be re-enabled if somebody
+// type of URLs (crbug.com/41258710), this test could be re-enabled if somebody
 // goes through the effort to wait for the various stages of the page loading.
 // The loading strategy of the new, Polymer version of chrome://history is
 // sophisticated and multi-part, so we'd need to wait on or ensure a few things
@@ -911,7 +911,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, BeforeUnloadCommitDuringPending) {
 
   // The beforeunload commit should happen before request start, which should
   // result in two history entries, with the newest in index 0. urls[0] was
-  // incorrectly url3 in https://crbug.com/956208.
+  // incorrectly url3 in https://crbug.com/41454894.
   {
     std::vector<GURL> urls(GetHistoryContents());
     ASSERT_EQ(2u, urls.size());

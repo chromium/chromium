@@ -50,7 +50,7 @@ void FontFamilyCache::FillFontFamilyMap(
     const char* map_name,
     blink::web_pref::ScriptFontFamilyMap* map) {
   // TODO(falken): Get rid of the brute-force scan over possible
-  // (font family / script) combinations - see http://crbug.com/308095.
+  // (font family / script) combinations - see http://crbug.com/40337107.
   for (size_t i = 0; i < prefs::kWebKitScriptsForFontFamilyMapsLength; ++i) {
     const char* script = prefs::kWebKitScriptsForFontFamilyMaps[i];
     std::u16string result = FetchAndCacheFont(script, map_name);

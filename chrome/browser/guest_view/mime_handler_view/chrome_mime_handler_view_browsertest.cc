@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_P(ChromeMimeHandlerViewTest,
 
 // TODO(ekaramad): Without proper handling of navigation to 'about:blank', this
 // test would be flaky. Use TestNavigationManager class and possibly break the
-// test into more sub-tests for various scenarios (https://crbug.com/659750).
+// test into more sub-tests for various scenarios (https://crbug.com/40490789).
 // This test verifies that (almost) concurrent navigations in a cross-process
 // frame inside an <embed> which is transitioning to a MimeHandlerView will
 // not block creation of MimeHandlerView. The test will load some cross-origin
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_P(ChromeMimeHandlerViewTest,
 }
 
 // This test verifies that removing embedder RenderFrame will not crash the
-// renderer (for context see https://crbug.com/930803).
+// renderer (for context see https://crbug.com/40613417).
 IN_PROC_BROWSER_TEST_P(ChromeMimeHandlerViewTest, EmbedderFrameRemovedNoCrash) {
   RunTest("test_iframe_basic.html");
   auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_P(ChromeMimeHandlerViewTest, EmbedderFrameRemovedNoCrash) {
 // about:blank from both the browser side and the embedder side in the method
 // HTMLPlugInElement::RequestObjectInternal. Find out the issue and add another
 // test here where the dialog is dismissed and the guest not created.
-// (https://crbug.com/659750).
+// (https://crbug.com/40490789).
 // This test verifies that transitioning a plugin element from text/html to
 // application/pdf respects 'beforeunload'. The test specifically checks that
 // 'beforeunload' dialog is shown to the user and if the user decides to
@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_P(ChromeMimeHandlerViewTest, EmbeddedDataUrlLong) {
   RunTest("test_embedded_data_url_long.html");
 }
 
-// Regression test for crbug.com/587709.
+// Regression test for crbug.com/41239959.
 IN_PROC_BROWSER_TEST_P(ChromeMimeHandlerViewTest, SingleRequest) {
   GURL url(embedded_test_server()->GetURL("/testBasic.csv"));
   RunTest("testBasic.csv");
@@ -658,7 +658,7 @@ IN_PROC_BROWSER_TEST_P(ChromeMimeHandlerViewTest,
 
 // This test verifies that a display:none frame loading a MimeHandlerView type
 // will end up creating a MimeHandlerview. NOTE: this is an exception to support
-// printing in Google docs (see https://crbug.com/978240).
+// printing in Google docs (see https://crbug.com/41467620).
 IN_PROC_BROWSER_TEST_P(ChromeMimeHandlerViewTest,
                        MimeHandlerViewInDisplayNoneFrameForGoogleApps) {
   GURL data_url(

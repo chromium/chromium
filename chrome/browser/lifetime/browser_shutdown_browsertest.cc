@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
 #else
 // On Chrome OS, the shutdown accelerator is handled by Ash and requires
 // confirmation, so Chrome shouldn't try to shut down after it's been hit one
-// time. Regression test for crbug.com/834092
+// time. Regression test for crbug.com/40572237
 IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest, ShutdownConfirmation) {
   const int modifiers = ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN;
 

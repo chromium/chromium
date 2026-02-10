@@ -615,7 +615,7 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, RegisterEngine) {
       << message_;
 }
 
-// https://crbug.com/709115 tracks test flakiness.
+// https://crbug.com/41311728 tracks test flakiness.
 #if BUILDFLAG(IS_POSIX)
 #define MAYBE_EngineError DISABLED_EngineError
 #else
@@ -662,7 +662,7 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, NoNetworkSpeechEngineWhenOffline) {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-// http://crbug.com/122474
+// http://crbug.com/40188097
 IN_PROC_BROWSER_TEST_P(TtsApiTest, EngineApi) {
   ASSERT_TRUE(RunExtensionTest("tts_engine/engine_api")) << message_;
 }

@@ -413,7 +413,7 @@ class FaviconUpdateOnlyInitialEntryTabStripObserver
 // Tests that ContentFaviconDriver can handle being sent updated favicon URLs
 // if there is no committed navigation, so it will use the initial
 // NavigationEntry. This occurs when script is injected in the initial empty
-// document of a newly created window. See crbug.com/520759 for more details.
+// document of a newly created window. See crbug.com/40431380 for more details.
 IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
                        FaviconUpdateOnlyInitialEntry) {
   const char kNoContentPath[] = "/nocontent";

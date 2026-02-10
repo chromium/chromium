@@ -47,7 +47,7 @@ const char kURL[] = "http://example.com";
 const char kCookieValue[] = "converted=true";
 // Assigned to Philip J. Fry to fix eventually.
 // TODO(maksims): use year 3000 when we get rid off the 32-bit
-// versions. https://crbug.com/619828
+// versions. https://crbug.com/41258731
 const char kCookieOptions[] = ";expires=Wed Jan 01 2038 00:00:00 GMT";
 constexpr int kBlockAll = 2;
 
@@ -165,8 +165,8 @@ class WebBluetoothPolicyTest : public PolicyTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // TODO(juncai): Remove this switch once Web Bluetooth is supported on Linux
     // and Windows.
-    // https://crbug.com/570344
-    // https://crbug.com/507419
+    // https://crbug.com/41229108
+    // https://crbug.com/40425585
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
     PolicyTest::SetUpCommandLine(command_line);

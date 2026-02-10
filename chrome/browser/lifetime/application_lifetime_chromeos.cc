@@ -112,7 +112,7 @@ void AttemptUserExit() {
   }
   ash::SessionTerminationManager::SetSendStopRequestToSessionManager();
   // On ChromeOS, always terminate the browser, regardless of the result of
-  // AreAllBrowsersCloseable(). See crbug.com/123107.
+  // AreAllBrowsersCloseable(). See crbug.com/40779433.
   browser_shutdown::NotifyAppTerminating();
   StopSession();
 }

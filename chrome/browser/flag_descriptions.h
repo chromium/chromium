@@ -26,8 +26,8 @@
 
 // This file declares strings used in chrome://flags. These messages are not
 // translated, because instead of end-users they target Chromium developers and
-// testers. See https://crbug.com/587272 and https://crbug.com/703134 for more
-// details.
+// testers. See https://crbug.com/40457200 and https://crbug.com/41308302 for
+// more details.
 //
 // Comments are not necessary. The contents of the strings (which appear in the
 // UI) should be good enough documentation for what flags do and when they

@@ -19,8 +19,8 @@ extern "C" void DummyExport() {
   // Use nops instead of volatile stores to avoid relocation entries in this
   // region. One of the tests measures the number of modified bytes between
   // relocations, and extra relocations will cause the test to fail.
-  // http://crbug.com/636157
-  // http://crbug.com/645544
+  // http://crbug.com/40479968
+  // http://crbug.com/40484314
 #define T4(x) x; x; x; x
 #define NOP4 T4(__nop());
 #define NOP16 T4(NOP4);

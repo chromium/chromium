@@ -132,9 +132,9 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, IncognitoTest) {
   EXPECT_TRUE(RunPrefetchExperiment(true, incognito_browser));
 }
 
-// https://crbug.com/922362: When the prefetched request is redirected, DCHECKs
-// in PrefetchURLLoader::FollowRedirect() failed due to "X-Client-Data" in
-// removed_headers. Verify that it no longer does, and the header is removed
+// https://crbug.com/40609665: When the prefetched request is redirected,
+// DCHECKs in PrefetchURLLoader::FollowRedirect() failed due to "X-Client-Data"
+// in removed_headers. Verify that it no longer does, and the header is removed
 // when redirected to non-Google host.
 IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, RedirectedPrefetch) {
   std::vector<net::test_server::HttpRequest> requests;

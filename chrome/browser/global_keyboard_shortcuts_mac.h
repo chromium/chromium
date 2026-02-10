@@ -48,7 +48,7 @@ struct CommandForKeyEventResult {
 // downsides:
 //  * There is no way for the user to configure or disable these keyEquivalents.
 //  * This can cause keyEquivalent conflicts for non-US keyboard layouts with
-//    different default keyEquivalents, see https://crbug.com/841299.
+//    different default keyEquivalents, see https://crbug.com/41388026.
 //
 // This function first searches the menu bar for a matching keyEquivalent. If
 // nothing is found, then it searches through the explicitly coded virtual

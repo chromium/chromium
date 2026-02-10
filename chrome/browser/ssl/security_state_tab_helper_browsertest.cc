@@ -1316,7 +1316,7 @@ IN_PROC_BROWSER_TEST_F(DidChangeVisibleSecurityStateTest,
 }
 
 // Tests that the Not Secure chip does not show for error pages on http:// URLs.
-// Regression test for https://crbug.com/760647.
+// Regression test for https://crbug.com/40537791.
 IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperIncognitoTest, HttpErrorPage) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();

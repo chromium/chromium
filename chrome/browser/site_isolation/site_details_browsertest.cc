@@ -304,7 +304,7 @@ class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
 // multiple iframes, navigation, multiple BrowsingInstances, and multiple tabs
 // in the same BrowsingInstance.
 //
-// Disabled since it's flaky: https://crbug.com/830318.
+// Disabled since it's flaky: https://crbug.com/41381593.
 IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_ManyIframes) {
   // Page with 14 nested oopifs across 9 sites (a.com through i.com).
   // None of these are https.
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_ManyIframes) {
   // For --site-per-process, the total process count will be 12 instead of 15,
   // because the third tab's subframes (b, c, d) will reuse matching subframe
   // processes from the second tab (across BrowsingInstances).  This subframe
-  // process consolidation was added as part of https://crbug.com/512560.  Note
+  // process consolidation was added as part of https://crbug.com/40427731. Note
   // that the a.com main frame in tab 3 won't reuse tab 2's main frame process,
   // so this is still one process higher than the lower bound.
   EXPECT_THAT(GetRenderProcessCount(), DependingOnPolicy(3, 3, 12));
@@ -595,10 +595,10 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_IsolateExtensions) {
 
   // There should be four total renderer processes: one for each of the two web
   // iframes, one for extension3, and one for extension 1's background page.
-  // Note that the optimization in https://crbug.com/512560, where subframes
+  // Note that the optimization in https://crbug.com/40427731, where subframes
   // that require a dedicated process reuse existing processes where possible,
   // does not apply to web iframes in extensions anymore -- see
-  // https://crbug.com/899418.
+  // https://crbug.com/40599941.
   EXPECT_THAT(GetRenderProcessCount(), DependingOnPolicy(2, 4, 4));
   EXPECT_THAT(details->GetOutOfProcessIframeCount(),
               DependingOnPolicy(0, 2, 2));
@@ -637,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, ExtensionWithTwoWebIframes) {
 
 // Verifies that --isolate-extensions doesn't isolate hosted apps.
 //
-// Disabled since it's flaky: https://crbug.com/830318.
+// Disabled since it's flaky: https://crbug.com/41381593.
 IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest,
                        DISABLED_IsolateExtensionsHostedApps) {
   GURL app_with_web_iframe_url = embedded_test_server()->GetURL(
@@ -692,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest,
 // Verifies that the UMA counter for SiteInstances in a BrowsingInstance is
 // correct when using tabs with web pages.
 //
-// Disabled since it's flaky. https://crbug.com/934900
+// Disabled since it's flaky. https://crbug.com/41442957
 IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest,
                        DISABLED_VerifySiteInstanceCountInBrowsingInstance) {
   // Page with 14 nested oopifs across 9 sites (a.com through i.com).
@@ -764,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest,
 // Verifies that the UMA counter for SiteInstances in a BrowsingInstance is
 // correct when extensions and web pages are mixed together.
 //
-// Disabled since it's flaky: https://crbug.com/830318.
+// Disabled since it's flaky: https://crbug.com/41381593.
 IN_PROC_BROWSER_TEST_F(
     SiteDetailsBrowserTest,
     DISABLED_VerifySiteInstanceCountInBrowsingInstanceWithExtensions) {

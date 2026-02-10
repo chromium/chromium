@@ -84,7 +84,7 @@ class MouseEventsTest : public InProcessBrowserTest {
 };
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// Flaky; http://crbug.com/133361.
+// Flaky; http://crbug.com/40845791.
 #define MAYBE_MouseOver DISABLED_MouseOver
 #else
 #define MAYBE_MouseOver MouseOver
@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_MouseOver) {
 }
 
 #if BUILDFLAG(IS_MAC)
-// Flaky; http://crbug.com/133361.
+// Flaky; http://crbug.com/40845791.
 #define MAYBE_ClickAndDoubleClick DISABLED_ClickAndDoubleClick
 #else
 #define MAYBE_ClickAndDoubleClick ClickAndDoubleClick
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ClickAndDoubleClick) {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_WIN)
-// Flaky; http://crbug.com/133361.
+// Flaky; http://crbug.com/40845791.
 #define MAYBE_TestOnMouseOut DISABLED_TestOnMouseOut
 #else
 #define MAYBE_TestOnMouseOut TestOnMouseOut
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_TestOnMouseOut) {
 }
 
 #if BUILDFLAG(IS_WIN)
-// Mac/Linux are flaky; http://crbug.com/133361.
+// Mac/Linux are flaky; http://crbug.com/40845791.
 IN_PROC_BROWSER_TEST_F(MouseEventsTest, MouseDownOnBrowserCaption) {
   gfx::Rect browser_bounds = browser()->window()->GetBounds();
   ui_controls::SendMouseMove(browser_bounds.x() + 200, browser_bounds.y() + 10);
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MouseDownOnBrowserCaption) {
 // when showing the context menu and it could make the unexpecting
 // content behavior such as clearing the hover status.
 // Please refer to the below issue for understanding what happens .
-// Flaky; See http://crbug.com/656101.
+// Flaky; See http://crbug.com/40489100.
 #define MAYBE_ContextMenu DISABLED_ContextMenu
 #else
 #define MAYBE_ContextMenu ContextMenu
@@ -167,8 +167,8 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ContextMenu) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 // Test that a mouseleave is not triggered when showing a modal dialog.
-// Sample regression: crbug.com/394672
-// Flaky; http://crbug.com/838120
+// Sample regression: crbug.com/41120621
+// Flaky; http://crbug.com/41386176
 #define MAYBE_ModalDialog DISABLED_ModalDialog
 #else
 #define MAYBE_ModalDialog ModalDialog

@@ -932,7 +932,7 @@ TEST_F(ProfileAttributesStorageTest, ProfileActiveTime) {
 
   // Store the time and check for the result. Allow for a difference one second
   // because the 64-bit integral representation in base::Time is rounded off to
-  // a double, which is what base::Value stores. http://crbug.com/346827
+  // a double, which is what base::Value stores. http://crbug.com/40353148
   base::Time lower_bound = base::Time::Now() - base::Seconds(1);
   entry->SetActiveTimeToNow();
   base::Time upper_bound = base::Time::Now() + base::Seconds(1);

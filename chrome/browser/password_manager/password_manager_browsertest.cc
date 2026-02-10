@@ -1265,7 +1265,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   signin_form.password_value = u"12345";
   password_store->AddLogin(signin_form);
 
-  // Steps from https://crbug.com/337429#c37.
+  // Steps from https://crbug.com/40348800#c37.
   // Navigate to the page, click a link that opens a second tab, reload the
   // first tab and observe that the password is accessible.
   NavigateToFile("/password/form_and_link.html");
@@ -1318,7 +1318,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   EXPECT_THAT(query, testing::HasSubstr("random_secret"));
 }
 
-// Test fix for crbug.com/338650.
+// Test fix for crbug.com/40349347.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
                        DontPromptForPasswordFormWithDefaultValue) {
   NavigateToFile("/password/password_form_with_default_value.html");
@@ -1365,7 +1365,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   prompt_observer.WaitForAutomaticSavePrompt();
 }
 
-// Test fix for crbug.com/368690.
+// Test fix for crbug.com/40363389.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptWhenReloading) {
   NavigateToFile("/password/password_form.html");
 
@@ -1426,7 +1426,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   WaitForElementValue("password", "12345");
 }
 
-// https://crbug.com/713645
+// https://crbug.com/41314299
 // Navigate to a page that can't load some of the subresources. Create a hidden
 // form when the body is loaded. Make the form visible. Chrome should autofill
 // the form.
@@ -1533,7 +1533,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 }
 
 // Tests whether a attempted submission of a malicious credentials gets blocked.
-// This simulates a case which is described in http://crbug.com/571580.
+// This simulates a case which is described in http://crbug.com/40450245.
 IN_PROC_BROWSER_TEST_F(
     PasswordManagerBrowserTest,
     NoPromptForSeparateLoginFormWhenSwitchingFromHttpsToHttp) {
@@ -2020,7 +2020,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptOnBack) {
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
-// Regression test for http://crbug.com/452306
+// Regression test for http://crbug.com/41154030
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
                        ChangingTextToPasswordFieldOnSignupForm) {
   NavigateToFile("/password/signup_form.html");
@@ -2040,7 +2040,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   prompt_observer.WaitForAutomaticSavePrompt();
 }
 
-// Regression test for http://crbug.com/451631
+// Regression test for http://crbug.com/41153670
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
                        SavingOnManyPasswordFieldsTest) {
   // Simulate Macy's registration page, which contains the normal 2 password
@@ -2727,7 +2727,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // When there are multiple HttpAuthObservers (e.g., multiple HTTP auth dialogs
-// as in http://crbug.com/537823), ensure that credentials from PasswordStore
+// as in http://crbug.com/40082956), ensure that credentials from PasswordStore
 // distributed to them are filtered by the realm.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, BasicAuthSeparateRealms) {
   // We must use a new test server here because embedded_test_server() is
@@ -2916,7 +2916,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Now navigate to another page, containing some forms, so that the renderer
   // attempts to log. It should be a different page than the current one,
   // because just reloading the current one sometimes confused the Wait() call
-  // and lead to timeouts (https://crbug.com/804398).
+  // and lead to timeouts (https://crbug.com/41366217).
   PasswordsNavigationObserver observer(forms_web_contents);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/password/password_form.html"),
@@ -3256,7 +3256,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerDialogBrowserTest, InvokeUi_normal) {
 }
 
 // Verify that password manager ignores passwords on forms injected into
-// about:blank frames.  See https://crbug.com/756587.
+// about:blank frames.  See https://crbug.com/40088741.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, AboutBlankFramesAreIgnored) {
   // Start from a page without a password form.
   NavigateToFile("/password/other.html");
@@ -3280,7 +3280,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, AboutBlankFramesAreIgnored) {
 }
 
 // Verify that password manager ignores passwords on forms injected into
-// about:blank popups.  See https://crbug.com/756587.
+// about:blank popups.  See https://crbug.com/40088741.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, AboutBlankPopupsAreIgnored) {
   // Start from a page without a password form.
   NavigateToFile("/password/other.html");
@@ -3309,7 +3309,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, AboutBlankPopupsAreIgnored) {
 }
 
 // Verify that previously saved passwords for about:blank frames are not used
-// for autofill.  See https://crbug.com/756587.
+// for autofill.  See https://crbug.com/40088741.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
                        ExistingAboutBlankPasswordsAreNotUsed) {
   password_manager::PasswordStoreInterface* password_store =
@@ -3553,10 +3553,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   EXPECT_TRUE(bubble_observer.IsSavePromptAvailable());
 }
 
-// This test emulates what was observed in https://crbug.com/856543: Imagine the
-// user stores a single username/password pair on origin A, and later submits a
-// username-less password-reset form on origin B. In the bug, A and B were
-// PSL-matches (different, but with the same eTLD+1), and Chrome ended up
+// This test emulates what was observed in https://crbug.com/41396833: Imagine
+// the user stores a single username/password pair on origin A, and later
+// submits a username-less password-reset form on origin B. In the bug, A and B
+// were PSL-matches (different, but with the same eTLD+1), and Chrome ended up
 // overwriting the old password with the new one. This test checks that update
 // bubble is shown instead of silent update.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,

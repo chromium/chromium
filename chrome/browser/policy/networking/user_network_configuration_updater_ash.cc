@@ -118,7 +118,7 @@ UserNetworkConfigurationUpdaterAsh::UserNetworkConfigurationUpdaterAsh(
   // responsible for creating it. This requires |GetNSSCertDatabaseForProfile|
   // call, which is not safe before the profile initialization is finalized.
   // Thus, listen for OnProfileInitializationComplete notification, on which
-  // |cert_importer_| creation should start. https://crbug.com/171406
+  // |cert_importer_| creation should start. https://crbug.com/40299450
   // TODO(crbug.com/40113187): Investigate if this is still required.
   profile_observation_.Observe(profile);
 

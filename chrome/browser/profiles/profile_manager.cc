@@ -538,7 +538,7 @@ Profile* ProfileManager::GetLastUsedProfile() {
           user->username_hash()));
 
   // Accessing a user profile before it is loaded may lead to policy exploit.
-  // See http://crbug.com/689206.
+  // See http://crbug.com/40505153.
   LOG_IF(FATAL, !profile) << "Calling GetLastUsedProfile() before profile "
                           << "initialization is completed.";
 
@@ -600,7 +600,7 @@ std::vector<Profile*> ProfileManager::GetLastOpenedProfiles() {
           profile_manager->GetProfile(profile_manager->user_data_dir().Append(
               base::FilePath::FromUTF8Unsafe(*profile_base_name)));
       if (profile) {
-        // crbug.com/823338 -> CHECK that the profiles aren't guest or
+        // crbug.com/41377418 -> CHECK that the profiles aren't guest or
         // incognito, causing a crash during session restore.
         CHECK(!profile->IsGuestSession())
             << "Guest profiles shouldn't have been saved as active profiles";
@@ -655,7 +655,7 @@ Profile* ProfileManager::GetPrimaryUserProfile(
     LOG(ERROR) << "ProfileManager::GetPrimaryUserProfile is called when "
                   "|user| is created but |user|'s profile is not yet created. "
                   "It probably means that something is wrong with a calling "
-                  "code. Please report in http://crbug.com/361528 if you see "
+                  "code. Please report in http://crbug.com/41100311 if you see "
                   "this message.";
 
     // Taking metrics to make sure this code path is not used in production.
@@ -717,9 +717,9 @@ Profile* ProfileManager::GetActiveUserProfile(
   if (IsLoggedIn()) {
     user_manager::UserManager* manager = user_manager::UserManager::Get();
     const user_manager::User* user = manager->GetActiveUser();
-    // To avoid an endless loop (crbug.com/334098) we have to additionally check
-    // if the profile of the user was already created. If the profile was not
-    // yet created we load the profile using the profile directly.
+    // To avoid an endless loop (crbug.com/41083672) we have to additionally
+    // check if the profile of the user was already created. If the profile was
+    // not yet created we load the profile using the profile directly.
     // TODO: This should be cleaned up with the new profile manager.
     if (user && user->is_profile_created())
       return ash::ProfileHelper::Get()->GetProfileByUser(user);
@@ -752,7 +752,7 @@ Profile* ProfileManager::GetActiveUserProfile(
   // is on a read-only volume (preventing Chrome from making a new one).
   // However, most callers of this function immediately dereference the result
   // which would lead to crashes in a variety of call sites. Assert here to
-  // figure out how common this is. http://crbug.com/383019
+  // figure out how common this is. http://crbug.com/40369785
   CHECK(profile) << profile_manager->user_data_dir().AsUTF8Unsafe();
   return profile;
 }
@@ -2076,14 +2076,13 @@ void ProfileManager::SaveActiveProfiles() {
   profile_list.clear();
   has_updated_last_opened_profiles_ = true;
 
-  // crbug.com/120112 -> several non-off-the-record profiles might have the same
-  // GetBaseName(). In that case, we cannot restore both
-  // profiles. Include each base name only once in the last active profile
-  // list.
+  // crbug.com/40178555 -> several non-off-the-record profiles might have the
+  // same GetBaseName(). In that case, we cannot restore both profiles. Include
+  // each base name only once in the last active profile list.
   std::set<base::FilePath> profile_paths;
   std::vector<raw_ptr<Profile, VectorExperimental>>::const_iterator it;
   for (it = active_profiles_.begin(); it != active_profiles_.end(); ++it) {
-    // crbug.com/823338 -> CHECK that the profiles aren't guest or incognito,
+    // crbug.com/41377418 -> CHECK that the profiles aren't guest or incognito,
     // causing a crash during session restore.
     CHECK((!(*it)->IsGuestSession()))
         << "Guest profiles shouldn't be saved as active profiles";

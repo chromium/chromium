@@ -798,7 +798,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
     if (ConnectSocket(&socket, socket_path_, cookie_path_)) {
 #if BUILDFLAG(IS_MAC)
       // On Mac, we want the open process' pid in case there are
-      // Apple Events to forward. See crbug.com/777863.
+      // Apple Events to forward. See crbug.com/40546317.
       std::string hostname;
       ParseProcessSingletonLock(lock_path_, &hostname, &pid);
 #endif
@@ -1026,7 +1026,7 @@ bool ProcessSingleton::Create() {
   // can have the socket open.
   if (!SymlinkPath(symlink_content, lock_path_)) {
     // TODO(jackhou): Remove this case once this code is stable on Mac.
-    // http://crbug.com/367612
+    // http://crbug.com/41103975
 #if BUILDFLAG(IS_MAC)
     // On Mac, an existing non-symlink lock file means the lock could be held by
     // the old process singleton code. If we can successfully replace the lock,

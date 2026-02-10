@@ -364,7 +364,7 @@ void ChromePermissionsClient::GetUkmSourceId(
 permissions::IconId ChromePermissionsClient::GetOverrideIconId(
     permissions::RequestType request_type) {
 #if BUILDFLAG(IS_CHROMEOS)
-  // TODO(xhwang): fix this icon, see crbug.com/446263.
+  // TODO(xhwang): fix this icon, see crbug.com/40399970.
   if (request_type == permissions::RequestType::kProtectedMediaIdentifier) {
     return vector_icons::kProductIcon;
   }
@@ -634,7 +634,7 @@ bool ChromePermissionsClient::CanBypassEmbeddingOriginCheck(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Extensions are excluded from origin checks as currently they can request
   // permission from iframes when embedded in non-secure contexts
-  // (https://crbug.com/530507).
+  // (https://crbug.com/40435309).
   if (requesting_origin.SchemeIs(extensions::kExtensionScheme)) {
     return true;
   }
@@ -687,7 +687,7 @@ std::optional<GURL> ChromePermissionsClient::GetCanonicalOriginOverride(
   // Note that currently chrome extensions are allowed to use permissions even
   // when in embedded in non-secure contexts. This is unfortunate and we
   // should remove this at some point, but for now always use the requesting
-  // origin for embedded extensions. https://crbug.com/530507.
+  // origin for embedded extensions. https://crbug.com/40435309.
   if (requesting_origin.SchemeIs(extensions::kExtensionScheme)) {
     return requesting_origin;
   }

@@ -388,7 +388,7 @@ void ProcessMonitor::OnBrowserChildProcessExited(
   auto it = browser_child_process_infos_.find(data.id);
   if (it == browser_child_process_infos_.end()) {
     // It is possible to receive this notification without a launch-and-connect
-    // notification. See https://crbug.com/942500 for a similar issue.
+    // notification. See https://crbug.com/41447174 for a similar issue.
     return;
   }
 

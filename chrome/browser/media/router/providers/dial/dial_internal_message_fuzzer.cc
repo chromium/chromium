@@ -12,7 +12,7 @@ namespace media_router {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Limit input size to prevent out-of-memory failures like the one seen in
-  // crbug.com/964715.
+  // crbug.com/40628111.
   if (size > 16 * 1024) {
     return 0;
   }

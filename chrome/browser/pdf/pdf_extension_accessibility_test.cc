@@ -514,7 +514,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Test a particular PDF encountered in the wild that triggered a crash
-// when accessibility is enabled.  (http://crbug.com/668724)
+// when accessibility is enabled.  (http://crbug.com/40086082)
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                        PdfAccessibilityTextRunCrash) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);

@@ -1314,7 +1314,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Verify in an integration test that the variations header (X-Client-Data) is
 // attached to service worker navigation preload requests. Regression test
-// for https://crbug.com/873061.
+// for https://crbug.com/40588908.
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
                        ServiceWorkerNavigationPreload) {
   // Register a service worker that uses navigation preload.

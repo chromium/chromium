@@ -180,7 +180,7 @@ TEST_F(IdleDetectionPermissionContextTest, TestParallelDenyInIncognito) {
     }
   }
 
-  // Only the first permission request receives a response (crbug.com/577336).
+  // Only the first permission request receives a response (crbug.com/40452210).
   EXPECT_EQ(1, permission_context.permission_set_count());
   EXPECT_TRUE(permission_context.last_permission_set_persisted());
   EXPECT_EQ(PermissionDecision::kDeny, permission_context.last_set_decision());

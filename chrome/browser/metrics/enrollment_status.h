@@ -9,7 +9,7 @@
 // Used by UMA histogram, so entries shouldn't be reordered or removed.
 enum class EnrollmentStatus {
   kNonManaged = 0,
-  kUnused = 1,  // Formerly MANAGED_EDU, see crbug.com/462770.
+  kUnused = 1,  // Formerly MANAGED_EDU, see crbug.com/41160046.
   kManaged = 2,
   kErrorGettingStatus = 3,
   kMaxValue = kErrorGettingStatus,

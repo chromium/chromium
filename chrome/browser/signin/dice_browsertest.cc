@@ -903,7 +903,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Reauth) {
   EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
                                     signin::ConsentLevel::kSignin));
 
-  // Old token must not be revoked (see http://crbug.com/865189).
+  // Old token must not be revoked (see http://crbug.com/40585591).
   EXPECT_EQ(0, token_revoked_notification_count_);
 
   EXPECT_EQ(1, reconcilor_blocked_count_);
@@ -1007,7 +1007,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, RevokePrimaryAccountInAuthErrorState) {
 }
 
 // Checks that Dice request header is not set from request from WebUI.
-// See https://crbug.com/428396
+// See https://crbug.com/40391545
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest, NoDiceFromWebUI) {
   // Navigate to Gaia and from the native tab, which uses an extension.

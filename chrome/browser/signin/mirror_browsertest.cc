@@ -125,7 +125,7 @@ class MirrorBrowserTest : public InProcessBrowserTest {
 //    domain to non-google domain.
 // 3- The header is NOT stripped in case it is added directly by the page and
 //    not because it was on a secure Google domain.
-// This is a regression test for crbug.com/588492.
+// This is a regression test for crbug.com/40083730.
 IN_PROC_BROWSER_TEST_F(MirrorBrowserTest, MirrorRequestHeader) {
   browser()->profile()->GetPrefs()->SetString(prefs::kGoogleServicesAccountId,
                                               "account_id");

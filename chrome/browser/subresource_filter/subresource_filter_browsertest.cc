@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   // This test should crash the *browser process* with CHECK failures if the
   // component is faulty. The CHECK assumes that the crash URL and other
   // renderer debug URLs do not create a navigation throttle. See
-  // crbug.com/736658.
+  // crbug.com/40527486.
   content::RenderProcessHostWatcher crash_observer(
       browser()->tab_strip_model()->GetActiveWebContents(),
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);

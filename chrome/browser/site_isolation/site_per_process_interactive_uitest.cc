@@ -753,7 +753,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 // Ensures that renderers know to advance focus to sibling frames and parent
 // frames in the presence of mouse click initiated focus changes.
-// Verifies against regression of https://crbug.com/702330
+// Verifies against regression of https://crbug.com/40511146
 IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
                        TabAndMouseFocusNavigation) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -1160,7 +1160,7 @@ void WaitForMultipleFullscreenEvents(
 // - fullscreen CSS is applied correctly in both frames.
 //
 #if BUILDFLAG(IS_MAC)
-// https://crbug.com/850594
+// https://crbug.com/41393319
 #define MAYBE_FullscreenElementInSubframe DISABLED_FullscreenElementInSubframe
 #else
 #define MAYBE_FullscreenElementInSubframe FullscreenElementInSubframe
@@ -1364,8 +1364,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   FullscreenElementInABA(FullscreenExitMethod::ESC_PRESS);
 }
 
-// This test is flaky on Linux (crbug.com/851236) and also not working
-// on Mac (crbug.com/850594).
+// This test is flaky on Linux (crbug.com/41393671) and also not working
+// on Mac (crbug.com/41393319).
 IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
                        DISABLED_FullscreenElementInABAAndExitViaJS) {
   FullscreenElementInABA(FullscreenExitMethod::JS_CALL);
@@ -1516,7 +1516,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 }
 
 // Test that deleting a RenderWidgetHost that holds the mouse lock won't cause a
-// crash. https://crbug.com/619571.
+// crash. https://crbug.com/40472780.
 
 // Flaky on multiple builders. https://crbug.com/1059632
 IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
@@ -1846,7 +1846,7 @@ void WaitForFramePositionUpdated(content::RenderFrameHost* render_frame_host,
 // This test verifies that when clicking outside the bounds of a date picker
 // associated with an <input> inside an OOPIF, the RenderWidgetHostImpl
 // corresponding to the WebPagePopup is destroyed (see
-// https://crbug.com/671732).
+// https://crbug.com/41289866).
 IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
                        ShowAndHideDatePopupInOOPIFMultipleTimes) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -1931,7 +1931,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 // There is a problem of missing keyup events with the command key after
 // the NSEvent is sent to NSApplication in ui/base/test/ui_controls_mac.mm .
 // This test is disabled on only the Mac until the problem is resolved.
-// See http://crbug.com/425859 for more information.
+// See http://crbug.com/40390352 for more information.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SubframeAnchorOpenedInBackgroundTab \
   DISABLED_SubframeAnchorOpenedInBackgroundTab
@@ -1940,7 +1940,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   SubframeAnchorOpenedInBackgroundTab
 #endif
 // Tests that ctrl-click in a subframe results in a background, not a foreground
-// tab - see https://crbug.com/804838.  This test is somewhat similar to
+// tab - see https://crbug.com/40559397.  This test is somewhat similar to
 // CtrlClickShouldEndUpIn*ProcessTest tests, but this test has to simulate an
 // actual mouse click.
 IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,

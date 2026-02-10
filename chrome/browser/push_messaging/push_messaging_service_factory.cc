@@ -29,7 +29,7 @@
 PushMessagingServiceImpl* PushMessagingServiceFactory::GetForProfile(
     content::BrowserContext* context) {
   // The Push API is not currently supported in incognito mode.
-  // See https://crbug.com/401439.
+  // See https://crbug.com/41124656.
   if (context->IsOffTheRecord())
     return nullptr;
 

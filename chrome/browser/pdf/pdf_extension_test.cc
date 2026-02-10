@@ -426,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutOopifOverride,
 
 // This test verifies that when a PDF is served with a restrictive
 // Content-Security-Policy, the embed tag is still sized correctly.
-// Regression test for https://crbug.com/271452.
+// Regression test for https://crbug.com/40328564.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, CSPDoesNotBlockEmbedStyles) {
   const GURL main_url(embedded_test_server()->GetURL("/pdf/test-csp.pdf"));
   content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(main_url);
@@ -836,7 +836,7 @@ IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest,
 
 IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest,
                        IframePlaceholderInjectedIntoNewWindow) {
-  // This is an unusual test to verify crbug.com/924823. We are injecting the
+  // This is an unusual test to verify crbug.com/41437121. We are injecting the
   // HTML for a PDF IFRAME into a newly created popup with an undefined URL.
   ASSERT_TRUE(
       content::EvalJs(
@@ -858,7 +858,8 @@ IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest,
 
 // Test that if the plugin tries to load a URL that redirects then it will fail
 // to load. This is to avoid the source origin of the document changing during
-// the redirect, which can have security implications. https://crbug.com/653749.
+// the redirect, which can have security implications.
+// https://crbug.com/40085620.
 //
 // Note that this can happen only during partial loading, as the initial URL
 // load is handled by MimeHandlerView, and the plugin only gets the response.
@@ -1214,7 +1215,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutOopifOverride,
   EXPECT_EQ(pdf::kPDFMimeType, GetEmbedderWebContents()->GetContentsMimeType());
 }
 
-// Flaky, http://crbug.com/767427
+// Flaky, http://crbug.com/41345877
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_PdfZoomWithoutBubble DISABLED_PdfZoomWithoutBubble
 #else
@@ -1634,7 +1635,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, SelectAllShortcut) {
 }
 
 // Test that even if a different tab is selected when a navigation occurs,
-// the correct tab still gets navigated (see crbug.com/672563).
+// the correct tab still gets navigated (see crbug.com/40497269).
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, NavigationOnCorrectTab) {
   content::RenderFrameHost* extension_host =
       LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
@@ -2631,7 +2632,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
 // Verifies that an <embed> of size zero will still instantiate a guest and post
 // message to the <embed> is correctly forwarded to the extension. This is for
 // catching future regression in docs/ and slides/ pages (see
-// https://crbug.com/763812).
+// https://crbug.com/41343805).
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PostMessageForZeroSizedEmbed) {
   content::DOMMessageQueue queue(
       browser()->tab_strip_model()->GetActiveWebContents());
@@ -2728,7 +2729,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, CtrlWheelInvokesCustomZoom) {
                                std::move(send_ctrl_wheel));
 }
 
-// Flaky on ChromeOS (https://crbug.com/922974)
+// Flaky on ChromeOS (https://crbug.com/41436172)
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TouchscreenPinchInvokesCustomZoom \
   DISABLED_TouchscreenPinchInvokesCustomZoom
@@ -2765,7 +2766,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
 
 using PDFExtensionHitTestTest = PDFExtensionTest;
 
-// Flaky in nearly all configurations; see https://crbug.com/856169.
+// Flaky in nearly all configurations; see https://crbug.com/40582227.
 IN_PROC_BROWSER_TEST_P(PDFExtensionHitTestTest, DISABLED_MouseLeave) {
   // Load page with embedded PDF and make sure it succeeds.
   content::RenderFrameHost* extension_host =
@@ -2984,7 +2985,7 @@ class RequestWaiter {
 
 // This is a regression test for a problem where DidStopLoading didn't get
 // propagated from a remote frame into the main frame.  See also
-// https://crbug.com/964364.
+// https://crbug.com/40627967.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DidStopLoading) {
   // Prepare to wait for requests for the main page of the MimeHandlerView for
   // PDFs.
@@ -3012,7 +3013,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DidStopLoading) {
 
   // Remove the hung subframe.  Afterwards the main page should stop loading as
   // soon as the MimeHandlerView frame stops loading (assumming we have not bugs
-  // similar to https://crbug.com/964364).
+  // similar to https://crbug.com/40627967).
   WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(content::ExecJs(
       web_contents, "document.getElementById('hung_subframe').remove();"));

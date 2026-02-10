@@ -869,7 +869,7 @@ class SitePerProcessPrintExtensionBrowserTest
 // Printing only a selection containing iframes is partially supported.
 // Iframes aren't currently displayed. This test passes whenever the print
 // preview is rendered (i.e. no timeout in the test).
-// This test shouldn't crash. See https://crbug.com/732780.
+// This test shouldn't crash. See https://crbug.com/41325095.
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, SelectionContainsIframe) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/selection_iframe.html"));
@@ -1687,7 +1687,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintExtensionBrowserTest,
 }
 
 // Printing frame content for the main frame of a generic webpage with N-up
-// printing. This is a regression test for https://crbug.com/937247
+// printing. This is a regression test for https://crbug.com/41444375
 // TODO(crbug.com/40870686): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DISABLED_PrintNup) {
   ASSERT_TRUE(embedded_test_server()->Started());

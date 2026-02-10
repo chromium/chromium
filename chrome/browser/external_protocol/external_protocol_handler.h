@@ -187,7 +187,7 @@ class ExternalProtocolHandler {
   //       to protect against this scenario.
   // This is implemented separately on each platform.
   // TODO(davidsac): Consider refactoring this to take a WebContents directly.
-  // crbug.com/668289
+  // crbug.com/40495154
   //
   // The dialog displays |initiating_origin| to the user so that they can
   // attribute the external protocol request to a site that initiated it. If an

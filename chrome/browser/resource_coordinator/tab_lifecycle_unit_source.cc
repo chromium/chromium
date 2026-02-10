@@ -334,7 +334,7 @@ void TabLifecycleUnitSource::OnTabChangedAt(tabs::TabInterface* tab,
   content::WebContents* contents = tab->GetContents();
   TabLifecycleUnit* lifecycle_unit = GetTabLifecycleUnit(contents);
   // This can be called before OnTabStripModelChanged() and |lifecycle_unit|
-  // will be null in that case. http://crbug.com/877940
+  // will be null in that case. http://crbug.com/41410168
   if (!lifecycle_unit) {
     return;
   }

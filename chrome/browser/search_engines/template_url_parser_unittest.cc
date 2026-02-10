@@ -258,7 +258,7 @@ TEST_F(TemplateURLParserTest, TestEmptyKeyword) {
 }
 
 // An invalid template URL should not crash the parser.
-// crbug.com/770734
+// crbug.com/40089184
 TEST_F(TemplateURLParserTest, InvalidInput) {
   TemplateURLParser::ParameterFilter filter = base::BindRepeating(
       [](const std::string&, const std::string&) -> bool { return true; });

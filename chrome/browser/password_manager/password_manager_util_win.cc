@@ -334,7 +334,7 @@ bool AuthenticateUser(gfx::NativeWindow window,
 
   // Never consider the current scope as hung. The hang watching deadline (if
   // any) is not valid since the user can take unbounded time to answer the
-  // password prompt (http://crbug.com/806174)
+  // password prompt (http://crbug.com/40560071)
   base::HangWatcher::InvalidateActiveExpectations();
 
   CredentialBufferValidator validator;

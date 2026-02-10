@@ -548,8 +548,8 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 
 #if defined(ADDRESS_SANITIZER)
-  // TODO(lukasza): https://crbug.com/971820: Disallow renderer crashes once the
-  // bug is fixed.
+  // TODO(lukasza): https://crbug.com/41463664: Disallow renderer crashes once
+  // the bug is fixed.
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 #endif
 };

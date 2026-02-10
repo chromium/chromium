@@ -53,8 +53,8 @@ using testing::DoAll;
 
 namespace {
 
-// Aura window capture unit tests are not stable. crbug.com/602494 and
-// crbug.com/603823.
+// Aura window capture unit tests are not stable. crbug.com/40464604 and
+// crbug.com/40465249.
 // #define ENABLE_AURA_WINDOW_TESTS
 
 static const int kDefaultWindowCount = 2;

@@ -426,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, DISABLED_RestoreMaximized) {
   EXPECT_EQ(3u, total_maximized_count);
 }
 
-// Test for crash when restoring minimized windows. http://crbug.com/679513.
+// Test for crash when restoring minimized windows. http://crbug.com/40500647.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreMinimized) {
   // One browser window is always created by default.
   ASSERT_TRUE(browser());

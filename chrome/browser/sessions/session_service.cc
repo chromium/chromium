@@ -433,7 +433,7 @@ void SessionService::WindowClosing(SessionID window_id) {
     // browser windows in turn but want them all to be restored when the user
     // unlocks.  To accomplish this, we do a "pending close" on all windows
     // instead of just the last one (which has no open_trackable_browsers).
-    // http://crbug.com/356818
+    // http://crbug.com/41097527
     //
     // Some editions (like iOS) don't have a profile_manager and some tests
     // don't supply one so be lenient.

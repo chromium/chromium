@@ -43,8 +43,8 @@ class MediaStreamDevicePermissionContext
 
   // ContentSettingPermissionContextBase:
   // TODO(xhwang): GURL.DeprecatedGetOriginAsURL() shouldn't be used as the
-  // origin. Need to refactor to use url::Origin. crbug.com/527149 is filed for
-  // this.
+  // origin. Need to refactor to use url::Origin. crbug.com/40082781 is filed
+  // for this.
   ContentSetting GetContentSettingStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,

@@ -3097,7 +3097,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       0, INT_MAX, true));
   // TODO(binjin): Remove LegacyPoliciesDeprecatingPolicyHandler for these two
   // policies once deprecation of legacy power management policies is done.
-  // http://crbug.com/346229
+  // http://crbug.com/41091163
   handlers->AddHandler(std::make_unique<LegacyPoliciesDeprecatingPolicyHandler>(
       std::move(power_management_idle_legacy_policies),
       base::WrapUnique(

@@ -715,7 +715,7 @@ TEST_F(TabLifecycleUnitSourceTest, DetachWebContents_External) {
   DetachWebContentsTest(LifecycleUnitDiscardReason::EXTERNAL);
 }
 
-// Regression test for https://crbug.com/818454. Previously, TabLifecycleUnits
+// Regression test for https://crbug.com/40090674. Previously, TabLifecycleUnits
 // were destroyed from TabStripModelObserver::TabClosingAt(). If a tab was
 // detached (TabStripModel::DetachWebContentsAt) and its WebContents destroyed,
 // the TabLifecycleUnit was never destroyed. This was solved by giving ownership

@@ -41,7 +41,7 @@ namespace resource_coordinator {
 // not reused in a session. They are stable for a given conceptual tab, and will
 // follow it through discards, reloads, tab strip operations, etc.
 //
-// TODO(fdoray): Rename to LifecycleManager. https://crbug.com/775644
+// TODO(fdoray): Rename to LifecycleManager. https://crbug.com/40545253
 class TabManager : public LifecycleUnitObserver,
                    public LifecycleUnitSourceObserver {
  public:

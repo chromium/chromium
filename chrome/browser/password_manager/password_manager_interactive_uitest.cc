@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 }
 
 // Check that we can fill in cases where <base href> is set and the action of
-// the form is not set. Regression test for https://crbug.com/360230.
+// the form is not set. Regression test for https://crbug.com/40359430.
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
                        AutofillBaseTagWithNoActionTest) {
   std::string submit = "document.getElementById('submit_button').click();";

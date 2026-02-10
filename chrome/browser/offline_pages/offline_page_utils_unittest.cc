@@ -461,7 +461,7 @@ TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeEdgeCase) {
                                             clock()->Now()));
 }
 
-// Timeout on Android.  http://crbug.com/981972
+// Timeout on Android.  http://crbug.com/40635196
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TestExtractOfflineHeaderValueFromNavigationEntry \
   DISABLED_TestExtractOfflineHeaderValueFromNavigationEntry

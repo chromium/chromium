@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunMasterPrefsImportBookmarksFile,
 }
 
 // Test an import with all import options disabled. This is a regression test
-// for http://crbug.com/169984 where this would cause the import process to
+// for http://crbug.com/40959863 where this would cause the import process to
 // stay running, and the NTP to be loaded with no apps.
 const char kImportNothing[] =
     "{\n"

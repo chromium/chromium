@@ -309,7 +309,7 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
       process_is_for_extensions = process_map->Contains(rph_id);
 
       // For our purposes, don't count processes running hosted apps as
-      // extension processes. See also: crbug.com/102533.
+      // extension processes. See also: crbug.com/40107820.
       if (const Extension* extension =
               process_map->GetEnabledExtensionByProcessID(rph_id)) {
         if (!extension->is_hosted_app()) {

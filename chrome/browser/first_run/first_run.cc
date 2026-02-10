@@ -507,7 +507,7 @@ void AutoImport(
 
   if (items_to_import) {
     // It may be possible to do the if block below asynchronously. In which
-    // case, get rid of this RunLoop. http://crbug.com/366116.
+    // case, get rid of this RunLoop. http://crbug.com/41103081.
     base::RunLoop run_loop;
     auto importer_list = std::make_unique<ImporterList>();
     importer_list->DetectSourceProfiles(

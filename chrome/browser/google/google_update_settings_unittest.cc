@@ -131,7 +131,7 @@ TEST_F(GoogleUpdateTest, IsEnterpriseBrandCodes) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Test for http://crbug.com/383003
+// Test for http://crbug.com/40079723
 TEST_F(GoogleUpdateTest, ConsentFileIsWorldReadable) {
   // Turn on stats reporting.
   EXPECT_TRUE(GoogleUpdateSettings::SetCollectStatsConsent(true));

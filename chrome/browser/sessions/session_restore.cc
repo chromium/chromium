@@ -989,7 +989,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
                   bool& did_show_browser) {
     // It's possible (particularly for foreign sessions) to receive a tab
     // without valid navigations. In that case, just skip it.
-    // See crbug.com/154129.
+    // See crbug.com/40290475.
     if (tab.navigations.empty()) {
       return;
     }

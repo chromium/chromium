@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionWebUICodeCacheJSTest, Basic) {
 }
 
 // Service worker tests are regression tests for
-// https://crbug.com/916514.
+// https://crbug.com/41432577.
 class PDFExtensionServiceWorkerJSTest : public PDFExtensionJSTest {
  public:
   ~PDFExtensionServiceWorkerJSTest() override = default;

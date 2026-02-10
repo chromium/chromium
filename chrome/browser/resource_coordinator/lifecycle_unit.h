@@ -91,7 +91,7 @@ class LifecycleUnit {
   // LifecycleUnits. On urgent discard, we want to minimize memory accesses. It
   // is easier to achieve that if we discard a group of LifecycleUnits that live
   // in the same process(es) than if we discard individual LifecycleUnits.
-  // https://crbug.com/775644
+  // https://crbug.com/40545253
   virtual bool Discard(LifecycleUnitDiscardReason discard_reason,
                        uint64_t resident_set_size_estimate = 0) = 0;
 

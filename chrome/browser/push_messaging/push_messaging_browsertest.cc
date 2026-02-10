@@ -112,7 +112,7 @@ const char kEncodedApplicationServerKey[] =
 // From chrome/browser/push_messaging/push_messaging_manager.cc
 const char* kIncognitoWarningPattern =
     "Chrome currently does not support the Push API in incognito mode "
-    "(https://crbug.com/401439). There is deliberately no way to "
+    "(https://crbug.com/41124656). There is deliberately no way to "
     "feature-detect this, since incognito mode needs to be undetectable by "
     "websites.";
 
@@ -1347,7 +1347,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, NoSubscription) {
 }
 
 // Tests receiving messages for an origin that does not have permission, but
-// somehow still has a subscription (as happened in https://crbug.com/633310).
+// somehow still has a subscription (as happened in https://crbug.com/40084988).
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventWithoutPermission) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
   push_messaging::AppIdentifier app_identifier =
@@ -2018,7 +2018,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, UnsubscribeSuccess) {
 
 // Push subscriptions used to be non-InstanceID GCM registrations. Still need
 // to be able to unsubscribe these, even though new ones are no longer created.
-// Flaky on some Win and Linux buildbots.  See crbug.com/835382.
+// Flaky on some Win and Linux buildbots.  See crbug.com/41384686.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_LegacyUnsubscribeSuccess DISABLED_LegacyUnsubscribeSuccess
 #else
@@ -2730,7 +2730,7 @@ class PushMessagingIncognitoBrowserTest : public PushMessagingBrowserTestBase {
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
 };
 
-// Regression test for https://crbug.com/476474
+// Regression test for https://crbug.com/40413606
 IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest,
                        IncognitoGetSubscriptionDoesNotHang) {
   ASSERT_TRUE(GetBrowser()->profile()->IsOffTheRecord());

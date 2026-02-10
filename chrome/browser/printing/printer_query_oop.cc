@@ -222,7 +222,7 @@ void PrinterQueryOop::UpdatePrintSettings(base::DictValue new_settings,
     // `PrintingContextWin::UpdatePrintSettings()` is special because it can
     // invoke `AskUserForSettings()` and cause a system dialog to be displayed.
     // Running a dialog causes an exit to webpage-initiated fullscreen.
-    // http://crbug.com/728276
+    // http://crbug.com/41322524
     content::WebContents* web_contents = GetWebContents();
     if (web_contents && web_contents->IsFullscreen()) {
       web_contents->ExitFullscreen(true);
@@ -373,7 +373,7 @@ void PrinterQueryOop::SendAskUserForSettings(uint32_t document_page_count,
   content::WebContents* web_contents = GetWebContents();
 
   // Running a dialog causes an exit to webpage-initiated fullscreen.
-  // http://crbug.com/728276
+  // http://crbug.com/41322524
   if (web_contents && web_contents->IsFullscreen()) {
     web_contents->ExitFullscreen(true);
   }

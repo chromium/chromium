@@ -231,7 +231,7 @@ class WebRtcVideoQualityBrowserTest : public WebRtcTestBase,
                  << output;
       return false;
     }
-    // TODO(http://crbug.com/923564): Enable this and drop the printf above
+    // TODO(http://crbug.com/40610245): Enable this and drop the printf above
     // when ready to switch to histogram sets.
     // if (!test::WriteCompareVideosOutputAsHistogram(test_label, output))
     //  return false;
@@ -286,7 +286,7 @@ class WebRtcVideoQualityBrowserTest : public WebRtcTestBase,
 
     // Shut everything down to avoid having the javascript race with the
     // analysis tools. For instance, dont have console log printouts interleave
-    // with the RESULT lines from the analysis tools (crbug.com/323200).
+    // with the RESULT lines from the analysis tools (crbug.com/40342719).
     chrome::CloseWebContents(browser(), left_tab, false);
     chrome::CloseWebContents(browser(), right_tab, false);
 
@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcVideoQualityBrowserTest,
 
 #if BUILDFLAG(RTC_USE_H264)
 
-// Flaky on mac (crbug.com/754684) and WebRTC's frame_analyzer doesn't build
+// Flaky on mac (crbug.com/40534742) and WebRTC's frame_analyzer doesn't build
 // from a Chromium's component build.
 #if BUILDFLAG(IS_MAC) || defined(COMPONENT_BUILD)
 #define MAYBE_MANUAL_TestVideoQualityH264 DISABLED_MANUAL_TestVideoQualityH264

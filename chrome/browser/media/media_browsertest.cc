@@ -46,7 +46,7 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // Disable out of process audio on Linux due to process spawn
-    // failures. http://crbug.com/986021
+    // failures. http://crbug.com/40636948
     features::kAudioServiceOutOfProcess,
 #endif
   };

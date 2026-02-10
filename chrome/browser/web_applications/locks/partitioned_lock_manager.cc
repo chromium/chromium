@@ -310,7 +310,7 @@ void PartitionedLockManager::LockReleased(base::Location request_location,
     lock.queue.pop_front();
     // Skip the request if the lock holder is already destroyed. This
     // avoids stack overflows for long chains of released locks. See
-    // https://crbug.com/959743
+    // https://crbug.com/40626055
     if (!requester.locks_holder) {
       continue;
     }

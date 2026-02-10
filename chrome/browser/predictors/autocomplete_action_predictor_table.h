@@ -38,7 +38,7 @@ class AutocompleteActionPredictorTable : public sqlite_proto::TableManager {
     // TODO(dominich): Make this 64-bit integer as an optimization. This
     // requires some investigation into how to make sure the id is unique for
     // each user_text/url pair.
-    // http://crbug.com/102020
+    // http://crbug.com/40105662
     typedef std::string Id;
 
     Row();

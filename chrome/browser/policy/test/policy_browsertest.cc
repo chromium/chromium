@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_HomepageLocation) {
 }
 
 #if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
-// Flaky on ASAN on Mac. See https://crbug.com/674497.
+// Flaky on ASAN on Mac. See https://crbug.com/40498261.
 #define MAYBE_IncognitoEnabled DISABLED_IncognitoEnabled
 #else
 #define MAYBE_IncognitoEnabled IncognitoEnabled

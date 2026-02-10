@@ -113,7 +113,7 @@ ImageFetcherServiceFactory::BuildServiceInstanceFor(
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
   // Network is null for some tests, may be removable after
-  // https://crbug.com/981057.
+  // https://crbug.com/40634772.
   if (SystemNetworkContextManager::GetInstance()) {
     url_loader_factory =
         SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory();

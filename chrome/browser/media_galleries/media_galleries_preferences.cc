@@ -1052,7 +1052,7 @@ MediaGalleryPrefIdSet MediaGalleriesPreferences::GalleriesForExtension(
           known_galleries_.find(it->pref_id);
 
       // Handle a stored permission for an erased gallery. This should never
-      // happen but, has caused crashes in the wild. http://crbug.com/374330.
+      // happen but, has caused crashes in the wild. http://crbug.com/40366027.
       if (gallery == known_galleries_.end()) {
         RemoveGalleryPermissionsFromPrefs(it->pref_id);
         continue;

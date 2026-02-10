@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 
-// Requires cleanup. See crbug.com/800374.
+// Requires cleanup. See crbug.com/40557376.
 enum SpeechRecognizerStatus {
   SPEECH_RECOGNIZER_OFF = 0,
   // Ready for SpeechRecognizer::Start() to be called.

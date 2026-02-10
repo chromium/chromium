@@ -415,7 +415,7 @@ TEST_F(PrintViewManagerTest, PrintForSystemDialog) {
 
 #if BUILDFLAG(IS_WIN)
 // Verifies that `StartPdfToPostScriptConversion` is called with the correct
-// printable area offsets. See crbug.com/821485.
+// printable area offsets. See crbug.com/41376276.
 TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
   scoped_refptr<TestPrintQueriesQueueWin> queue =
       base::MakeRefCounted<TestPrintQueriesQueueWin>();

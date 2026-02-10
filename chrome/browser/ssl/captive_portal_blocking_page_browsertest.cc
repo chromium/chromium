@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBlockingPageTest, WiFi_SSID_LoginURL) {
                    EXPECT_WIFI_YES, EXPECT_WIFI_SSID_YES, EXPECT_LOGIN_URL_YES);
 }
 
-// Flaky on mac: https://crbug.com/690170
+// Flaky on mac: https://crbug.com/41300584
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_WiFi_NoSSID_LoginURL DISABLED_WiFi_NoSSID_LoginURL
 #else
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBlockingPageTest,
                    EXPECT_WIFI_SSID_NO, EXPECT_LOGIN_URL_YES);
 }
 
-// Flaky on mac: https://crbug.com/690125
+// Flaky on mac: https://crbug.com/41300559
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_WiFi_SSID_NoLoginURL DISABLED_WiFi_SSID_NoLoginURL
 #else

@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, TabManagerBasics) {
   EXPECT_FALSE(IsTabDiscarded(GetWebContentsAt(2)));
 
   // Navigate the third tab back twice.  We used to crash here due to
-  // crbug.com/121373.
+  // crbug.com/40183760.
   EXPECT_TRUE(chrome::CanGoBack(browser()));
   EXPECT_FALSE(chrome::CanGoForward(browser()));
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);

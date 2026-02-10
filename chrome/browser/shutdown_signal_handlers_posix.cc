@@ -26,7 +26,7 @@ namespace {
 // shared with the parent process.  To prevent child crashes from
 // causing parent shutdowns, |g_pipe_pid| is the pid for the process
 // which registered |g_shutdown_pipe_write_fd|.
-// See <http://crbug.com/175341>.
+// See <http://crbug.com/40301529>.
 pid_t g_pipe_pid = -1;
 int g_shutdown_pipe_write_fd = -1;
 int g_shutdown_pipe_read_fd = -1;

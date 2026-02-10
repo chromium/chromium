@@ -36,7 +36,7 @@ BASE_DECLARE_FEATURE(kMediaRouter);
 
 // If enabled, allows Media Router to connect to Cast devices on all IP
 // addresses, not just RFC1918/RFC4193 private addresses. Workaround for
-// https://crbug.com/813974.
+// https://crbug.com/41371527.
 BASE_DECLARE_FEATURE(kCastAllowAllIPsFeature);
 
 // If enabled, allows all websites to request to start mirroring via

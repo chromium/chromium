@@ -1252,7 +1252,7 @@ TEST_F(TabRestoreServiceImplTest, PruneEntries) {
                 .virtual_url());
 }
 
-// Regression test for crbug.com/106082
+// Regression test for crbug.com/40122191
 TEST_F(TabRestoreServiceImplTest, PruneIsCalled) {
   CreateSessionServiceWithOneWindow(false);
 

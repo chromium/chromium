@@ -80,7 +80,7 @@ INSTANTIATE_TEST_SUITE_P(,
                                          switches::kGuest));
 
 IN_PROC_BROWSER_TEST_P(AttemptRestartTest, AttemptRestartWithOTRProfiles) {
-  // We will now attempt restart, prior to (crbug.com/999085)
+  // We will now attempt restart, prior to (crbug.com/41478995)
   // the new session after restart defaulted to the browser type
   // of the last session. Now, we will restart always to regular mode.
   chrome::AttemptRestart();

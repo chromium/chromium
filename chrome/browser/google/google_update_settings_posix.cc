@@ -38,7 +38,7 @@ const char kConsentToSendStats[] = "Consent To Send Stats";
 
 void SetConsentFilePermissionIfNeeded(const base::FilePath& consent_file) {
 #if BUILDFLAG(IS_CHROMEOS)
-  // The consent file needs to be world readable. See http://crbug.com/383003
+  // The consent file needs to be world readable. See http://crbug.com/40079723
   int permissions;
   if (base::GetPosixFilePermissions(consent_file, &permissions) &&
       (permissions & base::FILE_PERMISSION_READ_BY_OTHERS) == 0) {
@@ -54,7 +54,7 @@ void SetConsentFilePermissionIfNeeded(const base::FilePath& consent_file) {
 base::SequencedTaskRunner*
 GoogleUpdateSettings::CollectStatsConsentTaskRunner() {
   // TODO(fdoray): Use LazyThreadPoolSequencedTaskRunner::GetRaw() here instead
-  // of .Get().get() when it's added to the API, http://crbug.com/730170.
+  // of .Get().get() when it's added to the API, http://crbug.com/40524407.
   return g_collect_stats_consent_task_runner.Get().get();
 }
 

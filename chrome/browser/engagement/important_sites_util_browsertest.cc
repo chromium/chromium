@@ -94,11 +94,11 @@ IN_PROC_BROWSER_TEST_F(ImportantSitesUtilBrowserTest,
       ::testing::ElementsAre(kNonDSEOrigin.host(), kDSERegistrableDomain));
 
   // Important site calculation in incognito mode used to crash in Android
-  // pre-O where notification channels are not yet used, see crbug.com/989890.
+  // pre-O where notification channels are not yet used, see crbug.com/41474055.
   //
   // It also used to produce wrong results, since notification permission
   // information got inherited incorrectly.
-  // See crbug.com/993021, crbug.com/1052406
+  // See crbug.com/40640028, crbug.com/1052406
   auto* incognito_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ASSERT_TRUE(incognito_profile);

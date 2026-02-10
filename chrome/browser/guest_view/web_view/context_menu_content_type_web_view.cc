@@ -103,8 +103,8 @@ bool ContextMenuContentTypeWebView::SupportsGroup(int group) {
         }
       }
 
-        // TODO(lazyboy): Enable this for mac too when http://crbug.com/380405
-        // is fixed.
+      // TODO(lazyboy): Enable this for mac too when http://crbug.com/41111850
+      // is fixed.
 #if !BUILDFLAG(IS_MAC)
         // Add dev tools for unpacked extensions.
         return !embedder_extension ||

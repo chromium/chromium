@@ -150,7 +150,7 @@ class WebRtcBrowserTest : public WebRtcTestBase {
     StartDetectingVideo(left_tab_, "remote-view");
     StartDetectingVideo(right_tab_, "remote-view");
 #if !BUILDFLAG(IS_MAC)
-    // Video is choppy on Mac OS X. http://crbug.com/443542.
+    // Video is choppy on Mac OS X. http://crbug.com/40398907.
     WaitForVideoToPlay(left_tab_);
     WaitForVideoToPlay(right_tab_);
 #endif

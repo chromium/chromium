@@ -99,7 +99,7 @@ bool IsBinaryDownloadForCurrentOS(
 // the current OS.
 bool IsBinaryDownload(const history::DownloadRow& row) {
   // TODO(grt): Peek into archives to see if they contain binaries;
-  // http://crbug.com/386915.
+  // http://crbug.com/40371482.
   FileTypePolicies* policies = FileTypePolicies::GetInstance();
   return (policies->IsCheckedBinaryFile(row.target_path) &&
           !policies->IsArchiveFile(row.target_path) &&
@@ -188,7 +188,7 @@ void PopulateDetailsFromRow(const history::DownloadRow& download,
   ClientDownloadRequest* download_request = details->mutable_download();
   download_request->set_url(download.url_chain.back().spec());
   // digests is a required field, so force it to exist.
-  // TODO(grt): Include digests in reports; http://crbug.com/389123.
+  // TODO(grt): Include digests in reports; http://crbug.com/40372429.
   std::ignore = download_request->mutable_digests();
   download_request->set_length(download.received_bytes);
   for (size_t i = 0; i < download.url_chain.size(); ++i) {

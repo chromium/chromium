@@ -773,34 +773,34 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
-// Regression test for https://crbug.com/736357.
+// Regression test for https://crbug.com/40088173.
 IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
                        StoreInUnloadHandler_SameSite_OnDemandMojoPipe) {
   TestStoreInUnloadHandlerForSameSiteNavigation(
       false /* preestablish_mojo_pipe */);
 }
 
-// Regression test for https://crbug.com/736357.
+// Regression test for https://crbug.com/40088173.
 IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
                        StoreInUnloadHandler_SameSite_PreestablishedPipe) {
   TestStoreInUnloadHandlerForSameSiteNavigation(
       true /* preestablish_mojo_pipe */);
 }
-// Regression test for https://crbug.com/736357.
+// Regression test for https://crbug.com/40088173.
 IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
                        StoreInUnloadHandler_CrossSite_OnDemandMojoPipe) {
   TestStoreInUnloadHandlerForCrossSiteNavigation(
       false /* preestablish_mojo_pipe */);
 }
 
-// Regression test for https://crbug.com/736357.
+// Regression test for https://crbug.com/40088173.
 IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
                        StoreInUnloadHandler_CrossSite_PreestablishedPipe) {
   TestStoreInUnloadHandlerForCrossSiteNavigation(
       true /* preestablish_mojo_pipe */);
 }
 
-// Regression test for https://crbug.com/736357.
+// Regression test for https://crbug.com/40088173.
 IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
                        MojoConnectionRecreatedAfterNavigation) {
   const GURL a_url1 = https_test_server().GetURL("a.com", "/title1.html");

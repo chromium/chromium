@@ -96,7 +96,7 @@ void BackgroundPrintingManager::DeletePreviewContents(
   if (i == printing_contents_map_.end()) {
     // Everyone is racing to be the first to delete the `preview_contents`. If
     // this case is hit, someone else won the race, so there is no need to
-    // continue. <http://crbug.com/100806>
+    // continue. <http://crbug.com/40100494>
     return;
   }
 

@@ -813,7 +813,7 @@ class StatefulSSLHostStateDelegateExtensionTest
 
 // Tests that certificate decisions are isolated by storage partition. In
 // particular, clicking through a certificate error in a <webview> in a Chrome
-// App shouldn't affect normal browsing. See https://crbug.com/639173.
+// App shouldn't affect normal browsing. See https://crbug.com/40085151.
 IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateExtensionTest,
                        StoragePartitionIsolation) {
   ASSERT_TRUE(embedded_test_server()->Start());

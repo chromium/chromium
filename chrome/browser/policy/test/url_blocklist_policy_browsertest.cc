@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistIncognito) {
 }
 
 IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistAndAllowlist) {
-  // Regression test for http://crbug.com/755256. Blocklisting * and
+  // Regression test for http://crbug.com/40535044. Blocklisting * and
   // allowlisting an origin should work.
 
   ASSERT_TRUE(embedded_test_server()->Start());

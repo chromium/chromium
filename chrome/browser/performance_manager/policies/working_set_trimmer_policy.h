@@ -24,7 +24,7 @@ namespace policies {
 //   frames become frozen and record the size of their working set after x
 //   minutes.
 //   TODO(fdoray): Record the working set size x minutes after emptying it.
-//   https://crbug.com/885293
+//   https://crbug.com/40594220
 //
 // Objective #2: Improve performance.
 //   We hypothesize that emptying the working set of a process causes its pages

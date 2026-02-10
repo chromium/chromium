@@ -160,7 +160,7 @@ size_t AvatarMenu::GetIndexOfItemWithProfilePathForTesting(
 
 std::optional<size_t> AvatarMenu::GetActiveProfileIndex() const {
   // During singleton profile deletion, this function can be called with no
-  // profiles in the model - crbug.com/102278 .
+  // profiles in the model - crbug.com/40106760 .
   if (profile_list_->GetNumberOfItems() == 0) {
     return std::nullopt;
   }

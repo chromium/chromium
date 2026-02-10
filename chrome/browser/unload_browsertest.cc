@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, CrossSiteInfiniteBeforeUnloadAsync) {
 // Navigate to a page with an infinite beforeunload handler.
 // Then two two sync crosssite requests to ensure
 // we correctly nav to each one.
-// Flaky on Win, Linux, and Mac; http://crbug.com/462671.
+// Flaky on Win, Linux, and Mac; http://crbug.com/40407626.
 IN_PROC_BROWSER_TEST_F(UnloadTest, DISABLED_CrossSiteInfiniteBeforeUnloadSync) {
   // Tests makes no sense in single-process mode since the renderer is hung.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseBeforeUnloadOK) {
 
 // Tests closing the browser with a beforeunload handler and clicking
 // CANCEL in the beforeunload confirm dialog.
-// If this test flakes, reopen http://crbug.com/123110
+// If this test flakes, reopen http://crbug.com/40190555
 IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseBeforeUnloadCancel) {
   NavigateToDataURL(BEFORE_UNLOAD_HTML, "beforeunload");
   PrepareForDialog(browser());
@@ -714,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserListForceCloseAfterNormalClose) {
 }
 
 // Tests that a cross-site iframe runs its beforeunload handler when closing
-// the browser.  See https://crbug.com/853021.
+// the browser.  See https://crbug.com/40580860.
 IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseWithCrossSiteIframe) {
   ASSERT_TRUE(embedded_test_server()->Start());
 

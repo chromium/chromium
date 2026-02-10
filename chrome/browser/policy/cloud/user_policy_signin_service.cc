@@ -203,7 +203,7 @@ void UserPolicySigninService::InitializeOnProfileReady(Profile* profile) {
   // Shutdown the CloudPolicyManager when the user signs out. We start
   // observing the IdentityManager here because we don't want to get signout
   // notifications until after the profile has started initializing
-  // (http://crbug.com/316229).
+  // (http://crbug.com/40340335).
   identity_manager()->AddObserver(this);
 
   AccountId account_id = AccountIdFromAccountInfo(

@@ -95,8 +95,9 @@ class RedirectObserver : public content::WebContentsObserver {
 
   void WebContentsDestroyed() override {
     // Make sure we don't close the tab while the observer is in scope.
-    // See http://crbug.com/314036.
-    FAIL() << "WebContents closed during navigation (http://crbug.com/314036).";
+    // See http://crbug.com/40339462.
+    FAIL()
+        << "WebContents closed during navigation (http://crbug.com/40339462).";
   }
 
   ui::PageTransition transition() const { return transition_; }
@@ -145,7 +146,7 @@ double GetFrameDeviceScaleFactor(const content::ToRenderFrameHost& adapter) {
   return content::EvalJs(adapter, kGetFrameDeviceScaleFactor).ExtractDouble();
 }
 
-// Flaky on Windows 10. http://crbug.com/700150
+// Flaky on Windows 10. http://crbug.com/41306592
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_InterstitialLoadsWithCorrectDeviceScaleFactor \
   DISABLED_InterstitialLoadsWithCorrectDeviceScaleFactor
@@ -220,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
 
 // Ensure that creating a plugin in a cross-site subframe doesn't crash.  This
 // involves querying content settings from the renderer process and using the
-// top frame's origin as one of the parameters.  See https://crbug.com/426658.
+// top frame's origin as one of the parameters.  See https://crbug.com/40390747.
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest, PluginWithRemoteTopFrame) {
   GURL main_url(
       embedded_test_server()->GetURL("a.com", "/chrome/test/data/iframe.html"));
@@ -237,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest, PluginWithRemoteTopFrame) {
 }
 
 // Verify that ctrl-click of an anchor targeting a remote frame works (i.e. that
-// it opens the link in a new tab).  See also https://crbug.com/647772.
+// it opens the link in a new tab).  See also https://crbug.com/40485278.
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
                        AnchorCtrlClickWhenTargetIsCrossSite) {
   // Navigate to anchor_targeting_remote_frame.html.
@@ -311,7 +312,7 @@ class ChromeSitePerProcessGuestViewPDFTest : public ChromeSitePerProcessTest {
 
 // This test verifies that when navigating an OOPIF to a page with <embed>-ed
 // PDF, the guest is properly created, and by removing the embedder frame, the
-// guest is properly destroyed (https://crbug.com/649856).
+// guest is properly destroyed (https://crbug.com/40486257).
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessGuestViewPDFTest,
                        EmbeddedPDFInsideCrossOriginFrame) {
   // Navigate to a page with an <iframe>.
@@ -520,11 +521,11 @@ class MailtoExternalProtocolHandlerDelegate
 // navigations before getting to external protocol code.
 
 // This test verifies that external protocol requests succeed when made from an
-// OOPIF (https://crbug.com/668289).
+// OOPIF (https://crbug.com/40495154).
 
 // Disabled due to flakiness. If enabled, still skip for ChromeOS based on
 // comment above.
-// See https://crbug.com/980446
+// See https://crbug.com/41468843
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
                        DISABLED_LaunchExternalProtocolFromSubframe) {
   GURL start_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -563,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
 
 // Verify that a popup can be opened after navigating a remote frame.  This has
 // to be a chrome/ test to ensure that the popup blocker doesn't block the
-// popup.  See https://crbug.com/670770.
+// popup.  See https://crbug.com/40496335.
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
                        NavigateRemoteFrameAndOpenPopup) {
   // Start on a page with an <iframe>.
@@ -599,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
 // Ensure that a transferred cross-process navigation does not generate
 // DidStopLoading events until the navigation commits.  If it did, then
 // ui_test_utils::NavigateToURL would proceed before the URL had committed.
-// http://crbug.com/243957.
+// http://crbug.com/40319203.
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
                        NoStopDuringTransferUntilCommit) {
   GURL init_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -706,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest, PrintIgnoredInUnloadHandler) {
 
 // Ensure that when a window closes itself via window.close(), its process does
 // not get destroyed if there's a pending cross-process navigation in the same
-// process from another tab.  See https://crbug.com/799399.
+// process from another tab.  See https://crbug.com/41363309.
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
                        ClosePopupWithPendingNavigationInOpener) {
   // Start on a.com and open a popup to b.com.
@@ -1259,7 +1260,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
 
 // TODO(crbug.com/40106376): Flaky.
 // Tests that a cross-site iframe runs its beforeunload handler when closing a
-// tab.  See https://crbug.com/853021.
+// tab.  See https://crbug.com/40580860.
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
                        DISABLED_TabCloseWithCrossSiteBeforeUnloadIframe) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
@@ -1367,7 +1368,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
 // 2. The user tries to close the popup, triggering beforeunload.
 // 3. While waiting for the subframe's beforeunload, the original page closes
 //    the popup via window.close().
-// See https://crbug.com/866382.
+// See https://crbug.com/41403196.
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
                        CrossProcessWindowCloseWithBeforeUnloadIframe) {
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -1420,7 +1421,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
 // 2. The user tries to close the popup, triggering beforeunload.
 // 3. While waiting for second subframe's beforeunload, the original page
 //    closes the popup via window.close().
-// See https://crbug.com/866382.  This is a variant of the test above, but
+// See https://crbug.com/41403196.  This is a variant of the test above, but
 // with two iframes, which used to trigger a different crash.
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
                        CrossProcessWindowCloseWithTwoBeforeUnloadIframes) {

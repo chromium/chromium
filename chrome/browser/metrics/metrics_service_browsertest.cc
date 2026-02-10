@@ -179,8 +179,8 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CloseRenderersNormally) {
       "Stability.Counts2", metrics::StabilityEventType::kRendererCrash, 0);
 }
 
-// Child crashes fail the process on ASan (see crbug.com/411251,
-// crbug.com/368525).
+// Child crashes fail the process on ASan (see crbug.com/40383003,
+// crbug.com/40363314).
 // Note to sheriffs: Do not disable these tests if they starts to flake. If
 // either of these tests start to fail then changes likely need to be made
 // elsewhere in crash processing, metrics analysis, and dashboards. Please
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CrashRenderersInRust) {
 #if BUILDFLAG(IS_WIN) && !defined(ADDRESS_SANITIZER)
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, OOMRenderers) {
   // Disable stack traces during this test since DbgHelp is unreliable in
-  // low-memory conditions (see crbug.com/692564).
+  // low-memory conditions (see crbug.com/41302062).
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableInProcessStackTraces);
 

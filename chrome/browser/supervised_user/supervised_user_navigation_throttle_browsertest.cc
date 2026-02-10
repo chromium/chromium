@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
 
   // Both iframes (from allowed host iframe1.com as well as from blocked host
   // iframe2.com) should be loaded normally, since we don't filter iframes
-  // (yet) - see crbug.com/651115.
+  // (yet) - see crbug.com/41277984.
   EXPECT_TRUE(content::EvalJs(tab, "loaded1()").ExtractBool());
   EXPECT_TRUE(content::EvalJs(tab, "loaded2()").ExtractBool());
 }

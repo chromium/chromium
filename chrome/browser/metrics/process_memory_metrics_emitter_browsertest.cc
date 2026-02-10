@@ -756,7 +756,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   CheckPageInfoUkmMetrics(url, true);
 }
 
-// Flaky test: https://crbug.com/731466
+// Flaky test: https://crbug.com/41324301
 IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
                        DISABLED_FetchThreeTimes) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -787,8 +787,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   CheckPageInfoUkmMetrics(url, true, count);
 }
 
-// Test is flaky on chromeos and linux. https://crbug.com/938054.
-// Test is flaky on mac and win: https://crbug.com/948674.
+// Test is flaky on chromeos and linux. https://crbug.com/41444813.
+// Test is flaky on mac and win: https://crbug.com/40621250.
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) ||            \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)

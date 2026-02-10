@@ -529,8 +529,8 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
       0);
 }
 
-// Regression test for crbug.com/942326, where foreground duration was not being
-// updated unless the tab was hidden.
+// Regression test for crbug.com/41447085, where foreground duration was not
+// being updated unless the tab was hidden.
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
                        NonZeroForegroundTime) {
   StartHttpServer();

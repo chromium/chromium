@@ -407,7 +407,7 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
         // For now, `switches::kDisableGpu` should not be set. Otherwise,
         // the video playback will not work with software rendering. Note that
         // this switch is appended to browser_tests.exe by force as a workaround
-        // of http://crbug.com/687387.
+        // of http://crbug.com/40504416.
         command_line->RemoveSwitch(switches::kDisableGpu);
       }
     }
@@ -855,8 +855,8 @@ class EncryptedMediaTest
 
 // Similar to EncryptedMediaTest, but the source type is always MSE. This is
 // needed because many tests can only work with MSE (not with SRC), e.g.
-// encrypted MP4, see http://crbug.com/170793. Use this class for those tests so
-// we don't have to start the test and then skip it.
+// encrypted MP4, see http://crbug.com/40960332. Use this class for those tests
+// so we don't have to start the test and then skip it.
 class MseEncryptedMediaTest : public ParameterizedEncryptedMediaTestBase,
                               public WithParamInterface<const char*> {
  public:
@@ -1336,7 +1336,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaFileIOTest, FileIOTest) {
                        kUnitTestSuccess);
 }
 
-// Intermittent leaks on ASan/LSan runs: crbug.com/889923
+// Intermittent leaks on ASan/LSan runs: crbug.com/41417613
 #if defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER)
 #define MAYBE_MessageTypeTest DISABLED_MessageTypeTest
 #else

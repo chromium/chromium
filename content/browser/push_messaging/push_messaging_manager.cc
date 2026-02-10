@@ -46,7 +46,7 @@ namespace {
 // Chrome currently does not support the Push API in incognito.
 const char kIncognitoPushUnsupportedMessage[] =
     "Chrome currently does not support the Push API in incognito mode "
-    "(https://crbug.com/401439). There is deliberately no way to "
+    "(https://crbug.com/41124656). There is deliberately no way to "
     "feature-detect this, since incognito mode needs to be undetectable by "
     "websites.";
 

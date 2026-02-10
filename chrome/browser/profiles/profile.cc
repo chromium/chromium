@@ -274,7 +274,7 @@ Profile* Profile::FromBrowserContext(content::BrowserContext* browser_context) {
   // For code running in a chrome/ environment, it is safe to cast to Profile*
   // because Profile is the only implementation of BrowserContext used. In
   // testing, however, there are several BrowserContext subclasses that are not
-  // Profile subclasses, and we can catch them. http://crbug.com/725276
+  // Profile subclasses, and we can catch them. http://crbug.com/40522064
 #if DCHECK_IS_ON()
   base::AutoLock lock(GetProfileInstancesLock());
   if (!GetProfileInstances().count(browser_context)) {

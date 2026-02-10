@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_P(ForceFieldTrialsBrowserTest, ForceTrials) {
   // TODO(asvitkine): This test fails on Linux Chrome OS bots. Since it passes
   // on proper Chrome OS bots, and Linux Chrome OS is not an end user
   // configuration, disable there for now. Would be good to understand the
-  // problem at some point, though. crbug.com/947132
+  // problem at some point, though. crbug.com/41449818
   if (!base::SysInfo::IsRunningOnChromeOS())
     return;
 #endif  // BUILDFLAG(IS_CHROMEOS)

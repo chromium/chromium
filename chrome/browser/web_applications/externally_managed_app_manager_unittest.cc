@@ -146,7 +146,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
 
 // Test that destroying ExternallyManagedAppManager during a synchronize call
 // that installs an app doesn't crash. Regression test for
-// https://crbug.com/962808
+// https://crbug.com/41458655
 TEST_F(ExternallyManagedAppManagerTest, DestroyDuringInstallInSynchronize) {
   std::vector<ExternalInstallOptions> install_options_list;
   install_options_list.emplace_back(GURL("https://foo.example"),
@@ -167,7 +167,7 @@ TEST_F(ExternallyManagedAppManagerTest, DestroyDuringInstallInSynchronize) {
 
 // Test that destroying ExternallyManagedAppManager during a synchronize call
 // that uninstalls an app doesn't crash. Regression test for
-// https://crbug.com/962808
+// https://crbug.com/41458655
 TEST_F(ExternallyManagedAppManagerTest, DestroyDuringUninstallInSynchronize) {
   // Install an app that will be uninstalled next.
   {

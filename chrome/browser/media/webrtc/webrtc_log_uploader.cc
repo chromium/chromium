@@ -225,7 +225,7 @@ void WebRtcLogUploader::PrepareMultipartPostData(
   // Still fire the upload callback so that we can run an extension API test
   // using the test framework for that without hanging.
   // TODO(grunell): Remove this when the api test for this feature is fully
-  // implemented according to the test plan. http://crbug.com/257329.
+  // implemented according to the test plan. http://crbug.com/41023787.
   if (post_data_) {
     *post_data_ = *post_data;
     NotifyUploadDoneAndLogStats(net::HTTP_OK, net::OK, "",

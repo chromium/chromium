@@ -414,9 +414,9 @@ TEST_F(SearchTest, IsNTPURL) {
   }
 }
 
-// Regression test for https://crbug.com/605720: Set up a search provider backed
-// by localhost on a specific port, like browsertests do.  The chrome-search://
-// URLs generated in this mode should not have ports.
+// Regression test for https://crbug.com/40466271: Set up a search provider
+// backed by localhost on a specific port, like browsertests do.  The
+// chrome-search:// URLs generated in this mode should not have ports.
 TEST_F(SearchTest, SearchProviderWithPort) {
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile());

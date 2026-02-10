@@ -26,7 +26,7 @@ void ForceSafeSearchPolicyHandler::ApplyPolicySettings(
     PrefValueMap* prefs) {
   // These three policies take precedence over |kForceGoogleSafeSearch|. If any
   // of them is set, their handlers will set the proper prefs.
-  // https://crbug.com/476908, https://crbug.com/590478.
+  // https://crbug.com/41168227, https://crbug.com/41241493.
   if (policies.GetValue(key::kForceGoogleSafeSearch,
                         base::Value::Type::BOOLEAN) ||
       policies.GetValue(key::kForceYouTubeSafetyMode,

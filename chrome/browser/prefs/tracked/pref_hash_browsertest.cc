@@ -89,7 +89,7 @@ enum AllowedBuckets {
 
 #if BUILDFLAG(IS_WIN)
 std::wstring GetRegistryPathForTestProfile() {
-  // Cleanup follow-up to http://crbug.com/721245 for the previous location of
+  // Cleanup follow-up to http://crbug.com/40520015 for the previous location of
   // this test key which had similar problems (to a lesser extent). It's
   // redundant but harmless to have multiple callers hit this on the same
   // machine. TODO(gab): remove this mid-june 2017.
@@ -976,7 +976,7 @@ PREF_HASH_BROWSER_TEST(PrefHashBrowserTestChangedSplitPref, ChangedSplitPref);
 // Verifies that adding a value to unprotected preferences for a key which is
 // still using the default (i.e. has no value stored in protected preferences)
 // doesn't allow that value to slip in with no valid MAC (regression test for
-// http://crbug.com/414554)
+// http://crbug.com/40384661)
 class PrefHashBrowserTestUntrustedAdditionToPrefs
     : public PrefHashBrowserTestBase {
  public:
@@ -1056,7 +1056,7 @@ PREF_HASH_BROWSER_TEST(PrefHashBrowserTestUntrustedAdditionToPrefs,
 
 // Verifies that adding a value to unprotected preferences while wiping a
 // user-selected value from protected preferences doesn't allow that value to
-// slip in with no valid MAC (regression test for http://crbug.com/414554).
+// slip in with no valid MAC (regression test for http://crbug.com/40384661).
 class PrefHashBrowserTestUntrustedAdditionToPrefsAfterWipe
     : public PrefHashBrowserTestBase {
  public:

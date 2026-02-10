@@ -233,7 +233,7 @@ class ProcessSingleton {
   // This method extracts any waiting "open URL" AppleEvent and forwards
   // it to the running process. Returns true if an event was found and
   // forwarded.
-  // crbug.com/777863
+  // crbug.com/40546317
   bool WaitForAndForwardOpenURLEvent(pid_t event_destination_pid);
 #endif
 

@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(IFrameTest, InEmptyFrame) {
   NavigateAndVerifyTitle("iframe_in_empty_frame.html", "iframe test");
 }
 
-// Test for https://crbug.com/621076. It ensures that file chooser triggered
+// Test for https://crbug.com/41259523. It ensures that file chooser triggered
 // by an iframe, which is destroyed before the chooser is closed, does not
 // result in a use-after-free condition.
 //

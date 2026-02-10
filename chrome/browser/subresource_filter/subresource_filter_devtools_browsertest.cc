@@ -173,8 +173,8 @@ class SubresourceFilterDevtoolsBrowserTestWithSitePerProcess
   base::test::ScopedFeatureList feature_list_;
 };
 
-// See crbug.com/813197, where agent hosts from subframes could send messages to
-// disable ad blocking when they are detached (e.g. when the subframe goes
+// See crbug.com/40563389, where agent hosts from subframes could send messages
+// to disable ad blocking when they are detached (e.g. when the subframe goes
 // away).
 IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTestWithSitePerProcess,
                        IsolatedSubframe_DoesNotSendAdBlockingMessages) {

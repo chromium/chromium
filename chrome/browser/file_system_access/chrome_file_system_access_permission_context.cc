@@ -388,7 +388,7 @@ GenerateBlockPaths(bool should_normalize_file_path) {
           // to
           // access only _its_ corresponding natively installed application, but
           // unfortunately there's no straightforward way to do that. See
-          // https://crbug.com/984641#c22.
+          // https://crbug.com/40095723#c22.
           {base::DIR_HOME, FILE_PATH_LITERAL("Library/Containers"),
            BlockType::kDontBlockChildren},
           // Allow access to iCloud files...

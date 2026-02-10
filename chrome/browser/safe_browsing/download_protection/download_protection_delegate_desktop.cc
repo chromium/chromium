@@ -91,7 +91,7 @@ MayCheckDownloadResult DownloadProtectionDelegateDesktop::IsSupportedDownload(
     download::DownloadItem& item,
     const base::FilePath& target_path) const {
   // TODO(nparker): Remove the CRX check here once can support
-  // UNKNOWN types properly.  http://crbug.com/581044
+  // UNKNOWN types properly.  http://crbug.com/41236548
   if (download_type_util::GetDownloadType(target_path) ==
       ClientDownloadRequest::CHROME_EXTENSION) {
     return MayCheckDownloadResult::kMayNotCheckDownload;

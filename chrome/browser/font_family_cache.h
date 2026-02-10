@@ -26,7 +26,7 @@ FORWARD_DECLARE_TEST(FontFamilyCacheTest, Caching);
 // This class caches the strings necessary to update
 // "blink::web_pref::ScriptFontFamilyMap". This is necessary since Chrome
 // attempts to update blink::web_pref::ScriptFontFamilyMap 20000 times at
-// startup. See https://crbug.com/308095.
+// startup. See https://crbug.com/40337107.
 class FontFamilyCache : public base::SupportsUserData::Data {
  public:
   explicit FontFamilyCache(Profile* profile);

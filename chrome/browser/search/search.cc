@@ -85,7 +85,7 @@ enum NewTabURLState {
   NEW_TAB_URL_INSECURE = 4,
 
   // URL should not be used because Suggest is disabled.
-  // Not used anymore, see crbug.com/340424.
+  // Not used anymore, see crbug.com/40350179.
   // NEW_TAB_URL_SUGGEST_OFF = 5,
 
   // URL should not be used because it is blocked for a supervised user.

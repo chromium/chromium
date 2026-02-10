@@ -212,7 +212,7 @@ TEST_F(ProfileListDesktopTest, ActiveItem) {
   AvatarMenu* menu = GetAvatarMenu();
   ASSERT_EQ(2u, menu->GetNumberOfItems());
   // TODO(jeremy): Expand test to verify active profile index other than 0
-  // crbug.com/100871
+  // crbug.com/40100772
   ASSERT_EQ(0u, menu->GetActiveProfileIndex());
 }
 

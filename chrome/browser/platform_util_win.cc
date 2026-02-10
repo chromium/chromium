@@ -109,7 +109,7 @@ void OpenExternalOnWorkerThread(const GURL& url) {
           NULL, "open", escaped_url.c_str(), NULL,
           system_dir.AsUTF8Unsafe().c_str(), SW_SHOWNORMAL)) <= 32) {
     // On failure, it may be good to display a message to the user.
-    // https://crbug.com/727913
+    // https://crbug.com/40523302
     return;
   }
 }

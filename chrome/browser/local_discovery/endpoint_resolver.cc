@@ -26,7 +26,7 @@ void EndpointResolver::Start(const net::HostPortPair& address,
 #if BUILDFLAG(IS_MAC)
   net::IPAddress ip_address;
   if (!ip_address.AssignFromIPLiteral(address.host())) {
-    // Unexpected, but could be a reason for crbug.com/513505
+    // Unexpected, but could be a reason for crbug.com/40428182
     NOTREACHED() << address.ToString();
   }
 
