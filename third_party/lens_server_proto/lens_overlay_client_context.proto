@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto3';
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -11,6 +11,8 @@ package lens;
 import "lens_overlay_filters.proto";
 import "lens_overlay_platform.proto";
 import "lens_overlay_surface.proto";
+
+option features.field_presence = IMPLICIT;
 
 // Context information of the client sending the request.
 message LensOverlayClientContext {

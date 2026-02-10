@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto3';
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 
 package lens;
 
 import "lens_overlay_geometry.proto";
+option features.field_presence = IMPLICIT;
 
 // The text reading order.
 enum WritingDirection {
@@ -49,7 +50,7 @@ message TextLayout {
     // line/paragraph into a single-line string. This is specified as optional
     // because there is a distinction between the absence of a separator and
     // the empty string as a separator.
-    optional string text_separator = 3;
+    string text_separator = 3 [features.field_presence = EXPLICIT];
 
     // Optional. The geometry of the word.
     Geometry geometry = 4;

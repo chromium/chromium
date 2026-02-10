@@ -1,0 +1,33 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+// Represents a modality that uses the Lens API.
+message LensOverlayLensFile {
+  // B64 encoded Visual Search Request ID, as used in URL params.
+  string vsrid = 1;
+
+  // Sticky cluster token, as used in URL params as gsessionid.
+  string sticky_cluster_token = 2;
+
+  // The MIME type of the file.
+  string mime_type = 3;
+
+  // The name of the file.
+  string file_name = 5;
+
+  // The name of the page. Applies to both PDFs and Webpages in browser tabs.
+  string page_title = 6;
+
+  // The url of the page. Applies to both remote PDFs and Webpages in browser
+  // tabs.
+  string page_url = 7;
+
+  reserved 4;
+}

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto3';
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -11,6 +11,8 @@ package lens;
 // Phase latency metadata for the Lens Overlay.
 message LensOverlayPhaseLatenciesMetadata {
   enum ImageType {
+    option features.enum_type = CLOSED;
+
     UNKNOWN = 0;
     JPEG = 1;
     PNG = 2;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto3';
+syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -17,11 +17,12 @@ enum LensOverlayFilterType {
 
 // Supported filter types.
 message AppliedFilter {
-  LensOverlayFilterType filter_type = 1;
+  optional LensOverlayFilterType filter_type = 1;
 
   message Translate {
-    string target_language = 1;
-    string source_language = 2;
+    optional string target_language = 1;
+
+    optional string source_language = 2 [default = "auto"];
   }
 
   oneof filter_payload {
