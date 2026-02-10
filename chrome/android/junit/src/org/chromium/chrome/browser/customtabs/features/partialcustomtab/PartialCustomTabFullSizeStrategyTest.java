@@ -57,8 +57,6 @@ public class PartialCustomTabFullSizeStrategyTest {
         return pcct;
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_fullSizeStrategyInMultiWindowLandscape() {
         mPCCTTestRule.configLandscapeMode();
@@ -89,8 +87,6 @@ public class PartialCustomTabFullSizeStrategyTest {
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_fullSizeStrategyInMultiWindowPortrait() {
         mPCCTTestRule.configPortraitMode();
@@ -121,8 +117,6 @@ public class PartialCustomTabFullSizeStrategyTest {
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
     public void create_fullSizeStrategyInPortrait_HeightNotSet_WidthSet() {

@@ -124,8 +124,6 @@ public class PartialCustomTabDisplayManagerTest {
         return displayManager;
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_FullSize_HeightNotSetWidthNotSet() {
         int expected = PartialCustomTabType.FULL_SIZE;
@@ -140,8 +138,6 @@ public class PartialCustomTabDisplayManagerTest {
         histogram.assertExpected("PartialCustomTabType.FULL_SIZE should be recorded once");
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_FullSize_WidthSetCompactDevice() {
         int expected = PartialCustomTabType.FULL_SIZE;
@@ -157,8 +153,6 @@ public class PartialCustomTabDisplayManagerTest {
         histogram.assertExpected("PartialCustomTabType.FULL_SIZE should be recorded once");
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_SideSheet_WidthSetHeightNot_BelowBreakpoint() {
         int expected = PartialCustomTabType.FULL_SIZE;
@@ -173,8 +167,6 @@ public class PartialCustomTabDisplayManagerTest {
         histogram.assertExpected("PartialCustomTabType.FULL_SIZE should be recorded once");
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_SideSheet_WidthSetHeightNot_AboveBreakpoint() {
         int expected = PartialCustomTabType.SIDE_SHEET;
@@ -192,8 +184,6 @@ public class PartialCustomTabDisplayManagerTest {
         histogram.assertExpected("PartialCustomTabType.SIDE_SHEET should be recorded once");
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_SideSheet_AboveBreakPoint() {
         int expected = PartialCustomTabType.SIDE_SHEET;
@@ -210,8 +200,6 @@ public class PartialCustomTabDisplayManagerTest {
         histogram.assertExpected("PartialCustomTabType.SIDE_SHEET should be recorded once");
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_BottomSheet_HeightWidthSet_Compact() {
         int expected = PartialCustomTabType.BOTTOM_SHEET;
@@ -230,8 +218,6 @@ public class PartialCustomTabDisplayManagerTest {
         histogram.assertExpected("PartialCustomTabType.BOTTOM_SHEET should be recorded once");
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_BottomSheet_HeightSetWidthNot() {
         int expected = PartialCustomTabType.BOTTOM_SHEET;
@@ -246,8 +232,6 @@ public class PartialCustomTabDisplayManagerTest {
         histogram.assertExpected("PartialCustomTabType.BOTTOM_SHEET should be recorded once");
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_BottomSheet_BelowBreakPoint() {
         mPCCTTestRule.configPortraitMode();
@@ -259,8 +243,6 @@ public class PartialCustomTabDisplayManagerTest {
                 displayManager.getActiveStrategyType());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_BottomSheetStrategy() {
         mPCCTTestRule.configPortraitMode();
@@ -272,8 +254,6 @@ public class PartialCustomTabDisplayManagerTest {
                 displayManager.getActiveStrategyType());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_SideSheetStrategy() {
         mPCCTTestRule.configLandscapeMode();
@@ -285,8 +265,6 @@ public class PartialCustomTabDisplayManagerTest {
                 displayManager.getActiveStrategyType());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void transitionFromBottomSheetToSideSheetWhenOrientationChangedToLandscape() {
         mPCCTTestRule.configPortraitMode();
@@ -324,8 +302,6 @@ public class PartialCustomTabDisplayManagerTest {
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void transitionFromBottomSheetToSideSheetWhileSoftkeyboardIsOn() {
         mPCCTTestRule.configPortraitMode();
@@ -356,8 +332,6 @@ public class PartialCustomTabDisplayManagerTest {
         assertFalse(displayManager.getSizeStrategyForTesting().isMaximized());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void closeAnimationNotInvokedTwice() {
         mPCCTTestRule.configPortraitMode();
@@ -389,8 +363,6 @@ public class PartialCustomTabDisplayManagerTest {
         assertFalse("Close animation shouldn't run", displayManager.handleCloseAnimation(finish2));
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void
             transitionFromBottomSheetTo900dpBottomSheetWhenOrientationChangedToLandscape_andHeightSetWidthNot() {
@@ -434,8 +406,6 @@ public class PartialCustomTabDisplayManagerTest {
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void transitionFromSideSheetToBottomSheetWhenOrientationChangedToPortrait() {
         mPCCTTestRule.configLandscapeMode();
@@ -514,8 +484,6 @@ public class PartialCustomTabDisplayManagerTest {
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void dontTransitionIfOrientationDoesNotChange() {
         mPCCTTestRule.configPortraitMode();
@@ -547,8 +515,6 @@ public class PartialCustomTabDisplayManagerTest {
                         eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void rotateInFullscreenMode() {
         mPCCTTestRule.configLandscapeMode();
@@ -774,8 +740,6 @@ public class PartialCustomTabDisplayManagerTest {
                         null, initWidth, initHeight, displayWidthDp, breakPointDp));
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void startAnimationOverride() {
         int defId = 42;

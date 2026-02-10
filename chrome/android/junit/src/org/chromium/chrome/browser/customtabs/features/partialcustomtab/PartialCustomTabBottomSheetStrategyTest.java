@@ -158,8 +158,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         return pcct;
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_heightIsCappedToHalfOfDeviceHeight() {
         createPcctAtHeight(500);
@@ -169,8 +167,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertTabIsAtInitialPos(mPCCTTestRule.getWindowAttributes());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_largeInitialHeight() {
         createPcctAtHeight(5000);
@@ -180,8 +176,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertTabIsFullHeight(mPCCTTestRule.getWindowAttributes());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_heightIsCappedToDeviceHeight() {
         createPcctAtHeight(DEVICE_HEIGHT + 100);
@@ -207,8 +201,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertTabBelowStatusBar(mPCCTTestRule.mAttributeResults.get(0));
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_maxHeightWithStatusBar_Q() {
         configureStatusBarHeightForQ();
@@ -227,9 +219,8 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 mPCCTTestRule.mAttributeResults.get(0).height);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
+    @Config(sdk = 29)
     public void create_maxHeightWithStatusBar_landscape_Q() {
         configureStatusBarHeightForQ();
         mPCCTTestRule.configLandscapeMode();
@@ -239,8 +230,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 mPCCTTestRule.mAttributeResults.get(0).height);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_landscapeOrientation() {
         int pcctHeight = 800;
@@ -253,8 +242,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertEquals(pcctHeight, mPCCTTestRule.getWindowAttributes().height);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_backgroundAppDisabledPortrait() {
         createPcctBackgroundDisabled();
@@ -377,8 +364,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 .getDimensionPixelSize(eq(statusBarId));
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void setTitleWhenLaunched() {
         final String title = "BottomSheet";
@@ -399,8 +384,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         verify(coordinator, never()).addOnAttachStateChangeListener(any());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void moveFromTop() {
         // Drag to the top
@@ -422,8 +405,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertTabIsAtInitialPos(dragTab(handleStrategy, 50, 650, 1300));
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void moveFromInitialHeight() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
@@ -442,8 +423,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertTabIsAtInitialPos(dragTab(handleStrategy, 1500, 1550, 1600));
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void moveUpThenDown() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
@@ -460,8 +439,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertTabIsAtInitialPos(dragTab(handleStrategy, 1500, 1450, 1600));
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void moveUp_landscapeOrientationUnresizable() {
         mPCCTTestRule.configLandscapeMode();
@@ -470,8 +447,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertMotionEventIgnored(handleStrategy);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void moveUp_multiwindowModeUnresizable() {
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
@@ -480,8 +455,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertMotionEventIgnored(handleStrategy);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void moveDownToDismiss() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
@@ -497,8 +470,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertTrue("FinnishRunnable should be called.", finishRunnable[0]);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void showSpinnerOnDragUpOnly() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
@@ -536,8 +507,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         verify(mPCCTTestRule.mSpinnerView, never()).setVisibility(anyInt());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void hideSpinnerWhenReachingFullHeight() {
         disableSpinnerAnimation();
@@ -572,8 +541,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         verify(mPCCTTestRule.mSpinnerView, never()).setVisibility(anyInt());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void hideSpinnerWhenDraggingDown() {
         disableSpinnerAnimation();
@@ -605,8 +572,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         verify(mPCCTTestRule.mSpinnerView).setVisibility(View.GONE);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void hideSpinnerEarly() {
         // Test hiding spinner early (500ms after showing) when there is no glitch at
@@ -633,8 +598,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         verify(mPCCTTestRule.mSpinnerView).setVisibility(View.GONE);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void expandToFullHeightOnShowingKeyboard() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
@@ -695,8 +658,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertTabIsAtInitialPos(getWindowAttributes());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void fixedHeightReactsToSoftKeyboardBelowR() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500, true);
@@ -714,8 +675,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertTabIsAtInitialPos(getWindowAttributes());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void moveUpFixedHeight() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500, true);
@@ -734,8 +693,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertTabIsAtInitialPos(getWindowAttributes());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void moveUpFixedHeightWithFling() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500, true);
@@ -754,8 +711,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertTabIsAtInitialPos(getWindowAttributes());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void moveDownFixedHeight() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500, true);
@@ -770,8 +725,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertTabIsAtInitialPos(dragTab(handleStrategy, 1500, 1550, 1600));
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void dragHandlebarInvisibleFixedHeight() {
         createPcctAtHeight(500, true);
@@ -783,8 +736,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         verify(mPCCTTestRule.mDragHandlebar).setVisibility(View.GONE);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void invokeResizeCallbackExpansion() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
@@ -805,8 +756,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         // invokeResizeCallback() should have been called and MANUAL_EXPANSION logged once.
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void invokeResizeCallbackMinimization() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
@@ -830,8 +779,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         // invokeResizeCallback() should have been called and MANUAL_MINIMIZATION logged once.
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void callbackWhenHeightResized() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
@@ -856,8 +803,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(INITIAL_HEIGHT), anyInt());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void verifyNavigationBarHeightInMultiWindowMode() {
         mPCCTTestRule.setupDisplayMetricsInMultiWindowMode();
@@ -866,8 +811,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertEquals(0, strategy.getNavbarHeightForTesting());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void enterAndExitHtmlFullscreen() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
@@ -923,8 +866,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void dragToTheSameInitialY() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
@@ -945,8 +886,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertTabIsAtInitialPos(dragTab(handleStrategy, 1500, 1450, 1500));
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void dragBarMatchesFindToolbarInColor() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
@@ -963,8 +902,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         verify(mPCCTTestRule.mDragBarBackground).setColor(PCCT_TOOLBAR_COLOR);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void noTopShadowAtFullHeight() {
         doReturn(47)
@@ -984,8 +921,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.topMargin);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void sideShadowsWith900dpBottomSheet() {
         doReturn(8)
@@ -1032,8 +967,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.leftMargin);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void noTopShadowFullHeightBottomSheet() {
         doReturn(8)
@@ -1057,8 +990,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.topMargin);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void largeDeviceInPortrait_screenWidth() {
         doReturn(8)
@@ -1082,8 +1013,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 "Bottom sheet width should be the screen width", 6000, getWindowAttributes().width);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void largeDeviceInLandscape_900dpWidth() {
         doReturn(8)
@@ -1110,8 +1039,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 0.01f);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     @Test
     public void useDividerLine_LowEndDevice() {
@@ -1166,8 +1093,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.leftMargin);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void expandToFullHeightOnFindInPage() {
         mPCCTTestRule.configPortraitMode();
@@ -1212,8 +1137,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void contentScrollMayResizeTab() {
         var intentData = mPCCTTestRule.mIntentData;
@@ -1256,8 +1179,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
         verify(listener).doNonFlingRelease();
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     @EnableFeatures("PCCTMinimumHeight:pcct_minimum_height_ratio/0.7")
     public void create_heightIsClampedToMinimumRatioOfDeviceHeightFromFeature() {
@@ -1281,8 +1202,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 mPCCTTestRule.getWindowAttributes().y);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     @EnableFeatures("PCCTMinimumHeight:pcct_minimum_height_ratio/0.05")
     public void create_heightIsClampedToAbsoluteMinimumWhenRatioIsTooSmall() {
@@ -1304,8 +1223,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 mPCCTTestRule.getWindowAttributes().y);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     @EnableFeatures("PCCTMinimumHeight:pcct_minimum_height_ratio/0.6")
     public void create_requestedHeightIsUsedWhenAboveFeatureMinimum() {
@@ -1333,8 +1250,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 mPCCTTestRule.getWindowAttributes().y);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void create_heightIsClampedToDefaultMinimumWhenFeatureIsDisabled() {
         // Scenario: The new feature is disabled.
