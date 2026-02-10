@@ -2969,8 +2969,10 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
         ShouldSwapBrowsingInstance::kNo_SourceURLSchemeIsNotHTTPOrHTTPS);
   }
 
-  // WebView guests currently need to stay in the same SiteInstance and
-  // BrowsingInstance.
+  // Prior to site isolation in WebView guests, they needed to stay in the same
+  // SiteInstance and BrowsingInstance. This is no longer necessary. However,
+  // proceeding here would just lead to a NoSwap at the bfcache eligibility
+  // check below, so we keep this explicit check for guests here.
   if (current_instance->IsGuest()) {
     return BrowsingContextGroupSwap::CreateNoSwap(
         ShouldSwapBrowsingInstance::kNo_Guest);
