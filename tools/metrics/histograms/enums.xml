@@ -4132,24 +4132,6 @@ shown properly on the user-facing crash UI.
   <int value="3" label="Wheel"/>
 </enum>
 
-<enum name="EventTimingClickInteractionEvents">
-  <int value="0" label="Click detected"/>
-  <int value="1" label="Pointer click with pointerdown and pointerup"/>
-  <int value="2" label="Pointer click with missing pointerdown only"/>
-  <int value="3" label="Pointer click with missing pointerup only"/>
-  <int value="4" label="Pointer click with missing pointerdown and pointerup"/>
-  <int value="5"
-      label="Pointer click PointerId differ from LastPointerId and PointerId
-             exist in the map"/>
-  <int value="6"
-      label="Pointer click PointerId differ from LastPointerId and only
-             LastPointerId in the map"/>
-  <int value="7"
-      label="Pointer click PointerId differ from LastPointerId and neither in
-             the map"/>
-  <int value="8" label="Keyboard click"/>
-</enum>
-
 <enum name="ExtensionInProgressRequestState">
   <int value="0" label="In progress"/>
   <int value="1" label="In progress, but the final response has arrived"/>

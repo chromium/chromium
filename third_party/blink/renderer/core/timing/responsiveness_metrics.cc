@@ -64,23 +64,6 @@ constexpr char kSlowInteractionToNextPaintTraceEventCategory[] = "latency";
 constexpr char kSlowInteractionToNextPaintTraceEventName[] =
     "SlowInteractionToNextPaint";
 
-// These values are logged to UMA. Please keep in sync with
-// "EventTimingClickInteractionEvents" in tools/metrics/histograms/enums.xml.
-// LINT.IfChange
-enum ClickInteractionEvents {
-  kClickDetected = 0,
-  kPointerClickWithPointerdownAndPointerup = 1,
-  kPointerClickWithMissingPointerdownOnly = 2,
-  kPointerClickWithMissingPointerupOnly = 3,
-  kPointerClickWithMissingPointerdownAndPointerup = 4,
-  kPointerClickPointerIdDifferFromLastPointerIdAndPointerIdExistInMap = 5,
-  kPointerClickPointerIdDifferFromLastPointerIdAndOnlyLastPointerIdInMap = 6,
-  kPointerClickPointerIdDifferFromLastPointerIdAndNeitherInMap = 7,
-  kKeyboardClick = 8,
-  kMaxValue = kKeyboardClick,
-};
-// LINT.ThenChange(/tools/metrics/histograms/enums.xml:EventTimingClickInteractionEvents)
-
 void EmitSlowInteractionToNextPaintTraceEvent(
     const ResponsivenessMetrics::EventTimestamps& event,
     uint64_t event_id) {
