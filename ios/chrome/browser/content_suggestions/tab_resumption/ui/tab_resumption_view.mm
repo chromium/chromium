@@ -128,12 +128,6 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
   }
 }
 
-#pragma mark - TabResumptionConsumer
-- (void)shopCardDataCompleted:(TabResumptionItem*)item {
-  _item = item;
-  [self createSubviews];
-}
-
 #pragma mark - Private methods
 
 // Creates all the subviews.

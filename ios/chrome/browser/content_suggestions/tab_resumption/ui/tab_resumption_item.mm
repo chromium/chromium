@@ -32,18 +32,17 @@
 - (void)reconfigureWithItem:(TabResumptionItem*)item {
   DCHECK(self.commandHandler == item.commandHandler);
   _itemType = item.itemType;
-  _sessionName = item.sessionName;
-  _localWebState = item.localWebState;
-  _tabTitle = item.tabTitle;
-  _tabURL = item.tabURL;
-  _reason = item.reason;
-  _syncedTime = item.syncedTime;
-  _faviconImage = item.faviconImage;
-  _contentImage = item.contentImage;
-  _URLKey = item.URLKey;
-  _requestID = item.requestID;
-  _shopCardData = item.shopCardData;
-  _consumerSource = item.consumerSource;
+  self.sessionName = [item.sessionName copy];
+  self.localWebState = item.localWebState;
+  self.tabTitle = [item.tabTitle copy];
+  self.tabURL = item.tabURL;
+  self.reason = [item.reason copy];
+  self.syncedTime = item.syncedTime;
+  self.faviconImage = item.faviconImage;
+  self.contentImage = item.contentImage;
+  self.URLKey = item.URLKey;
+  self.requestID = item.requestID;
+  self.shopCardData = item.shopCardData;
 }
 
 - (BOOL)hasDifferentContentsFromConfig:(MagicStackModule*)config {
@@ -51,7 +50,7 @@
     return YES;
   }
   TabResumptionItem* item = static_cast<TabResumptionItem*>(config);
-  return _tabURL != item.tabURL;
+  return self.tabURL != item.tabURL;
 }
 
 #pragma mark - properties
@@ -74,23 +73,22 @@
 
 #pragma mark - NSCopying
 
-- (id)copyWithZone:(NSZone*)zone {
-  TabResumptionItem* copy =
+- (instancetype)copyWithZone:(NSZone*)zone {
+  TabResumptionItem* item =
       [[super copyWithZone:zone] initWithItemType:self.itemType];
-  copy.commandHandler = self.commandHandler;
-  copy.sessionName = self.sessionName;
-  copy.localWebState = self.localWebState;
-  copy.tabTitle = self.tabTitle;
-  copy.tabURL = self.tabURL;
-  copy.reason = self.reason;
-  copy.syncedTime = self.syncedTime;
-  copy.faviconImage = self.faviconImage;
-  copy.contentImage = self.contentImage;
-  copy.URLKey = self.URLKey;
-  copy.requestID = self.requestID;
-  copy.shopCardData = self.shopCardData;
-  copy.consumerSource = self.consumerSource;
-  return copy;
+  item.commandHandler = self.commandHandler;
+  item.sessionName = [self.sessionName copy];
+  item.localWebState = self.localWebState;
+  item.tabTitle = [self.tabTitle copy];
+  item.tabURL = self.tabURL;
+  item.reason = [self.reason copy];
+  item.syncedTime = self.syncedTime;
+  item.faviconImage = self.faviconImage;
+  item.contentImage = self.contentImage;
+  item.URLKey = self.URLKey;
+  item.requestID = self.requestID;
+  item.shopCardData = self.shopCardData;
+  return item;
 }
 
 @end

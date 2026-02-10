@@ -5,8 +5,6 @@
 source_set("ui") {
   sources = [
     "tab_resumption_commands.h",
-    "tab_resumption_consumer.h",
-    "tab_resumption_consumer_source.h",
     "tab_resumption_item.h",
     "tab_resumption_item.mm",
     "tab_resumption_view.h",

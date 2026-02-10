@@ -19,7 +19,6 @@ class Time;
 
 class GURL;
 @protocol TabResumptionCommands;
-@protocol TabResumptionConsumerSource;
 @class ShopCardData;
 
 // Tab resumption item types.
@@ -73,9 +72,6 @@ enum TabResumptionItemType {
 // ShopCard related information to render the ShopCard variants of
 // tab-resumption.
 @property(nonatomic, strong) ShopCardData* shopCardData;
-
-// Consumer source that receives ShopCardData update.
-@property(nonatomic, strong) id<TabResumptionConsumerSource> consumerSource;
 
 // The Item's designated initializer.
 - (instancetype)initWithItemType:(TabResumptionItemType)itemType
