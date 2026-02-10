@@ -197,9 +197,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // same flag.
   // TODO(crbug.com/445475304): Remove when tablet rollout is complete.
   feature_overrides.EnableFeature(feed::kAndroidOpenIncognitoAsWindow);
-  // TODO(crbug.com/427242080): Remove when tablet rollout is complete.
-  feature_overrides.EnableFeature(
-      chrome::android::kAndroidPinnedTabsTabletTabStrip);
 
   // Enable ANGLE/Vulkan features.
   // TODO (crbug.com//376280554): Enable these features with runtime checks
