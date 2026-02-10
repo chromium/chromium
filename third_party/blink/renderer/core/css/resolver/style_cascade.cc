@@ -459,7 +459,7 @@ const CSSUnparsedDeclarationValue* StyleCascade::ResolveSubstitutions(
     return nullptr;
   }
   return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
-      sequence.BuildVariableData());
+      sequence.BuildVariableData(), context);
 }
 
 void StyleCascade::AnalyzeIfNeeded() {
