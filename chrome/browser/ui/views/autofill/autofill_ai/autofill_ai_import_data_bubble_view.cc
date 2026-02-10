@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -153,8 +154,6 @@ AutofillAiImportDataBubbleView::BuildEntityAttributeRow(
       !controller_->IsSavePrompt() &&
       detail.update_type() !=
           EntityAttributeUpdateType::kNewEntityAttributeUnchanged;
-  const bool should_value_have_medium_weight =
-      controller_->IsSavePrompt() || existing_entity_added_or_updated_attribute;
 
   std::optional<std::u16string> accessibility_value;
   if (existing_entity_added_or_updated_attribute) {
@@ -166,10 +165,30 @@ AutofillAiImportDataBubbleView::BuildEntityAttributeRow(
         detail.attribute_value());
   }
 
+  const int new_value_font_style = [&]() {
+    if (!base::FeatureList::IsEnabled(features::kAutofillAiNewUpdatePrompt)) {
+      return (controller_->IsSavePrompt() ||
+              existing_entity_added_or_updated_attribute)
+                 ? views::style::STYLE_BODY_4_MEDIUM
+                 : views::style::STYLE_BODY_4;
+    }
+    if (controller_->IsSavePrompt()) {
+      return views::style::STYLE_BODY_4_MEDIUM;
+    }
+    return detail.update_type() ==
+                   EntityAttributeUpdateType::kNewEntityAttributeUnchanged
+               ? views::style::STYLE_BODY_4
+               : views::style::STYLE_BODY_4_BOLD;
+  }();
+
+  const bool with_blue_dot =
+      !base::FeatureList::IsEnabled(features::kAutofillAiNewUpdatePrompt) &&
+      existing_entity_added_or_updated_attribute;
+
   return CreateAutofillAiBubbleAttributeRow(
-      detail.attribute_name(), detail.attribute_value(), accessibility_value,
-      existing_entity_added_or_updated_attribute,
-      should_value_have_medium_weight);
+      detail.attribute_name(), detail.attribute_value(),
+      detail.old_attribute_value(), accessibility_value, new_value_font_style,
+      with_blue_dot);
 }
 
 std::unique_ptr<views::Label>

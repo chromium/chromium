@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,13 +31,20 @@ namespace {
 
 using ::testing::Bool;
 using ::testing::Combine;
-using TestParameterType = std::tuple<bool, bool>;
+using ::testing::Return;
+using TestParameterType = std::tuple<bool, bool, bool>;
 
 class AutofillAiImportDataBubbleViewBrowsertest
     : public UiBrowserTest,
       public testing::WithParamInterface<TestParameterType> {
  public:
-  AutofillAiImportDataBubbleViewBrowsertest() = default;
+  AutofillAiImportDataBubbleViewBrowsertest() {
+    if (IsRestyledUi(GetParam())) {
+      features_.InitWithFeatures({features::kAutofillAiNewUpdatePrompt}, {});
+    } else {
+      features_.InitWithFeatures({}, {features::kAutofillAiNewUpdatePrompt});
+    }
+  }
   ~AutofillAiImportDataBubbleViewBrowsertest() override = default;
 
   // BrowserTestBase:
@@ -45,8 +53,8 @@ class AutofillAiImportDataBubbleViewBrowsertest
 
     base::i18n::SetRTLForTesting(IsBrowserLanguageRTL(this->GetParam()));
     ON_CALL(mock_controller(), GetSaveUpdateDialogTitleImagesResourceId())
-        .WillByDefault(testing::Return(
-            IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE));
+        .WillByDefault(
+            Return(IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE));
   }
 
   void DismissUi() override { bubble_ = nullptr; }
@@ -57,12 +65,16 @@ class AutofillAiImportDataBubbleViewBrowsertest
   static bool IsBrowserLanguageRTL(const TestParameterType& param) {
     return std::get<1>(param);
   }
+  static bool IsRestyledUi(const TestParameterType& param) {
+    return std::get<2>(param);
+  }
 
   static std::string GetTestSuffix(
       const testing::TestParamInfo<TestParameterType>& param_info) {
     return base::StrCat(
         {IsDarkModeOn(param_info.param) ? "Dark" : "Light",
-         IsBrowserLanguageRTL(param_info.param) ? "BrowserRTL" : "BrowserLTR"});
+         IsBrowserLanguageRTL(param_info.param) ? "BrowserRTL" : "BrowserLTR",
+         IsRestyledUi(param_info.param) ? "_Restyled" : ""});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -97,6 +109,7 @@ class AutofillAiImportDataBubbleViewBrowsertest
   }
 
  private:
+  base::test::ScopedFeatureList features_;
   raw_ptr<AutofillAiImportDataBubbleView> bubble_ = nullptr;
   testing::NiceMock<MockAutofillAiImportDataController> mock_controller_;
 };
@@ -106,7 +119,7 @@ class AutofillAiImportDataBubbleViewBrowsertest
 IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        TypicalPassportCase_Save) {
   ON_CALL(mock_controller(), GetSaveUpdateDialogTitle())
-      .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
+      .WillByDefault(Return(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE)));
   std::vector<EntityAttributeUpdateDetails> details = {
       EntityAttributeUpdateDetails(
@@ -128,16 +141,15 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
           /*old_attribute_value=*/std::nullopt,
           EntityAttributeUpdateType::kNewEntityAttributeAdded)};
   ON_CALL(mock_controller(), GetUpdatedAttributesDetails())
-      .WillByDefault(testing::Return(details));
-  ON_CALL(mock_controller(), IsSavePrompt())
-      .WillByDefault(testing::Return(true));
+      .WillByDefault(Return(details));
+  ON_CALL(mock_controller(), IsSavePrompt()).WillByDefault(Return(true));
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        TypicalPassportCase_Update) {
   ON_CALL(mock_controller(), GetSaveUpdateDialogTitle())
-      .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
+      .WillByDefault(Return(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE)));
   std::vector<EntityAttributeUpdateDetails> details = {
       EntityAttributeUpdateDetails(
@@ -159,21 +171,19 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
           /*old_attribute_value=*/std::nullopt,
           EntityAttributeUpdateType::kNewEntityAttributeUnchanged)};
   ON_CALL(mock_controller(), GetUpdatedAttributesDetails())
-      .WillByDefault(testing::Return(details));
+      .WillByDefault(Return(details));
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        WalletableEntity_Save) {
   ON_CALL(mock_controller(), GetSaveUpdateDialogTitle())
-      .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
+      .WillByDefault(Return(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE)));
-  ON_CALL(mock_controller(), IsSavePrompt())
-      .WillByDefault(testing::Return(true));
-  ON_CALL(mock_controller(), IsWalletableEntity())
-      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_controller(), IsSavePrompt()).WillByDefault(Return(true));
+  ON_CALL(mock_controller(), IsWalletableEntity()).WillByDefault(Return(true));
   ON_CALL(mock_controller(), GetPrimaryAccountEmail())
-      .WillByDefault(testing::Return(u"machadodeassis@gmail.com"));
+      .WillByDefault(Return(u"machadodeassis@gmail.com"));
   std::vector<EntityAttributeUpdateDetails> details = {
       EntityAttributeUpdateDetails(
           /*attribute_name=*/u"Owner",
@@ -190,21 +200,19 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
           /*old_attribute_value=*/std::nullopt,
           EntityAttributeUpdateType::kNewEntityAttributeAdded)};
   ON_CALL(mock_controller(), GetUpdatedAttributesDetails())
-      .WillByDefault(testing::Return(details));
+      .WillByDefault(Return(details));
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        WalletableEntity_Update) {
   ON_CALL(mock_controller(), GetSaveUpdateDialogTitle())
-      .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
+      .WillByDefault(Return(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE)));
-  ON_CALL(mock_controller(), IsSavePrompt())
-      .WillByDefault(testing::Return(false));
-  ON_CALL(mock_controller(), IsWalletableEntity())
-      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_controller(), IsSavePrompt()).WillByDefault(Return(false));
+  ON_CALL(mock_controller(), IsWalletableEntity()).WillByDefault(Return(true));
   ON_CALL(mock_controller(), GetPrimaryAccountEmail())
-      .WillByDefault(testing::Return(u"machadodeassis@gmail.com"));
+      .WillByDefault(Return(u"machadodeassis@gmail.com"));
   std::vector<EntityAttributeUpdateDetails> details = {
       EntityAttributeUpdateDetails(
           /*attribute_name=*/u"Owner",
@@ -221,7 +229,7 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
           /*old_attribute_value=*/std::nullopt,
           EntityAttributeUpdateType::kNewEntityAttributeUnchanged)};
   ON_CALL(mock_controller(), GetUpdatedAttributesDetails())
-      .WillByDefault(testing::Return(details));
+      .WillByDefault(Return(details));
   ShowAndVerifyUi();
 }
 
@@ -229,7 +237,7 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
 IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        LongAttributeNamesAndValues_Update) {
   ON_CALL(mock_controller(), GetSaveUpdateDialogTitle())
-      .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
+      .WillByDefault(Return(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE)));
   std::vector<EntityAttributeUpdateDetails> details = {
       EntityAttributeUpdateDetails(
@@ -260,7 +268,7 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
           /*old_attribute_value=*/std::nullopt,
           EntityAttributeUpdateType::kNewEntityAttributeUnchanged)};
   ON_CALL(mock_controller(), GetUpdatedAttributesDetails())
-      .WillByDefault(testing::Return(details));
+      .WillByDefault(Return(details));
   ShowAndVerifyUi();
 }
 
@@ -268,10 +276,9 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
 IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        LongAttributeNamesAndValues_Save) {
   ON_CALL(mock_controller(), GetSaveUpdateDialogTitle())
-      .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
+      .WillByDefault(Return(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE)));
-  ON_CALL(mock_controller(), IsSavePrompt())
-      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_controller(), IsSavePrompt()).WillByDefault(Return(true));
   std::vector<EntityAttributeUpdateDetails> details = {
       // Test only the value being long.
       EntityAttributeUpdateDetails(
@@ -308,14 +315,16 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
           /*old_attribute_value=*/std::nullopt,
           EntityAttributeUpdateType::kNewEntityAttributeAdded)};
   ON_CALL(mock_controller(), GetUpdatedAttributesDetails())
-      .WillByDefault(testing::Return(details));
+      .WillByDefault(Return(details));
   ShowAndVerifyUi();
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     AutofillAiImportDataBubbleViewBrowsertest,
-    Combine(/*is_dark_mode=*/Bool(), /*is_rtl=*/Bool()),
+    Combine(/*is_dark_mode=*/Bool(),
+            /*is_rtl=*/Bool(),
+            /*is_restyled_ui*/ Bool()),
     AutofillAiImportDataBubbleViewBrowsertest::GetTestSuffix);
 
 }  // namespace

@@ -10,11 +10,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -81,7 +83,7 @@ std::unique_ptr<views::View> CreateAutofillAiBubbleAttributeValueView(
     std::u16string attribute_value,
     std::optional<std::u16string> accessibility_value,
     bool with_blue_dot,
-    bool use_medium_font) {
+    int new_value_font_style) {
   std::unique_ptr<views::View> attribute_value_wrapper =
       CreateAutofillAiBubbleAttributeCellContainer(
           views::BoxLayout::CrossAxisAlignment::kEnd);
@@ -89,8 +91,7 @@ std::unique_ptr<views::View> CreateAutofillAiBubbleAttributeValueView(
       views::Builder<views::Label>()
           .SetText(attribute_value)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT)
-          .SetTextStyle(use_medium_font ? views::style::STYLE_BODY_4_MEDIUM
-                                        : views::style::STYLE_BODY_4)
+          .SetTextStyle(new_value_font_style)
           .SetAccessibleRole(ax::mojom::Role::kDefinition)
           .SetMultiLine(true)
           .SetEnabledColor(ui::kColorSysOnSurface)
@@ -119,7 +120,7 @@ std::unique_ptr<views::View> CreateAutofillAiBubbleAttributeValueView(
   views::Label* blue_dot = updated_entity_dot_and_value_wrapper->AddChildView(
       views::Builder<views::Label>()
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT)
-          .SetTextStyle(views::style::STYLE_BODY_4_MEDIUM)
+          .SetTextStyle(new_value_font_style)
           .SetEnabledColor(ui::kColorButtonBackgroundProminent)
           .SetText(base::StrCat({kNewValueDot, u" "}))
           .Build());
@@ -154,8 +155,7 @@ std::unique_ptr<views::View> CreateAutofillAiBubbleAttributeValueView(
         views::Builder<views::Label>()
             .SetText(std::move(remaining_lines))
             .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT)
-            .SetTextStyle(use_medium_font ? views::style::STYLE_BODY_4_MEDIUM
-                                          : views::style::STYLE_BODY_4)
+            .SetTextStyle(new_value_font_style)
             .SetAccessibleRole(ax::mojom::Role::kDefinition)
             .SetMultiLine(true)
             .SetEnabledColor(ui::kColorSysOnSurface)
@@ -171,6 +171,55 @@ std::unique_ptr<views::View> CreateAutofillAiBubbleAttributeValueView(
   }
   return attribute_value_wrapper;
 }
+
+// Returns an attribute row. If there was an old attribute value, it will be
+// displayed with a strikethrough below the new attribute value and the new
+// attribute value is bold.
+std::unique_ptr<views::View> CreateRestyledAutofillAiBubbleAttributeValueView(
+    std::u16string new_attribute_value,
+    std::optional<std::u16string> old_attribute_value,
+    std::optional<std::u16string> accessibility_value,
+    int new_value_font_style) {
+  std::unique_ptr<views::View> attribute_value_wrapper =
+      CreateAutofillAiBubbleAttributeCellContainer(
+          views::BoxLayout::CrossAxisAlignment::kEnd);
+
+  attribute_value_wrapper->AddChildView(
+      views::Builder<views::Label>()
+          .SetText(std::move(new_attribute_value))
+          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT)
+          .SetTextStyle(new_value_font_style)
+          .SetAccessibleRole(ax::mojom::Role::kDefinition)
+          .SetMultiLine(true)
+          .SetEnabledColor(ui::kColorSysOnSurface)
+          .SetAllowCharacterBreak(true)
+          .SetMaximumWidth(GetAttributeCellMaxWidth())
+          .Build());
+  if (accessibility_value) {
+    attribute_value_wrapper->SetAccessibleRole(ax::mojom::Role::kDefinition);
+    attribute_value_wrapper->GetViewAccessibility().SetName(
+        *std::move(accessibility_value));
+  }
+
+  if (old_attribute_value) {
+    auto old_value_label =
+        views::Builder<views::Label>()
+            .SetText(*std::move(old_attribute_value))
+            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT)
+            .SetTextStyle(views::style::STYLE_BODY_4)
+            .SetAccessibleRole(ax::mojom::Role::kDefinition)
+            .SetMultiLine(true)
+            .SetEnabledColor(ui::kColorLabelForegroundDisabled)
+            .SetAllowCharacterBreak(true)
+            .SetMaximumWidth(GetAttributeCellMaxWidth())
+            .Build();
+    old_value_label->SetFontList(old_value_label->font_list().DeriveWithStyle(
+        gfx::Font::STRIKE_THROUGH));
+    attribute_value_wrapper->AddChildView(std::move(old_value_label));
+  }
+  return attribute_value_wrapper;
+}
+
 }  // namespace
 
 gfx::Insets GetAutofillAiBubbleInnerMargins() {
@@ -222,10 +271,11 @@ CreateAutofillAiBubbleSubtitleContainer() {
 
 std::unique_ptr<views::View> CreateAutofillAiBubbleAttributeRow(
     std::u16string attribute_name,
-    std::u16string attribute_value,
+    std::u16string new_attribute_value,
+    std::optional<std::u16string> old_attribute_value,
     std::optional<std::u16string> accessibility_value,
-    bool with_blue_dot,
-    bool use_medium_font) {
+    int new_value_font_style,
+    bool with_blue_dot) {
   auto row = views::Builder<views::BoxLayoutView>()
                  .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
                  .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
@@ -233,9 +283,15 @@ std::unique_ptr<views::View> CreateAutofillAiBubbleAttributeRow(
 
   row->AddChildView(
       CreateAutofillAiBubbleAttributeNameView(std::move(attribute_name)));
-  row->AddChildView(CreateAutofillAiBubbleAttributeValueView(
-      std::move(attribute_value), std::move(accessibility_value), with_blue_dot,
-      use_medium_font));
+  if (base::FeatureList::IsEnabled(features::kAutofillAiNewUpdatePrompt)) {
+    row->AddChildView(CreateRestyledAutofillAiBubbleAttributeValueView(
+        std::move(new_attribute_value), std::move(old_attribute_value),
+        std::move(accessibility_value), new_value_font_style));
+  } else {
+    row->AddChildView(CreateAutofillAiBubbleAttributeValueView(
+        std::move(new_attribute_value), std::move(accessibility_value),
+        with_blue_dot, new_value_font_style));
+  }
 
   // Set every child to expand with the same ratio.
   for (auto child : row->children()) {

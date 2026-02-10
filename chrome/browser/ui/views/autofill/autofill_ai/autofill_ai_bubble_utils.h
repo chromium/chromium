@@ -10,6 +10,8 @@
 #include <string>
 #include <string_view>
 
+#include "ui/views/style/typography.h"
+
 namespace gfx {
 class Insets;
 }  // namespace gfx
@@ -40,19 +42,22 @@ gfx::Insets GetAutofillAiBubbleInnerMargins();
 // Creates a view container for the autofill ai bubble subtitle.
 std::unique_ptr<views::BoxLayoutView> CreateAutofillAiBubbleSubtitleContainer();
 
-// Creates a row view displaying an attribute name and its value for autofill ai
-// bubble.
-// attribute_name: The name of the attribute.
-// attribute_value: The value of the attribute.
-// accessibility_value: Optional accessibility text for the value.
-// with_blue_dot: Whether to display a blue dot next to the value.
-// use_medium_font: Whether to use a medium font for the value.
+// Creates a row view displaying an attribute name and its value for an Autofill
+// AI bubble.
+// - `attribute_name`, the name of the attribute.
+// - `new_attribute_value`, the new value of the attribute.
+// - `old_attribute_value`, the previous value of the attribute (if this is an
+//    update).
+// - `accessibility_value`,  the accessibility text for the value.
+// - `value_font_style`, the font style to use for the new value label.
+// - `with_blue_dot`, whether to display a blue dot next to the value
 std::unique_ptr<views::View> CreateAutofillAiBubbleAttributeRow(
     std::u16string attribute_name,
-    std::u16string attribute_value,
+    std::u16string new_attribute_value,
+    std::optional<std::u16string> old_attribute_value = std::nullopt,
     std::optional<std::u16string> accessibility_value = std::nullopt,
-    bool with_blue_dot = false,
-    bool use_medium_font = true);
+    int new_value_font_style = views::style::STYLE_BODY_4_MEDIUM,
+    bool with_blue_dot = true);
 
 }  // namespace autofill
 
