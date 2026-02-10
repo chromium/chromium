@@ -1043,6 +1043,8 @@ public class ContextMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
+    // TODO(crbug.com/483149206): Test is flaky on desktop bots.
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testContextMenuRetrievesVideoOptions() throws TimeoutException {
         Tab tab = mActivityTestRule.getActivityTab();
         DOMUtils.clickNode(mActivityTestRule.getWebContents(), "videoDOMElement");
