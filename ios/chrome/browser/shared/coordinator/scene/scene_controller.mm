@@ -2550,6 +2550,8 @@ using UserFeedbackDataCallback =
 
   if ([self isIncognitoForced]) {
     targetMode = ApplicationModeForTabOpening::INCOGNITO;
+  } else if ([self isIncognitoDisabled]) {
+    targetMode = ApplicationModeForTabOpening::NORMAL;
   } else if (!canShowIncognitoInterstitial &&
              targetMode == ApplicationModeForTabOpening::UNDETERMINED) {
     // Fallback to NORMAL mode if the Incognito interstitial is not
