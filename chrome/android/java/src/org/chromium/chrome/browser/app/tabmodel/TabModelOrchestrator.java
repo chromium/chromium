@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Activity;
 
 import androidx.annotation.VisibleForTesting;
@@ -16,12 +14,10 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
-import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
@@ -251,12 +247,7 @@ public class TabModelOrchestrator {
      * Clean up persistent state for a given instance.
      * @param instanceId Instance ID.
      */
-    public void cleanupInstance(int instanceId) {
-        PersistentStoreMigrationManager migrationManager =
-                TabWindowManagerSingleton.getInstance()
-                        .getPersistentStoreMigrationManagerById(instanceId);
-        assumeNonNull(migrationManager).onWindowCleared();
-    }
+    public void cleanupInstance(int instanceId) {}
 
     /**
      * If there is an asynchronous session restore in-progress, try to synchronously restore the

@@ -692,10 +692,6 @@ public final class ChromePreferenceKeys {
     /** Preference to indicate whether payment request has been completed successfully once. */
     public static final String PAYMENTS_PAYMENT_COMPLETE_ONCE = "payment_complete_once";
 
-    /** Represents the current authoritative store type for a given window. */
-    public static final KeyPrefix TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE =
-            new KeyPrefix("Chrome.TabPersistence.CurrentAuthoritativeStore.*");
-
     /** Represents a persistent store that has fully written all tab state for a given window. */
     public static final KeyPrefix TAB_PERSISTENCE_SHADOW_WRITTEN_STORE =
             new KeyPrefix("Chrome.TabPersistence.ShadowWrittenStore.*");
@@ -1376,7 +1372,6 @@ public final class ChromePreferenceKeys {
                 TAB_DECLUTTER_DIALOG_IPH_DISMISS_COUNT,
                 TAB_OR_GROUP_TEARING_MAX_INSTANCES_FAILURE_START_TIME_MS,
                 TAB_OR_GROUP_TEARING_MAX_INSTANCES_FAILURE_COUNT,
-                TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE.pattern(),
                 TAB_PERSISTENCE_SHADOW_WRITTEN_STORE.pattern(),
                 TIPS_NOTIFICATIONS_CHANNEL_ENABLED,
                 TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN,

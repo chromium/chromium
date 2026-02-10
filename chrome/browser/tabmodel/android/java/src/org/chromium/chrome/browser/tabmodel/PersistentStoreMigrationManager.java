@@ -70,7 +70,4 @@ public interface PersistentStoreMigrationManager {
 
     /** Called upon the permanent destruction of all windows' persisted shadow store tab data. */
     void onAllShadowStoresRazed();
-
-    /** Called upon the permanent destruction of a window's persisted data. */
-    void onWindowCleared();
 }
