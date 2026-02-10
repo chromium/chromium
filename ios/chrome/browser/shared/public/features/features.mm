@@ -1067,3 +1067,9 @@ BASE_FEATURE(kComposeboxAIMDisabled, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsComposeboxAIMDisabled() {
   return base::FeatureList::IsEnabled(kComposeboxAIMDisabled);
 }
+
+BASE_FEATURE(kDisableComposeboxFromAIMNTP, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDisableComposeboxFromAIMNTPEnabled() {
+  return base::FeatureList::IsEnabled(kDisableComposeboxFromAIMNTP);
+}

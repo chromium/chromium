@@ -2760,6 +2760,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"composebox-aim-disabled", flag_descriptions::kComposeboxAIMDisabledName,
      flag_descriptions::kComposeboxAIMDisabledDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kComposeboxAIMDisabled)},
+    {"disable-composebox-from-aimntp",
+     flag_descriptions::kDisableComposeboxFromAIMNTPName,
+     flag_descriptions::kDisableComposeboxFromAIMNTPDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDisableComposeboxFromAIMNTP)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

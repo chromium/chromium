@@ -1825,7 +1825,7 @@
 
 - (void)openMIA {
   [self.NTPMetricsRecorder recordMIATapped];
-  if (!IsComposeboxAIMDisabled() &&
+  if (!IsDisableComposeboxFromAIMNTPEnabled() && !IsComposeboxAIMDisabled() &&
       MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPAIMButton)) {
     return;
   }

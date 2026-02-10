@@ -977,4 +977,10 @@ BASE_DECLARE_FEATURE(kComposeboxAIMDisabled);
 // Returns true if the ComposeboxAIMDisabled feature is enabled.
 bool IsComposeboxAIMDisabled();
 
+// Enables the DisableComposeboxFromAIMNTP feature.
+BASE_DECLARE_FEATURE(kDisableComposeboxFromAIMNTP);
+
+// Returns true if the DisableComposeboxFromAIMNTP feature is enabled.
+bool IsDisableComposeboxFromAIMNTPEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
