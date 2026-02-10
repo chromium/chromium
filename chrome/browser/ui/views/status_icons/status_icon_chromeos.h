@@ -5,16 +5,25 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_STATUS_ICON_CHROMEOS_H_
 #define CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_STATUS_ICON_CHROMEOS_H_
 
-#include "chrome/browser/status_icons/status_icon.h"
+#include <optional>
 
-class StatusIconChromeOS : public StatusIcon {
+#include "chrome/browser/status_icons/status_icon.h"
+#include "ui/display/display.h"
+#include "ui/display/display_observer.h"
+#include "ui/gfx/image/image_skia.h"
+
+class StatusIconChromeOS : public StatusIcon, public display::DisplayObserver {
  public:
-  StatusIconChromeOS();
+  explicit StatusIconChromeOS(int64_t icon_id);
 
   StatusIconChromeOS(const StatusIconChromeOS&) = delete;
   StatusIconChromeOS& operator=(const StatusIconChromeOS&) = delete;
 
   ~StatusIconChromeOS() override;
+
+  void Initialize();
+
+  void OnClick();
 
   // StatusIcon:
   void SetImage(const gfx::ImageSkia& image) override;
@@ -24,10 +33,23 @@ class StatusIconChromeOS : public StatusIcon {
                       const std::u16string& contents,
                       const message_center::NotifierId& notifier_id) override;
 
-  void OnClick();
+  // display::DisplayObserver:
+  void OnDisplayAdded(const display::Display& new_display) override;
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override;
 
  protected:
   void UpdatePlatformContextMenu(StatusIconMenuModel* model) override;
+
+ private:
+  void AddStatusIconForDisplay(int64_t display_id);
+
+  const int64_t id_;
+  std::optional<std::u16string> tool_tip_;
+  std::optional<gfx::ImageSkia> image_;
+
+  bool initialized_ = false;
+
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_STATUS_ICON_CHROMEOS_H_

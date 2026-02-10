@@ -2,4 +2,8 @@ specific_include_rules = {
   ".*dbus.*": [
     "+dbus",
   ],
+
+  "status_icon_chromeos\\.cc": [
+    "+ash/shell.h",
+  ],
 }

@@ -17,9 +17,14 @@ std::unique_ptr<StatusIcon> StatusTrayChromeOS::CreatePlatformStatusIcon(
     StatusIconType type,
     const gfx::ImageSkia& image,
     const std::u16string& tool_tip) {
-  auto icon = std::make_unique<StatusIconChromeOS>();
+  // TODO(b:463428431): Calculate correct icon id..
+  int64_t next_icon_id = 0;
+
+  auto icon = std::make_unique<StatusIconChromeOS>(next_icon_id);
   icon->SetImage(image);
   icon->SetToolTip(tool_tip);
+  icon->Initialize();
+
   return icon;
 }
 
