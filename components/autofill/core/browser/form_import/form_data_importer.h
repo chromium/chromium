@@ -61,27 +61,6 @@ class FormDataImporter : public AddressDataManager::Observer,
     kDuplicateLocalServerCard,
   };
 
-  // Context for most recently fetched payment method.
-  struct FetchedPaymentsDataContext {
-    // The instrument id of the card that has been most recently retrieved via
-    // Autofill Downstream (card retrieval from server). This can be used to
-    // decide whether the card submitted is the same card retrieved. This field
-    // is optional and is set when an Autofill credit card Downstream has
-    // happened.
-    std::optional<int64_t> fetched_card_instrument_id;
-
-    // Whether the last unmasked card (note: it may or may not be the extracted
-    // card) is fetched from the local cache (instead of going through a server
-    // retrieval process). This field is optional and is set when an Autofill
-    // credit card Downstream has happened.
-    std::optional<bool> card_was_fetched_from_cache;
-
-    // Whether Save and Fill suggestion was clicked on for the last fetched
-    // card. If so, no other payments post-checkout flow should be offered
-    // again.
-    bool card_submitted_through_save_and_fill = false;
-  };
-
   // The parameters should outlive the FormDataImporter.
   FormDataImporter(AutofillClient* client,
                    history::HistoryService* history_service);
@@ -127,10 +106,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   // history::HistoryServiceObserver
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
-
-  FetchedPaymentsDataContext& fetched_payments_data_context() {
-    return fetched_payments_data_context_;
-  }
 
   // See `FormAssociator::GetFormAssociations()`.
   FormStructure::FormAssociations GetFormAssociations(
@@ -367,10 +342,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   // mandatory reauth.
   std::optional<NonInteractivePaymentMethodType>
       payment_method_type_if_non_interactive_authentication_flow_completed_;
-
-  // Struct to record contexts for the last payments data fetch. Should be reset
-  // when a new fetch starts.
-  FetchedPaymentsDataContext fetched_payments_data_context_;
 
   friend class FormDataImporterTestApi;
 };

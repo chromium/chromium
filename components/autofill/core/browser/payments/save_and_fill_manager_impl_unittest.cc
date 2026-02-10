@@ -264,7 +264,8 @@ TEST_F(SaveAndFillManagerImplTest,
 
   EXPECT_TRUE(autofill_client()
                   .GetFormDataImporter()
-                  ->fetched_payments_data_context()
+                  ->GetPaymentsFormDataImporter()
+                  .fetched_payments_data_context()
                   .card_submitted_through_save_and_fill);
 }
 

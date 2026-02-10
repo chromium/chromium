@@ -289,7 +289,8 @@ void FormDataImporter::ImportAndProcessFormData(
 
   // Reset last fetch payments method metadata after all payments related form
   // data processing logic is finished.
-  fetched_payments_data_context_ = FetchedPaymentsDataContext();
+  GetPaymentsFormDataImporter().fetched_payments_data_context() =
+      payments::PaymentsFormDataImporter::FetchedPaymentsDataContext();
 
   // Record the prompt status iff at least one prompt could have been displayed.
   // Recording that status isn't pertinent otherwise. When there is a full
@@ -853,11 +854,11 @@ bool FormDataImporter::ProcessExtractedCreditCard(
 
   auto* virtual_card_enrollment_manager =
       client_->GetPaymentsAutofillClient()->GetVirtualCardEnrollmentManager();
+  auto& context = GetPaymentsFormDataImporter().fetched_payments_data_context();
   if (virtual_card_enrollment_manager &&
       virtual_card_enrollment_manager->ShouldOfferVirtualCardEnrollment(
-          *extracted_credit_card,
-          fetched_payments_data_context_.fetched_card_instrument_id,
-          fetched_payments_data_context_.card_was_fetched_from_cache)) {
+          *extracted_credit_card, context.fetched_card_instrument_id,
+          context.card_was_fetched_from_cache)) {
     virtual_card_enrollment_manager->InitVirtualCardEnroll(
         *extracted_credit_card, VirtualCardEnrollmentSource::kDownstream,
         base::BindOnce(
@@ -954,7 +955,9 @@ std::optional<CreditCard> FormDataImporter::ExtractCreditCard(
   // If Save and Fill suggestion was clicked (regardless of whether the card was
   // saved or not eventually) before the form extraction, don't offer other
   // payments post-checkout flows.
-  if (fetched_payments_data_context_.card_submitted_through_save_and_fill) {
+  if (GetPaymentsFormDataImporter()
+          .fetched_payments_data_context()
+          .card_submitted_through_save_and_fill) {
     return std::nullopt;
   }
 

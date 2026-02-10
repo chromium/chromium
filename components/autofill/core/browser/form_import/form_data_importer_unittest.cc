@@ -2470,6 +2470,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_SaveAndFillOccurred) {
   FormData form = CreateFullCreditCardForm("Jim Johansen", "4111111111111111",
                                            "02", "2999");
   form_data_importer()
+      .GetPaymentsFormDataImporter()
       .fetched_payments_data_context()
       .card_submitted_through_save_and_fill = true;
   std::unique_ptr<FormStructure> form_structure =
@@ -3684,6 +3685,7 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_VirtualCardEligible) {
       .set_credit_card_import_type(
           FormDataImporter::CreditCardImportType::kServerCard);
   form_data_importer()
+      .GetPaymentsFormDataImporter()
       .fetched_payments_data_context()
       .fetched_card_instrument_id = 2222;
 
@@ -3699,6 +3701,7 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_VirtualCardEligible) {
                                       ukm_source_id()));
 
   form_data_importer()
+      .GetPaymentsFormDataImporter()
       .fetched_payments_data_context()
       .fetched_card_instrument_id = 1111;
   EXPECT_CALL(virtual_card_enrollment_manager(),
