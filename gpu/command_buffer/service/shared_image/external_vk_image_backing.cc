@@ -10,7 +10,6 @@
 #include "base/auto_reset.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "build/build_config.h"
@@ -82,13 +81,6 @@
 namespace gpu {
 
 namespace {
-
-// Allows ExternalVkImage to use CPU readback+upload path for it instead of
-// using Vulkan staging buffer. This might be less efficient path than using
-// staging buffers. This is fine since it is used on linux only when a user
-// forces Vulkan ON.
-BASE_FEATURE(kUseCpuFallbackPathForExternalVkImage,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 class ScopedDedicatedMemoryObject {
  public:
@@ -1039,297 +1031,59 @@ ExternalVkImageBacking::GetMapPlaneData() const {
 }
 
 void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
-  if (base::FeatureList::IsEnabled(kUseCpuFallbackPathForExternalVkImage)) {
-    DCHECK(use_separate_gl_texture());
-    DCHECK_EQ(vk_textures_.size(), gl_textures_.size());
+  DCHECK(use_separate_gl_texture());
+  DCHECK_EQ(vk_textures_.size(), gl_textures_.size());
 
-    if (!MakeGLContextCurrent()) {
+  if (!MakeGLContextCurrent()) {
+    return;
+  }
+
+  auto [plane_data, total_data_bytes] = GetMapPlaneData();
+  std::vector<uint8_t> cpu_buffer(total_data_bytes);
+
+  std::vector<SkPixmap> pixmaps;
+  for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
+    auto& sk_image_info = plane_data[plane].image_info;
+    uint8_t* memory = UNSAFE_TODO(cpu_buffer.data() + plane_data[plane]).offset;
+    pixmaps.emplace_back(sk_image_info, memory, sk_image_info.minRowBytes());
+
+    if (!gl_textures_[plane].ReadbackToMemory(pixmaps.back())) {
+      DLOG(ERROR) << "GL readback failed";
       return;
     }
+  }
 
-    auto [plane_data, total_data_bytes] = GetMapPlaneData();
-    std::vector<uint8_t> cpu_buffer(total_data_bytes);
-
-    std::vector<SkPixmap> pixmaps;
-    for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
-      auto& sk_image_info = plane_data[plane].image_info;
-      uint8_t* memory =
-          UNSAFE_TODO(cpu_buffer.data() + plane_data[plane]).offset;
-      pixmaps.emplace_back(sk_image_info, memory, sk_image_info.minRowBytes());
-
-      if (!gl_textures_[plane].ReadbackToMemory(pixmaps.back())) {
-        DLOG(ERROR) << "GL readback failed";
-        return;
-      }
-    }
-
-    if (!UploadToVkImage(pixmaps)) {
-      DLOG(ERROR) << "UploadToVkImage failed";
-    }
-  } else {
-    CopyPixelsFromGLTextureToVkImageUsingStagingBuffer();
+  if (!UploadToVkImage(pixmaps)) {
+    DLOG(ERROR) << "UploadToVkImage failed";
   }
 }
 
 void ExternalVkImageBacking::CopyPixelsFromVkImageToGLTexture() {
-  if (base::FeatureList::IsEnabled(kUseCpuFallbackPathForExternalVkImage)) {
-    DCHECK(use_separate_gl_texture());
-    DCHECK_EQ(vk_textures_.size(), gl_textures_.size());
-
-    if (!MakeGLContextCurrent()) {
-      return;
-    }
-
-    auto [plane_data, total_data_bytes] = GetMapPlaneData();
-    std::vector<uint8_t> cpu_buffer(total_data_bytes);
-
-    std::vector<SkPixmap> pixmaps;
-    for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
-      auto& sk_image_info = plane_data[plane].image_info;
-      uint8_t* memory =
-          UNSAFE_TODO(cpu_buffer.data() + plane_data[plane]).offset;
-      pixmaps.emplace_back(sk_image_info, memory, sk_image_info.minRowBytes());
-    }
-
-    if (!ReadbackToMemory(pixmaps)) {
-      DLOG(ERROR) << "ReadbackToMemory failed";
-      return;
-    }
-
-    if (!UploadToGLTexture(pixmaps)) {
-      DLOG(ERROR) << "UploadToGLTexture failed";
-    }
-  } else {
-    CopyPixelsFromVKImageToGLTextureUsingStagingBuffer();
-  }
-}
-
-void ExternalVkImageBacking::
-    CopyPixelsFromGLTextureToVkImageUsingStagingBuffer() {
   DCHECK(use_separate_gl_texture());
   DCHECK_EQ(vk_textures_.size(), gl_textures_.size());
 
-  // Make sure GrContext is not using GL. So we don't need reset GrContext
-  DCHECK(!context_state_->GrContextIsGL());
-
-  // Make sure a gl context is current, since textures are shared between all gl
-  // contexts, we don't care which gl context is current.
   if (!MakeGLContextCurrent()) {
     return;
   }
 
   auto [plane_data, total_data_bytes] = GetMapPlaneData();
-  VkBufferCreateInfo buffer_create_info = {
-      .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-      .size = total_data_bytes,
-      .usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-  };
+  std::vector<uint8_t> cpu_buffer(total_data_bytes);
 
-  VmaAllocator allocator =
-      context_state()->vk_context_provider()->GetDeviceQueue()->vma_allocator();
-  VkBuffer stage_buffer = VK_NULL_HANDLE;
-  VmaAllocation stage_allocation = VK_NULL_HANDLE;
-  VkResult result = vma::CreateBuffer(allocator, &buffer_create_info,
-                                      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                                          VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                                      0, &stage_buffer, &stage_allocation);
-  if (result != VK_SUCCESS) {
-    DLOG(ERROR) << "vkCreateBuffer() failed." << result;
-    return;
-  }
-
-  absl::Cleanup destroy_buffer = [&]() {
-    vma::DestroyBuffer(allocator, stage_buffer, stage_allocation);
-  };
-
-  void* buffer = nullptr;
-  result = vma::MapMemory(allocator, stage_allocation, &buffer);
-  if (result != VK_SUCCESS) {
-    DLOG(ERROR) << "vma::MapMemory() failed. " << result;
-    return;
-  }
-
+  std::vector<SkPixmap> pixmaps;
   for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
     auto& sk_image_info = plane_data[plane].image_info;
-    uint8_t* memory =
-        UNSAFE_TODO(static_cast<uint8_t*>(buffer) + plane_data[plane]).offset;
-    SkPixmap pixmap(sk_image_info, memory, sk_image_info.minRowBytes());
-
-    if (!gl_textures_[plane].ReadbackToMemory(pixmap)) {
-      DLOG(ERROR) << "GL readback failed";
-      vma::UnmapMemory(allocator, stage_allocation);
-      return;
-    }
+    uint8_t* memory = UNSAFE_TODO(cpu_buffer.data() + plane_data[plane]).offset;
+    pixmaps.emplace_back(sk_image_info, memory, sk_image_info.minRowBytes());
   }
 
-  vma::UnmapMemory(allocator, stage_allocation);
-
-  std::vector<ExternalSemaphore> external_semaphores;
-  if (!BeginAccessInternal(/*readonly=*/false, &external_semaphores)) {
-    DLOG(ERROR) << "BeginAccess() failed.";
+  if (!ReadbackToMemory(pixmaps)) {
+    DLOG(ERROR) << "ReadbackToMemory failed";
     return;
   }
 
-  // Everything was successful so `stage_buffer` + `stage_allocation` ownership
-  // will be passed to EnqueueBufferCleanupForSubmittedWork().
-  std::move(destroy_buffer).Cancel();
-
-  auto command_buffer = command_pool_->CreatePrimaryCommandBuffer();
-  CHECK(command_buffer);
-  {
-    ScopedSingleUseCommandBufferRecorder recorder(*command_buffer);
-
-    for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
-      GrVkImageInfo image_info = vk_textures_[plane].GetGrVkImageInfo();
-      if (image_info.fImageLayout != VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
-        command_buffer->TransitionImageLayout(
-            image_info.fImage, image_info.fImageLayout,
-            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-        GrBackendTextures::SetVkImageLayout(
-            &vk_textures_[plane].backend_texture,
-            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-      }
-
-      auto& sk_image_info = plane_data[plane].image_info;
-      command_buffer->CopyBufferToImage(
-          stage_buffer, image_info.fImage, sk_image_info.width(),
-          sk_image_info.height(), sk_image_info.width(), sk_image_info.height(),
-          plane_data[plane].offset);
-    }
+  if (!UploadToGLTexture(pixmaps)) {
+    DLOG(ERROR) << "UploadToGLTexture failed";
   }
-
-  if (!need_synchronization()) {
-    DCHECK(external_semaphores.empty());
-    command_buffer->Submit(0, nullptr, 0, nullptr);
-    EndAccessInternal(/*readonly=*/false, ExternalSemaphore());
-
-    fence_helper()->EnqueueVulkanObjectCleanupForSubmittedWork(
-        std::move(command_buffer));
-    fence_helper()->EnqueueBufferCleanupForSubmittedWork(stage_buffer,
-                                                         stage_allocation);
-    return;
-  }
-
-  std::vector<VkSemaphore> begin_access_semaphores;
-  begin_access_semaphores.reserve(external_semaphores.size());
-  for (auto& external_semaphore : external_semaphores) {
-    begin_access_semaphores.emplace_back(external_semaphore.GetVkSemaphore());
-  }
-
-  auto end_access_semaphore = external_semaphore_pool()->GetOrCreateSemaphore();
-  VkSemaphore vk_end_access_semaphore = end_access_semaphore.GetVkSemaphore();
-  command_buffer->Submit(begin_access_semaphores.size(),
-                         begin_access_semaphores.data(), 1,
-                         &vk_end_access_semaphore);
-
-  EndAccessInternal(/*readonly=*/false, std::move(end_access_semaphore));
-  // |external_semaphores| have been waited on and can be reused when submitted
-  // GPU work is done.
-  ReturnPendingSemaphoresWithFenceHelper(std::move(external_semaphores));
-
-  fence_helper()->EnqueueVulkanObjectCleanupForSubmittedWork(
-      std::move(command_buffer));
-  fence_helper()->EnqueueBufferCleanupForSubmittedWork(stage_buffer,
-                                                       stage_allocation);
-}
-
-void ExternalVkImageBacking::
-    CopyPixelsFromVKImageToGLTextureUsingStagingBuffer() {
-  DCHECK(use_separate_gl_texture());
-  DCHECK_EQ(vk_textures_.size(), gl_textures_.size());
-
-  // Make sure GrContext is not using GL. So we don't need reset GrContext
-  DCHECK(!context_state_->GrContextIsGL());
-
-  // Make sure a gl context is current, since textures are shared between all gl
-  // contexts, we don't care which gl context is current.
-  if (!MakeGLContextCurrent()) {
-    return;
-  }
-
-  auto [plane_data, total_data_bytes] = GetMapPlaneData();
-  VkBufferCreateInfo buffer_create_info = {
-      .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-      .size = total_data_bytes,
-      .usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-  };
-
-  VmaAllocator allocator =
-      context_state()->vk_context_provider()->GetDeviceQueue()->vma_allocator();
-  VkBuffer stage_buffer = VK_NULL_HANDLE;
-  VmaAllocation stage_allocation = VK_NULL_HANDLE;
-  VkResult result = vma::CreateBuffer(allocator, &buffer_create_info,
-                                      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                                          VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                                      0, &stage_buffer, &stage_allocation);
-  if (result != VK_SUCCESS) {
-    DLOG(ERROR) << "vkCreateBuffer() failed." << result;
-    return;
-  }
-
-  absl::Cleanup destroy_buffer = [&]() {
-    vma::DestroyBuffer(allocator, stage_buffer, stage_allocation);
-  };
-
-  // ReadPixelsWithCallback() is only called for separate texture.
-  DCHECK(!need_synchronization());
-
-  std::vector<ExternalSemaphore> external_semaphores;
-  if (!BeginAccessInternal(/*readonly=*/true, &external_semaphores)) {
-    DLOG(ERROR) << "BeginAccess() failed.";
-    return;
-  }
-  DCHECK(external_semaphores.empty());
-
-  auto command_buffer = command_pool_->CreatePrimaryCommandBuffer();
-  CHECK(command_buffer);
-  {
-    ScopedSingleUseCommandBufferRecorder recorder(*command_buffer);
-
-    for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
-      GrVkImageInfo image_info = vk_textures_[plane].GetGrVkImageInfo();
-      if (image_info.fImageLayout != VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
-        command_buffer->TransitionImageLayout(
-            image_info.fImage, image_info.fImageLayout,
-            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-        GrBackendTextures::SetVkImageLayout(
-            &vk_textures_[plane].backend_texture,
-            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-      }
-
-      auto& sk_image_info = plane_data[plane].image_info;
-      command_buffer->CopyImageToBuffer(
-          stage_buffer, image_info.fImage, sk_image_info.width(),
-          sk_image_info.height(), sk_image_info.width(), sk_image_info.height(),
-          plane_data[plane].offset);
-    }
-  }
-
-  command_buffer->Submit(0, nullptr, 0, nullptr);
-  command_buffer->Wait(UINT64_MAX);
-  command_buffer->Destroy();
-  EndAccessInternal(/*readonly=*/true, ExternalSemaphore());
-
-  void* buffer = nullptr;
-  result = vma::MapMemory(allocator, stage_allocation, &buffer);
-  if (result != VK_SUCCESS) {
-    DLOG(ERROR) << "vma::MapMemory() failed. " << result;
-    return;
-  }
-
-  for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
-    auto& sk_image_info = plane_data[plane].image_info;
-    uint8_t* memory =
-        UNSAFE_TODO(static_cast<uint8_t*>(buffer) + plane_data[plane]).offset;
-    SkPixmap pixmap(sk_image_info, memory, sk_image_info.minRowBytes());
-    if (!gl_textures_[plane].UploadFromMemory(pixmap)) {
-      DLOG(ERROR) << "GL upload failed";
-    }
-  }
-
-  vma::UnmapMemory(allocator, stage_allocation);
 }
 
 bool ExternalVkImageBacking::UploadToVkImage(

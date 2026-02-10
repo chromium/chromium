@@ -237,9 +237,6 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   void CopyPixelsFromGLTextureToVkImage();
   void CopyPixelsFromVkImageToGLTexture();
 
-  void CopyPixelsFromGLTextureToVkImageUsingStagingBuffer();
-  void CopyPixelsFromVKImageToGLTextureUsingStagingBuffer();
-
   scoped_refptr<SharedContextState> context_state_;
   std::vector<TextureHolderVk> vk_textures_;
 
