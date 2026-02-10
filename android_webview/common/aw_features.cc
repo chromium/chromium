@@ -122,6 +122,12 @@ BASE_FEATURE(kWebViewPrefetchNativeLibrary, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kWebViewPrefetchFromRenderer{
     &kWebViewPrefetchNativeLibrary, "WebViewPrefetchFromRenderer", true};
 
+// This enables to start main resource prefetch request from off the main thread
+// for WebView Prefetch API. See crbug.com/452406598, crbug.com//452389538 for
+// more details.
+BASE_FEATURE(kWebViewPrefetchOffTheMainThread,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This enables WebView's hyperlink context menu.
 BASE_FEATURE(kWebViewHyperlinkContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
