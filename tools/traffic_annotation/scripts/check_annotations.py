@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 """Runs traffic_annotation_auditor on the given change list or all files to make
-sure network traffic annoations are syntactically and semantically correct and
+sure network traffic annotations are syntactically and semantically correct and
 all required functions are annotated.
 """
 
