@@ -21,8 +21,9 @@ update the modded_src/version and update the list of changes below.
 - Add support for extracting a lead image and its caption when they appear
   before the main article content. The affected containers are removed after
   extraction to prevent duplication. The extracted data are added as a <figure>
-  element that's added to the start of returned content.
+  element that's added to the start of returned content (crbug.com/424854317,
+  crbug.com/450069061).
 - When extracting title from JSON-LD, fix logic re. choosing name or headline
   crbug.com/467368520): If these both match or both mismatch the title,
   choose the longer string.
-
+- Remove <label for="id-of-removed-input"> (crbug.com/483369387).

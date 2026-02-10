@@ -834,6 +834,7 @@ Readability.prototype = {
     this._cleanConditionally(articleContent, "table");
     this._cleanConditionally(articleContent, "ul");
     this._cleanConditionally(articleContent, "div");
+    this._cleanConditionally(articleContent, "label");
 
     // replace H1 with H2 as H1 should be only title that is displayed separately
     this._replaceNodeTags(
@@ -2708,6 +2709,14 @@ Readability.prototype = {
       // Handle <img> buried inside nested <div> layers in <figure>.
       if (tag === "div" && this._hasAncestorTag(node, "figure") && this._isSingleImage(node)) {
         return false;
+      }
+
+      // Handle <label for="id-of-removed-input">.
+      if (tag === 'label') {
+        const forId = node.getAttribute('for');
+        if (forId && !e.querySelector('#' + CSS.escape(forId))) {
+          return true;
+        }
       }
 
       var weight = this._getClassWeight(node);
