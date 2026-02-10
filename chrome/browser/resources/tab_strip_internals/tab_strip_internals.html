@@ -26,6 +26,20 @@
       margin: 0;
       font-weight: 600;
     }
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+    button {
+      padding: 4px 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+    }
+    button:hover {
+      background: #eee;
+    }
     .split {
       display: grid;
       grid-template-columns: 320px 5px 1fr;
@@ -175,6 +189,14 @@
         background: #2a2a2a;
         border-bottom: 1px solid #3a3a3a;
       }
+      button {
+        background: #2b2b2b;
+        border-color: #3a3a3a;
+        color: #e6e6e6;
+      }
+      button:hover {
+        background: #3a3a3a;
+      }
       .tree-view-pane {
         border-right: 1px solid #3a3a3a;
       }
@@ -218,6 +240,11 @@
   <body>
     <header class="toolbar">
       <h1>TabStrip Internals</h1>
+      <div class="actions">
+        <button id="btn-expand">Expand All</button>
+        <button id="btn-collapse">Collapse All</button>
+        <button id="btn-copy">Copy JSON</button>
+      </div>
     </header>
     <main id="split" class="split">
       <aside id="treeViewPane" class="tree-view-pane" role="tree"></aside>

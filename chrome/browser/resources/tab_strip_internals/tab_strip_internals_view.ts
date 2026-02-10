@@ -37,6 +37,7 @@ export class TabStripInternalsView implements ViewModelObserver {
 
     // Setup event listeners.
     this.setupDividerListeners_();
+    this.setupToolbarListeners_();
 
     // Subscribe to ViewModel state changes.
     this.viewModel_.subscribe(this);
@@ -213,6 +214,15 @@ export class TabStripInternalsView implements ViewModelObserver {
     this.dividerEl_.onkeydown = this.handleDividerKeydown_.bind(this);
   }
 
+  private setupToolbarListeners_() {
+    document.getElementById('btn-expand')!.onclick =
+        this.handleExpandAll_.bind(this);
+    document.getElementById('btn-collapse')!.onclick =
+        this.handleCollapseAll_.bind(this);
+    document.getElementById('btn-copy')!.onclick =
+        this.handleCopyJson_.bind(this);
+  }
+
   /** Handle resizing of the sections via mouse events. */
   private handleDividerMouseDown_(e: MouseEvent) {
     let lastX = e.clientX;
@@ -291,6 +301,41 @@ export class TabStripInternalsView implements ViewModelObserver {
       return;
     }
     this.viewModel_.toggleExpanded(path);
+  }
+
+  /** Expands all nodes in the tree view. */
+  private handleExpandAll_() {
+    this.viewModel_.expandAll();
+  }
+
+  /** Collapses all nodes in the tree view. */
+  private handleCollapseAll_() {
+    this.viewModel_.collapseAll();
+  }
+
+  /** Copies JSON data of selected node to clipboard. */
+  private async handleCopyJson_() {
+    const selectedNodeId = this.viewModel_.selectedNode;
+    if (!selectedNodeId) {
+      this.showToast_('Select a node to copy JSON.');
+      return;
+    }
+
+    const node = this.viewModel_.getNode(selectedNodeId);
+    if (!node) {
+      this.showToast_('Unable to find selected node data.');
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(
+          this.safeStringify_(node.value ?? null));
+      this.showToast_('JSON copied');
+    } catch (e) {
+      const msg = `Failed to copy JSON to clipboard`;
+      console.error(`${msg}:`, e);
+      this.showToast_(msg);
+    }
   }
 
   // Utility methods to build highlighted JSON.
@@ -419,5 +464,11 @@ export class TabStripInternalsView implements ViewModelObserver {
   /** Append plain text to the fragment. */
   private appendText_(fragment: DocumentFragment, text: string): void {
     fragment.append(document.createTextNode(text));
+  }
+
+  /** Safely convert given json object to string for copying. */
+  private safeStringify_(obj: unknown, space = 2): string {
+    return JSON.stringify(
+        obj, (_, v) => (typeof v === 'bigint' ? v.toString() : v), space);
   }
 }

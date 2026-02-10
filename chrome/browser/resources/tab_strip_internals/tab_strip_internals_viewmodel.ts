@@ -178,6 +178,36 @@ export class TabStripInternalsViewModel {
     this.notifyObservers_(ViewModelChange.CONTENT);
   }
 
+  /** Expands all nodes in the TabStrip tree. */
+  expandAll(): void {
+    if (!this.root_) {
+      return;
+    }
+
+    const recursivelyExpandChildren = (node: ModelNode) => {
+      this.expandedNodeIds_.add(node.path);
+      for (const child of node.children) {
+        recursivelyExpandChildren(child);
+      }
+    };
+    recursivelyExpandChildren(this.root_);
+    this.saveState_();
+    this.notifyObservers_(ViewModelChange.CONTENT);
+  }
+
+  /** Collapses all nodes in the TabStrip tree except the root. */
+  collapseAll(): void {
+    if (!this.root_) {
+      return;
+    }
+
+    this.expandedNodeIds_.clear();
+    // Always keep root expanded.
+    this.expandedNodeIds_.add(this.root_.path);
+    this.saveState_();
+    this.notifyObservers_(ViewModelChange.CONTENT);
+  }
+
   /** Load UI state from localStorage. */
   private loadState_() {
     try {
