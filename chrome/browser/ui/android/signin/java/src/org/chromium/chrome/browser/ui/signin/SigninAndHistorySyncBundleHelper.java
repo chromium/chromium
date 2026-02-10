@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.ui.signin;
 
 import android.os.Bundle;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
-import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GaiaId;
@@ -19,7 +17,7 @@ import org.chromium.google_apis.gaia.GaiaId;
  * Parcelable in activity extras (See https://crbug.com/172602571 & https://crbug.com/394559360).
  */
 @NullMarked
-final class SigninAndHistorySyncBundleHelper {
+public final class SigninAndHistorySyncBundleHelper {
     private SigninAndHistorySyncBundleHelper() {}
 
     // Fields of {@link FullscreenSigninConfig}.
@@ -55,7 +53,7 @@ final class SigninAndHistorySyncBundleHelper {
             "Signin.BottomSheetShouldShowSigninSnackbar";
     private static final String BOTTOM_SHEET_SURVEY_CONFIG = "Signin.BottomSheetSigninSurveyConfig";
 
-    static Bundle getBundle(FullscreenSigninAndHistorySyncConfig config) {
+    public static Bundle getBundle(FullscreenSigninAndHistorySyncConfig config) {
         Bundle bundle = new Bundle();
         bundle.putString(SIGNIN_CONFIG_TITLE, config.signinConfig.title);
         bundle.putString(SIGNIN_CONFIG_SUBTITLE, config.signinConfig.subtitle);
@@ -68,7 +66,7 @@ final class SigninAndHistorySyncBundleHelper {
         return bundle;
     }
 
-    static FullscreenSigninAndHistorySyncConfig getFullscreenConfig(Bundle bundle) {
+    public static FullscreenSigninAndHistorySyncConfig getFullscreenConfig(Bundle bundle) {
 
         FullscreenSigninAndHistorySyncConfig.Builder builder =
                 new FullscreenSigninAndHistorySyncConfig.Builder(
@@ -83,7 +81,7 @@ final class SigninAndHistorySyncBundleHelper {
         return builder.build();
     }
 
-    static Bundle getBundle(BottomSheetSigninAndHistorySyncConfig config) {
+    public static Bundle getBundle(BottomSheetSigninAndHistorySyncConfig config) {
         Bundle bundle = new Bundle();
         bundle.putString(BOTTOM_SHEET_STRINGS_TITLE, config.bottomSheetStrings.titleString);
         bundle.putString(BOTTOM_SHEET_STRINGS_SUBTITLE, config.bottomSheetStrings.subtitleString);
@@ -108,7 +106,7 @@ final class SigninAndHistorySyncBundleHelper {
         return bundle;
     }
 
-    static BottomSheetSigninAndHistorySyncConfig getBottomSheetConfig(Bundle bundle) {
+    public static BottomSheetSigninAndHistorySyncConfig getBottomSheetConfig(Bundle bundle) {
         BottomSheetSigninAndHistorySyncConfig.Builder builder =
                 new BottomSheetSigninAndHistorySyncConfig.Builder(
                         new AccountPickerBottomSheetStrings.Builder(

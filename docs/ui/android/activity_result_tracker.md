@@ -16,8 +16,9 @@ killed by the OS in the background to free memory during the flow.
     needs to receive an activity result should implement the
     `ActivityResultTracker.ResultListener` interface. This interface has two
     methods:
-    - `onActivityResult(ActivityResult result)`: This is where you handle the
-      result.
+    - `onActivityResult(ActivityResult result, @Nullable Bundle savedInstanceData)`:
+      This is where you handle the result. The `savedInstanceData` parameter
+      contains the optional data that was saved before starting the activity.
     - `getRestorationKey()`: This should return a `String` that uniquely
       identifies the _purpose_ of the activity launch across activity
       recreations. If multiple indistinguishable instances of your component
@@ -34,7 +35,7 @@ killed by the OS in the background to free memory during the flow.
         }
 
         @Override
-        public void onActivityResult(ActivityResult result) {
+        public void onActivityResult(ActivityResult result, @Nullable Bundle savedInstanceData) {
             // Handle the result...
         }
 
@@ -61,7 +62,14 @@ killed by the OS in the background to free memory during the flow.
     ```
 
 4.  **Start the Activity Using the Tracker:**
-    `java     tracker.startActivity(myComponent, intent);     ` .
+
+    ```java
+    tracker.startActivity(myComponent, intent, savedInstanceData);
+    ```
+
+    The `savedInstanceData` is optional and can be used to save state that needs
+    to be restored after the base activity's recreation.
+
     **Re-registration is Key:** Components MUST call `tracker.register()` with
     the same restoration key in case the base activity is recreated and ensures
     it happens automatically. (e.g. it should not be triggered by an user

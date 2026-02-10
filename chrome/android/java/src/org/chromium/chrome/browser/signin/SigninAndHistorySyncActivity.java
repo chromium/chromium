@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoor
 import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncBundleHelper;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;

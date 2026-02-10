@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.activity.result.ActivityResult;
 import androidx.test.filters.SmallTest;
@@ -57,6 +58,7 @@ public class ActivityResultTrackerIntegrationTest {
         private final CallbackHelper mResultCallbackHelper = new CallbackHelper();
         private final String mKey;
         private ActivityResult mReceivedResult;
+        private Bundle mReceivedConfig;
 
         ActivityResultTester(ActivityResultTracker tracker, String key) {
             mKey = key;
@@ -75,18 +77,30 @@ public class ActivityResultTrackerIntegrationTest {
         }
 
         void assertReceivedResult(int expectedResultCode) {
+            assertReceivedResult(expectedResultCode, null);
+        }
+
+        void assertReceivedResult(int expectedResultCode, String expectedConfigValue) {
             assertCallbackCallCount(1);
             Assert.assertNotNull("Activity result should not be null.", mReceivedResult);
             Assert.assertEquals(
                     "Result code is not correct.",
                     expectedResultCode,
                     mReceivedResult.getResultCode());
+            if (expectedConfigValue != null) {
+                Assert.assertNotNull("Restoration config should not be null.", mReceivedConfig);
+                Assert.assertEquals(
+                        "Restoration config value is not correct.",
+                        expectedConfigValue,
+                        mReceivedConfig.getString("test_key"));
+            }
         }
 
         /** Implements {@link ActivityResultTracker.ResultListener} */
         @Override
-        public void onActivityResult(ActivityResult result) {
+        public void onActivityResult(ActivityResult result, Bundle savedInstanceData) {
             mReceivedResult = result;
+            mReceivedConfig = savedInstanceData;
             mResultCallbackHelper.notifyCalled();
         }
 
@@ -124,7 +138,7 @@ public class ActivityResultTrackerIntegrationTest {
         ActivityResultTracker.ResultListener emptyListener =
                 new ActivityResultTracker.ResultListener() {
                     @Override
-                    public void onActivityResult(ActivityResult result) {}
+                    public void onActivityResult(ActivityResult result, Bundle savedInstanceData) {}
 
                     @Override
                     public String getRestorationKey() {
@@ -133,7 +147,8 @@ public class ActivityResultTrackerIntegrationTest {
                 };
 
         Assert.assertThrows(
-                IllegalStateException.class, () -> mTracker.startActivity(emptyListener, intent));
+                IllegalStateException.class,
+                () -> mTracker.startActivity(emptyListener, intent, null));
     }
 
     @Test
@@ -271,12 +286,36 @@ public class ActivityResultTrackerIntegrationTest {
         testerAfterRecreation1.assertReceivedResult(Activity.RESULT_OK);
     }
 
+    @Test
+    @SmallTest
+    public void testStartActivity_activityKilled_withSavedInstanceData() throws TimeoutException {
+        Bundle savedInstanceData = new Bundle();
+        savedInstanceData.putString("test_key", "test_value");
+        ActivityResultTester tester = new ActivityResultTester(mTracker, KEY);
+        startResultActivity(tester, savedInstanceData);
+        recreateBaseActivity();
+        finishResultActivity(Activity.RESULT_OK);
+
+        // After the activity is recreated, the old `tester`'s callback is unregistered.
+        // A new tester needs to be created to listen to the result.
+        ActivityResultTester testerAfterRecreation = new ActivityResultTester(mTracker, KEY);
+
+        tester.assertCallbackCallCount(0);
+        testerAfterRecreation.waitForCallback();
+        testerAfterRecreation.assertReceivedResult(Activity.RESULT_OK, "test_value");
+    }
+
     private void startResultActivity(ActivityResultTracker.ResultListener listener) {
+        startResultActivity(listener, null);
+    }
+
+    private void startResultActivity(
+            ActivityResultTracker.ResultListener listener, Bundle savedInstanceData) {
         Intent intent = new Intent(mBaseActivity, BlankUiTestActivity.class);
         waitForActivityWithClass(
                 BlankUiTestActivity.class,
                 Stage.RESUMED,
-                () -> mTracker.startActivity(listener, intent));
+                () -> mTracker.startActivity(listener, intent, savedInstanceData));
     }
 
     private void finishResultActivity(int resultCode) {

@@ -935,6 +935,41 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWithExistingAccount_signInWithAddedAccount_activityKilled() {
+        HistogramWatcher addAccountStateWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AddAccountState",
+                                State.REQUESTED,
+                                State.STARTED,
+                                State.SUCCEEDED)
+                        .build();
+
+        // User clicked "Choose another account"
+        launchSigninFlow(
+                WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
+                HistorySyncConfig.OptInMode.REQUIRED,
+                TestAccounts.ACCOUNT1.getId());
+
+        // Select "Add Account to device" on the shown expanded sign-in bottom-sheet.
+        onView(allOf(withText(R.string.signin_add_account_to_device), isCompletelyDisplayed()))
+                .perform(click());
+        mSigninTestRule.setAddAccountFlowResult(TestAccounts.AADC_ADULT_ACCOUNT);
+
+        // Recreate base activity then confirm account addition.
+        mBaseActivityTestRule.recreateActivity();
+        createSigninCoordinator();
+
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+
+        acceptHistorySyncAndVerifyFlowCompletion(
+                /* checkRootDialog= */ false, /* hasSignedIn= */ true);
+        addAccountStateWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testWithExistingAccount_signInWithAddedAccount_requiredHistoryOptIn() {
         HistogramWatcher addAccountStateWatcher =
                 HistogramWatcher.newBuilder()
@@ -1167,29 +1202,8 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                         .build();
 
         mBaseActivityTestRule.startOnBlankPage();
-        ChromeTabbedActivity baseActivity = mBaseActivityTestRule.getActivity();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Profile profile =
-                            baseActivity.getProfileProviderSupplier().get().getOriginalProfile();
-                    OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
-                    profileSupplier.set(profile);
-                    mCoordinator =
-                            BottomSheetSigninAndHistorySyncCoordinator
-                                    .createAndObserveAddAccountResult(
-                                            baseActivity.getWindowAndroid(),
-                                            /* activity= */ baseActivity,
-                                            /* activityResultTracker= */ baseActivity
-                                                    .getActivityResultTracker(),
-                                            /* delegate= */ mDelegate,
-                                            DeviceLockActivityLauncherImpl.get(),
-                                            profileSupplier,
-                                            this::getBottomSheetController,
-                                            baseActivity.getModalDialogManagerSupplier(),
-                                            baseActivity.getSnackbarManager(),
-                                            mSigninAccessPoint);
-                    mCoordinator.startSigninFlow(config);
-                });
+        createSigninCoordinator();
+        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.startSigninFlow(config));
 
         // Verify seamless signin finished.
         mSigninTestRule.waitForSignin(TestAccounts.ACCOUNT1);
@@ -1312,6 +1326,11 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         BottomSheetSigninAndHistorySyncConfig config = builder.build();
 
         mBaseActivityTestRule.startOnBlankPage();
+        createSigninCoordinator();
+        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.startSigninFlow(config));
+    }
+
+    private void createSigninCoordinator() {
         ChromeTabbedActivity baseActivity = mBaseActivityTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1333,7 +1352,6 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                                             baseActivity.getModalDialogManagerSupplier(),
                                             baseActivity.getSnackbarManager(),
                                             mSigninAccessPoint);
-                    mCoordinator.startSigninFlow(config);
                 });
     }
 

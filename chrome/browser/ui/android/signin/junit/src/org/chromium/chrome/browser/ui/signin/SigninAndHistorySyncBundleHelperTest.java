@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.ui.signin;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,8 +15,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
-import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.google_apis.gaia.CoreAccountId;
