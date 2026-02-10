@@ -104,6 +104,10 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
     auto metrics_recorder_ptr =
         std::make_unique<MockContextualSearchMetricsRecorder>();
     metrics_recorder_ = metrics_recorder_ptr.get();
+    ON_CALL(*metrics_recorder_, RecordModesOnSubmission)
+        .WillByDefault(testing::Invoke(
+            metrics_recorder_.get(),
+            &MockContextualSearchMetricsRecorder::RecordModesOnSubmissionBase));
 
     service_ = ContextualSearchServiceFactory::GetForProfile(profile());
     contextual_session_handle_ = service_->CreateSessionForTesting(
@@ -220,25 +224,38 @@ TEST_F(ComposeboxHandlerTest, SubmitQueryWithToolMetric) {
   // Submit with no tools enabled.
   SubmitQueryAndWaitForNavigation();
   histogram_tester().ExpectBucketCount(
-      "ContextualSearch.Tools.SubmissionType.NewTabPage",
-      contextual_search::SubmissionType::kDefault, 1);
+      "ContextualSearch.Tools.ModeOnSubmission.NewTabPage",
+      composebox_query::mojom::ToolMode::kUnspecified, 1);
+  histogram_tester().ExpectBucketCount(
+      "ContextualSearch.Models.ModeOnSubmission.NewTabPage",
+      composebox_query::mojom::ModelMode::kUnspecified, 1);
 
-  // Submitting with deep search mode enabled.
+  // Submitting with deep search and Gemini regular model enabled.
   handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
   SubmitQueryAndWaitForNavigation();
   histogram_tester().ExpectBucketCount(
-      "ContextualSearch.Tools.SubmissionType.NewTabPage",
-      contextual_search::SubmissionType::kDeepSearch, 1);
+      "ContextualSearch.Tools.ModeOnSubmission.NewTabPage",
+      composebox_query::mojom::ToolMode::kDeepSearch, 1);
+  histogram_tester().ExpectBucketCount(
+      "ContextualSearch.Models.ModeOnSubmission.NewTabPage",
+      composebox_query::mojom::ModelMode::kGeminiRegular, 1);
 
-  // Submitting with create image mode enabled.
+  // Submitting with create image and Gemini Pro model enabled.
   handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
   SubmitQueryAndWaitForNavigation();
   histogram_tester().ExpectBucketCount(
-      "ContextualSearch.Tools.SubmissionType.NewTabPage",
-      contextual_search::SubmissionType::kCreateImages, 1);
+      "ContextualSearch.Tools.ModeOnSubmission.NewTabPage",
+      composebox_query::mojom::ToolMode::kImageGen, 1);
+  histogram_tester().ExpectBucketCount(
+      "ContextualSearch.Models.ModeOnSubmission.NewTabPage",
+      composebox_query::mojom::ModelMode::kGeminiPro, 1);
 
   histogram_tester().ExpectTotalCount(
-      "ContextualSearch.Tools.SubmissionType.NewTabPage", 3);
+      "ContextualSearch.Tools.ModeOnSubmission.NewTabPage", 3);
+  histogram_tester().ExpectTotalCount(
+      "ContextualSearch.Models.ModeOnSubmission.NewTabPage", 3);
 }
 
 TEST_F(ComposeboxHandlerTest, ContextMenu_Shows) {

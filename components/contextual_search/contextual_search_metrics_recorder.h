@@ -112,8 +112,6 @@ class ContextualSearchMetricsRecorder {
   static std::string ContextualSearchSourceToString(
       ContextualSearchSource source);
   ContextualSearchSource source() const { return source_; }
-  // Maps submission types to its string version for histogram naming.
-  std::string SubmissionTypeToString(SubmissionType submission_type);
 
   // Records several metrics about the query, such the number of characters
   // found in the query.
@@ -134,8 +132,6 @@ class ContextualSearchMetricsRecorder {
   void RecordTabContextMenuMetrics(int total_tab_count,
                                    int duplicate_title_count);
 
-  void RecordToolsSubmissionType(SubmissionType submission_type);
-
   // Records whether the config was parsed successfully.
   static void RecordConfigParseSuccess(ContextualSearchSource source,
                                        bool success);
@@ -145,6 +141,11 @@ class ContextualSearchMetricsRecorder {
 
   // Records the model mode (i.e. Gemini Pro, Gemini Pro Autoroute, etc.).
   virtual void RecordModelMode(composebox_query::mojom::ModelMode model_mode);
+
+  // Records tool mode and model mode on query submission.
+  virtual void RecordModesOnSubmission(
+      composebox_query::mojom::ToolMode tool_mode,
+      composebox_query::mojom::ModelMode model_mode);
 
  private:
   // Called when the session starts to correctly track session

@@ -115,18 +115,6 @@ struct FileInfo {
   std::unique_ptr<lens::ContextualInputData> input_data;
 };
 
-// LINT.IfChange(SubmissionType)
-
-// How an AIM Composebox query was submitted.
-enum class SubmissionType {
-  kDefault = 0,
-  kDeepSearch = 1,
-  kCreateImages = 2,
-  kMaxValue = kCreateImages,
-};
-
-// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:SubmissionType)
-
 // LINT.IfChange(ContextualSearchErrorPage)
 
 // Reasons the contextual search error page appeared.

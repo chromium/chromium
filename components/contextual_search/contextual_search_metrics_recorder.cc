@@ -228,14 +228,6 @@ void ContextualSearchMetricsRecorder::RecordTabContextMenuMetrics(
   }
 }
 
-void ContextualSearchMetricsRecorder::RecordToolsSubmissionType(
-    SubmissionType submission_type) {
-  base::UmaHistogramEnumeration(
-      base::StrCat(
-          {"ContextualSearch.Tools.SubmissionType", ".", metrics_suffix_}),
-      submission_type);
-}
-
 void ContextualSearchMetricsRecorder::ActivateMetricsFunnel(
     const std::string& funnel_name) {
   if (session_state_ == SessionState::kNone) {
@@ -507,18 +499,6 @@ std::string ContextualSearchMetricsRecorder::ContextualSearchSourceToString(
   }
 }
 
-std::string ContextualSearchMetricsRecorder::SubmissionTypeToString(
-    SubmissionType submission_type) {
-  switch (submission_type) {
-    case SubmissionType::kDefault:
-      return "Default";
-    case SubmissionType::kDeepSearch:
-      return "DeepSearch";
-    case SubmissionType::kCreateImages:
-      return "CreateImages";
-  }
-}
-
 // static
 void ContextualSearchMetricsRecorder::RecordConfigParseSuccess(
     ContextualSearchSource source,
@@ -540,6 +520,19 @@ void ContextualSearchMetricsRecorder::RecordModelMode(
     composebox_query::mojom::ModelMode model_mode) {
   base::UmaHistogramEnumeration(
       base::StrCat({"ContextualSearch.Models", ".", metrics_suffix_}),
+      model_mode);
+}
+
+void ContextualSearchMetricsRecorder::RecordModesOnSubmission(
+    composebox_query::mojom::ToolMode tool_mode,
+    composebox_query::mojom::ModelMode model_mode) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"ContextualSearch.Tools.ModeOnSubmission", ".", metrics_suffix_}),
+      tool_mode);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"ContextualSearch.Models.ModeOnSubmission", ".", metrics_suffix_}),
       model_mode);
 }
 

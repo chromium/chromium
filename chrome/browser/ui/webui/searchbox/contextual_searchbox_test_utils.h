@@ -112,6 +112,11 @@ class MockContextualSearchMetricsRecorder
               RecordModelMode,
               (composebox_query::mojom::ModelMode model_mode),
               (override));
+  MOCK_METHOD(void,
+              RecordModesOnSubmission,
+              (composebox_query::mojom::ToolMode tool_mode,
+               composebox_query::mojom::ModelMode model_mode),
+              (override));
 
   void NotifySessionStateChangedBase(
       contextual_search::SessionState session_state) {
@@ -124,6 +129,13 @@ class MockContextualSearchMetricsRecorder
 
   void RecordModelModeBase(composebox_query::mojom::ModelMode model_mode) {
     ContextualSearchMetricsRecorder::RecordModelMode(model_mode);
+  }
+
+  void RecordModesOnSubmissionBase(
+      composebox_query::mojom::ToolMode tool_mode,
+      composebox_query::mojom::ModelMode model_mode) {
+    ContextualSearchMetricsRecorder::RecordModesOnSubmission(tool_mode,
+                                                             model_mode);
   }
 };
 
