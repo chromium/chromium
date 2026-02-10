@@ -119,47 +119,47 @@ void NearbyShareMetricLogger::OnTransferCompleted(
   metric.SetBytesTransferred(bytes_transferred);
   metric.SetResult(static_cast<int>(result));
 
-  // Calculate selection time. This is not set for a receiver.
-  if (!share_target.is_incoming &&
-      share_target_scan_to_discover_delta_.contains(share_target.id)) {
-    base::TimeDelta time =
-        share_target_scan_to_discover_delta_[share_target.id];
-    metric.SetTimeToDiscovery(time.InMilliseconds());
-  }
+  base::TimeTicks discover_time = share_target_discover_time_[share_target.id];
 
   // Calculate selection time. This is not set for a receiver.
-  if (!share_target.is_incoming &&
-      share_target_select_time_.contains(share_target.id)) {
-    base::TimeDelta diff = (share_target_select_time_[share_target.id] -
-                            share_target_discover_time_[share_target.id]);
-    metric.SetTimeToSelect(diff.InMilliseconds());
-  }
+  if (!share_target.is_incoming) {
+    if (auto it = share_target_scan_to_discover_delta_.find(share_target.id);
+        it != share_target_scan_to_discover_delta_.end()) {
+      base::TimeDelta time = it->second;
+      metric.SetTimeToDiscovery(time.InMilliseconds());
+    }
 
-  // Calculate connect time. This is not set for a receiver.
-  if (!share_target.is_incoming &&
-      share_target_connect_time_.contains(share_target.id)) {
-    base::TimeDelta diff = (share_target_connect_time_[share_target.id] -
-                            share_target_discover_time_[share_target.id]);
-    metric.SetTimeToConnect(diff.InMilliseconds());
+    // Calculate selection time. This is not set for a receiver.
+    if (auto it = share_target_select_time_.find(share_target.id);
+        it != share_target_select_time_.end()) {
+      base::TimeDelta diff = it->second - discover_time;
+      metric.SetTimeToSelect(diff.InMilliseconds());
+    }
+
+    // Calculate connect time. This is not set for a receiver.
+    if (auto it = share_target_connect_time_.find(share_target.id);
+        it != share_target_connect_time_.end()) {
+      base::TimeDelta diff = it->second - discover_time;
+      metric.SetTimeToConnect(diff.InMilliseconds());
+    }
   }
 
   // Calculate accept time. This is not set for rejected transfers.
-  if (share_target_accept_time_.contains(share_target.id)) {
-    base::TimeDelta diff = (share_target_accept_time_[share_target.id] -
-                            share_target_discover_time_[share_target.id]);
+  if (auto it = share_target_accept_time_.find(share_target.id);
+      it != share_target_accept_time_.end()) {
+    base::TimeDelta diff = it->second - discover_time;
     metric.SetTimeToAccept(diff.InMilliseconds());
   }
 
   // Calculate upgrade time, if one occurred.
-  if (share_target_upgrade_time_.contains(share_target.id)) {
-    base::TimeDelta diff = (share_target_upgrade_time_[share_target.id] -
-                            share_target_discover_time_[share_target.id]);
+  if (auto it = share_target_upgrade_time_.find(share_target.id);
+      it != share_target_upgrade_time_.end()) {
+    base::TimeDelta diff = it->second - discover_time;
     metric.SetTimeToUpgrade(diff.InMilliseconds());
   }
 
   // Calculate transfer time
-  base::TimeDelta complete_time =
-      (base::TimeTicks::Now() - share_target_discover_time_[share_target.id]);
+  base::TimeDelta complete_time = (base::TimeTicks::Now() - discover_time);
   metric.SetTimeToTransferComplete(complete_time.InMilliseconds());
 
   // Emit the metric.
