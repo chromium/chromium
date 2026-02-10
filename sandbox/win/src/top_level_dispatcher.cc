@@ -64,12 +64,26 @@ TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) {
     signed_dispatcher_ = std::make_unique<SignedDispatcher>(policy);
     ipc_targets_[IpcTag::NTCREATESECTION] = signed_dispatcher_.get();
   }
+
+  static const IPCCall ping1 = {
+      {UINT32_TYPE},
+      reinterpret_cast<CallbackGeneric>(
+          static_cast<Callback1>(&TopLevelDispatcher::Ping))};
+  ipc_calls_[IpcTag::PING1] = ping1;
+  static const IPCCall ping2 = {
+      {INOUTPTR_TYPE},
+      reinterpret_cast<CallbackGeneric>(
+          static_cast<Callback1>(&TopLevelDispatcher::Ping))};
+  ipc_calls_[IpcTag::PING2] = ping2;
 }
 
 TopLevelDispatcher::~TopLevelDispatcher() {}
 
 std::vector<IpcTag> TopLevelDispatcher::ipc_targets() {
-  std::vector<IpcTag> results = {IpcTag::PING1, IpcTag::PING2};
+  std::vector<IpcTag> results;
+  for (const auto& pair : ipc_calls_) {
+    results.push_back(pair.first);
+  }
   for (const auto& pair : ipc_targets_) {
     results.push_back(pair.first);
   }
@@ -79,27 +93,24 @@ std::vector<IpcTag> TopLevelDispatcher::ipc_targets() {
 // When an IPC is ready in any of the targets we get called. We manage an array
 // of IPC dispatchers which are keyed on the IPC tag so we normally delegate
 // to the appropriate dispatcher unless we can handle the IPC call ourselves.
-Dispatcher* TopLevelDispatcher::OnMessageReady(IPCParams* ipc,
+Dispatcher* TopLevelDispatcher::OnMessageReady(IpcTag ipc_tag,
+                                               const IPCParamTypes& types,
                                                CallbackGeneric* callback) {
   DCHECK(callback);
-  static const IPCParams ping1 = {IpcTag::PING1, {UINT32_TYPE}};
-  static const IPCParams ping2 = {IpcTag::PING2, {INOUTPTR_TYPE}};
-
-  if (ping1.Matches(ipc) || ping2.Matches(ipc)) {
-    *callback = reinterpret_cast<CallbackGeneric>(
-        static_cast<Callback1>(&TopLevelDispatcher::Ping));
-    return this;
+  Dispatcher* dispatcher = Dispatcher::OnMessageReady(ipc_tag, types, callback);
+  if (!dispatcher) {
+    dispatcher =
+        GetDispatcher(ipc_tag)->OnMessageReady(ipc_tag, types, callback);
   }
-
-  return GetDispatcher(ipc->ipc_tag)->OnMessageReady(ipc, callback);
+  return dispatcher;
 }
 
 // Delegate to the appropriate dispatcher.
 bool TopLevelDispatcher::SetupService(InterceptionManager* manager,
                                       IpcTag service) {
-  if (IpcTag::PING1 == service || IpcTag::PING2 == service)
+  if (IpcTag::PING1 == service || IpcTag::PING2 == service) {
     return true;
-
+  }
   return GetDispatcher(service)->SetupService(manager, service);
 }
 

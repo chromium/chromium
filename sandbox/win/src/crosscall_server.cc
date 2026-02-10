@@ -300,17 +300,16 @@ void SetCallSuccess(CrossCallReturn* call_return) {
   call_return->call_outcome = SBOX_ALL_OK;
 }
 
-Dispatcher* Dispatcher::OnMessageReady(IPCParams* ipc,
+Dispatcher* Dispatcher::OnMessageReady(IpcTag ipc_tag,
+                                       const IPCParamTypes& types,
                                        CallbackGeneric* callback) {
   DCHECK(callback);
-  std::vector<IPCCall>::iterator it = ipc_calls_.begin();
-  for (; it != ipc_calls_.end(); ++it) {
-    if (it->params.Matches(ipc)) {
-      *callback = it->callback;
-      return this;
-    }
+  const auto& ipc_call = ipc_calls_.find(ipc_tag);
+  if (ipc_call == ipc_calls_.end() || ipc_call->second.types != types) {
+    return nullptr;
   }
-  return nullptr;
+  *callback = ipc_call->second.callback;
+  return this;
 }
 
 Dispatcher::Dispatcher() {}

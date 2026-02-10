@@ -155,17 +155,16 @@ bool SharedMemIPCServer::InvokeCallback(const ServerControl* service_context,
   // data in the channel while the IPC is being processed.
   std::unique_ptr<CrossCallParamsEx> params(CrossCallParamsEx::CreateFromBuffer(
       ipc_buffer, service_context->channel_size, &output_size));
-  if (!params.get())
+  if (!params.get()) {
     return false;
-
+  }
   IpcTag tag = params->GetTag();
   static_assert(0 == INVALID_TYPE, "incorrect type enum");
-  IPCParams ipc_params = {tag};
 
-  void* args[kMaxIpcParams];
-  if (!GetArgs(params.get(), &ipc_params, args))
+  IPCArgs args;
+  if (!args.Initialize(params.get())) {
     return false;
-
+  }
   IPCInfo ipc_info = {tag};
   ipc_info.client_info = &service_context->target_info;
   Dispatcher* dispatcher = service_context->dispatcher;
@@ -174,7 +173,7 @@ bool SharedMemIPCServer::InvokeCallback(const ServerControl* service_context,
   Dispatcher* handler = nullptr;
 
   Dispatcher::CallbackGeneric callback_generic;
-  handler = dispatcher->OnMessageReady(&ipc_params, &callback_generic);
+  handler = dispatcher->OnMessageReady(tag, args.types(), &callback_generic);
   if (handler) {
     switch (params->GetParamsCount()) {
       case 0: {
@@ -283,8 +282,6 @@ bool SharedMemIPCServer::InvokeCallback(const ServerControl* service_context,
       UNSAFE_TODO(memcpy(ipc_buffer, params.get(), output_size));
     }
   }
-
-  ReleaseArgs(&ipc_params, args);
 
   return !error;
 }

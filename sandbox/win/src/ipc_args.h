@@ -5,19 +5,33 @@
 #ifndef SANDBOX_WIN_SRC_IPC_ARGS_H_
 #define SANDBOX_WIN_SRC_IPC_ARGS_H_
 
+#include <array>
+#include <variant>
+
+#include "base/compiler_specific.h"
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/crosscall_server.h"
 
 namespace sandbox {
 
-// Releases memory allocated for IPC arguments.
-void ReleaseArgs(const IPCParams* ipc_params, void* args[kMaxIpcParams]);
+// Class to hold an IPC server call's types and argument values.
+class IPCArgs {
+ public:
+  IPCArgs();
+  ~IPCArgs();
 
-// Fills up the list of arguments (args and ipc_params) for an IPC call.
-// Call ReleaseArgs on |ipc_params| and |args| after calling this.
-bool GetArgs(CrossCallParamsEx* params,
-             IPCParams* ipc_params,
-             void* args[kMaxIpcParams]);
+  // Initializes the arguments for an IPC call.
+  bool Initialize(CrossCallParamsEx* params);
+
+  const IPCParamTypes& types() const LIFETIME_BOUND { return types_; }
+  // Get the IPC argument value by index.
+  void* operator[](size_t index) LIFETIME_BOUND;
+
+ private:
+  using IPCArgVariant = std::variant<void*, std::wstring, CountedBuffer>;
+  IPCParamTypes types_;
+  std::array<IPCArgVariant, kMaxIpcParams> args_;
+};
 
 }  // namespace sandbox
 

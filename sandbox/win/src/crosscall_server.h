@@ -7,10 +7,12 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/crosscall_params.h"
@@ -120,15 +122,7 @@ struct IPCInfo {
   CrossCallReturn return_info;
 };
 
-// This structure identifies IPC signatures.
-struct IPCParams {
-  IpcTag ipc_tag;
-  ArgType args[kMaxIpcParams];
-
-  bool Matches(IPCParams* other) const {
-    return UNSAFE_TODO(!memcmp(this, other, sizeof(*other)));
-  }
-};
+using IPCParamTypes = std::array<ArgType, kMaxIpcParams>;
 
 // Models an entity that can process an IPC message or it can route to another
 // one that could handle it. When an IPC arrives the IPC implementation will:
@@ -199,7 +193,9 @@ class [[clang::lto_visibility_public]] Dispatcher {
   // on a derived class to handle a set of  IPC messages. Return nullptr if your
   // subclass does not handle the message or return the pointer to the subclass
   // that can handle it.
-  virtual Dispatcher* OnMessageReady(IPCParams* ipc, CallbackGeneric* callback);
+  virtual Dispatcher* OnMessageReady(IpcTag ipc_tag,
+                                     const IPCParamTypes& types,
+                                     CallbackGeneric* callback);
 
   // Called when a target proces is created, to setup the interceptions related
   // with the given service (IPC).
@@ -211,12 +207,12 @@ class [[clang::lto_visibility_public]] Dispatcher {
  protected:
   // Structure that defines an IPC Call with all the parameters and the handler.
   struct IPCCall {
-    IPCParams params;
+    IPCParamTypes types;
     CallbackGeneric callback;
   };
 
-  // List of IPC Calls supported by the class.
-  std::vector<IPCCall> ipc_calls_;
+  // IPC Calls supported by the class.
+  base::flat_map<IpcTag, IPCCall> ipc_calls_;
 };
 
 }  // namespace sandbox

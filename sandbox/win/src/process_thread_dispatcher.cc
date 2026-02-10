@@ -22,12 +22,12 @@ namespace sandbox {
 
 ThreadProcessDispatcher::ThreadProcessDispatcher() {
   static const IPCCall open_thread = {
-      {IpcTag::NTOPENTHREAD, {UINT32_TYPE, UINT32_TYPE}},
+      {{UINT32_TYPE, UINT32_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &ThreadProcessDispatcher::NtOpenThread)};
 
   static const IPCCall process_tokenex = {
-      {IpcTag::NTOPENPROCESSTOKENEX, {UINT32_TYPE, UINT32_TYPE}},
+      {{UINT32_TYPE, UINT32_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &ThreadProcessDispatcher::NtOpenProcessTokenEx)};
 
@@ -36,14 +36,13 @@ ThreadProcessDispatcher::ThreadProcessDispatcher() {
   static_assert(sizeof(size_t) == sizeof(void*),
                 "VOIDPTR_TYPE not same size as size_t");
   static const IPCCall create_thread_params = {
-      {IpcTag::CREATETHREAD,
-       {VOIDPTR_TYPE, VOIDPTR_TYPE, VOIDPTR_TYPE, UINT32_TYPE}},
+      {{VOIDPTR_TYPE, VOIDPTR_TYPE, VOIDPTR_TYPE, UINT32_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &ThreadProcessDispatcher::CreateThread)};
 
-  ipc_calls_.push_back(open_thread);
-  ipc_calls_.push_back(process_tokenex);
-  ipc_calls_.push_back(create_thread_params);
+  ipc_calls_[IpcTag::NTOPENTHREAD] = open_thread;
+  ipc_calls_[IpcTag::NTOPENPROCESSTOKENEX] = process_tokenex;
+  ipc_calls_[IpcTag::CREATETHREAD] = create_thread_params;
 }
 
 bool ThreadProcessDispatcher::SetupService(InterceptionManager* manager,

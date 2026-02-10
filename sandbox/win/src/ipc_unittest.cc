@@ -592,14 +592,14 @@ class UnitTestIPCDispatcher : public Dispatcher {
 };
 
 UnitTestIPCDispatcher::UnitTestIPCDispatcher() {
-  static const IPCCall call_one = {{IpcTag::PING1, {VOIDPTR_TYPE, UINT32_TYPE}},
+  static const IPCCall call_one = {{VOIDPTR_TYPE, UINT32_TYPE},
                                    reinterpret_cast<CallbackGeneric>(
                                        &UnitTestIPCDispatcher::CallOneHandler)};
-  static const IPCCall call_two = {{IpcTag::PING2, {VOIDPTR_TYPE, UINT32_TYPE}},
+  static const IPCCall call_two = {{VOIDPTR_TYPE, UINT32_TYPE},
                                    reinterpret_cast<CallbackGeneric>(
                                        &UnitTestIPCDispatcher::CallTwoHandler)};
-  ipc_calls_.push_back(call_one);
-  ipc_calls_.push_back(call_two);
+  ipc_calls_[IpcTag::PING1] = call_one;
+  ipc_calls_[IpcTag::PING2] = call_two;
 }
 
 // This test does most of the shared memory IPC client-server roundtrip

@@ -15,13 +15,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       sandbox::CrossCallParamsEx::CreateFromBuffer(const_cast<uint8_t*>(data),
                                                    size, &output_size));
 
-  if (!params.get())
+  if (!params.get()) {
     return 0;
-
-  sandbox::IpcTag tag = params->GetTag();
-  sandbox::IPCParams ipc_params = {tag};
-  void* args[sandbox::kMaxIpcParams];
-  sandbox::GetArgs(params.get(), &ipc_params, args);
-  sandbox::ReleaseArgs(&ipc_params, args);
+  }
+  sandbox::IPCArgs args;
+  args.Initialize(params.get());
   return 0;
 }

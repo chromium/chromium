@@ -27,7 +27,8 @@ class TopLevelDispatcher : public Dispatcher {
 
   ~TopLevelDispatcher() override;
 
-  Dispatcher* OnMessageReady(IPCParams* ipc,
+  Dispatcher* OnMessageReady(IpcTag ipc_tag,
+                             const IPCParamTypes& types,
                              CallbackGeneric* callback) override;
   bool SetupService(InterceptionManager* manager, IpcTag service) override;
 

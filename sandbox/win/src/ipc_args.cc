@@ -4,92 +4,78 @@
 
 #include "sandbox/win/src/ipc_args.h"
 
+#include <base/notreached.h>
 #include <stddef.h>
-
-#include "base/compiler_specific.h"
-#include "sandbox/win/src/crosscall_params.h"
-#include "sandbox/win/src/crosscall_server.h"
 
 namespace sandbox {
 
-// Releases memory allocated for IPC arguments, if needed.
-void ReleaseArgs(const IPCParams* ipc_params, void* args[kMaxIpcParams]) {
-  for (size_t i = 0; i < kMaxIpcParams; i++) {
-    switch (UNSAFE_TODO(ipc_params->args[i])) {
-      case WCHAR_TYPE: {
-        delete reinterpret_cast<std::wstring*>(UNSAFE_TODO(args[i]));
-        UNSAFE_TODO(args[i]) = nullptr;
-        break;
-      }
-      case INOUTPTR_TYPE: {
-        delete reinterpret_cast<CountedBuffer*>(UNSAFE_TODO(args[i]));
-        UNSAFE_TODO(args[i]) = nullptr;
-        break;
-      }
-      default:
-        break;
-    }
-  }
-}
+IPCArgs::IPCArgs() : types_(), args_() {}
+IPCArgs::~IPCArgs() = default;
 
 // Fills up the list of arguments (args and ipc_params) for an IPC call.
-bool GetArgs(CrossCallParamsEx* params,
-             IPCParams* ipc_params,
-             void* args[kMaxIpcParams]) {
-  if (kMaxIpcParams < params->GetParamsCount())
+bool IPCArgs::Initialize(CrossCallParamsEx* params) {
+  if (args_.size() < params->GetParamsCount()) {
     return false;
-
+  }
   for (uint32_t i = 0; i < params->GetParamsCount(); i++) {
     uint32_t size;
     ArgType type;
-    UNSAFE_TODO(args[i]) = params->GetRawParameter(i, &size, &type);
-    if (UNSAFE_TODO(args[i])) {
-      UNSAFE_TODO(ipc_params->args[i]) = type;
+    void* arg = params->GetRawParameter(i, &size, &type);
+    if (arg) {
       switch (type) {
         case WCHAR_TYPE: {
-          std::unique_ptr<std::wstring> data(new std::wstring);
-          if (!params->GetParameterStr(i, data.get())) {
-            UNSAFE_TODO(args[i]) = 0;
-            ReleaseArgs(ipc_params, args);
+          std::wstring data;
+          if (!params->GetParameterStr(i, &data)) {
             return false;
           }
-          UNSAFE_TODO(args[i]) = data.release();
+          args_[i].emplace<std::wstring>(std::move(data));
           break;
         }
         case UINT32_TYPE: {
           uint32_t data;
           if (!params->GetParameter32(i, &data)) {
-            ReleaseArgs(ipc_params, args);
             return false;
           }
           IPCInt ipc_int(data);
-          UNSAFE_TODO(args[i]) = ipc_int.AsVoidPtr();
+          args_[i].emplace<void*>(ipc_int.AsVoidPtr());
           break;
         }
         case VOIDPTR_TYPE: {
           void* data;
           if (!params->GetParameterVoidPtr(i, &data)) {
-            ReleaseArgs(ipc_params, args);
             return false;
           }
-          UNSAFE_TODO(args[i]) = data;
+          args_[i].emplace<void*>(data);
           break;
         }
         case INOUTPTR_TYPE: {
-          if (!UNSAFE_TODO(args[i])) {
-            ReleaseArgs(ipc_params, args);
-            return false;
-          }
-          CountedBuffer* buffer = new CountedBuffer(UNSAFE_TODO(args[i]), size);
-          UNSAFE_TODO(args[i]) = buffer;
+          args_[i].emplace<CountedBuffer>(arg, size);
           break;
         }
         default:
-          break;
+          return false;
       }
+      types_[i] = type;
     }
   }
   return true;
+}
+
+void* IPCArgs::operator[](size_t index) LIFETIME_BOUND {
+  switch (types_[index]) {
+    case WCHAR_TYPE:
+      DCHECK(std::holds_alternative<std::wstring>(args_[index]));
+      return &std::get<std::wstring>(args_[index]);
+    case UINT32_TYPE:
+    case VOIDPTR_TYPE:
+      DCHECK(std::holds_alternative<void*>(args_[index]));
+      return std::get<void*>(args_[index]);
+    case INOUTPTR_TYPE:
+      DCHECK(std::holds_alternative<CountedBuffer>(args_[index]));
+      return &std::get<CountedBuffer>(args_[index]);
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace sandbox

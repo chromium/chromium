@@ -23,39 +23,35 @@ namespace sandbox {
 
 FilesystemDispatcher::FilesystemDispatcher(PolicyBase* policy_base)
     : policy_base_(policy_base) {
-  static const IPCCall create_params = {
-      {IpcTag::NTCREATEFILE,
-       {WCHAR_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE,
+  static const IPCCall create_file = {
+      {{WCHAR_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE,
         UINT32_TYPE, UINT32_TYPE}},
       reinterpret_cast<CallbackGeneric>(&FilesystemDispatcher::NtCreateFile)};
 
   static const IPCCall open_file = {
-      {IpcTag::NTOPENFILE,
-       {WCHAR_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE}},
+      {{WCHAR_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE}},
       reinterpret_cast<CallbackGeneric>(&FilesystemDispatcher::NtOpenFile)};
 
-  static const IPCCall attribs = {
-      {IpcTag::NTQUERYATTRIBUTESFILE, {WCHAR_TYPE, UINT32_TYPE, INOUTPTR_TYPE}},
+  static const IPCCall query_attribs = {
+      {{WCHAR_TYPE, UINT32_TYPE, INOUTPTR_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &FilesystemDispatcher::NtQueryAttributesFile)};
 
-  static const IPCCall full_attribs = {
-      {IpcTag::NTQUERYFULLATTRIBUTESFILE,
-       {WCHAR_TYPE, UINT32_TYPE, INOUTPTR_TYPE}},
+  static const IPCCall query_full_attribs = {
+      {{WCHAR_TYPE, UINT32_TYPE, INOUTPTR_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &FilesystemDispatcher::NtQueryFullAttributesFile)};
 
   static const IPCCall set_info = {
-      {IpcTag::NTSETINFO_RENAME,
-       {VOIDPTR_TYPE, INOUTPTR_TYPE, INOUTPTR_TYPE, UINT32_TYPE, UINT32_TYPE}},
+      {{VOIDPTR_TYPE, INOUTPTR_TYPE, INOUTPTR_TYPE, UINT32_TYPE, UINT32_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &FilesystemDispatcher::NtSetInformationFile)};
 
-  ipc_calls_.push_back(create_params);
-  ipc_calls_.push_back(open_file);
-  ipc_calls_.push_back(attribs);
-  ipc_calls_.push_back(full_attribs);
-  ipc_calls_.push_back(set_info);
+  ipc_calls_[IpcTag::NTCREATEFILE] = create_file;
+  ipc_calls_[IpcTag::NTOPENFILE] = open_file;
+  ipc_calls_[IpcTag::NTQUERYATTRIBUTESFILE] = query_attribs;
+  ipc_calls_[IpcTag::NTQUERYFULLATTRIBUTESFILE] = query_full_attribs;
+  ipc_calls_[IpcTag::NTSETINFO_RENAME] = set_info;
 }
 
 bool FilesystemDispatcher::SetupService(InterceptionManager* manager,
