@@ -2500,7 +2500,12 @@
     "AutofillAndroidKeyboardAccessoryDynamicPositioning": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
