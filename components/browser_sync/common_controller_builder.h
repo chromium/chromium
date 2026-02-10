@@ -41,6 +41,10 @@ namespace commerce {
 class ProductSpecificationsService;
 }  // namespace commerce
 
+namespace contextual_tasks {
+class ContextualTasksService;
+}  // namespace contextual_tasks
+
 namespace consent_auditor {
 class ConsentAuditor;
 }  // namespace consent_auditor
@@ -158,6 +162,8 @@ class CommonControllerBuilder {
   void SetConsentAuditor(consent_auditor::ConsentAuditor* consent_auditor);
   void SetCollaborationService(
       collaboration::CollaborationService* collaboration_service);
+  void SetContextualTasksService(
+      contextual_tasks::ContextualTasksService* contextual_tasks_service);
   void SetPersonalCollaborationDataService(
       data_sharing::personal_collaboration_data::
           PersonalCollaborationDataService*
@@ -313,6 +319,8 @@ class CommonControllerBuilder {
       product_specifications_service_;
   SafeOptional<raw_ptr<collaboration::CollaborationService>>
       collaboration_service_;
+  SafeOptional<raw_ptr<contextual_tasks::ContextualTasksService>>
+      contextual_tasks_service_;
   SafeOptional<raw_ptr<data_sharing::personal_collaboration_data::
                            PersonalCollaborationDataService>>
       personal_collaboration_data_service_;

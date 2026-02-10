@@ -124,6 +124,7 @@
 // Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/sync/android/jni_headers/SyncServiceFactory_jni.h"
 #else  // BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -204,6 +205,10 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
   builder.SetConsentAuditor(ConsentAuditorFactory::GetForProfile(profile));
   builder.SetCollaborationService(
       collaboration::CollaborationServiceFactory::GetForProfile(profile));
+#if !BUILDFLAG(IS_ANDROID)
+  builder.SetContextualTasksService(
+      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile));
+#endif
   builder.SetDataSharingService(
       data_sharing::DataSharingServiceFactory::GetForProfile(profile));
   builder.SetPersonalCollaborationDataService(
@@ -527,6 +532,9 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(browser_sync::UserEventServiceFactory::GetInstance());
   DependsOn(collaboration::CollaborationServiceFactory::GetInstance());
   DependsOn(ConsentAuditorFactory::GetInstance());
+#if !BUILDFLAG(IS_ANDROID)
+  DependsOn(contextual_tasks::ContextualTasksServiceFactory::GetInstance());
+#endif  // !BUILDFLAG(IS_ANDROID)
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());

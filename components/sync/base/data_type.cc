@@ -503,6 +503,9 @@ DataTypeSet AlwaysPreferredUserTypes() {
           kSyncSupportAlwaysSyncingPriorityPreferences)) {
     types.Remove(PRIORITY_PREFERENCES);
   }
+  if (base::FeatureList::IsEnabled(syncer::kSyncAIThread)) {
+    types.Put(AI_THREAD);
+  }
   return types;
 }
 

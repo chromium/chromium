@@ -88,6 +88,10 @@ source_set("sync") {
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
     "//chrome/browser/consent_auditor",
+
+    # TODO(crbug.com/483063966) Investigate why putting contextual_tasks
+    # dependency behind !is_android leads to failures on android-binary-size.
+    "//chrome/browser/contextual_tasks",
     "//chrome/browser/gcm",
     "//chrome/browser/history",
     "//chrome/browser/password_manager/factories",

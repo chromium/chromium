@@ -38,6 +38,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/consent_auditor/consent_auditor.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/personal_collaboration_data/personal_collaboration_data_service.h"
@@ -258,6 +259,11 @@ void CommonControllerBuilder::SetConsentAuditor(
 void CommonControllerBuilder::SetCollaborationService(
     collaboration::CollaborationService* collaboration_service) {
   collaboration_service_.Set(collaboration_service);
+}
+
+void CommonControllerBuilder::SetContextualTasksService(
+    contextual_tasks::ContextualTasksService* contextual_tasks_service) {
+  contextual_tasks_service_.Set(contextual_tasks_service);
 }
 
 void CommonControllerBuilder::SetPersonalCollaborationDataService(
@@ -912,19 +918,20 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   }
 
   if (!disabled_types.Has(syncer::AI_THREAD) &&
-      base::FeatureList::IsEnabled(syncer::kSyncAIThread)) {
-    // TODO(crbug.com/445841720): In CL #4, register the type, i.e. instantiate
-    // the DataTypeController. There is more than one way to go about it,
-    // but one option is:
-    // - Create a trivial implementation of DataTypeSyncBridge which lives in
-    //   your feature's directory. It should have synchronous access to your
-    //   data model (e.g. DualReadingListModel) and be (indirectly) owned by a
-    //   CoolKeyedService (often the model itself).
-    // - Expose CoolKeyedService::GetControllerDelegate() which calls
-    //   bridge->change_processor()->GetControllerDelegate().
-    // - Inject CoolKeyedService in this class and call GetControllerDelegate()
-    //   on it to create the DataTypeController.
-    // In CLs #5, #6, ..., implement the bridge and keep adding unit tests.
+      base::FeatureList::IsEnabled(syncer::kSyncAIThread) &&
+      contextual_tasks_service_.value()) {
+    syncer::DataTypeControllerDelegate* delegate =
+        contextual_tasks_service_.value()
+            ->GetAiThreadControllerDelegate()
+            .get();
+    controllers.push_back(std::make_unique<DataTypeController>(
+        /*type= */ syncer::AI_THREAD,
+        /*delegate_for_full_sync_mode= */
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+            delegate),
+        /*delegate_for_transport_mode= */
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+            delegate)));
   }
 
   if (!disabled_types.Has(syncer::GEMINI_THREAD) &&

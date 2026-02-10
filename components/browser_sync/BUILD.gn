@@ -33,6 +33,7 @@ static_library("browser_sync") {
     "//components/commerce/core:feature_list",
     "//components/commerce/core/product_specifications",
     "//components/consent_auditor",
+    "//components/contextual_tasks/public",
     "//components/data_sharing/public",
     "//components/data_sharing/public:personal_collaboration_data",
     "//components/history/core/browser",
