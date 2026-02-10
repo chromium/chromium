@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <set>
 #include <string>
 #include <utility>
 
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -29,7 +29,7 @@
 namespace mojo::core::ipcz_driver {
 namespace {
 
-const char kParentHandle[] = "mojo-ipcz-test-parent-handle";
+constexpr char kParentHandle[] = "mojo-ipcz-test-parent-handle";
 
 const char kMojoIpczInProcessTestDriverName[] = "MojoIpczInProcess";
 const char kMojoIpczMultiprocessTestDriverName[] = "MojoIpczMultiprocess";
@@ -261,17 +261,18 @@ class MojoIpczTestDriver : public ipcz::test::TestDriver {
     base::CommandLine command_line(
         base::GetMultiProcessTestChildBaseCommandLine().GetProgram());
 
-    std::set<std::string> uninherited_args;
-    uninherited_args.insert(PlatformChannel::kHandleSwitch);
-    uninherited_args.insert(kParentHandle);
-    uninherited_args.insert(switches::kTestChildProcess);
+    const auto kUninheritedArgs = base::flat_set<std::string_view>({
+        PlatformChannel::kHandleSwitch,
+        kParentHandle,
+        switches::kTestChildProcess,
+    });
 
     // Copy commandline switches from the parent process, except for the
     // multiprocess client name and mojo message pipe handle; this allows test
     // clients to spawn other test clients.
     for (const auto& entry :
          base::CommandLine::ForCurrentProcess()->GetSwitches()) {
-      if (!uninherited_args.contains(entry.first)) {
+      if (!kUninheritedArgs.contains(entry.first)) {
         command_line.AppendSwitchNative(entry.first, entry.second);
       }
     }

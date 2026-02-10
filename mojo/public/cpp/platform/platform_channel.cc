@@ -164,8 +164,6 @@ void CreateChannel(PlatformHandle* local_endpoint,
 
 }  // namespace
 
-const char PlatformChannel::kHandleSwitch[] = "mojo-platform-channel-handle";
-
 PlatformChannel::PlatformChannel() {
   PlatformHandle local_handle;
   PlatformHandle remote_handle;

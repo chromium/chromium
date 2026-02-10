@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannel {
  public:
   // A common helper constant that is used to pass handle values on the
   // command line when the relevant methods are used on this class.
-  static const char kHandleSwitch[];
+  static constexpr char kHandleSwitch[] = "mojo-platform-channel-handle";
 
   using HandlePassingInfo = PlatformChannelEndpoint::HandlePassingInfo;
 
