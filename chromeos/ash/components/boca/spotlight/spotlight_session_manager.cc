@@ -114,8 +114,7 @@ void SpotlightSessionManager::OnConsumerActivityUpdated(
                                                .view_screen_requester()
                                                .user()
                                                .email();
-        if (ash::features::IsBocaRedirectStudentAudioToKioskEnabled() &&
-            requester_user_email.length() > 0 &&
+        if (requester_user_email.length() > 0 &&
             // TODO: crbug.com/458711843 - Use a server-specified proto field to
             // determine if the requesting entity is a kiosk receiver
             IsChromeEnterpriseEmail(requester_user_email)) {

@@ -266,11 +266,6 @@ BASE_FEATURE(kBocaScreenSharingTeacher, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables or disables sharing student's screen in the Boca app.
 BASE_FEATURE(kBocaScreenSharingStudent, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables setting audio params when sharing from a student device
-// to a remote kiosk receiver.
-BASE_FEATURE(kBocaRedirectStudentAudioToKiosk,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables Boca receiver custom polling.
 BASE_FEATURE(kBocaReceiverCustomPolling, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2353,10 +2348,6 @@ bool IsBocaScreenSharingTeacherEnabled() {
 
 bool IsBocaScreenSharingStudentEnabled() {
   return base::FeatureList::IsEnabled(kBocaScreenSharingStudent);
-}
-
-bool IsBocaRedirectStudentAudioToKioskEnabled() {
-  return base::FeatureList::IsEnabled(kBocaRedirectStudentAudioToKiosk);
 }
 
 bool IsBocaReceiverCustomPollingEnabled() {
