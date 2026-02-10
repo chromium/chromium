@@ -677,14 +677,15 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
       // We leave the picker open, and do not "pick" an option, only if:
       //  1. The mousedown was on the <select> button, so we have a mousedown
       //     location stored, and
-      //  2. The mouseup on this <option> was within kEpsilon layout units
-      //     (post zoom, page-relative) of the location of the mousedown. I.e.
-      //     the mouse was not dragged between mousedown and mouseup.
+      //  2. The mouseup on this <option> was within kPopupMenuDragEpsilon
+      //     layout units (post zoom, page-relative) of the location of the
+      //     mousedown. I.e.  the mouse was not dragged between mousedown and
+      //     mouseup.
       auto mouse_down_info = GetDocument().PopoverPickerPointerdown();
-      constexpr float kEpsilon = 5;  // 5 pixels in any direction
-      bool mouse_moved = !mouse_down_info.target ||
-                         !mouse_down_info.location.IsWithinDistance(
-                             mouse_event->AbsoluteLocation(), kEpsilon);
+      bool mouse_moved =
+          !mouse_down_info.target ||
+          !mouse_down_info.location.IsWithinDistance(
+              mouse_event->AbsoluteLocation(), kPopupMenuDragEpsilon);
       if (mouse_moved) {
         ChooseOption(event);
       }

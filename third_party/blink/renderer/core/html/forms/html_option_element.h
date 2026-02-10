@@ -130,6 +130,17 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   void UpdateMutationObserver(bool in_style_recalc);
   bool HasMutationObserver() const { return text_observer_; }
 
+  // This constant is a distance in pixels (post zoom, page-relative). It is
+  // used in multiple cases (select popups, submenu popups) where we support
+  // mousedown -> popup opens -> drag into popup -> mouseup on item in popup
+  // as an interaction pattern for selecting an item in a popup. If the mouse
+  // *movement* is less than this distance, we don't want to treat the mouseup
+  // as selecting the item in the menu; instead we want to treat the gesture
+  // as a "click" that opened the menu but didn't select an item in it. This
+  // is important because the popup might open at a position that overlaps the
+  // current mouse pointer position.
+  static constexpr float kPopupMenuDragEpsilon = 5;
+
  private:
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   bool IsKeyboardFocusableSlow(UpdateBehavior update_behavior) const override;
