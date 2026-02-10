@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_POLICY_POLICY_AUDITOR_BRIDGE_H_
 #define CHROME_BROWSER_ANDROID_POLICY_POLICY_AUDITOR_BRIDGE_H_
 
-#include "base/android/scoped_java_ref.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -32,16 +31,12 @@ class PolicyAuditorBridge
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-  explicit PolicyAuditorBridge(
-      content::WebContents* web_contents,
-      ScopedJavaLocalRef<jobject>&& android_policy_auditor);
+  explicit PolicyAuditorBridge(content::WebContents* web_contents);
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
-
-  ScopedJavaGlobalRef<jobject> android_policy_auditor_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_POLICY_POLICY_AUDITOR_BRIDGE_H_

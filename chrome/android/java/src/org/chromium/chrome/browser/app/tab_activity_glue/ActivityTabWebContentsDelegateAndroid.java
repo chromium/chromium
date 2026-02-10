@@ -293,7 +293,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
             RecordUserAction.record("LinkNavigationOpenedInForegroundTab");
         } else if (disposition == WindowOpenDisposition.NEW_POPUP) {
-            PolicyAuditor auditor = PolicyAuditor.maybeCreate();
+            PolicyAuditor auditor = PolicyAuditor.maybeGetInstance();
             if (auditor != null) {
                 auditor.notifyAuditEvent(
                         ContextUtils.getApplicationContext(),

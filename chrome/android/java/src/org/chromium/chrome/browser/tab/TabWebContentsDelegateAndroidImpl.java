@@ -390,7 +390,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public void visibleSSLStateChanged() {
-        PolicyAuditor auditor = PolicyAuditor.maybeCreate();
+        PolicyAuditor auditor = PolicyAuditor.maybeGetInstance();
         if (auditor != null) {
             WebContents webContents = mTab.getWebContents();
             // Speculative fix for crbug.com/384566650

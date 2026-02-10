@@ -39,8 +39,19 @@ public class PolicyAuditor {
         int AUTOFILL_SELECTED = 4;
     }
 
-    public static @Nullable PolicyAuditor maybeCreate() {
-        return ServiceLoaderUtil.maybeCreate(PolicyAuditor.class);
+    private static @Nullable PolicyAuditor sInstance;
+
+    /**
+     * Returns an instance of PolicyAuditor if it is enabled, otherwise returns null.
+     *
+     * <p>This method is used to get the PolicyAuditor instance in a way that is compatible with
+     * ChromeApplicationImpl.
+     */
+    public static @Nullable PolicyAuditor maybeGetInstance() {
+        if (sInstance == null) {
+            sInstance = ServiceLoaderUtil.maybeCreate(PolicyAuditor.class);
+        }
+        return sInstance;
     }
 
     /** Make it non-obvious to accidentally instantiate this outside of ChromeApplicationImpl. */

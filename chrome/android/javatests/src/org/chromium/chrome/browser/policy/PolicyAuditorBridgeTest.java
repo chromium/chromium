@@ -133,7 +133,7 @@ public class PolicyAuditorBridgeTest {
                     });
         }
 
-        FakePolicyAuditor fakePolicyAuditor = (FakePolicyAuditor) PolicyAuditor.maybeCreate();
+        FakePolicyAuditor fakePolicyAuditor = (FakePolicyAuditor) PolicyAuditor.maybeGetInstance();
 
         // After a failed navigation that is not caused by the url being blocked by an
         // administrator, we expect an OPEN_URL_FAILURE entry from didFinishNavigation, followed by

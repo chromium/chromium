@@ -17,13 +17,15 @@ import org.chromium.url.GURL;
 @NullMarked
 public class PolicyAuditorBridge {
     @CalledByNative
-    public static @Nullable PolicyAuditor getPolicyAuditor() {
-        return PolicyAuditor.maybeCreate();
+    public static @Nullable PolicyAuditor maybeGetPolicyAuditorInstance() {
+        return PolicyAuditor.maybeGetInstance();
     }
 
     @CalledByNative
-    public static void notifyAuditEventForDidFinishNavigation(
-            NavigationHandle navigationHandle, PolicyAuditor policyAuditor) {
+    public static void notifyAuditEventForDidFinishNavigation(NavigationHandle navigationHandle) {
+        PolicyAuditor policyAuditor = PolicyAuditor.maybeGetInstance();
+        if (policyAuditor == null) return;
+
         if (navigationHandle.errorCode() != NetError.OK) {
             policyAuditor.notifyAuditEvent(
                     ContextUtils.getApplicationContext(),
@@ -43,7 +45,10 @@ public class PolicyAuditorBridge {
     }
 
     @CalledByNative
-    public static void notifyAuditEventForDidFinishLoad(GURL url, PolicyAuditor policyAuditor) {
+    public static void notifyAuditEventForDidFinishLoad(GURL url) {
+        PolicyAuditor policyAuditor = PolicyAuditor.maybeGetInstance();
+        if (policyAuditor == null) return;
+
         policyAuditor.notifyAuditEvent(
                 ContextUtils.getApplicationContext(),
                 PolicyAuditor.AuditEvent.OPEN_URL_SUCCESS,
