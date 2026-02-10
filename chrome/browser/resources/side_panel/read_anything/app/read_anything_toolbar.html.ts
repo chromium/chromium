@@ -10,11 +10,10 @@ export function getHtml(this: ReadAnythingToolbarElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="toolbarContainer" class="${this.getToolbarContainerClass_()}"
-    role="toolbar" aria-label="${this.getToolbarAriaLabel_()}"
+    role="toolbar" aria-label="i18n{readingModeReadAloudToolbarLabel}"
     @keydown="${this.onToolbarKeyDown_}"
     @reset-toolbar="${this.onResetToolbar_}"
     @toolbar-overflow="${this.onToolbarOverflow_}">
-  ${this.shouldShowToolbarAudioControls_() ? html`
     <span id="audio-controls" class="audio-background-${this.getAudioState_()}">
       <span ?hidden="${this.hideSpinner_}">
         <picture class="spinner toolbar-button audio-controls">
@@ -78,47 +77,21 @@ export function getHtml(this: ReadAnythingToolbarElement) {
     <rate-menu id="rateMenu" .settingsPrefs="${this.settingsPrefs}"
         @rate-change="${this.onRateChange_}">
     </rate-menu>
-  ` : ''}
   ${!this.isImmersiveEnabled_ ? html`
-    ${this.isReadAloudEnabled_ ? html`
-      <cr-icon-button class="toolbar-button" id="voice-selection" tabindex="-1"
-          aria-label="$i18n{voiceSelectionLabel}"
-          title="$i18n{voiceSelectionLabel}"
-          aria-haspopup="menu"
-          iron-icon="read-anything:voice-selection"
-          @click="${this.onVoiceSelectionMenuClick_}">
-      </cr-icon-button>
+    <cr-icon-button class="toolbar-button" id="voice-selection" tabindex="-1"
+        aria-label="$i18n{voiceSelectionLabel}"
+        title="$i18n{voiceSelectionLabel}"
+        aria-haspopup="menu"
+        iron-icon="read-anything:voice-selection"
+        @click="${this.onVoiceSelectionMenuClick_}">
+    </cr-icon-button>
 
-      <cr-icon-button class="toolbar-button" id="highlight" tabindex="-1"
-          iron-icon="read-anything:highlight-on"
-          title="${this.getHighlightButtonLabel_()}"
-          aria-label="${this.getHighlightButtonLabel_()}"
-          @click="${this.onHighlightClick_}">
-      </cr-icon-button>
-    ` : html`
-      <font-select id="font-select" tabindex="0"
-        .settingsPrefs="${this.settingsPrefs}"
-        .pageLanguage="${this.pageLanguage}"
-        .areFontsLoaded="${this.areFontsLoaded_}"
-        @font-change="${this.onFontChange_}">
-      </font-select>
-      <hr class="separator" aria-hidden="true">
-      <div id="size-announce" class="announce-block" aria-live="polite"></div>
-      <cr-icon-button id="font-size-decrease-old" tabindex="-1"
-          class="toolbar-button"
-          aria-label="$i18n{decreaseFontSizeLabel}"
-          title="$i18n{decreaseFontSizeLabel}"
-          iron-icon="read-anything:font-size-decrease-old"
-          @click="${this.onFontSizeDecreaseClick_}">
-      </cr-icon-button>
-      <cr-icon-button id="font-size-increase-old" tabindex="-1"
-          class="toolbar-button"
-          aria-label="$i18n{increaseFontSizeLabel}"
-          title="$i18n{increaseFontSizeLabel}"
-          iron-icon="read-anything:font-size-increase-old"
-          @click="${this.onFontSizeIncreaseClick_}">
-      </cr-icon-button>
-    `}
+    <cr-icon-button class="toolbar-button" id="highlight" tabindex="-1"
+        iron-icon="read-anything:highlight-on"
+        title="${this.getHighlightButtonLabel_()}"
+        aria-label="${this.getHighlightButtonLabel_()}"
+        @click="${this.onHighlightClick_}">
+    </cr-icon-button>
 
     <hr class="separator" aria-hidden="true">
 

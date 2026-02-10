@@ -36,9 +36,7 @@ export class VoiceLanguageController {
 
   constructor() {
     this.model_.setCurrentLanguage(chrome.readingMode.baseLanguageForSpeech);
-    if (chrome.readingMode.isReadAloudEnabled) {
-      this.speech_.setOnVoicesChanged(this.onVoicesChanged.bind(this));
-    }
+    this.speech_.setOnVoicesChanged(this.onVoicesChanged.bind(this));
   }
 
   addListener(listener: VoiceLanguageListener) {

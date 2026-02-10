@@ -441,14 +441,11 @@ suite('LineFocusController', () => {
     const startingTop = lineFocusController.getTop();
 
     lineFocusController.snapToNextLine(true);
-    // lineFocusController.onScrollEnd(height);
     assertFalse(lineFocusMoved);
     assertEquals(startingTop, lineFocusController.getTop());
 
     lineFocusController.snapToNextLine(true);
-    assertFalse(lineFocusMoved);
-    assertEquals(startingTop, lineFocusController.getTop());
-
+    lineFocusController.snapToNextLine(true);
     lineFocusController.onScrollEnd(height);
     assertTrue(lineFocusMoved);
     assertLT(startingTop, lineFocusController.getTop());

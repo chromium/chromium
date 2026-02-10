@@ -113,20 +113,18 @@ export class SelectionController {
     let focusNodeId = this.nodeStore_.getAxId(focusNode);
     let adjustedAnchorOffset = anchorOffset;
     let adjustedFocusOffset = focusOffset;
-    if (chrome.readingMode.isReadAloudEnabled) {
-      if (!anchorNodeId) {
-        const ancestor = this.nodeStore_.getAncestor(anchorNode);
-        if (ancestor) {
-          anchorNodeId = this.nodeStore_.getAxId(ancestor.node);
-          adjustedAnchorOffset += ancestor.offset;
-        }
+    if (!anchorNodeId) {
+      const ancestor = this.nodeStore_.getAncestor(anchorNode);
+      if (ancestor) {
+        anchorNodeId = this.nodeStore_.getAxId(ancestor.node);
+        adjustedAnchorOffset += ancestor.offset;
       }
-      if (!focusNodeId) {
-        const ancestor = this.nodeStore_.getAncestor(focusNode);
-        if (ancestor) {
-          focusNodeId = this.nodeStore_.getAxId(ancestor.node);
-          adjustedFocusOffset += ancestor.offset;
-        }
+    }
+    if (!focusNodeId) {
+      const ancestor = this.nodeStore_.getAncestor(focusNode);
+      if (ancestor) {
+        focusNodeId = this.nodeStore_.getAxId(ancestor.node);
+        adjustedFocusOffset += ancestor.offset;
       }
     }
     return {

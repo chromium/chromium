@@ -22,7 +22,6 @@ suite('ToolbarOverflow', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    chrome.readingMode.isReadAloudEnabled = true;
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
     return microtasksFinished();

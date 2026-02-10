@@ -98,9 +98,6 @@ declare namespace chrome {
     // Whether Read Anything is pinned to the toolbar.
     let isReadAnythingPinned: boolean;
 
-    // Whether the Read Aloud feature flag is enabled.
-    let isReadAloudEnabled: boolean;
-
     // Whether the TS text segmentation feature flag is enabled.
     let isTsTextSegmentationEnabled: boolean;
 

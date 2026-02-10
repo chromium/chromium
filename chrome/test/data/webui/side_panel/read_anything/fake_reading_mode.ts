@@ -88,8 +88,6 @@ export class FakeReadingMode {
   // method.
   distillationTypeReadability: number = 1;
 
-  // Whether the Read Aloud feature flag is enabled.
-  isReadAloudEnabled: boolean = true;
   imagesFeatureEnabled: boolean = false;
 
   // Whether the Immersive Read Anything feature flag is enabled.

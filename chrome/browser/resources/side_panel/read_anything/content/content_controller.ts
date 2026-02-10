@@ -213,11 +213,8 @@ export class ContentController {
           chrome.readingMode.unexpectedUpdateContentStopSource);
     }
 
-    if (chrome.readingMode.isReadAloudEnabled) {
-      this.speechController_.saveReadAloudState();
-      this.speechController_.resetForNewContent();
-    }
-
+    this.speechController_.saveReadAloudState();
+    this.speechController_.resetForNewContent();
     this.nodeStore_.clearDomNodes();
 
     if (isDistilledByReadability()) {
@@ -317,9 +314,8 @@ export class ContentController {
   updateReadAloudState(rootNode: Node): void {
     // If the previous reading position still exists and we haven't reached the
     // end of speech, keep that spot.
-    const setPreviousReadingPosition = chrome.readingMode.isReadAloudEnabled &&
+    const setPreviousReadingPosition =
         this.speechController_.setPreviousReadingPositionIfExists();
-
     requestAnimationFrame(() => {
       // Count this as a new page as long as there's no reading position to keep
       // from before.
@@ -427,8 +423,7 @@ export class ContentController {
     // which can be computationally expensive.
     // This needs to be done after the text node is created and added to the
     // node store.
-    if (chrome.readingMode.isReadAloudEnabled &&
-        !chrome.readingMode.isTsTextSegmentationEnabled) {
+    if (!chrome.readingMode.isTsTextSegmentationEnabled) {
       this.speechController_.initializeSpeechTree(textNode);
     }
 

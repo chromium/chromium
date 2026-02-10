@@ -90,7 +90,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   protected accessor contentState_: ContentState;
 
-  private isReadAloudEnabled_: boolean;
   protected isDocsLoadMoreButtonVisible_: boolean = false;
   protected isImmersiveEnabled_: boolean = false;
 
@@ -150,7 +149,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
   constructor() {
     super();
     this.logger_.logTimeFrom(TimeFrom.APP, this.startTime_, Date.now());
-    this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
     this.styleUpdater_ = new AppStyleUpdater(this);
     this.nodeStore_.clear();
     ColorChangeUpdater.forDocument().start();
@@ -193,15 +191,13 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.lineFocusController_.addListener(this);
     }
     this.contentController_.addListener(this);
-    if (this.isReadAloudEnabled_) {
-      this.speechController_.addListener(this);
-      this.voiceLanguageController_.addListener(this);
-      this.notificationManager_.addListener(this.$.languageToast);
+    this.speechController_.addListener(this);
+    this.voiceLanguageController_.addListener(this);
+    this.notificationManager_.addListener(this.$.languageToast);
 
-      // Clear state. We don't do this in disconnectedCallback because that's
-      // not always reliabled called.
-      this.nodeStore_.clearDomNodes();
-    }
+    // Clear state. We don't do this in disconnectedCallback because that's
+    // not always reliabled called.
+    this.nodeStore_.clearDomNodes();
     this.showLoading();
 
     this.settingsPrefs_ = {
@@ -229,10 +225,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
       const selection = this.getSelection();
       this.selectionController_.onSelectionChange(selection);
-      if (this.isReadAloudEnabled_) {
-        this.speechController_.onSelectionChange();
-        this.contentController_.onSelectionChange(this.shadowRoot);
-      }
+      this.speechController_.onSelectionChange();
+      this.contentController_.onSelectionChange(this.shadowRoot);
     };
 
     // Pass copy commands to main page. Copy commands will not work if they are
@@ -352,9 +346,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   protected onContainerScroll_() {
     this.selectionController_.onScroll();
-    if (this.isReadAloudEnabled_) {
-      this.speechController_.onScroll();
-    }
+    this.speechController_.onScroll();
     // Add fading effect to Immersive Mode text when scrolling.
     if (this.isImmersiveEnabled_) {
       const fontSize = Number.parseInt(window.getComputedStyle(this.$.container)
@@ -377,9 +369,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   showLoading() {
     this.contentController_.setState(ContentType.LOADING);
-    if (this.isReadAloudEnabled_) {
-      this.speechController_.resetForNewContent();
-    }
+    this.speechController_.resetForNewContent();
   }
 
   // TODO: crbug.com/40927698 - Handle focus changes for speech, including
@@ -571,9 +561,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   private restoreSettingsFromPrefs_() {
-    if (this.isReadAloudEnabled_) {
-      this.voiceLanguageController_.restoreFromPrefs();
-    }
+    this.voiceLanguageController_.restoreFromPrefs();
     this.settingsPrefs_ = {
       letterSpacing: chrome.readingMode.letterSpacing,
       lineSpacing: chrome.readingMode.lineSpacing,
@@ -705,10 +693,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   languageChanged() {
     this.pageLanguage_ = chrome.readingMode.baseLanguageForSpeech;
-    if (this.isReadAloudEnabled_) {
-      this.voiceLanguageController_.onPageLanguageChanged();
-      TextSegmenter.getInstance().updateLanguage(this.pageLanguage_);
-    }
+    this.voiceLanguageController_.onPageLanguageChanged();
+    TextSegmenter.getInstance().updateLanguage(this.pageLanguage_);
   }
 
   protected computeHasContent(): boolean {

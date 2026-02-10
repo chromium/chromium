@@ -23,7 +23,6 @@ export {ReadabilityImageClassifier} from './content/readability_image_classifier
 export {SelectionController} from './content/selection_controller.js';
 export type {ColorMenuElement} from './menus/color_menu.js';
 export type {FontMenuElement} from './menus/font_menu.js';
-export type {FontSelectElement} from './menus/font_select.js';
 export type {HighlightMenuElement} from './menus/highlight_menu.js';
 export type {LetterSpacingMenuElement} from './menus/letter_spacing_menu.js';
 export type {LineFocusMenuElement} from './menus/line_focus_menu.js';
