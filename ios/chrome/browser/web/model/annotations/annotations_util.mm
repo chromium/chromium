@@ -70,21 +70,12 @@ WebAnnotationPolicyValue GetPolicyForType(PrefService* prefs,
   return WebAnnotationPolicyValue::kEnabled;
 }
 
-bool IsAddressDetectionEnabled() {
-  if (@available(iOS 16.4, *)) {
-    return true;
-  }
-  return false;
-}
-
 bool IsAddressAutomaticDetectionEnabled(PrefService* prefs) {
-  return IsAddressDetectionEnabled() &&
-         prefs->GetBoolean(prefs::kDetectAddressesEnabled);
+  return prefs->GetBoolean(prefs::kDetectAddressesEnabled);
 }
 
 bool IsAddressAutomaticDetectionAccepted(PrefService* prefs) {
-  return IsAddressDetectionEnabled() &&
-         prefs->GetBoolean(prefs::kDetectAddressesAccepted);
+  return prefs->GetBoolean(prefs::kDetectAddressesAccepted);
 }
 
 bool ShouldPresentConsentIPH(PrefService* prefs) {
@@ -92,8 +83,7 @@ bool ShouldPresentConsentIPH(PrefService* prefs) {
 }
 
 bool IsAddressLongPressDetectionEnabled(PrefService* prefs) {
-  return !IsAddressDetectionEnabled() ||
-         prefs->GetBoolean(prefs::kDetectAddressesEnabled);
+  return prefs->GetBoolean(prefs::kDetectAddressesEnabled);
 }
 
 bool IsUnitAutomaticDetectionEnabled(PrefService* prefs) {
