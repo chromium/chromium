@@ -6,7 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_FEATURES_H_
 
 #include <optional>
-#include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
@@ -22,7 +22,7 @@ using OnDeviceFeatureSet = base::EnumSet<mojom::OnDeviceFeature,
 
 // Return the name to use in histogram variants for this feature key.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-std::string GetVariantName(mojom::OnDeviceFeature feature);
+std::string_view GetVariantName(mojom::OnDeviceFeature feature);
 
 // Returns which ModelExecutionFeature is used for this feature key.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

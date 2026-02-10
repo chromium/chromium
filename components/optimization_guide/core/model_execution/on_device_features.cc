@@ -9,7 +9,7 @@
 
 namespace optimization_guide {
 
-std::string GetVariantName(mojom::OnDeviceFeature feature) {
+std::string_view GetVariantName(mojom::OnDeviceFeature feature) {
   switch (feature) {
     case mojom::OnDeviceFeature::kCompose:
       return "Compose";
