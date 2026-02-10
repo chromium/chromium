@@ -42,13 +42,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
     virtual void OnGeolocationPermissionChanged(bool enabled) = 0;
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(ClientId)
   enum class ClientId {
     kGeolocationController = 0,
     kWizardController = 1,
     kTimezoneResolver = 2,
     kForTesting = 3,
-    kMaxValue = kForTesting,
+    kQueryGeolocationCommand = 4,
+    kMaxValue = kQueryGeolocationCommand,
   };
+  // LINT.ThenChange(tools/metrics/histograms/metadata/ash/enums.xml:SimpleGeolocationClientId)
 
   SystemLocationProvider(const SystemLocationProvider&) = delete;
   SystemLocationProvider& operator=(const SystemLocationProvider&) = delete;

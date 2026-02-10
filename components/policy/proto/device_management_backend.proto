@@ -144,6 +144,28 @@ enum FetchSupportPacketResultNote {
   WARNING_PII_NOT_ALLOWED = 1;
 }
 
+// Result code used in the response payload of the `QUERY_GEOLOCATION` remote
+// command.
+enum QueryGeolocationCommandResultCode {
+  // Successfully obtained geolocation.
+  SUCCESS = 0;
+  // The command is not allowed because the device is not managed.
+  DEVICE_NOT_MANAGED = 1;
+  // The command is not allowed because the device is not in disabled mode.
+  DEVICE_NOT_DISABLED = 2;
+  // The command is not allowed because location tracking is disabled by
+  // policy.
+  LOCATION_TRACKING_DISABLED = 3;
+  // Geolocation request timed out.
+  TIMEOUT = 4;
+  // Geolocation request failed due to a server error.
+  SERVER_ERROR = 5;
+  // Geolocation request failed due to a network error.
+  NETWORK_ERROR = 6;
+  // Incorrect location is returned.
+  INCORRECT_LOCATION_RETURNED = 7;
+}
+
 // Data along with a cryptographic signature verifying their authenticity.
 message SignedData {
   // The data to be signed.
@@ -3265,6 +3287,9 @@ message RemoteCommand {
 
     // Fetch the logs from the Support Tool on managed ChromeOS devices.
     FETCH_SUPPORT_PACKET = 16;
+
+    // Query the geolocation of the device.
+    QUERY_GEOLOCATION = 17;
 
     // Please update metrics after adding a new item - see the comment above.
   }

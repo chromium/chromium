@@ -43,6 +43,7 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":geolocation",
+    ":test_support",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -59,6 +60,21 @@ source_set("unit_tests") {
     "cached_location_provider_unittest.cc",
     "location_fetcher_unittest.cc",
     "system_location_provider_unittest.cc",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  deps = [
+    ":geolocation",
+    "//base",
+    "//chromeos/ash/components/network:test_support",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+  ]
+  sources = [
     "test_utils.cc",
     "test_utils.h",
   ]
