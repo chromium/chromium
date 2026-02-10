@@ -226,6 +226,13 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
     }
   }
 
+  protected get toolHeader_(): string {
+    if (this.inputState && this.inputState.toolsSectionConfig) {
+      return this.inputState.toolsSectionConfig.header;
+    }
+    return '';
+  }
+
   protected get modelHeader_(): string {
     if (this.inputState && this.inputState.modelSectionConfig) {
       return this.inputState.modelSectionConfig.header;

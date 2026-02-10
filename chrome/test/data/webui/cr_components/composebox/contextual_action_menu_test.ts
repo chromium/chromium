@@ -43,6 +43,7 @@ suite('ContextualActionMenu', () => {
       composeboxFileMaxCount: 10,
       composeboxShowContextMenuTabPreviews: true,
       composeboxShowPdfUpload: true,
+      ShowContextMenuHeaders: true,
     });
 
     actionMenu = document.createElement('cr-composebox-contextual-action-menu');
@@ -298,6 +299,7 @@ suite('ContextualActionMenu', () => {
         hintText: '',
         aimUrlParams: [],
       }],
+      modelSectionConfig: {header: 'Models'},
     });
     actionMenu.showAt(actionMenu);
     await microtasksFinished();
