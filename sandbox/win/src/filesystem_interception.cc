@@ -7,6 +7,7 @@
 #include <ntstatus.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/filesystem_policy.h"
 #include "sandbox/win/src/ipc_tags.h"
@@ -164,23 +165,24 @@ NTSTATUS WINAPI TargetNtOpenFile(NtOpenFileFunction orig_OpenFile,
   // Check if the process can open it first.
   NTSTATUS status = orig_OpenFile(file, desired_access, object_attributes,
                                   io_status, sharing, options);
-  if (STATUS_ACCESS_DENIED != status)
+  if (STATUS_ACCESS_DENIED != status) {
     return status;
-
+  }
   // We don't trust that the IPC can work this early.
-  if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled())
+  if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled()) {
     return status;
-
+  }
   do {
-    if (!ValidParameter(file, sizeof(HANDLE), WRITE))
+    if (!ValidParameter(file, sizeof(HANDLE), WRITE)) {
       break;
-    if (!ValidParameter(io_status, sizeof(IO_STATUS_BLOCK), WRITE))
+    }
+    if (!ValidParameter(io_status, sizeof(IO_STATUS_BLOCK), WRITE)) {
       break;
-
+    }
     void* memory = GetGlobalIPCMemory();
-    if (!memory)
+    if (!memory) {
       break;
-
+    }
     std::wstring_view name;
     uint32_t attributes;
     if (!ValidateObjectAttributes(object_attributes, name, attributes)) {
@@ -194,14 +196,14 @@ NTSTATUS WINAPI TargetNtOpenFile(NtOpenFileFunction orig_OpenFile,
     CrossCallReturn answer = {0};
     ResultCode code = CrossCall(ipc, IpcTag::NTOPENFILE, name, attributes,
                                 desired_access, sharing, options, &answer);
-    if (SBOX_ALL_OK != code)
+    if (SBOX_ALL_OK != code) {
       break;
-
+    }
     status = answer.nt_status;
 
-    if (!NT_SUCCESS(answer.nt_status))
+    if (!NT_SUCCESS(answer.nt_status)) {
       break;
-
+    }
     __try {
       *file = answer.handle;
       io_status->Status = answer.nt_status;
@@ -220,21 +222,22 @@ TargetNtQueryAttributesFile(NtQueryAttributesFileFunction orig_QueryAttributes,
                             PFILE_BASIC_INFORMATION file_attributes) {
   // Check if the process can query it first.
   NTSTATUS status = orig_QueryAttributes(object_attributes, file_attributes);
-  if (STATUS_ACCESS_DENIED != status)
+  if (STATUS_ACCESS_DENIED != status) {
     return status;
-
+  }
   // We don't trust that the IPC can work this early.
-  if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled())
+  if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled()) {
     return status;
-
+  }
   do {
-    if (!ValidParameter(file_attributes, sizeof(FILE_BASIC_INFORMATION), WRITE))
+    if (!ValidParameter(file_attributes, sizeof(FILE_BASIC_INFORMATION),
+                        WRITE)) {
       break;
-
+    }
     void* memory = GetGlobalIPCMemory();
-    if (!memory)
+    if (!memory) {
       break;
-
+    }
     std::wstring_view name;
     uint32_t attributes;
     if (!ValidateObjectAttributes(object_attributes, name, attributes)) {
@@ -244,16 +247,16 @@ TargetNtQueryAttributesFile(NtQueryAttributesFileFunction orig_QueryAttributes,
       break;
     }
 
-    InOutCountedBuffer file_info(file_attributes,
-                                 sizeof(FILE_BASIC_INFORMATION));
+    CountedBuffer file_info = base::byte_span_from_ref(
+        base::allow_nonunique_obj_t{}, *file_attributes);
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
     ResultCode code = CrossCall(ipc, IpcTag::NTQUERYATTRIBUTESFILE, name,
                                 attributes, file_info, &answer);
 
-    if (SBOX_ALL_OK != code)
+    if (SBOX_ALL_OK != code) {
       break;
-
+    }
     status = answer.nt_status;
 
   } while (false);
@@ -268,22 +271,22 @@ NTSTATUS WINAPI TargetNtQueryFullAttributesFile(
   // Check if the process can query it first.
   NTSTATUS status =
       orig_QueryFullAttributes(object_attributes, file_attributes);
-  if (STATUS_ACCESS_DENIED != status)
+  if (STATUS_ACCESS_DENIED != status) {
     return status;
-
+  }
   // We don't trust that the IPC can work this early.
-  if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled())
+  if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled()) {
     return status;
-
+  }
   do {
     if (!ValidParameter(file_attributes, sizeof(FILE_NETWORK_OPEN_INFORMATION),
-                        WRITE))
+                        WRITE)) {
       break;
-
+    }
     void* memory = GetGlobalIPCMemory();
-    if (!memory)
+    if (!memory) {
       break;
-
+    }
     std::wstring_view name;
     uint32_t attributes;
     if (!ValidateObjectAttributes(object_attributes, name, attributes)) {
@@ -293,16 +296,16 @@ NTSTATUS WINAPI TargetNtQueryFullAttributesFile(
       break;
     }
 
-    InOutCountedBuffer file_info(file_attributes,
-                                 sizeof(FILE_NETWORK_OPEN_INFORMATION));
+    CountedBuffer file_info = base::byte_span_from_ref(
+        base::allow_nonunique_obj_t{}, *file_attributes);
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
     ResultCode code = CrossCall(ipc, IpcTag::NTQUERYFULLATTRIBUTESFILE, name,
                                 attributes, file_info, &answer);
 
-    if (SBOX_ALL_OK != code)
+    if (SBOX_ALL_OK != code) {
       break;
-
+    }
     status = answer.nt_status;
   } while (false);
 
@@ -319,31 +322,31 @@ TargetNtSetInformationFile(NtSetInformationFileFunction orig_SetInformationFile,
   // Check if the process can open it first.
   NTSTATUS status = orig_SetInformationFile(file, io_status, file_info, length,
                                             file_info_class);
-  if (STATUS_ACCESS_DENIED != status)
+  if (STATUS_ACCESS_DENIED != status) {
     return status;
-
+  }
   // We don't trust that the IPC can work this early.
-  if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled())
+  if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled()) {
     return status;
-
+  }
   do {
     void* memory = GetGlobalIPCMemory();
-    if (!memory)
+    if (!memory) {
       break;
-
-    if (!ValidParameter(io_status, sizeof(IO_STATUS_BLOCK), WRITE))
+    }
+    if (!ValidParameter(io_status, sizeof(IO_STATUS_BLOCK), WRITE)) {
       break;
-
-    if (!ValidParameter(file_info, length, READ))
+    }
+    if (!ValidParameter(file_info, length, READ)) {
       break;
-
+    }
     FILE_RENAME_INFORMATION* file_rename_info =
         reinterpret_cast<FILE_RENAME_INFORMATION*>(file_info);
     std::wstring_view name;
     __try {
-      if (!IsSupportedRenameCall(file_rename_info, length, file_info_class))
+      if (!IsSupportedRenameCall(file_rename_info, length, file_info_class)) {
         break;
-
+      }
       name = {file_rename_info->FileName,
               file_rename_info->FileNameLength / sizeof(wchar_t)};
       if (ContainsNulCharacter(name)) {
@@ -357,20 +360,24 @@ TargetNtSetInformationFile(NtSetInformationFileFunction orig_SetInformationFile,
       break;
     }
 
-    InOutCountedBuffer io_status_buffer(io_status, sizeof(IO_STATUS_BLOCK));
     // This is actually not an InOut buffer, only In, but using InOut facility
     // really helps to simplify the code.
-    InOutCountedBuffer file_info_buffer(file_info, length);
+    // SAFETY: The size of the buffer is checked above.
+    UNSAFE_BUFFERS(CountedBuffer file_info_buffer(
+        static_cast<uint8_t*>(file_info), length));
 
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
     ResultCode code =
-        CrossCall(ipc, IpcTag::NTSETINFO_RENAME, file, io_status_buffer,
-                  file_info_buffer, length, file_info_class, &answer);
+        CrossCall(ipc, IpcTag::NTSETINFO_RENAME, file, file_info_buffer, length,
+                  file_info_class, &answer);
 
-    if (SBOX_ALL_OK != code)
+    if (SBOX_ALL_OK != code) {
       break;
+    }
 
+    io_status->Pointer = answer.extended[0].pointer;
+    io_status->Information = answer.extended[1].ulong_ptr;
     status = answer.nt_status;
   } while (false);
 

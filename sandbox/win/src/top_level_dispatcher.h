@@ -36,7 +36,8 @@ class TopLevelDispatcher : public Dispatcher {
   friend class PolicyDiagnostic;
 
   // Test IPC provider.
-  bool Ping(IPCInfo* ipc, void* cookie);
+  bool Ping1(IPCInfo* ipc, uint32_t cookie);
+  bool Ping2(IPCInfo* ipc, CountedBuffer* io_buffer);
 
   // Returns a dispatcher from ipc_targets_.
   Dispatcher* GetDispatcher(IpcTag ipc_tag);

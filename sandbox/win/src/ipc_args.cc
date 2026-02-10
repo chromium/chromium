@@ -36,8 +36,7 @@ bool IPCArgs::Initialize(CrossCallParamsEx* params) {
           if (!params->GetParameter32(i, &data)) {
             return false;
           }
-          IPCInt ipc_int(data);
-          args_[i].emplace<void*>(ipc_int.AsVoidPtr());
+          args_[i].emplace<void*>(reinterpret_cast<void*>(data));
           break;
         }
         case VOIDPTR_TYPE: {
@@ -49,7 +48,7 @@ bool IPCArgs::Initialize(CrossCallParamsEx* params) {
           break;
         }
         case INOUTPTR_TYPE: {
-          args_[i].emplace<CountedBuffer>(arg, size);
+          args_[i].emplace<CountedBuffer>(static_cast<uint8_t*>(arg), size);
           break;
         }
         default:

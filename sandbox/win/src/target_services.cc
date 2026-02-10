@@ -201,7 +201,7 @@ bool TargetServicesBase::TestIPCPing(int version) {
     }
   } else if (2 == version) {
     uint32_t cookie = 717111;
-    InOutCountedBuffer counted_buffer(&cookie, sizeof(cookie));
+    CountedBuffer counted_buffer = base::byte_span_from_ref(cookie);
     ResultCode code = CrossCall(ipc, IpcTag::PING2, counted_buffer, &answer);
 
     if (SBOX_ALL_OK != code) {

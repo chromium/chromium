@@ -43,7 +43,7 @@ FilesystemDispatcher::FilesystemDispatcher(PolicyBase* policy_base)
           &FilesystemDispatcher::NtQueryFullAttributesFile)};
 
   static const IPCCall set_info = {
-      {{VOIDPTR_TYPE, INOUTPTR_TYPE, INOUTPTR_TYPE, UINT32_TYPE, UINT32_TYPE}},
+      {{VOIDPTR_TYPE, INOUTPTR_TYPE, UINT32_TYPE, UINT32_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &FilesystemDispatcher::NtSetInformationFile)};
 
@@ -153,9 +153,9 @@ bool FilesystemDispatcher::NtQueryAttributesFile(IPCInfo* ipc,
                                                  std::wstring* name,
                                                  uint32_t attributes,
                                                  CountedBuffer* info) {
-  if (sizeof(FILE_BASIC_INFORMATION) != info->Size())
+  if (sizeof(FILE_BASIC_INFORMATION) != info->size()) {
     return false;
-
+  }
   if (ContainsNulCharacter(*name)) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
@@ -164,7 +164,7 @@ bool FilesystemDispatcher::NtQueryAttributesFile(IPCInfo* ipc,
   EvalResult result = EvalPolicy(IpcTag::NTQUERYATTRIBUTESFILE, *name);
 
   FILE_BASIC_INFORMATION* information =
-      reinterpret_cast<FILE_BASIC_INFORMATION*>(info->Buffer());
+      reinterpret_cast<FILE_BASIC_INFORMATION*>(info->data());
   NTSTATUS nt_status;
   if (!FileSystemPolicy::QueryAttributesFileAction(result, *ipc->client_info,
                                                    *name, attributes,
@@ -182,9 +182,9 @@ bool FilesystemDispatcher::NtQueryFullAttributesFile(IPCInfo* ipc,
                                                      std::wstring* name,
                                                      uint32_t attributes,
                                                      CountedBuffer* info) {
-  if (sizeof(FILE_NETWORK_OPEN_INFORMATION) != info->Size())
+  if (sizeof(FILE_NETWORK_OPEN_INFORMATION) != info->size()) {
     return false;
-
+  }
   if (ContainsNulCharacter(*name)) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
@@ -193,7 +193,7 @@ bool FilesystemDispatcher::NtQueryFullAttributesFile(IPCInfo* ipc,
   EvalResult result = EvalPolicy(IpcTag::NTQUERYFULLATTRIBUTESFILE, *name);
 
   FILE_NETWORK_OPEN_INFORMATION* information =
-      reinterpret_cast<FILE_NETWORK_OPEN_INFORMATION*>(info->Buffer());
+      reinterpret_cast<FILE_NETWORK_OPEN_INFORMATION*>(info->data());
   NTSTATUS nt_status;
   if (!FileSystemPolicy::QueryFullAttributesFileAction(
           result, *ipc->client_info, *name, attributes, information,
@@ -209,21 +209,18 @@ bool FilesystemDispatcher::NtQueryFullAttributesFile(IPCInfo* ipc,
 
 bool FilesystemDispatcher::NtSetInformationFile(IPCInfo* ipc,
                                                 HANDLE handle,
-                                                CountedBuffer* status,
                                                 CountedBuffer* info,
                                                 uint32_t length,
                                                 uint32_t info_class) {
-  if (sizeof(IO_STATUS_BLOCK) != status->Size())
+  if (length != info->size()) {
     return false;
-  if (length != info->Size())
-    return false;
-
+  }
   FILE_RENAME_INFORMATION* rename_info =
-      reinterpret_cast<FILE_RENAME_INFORMATION*>(info->Buffer());
+      reinterpret_cast<FILE_RENAME_INFORMATION*>(info->data());
 
-  if (!IsSupportedRenameCall(rename_info, length, info_class))
+  if (!IsSupportedRenameCall(rename_info, length, info_class)) {
     return false;
-
+  }
   std::wstring name;
   name.assign(rename_info->FileName,
               rename_info->FileNameLength / sizeof(rename_info->FileName[0]));
@@ -234,17 +231,18 @@ bool FilesystemDispatcher::NtSetInformationFile(IPCInfo* ipc,
 
   EvalResult result = EvalPolicy(IpcTag::NTSETINFO_RENAME, name);
 
-  IO_STATUS_BLOCK* io_status =
-      reinterpret_cast<IO_STATUS_BLOCK*>(status->Buffer());
+  IO_STATUS_BLOCK io_status = {};
   NTSTATUS nt_status;
   if (!FileSystemPolicy::SetInformationFileAction(
           result, *ipc->client_info, handle, rename_info, length, info_class,
-          io_status, &nt_status)) {
+          &io_status, &nt_status)) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }
 
   // Return operation status on the IPC.
+  ipc->return_info.extended[0].pointer = io_status.Pointer;
+  ipc->return_info.extended[1].ulong_ptr = io_status.Information;
   ipc->return_info.nt_status = nt_status;
   return true;
 }

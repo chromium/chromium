@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/raw_span.h"
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/sandbox.h"
 
@@ -152,31 +153,22 @@ class CopyHelper<std::wstring_view> {
   std::wstring_view t_;
 };
 
-// Generic encapsulation class containing a pointer to a buffer and the
-// size of the buffer. It is used by the IPC to be able to pass in/out
-// parameters.
-class InOutCountedBuffer : public CountedBuffer {
- public:
-  InOutCountedBuffer(void* buffer, uint32_t size)
-      : CountedBuffer(buffer, size) {}
-};
-
 // This copy helper template specialization catches the cases where the
 // parameter is a an input/output buffer.
 template <>
-class CopyHelper<InOutCountedBuffer> {
+class CopyHelper<CountedBuffer> {
  public:
-  explicit CopyHelper(const InOutCountedBuffer t) : t_(t) {}
+  explicit CopyHelper(const CountedBuffer t) : t_(t) {}
 
   // Returns the pointer to the start of the string.
-  const void* GetStart() const { return t_.Buffer(); }
+  const void* GetStart() const { return t_.data(); }
 
   // Updates the buffer with the value from the new buffer in parameter.
   bool Update(void* buffer) {
     // We are touching user memory, this has to be done from inside a try
     // except.
     __try {
-      memcpy_wrapper(t_.Buffer(), buffer, t_.Size());
+      memcpy_wrapper(t_.data(), buffer, t_.size());
     } __except (EXCEPTION_EXECUTE_HANDLER) {
       return false;
     }
@@ -185,7 +177,7 @@ class CopyHelper<InOutCountedBuffer> {
 
   // Returns the size of the string in bytes. We define a nullptr string to
   // be of zero length.
-  uint32_t GetSize() const { return t_.Size(); }
+  uint32_t GetSize() const { return static_cast<uint32_t>(t_.size()); }
 
   // Returns true if the current type is used as an In or InOut parameter.
   bool IsInOut() { return true; }
@@ -193,7 +185,7 @@ class CopyHelper<InOutCountedBuffer> {
   ArgType GetType() { return INOUTPTR_TYPE; }
 
  private:
-  const InOutCountedBuffer t_;
+  const CountedBuffer t_;
 };
 
 // The following two macros make it less error prone the generation

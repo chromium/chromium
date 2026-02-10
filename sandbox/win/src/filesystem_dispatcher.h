@@ -67,7 +67,6 @@ class FilesystemDispatcher : public Dispatcher {
   // rename information class.
   bool NtSetInformationFile(IPCInfo* ipc,
                             HANDLE handle,
-                            CountedBuffer* status,
                             CountedBuffer* info,
                             uint32_t length,
                             uint32_t info_class);

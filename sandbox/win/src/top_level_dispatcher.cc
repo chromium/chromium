@@ -67,13 +67,11 @@ TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) {
 
   static const IPCCall ping1 = {
       {UINT32_TYPE},
-      reinterpret_cast<CallbackGeneric>(
-          static_cast<Callback1>(&TopLevelDispatcher::Ping))};
+      reinterpret_cast<CallbackGeneric>(&TopLevelDispatcher::Ping1)};
   ipc_calls_[IpcTag::PING1] = ping1;
   static const IPCCall ping2 = {
       {INOUTPTR_TYPE},
-      reinterpret_cast<CallbackGeneric>(
-          static_cast<Callback1>(&TopLevelDispatcher::Ping))};
+      reinterpret_cast<CallbackGeneric>(&TopLevelDispatcher::Ping2)};
   ipc_calls_[IpcTag::PING2] = ping2;
 }
 
@@ -117,28 +115,20 @@ bool TopLevelDispatcher::SetupService(InterceptionManager* manager,
 // We service PING message which is a way to test a round trip of the
 // IPC subsystem. We receive a integer cookie and we are expected to return the
 // cookie times two (or three) and the current tick count.
-bool TopLevelDispatcher::Ping(IPCInfo* ipc, void* arg1) {
-  switch (ipc->ipc_tag) {
-    case IpcTag::PING1: {
-      IPCInt ipc_int(arg1);
-      uint32_t cookie = ipc_int.As32Bit();
-      ipc->return_info.extended_count = 2;
-      ipc->return_info.extended[0].unsigned_int = ::GetTickCount();
-      ipc->return_info.extended[1].unsigned_int = 2 * cookie;
-      return true;
-    }
-    case IpcTag::PING2: {
-      CountedBuffer* io_buffer = reinterpret_cast<CountedBuffer*>(arg1);
-      if (sizeof(uint32_t) != io_buffer->Size())
-        return false;
+bool TopLevelDispatcher::Ping1(IPCInfo* ipc, uint32_t cookie) {
+  ipc->return_info.extended_count = 2;
+  ipc->return_info.extended[0].unsigned_int = ::GetTickCount();
+  ipc->return_info.extended[1].unsigned_int = 2 * cookie;
+  return true;
+}
 
-      uint32_t* cookie = reinterpret_cast<uint32_t*>(io_buffer->Buffer());
-      *cookie = (*cookie) * 3;
-      return true;
-    }
-    default:
-      return false;
+bool TopLevelDispatcher::Ping2(IPCInfo* ipc, CountedBuffer* io_buffer) {
+  if (sizeof(uint32_t) != io_buffer->size()) {
+    return false;
   }
+  uint32_t* cookie = reinterpret_cast<uint32_t*>(io_buffer->data());
+  *cookie = (*cookie) * 3;
+  return true;
 }
 
 Dispatcher* TopLevelDispatcher::GetDispatcher(IpcTag ipc_tag) {
