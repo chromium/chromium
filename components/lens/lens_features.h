@@ -185,6 +185,12 @@ BASE_DECLARE_FEATURE(kLensOverlayNonBlockingPrivacyNotice);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensUseSeparateRequestIdForViewportImages);
 
+// Enables sending the vit parameter for single context next queries.
+// TODO(crbug.com/472319362): Remove this flag once vit is not needed on the
+// server for AIM queries.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSendVitForSingleContextNextQueries);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
