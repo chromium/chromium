@@ -54,7 +54,6 @@ public class NtpThemeCoordinator {
     private final Runnable mDismissBottomSheetRunnable;
     private final NtpThemeCollectionManager mNtpThemeCollectionManager;
     private final CallbackController mCallbackController = new CallbackController();
-    private final Runnable mApplyPreviewScrimAlphaRunnable;
     private NtpThemeMediator mMediator;
     private NtpThemeBottomSheetView mNtpThemeBottomSheetView;
     private @Nullable UploadImagePreviewCoordinator mUploadPreviewCoordinator;
@@ -65,13 +64,11 @@ public class NtpThemeCoordinator {
             Context context,
             BottomSheetDelegate delegate,
             Profile profile,
-            Runnable dismissBottomSheet,
-            Runnable applyPreviewScrimAlphaRunnable) {
+            Runnable dismissBottomSheet) {
         mContext = context;
         mBottomSheetDelegate = delegate;
         mProfile = profile;
         mDismissBottomSheetRunnable = dismissBottomSheet;
-        mApplyPreviewScrimAlphaRunnable = applyPreviewScrimAlphaRunnable;
         mNtpThemeBottomSheetView =
                 (NtpThemeBottomSheetView)
                         LayoutInflater.from(context)
@@ -108,10 +105,6 @@ public class NtpThemeCoordinator {
                         profile,
                         mCallbackController.makeCancelable(
                                 (Bitmap bitmap) -> {
-                                    // Reduces scrim opacity to allow the user to preview the
-                                    // applied background.
-                                    mApplyPreviewScrimAlphaRunnable.run();
-
                                     initializeBottomSheetContent(
                                             BottomSheetType.SINGLE_THEME_COLLECTION);
                                     initializeBottomSheetContent(BottomSheetType.THEME_COLLECTIONS);
@@ -184,8 +177,7 @@ public class NtpThemeCoordinator {
                                     mContext,
                                     mBottomSheetDelegate,
                                     mCallbackController.makeCancelable(
-                                            onChromeColorSelectedCallback),
-                                    mApplyPreviewScrimAlphaRunnable);
+                                            onChromeColorSelectedCallback));
                 }
                 mNtpChromeColorsCoordinator.prepareToShow();
                 mBottomSheetDelegate.showBottomSheet(CHROME_COLORS);

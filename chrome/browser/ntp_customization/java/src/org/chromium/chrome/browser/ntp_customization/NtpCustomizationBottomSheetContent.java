@@ -257,9 +257,4 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
     void setCurrentBottomSheetTypeSupplierForTesting(Supplier<@Nullable Integer> supplier) {
         mCurrentBottomSheetTypeSupplier = supplier;
     }
-
-    @Override
-    public boolean hasCustomScrimLifecycle() {
-        return true;
-    }
 }

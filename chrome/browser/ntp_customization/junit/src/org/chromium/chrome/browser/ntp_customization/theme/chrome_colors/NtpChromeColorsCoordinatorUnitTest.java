@@ -12,11 +12,9 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.CHROME_COLORS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
@@ -60,7 +58,6 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBa
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link NtpChromeColorsCoordinator}. */
@@ -81,7 +78,6 @@ public class NtpChromeColorsCoordinatorUnitTest {
     private PropertyModel mPropertyModel;
     private Context mContext;
     private View mBottomSheetView;
-    @Mock private BottomSheetController mBottomSheetController;
 
     @Before
     public void setUp() {
@@ -92,7 +88,6 @@ public class NtpChromeColorsCoordinatorUnitTest {
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
         mNtpCustomizationConfigManager = new NtpCustomizationConfigManager();
         NtpCustomizationConfigManager.setInstanceForTesting(mNtpCustomizationConfigManager);
-        when(mBottomSheetDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
 
         createCoordinator();
     }
@@ -562,10 +557,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
 
         mCoordinator =
                 new NtpChromeColorsCoordinator(
-                        mContext,
-                        mBottomSheetDelegate,
-                        mOnChromeColorSelectedCallback,
-                        mock(Runnable.class));
+                        mContext, mBottomSheetDelegate, mOnChromeColorSelectedCallback);
         mCoordinator.prepareToShow();
 
         ArgumentCaptor<View> viewCaptor = ArgumentCaptor.forClass(View.class);
