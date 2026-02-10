@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
+#include "third_party/omnibox_proto/input_type_config.pb.h"
 #include "third_party/omnibox_proto/model_config.pb.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/section_config.pb.h"
@@ -113,6 +114,16 @@ struct StructTraits<composebox_query::mojom::SectionConfigDataView,
 };
 
 template <>
+struct StructTraits<composebox_query::mojom::InputTypeConfigDataView,
+                    omnibox::InputTypeConfig> {
+  static omnibox::InputType input_type(const omnibox::InputTypeConfig& config);
+  static const std::string& menu_label(const omnibox::InputTypeConfig& config);
+
+  static bool Read(composebox_query::mojom::InputTypeConfigDataView data,
+                   omnibox::InputTypeConfig* output);
+};
+
+template <>
 struct StructTraits<composebox_query::mojom::InputStateDataView,
                     omnibox::InputState> {
   static const std::vector<omnibox::ModelMode>& allowed_models(
@@ -132,6 +143,8 @@ struct StructTraits<composebox_query::mojom::InputStateDataView,
   static const std::vector<omnibox::ToolConfig>& tool_configs(
       const omnibox::InputState& input);
   static const std::vector<omnibox::ModelConfig>& model_configs(
+      const omnibox::InputState& input);
+  static const std::vector<omnibox::InputTypeConfig>& input_type_configs(
       const omnibox::InputState& input);
   static const std::optional<omnibox::SectionConfig>& tools_section_config(
       const omnibox::InputState& input);

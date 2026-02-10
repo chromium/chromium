@@ -105,6 +105,12 @@ enum InputType {
   kBrowserTab = 3,
 };
 
+// Configuration for an input type.
+struct InputTypeConfig {
+  InputType input_type;
+  string menu_label;
+};
+
 // Configuration for a tool.
 struct ToolConfig {
   ToolMode tool;
@@ -152,6 +158,8 @@ struct InputState {
   array<ToolConfig> tool_configs;
   // Configuration for available models.
   array<ModelConfig> model_configs;
+  // Configuration for available input types.
+  array<InputTypeConfig> input_type_configs;
   // Configuration for the tools section.
   SectionConfig? tools_section_config;
   // Configuration for the model section.

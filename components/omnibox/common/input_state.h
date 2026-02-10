@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "third_party/omnibox_proto/input_type.pb.h"
+#include "third_party/omnibox_proto/input_type_config.pb.h"
 #include "third_party/omnibox_proto/model_config.pb.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/section_config.pb.h"
@@ -45,6 +46,7 @@ struct InputState {
   // Configs containing the header, chip label, and hint text.
   std::vector<ToolConfig> tool_configs;
   std::vector<ModelConfig> model_configs;
+  std::vector<InputTypeConfig> input_type_configs;
   std::optional<SectionConfig> tools_section_config;
   std::optional<SectionConfig> model_section_config;
   std::string hint_text;

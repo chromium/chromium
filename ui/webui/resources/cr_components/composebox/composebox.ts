@@ -557,6 +557,7 @@ export class ComposeboxElement extends I18nMixinLit
     if (model !== ModelMode.kUnspecified) {
       this.searchboxHandler_.setActiveModelMode(model);
     }
+    this.updateInputPlaceholder_();
   }
 
   protected computeCancelButtonTitle_() {
@@ -908,6 +909,31 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   private updateInputPlaceholder_() {
+    if (this.inputState_) {
+      if (this.activeToolMode_ !== ToolMode.kUnspecified) {
+        const config = this.inputState_.toolConfigs.find(
+            c => c.tool === this.activeToolMode_);
+        if (config?.hintText) {
+          this.inputPlaceholder_ = config.hintText;
+          return;
+        }
+      }
+
+      if (this.inputState_.activeModel !== ModelMode.kUnspecified) {
+        const config = this.inputState_.modelConfigs.find(
+            c => c.model === this.inputState_!.activeModel);
+        if (config?.hintText) {
+          this.inputPlaceholder_ = config.hintText;
+          return;
+        }
+      }
+
+      if (this.inputState_.hintText) {
+        this.inputPlaceholder_ = this.inputState_.hintText;
+        return;
+      }
+    }
+
     if (this.activeToolMode_ === ToolMode.kDeepSearch) {
       this.inputPlaceholder_ =
           loadTimeData.getString('composeDeepSearchPlaceholder');
@@ -923,7 +949,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected async onSetToolMode_(
       e: CustomEvent<{tool: ToolMode, enabled: boolean}>) {
     await this.handleToolMode_(e.detail.tool, e.detail.enabled);
-    }
+  }
 
   get activeToolMode(): ToolMode {
     return this.activeToolMode_;
@@ -938,9 +964,7 @@ export class ComposeboxElement extends I18nMixinLit
 
     this.searchboxHandler_.setActiveToolMode(this.activeToolMode_);
     this.queryAutocomplete_(/* clearMatches= */ true);
-    if (tool !== ToolMode.kCanvas) {
-      this.updateInputPlaceholder_();
-    }
+    this.updateInputPlaceholder_();
     this.fire('active-tool-mode-changed', {value: this.activeToolMode_});
 
     await this.updateComplete;
@@ -949,6 +973,7 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected async onModelClick_(e: CustomEvent<{model: ModelMode}>) {
     this.searchboxHandler_.setActiveModelMode(e.detail.model);
+    this.updateInputPlaceholder_();
 
     await this.updateComplete;
     this.focusInput();
