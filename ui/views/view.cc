@@ -878,14 +878,17 @@ void View::SetClipLayerToVisibleBounds(bool clip_layer) {
     return;
   }
   bool remove_layer_clip = clip_layer_to_visible_bounds_;
+  clip_layer_to_visible_bounds_ = clip_layer;
   auto* widget = GetWidget();
   // Register / Unregister to visible bounds notification only when the view is
-  // already added to the widget.  Otherwise this will registered when added to
-  // the widget.
-  if (!clip_layer && widget) {
+  // already added to the widget. Otherwise this will registered when added to
+  // the widget. If the view still needs notifications after `clip_layer` is set
+  // to false, don't unregister for notifications.
+  if (!clip_layer && widget &&
+      !GetNeedsNotificationWhenVisibleBoundsChangeImpl()) {
     UnregisterForVisibleBoundsNotification();
   }
-  clip_layer_to_visible_bounds_ = clip_layer;
+
   if (clip_layer_to_visible_bounds_ && widget) {
     RegisterForVisibleBoundsNotification();
   }
