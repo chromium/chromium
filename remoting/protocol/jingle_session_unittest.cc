@@ -126,28 +126,26 @@ class FakeTransport : public Transport {
 
 class FakePlugin : public SessionPlugin {
  public:
-  std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override {
-    std::string tag_name = "test-tag-";
-    tag_name += base::NumberToString(outgoing_messages_.size());
-    std::unique_ptr<jingle_xmpp::XmlElement> new_message(
-        new jingle_xmpp::XmlElement(
-            jingle_xmpp::QName("test-namespace", tag_name)));
-    outgoing_messages_.push_back(*new_message);
-    return new_message;
+  std::optional<Attachment> GetNextMessage() override {
+    Attachment attachment;
+    HostConfigAttachment config;
+    std::string key = "test-key-";
+    key += base::NumberToString(outgoing_messages_.size());
+    config.settings[key] = "test-value";
+    attachment.host_config = std::move(config);
+    outgoing_messages_.push_back(attachment);
+    return attachment;
   }
 
-  void OnIncomingMessage(const jingle_xmpp::XmlElement& attachments) override {
-    for (const jingle_xmpp::XmlElement* it = attachments.FirstElement();
-         it != nullptr; it = it->NextElement()) {
-      incoming_messages_.push_back(*it);
-    }
+  void OnIncomingMessage(const Attachment& attachment) override {
+    incoming_messages_.push_back(attachment);
   }
 
-  const std::vector<jingle_xmpp::XmlElement>& outgoing_messages() const {
+  const std::vector<Attachment>& outgoing_messages() const {
     return outgoing_messages_;
   }
 
-  const std::vector<jingle_xmpp::XmlElement>& incoming_messages() const {
+  const std::vector<Attachment>& incoming_messages() const {
     return incoming_messages_;
   }
 
@@ -157,8 +155,8 @@ class FakePlugin : public SessionPlugin {
   }
 
  private:
-  std::vector<jingle_xmpp::XmlElement> outgoing_messages_;
-  std::vector<jingle_xmpp::XmlElement> incoming_messages_;
+  std::vector<Attachment> outgoing_messages_;
+  std::vector<Attachment> incoming_messages_;
 };
 
 std::unique_ptr<jingle_xmpp::XmlElement> CreateTransportInfo(
@@ -329,15 +327,15 @@ class JingleSessionTest : public testing::Test {
     ASSERT_EQ(client_plugin_.outgoing_messages().size(),
               host_plugin_.incoming_messages().size());
     for (size_t i = 0; i < client_plugin_.outgoing_messages().size(); i++) {
-      ASSERT_EQ(client_plugin_.outgoing_messages()[i].Str(),
-                host_plugin_.incoming_messages()[i].Str());
+      ASSERT_EQ(client_plugin_.outgoing_messages()[i].host_config->settings,
+                host_plugin_.incoming_messages()[i].host_config->settings);
     }
 
     ASSERT_EQ(client_plugin_.incoming_messages().size(),
               host_plugin_.outgoing_messages().size());
     for (size_t i = 0; i < client_plugin_.incoming_messages().size(); i++) {
-      ASSERT_EQ(client_plugin_.incoming_messages()[i].Str(),
-                host_plugin_.outgoing_messages()[i].Str());
+      ASSERT_EQ(client_plugin_.incoming_messages()[i].host_config->settings,
+                host_plugin_.outgoing_messages()[i].host_config->settings);
     }
   }
 

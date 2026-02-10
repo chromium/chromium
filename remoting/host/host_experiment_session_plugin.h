@@ -5,11 +5,11 @@
 #ifndef REMOTING_HOST_HOST_EXPERIMENT_SESSION_PLUGIN_H_
 #define REMOTING_HOST_HOST_EXPERIMENT_SESSION_PLUGIN_H_
 
-#include <memory>
+#include <optional>
 #include <string>
 
+#include "base/values.h"
 #include "remoting/protocol/session_plugin.h"
-#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 namespace remoting {
 
@@ -20,20 +20,20 @@ class HostExperimentSessionPlugin : public protocol::SessionPlugin {
   using SessionPlugin::SessionPlugin;
 
   // protocol::SessionPlug implementation.
-  std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
+  std::optional<protocol::Attachment> GetNextMessage() override;
 
-  void OnIncomingMessage(const jingle_xmpp::XmlElement& attachments) override;
+  void OnIncomingMessage(const protocol::Attachment& attachment) override;
 
   // Whether we have received configuration from client.
   bool configuration_received() const;
 
   // The configuration sent from client, may be empty.
-  const std::string& configuration() const;
+  const base::DictValue& configuration() const;
 
  private:
   bool attributes_sent_ = false;
   bool configuration_received_ = false;
-  std::string configuration_;
+  base::DictValue configuration_;
 };
 
 }  // namespace remoting

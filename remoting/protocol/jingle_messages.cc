@@ -96,15 +96,6 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessage::ToXml() const {
   return JingleMessageToXml(*this);
 }
 
-void JingleMessage::AddAttachment(std::unique_ptr<XmlElement> attachment) {
-  DCHECK(attachment);
-  if (!attachments_legacy) {
-    attachments_legacy = std::make_unique<XmlElement>(
-        QName(kChromotingXmlNamespace, "attachments"));
-  }
-  attachments_legacy->AddElement(attachment.release());
-}
-
 JingleMessageReply::JingleMessageReply()
     : type(REPLY_RESULT), error_type(NONE) {}
 

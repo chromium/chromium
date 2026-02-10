@@ -5,60 +5,68 @@
 #include "remoting/host/host_experiment_session_plugin.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "remoting/base/constants.h"
 #include "remoting/host/host_attributes.h"
+#include "remoting/protocol/jingle_messages.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
-
-using jingle_xmpp::QName;
-using jingle_xmpp::XmlElement;
 
 namespace remoting {
 
 TEST(HostExperimentSessionPluginTest, AttachAttributes) {
   HostExperimentSessionPlugin plugin;
-  std::unique_ptr<XmlElement> attachments = plugin.GetNextMessage();
-  ASSERT_TRUE(attachments);
-  ASSERT_EQ(attachments->Name(),
-            QName(kChromotingXmlNamespace, "host-attributes"));
-  ASSERT_EQ(attachments->BodyText(), GetHostAttributes());
+  std::optional<protocol::Attachment> attachment = plugin.GetNextMessage();
+  ASSERT_TRUE(attachment);
+  ASSERT_TRUE(attachment->host_attributes);
+  EXPECT_THAT(attachment->host_attributes->attribute,
+              testing::Contains(GetHostAttributes()));
 
-  attachments.reset();
-  attachments = plugin.GetNextMessage();
-  ASSERT_FALSE(attachments);
+  attachment = plugin.GetNextMessage();
+  ASSERT_FALSE(attachment);
 }
 
 TEST(HostExperimentSessionPluginTest, LoadConfiguration) {
-  std::unique_ptr<XmlElement> attachment(
-      new XmlElement(QName(kChromotingXmlNamespace, "attachments")));
-  XmlElement* configuration =
-      new XmlElement(QName(kChromotingXmlNamespace, "host-configuration"));
-  configuration->SetBodyText("This Is A Test Configuration");
-  attachment->AddElement(configuration);
+  protocol::Attachment attachment;
+  protocol::HostConfigAttachment config;
+  config.settings["Detect-Updated-Region"] = "test-value";
+  config.settings["Exp1"] = "val1";
+  config.settings["Exp2"] = "val2";
+  attachment.host_config = std::move(config);
+
   HostExperimentSessionPlugin plugin;
-  plugin.OnIncomingMessage(*attachment);
+  plugin.OnIncomingMessage(attachment);
   ASSERT_TRUE(plugin.configuration_received());
-  ASSERT_EQ(plugin.configuration(), "This Is A Test Configuration");
+
+  const base::DictValue& configuration = plugin.configuration();
+  EXPECT_EQ(configuration.size(), 3u);
+  EXPECT_EQ(*configuration.FindString("Detect-Updated-Region"), "test-value");
+  EXPECT_EQ(*configuration.FindString("Exp1"), "val1");
+  EXPECT_EQ(*configuration.FindString("Exp2"), "val2");
 }
 
 TEST(HostExperimentSessionPluginTest, IgnoreSecondConfiguration) {
-  std::unique_ptr<XmlElement> attachment(
-      new XmlElement(QName(kChromotingXmlNamespace, "attachments")));
-  XmlElement* configuration =
-      new XmlElement(QName(kChromotingXmlNamespace, "host-configuration"));
-  attachment->AddElement(configuration);
-  configuration->SetBodyText("config1");
-  HostExperimentSessionPlugin plugin;
-  plugin.OnIncomingMessage(*attachment);
-  ASSERT_TRUE(plugin.configuration_received());
-  ASSERT_EQ(plugin.configuration(), "config1");
+  protocol::Attachment attachment1;
+  protocol::HostConfigAttachment config1;
+  config1.settings["Detect-Updated-Region"] = "val1";
+  attachment1.host_config = std::move(config1);
 
-  configuration->SetBodyText("config2");
-  plugin.OnIncomingMessage(*attachment);
+  HostExperimentSessionPlugin plugin;
+  plugin.OnIncomingMessage(attachment1);
   ASSERT_TRUE(plugin.configuration_received());
-  ASSERT_EQ(plugin.configuration(), "config1");
+  EXPECT_EQ(*plugin.configuration().FindString("Detect-Updated-Region"),
+            "val1");
+
+  protocol::Attachment attachment2;
+  protocol::HostConfigAttachment config2;
+  config2.settings["Detect-Updated-Region"] = "val2";
+  attachment2.host_config = std::move(config2);
+  plugin.OnIncomingMessage(attachment2);
+  ASSERT_TRUE(plugin.configuration_received());
+  EXPECT_EQ(*plugin.configuration().FindString("Detect-Updated-Region"),
+            "val1");
 }
 
 }  // namespace remoting

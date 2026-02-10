@@ -28,6 +28,7 @@
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/content_description.h"
 #include "remoting/protocol/errors.h"
+#include "remoting/protocol/jingle_message_xml_converter.h"
 #include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/session_config.h"
@@ -894,20 +895,19 @@ bool JingleSession::is_session_active() {
 }
 
 void JingleSession::ProcessIncomingPluginMessage(const JingleMessage& message) {
-  if (!message.attachments_legacy) {
-    return;
-  }
-  for (remoting::protocol::SessionPlugin* plugin : plugins_) {
-    plugin->OnIncomingMessage(*(message.attachments_legacy));
+  for (const auto& attachment : message.attachments) {
+    for (SessionPlugin* plugin : plugins_) {
+      plugin->OnIncomingMessage(attachment);
+    }
   }
 }
 
 void JingleSession::AddPluginAttachments(JingleMessage* message) {
   DCHECK(message);
-  for (remoting::protocol::SessionPlugin* plugin : plugins_) {
-    std::unique_ptr<XmlElement> attachment = plugin->GetNextMessage();
-    if (attachment) {
-      message->AddAttachment(std::move(attachment));
+  for (SessionPlugin* plugin : plugins_) {
+    std::optional<Attachment> attachment = plugin->GetNextMessage();
+    if (attachment.has_value()) {
+      message->attachments.emplace_back(std::move(*attachment));
     }
   }
 }

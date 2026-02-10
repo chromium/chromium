@@ -14,6 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/name_value_map.h"
 #include "remoting/protocol/content_description.h"
@@ -81,6 +83,10 @@ const jingle_xmpp::StaticQName kQNameErrorLocation = {kChromotingXmlNamespace,
                                                       "error-location"};
 const jingle_xmpp::StaticQName kQNameAttachments = {kChromotingXmlNamespace,
                                                     "attachments"};
+const jingle_xmpp::StaticQName kQNameHostAttributes = {kChromotingXmlNamespace,
+                                                       "host-attributes"};
+const jingle_xmpp::StaticQName kQNameHostConfiguration = {
+    kChromotingXmlNamespace, "host-configuration"};
 
 const int kPortMin = 1000;
 const int kPortMax = 65535;
@@ -321,12 +327,11 @@ bool ParseTransportInfoAction(const XmlElement* jingle_tag,
 }
 
 bool ParseSessionInfoAction(const XmlElement* jingle_tag,
-                            const XmlElement* attachments_tag,
                             JingleMessage* message) {
   const XmlElement* child = jingle_tag->FirstElement();
   // Plugin messages are action independent, which should not be considered
   // as session-info.
-  if (child == attachments_tag) {
+  while (child && child->Name() == kQNameAttachments) {
     child = child->NextElement();
   }
   if (child) {
@@ -463,8 +468,11 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
   }
   jingle_tag->AddAttr(kQNameAction, action_attr);
 
-  if (message.attachments_legacy) {
-    jingle_tag->AddElement(new XmlElement(*message.attachments_legacy));
+  for (const Attachment& attachment : message.attachments) {
+    auto attachment_xml = AttachmentToXml(attachment);
+    if (attachment_xml) {
+      jingle_tag->AddElement(attachment_xml.release());
+    }
   }
 
   if (message.action() == JingleMessage::ActionType::kSessionInfo) {
@@ -570,12 +578,17 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
     return false;
   }
 
-  const XmlElement* attachments_tag = jingle_tag->FirstNamed(kQNameAttachments);
-  if (attachments_tag) {
-    message->attachments_legacy =
-        std::make_unique<XmlElement>(*attachments_tag);
-  } else {
-    message->attachments_legacy.reset();
+  for (const XmlElement* attachments_tag =
+           jingle_tag->FirstNamed(kQNameAttachments);
+       attachments_tag;
+       attachments_tag = attachments_tag->NextNamed(kQNameAttachments)) {
+    Attachment attachment;
+    if (AttachmentFromXml(attachments_tag, &attachment)) {
+      message->attachments.emplace_back(std::move(attachment));
+    } else {
+      LOG(WARNING) << "Failed to convert attachment: "
+                   << attachments_tag->Str();
+    }
   }
 
   const XmlElement* reason_tag = jingle_tag->FirstNamed(kQNameReason);
@@ -620,7 +633,7 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
       return true;
 
     case JingleMessage::ActionType::kSessionInfo:
-      return ParseSessionInfoAction(jingle_tag, attachments_tag, message);
+      return ParseSessionInfoAction(jingle_tag, message);
 
     default:
       *error = "Unhandled action type";
@@ -717,6 +730,60 @@ bool IceTransportInfoFromXml(const jingle_xmpp::XmlElement* element,
       return false;
     }
     transport->candidates.push_back(candidate);
+  }
+
+  return true;
+}
+
+std::unique_ptr<jingle_xmpp::XmlElement> AttachmentToXml(
+    const Attachment& attachment) {
+  auto result = std::make_unique<XmlElement>(kQNameAttachments);
+
+  if (attachment.host_attributes) {
+    auto attributes_tag = std::make_unique<XmlElement>(kQNameHostAttributes);
+    attributes_tag->SetBodyText(
+        base::JoinString(attachment.host_attributes->attribute, ","));
+    result->AddElement(attributes_tag.release());
+  }
+
+  if (attachment.host_config) {
+    auto config_tag = std::make_unique<XmlElement>(kQNameHostConfiguration);
+    std::vector<std::string> pairs;
+    for (const auto& setting : attachment.host_config->settings) {
+      pairs.push_back(setting.first + ":" + setting.second);
+    }
+    config_tag->SetBodyText(base::JoinString(pairs, ","));
+    result->AddElement(config_tag.release());
+  }
+
+  return result;
+}
+
+bool AttachmentFromXml(const jingle_xmpp::XmlElement* element,
+                       Attachment* attachment) {
+  if (element->Name() != kQNameAttachments) {
+    return false;
+  }
+
+  const XmlElement* attributes_tag = element->FirstNamed(kQNameHostAttributes);
+  if (attributes_tag) {
+    HostAttributesAttachment attributes;
+    attributes.attribute =
+        base::SplitString(attributes_tag->BodyText(), ",",
+                          base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    attachment->host_attributes = std::move(attributes);
+  }
+
+  const XmlElement* config_tag = element->FirstNamed(kQNameHostConfiguration);
+  if (config_tag) {
+    HostConfigAttachment config;
+    base::StringPairs pairs;
+    base::SplitStringIntoKeyValuePairs(config_tag->BodyText(), ':', ',',
+                                       &pairs);
+    for (const auto& pair : pairs) {
+      config.settings[pair.first] = pair.second;
+    }
+    attachment->host_config = std::move(config);
   }
 
   return true;

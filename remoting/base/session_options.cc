@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/values.h"
 
 namespace remoting {
 
@@ -37,6 +38,15 @@ SessionOptions::SessionOptions(SessionOptions&& other) = default;
 
 SessionOptions::SessionOptions(const std::string& parameter) {
   Import(parameter);
+}
+
+SessionOptions::SessionOptions(const base::DictValue& dict) {
+  for (auto [key, value] : dict) {
+    if (value.is_string() && KeyIsValid(key) &&
+        ValueIsValid(value.GetString())) {
+      Append(key, value.GetString());
+    }
+  }
 }
 
 SessionOptions::~SessionOptions() = default;

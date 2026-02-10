@@ -4,46 +4,43 @@
 
 #include "remoting/host/host_experiment_session_plugin.h"
 
-#include "remoting/base/constants.h"
+#include "base/strings/string_util.h"
 #include "remoting/host/host_attributes.h"
+#include "remoting/protocol/jingle_messages.h"
 
 namespace remoting {
 
-using jingle_xmpp::QName;
-using jingle_xmpp::XmlElement;
-
-std::unique_ptr<XmlElement> HostExperimentSessionPlugin::GetNextMessage() {
+std::optional<protocol::Attachment>
+HostExperimentSessionPlugin::GetNextMessage() {
   if (attributes_sent_) {
-    return nullptr;
+    return std::nullopt;
   }
   attributes_sent_ = true;
-  std::unique_ptr<XmlElement> attributes(
-      new XmlElement(QName(kChromotingXmlNamespace, "host-attributes")));
-  attributes->SetBodyText(GetHostAttributes());
-  return attributes;
+
+  protocol::Attachment attachment;
+  protocol::HostAttributesAttachment host_attributes;
+  host_attributes.attribute.push_back(GetHostAttributes());
+  attachment.host_attributes = std::move(host_attributes);
+  return attachment;
 }
 
 void HostExperimentSessionPlugin::OnIncomingMessage(
-    const XmlElement& attachments) {
-  if (configuration_received_) {
-    return;
-  }
-
-  const XmlElement* configuration = attachments.FirstNamed(
-      QName(kChromotingXmlNamespace, "host-configuration"));
-  if (!configuration) {
+    const protocol::Attachment& attachment) {
+  if (configuration_received_ || !attachment.host_config) {
     return;
   }
 
   configuration_received_ = true;
-  configuration_ = configuration->BodyText();
+  for (const auto& [key, value] : attachment.host_config->settings) {
+    configuration_.Set(key, value);
+  }
 }
 
 bool HostExperimentSessionPlugin::configuration_received() const {
   return configuration_received_;
 }
 
-const std::string& HostExperimentSessionPlugin::configuration() const {
+const base::DictValue& HostExperimentSessionPlugin::configuration() const {
   return configuration_;
 }
 

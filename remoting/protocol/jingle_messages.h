@@ -282,11 +282,6 @@ class JingleMessage {
   // message when parsing fails.
   bool ParseXml(const jingle_xmpp::XmlElement* stanza, std::string* error);
 
-  // Adds an XmlElement into |attachments|. This function implicitly creates
-  // |attachments| if it's empty, and |attachment| should not be an empty
-  // unique_ptr.
-  void AddAttachment(std::unique_ptr<jingle_xmpp::XmlElement> attachment);
-
   std::unique_ptr<jingle_xmpp::XmlElement> ToXml() const;
 
   ActionType action() const { return action_; }
@@ -303,11 +298,11 @@ class JingleMessage {
   std::string initiator;
 
   std::unique_ptr<ContentDescription> description;
+  std::vector<Attachment> attachments;
 
   // Legacy XML-based payloads, maintained for backward compatibility.
   std::unique_ptr<jingle_xmpp::XmlElement> transport_info_legacy;
   std::unique_ptr<jingle_xmpp::XmlElement> info_legacy;
-  std::unique_ptr<jingle_xmpp::XmlElement> attachments_legacy;
 
   // Value from the <reason> tag if it is present in the
   // message. Useful mainly for session-terminate messages, but Jingle

@@ -10,6 +10,10 @@
 
 #include "base/containers/flat_map.h"
 
+namespace base {
+class DictValue;
+}  // namespace base
+
 namespace remoting {
 
 // Session based host options sending from client. This class parses and stores
@@ -21,6 +25,7 @@ class SessionOptions final {
   SessionOptions(const SessionOptions& other);
   SessionOptions(SessionOptions&& other);
   explicit SessionOptions(const std::string& parameter);
+  explicit SessionOptions(const base::DictValue& dict);
 
   ~SessionOptions();
 

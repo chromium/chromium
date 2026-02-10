@@ -10,8 +10,10 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
+#include "remoting/base/constants.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/fake_authenticator.h"
+#include "remoting/protocol/jingle_message_xml_converter.h"
 #include "remoting/protocol/session_plugin.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
@@ -130,12 +132,9 @@ void FakeSession::ProcessTransportInfo(
 
 void FakeSession::AddPlugin(SessionPlugin* plugin) {
   DCHECK(plugin);
-  for (const auto& message : attachments_) {
-    if (message) {
-      JingleMessage jingle_message;
-      jingle_message.AddAttachment(
-          std::make_unique<jingle_xmpp::XmlElement>(*message));
-      plugin->OnIncomingMessage(*(jingle_message.attachments_legacy));
+  for (const auto& attachment : attachments_) {
+    if (attachment.host_attributes || attachment.host_config) {
+      plugin->OnIncomingMessage(attachment);
     }
   }
 }
@@ -143,10 +142,29 @@ void FakeSession::AddPlugin(SessionPlugin* plugin) {
 void FakeSession::SetAttachment(
     size_t round,
     std::unique_ptr<jingle_xmpp::XmlElement> attachment) {
-  while (attachments_.size() <= round) {
-    attachments_.emplace_back();
+  if (!attachment) {
+    return;
   }
-  attachments_[round] = std::move(attachment);
+
+  Attachment attachment_struct;
+  if (AttachmentFromXml(attachment.get(), &attachment_struct)) {
+    SetAttachment(round, attachment_struct);
+  } else {
+    // Try wrapping it in an <attachments> element.
+    jingle_xmpp::XmlElement wrapper(
+        jingle_xmpp::QName(kChromotingXmlNamespace, "attachments"));
+    wrapper.AddElement(new jingle_xmpp::XmlElement(*attachment));
+    if (AttachmentFromXml(&wrapper, &attachment_struct)) {
+      SetAttachment(round, attachment_struct);
+    }
+  }
+}
+
+void FakeSession::SetAttachment(size_t round, const Attachment& attachment) {
+  if (attachments_.size() <= round) {
+    attachments_.resize(round + 1);
+  }
+  attachments_[round] = attachment;
 }
 
 }  // namespace remoting::protocol
