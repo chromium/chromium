@@ -35,7 +35,28 @@ void RecordTopLevelStorageAccessQueryMetrics(bool is_top_level_storage_access) {
   base::UmaHistogramBoolean("Permissions.Query.TopLevelStorageAccess",
                             is_top_level_storage_access);
 }
+
+bool ArePermissionDescriptorsEquivalent(
+    const mojom::blink::PermissionDescriptor& left,
+    const mojom::blink::PermissionDescriptor& right) {
+  if (left.name != right.name) {
+    return false;
+  }
+  if (!left.extension && !right.extension) {
+    return true;
+  }
+  if (!left.extension || !right.extension) {
+    return false;
+  }
+  return left.extension->Equals(*right.extension);
+}
 }  // namespace
+
+bool ArePermissionDescriptorsEquivalentForTesting(
+    const mojom::blink::PermissionDescriptor& left,
+    const mojom::blink::PermissionDescriptor& right) {
+  return ArePermissionDescriptorsEquivalent(left, right);
+}
 
 using mojom::blink::PermissionDescriptorPtr;
 using mojom::blink::PermissionName;
@@ -181,7 +202,8 @@ ScriptPromise<IDLSequence<PermissionStatus>> Permissions::requestAll(
     // Only append permissions types that are not already present in the vector.
     wtf_size_t internal_index = kNotFound;
     for (wtf_size_t j = 0; j < internal_permissions.size(); ++j) {
-      if (internal_permissions[j]->name == descriptor->name) {
+      if (ArePermissionDescriptorsEquivalent(*internal_permissions[j],
+                                             *descriptor)) {
         internal_index = j;
         break;
       }

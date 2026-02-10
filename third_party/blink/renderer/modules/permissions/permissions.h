@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/permissions/permission_status_listener.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -26,6 +27,10 @@ class PermissionStatus;
 class ScriptState;
 class ScriptValue;
 enum class PermissionType;
+
+MODULES_EXPORT bool ArePermissionDescriptorsEquivalentForTesting(
+    const mojom::blink::PermissionDescriptor& left,
+    const mojom::blink::PermissionDescriptor& right);
 
 class Permissions final : public ScriptWrappable,
                           public Supplement<NavigatorBase>,
