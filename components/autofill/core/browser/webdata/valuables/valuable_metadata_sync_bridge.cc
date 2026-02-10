@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <ranges>
 #include <string_view>
 
 #include "base/check.h"
@@ -239,8 +240,7 @@ std::unique_ptr<syncer::DataBatch> ValuableMetadataSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  absl::flat_hash_set<std::string> keys_set(storage_keys.begin(),
-                                            storage_keys.end());
+  absl::flat_hash_set<std::string> keys_set(std::from_range, storage_keys);
   std::unique_ptr<syncer::DataBatch> all_data = GetAllData();
   while (all_data->HasNext()) {
     syncer::KeyAndData item = all_data->Next();

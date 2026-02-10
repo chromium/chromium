@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <utility>
 #include <vector>
@@ -419,8 +420,7 @@ AutocompleteSyncBridge::AutocompleteSyncBridge::GetDataForCommit(
     return nullptr;
   }
 
-  absl::flat_hash_set<std::string> keys_set(storage_keys.begin(),
-                                            storage_keys.end());
+  absl::flat_hash_set<std::string> keys_set(std::from_range, storage_keys);
   auto batch = std::make_unique<MutableDataBatch>();
   for (const AutocompleteEntry& entry : entries) {
     std::string key = GetStorageKeyFromModel(entry.key());

@@ -5,9 +5,8 @@
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_credential_sync_bridge.h"
 
 #include <algorithm>
+#include <ranges>
 #include <utility>
-
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 #include "base/check.h"
 #include "base/notimplemented.h"
@@ -26,6 +25,7 @@
 #include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/webdata/common/web_database.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace autofill {
 
@@ -175,8 +175,8 @@ std::unique_ptr<syncer::DataBatch>
 AutofillWalletCredentialSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::flat_hash_set<std::string> storage_keys_set(storage_keys.begin(),
-                                                    storage_keys.end());
+  absl::flat_hash_set<std::string> storage_keys_set(std::from_range,
+                                                    storage_keys);
   std::vector<std::unique_ptr<ServerCvc>> filtered_server_cvc_list;
   for (std::unique_ptr<ServerCvc>& server_cvc :
        GetAutofillTable()->GetAllServerCvcs()) {
