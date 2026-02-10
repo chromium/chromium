@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/toolbar/test_toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_entry_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "chrome/browser/ui/views/native_widget_factory.h"
@@ -27,7 +26,13 @@ class ExtensionsMenuEntryViewTest : public ExtensionsToolbarUnitTest {
   ~ExtensionsMenuEntryViewTest() override = default;
 
  protected:
-  ExtensionsMenuButton* primary_button() {
+  // Helper to generate menu entry state with customizable action button
+  // properties.
+  ExtensionsMenuViewModel::MenuEntryState GenerateState(std::u16string name,
+                                                        std::u16string tooltip,
+                                                        bool is_enabled);
+
+  HoverButton* primary_button() {
     return menu_entry_->primary_action_button_for_testing();
   }
   HoverButton* context_menu_button() {
@@ -42,11 +47,11 @@ class ExtensionsMenuEntryViewTest : public ExtensionsToolbarUnitTest {
   const std::u16string initial_tooltip_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<ExtensionsMenuEntryView> menu_entry_ = nullptr;
-  raw_ptr<TestToolbarActionViewModel> model_ = nullptr;
+  std::unique_ptr<TestToolbarActionViewModel> action_model_holder_;
+  int action_callback_count_ = 0;
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestToolbarActionViewModel> action_model_holder_;
 };
 
 void ExtensionsMenuEntryViewTest::SetUp() {
@@ -67,18 +72,26 @@ void ExtensionsMenuEntryViewTest::SetUp() {
 #endif
   widget_->Init(std::move(init_params));
 
-  auto model = std::make_unique<TestToolbarActionViewModel>("hello");
-  model_ = model.get();
-  model_->SetActionName(initial_extension_name_);
-  model_->SetTooltip(initial_tooltip_);
-
-  action_model_holder_ = std::move(model);
+  // The view still needs a valid pointer to a model during construction,
+  // even if we update it later via MenuEntryState.
+  action_model_holder_ = std::make_unique<TestToolbarActionViewModel>("hello");
 
   std::unique_ptr<ExtensionsMenuEntryView> menu_entry =
       std::make_unique<ExtensionsMenuEntryView>(
           browser(), /*is_enterprise=*/false, action_model_holder_.get(),
+          /*action_toggle_callback=*/
+          base::BindRepeating(
+              [](ExtensionsMenuEntryViewTest* test) {
+                test->action_callback_count_++;
+              },
+              base::Unretained(this)),
           /*site_access_toggle_callback*/ base::DoNothing(),
           /*site_permissions_button_callback=*/base::RepeatingClosure());
+
+  // Initialize entry with initial state
+  menu_entry->Update(GenerateState(initial_extension_name_, initial_tooltip_,
+                                   /*is_enabled=*/true));
+
   menu_entry_ = menu_entry.get();
 
   widget_->SetContentsView(std::move(menu_entry));
@@ -86,52 +99,69 @@ void ExtensionsMenuEntryViewTest::SetUp() {
 
 void ExtensionsMenuEntryViewTest::TearDown() {
   menu_entry_ = nullptr;
-  model_ = nullptr;
   // All windows need to be closed before tear down.
   widget_.reset();
 
   ExtensionsToolbarUnitTest::TearDown();
 }
 
-TEST_F(ExtensionsMenuEntryViewTest, UpdatesToDisplayCorrectActionTitle) {
-  EXPECT_EQ(primary_button()->GetText(), initial_extension_name_);
+ExtensionsMenuViewModel::MenuEntryState
+ExtensionsMenuEntryViewTest::GenerateState(std::u16string name,
+                                           std::u16string tooltip,
+                                           bool is_enabled) {
+  ExtensionsMenuViewModel::MenuEntryState state;
 
-  std::u16string extension_name = u"Extension Name";
-  model_->SetActionName(extension_name);
+  // Set Action Button State
+  state.action_button.text = name;
+  state.action_button.tooltip_text = tooltip;
+  state.action_button.status =
+      is_enabled ? ExtensionsMenuViewModel::ControlState::Status::kEnabled
+                 : ExtensionsMenuViewModel::ControlState::Status::kDisabled;
 
-  EXPECT_EQ(primary_button()->GetText(), extension_name);
+  // Set defaults for other controls so the view doesn't crash/DCHECK.
+  state.context_menu_button.status =
+      ExtensionsMenuViewModel::ControlState::Status::kEnabled;
+
+  return state;
 }
 
-TEST_F(ExtensionsMenuEntryViewTest, UpdatesToDisplayTooltip) {
+TEST_F(ExtensionsMenuEntryViewTest, UpdatesToDisplayCorrectActionText) {
+  EXPECT_EQ(primary_button()->GetText(), initial_extension_name_);
+
+  std::u16string new_extension_name = u"Extension Name";
+  std::u16string new_tooltip = u"New Tooltip";
+  menu_entry_->Update(
+      GenerateState(new_extension_name, new_tooltip, /*is_enabled=*/true));
+
+  EXPECT_EQ(primary_button()->GetText(), new_extension_name);
   EXPECT_EQ(primary_button()->GetRenderedTooltipText(gfx::Point()),
-            initial_tooltip_);
-
-  std::u16string tooltip = u"New Tooltip";
-  model_->SetTooltip(tooltip);
-
-  EXPECT_EQ(primary_button()->GetRenderedTooltipText(gfx::Point()), tooltip);
+            new_tooltip);
 }
 
 TEST_F(ExtensionsMenuEntryViewTest, ButtonMatchesEnabledStateOfExtension) {
   EXPECT_TRUE(primary_button()->GetEnabled());
-  model_->SetEnabled(false);
+
+  menu_entry_->Update(GenerateState(initial_extension_name_, initial_tooltip_,
+                                    /*is_enabled=*/false));
   EXPECT_FALSE(primary_button()->GetEnabled());
-  model_->SetEnabled(true);
+
+  menu_entry_->Update(GenerateState(initial_extension_name_, initial_tooltip_,
+                                    /*is_enabled=*/true));
   EXPECT_TRUE(primary_button()->GetEnabled());
 }
 
 TEST_F(ExtensionsMenuEntryViewTest, NotifyClickExecutesAction) {
   base::UserActionTester user_action_tester;
-  constexpr char kActivatedUserAction[] =
-      "Extensions.Toolbar.ExtensionActivatedFromMenu";
-  EXPECT_EQ(0, model_->execute_action_count());
-  EXPECT_EQ(0, user_action_tester.GetActionCount(kActivatedUserAction));
+  // We don't check the UserActionTester for "ExtensionActivatedFromMenu" here
+  // because that metric is recorded by the ExtensionsMenuViewModel
+  // when handling the callback, not by the View or the ActionViewModel (as
+  // previously done).
+  EXPECT_EQ(0, action_callback_count_);
 
   primary_button()->SetBounds(0, 0, 100, 100);
   ClickButton(primary_button());
 
-  EXPECT_EQ(1, model_->execute_action_count());
-  EXPECT_EQ(1, user_action_tester.GetActionCount(kActivatedUserAction));
+  EXPECT_EQ(1, action_callback_count_);
 }
 
 TEST_F(ExtensionsMenuEntryViewTest, ContextMenuButtonUserAction) {

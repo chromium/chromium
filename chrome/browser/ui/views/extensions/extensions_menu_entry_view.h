@@ -14,7 +14,6 @@
 #include "ui/views/layout/flex_layout_view.h"
 
 class Browser;
-class ExtensionsMenuButton;
 class HoverButton;
 class ToolbarActionViewModel;
 
@@ -35,6 +34,7 @@ class ExtensionsMenuEntryView
       Browser* browser,
       bool is_enterprise,
       ToolbarActionViewModel* view_model,
+      views::Button::PressedCallback action_button_callback,
       base::RepeatingCallback<void(bool)> site_access_toggle_callback,
       views::Button::PressedCallback site_permissions_button_callback);
   ExtensionsMenuEntryView(const ExtensionsMenuEntryView&) = delete;
@@ -44,6 +44,10 @@ class ExtensionsMenuEntryView
   // Updates the view according to `entry_state`.
   void Update(ExtensionsMenuViewModel::MenuEntryState entry_state);
 
+  // Updates the action button with the given `button_state`.
+  void UpdateActionButton(
+      const ExtensionsMenuViewModel::ControlState& button_state);
+
   // Updates the context menu button given `is_action_pinned`.
   void UpdateContextMenuButton(
       ExtensionsMenuViewModel::ControlState button_state);
@@ -52,9 +56,7 @@ class ExtensionsMenuEntryView
 
   // Accessors for testing.
   bool IsContextMenuRunningForTesting() const;
-  ExtensionsMenuButton* primary_action_button_for_testing() {
-    return primary_action_button_;
-  }
+  HoverButton* primary_action_button_for_testing() { return action_button_; }
   views::ToggleButton* site_access_toggle_for_testing() {
     return site_access_toggle_;
   }
@@ -85,7 +87,7 @@ class ExtensionsMenuEntryView
   std::unique_ptr<ExtensionContextMenuController> context_menu_controller_;
 
   // Child Views
-  raw_ptr<ExtensionsMenuButton> primary_action_button_ = nullptr;
+  raw_ptr<HoverButton> action_button_ = nullptr;
   raw_ptr<views::ToggleButton> site_access_toggle_ = nullptr;
   raw_ptr<HoverButton> site_permissions_button_ = nullptr;
   raw_ptr<HoverButton> context_menu_button_ = nullptr;

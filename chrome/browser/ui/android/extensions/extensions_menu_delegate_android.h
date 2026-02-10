@@ -50,6 +50,8 @@ class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
                                 int index) override;
   void OnHostAccessRequestUpdated(const extensions::ExtensionId& extension_id,
                                   int index) override;
+  void OnActionIconUpdated(
+      const ToolbarActionsModel::ActionId& action_id) override;
   void OnHostAccessRequestsCleared() override;
   void OnHostAccessRequestRemoved(const extensions::ExtensionId& extension_id,
                                   int index) override;
@@ -61,6 +63,8 @@ class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
 
   // ExtensionsMenuHandler:
   void CloseBubble() override;
+  void OnActionButtonClicked(
+      const extensions::ExtensionId& extension_id) override;
   void OnAllowExtensionClicked(
       const extensions::ExtensionId& extension_id) override;
   void OnDismissExtensionClicked(

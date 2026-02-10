@@ -561,8 +561,8 @@ class ExtensionsMenuMainPageViewInteractiveTest
                   [&extension](ExtensionsMenuEntryView* menu_entry) {
                     return menu_entry->extension_id() == extension.id();
                   }),
-        NameDescendantViewByType<ExtensionsMenuButton>(
-            kExtensionsMenuEntryViewElementId, kExtensionMenuEntryActionButton),
+        NameDescendantViewByType<HoverButton>(kExtensionsMenuEntryViewElementId,
+                                              kExtensionMenuEntryActionButton),
         PressButton(kExtensionMenuEntryActionButton));
   }
 

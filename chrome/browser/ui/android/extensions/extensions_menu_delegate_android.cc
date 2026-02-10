@@ -80,6 +80,11 @@ void ExtensionsMenuDelegateAndroid::OnActionUpdated(
   // TODO(crbug.com/473213114)
 }
 
+void ExtensionsMenuDelegateAndroid::OnActionIconUpdated(
+    const ToolbarActionsModel::ActionId& action_id) {
+  // TODO(crbug.com/473213114)
+}
+
 void ExtensionsMenuDelegateAndroid::OnActionsInitialized() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ExtensionsMenuBridge_onReady(env, java_object_);
@@ -125,10 +130,16 @@ void ExtensionsMenuDelegateAndroid::CloseBubble() {
   // TODO(crbug.com/473213115)
 }
 
+void ExtensionsMenuDelegateAndroid::OnActionButtonClicked(
+    const extensions::ExtensionId& extension_id) {
+  // TODO(crbug.com/473213115)
+}
+
 void ExtensionsMenuDelegateAndroid::OnAllowExtensionClicked(
     const extensions::ExtensionId& extension_id) {
   // TODO(crbug.com/473213115)
 }
+
 void ExtensionsMenuDelegateAndroid::OnDismissExtensionClicked(
     const extensions::ExtensionId& extension_id) {
   // TODO(crbug.com/473213115)

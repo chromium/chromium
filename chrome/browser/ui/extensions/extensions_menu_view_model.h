@@ -87,8 +87,16 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     virtual void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id,
                                  int index) = 0;
 
-    // Called when an action is updated in the menu model.
+    // Called when an action is updated in the menu model. This doesn't cover
+    // icon updates because (a) icons are loaded asynchronously and (b) they
+    // only require updating the icon and no other fields (e.g an action update
+    // can include a permissions change which affects other views apart from the
+    // action menu entry).
     virtual void OnActionUpdated(
+        const ToolbarActionsModel::ActionId& action_id) = 0;
+
+    // Called when an action icon is updated.
+    virtual void OnActionIconUpdated(
         const ToolbarActionsModel::ActionId& action_id) = 0;
 
     // Called after all actions are added in the menu model after menu model
@@ -143,6 +151,8 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     std::u16string tooltip_text;
     // The checked/toggled state. False for buttons with no on/off state.
     bool is_on = false;
+    // The icon for the control. Empty if not applicable.
+    ui::ImageModel icon;
   };
 
   // Hold the information for an extension's host access request.
@@ -198,6 +208,8 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     MenuEntryState& operator=(const MenuEntryState&);
     ~MenuEntryState();
 
+    // The state for the action button.
+    ControlState action_button;
     // The state for the context menu button.
     ControlState context_menu_button;
     // The state for the site access toggle.
@@ -243,12 +255,19 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   void UpdateSiteSetting(
       extensions::PermissionsManager::UserSiteSetting site_setting);
 
+  // Executes the primary action for the extension with `extension_id`.
+  void ExecuteAction(const extensions::ExtensionId& extension_id);
+
   // Reloads the current web contents.
   void ReloadWebContents();
 
   // Returns true if the site permissions page can be shown for the given
   // `extension_id`.
   bool CanShowSitePermissionsPage(const extensions::ExtensionId& extension_id);
+
+  // Returns the action button state for an extension's menu entry.
+  ControlState GetActionButtonState(const extensions::ExtensionId& extension_id,
+                                    const gfx::Size& icon_size);
 
   // Returns the state for the extension's context menu button.
   ControlState GetContextMenuButtonState(
@@ -272,8 +291,10 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   ControlState GetExtensionShowRequestsToggleState(
       const extensions::ExtensionId& extension_id);
 
-  // Returns the menu item state for an extension.
-  MenuEntryState GetMenuEntryState(const extensions::ExtensionId& extension_id);
+  // Returns the menu item state for an extension. `action_icon_size` is the
+  // size the extension icon should have.
+  MenuEntryState GetMenuEntryState(const extensions::ExtensionId& extension_id,
+                                   const gfx::Size& action_icon_size);
 
   // Returns the optional section to display in the menu.
   OptionalSection GetOptionalSection();
@@ -356,6 +377,9 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   ExtensionActionViewModel* GetActionViewModel(
       const extensions::ExtensionId& extension_id) const;
 
+  // Callback for when an icon in `action_models_` updates.
+  void OnActionIconUpdated(const extensions::ExtensionId& extension_id);
+
   // Updates the model when web contents changed, and notifies observers.
   void OnWebContentsChanged(content::WebContents* web_contents);
 
@@ -376,6 +400,11 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
 
   // The actions models ordered alphabetically by their action name.
   std::vector<std::unique_ptr<ExtensionActionViewModel>> action_models_;
+
+  // Map of action IDs to their respective `ExtensionActionViewModel` update
+  // subscriptions for icon updates.
+  std::map<ToolbarActionsModel::ActionId, base::CallbackListSubscription>
+      action_icon_subscriptions_;
 
   // The extensions that have valid host access requests on the current site.
   std::vector<extensions::ExtensionId> host_access_requests_;

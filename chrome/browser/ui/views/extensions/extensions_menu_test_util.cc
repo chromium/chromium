@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
+#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
@@ -95,7 +96,7 @@ gfx::Image ExtensionsMenuTestUtil::GetIcon(const extensions::ExtensionId& id) {
 void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
   OpenExtensionsMenu();
 
-  ExtensionsMenuButton* primary_button = GetPrimaryButton(id);
+  HoverButton* primary_button = GetPrimaryButton(id);
   CHECK(primary_button);
 
   views::test::ButtonTestApi(primary_button).NotifyDefaultMouseClick();
@@ -182,7 +183,7 @@ bool ExtensionsMenuTestUtil::IsExtensionsMenuShowing() {
              : menu_view_;
 }
 
-ExtensionsMenuButton* ExtensionsMenuTestUtil::GetPrimaryButton(
+HoverButton* ExtensionsMenuTestUtil::GetPrimaryButton(
     const extensions::ExtensionId& id) {
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {

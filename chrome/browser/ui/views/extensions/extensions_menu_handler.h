@@ -24,6 +24,10 @@ class ExtensionsMenuHandler {
   // Closes the currently-showing extensions menu, if it exists.
   virtual void CloseBubble() = 0;
 
+  // Executes the action for `extension_id`.
+  virtual void OnActionButtonClicked(
+      const extensions::ExtensionId& extension_id) = 0;
+
   // Updates the user site setting whether toggle `is_on`.
   virtual void OnSiteSettingsToggleButtonPressed(bool is_on) = 0;
 

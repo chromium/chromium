@@ -710,6 +710,19 @@ void ExtensionsMenuViewModel::RevokeSiteAccess(
   }
 }
 
+void ExtensionsMenuViewModel::ExecuteAction(
+    const extensions::ExtensionId& extension_id) {
+  ExtensionActionViewModel* action_model = GetActionViewModel(extension_id);
+  if (!action_model) {
+    return;
+  }
+
+  action_model->ExecuteUserAction(
+      ToolbarActionViewModel::InvocationSource::kMenuEntry);
+  base::RecordAction(
+      base::UserMetricsAction("Extensions.Toolbar.ExtensionActivatedFromMenu"));
+}
+
 void ExtensionsMenuViewModel::UpdateSiteSetting(
     extensions::PermissionsManager::UserSiteSetting site_setting) {
   content::WebContents* web_contents = GetActiveWebContents();
@@ -749,6 +762,25 @@ ExtensionActionViewModel* ExtensionsMenuViewModel::GetActionViewModel(
         return model->GetId() == extension_id;
       });
   return it != action_models_.end() ? it->get() : nullptr;
+}
+
+ExtensionsMenuViewModel::ControlState
+ExtensionsMenuViewModel::GetActionButtonState(
+    const extensions::ExtensionId& extension_id,
+    const gfx::Size& icon_size) {
+  ExtensionActionViewModel* action_model = GetActionViewModel(extension_id);
+  CHECK(action_model);
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  ExtensionsMenuViewModel::ControlState button_state;
+  button_state.text = action_model->GetActionName();
+  button_state.tooltip_text = action_model->GetTooltip(web_contents);
+  button_state.status =
+      action_model->IsEnabled(web_contents)
+          ? ExtensionsMenuViewModel::ControlState::Status::kEnabled
+          : ExtensionsMenuViewModel::ControlState::Status::kDisabled;
+  button_state.icon = action_model->GetIcon(web_contents, icon_size);
+  return button_state;
 }
 
 ExtensionsMenuViewModel::ControlState
@@ -867,7 +899,8 @@ ExtensionsMenuViewModel::GetExtensionShowRequestsToggleState(
 
 ExtensionsMenuViewModel::MenuEntryState
 ExtensionsMenuViewModel::GetMenuEntryState(
-    const extensions::ExtensionId& extension_id) {
+    const extensions::ExtensionId& extension_id,
+    const gfx::Size& action_icon_size) {
   Profile* profile = browser_->GetProfile();
   ExtensionActionViewModel* action_model = GetActionViewModel(extension_id);
   const extensions::Extension* extension = action_model->GetExtension();
@@ -875,6 +908,8 @@ ExtensionsMenuViewModel::GetMenuEntryState(
   content::WebContents* web_contents = GetActiveWebContents();
 
   MenuEntryState entry_state;
+  entry_state.action_button =
+      GetActionButtonState(extension_id, action_icon_size);
   entry_state.context_menu_button = GetContextMenuButtonState(action_model);
   entry_state.site_access_toggle = GetSiteAccessToggleState(
       *extension, *profile, *toolbar_model_, *web_contents);
@@ -1106,6 +1141,12 @@ void ExtensionsMenuViewModel::OnToolbarActionAdded(
       delegate_->CreateActionViewModel(action_id);
   ExtensionActionViewModel* action_model_ptr = action_model.get();
 
+  // Register action icon observer.
+  action_icon_subscriptions_[action_id] =
+      action_model->RegisterIconUpdateObserver(
+          base::BindRepeating(&ExtensionsMenuViewModel::OnActionIconUpdated,
+                              base::Unretained(this), action_id));
+
   // Insert action model in the correct order.
   auto it = std::upper_bound(action_models_.begin(), action_models_.end(),
                              action_model, SortActionsByName);
@@ -1138,6 +1179,9 @@ void ExtensionsMenuViewModel::OnToolbarActionRemoved(
   std::unique_ptr<ExtensionActionViewModel> preserved_action_model =
       std::move(*it);
   action_models_.erase(it);
+
+  // Remove the action icon observer subscription.
+  action_icon_subscriptions_.erase(action_id);
 
   // Notify observers.
   for (Observer& observer : observers_) {
@@ -1281,6 +1325,16 @@ void ExtensionsMenuViewModel::UpdateHostAccessRequests() {
     if (permissions_manager->HasActiveHostAccessRequest(tab_id, extension_id)) {
       host_access_requests_.push_back(extension_id);
     }
+  }
+}
+
+void ExtensionsMenuViewModel::OnActionIconUpdated(
+    const extensions::ExtensionId& extension_id) {
+  // Notify observers that the action icon has changed. The platform-specific
+  // delegate will then re-fetch the necessary state (e.g. MenuEntryState) and
+  // update the corresponding views.
+  for (Observer& observer : observers_) {
+    observer.OnActionIconUpdated(extension_id);
   }
 }
 

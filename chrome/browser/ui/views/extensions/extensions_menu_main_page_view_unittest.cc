@@ -53,7 +53,7 @@ std::vector<std::string> GetExtensionNames(
     std::vector<ExtensionsMenuEntryView*> menu_entries) {
   return base::ToVector(menu_entries, [](ExtensionsMenuEntryView* entry) {
     return base::UTF16ToUTF8(
-        entry->primary_action_button_for_testing()->label_text_for_testing());
+        entry->primary_action_button_for_testing()->GetText());
   });
 }
 
@@ -930,11 +930,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, NavigationWhenMainPageIsOpen) {
   // Retrieve menu views for testing.
   ExtensionsMenuEntryView* extension_A_item = menu_entries()[0];
   ExtensionsMenuEntryView* extension_b_item = menu_entries()[1];
-  ASSERT_EQ(extension_A_item->primary_action_button_for_testing()
-                ->label_text_for_testing(),
+  ASSERT_EQ(extension_A_item->primary_action_button_for_testing()->GetText(),
             u"Extension A");
-  ASSERT_EQ(extension_b_item->primary_action_button_for_testing()
-                ->label_text_for_testing(),
+  ASSERT_EQ(extension_b_item->primary_action_button_for_testing()->GetText(),
             u"Extension B");
   const views::View* reload_section = main_page()->reload_section();
   const views::View* requests_section = main_page()->requests_section();
@@ -1228,12 +1226,11 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PolicyBlockedSite) {
   // Retrieve menu entries.
   ExtensionsMenuEntryView* extension_item = menu_entries()[0];
   ExtensionsMenuEntryView* activeTab_extension_item = menu_entries()[1];
-  ASSERT_EQ(extension_item->primary_action_button_for_testing()
-                ->label_text_for_testing(),
+  ASSERT_EQ(extension_item->primary_action_button_for_testing()->GetText(),
             u"Extension");
-  ASSERT_EQ(activeTab_extension_item->primary_action_button_for_testing()
-                ->label_text_for_testing(),
-            u"Extension: activeTab");
+  ASSERT_EQ(
+      activeTab_extension_item->primary_action_button_for_testing()->GetText(),
+      u"Extension: activeTab");
 
   // Verify all extensions':
   //   - site access toggle is hidden, since site access cannot be changed
@@ -1314,9 +1311,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
   // Retrieve menu item.
   ExtensionsMenuEntryView* enterprise_extension_item = menu_entries()[0];
-  ASSERT_EQ(enterprise_extension_item->primary_action_button_for_testing()
-                ->label_text_for_testing(),
-            u"Extension: enterprise");
+  ASSERT_EQ(
+      enterprise_extension_item->primary_action_button_for_testing()->GetText(),
+      u"Extension: enterprise");
 
   // Verify extension's:
   //   - site access toggle is hidden, since site access cannot be changed
