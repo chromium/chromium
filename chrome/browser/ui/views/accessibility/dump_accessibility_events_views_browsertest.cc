@@ -44,6 +44,7 @@ class DumpAccessibilityEventsViewsTest
 // Tests that focus events are recorded and match the expectation file.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsViewsTest,
                        MetaTest_FocusEventRecorded) {
+  SKIP_IF_VIEWS_AX_ENABLED();
   button_->RequestFocus();
   EndTestAndCompareEvents("meta-test-focus-event-recorded");
 }
@@ -51,6 +52,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsViewsTest,
 // Tests that the allow filter correctly includes matching events.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsViewsTest,
                        MetaTest_FilterAllowWorks) {
+  SKIP_IF_VIEWS_AX_ENABLED();
+  // First deny everything, then re-allow only focus-related events.
+  // This verifies that ALLOW filters can override a preceding DENY.
+  AddDenyFilter("*");
+  SetFilters(R"(
+@AURALINUX-ALLOW:FOCUS-EVENT*
+@MAC-ALLOW:AXFocusedUIElementChanged*
+@UIA-WIN-ALLOW:AutomationFocusChanged*
+@WIN-ALLOW:EVENT_OBJECT_FOCUS*
+)");
   button_->RequestFocus();
   EndTestAndCompareEvents("meta-test-filter-allow-works");
 }
@@ -58,6 +69,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsViewsTest,
 // Tests that the deny filter correctly excludes matching events.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsViewsTest,
                        MetaTest_FilterDenyWorks) {
+  SKIP_IF_VIEWS_AX_ENABLED();
+  // Exclude focus-related events, resulting in no output.
+  SetFilters(R"(
+@AURALINUX-DENY:FOCUS-EVENT*
+@AURALINUX-DENY:STATE-CHANGE*
+@MAC-DENY:AXFocusedUIElementChanged*
+@UIA-WIN-DENY:AutomationFocusChanged*
+@WIN-DENY:EVENT_OBJECT_FOCUS*
+)");
   button_->RequestFocus();
   EndTestAndCompareEvents("meta-test-filter-deny-works");
 }

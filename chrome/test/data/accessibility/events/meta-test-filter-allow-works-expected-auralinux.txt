@@ -1,4 +1,1 @@
-# This filter restricts output to only focus-related events.
-@AURALINUX-ALLOW:focus-event*
-
-focus-event:object:state-changed:focused(1) role=push-button name="Test Button"
+FOCUS-EVENT:TRUE role=ROLE_PUSH_BUTTON name='Test Button' ENABLED,FOCUSABLE,FOCUSED,SENSITIVE,SHOWING,VISIBLE

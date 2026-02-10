@@ -1,2 +1,1 @@
-# This filter excludes focus-related events, resulting in no output.
-@MAC-DENY:AXFocusedUIElementChanged*
+
