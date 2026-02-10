@@ -1207,60 +1207,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (6th generation)",
-          "--version",
-          "17.5",
-          "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a400",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_bookmarks_eg2tests_module iPad Pro (12.9-inch) (6th generation) 17.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
-            },
-            {
-              "name": "xcode_ios_17a400",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "ios_chrome_bookmarks_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.5"
-      },
-      {
-        "args": [
-          "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
           "18.2",
@@ -1365,67 +1311,6 @@
         "test": "ios_chrome_bookmarks_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
         "variant_id": "iPad Pro 13-inch (M4) 26.0"
-      },
-      {
-        "args": [
-          "--clones",
-          "2",
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "17.5",
-          "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a400",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_integration_eg2tests_module iPad Air (5th generation) 17.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
-            },
-            {
-              "name": "xcode_ios_17a400",
-              "path": "Xcode.app"
-            }
-          ],
-          "optional_dimensions": {
-            "30": {
-              "cpu": "Apple_(Virtual)"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
-        },
-        "test": "ios_chrome_integration_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPad Air (5th generation) 17.5"
       },
       {
         "args": [
@@ -1549,62 +1434,6 @@
           "--clones",
           "2",
           "--platform",
-          "iPad Pro (12.9-inch) (6th generation)",
-          "--version",
-          "17.5",
-          "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a400",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_settings_eg2tests_module iPad Pro (12.9-inch) (6th generation) 17.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
-            },
-            {
-              "name": "xcode_ios_17a400",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "test": "ios_chrome_settings_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
-        "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.5"
-      },
-      {
-        "args": [
-          "--clones",
-          "2",
-          "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
           "18.2",
@@ -1711,60 +1540,6 @@
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
         "variant_id": "iPad Pro 13-inch (M4) 26.0"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (6th generation)",
-          "--version",
-          "17.5",
-          "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a400",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_signin_eg2tests_module iPad Pro (12.9-inch) (6th generation) 17.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
-            },
-            {
-              "name": "xcode_ios_17a400",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
-        },
-        "test": "ios_chrome_signin_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.5"
       },
       {
         "args": [
@@ -1877,59 +1652,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (6th generation)",
-          "--version",
-          "17.5",
-          "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a400",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_smoke_eg2tests_module iPad Pro (12.9-inch) (6th generation) 17.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
-            },
-            {
-              "name": "xcode_ios_17a400",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_chrome_smoke_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
-        "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.5"
-      },
-      {
-        "args": [
-          "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
           "18.2",
@@ -2032,62 +1754,6 @@
         "test": "ios_chrome_smoke_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "variant_id": "iPad Pro 13-inch (M4) 26.0"
-      },
-      {
-        "args": [
-          "--clones",
-          "2",
-          "--platform",
-          "iPad Pro (12.9-inch) (6th generation)",
-          "--version",
-          "17.5",
-          "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a400",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_ui_eg2tests_module iPad Pro (12.9-inch) (6th generation) 17.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
-            },
-            {
-              "name": "xcode_ios_17a400",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
-        },
-        "test": "ios_chrome_ui_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.5"
       },
       {
         "args": [
@@ -2604,60 +2270,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (6th generation)",
-          "--version",
-          "17.5",
-          "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a400",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_web_eg2tests_module iPad Pro (12.9-inch) (6th generation) 17.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
-            },
-            {
-              "name": "xcode_ios_17a400",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "ios_chrome_web_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.5"
-      },
-      {
-        "args": [
-          "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
           "18.2",
@@ -2762,57 +2374,6 @@
         "test": "ios_chrome_web_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
         "variant_id": "iPad Pro 13-inch (M4) 26.0"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPhone SE (3rd generation)",
-          "--version",
-          "17.5",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a400",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//third_party/crashpad/crashpad/test/ios:ios_crash_xcuitests_module",
-        "module_scheme": "xctest",
-        "name": "ios_crash_xcuitests_module iPhone SE (3rd generation) 17.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
-            },
-            {
-              "name": "xcode_ios_17a400",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_crash_xcuitests_module",
-        "test_id_prefix": "ninja://third_party/crashpad/crashpad/test/ios:ios_crash_xcuitests_module/",
-        "variant_id": "iPhone SE (3rd generation) 17.5"
       },
       {
         "args": [
@@ -3715,64 +3276,6 @@
         "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
         "variant_id": "iPhone SE (3rd generation) 26.0"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "17.5",
-          "--xcodebuild-sim-runner",
-          "--record-video",
-          "failed_only",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a400",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module",
-        "module_scheme": "xctest",
-        "name": "ios_web_shell_eg2tests_module iPad Air (5th generation) 17.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
-            },
-            {
-              "name": "xcode_ios_17a400",
-              "path": "Xcode.app"
-            }
-          ],
-          "optional_dimensions": {
-            "30": {
-              "cpu": "Apple_(Virtual)"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_web_shell_eg2tests_module",
-        "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "variant_id": "iPad Air (5th generation) 17.5"
       },
       {
         "args": [
