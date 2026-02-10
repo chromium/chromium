@@ -18,6 +18,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/display/screen.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/widget/widget.h"
 
 using DialogButton = ui::DialogModel::Button;
@@ -104,9 +108,17 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitialImpl(
 
   bool positive_button_enabled = !was_request_aborted;
 
+  const views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
+  const int dialog_width = layout_provider->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+  const gfx::Insets dialog_insets =
+      layout_provider->GetInsetsMetric(views::INSETS_DIALOG);
+  const float content_width = dialog_width - dialog_insets.width();
+
+  const gfx::FontList& font_list = views::TypographyProvider::Get().GetFont(
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY);
   std::u16string formatted_origin =
-      url_formatter::FormatOriginForSecurityDisplay(
-          rp_origin_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+      url_formatter::ElideUrl(rp_origin_.GetURL(), font_list, content_width);
   std::u16string body_text =
       l10n_util::GetStringFUTF16(body_resource_id, formatted_origin);
   std::u16string positive_button_label = l10n_util::GetStringUTF16(
