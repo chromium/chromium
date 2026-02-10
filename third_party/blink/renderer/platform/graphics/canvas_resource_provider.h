@@ -299,12 +299,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   bool always_enable_raster_timers_for_testing_ = false;
 
-  // The maximum number of draw ops executed on the canvas, after which the
-  // underlying GrContext is flushed.
-  // Note: This parameter does not affect the flushing of recorded PaintOps.
-  // See kMaxRecordedOpBytes above.
-  static constexpr int kMaxDrawsBeforeContextFlush = 50;
-
   // Parameters for the auto-flushing heuristic.
   size_t max_recorded_op_bytes_;
   size_t max_pinned_image_bytes_;
