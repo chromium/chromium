@@ -33,6 +33,7 @@
 #include "base/threading/simple_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version_info/android/channel_getter.h"
+#include "build/build_config.h"
 #include "content/app/android/content_main_android.h"
 #include "content/common/shared_file_util.h"
 #include "content/public/app/content_main.h"
@@ -181,8 +182,8 @@ void ChildProcessService::SpawnMainThread() {
   // Set up stack size to match Java.
   base::SimpleThread::Options options;
   options.stack_size = stack_size;
-  thread_ =
-      std::make_unique<base::DelegateSimpleThread>(this, "CrRendererMain");
+  thread_ = std::make_unique<base::DelegateSimpleThread>(this, "CrRendererMain",
+                                                         options);
   thread_->StartAsync();
 }
 
