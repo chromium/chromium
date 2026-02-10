@@ -45,20 +45,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="SimpleGeolocation.Provider.QueryGeolocationCommandRequestInterval"
-    units="hours" expires_after="2026-06-07">
-  <owner>poromov@chromium.org</owner>
-  <owner>alvinji@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
-  <summary>
-    Measures the frequency of geolocation requests from the QueryGeolocation
-    remote command by recording the interval between each request in hour-sized
-    buckets, up to a maximum of 24 hours. The first request after startup is not
-    recorded. We don't remember time intervals across restart cycles.
-  </summary>
-</histogram>
-
 <histogram name="SimpleGeolocation.Provider.TimezoneResolverRequestInterval"
     units="hours" expires_after="2026-08-09">
   <owner>alvinji@chromium.org</owner>
