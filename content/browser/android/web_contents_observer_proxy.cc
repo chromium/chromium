@@ -44,19 +44,15 @@ WebContentsObserverProxy::WebContentsObserverProxy(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     WebContents* web_contents)
-    : WebContentsObserver(web_contents) {
+    : WebContentsObserver(web_contents), java_observer_(env, obj) {
   DCHECK(obj);
-  java_observer_.Reset(env, obj);
 }
 
 WebContentsObserverProxy::~WebContentsObserverProxy() {}
 
-static int64_t JNI_WebContentsObserverProxy_Init(
-    JNIEnv* env,
-    const JavaRef<jobject>& obj,
-    const JavaRef<jobject>& java_web_contents) {
-  WebContents* web_contents =
-      WebContents::FromJavaWebContents(java_web_contents);
+static int64_t JNI_WebContentsObserverProxy_Init(JNIEnv* env,
+                                                 const JavaRef<jobject>& obj,
+                                                 WebContents* web_contents) {
   CHECK(web_contents);
 
   WebContentsObserverProxy* native_observer =
@@ -71,14 +67,16 @@ void WebContentsObserverProxy::Destroy(JNIEnv* env) {
 void WebContentsObserverProxy::WebContentsDestroyed() {
   JNIEnv* env = AttachCurrentThread();
   // The java side will destroy |this|
-  Java_WebContentsObserverProxy_webContentsDestroyed(env, java_observer_);
+  Java_WebContentsObserverProxy_webContentsDestroyed(env,
+                                                     GetJavaObjectChecked(env));
 }
 
 void WebContentsObserverProxy::RenderFrameCreated(
     RenderFrameHost* render_frame_host) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_renderFrameCreated(
-      env, java_observer_, render_frame_host->GetProcess()->GetDeprecatedID(),
+      env, GetJavaObjectChecked(env),
+      render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID());
 }
 
@@ -86,21 +84,22 @@ void WebContentsObserverProxy::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_renderFrameDeleted(
-      env, java_observer_, render_frame_host->GetProcess()->GetDeprecatedID(),
+      env, GetJavaObjectChecked(env),
+      render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID());
 }
 
 void WebContentsObserverProxy::PrimaryPageChanged(content::Page& page) {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_primaryPageChanged(env, java_observer_,
-                                                   page.GetJavaPage());
+  Java_WebContentsObserverProxy_primaryPageChanged(
+      env, GetJavaObjectChecked(env), page.GetJavaPage());
 }
 
 void WebContentsObserverProxy::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus termination_status) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_primaryMainFrameRenderProcessGone(
-      env, java_observer_, termination_status);
+      env, GetJavaObjectChecked(env), termination_status);
 }
 
 void WebContentsObserverProxy::DidStartLoading() {
@@ -110,7 +109,7 @@ void WebContentsObserverProxy::DidStartLoading() {
     base_url_of_last_started_data_url_ = entry->GetBaseURLForDataURL();
   }
   Java_WebContentsObserverProxy_didStartLoading(
-      env, java_observer_,
+      env, GetJavaObjectChecked(env),
       url::GURLAndroid::FromNativeGURL(env, web_contents()->GetVisibleURL()));
 }
 
@@ -121,13 +120,14 @@ void WebContentsObserverProxy::DidStopLoading() {
   // DidStopLoading is the last event we should get.
   base_url_of_last_started_data_url_ = GURL();
   Java_WebContentsObserverProxy_didStopLoading(
-      env, java_observer_, url::GURLAndroid::FromNativeGURL(env, url),
-      assume_valid);
+      env, GetJavaObjectChecked(env),
+      url::GURLAndroid::FromNativeGURL(env, url), assume_valid);
 }
 
 void WebContentsObserverProxy::LoadProgressChanged(double progress) {
+  JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_loadProgressChanged(
-      AttachCurrentThread(), java_observer_, static_cast<float>(progress));
+      env, GetJavaObjectChecked(env), static_cast<float>(progress));
 }
 
 void WebContentsObserverProxy::DidFailLoad(RenderFrameHost* render_frame_host,
@@ -135,36 +135,39 @@ void WebContentsObserverProxy::DidFailLoad(RenderFrameHost* render_frame_host,
                                            int error_code) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_didFailLoad(
-      env, java_observer_, render_frame_host->IsInPrimaryMainFrame(),
+      env, GetJavaObjectChecked(env), render_frame_host->IsInPrimaryMainFrame(),
       error_code, url::GURLAndroid::FromNativeGURL(env, validated_url),
       static_cast<int32_t>(render_frame_host->GetLifecycleState()));
 }
 
 void WebContentsObserverProxy::DidChangeVisibleSecurityState() {
+  JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_didChangeVisibleSecurityState(
-      AttachCurrentThread(), java_observer_);
+      env, GetJavaObjectChecked(env));
 }
 
 void WebContentsObserverProxy::PrimaryMainDocumentElementAvailable() {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_primaryMainDocumentElementAvailable(
-      env, java_observer_);
+      env, GetJavaObjectChecked(env));
 }
 
 void WebContentsObserverProxy::DidStartNavigation(
     NavigationHandle* navigation_handle) {
   TRACE_EVENT("browser", "WebContentsObserverProxy::DidStartNavigation");
   if (navigation_handle->IsInPrimaryMainFrame()) {
+    JNIEnv* env = AttachCurrentThread();
     Java_WebContentsObserverProxy_didStartNavigationInPrimaryMainFrame(
-        AttachCurrentThread(), java_observer_,
+        env, GetJavaObjectChecked(env),
         navigation_handle->GetJavaNavigationHandle());
   }
 }
 
 void WebContentsObserverProxy::DidRedirectNavigation(
     NavigationHandle* navigation_handle) {
+  JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_didRedirectNavigation(
-      AttachCurrentThread(), java_observer_,
+      env, GetJavaObjectChecked(env),
       navigation_handle->GetJavaNavigationHandle());
 }
 
@@ -175,8 +178,9 @@ void WebContentsObserverProxy::DidFinishNavigation(
 
   if (navigation_handle->IsInPrimaryMainFrame()) {
     base::trace_event::EmitNamedTrigger("did-finish-navigation-in-pmf");
+    JNIEnv* env = AttachCurrentThread();
     Java_WebContentsObserverProxy_didFinishNavigationInPrimaryMainFrame(
-        AttachCurrentThread(), java_observer_,
+        env, GetJavaObjectChecked(env),
         navigation_handle->GetJavaNavigationHandle());
   }
 }
@@ -190,7 +194,8 @@ void WebContentsObserverProxy::DidFinishLoad(RenderFrameHost* render_frame_host,
 
   if (render_frame_host->IsInPrimaryMainFrame()) {
     Java_WebContentsObserverProxy_didFinishLoadInPrimaryMainFrame(
-        env, java_observer_, render_frame_host->GetPage().GetJavaPage(),
+        env, GetJavaObjectChecked(env),
+        render_frame_host->GetPage().GetJavaPage(),
         render_frame_host->GetProcess()->GetDeprecatedID(),
         render_frame_host->GetRoutingID(),
         url::GURLAndroid::FromNativeGURL(env, url), assume_valid,
@@ -201,8 +206,9 @@ void WebContentsObserverProxy::DidFinishLoad(RenderFrameHost* render_frame_host,
 void WebContentsObserverProxy::DOMContentLoaded(
     RenderFrameHost* render_frame_host) {
   if (render_frame_host->IsInPrimaryMainFrame()) {
+    JNIEnv* env = AttachCurrentThread();
     Java_WebContentsObserverProxy_documentLoadedInPrimaryMainFrame(
-        AttachCurrentThread(), java_observer_,
+        env, GetJavaObjectChecked(env),
         render_frame_host->GetPage().GetJavaPage(),
         render_frame_host->GetProcess()->GetDeprecatedID(),
         render_frame_host->GetRoutingID(),
@@ -214,7 +220,7 @@ void WebContentsObserverProxy::NavigationEntryCommitted(
     const LoadCommittedDetails& load_details) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_navigationEntryCommitted(
-      env, java_observer_,
+      env, GetJavaObjectChecked(env),
       Java_LoadCommittedDetails_Constructor(
           env, load_details.previous_entry_index,
           url::GURLAndroid::FromNativeGURL(
@@ -225,30 +231,34 @@ void WebContentsObserverProxy::NavigationEntryCommitted(
 
 void WebContentsObserverProxy::NavigationEntriesDeleted() {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_navigationEntriesDeleted(env, java_observer_);
+  Java_WebContentsObserverProxy_navigationEntriesDeleted(
+      env, GetJavaObjectChecked(env));
 }
 
 void WebContentsObserverProxy::NavigationEntryChanged(
     const EntryChangedDetails& change_details) {
   JNIEnv* env = AttachCurrentThread();
   // TODO(jinsukkim): Convert |change_details| to Java object when needed.
-  Java_WebContentsObserverProxy_navigationEntriesChanged(env, java_observer_);
+  Java_WebContentsObserverProxy_navigationEntriesChanged(
+      env, GetJavaObjectChecked(env));
 }
 
 void WebContentsObserverProxy::FrameReceivedUserActivation(RenderFrameHost*) {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_frameReceivedUserActivation(env,
-                                                            java_observer_);
+  Java_WebContentsObserverProxy_frameReceivedUserActivation(
+      env, GetJavaObjectChecked(env));
 }
 
 void WebContentsObserverProxy::DidChangeThemeColor() {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_didChangeThemeColor(env, java_observer_);
+  Java_WebContentsObserverProxy_didChangeThemeColor(env,
+                                                    GetJavaObjectChecked(env));
 }
 
 void WebContentsObserverProxy::OnBackgroundColorChanged() {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_onBackgroundColorChanged(env, java_observer_);
+  Java_WebContentsObserverProxy_onBackgroundColorChanged(
+      env, GetJavaObjectChecked(env));
 }
 
 void WebContentsObserverProxy::MediaStartedPlaying(
@@ -256,7 +266,7 @@ void WebContentsObserverProxy::MediaStartedPlaying(
     const MediaPlayerId& id) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_mediaStartedPlaying(
-      env, java_observer_, id.player_id, video_type.has_audio,
+      env, GetJavaObjectChecked(env), id.player_id, video_type.has_audio,
       video_type.has_video);
 }
 
@@ -265,15 +275,15 @@ void WebContentsObserverProxy::MediaStoppedPlaying(
     const MediaPlayerId& id,
     WebContentsObserver::MediaStoppedReason reason) {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_mediaStoppedPlaying(env, java_observer_,
-                                                    id.player_id);
+  Java_WebContentsObserverProxy_mediaStoppedPlaying(
+      env, GetJavaObjectChecked(env), id.player_id);
 }
 
 void WebContentsObserverProxy::MediaEffectivelyFullscreenChanged(
     bool is_fullscreen) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_hasEffectivelyFullscreenVideoChange(
-      env, java_observer_, is_fullscreen);
+      env, GetJavaObjectChecked(env), is_fullscreen);
 }
 
 void WebContentsObserverProxy::DidToggleFullscreenModeForTab(
@@ -281,27 +291,28 @@ void WebContentsObserverProxy::DidToggleFullscreenModeForTab(
     bool will_cause_resize) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_didToggleFullscreenModeForTab(
-      env, java_observer_, entered_fullscreen, will_cause_resize);
+      env, GetJavaObjectChecked(env), entered_fullscreen, will_cause_resize);
 }
 
 void WebContentsObserverProxy::DidFirstVisuallyNonEmptyPaint() {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_didFirstVisuallyNonEmptyPaint(env,
-                                                              java_observer_);
+  Java_WebContentsObserverProxy_didFirstVisuallyNonEmptyPaint(
+      env, GetJavaObjectChecked(env));
 }
 
 void WebContentsObserverProxy::OnVisibilityChanged(
     content::Visibility visibility) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_onVisibilityChanged(
-      env, java_observer_, static_cast<int32_t>(visibility));
+      env, GetJavaObjectChecked(env), static_cast<int32_t>(visibility));
 }
 
 void WebContentsObserverProxy::TitleWasSet(NavigationEntry* entry) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> jstring_title = ConvertUTF8ToJavaString(
       env, base::UTF16ToUTF8(web_contents()->GetTitle()));
-  Java_WebContentsObserverProxy_titleWasSet(env, java_observer_, jstring_title);
+  Java_WebContentsObserverProxy_titleWasSet(env, GetJavaObjectChecked(env),
+                                            jstring_title);
 }
 
 bool WebContentsObserverProxy::SetToBaseURLForDataURLIfNeeded(GURL* url) {
@@ -326,37 +337,39 @@ bool WebContentsObserverProxy::SetToBaseURLForDataURLIfNeeded(GURL* url) {
 void WebContentsObserverProxy::ViewportFitChanged(
     blink::mojom::ViewportFit value) {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_viewportFitChanged(env, java_observer_,
-                                                   static_cast<int32_t>(value));
+  Java_WebContentsObserverProxy_viewportFitChanged(
+      env, GetJavaObjectChecked(env), static_cast<int32_t>(value));
 }
 
 void WebContentsObserverProxy::SafeAreaConstraintChanged(bool has_constraint) {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_safeAreaConstraintChanged(env, java_observer_,
-                                                          has_constraint);
+  Java_WebContentsObserverProxy_safeAreaConstraintChanged(
+      env, GetJavaObjectChecked(env), has_constraint);
 }
 
 void WebContentsObserverProxy::VirtualKeyboardModeChanged(
     ui::mojom::VirtualKeyboardMode mode) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_virtualKeyboardModeChanged(
-      env, java_observer_, static_cast<int32_t>(mode));
+      env, GetJavaObjectChecked(env), static_cast<int32_t>(mode));
 }
 
 void WebContentsObserverProxy::OnWebContentsFocused(RenderWidgetHost*) {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_onWebContentsFocused(env, java_observer_);
+  Java_WebContentsObserverProxy_onWebContentsFocused(env,
+                                                     GetJavaObjectChecked(env));
 }
 
 void WebContentsObserverProxy::OnWebContentsLostFocus(RenderWidgetHost*) {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_onWebContentsLostFocus(env, java_observer_);
+  Java_WebContentsObserverProxy_onWebContentsLostFocus(
+      env, GetJavaObjectChecked(env));
 }
 
 void WebContentsObserverProxy::MediaSessionCreated(MediaSession* session) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_mediaSessionCreated(
-      env, java_observer_,
+      env, GetJavaObjectChecked(env),
       static_cast<MediaSessionImpl*>(session)
           ->GetMediaSessionAndroid()
           ->GetJavaObject());
@@ -364,7 +377,14 @@ void WebContentsObserverProxy::MediaSessionCreated(MediaSession* session) {
 
 void WebContentsObserverProxy::WasDiscarded() {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_wasDiscarded(env, java_observer_);
+  Java_WebContentsObserverProxy_wasDiscarded(env, GetJavaObjectChecked(env));
+}
+
+ScopedJavaLocalRef<jobject> WebContentsObserverProxy::GetJavaObjectChecked(
+    JNIEnv* env) const {
+  auto obj = java_observer_.get(env);
+  DCHECK(!obj.is_null());
+  return obj;
 }
 
 }  // namespace content

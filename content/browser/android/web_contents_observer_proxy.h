@@ -87,7 +87,13 @@ class WebContentsObserverProxy : public WebContentsObserver {
   void MediaSessionCreated(MediaSession* media_session) override;
   void WasDiscarded() override;
 
-  base::android::ScopedJavaGlobalRef<jobject> java_observer_;
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObjectChecked(
+      JNIEnv* env) const;
+
+  // This object is owned by the WebContentsImpl in Java and is destroyed by it.
+  // Due to this lifecycle it is safe to use a weak reference to avoid an entry
+  // in the finite global reference table.
+  JavaObjectWeakGlobalRef java_observer_;
   GURL base_url_of_last_started_data_url_;
 };
 
