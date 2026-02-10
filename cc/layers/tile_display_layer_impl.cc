@@ -194,67 +194,80 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
   // See crbug.com/482862751.
 
   const float ideal_scale_key = GetIdealContentsScaleKey();
-  const gfx::Rect scaled_recorded_bounds =
-      gfx::ScaleToEnclosingRect(recorded_bounds_, max_contents_scale);
 
   // Append quads for the tiles in this layer.
   for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
                          max_contents_scale, ideal_scale_key);
        iter; ++iter) {
-    const gfx::Rect geometry_rect = iter.geometry_rect();
-    gfx::Rect visible_geometry_rect;
-    if (ShouldSkipTile(geometry_rect, scaled_recorded_bounds, scaled_occlusion,
-                       visible_geometry_rect)) {
-      continue;
-    }
-
-    gfx::Rect offset_geometry_rect = geometry_rect;
-    offset_geometry_rect.Offset(quad_offset);
-    gfx::Rect offset_visible_geometry_rect = visible_geometry_rect;
-    offset_visible_geometry_rect.Offset(quad_offset);
-
-    bool needs_blending = !contents_opaque();
-
-    uint64_t visible_geometry_area = visible_geometry_rect.size().Area64();
-    append_quads_data->visible_layer_area += visible_geometry_area;
-
-    bool has_draw_quad = false;
-    if (*iter) {
-      if (auto resource = iter->resource()) {
-        const gfx::RectF texture_rect = iter.texture_rect();
-        auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
-        quad->SetNew(shared_quad_state, offset_geometry_rect,
-                     offset_visible_geometry_rect, needs_blending,
-                     resource->resource_id, texture_rect, nearest_neighbor_,
-                     !layer_tree_impl()->settings().enable_edge_anti_aliasing);
-        has_draw_quad = true;
-      } else if (auto color = iter->solid_color()) {
-        has_draw_quad = true;
-        const float alpha = color->fA * shared_quad_state->opacity;
-        if (alpha >= std::numeric_limits<float>::epsilon()) {
-          auto* quad =
-              render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-          quad->SetNew(
-              shared_quad_state, offset_geometry_rect,
-              offset_visible_geometry_rect, *color,
-              !layer_tree_impl()->settings().enable_edge_anti_aliasing);
-        }
-      } else if (iter->is_oom()) {
-        // Keep `has_draw_quad` false to end up checkerboarding below.
-      }
-    }
-    if (!has_draw_quad) {
-      // Checkerboard due to missing raster.
-      SkColor4f color = safe_opaque_background_color();
-      auto* quad =
-          render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-      quad->SetNew(shared_quad_state, offset_geometry_rect,
-                   offset_visible_geometry_rect, color, false);
-      continue;
-    }
-
-    AddScaleToLastAppendQuadsScales(iter.CurrentTiling()->contents_scale_key());
+    AppendQuadForTile(iter, context, render_pass, append_quads_data,
+                      shared_quad_state, scaled_occlusion, quad_offset,
+                      max_contents_scale);
   }
+}
+
+void TileDisplayLayerImpl::AppendQuadForTile(
+    TilingSetCoverageIterator<TileDisplayLayerTiling> iter,
+    const AppendQuadsContext& context,
+    viz::CompositorRenderPass* render_pass,
+    AppendQuadsData* append_quads_data,
+    viz::SharedQuadState* shared_quad_state,
+    const Occlusion& scaled_occlusion,
+    const gfx::Vector2d& quad_offset,
+    float max_contents_scale) {
+  const gfx::Rect scaled_recorded_bounds =
+      gfx::ScaleToEnclosingRect(recorded_bounds_, max_contents_scale);
+  const gfx::Rect geometry_rect = iter.geometry_rect();
+  gfx::Rect visible_geometry_rect;
+  if (ShouldSkipTile(geometry_rect, scaled_recorded_bounds, scaled_occlusion,
+                     visible_geometry_rect)) {
+    return;
+  }
+
+  gfx::Rect offset_geometry_rect = geometry_rect;
+  offset_geometry_rect.Offset(quad_offset);
+  gfx::Rect offset_visible_geometry_rect = visible_geometry_rect;
+  offset_visible_geometry_rect.Offset(quad_offset);
+
+  bool needs_blending = !contents_opaque();
+
+  uint64_t visible_geometry_area = visible_geometry_rect.size().Area64();
+  append_quads_data->visible_layer_area += visible_geometry_area;
+
+  bool has_draw_quad = false;
+  if (*iter) {
+    if (auto resource = iter->resource()) {
+      const gfx::RectF texture_rect = iter.texture_rect();
+      auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
+      quad->SetNew(shared_quad_state, offset_geometry_rect,
+                   offset_visible_geometry_rect, needs_blending,
+                   resource->resource_id, texture_rect, nearest_neighbor_,
+                   !layer_tree_impl()->settings().enable_edge_anti_aliasing);
+      has_draw_quad = true;
+    } else if (auto color = iter->solid_color()) {
+      has_draw_quad = true;
+      const float alpha = color->fA * shared_quad_state->opacity;
+      if (alpha >= std::numeric_limits<float>::epsilon()) {
+        auto* quad =
+            render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+        quad->SetNew(shared_quad_state, offset_geometry_rect,
+                     offset_visible_geometry_rect, *color,
+                     !layer_tree_impl()->settings().enable_edge_anti_aliasing);
+      }
+    } else if (iter->is_oom()) {
+      // Keep `has_draw_quad` false to end up checkerboarding below.
+    }
+  }
+  if (!has_draw_quad) {
+    // Checkerboard due to missing raster.
+    SkColor4f color = safe_opaque_background_color();
+    auto* quad =
+        render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+    quad->SetNew(shared_quad_state, offset_geometry_rect,
+                 offset_visible_geometry_rect, color, false);
+    return;
+  }
+
+  AddScaleToLastAppendQuadsScales(iter.CurrentTiling()->contents_scale_key());
 }
 
 float TileDisplayLayerImpl::GetMaximumContentsScaleForUseInAppendQuads() const {
