@@ -545,6 +545,10 @@ const char kOmniboxFocusResultedInNavigation[] =
     }
   }
 
+  // Don't enter pre-edit if the user has already input text.
+  BOOL userInputInProgress =
+      IsComposeboxIOSEnabled() && _omniboxTextModel->user_input_in_progress;
+
   // If the omnibox is displaying a URL and the popup is not showing, set the
   // input into pre-editing state.  If the omnibox is displaying search terms,
   // leave the default behavior of positioning the cursor at the end of the
@@ -553,7 +557,8 @@ const char kOmniboxFocusResultedInNavigation[] =
   // behavior should not be invoked. When `is_lens_overlay_` is true, the
   // omnibox only display search terms.
   if (!popupOpenBeforeEdit &&
-      _presentationContext != OmniboxPresentationContext::kLensOverlay) {
+      _presentationContext != OmniboxPresentationContext::kLensOverlay &&
+      !userInputInProgress) {
     [textInput enterPreEditState];
   }
 
