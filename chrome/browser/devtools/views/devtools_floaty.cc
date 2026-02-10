@@ -65,19 +65,29 @@ class FloatyBindingsDelegate : public DevToolsUIBindings::Delegate {
   ~FloatyBindingsDelegate() override = default;
 
   void OpenInNewTab(const std::string& url) override {
+    content::RenderFrameHost* rfh =
+        content::RenderFrameHost::FromID(process_id_, routing_id_);
+    if (!rfh) {
+      return;
+    }
+    content::WebContents* inspected_web_contents =
+        content::WebContents::FromRenderFrameHost(rfh);
+
     if (url == "magic:open-devtools") {
-      content::RenderFrameHost* rfh =
-          content::RenderFrameHost::FromID(process_id_, routing_id_);
-      if (rfh) {
-        content::WebContents* inspected_web_contents =
-            content::WebContents::FromRenderFrameHost(rfh);
-        Profile* profile = Profile::FromBrowserContext(
-            inspected_web_contents->GetBrowserContext());
-        content::DevToolsManagerDelegate::DevToolsOptions options("greendev");
-        DevToolsWindow::OpenDevToolsWindow(
-            inspected_web_contents, profile,
-            DevToolsOpenedByAction::kContextMenuInspect, options);
-      }
+      Profile* profile = Profile::FromBrowserContext(
+          inspected_web_contents->GetBrowserContext());
+      content::DevToolsManagerDelegate::DevToolsOptions options("greendev");
+      DevToolsWindow::OpenDevToolsWindow(
+          inspected_web_contents, profile,
+          DevToolsOpenedByAction::kContextMenuInspect, options);
+    } else {
+      // Open regular URLs in a new tab.
+      content::OpenURLParams params(GURL(url), content::Referrer(),
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                    ui::PAGE_TRANSITION_LINK, false);
+      // We use the inspected contents to open the URL, ensuring it opens in the
+      // correct browser window/context.
+      inspected_web_contents->OpenURL(params, base::DoNothing());
     }
   }
 
