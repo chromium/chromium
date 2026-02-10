@@ -4,7 +4,6 @@
 
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_REGEX_CONSTANTS_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_REGEX_CONSTANTS_H_
-
 namespace autofill {
 
 // TODO(crbug.com/40280853): This regex corresponds to the
@@ -32,8 +31,30 @@ inline constexpr char16_t kCardCvcRe[] =
 /////////////////////////////////////////////////////////////////////////////
 // data_model_utils.cc
 /////////////////////////////////////////////////////////////////////////////
-inline constexpr char16_t kAugmentedPhoneCountryCodeRe[] =
+
+// These regexes are used for phone number country code detection. The second
+// one matches the same patterns as the first one, plus patterns like +1 (234)
+// that often appear in select fields.
+//
+// The second regex does not capture any group since it is only used to detect
+// if an option value is a phone country code or not.
+//
+// The first regex captures the country code value to use later for comparison.
+// It is different from the second regex because the second one would capture
+// groups like +1 (234 (Without the second parenthesis) which could cause
+// problems during comparison.
+//
+// See https://en.wikipedia.org/wiki/List_of_telephone_country_codes
+inline constexpr char16_t kAugmentedPhoneCountryCodeExtractionRe[] =
     u"^[^0-9+]*(?:\\+|00)\\s*([1-9]\\d{0,3})\\D*$";
+inline constexpr char16_t kAugmentedPhoneCountryCodeParsingRe[] =
+    u"^[^\\p{N}+]*"      // No numbers or plus.
+    u"(?:\\+|00)\\s*"    // Start of country code.
+    u"(?:[2-9]\\d{0,2}"  // Country code not starting with 1.
+    // Country code starting with 1 followed by 3 optional digits from
+    // North American Numbering Plan
+    u"|1\\s?[^\\p{L}\\p{N}\\s]?\\s?(?:\\d{3})?)"
+    u"[^\\p{N}]*$";  // Trailing no numbers.
 
 /////////////////////////////////////////////////////////////////////////////
 // validation.cc

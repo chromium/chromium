@@ -760,6 +760,11 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kAutofillMoveSmallFormLogicToClient,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Improves the regex for matching augmented country code select options by
+// supporting cases like +1 (234).
+BASE_FEATURE(kAutofillNewAugmentedPhoneCountryCodeRegex,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, more patterns are added to the PHONE_COUNTRY_CODE regex.
 // TODO(crbug.com/479503511): Remove once launched.
 BASE_FEATURE(kAutofillNewRegexForPhoneCountryCode,

@@ -279,6 +279,8 @@ TEST_F(PhoneFieldParserTest, CountryCodeWithOptions) {
 // Tests if the country code field is correctly classified by the heuristic when
 // the phone code is a select element and consists of valid options.
 TEST_F(PhoneFieldParserTest, IsPhoneCountryCodeField) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillNewAugmentedPhoneCountryCodeRegex};
   std::vector<std::vector<const char*>> augmented_field_options_list = {
       // Options with the country name followed by the country code in brackets.
       {"India(+91) ", "Germany(+49)", "United States(+1)", "Egypt(+20)",
@@ -299,7 +301,7 @@ TEST_F(PhoneFieldParserTest, IsPhoneCountryCodeField) {
        "+30",   "+31",
        "+32",   "+33",
        "+34",   "+51",
-       "52",    "+673",
+       "+52",   "+673",
        "+674",  "+81",
        "+82",   "Please select an option"},
 
@@ -328,13 +330,36 @@ TEST_F(PhoneFieldParserTest, IsPhoneCountryCodeField) {
       {"00  91", "00  49", "00   1", "00  20", "001242", "00 593", "00   7"},
 
       // Options with the phone country code preceded by '00'.
-      {"0091", "0049", "001", "0020", "001242", "00593", "007"}};
+      {"0091", "0049", "001", "0020", "001242", "00593", "007"},
+
+      // Options that have a dash in between the country code digits, and have
+      // flags as identifiers.
+      {"+1-242 🇧🇸", "+1-246 🇧🇧", "+1-264 🇦🇮", "+1-268 🇦🇬", "+1-284 🇻🇬",
+       "+1-649 🇹🇨", "+1-664 🇲🇸", "+1-671 🇬🇺", "+1-684 🇦🇸"},
+
+      // Options that have a dash and whitespaces in between the country code
+      // digits, and have flags as identifiers.
+      {"+1 - 242 🇧🇸", "+1 - 246 🇧🇧", "+1 - 264 🇦🇮", "+1 - 268 🇦🇬",
+       "+1 - 284 🇻🇬", "+1 - 649 🇹🇨", "+1 - 664 🇲🇸", "+1 - 671 🇬🇺",
+       "+1 - 684 🇦🇸"},
+
+      // Options that have a whitespace in between the country code digits, and
+      // have flags as identifiers.
+      {"+1 242 🇧🇸", "+1 246 🇧🇧", "+1 264 🇦🇮", "+1 268 🇦🇬", "+1 284 🇻🇬",
+       "+1 649 🇹🇨", "+1 664 🇲🇸", "+1 671 🇬🇺", "+1 684 🇦🇸"},
+
+      // Options that wrap part of the country code digits in parenthesis, and
+      // have flags as identifiers.
+      {"+1 (242) 🇧🇸", "+1 (246) 🇧🇧", "+1 (264) 🇦🇮", "+1 (268) 🇦🇬",
+       "+1 (284) 🇻🇬", "+1 (649) 🇹🇨", "+1 (664) 🇲🇸", "+1 (671) 🇬🇺",
+       "+1 (684) 🇦🇸"},
+  };
 
   for (size_t i = 0; i < augmented_field_options_list.size(); ++i) {
     // TODO(crbug.com/40158319): The country code check fails in iteration 4.
-    if (i == 4)
+    if (i == 4) {
       continue;
-
+    }
     SCOPED_TRACE(testing::Message() << "i = " << i);
     RunParsingTest(
         {{FormControlType::kSelectOne, u"PC", u"PC", PHONE_HOME_COUNTRY_CODE, 0,

@@ -3087,7 +3087,7 @@
             ]
         }
     ],
-    "AutofillImprovePhoneFieldParser": [
+    "AutofillImprovePhoneNumberDetection": [
         {
             "platforms": [
                 "android",
@@ -3102,7 +3102,9 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillImprovePhoneFieldParser"
+                        "AutofillImprovePhoneFieldParser",
+                        "AutofillNewAugmentedPhoneCountryCodeRegex",
+                        "AutofillNewRegexForPhoneCountryCode"
                     ]
                 }
             ]
@@ -3168,27 +3170,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillMoveSmallFormLogicToClient"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillNewRegexForPhoneCountryCode": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillNewRegexForPhoneCountryCode"
                     ]
                 }
             ]

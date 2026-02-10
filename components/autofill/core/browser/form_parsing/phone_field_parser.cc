@@ -230,7 +230,8 @@ bool PhoneFieldParser::ParseGrammar(
     const PhoneGrammar& grammar,
     ParsedPhoneFields& parsed_fields,
     AutofillScanner& scanner,
-    bool improve_phone_field_parser_experiment_enabled) {
+    bool improve_phone_field_parser_experiment_enabled,
+    bool new_augmented_cc_regex_experiment_enabled) {
   if (grammar.id == 15 && !improve_phone_field_parser_experiment_enabled) {
     return false;
   }
@@ -240,7 +241,8 @@ bool PhoneFieldParser::ParseGrammar(
     // The field length comparison with `Rule::max_length` is not required in
     // case of the selection boxes that are of phone country code type.
     if (is_country_code_field &&
-        LikelyAugmentedPhoneCountryCode(scanner.Cursor())) {
+        LikelyAugmentedPhoneCountryCode(
+            scanner.Cursor(), new_augmented_cc_regex_experiment_enabled)) {
       // Assign the `match` and advance the cursor.
       parsed_fields[FIELD_COUNTRY_CODE] = {
           &scanner.Cursor(),
@@ -280,13 +282,17 @@ std::unique_ptr<FormFieldParser> PhoneFieldParser::Parse(
     return nullptr;
   }
   const AutofillScanner::Position start_cursor = scanner.GetPosition();
-  const bool improve_phone_field_parser =
+  const bool improve_phone_field_parser_experiment_enabled =
       base::FeatureList::IsEnabled(features::kAutofillImprovePhoneFieldParser);
+  const bool new_augmented_cc_regex_experiment_enabled =
+      base::FeatureList::IsEnabled(
+          features::kAutofillNewAugmentedPhoneCountryCodeRegex);
 
   for (const PhoneGrammar& grammar : GetPhoneGrammars()) {
     ParsedPhoneFields parsed_fields;
     if (ParseGrammar(context, grammar, parsed_fields, scanner,
-                     improve_phone_field_parser)) {
+                     improve_phone_field_parser_experiment_enabled,
+                     new_augmented_cc_regex_experiment_enabled)) {
       base::UmaHistogramExactLinear(
           "Autofill.FieldPrediction.PhoneNumberGrammarUsage2", grammar.id,
           /*exclusive_max=*/kMaxPhoneGrammarId + 1);

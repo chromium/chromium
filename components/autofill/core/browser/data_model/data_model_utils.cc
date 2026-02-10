@@ -380,7 +380,7 @@ std::u16string FindPossiblePhoneCountryCode(std::u16string_view text) {
   if (text.find(u"00") != std::u16string::npos ||
       text.find('+') != std::u16string::npos) {
     std::vector<std::u16string> captures;
-    if (MatchesRegex<kAugmentedPhoneCountryCodeRe>(text, &captures)) {
+    if (MatchesRegex<kAugmentedPhoneCountryCodeExtractionRe>(text, &captures)) {
       return captures[1];
     }
   }

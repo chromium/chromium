@@ -115,7 +115,8 @@ class PhoneFieldParser : public FormFieldParser {
                            const PhoneGrammar& grammar,
                            ParsedPhoneFields& parsed_fields,
                            AutofillScanner& scanner,
-                           bool improve_phone_field_parser_experiment_enabled);
+                           bool improve_phone_field_parser_experiment_enabled,
+                           bool new_augmented_cc_regex_experiment_enabled);
 
   // FIELD_PHONE is always present if a match is found. The rest may be nullopt.
   ParsedPhoneFields parsed_phone_fields_;

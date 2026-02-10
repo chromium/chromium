@@ -40,8 +40,6 @@ const base::Feature* GetFeatureOfRegexFeature(RegexFeature feature) {
       return &features::kAutofillNewRegexForPhoneCountryCode;
     case RegexFeature::kAutofillSupportCombinedZipAndCityFR:
       return &features::kAutofillSupportCombinedZipAndCityFR;
-    case RegexFeature::kAutofillImprovePhoneFieldParser:
-      return &features::kAutofillImprovePhoneFieldParser;
   }
   NOTREACHED();
 }

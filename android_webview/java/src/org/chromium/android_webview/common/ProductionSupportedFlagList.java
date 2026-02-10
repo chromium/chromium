@@ -293,6 +293,10 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_MOVE_SMALL_FORM_LOGIC_TO_CLIENT,
                 "Moves the small form handling from Autofill server to client."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_NEW_AUGMENTED_PHONE_COUNTRY_CODE_REGEX,
+                "When enabled, a new regex for matching phone country code select options is"
+                        + " used."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_NEW_REGEX_FOR_PHONE_COUNTRY_CODE,
                 "If enabled, more patterns are added to the PHONE_COUNTRY_CODE regex."),
         Flag.baseFeature(
