@@ -874,10 +874,6 @@ def main():
                          help=argparse.SUPPRESS)
   argparser.add_argument('--isolated-script-test-launcher-retry-limit',
                          help=argparse.SUPPRESS)
-  # Ignored, but can be passed to android builders as an arg.
-  argparser.add_argument('--use-persistent-shell',
-                         action='store_true',
-                         help=argparse.SUPPRESS)
 
   output_group = argparser.add_mutually_exclusive_group()
 
