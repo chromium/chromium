@@ -176,7 +176,7 @@ bool Process::Terminate(int exit_code, bool wait) const {
       DPLOG(ERROR) << "Unable to terminate process";
     }
     // A non-zero timeout is necessary here for the same reasons as above.
-    if (::WaitForSingleObject(Handle(), kWaitMs) == WAIT_OBJECT_0) {
+    if (wait && ::WaitForSingleObject(Handle(), kWaitMs) == WAIT_OBJECT_0) {
       DWORD actual_exit;
       Exited(::GetExitCodeProcess(Handle(), &actual_exit)
                  ? static_cast<int>(actual_exit)
