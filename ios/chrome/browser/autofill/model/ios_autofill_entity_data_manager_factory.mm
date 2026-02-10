@@ -7,6 +7,7 @@
 #import "base/no_destructor.h"
 #import "components/autofill/core/browser/country_type.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/strike_database/strike_database.h"
 #import "components/variations/service/variations_service.h"
@@ -62,6 +63,11 @@ IOSAutofillEntityDataManagerFactory::~IOSAutofillEntityDataManagerFactory() =
 std::unique_ptr<KeyedService>
 IOSAutofillEntityDataManagerFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiCreateEntityDataManager)) {
+    return nullptr;
+  }
+
   return std::make_unique<autofill::EntityDataManager>(
       profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile),

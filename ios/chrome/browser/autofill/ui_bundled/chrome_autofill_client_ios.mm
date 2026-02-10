@@ -196,11 +196,7 @@ ValuablesDataManager* ChromeAutofillClientIOS::GetValuablesDataManager() {
 }
 
 EntityDataManager* ChromeAutofillClientIOS::GetEntityDataManager() {
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAiCreateEntityDataManager)) {
-    return IOSAutofillEntityDataManagerFactory::GetForProfile(profile_);
-  }
-  return nullptr;
+  return IOSAutofillEntityDataManagerFactory::GetForProfile(profile_);
 }
 
 FieldClassificationModelHandler*
