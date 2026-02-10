@@ -79,7 +79,10 @@ enum class LensOverlayInvocationSource {
   // The composebox on the Contextual Tasks page.
   kContextualTasksComposebox = 18,
 
-  kMaxValue = kContextualTasksComposebox
+  // The cobrowse toolbar button.
+  kCobrowseToolbarButton = 19,
+
+  kMaxValue = kCobrowseToolbarButton
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayInvocationSource)
 // When adding a value here, also update:

@@ -136,6 +136,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="NTP Contextual Compose Flow"/>
   <int value="17" label="Omnibox Contextual Compose Flow"/>
   <int value="18" label="Contextual Tasks composebox"/>
+  <int value="19" label="Cobrowse Toolbar Button"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->

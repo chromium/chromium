@@ -732,11 +732,15 @@ TEST_F(ContextualTasksUiServiceTest,
   // Set the entry point for the task.
   service.SetInitialEntryPointForTask(task_id, entry_point);
 
-  // Get the URL and verify it contains the `aep` parameter.
+  // Get the URL and verify it contains the `aep` and `source` parameter.
   GURL url = service.GetContextualTaskUrlForTask(task_id);
   std::string aep_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "aep", &aep_value));
   EXPECT_EQ(aep_value, base::NumberToString(static_cast<int>(entry_point)));
+
+  std::string source_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "source", &source_value));
+  EXPECT_EQ(source_value, "chrome.crn.cct");
 }
 
 TEST_F(ContextualTasksUiServiceTest, SrpHomepage_Intercepted) {
