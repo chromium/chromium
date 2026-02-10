@@ -360,12 +360,12 @@ TaskId ActorKeyedService::CreateTaskImpl(
 
 base::CallbackListSubscription ActorKeyedService::AddTaskStateChangedCallback(
     TaskStateChangedCallback callback) {
-  return tab_state_change_callback_list_.Add(std::move(callback));
+  return task_state_change_callback_list_.Add(std::move(callback));
 }
 
 void ActorKeyedService::NotifyTaskStateChanged(TaskId task_id,
                                                ActorTask::State state) {
-  tab_state_change_callback_list_.Notify(task_id, state);
+  task_state_change_callback_list_.Notify(task_id, state);
 }
 
 void ActorKeyedService::RequestTabObservation(

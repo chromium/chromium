@@ -201,7 +201,7 @@ class ActorKeyedService : public KeyedService,
   TaskId::Generator next_task_id_;
 
   base::RepeatingCallbackList<void(TaskId, ActorTask::State)>
-      tab_state_change_callback_list_;
+      task_state_change_callback_list_;
 
   // Owns this.
   raw_ptr<Profile> profile_;
