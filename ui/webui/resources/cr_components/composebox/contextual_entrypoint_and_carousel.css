@@ -71,11 +71,15 @@
   flex-wrap: nowrap;
 }
 
+:host(:not([file-uploads-complete])) .upload-button {
+  cursor: not-allowed;
+}
+
 .context-menu-container:has(.contextual-chip) {
   padding-bottom: var(--contextual-entrypoint-and-carousel-contextual-chip-padding-bottom);
 }
 
-:host([inputs-disabled_]) .upload-button {
+:host([upload-button-disabled_]) .upload-button {
   color: var(--color-composebox-upload-button-disabled);
 }
 

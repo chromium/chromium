@@ -13,7 +13,7 @@ export function getHtml(this: ContextMenuEntrypointElement) {
     <cr-button id="entrypoint"
         class="ai-mode-button"
         @click="${this.onEntrypointClick_}"
-        ?disabled="${this.inputsDisabled}"
+        ?disabled="${this.uploadButtonDisabled}"
         title="${this.i18n('addContextTitle')}"
         noink>
       <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
@@ -29,7 +29,7 @@ export function getHtml(this: ContextMenuEntrypointElement) {
         part="context-menu-entrypoint-icon"
         iron-icon="cr:add"
         @click="${this.onEntrypointClick_}"
-        ?disabled="${this.inputsDisabled}"
+        ?disabled="${this.uploadButtonDisabled}"
         title="${this.i18n('addContextTitle')}"
         noink>
     </cr-icon-button>`}` : '';

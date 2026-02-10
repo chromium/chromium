@@ -2140,6 +2140,110 @@ suite('ContextualTasksComposeboxTest', () => {
     assertEquals(0, composebox.$.context.files_.size);
   });
 
+  test('Composebox upload disabled when uploading files', async () => {
+    composebox.$.context.searchboxLayoutMode = '';
+    composebox.$.context.contextMenuEnabled_ = false;
+    await composebox.updateComplete;
+    await composebox.$.context.updateComplete;
+    await microtasksFinished();
+
+    assertFalse(
+        !!composebox.$.context.$.imageUploadButton.disabled,
+        'Upload button should be enabled');
+
+    await uploadFileAndVerify(
+        FAKE_TOKEN_STRING, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+
+    // Other processing state should result in not ready to submit.
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        FileUploadStatus.kProcessingSuggestSignalsReady,
+        /*error_type=*/ null,
+    );
+
+    await microtasksFinished();
+    await composebox.$.context.updateComplete;
+    await composebox.updateComplete;
+    assertEquals(
+        1, composebox.getRemainingFilesToUpload().size,
+        '1 File should be uploading');
+    assertFalse(
+        composebox.fileUploadsComplete,
+        'Files should not be finished uploading');
+    assertTrue(
+        !!composebox.$.context.$.imageUploadButton.disabled,
+        'Upload button should be disabled while uploading');
+
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        FileUploadStatus.kUploadSuccessful,
+        /*error_type=*/ null,
+    );
+
+    await microtasksFinished();
+    await composebox.$.context.updateComplete;
+    await composebox.updateComplete;
+
+    assertEquals(
+        0, composebox.getRemainingFilesToUpload().size,
+        '0 Files should be uploading');
+    assertTrue(
+        composebox.fileUploadsComplete, 'Files should be finished uploading');
+    assertFalse(
+        !!composebox.$.context.$.imageUploadButton.disabled,
+        'Upload button should be re-enabled after upload');
+  });
+
+  test(
+      'Composebox upload disabled when uploading files with contextMenu',
+      async () => {
+        composebox.$.context.searchboxLayoutMode = '';
+        composebox.$.context.contextMenuEnabled_ = true;
+        await composebox.updateComplete;
+        await composebox.$.context.updateComplete;
+        await microtasksFinished();
+        const button =
+            composebox.$.context.$.contextEntrypoint.shadowRoot.querySelector(
+                '#entrypoint');
+        assertTrue(!!button, 'Context menu button should exist');
+        assertFalse(!!button.disabled);
+
+        await uploadFileAndVerify(
+            FAKE_TOKEN_STRING,
+            new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+
+        // Other processing state should result in not ready to submit.
+        searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+            FAKE_TOKEN_STRING,
+            FileUploadStatus.kProcessingSuggestSignalsReady,
+            /*error_type=*/ null,
+        );
+
+        await microtasksFinished();
+        await composebox.$.context.updateComplete;
+        await composebox.updateComplete;
+
+        assertEquals(
+            1, composebox.getRemainingFilesToUpload().size,
+            '1 File should be uploading');
+        assertFalse(
+            composebox.fileUploadsComplete,
+            'Files should not be finished uploading');
+
+        assertTrue(!!button.disabled);
+
+        searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+            FAKE_TOKEN_STRING,
+            FileUploadStatus.kUploadSuccessful,
+            /*error_type=*/ null,
+        );
+
+        await microtasksFinished();
+        await composebox.$.context.updateComplete;
+
+        assertFalse(!!button.disabled);
+      });
+
   test('queries autocomplete on load when isZeroState is true', async () => {
     // Clear the body and reset the mock to test a fresh instance.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

@@ -102,6 +102,7 @@ export function getHtml(this: ComposeboxElement) {
           .tabSuggestions="${this.tabSuggestions_}"
           .showMenuOnClick="${this.showMenuOnClick}"
           .entrypointName="${this.entrypointName ? this.entrypointName : 'Composebox'}"
+          .fileUploadsComplete="${this.fileUploadsComplete}"
           @add-tab-context="${this.addTabContext_}"
           @open-voice-search="${this.openAimVoiceSearch_}"
           @add-file-context="${this.addFileContext_}"
