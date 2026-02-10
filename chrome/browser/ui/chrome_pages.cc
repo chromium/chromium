@@ -564,6 +564,13 @@ void ShowPasswordManager(BrowserWindowInterface* bwi) {
                                          GURL(kChromeUIPasswordManagerURL));
 }
 
+void ShowPasswordManagerSettings(BrowserWindowInterface* bwi) {
+  base::RecordAction(UserMetricsAction("Options_ShowPasswordManagerSettings"));
+  ShowSingletonTabIgnorePathOverwriteNTP(
+      bwi->GetBrowserForMigrationOnly(),
+      GURL(kChromeUIPasswordManagerSettingsURL));
+}
+
 void ShowPasswordDetailsPage(Browser* browser,
                              const std::string& password_domain_name) {
   base::RecordAction(

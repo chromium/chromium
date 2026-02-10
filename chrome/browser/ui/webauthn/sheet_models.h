@@ -159,6 +159,20 @@ class AuthenticatorNoPasskeysErrorModel : public AuthenticatorSheetModelBase {
   std::u16string GetStepDescription() const override;
 };
 
+class AuthenticatorGpmDisabledErrorModel : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorGpmDisabledErrorModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+
+ private:
+  // AuthenticatorSheetModelBase:
+  std::u16string GetCancelButtonLabel() const override;
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+  bool IsGpmSettingsButtonVisible() const override;
+  void OnOpenGpmSettingsButtonPressed() override;
+};
+
 class AuthenticatorNotRegisteredErrorModel
     : public AuthenticatorSheetModelBase {
  public:

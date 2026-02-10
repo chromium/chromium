@@ -140,6 +140,8 @@ using UIPresentation =
   /* Open the system dialog to grant BLE permission to Chrome. Valid */       \
   /* action when at step: kBlePermissionMac. */                               \
   AUTHENTICATOR_REQUEST_EVENT_0(OpenBlePreferences)                           \
+  /* Open the Google Password Manager settings page. */                       \
+  AUTHENTICATOR_REQUEST_EVENT_0(OpenGpmSettings)                              \
   /* Turns on the BLE adapter automatically. Valid action when at step: */    \
   /* kBlePowerOnAutomatic. */                                                 \
   AUTHENTICATOR_REQUEST_EVENT_0(PowerOnBleAdapter)                            \
@@ -208,6 +210,7 @@ struct AuthenticatorRequestDialogModel
     // after user interaction.
     kErrorNoAvailableTransports,
     kErrorNoPasskeys,
+    kErrorGpmDisabled,
     kErrorInternalUnrecognized,
     kErrorWindowsHelloNotEnabled,
     // The request is already complete, but the error dialog should wait
@@ -501,6 +504,10 @@ struct AuthenticatorRequestDialogModel
   // Number of remaining GPM pin entry attempts before getting locked out or
   // `std::nullopt` if there was no failed attempts during that request.
   std::optional<int> gpm_pin_remaining_attempts_;
+
+  // True if GPM passkey creation is available has been disabled by enterprise
+  // policy or Chrome settings.
+  bool gpm_create_available_but_disabled_by_policy = false;
 
   // Whether the UI is currently in a disabled state, which is required for some
   // transitions (e.g. when waiting for the response from the enclave). When

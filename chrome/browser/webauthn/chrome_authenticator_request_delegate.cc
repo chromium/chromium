@@ -491,6 +491,9 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
             password_manager::prefs::kCredentialsEnableService) &&
         profile()->GetPrefs()->GetBoolean(
             password_manager::prefs::kCredentialsEnablePasskeys);
+    if (!enclave_create_enabled) {
+      dialog_model_->gpm_create_available_but_disabled_by_policy = true;
+    }
     if (dialog_controller_->ui_presentation() ==
             UIPresentation::kPasskeyUpgrade &&
         enclave_create_enabled) {

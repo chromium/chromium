@@ -74,6 +74,7 @@ class AuthenticatorRequestDialogController
   void ContinueWithFlowAfterBleAdapterPowered() override;
   void PowerOnBleAdapter() override;
   void OpenBlePreferences() override;
+  void OpenGpmSettings() override;
   void OnOffTheRecordInterstitialAccepted() override;
   void CancelAuthenticatorRequest() override;
   void OnRequestComplete() override;

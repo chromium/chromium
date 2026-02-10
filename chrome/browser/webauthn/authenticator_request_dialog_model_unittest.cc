@@ -1447,6 +1447,32 @@ TEST_F(AuthenticatorRequestDialogControllerTest, NoAvailableTransports) {
   EXPECT_CALL(mock_observer, OnModelDestroyed(model.get()));
 }
 
+TEST_F(AuthenticatorRequestDialogControllerTest, GpmDisabledForCreate) {
+  for (bool security_keys_available : {false, true}) {
+    SCOPED_TRACE(security_keys_available);
+    auto model =
+        base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
+    model->gpm_create_available_but_disabled_by_policy = true;
+    TransportAvailabilityInfo transports_info;
+    if (security_keys_available) {
+      transports_info.available_transports.insert(
+          device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+    }
+    transports_info.attestation_conveyance_preference =
+        device::AttestationConveyancePreference::kNone;
+    transports_info.request_type = device::FidoRequestType::kMakeCredential;
+    UpdateModelBeforeStartFlow(model.get(), transports_info,
+                               /*is_off_the_record=*/false);
+    controller.StartFlow(std::move(transports_info), {});
+    if (security_keys_available) {
+      EXPECT_EQ(Step::kUsbInsertAndActivate, model->step());
+    } else {
+      EXPECT_EQ(Step::kErrorGpmDisabled, model->step());
+    }
+  }
+}
+
 TEST_F(AuthenticatorRequestDialogControllerTest, Cable2ndFactorFlows) {
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/41490900): Get test to pass in the webauthn supports

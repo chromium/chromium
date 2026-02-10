@@ -2436,6 +2436,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
             AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
       }));
   EXPECT_FALSE(request_delegate()->enclave_controller_for_testing());
+  EXPECT_TRUE(dialog_model()->gpm_create_available_but_disabled_by_policy);
 }
 
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
@@ -2465,6 +2466,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
             AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
       }));
   EXPECT_FALSE(request_delegate()->enclave_controller_for_testing());
+  EXPECT_TRUE(dialog_model()->gpm_create_available_but_disabled_by_policy);
 }
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, EnrollAndCreate) {

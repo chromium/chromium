@@ -35751,6 +35751,12 @@ should be able to be added at any place in this file.
   <description>Settings: saved passwords</description>
 </action>
 
+<action name="Options_ShowPasswordManagerSettings">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>Settings: password manager settings page</description>
+</action>
+
 <action name="Options_ShowPaymentMethods">
   <owner>vidhanj@google.com</owner>
   <description>Settings: Show payment options</description>

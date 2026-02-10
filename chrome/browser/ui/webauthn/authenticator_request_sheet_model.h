@@ -64,6 +64,7 @@ class AuthenticatorRequestSheetModel {
   virtual AcceptButtonState GetAcceptButtonState() const = 0;
   virtual std::u16string GetAcceptButtonLabel() const = 0;
 
+  virtual bool IsGpmSettingsButtonVisible() const;
   virtual bool IsManageDevicesButtonVisible() const;
   virtual bool IsOtherMechanismButtonVisible() const;
   virtual bool IsForgotGPMPinButtonVisible() const;
@@ -79,6 +80,7 @@ class AuthenticatorRequestSheetModel {
   virtual void OnBack() = 0;
   virtual void OnAccept() = 0;
   virtual void OnCancel() = 0;
+  virtual void OnOpenGpmSettingsButtonPressed();
   virtual void OnManageDevices();
   virtual void OnForgotGPMPin() const;
   virtual void OnGPMPinOptionChosen(bool is_arbitrary) const;

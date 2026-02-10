@@ -129,6 +129,7 @@ void ShowSettingsSubPageInTabbedBrowser(Browser* browser,
                                         std::string_view sub_page);
 void ShowClearBrowsingDataDialog(Browser* browser);
 void ShowPasswordManager(BrowserWindowInterface* bwi);
+void ShowPasswordManagerSettings(BrowserWindowInterface* bwi);
 void ShowPasswordDetailsPage(Browser* browser,
                              const std::string& password_domain_name);
 void ShowPasswordCheck(Browser* browser);

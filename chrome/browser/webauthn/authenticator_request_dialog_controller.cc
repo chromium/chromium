@@ -39,6 +39,9 @@
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/webauthn/ambient/ambient_signin_controller.h"
 #include "chrome/browser/ui/webauthn/passkey_upgrade_request_controller.h"
@@ -583,6 +586,14 @@ void AuthenticatorRequestDialogController::OpenBlePreferences() {
 #endif  // IS_MAC
 }
 
+void AuthenticatorRequestDialogController::OpenGpmSettings() {
+  auto* render_frame_host = GetRenderFrameHost();
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  chrome::ShowPasswordManagerSettings(browser);
+}
+
 void AuthenticatorRequestDialogController::
     OnOffTheRecordInterstitialAccepted() {
   std::move(after_off_the_record_interstitial_).Run();
@@ -786,7 +797,11 @@ void AuthenticatorRequestDialogController::
     SetCurrentStep(*pending_step_);
     pending_step_.reset();
   } else if (model_->mechanisms.empty()) {
-    if (transport_availability_.transport_list_did_include_internal) {
+    if (transport_availability_.request_type ==
+            device::FidoRequestType::kMakeCredential &&
+        model_->gpm_create_available_but_disabled_by_policy) {
+      SetCurrentStep(Step::kErrorGpmDisabled);
+    } else if (transport_availability_.transport_list_did_include_internal) {
       SetCurrentStep(Step::kErrorNoPasskeys);
     } else {
       SetCurrentStep(Step::kErrorNoAvailableTransports);

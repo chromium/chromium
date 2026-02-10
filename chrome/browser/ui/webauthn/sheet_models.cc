@@ -354,6 +354,37 @@ std::u16string AuthenticatorNoPasskeysErrorModel::GetStepDescription() const {
       GetRelyingPartyIdStringLabel(dialog_model()));
 }
 
+// AuthenticatorGpmDisabledErrorModel ------------------------------------------
+
+AuthenticatorGpmDisabledErrorModel::AuthenticatorGpmDisabledErrorModel(
+    AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model) {
+  vector_illustrations_.emplace(kPasskeyErrorIcon, kPasskeyErrorDarkIcon);
+}
+
+std::u16string AuthenticatorGpmDisabledErrorModel::GetCancelButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_CLOSE);
+}
+
+std::u16string AuthenticatorGpmDisabledErrorModel::GetStepTitle() const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_ERROR_GPM_DISABLED_TITLE);
+}
+
+std::u16string AuthenticatorGpmDisabledErrorModel::GetStepDescription() const {
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_ERROR_GPM_DISABLED_DESCRIPTION,
+      GetRelyingPartyIdStringLabel(dialog_model()));
+}
+
+bool AuthenticatorGpmDisabledErrorModel::IsGpmSettingsButtonVisible() const {
+  return true;
+}
+
+void AuthenticatorGpmDisabledErrorModel::OnOpenGpmSettingsButtonPressed() {
+  dialog_model()->OpenGpmSettings();
+}
+
 // AuthenticatorNotRegisteredErrorModel ---------------------------------------
 
 AuthenticatorNotRegisteredErrorModel::AuthenticatorNotRegisteredErrorModel(

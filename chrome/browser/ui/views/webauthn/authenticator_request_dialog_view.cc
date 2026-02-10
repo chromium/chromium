@@ -152,6 +152,13 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
             base::Unretained(this)),
         sheet_->model()->GetOtherMechanismButtonLabel()));
     other_mechanisms->SetEnabled(!model_->ui_disabled_);
+  } else if (sheet_->model()->IsGpmSettingsButtonVisible()) {
+    auto* gpm_settings = SetExtraView(std::make_unique<views::MdTextButton>(
+        base::BindRepeating(
+            &AuthenticatorRequestDialogView::OpenGpmSettingsButtonPressed,
+            base::Unretained(this)),
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_SETTINGS)));
+    gpm_settings->SetEnabled(!model_->ui_disabled_);
   } else if (sheet_->model()->IsManageDevicesButtonVisible()) {
     auto* manage_devices = SetExtraView(std::make_unique<views::MdTextButton>(
         base::BindRepeating(
@@ -384,6 +391,10 @@ void AuthenticatorRequestDialogView::OtherMechanismsButtonPressed() {
 
 void AuthenticatorRequestDialogView::ManageDevicesButtonPressed() {
   sheet_->model()->OnManageDevices();
+}
+
+void AuthenticatorRequestDialogView::OpenGpmSettingsButtonPressed() {
+  sheet_->model()->OnOpenGpmSettingsButtonPressed();
 }
 
 void AuthenticatorRequestDialogView::ForgotGPMPinPressed() {
