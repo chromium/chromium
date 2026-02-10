@@ -792,6 +792,7 @@ chromium-metrics-reviews@google.com.
   <int value="-853789543" label="chrome://bluetooth-pairing/"/>
   <int value="-833683433" label="chrome://on-device-internals/"/>
   <int value="-823585847" label="chrome://chrome-signin/"/>
+  <int value="-780324767" label="chrome://webnn-internals/"/>
   <int value="-769094624" label="chrome://borealis-credits/"/>
   <int value="-756514973" label="chrome://version/"/>
   <int value="-753390931" label="chrome://interstitials/"/>

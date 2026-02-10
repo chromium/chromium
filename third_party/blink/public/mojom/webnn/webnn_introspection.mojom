@@ -1,0 +1,22 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+
+// Interface for the client to receive WebNN introspection data.
+interface WebNNIntrospectionClient {
+  // Called when a graph is recorded. `json_data` contains the serialized graph
+  // information.
+  [EnableIf=webnn_enable_graph_dump]
+  OnGraphRecorded(mojo_base.mojom.BigBuffer json_data);
+};
+
+// Interface for controlling WebNN introspection.
+interface WebNNIntrospection {
+  // Sets the client to receive recorded graphs.
+  [EnableIf=webnn_enable_graph_dump]
+  SetClient(pending_remote<WebNNIntrospectionClient> client);
+};

@@ -1,0 +1,37 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webnn_internals.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+
+// Interface for the WebUI page to communicate with the browser.
+interface WebNNInternalsHandler {
+  // Sets whether to enable recording of WebNN graphs.
+  [EnableIf=webnn_enable_graph_dump]
+  SetGraphRecordEnabled(bool enabled);
+
+  // Returns whether recording of WebNN graphs is currently enabled.
+  [EnableIf=webnn_enable_graph_dump]
+  IsGraphRecording() => (bool enabled);
+};
+
+// Interface for the browser to communicate with the WebUI page.
+interface WebNNInternalsPage {
+  // Called when a graph is recorded. `json_data` contains the serialized graph
+  // information.
+  [EnableIf=webnn_enable_graph_dump]
+  ExportGraphRecorded(mojo_base.mojom.BigBuffer json_data);
+
+  // Called when the graph recording state changes.
+  [EnableIf=webnn_enable_graph_dump]
+  OnGraphRecordEnabledChanged(bool is_enabled);
+};
+
+// Factory interface to create the handler.
+interface WebNNInternalsHandlerFactory {
+  // Creates the handler and connects the page.
+  CreateWebNNInternalsHandler(pending_remote<WebNNInternalsPage> page,
+                              pending_receiver<WebNNInternalsHandler> handler);
+};

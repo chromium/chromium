@@ -8611,6 +8611,7 @@ static_library("browser_generated_files") {
     "//chrome/browser/ui/webui/suggest_internals:mojo_bindings",
     "//chrome/browser/ui/webui/usb_internals:mojo_bindings",
     "//chrome/browser/ui/webui/user_education_internals:mojo_bindings",
+    "//chrome/browser/ui/webui/webnn_internals:mojo_bindings",
     "//chrome/browser/v8_compile_hints/proto",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common/request_header_integrity:buildflags",

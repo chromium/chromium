@@ -230,6 +230,7 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUIPrintHost,
 #endif
       kChromeUIWebRtcLogsHost,
+      kChromeUIWebNNInternalsHost,
 #if BUILDFLAG(IS_CHROMEOS)
       kChromeUIDlpInternalsHost,
 #endif  // BUILDFLAG(IS_CHROMEOS)

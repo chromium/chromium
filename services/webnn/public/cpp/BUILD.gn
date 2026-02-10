@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//services/webnn/public/webnn_features.gni")
+
+buildflag_header("buildflags") {
+  header = "webnn_buildflags.h"
+  flags = [ "WEBNN_ENABLE_GRAPH_DUMP=$webnn_enable_graph_dump" ]
+}
+
 component("cpp") {
   sources = [
     "context_properties.cc",
@@ -25,7 +33,10 @@ component("cpp") {
     "webnn_types.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    ":buildflags",
+    "//base",
+  ]
 
   deps = [
     "//mojo/public/cpp/bindings",

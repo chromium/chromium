@@ -207,6 +207,10 @@ static_library("ui") {
     "webui/version/version_handler.h",
     "webui/version/version_ui.cc",
     "webui/version/version_ui.h",
+    "webui/webnn_internals/webnn_internals_handler.cc",
+    "webui/webnn_internals/webnn_internals_handler.h",
+    "webui/webnn_internals/webnn_internals_ui.cc",
+    "webui/webnn_internals/webnn_internals_ui.h",
     "webui/webui_load_timer.cc",
     "webui/webui_load_timer.h",
   ]
@@ -405,6 +409,7 @@ static_library("ui") {
     "//chrome/browser/updates/announcement_notification:impl",
     "//chrome/browser/vr",
     "//chrome/browser/webauthn",
+    "//chrome/browser/webnn",
     "//chrome/common",
     "//chrome/common/net",
     "//chrome/common/search:mojo_bindings",
@@ -5529,6 +5534,7 @@ static_library("ui_public_dependencies") {
     "//components/translate/content/browser",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
+    "//services/webnn/public/cpp",
     "//ui/webui/resources",
   ]
   if (enable_extensions_core) {

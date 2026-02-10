@@ -485,6 +485,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".vm"/>
   <variant name=".watermark"/>
   <variant name=".web-app-internals"/>
+  <variant name=".webnn-internals"/>
   <variant name=".webrtc-internals"/>
   <variant name=".webui-browser"/>
   <variant name=".webui-toolbar.top-chrome"/>

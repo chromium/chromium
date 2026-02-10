@@ -21,6 +21,7 @@ class MLGraphTransformPipeline
   void Run(MLNamedOperands& named_outputs);
 
  private:
+  Member<MLGraphBuilder> graph_builder_;
   HeapVector<Member<MLGraphTransformer>> transformers_;
 };
 

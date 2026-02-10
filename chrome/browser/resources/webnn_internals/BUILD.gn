@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//services/webnn/public/webnn_features.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "webnn_internals"
+
+  static_files = [ "index.html" ]
+
+  preprocessor_defines = [ "webnn_enable_graph_dump=$webnn_enable_graph_dump" ]
+
+  ts_files = [ "app.ts" ]
+
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/webnn_internals:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/webnn_internals/webnn_internals.mojom-webui.ts" ]
+
+  ts_deps = [
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  webui_context_type = "trusted"
+}

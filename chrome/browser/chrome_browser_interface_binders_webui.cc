@@ -32,6 +32,8 @@
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals.mojom.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
+#include "chrome/browser/ui/webui/webnn_internals/webnn_internals.mojom.h"
+#include "chrome/browser/ui/webui/webnn_internals/webnn_internals_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/commerce/content/browser/commerce_internals_ui.h"
@@ -126,6 +128,10 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
 
   RegisterWebUIControllerInterfaceBinder<
       actor_internals::mojom::PageHandlerFactory, ActorInternalsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      webnn_internals::mojom::WebNNInternalsHandlerFactory, WebNNInternalsUI>(
+      map);
 
   // End of PopulateChromeWebUIFrameBindersPartsAllPlatforms().
   // Please do not add platform-specific logic to this function.

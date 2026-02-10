@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/webui/translate_internals/translate_internals_ui.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
+#include "chrome/browser/ui/webui/webnn_internals/webnn_internals_ui.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_interstitials/content/connection_help_ui.h"
@@ -289,6 +290,7 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<user_actions_ui::UserActionsUIConfig>());
   map.AddWebUIConfig(std::make_unique<VersionUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebRtcLogsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<WebNNInternalsUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<
           privacy_sandbox_internals::PrivacySandboxInternalsUIConfig>());

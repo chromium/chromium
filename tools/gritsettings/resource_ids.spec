@@ -788,6 +788,10 @@
     "META": {"sizes": {"includes": [100]}},
     "includes": [5280],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/webnn_internals/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [5290],
+  },
   # END chrome/ WebUI resources section
 
   # START chrome/ miscellaneous section.

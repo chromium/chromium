@@ -7,7 +7,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/thread_pool.h"
 #include "fp16/fp16.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
@@ -1142,6 +1141,12 @@ void MLGraphDumper::RecordGraph(const std::string& graph_id,
   if (graphs) {
     graphs->Append(std::move(graph_json));
   }
+}
+
+const std::string MLGraphDumper::GetJson() const {
+  std::string json_string;
+  base::JSONWriter::Write(root_, &json_string);
+  return json_string;
 }
 
 }  // namespace blink

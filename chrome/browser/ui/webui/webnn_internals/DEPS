@@ -1,0 +1,4 @@
+include_rules = [
+  "+chrome/browser/webnn",
+  "+services/webnn/public/cpp/webnn_buildflags.h",
+]

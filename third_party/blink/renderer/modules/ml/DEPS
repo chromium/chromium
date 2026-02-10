@@ -30,5 +30,8 @@ specific_include_rules = {
   ],
   "ml_graph_test\.cc" : [
     "+base/values.h",
-  ]
+  ],
+  "webnn_introspection_impl\.h" : [
+    "+base/no_destructor.h",
+  ],
 }

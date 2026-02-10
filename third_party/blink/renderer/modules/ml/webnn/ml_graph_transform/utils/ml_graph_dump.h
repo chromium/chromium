@@ -40,6 +40,8 @@ class MODULES_EXPORT MLGraphDumper : public GarbageCollected<MLGraphDumper> {
 
   const base::DictValue& GetRoot() const { return root_; }
 
+  const std::string GetJson() const;
+
  private:
   base::DictValue root_;
   Member<NodeIdMapper> node_id_mapper_;
