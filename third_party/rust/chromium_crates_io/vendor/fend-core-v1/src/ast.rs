@@ -73,7 +73,11 @@ impl Bop {
 			11 => Self::Bitwise(BitwiseBop::RightShift),
 			12 => Self::Combination,
 			13 => Self::Permutation,
-			_ => return Err(FendError::DeserializationError),
+			_ => {
+				return Err(FendError::DeserializationError(
+					"binary operator is out of range",
+				));
+			}
 		})
 	}
 }
@@ -104,27 +108,27 @@ impl fmt::Display for Bop {
 pub(crate) enum Expr {
 	Literal(Value),
 	Ident(Ident),
-	Parens(Box<Expr>),
-	UnaryMinus(Box<Expr>),
-	UnaryPlus(Box<Expr>),
-	UnaryDiv(Box<Expr>),
-	Factorial(Box<Expr>),
-	Bop(Bop, Box<Expr>, Box<Expr>),
+	Parens(Box<Self>),
+	UnaryMinus(Box<Self>),
+	UnaryPlus(Box<Self>),
+	UnaryDiv(Box<Self>),
+	Factorial(Box<Self>),
+	Bop(Bop, Box<Self>, Box<Self>),
 	// Call a function or multiply the expressions
-	Apply(Box<Expr>, Box<Expr>),
+	Apply(Box<Self>, Box<Self>),
 	// Call a function, or throw an error if lhs is not a function
-	ApplyFunctionCall(Box<Expr>, Box<Expr>),
+	ApplyFunctionCall(Box<Self>, Box<Self>),
 	// Multiply the expressions
-	ApplyMul(Box<Expr>, Box<Expr>),
+	ApplyMul(Box<Self>, Box<Self>),
 
-	As(Box<Expr>, Box<Expr>),
-	Fn(Ident, Box<Expr>),
+	As(Box<Self>, Box<Self>),
+	Fn(Ident, Box<Self>),
 
-	Of(Ident, Box<Expr>),
+	Of(Ident, Box<Self>),
 
-	Assign(Ident, Box<Expr>),
-	Equality(bool, Box<Expr>, Box<Expr>),
-	Statements(Box<Expr>, Box<Expr>),
+	Assign(Ident, Box<Self>),
+	Equality(bool, Box<Self>, Box<Self>),
+	Statements(Box<Self>, Box<Self>),
 }
 
 impl Expr {
@@ -139,34 +143,26 @@ impl Expr {
 				a.compare(b, ctx, int)? == Some(cmp::Ordering::Equal)
 			}
 			(Self::Ident(a), Self::Ident(b)) => a == b,
-			(Self::Parens(a), Self::Parens(b)) => a.compare(b, ctx, int)?,
-			(Self::UnaryMinus(a), Self::UnaryMinus(b)) => a.compare(b, ctx, int)?,
-			(Self::UnaryPlus(a), Self::UnaryPlus(b)) => a.compare(b, ctx, int)?,
-			(Self::UnaryDiv(a), Self::UnaryDiv(b)) => a.compare(b, ctx, int)?,
-			(Self::Factorial(a), Self::Factorial(b)) => a.compare(b, ctx, int)?,
+			(Self::Parens(a), Self::Parens(b))
+			| (Self::UnaryMinus(a), Self::UnaryMinus(b))
+			| (Self::UnaryPlus(a), Self::UnaryPlus(b))
+			| (Self::UnaryDiv(a), Self::UnaryDiv(b))
+			| (Self::Factorial(a), Self::Factorial(b)) => a.compare(b, ctx, int)?,
 			(Self::Bop(a1, a2, a3), Self::Bop(b1, b2, b3)) => {
 				a1 == b1 && a2.compare(b2, ctx, int)? && a3.compare(b3, ctx, int)?
 			}
-			(Self::Apply(a1, a2), Self::Apply(b1, b2)) => {
+			(Self::Apply(a1, a2), Self::Apply(b1, b2))
+			| (Self::ApplyFunctionCall(a1, a2), Self::ApplyFunctionCall(b1, b2))
+			| (Self::ApplyMul(a1, a2), Self::ApplyMul(b1, b2))
+			| (Self::As(a1, a2), Self::As(b1, b2))
+			| (Self::Statements(a1, a2), Self::Statements(b1, b2)) => {
 				a1.compare(b1, ctx, int)? && a2.compare(b2, ctx, int)?
 			}
-			(Self::ApplyFunctionCall(a1, a2), Self::ApplyFunctionCall(b1, b2)) => {
-				a1.compare(b1, ctx, int)? && a2.compare(b2, ctx, int)?
-			}
-			(Self::ApplyMul(a1, a2), Self::ApplyMul(b1, b2)) => {
-				a1.compare(b1, ctx, int)? && a2.compare(b2, ctx, int)?
-			}
-			(Self::As(a1, a2), Self::As(b1, b2)) => {
-				a1.compare(b1, ctx, int)? && a2.compare(b2, ctx, int)?
-			}
-			(Self::Fn(a1, a2), Self::Fn(b1, b2)) => a1 == b1 && a2.compare(b2, ctx, int)?,
-			(Self::Of(a1, a2), Self::Of(b1, b2)) => a1 == b1 && a2.compare(b2, ctx, int)?,
-			(Self::Assign(a1, a2), Self::Assign(b1, b2)) => a1 == b1 && a2.compare(b2, ctx, int)?,
+			(Self::Fn(a1, a2), Self::Fn(b1, b2))
+			| (Self::Of(a1, a2), Self::Of(b1, b2))
+			| (Self::Assign(a1, a2), Self::Assign(b1, b2)) => a1 == b1 && a2.compare(b2, ctx, int)?,
 			(Self::Equality(a1, a2, a3), Self::Equality(b1, b2, b3)) => {
 				a1 == b1 && a2.compare(b2, ctx, int)? && a3.compare(b3, ctx, int)?
-			}
-			(Self::Statements(a1, a2), Self::Statements(b1, b2)) => {
-				a1.compare(b1, ctx, int)? && a2.compare(b2, ctx, int)?
 			}
 			_ => false,
 		})
@@ -309,7 +305,7 @@ impl Expr {
 				Box::new(Self::deserialize(read)?),
 				Box::new(Self::deserialize(read)?),
 			),
-			_ => return Err(FendError::DeserializationError),
+			_ => return Err(FendError::DeserializationError("expr type is out of range")),
 		})
 	}
 

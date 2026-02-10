@@ -787,6 +787,7 @@ pub mod test_utils {
 				"AUD" => 1.3,
 				"PLN" => 0.2,
 				"JPY" => 149.9,
+				"TRY" => 0.03,
 				_ => panic!("unknown currency {currency}"),
 			})
 		}

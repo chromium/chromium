@@ -12,6 +12,7 @@ use crate::interrupt::Never;
 use crate::num::bigrat::sign::Sign;
 use crate::num::biguint::BigUint;
 use crate::result::FResult;
+use crate::serialize::{CborValue, Deserialize, Serialize};
 use std::hash::Hash;
 use std::rc::Rc;
 use std::{cmp, fmt, io, iter, mem, ops};
@@ -236,7 +237,7 @@ impl ContinuedFraction {
 
 	pub(crate) fn serialize(&self, write: &mut impl io::Write) -> FResult<()> {
 		self.integer_sign.serialize(write)?;
-		self.integer.serialize(write)?;
+		self.integer.serialize(Sign::Positive).serialize(write)?;
 		// TODO serialize fraction
 		Ok(())
 	}
@@ -244,7 +245,7 @@ impl ContinuedFraction {
 	pub(crate) fn deserialize(read: &mut impl io::Read) -> FResult<Self> {
 		Ok(Self {
 			integer_sign: Sign::deserialize(read)?,
-			integer: BigUint::deserialize(read)?,
+			integer: BigUint::deserialize(CborValue::deserialize(read)?)?.0,
 			// TODO deserialize fraction
 			fraction: Rc::new(|| Box::new(iter::empty())),
 		})

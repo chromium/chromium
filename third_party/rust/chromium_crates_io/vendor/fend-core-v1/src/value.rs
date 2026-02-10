@@ -28,7 +28,7 @@ pub(crate) enum Value {
 	Base(Base),
 	// user-defined function with a named parameter
 	Fn(Ident, Box<Expr>, Option<Arc<Scope>>),
-	Object(Vec<(Cow<'static, str>, Box<Value>)>),
+	Object(Vec<(Cow<'static, str>, Box<Self>)>),
 	String(Cow<'static, str>),
 	Bool(bool),
 	Unit, // unit value `()`
@@ -189,7 +189,11 @@ impl Value {
 			11 => Self::Month(Month::deserialize(read)?),
 			12 => Self::DayOfWeek(DayOfWeek::deserialize(read)?),
 			13 => Self::Date(Date::deserialize(read)?),
-			_ => return Err(FendError::DeserializationError),
+			_ => {
+				return Err(FendError::DeserializationError(
+					"fend value type is out of range",
+				));
+			}
 		})
 	}
 

@@ -56,7 +56,8 @@ impl Year {
 	}
 
 	pub(crate) fn deserialize(read: &mut impl io::Read) -> FResult<Self> {
-		Self::try_from(i32::deserialize(read)?).map_err(|_| FendError::DeserializationError)
+		Self::try_from(i32::deserialize(read)?)
+			.map_err(|_| FendError::DeserializationError("year is out of range"))
 	}
 }
 

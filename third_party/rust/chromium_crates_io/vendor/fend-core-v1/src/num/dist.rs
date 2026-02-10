@@ -3,11 +3,11 @@ use crate::interrupt::{Never, test_int};
 use crate::num::bigrat::BigRat;
 use crate::num::complex::{self, Complex};
 use crate::result::FResult;
-use crate::serialize::{Deserialize, Serialize};
+use crate::serialize::CborValue;
 use std::cmp::Ordering;
+use std::fmt;
 use std::fmt::Write;
 use std::ops::Neg;
-use std::{fmt, io};
 
 use super::real::Real;
 use super::{Base, Exact, FormattingStyle};
@@ -19,24 +19,39 @@ pub(crate) struct Dist {
 }
 
 impl Dist {
-	pub(crate) fn serialize(&self, write: &mut impl io::Write) -> FResult<()> {
-		self.parts.len().serialize(write)?;
-		for (a, b) in &self.parts {
-			a.serialize(write)?;
-			b.serialize(write)?;
+	pub(crate) fn serialize(&self) -> CborValue {
+		if self.parts.len() == 1 {
+			self.parts[0].0.serialize()
+		} else {
+			CborValue::Tag(
+				80001,
+				Box::new(CborValue::Map(
+					self.parts
+						.iter()
+						.map(|(k, v)| (k.serialize(), v.serialize()))
+						.collect(),
+				)),
+			)
 		}
-		Ok(())
 	}
 
-	pub(crate) fn deserialize(read: &mut impl io::Read) -> FResult<Self> {
-		let len = usize::deserialize(read)?;
-		let mut parts = Vec::with_capacity(len);
-		for _ in 0..len {
-			let k = Complex::deserialize(read)?;
-			let v = BigRat::deserialize(read)?;
-			parts.push((k, v));
-		}
-		Ok(Self { parts })
+	pub(crate) fn deserialize(value: CborValue) -> FResult<Self> {
+		Ok(match value {
+			CborValue::Tag(80001, inner) => {
+				if let CborValue::Map(arr) = *inner {
+					let mut parts = vec![];
+					for (k, v) in arr {
+						parts.push((Complex::deserialize(k)?, BigRat::deserialize(v)?));
+					}
+					Self { parts }
+				} else {
+					return Err(FendError::DeserializationError(
+						"tag 80001 must contain a map",
+					));
+				}
+			}
+			value => Complex::deserialize(value)?.into(),
+		})
 	}
 
 	pub(crate) fn one_point(self) -> FResult<Complex> {

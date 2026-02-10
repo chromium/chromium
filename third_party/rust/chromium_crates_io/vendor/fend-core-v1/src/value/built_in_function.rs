@@ -143,7 +143,11 @@ impl BuiltInFunction {
 			"fibonacci" => Self::Fibonacci,
 			"print" => Self::Print,
 			"prinln" => Self::Println,
-			_ => return Err(FendError::DeserializationError),
+			_ => {
+				return Err(FendError::DeserializationError(
+					"built-in function type is out of range",
+				));
+			}
 		})
 	}
 
