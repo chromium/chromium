@@ -103,6 +103,9 @@ def GetNativeLibsRustFlags():
             f'-Clink-arg=/LIBPATH:{zlib_lib_path}'
         ]
 
+    # No native libs needed on other platforms:
+    return []
+
 
 def BuildCrubit(rust_sysroot, out_dir, skip_checkout):
     target_dir = os.path.abspath(os.path.join(out_dir, 'target'))
