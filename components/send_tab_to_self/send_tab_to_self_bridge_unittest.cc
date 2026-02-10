@@ -1069,9 +1069,6 @@ TEST_F(SendTabToSelfBridgeTest,
   open_tabs_ui_delegate()->SetForeignSessions(
       std::vector<raw_ptr<const sync_sessions::SyncedSession>>{&session});
 
-  // Trigger computation.
-  bridge()->OnDeviceInfoChange();
-
   TargetDeviceInfo expected_device_info(device->client_name(),
                                         device->client_name(), device->guid(),
                                         device->form_factor(), session_time);
@@ -1101,9 +1098,6 @@ TEST_F(SendTabToSelfBridgeTest,
 
   open_tabs_ui_delegate()->SetForeignSessions(
       std::vector<raw_ptr<const sync_sessions::SyncedSession>>{&session});
-
-  // Trigger computation.
-  bridge()->OnDeviceInfoChange();
 
   TargetDeviceInfo expected_device_info(device->client_name(),
                                         device->client_name(), device->guid(),

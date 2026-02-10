@@ -44,7 +44,6 @@ struct TargetDeviceInfo;
 // All interface methods have to be called on main thread.
 class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
                             public SendTabToSelfModel,
-                            public syncer::DeviceInfoTracker::Observer,
                             public history::HistoryServiceObserver {
  public:
   // The caller should ensure that all raw pointers are not null and will
@@ -102,9 +101,6 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
 
-  // syncer::DeviceInfoTracker::Observer overrides.
-  void OnDeviceInfoChange() override;
-
   // For testing only.
   static std::unique_ptr<syncer::DataTypeStore> DestroyAndStealStoreForTest(
       std::unique_ptr<SendTabToSelfBridge> bridge);
@@ -152,8 +148,6 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   // Delete expired entries.
   void DoGarbageCollection();
 
-  void ComputeTargetDeviceInfoSortedList();
-
   // Remove entry with |guid| from entries, but doesn't call Commit on provided
   // |batch|. This allows multiple for deletions without duplicate batch calls.
   void DeleteEntryWithBatch(const std::string& guid,
@@ -200,14 +194,8 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   // A pointer to the most recently used entry used for deduplication.
   raw_ptr<const SendTabToSelfEntry, DanglingUntriaged> mru_entry_;
 
-  // The list of target devices, deduplicated and sorted by most recently used.
-  std::vector<TargetDeviceInfo> target_device_info_sorted_list_;
-
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
-  base::ScopedObservation<syncer::DeviceInfoTracker,
-                          syncer::DeviceInfoTracker::Observer>
-      device_info_tracker_observation_{this};
 
   base::WeakPtrFactory<SendTabToSelfBridge> weak_ptr_factory_{this};
 };
