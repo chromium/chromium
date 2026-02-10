@@ -1433,8 +1433,12 @@ class TabStripModel {
 
   bool tab_strip_ui_was_set_ = false;
 
-  base::ObserverList<TabStripModelObserver>::UncheckedAndDanglingUntriaged
-      observers_;
+  // TODO(crbug.com/483152816): Investigate if this can be made non-reentrant.
+  base::ObserverList<
+      TabStripModelObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::
+      UncheckedAndDanglingUntriaged observers_;
 
   // A profile associated with this TabStripModel.
   raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
