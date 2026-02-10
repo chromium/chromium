@@ -16,8 +16,14 @@ import org.chromium.build.annotations.NullMarked;
 /**
  * Finds views for tests and return handles for them.
  *
- * <p>waitForView() methods wait for Views to exist, be visible, displayed and enabled before
- * returning.
+ * <p>By default, waitForView() methods wait for Views to:
+ *
+ * <ul>
+ *   <li>Exist
+ *   <li>Be {@link android.view.View#VISIBLE}
+ *   <li>Be displayed >= 51% ({@link ViewElement#MIN_DISPLAYED_PERCENT})
+ *   <li>Be enabled
+ * </ul>
  *
  * <p>Returns {@link ViewPresence}s to get/interact with them.
  */

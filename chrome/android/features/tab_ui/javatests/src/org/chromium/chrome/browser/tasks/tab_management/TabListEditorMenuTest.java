@@ -47,6 +47,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
@@ -775,7 +776,8 @@ public class TabListEditorMenuTest {
                         withId(id),
                         isDescendantOfA(withId(R.id.action_view_layout)),
                         isDisplayed(),
-                        enabled ? isEnabled() : not(isEnabled())));
+                        enabled ? isEnabled() : not(isEnabled())),
+                enabled ? ViewElement.newOptions().build() : ViewElement.expectDisabledOption());
     }
 
     private void assertMenuItem(String text, boolean enabled) {
@@ -784,7 +786,8 @@ public class TabListEditorMenuTest {
                         withText(text),
                         isDescendantOfA(withId(R.id.app_menu_list)),
                         isDisplayed(),
-                        enabled ? isEnabled() : not(isEnabled())));
+                        enabled ? isEnabled() : not(isEnabled())),
+                enabled ? ViewElement.newOptions().build() : ViewElement.expectDisabledOption());
     }
 
     private void openMenu(PopupListener listener) throws TimeoutException {

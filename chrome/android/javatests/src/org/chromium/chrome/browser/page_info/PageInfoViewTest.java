@@ -63,6 +63,7 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -266,7 +267,9 @@ public class PageInfoViewTest {
                                     ChromePageInfoHighlight.highlightPermission(
                                             highlightedPermission));
                 });
-        onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()), true);
+        onViewWaiting(
+                allOf(withId(R.id.page_info_url_wrapper), isDisplayed()),
+                ViewElement.newOptions().inDialog().allowDisabled().build());
     }
 
     private View getPageInfoView() {
@@ -530,9 +533,13 @@ public class PageInfoViewTest {
         mTestServerRule.setServerUsesHttps(false);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.VERIFY_QWACS)) {
-            onViewWaiting(allOf(withId(R.id.security_description_details), isDisplayed()));
+            onViewWaiting(
+                    allOf(withId(R.id.security_description_details), isDisplayed()),
+                    ViewElement.allowDisabledOption());
         } else {
-            onViewWaiting(allOf(withId(R.id.page_info_connection_row), isDisplayed()));
+            onViewWaiting(
+                    allOf(withId(R.id.page_info_connection_row), isDisplayed()),
+                    ViewElement.allowDisabledOption());
         }
         onView(withText("Connection is not secure")).check(matches(isDisplayed()));
     }
@@ -542,7 +549,9 @@ public class PageInfoViewTest {
     @MediumTest
     public void testShowOnSecureWebsite() throws IOException {
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        onViewWaiting(allOf(withId(R.id.page_info_connection_row), isDisplayed()));
+        onViewWaiting(
+                allOf(withId(R.id.page_info_connection_row), isDisplayed()),
+                ViewElement.allowDisabledOption());
         onView(withText("Connection is secure")).check(matches(isDisplayed()));
     }
 
@@ -553,9 +562,13 @@ public class PageInfoViewTest {
         mTestServerRule.setCertificateType(ServerCertificate.CERT_EXPIRED);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.VERIFY_QWACS)) {
-            onViewWaiting(allOf(withId(R.id.security_description_details), isDisplayed()));
+            onViewWaiting(
+                    allOf(withId(R.id.security_description_details), isDisplayed()),
+                    ViewElement.allowDisabledOption());
         } else {
-            onViewWaiting(allOf(withId(R.id.page_info_connection_row), isDisplayed()));
+            onViewWaiting(
+                    allOf(withId(R.id.page_info_connection_row), isDisplayed()),
+                    ViewElement.allowDisabledOption());
         }
         onView(withText("Connection is not secure")).check(matches(isDisplayed()));
     }
@@ -650,7 +663,9 @@ public class PageInfoViewTest {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_permissions_row)).perform(click());
-        onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
+        onViewWaiting(
+                allOf(withText("Control this site's access to your device"), isDisplayed()),
+                ViewElement.allowDisabledOption());
         mRenderTestRule.render(getPageInfoView(), "PageInfo_PermissionsSubpage");
     }
 
@@ -670,7 +685,9 @@ public class PageInfoViewTest {
                 });
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_permissions_row)).perform(click());
-        onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
+        onViewWaiting(
+                allOf(withText("Control this site's access to your device"), isDisplayed()),
+                ViewElement.allowDisabledOption());
         onView(withText(containsString("Sound"))).check(matches(isDisplayed()));
     }
 
@@ -700,7 +717,9 @@ public class PageInfoViewTest {
                 });
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_permissions_row)).perform(click());
-        onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
+        onViewWaiting(
+                allOf(withText("Control this site's access to your device"), isDisplayed()),
+                ViewElement.allowDisabledOption());
         onView(withText("Location"))
                 .check(matches(hasSibling(withText("Allowed this time • Precise"))));
         onView(withText("Camera")).check(matches(hasSibling(withText("Allowed"))));
@@ -715,7 +734,9 @@ public class PageInfoViewTest {
         loadUrlAndOpenPageInfo(url);
         setRwsInfo(hostName);
         onView(withId(R.id.page_info_cookies_row)).perform(click());
-        onViewWaiting(allOf(withText(R.string.cookie_info_rws_title), isDisplayed()));
+        onViewWaiting(
+                allOf(withText(R.string.cookie_info_rws_title), isDisplayed()),
+                ViewElement.allowDisabledOption());
         mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage_RwsEnabled");
     }
 
@@ -729,7 +750,9 @@ public class PageInfoViewTest {
         loadUrlAndOpenPageInfo(url);
         setRwsInfo(hostName);
         onView(withId(R.id.page_info_cookies_row)).perform(click());
-        onViewWaiting(allOf(withText(R.string.cookie_info_rws_title), isDisplayed()));
+        onViewWaiting(
+                allOf(withText(R.string.cookie_info_rws_title), isDisplayed()),
+                ViewElement.allowDisabledOption());
         mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage_RwsEnabledAndManaged");
     }
 
@@ -990,10 +1013,14 @@ public class PageInfoViewTest {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_permissions_row)).perform(click());
-        onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
+        onViewWaiting(
+                allOf(withText("Control this site's access to your device"), isDisplayed()),
+                ViewElement.allowDisabledOption());
 
         onView(withText("Location")).perform(click());
-        onViewWaiting(allOf(withText(R.string.website_settings_device_location), isDisplayed()));
+        onViewWaiting(
+                allOf(withText(R.string.website_settings_device_location), isDisplayed()),
+                ViewElement.allowDisabledOption());
         onViewWaiting(
                 allOf(
                         withText(
@@ -1013,7 +1040,9 @@ public class PageInfoViewTest {
         loadUrlAndOpenPageInfoWithPermission(
                 mTestServerRule.getServer().getURL(sSimpleHtml), getGeolocationType());
         onView(withId(R.id.page_info_permissions_row)).perform(click());
-        onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
+        onViewWaiting(
+                allOf(withText("Control this site's access to your device"), isDisplayed()),
+                ViewElement.allowDisabledOption());
         Context context = ApplicationProvider.getApplicationContext();
         // Find the preference and check its background color.
         onView(
@@ -1059,15 +1088,21 @@ public class PageInfoViewTest {
 
         // Open first subpage.
         onView(withId(R.id.page_info_permissions_row)).perform(click());
-        onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
+        onViewWaiting(
+                allOf(withText("Control this site's access to your device"), isDisplayed()),
+                ViewElement.allowDisabledOption());
 
         // Open second subpage
         onView(withText("Location")).perform(click());
-        onViewWaiting(allOf(withText(R.string.website_settings_device_location), isDisplayed()));
+        onViewWaiting(
+                allOf(withText(R.string.website_settings_device_location), isDisplayed()),
+                ViewElement.allowDisabledOption());
 
         // Verify back button press takes you back to the first subpage.
         ThreadUtils.runOnUiThreadBlocking(() -> controller.exitSubpage());
-        onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
+        onViewWaiting(
+                allOf(withText("Control this site's access to your device"), isDisplayed()),
+                ViewElement.allowDisabledOption());
 
         // Verify another back button press takes you back to the main page info view.
         controller.exitSubpage();

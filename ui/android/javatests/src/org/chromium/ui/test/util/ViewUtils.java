@@ -135,6 +135,8 @@ public class ViewUtils {
      * Waits until a visible view matches the given matcher. Fails if the matcher applies to
      * multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
      *
+     * <p>By default, also waits for the view to be displayed >= 51% and enabled.
+     *
      * @param viewMatcher The matcher matching the view that should be waited for.
      */
     public static void waitForVisibleView(Matcher<View> viewMatcher) {
@@ -173,9 +175,8 @@ public class ViewUtils {
     }
 
     /**
-     * Waits until a visible view matching the given matcher appears. Fails if the matcher applies
-     * to multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL}
-     * milliseconds.
+     * Waits until a visible view matches the given matcher. Fails if the matcher applies to
+     * multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
      *
      * @param root The view group to search in.
      * @param viewMatcher The matcher matching the view that should be waited for.
@@ -197,8 +198,10 @@ public class ViewUtils {
     }
 
     /**
-     * Waits until a visible view matching the given matcher Fails if the matcher applies to
+     * Waits until a visible view matches the given matcher. Fails if the matcher applies to
      * multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
+     *
+     * <p>By default, also waits for the view to be displayed >= 51% and enabled.
      *
      * @param viewMatcher The matcher matching the view that should be waited for.
      * @param options The options to override expectations for the View (e.g. displayed %).
@@ -211,17 +214,17 @@ public class ViewUtils {
     }
 
     /**
-     * Waits until a visible view matching the given matcher Fails if the matcher applies to
+     * Waits until a visible view matches the given matcher. Fails if the matcher applies to
      * multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
      *
-     * <p>Android API 30+ tests are flakey with espresso 3.2 without the inRoot(isDialog()) check.
+     * <p>By default, also waits for the view to be displayed >= 51% and enabled.
      *
      * @param viewMatcher The matcher matching the view that should be waited for.
      * @return An interaction on the matching view.
      */
     public static ViewInteraction onViewWaiting(
             Matcher<View> viewMatcher, boolean checkRootDialog) {
-        ViewElement.Options.Builder optionsBuilder = ViewElement.newOptions().allowDisabled();
+        ViewElement.Options.Builder optionsBuilder = ViewElement.newOptions();
         if (checkRootDialog) {
             optionsBuilder = optionsBuilder.inDialog();
         }
@@ -231,16 +234,16 @@ public class ViewUtils {
     }
 
     /**
-     * Waits until a visible view matching the given matcher appears. Fails if the matcher applies
-     * to multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL}
-     * milliseconds.
+     * Waits until a visible view matches the given matcher. Fails if the matcher applies to
+     * multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
+     *
+     * <p>By default, also waits for the view to be displayed >= 51% and enabled.
      *
      * @param viewMatcher The matcher matching the view that should be waited for.
      * @return An interaction on the matching view.
      */
     public static ViewInteraction onViewWaiting(Matcher<View> viewMatcher) {
-        ViewPresence<View> viewPresence =
-                ViewFinder.waitForView(viewMatcher, ViewElement.allowDisabledOption());
+        ViewPresence<View> viewPresence = ViewFinder.waitForView(viewMatcher);
         return viewPresence.onView();
     }
 

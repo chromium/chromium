@@ -131,13 +131,13 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
         return mViewSpec;
     }
 
-    /** Returns a {@link ViewSpec} to declare a descandant of this ViewElement. */
+    /** Returns a {@link ViewSpec} to declare a descendant of this ViewElement. */
     @SafeVarargs
     public final ViewSpec<View> descendant(Matcher<View>... viewMatcher) {
         return mViewSpec.descendant(viewMatcher);
     }
 
-    /** Returns a {@link ViewSpec} to declare a descandant of this ViewElement. */
+    /** Returns a {@link ViewSpec} to declare a descendant of this ViewElement. */
     @SafeVarargs
     public final <DescendantViewT extends View> ViewSpec<DescendantViewT> descendant(
             Class<DescendantViewT> viewClass, Matcher<View>... viewMatcher) {
@@ -288,7 +288,19 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
                 .inRoot(withDecorView(is(rootMatched.getDecorView())));
     }
 
-    /** Extra options for declaring ViewElements. */
+    /**
+     * Extra options for declaring ViewElements.
+     *
+     * <p>By default:
+     *
+     * <ul>
+     *   <li>Views are expected to be {@link View#VISIBLE}.
+     *   <li>Views are expected to be displayed >= 51% ({@link #MIN_DISPLAYED_PERCENT}).
+     *   <li>Views are expected to be enabled.
+     * </ul>
+     *
+     * These can be overridden by the {@link Builder} methods.
+     */
     public static class Options {
         static final Options DEFAULT = new Options();
         protected boolean mScoped = true;
@@ -320,7 +332,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
             /**
              * Expect the View to be disabled instead of enabled.
              *
-             * <p>This is different than passing an isEnabled() Matcher.If the matcher was, for
+             * <p>This is different than passing an isEnabled() Matcher. If the matcher was, for
              * example |allOf(withId(ID), isEnabled())|, the exit condition would be considered
              * fulfilled if the View became disabled. Meanwhile, using this option makes the exit
              * condition only be considered fulfilled if no Views |withId(ID)|, enabled or not, were
@@ -353,8 +365,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
 
             /**
              * Changes the minimum percentage of the View that needs be displayed to fulfill the
-             * enter Condition. Default is >=90% visible, which matches the minimum requirement for
-             * ViewInteractions like click().
+             * enter Condition. Default is >= 51% visible ({@link #MIN_DISPLAYED_PERCENT}).
              */
             public Builder displayingAtLeast(int percentage) {
                 mDisplayedPercentageRequired = percentage;

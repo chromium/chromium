@@ -50,6 +50,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.AnnotationRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -445,7 +446,9 @@ public class TrustedCdnPublisherUrlTest {
     }
 
     private void verifyUrl(String expectedUrl) {
-        onViewWaiting(allOf(withId(R.id.url_bar), withText(expectedUrl)));
+        onViewWaiting(
+                allOf(withId(R.id.url_bar), withText(expectedUrl)),
+                ViewElement.allowDisabledOption());
     }
 
     private void verifySecurityIcon(int expectedSecurityIcon) {
