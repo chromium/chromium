@@ -267,6 +267,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void DidAnimateScrollOffset();
   void SetFullViewportDamage();
   void SetViewportDamage(const gfx::Rect& damage_rect);
+  void SetRootLayerDamageRect(const gfx::Rect& damage_rect);
 
   // Interface for InputHandler
   void BindToInputHandler(
@@ -1232,6 +1233,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool resourceless_software_draw_ = false;
 
   gfx::Rect viewport_damage_rect_;
+  gfx::Rect root_layer_damage_rect_;
   std::optional<base::CheckedNumeric<uint32_t>> total_invalidated_area_ = 0;
 
   std::unique_ptr<MutatorHost> mutator_host_;

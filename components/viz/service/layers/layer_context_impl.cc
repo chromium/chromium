@@ -2005,6 +2005,7 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       update->top_controls_shown_ratio, update->bottom_controls_shown_ratio);
 
   host_impl_->SetViewportDamage(update->viewport_damage_rect);
+  host_impl_->SetRootLayerDamageRect(update->root_layer_damage_rect);
   host_impl_->SetDebugState(update->debug_state);
 
   for (auto& ui_resource_request : update->ui_resource_requests) {

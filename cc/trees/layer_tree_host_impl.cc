@@ -1645,6 +1645,27 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
   last_frame_has_damage_data_ = GetHasDamageData();
 
   if (expects_to_draw) {
+    if (active_tree_->RootRenderSurface()) {
+      const gfx::Rect& viz_damage_rect =
+          active_tree_->RootRenderSurface()->GetDamageRect();
+      // If Viz has MORE damage than the client expected, it's safe for
+      // rendering (just potentially wasteful). If Viz has LESS damage, we might
+      // miss redrawing some areas.
+      if (!root_layer_damage_rect_.IsEmpty()) {
+        if (root_layer_damage_rect_ != viz_damage_rect) {
+          LOG(ERROR) << "crbug.com/454680865: Root layer damage rect mismatch. "
+                     << "Client expected: "
+                     << root_layer_damage_rect_.ToString()
+                     << " Viz calculated: " << viz_damage_rect.ToString();
+        }
+        DUMP_WILL_BE_CHECK(viz_damage_rect.Contains(root_layer_damage_rect_))
+            << "crbug.com/454680865: Viz damage does not contain client "
+               "damage! "
+            << "Client: " << root_layer_damage_rect_.ToString()
+            << " Viz: " << viz_damage_rect.ToString();
+      }
+    }
+
     // Force drawing, but assert in DCHECK builds.
     AddDamageDataCrashKeys(last_frame_has_damage_data_, /*is_viz=*/true);
     DUMP_WILL_BE_CHECK(has_damage)
@@ -2008,6 +2029,10 @@ void LayerTreeHostImpl::DidAnimateScrollOffset() {
 
 void LayerTreeHostImpl::SetViewportDamage(const gfx::Rect& damage_rect) {
   viewport_damage_rect_.Union(damage_rect);
+}
+
+void LayerTreeHostImpl::SetRootLayerDamageRect(const gfx::Rect& damage_rect) {
+  root_layer_damage_rect_.Union(damage_rect);
 }
 
 void LayerTreeHostImpl::InvalidateContentOnImplSide() {
@@ -3396,6 +3421,7 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   }
   if (active_tree_->RootRenderSurface()) {
     viewport_damage_rect_ = gfx::Rect();
+    root_layer_damage_rect_ = gfx::Rect();
   }
   active_tree_->ResetAllChangeTracking();
 

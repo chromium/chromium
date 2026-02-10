@@ -134,6 +134,9 @@ struct LayerTreeUpdate {
   // The tree's viewport damage rect.
   gfx.mojom.Rect viewport_damage_rect;
 
+  // Damage rect for the root layer.
+  gfx.mojom.Rect root_layer_damage_rect;
+
   // We cache a global bool for full tree damages to avoid walking the entire
   // tree.
   bool full_tree_damaged;
