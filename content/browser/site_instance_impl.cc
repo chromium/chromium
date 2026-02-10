@@ -1020,6 +1020,10 @@ BrowserContext* SiteInstanceImpl::GetBrowserContext() {
   return browsing_instance_->browser_context();
 }
 
+const SecurityPrincipal& SiteInstanceImpl::GetSecurityPrincipal() const {
+  return site_info_;
+}
+
 // static
 scoped_refptr<SiteInstance> SiteInstance::Create(
     BrowserContext* browser_context) {

@@ -26,6 +26,7 @@ class SiteInstance;
 namespace content {
 class BrowserContext;
 class RenderProcessHost;
+class SecurityPrincipal;
 class StoragePartitionConfig;
 
 using SiteInstanceId = base::IdType32<class SiteInstanceIdTag>;
@@ -163,6 +164,10 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   // Browser context to which this SiteInstance (and all related
   // SiteInstances) belongs.
   virtual BrowserContext* GetBrowserContext() = 0;
+
+  // Returns the security principal identifying all documents and workers within
+  // this SiteInstance.
+  virtual const SecurityPrincipal& GetSecurityPrincipal() const = 0;
 
   // Get the web site that this SiteInstance is rendering pages for. This
   // includes the scheme and registered domain, but not the port.

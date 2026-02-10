@@ -88,7 +88,9 @@ synchronous access to each other, as a constraint for process model decisions.
     modify their document.domain value to access other same-site documents, and
     not just same-origin documents. In some cases, though, the principal may be
     an origin or have a coarser granularity (e.g., `file:`). The SiteInfo class
-    tracks all values that identify a security principal.
+    tracks all values that identify a security principal, while the
+    SecurityPrincipal interface exposes a subset of these values in the
+    content/public API.
 
 * **Principal Instance** (implemented by
     [SiteInstance](https://source.chromium.org/chromium/chromium/src/+/main:content/public/browser/site_instance.h;drc=858df4ab8b73f2418f51385954760f2154512029;l=32)):

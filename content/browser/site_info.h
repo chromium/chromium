@@ -9,6 +9,7 @@
 #include "content/browser/url_info.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 #include "url/gurl.h"
@@ -34,6 +35,11 @@ struct UrlInfo;
 // site URLs can be finer grained (e.g., origins) or coarser grained (e.g.,
 // file://). See |site_url()| for more considerations.
 //
+// SecurityPrincipal is the interface that's exposed to features that need
+// to access security principals outside of //content, providing access to a
+// subset of SiteInfo properties. SiteInfo is the sole implementation of that
+// interface, for use inside //content.
+//
 // In the future, we may add more information to SiteInfo for cases where the
 // site URL is not sufficient to identify which process a document belongs in.
 // For example, origin isolation (https://crbug.com/1067389) will introduce a
@@ -42,7 +48,7 @@ struct UrlInfo;
 // values to have the same site URL. It is important that any extra members of
 // SiteInfo do not cause two documents that can script each other to end up in
 // different SiteInfos and thus different processes.
-class CONTENT_EXPORT SiteInfo {
+class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
  public:
   // Helper to create a SiteInfo that will be used for an error page.  This is
   // used only when error page isolation is enabled.  Note that when site
@@ -199,7 +205,9 @@ class CONTENT_EXPORT SiteInfo {
            const std::string& browser_context_id);
   SiteInfo() = delete;
   SiteInfo(const SiteInfo& rhs);
-  ~SiteInfo();
+
+  // SecurityPrincipal overrides.
+  ~SiteInfo() override;
 
   // This function returns a new SiteInfo which is equivalent to the original,
   // except that its AgentClusterKey is made site-keyed if it had been created
