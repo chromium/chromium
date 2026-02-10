@@ -518,6 +518,27 @@ void StatusAreaWidget::EnsureTrayOrder() {
   }
   status_area_widget_delegate_->ReorderChildView(stop_recording_button_tray_,
                                                  annotation_tray_ ? 2 : 1);
+
+  auto reorder_before = [&](views::View* view_to_move, views::View* ref_view) {
+    size_t target_index =
+        status_area_widget_delegate_->GetIndexOf(ref_view).value();
+
+    // If the view is currently BEFORE the target, moving it to 'target_index'
+    // would actually place it AFTER the target (because the target shifts
+    // left). We must decrement the target index in this case.
+    if (status_area_widget_delegate_->GetIndexOf(view_to_move).value() <
+        target_index) {
+      target_index--;
+    }
+
+    status_area_widget_delegate_->ReorderChildView(view_to_move, target_index);
+  };
+
+  // The custom tray button should come before fixed pods.
+  for (auto id : custom_tray_buttons_ids_) {
+    reorder_before(status_area_widget_delegate_->GetViewByID(id),
+                   notification_center_tray_);
+  }
 }
 
 StatusAreaWidget::CollapseState StatusAreaWidget::CalculateCollapseState()
