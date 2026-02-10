@@ -796,13 +796,6 @@ public final class ChromePreferenceKeys {
     public static final String PRIVACY_IN_SAMPLE_FOR_CRASHES =
             "Chrome.Privacy.InSampleForCrashReporting";
 
-    /**
-     * This is deprecated and is going to be removed in the future (See https://crbug.com/1320040).
-     * Use PrivacyPreferencesManagerImpl#isUsageAndCrashReportingPermitted to know if metrics
-     * reporting is allowed.
-     */
-    @Deprecated public static final String PRIVACY_METRICS_REPORTING = "metrics_reporting";
-
     public static final String PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER =
             "Chrome.Privacy.UsageAndCrashReportingPermittedByUser";
 

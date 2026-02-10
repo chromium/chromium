@@ -160,6 +160,7 @@ public class DeprecatedChromePreferenceKeys {
                 "labeled_bottom_toolbar_enabled",
                 "last_shared_class_name",
                 "last_shared_package_name",
+                "metrics_reporting",
                 "network_service_warm_up_enabled",
                 "night_mode_available",
                 "night_mode_cct_available",

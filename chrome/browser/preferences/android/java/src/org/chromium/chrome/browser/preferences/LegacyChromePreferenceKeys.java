@@ -84,7 +84,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.PAYMENTS_CHECK_SAVE_CARD_TO_DEVICE,
                 ChromePreferenceKeys.PAYMENTS_PAYMENT_COMPLETE_ONCE,
                 ChromePreferenceKeys.PRIVACY_IN_SAMPLE_FOR_METRICS,
-                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING,
                 ChromePreferenceKeys.PROFILES_BOOT_TIMESTAMP,
                 ChromePreferenceKeys.PROMOS_SKIPPED_ON_FIRST_START,
                 ChromePreferenceKeys.RLZ_NOTIFIED,
