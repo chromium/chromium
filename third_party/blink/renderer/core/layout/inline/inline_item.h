@@ -78,7 +78,7 @@ class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
   InlineItem(const InlineItem&);
 
   InlineItemType Type() const { return type_; }
-  const char* InlineItemTypeToString(InlineItemType val) const;
+  static const char* InlineItemTypeToString(InlineItemType val);
 
   TextItemType TextType() const {
     return static_cast<TextItemType>(text_type_);

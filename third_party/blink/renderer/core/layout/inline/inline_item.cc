@@ -150,7 +150,7 @@ void InlineItem::ComputeBoxProperties() {
   is_empty_item_ = true;
 }
 
-const char* InlineItem::InlineItemTypeToString(InlineItemType val) const {
+const char* InlineItem::InlineItemTypeToString(InlineItemType val) {
   switch (val) {
     case kText:
       return "Text";
