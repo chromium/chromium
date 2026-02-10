@@ -26,6 +26,7 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_auth_handler_factory.h"
@@ -96,8 +97,11 @@ class TestTransactionFactory : public HttpTransactionFactory {
 
 class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
  protected:
-  QuicEndToEndTest()
-      : host_resolver_(CreateResolverImpl()),
+  explicit QuicEndToEndTest(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::DEFAULT)
+      : WithTaskEnvironment(time_source),
+        host_resolver_(CreateResolverImpl()),
         ssl_config_service_(
             std::make_unique<TestSSLConfigService>(SSLContextConfig())),
         proxy_resolution_service_(
@@ -354,56 +358,80 @@ TEST_F(QuicEndToEndTest, MLKEMDisabled) {
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 class QuicEndToEndMTCTest : public QuicEndToEndTest {
  public:
+  QuicEndToEndMTCTest()
+      : QuicEndToEndTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    feature_list_.InitWithFeatures(
+        {{features::kTLSTrustAnchorIDs, features::kVerifyMTCs}}, {});
+  }
+
   void SetUp() override {
     auto leaf = std::move(CertBuilder::CreateSimpleChain(1)[0]);
     leaf->SetSubjectAltName("test.example.com");
     // ProofSourceChromium assumes the leaf cert uses an RSA key.
-    leaf->UseKeyFromFile(GetTestCertsDirectory().AppendASCII("rsa-2048-1.key"));
+    ASSERT_TRUE(leaf->UseKeyFromFile(
+        GetTestCertsDirectory().AppendASCII("rsa-2048-1.key")));
     cert_key_ = crypto::keypair::PrivateKey(
         bssl::UpRef(leaf->GetKey()), crypto::SubtlePassKey::ForTesting());
 
-    // This is the log ID for the MTC experiment (see kMtcExperimentBaseId in
+    // This is the log ID for the MTC experiment (see log_id in
+    // root_store.textproto). It doesn't actually matter for this test.
+    constexpr uint8_t kMtcLogId[] = {0x82, 0xda, 0x4b, 0x30, 0x08};
+    // This is the base ID for the MTC experiment (see kMtcExperimentBaseId in
     // quic_chromium_client_session.cc).
-    constexpr uint8_t kMtcLogId[] = {0x82, 0xda, 0x4b, 0x30, 0x07};
-    MtcLogBuilder mtc_log(kMtcLogId);
+    constexpr uint8_t kMtcBaseId[] = {0x82, 0xda, 0x4b, 0x30, 0x07};
+    MtcLogBuilder mtc_log(kMtcLogId, kMtcBaseId);
     uint64_t leaf_index = mtc_log.AddEntry(*leaf);
     mtc_log.AdvanceLandmark();
     auto leaf_der = mtc_log.CreateSignaturelessCertificate(leaf_index);
     ASSERT_TRUE(leaf_der);
     cert_ = X509Certificate::CreateFromBytes(*leaf_der);
+    ASSERT_TRUE(cert_);
+
+    // This is a fake trust anchor ID formed from the base ID above. (We could
+    // make one that actually matches the generated landmark number from
+    // mtc_log, but it doesn't matter for this test.)
+    const auto kMtcTrustAnchorId =
+        x509_util::AppendOidComponent(kMtcBaseId, 0x01);
+
+    SSLContextConfig config;
+    config.mtc_trust_anchor_ids = {{kMtcTrustAnchorId}};
+    config.mtc_update_time_seconds =
+        (base::Time::Now() - kMtcUpdateAge).InMillisecondsSinceUnixEpoch() /
+        1000;
+    ssl_config_service_->UpdateSSLConfigAndNotify(config);
 
     QuicEndToEndTest::SetUp();
   }
+
+  static constexpr base::TimeDelta kMtcUpdateAge = base::Hours(42);
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(QuicEndToEndMTCTest, SimpleConnection) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {{features::kTLSTrustAnchorIDs, features::kVerifyMTCs}}, {});
-
   AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
 
   base::HistogramTester histograms;
   TestTransactionConsumer consumer(DEFAULT_PRIORITY,
                                    transaction_factory_.get());
   consumer.Start(&request_, NetLogWithSource());
-  CheckResponse(consumer, "HTTP/1.1 200", kResponseBody);
+  ASSERT_NO_FATAL_FAILURE(
+      CheckResponse(consumer, "HTTP/1.1 200", kResponseBody));
 
   EXPECT_EQ(consumer.response_info()->ssl_info.cert->signature_algorithm(),
             bssl::SignatureAlgorithm::kMtcProofDraftDavidben08);
 
-  // Not logged, since the test does not configure the client's MTC metadata or
-  // Trust Anchor IDs, we have no client MTC TAI, client_landmark, or metadata
-  // update time (this test is not yet representative of the real-world
-  // conditions where MTCs would be used).
-  // TODO(crbug.com/482083310): update the test setup to be more realistic, and
-  // add tests of other cases.
+  // Not logged, since the server is not configured to reply with a TAI.
+  // TODO(crbug.com/482083310): add tests of other cases.
   histograms.ExpectTotalCount("Net.QuicSession.MTCLandmarkDelta.OldClient", 0);
   histograms.ExpectTotalCount("Net.QuicSession.MTCLandmarkDelta.CurrentClient",
                               0);
-  histograms.ExpectTotalCount("Net.QuicSession.MTCMetadataAge", 0);
 
-  histograms.ExpectUniqueSample("Net.QuicSession.HasMTCMetadata", /*sample=*/0,
+  histograms.ExpectTimeBucketCount("Net.QuicSession.MTCMetadataAge",
+                                   kMtcUpdateAge, 1);
+
+  histograms.ExpectUniqueSample("Net.QuicSession.HasMTCMetadata", /*sample=*/1,
                                 /*expected_bucket_count=*/1);
 
   histograms.ExpectUniqueSample("Net.QuicSession.MTCResult",
@@ -419,9 +447,18 @@ TEST_F(QuicEndToEndMTCTest, SimpleConnection) {
       /*sample=*/-net::OK,
       /*expected_bucket_count=*/1);
 
-  // These should be logged, but we don't know what the exact value will be, so
-  // just check that a sample is present.
+  // A mock time is used, and is not advanced during the test, but there was
+  // still some flaky failures where the histogram had a non-zero number. I'm
+  // not sure it is actually the cause, but apparently the test framework may
+  // automatically advance the mocked time if the threadpool has delayed tasks
+  // (see
+  // https://crsrc.org/c/base/test/task_environment.h;drc=e63596721df61bbc199c38c4a102597ad81ad154;l=106)
+  // Therefore we only check that the metric is present, but don't try to check
+  // the value.
   histograms.ExpectTotalCount("Net.QuicSession.HandshakeConfirmedTime.MTC", 1);
+
+  // Should be logged, but we don't know what the exact value will be, so just
+  // check that a sample is present.
   histograms.ExpectTotalCount("Net.QuicSession.TLSHandshakeBytes.MTC", 1);
 }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
