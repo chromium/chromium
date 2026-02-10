@@ -81,9 +81,7 @@ WebInputEventResult MouseWheelEventManager::HandleWheelEvent(
   LocalFrame* subframe =
       event_handling_util::SubframeForTargetNode(wheel_target_.Get());
   if (subframe) {
-    WebInputEventResult result =
-        subframe->GetEventHandler().HandleWheelEvent(event);
-    return result;
+    return subframe->GetEventHandler().HandleWheelEvent(event);
   }
 
   if (event.phase == WebMouseWheelEvent::kPhaseMayBegin) {
@@ -108,7 +106,7 @@ WebInputEventResult MouseWheelEventManager::HandleWheelEvent(
     if (dom_event_result != DispatchEventResult::kNotCanceled) {
       // Reset the target if the dom event is cancelled to make sure that new
       // targeting happens for the next wheel event.
-      wheel_target_ = nullptr;
+      UpdateWheelTarget(nullptr);
 
       bool is_vertical = dom_event->NativeEvent().event_action ==
                          WebMouseWheelEvent::EventAction::kScrollVertical;
@@ -178,6 +176,14 @@ void MouseWheelEventManager::UpdateWheelTarget(Node* wheel_target) {
   }
 
   wheel_target_ = wheel_target;
+
+  if (!wheel_target_) {
+    if (auto* parent_frame = DynamicTo<LocalFrame>(frame_->Parent())) {
+      parent_frame->GetEventHandler()
+          .GetMouseWheelEventManager()
+          .UpdateWheelTarget(nullptr);
+    }
+  }
 }
 
 void MouseWheelEventManager::FadeInChainedScrollbarsAndDeferFadeOut() {

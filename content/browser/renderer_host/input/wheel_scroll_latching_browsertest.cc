@@ -379,4 +379,117 @@ IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest,
   EXPECT_EQ("redDiv", EvalJs(shell(), "domTarget"));
 }
 
+IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest,
+                       WheelEventFrameRetargetOnPreventDefault) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_content_type("text/html");
+        response->set_content(R"HTML(
+            <!DOCTYPE html>
+            <meta name='viewport' content='width=device-width, minimum-scale=1'>
+            <style>
+            #iframe {
+              position: absolute;
+              left: 50px;
+              top: 100px;
+              width: 200px;
+              height: 200px;
+              border: none;
+              background: blue;
+            }
+            #redDiv {
+              position: absolute;
+              left: 50px;
+              top: 100px;
+              width: 200px;
+              height: 200px;
+              display: none;
+              background: red;
+            }
+            </style>
+            <body>
+              <script>
+                var iframeReadyResolver;
+                var iframeReady = new Promise(r => iframeReadyResolver = r);
+                var domTarget = 'noTarget';
+              </script>
+              <iframe id='iframe' srcdoc="
+                <body style='margin: 0;'>
+                  <div id='target'
+                       style='width: 200px; height: 200px; background: blue;'>
+                    Target in iframe
+                  </div>
+                  <script>
+                    window.addEventListener('wheel', (e) => {
+                      e.preventDefault();
+                      window.parent.domTarget = 'iframe';
+                      window.parent.document
+                        .getElementById('redDiv').style.display = 'block';
+                    }, {passive: false});
+                    window.parent.iframeReadyResolver(true);
+                  </script>
+                </body>
+              "></iframe>
+              <div id='redDiv'>Red div overlapping</div>
+            </body>
+            <script>
+            document.getElementById('redDiv').addEventListener('wheel', (e) => {
+              domTarget = 'redDiv';
+              e.stopPropagation();
+            });
+            </script>
+        )HTML");
+        return response;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL test_url = embedded_test_server()->GetURL("/test.html");
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+
+  // Ensure hit test data is ready for the subframe.
+  RenderFrameHost* child =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child);
+  WaitForHitTestData(child);
+
+  // Wait for iframe to signal it's ready.
+  EXPECT_EQ(true, EvalJs(shell(), "window.iframeReady"));
+
+  float x = 150;
+  float y = 200;
+
+  // Send the first wheel event.
+  auto wheel_msg_watcher = std::make_unique<InputMsgWatcher>(
+      GetWidgetHost(), blink::WebInputEvent::Type::kMouseWheel);
+  blink::WebMouseWheelEvent wheel_event =
+      blink::SyntheticWebMouseWheelEventBuilder::Build(
+          x, y, x, y, 1, 1, 0, ui::ScrollGranularity::kScrollByPrecisePixel);
+  wheel_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
+
+  GetRouter()->RouteMouseWheelEvent(GetRootView(), &wheel_event,
+                                    ui::LatencyInfo());
+
+  // Run until we get the callback, then check the target.
+  EXPECT_EQ(blink::mojom::InputEventResultState::kConsumed,
+            wheel_msg_watcher->WaitForAck());
+
+  EXPECT_EQ("iframe", EvalJs(shell(), "domTarget"));
+
+  // Send the second wheel event.
+  wheel_msg_watcher = std::make_unique<InputMsgWatcher>(
+      GetWidgetHost(), blink::WebInputEvent::Type::kMouseWheel);
+  wheel_event.phase = blink::WebMouseWheelEvent::kPhaseChanged;
+
+  GetRouter()->RouteMouseWheelEvent(GetRootView(), &wheel_event,
+                                    ui::LatencyInfo());
+
+  // Run until we get the callback, then check the target.
+  EXPECT_EQ(blink::mojom::InputEventResultState::kNotConsumed,
+            wheel_msg_watcher->WaitForAck());
+
+  EXPECT_EQ("redDiv", EvalJs(shell(), "domTarget"));
+}
+
 }  // namespace content
