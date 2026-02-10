@@ -54,6 +54,7 @@
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
+#include "components/autofill/core/browser/network/autofill_ai/mock_wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
@@ -102,6 +103,7 @@ using test::CreateAutofillSuggestion;
 using test::CreateTestAddressFormData;
 using test::GetPassportEntityInstance;
 using test::GetPassportEntityInstanceWithRandomGuid;
+using test::MaskEntityInstance;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AnyOf;
@@ -1676,6 +1678,144 @@ TEST_F(AutofillExternalDelegateTest, AcceptedOtpSuggestion) {
       CreateAutofillSuggestion(SuggestionType::kOneTimePasswordEntry,
                                /*main_text_value=*/otp_value),
       {});
+}
+
+class AutofillExternalDelegateWithWalletPrivatePassesTest
+    : public AutofillExternalDelegateTest {
+ public:
+  AutofillExternalDelegateWithWalletPrivatePassesTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kAutofillAiWithDataSchema,
+         features::kAutofillAiWalletPrivatePasses},
+        {});
+  }
+
+  void SetUp() override {
+    AutofillExternalDelegateTest::SetUp();
+    autofill_client().set_wallet_pass_access_manager(
+        std::make_unique<MockWalletPassAccessManager>());
+  }
+
+  MockWalletPassAccessManager& wallet_manager() {
+    return static_cast<MockWalletPassAccessManager&>(
+        *autofill_client().GetWalletPassAccessManager());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that when accepting a `kFillAutofillAi` suggestion that would fill a
+// masked server entity, the entity is first fetched from the server.
+TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
+       AutofillAiFillMaskedServerEntity) {
+  constexpr auto kPassportNumberType =
+      AttributeType(AttributeTypeName::kPassportNumber);
+
+  EntityInstance full_passport = GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EntityInstance masked_passport = MaskEntityInstance(full_passport);
+  ASSERT_NE(
+      full_passport.attribute(kPassportNumberType)->GetCompleteRawInfo(),
+      masked_passport.attribute(kPassportNumberType)->GetCompleteRawInfo());
+  AddOrUpdateEntityInstance(masked_passport);
+
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
+  Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
+  fill_suggestion.payload =
+      Suggestion::AutofillAiPayload(masked_passport.guid());
+  std::vector<Suggestion> suggestions = {fill_suggestion};
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+  ON_CALL(autofill_client(), GetAutofillSuggestions)
+      .WillByDefault(Return(suggestions));
+
+  {
+    InSequence s;
+    EXPECT_CALL(wallet_manager(),
+                GetUnmaskedWalletEntityInstance(masked_passport.guid(), _))
+        .WillOnce(RunOnceCallback<1>(full_passport));
+    EXPECT_CALL(
+        autofill_manager(),
+        FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
+                          IsQueriedFieldId(), HasFillingPayload(full_passport),
+                          DefaultTriggerSource()));
+    EXPECT_CALL(
+        autofill_client(),
+        HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
+  }
+
+  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+}
+
+// Tests that when accepting a `kFillAutofillAi` suggestion that would fill a
+// only non-obfuscated attributes of a server entity, the entity is not fetched
+// from the server and the masked entity is used for filling.
+TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
+       AutofillAiFillMaskedServerEntityNonObfuscatedAttributesOnly) {
+  EntityInstance full_passport = GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EntityInstance masked_passport = MaskEntityInstance(full_passport);
+  AddOrUpdateEntityInstance(masked_passport);
+
+  IssueOnQuery({.fields = {{.role = PASSPORT_EXPIRATION_DATE},
+                           {.role = PASSPORT_ISSUE_DATE},
+                           {.role = PASSPORT_ISSUING_COUNTRY}}});
+  Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
+  fill_suggestion.payload =
+      Suggestion::AutofillAiPayload(masked_passport.guid());
+  std::vector<Suggestion> suggestions = {fill_suggestion};
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+  ON_CALL(autofill_client(), GetAutofillSuggestions)
+      .WillByDefault(Return(suggestions));
+
+  EXPECT_CALL(wallet_manager(),
+              GetUnmaskedWalletEntityInstance(masked_passport.guid(), _))
+      .Times(0);
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
+                        IsQueriedFieldId(), HasFillingPayload(masked_passport),
+                        DefaultTriggerSource()));
+  EXPECT_CALL(
+      autofill_client(),
+      HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
+
+  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+}
+
+// Tests that when fetching a masked server entity fails, the suggestion is
+// not filled.
+TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
+       AutofillAiFillMaskedServerEntityFetchingFails) {
+  constexpr auto kPassportNumberType =
+      AttributeType(AttributeTypeName::kPassportNumber);
+
+  EntityInstance full_passport = GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EntityInstance masked_passport = MaskEntityInstance(full_passport);
+  ASSERT_NE(
+      full_passport.attribute(kPassportNumberType)->GetCompleteRawInfo(),
+      masked_passport.attribute(kPassportNumberType)->GetCompleteRawInfo());
+  AddOrUpdateEntityInstance(masked_passport);
+
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
+  Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
+  fill_suggestion.payload =
+      Suggestion::AutofillAiPayload(masked_passport.guid());
+  std::vector<Suggestion> suggestions = {fill_suggestion};
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+  ON_CALL(autofill_client(), GetAutofillSuggestions)
+      .WillByDefault(Return(suggestions));
+
+  EXPECT_CALL(wallet_manager(),
+              GetUnmaskedWalletEntityInstance(masked_passport.guid(), _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+  EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
+  EXPECT_CALL(
+      autofill_client(),
+      HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
+
+  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }
 
 class AutofillExternalDelegatePlusAddressTest
