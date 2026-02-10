@@ -59,6 +59,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
+#include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_attribute.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
@@ -143,16 +144,6 @@ base::flat_set<EntityTypeName> GetSaveEntitiesTypesNames(
     entity_types.insert(entity.type().name());
   }
   return entity_types;
-}
-
-// A placeholder for sending a Wallet upsert request.
-// TODO(crbug.com/478783796): Implement this properly.
-void SendWalletUpsertRequest(
-    const EntityInstance& entity_to_upload,
-    base::OnceCallback<void(std::optional<EntityInstance>)> callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::nullopt),
-      base::Seconds(3));
 }
 
 }  // namespace
@@ -375,7 +366,6 @@ void AutofillAiManager::HandlePromptResult(
   const bool prompt_accepted =
       result == AutofillClient::AutofillAiBubbleResult::kAccepted;
 
-  // This switch should handle prompt-type-specific logic.
   switch (prompt_type) {
     case AutofillClient::AutofillAiImportPromptType::kSave:
       client_->TriggerAutofillAiSavePromptSurvey(
@@ -386,9 +376,6 @@ void AutofillAiManager::HandlePromptResult(
     case AutofillClient::AutofillAiImportPromptType::kMigrate:
       break;
   }
-
-  // Only add logic that is common across all prompt types below this line.
-  // Otherwise use the switch above.
 
   if (!prompt_accepted) {
     return;
@@ -404,7 +391,18 @@ void AutofillAiManager::HandlePromptResult(
                      client_->GetEntityDataManager()->GetWeakPtr(),
                      client_->GetWeakPtr(), prompt_type, entity);
   // For now, asynchronous saves imply saving to Wallet.
-  SendWalletUpsertRequest(entity, std::move(callback));
+  if (WalletPassAccessManager* wallet_manager =
+          client_->GetWalletPassAccessManager()) {
+    switch (prompt_type) {
+      case AutofillClient::AutofillAiImportPromptType::kSave:
+      case AutofillClient::AutofillAiImportPromptType::kMigrate:
+        wallet_manager->SaveWalletEntityInstance(entity, std::move(callback));
+        break;
+      case AutofillClient::AutofillAiImportPromptType::kUpdate:
+        wallet_manager->UpdateWalletEntityInstance(entity, std::move(callback));
+        break;
+    }
+  }
 }
 
 std::vector<Suggestion> AutofillAiManager::GetSuggestions(
