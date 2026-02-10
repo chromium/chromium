@@ -211,7 +211,7 @@ inline void ValidateDownCast(From* f ABSL_ATTRIBUTE_UNUSED) {
   // Assert only if RTTI is enabled and in debug mode or hardened asserts are
   // enabled.
 #ifdef ABSL_INTERNAL_HAS_RTTI
-#if !defined(NDEBUG) || (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2)
+#if !defined(NDEBUG) || (ABSL_OPTION_HARDENED == 1)
   // Suppress erroneous nonnull comparison warning on older GCC.
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push

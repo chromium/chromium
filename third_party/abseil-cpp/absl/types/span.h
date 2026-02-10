@@ -64,11 +64,11 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
-#include "absl/base/internal/throw_delegate.h"
 #include "absl/base/macros.h"
 #include "absl/base/nullability.h"
 #include "absl/base/optimization.h"
 #include "absl/base/port.h"  // TODO(strel): remove this include
+#include "absl/base/throw_delegate.h"
 #include "absl/hash/internal/weakly_mixed_integer.h"
 #include "absl/meta/type_traits.h"
 #include "absl/types/internal/span.h"
@@ -345,8 +345,7 @@ class ABSL_ATTRIBUTE_VIEW Span {
   constexpr reference at(size_type i) const {
     return ABSL_PREDICT_TRUE(i < size())  //
                ? *(data() + i)
-               : (base_internal::ThrowStdOutOfRange(
-                      "Span::at failed bounds check"),
+               : (ThrowStdOutOfRange("Span::at failed bounds check"),
                   *(data() + i));
   }
 
@@ -465,9 +464,8 @@ class ABSL_ATTRIBUTE_VIEW Span {
   //   absl::MakeSpan(vec).subspan(4);     // {}
   //   absl::MakeSpan(vec).subspan(5);     // throws std::out_of_range
   constexpr Span subspan(size_type pos = 0, size_type len = npos) const {
-    return (pos <= size())
-               ? Span(data() + pos, (std::min)(size() - pos, len))
-               : (base_internal::ThrowStdOutOfRange("pos > size()"), Span());
+    return (pos <= size()) ? Span(data() + pos, (std::min)(size() - pos, len))
+                           : (ThrowStdOutOfRange("pos > size()"), Span());
   }
 
   // Span::first()
@@ -482,9 +480,8 @@ class ABSL_ATTRIBUTE_VIEW Span {
   //   absl::MakeSpan(vec).first(3);  // {10, 11, 12}
   //   absl::MakeSpan(vec).first(5);  // throws std::out_of_range
   constexpr Span first(size_type len) const {
-    return (len <= size())
-               ? Span(data(), len)
-               : (base_internal::ThrowStdOutOfRange("len > size()"), Span());
+    return (len <= size()) ? Span(data(), len)
+                           : (ThrowStdOutOfRange("len > size()"), Span());
   }
 
   // Span::last()
@@ -499,9 +496,8 @@ class ABSL_ATTRIBUTE_VIEW Span {
   //   absl::MakeSpan(vec).last(3);  // {11, 12, 13}
   //   absl::MakeSpan(vec).last(5);  // throws std::out_of_range
   constexpr Span last(size_type len) const {
-    return (len <= size())
-               ? Span(size() - len + data(), len)
-               : (base_internal::ThrowStdOutOfRange("len > size()"), Span());
+    return (len <= size()) ? Span(size() - len + data(), len)
+                           : (ThrowStdOutOfRange("len > size()"), Span());
   }
 
   // Support for absl::Hash.

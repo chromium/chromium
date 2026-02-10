@@ -221,6 +221,10 @@
 #include "absl/numeric/bits.h"
 #include "absl/utility/utility.h"
 
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
+#include <ranges>  // NOLINT(build/c++20)
+#endif
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace container_internal {
@@ -2148,6 +2152,28 @@ class raw_hash_set {
   raw_hash_set(InputIter first, InputIter last, size_t bucket_count,
                const allocator_type& alloc)
       : raw_hash_set(first, last, bucket_count, hasher(), key_equal(), alloc) {}
+
+#if defined(__cpp_lib_containers_ranges) && \
+    __cpp_lib_containers_ranges >= 202202L
+  template <typename R>
+  raw_hash_set(std::from_range_t, R&& rg, size_type bucket_count = 0,
+               const hasher& hash = hasher(), const key_equal& eq = key_equal(),
+               const allocator_type& alloc = allocator_type())
+      : raw_hash_set(std::begin(rg), std::end(rg), bucket_count, hash, eq,
+                     alloc) {}
+
+  template <typename R>
+  raw_hash_set(std::from_range_t, R&& rg, size_type bucket_count,
+               const allocator_type& alloc)
+      : raw_hash_set(std::from_range, std::forward<R>(rg), bucket_count,
+                     hasher(), key_equal(), alloc) {}
+
+  template <typename R>
+  raw_hash_set(std::from_range_t, R&& rg, size_type bucket_count,
+               const hasher& hash, const allocator_type& alloc)
+      : raw_hash_set(std::from_range, std::forward<R>(rg), bucket_count, hash,
+                     key_equal(), alloc) {}
+#endif
 
   template <class InputIter>
   raw_hash_set(InputIter first, InputIter last, const allocator_type& alloc)

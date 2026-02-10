@@ -374,13 +374,16 @@ cc_test(
 
 cc_library(
     name = "throw_delegate",
-    srcs = ["internal/throw_delegate.cc"],
-    hdrs = ["internal/throw_delegate.h"],
+    srcs = [
+        "internal/throw_delegate.cc",
+        "throw_delegate.cc",
+    ],
+    hdrs = [
+        "internal/throw_delegate.h",
+        "throw_delegate.h",
+    ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    visibility = [
-        "//absl:__subpackages__",
-    ],
     deps = [
         ":config",
         ":raw_logging_internal",

@@ -827,7 +827,7 @@ bool Base64UnescapeInternal(const char* absl_nullable src, size_t slen,
 }
 
 /* clang-format off */
-constexpr std::array<char, 256> kHexValueLenient = {
+constexpr std::array<uint8_t, 256> kHexValueLenient = {
     0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -846,7 +846,7 @@ constexpr std::array<char, 256> kHexValueLenient = {
     0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-constexpr std::array<signed char, 256> kHexValueStrict = {
+constexpr std::array<int8_t, 256> kHexValueStrict = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -874,7 +874,7 @@ void HexStringToBytesInternal(const char* absl_nullable from, T to,
                               size_t num) {
   for (size_t i = 0; i < num; i++) {
     to[i] = static_cast<char>(kHexValueLenient[from[i * 2] & 0xFF] << 4) +
-            (kHexValueLenient[from[i * 2 + 1] & 0xFF]);
+            static_cast<char>(kHexValueLenient[from[i * 2 + 1] & 0xFF]);
   }
 }
 
@@ -992,8 +992,10 @@ bool HexStringToBytes(absl::string_view hex, std::string* absl_nonnull bytes) {
       output, num_bytes, [hex](char* buf, size_t buf_size) {
         auto hex_p = hex.cbegin();
         for (size_t i = 0; i < buf_size; ++i) {
-          int h1 = absl::kHexValueStrict[static_cast<size_t>(*hex_p++)];
-          int h2 = absl::kHexValueStrict[static_cast<size_t>(*hex_p++)];
+          int h1 = absl::kHexValueStrict[static_cast<size_t>(
+              static_cast<uint8_t>(*hex_p++))];
+          int h2 = absl::kHexValueStrict[static_cast<size_t>(
+              static_cast<uint8_t>(*hex_p++))];
           if (h1 == -1 || h2 == -1) {
             return size_t{0};
           }

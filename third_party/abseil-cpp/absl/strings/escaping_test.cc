@@ -733,6 +733,10 @@ TEST(Escaping, HexStringToBytesBackToHex) {
   bytes = "abc";
   EXPECT_TRUE(absl::HexStringToBytes("", &bytes));
   EXPECT_EQ("", bytes);  // Results in empty output.
+
+  // Ensure there is no sign extension bug on a signed char.
+  hex.assign("\xC8" "b", 2);
+  EXPECT_FALSE(absl::HexStringToBytes(hex, &bytes));
 }
 
 TEST(HexAndBack, HexStringToBytes_and_BytesToHexString) {

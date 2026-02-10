@@ -78,12 +78,37 @@ inline Vector128 Sub128(Vector128 a, Vector128 b) {
   return _mm_sub_epi64(a, b);
 }
 
+// Bits of the second argument to Encrypt128/Decrypt128 are XORed with the
+// first argument after encryption/decryption.
+
 inline Vector128 Encrypt128(Vector128 data, Vector128 key) {
   return _mm_aesenc_si128(data, key);
 }
 
 inline Vector128 Decrypt128(Vector128 data, Vector128 key) {
   return _mm_aesdec_si128(data, key);
+}
+
+// We use each value as the first argument to shuffle all the bits around. We do
+// not add any salt to the state or loaded data, instead we vary instructions
+// used to mix bits Encrypt128/Decrypt128 and Add128/Sub128. On x86,
+// Add128/Sub128 are combined to one instruction with data loading like
+// `vpaddq xmm1, xmm0, xmmword ptr [rdi]`.
+
+inline Vector128 MixA(Vector128 a, Vector128 state) {
+  return Decrypt128(Add128(state, a), state);
+}
+
+inline Vector128 MixB(Vector128 b, Vector128 state) {
+  return Decrypt128(Sub128(state, b), state);
+}
+
+inline Vector128 MixC(Vector128 c, Vector128 state) {
+  return Encrypt128(Add128(state, c), state);
+}
+
+inline Vector128 MixD(Vector128 d, Vector128 state) {
+  return Encrypt128(Sub128(state, d), state);
 }
 
 inline uint64_t ExtractLow64(Vector128 v) {
@@ -118,35 +143,39 @@ inline Vector128 Add128(Vector128 a, Vector128 b) {
       vaddq_u64(vreinterpretq_u64_u8(a), vreinterpretq_u64_u8(b)));
 }
 
-inline Vector128 Sub128(Vector128 a, Vector128 b) {
-  return vreinterpretq_u8_u64(
-      vsubq_u64(vreinterpretq_u64_u8(a), vreinterpretq_u64_u8(b)));
-}
-
-// Encrypt128 and Decrypt128 are equivalent to x86 versions.
-// `vaeseq_u8` and `vaesdq_u8` perform `^ key` before encryption/decryption.
-// We need to perform `^ key` after encryption/decryption to improve hash
-// quality and match x86 version.
+// Bits of the second argument to Decrypt128/Encrypt128 are XORed with the
+// state argument BEFORE encryption (in x86 version they are XORed after).
 
 inline Vector128 Encrypt128(Vector128 data, Vector128 key) {
-  return vaesmcq_u8(vaeseq_u8(data, Vector128{})) ^ key;
-}
-
-inline Vector128 Decrypt128(Vector128 data, Vector128 key) {
-  return vaesimcq_u8(vaesdq_u8(data, Vector128{})) ^ key;
-}
-
-// ArmEncrypt128 and ArmDecrypt128 are ARM specific versions that use ARM
-// instructions directly.
-// We can only use these versions in the second round of encryption/decryption
-// to have good hash quality.
-
-inline Vector128 ArmEncrypt128(Vector128 data, Vector128 key) {
   return vaesmcq_u8(vaeseq_u8(data, key));
 }
 
-inline Vector128 ArmDecrypt128(Vector128 data, Vector128 key) {
+inline Vector128 Decrypt128(Vector128 data, Vector128 key) {
   return vaesimcq_u8(vaesdq_u8(data, key));
+}
+
+// We use decryption for a, b and encryption for c, d. That helps us to avoid
+// collisions for trivial byte rotations. Mix4x16Vectors later uses
+// encrypted/decrypted pairs differently to ensure that the order of blocks is
+// important for the hash value.
+// We also avoid using Add128/Sub128 instructions because state is being mixed
+// before encryption/decryption. On ARM, there is no fusion of load and add/sub
+// instructions so it is more expensive to use them.
+
+inline Vector128 MixA(Vector128 a, Vector128 state) {
+  return Decrypt128(a, state);
+}
+
+inline Vector128 MixB(Vector128 b, Vector128 state) {
+  return Decrypt128(b, state);
+}
+
+inline Vector128 MixC(Vector128 c, Vector128 state) {
+  return Encrypt128(c, state);
+}
+
+inline Vector128 MixD(Vector128 d, Vector128 state) {
+  return Encrypt128(d, state);
 }
 
 inline uint64_t ExtractLow64(Vector128 v) {
@@ -158,7 +187,7 @@ inline uint64_t ExtractHigh64(Vector128 v) {
 }
 
 uint64_t Mix4x16Vectors(Vector128 a, Vector128 b, Vector128 c, Vector128 d) {
-  Vector128 res128 = Add128(ArmEncrypt128(a, c), ArmDecrypt128(b, d));
+  Vector128 res128 = Add128(Encrypt128(a, c), Decrypt128(b, d));
   uint64_t x64 = ExtractLow64(res128);
   uint64_t y64 = ExtractHigh64(res128);
   return x64 ^ y64;
@@ -176,16 +205,10 @@ uint64_t LowLevelHash33To64(uint64_t seed, const uint8_t* ptr, size_t len) {
   Vector128 c = Load128(last32_ptr);
   Vector128 d = Load128(last32_ptr + 16);
 
-  // Bits of the second argument to Decrypt128/Encrypt128 are XORed with the
-  // state argument after encryption. We use each value as the first argument to
-  // shuffle all the bits around. We do not add any salt to the state or loaded
-  // data, instead we vary instructions used to mix bits Decrypt128/Encrypt128
-  // and Add128/Sub128. On x86 Add128/Sub128 are combined to one instruction
-  // with data loading like `vpaddq  xmm1, xmm0, xmmword ptr [rdi]`.
-  Vector128 na = Decrypt128(Add128(state, a), state);
-  Vector128 nb = Decrypt128(Sub128(state, b), state);
-  Vector128 nc = Encrypt128(Add128(state, c), state);
-  Vector128 nd = Encrypt128(Sub128(state, d), state);
+  Vector128 na = MixA(a, state);
+  Vector128 nb = MixB(b, state);
+  Vector128 nc = MixC(c, state);
+  Vector128 nd = MixD(d, state);
 
   // We perform another round of encryption to mix bits between two halves of
   // the input.
@@ -216,15 +239,15 @@ LowLevelHashLenGt64(uint64_t seed, const void* data, size_t len) {
                  &state1](const uint8_t* p) ABSL_ATTRIBUTE_ALWAYS_INLINE {
     Vector128 a = Load128(p);
     Vector128 b = Load128(p + 16);
-    state0 = Decrypt128(Add128(state0, a), state0);
-    state1 = Decrypt128(Sub128(state1, b), state1);
+    state0 = MixA(a, state0);
+    state1 = MixB(b, state1);
   };
   auto mix_cd = [&state2,
                  &state3](const uint8_t* p) ABSL_ATTRIBUTE_ALWAYS_INLINE {
     Vector128 c = Load128(p);
     Vector128 d = Load128(p + 16);
-    state2 = Encrypt128(Add128(state2, c), state2);
-    state3 = Encrypt128(Sub128(state3, d), state3);
+    state2 = MixC(c, state2);
+    state3 = MixD(d, state3);
   };
 
   do {

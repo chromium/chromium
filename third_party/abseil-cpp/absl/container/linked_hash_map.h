@@ -43,8 +43,8 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
-#include "absl/base/internal/throw_delegate.h"
 #include "absl/base/optimization.h"
+#include "absl/base/throw_delegate.h"
 #include "absl/container/flat_hash_set.h"
 #include "absl/container/internal/common.h"
 
@@ -377,7 +377,7 @@ class linked_hash_map {
   mapped_type& at(const key_arg<K>& key) {
     auto it = find(key);
     if (ABSL_PREDICT_FALSE(it == end())) {
-      absl::base_internal::ThrowStdOutOfRange("absl::linked_hash_map::at");
+      ThrowStdOutOfRange("absl::linked_hash_map::at");
     }
     return it->second;
   }

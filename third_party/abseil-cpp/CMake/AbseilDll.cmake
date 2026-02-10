@@ -64,6 +64,8 @@ set(ABSL_INTERNAL_DLL_FILES
   "base/policy_checks.h"
   "base/port.h"
   "base/thread_annotations.h"
+  "base/throw_delegate.h"
+  "base/throw_delegate.cc"
   "cleanup/cleanup.h"
   "cleanup/internal/cleanup.h"
   "container/btree_map.h"
