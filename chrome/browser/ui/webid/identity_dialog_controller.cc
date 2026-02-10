@@ -27,6 +27,7 @@
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/webid/identity_credential_source.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 
 // We add nognchecks on these includes so that Android bots do not fail
@@ -185,12 +186,14 @@ bool IdentityDialogController::ShowAccountsDialog(
         // could happen if the account was revoked between being shown to the
         // user and the actor login request being sent.
         actor_login_request->on_federated_result_received_callback().Run(
-            FederatedLoginResult::kFailure);
+            content::webid::FederatedLoginResult::kAccountIsSignUp);
         return false;
       }
     }
+    // The selected account was not found in the list of accounts fetched from
+    // the IdP.
     actor_login_request->on_federated_result_received_callback().Run(
-        FederatedLoginResult::kFailure);
+        content::webid::FederatedLoginResult::kAccountNotLoggedIn);
     return false;
   }
 
@@ -334,7 +337,8 @@ void IdentityDialogController::OnAccountsDisplayed() {
   std::move(on_accounts_displayed_).Run();
 }
 
-void IdentityDialogController::OnFlowCompleted(bool success) {
+void IdentityDialogController::OnFlowCompleted(
+    content::webid::FederatedLoginResult result) {
   // OnFlowCompleted() may be invoked while the WebContents is being destroyed,
   // so be careful when trying to access the Page.
   if (rp_web_contents_->IsBeingDestroyed()) {
@@ -343,9 +347,7 @@ void IdentityDialogController::OnFlowCompleted(bool success) {
   FederatedActorLoginRequest* actor_login_request =
       FederatedActorLoginRequest::Get(rp_web_contents_);
   if (actor_login_request) {
-    actor_login_request->on_federated_result_received_callback().Run(
-        success ? FederatedLoginResult::kSuccess
-                : FederatedLoginResult::kFailure);
+    actor_login_request->on_federated_result_received_callback().Run(result);
   }
 }
 
@@ -438,7 +440,7 @@ content::WebContents* IdentityDialogController::ShowModalDialog(
       FederatedActorLoginRequest::Get(rp_web_contents_);
   if (actor_login_request) {
     actor_login_request->on_federated_result_received_callback().Run(
-        FederatedLoginResult::kContinuation);
+        content::webid::FederatedLoginResult::kContinuation);
   }
   // Show the modal dialog even if FedCM UI is not being shown.
   return account_view_->ShowModalDialog(url, rp_mode);

@@ -16,6 +16,19 @@ class Page;
 
 namespace content::webid {
 
+enum class FederatedLoginResult {
+  kSuccess = 0,
+  kContinuation,
+  kAccountNotLoggedIn,
+  kAccountIsSignUp,
+  kAccountNotAvailable,
+  kIdpReturnedError,
+  kIdpNetworkError,
+  kTokenRequestAborted,
+  kFrameNotActive,
+  kExpectedAccountNotPresent,
+};
+
 // A data source for embedder initiated login, used to fetch accounts from
 // identity providers.
 class CONTENT_EXPORT IdentityCredentialSource {

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/webid/identity_credential_source.h"
 
 namespace content {
 
@@ -169,7 +170,8 @@ WebContents* IdentityRequestDialogController::ShowModalDialog(
 
 void IdentityRequestDialogController::CloseModalDialog() {}
 
-void IdentityRequestDialogController::OnFlowCompleted(bool success) {}
+void IdentityRequestDialogController::OnFlowCompleted(
+    content::webid::FederatedLoginResult result) {}
 
 WebContents* IdentityRequestDialogController::GetRpWebContents() {
   return nullptr;

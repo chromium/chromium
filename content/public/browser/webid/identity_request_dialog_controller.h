@@ -22,6 +22,10 @@
 namespace content {
 class WebContents;
 
+namespace webid {
+enum class FederatedLoginResult;
+}  // namespace webid
+
 // The client metadata that will be used to display a FedCM dialog. This data is
 // extracted from the client metadata endpoint from the FedCM API, where
 // 'client' is essentially the relying party which invoked the API.
@@ -301,7 +305,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   virtual void CloseModalDialog();
 
   // Informs the controller that the flow has completed.
-  virtual void OnFlowCompleted(bool success);
+  virtual void OnFlowCompleted(webid::FederatedLoginResult result);
 
   // When called on an object corresponding to the popup opened by
   // ShowModalDialog, returns the web contents for the original RP page.

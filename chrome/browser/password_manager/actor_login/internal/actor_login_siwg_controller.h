@@ -26,6 +26,10 @@
 namespace content {
 class WebContents;
 class RenderFrameHost;
+
+namespace webid {
+enum class FederatedLoginResult;
+}  // namespace webid
 }  // namespace content
 
 namespace actor_login {
@@ -88,7 +92,8 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
 
   void OnClickFinished(actor::mojom::ActionResultPtr result);
 
-  void OnFederatedLoginResultReceived(FederatedLoginResult result);
+  void OnFederatedLoginResultReceived(
+      content::webid::FederatedLoginResult result);
 
   GetPageContentProvider get_page_content_provider_;
   std::unique_ptr<SiwgButtonFinder> siwg_finder_;

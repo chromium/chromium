@@ -9,20 +9,20 @@
 
 #include "base/functional/callback.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "content/public/browser/webid/identity_credential_source.h"
 #include "url/origin.h"
 
 namespace content {
+
+namespace webid {
+enum class FederatedLoginResult;
+}  // namespace webid
+
 class WebContents;
 }
 
-enum class FederatedLoginResult {
-  kSuccess = 0,
-  kFailure,
-  kContinuation,
-};
-
 using OnFederatedResultReceivedCallback =
-    base::RepeatingCallback<void(FederatedLoginResult)>;
+    base::RepeatingCallback<void(content::webid::FederatedLoginResult)>;
 
 // Represents an actor login request. The actor may choose to request
 // a federated token from a specific account, and request to be notified when

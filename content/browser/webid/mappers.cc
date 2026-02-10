@@ -10,6 +10,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/metrics.h"
+#include "content/public/browser/webid/identity_credential_source.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
@@ -367,6 +368,84 @@ void ComputeAccountFields(
       };
     }
   }
+}
+
+FederatedLoginResult FederatedAuthRequestResultToFederatedLoginResult(
+    FederatedAuthRequestResult result) {
+  FederatedLoginResult federated_login_result;
+  switch (result) {
+    case blink::mojom::FederatedAuthRequestResult::kSuccess:
+      federated_login_result = FederatedLoginResult::kSuccess;
+      break;
+    case blink::mojom::FederatedAuthRequestResult::
+        kIdpNotPotentiallyTrustworthy:
+    case blink::mojom::FederatedAuthRequestResult::kWellKnownHttpNotFound:
+    case blink::mojom::FederatedAuthRequestResult::kWellKnownNoResponse:
+    case blink::mojom::FederatedAuthRequestResult::kWellKnownInvalidResponse:
+    case blink::mojom::FederatedAuthRequestResult::kWellKnownListEmpty:
+    case blink::mojom::FederatedAuthRequestResult::kWellKnownInvalidContentType:
+    case blink::mojom::FederatedAuthRequestResult::kConfigNotInWellKnown:
+    case blink::mojom::FederatedAuthRequestResult::kWellKnownTooBig:
+    case blink::mojom::FederatedAuthRequestResult::kConfigHttpNotFound:
+    case blink::mojom::FederatedAuthRequestResult::kConfigNoResponse:
+    case blink::mojom::FederatedAuthRequestResult::kConfigInvalidResponse:
+    case blink::mojom::FederatedAuthRequestResult::kConfigInvalidContentType:
+    case blink::mojom::FederatedAuthRequestResult::kClientMetadataHttpNotFound:
+    case blink::mojom::FederatedAuthRequestResult::kClientMetadataNoResponse:
+    case blink::mojom::FederatedAuthRequestResult::
+        kClientMetadataInvalidResponse:
+    case blink::mojom::FederatedAuthRequestResult::
+        kClientMetadataInvalidContentType:
+    case blink::mojom::FederatedAuthRequestResult::kAccountsHttpNotFound:
+    case blink::mojom::FederatedAuthRequestResult::kAccountsNoResponse:
+    case blink::mojom::FederatedAuthRequestResult::kAccountsInvalidResponse:
+    case blink::mojom::FederatedAuthRequestResult::kAccountsListEmpty:
+    case blink::mojom::FederatedAuthRequestResult::kAccountsInvalidContentType:
+    case blink::mojom::FederatedAuthRequestResult::kIdTokenHttpNotFound:
+    case blink::mojom::FederatedAuthRequestResult::kIdTokenNoResponse:
+    case blink::mojom::FederatedAuthRequestResult::kIdTokenInvalidResponse:
+    case blink::mojom::FederatedAuthRequestResult::kIdTokenInvalidContentType:
+    case blink::mojom::FederatedAuthRequestResult::kInvalidFieldsSpecified:
+    case blink::mojom::FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque:
+    case blink::mojom::FederatedAuthRequestResult::kTypeNotMatching:
+    case blink::mojom::FederatedAuthRequestResult::kError:
+    case blink::mojom::FederatedAuthRequestResult::kCorsError:
+      federated_login_result = FederatedLoginResult::kIdpNetworkError;
+      break;
+    case blink::mojom::FederatedAuthRequestResult::kIdTokenIdpErrorResponse:
+    case blink::mojom::FederatedAuthRequestResult::
+        kIdTokenCrossSiteIdpErrorResponse:
+      federated_login_result = FederatedLoginResult::kIdpReturnedError;
+      break;
+    case blink::mojom::FederatedAuthRequestResult::kCanceled:
+      federated_login_result = FederatedLoginResult::kTokenRequestAborted;
+      break;
+    case blink::mojom::FederatedAuthRequestResult::kRpPageNotVisible:
+      federated_login_result = FederatedLoginResult::kFrameNotActive;
+      break;
+    case blink::mojom::FederatedAuthRequestResult::kSilentMediationFailure:
+      federated_login_result = FederatedLoginResult::kExpectedAccountNotPresent;
+      break;
+    case blink::mojom::FederatedAuthRequestResult::kNotSignedInWithIdp:
+      federated_login_result = FederatedLoginResult::kAccountNotLoggedIn;
+      break;
+    // These should not happen during actor login flow, but this conversion
+    // method is invoked regardless, so just return some default error.
+    case blink::mojom::FederatedAuthRequestResult::kShouldEmbargo:
+    case blink::mojom::FederatedAuthRequestResult::kUiDismissedNoEmbargo:
+    case blink::mojom::FederatedAuthRequestResult::kDisabledInSettings:
+    case blink::mojom::FederatedAuthRequestResult::kDisabledInFlags:
+    case blink::mojom::FederatedAuthRequestResult::kTooManyRequests:
+    case blink::mojom::FederatedAuthRequestResult::kThirdPartyCookiesBlocked:
+    case blink::mojom::FederatedAuthRequestResult::
+        kMissingTransientUserActivation:
+    case blink::mojom::FederatedAuthRequestResult::kReplacedByActiveMode:
+    case blink::mojom::FederatedAuthRequestResult::
+        kSuppressedBySegmentationPlatform:
+      federated_login_result = FederatedLoginResult::kIdpNetworkError;
+      break;
+  }
+  return federated_login_result;
 }
 
 }  // namespace content::webid

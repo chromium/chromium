@@ -16,6 +16,8 @@
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/webid/identity_credential_source.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
@@ -81,15 +83,15 @@ void ActorLoginSiwgController::ClickSiwgButton() {
 }
 
 void ActorLoginSiwgController::OnFederatedLoginResultReceived(
-    FederatedLoginResult result) {
+    content::webid::FederatedLoginResult result) {
   if (!on_finished_callback_) {
     return;
   }
-  if (result == FederatedLoginResult::kSuccess) {
+  if (result == content::webid::FederatedLoginResult::kSuccess) {
     std::move(on_finished_callback_)
         // TODO(crbug.com/478799141): add new status for SiwG success.
         .Run(LoginStatusResult::kSuccessUsernameAndPasswordFilled);
-  } else if (result == FederatedLoginResult::kContinuation) {
+  } else if (result == content::webid::FederatedLoginResult::kContinuation) {
     // TODO(crbug.com/481685277): handle the continuation case.
   } else {
     std::move(on_finished_callback_)

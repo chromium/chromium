@@ -189,7 +189,8 @@ void FakeIdentityRequestDialogController::CloseModalDialog() {
   }
 }
 
-void FakeIdentityRequestDialogController::OnFlowCompleted(bool success) {}
+void FakeIdentityRequestDialogController::OnFlowCompleted(
+    content::webid::FederatedLoginResult result) {}
 
 void FakeIdentityRequestDialogController::WebContentsDestroyed() {
   if (popup_dismiss_callback_) {

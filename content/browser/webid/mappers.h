@@ -23,6 +23,8 @@ enum class FedCmLifecycleStateFailureReason;
 
 namespace webid {
 
+enum class FederatedLoginResult;
+
 // This header file defines functions which convert between FedCM types. It also
 // defines some constants used in some of these conversions.
 
@@ -109,6 +111,11 @@ GetDisclosureFields(const std::optional<std::vector<std::string>>& fields);
 CONTENT_EXPORT void ComputeAccountFields(
     const std::vector<IdentityRequestDialogDisclosureField>& rp_fields,
     std::vector<IdentityRequestAccountPtr>& accounts);
+
+// Converts a FederatedAuthRequestResult to a FederatedLoginResult. The later is
+// a less granular result type used by the embedder.
+FederatedLoginResult FederatedAuthRequestResultToFederatedLoginResult(
+    blink::mojom::FederatedAuthRequestResult result);
 
 }  // namespace webid
 }  // namespace content
