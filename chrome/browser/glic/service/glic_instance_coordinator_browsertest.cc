@@ -679,6 +679,12 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   GlicInstanceImpl* instance = OpenGlicForActiveTab();
   ASSERT_TRUE(instance);
 
+  // Register a conversation ID to prevent the instance from being deleted
+  // when the side panel is closed.
+  auto info = mojom::ConversationInfo::New();
+  info->conversation_id = "test_conversation_id";
+  instance->RegisterConversation(std::move(info), base::DoNothing());
+
   // Close the side panel for this tab.
   auto original_instance_id = instance->id();
   instance->Close(EmbedderKey(tab), CloseOptions());
