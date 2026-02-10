@@ -10,12 +10,12 @@ import static org.chromium.chrome.browser.autofill.editors.address.EditorPropert
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.EDITOR_TITLE;
-import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.NOTICE;
-import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.VALIDATE_ON_SHOW;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.VISIBLE;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.scrollToFieldWithErrorMessage;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.validateForm;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NOTICE;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;

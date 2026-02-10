@@ -4,13 +4,12 @@
 
 package org.chromium.chrome.browser.autofill.editors.address;
 
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.isEditable;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.FOCUSED;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALIDATOR;
 
 import android.app.Activity;
-
-import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
@@ -24,9 +23,6 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /** Properties defined here reflect the visible state of the {@link EditorDialog}. */
 @NullMarked
@@ -85,30 +81,6 @@ public class EditorProperties {
     };
 
     private EditorProperties() {}
-
-    /*
-     * Types of fields this editor model supports.
-     */
-    @IntDef({ItemType.DROPDOWN, ItemType.TEXT_INPUT, ItemType.NON_EDITABLE_TEXT, ItemType.NOTICE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ItemType {
-        // A fixed list of values, only 1 of which can be selected.
-        int DROPDOWN = 1;
-        // User can fill in a sequence of characters subject to input type restrictions.
-        int TEXT_INPUT = 2;
-        // A non-editable constant string.
-        int NON_EDITABLE_TEXT = 3;
-        // A notice string that is not editable.
-        int NOTICE = 4;
-    }
-
-    public static boolean isDropdownField(ListItem fieldItem) {
-        return fieldItem.type == ItemType.DROPDOWN;
-    }
-
-    public static boolean isEditable(ListItem fieldItem) {
-        return fieldItem.type == ItemType.DROPDOWN || fieldItem.type == ItemType.TEXT_INPUT;
-    }
 
     public static boolean validateForm(PropertyModel editorModel) {
         boolean isValid = true;

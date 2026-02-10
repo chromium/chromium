@@ -26,13 +26,13 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.EDITOR_FIELDS;
-import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.DROPDOWN;
-import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.NOTICE;
-import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.TEXT_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.isEditable;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DROPDOWN;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NOTICE;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.isEditable;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.setDropdownKey;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.ERROR_MESSAGE;
@@ -70,7 +70,7 @@ import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtilJni;
 import org.chromium.chrome.browser.autofill.SubKeyRequesterFactory;
 import org.chromium.chrome.browser.autofill.editors.address.EditorDialogView;
-import org.chromium.chrome.browser.autofill.editors.address.EditorProperties;
+import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties;
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
 import org.chromium.components.autofill.AutofillAddressEditorUiInfo;
 import org.chromium.components.autofill.AutofillAddressUiComponent;
@@ -832,7 +832,7 @@ public class AddressEditorTest {
         ListModel<EditorItem> model = editorModel.get(EDITOR_FIELDS);
         assertEquals(11, model.size());
         for (EditorItem item : model) {
-            if (EditorProperties.isEditable(item) && item.model.get(IS_REQUIRED)) {
+            if (EditorComponentsProperties.isEditable(item) && item.model.get(IS_REQUIRED)) {
                 item.model.set(VALUE, "");
             }
         }

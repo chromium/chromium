@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.editors.common;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -11,6 +13,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Common properties for the editor fields or other views displayed in an editor.
@@ -31,6 +36,30 @@ public class EditorComponentsProperties {
             super(type, model);
             this.isFullLine = isFullLine;
         }
+    }
+
+    /*
+     * Types of fields this editor model supports.
+     */
+    @IntDef({ItemType.DROPDOWN, ItemType.TEXT_INPUT, ItemType.NON_EDITABLE_TEXT, ItemType.NOTICE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ItemType {
+        // A fixed list of values, only 1 of which can be selected.
+        int DROPDOWN = 1;
+        // User can fill in a sequence of characters subject to input type restrictions.
+        int TEXT_INPUT = 2;
+        // A non-editable constant string.
+        int NON_EDITABLE_TEXT = 3;
+        // A notice string that is not editable.
+        int NOTICE = 4;
+    }
+
+    public static boolean isDropdownField(ListItem fieldItem) {
+        return fieldItem.type == ItemType.DROPDOWN;
+    }
+
+    public static boolean isEditable(ListItem fieldItem) {
+        return fieldItem.type == ItemType.DROPDOWN || fieldItem.type == ItemType.TEXT_INPUT;
     }
 
     /** Properties specific for the non-editable text fields. */

@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.autofill.editors.common;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.DROPDOWN;
-import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.NON_EDITABLE_TEXT;
-import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.NOTICE;
-import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.TEXT_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.isDropdownField;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DROPDOWN;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NON_EDITABLE_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NOTICE;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.TEXT_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.isDropdownField;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
