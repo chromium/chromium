@@ -51,7 +51,6 @@ class NetworkConfigurationHandler;
 class NetworkConnectionHandler;
 class NetworkDeviceHandler;
 class NetworkDeviceHandlerImpl;
-class NetworkLoginScreenProtocolHandlerObserver;
 class NetworkMetadataStore;
 class NetworkProfileHandler;
 class NetworkStateHandler;
@@ -218,9 +217,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
       ephemeral_network_policies_enablement_handler_;
   std::unique_ptr<EphemeralNetworkConfigurationHandler>
       ephemeral_network_configuration_handler_;
-
-  std::unique_ptr<NetworkLoginScreenProtocolHandlerObserver>
-      network_login_screen_protocol_handler_observer_;
 
   // True when the device is managed by policy.
   bool is_enterprise_managed_ = false;
