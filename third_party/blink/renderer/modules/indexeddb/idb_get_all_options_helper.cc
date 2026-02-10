@@ -21,11 +21,6 @@ namespace {
 IDBGetAllOptions* TryCreateGetAllOptions(ScriptState* script_state,
                                          v8::Local<v8::Value> range_or_options,
                                          ExceptionState& exception_state) {
-  if (!RuntimeEnabledFeatures::IndexedDbGetAllRecordsEnabled()) {
-    // `getAllRecords()` introduced the `IDBGetAllOptions` dictionary.
-    return nullptr;
-  }
-
   if (range_or_options->IsNullOrUndefined()) {
     return nullptr;
   }

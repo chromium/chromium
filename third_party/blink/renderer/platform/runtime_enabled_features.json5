@@ -3093,10 +3093,6 @@
       base_feature: "IncomingCallNotifications",
     },
     {
-      name: "IndexedDbGetAllRecords",
-      status: "stable",
-    },
-    {
       name: "InertElementNonEditable",
       status: "stable",
     },
