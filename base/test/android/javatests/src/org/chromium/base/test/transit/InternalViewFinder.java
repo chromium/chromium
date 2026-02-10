@@ -41,9 +41,6 @@ class InternalViewFinder {
                     instanceof WindowManager.LayoutParams windowLayoutParams)) {
                 continue;
             }
-            if ((windowLayoutParams.flags & WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE) != 0) {
-                continue;
-            }
 
             Root root =
                     new Root.Builder()

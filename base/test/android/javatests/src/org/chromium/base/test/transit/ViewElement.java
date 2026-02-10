@@ -10,10 +10,12 @@ import static org.hamcrest.CoreMatchers.is;
 
 import static org.chromium.base.test.transit.Condition.whether;
 import static org.chromium.base.test.transit.SimpleConditions.instrumentationThreadCondition;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
+import android.view.WindowManager;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.Root;
@@ -206,7 +208,8 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
                             // This is crucial in multiwindow. Even when two tasks are displayed
                             // side-by-side, only the window of the task last interacted with is
                             // focused.
-                            if (!rootMatched.getDecorView().hasWindowFocus()) {
+                            if (isWindowFocusable(rootMatched)
+                                    && !rootMatched.getDecorView().hasWindowFocus()) {
                                 Log.i(TAG, "Root does not have window focus, moving to front.");
                                 focusWindow(rootMatched);
                             }
@@ -215,6 +218,12 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
                                     .inRoot(withDecorView(is(rootMatched.getDecorView())))
                                     .perform(action);
                         });
+    }
+
+    private static boolean isWindowFocusable(Root rootMatched) {
+        WindowManager.LayoutParams windowLayoutParams = rootMatched.getWindowLayoutParams2();
+        assumeNonNull(windowLayoutParams);
+        return (windowLayoutParams.flags & WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE) == 0;
     }
 
     private void focusWindow(Root rootMatched) {
