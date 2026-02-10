@@ -53,6 +53,9 @@ WTF_EXPORT unsigned CharactersToUInt(base::span<const LChar>,
 WTF_EXPORT unsigned CharactersToUInt(base::span<const UChar>,
                                      NumberParsingOptions,
                                      bool* ok);
+WTF_EXPORT unsigned CharactersToUInt(const StringView&,
+                                     NumberParsingOptions,
+                                     bool* ok);
 
 // NumberParsingResult versions of CharactersToUInt. They can detect
 // overflow. |NumberParsingResult*| should not be nullptr;

@@ -221,6 +221,13 @@ unsigned CharactersToUInt(base::span<const UChar> data,
   return ToIntegralType<unsigned, UChar, 10>(data, options, ok);
 }
 
+unsigned CharactersToUInt(const StringView& string,
+                          NumberParsingOptions options,
+                          bool* ok) {
+  return VisitCharacters(
+      string, [&](auto chars) { return CharactersToUInt(chars, options, ok); });
+}
+
 int64_t CharactersToInt64(base::span<const LChar> data,
                           NumberParsingOptions options,
                           bool* ok) {

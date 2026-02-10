@@ -71,6 +71,7 @@ TEST_F(BackgroundTracingHelperTest, GetMarkHashAndSequenceNumber) {
   static constexpr char kInvalidSuffix0[] = "trigger:foo_";
   static constexpr char kInvalidSuffix1[] = "trigger:foo123";
   static constexpr char kHasSuffix[] = "trigger:foo_123";
+  static constexpr char kHasBigSuffix[] = "trigger:foo_2147483648";
 
   {
     auto result = SplitMarkNameAndId(kNoSuffix);
@@ -94,6 +95,12 @@ TEST_F(BackgroundTracingHelperTest, GetMarkHashAndSequenceNumber) {
     auto result = SplitMarkNameAndId(kHasSuffix);
     EXPECT_EQ("foo", result.first);
     EXPECT_EQ(123u, result.second);
+  }
+
+  {
+    auto result = SplitMarkNameAndId(kHasBigSuffix);
+    EXPECT_EQ("foo", result.first);
+    EXPECT_EQ(0x80000000, result.second);
   }
 }
 

@@ -222,7 +222,7 @@ BackgroundTracingHelper::SplitMarkNameAndId(StringView mark_name) {
   auto suffix = StringView(mark_name, sequence_number_pos + 1);
   mark_name = StringView(mark_name, 0, sequence_number_pos);
   bool result = false;
-  int seq_num = CharactersToInt(suffix, NumberParsingOptions(), &result);
+  uint32_t seq_num = CharactersToUInt(suffix, NumberParsingOptions(), &result);
   if (!result) {
     return std::make_pair(mark_name, std::nullopt);
   }
