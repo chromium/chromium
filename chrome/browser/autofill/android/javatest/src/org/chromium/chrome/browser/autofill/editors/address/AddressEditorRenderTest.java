@@ -16,6 +16,7 @@ import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
@@ -215,6 +216,13 @@ public class AddressEditorRenderTest {
         when(mPhoneNumberUtilJni.isPossibleNumber(anyString(), anyString())).thenReturn(true);
 
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
+    }
+
+    @After
+    public void tearDown() {
+        // TODO(crbug.com/483420501): Fix NPE: Profile.shutdownStarted() on null profile after
+        // activity destruction.
+        mActivityTestRule.skipWindowAndTabStateCleanup();
     }
 
     @AfterClass

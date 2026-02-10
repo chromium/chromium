@@ -16,6 +16,7 @@ import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -159,6 +160,13 @@ public class FullscreenManagerTest {
     public void setUp() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> TabStateBrowserControlsVisibilityDelegate.disablePageLoadDelayForTests());
+    }
+
+    @After
+    public void tearDown() {
+        // TODO(crbug.com/483420501): Fix NPE: Attempt to invoke virtual method 'getClass()' on a
+        // null object reference.
+        mActivityTestRule.skipWindowAndTabStateCleanup();
     }
 
     @Test
