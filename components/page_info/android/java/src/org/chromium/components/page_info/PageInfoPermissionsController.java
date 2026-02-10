@@ -24,7 +24,6 @@ import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetcher;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
-import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.embedder_support.util.Origin;
@@ -138,8 +137,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
         // was being requested, we should resolve the permission request as denied as the user did
         // not explicitly grant the permission via clicking the "Subscribe" button.
         if (mHasRequestedNotificationsPermission) {
-            PermissionUtil.resolveNotificationsPermissionRequest(
-                    mWebContents, ContentSetting.BLOCK);
+            PermissionUtil.resolveClapperViaClose(mWebContents);
             // Reset the requested permission state to false, as the permission has been denied and
             // is not longer in request. This will ensure that the notification permission request
             // will not be accidentally shown again when the user navigates back to the permission
@@ -311,8 +309,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
     @Override
     public void onPermissionsReset() {
         if (mHasRequestedNotificationsPermission) {
-            PermissionUtil.resolveNotificationsPermissionRequest(
-                    mWebContents, ContentSetting.DEFAULT);
+            PermissionUtil.resolveClapperViaReset(mWebContents);
             mHasRequestedNotificationsPermission = false;
         }
 
@@ -338,7 +335,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
     public void onNotificationSubscribeClicked() {
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
         if (windowAndroid == null) {
-            resolvePermissionRequest(true);
+            resolvePermissionRequest();
             return;
         }
         boolean requestSent =
@@ -350,18 +347,18 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
                             public void onAndroidPermissionAccepted() {
                                 RecordHistogram.recordBooleanHistogram(
                                         "Permissions.ClapperLoud.PageInfo.OsPromptResolved", true);
-                                resolvePermissionRequest(true);
+                                resolvePermissionRequest();
                             }
 
                             @Override
                             public void onAndroidPermissionCanceled() {
                                 RecordHistogram.recordBooleanHistogram(
                                         "Permissions.ClapperLoud.PageInfo.OsPromptResolved", false);
-                                resolvePermissionRequest(false);
+                                resolvePermissionRequest();
                             }
                         });
         if (!requestSent) {
-            resolvePermissionRequest(true);
+            resolvePermissionRequest();
         }
     }
 
@@ -372,18 +369,13 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
                 windowAndroid, contentSettingsTypes, delegate);
     }
 
-    private void resolvePermissionRequest(boolean isGranted) {
+    private void resolvePermissionRequest() {
         // Reset the requested permission state to false, as the permission has been granted and is
         // not longer in request. This will ensure that the notification permission request will not
         // be accidentally denied when the user navigates away from the permission subpage.
         mHasRequestedNotificationsPermission = false;
 
-        if (isGranted) {
-            PermissionUtil.resolveNotificationsPermissionRequest(
-                    mWebContents, ContentSetting.ALLOW);
-        } else {
-            PermissionUtil.dismissNotificationsPermissionRequest(mWebContents);
-        }
+        PermissionUtil.resolveClapperViaSubscribe(mWebContents);
 
         // `updateRowIfNeeded` will update the permission row in the main view of PageInfo. It will
         // not update the permission row in the subpage.

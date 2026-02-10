@@ -232,99 +232,108 @@ void ResolvePermissionWithOSPrompt(content::WebContents* web_contents,
 
 namespace internal {
 
-void ResolveNotificationsPermissionRequest(content::WebContents* web_contents,
-                                           ContentSetting setting) {
+// Helper method to retrieve the PermissionRequestManager for a notification
+// request. Returns nullptr if no such request is currently in progress.
+permissions::PermissionRequestManager*
+GetPermissionRequestManagerForNotifications(
+    content::WebContents* web_contents) {
   if (!web_contents) {
-    return;
+    return nullptr;
   }
   permissions::PermissionRequestManager* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
 
   if (!permission_request_manager) {
-    return;
+    return nullptr;
   }
+
   if (permission_request_manager->IsRequestInProgress() &&
       permission_request_manager->Requests().size() > 0 &&
       permission_request_manager->Requests()[0]->GetContentSettingsType() ==
           ContentSettingsType::NOTIFICATIONS) {
-    if (setting == CONTENT_SETTING_ALLOW) {
-      if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
-        base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Subscribed",
-                                  true);
-      }
-      permission_request_manager->Accept(/*prompt_options=*/std::monostate());
-    } else if (setting == CONTENT_SETTING_BLOCK) {
-      // There are multiple ways to deny the permission request. This histogram
-      // will track the number of times the user denied the permission request
-      // by closing the PageInfo.
-      if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
-        base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Closed",
-                                  true);
-      }
-      permission_request_manager->Deny(/*prompt_options=*/std::monostate());
-    } else if (setting == CONTENT_SETTING_DEFAULT) {
-      if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
-        base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Reset",
-                                  true);
-      }
-      // After the user interacts with the reset permission button in PageInfo,
-      // all previously decided permissions are reset by setting them to
-      // DEFAULT. There is no a default action or a state for permission
-      // requests, so we need to explicitly dismiss the request.
-      permission_request_manager->Dismiss(/*prompt_options=*/std::monostate());
-    } else {
-      // Currently, only ALLOW and BLOCK are supported. In case other actions
-      // are added in the future, this should be updated.
-      NOTREACHED();
+    return permission_request_manager;
+  }
+  return nullptr;
+}
+
+void ResolveClapperViaSubscribe(content::WebContents* web_contents) {
+  if (auto* permission_request_manager =
+          GetPermissionRequestManagerForNotifications(web_contents)) {
+    if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
+      base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Subscribed",
+                                true);
     }
+    permission_request_manager->Accept(/*prompt_options=*/std::monostate());
   }
 }
 
-void DismissNotificationsPermissionRequest(content::WebContents* web_contents) {
-  if (!web_contents) {
-    return;
-  }
-  permissions::PermissionRequestManager* permission_request_manager =
-      permissions::PermissionRequestManager::FromWebContents(web_contents);
-
-  if (!permission_request_manager) {
-    return;
-  }
-  if (permission_request_manager->IsRequestInProgress() &&
-      permission_request_manager->Requests().size() > 0 &&
-      permission_request_manager->Requests()[0]->GetContentSettingsType() ==
-          ContentSettingsType::NOTIFICATIONS) {
-    permission_request_manager->Dismiss(/*prompt_options=*/std::monostate());
+void ResolveLoudClapperViaAllow(content::WebContents* web_contents) {
+  if (auto* permission_request_manager =
+          GetPermissionRequestManagerForNotifications(web_contents)) {
+    permission_request_manager->Accept(/*prompt_options=*/std::monostate());
   }
 }
 
+void ResolveClapperViaClose(content::WebContents* web_contents) {
+  if (auto* permission_request_manager =
+          GetPermissionRequestManagerForNotifications(web_contents)) {
+    if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
+      base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Closed",
+                                true);
+    }
+    permission_request_manager->Deny(/*prompt_options=*/std::monostate());
+  }
+}
+
+void ResolveClapperViaReset(content::WebContents* web_contents) {
+  if (auto* permission_request_manager =
+          GetPermissionRequestManagerForNotifications(web_contents)) {
+    if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
+      base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Reset", true);
+    }
+    permission_request_manager->Dismiss(
+        /*prompt_options=*/std::monostate());
+  }
+}
 }  // namespace internal
 
 }  // namespace permissions
 
 // This method is called when the user clicks on the "Subscribe" button in the
-// notifications permission row in PageInfo but did not grant the Android OS
-// level permission prompt. Despite the user granted the site-level permission,
-// we still need to dismiss the permission request as Chrome doesn't have the
-// Android OS level permission and hence the permission request is no longer
-// valid.
-static void JNI_PermissionUtil_DismissNotificationsPermissionRequest(
+// notifications permission row in the PageInfo Permissions Subpage.
+static void JNI_PermissionUtil_ResolveClapperViaSubscribe(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
-  permissions::internal::DismissNotificationsPermissionRequest(web_contents);
+  permissions::internal::ResolveClapperViaSubscribe(
+      content::WebContents::FromJavaWebContents(jweb_contents));
 }
 
-static void JNI_PermissionUtil_ResolveNotificationsPermissionRequest(
+// This method is called when the user clicks on the "Allow" button in the
+// notifications permission message UI for Loud Clapper.
+static void JNI_PermissionUtil_ResolveLoudClapperViaAllow(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& jweb_contents,
-    int32_t content_setting) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
-  ContentSetting setting = static_cast<ContentSetting>(content_setting);
-  permissions::internal::ResolveNotificationsPermissionRequest(web_contents,
-                                                               setting);
+    const base::android::JavaRef<jobject>& jweb_contents) {
+  permissions::internal::ResolveLoudClapperViaAllow(
+      content::WebContents::FromJavaWebContents(jweb_contents));
+}
+
+// This method is called when the user dismisses the notifications permission
+// request by closing Page Info or pressing the back arrow to return from
+// the Page Info Permissions Subpage to the main PageInfo bubble.
+static void JNI_PermissionUtil_ResolveClapperViaClose(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jweb_contents) {
+  permissions::internal::ResolveClapperViaClose(
+      content::WebContents::FromJavaWebContents(jweb_contents));
+}
+
+// This method is called when the user clicks on the "Reset permissions" button
+// in Page Info Permissions subpage.
+static void JNI_PermissionUtil_ResolveClapperViaReset(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jweb_contents) {
+  permissions::internal::ResolveClapperViaReset(
+      content::WebContents::FromJavaWebContents(jweb_contents));
 }
 // TODO(crbug.com/463333225): Clean this provisional function name up if
 // Clapper is launched or removed.
@@ -336,14 +345,9 @@ static void JNI_PermissionUtil_NotifyQuietIconDismissed(
     const base::android::JavaRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  if (!web_contents) {
-    return;
-  }
-  permissions::PermissionRequestManager* permission_request_manager =
-      permissions::PermissionRequestManager::FromWebContents(web_contents);
-
-  if (permission_request_manager &&
-      permission_request_manager->IsRequestInProgress()) {
+  if (auto* permission_request_manager =
+          permissions::internal::GetPermissionRequestManagerForNotifications(
+              web_contents)) {
     auto* prompt = permission_request_manager->GetCurrentPrompt();
     if (prompt && prompt->GetPromptDisposition() ==
                       permissions::PermissionPromptDisposition::

@@ -60,24 +60,30 @@ class AndroidPermissionUtilTest : public content::RenderViewHostTestHarness {
 
 TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_NoManager) {
   // Pass nullptr as web_contents.
-  internal::ResolveNotificationsPermissionRequest(nullptr,
-                                                  CONTENT_SETTING_ALLOW);
+  internal::ResolveClapperViaReset(nullptr);
+  internal::ResolveClapperViaSubscribe(nullptr);
+  internal::ResolveLoudClapperViaAllow(nullptr);
+  internal::ResolveClapperViaClose(nullptr);
   // Should not crash.
 }
 
 TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_NoRequests) {
-  internal::ResolveNotificationsPermissionRequest(web_contents(),
-                                                  CONTENT_SETTING_ALLOW);
   // Should not crash.
+  internal::ResolveClapperViaReset(web_contents());
+  internal::ResolveClapperViaSubscribe(web_contents());
+  internal::ResolveLoudClapperViaAllow(web_contents());
+  internal::ResolveClapperViaClose(web_contents());
 }
 
 TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_MismatchType) {
   MockPermissionRequest::MockPermissionRequestState state;
   AddRequest(RequestType::kGeolocation, &state);
 
-  // Call with Notifications type.
-  internal::ResolveNotificationsPermissionRequest(web_contents(),
-                                                  CONTENT_SETTING_ALLOW);
+  // Calls require notifications permission type.
+  internal::ResolveClapperViaReset(web_contents());
+  internal::ResolveClapperViaSubscribe(web_contents());
+  internal::ResolveLoudClapperViaAllow(web_contents());
+  internal::ResolveClapperViaClose(web_contents());
 
   // Request should still be in progress and not decided.
   EXPECT_TRUE(manager_->IsRequestInProgress());
@@ -86,13 +92,12 @@ TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_MismatchType) {
   EXPECT_FALSE(state.cancelled);
 }
 
-TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Allow) {
+TEST_F(AndroidPermissionUtilTest, ResolveClapperViaSubscribe) {
   base::HistogramTester histogram_tester;
   MockPermissionRequest::MockPermissionRequestState state;
   AddRequest(RequestType::kNotifications, &state);
 
-  internal::ResolveNotificationsPermissionRequest(web_contents(),
-                                                  CONTENT_SETTING_ALLOW);
+  internal::ResolveClapperViaSubscribe(web_contents());
 
   EXPECT_TRUE(state.granted);
   EXPECT_FALSE(state.cancelled);
@@ -102,13 +107,12 @@ TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Allow) {
       "Permissions.ClapperLoud.PageInfo.Subscribed", true, 1);
 }
 
-TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Block) {
+TEST_F(AndroidPermissionUtilTest, ResolveClapperViaClose) {
   base::HistogramTester histogram_tester;
   MockPermissionRequest::MockPermissionRequestState state;
   AddRequest(RequestType::kNotifications, &state);
 
-  internal::ResolveNotificationsPermissionRequest(web_contents(),
-                                                  CONTENT_SETTING_BLOCK);
+  internal::ResolveClapperViaClose(web_contents());
 
   EXPECT_FALSE(state.granted);
   EXPECT_FALSE(state.cancelled);
@@ -118,13 +122,12 @@ TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Block) {
                                      true, 1);
 }
 
-TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Default) {
+TEST_F(AndroidPermissionUtilTest, ResolveClapperViaReset) {
   base::HistogramTester histogram_tester;
   MockPermissionRequest::MockPermissionRequestState state;
   AddRequest(RequestType::kNotifications, &state);
 
-  internal::ResolveNotificationsPermissionRequest(web_contents(),
-                                                  CONTENT_SETTING_DEFAULT);
+  internal::ResolveClapperViaReset(web_contents());
 
   // Default triggers Dismiss(), which calls Cancelled().
   EXPECT_TRUE(state.cancelled);
@@ -135,23 +138,23 @@ TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Default) {
                                      true, 1);
 }
 
-TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_NoManager) {
+TEST_F(AndroidPermissionUtilTest, ResolveClapperViaSubscribe_NoManager) {
   // Pass nullptr as web_contents.
-  internal::DismissNotificationsPermissionRequest(nullptr);
+  internal::ResolveClapperViaSubscribe(nullptr);
   // Should not crash.
 }
 
-TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_NoRequests) {
-  internal::DismissNotificationsPermissionRequest(web_contents());
+TEST_F(AndroidPermissionUtilTest, ResolveClapperViaSubscribe_NoRequests) {
+  internal::ResolveClapperViaSubscribe(web_contents());
   // Should not crash.
 }
 
-TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_MismatchType) {
+TEST_F(AndroidPermissionUtilTest, ResolveClapperViaSubscribe_MismatchType) {
   MockPermissionRequest::MockPermissionRequestState state;
   AddRequest(RequestType::kGeolocation, &state);
 
   // Call with Notifications type.
-  internal::DismissNotificationsPermissionRequest(web_contents());
+  internal::ResolveClapperViaSubscribe(web_contents());
 
   // Request should still be in progress and not decided.
   EXPECT_TRUE(manager_->IsRequestInProgress());
@@ -160,15 +163,21 @@ TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_MismatchType) {
   EXPECT_FALSE(state.cancelled);
 }
 
-TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_Dismiss) {
+TEST_F(AndroidPermissionUtilTest, ResolveLoudClapperViaAllow) {
+  base::HistogramTester histogram_tester;
   MockPermissionRequest::MockPermissionRequestState state;
   AddRequest(RequestType::kNotifications, &state);
 
-  internal::DismissNotificationsPermissionRequest(web_contents());
+  internal::ResolveLoudClapperViaAllow(web_contents());
 
-  EXPECT_TRUE(state.cancelled);
-  EXPECT_FALSE(state.granted);
+  // Should be allowed (granted).
+  EXPECT_FALSE(state.cancelled);
+  EXPECT_TRUE(state.granted);
   EXPECT_TRUE(state.finished);
+
+  // Should NOT log the Subscribed histogram.
+  histogram_tester.ExpectBucketCount(
+      "Permissions.ClapperLoud.PageInfo.Subscribed", true, 0);
 }
 
 }  // namespace permissions
