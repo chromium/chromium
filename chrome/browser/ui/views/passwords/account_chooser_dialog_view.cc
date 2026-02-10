@@ -18,6 +18,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -47,7 +48,6 @@ AccountChooserDialogView::AccountChooserDialogView(
   SetButtonLabel(
       ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN));
-  set_close_on_deactivate(false);
   SetModalType(ui::mojom::ModalType::kChild);
   if (controller_->ShouldShowFooter()) {
     auto* label = SetFootnoteView(std::make_unique<views::Label>(
@@ -57,8 +57,10 @@ AccountChooserDialogView::AccountChooserDialogView(
     label->SetMultiLine(true);
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   }
-  SetArrow(views::BubbleBorder::NONE);
-  set_margins(gfx::Insets::TLBR(margins().top(), 0, margins().bottom(), 0));
+  const auto insets =
+      views::LayoutProvider::Get()->GetDialogInsetsForContentType(
+          views::DialogContentType::kText, views::DialogContentType::kText);
+  set_margins(gfx::Insets::TLBR(insets.top(), 0, insets.bottom(), 0));
 }
 
 AccountChooserDialogView::~AccountChooserDialogView() = default;
@@ -72,7 +74,11 @@ void AccountChooserDialogView::ShowAccountChooser() {
                  : static_cast<int>(ui::mojom::DialogButton::kCancel));
   DialogModelChanged();
   InitWindow();
-  constrained_window::ShowWebModalDialogViews(this, web_contents_);
+
+  DCHECK(!widget_);
+  SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget_ = base::WrapUnique(
+      constrained_window::ShowWebModalDialogViews(this, web_contents_));
 }
 
 void AccountChooserDialogView::ControllerGone() {
@@ -104,10 +110,11 @@ bool AccountChooserDialogView::Accept() {
 }
 
 void AccountChooserDialogView::InitWindow() {
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  auto contents_view = std::make_unique<views::View>();
+  contents_view->SetLayoutManager(std::make_unique<views::FillLayout>());
 
   views::ScrollView* scroll_view =
-      AddChildView(std::make_unique<views::ScrollView>());
+      contents_view->AddChildView(std::make_unique<views::ScrollView>());
   auto* list_view = scroll_view->SetContents(std::make_unique<views::View>());
   list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -133,6 +140,7 @@ void AccountChooserDialogView::InitWindow() {
   }
   constexpr float kMaxVisibleItems = 3.5;
   scroll_view->ClipHeightTo(0, kMaxVisibleItems * item_height);
+  SetContentsView(std::move(contents_view));
 }
 
 void AccountChooserDialogView::CredentialsItemPressed(
@@ -145,11 +153,8 @@ void AccountChooserDialogView::CredentialsItemPressed(
   }
 }
 
-BEGIN_METADATA(AccountChooserDialogView)
-END_METADATA
-
-AccountChooserPrompt* CreateAccountChooserPromptView(
+std::unique_ptr<AccountChooserPrompt> CreateAccountChooserPromptView(
     CredentialManagerDialogController* controller,
     content::WebContents* web_contents) {
-  return new AccountChooserDialogView(controller, web_contents);
+  return std::make_unique<AccountChooserDialogView>(controller, web_contents);
 }

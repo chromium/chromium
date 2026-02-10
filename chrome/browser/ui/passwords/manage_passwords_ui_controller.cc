@@ -1277,7 +1277,8 @@ void ManagePasswordsUIController::UpdatePasswordIconAndBubbleState(
   }
 }
 
-AccountChooserPrompt* ManagePasswordsUIController::CreateAccountChooser(
+std::unique_ptr<AccountChooserPrompt>
+ManagePasswordsUIController::CreateAccountChooser(
     CredentialManagerDialogController* controller) {
   return CreateAccountChooserPromptView(controller, web_contents());
 }

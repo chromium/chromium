@@ -260,7 +260,7 @@ class ManagePasswordsUIController
       actions::ActionItem* passwords_action_item);
 
   // Called to create the account chooser dialog. Mocked in tests.
-  virtual AccountChooserPrompt* CreateAccountChooser(
+  virtual std::unique_ptr<AccountChooserPrompt> CreateAccountChooser(
       CredentialManagerDialogController* controller);
 
   // Called to create the account chooser dialog. Mocked in tests.

@@ -72,7 +72,7 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
       const TestManagePasswordsUIController&) = delete;
 
   void OnDialogHidden() override;
-  AccountChooserPrompt* CreateAccountChooser(
+  std::unique_ptr<AccountChooserPrompt> CreateAccountChooser(
       CredentialManagerDialogController* controller) override;
   AutoSigninFirstRunPrompt* CreateAutoSigninPrompt(
       CredentialManagerDialogController* controller) override;
@@ -122,11 +122,12 @@ void TestManagePasswordsUIController::OnDialogHidden() {
   OnDialogClosed();
 }
 
-AccountChooserPrompt* TestManagePasswordsUIController::CreateAccountChooser(
+std::unique_ptr<AccountChooserPrompt>
+TestManagePasswordsUIController::CreateAccountChooser(
     CredentialManagerDialogController* controller) {
-  current_account_chooser_ =
-      ManagePasswordsUIController::CreateAccountChooser(controller);
-  return current_account_chooser_;
+  auto chooser = ManagePasswordsUIController::CreateAccountChooser(controller);
+  current_account_chooser_ = chooser.get();
+  return chooser;
 }
 
 AutoSigninFirstRunPrompt*
@@ -364,8 +365,7 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
                          url::Origin::Create(origin));
 
   EXPECT_TRUE(controller()->current_account_chooser());
-  views::BubbleDialogDelegateView* dialog =
-      controller()->current_account_chooser();
+  AccountChooserDialogView* dialog = controller()->current_account_chooser();
   views::test::WidgetDestroyedWaiter bubble_observer(dialog->GetWidget());
   EXPECT_CALL(*this, OnChooseCredential(testing::Pointee(form)));
   dialog->Accept();

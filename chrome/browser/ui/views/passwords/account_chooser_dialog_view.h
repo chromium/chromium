@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace content {
 class WebContents;
@@ -20,10 +20,8 @@ struct PasswordForm;
 
 class CredentialManagerDialogController;
 
-class AccountChooserDialogView : public views::BubbleDialogDelegateView,
+class AccountChooserDialogView : public views::DialogDelegate,
                                  public AccountChooserPrompt {
-  METADATA_HEADER(AccountChooserDialogView, views::BubbleDialogDelegateView)
-
  public:
   AccountChooserDialogView(CredentialManagerDialogController* controller,
                            content::WebContents* web_contents);
@@ -35,14 +33,13 @@ class AccountChooserDialogView : public views::BubbleDialogDelegateView,
   void ShowAccountChooser() override;
   void ControllerGone() override;
 
+  // DialogDelegate:
+  bool Accept() override;
+
  private:
-  // WidgetDelegate:
   std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
   void WindowClosing() override;
-
-  // DialogDelegate:
-  bool Accept() override;
 
   // Sets up the child views.
   void InitWindow();
@@ -53,6 +50,8 @@ class AccountChooserDialogView : public views::BubbleDialogDelegateView,
   raw_ptr<CredentialManagerDialogController, AcrossTasksDanglingUntriaged>
       controller_;
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
+
+  std::unique_ptr<views::Widget> widget_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_ACCOUNT_CHOOSER_DIALOG_VIEW_H_
