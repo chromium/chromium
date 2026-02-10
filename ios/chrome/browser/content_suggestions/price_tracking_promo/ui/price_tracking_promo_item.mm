@@ -4,13 +4,33 @@
 
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_item.h"
 
+#import "base/check_op.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/public/price_tracking_promo_constants.h"
+#import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_commands.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using l10n_util::GetNSString;
+
+namespace {
+
+// Size of the fallback symbol image.
+constexpr CGFloat kFallbackSymbolSize = 10;
+
+}  // namespace
+
 @implementation PriceTrackingPromoItem
+
+#pragma mark - NSCopying
+
+- (instancetype)copyWithZone:(NSZone*)zone {
+  PriceTrackingPromoItem* item = [[super copyWithZone:zone] init];
+  item.priceTrackingPromoHandler = self.priceTrackingPromoHandler;
+  item.productImageData = self.productImageData;
+  return item;
+}
 
 #pragma mark - MagicStackModule
 
@@ -26,37 +46,31 @@
 }
 
 - (UIImage*)fallbackSymbolImage {
-  return CustomSymbolWithPointSize(kDownTrendSymbol, 10);
+  return CustomSymbolWithPointSize(kDownTrendSymbol, kFallbackSymbolSize);
 }
 
 - (NSString*)titleText {
-  return l10n_util::GetNSString(
-      IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_TITLE);
+  return GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_TITLE);
 }
 
 - (NSString*)bodyText {
-  return l10n_util::GetNSString(
+  return GetNSString(
       IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_DESCRIPTION);
 }
 
 - (NSString*)buttonText {
-  return l10n_util::GetNSString(
-      IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_ALLOW);
+  return GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_ALLOW);
 }
 
 - (NSString*)accessibilityIdentifier {
   return kPriceTrackingPromoViewID;
 }
 
-#pragma mark - NSCopying
+#pragma mark - StandaloneModuleViewTapDelegate
 
-- (id)copyWithZone:(NSZone*)zone {
-  PriceTrackingPromoItem* copy = [super copyWithZone:zone];
-  copy.priceTrackingPromoHandler = self.priceTrackingPromoHandler;
-  copy.productImageData = self.productImageData;
-  copy.priceTrackingPromoFaviconConsumerSource =
-      self.priceTrackingPromoFaviconConsumerSource;
-  return copy;
+- (void)buttonTappedForModuleType:(ContentSuggestionsModuleType)moduleType {
+  CHECK_EQ(moduleType, ContentSuggestionsModuleType::kPriceTrackingPromo);
+  [self.priceTrackingPromoHandler allowPriceTrackingNotifications];
 }
 
 @end

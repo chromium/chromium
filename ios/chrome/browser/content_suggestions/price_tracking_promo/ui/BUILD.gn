@@ -5,12 +5,8 @@
 source_set("ui") {
   sources = [
     "price_tracking_promo_commands.h",
-    "price_tracking_promo_favicon_consumer.h",
-    "price_tracking_promo_favicon_consumer_source.h",
     "price_tracking_promo_item.h",
     "price_tracking_promo_item.mm",
-    "price_tracking_promo_module_view.h",
-    "price_tracking_promo_module_view.mm",
   ]
   public_deps = [
     "//ios/chrome/browser/content_suggestions/ui/cells:standalone_module_view",
@@ -21,7 +17,6 @@ source_set("ui") {
     "//ios/chrome/browser/content_suggestions/price_tracking_promo/public:constants",
     "//ios/chrome/browser/content_suggestions/public:constants",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

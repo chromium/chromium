@@ -9,6 +9,10 @@
 // PriceTrackingPromoMediator.
 @protocol PriceTrackingPromoMediatorDelegate
 
+// Signals that the PriceTrackingPromoMediator did reconfigure the existing
+// item.
+- (void)priceTrackingPromoMediatorDidReconfigureItem;
+
 // New subscription for user observed (originating from a different platform).
 - (void)newSubscriptionAvailable;
 

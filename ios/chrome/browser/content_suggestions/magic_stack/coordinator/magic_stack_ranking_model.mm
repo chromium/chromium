@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/coordinator/price_tracking_promo_mediator.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/coordinator/price_tracking_promo_mediator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/price_tracking_promo/model/price_tracking_promo_prefs.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_item.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/coordinator/safety_check_magic_stack_mediator.h"
@@ -415,9 +416,37 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
 #pragma mark - PriceTrackingPromoMediatorDelegate
 
+- (void)priceTrackingPromoMediatorDidReconfigureItem {
+  if (_prefService->GetBoolean(kPriceTrackingPromoDisabled)) {
+    return;
+  }
+  PriceTrackingPromoItem* item =
+      _priceTrackingPromoMediator.priceTrackingPromoItemToShow;
+  [self.delegate magicStackRankingModel:self didReconfigureItem:item];
+}
+
+- (void)newSubscriptionAvailable {
+  MagicStackModule* item =
+      _priceTrackingPromoMediator.priceTrackingPromoItemToShow;
+  NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
+  NSUInteger index = [rank indexOfObject:item];
+  if (index == NSNotFound) {
+    return;
+  }
+  [self.delegate magicStackRankingModel:self didInsertItem:item atIndex:index];
+}
+
 - (void)promoWasTapped {
   [self logMagicStackEngagementForType:ContentSuggestionsModuleType::
                                            kPriceTrackingPromo];
+}
+
+- (void)removePriceTrackingPromo {
+  [self.delegate magicStackRankingModel:self
+                          didRemoveItem:_priceTrackingPromoMediator
+                                            .priceTrackingPromoItemToShow
+                                animate:YES
+                         withCompletion:nil];
 }
 
 #pragma mark - Private
@@ -439,19 +468,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 // state.
 - (void)addSafetyCheckToMagicStackOrder:(NSMutableArray*)order {
   [order addObject:@(int(ContentSuggestionsModuleType::kSafetyCheck))];
-}
-
-// New subscription observed for user (from another platform). This
-// has the potential to boost the ranking of the price trackiing promo.
-- (void)newSubscriptionAvailable {
-  MagicStackModule* item =
-      _priceTrackingPromoMediator.priceTrackingPromoItemToShow;
-  NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
-  NSUInteger index = [rank indexOfObject:item];
-  if (index == NSNotFound) {
-    return;
-  }
-  [self.delegate magicStackRankingModel:self didInsertItem:item atIndex:index];
 }
 
 // Starts a fetch of the ephemeral card to show from Segmentation.
@@ -677,14 +693,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
   _latestMagicStackConfigOrder = [self latestMagicStackConfigRank];
   [self.delegate magicStackRankingModel:self didInsertItem:card atIndex:0];
-}
-
-- (void)removePriceTrackingPromo {
-  [self.delegate magicStackRankingModel:self
-                          didRemoveItem:_priceTrackingPromoMediator
-                                            .priceTrackingPromoItemToShow
-                                animate:YES
-                         withCompletion:nil];
 }
 
 - (void)removeShopCard {

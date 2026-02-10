@@ -26,8 +26,6 @@
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/coordinator/price_tracking_promo_action_delegate.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/coordinator/price_tracking_promo_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/model/price_tracking_promo_prefs.h"
-#import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_favicon_consumer.h"
-#import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_favicon_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/price_tracking_promo/ui/price_tracking_promo_item.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
@@ -72,10 +70,8 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 
 }  // namespace
 
-@interface PriceTrackingPromoMediator () <
-    NotificationsSettingsObserverDelegate,
-    PrefObserverDelegate,
-    PriceTrackingPromoFaviconConsumerSource>
+@interface PriceTrackingPromoMediator () <NotificationsSettingsObserverDelegate,
+                                          PrefObserverDelegate>
 @end
 
 @implementation PriceTrackingPromoMediator {
@@ -92,7 +88,6 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   raw_ptr<FaviconLoader> _faviconLoader;
   bool _faviconCallbackCalledOnce;
   bool _subscriptionDataFound;
-  id<PriceTrackingPromoFaviconConsumer> _faviconConsumer;
 }
 
 - (instancetype)
@@ -146,10 +141,6 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   _faviconCallbackCalledOnce = false;
   _subscriptionDataFound = false;
   _priceTrackingPromoItem = nil;
-}
-
-- (void)addConsumer:(id<PriceTrackingPromoFaviconConsumer>)consumer {
-  _faviconConsumer = consumer;
 }
 
 - (void)fetchLatestSubscription {
@@ -327,7 +318,6 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   if (most_recent_subscription_product_image_url.is_empty()) {
     _priceTrackingPromoItem = [[PriceTrackingPromoItem alloc] init];
     _priceTrackingPromoItem.priceTrackingPromoHandler = self;
-    _priceTrackingPromoItem.priceTrackingPromoFaviconConsumerSource = self;
     [self onNewSubscriptionAvailable];
   } else {
     // If we have an image, fetch it and display the price tracking promo
@@ -376,7 +366,6 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 - (void)onImageFetchedResult:(const std::string&)imageData
                   productUrl:(const GURL&)productUrl {
   self->_priceTrackingPromoItem = [[PriceTrackingPromoItem alloc] init];
-  self->_priceTrackingPromoItem.priceTrackingPromoFaviconConsumerSource = self;
   self->_priceTrackingPromoItem.priceTrackingPromoHandler = self;
   NSData* data = [NSData dataWithBytes:imageData.data()
                                 length:imageData.size()];
@@ -399,8 +388,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   if (attributes.faviconImage) {
     self->_priceTrackingPromoItem.faviconImage = attributes.faviconImage;
     if (_faviconCallbackCalledOnce) {
-      [_faviconConsumer
-          priceTrackingPromoFaviconCompleted:attributes.faviconImage];
+      [self.delegate priceTrackingPromoMediatorDidReconfigureItem];
     }
   }
   // Return early without calling the delegate, if callback already called.

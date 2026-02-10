@@ -38,6 +38,7 @@ source_set("ranking_model") {
     "//ios/chrome/browser/content_suggestions/most_visited_tiles/coordinator",
     "//ios/chrome/browser/content_suggestions/most_visited_tiles/ui",
     "//ios/chrome/browser/content_suggestions/price_tracking_promo/coordinator",
+    "//ios/chrome/browser/content_suggestions/price_tracking_promo/model:prefs",
     "//ios/chrome/browser/content_suggestions/price_tracking_promo/ui",
     "//ios/chrome/browser/content_suggestions/public:constants",
     "//ios/chrome/browser/content_suggestions/safety_check/coordinator",

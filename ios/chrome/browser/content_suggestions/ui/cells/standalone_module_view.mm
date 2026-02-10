@@ -131,18 +131,6 @@ const CGFloat kSeparatorHeight = 0.5;
   [self applyBackgroundColors];
 }
 
-- (void)updateProductImageViewWithFavicon:(UIImage*)faviconImage {
-  // Skip update if no product image container exists (e.g. if invalid image
-  // data resulted in using a fallback icon).
-  if (!_productImage) {
-    return;
-  }
-  [self populateProductImageFaviconContainerAndView:faviconImage];
-  [self addFaviconToProductImage];
-  [self addConstraintsForProductImage];
-  [self addConstraintsForProductImageFavicon];
-}
-
 #pragma mark - NewTabPageColorUpdating
 
 - (void)applyBackgroundColors {
