@@ -67,6 +67,7 @@ bool SupportsDataSharing() {
 
 VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
     : VerticalDraggedTabsContainer(static_cast<views::View&>(*this),
+                                   collection_node,
                                    DragAxes::kVerticalOnly,
                                    DragLayout::kVertical),
       collection_node_(collection_node),
@@ -311,17 +312,6 @@ void VerticalTabGroupView::UpdateChildVisibilityForCollapseState(
 
 bool VerticalTabGroupView::IsCollapsed() const {
   return tab_group_visual_data_.is_collapsed();
-}
-
-VerticalTabDragHandler& VerticalTabGroupView::GetDragHandler() {
-  return const_cast<VerticalTabDragHandler&>(
-      std::as_const(*this).GetDragHandler());
-}
-
-const VerticalTabDragHandler& VerticalTabGroupView::GetDragHandler() const {
-  CHECK(collection_node_);
-  CHECK(collection_node_->GetController());
-  return collection_node_->GetController()->GetDragHandler();
 }
 
 bool VerticalTabGroupView::IsTabStripCollapsed() const {

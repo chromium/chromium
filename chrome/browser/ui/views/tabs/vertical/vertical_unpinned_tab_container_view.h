@@ -14,7 +14,6 @@
 #include "ui/views/view.h"
 
 class TabCollectionNode;
-class VerticalTabDragHandler;
 class VerticalTabGroupView;
 
 // The view class that represents the unpinned tab region for the
@@ -52,9 +51,6 @@ class VerticalUnpinnedTabContainerView
 
  private:
   // VerticalDraggedTabsContainer:
-  VerticalTabDragHandler& GetDragHandler() override;
-  const VerticalTabDragHandler& GetDragHandler() const override;
-  bool IsTabStripCollapsed() const override;
   views::ScrollView* GetScrollViewForContainer() const override;
   void UpdateLayoutForDrag() override;
   void HandleTabDragInContainer(const gfx::Rect& dragged_tab_bounds) override;
@@ -66,6 +62,7 @@ class VerticalUnpinnedTabContainerView
                                const gfx::Point& point_in_screen) const;
 
   void ResetCollectionNode();
+  bool IsTabStripCollapsed() const;
 
   raw_ptr<TabCollectionNode> collection_node_;
   const raw_ref<TabCollectionAnimatingLayoutManager> layout_manager_;

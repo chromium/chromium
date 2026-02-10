@@ -29,6 +29,7 @@ constexpr int kTabPadding = 4;
 VerticalPinnedTabContainerView::VerticalPinnedTabContainerView(
     TabCollectionNode* collection_node)
     : VerticalDraggedTabsContainer(static_cast<views::View&>(*this),
+                                   collection_node,
                                    DragAxes::kBoth,
                                    DragLayout::kSquash),
       collection_node_(collection_node),
@@ -148,18 +149,6 @@ gfx::Size VerticalPinnedTabContainerView::GetMinimumSize() const {
 
 void VerticalPinnedTabContainerView::ResetCollectionNode() {
   collection_node_ = nullptr;
-}
-
-VerticalTabDragHandler& VerticalPinnedTabContainerView::GetDragHandler() {
-  return const_cast<VerticalTabDragHandler&>(
-      std::as_const(*this).GetDragHandler());
-}
-
-const VerticalTabDragHandler& VerticalPinnedTabContainerView::GetDragHandler()
-    const {
-  CHECK(collection_node_);
-  CHECK(collection_node_->GetController());
-  return collection_node_->GetController()->GetDragHandler();
 }
 
 bool VerticalPinnedTabContainerView::IsTabStripCollapsed() const {

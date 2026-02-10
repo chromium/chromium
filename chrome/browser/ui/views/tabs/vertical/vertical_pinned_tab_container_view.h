@@ -39,13 +39,11 @@ class VerticalPinnedTabContainerView : public views::View,
 
  private:
   // VerticalDraggedTabsContainer:
-  VerticalTabDragHandler& GetDragHandler() override;
-  const VerticalTabDragHandler& GetDragHandler() const override;
-  bool IsTabStripCollapsed() const override;
   views::ScrollView* GetScrollViewForContainer() const override;
   void UpdateLayoutForDrag() override;
   void HandleTabDragInContainer(const gfx::Rect& dragged_tab_bounds) override;
 
+  bool IsTabStripCollapsed() const;
   void ResetCollectionNode();
 
   raw_ptr<TabCollectionNode> collection_node_;

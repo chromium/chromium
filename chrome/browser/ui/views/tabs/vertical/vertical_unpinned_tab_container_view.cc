@@ -74,6 +74,7 @@ class VerticalUnpinnedTabContainerViewTargeter
 VerticalUnpinnedTabContainerView::VerticalUnpinnedTabContainerView(
     TabCollectionNode* collection_node)
     : VerticalDraggedTabsContainer(static_cast<views::View&>(*this),
+                                   collection_node,
                                    DragAxes::kVerticalOnly,
                                    DragLayout::kVertical),
       collection_node_(collection_node),
@@ -177,18 +178,6 @@ bool VerticalUnpinnedTabContainerView::ShouldSnapToTarget(
 
 void VerticalUnpinnedTabContainerView::ResetCollectionNode() {
   collection_node_ = nullptr;
-}
-
-VerticalTabDragHandler& VerticalUnpinnedTabContainerView::GetDragHandler() {
-  return const_cast<VerticalTabDragHandler&>(
-      std::as_const(*this).GetDragHandler());
-}
-
-const VerticalTabDragHandler& VerticalUnpinnedTabContainerView::GetDragHandler()
-    const {
-  CHECK(collection_node_);
-  CHECK(collection_node_->GetController());
-  return collection_node_->GetController()->GetDragHandler();
 }
 
 bool VerticalUnpinnedTabContainerView::IsTabStripCollapsed() const {

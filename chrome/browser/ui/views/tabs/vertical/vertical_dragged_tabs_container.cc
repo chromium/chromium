@@ -76,10 +76,17 @@ gfx::Vector2d GetSourceViewOffsetFromMouse(
 
 VerticalDraggedTabsContainer::VerticalDraggedTabsContainer(
     views::View& host_view,
+    TabCollectionNode* collection_node,
     DragAxes drag_axes,
     DragLayout drag_layout)
-    : host_view_(host_view), drag_axes_(drag_axes), drag_layout_(drag_layout) {
+    : host_view_(host_view),
+      collection_node_(collection_node),
+      drag_axes_(drag_axes),
+      drag_layout_(drag_layout) {
   host_view_observation_.Observe(&host_view);
+  node_destroyed_subscription_ = collection_node_->RegisterWillDestroyCallback(
+      base::BindOnce(&VerticalDraggedTabsContainer::ResetCollectionNode,
+                     base::Unretained(this)));
 }
 
 VerticalDraggedTabsContainer::~VerticalDraggedTabsContainer() {
@@ -391,4 +398,26 @@ bool VerticalDraggedTabsContainer::HasMinimumOverlap(
 
 bool VerticalDraggedTabsContainer::IsHandlingDrag() const {
   return !dragging_views_.empty();
+}
+
+VerticalTabDragHandler& VerticalDraggedTabsContainer::GetDragHandler() {
+  return const_cast<VerticalTabDragHandler&>(
+      std::as_const(*this).GetDragHandler());
+}
+
+const VerticalTabDragHandler& VerticalDraggedTabsContainer::GetDragHandler()
+    const {
+  CHECK(collection_node_);
+  CHECK(collection_node_->GetController());
+  return collection_node_->GetController()->GetDragHandler();
+}
+
+bool VerticalDraggedTabsContainer::IsTabStripCollapsed() const {
+  CHECK(collection_node_);
+  const auto* controller = collection_node_->GetController();
+  return controller && controller->IsCollapsed();
+}
+
+void VerticalDraggedTabsContainer::ResetCollectionNode() {
+  collection_node_ = nullptr;
 }

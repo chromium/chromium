@@ -18,7 +18,6 @@
 #include "ui/views/view.h"
 
 class TabCollectionNode;
-class VerticalTabDragHandler;
 class VerticalTabGroupHeaderView;
 
 // The view class for vertical tab group container. It manages layout
@@ -73,9 +72,6 @@ class VerticalTabGroupView
 
  private:
   // VerticalDraggedTabsContainer:
-  VerticalTabDragHandler& GetDragHandler() override;
-  const VerticalTabDragHandler& GetDragHandler() const override;
-  bool IsTabStripCollapsed() const override;
   views::ScrollView* GetScrollViewForContainer() const override;
   void UpdateLayoutForDrag() override;
   void HandleTabDragInContainer(const gfx::Rect& dragged_tab_bounds) override;
@@ -85,6 +81,7 @@ class VerticalTabGroupView
   void OnDataChanged();
   void UpdateChildVisibilityForCollapseState(bool collapsed);
   bool GetIsShared();
+  bool IsTabStripCollapsed() const;
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
 

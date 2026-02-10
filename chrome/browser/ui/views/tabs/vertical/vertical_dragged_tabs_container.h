@@ -13,6 +13,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/view_observer.h"
 
+class TabCollectionNode;
 class VerticalTabDragHandler;
 
 namespace views {
@@ -36,6 +37,7 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   enum class DragLayout { kVertical, kSquash };
 
   VerticalDraggedTabsContainer(views::View& host_view,
+                               TabCollectionNode* collection_node,
                                DragAxes drag_axis,
                                DragLayout drag_layout);
   VerticalDraggedTabsContainer(const VerticalDraggedTabsContainer& other) =
@@ -99,13 +101,10 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
                          std::optional<int> min_x_overlap,
                          std::optional<int> min_y_overlap) const;
 
+  VerticalTabDragHandler& GetDragHandler();
+  const VerticalTabDragHandler& GetDragHandler() const;
+
  private:
-  virtual VerticalTabDragHandler& GetDragHandler() = 0;
-  virtual const VerticalTabDragHandler& GetDragHandler() const = 0;
-
-  // Whether the tab strip is collapsed.
-  virtual bool IsTabStripCollapsed() const = 0;
-
   // Returns the scroll view for the container.
   virtual views::ScrollView* GetScrollViewForContainer() const = 0;
 
@@ -129,6 +128,9 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   void AddViewToSquashedDragLayout(views::View* dragging_view,
                                    bool is_source_dragged_view);
 
+  // Whether the tab strip is collapsed.
+  bool IsTabStripCollapsed() const;
+
   // Clears drag state and removes the transformations that were being used for
   // the drag.
   void ResetDragState();
@@ -146,7 +148,12 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   gfx::Rect GetDraggingViewsBoundsAtPointClamped(
       const gfx::Point& point_in_container) const;
 
+  void ResetCollectionNode();
+
   const raw_ref<const views::View> host_view_;
+  raw_ptr<TabCollectionNode> collection_node_;
+
+  base::CallbackListSubscription node_destroyed_subscription_;
   int tab_strip_padding_;
 
   gfx::Point last_drag_point_in_screen_;

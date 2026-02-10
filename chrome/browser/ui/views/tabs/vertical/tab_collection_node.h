@@ -137,6 +137,9 @@ class TabCollectionNode {
 
   void SetController(VerticalTabStripController* controller);
   VerticalTabStripController* GetController() { return tab_strip_controller_; }
+  const VerticalTabStripController* GetController() const {
+    return tab_strip_controller_;
+  }
 
  protected:
   // Returns the pass key to be used by derived classes so that methods such as
