@@ -159,20 +159,15 @@ class ContextualSearchContextController {
     lens::QueryPayload::QueryTextSource query_text_source =
         lens::QueryPayload::QUERY_TEXT_SOURCE_UNSPECIFIED;
 
-    // Whether deep search is selected.
-    bool deep_search_selected = false;
-
-    // Whether create images is selected.
-    bool create_images_selected = false;
-
     // Whether to force include the latest interaction request data in the AIM
     // query payload.
     bool force_include_latest_interaction_request_data = false;
     // The currently active tool.
-    lens::ToolMode active_tool = lens::ToolMode::TOOL_MODE_UNSPECIFIED;
+    omnibox::ToolMode active_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
 
     // The currently active model.
-    lens::ModelMode active_model = lens::ModelMode::MODEL_MODE_UNSPECIFIED;
+    omnibox::ModelMode active_model =
+        omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
 
     // Additional CGI params to append to the search request URL.
     std::map<std::string, std::string> additional_cgi_params;

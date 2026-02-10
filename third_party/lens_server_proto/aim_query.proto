@@ -109,6 +109,9 @@ message QueryPayload {
   // Whether to use research agent for this query.
   bool use_research_agent = 4;
 
+  // Whether to use canvas for this query.
+  bool use_canvas = 11;
+
   // Whether to use Image Generation for this query.
   bool use_image_generation = 12;
 

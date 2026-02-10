@@ -1019,8 +1019,6 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 
 struct ToolModeTestParam {
   omnibox::ToolMode tool_mode;
-  bool expected_deep_search_selected;
-  bool expected_create_images_selected;
 };
 
 class ContextualTasksComposeboxHandlerToolModeTest
@@ -1036,10 +1034,7 @@ TEST_P(ContextualTasksComposeboxHandlerToolModeTest, SetsToolModeFlags) {
       .WillOnce([&](std::unique_ptr<
                     contextual_search::ContextualSearchContextController::
                         CreateClientToAimRequestInfo> info) {
-        EXPECT_EQ(info->deep_search_selected,
-                  param.expected_deep_search_selected);
-        EXPECT_EQ(info->create_images_selected,
-                  param.expected_create_images_selected);
+        EXPECT_EQ(info->active_tool, param.tool_mode);
         return lens::ClientToAimMessage();
       });
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
@@ -1051,13 +1046,10 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ContextualTasksComposeboxHandlerToolModeTest,
     ::testing::Values(
-        ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_UNSPECIFIED, false,
-                          false},
-        ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH, true,
-                          false},
-        ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_IMAGE_GEN, false, true},
-        ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD, false,
-                          true}));
+        ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_UNSPECIFIED},
+        ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH},
+        ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_IMAGE_GEN},
+        ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD}));
 
 TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
