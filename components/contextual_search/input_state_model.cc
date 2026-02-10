@@ -139,12 +139,9 @@ InputStateModel::InputStateModel(
     state_.allowed_input_types.push_back(omnibox::INPUT_TYPE_BROWSER_TAB);
   }
 
-  state_.active_tool = mutable_config.has_initial_tool_mode()
-                           ? mutable_config.initial_tool_mode()
-                           : omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
-  state_.active_model = mutable_config.has_initial_model_mode()
-                            ? mutable_config.initial_model_mode()
-                            : omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
+  state_.active_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+  // the initial model should be the first allowed model.
+  state_.active_model = state_.GetDefaultModel();
 
   updateDisabledState();
 }

@@ -82,6 +82,35 @@ TEST_F(InputStateModelTest, TestSubscribeAndNotify) {
   input_state_model_->setActiveTool(ToolMode::TOOL_MODE_UNSPECIFIED);
 }
 
+TEST_F(InputStateModelTest, DefaultToFirstAllowedModel) {
+  omnibox::SearchboxConfig config;
+  auto* rule_set = config.mutable_rule_set();
+
+  // Setup Allowed Models.
+  // Add Gemini Regular first. It becomes allowed_models[0].
+  rule_set->add_allowed_models(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  // Add Gemini Pro as the second option.
+  rule_set->add_allowed_models(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  auto* auto_rule = rule_set->add_model_rules();
+  auto_rule->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
+  auto* pro_rule = rule_set->add_model_rules();
+  pro_rule->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  // Initialize Model.
+  input_state_model_ =
+      std::make_unique<InputStateModel>(session_handle_, config);
+  const auto& state = input_state_model_->get_state_for_testing();
+
+  // Verify Initialization Logic.
+  // Active model defaults to allowed_models[0].
+  EXPECT_EQ(state.active_model, omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
+  // Verify: Even though Regular is active, Pro should remain enabled.
+  EXPECT_TRUE(state.disabled_models.empty());
+}
+
 class InputStateModelCompatibilityTest : public InputStateModelTest {
  public:
   void SetUp() override {

@@ -28,6 +28,9 @@ struct InputState {
 
   size_t EstimateMemoryUsage() const;
 
+  // Helper method to derive the default model from the allowed list.
+  ModelMode GetDefaultModel() const;
+
   // The set of allowed tools, models, and input types.
   std::vector<ToolMode> allowed_tools;
   std::vector<ModelMode> allowed_models;
