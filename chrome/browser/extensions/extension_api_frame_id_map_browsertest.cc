@@ -2,14 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/extension_api_frame_id_map.h"
+
 #include "base/uuid.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/browser/extension_api_frame_id_map.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
 #include "ui/base/window_open_disposition.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -66,11 +72,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiFrameIdMapBrowserTest, ContextIdsAreUnique) {
 
   // Navigate page2 to page2 (again). It should have a new (unique) context ID
   // since it's a new document.
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            extension->GetResourceURL("page2.html")));
   content::RenderFrameHost* page2_new_host =
-      ui_test_utils::NavigateToURLWithDisposition(
-          browser(), extension->GetResourceURL("page2.html"),
-          WindowOpenDisposition::CURRENT_TAB,
-          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+      GetActiveWebContents()->GetPrimaryMainFrame();
   ASSERT_TRUE(page2_new_host);
   base::Uuid page2_new_context_id =
       ExtensionApiFrameIdMap::GetContextId(page2_new_host);
