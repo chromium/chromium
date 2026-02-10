@@ -11,6 +11,7 @@
 #include "base/barrier_closure.h"
 #include "base/check_is_test.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "services/network/enterprise/encryption/chunked_encryptor.h"
@@ -74,12 +75,16 @@ OSCryptCacheEncryptionDelegate::GetEncryptionFileOperationsFactory(
 
   std::vector<uint8_t> decrypted_primary_key;
   if (!DecryptData(encrypted_primary_key_, &decrypted_primary_key)) {
+    base::UmaHistogramBoolean(
+        "Enterprise.EncryptedCache.FactoryCreationSuccess", false);
     LOG(ERROR) << "Failed to decrypt the primary key.";
     return nullptr;
   }
   crypto::ProcessBoundString primary_key(
       std::string(decrypted_primary_key.begin(), decrypted_primary_key.end()));
 
+  base::UmaHistogramBoolean("Enterprise.EncryptedCache.FactoryCreationSuccess",
+                            true);
   encrypted_file_operations_factory_ =
       base::MakeRefCounted<EncryptedBackendFileOperationsFactory>(
           file_operations_factory, std::move(primary_key));
@@ -92,12 +97,16 @@ OSCryptCacheEncryptionDelegate::GetCacheEntryHasher() {
   CHECK(instance_.has_value());
   std::vector<uint8_t> decrypted_primary_key;
   if (!DecryptData(encrypted_primary_key_, &decrypted_primary_key)) {
+    base::UmaHistogramBoolean(
+        "Enterprise.EncryptedCache.KeyHasherObtainSuccess", false);
     LOG(ERROR) << "Failed to decrypt the primary key.";
     return nullptr;
   }
   crypto::ProcessBoundString primary_key(
       std::string(decrypted_primary_key.begin(), decrypted_primary_key.end()));
 
+  base::UmaHistogramBoolean("Enterprise.EncryptedCache.KeyHasherObtainSuccess",
+                            true);
   return std::make_unique<EncryptedCacheEntryHasher>(std::move(primary_key));
 }
 

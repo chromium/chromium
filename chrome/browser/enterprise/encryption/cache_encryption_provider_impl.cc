@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/encryption/cache_encryption_provider_impl.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "crypto/random.h"
@@ -46,6 +47,8 @@ void CacheEncryptionProviderImpl::OnEncryptorReadyForKey(
     std::optional<std::string> decrypted =
         encryptor.DecryptData(encrypted_primary_key_, &flags);
     if (decrypted && decrypted->length() == kPrimaryKeySizeInBytes) {
+      base::UmaHistogramBoolean(
+          "Enterprise.EncryptedCache.KeyRetrievalFromPrefsSuccess", true);
       DVLOG(1)
           << "Successfully validated existing encrypted cache encryption key.";
       needs_new_key = false;
@@ -60,16 +63,21 @@ void CacheEncryptionProviderImpl::OnEncryptorReadyForKey(
           store_key_callback_.Run(encrypted_primary_key_);
           DVLOG(1) << "Successfully re-encrypted and stored cache encryption "
                       "key.";
+          base::UmaHistogramBoolean(
+              "Enterprise.EncryptedCache.KeyReencryptionSuccess", true);
         } else {
           LOG(ERROR) << "Failed to re-encrypt cache encryption key. "
                         "Cache encryption will be disabled for this session.";
           LOG_POLICY(ERROR, POLICY_PROCESSING)
               << "Failed to re-encrypt cache encryption key.";
+          base::UmaHistogramBoolean(
+              "Enterprise.EncryptedCache.KeyReencryptionSuccess", false);
           encrypted_primary_key_.clear();
         }
       }
     } else {
-      // TODO: crbug.com/475800166 - Log errors in UMA.
+      base::UmaHistogramBoolean(
+          "Enterprise.EncryptedCache.KeyRetrievalFromPrefsSuccess", false);
       LOG(ERROR) << "Failed to decrypt/validate existing cache encryption key.";
       LOG_POLICY(ERROR, POLICY_PROCESSING)
           << "Failed to decrypt/validate existing cache encryption key.";
@@ -97,9 +105,13 @@ void CacheEncryptionProviderImpl::OnEncryptorReadyForKey(
       store_key_callback_.Run(encrypted_primary_key_);
       DVLOG(1) << "Successfully generated and stored new encrypted cache "
                   "encryption key.";
+      base::UmaHistogramBoolean("Enterprise.EncryptedCache.KeyCreationSuccess",
+                                true);
     } else {
       LOG(ERROR) << "Failed to encrypt new cache encryption key. "
                     "Cache encryption will be disabled for this session.";
+      base::UmaHistogramBoolean("Enterprise.EncryptedCache.KeyCreationSuccess",
+                                false);
       encrypted_primary_key_.clear();
     }
   }
