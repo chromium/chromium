@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAYMENTS_CORE_TEST_PAYMENT_MANIFEST_DOWNLOADER_H_
-#define COMPONENTS_PAYMENTS_CORE_TEST_PAYMENT_MANIFEST_DOWNLOADER_H_
+#ifndef COMPONENTS_PAYMENTS_CONTENT_TEST_PAYMENT_MANIFEST_DOWNLOADER_H_
+#define COMPONENTS_PAYMENTS_CONTENT_TEST_PAYMENT_MANIFEST_DOWNLOADER_H_
 
 #include <map>
 #include <memory>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "components/payments/core/payment_manifest_downloader.h"
+#include "components/payments/content/payment_manifest_downloader.h"
 
 class GURL;
 
@@ -136,4 +136,4 @@ class TestDownloader : public PaymentManifestDownloader {
 
 }  // namespace payments
 
-#endif  // COMPONENTS_PAYMENTS_CORE_TEST_PAYMENT_MANIFEST_DOWNLOADER_H_
+#endif  // COMPONENTS_PAYMENTS_CONTENT_TEST_PAYMENT_MANIFEST_DOWNLOADER_H_

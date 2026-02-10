@@ -626,6 +626,7 @@ static_library("test_support") {
     "//components/page_content_annotations/core:test_support",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/payments/content:test_support",
     "//components/payments/core:test_support",
     "//components/performance_manager/test_support",
     "//components/permissions",

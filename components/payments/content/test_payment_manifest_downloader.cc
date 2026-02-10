@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/core/test_payment_manifest_downloader.h"
+#include "components/payments/content/test_payment_manifest_downloader.h"
 
 #include <utility>
 

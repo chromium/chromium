@@ -12,7 +12,7 @@
 #include "base/android/jni_android.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/payments/core/payment_manifest_downloader.h"
+#include "components/payments/content/payment_manifest_downloader.h"
 
 namespace network {
 class SharedURLLoaderFactory;

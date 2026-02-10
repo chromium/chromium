@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/core/payment_manifest_downloader.h"
+#include "components/payments/content/payment_manifest_downloader.h"
 
 #include <algorithm>
 #include <optional>
@@ -387,6 +387,18 @@ void PaymentManifestDownloader::InitiateDownload(
             "payments API."
           data: "None."
           destination: WEBSITE
+          internal {
+            contacts {
+              email: "chrome-payments-eng@google.com"
+            }
+            contacts {
+              email: "darwinyang@chromium.org"
+            }
+          }
+          user_data: {
+            type: NONE
+          }
+          last_reviewed: "2026-02-09"
         }
         policy {
           cookies_allowed: NO

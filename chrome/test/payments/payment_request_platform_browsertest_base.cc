@@ -16,7 +16,7 @@
 #include "chrome/test/payments/payment_app_install_util.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/payments/content/service_worker_payment_app_finder.h"
-#include "components/payments/core/test_payment_manifest_downloader.h"
+#include "components/payments/content/test_payment_manifest_downloader.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"

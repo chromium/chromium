@@ -5,6 +5,7 @@ include_rules = [
   "+chromeos/components/payments",
   "+components/autofill",
   "+components/keyed_service/content",
+  "+components/link_header_util",
   "+components/keyed_service/core",
   "+components/network_session_configurator/common",
   "+components/prefs",

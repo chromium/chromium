@@ -49,6 +49,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//chrome/test/payments:test_support",
     "//components/payments/content",
+    "//components/payments/content:test_support",
     "//components/payments/content:utils",
     "//components/payments/core",
     "//components/payments/core:test_support",

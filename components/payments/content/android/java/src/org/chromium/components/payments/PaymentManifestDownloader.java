@@ -15,10 +15,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
-/**
- * See comment in:
- * components/payments/core/payment_manifest_downloader.h
- */
+/** See comment in: components/payments/content/payment_manifest_downloader.h */
 @JNINamespace("payments")
 @NullMarked
 public class PaymentManifestDownloader {

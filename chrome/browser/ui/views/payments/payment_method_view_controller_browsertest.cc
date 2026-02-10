@@ -12,7 +12,7 @@
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_state.h"
 #include "components/payments/content/service_worker_payment_app_finder.h"
-#include "components/payments/core/test_payment_manifest_downloader.h"
+#include "components/payments/content/test_payment_manifest_downloader.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
