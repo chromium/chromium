@@ -66,6 +66,10 @@ class SaveUpdateAddressProfileFlowManager;
 class AutofillMessageController;
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+class GlicFormParsingTracker;
+#endif
+
 class AutofillOptimizationGuideDecider;
 class EmailVerifierDelegate;
 class FormFieldData;
@@ -365,6 +369,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
   // differently. There can be at most one actor on a given tab. If there is no
   // actor interacting with the current tab it is `std::nullopt`.
   std::optional<actor::TaskId> active_actor_task_;
+
+  std::unique_ptr<GlicFormParsingTracker> glic_form_parsing_tracker_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   SEQUENCE_CHECKER(sequence_checker_);

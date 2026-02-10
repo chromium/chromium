@@ -11,6 +11,8 @@ static_library("glic") {
     "actor_form_filling_service.h",
     "actor_form_filling_service_impl.cc",
     "actor_form_filling_service_impl.h",
+    "glic_form_parsing_tracker.cc",
+    "glic_form_parsing_tracker.h",
   ]
 
   deps = [
