@@ -18,6 +18,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/child_process_termination_info.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "net/base/network_change_notifier.h"
@@ -66,7 +67,9 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OverlayBaseController, kOverlayId);
 
 OverlayBaseController::OverlayBaseController(tabs::TabInterface* tab,
                                              PrefService* pref_service)
-    : tab_(tab), pref_service_(pref_service) {}
+    : content::WebContentsObserver(tab->GetContents()),
+      tab_(tab),
+      pref_service_(pref_service) {}
 
 OverlayBaseController::~OverlayBaseController() {
   state_ = State::kOff;
@@ -878,6 +881,44 @@ void OverlayBaseController::ClosePreselectionBubbleImpl() {
     preselection_widget_ = nullptr;
     preselection_widget_observer_.Reset();
   }
+}
+
+void OverlayBaseController::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  // Exit early if the overlay is off or already closing.
+  if (state_ == State::kOff || IsOverlayClosing()) {
+    return;
+  }
+
+  RequestSyncClose(status == base::TERMINATION_STATUS_NORMAL_TERMINATION
+                       ? DismissalSource::kPageRendererClosedNormally
+                       : DismissalSource::kPageRendererClosedUnexpectedly);
+}
+
+void OverlayBaseController::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // If the overlay is off, do nothing.
+  if (state_ == State::kOff) {
+    return;
+  }
+
+  // If the overlay is open, check if we should close it.
+  bool is_user_reload =
+      navigation_handle->GetReloadType() != content::ReloadType::NONE &&
+      !navigation_handle->IsRendererInitiated();
+  // We don't need to close if:
+  //   1) The navigation is not for the main page.
+  //   2) The navigation hasn't been committed yet.
+  //   3) The URL did not change and the navigation wasn't the user reloading
+  //      the page.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted() ||
+      (navigation_handle->GetPreviousPrimaryMainFrameURL() ==
+           navigation_handle->GetURL() &&
+       !is_user_reload)) {
+    return;
+  }
+  NotifyPageNavigated();
 }
 
 void OverlayBaseController::OnSidePanelAlignmentChanged() {

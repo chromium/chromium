@@ -535,8 +535,6 @@ class LensOverlayController : public OverlayBaseController,
     std::optional<lens::TranslateOptions> translate_options_;
   };
 
-  class UnderlyingWebContentsObserver;
-
   // Implementation of IssueTextSearchRequest() for passing query_start_time.
   void IssueTextSearchRequestInner(
       base::Time query_start_time,
@@ -610,6 +608,7 @@ class LensOverlayController : public OverlayBaseController,
   void FinishedWaitingForReflow(base::TimeTicks reflow_start_time) override;
   bool ShouldShowPreselectionBubble() override;
   bool UseOverlayBlur() override;
+  void NotifyPageNavigated() override;
   void NotifyOverlayClosing() override;
   void NotifyTabForegrounded() override;
   void NotifyTabWillEnterBackground() override;
@@ -702,6 +701,10 @@ class LensOverlayController : public OverlayBaseController,
   void FinishReshowOverlay() override;
   void AcceptPrivacyNotice() override;
   void DismissPrivacyNotice() override;
+
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // Tries to show the translate feature promo after the translate button
   // element is shown.
@@ -843,10 +846,6 @@ class LensOverlayController : public OverlayBaseController,
   // and has bound the connection.
   mojo::Receiver<lens::mojom::LensPageHandler> receiver_{this};
   mojo::Remote<lens::mojom::LensPage> page_;
-
-  // Observer for the WebContents of the associated tab. Only valid while the
-  // overlay view is showing.
-  std::unique_ptr<UnderlyingWebContentsObserver> tab_contents_observer_;
 
   // Whether the OCR DOM similarity has been recorded in the current session.
   bool ocr_dom_similarity_recorded_in_session_ = false;
