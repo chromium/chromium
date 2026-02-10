@@ -57,6 +57,7 @@
 #include "components/password_manager/core/browser/votes_uploader.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/password_manager/core/common/password_manager_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -316,11 +317,14 @@ PasswordFormManager::PasswordFormManager(
       !observed_form()->is_gaia_with_skip_save_password_form()) {
     owned_form_fetcher_->Fetch();
 
-    WebAuthnCredentialsDelegate* delegate =
-        client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
-    if (delegate) {
-      delegate->RequestNotificationWhenPasskeysReady(
-          async_predictions_waiter_.CreateClosure());
+    // Wait for passkeys only if the form has autocomplete="webauthn" fields.
+    if (util::FormContainsWebauthnAutocomplete(observed_form_data)) {
+      WebAuthnCredentialsDelegate* delegate =
+          client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
+      if (delegate) {
+        delegate->RequestNotificationWhenPasskeysReady(
+            async_predictions_waiter_.CreateClosure());
+      }
     }
   }
   if (votes_uploader_.has_value()) {

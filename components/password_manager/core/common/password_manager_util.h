@@ -15,6 +15,9 @@ class FormData;
 
 namespace password_manager::util {
 
+// Returns whether this form contains any input with autocomplete="webauthn".
+bool FormContainsWebauthnAutocomplete(const autofill::FormData& form);
+
 // Returns whether this form is recognized as a credential form by the renderer.
 // If is the case iff it has at least one field of type="password", a text field
 // with autocomplete="username", or a textfield with autocomplete="webauthn".

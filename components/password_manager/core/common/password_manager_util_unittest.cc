@@ -57,6 +57,47 @@ TEST(PasswordsManagerUtilTest,
   EXPECT_FALSE(IsRendererRecognizedCredentialForm(form));
 }
 
+TEST(PasswordsManagerUtilTest, FormDoesNotContainWebauthnAutocomplete) {
+  FormData form;
+  form.set_fields(
+      {CreateFormField(autofill::FormControlType::kInputText,
+                       /*autocomplete_attribute=*/"username"),
+       CreateFormField(autofill::FormControlType::kInputPassword,
+                       /*autocomplete_attribute=*/"current-password")});
+  EXPECT_FALSE(FormContainsWebauthnAutocomplete(form));
+}
+
+TEST(PasswordsManagerUtilTest, FormContainsWebauthnAutocompleteLiteral) {
+  FormData form;
+  form.set_fields({CreateFormField(autofill::FormControlType::kInputText,
+                                   /*autocomplete_attribute=*/"webauthn")});
+  EXPECT_TRUE(FormContainsWebauthnAutocomplete(form));
+}
+
+TEST(PasswordsManagerUtilTest, FormContainsWebauthnAutocompleteMultiple) {
+  FormData form;
+  form.set_fields(
+      {CreateFormField(autofill::FormControlType::kInputText,
+                       /*autocomplete_attribute=*/"username webauthn")});
+  EXPECT_TRUE(FormContainsWebauthnAutocomplete(form));
+}
+
+TEST(PasswordsManagerUtilTest, FormContainsWebauthnAutocompleteMultipleUpper) {
+  FormData form;
+  form.set_fields(
+      {CreateFormField(autofill::FormControlType::kInputText,
+                       /*autocomplete_attribute=*/"username WebAuthn")});
+  EXPECT_TRUE(FormContainsWebauthnAutocomplete(form));
+}
+
+TEST(PasswordsManagerUtilTest, FormContainsWebauthnAutocompleteInvalid) {
+  FormData form;
+  form.set_fields(
+      {CreateFormField(autofill::FormControlType::kInputText,
+                       /*autocomplete_attribute=*/"webauthn whatever")});
+  EXPECT_FALSE(FormContainsWebauthnAutocomplete(form));
+}
+
 // Test that a valid username field is considered as such.
 TEST(PasswordsManagerUtilTest, CanValueBeConsideredAsSingleUsername_Valid) {
   EXPECT_TRUE(CanValueBeConsideredAsSingleUsername(/*value=*/u"test_username"));

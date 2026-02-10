@@ -559,6 +559,20 @@ class PasswordFormManagerTest : public testing::Test,
         std::move(password_save_manager), nullptr);
   }
 
+  // Creates PasswordFormManager without a passed |fetcher_| in order to
+  // populate |owned_form_fetcher_|.
+  virtual void CreateFormManagerWithoutFetcher(const FormData& observed_form) {
+    auto password_save_manager = std::make_unique<PasswordSaveManagerImpl>(
+        /*profile_form_saver=*/std::make_unique<NiceMock<MockFormSaver>>(),
+        /*account_form_saver=*/GetParam()
+            ? std::make_unique<NiceMock<MockFormSaver>>()
+            : nullptr);
+
+    form_manager_ = std::make_unique<PasswordFormManager>(
+        &client_, driver_.AsWeakPtr(), observed_form, nullptr,
+        std::move(password_save_manager), nullptr);
+  }
+
   // Creates PasswordFormManager and sets it to |form_manager_| for
   // |base_auth_observed_form|. Along the way a new |fetcher_| is created.
   virtual void CreateFormManagerForNonWebForm(
@@ -4848,6 +4862,25 @@ TEST_P(PasswordFormManagerTest, DoesNotNotifyAfterObserverRemoved) {
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});
 
   task_environment_.FastForwardUntilNoTasksRemain();
+}
+
+TEST_P(PasswordFormManagerTest,
+       NoWaitForPasskeysWhenFormLacksWebauthnAutocomplete) {
+  test_api(observed_form_).field(-1).set_autocomplete_attribute("new-password");
+
+  EXPECT_CALL(webauthn_credentials_delegate_,
+              RequestNotificationWhenPasskeysReady)
+      .Times(0);
+  CreateFormManagerWithoutFetcher(observed_form_);
+}
+
+TEST_P(PasswordFormManagerTest,
+       WaitForPasskeysWhenFormHasWebauthnAutocomplete) {
+  test_api(observed_form_).field(-1).set_autocomplete_attribute("webauthn");
+
+  EXPECT_CALL(webauthn_credentials_delegate_,
+              RequestNotificationWhenPasskeysReady);
+  CreateFormManagerWithoutFetcher(observed_form_);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PasswordFormManagerTest, testing::Bool());
