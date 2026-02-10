@@ -16,7 +16,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -32,16 +31,17 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
@@ -97,6 +97,7 @@ public class TabSwitcherMessageManagerUnitTest {
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private ReauthenticatorBridge mReauthenticatorBridge;
     @Mock private TabListCoordinator mTabListCoordinator;
     @Mock private TabListHighlighter mTabListHighlighter;
     @Mock private PriceWelcomeMessageReviewActionProvider mPriceWelcomeMessageReviewActionProvider;
@@ -118,7 +119,7 @@ public class TabSwitcherMessageManagerUnitTest {
     private ArgumentCaptor<MultiWindowModeStateDispatcher.MultiWindowModeObserver>
             mMultiWindowModeObserverCaptor;
 
-    private final org.chromium.base.supplier.SettableNullableObservableSupplier<TabGroupModelFilter>
+    private final SettableNullableObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier = ObservableSuppliers.createNullable();
     private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
             ObservableSuppliers.createMonotonic();
@@ -152,10 +153,11 @@ public class TabSwitcherMessageManagerUnitTest {
         mCurrentTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
         when(mArchivedTabModelOrchestrator.getTabCountSupplier()).thenReturn(mTabCountSupplier);
 
+        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
         mActivityScenarioRule.getScenario().onActivity(this::onActivityReady);
     }
 
-    private void onActivityReady(Activity activity) {
+    private void onActivityReady(TestActivity activity) {
         FrameLayout container = new FrameLayout(activity);
         activity.setContentView(container);
 
@@ -199,16 +201,12 @@ public class TabSwitcherMessageManagerUnitTest {
         assertFalse(mCurrentTabGroupModelFilterSupplier.hasObservers());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testBeforeReset() {
         mMessageManager.beforeReset();
         verify(mTabGroupModelFilter).removeObserver(any());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testAfterReset() {
         verify(mTabGroupModelFilter, times(2)).addObserver(any());
@@ -224,8 +222,6 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mTabGroupModelFilter, times(4)).addObserver(any());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void removeMessageItemsWhenCloseLastTab() {
         // Mock that mTab1 is not the only tab in the current tab model and it will be closed.
@@ -250,8 +246,6 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void removeMessageItemsWhenCloseMultipleTabs() {
         // Simulate only some tabs being closed.
@@ -276,8 +270,6 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void removeMessageItemsWhenCloseLastTab_withGroupSuggestion() {
         createGroupSuggestion();
@@ -309,8 +301,6 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void restoreMessageItemsWhenUndoLastTabClosure() {
         // Mock that mTab1 was not the only tab in the current tab model and its closure will be
@@ -325,8 +315,6 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mMessageUpdateObserver).onRestoreAllAppendedMessage();
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void enterMultiWindowMode() {
         mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(true);
@@ -344,8 +332,6 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void enterMultiWindowMode_withGroupSuggestion() {
         createGroupSuggestion();
@@ -370,8 +356,6 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void exitMultiWindowMode() {
         mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(false);
@@ -379,8 +363,6 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mMessageUpdateObserver).onRestoreAllAppendedMessage();
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void dismissHandlerSkipWhenUnbound() {
         @MessageType int messageType = MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE;
