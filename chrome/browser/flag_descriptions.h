@@ -291,7 +291,20 @@ inline constexpr char kBrowsingHistoryActorIntegrationM1Description[] =
 inline constexpr char kBrowsingHistoryActorIntegrationM2Name[] =
     "Browsing History Actor Integration M2";
 inline constexpr char kBrowsingHistoryActorIntegrationM2Description[] =
-    "Enables the browsing history glic actor integration M2";
+    "Enables the browsing history glic actor integration M2. Requires "
+    "browsing-history-actor-integration-M1 to be enabled as well.";
+
+inline constexpr char kBrowsingHistoryActorIntegrationM3Name[] =
+    "Browsing History Actor Integration M3";
+inline constexpr char kBrowsingHistoryActorIntegrationM3Description[] =
+    "Enables the browsing history glic actor integration M3. Requires "
+    "browsing-history-actor-integration-M2 to be enabled as well.";
+
+inline constexpr char kBrowsingHistorySimilarVisitsGroupingName[] =
+    "Browsing History Grouping Improvements";
+inline constexpr char kBrowsingHistorySimilarVisitsGroupingDescription[] =
+    "Enables improvements to grouping of similar browsing history on the "
+    "history page.";
 
 inline constexpr char kBundledSecuritySettingsName[] =
     "Bundled Security Settings";

@@ -1270,6 +1270,22 @@
     "expiry_milestone": 148
   },
   {
+    "name": "browsing-history-actor-integration-M3",
+    "owners": [
+      "rainhard@google.com",
+      "zalmashni@google.com",
+      "chrome-browser-privacy-team@google.com"],
+    "expiry_milestone": 152
+  },
+  {
+    "name": "browsing-history-similar-visits-grouping",
+    "owners": [
+      "rainhard@google.com",
+      "zalmashni@google.com",
+      "chrome-browser-privacy-team@google.com"],
+    "expiry_milestone": 152
+  },
+  {
     "name": "bundled-security-settings",
     "owners": [
       "awado@google.com",
