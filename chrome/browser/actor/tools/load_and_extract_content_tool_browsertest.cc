@@ -45,6 +45,11 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest, Placeholder) {
           std::vector<GURL>{url1, url2});
 
   EXPECT_NE(request, nullptr);
+
+  // For now, we just check that the tool runs without crashing.
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(request), result.GetCallback());
+  ExpectOkResult(result);
 }
 
 }  // namespace actor
