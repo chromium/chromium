@@ -49,14 +49,7 @@ found in the LICENSE file.
         android:layout="@layout/composeplate_view_layout_v2"
         />
 
-    <!-- Query tiles -->
-    <FrameLayout
-        android:id="@+id/query_tiles"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:visibility="gone"/>
-
+    <!-- Most Visited Tiles -->
     <ViewStub
         android:id="@+id/mv_tiles_layout_stub"
         android:inflatedId="@+id/mv_tiles_container"

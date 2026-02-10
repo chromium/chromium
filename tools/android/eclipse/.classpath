@@ -394,7 +394,6 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="src" path="components/policy/android/javatests/src"/>
     <classpathentry kind="src" path="components/policy/android/junit/src"/>
     <classpathentry kind="src" path="components/prefs/android/java/src"/>
-    <classpathentry kind="src" path="components/query_tiles/android/java/src"/>
     <classpathentry kind="src" path="components/safe_browsing/android/java/src"/>
     <classpathentry kind="src" path="components/search_engines/android/java/src"/>
     <classpathentry kind="src" path="components/security_interstitials/content/android/java/src"/>
