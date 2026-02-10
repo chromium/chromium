@@ -841,6 +841,7 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Disabled because of crbug.com/483152321")
     public void typingStarted_clipboardPasteTriggersTypingStartedWithRetainOmniboxOnFocusEnabled() {
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
         testTypingStarted_clipboardPasteTriggersTypingStarted();
