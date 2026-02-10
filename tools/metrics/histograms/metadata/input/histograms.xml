@@ -2205,8 +2205,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextInputClient.CharacterIndex" units="ms"
-    expires_after="2024-08-18">
-  <owner>kouhei@chromium.org</owner>
+    expires_after="M147">
+  <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Recorded per call from a browser process thread to query
@@ -2215,14 +2215,13 @@ chromium-metrics-reviews@google.com.
 
     Only recorded on macOS.
 
-    Warning: this histogram was missing its entry until 2024-01; data may be
-    missing.
+    Warning: this histogram was missing its entry until 2024-01 and expired from
+    2024-08-18 to 2026-02-09; data may be missing.
   </summary>
 </histogram>
 
-<histogram name="TextInputClient.FirstRect" units="ms"
-    expires_after="2025-02-23">
-  <owner>kouhei@chromium.org</owner>
+<histogram name="TextInputClient.FirstRect" units="ms" expires_after="M147">
+  <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Recorded per call from a browser process thread to query
@@ -2231,14 +2230,13 @@ chromium-metrics-reviews@google.com.
 
     Only recorded on macOS.
 
-    Warning: this histogram was missing its entry until 2024-01; data may be
-    missing.
+    Warning: this histogram was missing its entry until 2024-01 and expired from
+    2025-02-23 to 2026-02-09; data may be missing.
   </summary>
 </histogram>
 
-<histogram name="TextInputClient.LockWait" units="ms"
-    expires_after="2024-08-18">
-  <owner>kouhei@chromium.org</owner>
+<histogram name="TextInputClient.LockWait" units="ms" expires_after="M147">
+  <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time took to acquire TextInputClient mutex lock on the browser process
@@ -2248,8 +2246,8 @@ chromium-metrics-reviews@google.com.
 
     Only recorded on macOS.
 
-    Warning: this histogram was missing its entry until 2024-01; data may be
-    missing.
+    Warning: this histogram was missing its entry until 2024-01 and expired from
+    2024-08-18 to 2026-02-09; data may be missing.
   </summary>
 </histogram>
 
