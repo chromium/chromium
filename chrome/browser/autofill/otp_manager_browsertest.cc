@@ -90,6 +90,11 @@ class FakeGmailOtpBackend : public one_time_tokens::GmailOtpBackend {
     return one_time_tokens::ExpiringSubscription();
   }
 
+  // one_time_tokens::GmailOtpBackend:
+  void OnIncomingOneTimeTokenBackendTickle(
+      const one_time_tokens::GmailOtpBackend::EncryptedMessageReference&
+          encrypted_message_reference) override {}
+
   // Simulates the reception of a Gmail OTP.
   void ProcessCallbacks(
       base::expected<one_time_tokens::OneTimeToken,

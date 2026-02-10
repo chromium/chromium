@@ -55,4 +55,8 @@ void GmailOtpBackendImpl::OnResponseFromGmailOtpBackend(
   subscription_manager_.Notify(base::ok(token));
 }
 
+void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendTickle(
+    const GmailOtpBackendImpl::EncryptedMessageReference&
+        encrypted_message_reference) {}
+
 }  // namespace one_time_tokens

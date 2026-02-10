@@ -83,6 +83,12 @@ class MockGmailOtpBackend : public GmailOtpBackend {
               (base::Time expiration, Callback callback),
               (override));
 
+  MOCK_METHOD(
+      void,
+      OnIncomingOneTimeTokenBackendTickle,
+      (const GmailOtpBackend::EncryptedMessageReference& encrypted_message_reference),
+      (override));
+
   // Simulates the reception of an OTP. This will run all pending callbacks from
   // `Subscribe`.
   void SimulateOtpArrived(
