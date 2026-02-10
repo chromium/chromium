@@ -12,10 +12,12 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/callback_list.h"
 #include "base/strings/strcat.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/enterprise_policy_url_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/shared_types.h"
@@ -267,6 +269,23 @@ class ExecutionEngineStateWaiter : public ExecutionEngine::StateObserver {
   base::OnceClosure callback_;
   const base::WeakPtr<ExecutionEngine> execution_engine_;
   ExecutionEngine::State target_state_;
+};
+
+class ActorTaskStateWaiter {
+ public:
+  ActorTaskStateWaiter(base::OnceClosure callback,
+                       ActorKeyedService& service,
+                       ActorTask& task,
+                       ActorTask::State target_state);
+  ~ActorTaskStateWaiter();
+
+ private:
+  void StateChanged(TaskId task_id, ActorTask::State state);
+
+  base::OnceClosure callback_;
+  TaskId task_id_;
+  ActorTask::State target_state_;
+  base::CallbackListSubscription subscription_;
 };
 
 // Use this RAII helper to provide a factory function for constructing

@@ -318,12 +318,6 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
 
   ResetToObserveTabsSet();
 
-  SetState(State::kActing);
-
-  actions_in_current_state_ += actions.size();
-  total_number_of_actions_ += actions.size();
-
-  action_tracker_for_metrics_->WillAct(actions);
   callback_for_act_ = std::move(callback);
 
   // TODO(b/474410401): ActorTask tabs should be explicitly added by the client.
@@ -345,6 +339,13 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
       AddTab(tab, add_tabs_barrier);
     }
   } else {
+    SetState(State::kActing);
+
+    actions_in_current_state_ += actions.size();
+    total_number_of_actions_ += actions.size();
+
+    action_tracker_for_metrics_->WillAct(actions);
+
     execution_engine_->Act(std::move(actions),
                            base::BindOnce(&ActorTask::OnFinishedAct,
                                           weak_ptr_factory_.GetWeakPtr()));
@@ -381,7 +382,7 @@ void ActorTask::OnFinishedAct(
   if (callback_for_act_) {
     // Interruption (WaitingOnUser) can happen while acting, but in that case
     // the tool is the source and must not finish before uninterrupting.
-    DCHECK_EQ(state_, State::kActing);
+    DCHECK(state_ == State::kCreated || state_ == State::kActing);
     action_tracker_for_metrics_->OnFinishedAct(*result);
     std::move(callback_for_act_)
         .Run(std::move(result), index_of_failed_action,
@@ -435,7 +436,8 @@ void ActorTask::Pause(bool from_actor) {
   // Invoke the callback before changing states so that the client sees the Act
   // result before seeing the state transition.
   if (callback_for_act_) {
-    DCHECK(state_ == State::kActing || state_ == State::kWaitingOnUser);
+    DCHECK(state_ == State::kActing || state_ == State::kWaitingOnUser ||
+           state_ == State::kCreated);
     mojom::ActionResultPtr result =
         MakeResult(mojom::ActionResultCode::kTaskPaused);
     action_tracker_for_metrics_->OnFinishedAct(*result);
@@ -686,6 +688,13 @@ void ActorTask::DidEarlyAddTabs(
       return;
     }
   }
+
+  SetState(State::kActing);
+
+  actions_in_current_state_ += actions.size();
+  total_number_of_actions_ += actions.size();
+
+  action_tracker_for_metrics_->WillAct(actions);
 
   execution_engine_->Act(std::move(actions),
                          base::BindOnce(&ActorTask::OnFinishedAct,

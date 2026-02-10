@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/enterprise_policy_url_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/shared_types.h"
@@ -698,6 +699,30 @@ void ExecutionEngineStateWaiter::OnStateChanged(
     ExecutionEngine::State old_state,
     ExecutionEngine::State new_state) {
   if (new_state == target_state_) {
+    std::move(callback_).Run();
+  }
+}
+
+ActorTaskStateWaiter::ActorTaskStateWaiter(base::OnceClosure callback,
+                                           ActorKeyedService& service,
+                                           ActorTask& task,
+                                           ActorTask::State target_state)
+    : callback_(std::move(callback)),
+      task_id_(task.id()),
+      target_state_(target_state),
+      subscription_(service.AddTaskStateChangedCallback(
+          base::BindRepeating(&ActorTaskStateWaiter::StateChanged,
+                              base::Unretained(this)))) {}
+
+ActorTaskStateWaiter::~ActorTaskStateWaiter() = default;
+
+void ActorTaskStateWaiter::StateChanged(TaskId task_id,
+                                        ActorTask::State state) {
+  if (!callback_) {
+    return;
+  }
+
+  if (task_id_ == task_id && target_state_ == state) {
     std::move(callback_).Run();
   }
 }

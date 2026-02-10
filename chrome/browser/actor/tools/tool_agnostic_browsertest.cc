@@ -9,12 +9,14 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
@@ -561,6 +563,40 @@ IN_PROC_BROWSER_TEST_F(ActorEarlyAddTaskTabsBrowserTest,
   // resolve. This is needed as the site policy checks may query task tabs (e.g.
   // a "Switch To Tab" button while confirming a non-allowlisted URL).
   EXPECT_TRUE(actor_task().GetTabs().contains(tab));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorEarlyAddTaskTabsBrowserTest,
+                       NewlyAddedTabsVisibleFromStateChangeCallback) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::optional<int> button_id =
+      GetDOMNodeId(*main_frame(), "button#clickable");
+  ASSERT_TRUE(button_id);
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), button_id.value());
+  tabs::TabHandle tab = action->GetTabHandle();
+
+  ASSERT_TRUE(actor_task().GetTabs().empty());
+
+  std::optional<ActorTask::TabHandleSet> tabs_at_acting_start;
+  auto subscription = actor_keyed_service().AddTaskStateChangedCallback(
+      base::BindLambdaForTesting([&](TaskId id, ActorTask::State state) {
+        CHECK(id == actor_task().id());
+        if (state == ActorTask::State::kActing) {
+          tabs_at_acting_start.emplace(actor_task().GetTabs());
+        }
+      }));
+
+  // Tab-scoped actions require async site_policy checks.
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  ASSERT_TRUE(tabs_at_acting_start.has_value());
+  EXPECT_TRUE(tabs_at_acting_start->contains(tab));
 }
 
 // This test is for behavior guarded by a killswitch.

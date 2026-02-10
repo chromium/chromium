@@ -564,7 +564,13 @@ TEST_F(ExecutionEngineTest, MAYBE_ActorTaskCompletedHistogram) {
         MakeClickCallback(kFakeContentNodeId).Run();
     std::unique_ptr<ToolRequest> action2 =
         MakeClickCallback(kFakeContentNodeId).Run();
+
+    base::test::TestFuture<void> future;
+    ActorTaskStateWaiter wait_to_act(future.GetCallback(),
+                                     *ActorKeyedService::Get(profile()), *task_,
+                                     ActorTask::State::kActing);
     task_->Act(ToRequestList(action, action2), result.GetCallback());
+    ASSERT_TRUE(future.Wait());
   }
 
   // Simulate time passing before the task stops
@@ -662,7 +668,13 @@ TEST_P(ExecutionEngineStopReasonParamTest, MAYBE_ActorTaskStoppedHistogram) {
     ActResultFuture result;
     std::unique_ptr<ToolRequest> action =
         MakeClickCallback(kFakeContentNodeId).Run();
+
+    base::test::TestFuture<void> future;
+    ActorTaskStateWaiter wait_to_act(future.GetCallback(),
+                                     *ActorKeyedService::Get(profile()), *task_,
+                                     ActorTask::State::kActing);
     task_->Act(ToRequestList(action), result.GetCallback());
+    ASSERT_TRUE(future.Wait());
   }
 
   // Simulate time passing before the task is cancelled
@@ -695,7 +707,12 @@ TEST_F(ExecutionEngineTest, ActorTaskCountAndDurationHistograms) {
       MakeClickCallback(kFakeContentNodeId).Run();
   task_environment()->FastForwardBy(created_duration);
 
+  base::test::TestFuture<void> future;
+  ActorTaskStateWaiter wait_to_act(future.GetCallback(),
+                                   *ActorKeyedService::Get(profile()), *task_,
+                                   ActorTask::State::kActing);
   task_->Act(ToRequestList(action1, action2, action3), result.GetCallback());
+  ASSERT_TRUE(future.Wait());
 
   histograms_.ExpectTimeBucketCount(
       "Actor.Task.StateTransition.Duration.Created", created_duration, 1);
