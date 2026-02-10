@@ -121,6 +121,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.versioning.VersioningMessageBanner;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.download.DownloadNotificationService;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
@@ -319,6 +320,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.TransitiveTopInsetProvider;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
@@ -3378,6 +3380,52 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             @Override
             public int getTabCountForRelaunchFromPersistentStore() {
                 return MultiWindowUtils.getTabCountForRelaunchFromPersistentStore(mWindowId);
+            }
+
+            @Override
+            public BottomSheetSigninAndHistorySyncCoordinator
+                    createBottomSheetSigninAndHistorySyncCoordinator(
+                            BottomSheetSigninAndHistorySyncCoordinator.Delegate delegate,
+                            @SigninAccessPoint int accessPoint) {
+                OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
+                getProfileProviderSupplier()
+                        .onAvailable(pp -> profileSupplier.set(pp.getOriginalProfile()));
+                return SigninAndHistorySyncActivityLauncherImpl.get()
+                        .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                                getWindowAndroid(),
+                                ChromeTabbedActivity.this,
+                                getActivityResultTracker(),
+                                delegate,
+                                DeviceLockActivityLauncherImpl.get(),
+                                profileSupplier,
+                                this::getBottomSheetController,
+                                getModalDialogManagerSupplier(),
+                                getSnackbarManager(),
+                                accessPoint);
+            }
+
+            @Override
+            public void startSignInFlow(BottomSheetSigninAndHistorySyncCoordinator coordinator) {
+                String title = getString(R.string.signin_account_picker_bottom_sheet_title);
+                String subtitle =
+                        getString(R.string.signin_account_picker_bottom_sheet_benefits_subtitle);
+                AccountPickerBottomSheetStrings accountPickerBottomSheetStrings =
+                        new AccountPickerBottomSheetStrings.Builder(title)
+                                .setSubtitleString(subtitle)
+                                .build();
+                BottomSheetSigninAndHistorySyncConfig config =
+                        new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                        accountPickerBottomSheetStrings,
+                                        BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode
+                                                .BOTTOM_SHEET,
+                                        BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode
+                                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                        HistorySyncConfig.OptInMode.OPTIONAL,
+                                        getString(R.string.history_sync_title),
+                                        getString(R.string.history_sync_subtitle))
+                                .build();
+
+                coordinator.startSigninFlow(config);
             }
         };
     }

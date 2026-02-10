@@ -126,13 +126,13 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     public interface Delegate {
 
         /** Called when the whole flow finishes. */
-        void onFlowComplete(SigninAndHistorySyncCoordinator.Result result);
+        default void onFlowComplete(SigninAndHistorySyncCoordinator.Result result) {}
 
         /**
          * Called when the sign-in flow has been undone, executing after the user has been signed
          * out and history sync has been optionally opted out.
          */
-        void onSigninUndone();
+        default void onSigninUndone() {}
     }
 
     /**

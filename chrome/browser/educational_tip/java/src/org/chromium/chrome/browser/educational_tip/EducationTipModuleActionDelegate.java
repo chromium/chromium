@@ -11,7 +11,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /** The delegate to provide actions for the educational tips module. */
 @NullMarked
@@ -56,4 +58,21 @@ public interface EducationTipModuleActionDelegate {
      * modes from persisted state.
      */
     int getTabCountForRelaunchFromPersistentStore();
+
+    /**
+     * Creates a coordinator for the bottom-sheet sign-in and history sync flow.
+     *
+     * @param delegate The delegate to notify when the flow is complete.
+     * @param accessPoint The access point from which the sign-in was triggered.
+     */
+    BottomSheetSigninAndHistorySyncCoordinator createBottomSheetSigninAndHistorySyncCoordinator(
+            BottomSheetSigninAndHistorySyncCoordinator.Delegate delegate,
+            @SigninAccessPoint int accessPoint);
+
+    /**
+     * Configures and starts the sign-in and history sync flow.
+     *
+     * @param coordinator The coordinator to use for the flow.
+     */
+    void startSignInFlow(BottomSheetSigninAndHistorySyncCoordinator coordinator);
 }

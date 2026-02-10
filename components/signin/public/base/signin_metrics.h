@@ -218,7 +218,7 @@ enum class AccessPoint : int {
   // Access point for the consistency service.
   kAccountConsistencyService = 49,
   // kSearchCompanion = 50, no longer used.
-  // Access point for the IOS Set Up List on the NTP.
+  // Access point for the Set Up List on the NTP (Mobile only).
   kSetUpList = 51,
   // Access point for the local password migration warning on Android.
   // Deprecated: kPasswordMigrationWarningAndroid = 52,

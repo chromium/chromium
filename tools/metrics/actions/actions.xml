@@ -44391,7 +44391,7 @@ should be able to be added at any place in this file.
   <owner>bling-pandamonium@google.com</owner>
   <description>
     Recorded when showing sign in that originates from the Set Up List on the
-    NTP. iOS only.
+    NTP. (Mobile only)
   </description>
 </action>
 
@@ -45410,7 +45410,7 @@ should be able to be added at any place in this file.
   <owner>bling-pandamonium@google.com</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::kSetUpList. iOS only.
+    signin_metrics::AccessPoint::kSetUpList. (Mobile only)
   </description>
 </action>
 
