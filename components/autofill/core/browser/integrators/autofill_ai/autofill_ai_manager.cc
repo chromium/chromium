@@ -701,14 +701,11 @@ AutofillAiManager::GetUpdatePromptCandidates(
       // This will contain the attributes of the new to-be-updated entity.
       base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
           new_attributes = std::move(mergeability->mergeable_attributes);
-      for (const AttributeInstance& curr_attribute :
-           saved_entity.attributes()) {
-        // Only add the attributes of the saved entity that weren't mergeable
-        // with the observed entity. The other attributes were added by
-        // `mergeable_attributes`.
-        // Note that `base::flat_set::insert` does exactly that.
-        new_attributes.insert(curr_attribute);
-      }
+      // First add the attributes from the observed entity since the saved
+      // entity only has masked attributes.
+      new_attributes.insert_range(observed_entity.attributes());
+      // Add the remaining attributes from the saved entity.
+      new_attributes.insert_range(saved_entity.attributes());
       update_candidates.emplace_back(
           AutofillClient::AutofillAiImportPromptType::kUpdate,
           EntityInstance(saved_entity.type(), std::move(new_attributes),

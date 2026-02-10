@@ -639,6 +639,42 @@ TEST_P(AutofillEntityInstanceTest, IsMaskedStorageSupportedSelectTypes) {
       EntityType(kRedressNumber), EntityInstance::RecordType::kServerWallet));
 }
 
+// Tests that all obfuscated attributes of entity types that can be stored in
+// Wallet are part of every import constraint.
+//
+// The reason for this test is as follows:
+// - When importing data from a form submission, we assemble the entity that we
+//   send to Wallet by augmenting the observed submission data with data stored
+//   locally for that entity.
+// - However, we never want to send a masked attribute to Wallet: If we did,
+//   then Wallet would overwrite the attribute's value with the masked value.
+// - We can guarantee that this never happens if we only offer to update if all
+//   of the obfuscated attributes were present in the submitted form.
+//
+// Should this test start to fail, then the form import logic must be updated.
+// For example, you might need to fetch the unmasked entity from the Wallet
+// server before sending the update request.
+TEST_P(AutofillEntityInstanceTest, ObfuscatedAttributesAreImportonstraints) {
+  for (const EntityType entity_type : DenseSet<EntityType>::all()) {
+    if (!IsMaskedStorageSupported(entity_type,
+                                  EntityInstance::RecordType::kServerWallet)) {
+      continue;
+    }
+    for (const AttributeType attribute_type : entity_type.attributes()) {
+      if (!attribute_type.is_obfuscated()) {
+        continue;
+      }
+      EXPECT_TRUE(std::ranges::all_of(entity_type.import_constraints(),
+                                      [&](DenseSet<AttributeType> constraint) {
+                                        return constraint.contains(
+                                            attribute_type);
+                                      }))
+          << attribute_type << " must appear in all import constraints of "
+          << entity_type;
+    }
+  }
+}
+
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AutofillEntityInstanceTest);
 
 }  // namespace
