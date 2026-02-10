@@ -1152,6 +1152,42 @@ suite('NewTabPageAppTest', () => {
                     'NewTabPage.ComposeEntrypoint.Click.UserTextPresent',
                     true));
           });
+
+      test('compose entrypoint navigates with correct parameters', async () => {
+        // Arrange.
+        loadTimeData.overrideValues({
+          googleBaseUrl: 'https://www.google.com',
+        });
+        const openResolver = new PromiseResolver<string>();
+        const originalOpen = window.open;
+        window.open = (url) => {
+          openResolver.resolve(url as string);
+          return null;
+        };
+
+        const searchboxContainer =
+            app.shadowRoot.querySelector('cr-searchbox');
+        const composeButton = getComposeButton();
+        assertTrue(!!composeButton);
+
+        searchboxContainer!.shadowRoot
+            .querySelector<HTMLInputElement>('#input')!.value = 'hello';
+
+        // Act.
+        composeButton.dispatchEvent(new CustomEvent(
+            'compose-click', DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS));
+
+        // Assert.
+        const url = new URL(await openResolver.promise);
+        assertEquals('chrome', url.searchParams.get('sourceid'));
+        assertEquals('50', url.searchParams.get('udm'));
+        assertEquals('42', url.searchParams.get('aep'));
+        assertEquals('chrome.crn.rb', url.searchParams.get('source'));
+        assertEquals('hello', url.searchParams.get('q'));
+
+        // Cleanup.
+        window.open = originalOpen;
+      });
     });
 
     suite('compose entrypoint enabled - composebox disabled', () => {
