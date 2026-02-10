@@ -381,14 +381,6 @@ public class TabStateStore implements TabPersistentStore {
     }
 
     @Override
-    public void clearCurrentWindow() {
-        assertInitialized();
-
-        mTabStateStorageService.clearWindow(mWindowTag);
-        mMigrationManager.onShadowStoreRazed();
-    }
-
-    @Override
     public void addObserver(TabPersistentStoreObserver observer) {
         mObservers.addObserver(observer);
     }

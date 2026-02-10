@@ -245,21 +245,9 @@ public class TabModelOrchestrator {
 
     /**
      * Clean up persistent state for a given instance.
-     *
      * @param instanceId Instance ID.
      */
     public void cleanupInstance(int instanceId) {}
-
-    /** Clean up persisted state for this orchestrator. */
-    public void clearCurrentWindow() {
-        assertInitialized();
-        if (!mTabPersistentStoreDestroyedEarly) {
-            mTabPersistentStore.clearCurrentWindow();
-            if (mShadowTabPersistentStore != null) {
-                mShadowTabPersistentStore.clearCurrentWindow();
-            }
-        }
-    }
 
     /**
      * If there is an asynchronous session restore in-progress, try to synchronously restore the
