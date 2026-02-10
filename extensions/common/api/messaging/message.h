@@ -6,6 +6,7 @@
 #define EXTENSIONS_COMMON_API_MESSAGING_MESSAGE_H_
 
 #include <string>
+#include <utility>
 #include <variant>
 
 #include "extensions/common/mojom/message_port.mojom-shared.h"
@@ -33,7 +34,7 @@ using MessageData = std::variant<std::string, StructuredCloneMessageWireData>;
 //
 // 2. Structure-cloned data: For complex, non-JSON-serializable objects, this
 //    class can hold data serialized by Blink's `(Web)SerializedScriptValue`.
-//    This wire data is stored in the `structured_data_` member as a
+//    This wire data is stored in the `data_` member as a
 //    `mojo_base::BigBuffer`, and the `format()` will be
 //    `mojom::SerializationFormat::kStructuredClone`.
 //
@@ -54,14 +55,27 @@ class Message {
           mojom::SerializationFormat format,
           bool user_gesture,
           bool from_privileged_context = false);
-  Message(const Message& other);
+  // This class is move-only to efficiently manage resources by discouraging
+  // unintentional copies since messages can be quite large (see
+  // `extensions::mojom::kMaxMessageBytes`).
+  Message(const Message&) = delete;
+  Message& operator=(const Message&) = delete;
+
   Message(Message&& other);
   ~Message();
 
-  Message& operator=(const Message& other);
   Message& operator=(Message&& other);
 
   bool operator==(const Message& other) const;
+
+  // Performs a deep copy of the message.
+  //
+  // Note: messages can be large so this should only be called when necessary,
+  // otherwise use `std::move` mechanics to avoid unnecessary copies. However,
+  // in some cases (e.g. `ExtensionMessagePort::DispatchOnMessage`), a single
+  // message needs to be broadcast to multiple listeners/contexts. This method
+  // provides an explicit way to copy the message for such scenarios.
+  Message Clone() const;
 
   // TODO(crbug.com/40321352): Merge `data()` and `structured_data()` into
   // `message_data()` once the feature is complete and callers are updated to
@@ -69,6 +83,8 @@ class Message {
   const std::string& data() const;
   const StructuredCloneMessageWireData& structured_data() const;
   const MessageData& message_data() const { return data_; }
+  MessageData& message_data() { return data_; }
+
   mojom::SerializationFormat format() const { return format_; }
   bool user_gesture() const { return user_gesture_; }
   bool from_privileged_context() const { return from_privileged_context_; }

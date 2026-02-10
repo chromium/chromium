@@ -6,8 +6,10 @@
 #define EXTENSIONS_RENDERER_API_MESSAGING_MESSAGING_UTIL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "extensions/common/api/messaging/message.h"
 #include "extensions/common/extension_id.h"
 #include "v8/include/v8-forward.h"
 
@@ -23,7 +25,6 @@ enum class SerializationFormat;
 }  // namespace mojom
 
 class ScriptContext;
-class Message;
 struct MessagingEndpoint;
 
 namespace messaging_util {
@@ -45,12 +46,12 @@ extern const char kOnConnectNativeEvent[];
 
 inline constexpr int kNoFrameId = -1;
 
-// Parses the message from a v8 value, returning null on failure. On error,
-// will populate `error_out`.
-std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
-                                       v8::Local<v8::Value> value,
-                                       mojom::SerializationFormat format,
-                                       std::string* error);
+// Parses the message from a v8 value, returning `std::nullopt` on failure. On
+// error, will populate `error_out`.
+std::optional<Message> MessageFromV8(v8::Local<v8::Context> context,
+                                     v8::Local<v8::Value> value,
+                                     mojom::SerializationFormat format,
+                                     std::string* error);
 
 // Converts a message to a v8 value. For well-formed inputs, this will always
 // return a valid value. For malformed inputs, the behavior is as follows:
@@ -61,7 +62,7 @@ std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
 // If `is_parsing_fail_safe` is false, this function will CHECK() and cause a
 // crash.
 v8::Local<v8::Value> MessageToV8(v8::Local<v8::Context> context,
-                                 const Message& message,
+                                 Message message,
                                  bool is_parsing_fail_safe,
                                  std::string* error);
 

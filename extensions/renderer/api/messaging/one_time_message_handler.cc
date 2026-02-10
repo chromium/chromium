@@ -445,7 +445,7 @@ v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
     const PortId& new_port_id,
     const MessageTarget& target,
     mojom::ChannelType channel_type,
-    const Message& message,
+    Message message,
     binding::AsyncResponseType async_type,
     v8::Local<v8::Function> response_callback,
     mojom::MessagePortHost* message_port_host,
@@ -505,7 +505,7 @@ v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
   ipc_sender->SendOpenMessageChannel(
       script_context, new_port_id, target, channel_type, channel_name,
       std::move(message_port), std::move(message_port_host_receiver));
-  message_port_host->PostMessage(message);
+  message_port_host->PostMessage(std::move(message));
 
   // If the sender doesn't provide a response callback, we can immediately
   // close the channel. Note: we only do this for extension messages, not
@@ -557,14 +557,15 @@ void OneTimeMessageHandler::AddReceiverForTesting(
 }
 
 bool OneTimeMessageHandler::DeliverMessage(ScriptContext* script_context,
-                                           const Message& message,
+                                           Message message,
                                            const PortId& target_port_id) {
   v8::Isolate* isolate = script_context->isolate();
   v8::HandleScope handle_scope(isolate);
 
   return target_port_id.is_opener
-             ? DeliverReplyToOpener(script_context, message, target_port_id)
-             : DeliverMessageToReceiver(script_context, message,
+             ? DeliverReplyToOpener(script_context, std::move(message),
+                                    target_port_id)
+             : DeliverMessageToReceiver(script_context, std::move(message),
                                         target_port_id);
 }
 
@@ -645,7 +646,7 @@ void OneTimeMessageHandler::OnAllCallbacksCollected(
 
 bool OneTimeMessageHandler::DeliverMessageToReceiver(
     ScriptContext* script_context,
-    const Message& message,
+    Message message,
     const PortId& target_port_id) {
   DCHECK(!target_port_id.is_opener);
 
@@ -694,7 +695,7 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
   // malformed messages.
   std::string error;
   v8::Local<v8::Value> v8_message = messaging_util::MessageToV8(
-      context, message,
+      context, std::move(message),
       port.event_name == messaging_util::kOnConnectNativeEvent, &error);
 
   if (error.empty()) {
@@ -742,7 +743,7 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
 }
 
 bool OneTimeMessageHandler::DeliverReplyToOpener(ScriptContext* script_context,
-                                                 const Message& message,
+                                                 Message message,
                                                  const PortId& target_port_id) {
   DCHECK(target_port_id.is_opener);
 
@@ -780,8 +781,8 @@ bool OneTimeMessageHandler::DeliverReplyToOpener(ScriptContext* script_context,
   // hosts can send malformed messages.
   std::string error;
   v8::Local<v8::Value> v8_message = messaging_util::MessageToV8(
-      v8_context, message, port.channel_type == mojom::ChannelType::kNative,
-      &error);
+      v8_context, std::move(message),
+      port.channel_type == mojom::ChannelType::kNative, &error);
 
   if (v8_message.IsEmpty()) {
     // If the parsing fails, send back a v8::Undefined() message.
@@ -955,7 +956,7 @@ void OneTimeMessageHandler::OnOneTimeMessageResponse(
   callback_manager_->ClearCallbackDataForPortId(script_context, port_id);
 
   std::string message_creation_error;
-  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
+  std::optional<Message> message = messaging_util::MessageFromV8(
       context, value, port_id.serialization_format, &message_creation_error);
   if (!message) {
     // Throw an error in the listener context.
@@ -973,7 +974,7 @@ void OneTimeMessageHandler::OnOneTimeMessageResponse(
   // might be replying after the channel has been closed.
   if (auto* message_port_host = messaging_service()->GetMessagePortHostIfExists(
           script_context, port_id)) {
-    message_port_host->PostMessage(*message);
+    message_port_host->PostMessage(std::move(*message));
     CloseReceiverMessagePortOrChannel(script_context, port_id,
                                       /*close_channel=*/true,
                                       /*error=*/std::nullopt);

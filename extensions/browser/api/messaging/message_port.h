@@ -53,7 +53,7 @@ class MessagePort
 
     // Enqueues a message on a pending channel, or sends a message to the given
     // port if the channel isn't pending.
-    virtual void PostMessage(const PortId& port_id, const Message& message) = 0;
+    virtual void PostMessage(const PortId& port_id, Message message) = 0;
 
     virtual void NotifyResponsePending(const PortId& port_id) = 0;
   };
@@ -102,7 +102,7 @@ class MessagePort
   virtual void DispatchOnDisconnect(const std::string& error_message);
 
   // Dispatches a message to this end of the communication.
-  virtual void DispatchOnMessage(const Message& message) = 0;
+  virtual void DispatchOnMessage(Message message) = 0;
 
   // Marks the port as opened by the specific frame or service worker.
   virtual void OpenPort(int process_id, const PortContext& port_context);

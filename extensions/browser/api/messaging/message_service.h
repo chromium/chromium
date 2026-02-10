@@ -87,7 +87,7 @@ class MessageService : public BrowserContextKeyedAPI,
                  const PortContext& port_context,
                  bool close_channel,
                  const std::string& error_message) override;
-  void PostMessage(const PortId& port_id, const Message& message) override;
+  void PostMessage(const PortId& port_id, Message message) override;
   void NotifyResponsePending(const PortId& port_id) override;
 
   // Convenience method to get the MessageService for a browser context.
@@ -209,7 +209,12 @@ class MessageService : public BrowserContextKeyedAPI,
   using MessageChannelMap =
       std::map<ChannelId, std::unique_ptr<MessageChannel>>;
 
-  using PendingMessage = std::pair<PortId, Message>;
+  // A PendingMessage holds a message and the port it is destined for.
+  struct PendingMessage {
+    PortId port_id;
+    Message message;
+  };
+
   using PendingMessagesQueue = std::vector<PendingMessage>;
   // A set of channel IDs waiting to complete opening, and any pending messages
   // queued to be sent on those channels.
@@ -257,17 +262,17 @@ class MessageService : public BrowserContextKeyedAPI,
   // Enqueues a message on a pending channel.
   void EnqueuePendingMessage(const PortId& port_id,
                              const ChannelId& channel_id,
-                             const Message& message);
+                             Message message);
 
   // Enqueues a message on a channel pending on a lazy background page load.
   void EnqueuePendingMessageForLazyBackgroundLoad(const PortId& port_id,
                                                   const ChannelId& channel_id,
-                                                  const Message& message);
+                                                  Message message);
 
   // Immediately sends a message to the given port.
   void DispatchMessage(const PortId& port_id,
                        MessageChannel* channel,
-                       const Message& message);
+                       Message message);
 
   // Potentially registers a pending task with lazy context task queue
   // to open a channel. Returns true if a task was queued.
@@ -276,7 +281,7 @@ class MessageService : public BrowserContextKeyedAPI,
       content::BrowserContext* context,
       const Extension* extension,
       std::unique_ptr<OpenChannelParams>* params,
-      const PendingMessagesQueue& pending_messages);
+      PendingMessagesQueue& pending_messages);
 
   // Callbacks for background task queue tasks. The queue passes in an
   // ExtensionHost to its task callbacks, though some of our callbacks don't
@@ -300,14 +305,14 @@ class MessageService : public BrowserContextKeyedAPI,
   }
   void PendingLazyContextPostMessage(
       const PortId& port_id,
-      const Message& message,
+      Message message,
       std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info) {
     if (context_info) {
-      PostMessage(port_id, message);
+      PostMessage(port_id, std::move(message));
     }
   }
 
-  void DispatchPendingMessages(const PendingMessagesQueue& queue,
+  void DispatchPendingMessages(PendingMessagesQueue queue,
                                const ChannelId& channel_id);
 
   // BrowserContextKeyedAPI implementation.

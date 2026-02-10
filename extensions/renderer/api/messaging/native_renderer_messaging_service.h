@@ -107,7 +107,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   // specified, only contexts in that render view will receive the message.
   void DeliverMessage(ScriptContextSetIterable* context_set,
                       const PortId& target_port_id,
-                      const Message& message,
+                      Message message,
                       content::RenderFrame* restrict_to_render_frame);
 
   // Dispatches the onDisconnect event in response to the channel being closed.
@@ -129,14 +129,14 @@ class NativeRendererMessagingService : public GinPort::Delegate {
       ScriptContext* script_context,
       const MessageTarget& target,
       mojom::ChannelType channel_type,
-      const Message& message,
+      Message message,
       binding::AsyncResponseType async_type,
       v8::Local<v8::Function> response_callback);
 
   // GinPort::Delegate:
   void PostMessageToPort(v8::Local<v8::Context> context,
                          const PortId& port_id,
-                         std::unique_ptr<Message> message) override;
+                         Message message) override;
   void ClosePort(v8::Local<v8::Context> context,
                  const PortId& port_id) override;
 
@@ -231,7 +231,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   // Dispatches the onMessage event to listeners in the given `script_context`.
   // This will only be called if the context has a port with the given id.
   void DispatchOnMessageToListeners(ScriptContext* script_context,
-                                    const Message& message,
+                                    Message message,
                                     const PortId& target_port_id);
 
   // Dispatches the onDisconnect event to listeners in the given

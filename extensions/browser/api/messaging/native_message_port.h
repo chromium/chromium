@@ -34,7 +34,7 @@ class NativeMessagePort : public MessagePort {
 
   // MessagePort implementation.
   bool IsValidPort() override;
-  void DispatchOnMessage(const Message& message) override;
+  void DispatchOnMessage(Message message) override;
 
   void PostMessageFromNativeHost(const std::string& message);
   void CloseChannel(const std::string& error_message);

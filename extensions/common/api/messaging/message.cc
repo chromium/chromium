@@ -30,32 +30,9 @@ Message::Message(MessageData data,
   }
 }
 
-Message::Message(const Message& other)
-    : format_(other.format_),
-      user_gesture_(other.user_gesture_),
-      from_privileged_context_(other.from_privileged_context_) {
-  if (std::holds_alternative<std::string>(other.data_)) {
-    data_ = std::get<std::string>(other.data_);
-  } else {
-    data_ = std::get<StructuredCloneMessageWireData>(other.data_).Clone();
-  }
-}
-
 Message::Message(Message&& other) = default;
 
 Message::~Message() = default;
-
-Message& Message::operator=(const Message& other) {
-  format_ = other.format_;
-  user_gesture_ = other.user_gesture_;
-  from_privileged_context_ = other.from_privileged_context_;
-  if (std::holds_alternative<std::string>(other.data_)) {
-    data_ = std::get<std::string>(other.data_);
-  } else {
-    data_ = std::get<StructuredCloneMessageWireData>(other.data_).Clone();
-  }
-  return *this;
-}
 
 Message& Message::operator=(Message&& other) = default;
 
@@ -84,6 +61,18 @@ bool Message::operator==(const Message& other) const {
   }
 
   return message_data_equal && user_gesture_ == other.user_gesture_;
+}
+
+Message Message::Clone() const {
+  MessageData data;
+  if (std::holds_alternative<std::string>(data_)) {
+    data = std::get<std::string>(data_);
+  } else {
+    data = std::get<StructuredCloneMessageWireData>(data_).Clone();
+  }
+
+  return Message(std::move(data), format_, user_gesture_,
+                 from_privileged_context_);
 }
 
 const std::string& Message::data() const {

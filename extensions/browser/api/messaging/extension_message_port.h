@@ -105,7 +105,7 @@ class ExtensionMessagePort : public MessagePort {
                          const std::set<base::UnguessableToken>&
                              open_channel_tracking_ids) override;
   void DispatchOnDisconnect(const std::string& error_message) override;
-  void DispatchOnMessage(const Message& message) override;
+  void DispatchOnMessage(Message message) override;
   void IncrementLazyKeepaliveCount(Activity::Type activity_type) override;
   void DecrementLazyKeepaliveCount(Activity::Type activity_type) override;
   void OpenPort(int process_id, const PortContext& port_context) override;

@@ -103,7 +103,7 @@ class OneTimeMessageHandler {
       const PortId& new_port_id,
       const MessageTarget& target_id,
       mojom::ChannelType channel_type,
-      const Message& message,
+      Message message,
       binding::AsyncResponseType async_type,
       v8::Local<v8::Function> response_callback,
       mojom::MessagePortHost* message_port_host,
@@ -132,7 +132,7 @@ class OneTimeMessageHandler {
   // true if a message was delivered (i.e., an open channel existed), and false
   // otherwise.
   bool DeliverMessage(ScriptContext* script_context,
-                      const Message& message,
+                      Message message,
                       const PortId& target_port_id);
 
   // Disconnects the port in the context, if one exists with the specified
@@ -178,10 +178,10 @@ class OneTimeMessageHandler {
 
   // Helper methods to deliver a message to an opener/receiver.
   bool DeliverMessageToReceiver(ScriptContext* script_context,
-                                const Message& message,
+                                Message message,
                                 const PortId& target_port_id);
   bool DeliverReplyToOpener(ScriptContext* script_context,
-                            const Message& message,
+                            Message message,
                             const PortId& target_port_id);
 
   // Helper methods to disconnect an opener/receiver.

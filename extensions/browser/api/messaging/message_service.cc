@@ -1149,7 +1149,7 @@ void MessageService::CloseChannelImpl(MessageChannelMap::iterator channel_iter,
 }
 
 void MessageService::PostMessage(const PortId& source_port_id,
-                                 const Message& message) {
+                                 Message message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ChannelId channel_id = source_port_id.GetChannelId();
@@ -1157,35 +1157,35 @@ void MessageService::PostMessage(const PortId& source_port_id,
   if (iter == channels_.end()) {
     // If this channel is pending, queue up the PostMessage to run once
     // the channel opens.
-    EnqueuePendingMessage(source_port_id, channel_id, message);
+    EnqueuePendingMessage(source_port_id, channel_id, std::move(message));
     return;
   }
 
-  DispatchMessage(source_port_id, iter->second.get(), message);
+  DispatchMessage(source_port_id, iter->second.get(), std::move(message));
 }
 
 void MessageService::EnqueuePendingMessage(const PortId& source_port_id,
                                            const ChannelId& channel_id,
-                                           const Message& message) {
+                                           Message message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto pending_for_incognito = pending_incognito_channels_.find(channel_id);
   if (pending_for_incognito != pending_incognito_channels_.end()) {
-    pending_for_incognito->second.push_back(
-        PendingMessage(source_port_id, message));
+    pending_for_incognito->second.emplace_back(source_port_id,
+                                               std::move(message));
     // A channel should only be holding pending messages because it is in one
     // of these states.
     DCHECK(!pending_lazy_context_channels_.contains(channel_id));
     return;
   }
   EnqueuePendingMessageForLazyBackgroundLoad(source_port_id, channel_id,
-                                             message);
+                                             std::move(message));
 }
 
 void MessageService::EnqueuePendingMessageForLazyBackgroundLoad(
     const PortId& source_port_id,
     const ChannelId& channel_id,
-    const Message& message) {
+    Message message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto pending = pending_lazy_context_channels_.find(channel_id);
@@ -1208,21 +1208,21 @@ void MessageService::EnqueuePendingMessageForLazyBackgroundLoad(
   }
 
   context_id.GetTaskQueue()->AddPendingTask(
-      context_id,
-      base::BindOnce(&MessageService::PendingLazyContextPostMessage,
-                     weak_factory_.GetWeakPtr(), source_port_id, message));
+      context_id, base::BindOnce(&MessageService::PendingLazyContextPostMessage,
+                                 weak_factory_.GetWeakPtr(), source_port_id,
+                                 std::move(message)));
 }
 
 void MessageService::DispatchMessage(const PortId& source_port_id,
                                      MessageChannel* channel,
-                                     const Message& message) {
+                                     Message message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Figure out which port the ID corresponds to.
   MessagePort* dest_port = source_port_id.is_opener ? channel->receiver.get()
                                                     : channel->opener.get();
 
-  dest_port->DispatchOnMessage(message);
+  dest_port->DispatchOnMessage(std::move(message));
 }
 
 void MessageService::NotifyResponsePending(const PortId& port_id) {
@@ -1249,7 +1249,7 @@ bool MessageService::MaybeAddPendingLazyContextOpenChannelTask(
     BrowserContext* context,
     const Extension* extension,
     std::unique_ptr<OpenChannelParams>* params,
-    const PendingMessagesQueue& pending_messages) {
+    PendingMessagesQueue& pending_messages) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(ExtensionsBrowserClient::Get()->IsSameContext(context, context_));
 
@@ -1291,9 +1291,9 @@ bool MessageService::MaybeAddPendingLazyContextOpenChannelTask(
                      weak_factory_.GetWeakPtr(), std::move(*params),
                      std::move(open_channel_wakeup_context_tracking_id)));
 
-  for (const PendingMessage& message : pending_messages) {
-    EnqueuePendingMessageForLazyBackgroundLoad(message.first, channel_id,
-                                               message.second);
+  for (PendingMessage& message : pending_messages) {
+    EnqueuePendingMessageForLazyBackgroundLoad(message.port_id, channel_id,
+                                               std::move(message.message));
   }
   return true;
 }
@@ -1377,7 +1377,7 @@ void MessageService::OnOpenChannelAllowed(
                                                  &params, pending_messages)) {
     OpenChannelImpl(context, std::move(params), target_extension,
                     /*did_enqueue=*/false);
-    DispatchPendingMessages(pending_messages, channel_id);
+    DispatchPendingMessages(std::move(pending_messages), channel_id);
   }
 }
 
@@ -1427,15 +1427,15 @@ void MessageService::PendingLazyContextOpenChannel(
                   /*did_enqueue=*/true);
 }
 
-void MessageService::DispatchPendingMessages(const PendingMessagesQueue& queue,
+void MessageService::DispatchPendingMessages(PendingMessagesQueue queue,
                                              const ChannelId& channel_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto channel_iter = channels_.find(channel_id);
   if (channel_iter != channels_.end()) {
-    for (const PendingMessage& message : queue) {
-      DispatchMessage(message.first, channel_iter->second.get(),
-                      message.second);
+    for (PendingMessage& message : queue) {
+      DispatchMessage(message.port_id, channel_iter->second.get(),
+                      std::move(message.message));
     }
   }
 }

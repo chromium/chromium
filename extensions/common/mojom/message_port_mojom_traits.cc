@@ -23,13 +23,6 @@ extensions::mojom::MessageDataDataView::Tag UnionTraits<
 }
 
 // static
-extensions::StructuredCloneMessageWireData
-UnionTraits<extensions::mojom::MessageDataDataView, extensions::MessageData>::
-    structured_clone(const extensions::MessageData& data) {
-  return std::get<extensions::StructuredCloneMessageWireData>(data).Clone();
-}
-
-// static
 bool UnionTraits<
     extensions::mojom::MessageDataDataView,
     extensions::MessageData>::Read(extensions::mojom::MessageDataDataView data,

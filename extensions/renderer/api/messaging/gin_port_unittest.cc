@@ -41,7 +41,7 @@ class TestPortDelegate : public GinPort::Delegate {
 
   void PostMessageToPort(v8::Local<v8::Context> context,
                          const PortId& port_id,
-                         std::unique_ptr<Message> message) override {
+                         Message message) override {
     last_port_id_ = port_id;
     last_message_ = std::move(message);
   }
@@ -53,11 +53,13 @@ class TestPortDelegate : public GinPort::Delegate {
   }
 
   const std::optional<PortId>& last_port_id() const { return last_port_id_; }
-  const Message* last_message() const { return last_message_.get(); }
+  const Message* last_message() const {
+    return last_message_ ? &(*last_message_) : nullptr;
+  }
 
  private:
   std::optional<PortId> last_port_id_;
-  std::unique_ptr<Message> last_message_;
+  std::optional<Message> last_message_;
 };
 
 class GinPortTest : public APIBindingTest {
@@ -154,9 +156,9 @@ TEST_F(GinPortTest, TestDispatchMessage) {
   v8::Local<v8::Value> args[] = {port_obj};
   RunFunctionOnGlobal(test_function, context, std::size(args), args);
 
-  port->DispatchOnMessage(
-      context,
-      Message(R"({"foo":42})", mojom::SerializationFormat::kJson, false));
+  Message message(R"({"foo":42})", mojom::SerializationFormat::kJson,
+                  /*user_gesture=*/false);
+  port->DispatchOnMessage(context, std::move(message));
 
   EXPECT_EQ("true", GetStringPropertyFromObject(context->Global(), context,
                                                 "messageValid"));

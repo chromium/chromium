@@ -67,7 +67,7 @@ void MessagePort::PostMessage(Message message) {
   if (!weak_channel_delegate_) {
     return;
   }
-  weak_channel_delegate_->PostMessage(port_id_, message);
+  weak_channel_delegate_->PostMessage(port_id_, std::move(message));
 }
 
 void MessagePort::ResponsePending() {

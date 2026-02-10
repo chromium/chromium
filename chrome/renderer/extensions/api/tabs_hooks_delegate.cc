@@ -91,7 +91,7 @@ RequestResult TabsHooksDelegate::HandleSendRequest(
   std::string error;
 
   mojom::ChannelType channel_type = mojom::ChannelType::kSendRequest;
-  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
+  std::optional<Message> message = messaging_util::MessageFromV8(
       script_context->v8_context(), v8_message,
       messaging_util::GetSerializationFormat(script_context->extension(),
                                              channel_type),
@@ -108,7 +108,8 @@ RequestResult TabsHooksDelegate::HandleSendRequest(
 
   v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForTab(tab_id, messaging_util::kNoFrameId),
-      channel_type, *message, parse_result.async_type, response_callback);
+      channel_type, std::move(*message), parse_result.async_type,
+      response_callback);
   DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
             !promise.IsEmpty())
       << "SendOneTimeMessage should only return a Promise for promise based "
@@ -140,7 +141,7 @@ RequestResult TabsHooksDelegate::HandleSendMessage(
   std::string error;
 
   mojom::ChannelType channel_type = mojom::ChannelType::kSendMessage;
-  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
+  std::optional<Message> message = messaging_util::MessageFromV8(
       script_context->v8_context(), v8_message,
       messaging_util::GetSerializationFormat(script_context->extension(),
                                              channel_type),
@@ -158,7 +159,8 @@ RequestResult TabsHooksDelegate::HandleSendMessage(
   v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context,
       MessageTarget::ForTab(tab_id, options.frame_id, options.document_id),
-      channel_type, *message, parse_result.async_type, response_callback);
+      channel_type, std::move(*message), parse_result.async_type,
+      response_callback);
   DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
             !promise.IsEmpty())
       << "SendOneTimeMessage should only return a Promise for promise based "

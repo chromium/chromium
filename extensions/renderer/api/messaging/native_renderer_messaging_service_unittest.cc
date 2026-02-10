@@ -356,8 +356,8 @@ TEST_F(NativeRendererMessagingServiceTest, PostMessageFromJS) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_message_port_host,
-              PostMessage(Message(R"({"data":"hello"})",
-                                  mojom::SerializationFormat::kJson, false)))
+              PostMessage(testing::Property(
+                  &Message::data, std::string(R"({"data":"hello"})"))))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   RunFunctionOnGlobal(post_message, context, std::size(args), args);
   run_loop.Run();
@@ -444,7 +444,8 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithCallback) {
 
   // Send a message and expect a reply to a passed in callback. A new port
   // should be created, and should remain open until the response is sent.
-  const Message message("\"hi\"", mojom::SerializationFormat::kJson, false);
+  Message message("\"hi\"", mojom::SerializationFormat::kJson,
+                  /*user_gesture=*/false);
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
   MockMessagePortHost mock_message_port_host;
   auto run_loop = std::make_unique<base::RunLoop>();
@@ -464,11 +465,12 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithCallback) {
         port_host.EnableUnassociatedUsage();
         mock_message_port_host.BindReceiver(std::move(port_host));
       });
-  EXPECT_CALL(mock_message_port_host, PostMessage(message))
+  EXPECT_CALL(mock_message_port_host,
+              PostMessage(testing::Property(&Message::data, message.data())))
       .WillOnce(base::test::RunClosure(run_loop->QuitClosure()));
 
   v8::Local<v8::Promise> promise = messaging_service()->SendOneTimeMessage(
-      script_context(), target, kChannel, message,
+      script_context(), target, kChannel, std::move(message),
       binding::AsyncResponseType::kCallback, response_callback);
   // Since this is a callback based request, the returned promise should be
   // empty.
@@ -511,7 +513,8 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithPromise) {
 
   // Send a message and expect a reply fulfilling a promise. A new port should
   // be created, and should remain open until the response is sent.
-  const Message message("\"hi\"", mojom::SerializationFormat::kJson, false);
+  Message message("\"hi\"", mojom::SerializationFormat::kJson,
+                  /*user_gesture=*/false);
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
   MockMessagePortHost mock_message_port_host;
   auto run_loop = std::make_unique<base::RunLoop>();
@@ -531,10 +534,11 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithPromise) {
             port_host.EnableUnassociatedUsage();
             mock_message_port_host.BindReceiver(std::move(port_host));
           });
-  EXPECT_CALL(mock_message_port_host, PostMessage(message))
+  EXPECT_CALL(mock_message_port_host,
+              PostMessage(testing::Property(&Message::data, message.data())))
       .WillOnce(base::test::RunClosure(run_loop->QuitClosure()));
   v8::Local<v8::Promise> promise = messaging_service()->SendOneTimeMessage(
-      script_context(), target, kChannel, message,
+      script_context(), target, kChannel, std::move(message),
       binding::AsyncResponseType::kPromise, v8::Local<v8::Function>());
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_EQ(v8::Promise::kPending, promise->State());
@@ -633,8 +637,8 @@ TEST_F(NativeRendererMessagingServiceTest, ReceiveOneTimeMessage) {
   // Post the message to the receiver. The receiver should respond, and the
   // port should close.
   EXPECT_CALL(mock_message_port_host,
-              PostMessage(Message(R"({"data":"hi"})",
-                                  mojom::SerializationFormat::kJson, false)));
+              PostMessage(testing::Property(&Message::data,
+                                            std::string(R"({"data":"hi"})"))));
   EXPECT_CALL(mock_message_port_host,
               ClosePort(
                   /*close_channel=*/true,

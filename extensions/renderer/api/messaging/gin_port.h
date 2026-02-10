@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/mojom/message_port.mojom.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
@@ -26,7 +27,6 @@ class Arguments;
 
 namespace extensions {
 class APIEventHandler;
-class Message;
 
 // A gin::Wrappable implementation of `runtime.Port` exposed to extensions. This
 // provides a means for extensions to communicate with themselves and each
@@ -44,7 +44,7 @@ class GinPort final : public gin::Wrappable<GinPort> {
     // Posts a message to the port.
     virtual void PostMessageToPort(v8::Local<v8::Context> context,
                                    const PortId& port_id,
-                                   std::unique_ptr<Message> message) = 0;
+                                   Message message) = 0;
 
     // Closes the port.
     virtual void ClosePort(v8::Local<v8::Context> context,
@@ -72,8 +72,7 @@ class GinPort final : public gin::Wrappable<GinPort> {
   const char* GetHumanReadableName() const override;
 
   // Dispatches an event to any listeners of the onMessage event.
-  void DispatchOnMessage(v8::Local<v8::Context> context,
-                         const Message& message);
+  void DispatchOnMessage(v8::Local<v8::Context> context, Message message);
 
   // Dispatches an event to any listeners of the onDisconnect event and closes
   // the port.

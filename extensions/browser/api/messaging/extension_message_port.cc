@@ -607,7 +607,7 @@ void ExtensionMessagePort::DispatchOnDisconnect(
       std::ref(error_message)));
 }
 
-void ExtensionMessagePort::DispatchOnMessage(const Message& message) {
+void ExtensionMessagePort::DispatchOnMessage(Message message) {
   // We increment activity for every message that passes through the channel.
   // This is important for long-lived ports, which only keep an extension
   // alive so long as they are being actively used.
@@ -617,9 +617,9 @@ void ExtensionMessagePort::DispatchOnMessage(const Message& message) {
   asynchronous_reply_pending_ = false;
   SendToPort(base::BindRepeating(
       [](const Message& message, mojom::MessagePort* port) {
-        port->DeliverMessage(message);
+        port->DeliverMessage(message.Clone());
       },
-      std::ref(message)));
+      std::cref(message)));
   DecrementLazyKeepaliveCount(Activity::MESSAGE);
 }
 

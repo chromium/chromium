@@ -48,7 +48,7 @@ TEST_F(MessagingUtilTest, TestMaximumJSONMessageSize) {
   v8::Local<v8::Value> long_message =
       V8ValueFromScriptSource(context, "'a'.repeat(1024 *1024 * 65)");
   std::string error;
-  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
+  std::optional<Message> message = messaging_util::MessageFromV8(
       context, long_message, mojom::SerializationFormat::kJson, &error);
   EXPECT_FALSE(message);
   EXPECT_EQ(kMessageTooLongError, error);

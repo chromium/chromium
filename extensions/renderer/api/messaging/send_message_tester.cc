@@ -167,14 +167,16 @@ void SendMessageTester::TestSendMessageOrRequest(
         mock_message_port_host.BindReceiver(std::move(port_host));
       });
   if (expected_port_status == CLOSED) {
-    EXPECT_CALL(mock_message_port_host, PostMessage(message));
+    EXPECT_CALL(mock_message_port_host,
+                PostMessage(testing::Property(&Message::data, message.data())));
     EXPECT_CALL(mock_message_port_host,
                 ClosePort(
                     /*close_channel=*/true,
                     /*error_message=*/testing::Eq(std::nullopt)))
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   } else {
-    EXPECT_CALL(mock_message_port_host, PostMessage(message))
+    EXPECT_CALL(mock_message_port_host,
+                PostMessage(testing::Property(&Message::data, message.data())))
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   }
 

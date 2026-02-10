@@ -43,7 +43,7 @@ bool NativeMessagePort::IsValidPort() {
   return true;
 }
 
-void NativeMessagePort::DispatchOnMessage(const Message& message) {
+void NativeMessagePort::DispatchOnMessage(Message message) {
   DCHECK(thread_checker_.CalledOnValidThread());
   dispatcher_->DispatchOnMessage(message.data());
 }

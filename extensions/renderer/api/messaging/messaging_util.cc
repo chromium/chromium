@@ -171,10 +171,10 @@ const char kOnUserScriptConnectEvent[] = "runtime.onUserScriptConnect";
 const char kOnConnectExternalEvent[] = "runtime.onConnectExternal";
 const char kOnConnectNativeEvent[] = "runtime.onConnectNative";
 
-std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
-                                       v8::Local<v8::Value> value,
-                                       mojom::SerializationFormat format,
-                                       std::string* error) {
+std::optional<Message> MessageFromV8(v8::Local<v8::Context> context,
+                                     v8::Local<v8::Value> value,
+                                     mojom::SerializationFormat format,
+                                     std::string* error) {
   DCHECK(!value.IsEmpty());
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   CHECK(isolate);
@@ -191,7 +191,7 @@ std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
     case mojom::SerializationFormat::kJson: {
       json_message = MessageFromV8UsingJSON(context, *isolate, value, error);
       if (!error->empty()) {
-        return nullptr;
+        return std::nullopt;
       }
       message_size = json_message.length();
       break;
@@ -200,7 +200,7 @@ std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
       structured_message =
           MessageFromV8UsingStructuredClone(*isolate, value, error);
       if (!error->empty()) {
-        return nullptr;
+        return std::nullopt;
       }
       message_size = structured_message.size();
       break;
@@ -214,18 +214,18 @@ std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
   // which has shared memory benefits for large messages?
   if (message_size > mojom::kMaxMessageBytes) {
     *error = "Message exceeded maximum allowed size of 64MiB.";
-    return nullptr;
+    return std::nullopt;
   }
 
   MessageMetadata metadata = GetMessageMetadata(context);
   switch (format) {
     case mojom::SerializationFormat::kJson: {
-      return std::make_unique<Message>(
+      return std::make_optional<Message>(
           std::move(json_message), mojom::SerializationFormat::kJson,
           metadata.has_user_gesture, metadata.is_from_privileged_context);
     }
     case mojom::SerializationFormat::kStructuredClone: {
-      return std::make_unique<Message>(
+      return std::make_optional<Message>(
           std::move(structured_message),
           mojom::SerializationFormat::kStructuredClone,
           metadata.has_user_gesture, metadata.is_from_privileged_context);
@@ -275,7 +275,7 @@ v8::Local<v8::Value> MessageToV8UsingJSON(v8::Local<v8::Context> context,
 }
 
 v8::Local<v8::Value> MessageToV8(v8::Local<v8::Context> context,
-                                 const Message& message,
+                                 Message message,
                                  bool is_parsing_fail_safe,
                                  std::string* error) {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();

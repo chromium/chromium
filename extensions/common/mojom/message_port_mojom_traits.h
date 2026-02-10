@@ -35,8 +35,10 @@ struct UnionTraits<extensions::mojom::MessageDataDataView,
         data);
   }
 
-  static extensions::StructuredCloneMessageWireData structured_clone(
-      const extensions::MessageData& data);
+  static extensions::StructuredCloneMessageWireData& structured_clone(
+      extensions::MessageData& data) {
+    return std::get<extensions::StructuredCloneMessageWireData>(data);
+  }
 
   static bool Read(extensions::mojom::MessageDataDataView data,
                    extensions::MessageData* out);
@@ -44,8 +46,7 @@ struct UnionTraits<extensions::mojom::MessageDataDataView,
 
 template <>
 struct StructTraits<extensions::mojom::MessageDataView, extensions::Message> {
-  static const extensions::MessageData& data(
-      const extensions::Message& message) {
+  static extensions::MessageData& data(extensions::Message& message) {
     return message.message_data();
   }
 

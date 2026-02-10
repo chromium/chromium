@@ -340,7 +340,7 @@ RequestResult RuntimeHooksDelegate::HandleSendMessage(
 
   v8::Local<v8::Value> v8_message = arguments[1];
   mojom::ChannelType channel_type = mojom::ChannelType::kSendMessage;
-  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
+  std::optional<Message> message = messaging_util::MessageFromV8(
       v8_context, v8_message,
       messaging_util::GetSerializationFormat(script_context->extension(),
                                              channel_type),
@@ -362,7 +362,7 @@ RequestResult RuntimeHooksDelegate::HandleSendMessage(
 
   v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForExtension(target_id), channel_type,
-      *message, parse_result.async_type, response_callback);
+      std::move(*message), parse_result.async_type, response_callback);
   DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
             !promise.IsEmpty())
       << "SendOneTimeMessage should only return a Promise for promise based "
@@ -389,7 +389,7 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
   std::string error;
 
   mojom::ChannelType channel_type = mojom::ChannelType::kNative;
-  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
+  std::optional<Message> message = messaging_util::MessageFromV8(
       script_context->v8_context(), v8_message,
       messaging_util::GetSerializationFormat(script_context->extension(),
                                              channel_type),
@@ -406,7 +406,8 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
 
   v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForNativeApp(application_name),
-      channel_type, *message, parse_result.async_type, response_callback);
+      channel_type, std::move(*message), parse_result.async_type,
+      response_callback);
   DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
             !promise.IsEmpty())
       << "SendOneTimeMessage should only return a Promise for promise based "

@@ -108,7 +108,7 @@ class NativeRendererMessagingService::MessagePortScope
     auto target_port_id = message_port_dispatchers_.current_context();
     messaging_service_->DeliverMessage(
         messaging_service_->bindings_system_->delegate()->GetScriptContextSet(),
-        target_port_id, message,
+        target_port_id, std::move(message),
         /*restrict_to_render_frame=*/GetRestrictToRenderFrame());
   }
 
@@ -293,13 +293,18 @@ void NativeRendererMessagingService::DispatchOnConnect(
 void NativeRendererMessagingService::DeliverMessage(
     ScriptContextSetIterable* context_set,
     const PortId& target_port_id,
-    const Message& message,
+    Message message,
     content::RenderFrame* restrict_to_render_frame) {
+  // We use `std::ref` to avoid copying the `extensions::Message` object (which
+  // is move-only) into the callback. `ScriptContextSetIterable::ForEach` is
+  // synchronous, so `message` remains valid for the duration of the loop.
+  // Note: `DeliverMessageToScriptContext` takes `const Message&` and clones the
+  // message for each listener to ensure each receives its own copy of the data.
   context_set->ForEach(
       restrict_to_render_frame,
       base::BindRepeating(
           &NativeRendererMessagingService::DeliverMessageToScriptContext,
-          base::Unretained(this), message, target_port_id));
+          base::Unretained(this), std::ref(message), target_port_id));
 }
 
 void NativeRendererMessagingService::DispatchOnDisconnect(
@@ -353,7 +358,7 @@ v8::Local<v8::Promise> NativeRendererMessagingService::SendOneTimeMessage(
     ScriptContext* script_context,
     const MessageTarget& target,
     mojom::ChannelType channel_type,
-    const Message& message,
+    Message message,
     binding::AsyncResponseType async_type,
     v8::Local<v8::Function> response_callback) {
   if (!ScriptContextIsValid(script_context)) {
@@ -384,15 +389,15 @@ v8::Local<v8::Promise> NativeRendererMessagingService::SendOneTimeMessage(
   message_port_host = scope->GetMessagePortHost(port_id);
 
   return one_time_message_handler_.SendMessage(
-      script_context, port_id, target, channel_type, message, async_type,
-      response_callback, message_port_host, std::move(message_port),
+      script_context, port_id, target, channel_type, std::move(message),
+      async_type, response_callback, message_port_host, std::move(message_port),
       std::move(message_port_host_receiver));
 }
 
 void NativeRendererMessagingService::PostMessageToPort(
     v8::Local<v8::Context> context,
     const PortId& port_id,
-    std::unique_ptr<Message> message) {
+    Message message) {
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
   CHECK(script_context);
   if (!ScriptContextIsValid(script_context)) {
@@ -405,7 +410,7 @@ void NativeRendererMessagingService::PostMessageToPort(
   if (!scope->HasPort(port_id)) {
     return;
   }
-  scope->GetMessagePortHost(port_id)->PostMessage(*message);
+  scope->GetMessagePortHost(port_id)->PostMessage(std::move(message));
 }
 
 void NativeRendererMessagingService::ClosePort(v8::Local<v8::Context> context,
@@ -506,10 +511,15 @@ void NativeRendererMessagingService::DeliverMessageToScriptContext(
     return;
   }
 
+  // Since this is a broadcast to potentially multiple listeners in different
+  // script contexts, we must clone the message here. `message` is a reference
+  // that must remain valid for subsequent iterations of the loop in
+  // `DeliverMessage`, but the worker/background page functions take ownership.
   if (script_context->IsForServiceWorker()) {
-    DeliverMessageToWorker(message, target_port_id, script_context);
+    DeliverMessageToWorker(message.Clone(), target_port_id, script_context);
   } else {
-    DeliverMessageToBackgroundPage(message, target_port_id, script_context);
+    DeliverMessageToBackgroundPage(message.Clone(), target_port_id,
+                                   script_context);
   }
 }
 
@@ -530,7 +540,7 @@ void NativeRendererMessagingService::DeliverMessageToWorker(
             script_context->v8_context());
   }
 
-  DispatchOnMessageToListeners(script_context, message, target_port_id);
+  DispatchOnMessageToListeners(script_context, message.Clone(), target_port_id);
 }
 
 void NativeRendererMessagingService::DeliverMessageToBackgroundPage(
@@ -580,7 +590,7 @@ void NativeRendererMessagingService::DeliverMessageToBackgroundPage(
             &document);
   }
 
-  DispatchOnMessageToListeners(script_context, message, target_port_id);
+  DispatchOnMessageToListeners(script_context, message.Clone(), target_port_id);
 }
 
 void NativeRendererMessagingService::DispatchOnDisconnectToScriptContext(
@@ -712,13 +722,18 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
 
 void NativeRendererMessagingService::DispatchOnMessageToListeners(
     ScriptContext* script_context,
-    const Message& message,
+    Message message,
     const PortId& target_port_id) {
   v8::Isolate* isolate = script_context->isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Context::Scope context_scope(script_context->v8_context());
 
-  if (one_time_message_handler_.DeliverMessage(script_context, message,
+  // We must clone the message here because it could be delivered to both the
+  // one-time handler and a long-lived port.
+  // `one_time_message_handler_.DeliverMessage` consumes the message, so we
+  // clone it to ensure the message remains valid for `port->DispatchOnMessage`
+  // below if both handlers exist.
+  if (one_time_message_handler_.DeliverMessage(script_context, message.Clone(),
                                                target_port_id)) {
     return;
   }
@@ -726,7 +741,7 @@ void NativeRendererMessagingService::DispatchOnMessageToListeners(
   GinPort* port = GetPort(script_context, target_port_id);
   DCHECK(port);
 
-  port->DispatchOnMessage(script_context->v8_context(), message);
+  port->DispatchOnMessage(script_context->v8_context(), std::move(message));
   // Note: Arbitrary JS may have run; the context may now be deleted.
 }
 
