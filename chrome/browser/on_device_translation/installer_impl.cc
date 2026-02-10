@@ -5,6 +5,7 @@
 #include "chrome/browser/on_device_translation/installer_impl.h"
 
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -20,6 +21,7 @@
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/paths.h"
 #include "components/on_device_translation/public/pref_names.h"
+#include "components/prefs/pref_change_registrar.h"
 
 namespace on_device_translation {
 namespace {
@@ -41,7 +43,63 @@ base::FilePath GetTranslateKitLibraryPath(PrefService* prefs) {
 
 }  // namespace
 
-OnDeviceTranslationInstallerImpl::OnDeviceTranslationInstallerImpl() = default;
+class OnDeviceTranslationInstallerImpl::Notifier {
+ public:
+  explicit Notifier(PrefService* local_state) {
+    pref_registrar_.Init(local_state);
+    pref_registrar_.Add(
+        prefs::kTranslateKitBinaryPath,
+        base::BindRepeating(&OnDeviceTranslationInstallerImpl::Notifier::
+                                NotifyInstallationChanged,
+                            GetWeakPtr()));
+    // Start listening to pref changes for language pack keys.
+    for (const auto& it : kLanguagePackComponentConfigMap) {
+      pref_name_to_lang_pack_.emplace(GetComponentPathPrefName(*it.second),
+                                      it.first);
+      pref_registrar_.Add(
+          GetComponentPathPrefName(*it.second),
+          base::BindRepeating(&OnDeviceTranslationInstallerImpl::Notifier::
+                                  NotifyLanguagePackInstallationChanged,
+                              GetWeakPtr()));
+    }
+  }
+  // Called when a language pack has finished being installed.
+  void OnLanguagePackInstalled(LanguagePackKey language_pack) {
+    for (Observer& observer : observers_) {
+      observer.OnLanguagePackInstalled(language_pack);
+    }
+  }
+
+  base::WeakPtr<OnDeviceTranslationInstallerImpl::Notifier> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void NotifyLanguagePackInstallationChanged(const std::string& pref_name) {
+    for (Observer& observer : observers_) {
+      observer.OnLanguagePackInstallationChanged(
+          pref_name_to_lang_pack_[pref_name]);
+    }
+  }
+  void NotifyInstallationChanged(const std::string& pref_name) {
+    for (Observer& observer : observers_) {
+      observer.OnInstallationChanged();
+    }
+  }
+  void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
+
+ private:
+  PrefChangeRegistrar pref_registrar_;
+  base::ObserverList<Observer> observers_;
+  base::flat_map<std::string, LanguagePackKey> pref_name_to_lang_pack_;
+  base::WeakPtrFactory<OnDeviceTranslationInstallerImpl::Notifier>
+      weak_ptr_factory_{this};
+};
+
+OnDeviceTranslationInstallerImpl::OnDeviceTranslationInstallerImpl() {
+  notifier_ = std::make_unique<OnDeviceTranslationInstallerImpl::Notifier>(
+      g_browser_process->local_state());
+}
+
 OnDeviceTranslationInstallerImpl::~OnDeviceTranslationInstallerImpl() = default;
 
 base::FilePath OnDeviceTranslationInstallerImpl::GetLibraryPath() const {
@@ -114,8 +172,8 @@ void OnDeviceTranslationInstallerImpl::InstallLanguagePack(
           base::Unretained(g_browser_process->component_updater()),
           language_pack),
       base::BindRepeating(
-          &OnDeviceTranslationInstallerImpl::OnLanguagePackInstalled,
-          weak_ptr_factory_.GetWeakPtr(), language_pack));
+          &OnDeviceTranslationInstallerImpl::Notifier::OnLanguagePackInstalled,
+          notifier_->GetWeakPtr(), language_pack));
 }
 
 void OnDeviceTranslationInstallerImpl::UnInstallLanguagePack(
@@ -126,15 +184,8 @@ void OnDeviceTranslationInstallerImpl::UnInstallLanguagePack(
       language_pack);
 }
 
-void OnDeviceTranslationInstallerImpl::AddOserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void OnDeviceTranslationInstallerImpl::OnLanguagePackInstalled(
-    LanguagePackKey language_pack) {
-  for (Observer& observer : observers_) {
-    observer.OnLanguagePackInstalled(language_pack);
-  }
+void OnDeviceTranslationInstallerImpl::AddObserver(Observer* observer) {
+  notifier_->AddObserver(observer);
 }
 
 }  // namespace on_device_translation

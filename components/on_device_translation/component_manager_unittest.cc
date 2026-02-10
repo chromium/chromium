@@ -71,6 +71,9 @@ class TestObserver : public OnDeviceTranslationInstaller::Observer {
       std::move(quit_closure_).Run();
     }
   }
+  void OnLanguagePackInstallationChanged(
+      const LanguagePackKey lang_pack) override {}
+  void OnInstallationChanged() override {}
 
  private:
   base::OnceClosure quit_closure_;
@@ -83,7 +86,7 @@ TEST_F(ComponentManagerTest, RegisterAndUnregisterTranslateKit) {
   ComponentManager::GetInstance().RegisterTranslateKitComponent();
   base::RunLoop lpack_run_loop;
   TestObserver observer(lpack_run_loop.QuitClosure());
-  OnDeviceTranslationInstaller::GetInstance()->AddOserver(&observer);
+  OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
   ComponentManager::GetInstance().RegisterTranslateKitLanguagePackComponent(
       LanguagePackKey::kEn_Ja);
   lpack_run_loop.Run();

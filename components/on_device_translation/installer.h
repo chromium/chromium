@@ -38,6 +38,9 @@ class OnDeviceTranslationInstaller {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnLanguagePackInstalled(const LanguagePackKey lang_pack) = 0;
+    virtual void OnLanguagePackInstallationChanged(
+        const LanguagePackKey lang_pack) = 0;
+    virtual void OnInstallationChanged() = 0;
   };
 
   // Returns the singleton instance that implements
@@ -66,7 +69,7 @@ class OnDeviceTranslationInstaller {
   virtual void UnInstallLanguagePack(LanguagePackKey language_pack) = 0;
 
   // Subscribes a new observer to be notified of events.
-  virtual void AddOserver(Observer* observer) = 0;
+  virtual void AddObserver(Observer* observer) = 0;
 };
 
 }  // namespace on_device_translation

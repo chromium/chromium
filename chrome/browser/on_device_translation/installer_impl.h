@@ -27,14 +27,12 @@ class OnDeviceTranslationInstallerImpl : public OnDeviceTranslationInstaller {
   void Init(base::RepeatingClosure on_ready_callback) override;
   void InstallLanguagePack(LanguagePackKey language_pack) override;
   void UnInstallLanguagePack(LanguagePackKey language_pack) override;
-  void AddOserver(Observer* observer) override;
+  void AddObserver(Observer* observer) override;
 
  private:
-  // Called when a language pack has finished being installed.
-  void OnLanguagePackInstalled(LanguagePackKey language_pack);
-
-  std::set<LanguagePackKey> installed_language_packs_;
-  base::ObserverList<Observer> observers_;
+  // We hide away the logic to notify observers.
+  class Notifier;
+  std::unique_ptr<Notifier> notifier_;
   base::WeakPtrFactory<OnDeviceTranslationInstallerImpl> weak_ptr_factory_{
       this};
 };

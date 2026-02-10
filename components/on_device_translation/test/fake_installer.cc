@@ -79,7 +79,7 @@ void FakeOnDeviceTranslationInstaller::UnInstallLanguagePack(
   installed_lang_packs_.erase(language_pack);
 }
 
-void FakeOnDeviceTranslationInstaller::AddOserver(Observer* observer) {
+void FakeOnDeviceTranslationInstaller::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
