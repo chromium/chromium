@@ -19,7 +19,10 @@ source_set("default_browser_prompt") {
     "default_browser_prompt_prefs.h",
   ]
 
-  sources = [ "default_browser_infobar_manager.h" ]
+  sources = [
+    "default_browser_bubble_dialog.h",
+    "default_browser_infobar_manager.h",
+  ]
 
   public_deps = [
     "//base",
@@ -39,6 +42,7 @@ source_set("default_browser_prompt") {
 
 source_set("impl") {
   sources = [
+    "default_browser_bubble_dialog.cc",
     "default_browser_infobar_delegate.cc",
     "default_browser_infobar_manager.cc",
     "default_browser_prompt.cc",
@@ -52,6 +56,7 @@ source_set("impl") {
     ":default_browser_prompt",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
+    "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:global_features",
     "//chrome/browser:shell_integration",
@@ -60,6 +65,7 @@ source_set("impl") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/omnibox/browser",
@@ -103,7 +109,10 @@ source_set("unit_tests") {
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "default_browser_prompt_interactive_uitest.cc" ]
+  sources = [
+    "default_browser_bubble_dialog_interactive_uitest.cc",
+    "default_browser_prompt_interactive_uitest.cc",
+  ]
   deps = [
     ":default_browser_prompt",
     "//base/test:test_support",

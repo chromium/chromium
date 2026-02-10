@@ -13624,6 +13624,18 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_DEFAULT_BROWSER_MODAL_CANCEL_BUTTON" desc="Label for the button to cancel setting the default browser.">
         Set later
       </message>
+      <message name="IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_STEPS_COMBINED" desc="Numbered instructions. $1 and $2 are the bold button names.">
+        1. Click <ph name="BUTTON_LABEL">$1<ex>Open settings</ex></ph> below&#xA;2. Click <ph name="BUTTON_2">$2<ex>Set default</ex></ph> in your Windows settings
+      </message>
+      <message name="IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_OPEN_SETTINGS_LABEL" desc="Label for the 'Open settings' button. Also used inside the instructions.">
+        Open settings
+      </message>
+      <message name="IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_SET_DEFAULT_LABEL" desc="Text corresponding to the button in Windows System Settings. Used inside the instructions.">
+        Set default
+      </message>
+      <message name="IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_SET_LATER_LABEL" desc="Label for the 'Set later' (decline) button.">
+        Set later
+      </message>
 
       <!-- chrome://help -->
       <if expr="not is_android">

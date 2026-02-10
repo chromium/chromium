@@ -764,6 +764,12 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_DEFAULT_BROWSER_MODAL_BODY_WITHOUT_SETTINGS_ILLUSTRATION" desc="Body text of the default browser modal without settings illustration.">
           Get easy access to the features you know, love, and trust by setting Chrome as your default browser. Chrome will be pinned to your taskbar for quick access.
         </message>
+        <message name="IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_TITLE" desc="Title of the dialog prompting the user to set Chrome as the default browser.">
+          Use Google recommended browser settings
+        </message>
+        <message name="IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_BODY" desc="Main explanatory text in the default browser dialog.">
+          Get easy access to the features you know, love, and trust by setting Chrome as your default browser.
+        </message>
       </if>
       <if expr="is_win or is_macosx">
         <message name="IDS_PDF_INFOBAR_TEXT" desc="Text to show in an infobar when Google Chrome is not the default PDF viewer.">
