@@ -762,7 +762,7 @@ group("gn_all") {
 
     if (((is_linux || is_chromeos) && use_ozone) || is_fuchsia) {
       deps += [
-        "//headless:headless_non_renderer",
+        "//headless:headless_shell",
         "//headless:headless_tests",
       ]
     }

@@ -11,7 +11,7 @@
 #include "base/strings/string_util.h"
 #include "content/public/common/web_identity.h"
 #include "content/public/renderer/render_thread.h"
-#include "headless/lib/headless_content_main_delegate.h"
+#include "headless/lib/common/headless_features.h"
 #include "headless/public/switches.h"
 #include "media/base/video_codecs.h"
 #include "printing/buildflags/buildflags.h"

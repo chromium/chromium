@@ -48,10 +48,10 @@
 
 #if defined(HEADLESS_USE_PREFS)
 #include "components/os_crypt/sync/os_crypt.h"  // nogncheck
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/in_memory_pref_store.h"
-#include "components/prefs/json_pref_store.h"
-#include "components/prefs/pref_service_factory.h"
+#include "components/pref_registry/pref_registry_syncable.h"  // nogncheck
+#include "components/prefs/in_memory_pref_store.h"            // nogncheck
+#include "components/prefs/json_pref_store.h"                 // nogncheck
+#include "components/prefs/pref_service_factory.h"            // nogncheck
 #endif
 
 #if defined(HEADLESS_USE_POLICY)
