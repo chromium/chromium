@@ -29,6 +29,7 @@ export default {
     /*  Stylistic chceks. */
 
     'block-no-empty': true,
+    'length-zero-no-unit': [true, { "ignore": ["custom-properties"] }],
 
     // https://google.github.io/styleguide/htmlcssguide.html#Rule_Separation
     'rule-empty-line-before': [

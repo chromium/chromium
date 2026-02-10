@@ -76,7 +76,7 @@ webview:not([hidden]) {
 }
 
 #loadingPanel .container {
-  padding-bottom: 0px;
+  padding-bottom: 0;
   background: var(--color--surface);
 }
 

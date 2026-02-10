@@ -28,7 +28,7 @@ h1 {
   font-size: 16px;
   font-weight: 500;
   line-height: 24px;
-  margin: 0px;
+  margin: 0;
 }
 
 p.description {
@@ -36,7 +36,7 @@ p.description {
   font-size: 13px;
   font-weight: 400;
   line-height: 20px;
-  margin: 0px;
+  margin: 0;
 }
 
 .form-group {

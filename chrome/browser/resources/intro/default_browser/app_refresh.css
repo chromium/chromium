@@ -69,7 +69,7 @@
 .title {
   font-weight: 500;
   height: 64px;
-  letter-spacing: 0px;
+  letter-spacing: 0;
   line-height: 32px;
   max-width: var(--text-max-width);
   margin: 0;

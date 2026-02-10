@@ -25,11 +25,11 @@ th {
 .flexbar {
   display: flex;
   flex-direction: row;
-  margin: 5px 0px;
+  margin: 5px 0;
 }
 
 .flexbar button {
-  padding: 0px 4px;
+  padding: 0 4px;
 }
 
 #device-info tr > :first-child {
