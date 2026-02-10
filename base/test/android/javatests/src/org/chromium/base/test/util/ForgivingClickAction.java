@@ -5,7 +5,6 @@
 package org.chromium.base.test.util;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.Matchers.allOf;
 
 import android.view.InputDevice;
 import android.view.MotionEvent;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.webkit.WebView;
 
-import androidx.annotation.Nullable;
 import androidx.test.espresso.PerformException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
@@ -44,7 +42,6 @@ public class ForgivingClickAction implements ViewAction {
     private final PrecisionDescriber mPrecisionDescriber;
     private final int mInputDevice;
     private final int mButtonState;
-    @Nullable private final ViewAction mRollbackAction;
 
     public static ForgivingClickAction forgivingClick() {
         return new ForgivingClickAction(
@@ -53,16 +50,6 @@ public class ForgivingClickAction implements ViewAction {
                 Press.FINGER,
                 InputDevice.SOURCE_UNKNOWN,
                 MotionEvent.BUTTON_PRIMARY);
-    }
-
-    public static ForgivingClickAction forgivingClick(@Nullable ViewAction rollbackAction) {
-        return new ForgivingClickAction(
-                Tap.SINGLE,
-                GeneralLocation.VISIBLE_CENTER,
-                Press.FINGER,
-                InputDevice.SOURCE_UNKNOWN,
-                MotionEvent.BUTTON_PRIMARY,
-                rollbackAction);
     }
 
     public static ForgivingClickAction forgivingLongClick() {
@@ -80,22 +67,11 @@ public class ForgivingClickAction implements ViewAction {
             PrecisionDescriber precisionDescriber,
             int inputDevice,
             int buttonState) {
-        this(tapper, coordinatesProvider, precisionDescriber, inputDevice, buttonState, null);
-    }
-
-    public ForgivingClickAction(
-            Tapper tapper,
-            CoordinatesProvider coordinatesProvider,
-            PrecisionDescriber precisionDescriber,
-            int inputDevice,
-            int buttonState,
-            @Nullable ViewAction rollbackAction) {
         this.mCoordinatesProvider = coordinatesProvider;
         this.mTapper = tapper;
         this.mPrecisionDescriber = precisionDescriber;
         this.mInputDevice = inputDevice;
         this.mButtonState = buttonState;
-        this.mRollbackAction = rollbackAction;
     }
 
     @Override
@@ -111,11 +87,7 @@ public class ForgivingClickAction implements ViewAction {
 
     @Override
     public Matcher<View> getConstraints() {
-        Matcher<View> standardConstraint = instanceOf(View.class);
-        if (mRollbackAction != null) {
-            return allOf(standardConstraint, mRollbackAction.getConstraints());
-        }
-        return standardConstraint;
+        return instanceOf(View.class);
     }
 
     @Override
@@ -123,54 +95,42 @@ public class ForgivingClickAction implements ViewAction {
         float[] coordinates = mCoordinatesProvider.calculateCoordinates(view);
         float[] precision = mPrecisionDescriber.describePrecision();
 
-        Tapper.Status status = Tapper.Status.FAILURE;
-        int loopCount = 0;
-        while (status != Tapper.Status.SUCCESS && loopCount < 3) {
-            try {
-                status =
-                        mTapper.sendTap(
-                                uiController, coordinates, precision, mInputDevice, mButtonState);
-                Log.d(
-                        TAG,
-                        "perform: "
-                                + String.format(
-                                        Locale.ROOT,
-                                        "%s - At Coordinates: %d, %d and precision: %d, %d",
-                                        this.getDescription(),
-                                        (int) coordinates[0],
-                                        (int) coordinates[1],
-                                        (int) precision[0],
-                                        (int) precision[1]));
-            } catch (RuntimeException re) {
-                throw new PerformException.Builder()
-                        .withActionDescription(
-                                String.format(
-                                        Locale.ROOT,
-                                        "%s - At Coordinates: %d, %d and precision: %d, %d",
-                                        this.getDescription(),
-                                        (int) coordinates[0],
-                                        (int) coordinates[1],
-                                        (int) precision[0],
-                                        (int) precision[1]))
-                        .withViewDescription(HumanReadables.describe(view))
-                        .withCause(re)
-                        .build();
-            }
+        Tapper.Status status;
+        try {
+            status =
+                    mTapper.sendTap(
+                            uiController, coordinates, precision, mInputDevice, mButtonState);
+            Log.d(
+                    TAG,
+                    "perform: "
+                            + String.format(
+                                    Locale.ROOT,
+                                    "%s - At Coordinates: %d, %d and precision: %d, %d",
+                                    this.getDescription(),
+                                    (int) coordinates[0],
+                                    (int) coordinates[1],
+                                    (int) precision[0],
+                                    (int) precision[1]));
+        } catch (RuntimeException re) {
+            throw new PerformException.Builder()
+                    .withActionDescription(
+                            String.format(
+                                    Locale.ROOT,
+                                    "%s - At Coordinates: %d, %d and precision: %d, %d",
+                                    this.getDescription(),
+                                    (int) coordinates[0],
+                                    (int) coordinates[1],
+                                    (int) precision[0],
+                                    (int) precision[1]))
+                    .withViewDescription(HumanReadables.describe(view))
+                    .withCause(re)
+                    .build();
+        }
 
-            int duration = ViewConfiguration.getPressedStateDuration();
-            // ensures that all work enqueued to process the tap has been run.
-            if (duration > 0) {
-                uiController.loopMainThreadForAtLeast(duration);
-            }
-
-            if (status == Tapper.Status.WARNING) {
-                if (mRollbackAction != null) {
-                    mRollbackAction.perform(uiController, view);
-                } else {
-                    break;
-                }
-            }
-            loopCount++;
+        int duration = ViewConfiguration.getPressedStateDuration();
+        // ensures that all work enqueued to process the tap has been run.
+        if (duration > 0) {
+            uiController.loopMainThreadForAtLeast(duration);
         }
 
         if (status == Tapper.Status.FAILURE) {
@@ -183,16 +143,14 @@ public class ForgivingClickAction implements ViewAction {
                                             Locale.ROOT,
                                             "Couldn't click at: %s,%s precision: %s, %s . Tapper:"
                                                 + " %s coordinate provider: %s precision describer:"
-                                                + " %s. Tried %d times. With Rollback? %b",
+                                                + " %s.",
                                             coordinates[0],
                                             coordinates[1],
                                             precision[0],
                                             precision[1],
                                             mTapper,
                                             mCoordinatesProvider,
-                                            mPrecisionDescriber,
-                                            loopCount,
-                                            mRollbackAction != null)))
+                                            mPrecisionDescriber)))
                     .build();
         }
 
