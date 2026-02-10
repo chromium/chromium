@@ -11,6 +11,7 @@ include_rules = [
   "+third_party/skia/include",
   "+components/devtools/simple_devtools_protocol_client",
   "+components/embedder_support/user_agent_utils.h",
+  "+components/optimization_guide",
   "+components/os_crypt/common",
   "+components/password_manager/core/browser/password_manager_switches.h",
   "+components/policy",

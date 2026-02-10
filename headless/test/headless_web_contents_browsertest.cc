@@ -16,15 +16,20 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/devtools/simple_devtools_protocol_client/simple_devtools_protocol_client.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/viz/common/switches.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
@@ -653,5 +658,67 @@ class BlockDevToolsEmbedding : public HeadlessDevTooledBrowserTest {
 };
 
 HEADLESS_DEVTOOLED_TEST_F(BlockDevToolsEmbedding);
+
+class HeadlessWebContentsAIPageContentTest : public HeadlessWebContentsTest {
+ public:
+  HeadlessWebContentsAIPageContentTest() {
+    feature_list_.InitAndEnableFeature(
+        optimization_guide::features::
+            kAnnotatedPageContentWithActionableElements);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessWebContentsAIPageContentTest, GetAIPageContent) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+  HeadlessBrowserContext* browser_context =
+      browser()->CreateBrowserContextBuilder().Build();
+  HeadlessWebContents* web_contents =
+      browser_context->CreateWebContentsBuilder()
+          .SetInitialURL(embedded_test_server()->GetURL("/hello.html"))
+          .Build();
+  EXPECT_TRUE(WaitForLoad(web_contents));
+
+  content::WebContents* content_web_contents =
+      HeadlessWebContentsImpl::From(web_contents)->web_contents();
+  content::WebContentsDelegate* delegate = content_web_contents->GetDelegate();
+  ASSERT_TRUE(delegate);
+
+  base::RunLoop run_loop;
+  delegate->GetAIPageContent(
+      content_web_contents, true,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const std::string& result) {
+            LOG(INFO) << "GetAIPageContent result size: " << result.size();
+            optimization_guide::proto::AnnotatedPageContent proto;
+            if (proto.ParseFromString(result)) {
+              bool has_text = false;
+              std::vector<const optimization_guide::proto::ContentNode*> nodes;
+              nodes.push_back(&proto.root_node());
+              while (!nodes.empty()) {
+                const auto* node = nodes.back();
+                nodes.pop_back();
+                if (!node->content_attributes()
+                         .text_data()
+                         .text_content()
+                         .empty()) {
+                  has_text = true;
+                  break;
+                }
+                for (const auto& child : node->children_nodes()) {
+                  nodes.push_back(&child);
+                }
+              }
+              EXPECT_TRUE(has_text);
+            } else {
+              ADD_FAILURE() << "Failed to parse AnnotatedPageContent";
+            }
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
 
 }  // namespace headless

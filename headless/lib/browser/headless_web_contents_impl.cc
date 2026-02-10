@@ -22,6 +22,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/headless/console_message_logger/headless_console_message_logger.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_termination_info.h"
@@ -46,6 +48,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -126,6 +129,27 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     auto& headless_contents =
         CHECK_DEREF(HeadlessWebContentsImpl::From(source));
     headless_contents.Close();
+  }
+
+  void GetAIPageContent(
+      content::WebContents* web_contents,
+      bool include_actionable_elements,
+      base::OnceCallback<void(const std::string&)> callback) override {
+    auto options = include_actionable_elements
+                       ? optimization_guide::ActionableAIPageContentOptions(
+                             /*on_critical_path=*/false)
+                       : optimization_guide::DefaultAIPageContentOptions(
+                             /*on_critical_path=*/false);
+
+    optimization_guide::GetAIPageContent(
+        web_contents, std::move(options),
+        base::BindOnce([](optimization_guide::AIPageContentResultOrError result)
+                           -> std::string {
+          if (!result.has_value()) {
+            return "";
+          }
+          return result->proto.SerializeAsString();
+        }).Then(std::move(callback)));
   }
 
   content::WebContents* AddNewContents(
