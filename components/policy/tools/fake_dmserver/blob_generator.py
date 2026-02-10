@@ -18,6 +18,11 @@ import sys
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
+# For ChromeOS, The ebuild installs _pb2.py files to
+# /usr/local/share/policy-test-tool. They are imported in main().
+POLICY_TEST_TOOL_PATH = "/usr/local/share/policy-test-tool"
+sys.path.insert(0, POLICY_TEST_TOOL_PATH)
+
 
 def generate_device_policy_schema(manual_map_path):
   """Builds a schema for device policies by parsing the manual map."""
@@ -223,11 +228,6 @@ please refer to the README.md in this directory.""",
         0,
         os.path.join(args.build_path,
                      "pyproto/third_party/shell-encryption/src"))
-  else:
-    # Running from ChromeOS. The ebuild installs these to
-    # /usr/local/share/policy-test-tool
-    POLICY_TEST_TOOL_PATH = "/usr/local/share/policy-test-tool"
-    sys.path.insert(0, POLICY_TEST_TOOL_PATH)
 
   try:
     import chrome_device_policy_pb2
