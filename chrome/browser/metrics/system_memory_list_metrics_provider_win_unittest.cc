@@ -18,6 +18,9 @@ constexpr char kZeroMemoryListHistogramName[] =
     "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds.ZeroList";
 constexpr char kFreeMemoryListHistogramName[] =
     "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds.FreeList";
+constexpr char kZeroAndFreeMemoryListHistogramName[] =
+    "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds."
+    "ZeroAndFreeList";
 constexpr char kTotalIntervalsRecordedHistogramName[] =
     "Memory.SystemMemoryLists.TotalIntervalsRecorded";
 constexpr char kFreeListCountHistogramName[] =
@@ -74,6 +77,11 @@ TEST_F(WinSystemMemoryListMetricsProviderTest, SystemListEmpty) {
             return STATUS_SUCCESS;
           })
       .WillOnce(
+          [](SYSTEM_MEMORY_LIST_INFORMATION& memory_list_info) -> NTSTATUS {
+            memory_list_info = SYSTEM_MEMORY_LIST_INFORMATION{0};
+            return STATUS_SUCCESS;
+          })
+      .WillOnce(
           [quit_closure = run_loop_.QuitClosure()](
               SYSTEM_MEMORY_LIST_INFORMATION& memory_list_info) -> NTSTATUS {
             quit_closure.Run();
@@ -88,19 +96,23 @@ TEST_F(WinSystemMemoryListMetricsProviderTest, SystemListEmpty) {
 
   run_loop_.Run();
 
-  histogram_tester_.ExpectTotalCount(kZeroMemoryListHistogramName, 1);
+  histogram_tester_.ExpectTotalCount(kZeroMemoryListHistogramName, 2);
   histogram_tester_.ExpectBucketCount(kZeroMemoryListHistogramName, 1, 1);
 
-  histogram_tester_.ExpectTotalCount(kFreeMemoryListHistogramName, 1);
+  histogram_tester_.ExpectTotalCount(kFreeMemoryListHistogramName, 2);
   histogram_tester_.ExpectBucketCount(kFreeMemoryListHistogramName, 1, 1);
 
-  histogram_tester_.ExpectTotalCount(kTotalIntervalsRecordedHistogramName, 1);
-  histogram_tester_.ExpectBucketCount(kTotalIntervalsRecordedHistogramName, 1,
+  histogram_tester_.ExpectTotalCount(kZeroAndFreeMemoryListHistogramName, 2);
+  histogram_tester_.ExpectBucketCount(kZeroAndFreeMemoryListHistogramName, 1,
                                       1);
 
-  histogram_tester_.ExpectUniqueSample(kFreeListCountHistogramName, 0, 1);
-  histogram_tester_.ExpectUniqueSample(kZeroListCountHistogramName, 0, 1);
-  histogram_tester_.ExpectUniqueSample(kModifiedListCountHistogramName, 0, 1);
+  histogram_tester_.ExpectTotalCount(kTotalIntervalsRecordedHistogramName, 2);
+  histogram_tester_.ExpectBucketCount(kTotalIntervalsRecordedHistogramName, 1,
+                                      2);
+
+  histogram_tester_.ExpectUniqueSample(kFreeListCountHistogramName, 0, 2);
+  histogram_tester_.ExpectUniqueSample(kZeroListCountHistogramName, 0, 2);
+  histogram_tester_.ExpectUniqueSample(kModifiedListCountHistogramName, 0, 2);
 }
 
 // Verifies that we correctly set a non-empty memory list as non-exhausted.
@@ -131,6 +143,10 @@ TEST_F(WinSystemMemoryListMetricsProviderTest, SystemListFull) {
 
   histogram_tester_.ExpectTotalCount(kFreeMemoryListHistogramName, 1);
   histogram_tester_.ExpectBucketCount(kFreeMemoryListHistogramName, 0, 1);
+
+  histogram_tester_.ExpectTotalCount(kZeroAndFreeMemoryListHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(kZeroAndFreeMemoryListHistogramName, 0,
+                                      1);
 
   histogram_tester_.ExpectTotalCount(kTotalIntervalsRecordedHistogramName, 1);
   histogram_tester_.ExpectBucketCount(kTotalIntervalsRecordedHistogramName, 1,
@@ -167,8 +183,10 @@ TEST_F(WinSystemMemoryListMetricsProviderTest, SystemListCounterReset) {
 
   run_loop_.Run();
 
-  histogram_tester_.ExpectUniqueSample(kZeroMemoryListHistogramName, 1, 2);
-  histogram_tester_.ExpectUniqueSample(kFreeMemoryListHistogramName, 1, 2);
+  histogram_tester_.ExpectBucketCount(kZeroMemoryListHistogramName, 1, 1);
+  histogram_tester_.ExpectBucketCount(kFreeMemoryListHistogramName, 1, 1);
+  histogram_tester_.ExpectBucketCount(kZeroAndFreeMemoryListHistogramName, 1,
+                                      1);
   histogram_tester_.ExpectUniqueSample(kTotalIntervalsRecordedHistogramName, 1,
                                        2);
   histogram_tester_.ExpectUniqueSample(kFreeListCountHistogramName, 0, 2);
