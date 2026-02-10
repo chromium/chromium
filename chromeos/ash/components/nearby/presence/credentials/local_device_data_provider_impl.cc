@@ -151,18 +151,18 @@ std::string LocalDeviceDataProviderImpl::GetDeviceName() const {
   // changes to the user set device name.
   std::u16string device_type = ui::GetChromeOSDeviceName();
 
-  const CoreAccountInfo account_info =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  std::string given_name =
-      identity_manager_->FindExtendedAccountInfo(account_info).given_name;
+  const CoreAccountId primary_account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(primary_account_id);
 
-  if (given_name.empty()) {
+  if (!account_info.GetGivenName().has_value()) {
     return base::UTF16ToUTF8(device_type);
   }
 
-  std::string device_name =
-      l10n_util::GetStringFUTF8(IDS_NEARBY_PRESENCE_DEVICE_NAME,
-                                base::UTF8ToUTF16(given_name), device_type);
+  std::string device_name = l10n_util::GetStringFUTF8(
+      IDS_NEARBY_PRESENCE_DEVICE_NAME,
+      base::UTF8ToUTF16(*account_info.GetGivenName()), device_type);
   return device_name;
 }
 

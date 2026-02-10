@@ -108,7 +108,8 @@ TEST_F(LocalDeviceDataProviderImplTest, Metadata) {
 
   // Populate the account information and expect the device name to include the
   // user's given name.
-  account_info_.given_name = kGivenName;
+  account_info_ =
+      AccountInfo::Builder(account_info_).SetGivenName(kGivenName).Build();
   identity_test_env_.UpdateAccountInfoForAccount(account_info_);
   metadata = local_device_data_provider_->GetDeviceMetadata();
   EXPECT_EQ(l10n_util::GetStringFUTF8(IDS_NEARBY_PRESENCE_DEVICE_NAME,
