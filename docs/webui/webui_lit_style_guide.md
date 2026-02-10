@@ -9,6 +9,89 @@ development with Lit. These guidelines are intended to ensure code quality,
 consistency, and performance across the codebase. They supplement the
 [Chromium Web Development Style Guide](../../styleguide/web/web.md).
 
+## CrLitElement Subclass Guidelines (.ts)
+
+A Lit element class definition should have the following structure.
+
+```ts
+// my_button.ts example contents
+
+import {getCss} from './my_button.css.js';
+import {getHtml} from './my_button.html.js';
+
+class MyButtonElement extends CrLitElement {
+ static get is() {
+    return 'my-button';
+  }
+
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
+    return {
+      ...
+    };
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-button': MyButtonElement;
+  }
+}
+
+customElements.define(MyButtonElement.is, MyButtonElement);
+```
+
+Specifically the following pieces are required:
+
+ 1. `static get is() {...}` holds the DOM name of the custom element.
+ 2. `interface HTMLElementTagNameMap {...}` informs the TypeScript compiler
+     about the association between the DOM name and the class name, allowing it
+     to infer the type in `document.createElement` or `querySelector`,
+     `querySelectorAll` calls. Must be placed after the class definition in the
+     same file.
+ 3. `customElements.define(...)` registers the custom element at runtime, so
+     that the browser knows which class to instantiate when encountering the
+     corresponding DOM name. Must be placed after the class definition in the
+     same file.
+
+### Method definition order
+
+Methods (if applicable) must be defined in the following order for consistency:
+`is`, `styles`, `render`, `properties`, `constructor`, `connectedCallback`,
+`disconnectedCallback`, `willUpdate`, `firstUpdated`, `updated`.
+
+### Class fields definition order
+
+Class fields should be defined after the `properties` getter and before the
+`constructor` or, if no constructor exists, before any subsequent methods in the
+method definition order.
+
+Moreover, separate class fields that have a corresponding Lit reactive property
+from class fields that don't correspond to any property with a blank
+line. For example:
+
+```ts
+  static override get properties() {
+    return {
+      isActive: {type: Boolean},
+      isDefault: {type: Boolean},
+    };
+  }
+
+  accessor isActive: boolean = false;
+  accessor isDefault: boolean = false;
+
+  private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
+```
+
+
 ## Template Guidelines (.html.ts)
 
 ### Logic-free Templates

@@ -221,6 +221,7 @@ class EslintTsTest(unittest.TestCase):
     _EXPECTED_STRING = "@webui-eslint/lit-element-structure"
     self.assertTrue(_EXPECTED_STRING in str(context.exception))
 
+    _EXPECTED_INCONSISTENT_METHOD_DEFINITION_ORDER_ERROR = "Inconsistent method definition order in class %(className)s. Expected [is, styles, render, properties], found %(order)s"
     _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR = "Missing customElements.define(%(className)s.is, %(className)s) call"
     _EXPECTED_MISSING_STATIC_GET_IS_ERROR = "Missing 'static get is() {...}' for web component class %(className)s"
     _EXPECTED_MISSING_SUPER_CALLS_ERROR = "Missing superclass calls for lifecycle method(s) %(lifecycleMethods)s in class %(className)s"
@@ -261,6 +262,11 @@ class EslintTsTest(unittest.TestCase):
             'className': 'SomeElement5',
             'lifecycleMethods': ', '.join(super_call_required_methods)
         },
+        # Case6
+        _EXPECTED_INCONSISTENT_METHOD_DEFINITION_ORDER_ERROR % {
+            'className': 'SomeElement6',
+            'order': '[render, styles, is, properties]',
+        },
     ]
     for e in errors:
       self.assertTrue(
@@ -268,21 +274,6 @@ class EslintTsTest(unittest.TestCase):
 
     # The following strings *should not* appear in the error output.
     non_errors = [
-        # Case6
-        _EXPECTED_MISSING_STATIC_GET_IS_ERROR % {
-            'className': 'SomeElement6'
-        },
-        _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR % {
-            'className': 'SomeElement6',
-            'domName': 'some-element6'
-        },
-        _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR % {
-            'className': 'SomeElement6'
-        },
-        _EXPECTED_MISSING_SUPER_CALLS_ERROR % {
-            'className': 'SomeElement6',
-            'lifecycleMethods': ', '.join(super_call_required_methods)
-        },
         # Case7
         _EXPECTED_MISSING_STATIC_GET_IS_ERROR % {
             'className': 'SomeElement7'
@@ -298,6 +289,10 @@ class EslintTsTest(unittest.TestCase):
             'className': 'SomeElement7',
             'lifecycleMethods': ', '.join(super_call_required_methods)
         },
+        _EXPECTED_INCONSISTENT_METHOD_DEFINITION_ORDER_ERROR % {
+            'className': 'SomeElement7',
+            'order': '',
+        },
         # Case8
         _EXPECTED_MISSING_STATIC_GET_IS_ERROR % {
             'className': 'SomeElement8'
@@ -312,6 +307,29 @@ class EslintTsTest(unittest.TestCase):
         _EXPECTED_MISSING_SUPER_CALLS_ERROR % {
             'className': 'SomeElement8',
             'lifecycleMethods': ', '.join(super_call_required_methods)
+        },
+        _EXPECTED_INCONSISTENT_METHOD_DEFINITION_ORDER_ERROR % {
+            'className': 'SomeElement8',
+            'order': '',
+        },
+        # Case9
+        _EXPECTED_MISSING_STATIC_GET_IS_ERROR % {
+            'className': 'SomeElement9'
+        },
+        _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR % {
+            'className': 'SomeElement9',
+            'domName': 'some-element9'
+        },
+        _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR % {
+            'className': 'SomeElement9'
+        },
+        _EXPECTED_MISSING_SUPER_CALLS_ERROR % {
+            'className': 'SomeElement9',
+            'lifecycleMethods': ', '.join(super_call_required_methods)
+        },
+        _EXPECTED_INCONSISTENT_METHOD_DEFINITION_ORDER_ERROR % {
+            'className': 'SomeElement9',
+            'order': '',
         },
     ]
     for e in non_errors:

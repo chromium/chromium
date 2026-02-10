@@ -33,6 +33,8 @@ const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
       recommended: 'error',
     },
     messages: {
+      incorrectMethodDefinitionOrder:
+          'Inconsistent method definition order in class {{className}}. Expected [is, styles, render, properties], found [{{order}}].',
       missingSuperCalls:
           'Missing superclass calls for lifecycle method(s) {{lifecycleMethods}} in class {{className}}.',
       missingStaticIsGetter:
@@ -54,6 +56,14 @@ const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
 
     // Regex to detect if a class is subclassing a native HTMLElement.
     const NATIVE_HTML_SUBCLASS_REGEX = /^HTML\S+Element$/g;
+
+    // The order in which boilerplate CrLitElement methods should be defined.
+    const desiredMethodDefinitionOrder = new Map([
+      ['is', 0],
+      ['styles', 1],
+      ['render', 2],
+      ['properties', 3],
+    ]);
 
     // Necessary info to track about each class definition encountered in the
     // current file.
@@ -81,6 +91,13 @@ const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
 
         // Set of calls to superclass lifecycle methods.
         this.superCallCalled = new Set();
+
+        // Holds the order in which various methods are defined.
+        // interface OrderEntry {
+        //   name: string;
+        //   node: MethodDefinition;
+        // }
+        this.methodDefinitionOrder = [];
       }
 
       visitClassDeclaration(node) {
@@ -208,13 +225,69 @@ interface HTMLElementTagNameMap {
           },
         });
       }
+
+      runMethodDefinitionOrderCheck() {
+        if (!this.isLitElement || !this.node) {
+          return;
+        }
+
+        // Convert the encountered order into a numerical sequence.
+        const numericalOrder = this.methodDefinitionOrder.map(
+            entry => desiredMethodDefinitionOrder.get(entry.name));
+
+        // Check if the sequence is ascending.
+        const isCorrect = numericalOrder.every(
+            (item, i) => i === 0 || item > numericalOrder[i - 1]);
+
+        if (isCorrect) {
+          return;
+        }
+
+        context.report({
+          node: this.node,
+          messageId: 'incorrectMethodDefinitionOrder',
+          data: {
+            className: this.node.id.name,
+            order:
+                this.methodDefinitionOrder.map(entry => entry.name).join(', '),
+          },
+          fix: fixer => {
+            const incorrectIndex =
+                numericalOrder.findIndex(
+                    (item, i) => i !== 0 && item < numericalOrder[i - 1]) -
+                1;
+            const incorrectValue = numericalOrder[incorrectIndex];
+            const moveAfterIndex = numericalOrder.findIndex(
+                (item, i) => i > incorrectIndex && item < incorrectValue);
+
+            // Swap the first incorrect node with the first acceptable location.
+            const fromNode = this.methodDefinitionOrder[incorrectIndex].node;
+            const fromText = context.getSourceCode().getText(fromNode);
+            const toNode = this.methodDefinitionOrder.at(moveAfterIndex).node;
+            const toText = context.getSourceCode().getText(toNode);
+
+            return [
+              fixer.replaceText(fromNode, toText),
+              fixer.replaceText(toNode, fromText),
+            ];
+          },
+        });
+      }
     }
 
+    const METHOD_DEFINITION_SELECTOR_TEMPLATE =
+        'ClassDeclaration > ClassBody > MethodDefinition[key.name=/{{methodDefinition}}/]';
+
+    const METHOD_DEFINITION_ORDER_REGEX = '^(is|styles|render|properties)$';
+    const METHOD_DEFINITION_SELECTOR =
+        METHOD_DEFINITION_SELECTOR_TEMPLATE.replace(
+            '{{methodDefinition}}', METHOD_DEFINITION_ORDER_REGEX);
+
     const SUPER_CALL_REQUIRED_REGEX =
-        '^connectedCallback|disconnectedCallback|willUpdate|updated$';
+        '^(connectedCallback|disconnectedCallback|willUpdate|updated)$';
     const LIFECYCLE_METHOD_DEFINITION_SELECTOR =
-        `ClassDeclaration > ClassBody > MethodDefinition[key.name=/${
-            SUPER_CALL_REQUIRED_REGEX}/]`;
+        METHOD_DEFINITION_SELECTOR_TEMPLATE.replace(
+            '{{methodDefinition}}', SUPER_CALL_REQUIRED_REGEX);
     const LIFECYCLE_METHOD_SUPER_CALL_SELECTOR = `${
         LIFECYCLE_METHOD_DEFINITION_SELECTOR} > FunctionExpression > BlockStatement > ExpressionStatement > CallExpression > MemberExpression[object.type="Super"][property.name=/${
         SUPER_CALL_REQUIRED_REGEX}/]`;
@@ -247,6 +320,14 @@ interface HTMLElementTagNameMap {
 
         currentClassInfo.visitStaticGetIs(node);
       },
+      [METHOD_DEFINITION_SELECTOR](node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        currentClassInfo.methodDefinitionOrder.push(
+            {name: node.key.name, node});
+      },
       [LIFECYCLE_METHOD_DEFINITION_SELECTOR](node) {
         if (!hasLitImport) {
           return;
@@ -268,6 +349,7 @@ interface HTMLElementTagNameMap {
 
         currentClassInfo.runMissingStaticIsGetterCheck();
         currentClassInfo.runMissingSuperCallsCheck();
+        currentClassInfo.runMethodDefinitionOrderCheck();
       },
       ['Program > TSModuleDeclaration[kind=global] > TSModuleBlock > TSInterfaceDeclaration[id.name="HTMLElementTagNameMap"] > TSInterfaceBody > TSPropertySignature'](
           node) {

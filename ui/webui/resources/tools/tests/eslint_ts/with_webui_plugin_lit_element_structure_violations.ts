@@ -67,19 +67,58 @@ declare global {
 
 customElements.define(SomeElement5.is, SomeElement5);
 
+// Case6: Class with incorrect order method definition order.
+export class SomeElement6 extends CrLitElement {
+  override render() {
+    return '';
+  }
+
+  static override get styles() {
+    return '';
+  }
+
+  static get is() {
+    return 'some-element6';
+  }
+
+  static override get properties() {
+    return {};
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'some-element6': SomeElement6;
+  }
+}
+
+customElements.define(SomeElement6.is, SomeElement6);
+
 
 /* Cases with no violations below. */
 
-// Case6: Class missing everything, but it is an abstract class.
-export abstract class SomeElement6 extends CrLitElement {}
+// Case7: Class missing everything, but it is an abstract class.
+export abstract class SomeElement7 extends CrLitElement {}
 
-// Case7: Class missing everything, but it is not a CrLitElement subclass.
-export class SomeElement7 extends HTMLEmbedElement {}
+// Case8: Class missing everything, but it is not a CrLitElement subclass.
+export class SomeElement8 extends HTMLEmbedElement {}
 
-// Case8: Class not missing anything.
-export class SomeElement8 extends CrLitElement {
+// Case9: Class not missing anything.
+export class SomeElement9 extends CrLitElement {
   static get is() {
-    return 'some-element8';
+    return 'some-element9';
+  }
+
+  static override get styles() {
+    return '';
+  }
+
+  override render() {
+    return '';
+  }
+
+  static override get properties() {
+    return {};
   }
 
   override connectedCallback() {
@@ -101,8 +140,8 @@ export class SomeElement8 extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'some-element8': SomeElement8;
+    'some-element9': SomeElement9;
   }
 }
 
-customElements.define(SomeElement8.is, SomeElement8);
+customElements.define(SomeElement9.is, SomeElement9);
