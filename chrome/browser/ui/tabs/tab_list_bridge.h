@@ -7,8 +7,8 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
-#include "chrome/browser/ui/tabs/tab_list_interface.h"
-#include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"

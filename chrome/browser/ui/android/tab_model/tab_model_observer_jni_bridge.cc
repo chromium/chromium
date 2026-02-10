@@ -10,10 +10,10 @@
 #include "base/android/token_android.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/tab_list/tab_removed_reason.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
-#include "chrome/browser/ui/tabs/tab_removed_reason.h"
 #include "components/tab_groups/tab_group_id.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

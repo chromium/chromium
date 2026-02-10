@@ -1,0 +1,8 @@
+include_rules = [
+  "+chrome/browser/ui/browser_window",
+  "+components/sessions",
+  "+components/tab_groups",
+  "+components/tabs/public",
+  "+ui/base/unowned_user_data",
+  "+ui/gfx/range",
+]

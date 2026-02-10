@@ -36,8 +36,8 @@ source_set("test_support") {
     "//chrome/browser/glic",
     "//chrome/browser/glic:impl",
     "//chrome/browser/glic/fre",
+    "//chrome/browser/tab_list",
     "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/tabs:tab_list_interface",
     "//components/signin/public/identity_manager:test_support",
   ]
   if (!is_android) {

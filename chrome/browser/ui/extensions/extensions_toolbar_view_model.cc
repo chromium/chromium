@@ -9,7 +9,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
