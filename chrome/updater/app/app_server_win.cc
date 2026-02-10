@@ -265,7 +265,11 @@ void AppServerWin::Stop() {
     // Call `on_service_stopping_` to allow for incoming COM activation requests
     // received while the service is shutting down to be handled by a new
     // service process.
-    std::move(on_service_stopping_).Run();
+    // It is possible for `Stop` to be called multiple times, so check for a
+    // valid `on_service_stopping_` callback before calling `Run`.
+    if (on_service_stopping_) {
+      std::move(on_service_stopping_).Run();
+    }
   }
   UnregisterClassObjects();
   main_task_runner_->PostTask(FROM_HERE, base::BindOnce([] {
