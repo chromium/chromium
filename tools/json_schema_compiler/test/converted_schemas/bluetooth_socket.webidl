@@ -12,10 +12,10 @@ dictionary SocketProperties {
   boolean persistent;
 
   // An application-defined string associated with the socket.
-  DOMString? name;
+  DOMString name;
 
   // The size of the buffer used to receive data. The default value is 4096.
-  long? bufferSize;
+  long bufferSize;
 };
 
 dictionary CreateInfo {
@@ -32,16 +32,16 @@ dictionary ListenOptions {
   // The RFCOMM Channel used by <code>listenUsingRfcomm</code>. If specified,
   // this channel must not be previously in use or the method call will fail.
   // When not specified, an unused channel will be automatically allocated.
-  long? channel;
+  long channel;
 
   // The L2CAP PSM used by <code>listenUsingL2cap</code>. If specified, this
   // PSM must not be previously in use or the method call with fail. When
   // not specified, an unused PSM will be automatically allocated.
-  long? psm;
+  long psm;
 
   // Length of the socket's listen queue. The default value depends on the
   // operating system's host subsystem.
-  long? backlog;
+  long backlog;
 };
 
 dictionary SocketInfo {
@@ -54,11 +54,11 @@ dictionary SocketInfo {
   required boolean persistent;
 
   // Application-defined string associated with the socket.
-  DOMString? name;
+  DOMString name;
 
   // The size of the buffer used to receive data. If no buffer size has been
   // specified explictly, the value is not provided.
-  long? bufferSize;
+  long bufferSize;
 
   // Flag indicating whether a connected socket blocks its peer from sending
   // more data, or whether connection requests on a listening socket are
@@ -72,13 +72,13 @@ dictionary SocketInfo {
 
   // If the underlying socket is connected, contains the Bluetooth address of
   // the device it is connected to.
-  DOMString? address;
+  DOMString address;
 
   // If the underlying socket is connected, contains information about the
   // service UUID it is connected to, otherwise if the underlying socket is
   // listening, contains information about the service UUID it is listening
   // on.
-  DOMString? uuid;
+  DOMString uuid;
 };
 
 dictionary AcceptInfo {
