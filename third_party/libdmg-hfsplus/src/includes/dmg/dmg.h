@@ -351,7 +351,28 @@ extern "C" {
 
 
 	int extractDmg(AbstractFile* abstractIn, AbstractFile* abstractOut, int partNum);
+
+	// Convert the uncompressed raw UDIF represented by `abstractIn` into a
+	// (potentially) compressed fully structured DMG using compression defined
+	// by `comp`. The first chunk, or consecutive pair of chunks, containing
+	// the exact binary content in `sentinel` is left uncompressed, and
+	// information to support DMG re-attribution (around the sentinel) is
+	// embeded in the DMG's resources. To skip this behavior, pass NULL for
+	// `sentinel`.
+	//
+	// `BlockSize` specifies the block size to use for the simulated disk.
+	// `runSectors` specifies how many blocks are contained per DMG "chunk" and
+	// compressed together. Longer runs compress better but require more CPU
+	// effort to compress and decompress, and create a larger uncompressed
+	// region around a sentinel.
+	int buildDmgWithSentinelBuf(AbstractFile* abstractIn, AbstractFile* abstractOut, unsigned int BlockSize, const SizedBuf* sentinel, Compressor *comp, size_t runSectors);
+
+	// buildDmg is equivalent to buildDmgWithSentinelBuf, but sentinel must be a
+	// literal C string and therefore cannot contain any bytes with value zero.
+	//
+	// Prefer buildDmgWithSentinelBuf for new uses.
 	int buildDmg(AbstractFile* abstractIn, AbstractFile* abstractOut, unsigned int BlockSize, const char* sentinel, Compressor *comp, size_t runSectors);
+
 	int convertToISO(AbstractFile* abstractIn, AbstractFile* abstractOut);
 	int convertToDMG(AbstractFile* abstractIn, AbstractFile* abstractOut, Compressor* comp, size_t runSectors);
 #ifdef __cplusplus

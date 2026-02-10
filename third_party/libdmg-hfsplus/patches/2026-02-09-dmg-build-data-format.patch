@@ -1,0 +1,99 @@
+diff --git a/third_party/libdmg-hfsplus/src/dmg/dmg.c b/third_party/libdmg-hfsplus/src/dmg/dmg.c
+index 511e2f5e8037b..029dd1137306f 100644
+--- a/third_party/libdmg-hfsplus/src/dmg/dmg.c
++++ b/third_party/libdmg-hfsplus/src/dmg/dmg.c
+@@ -47,7 +47,7 @@ void usage(const char *name) {
+ 	printf("\t--compression, -c   compressor name (%s)\n", compressionNames());
+ 	printf("\t--level, -l         compression level\n");
+ 	printf("\t--run-sectors, -r   run size (in sectors)\n");
+-	printf("\t--data-format, -d   encoding format for attribution or sentinel data (attribute command only)\n");
++	printf("\t--data-format, -d   encoding format for attribution or sentinel data (attribute and build commands only)\n");
+ 	printf("\t                      supported formats: %s\n", dataFormats);
+ 	exit(2);
+ }
+@@ -128,11 +128,14 @@ int main(int argc, char* argv[]) {
+ 		}
+ 		extractDmg(in, out, partNum);
+ 	} else if(strcmp(cmd, "build") == 0) {
+-		char *anchor = NULL;
++		SizedBuf *anchor = NULL;
+ 		if (optind < argc) {
+-			anchor = argv[optind++];
++			anchor = data_param_parser(argv[optind++]);
++		}
++		buildDmgWithSentinelBuf(in, out, SECTOR_SIZE, anchor, &comp, runSectors);
++		if (anchor) {
++			free(anchor);
+ 		}
+-		buildDmg(in, out, SECTOR_SIZE, anchor, &comp, runSectors);
+ 	} else if(strcmp(cmd, "build2048") == 0) {
+ 		buildDmg(in, out, 2048, NULL, &comp, runSectors);
+ 	} else if(strcmp(cmd, "res") == 0) {
+diff --git a/third_party/libdmg-hfsplus/src/dmg/dmglib.c b/third_party/libdmg-hfsplus/src/dmg/dmglib.c
+index 1f160562131e5..0c5e538f189b9 100644
+--- a/third_party/libdmg-hfsplus/src/dmg/dmglib.c
++++ b/third_party/libdmg-hfsplus/src/dmg/dmglib.c
+@@ -4,6 +4,7 @@
+ #include <dmg/attribution.h>
+ #include <dmg/dmg.h>
+ #include <dmg/dmgfile.h>
++#include "sizedbuf.h"
+ 
+ uint32_t calculateMasterChecksum(ResourceKey* resources);
+ 
+@@ -89,6 +90,13 @@ uint32_t calculateMasterChecksum(ResourceKey* resources) {
+ }
+ 
+ int buildDmg(AbstractFile* abstractIn, AbstractFile* abstractOut, unsigned int BlockSize, const char* sentinel, Compressor *comp, size_t runSectors) {
++	SizedBuf* sentinelBuf = AllocBufCopyString(sentinel);
++	int ret = buildDmgWithSentinelBuf(abstractIn, abstractOut, BlockSize, sentinelBuf, comp, runSectors);
++	free(sentinelBuf);
++	return ret;
++}
++
++int buildDmgWithSentinelBuf(AbstractFile* abstractIn, AbstractFile* abstractOut, unsigned int BlockSize, const SizedBuf* sentinel, Compressor *comp, size_t runSectors) {
+ 	io_func* io;
+ 	Volume* volume;
+ 
+@@ -151,7 +159,7 @@ int buildDmg(AbstractFile* abstractIn, AbstractFile* abstractOut, unsigned int B
+ 
+ 	AbstractAttribution* attribution = NULL;
+ 	if (sentinel) {
+-		attribution = createAbstractAttributionPreservingSentinel(sentinel);
++		attribution = createAbstractAttributionPreservingSentinelBuf(sentinel);
+ 	}
+ 
+ 	if (attribution) {
+diff --git a/third_party/libdmg-hfsplus/src/includes/dmg/dmg.h b/third_party/libdmg-hfsplus/src/includes/dmg/dmg.h
+index f7db35209e8da..27b1292720ee0 100644
+--- a/third_party/libdmg-hfsplus/src/includes/dmg/dmg.h
++++ b/third_party/libdmg-hfsplus/src/includes/dmg/dmg.h
+@@ -351,7 +351,28 @@ extern "C" {
+ 
+ 
+ 	int extractDmg(AbstractFile* abstractIn, AbstractFile* abstractOut, int partNum);
++
++	// Convert the uncompressed raw UDIF represented by `abstractIn` into a
++	// (potentially) compressed fully structured DMG using compression defined
++	// by `comp`. The first chunk, or consecutive pair of chunks, containing
++	// the exact binary content in `sentinel` is left uncompressed, and
++	// information to support DMG re-attribution (around the sentinel) is
++	// embeded in the DMG's resources. To skip this behavior, pass NULL for
++	// `sentinel`.
++	//
++	// `BlockSize` specifies the block size to use for the simulated disk.
++	// `runSectors` specifies how many blocks are contained per DMG "chunk" and
++	// compressed together. Longer runs compress better but require more CPU
++	// effort to compress and decompress, and create a larger uncompressed
++	// region around a sentinel.
++	int buildDmgWithSentinelBuf(AbstractFile* abstractIn, AbstractFile* abstractOut, unsigned int BlockSize, const SizedBuf* sentinel, Compressor *comp, size_t runSectors);
++
++	// buildDmg is equivalent to buildDmgWithSentinelBuf, but sentinel must be a
++	// literal C string and therefore cannot contain any bytes with value zero.
++	//
++	// Prefer buildDmgWithSentinelBuf for new uses.
+ 	int buildDmg(AbstractFile* abstractIn, AbstractFile* abstractOut, unsigned int BlockSize, const char* sentinel, Compressor *comp, size_t runSectors);
++
+ 	int convertToISO(AbstractFile* abstractIn, AbstractFile* abstractOut);
+ 	int convertToDMG(AbstractFile* abstractIn, AbstractFile* abstractOut, Compressor* comp, size_t runSectors);
+ #ifdef __cplusplus

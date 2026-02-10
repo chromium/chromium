@@ -4,6 +4,7 @@
 #include <dmg/attribution.h>
 #include <dmg/dmg.h>
 #include <dmg/dmgfile.h>
+#include "sizedbuf.h"
 
 uint32_t calculateMasterChecksum(ResourceKey* resources);
 
@@ -89,6 +90,13 @@ uint32_t calculateMasterChecksum(ResourceKey* resources) {
 }
 
 int buildDmg(AbstractFile* abstractIn, AbstractFile* abstractOut, unsigned int BlockSize, const char* sentinel, Compressor *comp, size_t runSectors) {
+	SizedBuf* sentinelBuf = AllocBufCopyString(sentinel);
+	int ret = buildDmgWithSentinelBuf(abstractIn, abstractOut, BlockSize, sentinelBuf, comp, runSectors);
+	free(sentinelBuf);
+	return ret;
+}
+
+int buildDmgWithSentinelBuf(AbstractFile* abstractIn, AbstractFile* abstractOut, unsigned int BlockSize, const SizedBuf* sentinel, Compressor *comp, size_t runSectors) {
 	io_func* io;
 	Volume* volume;
 
@@ -151,7 +159,7 @@ int buildDmg(AbstractFile* abstractIn, AbstractFile* abstractOut, unsigned int B
 
 	AbstractAttribution* attribution = NULL;
 	if (sentinel) {
-		attribution = createAbstractAttributionPreservingSentinel(sentinel);
+		attribution = createAbstractAttributionPreservingSentinelBuf(sentinel);
 	}
 
 	if (attribution) {

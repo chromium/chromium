@@ -47,7 +47,7 @@ void usage(const char *name) {
 	printf("\t--compression, -c   compressor name (%s)\n", compressionNames());
 	printf("\t--level, -l         compression level\n");
 	printf("\t--run-sectors, -r   run size (in sectors)\n");
-	printf("\t--data-format, -d   encoding format for attribution or sentinel data (attribute command only)\n");
+	printf("\t--data-format, -d   encoding format for attribution or sentinel data (attribute and build commands only)\n");
 	printf("\t                      supported formats: %s\n", dataFormats);
 	exit(2);
 }
@@ -128,11 +128,14 @@ int main(int argc, char* argv[]) {
 		}
 		extractDmg(in, out, partNum);
 	} else if(strcmp(cmd, "build") == 0) {
-		char *anchor = NULL;
+		SizedBuf *anchor = NULL;
 		if (optind < argc) {
-			anchor = argv[optind++];
+			anchor = data_param_parser(argv[optind++]);
 		}
-		buildDmg(in, out, SECTOR_SIZE, anchor, &comp, runSectors);
+		buildDmgWithSentinelBuf(in, out, SECTOR_SIZE, anchor, &comp, runSectors);
+		if (anchor) {
+			free(anchor);
+		}
 	} else if(strcmp(cmd, "build2048") == 0) {
 		buildDmg(in, out, 2048, NULL, &comp, runSectors);
 	} else if(strcmp(cmd, "res") == 0) {

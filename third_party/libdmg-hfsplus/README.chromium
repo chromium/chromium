@@ -102,3 +102,10 @@ Local modifications:
       positional parameters. Default is the `literal` parser, matching existing
       behavior.
     * Implements only the `literal` parser.
+  * patches/2026-02-09-dmg-build-data-format.patch
+    * Extends `--data-format` flag to `dmg build` when looking for a sentinel.
+    * Extends `SizedBuf` plumbing into the `dmg build` logic by converting
+      `buildDmg` to `buildDmgWithSentinelBuf` and rewriting `buildDmg` to call
+      it (preserving `buildDmg`'s API). This converges on SizedBuf entry points
+      already written for the prior `dmg attribute` patch.
+    * Consequently, supports NUL bytes in the sentinel for `dmg build`.
