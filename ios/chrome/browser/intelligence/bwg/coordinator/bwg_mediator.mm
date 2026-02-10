@@ -161,20 +161,20 @@
   // Configure the callback to be executed once the page context is ready.
   __weak __typeof(self) weakSelf = self;
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
-  base::OnceCallback<void(PageContextWrapperCallbackResponse)>
+  base::RepeatingCallback<void(PageContextWrapperCallbackResponse)>
       page_context_completion_callback;
   if (IsGeminiImmediateOverlayEnabled()) {
     // Present the overlay immediately without page context.
     [self openPendingBWGOverlay];
 
     page_context_completion_callback =
-        base::BindOnce(^void(PageContextWrapperCallbackResponse response) {
+        base::BindRepeating(^void(PageContextWrapperCallbackResponse response) {
           [weakSelf updateBWGOverlayForWebState:activeWebState
                      pageContextWrapperResponse:std::move(response)];
         });
   } else {
     page_context_completion_callback =
-        base::BindOnce(^void(PageContextWrapperCallbackResponse response) {
+        base::BindRepeating(^void(PageContextWrapperCallbackResponse response) {
           [weakSelf openBWGOverlayForPage:std::move(response)];
         });
   }
@@ -184,8 +184,8 @@
     return;
   }
 
-  BWGTabHelper->GeneratePageContext(std::move(page_context_completion_callback),
-                                    /*full_page_context=*/true);
+  BWGTabHelper->SetupPageContextGeneration(
+      std::move(page_context_completion_callback));
 }
 
 // Opens the BWG overlay with a given PageContextWrapperCallbackResponse.

@@ -158,39 +158,35 @@ bool BwgTabHelper::HasObserver(GeminiTabHelperObserver* observer) {
   return observers_.HasObserver(observer);
 }
 
-void BwgTabHelper::GeneratePageContext(
-    base::OnceCallback<void(PageContextWrapperCallbackResponse)> callback,
-    bool full_page_context) {
-  // Cancel any ongoing page context operation.
-  if (page_context_wrapper_) {
-    page_context_wrapper_ = nil;
-  }
-
-  // Create a new wrapper.
-  page_context_wrapper_ =
-      [[PageContextWrapper alloc] initWithWebState:web_state_
-                                completionCallback:std::move(callback)];
-
-  // Configure it to fetch full context.
-  [page_context_wrapper_ setShouldGetAnnotatedPageContent:full_page_context];
-  [page_context_wrapper_ setShouldGetSnapshot:full_page_context];
+void BwgTabHelper::SetupPageContextGeneration(
+    base::RepeatingCallback<void(PageContextWrapperCallbackResponse)>
+        callback) {
+  page_context_wrapper_response_ready_callback_ = std::move(callback);
 
   // If the page is still loading, wait for it to finish before extracting the
   // page context.
   bool should_update_context_after_page_load =
-      full_page_context && IsGeminiImmediateOverlayEnabled() &&
-      web_state_->IsLoading();
+      IsGeminiImmediateOverlayEnabled() && web_state_->IsLoading();
   if (should_update_context_after_page_load) {
     // TODO(crbug.com/466107255): Move waiting for page loading responsibility
     // to GeminiBrowserAgent.
-    base::OnceCallback<void()> pageContextPopulateCallback =
-        base::BindOnce(&BwgTabHelper::PopulatePageContextFields,
-                       weak_ptr_factory_.GetWeakPtr());
+    base::RepeatingCallback<void()> pageContextPopulateCallback =
+        base::BindRepeating(&BwgTabHelper::PopulatePageContextFields,
+                            weak_ptr_factory_.GetWeakPtr());
     SetPageLoadedCallback(std::move(pageContextPopulateCallback));
     return;
   }
 
   PopulatePageContextFields();
+}
+
+void BwgTabHelper::ForcePageContextGeneration() {
+  if (page_loaded_callback_) {
+    // Override the wait for PageLoaded.
+    // Run the callback but do not reset it, so it can run again when the page
+    // actually finishes loading (to get the full context).
+    page_loaded_callback_.Run();
+  }
 }
 
 void BwgTabHelper::ExecuteZeroStateSuggestions(
@@ -260,7 +256,7 @@ void BwgTabHelper::SetPreventContextualPanelEntryPoint(bool shouldPrevent) {
   prevent_contextual_panel_entry_point_ = shouldPrevent;
 }
 
-void BwgTabHelper::SetPageLoadedCallback(base::OnceClosure callback) {
+void BwgTabHelper::SetPageLoadedCallback(base::RepeatingClosure callback) {
   page_loaded_callback_ = std::move(callback);
 }
 
@@ -532,7 +528,8 @@ void BwgTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
   if (page_loaded_callback_) {
-    std::move(page_loaded_callback_).Run();
+    page_loaded_callback_.Run();
+    page_loaded_callback_.Reset();
   }
 }
 
@@ -583,9 +580,22 @@ void BwgTabHelper::WebStateDestroyed(web::WebState* web_state) {
 #pragma mark - Private
 
 void BwgTabHelper::PopulatePageContextFields() {
+  // Cancel any ongoing page context operation.
   if (page_context_wrapper_) {
-    [page_context_wrapper_ populatePageContextFieldsAsync];
+    page_context_wrapper_ = nil;
   }
+
+  // Create a new wrapper.
+  page_context_wrapper_ = [[PageContextWrapper alloc]
+        initWithWebState:web_state_
+      completionCallback:page_context_wrapper_response_ready_callback_];
+
+  // Configure it to fetch full context.
+  [page_context_wrapper_ setShouldGetAnnotatedPageContent:YES];
+  [page_context_wrapper_ setShouldGetSnapshot:YES];
+
+  // Start populating the page context fields.
+  [page_context_wrapper_ populatePageContextFieldsAsync];
 }
 
 void BwgTabHelper::ClearZeroStateSuggestions() {

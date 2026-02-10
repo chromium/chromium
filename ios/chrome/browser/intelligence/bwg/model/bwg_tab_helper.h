@@ -34,11 +34,16 @@ class BwgTabHelper : public web::WebStateObserver,
 
   ~BwgTabHelper() override;
 
-  // Generate page Context (including snapshot and APC) and invokes the callback
-  // with the result.
-  void GeneratePageContext(
-      base::OnceCallback<void(PageContextWrapperCallbackResponse)> callback,
-      bool full_page_context = true);
+  // Set up generation of page Context and the callback to be run when the page
+  // context is ready.
+  void SetupPageContextGeneration(
+      base::RepeatingCallback<void(PageContextWrapperCallbackResponse)>
+          callback);
+
+  // Forces the generation of page context immediately, bypassing any wait for
+  // page load completion. Used when the page load timeout is exceeded.
+  // This is no op if page has already finished loading.
+  void ForcePageContextGeneration();
 
   // Executes the zero-state suggestions flow.
   void ExecuteZeroStateSuggestions(
@@ -112,7 +117,7 @@ class BwgTabHelper : public web::WebStateObserver,
   void SetPreventContextualPanelEntryPoint(bool should_prevent);
 
   // Sets a callback to be run when the page has finished loading.
-  void SetPageLoadedCallback(base::OnceClosure callback);
+  void SetPageLoadedCallback(base::RepeatingClosure callback);
 
   // Getter `contextual_cue_label_`.
   NSString* GetContextualCueLabel();
@@ -265,7 +270,7 @@ class BwgTabHelper : public web::WebStateObserver,
   std::unique_ptr<ZeroStateSuggestions> zero_state_suggestions_;
 
   // Callback to be run when the page has finished loading.
-  base::OnceClosure page_loaded_callback_;
+  base::RepeatingClosure page_loaded_callback_;
 
   // Contextual cue label generated for Gemini contextual cue metadata.
   NSString* contextual_cue_label_;
@@ -277,6 +282,10 @@ class BwgTabHelper : public web::WebStateObserver,
   GURL current_url_;
   std::u16string current_title_;
   __strong UIImage* current_favicon_;
+
+  // The callback to be run when the page context is ready.
+  base::RepeatingCallback<void(PageContextWrapperCallbackResponse)>
+      page_context_wrapper_response_ready_callback_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<BwgTabHelper> weak_ptr_factory_{this};

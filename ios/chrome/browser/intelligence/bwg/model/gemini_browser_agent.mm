@@ -93,6 +93,11 @@ const CGFloat kFloatyHiddenOpacity = 0.0;
 // presentation.
 const double kViewTransitionTime = 0.8;
 
+// The maximum time to wait for full page load before timing out.
+// Timeout will cause page context to be generated without waiting for full page
+// load.
+const base::TimeDelta kFullPageContextTimeout = base::Seconds(3);
+
 }  // namespace
 
 GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
@@ -282,7 +287,7 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
 
   // Configure the callback to be executed once the page context is ready.
   base::WeakPtr<GeminiBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
-  base::OnceCallback<void(PageContextWrapperCallbackResponse)>
+  base::RepeatingCallback<void(PageContextWrapperCallbackResponse)>
       page_context_completion_callback;
 
   if (IsGeminiImmediateOverlayEnabled()) {
@@ -290,10 +295,12 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
     PresentFloatyWithPendingContext(base_view_controller, entry_point,
                                     image_attachment);
 
-    page_context_completion_callback = base::BindOnce(
+    page_context_completion_callback = base::BindRepeating(
         [](base::WeakPtr<GeminiBrowserAgent> weak_ptr,
            PageContextWrapperCallbackResponse response) {
           if (weak_ptr) {
+            // Cancel the timeout timer since the page context is ready.
+            weak_ptr->page_context_timeout_timer_.Stop();
             weak_ptr->UpdateFloatyPageContext(std::move(response));
           }
         },
@@ -302,16 +309,23 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
     base::UmaHistogramLongTimes(first_run_shown ? kStartupTimeWithFREHistogram
                                                 : kStartupTimeNoFREHistogram,
                                 base::TimeTicks::Now() - start_time);
+
+    // Start the timeout timer to force page context generation if page load
+    // takes too long.
+    page_context_timeout_timer_.Start(
+        FROM_HERE, kFullPageContextTimeout,
+        base::BindOnce(
+            &GeminiBrowserAgent::TriggerBestEffortPageContextGeneration,
+            weak_factory_.GetWeakPtr()));
   } else {
-    page_context_completion_callback = base::BindOnce(
+    page_context_completion_callback = base::BindRepeating(
         &GeminiBrowserAgent::OnPageContextReady, weak_factory_.GetWeakPtr(),
         base_view_controller, image_attachment, start_time, first_run_shown,
         entry_point);
   }
 
-  gemini_tab_helper->GeneratePageContext(
-      std::move(page_context_completion_callback),
-      /*full_page_context=*/true);
+  gemini_tab_helper->SetupPageContextGeneration(
+      std::move(page_context_completion_callback));
 }
 
 void GeminiBrowserAgent::PresentFloatyWithPageContext(
@@ -399,10 +413,9 @@ void GeminiBrowserAgent::OnGeminiViewStateExpanded() {
 
   if (tab_helper) {
     tab_helper->SetBwgUiShowing(true);
-    tab_helper->GeneratePageContext(
-        base::BindOnce(&GeminiBrowserAgent::UpdateFloatyPageContext,
-                       weak_factory_.GetWeakPtr()),
-        /*full_page_context=*/true);
+    tab_helper->SetupPageContextGeneration(
+        base::BindRepeating(&GeminiBrowserAgent::UpdateFloatyPageContext,
+                            weak_factory_.GetWeakPtr()));
   }
   // Show page attachment UI chip every time the floaty is expanded.
   ios::provider::RequestUIChange(
@@ -807,6 +820,9 @@ void GeminiBrowserAgent::OnPageContextReady(
     bool first_run_shown,
     gemini::EntryPoint entry_point,
     PageContextWrapperCallbackResponse response) {
+  // Cancel the timeout timer since the page context is ready.
+  page_context_timeout_timer_.Stop();
+
   if (response.has_value()) {
     PresentFloatyWithState(
         base_view_controller, std::move(response.value()),
@@ -823,6 +839,16 @@ void GeminiBrowserAgent::OnPageContextReady(
   base::UmaHistogramLongTimes(first_run_shown ? kStartupTimeWithFREHistogram
                                               : kStartupTimeNoFREHistogram,
                               base::TimeTicks::Now() - start_time);
+}
+
+void GeminiBrowserAgent::TriggerBestEffortPageContextGeneration() {
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  BwgTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
+  if (!tab_helper || !active_web_state || !active_web_state->IsLoading()) {
+    return;
+  }
+  tab_helper->ForcePageContextGeneration();
 }
 
 void GeminiBrowserAgent::SetSessionCommandHandlers() {

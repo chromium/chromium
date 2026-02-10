@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 
 #import "base/run_loop.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
@@ -49,7 +50,8 @@
 class GeminiBrowserAgentTest : public PlatformTest {
  protected:
   GeminiBrowserAgentTest()
-      : web_client_(std::make_unique<web::FakeWebClient>()) {
+      : web_client_(std::make_unique<web::FakeWebClient>()),
+        task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     feature_list_.InitWithFeatures({kPageContextExtractorRefactored,
                                     kGeminiRefactoredFRE, kGeminiCopresence},
                                    {});
@@ -357,6 +359,74 @@ TEST_F(GeminiBrowserAgentTest, TestOnGeminiViewStateExpanded) {
       base::test::RunUntil([delegate_called]() { return *delegate_called; }));
 
   [mock_delegate verify];
+}
+
+TEST_F(GeminiBrowserAgentTest, TestPageContextGenerationTimeout) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kGeminiImmediateOverlay);
+  // Simulate FRE completion.
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+
+  UIViewController* base_view_controller = [[UIViewController alloc] init];
+  web_state_->SetCurrentURL(GURL("https://example.com"));
+  web_state_->SetLoading(true);
+
+  // Add a fake JS result for page context extraction.
+  base::DictValue result;
+  result.Set("currentNodeInnerText", "Example Text");
+  fake_main_frame_->AddJsResultForFunctionCall(
+      new base::Value(std::move(result)),
+      "pageContextExtractor.extractPageContext");
+
+  // Create a protocol mock to intercept the delegate call.
+  id mock_delegate = OCMProtocolMock(@protocol(SnapshotGeneratorDelegate));
+  SnapshotTabHelper::FromWebState(web_state_)->SetDelegate(mock_delegate);
+  // Stub the canTakeSnapshot method to return YES.
+  OCMStub([mock_delegate canTakeSnapshotWithWebStateInfo:[OCMArg any]])
+      .andReturn(YES);
+
+  gemini_browser_agent_->StartGeminiFlow(base_view_controller, nil,
+                                         gemini::EntryPoint::Promo);
+
+  // At this point, the page is loading and we are waiting for context.
+  // The timer should be running. Verify that JS has NOT been called yet.
+  EXPECT_EQ(0ul, fake_main_frame_->GetJavaScriptCallHistory().size());
+
+  // Fast forward by the timeout duration (3 seconds) + epsilon.
+  task_environment_.FastForwardBy(base::Seconds(3) + base::Milliseconds(100));
+
+  // Verify that the page context extraction was forced (JS called).
+  // We check if "extractPageContext" was called.
+  const auto& call_history = fake_main_frame_->GetJavaScriptCallHistory();
+  ASSERT_GT(call_history.size(), 0ul);
+  bool found_context_extraction = false;
+  for (const auto& call : call_history) {
+    if (base::UTF16ToUTF8(call).find("extractPageContext") !=
+        std::string::npos) {
+      found_context_extraction = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_context_extraction);
+  fake_main_frame_->ClearJavaScriptCallHistory();
+
+  // Now simulate the page finishing loading.
+  web_state_->SetLoading(false);
+  web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  // Verify that the page context extraction was triggered AGAIN (JS called).
+  const auto& new_call_history = fake_main_frame_->GetJavaScriptCallHistory();
+  ASSERT_GT(new_call_history.size(), 0ul);
+  bool found_context_extraction_again = false;
+  for (const auto& call : new_call_history) {
+    if (base::UTF16ToUTF8(call).find("extractPageContext") !=
+        std::string::npos) {
+      found_context_extraction_again = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_context_extraction_again);
+  task_environment_.RunUntilIdle();  // IN-TEST
 }
 
 // Tests hiding the floaty.
