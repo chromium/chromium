@@ -837,7 +837,6 @@ CanvasResourceProviderSharedImage::GetBackingClientSharedImageForExternalWrite(
 
   const CanvasResource* const original_resource = resource_.get();
   auto access = WillDrawInternal();
-  EndWriteAccess();
 
   if (was_copy_performed != nullptr) {
     *was_copy_performed = resource_.get() != original_resource;
