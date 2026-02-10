@@ -16,6 +16,7 @@ import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/con
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -315,6 +316,14 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         this.hideEntrypointButton;
   }
 
+  protected shouldShowDescription_(): boolean {
+    return this.showContextMenuDescription_ && !this.shouldShowRecentTabChip_ &&
+        !this.shouldShowLensSearchChip_;
+  }
+
+  // TODO(b/481755889): Move property declarations above methods and remove
+  // getters.
+  private eventTracker_: EventTracker = new EventTracker();
   private maxFileCount_: number =
       loadTimeData.getInteger('composeboxFileMaxCount');
   private maxFileSize_: number =
@@ -324,6 +333,20 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   private composeboxSource_: string =
       loadTimeData.getString('composeboxSource');
   private automaticActiveTabChipToken_: UnguessableToken|null = null;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.eventTracker_.add(
+        window.matchMedia('(width <= 264px)'), 'change',
+        (e: MediaQueryListEvent) => {
+          this.showContextMenuDescription_ = !e.matches;
+        });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker_.removeAll();
+  }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

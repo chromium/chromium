@@ -10,8 +10,6 @@ import {ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js'
 import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
 
 export function getHtml(this: ContextualEntrypointAndCarouselElement) {
-  const showDescription =
-      this.showContextMenuDescription_ && !this.shouldShowRecentTabChip_;
   const getActiveToolChip = () => {
     switch (this.activeTool_) {
       case ComposeboxToolMode.kDeepSearch:
@@ -102,7 +100,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             .fileNum="${this.files_.size}"
             .searchboxLayoutMode="${this.searchboxLayoutMode}"
             .inputState="${this.inputState}"
-            ?show-context-menu-description="${showDescription}"
+            ?show-context-menu-description="${this.shouldShowDescription_()}"
             glif-animation-state="${this.contextMenuGlifAnimationState}">
         </cr-composebox-contextual-entrypoint-button>
         ` :
@@ -127,7 +125,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             .fileNum="${this.files_.size}"
             .searchboxLayoutMode="${this.searchboxLayoutMode}"
             ?upload-button-disabled="${this.uploadButtonDisabled_}"
-            ?show-context-menu-description="${showDescription}"
+            ?show-context-menu-description="${this.shouldShowDescription_()}"
             glif-animation-state="${this.contextMenuGlifAnimationState}">
         </cr-composebox-context-menu-entrypoint>`}
         ${
