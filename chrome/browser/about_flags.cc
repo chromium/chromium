@@ -8087,12 +8087,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityManifestV3GoogleTtsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(::features::kAccessibilityManifestV3GoogleTts)},
 
-    {"enable-accessibility-manifest-v3-switch-access",
-     flag_descriptions::kAccessibilityManifestV3SwitchAccessName,
-     flag_descriptions::kAccessibilityManifestV3SwitchAccessDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilityManifestV3SwitchAccess)},
-
     {"enable-accessibility-mousekeys",
      flag_descriptions::kAccessibilityMouseKeysName,
      flag_descriptions::kAccessibilityMouseKeysDescription, kOsCrOS,

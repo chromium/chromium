@@ -313,13 +313,6 @@ bool IsAccessibilityManifestV3EnabledForGoogleTts() {
       ::features::kAccessibilityManifestV3GoogleTts);
 }
 
-BASE_FEATURE(kAccessibilityManifestV3SwitchAccess,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityManifestV3EnabledForSwitchAccess() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityManifestV3SwitchAccess);
-}
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)

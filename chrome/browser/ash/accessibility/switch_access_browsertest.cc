@@ -29,12 +29,6 @@ class SwitchAccessTest : public AccessibilityFeatureBrowserTest {
   SwitchAccessTest(const SwitchAccessTest&) = delete;
   SwitchAccessTest& operator=(const SwitchAccessTest&) = delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{::features::kAccessibilityManifestV3SwitchAccess, true}});
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-  }
-
   void SetUpOnMainThread() override {
     switch_access_test_utils_ = std::make_unique<SwitchAccessTestUtils>(
         AccessibilityManager::Get()->profile());
@@ -93,7 +87,6 @@ class SwitchAccessTest : public AccessibilityFeatureBrowserTest {
  private:
   std::unique_ptr<SwitchAccessTestUtils> switch_access_test_utils_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(crbug.com/431933537): Disabled on MSAN due to a renderer crash. The

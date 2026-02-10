@@ -175,8 +175,6 @@ class DictationTestBase : public AccessibilityFeatureBrowserTest,
                                                   editable_type());
     std::vector<base::test::FeatureRef> enabled_features =
         utils_->GetEnabledFeatures();
-    enabled_features.push_back(
-        ::features::kAccessibilityManifestV3SwitchAccess);
     scoped_feature_list_.InitWithFeatures(enabled_features,
                                           utils_->GetDisabledFeatures());
     AccessibilityFeatureBrowserTest::SetUpCommandLine(command_line);
