@@ -174,6 +174,7 @@ class ContextualTasksPageHandlerTest : public BrowserWithTestWindowTest {
     page_handler_ = std::make_unique<ContextualTasksPageHandler>(
         mojo::PendingReceiver<mojom::PageHandler>(), contextual_tasks_ui_.get(),
         mock_contextual_tasks_ui_service_, mock_contextual_tasks_service_);
+    page_handler_->set_skip_feedback_ui_for_testing(true);
   }
 
   void TearDown() override {

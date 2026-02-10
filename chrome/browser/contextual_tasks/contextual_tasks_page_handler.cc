@@ -12,11 +12,16 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/ai_mode_context_library_converter.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/feedback/public/feedback_source.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -27,11 +32,13 @@
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/url_util.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -39,7 +46,6 @@
 #endif
 
 namespace {
-
 constexpr char kMyActivityUrl[] = "https://myactivity.google.com/myactivity";
 
 void OpenUrlWithDisposition(Profile* profile,
@@ -182,9 +188,25 @@ void ContextualTasksPageHandler::OpenMyActivityUi() {
 }
 
 void ContextualTasksPageHandler::OpenHelpUi() {
-  OpenUrlWithDisposition(web_ui_controller_->GetProfile(),
-                         GURL(contextual_tasks::GetContextualTasksHelpUrl()),
-                         WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  if (skip_feedback_ui_for_testing_) {
+    return;
+  }
+  GURL page_url =
+      web_ui_controller_->GetWebUIWebContents()->GetLastCommittedURL();
+  if (auto* browser = web_ui_controller_->GetBrowser()) {
+    if (auto* tab_list = TabListInterface::From(browser)) {
+      if (auto* active_tab = tab_list->GetActiveTab()) {
+        page_url = active_tab->GetContents()->GetLastCommittedURL();
+      }
+    }
+  }
+  chrome::ShowFeedbackPage(page_url, web_ui_controller_->GetProfile(),
+                           feedback::kFeedbackSourceAI,
+                           /*description_template=*/std::string(),
+                           /*description_placeholder_text=*/
+                           l10n_util::GetStringUTF8(IDS_LENS_SEND_FEEDBACK),
+                           /*category_tag=*/"cobrowse",
+                           /*extra_diagnostics=*/std::string());
 }
 
 void ContextualTasksPageHandler::OpenOnboardingHelpUi() {

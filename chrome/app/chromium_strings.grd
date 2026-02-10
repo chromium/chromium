@@ -1836,6 +1836,15 @@ Chromium is unable to recover your settings.
       </message>
 
       <!-- Lens Overlay Strings -->
+      <message name="IDS_LENS_SEND_FEEDBACK"
+        desc="Text that is shown in the more options menu to open the feedback dialog.">
+        Send feedback
+      </message>
+      <message name="IDS_LENS_SEND_FEEDBACK_PLACEHOLDER"
+        desc="Placeholder text that is shown in the feedback dialog to send feedback for the Lens Overlay.">
+        Send feedback for search with Lens
+      </message>
+
       <if expr="not is_android">
         <!-- Side Panel Pinnable Entrypoint Strings -->
         <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_IPH"
@@ -2002,14 +2011,6 @@ Chromium is unable to recover your settings.
         <message name="IDS_LENS_OVERLAY_DETECT_LANGUAGE_LABEL"
           desc="Label in the language picker menu denoting that the following language is the one that has been detected.">
           Detect language
-        </message>
-        <message name="IDS_LENS_SEND_FEEDBACK"
-          desc="Text that is shown in the more options menu to open the feedback dialog.">
-          Send feedback
-        </message>
-        <message name="IDS_LENS_SEND_FEEDBACK_PLACEHOLDER"
-          desc="Placeholder text that is shown in the feedback dialog to send feedback for the Lens Overlay.">
-          Send feedback for search with Lens
         </message>
         <message name="IDS_LENS_OVERLAY_RENDERER_LABEL"
           desc="The label for the renderer process housing the Lens overlay.">
