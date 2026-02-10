@@ -11,6 +11,15 @@
   "-c",
   "import os; import sys; script = os.path.join(os.environ['JJ_WORKSPACE_ROOT'], sys.argv[1]); os.execv(script, [script, *sys.argv[2:]])"
 ]
+
+# Note that this will still output a URL even if it has never been uploaded.
+"gerrit-url" = [
+  "log",
+  "--no-graph",
+  "-T",
+  '"https://chromium-review.googlesource.com/q/" ++ if(trailers.contains_key("Change-Id"), trailers.filter(|t| t.key() == "Change-Id").map(|t| t.value()), "I" ++ change_id.normal_hex() ++ "6a6a6964") ++ "\n"'
+]
+
 # cr-* aliases are the equivalent of "porcelain" commands and should not
 # be overridden.
 # All cr-foo commands will have a corresponding foo command that you can

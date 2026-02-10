@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -eu
 
 # Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
@@ -9,8 +9,11 @@ cd "$(dirname ${BASH_SOURCE[0]})/../.."
 
 if [[ ! -d .jj ]]; then
   jj git init --colocate .
-  ln -sf "$(realpath tools/jj/config.toml)" .jj/repo/config.toml
 fi
+
+CONFIG="$(jj config path --repo)"
+rm "$CONFIG"
+ln -sf "$(realpath tools/jj/config.toml)" "$CONFIG"
 
 # Ensure that jj snapshots your current commit so it doesn't get lost with git
 # switch.
@@ -23,4 +26,3 @@ jj abandon
 git add -A
 
 echo "Reminder: If you haven't already, we recommend joining https://groups.google.com/g/chromium-jj-users"
-
