@@ -187,6 +187,7 @@
 #import "ios/chrome/browser/translate/model/translate_ranker_factory.h"
 #import "ios/chrome/browser/trusted_vault/model/ios_trusted_vault_service_factory.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
+#import "ios/chrome/browser/unified_consent/model/url_keyed_data_collection_consent_helper_factory_ios.h"
 #import "ios/chrome/browser/unit_conversion/model/unit_conversion_service_factory.h"
 #import "ios/chrome/browser/variations/model/client/variations_client_service_factory.h"
 #import "ios/chrome/browser/visited_url_ranking/model/visited_url_ranking_service_factory.h"
@@ -393,6 +394,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   TrustedVaultClientBackendFactory::GetInstance();
   UnifiedConsentServiceFactory::GetInstance();
   UnitConversionServiceFactory::GetInstance();
+  UrlKeyedDataCollectionConsentHelperFactoryIOS::GetInstance();
   UrlLanguageHistogramFactory::GetInstance();
   UserUploadedImageManagerFactory::GetInstance();
   VariationsClientServiceFactory::GetInstance();

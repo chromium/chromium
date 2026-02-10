@@ -6,6 +6,10 @@ source_set("model") {
   sources = [
     "unified_consent_service_factory.h",
     "unified_consent_service_factory.mm",
+    "url_keyed_data_collection_consent_helper_factory_ios.h",
+    "url_keyed_data_collection_consent_helper_factory_ios.mm",
+    "url_keyed_data_collection_consent_helper_ios.h",
+    "url_keyed_data_collection_consent_helper_ios.mm",
   ]
   deps = [
     "//components/browser_sync",
