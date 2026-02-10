@@ -56,13 +56,47 @@
     white-space: initial;
   }
 
+  .title-text {
+    font-weight: bold;
+  }
+
+  .title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .title-icon-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .title-icon-container img {
+    height: 18px;
+    width: auto;
+    display: block;
+  }
+
   #validation-error-top {
     color: var(--cr-fallback-color-error);
     margin-bottom: 16px;
   }
 </style>
 <cr-dialog id="dialog" close-text="$i18n{close}">
-  <div slot="title">[[dialogTitle]]</div>
+  <div slot="title" class="title-container">
+    <div class="title-text">[[dialogTitle]]</div>
+
+    <template is="dom-if" if="[[shouldShowWalletBranding_(saveToWalletFromSettingsEnabled_, entityInstance)]]">
+      <if expr="_google_chrome">
+        <div class="title-icon-container">
+          <img src="chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET"
+              alt=""
+              role="presentation">
+        </div>
+      </if>
+    </template>
+  </div>
   <div slot="body">
     <template is="dom-if" if="[[saveToWalletFromSettingsEnabled_]]">
       <div id="validation-error-top" class="cr-form-field-label"
