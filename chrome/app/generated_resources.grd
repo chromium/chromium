@@ -9704,10 +9704,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Pin reading mode
       </message>
       <message name="IDS_READING_MODE_DISABLE_PIN_BUTTON_LABEL" desc="Accessibility label for the button that unpins reading mode from the toolbar.">
-        Pin to toolbar
+        Pin reading mode
       </message>
       <message name="IDS_READING_MODE_ENABLE_PIN_BUTTON_LABEL" desc="Accessibility label for the button that pins reading mode to the toolbar.">
-        Unpin from toolbar
+        Unpin reading mode
       </message>
       <message name="IDS_READING_MODE_COLORS_COMBOBOX_LABEL" desc="Accessibility label for the colors combobox of the reading mode feature.">
         Color theme
