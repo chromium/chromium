@@ -531,6 +531,7 @@ source_set("browser_tests") {
       "glic_tab_restore_helper_browsertest.cc",
       "glic_user_status_browsertest.cc",
       "host/context/glic_active_instance_sharing_manager_browsertest.cc",
+      "host/context/glic_active_pinned_focused_tab_manager_browsertest.cc",
       "host/context/glic_delegating_sharing_manager_browsertest.cc",
       "host/context/glic_pinned_tab_manager_browsertest.cc",
       "host/context/glic_tab_data_browsertest.cc",
