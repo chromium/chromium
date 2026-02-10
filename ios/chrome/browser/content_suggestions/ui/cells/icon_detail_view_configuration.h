@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_ICON_DETAIL_VIEW_CONFIGURATION_H_
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_ICON_DETAIL_VIEW_CONFIGURATION_H_
 
-#import <UIKit/UIKit.h>
+#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module.h"
 
 // The possible layout types for a given `IconDetailView`. These values
 // determine how the content within the `IconDetailView` is arranged.
@@ -46,9 +46,10 @@ struct BadgeShapeConfig {
 
 @class IconViewConfiguration;
 enum class IconViewSourceType;
+@class NewTabPageColorPalette;
 
 // Configuration for the `IconDetailView`.
-@interface IconDetailViewConfiguration : NSObject
+@interface IconDetailViewConfiguration : MagicStackModule
 
 // Content properties.
 // The title to be displayed in the view.
@@ -80,8 +81,6 @@ enum class IconViewSourceType;
 @property(nonatomic, copy) NSArray<UIColor*>* symbolColorPalette;
 // The background color of the symbol displayed in the view.
 @property(nonatomic, strong) UIColor* symbolBackgroundColor;
-// The background color of the icon container in the view.
-@property(nonatomic, strong) UIColor* iconContainerBackgroundColor;
 // Indicates whether the symbol is a default symbol.
 @property(nonatomic, assign) BOOL usesDefaultSymbol;
 // The width of the icon.
@@ -99,17 +98,7 @@ enum class IconViewSourceType;
 // Indicates whether the Badge's Icon is a default symbol.
 @property(nonatomic, assign) BOOL badgeUsesDefaultSymbol;
 
-// Convenience initializer to create a configuration with `titleText` and
-// `descriptionText`.
-+ (instancetype)configurationWithTitleText:(NSString*)titleText
-                           descriptionText:(NSString*)descriptionText;
-
-// Convenience initializer to create a configuration with `titleText`,
-// `descriptionText`, `layoutType`, and `badgeShape`.
-+ (instancetype)configurationWithTitleText:(NSString*)titleText
-                           descriptionText:(NSString*)descriptionText
-                                layoutType:(IconDetailViewLayoutType)layoutType
-                                badgeShape:(IconDetailViewBadgeShape)badgeShape;
+@property(nonatomic, strong) NewTabPageColorPalette* ntpBackgroundColorPalette;
 
 // Returns the configuration for an `IconView` associated with this
 // `IconDetailView`.

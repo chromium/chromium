@@ -5,12 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_DEFAULT_BROWSER_UI_DEFAULT_BROWSER_CONFIG_H_
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_DEFAULT_BROWSER_UI_DEFAULT_BROWSER_CONFIG_H_
 
+#import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view.h"
+#import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view_configuration.h"
+
 @protocol DefaultBrowserCommands;
 
-#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module.h"
-
 // Item containing the configurations for the Default Browser view.
-@interface DefaultBrowserConfig : MagicStackModule
+@interface DefaultBrowserConfig
+    : IconDetailViewConfiguration <IconDetailViewTapDelegate>
 
 // Command handler for user actions.
 @property(nonatomic, weak) id<DefaultBrowserCommands> defaultBrowserHandler;

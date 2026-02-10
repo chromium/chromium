@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_view.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_view_configuration.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_updating.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -237,6 +238,9 @@ UIView* BadgeIconInContainer(UIImageView* icon,
 
 }  // namespace
 
+@interface IconDetailView () <NewTabPageColorUpdating>
+@end
+
 @implementation IconDetailView {
   // Configuration for this view.
   IconDetailViewConfiguration* _configuration;
@@ -257,6 +261,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
       [self registerForTraitChanges:@[ NewTabPageTrait.class ]
                          withAction:@selector(applyBackgroundColors)];
     }
+    [self applyBackgroundColors];
   }
   return self;
 }
@@ -276,14 +281,17 @@ UIView* BadgeIconInContainer(UIImageView* icon,
                                     _configuration.descriptionText];
 }
 
-#pragma mark - Private
+#pragma mark - NewTabPageColorUpdating
 
 - (void)applyBackgroundColors {
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
   _imageContainerView.backgroundColor =
       colorPalette.tertiaryColor ?: [UIColor colorNamed:kGrey100Color];
+  _configuration.ntpBackgroundColorPalette = colorPalette;
 }
+
+#pragma mark - Private
 
 // Creates and configures the subviews for the `IconDetailView`. This method
 // sets up the icon, title, description, and optional chevron, arranging them
@@ -304,9 +312,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
   // chevron.
   NSMutableArray* arrangedSubviews = [[NSMutableArray alloc] init];
 
-  IconView* icon = [[IconView alloc]
-      initWithConfiguration:[_configuration iconViewConfiguration:YES]];
-  UIView* image = icon;
+  UIView* image;
 
   if (_configuration.backgroundImage) {
     UIImageView* backgroundImageView = [[UIImageView alloc] init];
@@ -331,9 +337,6 @@ UIView* BadgeIconInContainer(UIImageView* icon,
     gradientOverlay.layer.zPosition = 1;
 
     [NSLayoutConstraint activateConstraints:@[
-      [image.heightAnchor
-          constraintEqualToConstant:kBackgroundImageWidthHeight],
-      [image.widthAnchor constraintEqualToAnchor:image.heightAnchor],
       [backgroundImageView.heightAnchor
           constraintEqualToConstant:kBackgroundImageWidthHeight],
       [backgroundImageView.widthAnchor
@@ -344,8 +347,11 @@ UIView* BadgeIconInContainer(UIImageView* icon,
           constraintEqualToAnchor:gradientOverlay.heightAnchor],
     ]];
 
-    [image addSubview:backgroundImageView];
     [backgroundImageView addSubview:gradientOverlay];
+    image = backgroundImageView;
+  } else {
+    image = [[IconView alloc]
+        initWithConfiguration:[_configuration iconViewConfiguration:YES]];
   }
 
   image.translatesAutoresizingMaskIntoConstraints = NO;
@@ -450,7 +456,6 @@ UIView* BadgeIconInContainer(UIImageView* icon,
   contentStack.spacing = kContentStackSpacing;
 
   [self addSubview:contentStack];
-
   AddSameConstraints(contentStack, self);
 
   // Set up the tap gesture recognizer.

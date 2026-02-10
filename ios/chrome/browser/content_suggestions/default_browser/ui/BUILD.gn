@@ -7,19 +7,15 @@ source_set("ui") {
     "default_browser_commands.h",
     "default_browser_config.h",
     "default_browser_config.mm",
-    "default_browser_view.h",
-    "default_browser_view.mm",
   ]
   public_deps =
-      [ "//ios/chrome/browser/content_suggestions/magic_stack/ui:public" ]
+      [ "//ios/chrome/browser/content_suggestions/ui/cells:icon_detail_view" ]
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/magic_stack/public:constants",
     "//ios/chrome/browser/content_suggestions/public:constants",
-    "//ios/chrome/browser/content_suggestions/ui/cells:icon_detail_view",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

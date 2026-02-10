@@ -20,9 +20,6 @@
 // Initializes the `TipsModuleView` with `state`.
 - (instancetype)initWithState:(TipsModuleState*)state;
 
-// The object that should handle user events.
-@property(nonatomic, weak) id<TipsModuleAudience> audience;
-
 // The delegate for handling content view events.
 @property(nonatomic, weak) id<MagicStackModuleContentViewDelegate>
     contentViewDelegate;

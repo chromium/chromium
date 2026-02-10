@@ -10,6 +10,9 @@
 @protocol TabResumptionCommands;
 @class TabResumptionItem;
 
+/// TODO(crbug.com/482377120): Consider refactoring to use an `IconDetailView`
+/// as the main content view for this Magic Stack card.
+
 // A view that displays a tab resumption item in the Magic Stack.
 @interface TabResumptionView : UIView
 

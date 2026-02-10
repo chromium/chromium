@@ -6,9 +6,7 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/content_suggestions/app_bundle_promo/ui/app_bundle_promo_config.h"
-#import "ios/chrome/browser/content_suggestions/app_bundle_promo/ui/app_bundle_promo_view.h"
 #import "ios/chrome/browser/content_suggestions/default_browser/ui/default_browser_config.h"
-#import "ios/chrome/browser/content_suggestions/default_browser/ui/default_browser_view.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_stack_view.h"
@@ -204,7 +202,6 @@
   SafetyCheckView* safetyCheckView =
       [[SafetyCheckView alloc] initWithState:state
                          contentViewDelegate:contentViewDelegate];
-  safetyCheckView.audience = state.audience;
   [state.safetyCheckConsumerSource addConsumer:safetyCheckView];
   return safetyCheckView;
 }
@@ -246,27 +243,23 @@
          contentViewDelegate:
              (id<MagicStackModuleContentViewDelegate>)contentViewDelegate {
   TipsModuleView* view = [[TipsModuleView alloc] initWithState:state];
-
-  view.audience = state.audience;
   view.contentViewDelegate = contentViewDelegate;
   [state.consumerSource addConsumer:view];
 
   return view;
 }
 
-// Returns an `AppBundlePromoView` for a given `AppBundlePromoConfig`.
+// Returns a view for a given `AppBundlePromoConfig`.
 - (UIView*)appBundlePromoViewForConfig:(AppBundlePromoConfig*)config {
-  AppBundlePromoView* view = [[AppBundlePromoView alloc] initWithConfig:config];
-  view.audience = config.audience;
-
+  IconDetailView* view = [[IconDetailView alloc] initWithConfiguration:config];
+  view.tapDelegate = config;
   return view;
 }
 
-// Returns a `DefaultBrowserView` for a given `DefaultBrowserConfig`.
+// Returns a view for a given `DefaultBrowserConfig`.
 - (UIView*)defaultBrowserViewForConfig:(DefaultBrowserConfig*)config {
-  DefaultBrowserView* view = [[DefaultBrowserView alloc] initWithConfig:config];
-  view.defaultBrowserHandler = config.defaultBrowserHandler;
-
+  IconDetailView* view = [[IconDetailView alloc] initWithConfiguration:config];
+  view.tapDelegate = config;
   return view;
 }
 

@@ -8,6 +8,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/segmentation_platform/embedder/home_modules/constants.h"
 #import "components/segmentation_platform/public/features.h"
+#import "ios/chrome/browser/content_suggestions/app_bundle_promo/public/app_bundle_promo_constants.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -18,9 +19,6 @@
 #import "ui/base/device_form_factor.h"
 
 namespace {
-
-// Accessibility ID for an `AppBundlePromoView`.
-NSString* const kAppBundlePromoViewID = @"kAppBundlePromoViewID";
 
 // Scrolls to the App Bundle promo card.
 void ScrollToAppBundlePromo() {

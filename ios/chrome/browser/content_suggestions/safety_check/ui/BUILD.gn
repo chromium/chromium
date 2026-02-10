@@ -14,8 +14,7 @@ source_set("ui") {
   ]
   public_deps = [
     "//base",
-    "//ios/chrome/browser/content_suggestions/magic_stack/ui:public",
-    "//ios/chrome/browser/ntp/ui_bundled:theme",
+    "//ios/chrome/browser/content_suggestions/ui/cells:icon_detail_view",
   ]
   deps = [
     ":item_types",
@@ -26,7 +25,7 @@ source_set("ui") {
     "//ios/chrome/browser/content_suggestions/safety_check/model:utils",
     "//ios/chrome/browser/content_suggestions/safety_check/public:constants",
     "//ios/chrome/browser/content_suggestions/ui/cells",
-    "//ios/chrome/browser/content_suggestions/ui/cells:icon_detail_view",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
     "//ios/chrome/browser/safety_check/model:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",

@@ -7,20 +7,19 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module.h"
+#import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view.h"
+#import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view_configuration.h"
 
 @protocol TipsModuleAudience;
 @protocol TipsModuleConsumerSource;
+
 namespace segmentation_platform {
 enum class TipIdentifier;
 }  // namespace segmentation_platform
 
 // Helper class to contain the current Tips module state.
-@interface TipsModuleState : MagicStackModule
-
-// Initializes a `TipsModuleState` with `identifier`.
-- (instancetype)initWithTipIdentifier:
-    (segmentation_platform::TipIdentifier)identifier;
+@interface TipsModuleState
+    : IconDetailViewConfiguration <IconDetailViewTapDelegate>
 
 // Unique identifier for the given tip.
 @property(nonatomic, readonly) segmentation_platform::TipIdentifier identifier;
@@ -34,6 +33,10 @@ enum class TipIdentifier;
 
 // Tips model.
 @property(nonatomic, strong) id<TipsModuleConsumerSource> consumerSource;
+
+// Initializes a `TipsModuleState` with `identifier`.
+- (instancetype)initWithTipIdentifier:
+    (segmentation_platform::TipIdentifier)identifier;
 
 @end
 
