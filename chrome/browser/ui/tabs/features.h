@@ -14,7 +14,13 @@ namespace tabs {
 
 BASE_DECLARE_FEATURE(kTabGroupHome);
 
+// This feature will be used for the LE rollout of Vertical Tabs. It will have
+// an earlier min version than kVerticalTabsLaunch.
 BASE_DECLARE_FEATURE(kVerticalTabs);
+
+// This will be used for the full launch of Vertical Tabs with an updated min
+// version.
+BASE_DECLARE_FEATURE(kVerticalTabsLaunch);
 
 BASE_DECLARE_FEATURE(kVerticalTabsPreviewBadge);
 

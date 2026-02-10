@@ -13,6 +13,8 @@ BASE_FEATURE(kTabGroupHome, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kVerticalTabs, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kVerticalTabsLaunch, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kVerticalTabsPreviewBadge, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kVerticalTabsNewBadge, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -31,7 +33,9 @@ const base::FeatureParam<bool> kProjectsPanelWithThreads{
 BASE_FEATURE(kBackToOpener, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsVerticalTabsFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kVerticalTabs);
+  return base::FeatureList::IsEnabled(kVerticalTabs) ||
+         base::FeatureList::IsEnabled(kVerticalTabsLaunch);
+  ;
 }
 
 bool IsProjectsPanelFeatureEnabled() {
