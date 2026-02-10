@@ -102,6 +102,11 @@ BASE_FEATURE_PARAM(int,
                    &kSeparateDefaultAndPinPrompt,
                    "default_cooldown_days",
                    21);
+BASE_FEATURE_PARAM(int,
+                   kSeparateDefaultAndPinPromptMessageVersion,
+                   &kSeparateDefaultAndPinPrompt,
+                   "message_version",
+                   0);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // Preloads a WebContents with a Top Chrome WebUI on BrowserView initialization,
