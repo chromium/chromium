@@ -23,9 +23,6 @@ class TabStripInternalsUIConfig
  public:
   TabStripInternalsUIConfig()
       : DefaultInternalWebUIConfig(chrome::kChromeUITabStripInternalsHost) {}
-
-  // Overridden implementation of `DefaultInternalWebUIConfig::IsWebUIEnabled`.
-  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 // The Web UI controller for the chrome://tab-strip-internals page.

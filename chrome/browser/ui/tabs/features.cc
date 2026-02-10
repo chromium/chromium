@@ -9,10 +9,6 @@
 
 namespace tabs {
 
-// Enables the debug UI used to visualize the tab strip model.
-// chrome://tab-strip-internals
-BASE_FEATURE(kDebugUITabStrip, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabGroupHome, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kVerticalTabs, base::FEATURE_DISABLED_BY_DEFAULT);

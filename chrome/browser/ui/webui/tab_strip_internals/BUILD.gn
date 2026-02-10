@@ -44,7 +44,6 @@ source_set("impl") {
     "//chrome/browser/resources/tab_strip_internals:resources",
     "//chrome/browser/sessions",
     "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs/alert:tab_alert",
     "//components/sessions:session_id",

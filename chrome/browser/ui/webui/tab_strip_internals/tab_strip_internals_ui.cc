@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_handler.h"
 #include "chrome/grit/tab_strip_internals_resources.h"
 #include "chrome/grit/tab_strip_internals_resources_map.h"
@@ -32,12 +31,6 @@ TabStripInternalsUI::TabStripInternalsUI(content::WebUI* web_ui)
 TabStripInternalsUI::~TabStripInternalsUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(TabStripInternalsUI)
-
-bool TabStripInternalsUIConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  return DefaultInternalWebUIConfig::IsWebUIEnabled(browser_context) &&
-         base::FeatureList::IsEnabled(tabs::kDebugUITabStrip);
-}
 
 void TabStripInternalsUI::BindInterface(
     mojo::PendingReceiver<tab_strip_internals::mojom::PageHandlerFactory>

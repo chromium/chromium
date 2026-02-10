@@ -12,8 +12,6 @@ namespace tabs {
 
 // TODO(crbug.com/346837232): move all flags to this file.
 
-BASE_DECLARE_FEATURE(kDebugUITabStrip);
-
 BASE_DECLARE_FEATURE(kTabGroupHome);
 
 BASE_DECLARE_FEATURE(kVerticalTabs);
