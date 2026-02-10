@@ -1132,12 +1132,7 @@ bool LocalFrameView::HasRunningAnchorTransformAnimation() const {
   for (Frame* child = frame_->Tree().FirstChild(); child;
        child = child->Tree().NextSibling()) {
     const auto* child_view = DynamicTo<LocalFrameView>(child->View());
-    if (!child_view) {
-      // If this is not a local frame (in other words, it's typically a remote
-      // frame), there's no way of answering this. Err on the safe side.
-      return true;
-    }
-    if (child_view->HasRunningAnchorTransformAnimation()) {
+    if (child_view && child_view->HasRunningAnchorTransformAnimation()) {
       return true;
     }
   }
