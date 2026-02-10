@@ -22,6 +22,7 @@ import("//media/media_options.gni")
 import("//net/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//services/device/public/cpp/compute_pressure/buildflags.gni")
+import("//services/network/public/cpp/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
@@ -1970,8 +1971,6 @@ source_set("browser") {
     "renderer_host/overscroll_controller.h",
     "renderer_host/overscroll_controller_delegate.cc",
     "renderer_host/overscroll_controller_delegate.h",
-    "renderer_host/p2p/socket_dispatcher_host.cc",
-    "renderer_host/p2p/socket_dispatcher_host.h",
     "renderer_host/page_delegate.h",
     "renderer_host/page_factory.cc",
     "renderer_host/page_factory.h",
@@ -2659,6 +2658,14 @@ source_set("browser") {
   if (allow_oop_video_decoder) {
     sources += [ "media/oop_video_decoder_factory.cc" ]
     deps += [ "//media/mojo/mojom" ]
+  }
+
+  if (is_p2p_enabled) {
+    sources += [
+      "renderer_host/p2p/socket_dispatcher_host.cc",
+      "renderer_host/p2p/socket_dispatcher_host.h",
+    ]
+    deps += [ "//services/network/public/cpp:cpp_p2p" ]
   }
 
   if (enable_smart_card) {

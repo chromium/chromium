@@ -420,7 +420,10 @@ component("network_service") {
   }
 
   if (is_p2p_enabled) {
-    deps += [ "//third_party/webrtc_overrides:webrtc_component" ]
+    deps += [
+      "//services/network/public/cpp:cpp_p2p",
+      "//third_party/webrtc_overrides:webrtc_component",
+    ]
   }
 
   if (is_android) {

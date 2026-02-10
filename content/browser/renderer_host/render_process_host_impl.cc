@@ -121,7 +121,6 @@
 #include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
 #include "content/browser/renderer_host/indexed_db_client_state_checker_factory.h"
 #include "content/browser/renderer_host/media/media_stream_track_metrics_host.h"
-#include "content/browser/renderer_host/p2p/socket_dispatcher_host.h"
 #include "content/browser/renderer_host/recently_destroyed_hosts.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -191,6 +190,7 @@
 #include "services/device/public/mojom/power_monitor.mojom.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
 #include "services/device/public/mojom/time_zone_monitor.mojom.h"
+#include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
@@ -281,6 +281,10 @@
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
 #include "content/public/common/profiling_utils.h"
 #endif
+
+#if BUILDFLAG(IS_P2P_ENABLED)
+#include "content/browser/renderer_host/p2p/socket_dispatcher_host.h"
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 
 // VLOG additional statements in Fuchsia release builds.
 #if BUILDFLAG(IS_FUCHSIA)
@@ -2133,10 +2137,12 @@ void RenderProcessHostImpl::ResetChannelProxy() {
 
 void RenderProcessHostImpl::CreateMessageFilters() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+#if BUILDFLAG(IS_P2P_ENABLED)
   // TODO(crbug.com/40169214): Move this initialization out of
   // CreateMessageFilters().
   p2p_socket_dispatcher_host_ =
       std::make_unique<P2PSocketDispatcherHost>(GetDeprecatedID());
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 }
 
 void RenderProcessHostImpl::BindCacheStorage(
@@ -2685,6 +2691,7 @@ void RenderProcessHostImpl::BindPushMessaging(
   push_messaging_manager_->AddPushMessagingReceiver(std::move(receiver));
 }
 
+#if BUILDFLAG(IS_P2P_ENABLED)
 void RenderProcessHostImpl::BindP2PSocketManager(
     net::NetworkAnonymizationKey anonymization_key,
     mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver,
@@ -2692,6 +2699,7 @@ void RenderProcessHostImpl::BindP2PSocketManager(
   p2p_socket_dispatcher_host_->BindReceiver(
       *this, std::move(receiver), anonymization_key, render_frame_host_id);
 }
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 
 void RenderProcessHostImpl::CreateMediaLogRecordHost(
     mojo::PendingReceiver<content::mojom::MediaInternalLogRecords> receiver) {
@@ -4169,14 +4177,18 @@ bool RenderProcessHostImpl::IsBlocked() {
 
 void RenderProcessHostImpl::PauseSocketManagerForRenderFrameHost(
     const GlobalRenderFrameHostId& render_frame_host_id) {
+#if BUILDFLAG(IS_P2P_ENABLED)
   p2p_socket_dispatcher_host_->PauseSocketManagerForRenderFrameHost(
       render_frame_host_id);
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 }
 
 void RenderProcessHostImpl::ResumeSocketManagerForRenderFrameHost(
     const GlobalRenderFrameHostId& render_frame_host_id) {
+#if BUILDFLAG(IS_P2P_ENABLED)
   p2p_socket_dispatcher_host_->ResumeSocketManagerForRenderFrameHost(
       render_frame_host_id);
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 }
 
 base::CallbackListSubscription
@@ -4521,11 +4533,15 @@ RenderProcessHostImpl::WebRtcStopRtpDumpCallback
 RenderProcessHostImpl::StartRtpDump(bool incoming,
                                     bool outgoing,
                                     WebRtcRtpPacketCallback packet_callback) {
+#if BUILDFLAG(IS_P2P_ENABLED)
   p2p_socket_dispatcher_host_->StartRtpDump(incoming, outgoing,
                                             std::move(packet_callback));
 
   return base::BindOnce(&P2PSocketDispatcherHost::StopRtpDump,
                         p2p_socket_dispatcher_host_->GetWeakPtr());
+#else
+  return base::DoNothing();
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 }
 
 IPC::ChannelProxy* RenderProcessHostImpl::GetChannel() {

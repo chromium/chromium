@@ -721,17 +721,6 @@ component("cpp_base") {
   ]
   defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
 
-  if (is_p2p_enabled) {
-    sources += [
-      "p2p_param_traits.cc",
-      "p2p_param_traits.h",
-      "p2p_socket_type.h",
-    ]
-
-    deps += [ "//services/network/public/mojom:mojom_shared" ]
-    public_deps += [ "//third_party/webrtc_overrides:webrtc_component" ]
-  }
-
   if (is_fuchsia) {
     sources += [ "transferable_directory_fuchsia.cc" ]
   }
@@ -746,6 +735,29 @@ component("cpp_base") {
   # TODO(crbug.com/40915226): Remove the need to ignore this warning.
   if (is_win && is_component_build) {
     ldflags = [ "/IGNORE:4217" ]
+  }
+}
+
+if (is_p2p_enabled) {
+  component("cpp_p2p") {
+    output_name = "network_cpp_p2p"
+
+    sources = [
+      "p2p_param_traits.cc",
+      "p2p_param_traits.h",
+      "p2p_socket_type.h",
+    ]
+
+    defines = [ "IS_NETWORK_CPP_P2P_IMPL" ]
+
+    public_deps = [ "//third_party/webrtc_overrides:webrtc_component" ]
+
+    deps = [
+      ":network_param_mojom_support",
+      "//ipc",
+      "//net",
+      "//services/network/public/mojom:mojom_shared",
+    ]
   }
 }
 

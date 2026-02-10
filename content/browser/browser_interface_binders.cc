@@ -121,7 +121,7 @@
 #include "services/metrics/ukm_recorder_factory_impl.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "services/network/public/mojom/p2p.mojom.h"
+#include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/shape_detection/public/mojom/barcodedetection_provider.mojom.h"
@@ -217,6 +217,10 @@
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_P2P_ENABLED)
+#include "services/network/public/mojom/p2p.mojom.h"
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 #include "content/browser/compute_pressure/pressure_service_for_frame.h"
@@ -685,6 +689,7 @@ void BindMediaPlayerObserverClientHandler(
       std::move(receiver));
 }
 
+#if BUILDFLAG(IS_P2P_ENABLED)
 void BindSocketManager(
     RenderFrameHost* frame,
     mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver) {
@@ -693,6 +698,7 @@ void BindSocketManager(
           frame->GetIsolationInfoForSubresources().network_anonymization_key(),
           std::move(receiver), frame->GetGlobalId());
 }
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 
 void BindDevicePostureProvider(
     RenderFrameHost* frame_host,
@@ -836,6 +842,7 @@ void PopulateBinderMapWithContext(
       &BindRenderFrameHostImpl<
           &RenderFrameHostImpl::CreateNotificationService>);
 
+#if BUILDFLAG(IS_P2P_ENABLED)
   // WebRTC p2p connections are disallowed in fenced frames. Creation of
   // RTCPeerConnection is already disabled in the renderer, so in theory this
   // unbound interface should never present an issue.
@@ -846,6 +853,7 @@ void PopulateBinderMapWithContext(
   if (!should_ban_p2p) {
     map->Add<network::mojom::P2PSocketManager>(&BindSocketManager);
   }
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 
   map->Add<blink::mojom::PeerConnectionTrackerHost>(
       &BindRenderFrameHostImpl<

@@ -23,7 +23,6 @@
 #include "content/browser/push_messaging/push_messaging_manager.h"
 #include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
 #include "content/browser/renderer_host/media/media_stream_track_metrics_host.h"
-#include "content/browser/renderer_host/p2p/socket_dispatcher_host.h"
 #include "content/browser/renderer_host/render_message_filter.h"
 #include "content/browser/renderer_host/render_widget_helper.h"
 #include "content/common/features.h"
@@ -41,6 +40,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "services/metrics/ukm_recorder_factory_impl.h"
+#include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "third_party/blink/public/mojom/plugins/plugin_registry.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
@@ -51,6 +51,10 @@
 #include "content/public/browser/android/java_interfaces.h"
 #include "third_party/blink/public/mojom/android_font_lookup/android_font_lookup.mojom.h"
 #endif
+
+#if BUILDFLAG(IS_P2P_ENABLED)
+#include "content/browser/renderer_host/p2p/socket_dispatcher_host.h"
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/services/font/public/mojom/font_service.mojom.h"  // nogncheck

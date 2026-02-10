@@ -1937,8 +1937,7 @@ mojom("mojom") {
           },
         ]
         traits_headers = [ "//services/network/public/cpp/p2p_param_traits.h" ]
-        traits_public_deps =
-            [ "//third_party/webrtc_overrides:webrtc_component" ]
+        traits_public_deps = [ "//services/network/public/cpp:cpp_p2p" ]
       },
     ]
   }

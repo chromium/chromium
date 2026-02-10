@@ -9,6 +9,7 @@ import("//ipc/features.gni")
 import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//sandbox/features.gni")
+import("//services/network/public/cpp/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("features.gni")
 
@@ -514,10 +515,8 @@ mojom("mojo_bindings") {
         "//ui/native_theme/native_theme.h",
       ]
 
-      traits_private_headers = [
-        "//content/public/common/common_param_traits.h",
-        "//services/network/public/cpp/p2p_param_traits.h",
-      ]
+      traits_private_headers =
+          [ "//content/public/common/common_param_traits.h" ]
 
       traits_sources = [
         "//content/common/frame_owner_element_type_mojom_traits.cc",

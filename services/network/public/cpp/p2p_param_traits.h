@@ -22,11 +22,11 @@
 #define INTERNAL_SERVICES_NETWORK_PUBLIC_CPP_P2P_PARAM_TRAITS_H_
 
 #undef IPC_MESSAGE_EXPORT
-#define IPC_MESSAGE_EXPORT COMPONENT_EXPORT(NETWORK_CPP_BASE)
+#define IPC_MESSAGE_EXPORT COMPONENT_EXPORT(NETWORK_CPP_P2P)
 
 namespace mojo {
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+struct COMPONENT_EXPORT(NETWORK_CPP_P2P)
     EnumTraits<network::mojom::EcnMarking, webrtc::EcnMarking> {
   static network::mojom::EcnMarking ToMojom(webrtc::EcnMarking input);
   static bool FromMojom(network::mojom::EcnMarking input,
