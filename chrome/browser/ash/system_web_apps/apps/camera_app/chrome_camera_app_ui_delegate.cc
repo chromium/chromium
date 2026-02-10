@@ -32,7 +32,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/camera_app_survey_handler.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -523,18 +522,18 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
   source->AddBoolean(
       "cca_disallowed",
       !prefs->GetBoolean(prefs::kVideoCaptureAllowed) && !url_allowed);
-  source->AddString("path_relative_to_root",
-                    CHECK_DEREF(CameraSaveHandler::Get(*profile))
-                        .GetWritablePathRelativeToRoot()
-                        .value());
-  auto camera_destination =
-      policy::local_user_files::GetCameraDestination(profile);
+  const auto& camera_save_handler =
+      CHECK_DEREF(CameraSaveHandler::Get(*profile));
+  source->AddString(
+      "path_relative_to_root",
+      camera_save_handler.GetWritablePathRelativeToRoot().value());
+  auto camera_destination = camera_save_handler.GetDestination();
   std::string cloud_destination;
   if (camera_destination ==
-      policy::local_user_files::FileSaveDestination::kGoogleDrive) {
+      CameraSaveHandler::FileSaveDestination::kGoogleDrive) {
     cloud_destination = kCloudDestinationGoogleDrive;
   } else if (camera_destination ==
-             policy::local_user_files::FileSaveDestination::kOneDrive) {
+             CameraSaveHandler::FileSaveDestination::kOneDrive) {
     cloud_destination = kCloudDestinationOnedrive;
   }
   source->AddString("cloud_destination", cloud_destination);
@@ -607,9 +606,9 @@ std::string ChromeCameraAppUIDelegate::GetFilePathInArcByName(
     return std::string();
   }
   if (requires_sharing &&
-      policy::local_user_files::GetCameraDestination(
-          Profile::FromWebUI(web_ui_)) ==
-          policy::local_user_files::FileSaveDestination::kNotSpecified) {
+      CHECK_DEREF(CameraSaveHandler::Get(*Profile::FromWebUI(web_ui_)))
+              .GetDestination() ==
+          CameraSaveHandler::FileSaveDestination::kLocal) {
     NOTREACHED()
         << "File path should be in MyFiles and not require any sharing";
   }

@@ -69,6 +69,12 @@ CameraSaveHandler::~CameraSaveHandler() {
   }
 }
 
+CameraSaveHandler::FileSaveDestination CameraSaveHandler::GetDestination()
+    const {
+  CHECK(delegate_);
+  return delegate_->GetDestination();
+}
+
 base::FilePath CameraSaveHandler::GetWritableRoot() const {
   CHECK(delegate_);
   switch (delegate_->GetDestination()) {

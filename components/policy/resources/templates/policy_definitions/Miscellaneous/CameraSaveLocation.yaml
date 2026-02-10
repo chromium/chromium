@@ -12,7 +12,7 @@ desc: |-
 example_value: ${google_drive}/Camera
 features:
   can_be_recommended: false
-  dynamic_refresh: true
+  dynamic_refresh: false
   per_profile: false
 owners:
 - file://components/policy/OWNERS
