@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Container, Node, SplitTabVisualData, Tab, TabGroupVisualData, WindowNode} from './tab_strip_internals.mojom-webui.js';
+import type {TokenMojoType} from '//resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
+
+import type {Container, Node, SplitTabVisualData, Tab, TabGroupVisualData, TabRestoreEntry, TabRestoreGroup, TabRestoreTab, TabRestoreWindow, WindowNode} from './tab_strip_internals.mojom-webui.js';
 
 /**
  * Model layer: Represents a UI node used by the ViewModel to build a semantic
@@ -47,11 +49,12 @@ export class DataModelAdapter {
       displayName: 'Container',
     };
 
-    // TODO(crbug.com/427204855): Add adapter logic to map TabRestore,
-    // SavedSession and RestoredSession data.
+    // TODO(crbug.com/427204855): Add adapter logic to map SavedSession and
+    // RestoredSession data.
     const tabstripNode = this.buildTabStripTree(container.tabstripTree);
+    const tabRestoreNode = this.buildTabRestore(container.tabRestore);
 
-    root.children.push(tabstripNode);
+    root.children.push(tabstripNode, tabRestoreNode);
     return root;
   }
 
@@ -156,9 +159,115 @@ export class DataModelAdapter {
     return out;
   }
 
-  // TODO(crbug.com/427204855): Add support for TabRestore and SessionRestore
+  /**
+   * Build a sub-tree representing the recently closed tabs (TabRestore data).
+   */
+  private static buildTabRestore(restore: Container['tabRestore']): ModelNode {
+    const node: ModelNode = {
+      path: 'Container.tabRestore',
+      value: restore,
+      children: [],
+      label: 'Recently Closed',
+      displayName: 'Recently Closed',
+    };
+
+    restore.entries.forEach((entry: TabRestoreEntry, i: number) => {
+      if ('tab' in entry) {
+        const tab = entry.tab as TabRestoreTab;
+        node.children.push({
+          path: `${node.path}.entries[${i}]`,
+          value: tab,
+          children: [],
+          label: this.formatTabLabel(tab),
+          displayName: tab.title,
+        });
+      } else if ('window' in entry) {
+        const window = entry.window as TabRestoreWindow;
+        const windowNode: ModelNode = {
+          path: `${node.path}.entries[${i}]`,
+          value: window,
+          children: [],
+          label: `Window ${window.id.nodeId}`,
+          displayName: `Window ${window.id.nodeId}`,
+        };
+
+        // Group tabs by a stable string key derived from TokenMojoType.
+        const groupedTabs = new Map<string, TabRestoreTab[]>();
+        const groupVisuals = new Map<string, TabGroupVisualData>();
+        const ungroupedTabs: TabRestoreTab[] = [];
+
+        for (const tab of window.tabs) {
+          if (tab.groupId) {
+            const groupKey = this.tokenToString_(tab.groupId);
+            if (!groupedTabs.has(groupKey)) {
+              groupedTabs.set(groupKey, []);
+            }
+            groupedTabs.get(groupKey)!.push(tab);
+            if (tab.groupVisualData) {
+              groupVisuals.set(groupKey, tab.groupVisualData);
+            }
+          } else {
+            ungroupedTabs.push(tab);
+          }
+        }
+
+        for (const [groupKey, groupTabs] of groupedTabs.entries()) {
+          const visual = groupVisuals.get(groupKey) as TabGroupVisualData;
+          const groupNode: ModelNode = {
+            path: `${windowNode.path}.groups[${groupKey}]`,
+            value: visual,
+            children: [],
+            label: this.formatGroupLabel(visual),
+            displayName: visual.title,
+          };
+          groupTabs.forEach(
+              (tab: TabRestoreTab, index: number) => groupNode.children.push({
+                path: `${groupNode.path}.tabs[${index}]`,
+                value: tab,
+                children: [],
+                label: this.formatTabLabel(tab),
+                displayName: tab.title,
+              }),
+          );
+          windowNode.children.push(groupNode);
+        }
+        ungroupedTabs.forEach(
+            (tab: TabRestoreTab, index: number) => windowNode.children.push({
+              path: `${windowNode.path}.tabs[${index}]`,
+              value: tab,
+              children: [],
+              label: this.formatTabLabel(tab),
+              displayName: tab.title,
+            }),
+        );
+        node.children.push(windowNode);
+      } else if ('group' in entry) {
+        const group = entry.group as TabRestoreGroup;
+        const groupNode: ModelNode = {
+          path: `${node.path}.entries[${i}]`,
+          value: group,
+          children: [],
+          label: this.formatGroupLabel(group.visualData),
+          displayName: group.visualData.title,
+        };
+        group.tabs.forEach((tab: TabRestoreTab, index: number) => {
+          groupNode.children.push({
+            path: `${groupNode.path}.tabs[${index}]`,
+            value: tab,
+            children: [],
+            label: this.formatTabLabel(tab),
+            displayName: tab.title,
+          });
+        });
+        node.children.push(groupNode);
+      }
+    });
+    return node;
+  }
+
+  // TODO(crbug.com/427204855): Add support for SessionRestore
   // tabs.
-  private static formatTabLabel(tab: Partial<Tab>): string {
+  private static formatTabLabel(tab: Partial<Tab|TabRestoreTab>): string {
     return `Tab: ${tab.title}`;
   }
 
@@ -170,5 +279,18 @@ export class DataModelAdapter {
   private static formatSplitLabel(visual: SplitTabVisualData): string {
     const {layout, splitRatio} = visual;
     return `[Split] Layout: ${layout}, Ratio: ${splitRatio}`;
+  }
+
+  /**
+   * Convert a Mojo Token to its canonical string representation i.e. represents
+   * a 128-bit value as two 64-bit words using zero-padded uppercase
+   * hexadecimal format.
+   *
+   * Note: This mirrors C++ representation of base::Token::ToString().
+   */
+  private static tokenToString_(token: TokenMojoType): string {
+    const hi = token.high.toString(16).padStart(16, '0').toUpperCase();
+    const lo = token.low.toString(16).padStart(16, '0').toUpperCase();
+    return `${hi}${lo}`;
   }
 }
