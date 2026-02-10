@@ -18,10 +18,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
-#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
@@ -37,7 +36,6 @@
 class Browser;
 class BrowserWindow;
 class Profile;
-class GlobalBrowserCollection;
 class SkBitmap;
 
 namespace apps {
@@ -64,7 +62,7 @@ class WithAppResources;
 // Implementation of WebAppUiManager that depends upon //c/b/ui.
 // Allows //c/b/web_applications code to call into //c/b/ui without directly
 // depending on UI.
-class WebAppUiManagerImpl : public BrowserCollectionObserver,
+class WebAppUiManagerImpl : public BrowserListObserver,
                             public WebAppUiManager,
                             public TabStripModelObserver {
  public:
@@ -198,9 +196,9 @@ class WebAppUiManagerImpl : public BrowserCollectionObserver,
       Profile* profile,
       const std::string& app_id) override;
 
-  // BrowserCollectionObserver:
-  void OnBrowserCreated(BrowserWindowInterface* browser) override;
-  void OnBrowserClosed(BrowserWindowInterface* browser) override;
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserRemoved(Browser* browser) override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TabStripModelObserver:
@@ -278,8 +276,6 @@ class WebAppUiManagerImpl : public BrowserCollectionObserver,
   std::map<base::FilePath, raw_ptr<IsolatedWebAppInstallerCoordinator>>
       active_installers_;
   bool started_ = false;
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
-      browser_collection_observation_{this};
 
   base::WeakPtrFactory<WebAppUiManagerImpl> weak_ptr_factory_{this};
 };

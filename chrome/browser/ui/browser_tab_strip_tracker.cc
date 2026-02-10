@@ -6,9 +6,9 @@
 
 #include "base/auto_reset.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 BrowserTabStripTracker::BrowserTabStripTracker(
@@ -21,6 +21,7 @@ BrowserTabStripTracker::BrowserTabStripTracker(
 }
 
 BrowserTabStripTracker::~BrowserTabStripTracker() {
+  BrowserList::RemoveObserver(this);
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this](BrowserWindowInterface* browser) {
         browser->GetTabStripModel()->RemoveObserver(tab_strip_model_observer_);
@@ -35,8 +36,7 @@ void BrowserTabStripTracker::Init() {
         MaybeTrackBrowser(browser);
         return true;
       });
-  browser_collection_observation_.Observe(
-      GlobalBrowserCollection::GetInstance());
+  BrowserList::AddObserver(this);
 }
 
 bool BrowserTabStripTracker::ShouldTrackBrowser(
@@ -50,7 +50,6 @@ void BrowserTabStripTracker::MaybeTrackBrowser(
     return;
   }
 
-  // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
   TabStripModel* const tab_strip_model = browser->GetTabStripModel();
   tab_strip_model->AddObserver(tab_strip_model_observer_);
 
@@ -69,6 +68,12 @@ void BrowserTabStripTracker::MaybeTrackBrowser(
                                                     selection);
 }
 
-void BrowserTabStripTracker::OnBrowserCreated(BrowserWindowInterface* browser) {
+void BrowserTabStripTracker::OnBrowserAdded(Browser* browser) {
   MaybeTrackBrowser(browser);
+}
+
+void BrowserTabStripTracker::OnBrowserRemoved(Browser* browser) {
+  // Per ObserverList::RemoveObserver() documentation, this does nothing if the
+  // observer is not in the ObserverList (i.e. if |browser| is not tracked).
+  browser->GetTabStripModel()->RemoveObserver(tab_strip_model_observer_);
 }

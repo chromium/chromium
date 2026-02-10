@@ -5,13 +5,12 @@
 #ifndef CHROME_BROWSER_SYNC_SESSIONS_BROWSER_LIST_ROUTER_HELPER_H_
 #define CHROME_BROWSER_SYNC_SESSIONS_BROWSER_LIST_ROUTER_HELPER_H_
 
-#include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include <set>
 
-class GlobalBrowserCollection;
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
+#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
 namespace sync_sessions {
 
@@ -19,7 +18,7 @@ namespace sync_sessions {
 // multi-window scenarios(e.g. tab movement between windows). Android doesn't
 // have a BrowserList or TabStrip, so it doesn't compile the needed
 // dependencies, nor would it benefit from the added tracking.
-class BrowserListRouterHelper : public BrowserCollectionObserver,
+class BrowserListRouterHelper : public BrowserListObserver,
                                 public TabStripModelObserver {
  public:
   explicit BrowserListRouterHelper(SyncSessionsWebContentsRouter* router,
@@ -31,8 +30,9 @@ class BrowserListRouterHelper : public BrowserCollectionObserver,
   ~BrowserListRouterHelper() override;
 
  private:
-  // BrowserCollectionObserver implementation.
-  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  // BrowserListObserver implementation.
+  void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserRemoved(Browser* browser) override;
   // TabStripModelObserver implementation.
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -44,8 +44,7 @@ class BrowserListRouterHelper : public BrowserCollectionObserver,
 
   const raw_ptr<Profile> profile_;
 
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
-      browser_collection_observation_{this};
+  std::set<raw_ptr<Browser, SetExperimental>> attached_browsers_;
 };
 
 }  // namespace sync_sessions

@@ -7,9 +7,10 @@
 
 #include <utility>
 
-#include "base/callback_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/display/display.h"
@@ -18,7 +19,6 @@
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget_observer.h"
 
-class Browser;
 class BrowserWindowInterface;
 
 namespace display {
@@ -59,6 +59,30 @@ class BrowserActivationWaiter : public views::WidgetObserver {
   base::RunLoop run_loop_;
 };
 
+// Use in browser interactive uitests to wait until a browser is deactivated.
+// To use, create and call WaitForDeactivation().
+class BrowserDeactivationWaiter : public BrowserListObserver {
+ public:
+  explicit BrowserDeactivationWaiter(const Browser* browser);
+  BrowserDeactivationWaiter(const BrowserDeactivationWaiter&) = delete;
+  BrowserDeactivationWaiter& operator=(const BrowserDeactivationWaiter&) =
+      delete;
+  ~BrowserDeactivationWaiter() override;
+
+  // Runs a message loop until the |browser_| supplied to the constructor is
+  // deactivated, or returns immediately if |browser_| has already become
+  // inactive.
+  // Should only be called once.
+  void WaitForDeactivation();
+
+ private:
+  // BrowserListObserver:
+  void OnBrowserNoLongerActive(Browser* browser) override;
+
+  const base::WeakPtr<const Browser> browser_;
+  bool observed_ = false;
+  base::RunLoop run_loop_;
+};
 
 // Brings the native window for |browser| to the foreground and waits until the
 // browser is active.

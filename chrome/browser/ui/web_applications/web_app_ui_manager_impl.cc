@@ -30,13 +30,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -214,12 +214,11 @@ void WebAppUiManagerImpl::Start() {
       FROM_HERE, base::BindOnce(&WebAppUiManagerImpl::OnExtensionSystemReady,
                                 weak_ptr_factory_.GetWeakPtr()));
 
-  browser_collection_observation_.Observe(
-      GlobalBrowserCollection::GetInstance());
+  BrowserList::AddObserver(this);
 }
 
 void WebAppUiManagerImpl::Shutdown() {
-  browser_collection_observation_.Reset();
+  BrowserList::RemoveObserver(this);
   started_ = false;
 }
 
@@ -642,7 +641,7 @@ void WebAppUiManagerImpl::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
-void WebAppUiManagerImpl::OnBrowserCreated(BrowserWindowInterface* browser) {
+void WebAppUiManagerImpl::OnBrowserAdded(Browser* browser) {
   DCHECK(started_);
   if (!IsBrowserForInstalledApp(browser)) {
     return;
@@ -651,8 +650,7 @@ void WebAppUiManagerImpl::OnBrowserCreated(BrowserWindowInterface* browser) {
   ++num_windows_for_apps_map_[GetAppIdForBrowser(browser)];
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
-  browser->GetTabStripModel()->AddObserver(this);
+  browser->tab_strip_model()->AddObserver(this);
   browser_close_cancelled_subscriptions_.push_back(
       browser->RegisterBrowserCloseCancelled(
           base::BindRepeating(&WebAppUiManagerImpl::OnBrowserCloseCancelled,
@@ -660,7 +658,7 @@ void WebAppUiManagerImpl::OnBrowserCreated(BrowserWindowInterface* browser) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void WebAppUiManagerImpl::OnBrowserClosed(BrowserWindowInterface* browser) {
+void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
   DCHECK(started_);
   if (!IsBrowserForInstalledApp(browser)) {
     return;
@@ -671,6 +669,10 @@ void WebAppUiManagerImpl::OnBrowserClosed(BrowserWindowInterface* browser) {
   size_t& num_windows_for_app = num_windows_for_apps_map_[app_id];
   DCHECK_GT(num_windows_for_app, 0u);
   --num_windows_for_app;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  browser->tab_strip_model()->RemoveObserver(this);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (num_windows_for_app > 0) {
     return;
