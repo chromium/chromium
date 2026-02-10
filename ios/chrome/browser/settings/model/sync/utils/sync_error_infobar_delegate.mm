@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 namespace {
@@ -101,6 +102,9 @@ SyncErrorInfoBarDelegate::SyncErrorInfoBarDelegate(
 
   // Register for sync status changes.
   sync_observation_.Observe(sync_service);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  identity_manager_observation_.Observe(identity_manager);
 }
 
 SyncErrorInfoBarDelegate::~SyncErrorInfoBarDelegate() = default;
@@ -219,6 +223,27 @@ void SyncErrorInfoBarDelegate::OnStateChanged(syncer::SyncService* sync) {
 
 void SyncErrorInfoBarDelegate::OnSyncShutdown(syncer::SyncService* sync) {
   NOTREACHED();
+}
+
+void SyncErrorInfoBarDelegate::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      return;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      break;
+  }
+  infobars::InfoBar* infobar = this->infobar();
+  if (!infobar) {
+    return;
+  }
+  infobar->RemoveSelf();
+}
+
+void SyncErrorInfoBarDelegate::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_observation_.Reset();
 }
 
 void SyncErrorInfoBarDelegate::InfoBarDismissedByTimeout() const {
