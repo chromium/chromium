@@ -303,7 +303,7 @@ found in the LICENSE file.
     <style name="TextAppearance.Headline.OnAccent1" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
     </style>
-    <style name="TextAppearance.TextMediumThick.Primary.OnAccent1" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextMediumThick.OnAccent1" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
     </style>
     <style name="TextAppearance.TextMedium.Primary.OnAccent1" tools:ignore="UnusedResources">
@@ -315,7 +315,7 @@ found in the LICENSE file.
     <style name="TextAppearance.TextSmall.Primary.OnAccent1" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
     </style>
-    <style name="TextAppearance.Button.OnAccent1" parent="TextAppearance.TextMediumThick.Primary.OnAccent1"/>
+    <style name="TextAppearance.Button.OnAccent1" parent="TextAppearance.TextMediumThick.OnAccent1"/>
 
     <!-- Chip Text Styles -->
     <style name="TextAppearance.ChipText" parent="TextAppearance.TextAccentMediumThick">

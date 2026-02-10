@@ -50,6 +50,6 @@ found in the LICENSE file.
         android:id="@+id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary.OnAccent1" />
+        android:textAppearance="@style/TextAppearance.TextMediumThick.OnAccent1" />
 
 </LinearLayout>

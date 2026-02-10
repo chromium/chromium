@@ -20,7 +20,7 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:padding="16dp"
           android:layout_weight="1"
-          android:textAppearance="@style/TextAppearance.TextMediumThick.Primary.OnAccent1" />
+          android:textAppearance="@style/TextAppearance.TextMediumThick.OnAccent1" />
 
      <org.chromium.ui.widget.ButtonCompat
           android:id="@+id/button_snooze"
