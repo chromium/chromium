@@ -8305,3 +8305,7 @@ def CheckSettingsChanges(input_api, output_api):
             '  //components/browser_ui/settings/android/java/src/org/chromium/components/browser_ui/settings/search/SearchIndexProvider.java',
             problems)
     ]
+
+
+def CheckAyeAye(input_api, output_api):
+    return input_api.canned_checks.CheckAyeAye(input_api, output_api)
