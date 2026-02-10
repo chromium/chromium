@@ -17,6 +17,10 @@ namespace password_manager {
 struct PasswordForm;
 }  // namespace password_manager
 
+namespace url {
+class Origin;
+}  // namespace url
+
 // An interface used by the password dialog (the account chooser) for setting
 // and retrieving the state.
 class CredentialManagerDialogController : public PasswordBaseDialogController {
@@ -26,6 +30,9 @@ class CredentialManagerDialogController : public PasswordBaseDialogController {
 
   // Returns forms from the password database for the current site.
   virtual const FormsVector& GetLocalForms() const = 0;
+
+  // Returns the origin of the current site.
+  virtual url::Origin GetOrigin() const = 0;
 
   // Returns a title of the account chooser.
   virtual std::u16string GetAccountChooserTitle() const = 0;
