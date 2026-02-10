@@ -34,7 +34,7 @@ BASE_FEATURE(kSkipModerateMemoryPressureLevelMac,
 
 // This feature controls the critical memory pressure signal based on low disk
 // space. Disabling this feature turns off the disk space check entirely.
-BASE_FEATURE(kMacCriticalDiskSpacePressure, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMacCriticalDiskSpacePressure, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The default threshold for the critical disk space pressure
 // signal.
