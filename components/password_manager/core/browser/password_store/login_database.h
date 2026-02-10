@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/pickle.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/password_form.h"

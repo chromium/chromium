@@ -22,6 +22,7 @@
 #include "base/scoped_observation_traits.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/metrics/frame_sequence_tracker.h"

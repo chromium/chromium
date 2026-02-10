@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 

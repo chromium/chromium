@@ -5,6 +5,7 @@
 #include "components/autofill/content/renderer/test_utils.h"
 
 #include "base/strings/strcat.h"
+#include "base/types/strong_alias.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"

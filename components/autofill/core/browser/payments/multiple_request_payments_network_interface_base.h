@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/payments/payments_access_token_fetcher.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "google_apis/gaia/google_service_auth_error.h"

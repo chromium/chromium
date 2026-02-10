@@ -14,6 +14,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/test_shared_memory_util.h"
+#include "base/types/strong_alias.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message.h"

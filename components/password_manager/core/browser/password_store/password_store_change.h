@@ -10,6 +10,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 

@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"

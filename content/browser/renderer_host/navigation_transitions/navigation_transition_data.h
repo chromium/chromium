@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/types/strong_alias.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"

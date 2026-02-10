@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/types/strong_alias.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
 

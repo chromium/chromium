@@ -5,6 +5,7 @@
 #define DEVICE_VR_OPENXR_MSFT_OPENXR_SCENE_OBJECT_MSFT_H_
 
 #include "base/types/id_type.h"
+#include "base/types/strong_alias.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {

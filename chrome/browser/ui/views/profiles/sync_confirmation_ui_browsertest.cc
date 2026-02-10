@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/strong_alias.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"

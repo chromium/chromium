@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ref.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/payments/multiple_request_payments_network_interface_base.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

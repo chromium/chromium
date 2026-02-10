@@ -23,6 +23,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"

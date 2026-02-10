@@ -32,6 +32,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/types/id_type.h"
+#include "base/types/strong_alias.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "ipc/mojo_param_traits.h"

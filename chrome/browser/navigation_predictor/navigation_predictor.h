@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_metrics_document_data.h"
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service.h"
 #include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"

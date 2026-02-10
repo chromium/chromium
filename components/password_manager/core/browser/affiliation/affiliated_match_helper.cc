@@ -13,6 +13,7 @@
 #include "base/barrier_closure.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/strong_alias.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 

@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/foundations/form_forest_test_api.h"
 #include "components/autofill/core/browser/foundations/form_forest_util_inl.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"

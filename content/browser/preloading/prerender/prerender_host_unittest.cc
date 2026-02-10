@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"

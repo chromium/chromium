@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_MULTIPLE_REQUEST_PAYMENTS_NETWORK_INTERFACE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_MULTIPLE_REQUEST_PAYMENTS_NETWORK_INTERFACE_H_
 
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/payments/multiple_request_payments_network_interface_base.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 

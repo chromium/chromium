@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "cc/paint/element_id.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/layer_tree_client.h"

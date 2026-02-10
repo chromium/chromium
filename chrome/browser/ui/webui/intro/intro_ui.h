@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/strong_alias.h"
 #include "chrome/browser/ui/webui/intro/intro_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
