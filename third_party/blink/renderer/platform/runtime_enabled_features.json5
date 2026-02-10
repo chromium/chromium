@@ -1867,16 +1867,16 @@
       status: "experimental",
     },
     {
-      // https://crbug.com/393631108
+      // https://chromestatus.com/feature/5133099851317248
       name: "DecoupleComputedBorderWidthFromStyle",
       public: true,
-      status: "experimental",
+      status: "stable",
     },
     {
-      // https://crbug.com/393631108
+      // https://chromestatus.com/feature/5133099851317248
       name: "DecoupleResolvedColumnRuleWidthFromStyle",
       public: true,
-      status: "experimental",
+      status: "stable",
     },
     {
       // Killswitch for https://crbug.com/400317114 fix.
