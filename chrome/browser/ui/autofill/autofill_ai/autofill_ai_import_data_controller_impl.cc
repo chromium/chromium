@@ -202,7 +202,7 @@ void AutofillAiImportDataControllerImpl::OnBubbleClosed(
 }
 
 bool AutofillAiImportDataControllerImpl::CanBeReshown() const {
-  // We reshow the prompt only if if it a save/update prompt that has not run
+  // We reshow the prompt only if it is a save/update prompt that has not run
   // yet. The other cases offer too little benefit to the user.
   return IsSaveUpdatePrompt() && GetSaveUpdateState().prompt_result_callback;
 }
