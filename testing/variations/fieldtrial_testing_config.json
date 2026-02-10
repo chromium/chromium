@@ -12683,7 +12683,8 @@
                         "arm": "1"
                     },
                     "enable_features": [
-                        "GlicTrustFirstOnboarding"
+                        "GlicTrustFirstOnboarding",
+                        "IPH_GlicTrustFirstOnboardingShortcutSnoozePromo"
                     ]
                 },
                 {
@@ -12692,23 +12693,7 @@
                         "arm": "2"
                     },
                     "enable_features": [
-                        "GlicTrustFirstOnboarding"
-                    ]
-                }
-            ]
-        }
-    ],
-    "GlicTrustFirstOnboardingShortcutSnoozePromo": [
-        {
-            "platforms": [
-                "chromeos",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
+                        "GlicTrustFirstOnboarding",
                         "IPH_GlicTrustFirstOnboardingShortcutSnoozePromo"
                     ]
                 }
