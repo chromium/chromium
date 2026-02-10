@@ -39,6 +39,8 @@ enum class FileUploadStatus {
   kUploadExpired = 6,
   // File being processed, and suggest signals are ready.
   kProcessingSuggestSignalsReady = 7,
+  // File is being replaced.
+  kUploadReplaced = 8,
 };
 
 // For upload error notifications and metrics.

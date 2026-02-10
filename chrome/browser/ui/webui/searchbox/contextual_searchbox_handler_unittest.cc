@@ -1287,4 +1287,5 @@ INSTANTIATE_TEST_SUITE_P(
         composebox_query::mojom::FileUploadStatus::kUploadStarted,
         composebox_query::mojom::FileUploadStatus::kUploadSuccessful,
         composebox_query::mojom::FileUploadStatus::kUploadFailed,
-        composebox_query::mojom::FileUploadStatus::kUploadExpired));
+        composebox_query::mojom::FileUploadStatus::kUploadExpired,
+        composebox_query::mojom::FileUploadStatus::kUploadReplaced));

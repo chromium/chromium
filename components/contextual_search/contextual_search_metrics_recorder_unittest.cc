@@ -639,7 +639,8 @@ INSTANTIATE_TEST_SUITE_P(
                                      FileUploadStatus::kUploadStarted,
                                      FileUploadStatus::kUploadSuccessful,
                                      FileUploadStatus::kUploadFailed,
-                                     FileUploadStatus::kUploadExpired)));
+                                     FileUploadStatus::kUploadExpired,
+                                     FileUploadStatus::kUploadReplaced)));
 
 TEST_F(ContextualSearchMetricsRecorderTest, FunnelMetrics) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);

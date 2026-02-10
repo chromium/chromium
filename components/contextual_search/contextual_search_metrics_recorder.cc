@@ -133,6 +133,7 @@ void ContextualSearchMetricsRecorder::OnFileUploadStatusChanged(
     case FileUploadStatus::kUploadStarted:
     case FileUploadStatus::kUploadExpired:
     case FileUploadStatus::kProcessingSuggestSignalsReady:
+    case FileUploadStatus::kUploadReplaced:
       break;
   }
 }

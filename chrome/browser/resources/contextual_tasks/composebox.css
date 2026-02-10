@@ -197,10 +197,6 @@
   position: relative;
 }
 
-#composebox::part(error-scrim) {
-  display: none;
-}
-
 #composebox::part(g-container) {
   max-height: 40vh;
   padding: 0;
