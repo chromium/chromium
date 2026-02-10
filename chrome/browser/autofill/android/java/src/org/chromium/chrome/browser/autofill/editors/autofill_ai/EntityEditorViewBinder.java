@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEdi
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DELETE_CONFIRMATION_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DONE_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.VISIBLE;
 
@@ -52,6 +53,8 @@ public class EntityEditorViewBinder {
             view.setDeleteRunnable(model.get(DELETE_RUNNABLE));
         } else if (propertyKey == ALLOW_DELETE) {
             view.setAllowDelete(model.get(ALLOW_DELETE));
+        } else if (propertyKey == EDITOR_FIELDS) {
+            view.setEditorFields(model.get(EDITOR_FIELDS));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

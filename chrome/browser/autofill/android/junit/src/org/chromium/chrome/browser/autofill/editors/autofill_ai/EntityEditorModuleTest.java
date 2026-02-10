@@ -7,7 +7,13 @@ package org.chromium.chrome.browser.autofill.editors.autofill_ai;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verify;
+
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NOTICE;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
 
 import android.app.Activity;
 import android.view.View;
@@ -30,12 +36,14 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator.Delegate;
+import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
 import org.chromium.chrome.browser.autofill.editors.common.EditorDialogToolbar;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 import org.chromium.components.autofill.autofill_ai.RecordType;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.time.LocalDate;
@@ -138,5 +146,27 @@ public class EntityEditorModuleTest {
 
         PropertyModel model = mCoordinator.getEditorModelForTest();
         assertFalse(model.get(EntityEditorProperties.ALLOW_DELETE));
+    }
+
+    @Test
+    @SmallTest
+    public void testLocalEntitySourceNotice() {
+        mCoordinator.showEditorDialog(LOCAL_PASSPORT);
+
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        verifySourceNotice(
+                model.get(EntityEditorProperties.EDITOR_FIELDS),
+                mActivity.getString(R.string.autofill_ai_local_entity_editor_source_notice));
+    }
+
+    private void verifySourceNotice(ListModel<EditorItem> editorFields, String expectedNoticeText) {
+        for (EditorItem item : editorFields) {
+            if (item.type == NOTICE && expectedNoticeText.equals(item.model.get(NOTICE_TEXT))) {
+                assertTrue(item.model.get(SHOW_BACKGROUND));
+                assertTrue(item.model.get(IMPORTANT_FOR_ACCESSIBILITY));
+                return;
+            }
+        }
+        fail("Source notice not found");
     }
 }

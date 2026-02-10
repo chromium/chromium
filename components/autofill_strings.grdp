@@ -1186,6 +1186,9 @@
     <message name="IDS_AUTOFILL_AI_ENTITY_EDITOR_DELETE_LOCAL_ENTITY_DIALOG_TEXT" desc="The text that appears beneath a 'Delete object' title. We want the 'Autofill' keyword to be as prominent as possible because that word captures the value of saved information. 'On this device': helps the user understand that information is saved locally, not in the Cloud." translateable="false" formatter_data="android_java">
       Autofill won't have this info on this device to help fill out forms
     </message>
+    <message name="IDS_AUTOFILL_AI_LOCAL_ENTITY_EDITOR_SOURCE_NOTICE" desc="The footer message in the editor dialog informing the user that their data will be stored locally on their device. 'To your device': helps the user understand that information is saved locally, not in the Cloud." translateable="false" formatter_data="android_java">
+      Your info is saved only to your device. You'll have the chance to save it to Wallet the next time you fill a relevant form.
+    </message>
   </if>
 
   <!-- FFR Dialog -->
