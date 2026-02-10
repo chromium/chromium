@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ModelNode} from './tab_strip_internals_adapter.js';
 import type {TabStripInternalsViewModel, ViewModelObserver} from './tab_strip_internals_viewmodel.js';
 import {ViewModelChange} from './tab_strip_internals_viewmodel.js';
 
@@ -79,10 +80,54 @@ export class TabStripInternalsView implements ViewModelObserver {
    * the navigation panel present on the left side.
    */
   private renderTreeViewPane_() {
-    // TODO(crbug.com/427204855): Implement logic to render a tree-view
-    // to display the hierarchy of tabs and collections.
-    this.treeViewPaneEl_;
-    this.dividerEl_;
+    this.treeViewPaneEl_.replaceChildren(
+        this.renderTreeNode_(this.viewModel_.root));
+  }
+
+  /** Recursively render nodes for the tree view. */
+  private renderTreeNode_(node: ModelNode): HTMLElement {
+    const nodeLabel = node.label;
+    const nodePath = node.path;
+    const isSelected = this.viewModel_.selectedNode === nodePath;
+    const isExpanded = this.viewModel_.isExpanded(nodePath);
+    const canExpand = this.viewModel_.hasChildren(nodePath);
+
+    const wrapEl = document.createElement('div');
+    wrapEl.className = 'tree-node-wrap';
+
+    const nodeEl = document.createElement('div');
+    nodeEl.className = 'tree-node' + (isSelected ? ' selected' : '');
+    nodeEl.dataset['path'] = nodePath;
+
+    const expandEl = document.createElement('span');
+    expandEl.className = 'expander';
+    expandEl.textContent = canExpand ? (isExpanded ? '▾' : '▸') : '';
+
+    const nodeLabelEl = document.createElement('span');
+    nodeLabelEl.textContent = nodeLabel;
+
+    nodeEl.append(expandEl, nodeLabelEl);
+    const icon = this.renderNodeIcon_(node);
+    if (icon) {
+      nodeEl.append(icon);
+    }
+
+    nodeEl.onclick = this.handleNodeClick_.bind(this, node);
+    expandEl.onclick = this.handleExpanderClick_.bind(this, node);
+
+    wrapEl.append(nodeEl);
+
+    // Render children recursively if expanded.
+    if (isExpanded) {
+      const childrenEl = document.createElement('div');
+      childrenEl.className = 'tree-children';
+      for (const childNode of this.viewModel_.getChildren(nodePath)) {
+        childrenEl.appendChild(this.renderTreeNode_(childNode));
+      }
+      wrapEl.append(childrenEl);
+    }
+
+    return wrapEl;
   }
 
   /**
@@ -108,6 +153,40 @@ export class TabStripInternalsView implements ViewModelObserver {
   private updateSplitLayout_(): void {
     document.getElementById('split')!.style.gridTemplateColumns =
         `${this.viewModel_.navPaneWidth}px 5px 1fr`;
+  }
+
+  /** Returns a container span with all applicable icons. */
+  private renderNodeIcon_(node: ModelNode): HTMLElement|null {
+    const value = node.value as any;
+    const iconsEl: HTMLElement[] = [];
+
+    if (value?.pinned) {
+      iconsEl.push(this.makeIcon('pinned', 'Pinned'));
+    }
+    if (value?.selected) {
+      iconsEl.push(this.makeIcon('check', 'Selected'));
+    }
+    if (value?.active) {
+      iconsEl.push(this.makeIcon('dot active', 'Active'));
+    }
+    if (!iconsEl.length) {
+      return null;
+    }
+
+    const group = document.createElement('span');
+    group.className = 'icon-group';
+    for (const icon of iconsEl) {
+      group.appendChild(icon);
+    }
+    return group;
+  }
+
+  /** Returns an icon element. */
+  private makeIcon(iconClass: string, iconTitle: string): HTMLElement {
+    const element = document.createElement('span');
+    element.className = `icon ${iconClass}`;
+    element.title = iconTitle;
+    return element;
   }
 
   // Event handlers.
@@ -163,5 +242,37 @@ export class TabStripInternalsView implements ViewModelObserver {
     }
     this.viewModel_.saveNavPaneWidthState();
     e.preventDefault();
+  }
+
+  /** Handle clicks on a tree node within the treeView pane. */
+  private handleNodeClick_(node: ModelNode) {
+    const path = node.path;
+    if (this.viewModel_.selectedNode !== path) {
+      this.viewModel_.setSelectedNode(path);
+    }
+
+    // Clicking a node should expand or collapse the sub-tree for
+    // user-convenience.
+    // It mimics the same behavior that occurs when user clicks on the
+    // expander of a node.
+    const canExpand = this.viewModel_.hasChildren(path);
+    if (canExpand) {
+      this.viewModel_.toggleExpanded(path);
+    }
+  }
+
+  /**
+   * Handle clicks on the expander (expand-collapse icon) within a node in the
+   * treeView pane.
+   */
+  private handleExpanderClick_(node: ModelNode, e: MouseEvent) {
+    e.stopPropagation();
+    const path = node.path;
+    const canExpand = this.viewModel_.hasChildren(path);
+
+    if (!canExpand) {
+      return;
+    }
+    this.viewModel_.toggleExpanded(path);
   }
 }

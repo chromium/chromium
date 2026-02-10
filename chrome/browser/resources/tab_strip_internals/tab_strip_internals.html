@@ -36,6 +36,23 @@
       overflow: auto;
       padding: 6px;
     }
+    .tree-node {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 4px;
+      border-radius: 4px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .tree-node:hover { background: #eee; }
+    .tree-node.selected { background: #cce5ff; }
+    .expander {
+      width: 12px;
+      text-align: center;
+      font-family: system-ui, sans-serif;
+    }
+    .tree-children { margin-left: 16px; }
     .divider {
       cursor: col-resize;
       background: #f0f0f0;
@@ -66,6 +83,50 @@
       opacity: 1;
       transform: translateY(0);
     }
+    /* Icons */
+    .icon-group {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.1em;
+      height: 1.1em;
+      opacity: 0.95;
+    }
+    /* Pinned icon */
+    .icon.pinned::before {
+      content: '📌';
+      color: #ff9e00;
+      font-size: 0.9em;
+      text-shadow: 0 0 1px rgba(255, 158, 0, 0.4);
+    }
+    /* --- Selected icon --- */
+    .icon.check::before {
+      content: '✓';
+      color: #2b6ef5;
+      font-weight: 700;
+      font-size: 0.85em;
+    }
+    /* --- Active icon --- */
+    .icon.dot::before {
+      content: '';
+      display: block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: transparent;
+      transform: translateY(0.5px);
+    }
+    .icon.dot.active::before {
+      background-color: #23d25f;
+    }
     /* Dark Theme */
     @media (prefers-color-scheme: dark) {
       body {
@@ -78,6 +139,12 @@
       }
       .tree-view-pane {
         border-right: 1px solid #3a3a3a;
+      }
+      .tree-node:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .tree-node.selected {
+        background: rgba(56, 139, 253, 0.25);
       }
       .divider {
         background: #333;
@@ -93,6 +160,10 @@
         background: #444;
         color: #fff;
       }
+      /* Icons */
+      .icon.pinned::before { color: #ffc04d; }
+      .icon.check::before { color: #6fa8ff; }
+      .icon.dot.active::before { background-color: #3ef27b; }
     }
   </style>
   </head>
