@@ -24,24 +24,35 @@ export function getHtml(this: TopToolbarElement) {
     ${this.title}
   </div>
   <div class="top-toolbar-action-buttons">
-    <cr-icon-button @click="${this.onNewThreadClick_}"
+    <cr-icon-button id="newThreadButton"
+        @click="${this.onNewThreadClick_}"
         iron-icon="contextual_tasks:edit_square"
-        class="no-overlap" title="New Thread">
+        class="no-overlap" title="$i18n{newThreadTooltip}"
+        aria-label="i18n{newThreadTooltip}">
     </cr-icon-button>
-    <cr-icon-button @click="${this.onThreadHistoryClick_}"
+    <cr-icon-button id="threadHistoryButton"
+        @click="${this.onThreadHistoryClick_}"
         iron-icon="contextual_tasks:schedule_auto"
-        class="no-overlap" title="Thread History">
+        class="no-overlap" title="$i18n{threadHistoryTooltip}"
+        aria-label="i18n{threadHistoryTooltip}">
     </cr-icon-button>
     <contextual-tasks-favicon-group id="sources"
         .contextInfos="${this.contextInfos}"
-        title="Sources" @click="${this.onSourcesClick_}"
+        title="$i18n{contextTooltip}"
+        aria-label="i18n{contextTooltip}"
+        @click="${this.onSourcesClick_}"
         ?hidden="${!this.shouldShowSourcesMenuButton_()}">
     </contextual-tasks-favicon-group>
     <cr-icon-button id="more" iron-icon="cr:more-vert"
-        class="no-overlap" title="More" @click="${this.onMoreClick_}">
+        class="no-overlap" title="$i18n{moreOptionsTooltip}"
+        aria-label="i18n{moreOptionsTooltip}"
+        @click="${this.onMoreClick_}">
     </cr-icon-button>
-    <cr-icon-button @click="${this.onCloseButtonClick_}" iron-icon="cr:close"
-        title="Close">
+    <cr-icon-button id="closeButton"
+        @click="${this.onCloseButtonClick_}"
+        iron-icon="cr:close"
+        title="$i18n{closeTooltip}"
+        aria-label="i18n{closeTooltip}">
     </cr-icon-button>
   </div>
   <cr-lazy-render-lit id="sourcesMenu" .template="${() => html`

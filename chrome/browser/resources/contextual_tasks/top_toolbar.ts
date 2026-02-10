@@ -25,8 +25,12 @@ import {getHtml} from './top_toolbar.html.js';
 
 export interface TopToolbarElement {
   $: {
+    closeButton: HTMLImageElement,
+    contextButton: HTMLImageElement,
     menu: CrLazyRenderLitElement<CrActionMenuElement>,
+    newThreadButton: HTMLImageElement,
     sourcesMenu: CrLazyRenderLitElement<SourcesMenuElement>,
+    threadHistoryButton: HTMLImageElement,
     topToolbarLogo: HTMLImageElement,
   };
 }

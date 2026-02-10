@@ -202,10 +202,17 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->UseStringsJs();
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"openInNewTab", IDS_CONTEXTUAL_TASKS_MENU_OPEN_IN_NEW_TAB},
-      {"myActivity", IDS_CONTEXTUAL_TASKS_MENU_MY_ACTIVITY},
+      {"closeTooltip", IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CLOSE_TOOL_TIP},
+      {"contextTooltip", IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CONTEXT_TOOL_TIP},
       {"help", IDS_CONTEXTUAL_TASKS_MENU_HELP},
+      {"moreOptionsTooltip",
+       IDS_CONTEXTUAL_TASKS_SIDE_PANEL_MORE_OPTIONS_TOOL_TIP},
+      {"myActivity", IDS_CONTEXTUAL_TASKS_MENU_MY_ACTIVITY},
+      {"newThreadTooltip", IDS_CONTEXTUAL_TASKS_SIDE_PANEL_NEW_THREAD_TOOL_TIP},
+      {"openInNewTab", IDS_CONTEXTUAL_TASKS_MENU_OPEN_IN_NEW_TAB},
       {"sourcesMenuTitle", IDS_CONTEXTUAL_TASKS_SOURCES_MENU_TITLE},
+      {"threadHistoryTooltip",
+       IDS_CONTEXTUAL_TASKS_SIDE_PANEL_HISTORY_TOOL_TIP},
       {"title", IDS_CONTEXTUAL_TASKS_AI_MODE_TITLE},
       /* composeDeepSearchPlaceholder and
        * composeCreateImagePlaceholder are defined by searchbox_handler.cc.
