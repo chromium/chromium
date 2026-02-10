@@ -9,7 +9,6 @@
 
 namespace base {
 class FilePath;
-class ScopedTempDir;
 
 namespace test::android {
 
