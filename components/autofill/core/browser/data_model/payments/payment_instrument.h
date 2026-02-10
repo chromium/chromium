@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <set>
 
-#include "base/types/strong_alias.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "url/gurl.h"
 

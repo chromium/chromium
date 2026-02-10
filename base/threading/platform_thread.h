@@ -11,9 +11,9 @@
 
 #include <stddef.h>
 
-#include <iosfwd>
 #include <limits>
 #include <optional>
+#include <ostream>
 #include <type_traits>
 
 #include "base/base_export.h"
@@ -22,7 +22,6 @@
 #include "base/task/thread_type.h"
 #include "base/threading/platform_thread_ref.h"
 #include "base/trace_event/base_tracing_forward.h"
-#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
