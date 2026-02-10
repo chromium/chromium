@@ -212,6 +212,12 @@ the **Security-Impact_None** hotlist (hotlistID: 5433277). See
 for more information. The bug should still have a severity set according
 to these guidelines.
 
+Bugs which have **Security-Impact_None** are exempt from the usual fix timelines
+given in this document. These bugs are often in experimental, prototype, or
+unfinished features, some of which have very long development timelines, and
+setting fix deadlines for them doesn't improve security outcomes for users.
+Instead, teams are expected to fix these bugs before default-enabling these
+features.
 
 ## Not a security bug {#TOC-Not-a-security-bug}
 
