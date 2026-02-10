@@ -10,12 +10,12 @@
 
 #include <optional>
 #include <string>
-#include <unordered_map>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -27,7 +27,7 @@ class GURL;
 namespace safe_browsing {
 
 // Maps a URL to its Resource.
-typedef std::unordered_map<
+typedef absl::flat_hash_map<
     std::string,
     std::unique_ptr<ClientSafeBrowsingReportRequest::Resource>>
     ResourceMap;
