@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 #include "base/uuid.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
@@ -202,6 +203,10 @@ class ContextualTasksUI
     composebox_handler_ = std::move(handler);
   }
 
+  void SetCookieSynchronizerForTesting(
+      std::unique_ptr<contextual_tasks::ContextualTasksCookieSynchronizer>
+          cookie_synchronizer);
+
  private:
   // An observer specifically to watch for the creation of the hosted remote
   // page. This is attached to the WebContents for the WebUI and notifies the
@@ -253,6 +258,8 @@ class ContextualTasksUI
   GetSidePanelCoordinator();
 
   std::unique_ptr<ContextualTasksComposeboxHandler> composebox_handler_;
+  std::unique_ptr<contextual_tasks::ContextualTasksCookieSynchronizer>
+      cookie_synchronizer_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
 
   raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;

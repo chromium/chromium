@@ -42,8 +42,15 @@ const char* const kAuthTokenAllowList[] = {
 
 const char kAuthorizationHeader[] = "Authorization";
 const char kBearerPrefix[] = "Bearer ";
+const char kOneGoogleIdentifier[] = "onegoogle";
 
 bool ShouldAddAuthHeader(const GURL& url) {
+  // Don't add the Authorization header to OGB URLs, since they don't support
+  // OAuth. Attaching an OAuth token can result in 403 errors.
+  if (url.spec().contains(kOneGoogleIdentifier)) {
+    return false;
+  }
+
   // Only add the Authorization header to domains in the allow list.
   for (const char* domain : kAuthTokenAllowList) {
     if (url.DomainIs(domain)) {

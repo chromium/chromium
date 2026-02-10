@@ -21,7 +21,7 @@ export function getHtml(this: ContextualTasksAppElement) {
       </top-toolbar>
     </div>
   `}
-  <webview id="threadFrame" allowtransparency="on"></webview>
+  <webview id="threadFrame" allowtransparency="on" partition="persist:contextual-tasks"></webview>
   <ghost-loader id="ghostLoader"></ghost-loader>
   <div class="flex-center" id="flexCenterContainer">
     <div id="composeboxHeaderWrapper"

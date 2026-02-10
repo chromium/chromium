@@ -12,6 +12,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -139,13 +140,18 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
     if (request.relative_url.find("/echoheader?Authorization") !=
         std::string::npos) {
       auto it = request.headers.find("Authorization");
+      std::string header_value;
       if (it != request.headers.end()) {
+        header_value = it->second;
+      }
+      if (!header_value.empty() ||
+          request.relative_url.find("onegoogle") != std::string::npos) {
         content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE,
             base::BindOnce(
                 &ContextualTasksUrlLoaderFactoryInterceptorBrowserTest::
                     OnAuthHeaderCaptured,
-                base::Unretained(this), it->second));
+                base::Unretained(this), header_value));
       }
       return std::make_unique<net::test_server::BasicHttpResponse>();
     }
@@ -330,6 +336,54 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
 
   // Wait for the retry request to reach the server.
   run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
+                       OneGoogleUrlDoesNotHaveAuthToken) {
+  base::RunLoop run_loop;
+  auth_capture_quit_closure_ = run_loop.QuitClosure();
+
+  // Navigate to the Contextual Tasks WebUI.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+
+  // Wait for the WebUI to load and create the webview.
+  content::WebContents* web_ui_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+
+  // Script to find the webview and navigate it.
+  // Note: We access the shadowRoot of the app.
+  std::string script = content::JsReplace(
+      R"(
+    (async () => {
+      let app = document.querySelector('contextual-tasks-app');
+      while (!app) {
+        await new Promise(r => setTimeout(r, 100));
+        app = document.querySelector('contextual-tasks-app');
+      }
+      // Wait for shadow root
+      while (!app.shadowRoot) {
+        await new Promise(r => setTimeout(r, 100));
+      }
+      // Wait for threadFrame
+      let webview = app.shadowRoot.querySelector('#threadFrame');
+      while (!webview) {
+        await new Promise(r => setTimeout(r, 100));
+        webview = app.shadowRoot.querySelector('#threadFrame');
+      }
+      webview.src = $1;
+    })();
+  )",
+      https_server_.GetURL(kTestHost, "/onegoogle/echoheader?Authorization")
+          .spec());
+
+  EXPECT_TRUE(content::ExecJs(web_ui_contents, script));
+
+  // Wait for the request to reach the server.
+  run_loop.Run();
+
+  // Verify the header.
+  EXPECT_TRUE(captured_auth_header_.empty());
 }
 
 }  // namespace contextual_tasks
