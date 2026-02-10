@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <unordered_set>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -23,6 +22,7 @@
 #include "extensions/common/api/bluetooth/bluetooth_manifest_data.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "net/base/io_buffer.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 using content::BrowserThread;
 using extensions::BluetoothApiSocket;
@@ -167,7 +167,7 @@ void BluetoothSocketAsyncApiFunction::RemoveSocket(int api_resource_id) {
   manager_->Remove(extension_id(), api_resource_id);
 }
 
-std::unordered_set<int>* BluetoothSocketAsyncApiFunction::GetSocketIds() {
+absl::flat_hash_set<int>* BluetoothSocketAsyncApiFunction::GetSocketIds() {
   return manager_->GetResourceIds(extension_id());
 }
 
@@ -601,7 +601,7 @@ BluetoothSocketGetSocketsFunction::~BluetoothSocketGetSocketsFunction() =
 
 ExtensionFunction::ResponseAction BluetoothSocketGetSocketsFunction::Run() {
   std::vector<bluetooth_socket::SocketInfo> socket_infos;
-  std::unordered_set<int>* resource_ids = GetSocketIds();
+  absl::flat_hash_set<int>* resource_ids = GetSocketIds();
   if (resource_ids) {
     for (int socket_id : *resource_ids) {
       BluetoothApiSocket* socket = GetSocket(socket_id);

@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <map>
-#include <unordered_set>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -19,6 +18,7 @@
 #include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace extensions {
 
@@ -320,7 +320,7 @@ SerialGetConnectionsFunction::~SerialGetConnectionsFunction() = default;
 
 ExtensionFunction::ResponseAction SerialGetConnectionsFunction::Run() {
   auto* manager = ApiResourceManager<SerialConnection>::Get(browser_context());
-  const std::unordered_set<int>* connection_ids =
+  const absl::flat_hash_set<int>* connection_ids =
       manager->GetResourceIds(extension_->id());
   if (connection_ids) {
     for (auto it = connection_ids->cbegin(); it != connection_ids->cend();

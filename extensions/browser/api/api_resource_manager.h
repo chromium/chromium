@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <unordered_set>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -30,6 +29,7 @@
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace extensions {
 
@@ -132,7 +132,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
     return data_->Get(extension_id, api_resource_id);
   }
 
-  std::unordered_set<int>* GetResourceIds(const ExtensionId& extension_id) {
+  absl::flat_hash_set<int>* GetResourceIds(const ExtensionId& extension_id) {
     return data_->GetResourceIds(extension_id);
   }
 
@@ -193,7 +193,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
    public:
     typedef std::map<int, std::unique_ptr<T>> ApiResourceMap;
     // Lookup map from extension id's to allocated resource id's.
-    typedef std::map<std::string, std::unordered_set<int>>
+    typedef std::map<std::string, absl::flat_hash_set<int>>
         ExtensionToResourceMap;
 
     ApiResourceData() : next_id_(1) { DETACH_FROM_SEQUENCE(sequence_checker_); }
@@ -210,8 +210,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
             extension_resource_map_.find(extension_id);
         if (it == extension_resource_map_.end()) {
           it = extension_resource_map_
-                   .insert(
-                       std::make_pair(extension_id, std::unordered_set<int>()))
+                   .emplace(extension_id, absl::flat_hash_set<int>())
                    .first;
         }
         it->second.insert(id);
@@ -251,7 +250,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
       return false;
     }
 
-    std::unordered_set<int>* GetResourceIds(const ExtensionId& extension_id) {
+    absl::flat_hash_set<int>* GetResourceIds(const ExtensionId& extension_id) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       return GetOwnedResourceIds(extension_id);
     }
@@ -291,7 +290,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
       return NULL;
     }
 
-    std::unordered_set<int>* GetOwnedResourceIds(
+    absl::flat_hash_set<int>* GetOwnedResourceIds(
         const ExtensionId& extension_id) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       ExtensionToResourceMap::iterator it =
@@ -324,9 +323,8 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
 
       // Remove all resources, or the non persistent ones only if `remove_all`
       // is false.
-      std::unordered_set<int>& resource_ids = extension_it->second;
-      for (std::unordered_set<int>::iterator it = resource_ids.begin();
-           it != resource_ids.end();) {
+      absl::flat_hash_set<int>& resource_ids = extension_it->second;
+      for (auto it = resource_ids.begin(); it != resource_ids.end();) {
         bool erase = false;
         if (remove_all) {
           erase = true;

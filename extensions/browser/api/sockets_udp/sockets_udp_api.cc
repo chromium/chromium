@@ -16,6 +16,7 @@
 #include "extensions/common/api/sockets/sockets_manifest_data.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace extensions {
 namespace api {
@@ -364,7 +365,7 @@ SocketsUdpGetSocketsFunction::~SocketsUdpGetSocketsFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsUdpGetSocketsFunction::Work() {
   std::vector<sockets_udp::SocketInfo> socket_infos;
-  std::unordered_set<int>* resource_ids = GetSocketIds();
+  absl::flat_hash_set<int>* resource_ids = GetSocketIds();
   if (resource_ids) {
     for (int socket_id : *resource_ids) {
       ResumableUDPSocket* socket = GetUdpSocket(socket_id);

@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -21,6 +20,7 @@
 #include "extensions/browser/api/sockets_tcp/tcp_socket_event_dispatcher.h"
 #include "extensions/common/api/sockets_tcp.h"
 #include "net/base/net_errors.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 using extensions::ResumableTCPSocket;
 using extensions::api::sockets_tcp::SocketInfo;
@@ -448,7 +448,7 @@ SocketsTcpGetSocketsFunction::~SocketsTcpGetSocketsFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpGetSocketsFunction::Work() {
   std::vector<sockets_tcp::SocketInfo> socket_infos;
-  std::unordered_set<int>* resource_ids = GetSocketIds();
+  absl::flat_hash_set<int>* resource_ids = GetSocketIds();
   if (resource_ids) {
     for (int socket_id : *resource_ids) {
       ResumableTCPSocket* socket = GetTcpSocket(socket_id);

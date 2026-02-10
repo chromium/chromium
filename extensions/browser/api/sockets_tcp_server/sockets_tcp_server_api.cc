@@ -5,7 +5,6 @@
 #include "extensions/browser/api/sockets_tcp_server/sockets_tcp_server_api.h"
 
 #include <memory>
-#include <unordered_set>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -17,6 +16,7 @@
 #include "extensions/common/permissions/socket_permission.h"
 #include "net/base/net_errors.h"
 #include "net/base/sys_addrinfo.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 using content::SocketPermissionRequest;
 using extensions::ResumableTCPServerSocket;
@@ -275,7 +275,7 @@ SocketsTcpServerGetSocketsFunction::~SocketsTcpServerGetSocketsFunction() =
 
 ExtensionFunction::ResponseAction SocketsTcpServerGetSocketsFunction::Work() {
   std::vector<sockets_tcp_server::SocketInfo> socket_infos;
-  std::unordered_set<int>* resource_ids = GetSocketIds();
+  absl::flat_hash_set<int>* resource_ids = GetSocketIds();
   if (resource_ids) {
     for (int socket_id : *resource_ids) {
       ResumableTCPServerSocket* socket = GetTcpSocket(socket_id);

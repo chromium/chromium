@@ -5,7 +5,6 @@
 #include "extensions/browser/api/socket/socket_api.h"
 
 #include <memory>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -39,6 +38,7 @@
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "extensions/browser/api/socket/app_firewall_hole_manager.h"
@@ -124,7 +124,7 @@ void SocketApiFunction::ReplaceSocket(int api_resource_id, Socket* socket) {
   manager_->Replace(GetOriginId(), api_resource_id, socket);
 }
 
-std::unordered_set<int>* SocketApiFunction::GetSocketIds() {
+absl::flat_hash_set<int>* SocketApiFunction::GetSocketIds() {
   return manager_->GetResourceIds(GetOriginId());
 }
 

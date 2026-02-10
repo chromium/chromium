@@ -11,7 +11,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_set>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -71,7 +70,7 @@ class SocketResourceManagerInterface {
   virtual void Replace(const ExtensionId& extension_id,
                        int api_resource_id,
                        Socket* socket) = 0;
-  virtual std::unordered_set<int>* GetResourceIds(
+  virtual absl::flat_hash_set<int>* GetResourceIds(
       const ExtensionId& extension_id) = 0;
 };
 
@@ -111,7 +110,7 @@ class SocketResourceManager : public SocketResourceManagerInterface {
     manager_->Remove(extension_id, api_resource_id);
   }
 
-  std::unordered_set<int>* GetResourceIds(
+  absl::flat_hash_set<int>* GetResourceIds(
       const ExtensionId& extension_id) override {
     return manager_->GetResourceIds(extension_id);
   }
@@ -165,7 +164,7 @@ class SocketApiFunction : public ExtensionFunction {
   Socket* GetSocket(int api_resource_id);
   void ReplaceSocket(int api_resource_id, Socket* socket);
   void RemoveSocket(int api_resource_id);
-  std::unordered_set<int>* GetSocketIds();
+  absl::flat_hash_set<int>* GetSocketIds();
 
   // A no-op outside of Chrome OS. Calls Respond() with an error if it fails.
   void OpenFirewallHole(const std::string& address,

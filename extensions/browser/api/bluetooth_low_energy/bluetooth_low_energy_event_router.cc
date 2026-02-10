@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <unordered_set>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -34,6 +33,7 @@
 #include "extensions/common/api/bluetooth/bluetooth_manifest_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 using content::BrowserThread;
 
@@ -1778,7 +1778,7 @@ BluetoothLowEnergyConnection* BluetoothLowEnergyEventRouter::FindConnection(
   ConnectionResourceManager* manager =
       GetConnectionResourceManager(browser_context_);
 
-  std::unordered_set<int>* connection_ids =
+  absl::flat_hash_set<int>* connection_ids =
       manager->GetResourceIds(extension_id);
   if (!connection_ids)
     return nullptr;
@@ -1803,7 +1803,7 @@ bool BluetoothLowEnergyEventRouter::RemoveConnection(
   ConnectionResourceManager* manager =
       GetConnectionResourceManager(browser_context_);
 
-  std::unordered_set<int>* connection_ids =
+  absl::flat_hash_set<int>* connection_ids =
       manager->GetResourceIds(extension_id);
   if (!connection_ids)
     return false;
@@ -1829,7 +1829,7 @@ BluetoothLowEnergyEventRouter::FindNotifySession(
   NotifySessionResourceManager* manager =
       GetNotifySessionResourceManager(browser_context_);
 
-  std::unordered_set<int>* ids = manager->GetResourceIds(extension_id);
+  absl::flat_hash_set<int>* ids = manager->GetResourceIds(extension_id);
   if (!ids)
     return nullptr;
 
@@ -1853,7 +1853,7 @@ bool BluetoothLowEnergyEventRouter::RemoveNotifySession(
   NotifySessionResourceManager* manager =
       GetNotifySessionResourceManager(browser_context_);
 
-  std::unordered_set<int>* ids = manager->GetResourceIds(extension_id);
+  absl::flat_hash_set<int>* ids = manager->GetResourceIds(extension_id);
   if (!ids)
     return false;
 
