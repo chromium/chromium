@@ -30,6 +30,7 @@ include_rules = [
   "+components/user_education/webui",
   "+components/wallet",
   "+components/web_package",
+  "+extensions/strings/grit/extensions_strings.h",
   "+services/device/public/mojom",
   "+services/screen_ai",
   "+services/webnn/webnn_switches.h",

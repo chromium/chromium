@@ -5167,6 +5167,7 @@ static_library("ui") {
     deps += [
       "//chrome/browser/extensions",
       "//extensions/common",
+      "//extensions/strings",
     ]
 
     # TODO(crbug.com/420905611): Verify whether this circular dependency declaration can

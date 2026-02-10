@@ -55,6 +55,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/strings/grit/extensions_strings.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "sandbox/policy/switches.h"
 #include "ui/base/l10n/l10n_util.h"
