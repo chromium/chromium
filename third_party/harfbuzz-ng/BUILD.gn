@@ -30,10 +30,17 @@ if (use_system_harfbuzz) {
   }
 
   config("harfbuzz_warnings") {
+    cflags = []
+
     if (is_win) {
       # Result of 32-bit shift implicitly converted to 64 bits.
-      cflags = [ "/wd4334" ]
+      cflags += [ "/wd4334" ]
     }
+
+    # TODO(crbug.com/483020951): Replace this with `-Wno-array-bounds-member` if
+    # that gets implemented. Then patch harfbuzz and remove this completely.
+    # Upstream issue: https://github.com/harfbuzz/harfbuzz/issues/5738
+    cflags += [ "-Wno-array-bounds" ]
   }
 
   component("harfbuzz-ng") {
