@@ -101,6 +101,9 @@ The process for importing a new Rust third-party dependency is documented at
 
 Email rust-dev@chromium.org with any questions about the Rust toolchain.
 
+Note that new Rust crates do not require security approval - the Rust
+third_party approval is sufficient.
+
 ## A note on size constraints
 
 The size of Chromium derived executables can impact overall performance of those binaries as they
@@ -520,6 +523,8 @@ Non-Googlers can email one of the people in
   `Description:` field of the README.chromium. Third party code is a hot spot
   for security vulnerabilities. Help people make informed decisions about
   relying on this package by highlighting security considerations.
+    * Rust dependencies do not need separate security review - the Rust review
+      process will cover security aspects.
 * Add chromium-third-party@google.com as a reviewer on your change. This
   will trigger automatic assignment to a reviewer who will check license use,
   metadata compliance and verify long term dependency maintenance plans.
