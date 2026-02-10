@@ -580,11 +580,9 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
     }
     auto* composebox_handler =
         omnibox_popup_ui ? omnibox_popup_ui->composebox_handler() : nullptr;
-    auto* input_state_model =
-        composebox_handler ? composebox_handler->input_state_model() : nullptr;
     bool use_input_state_model =
         base::FeatureList::IsEnabled(omnibox::kAimUsePecApi) &&
-        input_state_model;
+        composebox_handler;
 
     // All context actions will eventually log a histogram, but those that open
     // a dialog do so only after the dialog is closed.
@@ -604,7 +602,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         break;
       case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
         if (use_input_state_model) {
-          input_state_model->setActiveTool(
+          composebox_handler->SetActiveToolMode(
               omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
         }
         UpdateSearchboxContext(
@@ -616,7 +614,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         break;
       case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
         if (use_input_state_model) {
-          input_state_model->setActiveTool(
+          composebox_handler->SetActiveToolMode(
               omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
         }
         UpdateSearchboxContext(
@@ -628,7 +626,8 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         break;
       case IDC_OMNIBOX_CONTEXT_CANVAS:
         if (use_input_state_model) {
-          input_state_model->setActiveTool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+          composebox_handler->SetActiveToolMode(
+              omnibox::ToolMode::TOOL_MODE_CANVAS);
         }
         UpdateSearchboxContext(
             /*tab_info=*/std::nullopt,
@@ -639,13 +638,13 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         break;
       case IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO:
         if (use_input_state_model) {
-          input_state_model->setActiveModel(
+          composebox_handler->SetActiveModelMode(
               omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
         }
         break;
       case IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING:
         if (use_input_state_model) {
-          input_state_model->setActiveModel(
+          composebox_handler->SetActiveModelMode(
               omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
         }
         break;
