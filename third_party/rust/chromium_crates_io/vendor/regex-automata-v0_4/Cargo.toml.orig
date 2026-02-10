@@ -1,6 +1,6 @@
 [package]
 name = "regex-automata"
-version = "0.4.13"  #:version
+version = "0.4.14"  #:version
 authors = ["The Rust Project Developers", "Andrew Gallant <jamslam@gmail.com>"]
 description = "Automata construction and matching using regular expressions."
 documentation = "https://docs.rs/regex-automata"
@@ -13,6 +13,7 @@ categories = ["text-processing"]
 edition = "2021"
 autoexamples = false
 rust-version = "1.65"
+include.workspace = true
 
 [lib]
 bench = false

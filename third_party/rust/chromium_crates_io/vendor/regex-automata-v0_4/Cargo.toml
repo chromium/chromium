@@ -13,12 +13,27 @@
 edition = "2021"
 rust-version = "1.65"
 name = "regex-automata"
-version = "0.4.13"
+version = "0.4.14"
 authors = [
     "The Rust Project Developers",
     "Andrew Gallant <jamslam@gmail.com>",
 ]
 build = false
+include = [
+    "/CHANGELOG.md",
+    "/Cargo.toml",
+    "/LICENSE-MIT",
+    "/LICENSE-APACHE",
+    "/README.md",
+    "/UNICODE.md",
+    "bench/README.md",
+    "src/**/*.rs",
+    "testdata/**.toml",
+    "tests/**/*.rs",
+    "bench/**/*.rs",
+    "LICENSE-UNICODE",
+    "!/tests/fuzz/mod.rs",
+]
 autolib = false
 autobins = false
 autoexamples = false
