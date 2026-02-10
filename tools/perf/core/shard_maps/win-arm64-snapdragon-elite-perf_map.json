@@ -16,9 +16,6 @@
             "rendering.desktop.notracing": {
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             },
@@ -69,10 +66,6 @@
                 "crossbench_name": "motionmark_1.3",
                 "arguments": []
             },
-            "speedometer2.crossbench": {
-                "crossbench_name": "speedometer_2",
-                "arguments": []
-            },
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
                 "arguments": []
@@ -80,11 +73,11 @@
         }
     },
     "extra_infos": {
-        "num_stories": 183,
-        "predicted_min_shard_time": 3805.0,
+        "num_stories": 181,
+        "predicted_min_shard_time": 3717.0,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 3805.0,
+        "predicted_max_shard_time": 3717.0,
         "predicted_max_shard_index": 0,
-        "shard #0": 3805.0
+        "shard #0": 3717.0
     }
 }

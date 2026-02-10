@@ -20,7 +20,7 @@
                 "abridged": false
             },
             "blink_perf.image_decoder": {
-                "end": 6,
+                "end": 3,
                 "abridged": false
             }
         }
@@ -28,7 +28,7 @@
     "1": {
         "benchmarks": {
             "blink_perf.image_decoder": {
-                "begin": 6,
+                "begin": 3,
                 "abridged": false
             },
             "blink_perf.layout": {
@@ -82,7 +82,8 @@
                     "--cool-down-threshold=moderate"
                 ]
             }
-        }
+        },
+        "benchmarks": {}
     },
     "3": {
         "benchmarks": {
@@ -114,7 +115,7 @@
         "benchmarks": {
             "rendering.mobile": {
                 "begin": 186,
-                "end": 305,
+                "end": 304,
                 "abridged": false
             }
         }
@@ -122,7 +123,7 @@
     "6": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 305,
+                "begin": 304,
                 "abridged": false
             },
             "rendering.mobile.notracing": {
@@ -144,10 +145,16 @@
             "speedometer2-future": {
                 "abridged": false
             },
+            "speedometer2-predictable": {
+                "abridged": false
+            },
             "speedometer3": {
                 "abridged": false
             },
             "speedometer3-future": {
+                "abridged": false
+            },
+            "speedometer3-predictable": {
                 "abridged": false
             },
             "startup.mobile": {
@@ -177,18 +184,18 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1125,
-        "predicted_min_shard_time": 2815.0,
+        "num_stories": 1124,
+        "predicted_min_shard_time": 2719.0,
         "predicted_min_shard_index": 7,
-        "predicted_max_shard_time": 3725.0,
+        "predicted_max_shard_time": 3600,
         "predicted_max_shard_index": 2,
-        "shard #0": 3015.0,
-        "shard #1": 2981.0,
-        "shard #2": 3725.0,
-        "shard #3": 2876.0,
-        "shard #4": 2887.0,
-        "shard #5": 2857.0,
-        "shard #6": 2939.0,
-        "shard #7": 2815.0
+        "shard #0": 2969.0,
+        "shard #1": 2992.0,
+        "shard #2": 3600,
+        "shard #3": 2831.0,
+        "shard #4": 2829.0,
+        "shard #5": 2856.0,
+        "shard #6": 2959.0,
+        "shard #7": 2719.0
     }
 }

@@ -1,10 +1,10 @@
 [
     {
-        "duration": "25.0",
+        "duration": "23.0",
         "name": "blink_perf.accessibility/build-table.html"
     },
     {
-        "duration": "22.0",
+        "duration": "21.0",
         "name": "blink_perf.accessibility/focus-links.html"
     },
     {
@@ -16,7 +16,7 @@
         "name": "blink_perf.accessibility/line-breaks.html"
     },
     {
-        "duration": "19.0",
+        "duration": "20.0",
         "name": "blink_perf.accessibility/location-changes-css-animation.html"
     },
     {
@@ -24,11 +24,11 @@
         "name": "blink_perf.accessibility/location-changes-js-animation.html"
     },
     {
-        "duration": "110.0",
+        "duration": "112.0",
         "name": "blink_perf.accessibility/location-changes-scrolling-content-visibility-auto.html"
     },
     {
-        "duration": "114.0",
+        "duration": "112.0",
         "name": "blink_perf.accessibility/location-changes-scrolling.html"
     },
     {
@@ -44,7 +44,7 @@
         "name": "blink_perf.accessibility/many-nodes-toggle-content-visibility-auto.html"
     },
     {
-        "duration": "19.0",
+        "duration": "20.0",
         "name": "blink_perf.accessibility/many-nodes-toggle-content-visibility-hidden.html"
     },
     {
@@ -52,15 +52,15 @@
         "name": "blink_perf.accessibility/many-nodes-toggle-display-none-in-focusable.html"
     },
     {
-        "duration": "19.0",
+        "duration": "20.0",
         "name": "blink_perf.accessibility/many-nodes-toggle-display-none.html"
     },
     {
-        "duration": "22.0",
+        "duration": "20.0",
         "name": "blink_perf.accessibility/many-text-changes-deep-block-subtree.html"
     },
     {
-        "duration": "20.0",
+        "duration": "21.0",
         "name": "blink_perf.accessibility/many-text-changes-deep-hidden-subtree.html"
     },
     {
@@ -72,7 +72,7 @@
         "name": "blink_perf.accessibility/many-text-changes-small-wait-between.html"
     },
     {
-        "duration": "19.0",
+        "duration": "20.0",
         "name": "blink_perf.accessibility/slot-updates.html"
     },
     {
@@ -80,11 +80,11 @@
         "name": "blink_perf.accessibility/text-changes-ignored-in-focusable.html"
     },
     {
-        "duration": "19.0",
+        "duration": "20.0",
         "name": "blink_perf.accessibility/text-changes-unignored-in-focusable-scrollable.html"
     },
     {
-        "duration": "19.0",
+        "duration": "20.0",
         "name": "blink_perf.accessibility/text-changes-unignored-in-focusable.html"
     },
     {
@@ -104,7 +104,7 @@
         "name": "blink_perf.accessibility/unassignable-slots-wide-tree.html"
     },
     {
-        "duration": "25.0",
+        "duration": "23.0",
         "name": "blink_perf.accessibility/very-many-nodes.html"
     },
     {
@@ -124,7 +124,7 @@
         "name": "blink_perf.bindings/dom-attribute-on-prototoype.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.bindings/first-child.html"
     },
     {
@@ -132,11 +132,11 @@
         "name": "blink_perf.bindings/gc-forest.html"
     },
     {
-        "duration": "2.0",
+        "duration": "3.0",
         "name": "blink_perf.bindings/gc-mini-tree.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.bindings/gc-tree.html"
     },
     {
@@ -156,7 +156,7 @@
         "name": "blink_perf.bindings/get-elements-by-tag-name.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.bindings/id-getter.html"
     },
     {
@@ -176,7 +176,7 @@
         "name": "blink_perf.bindings/named-property-enumerator.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.bindings/node-list-access.html"
     },
     {
@@ -184,7 +184,7 @@
         "name": "blink_perf.bindings/node-type.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.bindings/post-message.html"
     },
     {
@@ -192,7 +192,7 @@
         "name": "blink_perf.bindings/sequence-conversion-array.html"
     },
     {
-        "duration": "6.0",
+        "duration": "8.0",
         "name": "blink_perf.bindings/sequence-conversion-custom-iterator.html"
     },
     {
@@ -236,11 +236,11 @@
         "name": "blink_perf.bindings/structured-clone-long-string-serialize.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.bindings/typed-array-construct-from-array.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.bindings/typed-array-construct-from-same-type.html"
     },
     {
@@ -272,7 +272,7 @@
         "name": "blink_perf.bindings/wasm_webgl_through_js.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.bindings/worker-structured-clone-different-payloads.html"
     },
     {
@@ -280,7 +280,7 @@
         "name": "blink_perf.bindings/worker-structured-clone-json-from-worker.html"
     },
     {
-        "duration": "5.0",
+        "duration": "6.0",
         "name": "blink_perf.bindings/worker-structured-clone-json-roundtrip.html"
     },
     {
@@ -288,7 +288,7 @@
         "name": "blink_perf.bindings/worker-structured-clone-json-to-worker.html"
     },
     {
-        "duration": "4.0",
+        "duration": "3.0",
         "name": "blink_perf.bindings/worker-structured-clone-workerDOM-DBMon-from-worker.html"
     },
     {
@@ -304,15 +304,15 @@
         "name": "blink_perf.bindings/worker-text-encoded-transferable-roundtrip.html"
     },
     {
-        "duration": "4.0",
+        "duration": "6.0",
         "name": "blink_perf.bindings/worker-text-encoded-transferable-to-worker.html"
     },
     {
-        "duration": "4.0",
+        "duration": "5.0",
         "name": "blink_perf.bindings/worker-transferable-from-worker.html"
     },
     {
-        "duration": "4.0",
+        "duration": "5.0",
         "name": "blink_perf.bindings/worker-transferable-roundtrip.html"
     },
     {
@@ -328,7 +328,7 @@
         "name": "blink_perf.css/AtScopeAncestor.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.css/AtScopeInsertion.html"
     },
     {
@@ -344,7 +344,7 @@
         "name": "blink_perf.css/CSSCountersCreate.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.css/CSSLogicalDirection.html"
     },
     {
@@ -352,7 +352,7 @@
         "name": "blink_perf.css/CSSPropertySetterGetter.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.css/CSSPropertySetterGetterMethods.html"
     },
     {
@@ -368,7 +368,7 @@
         "name": "blink_perf.css/ChangeStyleCSSVariableRecalc.html"
     },
     {
-        "duration": "3.0",
+        "duration": "4.0",
         "name": "blink_perf.css/ChangeStyleChildClassSelector.html"
     },
     {
@@ -392,7 +392,7 @@
         "name": "blink_perf.css/ChangeStyleMultipleClassSelector.html"
     },
     {
-        "duration": "3.0",
+        "duration": "4.0",
         "name": "blink_perf.css/ChangeStyleMultipleQualifiedDataAttributesWithValuesSelector.html"
     },
     {
@@ -400,7 +400,7 @@
         "name": "blink_perf.css/ChangeStyleNestedPseudoSelector.html"
     },
     {
-        "duration": "8.0",
+        "duration": "9.0",
         "name": "blink_perf.css/ChangeStyleNewRuleInExistingStylesheet.html"
     },
     {
@@ -408,7 +408,7 @@
         "name": "blink_perf.css/ChangeStylePairOfNthChildSelector.html"
     },
     {
-        "duration": "3.0",
+        "duration": "4.0",
         "name": "blink_perf.css/ChangeStylePartialAttributeMatchingSelector.html"
     },
     {
@@ -432,7 +432,7 @@
         "name": "blink_perf.css/ChangeStyleSingleNthChildSelector.html"
     },
     {
-        "duration": "3.0",
+        "duration": "4.0",
         "name": "blink_perf.css/ChangeStyleSinglePseudoSelector.html"
     },
     {
@@ -440,7 +440,7 @@
         "name": "blink_perf.css/ChangeStyleUniversalSelector.html"
     },
     {
-        "duration": "3.0",
+        "duration": "4.0",
         "name": "blink_perf.css/ChangeStyleUnqualifiedDataAttributeSelector.html"
     },
     {
@@ -452,7 +452,7 @@
         "name": "blink_perf.css/ChangeStyleUnrelatedAttributeSelector.html"
     },
     {
-        "duration": "10.0",
+        "duration": "11.0",
         "name": "blink_perf.css/ClassDescendantSelector.html"
     },
     {
@@ -460,7 +460,7 @@
         "name": "blink_perf.css/ClassInvalidation.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.css/CustomPropertiesCascade.html"
     },
     {
@@ -472,15 +472,15 @@
         "name": "blink_perf.css/CustomPropertiesIdenticalSets.html"
     },
     {
-        "duration": "3.0",
+        "duration": "4.0",
         "name": "blink_perf.css/CustomPropertiesLargeRootSet.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.css/CustomPropertiesNonRootInheritance.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.css/CustomPropertiesPendingSubstitution.html"
     },
     {
@@ -488,7 +488,7 @@
         "name": "blink_perf.css/CustomPropertiesRootInheritance.html"
     },
     {
-        "duration": "1.0",
+        "duration": "3.0",
         "name": "blink_perf.css/CustomPropertiesVarAlias.html"
     },
     {
@@ -500,15 +500,15 @@
         "name": "blink_perf.css/FocusUpdate.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.css/HasDescendantInAncestorPositionInvalidation.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.css/HasDescendantInvalidation.html"
     },
     {
-        "duration": "6.0",
+        "duration": "8.0",
         "name": "blink_perf.css/HasDescendantInvalidationAllSubjects.html"
     },
     {
@@ -516,15 +516,15 @@
         "name": "blink_perf.css/HasDescendantInvalidationMultipleSubjects.html"
     },
     {
-        "duration": "7.0",
+        "duration": "10.0",
         "name": "blink_perf.css/HasDescendantInvalidationWith1NonMatchingHasRule.html"
     },
     {
-        "duration": "6.0",
+        "duration": "9.0",
         "name": "blink_perf.css/HasDescendantInvalidationWithMultipleNonMatchingHasRules.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.css/HasDescendantInvalidationWithoutNonMatchingHasRule.html"
     },
     {
@@ -532,7 +532,7 @@
         "name": "blink_perf.css/HasInvalidationFiltering.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.css/HasSiblingDescendantInvalidation.html"
     },
     {
@@ -540,31 +540,31 @@
         "name": "blink_perf.css/HasSiblingDescendantInvalidationAllSubjects.html"
     },
     {
-        "duration": "6.0",
+        "duration": "8.0",
         "name": "blink_perf.css/HasSiblingInvalidation.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.css/HasSiblingInvalidationAllSubjects.html"
     },
     {
-        "duration": "1.0",
+        "duration": "3.0",
         "name": "blink_perf.css/HighlightInheritanceRecalc.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.css/HighlightInheritanceSelected.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.css/ImplicitAtScope.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.css/ImplicitAtScopeInsertion.html"
     },
     {
-        "duration": "1.0",
+        "duration": "4.0",
         "name": "blink_perf.css/ImplicitAtScopeMatching.html"
     },
     {
@@ -572,7 +572,7 @@
         "name": "blink_perf.css/ImplicitScopeShared.html"
     },
     {
-        "duration": "3.0",
+        "duration": "4.0",
         "name": "blink_perf.css/LoadBootstrapBlog.html"
     },
     {
@@ -580,15 +580,15 @@
         "name": "blink_perf.css/LoadMaterializeStarterPage.html"
     },
     {
-        "duration": "4.0",
+        "duration": "6.0",
         "name": "blink_perf.css/LoadSemanticPageExample.html"
     },
     {
-        "duration": "20.0",
+        "duration": "22.0",
         "name": "blink_perf.css/ModifySelectorText.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.css/NamedContainerLookup.html"
     },
     {
@@ -600,7 +600,7 @@
         "name": "blink_perf.css/NestingIdentKnownProperty.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.css/NestingIdentLeadingBraces.html"
     },
     {
@@ -612,7 +612,7 @@
         "name": "blink_perf.css/PseudoClassSelectors.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.css/ScrollbarPseudoSelector.html"
     },
     {
@@ -632,11 +632,11 @@
         "name": "blink_perf.dom/custom-element-default-style.html"
     },
     {
-        "duration": "20.0",
+        "duration": "19.0",
         "name": "blink_perf.dom/customizable-select-single-add.html"
     },
     {
-        "duration": "16.0",
+        "duration": "18.0",
         "name": "blink_perf.dom/customizable-select-single-remove.html"
     },
     {
@@ -644,19 +644,19 @@
         "name": "blink_perf.dom/deep-tree-clonenode.html"
     },
     {
-        "duration": "14.0",
+        "duration": "16.0",
         "name": "blink_perf.dom/dom-parts-api-flat-append.html"
     },
     {
-        "duration": "14.0",
+        "duration": "16.0",
         "name": "blink_perf.dom/dom-parts-api-flat-clone.html"
     },
     {
-        "duration": "14.0",
+        "duration": "15.0",
         "name": "blink_perf.dom/dom-parts-api-flat-parts.html"
     },
     {
-        "duration": "15.0",
+        "duration": "16.0",
         "name": "blink_perf.dom/dom-parts-api-manual-append.html"
     },
     {
@@ -664,11 +664,11 @@
         "name": "blink_perf.dom/dom-parts-api-manual-clone.html"
     },
     {
-        "duration": "15.0",
+        "duration": "16.0",
         "name": "blink_perf.dom/dom-parts-api-manual-parts.html"
     },
     {
-        "duration": "14.0",
+        "duration": "17.0",
         "name": "blink_perf.dom/dom-parts-api-nested-append.html"
     },
     {
@@ -676,15 +676,15 @@
         "name": "blink_perf.dom/dom-parts-api-nested-clone.html"
     },
     {
-        "duration": "14.0",
+        "duration": "15.0",
         "name": "blink_perf.dom/dom-parts-api-nested-parts.html"
     },
     {
-        "duration": "19.0",
+        "duration": "20.0",
         "name": "blink_perf.dom/insert-text-with-dir-auto.html"
     },
     {
-        "duration": "5.0",
+        "duration": "6.0",
         "name": "blink_perf.dom/long-sibling-list.html"
     },
     {
@@ -692,15 +692,15 @@
         "name": "blink_perf.dom/modify-element-classname.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.dom/modify-element-id.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.dom/modify-element-title.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.dom/replace-text-with-dir-auto.html"
     },
     {
@@ -716,7 +716,7 @@
         "name": "blink_perf.dom/select-single-add.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.dom/select-single-remove.html"
     },
     {
@@ -724,7 +724,7 @@
         "name": "blink_perf.events/EventsDispatching.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.events/EventsDispatchingInDeeplyNestedV1ShadowTrees.html"
     },
     {
@@ -792,11 +792,11 @@
         "name": "blink_perf.layout/CJK-article.html"
     },
     {
-        "duration": "4.0",
+        "duration": "3.0",
         "name": "blink_perf.layout/Shapes/MultipleShapes.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/SimpleTextPathLineLayout.html"
     },
     {
@@ -828,7 +828,7 @@
         "name": "blink_perf.layout/auto-grid-lots-of-data.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/auto-grid-lots-of-spanning-data.html"
     },
     {
@@ -836,7 +836,7 @@
         "name": "blink_perf.layout/chapter-reflow-once-random.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/chapter-reflow-once.html"
     },
     {
@@ -852,7 +852,7 @@
         "name": "blink_perf.layout/chapter-reflow.html"
     },
     {
-        "duration": "1.0",
+        "duration": "4.0",
         "name": "blink_perf.layout/character_fallback.html"
     },
     {
@@ -920,15 +920,15 @@
         "name": "blink_perf.layout/fixed-grid-lots-of-stretched-data.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/flexbox-column-nowrap.html"
     },
     {
-        "duration": "6.0",
+        "duration": "8.0",
         "name": "blink_perf.layout/flexbox-column-wrap.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/flexbox-deeply-nested-column-flow.html"
     },
     {
@@ -944,7 +944,7 @@
         "name": "blink_perf.layout/flexbox-input.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.layout/flexbox-lots-of-data.html"
     },
     {
@@ -960,7 +960,7 @@
         "name": "blink_perf.layout/flexbox-row-stretch-height-definite.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/flexbox-row-stretch-height-indefinite.html"
     },
     {
@@ -980,7 +980,7 @@
         "name": "blink_perf.layout/floats_100_100.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.layout/floats_100_100_nested.html"
     },
     {
@@ -1000,7 +1000,7 @@
         "name": "blink_perf.layout/floats_2_100.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.layout/floats_2_100_nested.html"
     },
     {
@@ -1008,7 +1008,7 @@
         "name": "blink_perf.layout/floats_50_100.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.layout/floats_50_100_nested.html"
     },
     {
@@ -1016,11 +1016,11 @@
         "name": "blink_perf.layout/floats_show_hide.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.layout/gap-decorations-fixed-grid-lots-of-data.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.layout/gap-decorations-flexbox-lots-of-data.html"
     },
     {
@@ -1036,7 +1036,7 @@
         "name": "blink_perf.layout/grid-with-block-constraints-dependence.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/hindi-line-layout.html"
     },
     {
@@ -1044,7 +1044,7 @@
         "name": "blink_perf.layout/hittest-block-children.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/hittest-nested-inline-blocks-listbased.html"
     },
     {
@@ -1052,7 +1052,7 @@
         "name": "blink_perf.layout/japanese-kokoro-insert.html"
     },
     {
-        "duration": "11.0",
+        "duration": "13.0",
         "name": "blink_perf.layout/large-grid.html"
     },
     {
@@ -1072,7 +1072,7 @@
         "name": "blink_perf.layout/large-table-with-collapsed-borders-and-no-colspans.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.layout/latin-ebook-french.html"
     },
     {
@@ -1080,7 +1080,7 @@
         "name": "blink_perf.layout/latin-ebook-resize.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.layout/latin-ebook.html"
     },
     {
@@ -1092,15 +1092,15 @@
         "name": "blink_perf.layout/layers_overlap_2d.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.layout/layers_overlap_3d.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.layout/line-layout-fit-content-break-word.html"
     },
     {
-        "duration": "2.0",
+        "duration": "3.0",
         "name": "blink_perf.layout/line-layout-fit-content.html"
     },
     {
@@ -1116,7 +1116,7 @@
         "name": "blink_perf.layout/line-layout-repeat-append.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/line-layout.html"
     },
     {
@@ -1124,7 +1124,7 @@
         "name": "blink_perf.layout/long-line-nowrap-collapse.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.layout/long-line-nowrap-spans-collapse.html"
     },
     {
@@ -1156,7 +1156,7 @@
         "name": "blink_perf.layout/multicol/balance-tables-with-break-inside-avoidance.html"
     },
     {
-        "duration": "6.0",
+        "duration": "9.0",
         "name": "blink_perf.layout/multicol/deeply-nested-tables-2.html"
     },
     {
@@ -1164,7 +1164,7 @@
         "name": "blink_perf.layout/multicol/deeply-nested-tables.html"
     },
     {
-        "duration": "9.0",
+        "duration": "8.0",
         "name": "blink_perf.layout/multicol/fixed-height-with-spanner-and-nested-tables.html"
     },
     {
@@ -1204,7 +1204,7 @@
         "name": "blink_perf.layout/multicol/tall-content-short-columns-realistic.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.layout/multicol/tall-content-short-columns.html"
     },
     {
@@ -1212,7 +1212,7 @@
         "name": "blink_perf.layout/nested-blocks-with-percent-height-and-max-height.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/nested-grid-lots-of-tracks.html"
     },
     {
@@ -1220,7 +1220,7 @@
         "name": "blink_perf.layout/nested-grid.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/nested-percent-height-tables.html"
     },
     {
@@ -1232,7 +1232,7 @@
         "name": "blink_perf.layout/nested-tables-with-overflow-auto.html"
     },
     {
-        "duration": "11.0",
+        "duration": "9.0",
         "name": "blink_perf.layout/ruby.html"
     },
     {
@@ -1244,7 +1244,7 @@
         "name": "blink_perf.layout/subtree-layout-scrollable-area.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/text-wrap-balance.html"
     },
     {
@@ -1252,7 +1252,7 @@
         "name": "blink_perf.layout/vertical-japanese-kokoro-insert.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.layout/word-break-break-all.html"
     },
     {
@@ -1260,7 +1260,7 @@
         "name": "blink_perf.layout/word-break-break-word.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.layout/word-wrap-break-word.html"
     },
     {
@@ -1272,7 +1272,7 @@
         "name": "blink_perf.owp_storage/blob-perf-ipc.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.owp_storage/blob-perf-shm.html"
     },
     {
@@ -1284,7 +1284,7 @@
         "name": "blink_perf.owp_storage/idb-load-docs.html"
     },
     {
-        "duration": "9.0",
+        "duration": "8.0",
         "name": "blink_perf.owp_storage/mail-client-read.html"
     },
     {
@@ -1292,11 +1292,11 @@
         "name": "blink_perf.owp_storage/mail-client-sync.html"
     },
     {
-        "duration": "67.0",
+        "duration": "65.0",
         "name": "blink_perf.owp_storage/mail-client-version-upgrade.html"
     },
     {
-        "duration": "40.0",
+        "duration": "39.0",
         "name": "blink_perf.owp_storage/mail-client-write.html"
     },
     {
@@ -1308,7 +1308,7 @@
         "name": "blink_perf.paint/background-in-multicol.html"
     },
     {
-        "duration": "9.0",
+        "duration": "10.0",
         "name": "blink_perf.paint/color-changes.html"
     },
     {
@@ -1316,7 +1316,7 @@
         "name": "blink_perf.paint/complex-content-slow-scroll.html"
     },
     {
-        "duration": "10.0",
+        "duration": "11.0",
         "name": "blink_perf.paint/contain-update-layer-tree.html"
     },
     {
@@ -1336,7 +1336,7 @@
         "name": "blink_perf.paint/custom-highlights.html"
     },
     {
-        "duration": "6.0",
+        "duration": "9.0",
         "name": "blink_perf.paint/fixed-and-many-layers-scroll.html"
     },
     {
@@ -1352,7 +1352,7 @@
         "name": "blink_perf.paint/gap-decorations-multicol.html"
     },
     {
-        "duration": "10.0",
+        "duration": "9.0",
         "name": "blink_perf.paint/large-table-background-change.html"
     },
     {
@@ -1372,7 +1372,7 @@
         "name": "blink_perf.paint/paint-offset-changes.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.paint/relpos-inline-in-multicol.html"
     },
     {
@@ -1380,7 +1380,7 @@
         "name": "blink_perf.paint/spelling-errors.html"
     },
     {
-        "duration": "7.0",
+        "duration": "9.0",
         "name": "blink_perf.paint/transform-changes.html"
     },
     {
@@ -1392,7 +1392,7 @@
         "name": "blink_perf.paint/wavy-decorations-many.html"
     },
     {
-        "duration": "9.0",
+        "duration": "10.0",
         "name": "blink_perf.parser/css-parser-yui.html"
     },
     {
@@ -1420,11 +1420,11 @@
         "name": "blink_perf.parser/innerHTML-setter-siblings.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.parser/innerHTML-setter.html"
     },
     {
-        "duration": "6.0",
+        "duration": "8.0",
         "name": "blink_perf.parser/query-selector-all-attribute-complex.html"
     },
     {
@@ -1432,7 +1432,7 @@
         "name": "blink_perf.parser/query-selector-all-attribute.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.parser/query-selector-all-class-deep.html"
     },
     {
@@ -1460,7 +1460,7 @@
         "name": "blink_perf.parser/query-selector-all-id-deep.html"
     },
     {
-        "duration": "6.0",
+        "duration": "8.0",
         "name": "blink_perf.parser/query-selector-all-id-first.html"
     },
     {
@@ -1496,7 +1496,7 @@
         "name": "blink_perf.parser/simple-url.html"
     },
     {
-        "duration": "9.0",
+        "duration": "11.0",
         "name": "blink_perf.parser/textarea-parsing.html"
     },
     {
@@ -1508,7 +1508,7 @@
         "name": "blink_perf.parser/url-parser.html"
     },
     {
-        "duration": "7.0",
+        "duration": "9.0",
         "name": "blink_perf.parser/xml-parser.html"
     },
     {
@@ -1520,23 +1520,23 @@
         "name": "blink_perf.shadow_dom/imperative-api-appendchild.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.shadow_dom/imperative-api-assign.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.shadow_dom/imperative-api-assigned-elements.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.shadow_dom/imperative-api-assigned-slot.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.shadow_dom/imperative-api-custom-detail-summary-large.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.shadow_dom/imperative-api-custom-detail-summary.html"
     },
     {
@@ -1568,11 +1568,11 @@
         "name": "blink_perf.shadow_dom/shadow-dom-overhead.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.shadow_dom/shadow-style-share-attr-selectors.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.shadow_dom/shadow-style-share-media-query.html"
     },
     {
@@ -1584,7 +1584,7 @@
         "name": "blink_perf.shadow_dom/shadow-style-share.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.shadow_dom/style-sheet-insert.html"
     },
     {
@@ -1604,11 +1604,11 @@
         "name": "blink_perf.shadow_dom/v1-large-deep-distribution.html"
     },
     {
-        "duration": "7.0",
+        "duration": "6.0",
         "name": "blink_perf.shadow_dom/v1-large-deep-layout.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.shadow_dom/v1-large-shallow-append-layout.html"
     },
     {
@@ -1624,7 +1624,7 @@
         "name": "blink_perf.shadow_dom/v1-large-shallow-prepend-layout.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.shadow_dom/v1-mutate-deep-tree-then-re-layout.html"
     },
     {
@@ -1632,7 +1632,7 @@
         "name": "blink_perf.shadow_dom/v1-mutate-deep-tree-then-slot-assigned-nodes.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.shadow_dom/v1-mutate-deep-tree-then-slot-flatten.html"
     },
     {
@@ -1652,7 +1652,7 @@
         "name": "blink_perf.shadow_dom/v1-slot-append.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.shadow_dom/v1-small-deep-distribution.html"
     },
     {
@@ -1672,11 +1672,11 @@
         "name": "blink_perf.svg/AzLizardBenjiPark.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.svg/Bamboo.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.svg/Cactus.html"
     },
     {
@@ -1700,7 +1700,7 @@
         "name": "blink_perf.svg/DropsOnABlade.html"
     },
     {
-        "duration": "1.0",
+        "duration": "3.0",
         "name": "blink_perf.svg/FlowerFromMyGarden.html"
     },
     {
@@ -1736,11 +1736,11 @@
         "name": "blink_perf.svg/Samurai.html"
     },
     {
-        "duration": "13.0",
+        "duration": "14.0",
         "name": "blink_perf.svg/SierpinskiCarpet.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.svg/SvgCubics.html"
     },
     {
@@ -1772,7 +1772,7 @@
         "name": "blink_perf.webaudio/audio-worklet-node.html"
     },
     {
-        "duration": "20.0",
+        "duration": "21.0",
         "name": "blink_perf.webaudio/biquad-filter-node.html"
     },
     {
@@ -1780,7 +1780,7 @@
         "name": "blink_perf.webaudio/dynamics-compressor-node-knee.html"
     },
     {
-        "duration": "21.0",
+        "duration": "20.0",
         "name": "blink_perf.webaudio/dynamics-compressor-node-post-knee.html"
     },
     {
@@ -1804,11 +1804,11 @@
         "name": "blink_perf.webcodecs/hardware-video-encoding.html"
     },
     {
-        "duration": "4.0",
+        "duration": "5.0",
         "name": "blink_perf.webcodecs/software-video-encoding.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.webcodecs/videoFrame-batch-copyTo-canvas.html"
     },
     {
@@ -1820,11 +1820,11 @@
         "name": "blink_perf.webcodecs/videoFrame-copyTo-videoDecoder.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.webcodecs/videoFrame-createImageBitmap-canvas.html"
     },
     {
-        "duration": "4.0",
+        "duration": "3.0",
         "name": "blink_perf.webcodecs/videoFrame-createImageBitmap-imageDecoder.html"
     },
     {
@@ -1840,7 +1840,7 @@
         "name": "blink_perf.webcodecs/videoFrame-drawImage-scaled.html"
     },
     {
-        "duration": "2.0",
+        "duration": "3.0",
         "name": "blink_perf.webcodecs/videoFrame-drawImage.html"
     },
     {
@@ -1856,7 +1856,7 @@
         "name": "blink_perf.webgl/binding-draw-arrays.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.webgl/binding-typed-array-uniforms.html"
     },
     {
@@ -1868,7 +1868,7 @@
         "name": "blink_perf.webgpu/async-1-map-read-after-no-work.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.webgpu/async-2-map-read-after-unrelated-submit.html"
     },
     {
@@ -1880,7 +1880,7 @@
         "name": "blink_perf.webgpu/async-map-write-after-related-submit.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.webgpu/binding-draw.html"
     },
     {
@@ -1896,11 +1896,11 @@
         "name": "dummy_benchmark.stable_benchmark_1/dummy_page.html"
     },
     {
-        "duration": "61.0",
+        "duration": "62.0",
         "name": "jetstream2/JetStream2"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "media.desktop/mse.html?media=aac_audio.mp4"
     },
     {
@@ -1920,7 +1920,7 @@
         "name": "media.desktop/mse.html?media=tulip2.vp9.webm"
     },
     {
-        "duration": "126.0",
+        "duration": "127.0",
         "name": "media.desktop/video.html?src=boat_1080p60fps_vp9.webm"
     },
     {
@@ -1928,7 +1928,7 @@
         "name": "media.desktop/video.html?src=crowd1080.mp4"
     },
     {
-        "duration": "15.0",
+        "duration": "16.0",
         "name": "media.desktop/video.html?src=crowd1080.webm"
     },
     {
@@ -1952,7 +1952,7 @@
         "name": "media.desktop/video.html?src=smpte_3840x2160_60fps_vp9.webm&seek"
     },
     {
-        "duration": "14.0",
+        "duration": "13.0",
         "name": "media.desktop/video.html?src=tulip0.av1.mp4"
     },
     {
@@ -2016,7 +2016,7 @@
         "name": "memory.desktop/TrivialCanvasPageSharedPageState"
     },
     {
-        "duration": "14.0",
+        "duration": "13.0",
         "name": "memory.desktop/TrivialFullscreenVideoPageSharedPageState"
     },
     {
@@ -2040,11 +2040,11 @@
         "name": "octane/Octane"
     },
     {
-        "duration": "33.0",
+        "duration": "32.0",
         "name": "power.desktop/TrivialAnimationPageSharedPageState"
     },
     {
-        "duration": "34.0",
+        "duration": "33.0",
         "name": "power.desktop/TrivialBlinkingCursorPageSharedPageState"
     },
     {
@@ -2052,7 +2052,7 @@
         "name": "power.desktop/TrivialBlurAnimationPageSharedPageState"
     },
     {
-        "duration": "34.0",
+        "duration": "33.0",
         "name": "power.desktop/TrivialCanvasPageSharedPageState"
     },
     {
@@ -2076,7 +2076,7 @@
         "name": "power.desktop/abcnews"
     },
     {
-        "duration": "33.0",
+        "duration": "32.0",
         "name": "power.desktop/indiatimes"
     },
     {
@@ -2092,7 +2092,7 @@
         "name": "power.desktop/sina"
     },
     {
-        "duration": "36.0",
+        "duration": "35.0",
         "name": "power.desktop/slideshare"
     },
     {
@@ -2100,7 +2100,7 @@
         "name": "power.desktop/uol"
     },
     {
-        "duration": "27.0",
+        "duration": "28.0",
         "name": "speedometer2-future/Speedometer2"
     },
     {
@@ -2108,7 +2108,7 @@
         "name": "speedometer2-predictable/Speedometer2"
     },
     {
-        "duration": "27.0",
+        "duration": "28.0",
         "name": "speedometer2/Speedometer2"
     },
     {
@@ -2144,7 +2144,7 @@
         "name": "webrtc/codec_constraints_vp9"
     },
     {
-        "duration": "24.0",
+        "duration": "23.0",
         "name": "webrtc/encoded_insertable_streams"
     },
     {
@@ -2180,7 +2180,7 @@
         "name": "webrtc/insertable_streams_video_processing_video_webgl_video"
     },
     {
-        "duration": "24.0",
+        "duration": "23.0",
         "name": "webrtc/multiple_peerconnections"
     },
     {
@@ -2192,19 +2192,19 @@
         "name": "webrtc/pause_play_peerconnections"
     },
     {
-        "duration": "5.0",
-        "name": "tracing_perftests/_gtest_"
-    },
-    {
         "duration": "180.0",
         "name": "tint_benchmark/_gtest_"
     },
     {
-        "duration": "3.0",
-        "name": "load_library_perf_tests/_gtest_"
+        "duration": "5.0",
+        "name": "tracing_perftests/_gtest_"
     },
     {
         "duration": "200.0",
         "name": "base_perftests/_gtest_"
+    },
+    {
+        "duration": "3.0",
+        "name": "load_library_perf_tests/_gtest_"
     }
 ]

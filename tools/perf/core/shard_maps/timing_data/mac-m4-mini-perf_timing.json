@@ -1,22 +1,22 @@
 [
     {
-        "duration": "23.0",
+        "duration": "24.0",
         "name": "blink_perf.accessibility/build-table.html"
     },
     {
-        "duration": "21.0",
+        "duration": "22.0",
         "name": "blink_perf.accessibility/focus-links.html"
     },
     {
-        "duration": "20.0",
+        "duration": "22.0",
         "name": "blink_perf.accessibility/insert-block-child-after-many-inline-children.html"
     },
     {
-        "duration": "20.0",
+        "duration": "22.0",
         "name": "blink_perf.accessibility/line-breaks.html"
     },
     {
-        "duration": "20.0",
+        "duration": "21.0",
         "name": "blink_perf.accessibility/location-changes-css-animation.html"
     },
     {
@@ -28,7 +28,7 @@
         "name": "blink_perf.accessibility/location-changes-scrolling-content-visibility-auto.html"
     },
     {
-        "duration": "103.0",
+        "duration": "102.0",
         "name": "blink_perf.accessibility/location-changes-scrolling.html"
     },
     {
@@ -36,7 +36,7 @@
         "name": "blink_perf.accessibility/many-nested-click-listeners.html"
     },
     {
-        "duration": "21.0",
+        "duration": "20.0",
         "name": "blink_perf.accessibility/many-nodes-toggle-aria-hidden.html"
     },
     {
@@ -44,7 +44,7 @@
         "name": "blink_perf.accessibility/many-nodes-toggle-content-visibility-auto.html"
     },
     {
-        "duration": "21.0",
+        "duration": "20.0",
         "name": "blink_perf.accessibility/many-nodes-toggle-content-visibility-hidden.html"
     },
     {
@@ -72,7 +72,7 @@
         "name": "blink_perf.accessibility/many-text-changes-small-wait-between.html"
     },
     {
-        "duration": "23.0",
+        "duration": "22.0",
         "name": "blink_perf.accessibility/slot-updates.html"
     },
     {
@@ -92,7 +92,7 @@
         "name": "blink_perf.accessibility/textarea-append.html"
     },
     {
-        "duration": "21.0",
+        "duration": "20.0",
         "name": "blink_perf.accessibility/unassignable-slots-deep-tree.html"
     },
     {
@@ -104,7 +104,7 @@
         "name": "blink_perf.accessibility/unassignable-slots-wide-tree.html"
     },
     {
-        "duration": "25.0",
+        "duration": "27.0",
         "name": "blink_perf.accessibility/very-many-nodes.html"
     },
     {
@@ -192,7 +192,7 @@
         "name": "blink_perf.bindings/sequence-conversion-array.html"
     },
     {
-        "duration": "9.0",
+        "duration": "8.0",
         "name": "blink_perf.bindings/sequence-conversion-custom-iterator.html"
     },
     {
@@ -400,7 +400,7 @@
         "name": "blink_perf.css/ChangeStyleNestedPseudoSelector.html"
     },
     {
-        "duration": "4.0",
+        "duration": "5.0",
         "name": "blink_perf.css/ChangeStyleNewRuleInExistingStylesheet.html"
     },
     {
@@ -436,7 +436,7 @@
         "name": "blink_perf.css/ChangeStyleSinglePseudoSelector.html"
     },
     {
-        "duration": "3.0",
+        "duration": "4.0",
         "name": "blink_perf.css/ChangeStyleUniversalSelector.html"
     },
     {
@@ -584,7 +584,7 @@
         "name": "blink_perf.css/LoadSemanticPageExample.html"
     },
     {
-        "duration": "15.0",
+        "duration": "14.0",
         "name": "blink_perf.css/ModifySelectorText.html"
     },
     {
@@ -620,39 +620,39 @@
         "name": "blink_perf.css/SelectorCountScaling.html"
     },
     {
-        "duration": "10.0",
+        "duration": "9.0",
         "name": "blink_perf.dom/clone-node-containing-form-elements-inserted-into-collection.html"
     },
     {
-        "duration": "10.0",
+        "duration": "9.0",
         "name": "blink_perf.dom/custom-element-default-style-with-shadow.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.dom/custom-element-default-style.html"
     },
     {
-        "duration": "28.0",
+        "duration": "26.0",
         "name": "blink_perf.dom/customizable-select-single-add.html"
     },
     {
-        "duration": "28.0",
+        "duration": "27.0",
         "name": "blink_perf.dom/customizable-select-single-remove.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.dom/deep-tree-clonenode.html"
     },
     {
-        "duration": "9.0",
+        "duration": "10.0",
         "name": "blink_perf.dom/dom-parts-api-flat-append.html"
     },
     {
-        "duration": "9.0",
+        "duration": "10.0",
         "name": "blink_perf.dom/dom-parts-api-flat-clone.html"
     },
     {
-        "duration": "9.0",
+        "duration": "10.0",
         "name": "blink_perf.dom/dom-parts-api-flat-parts.html"
     },
     {
@@ -692,7 +692,7 @@
         "name": "blink_perf.dom/modify-element-classname.html"
     },
     {
-        "duration": "2.0",
+        "duration": "1.0",
         "name": "blink_perf.dom/modify-element-id.html"
     },
     {
@@ -780,7 +780,7 @@
         "name": "blink_perf.image_decoder/decode-png-palette.html"
     },
     {
-        "duration": "7.0",
+        "duration": "6.0",
         "name": "blink_perf.image_decoder/decode-png.html"
     },
     {
@@ -820,7 +820,7 @@
         "name": "blink_perf.layout/attach-inlines-2.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/attach-inlines.html"
     },
     {
@@ -852,7 +852,7 @@
         "name": "blink_perf.layout/chapter-reflow.html"
     },
     {
-        "duration": "4.0",
+        "duration": "3.0",
         "name": "blink_perf.layout/character_fallback.html"
     },
     {
@@ -892,7 +892,7 @@
         "name": "blink_perf.layout/editing_append_single_line.html"
     },
     {
-        "duration": "7.0",
+        "duration": "6.0",
         "name": "blink_perf.layout/editing_delete.html"
     },
     {
@@ -936,7 +936,7 @@
         "name": "blink_perf.layout/flexbox-deeply-nested-with-ortho-flow.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/flexbox-hittest.html"
     },
     {
@@ -1064,7 +1064,7 @@
         "name": "blink_perf.layout/large-table-with-collapsed-borders-and-colspans-wider-than-table.html"
     },
     {
-        "duration": "3.0",
+        "duration": "4.0",
         "name": "blink_perf.layout/large-table-with-collapsed-borders-and-colspans.html"
     },
     {
@@ -1152,7 +1152,7 @@
         "name": "blink_perf.layout/multicol/balance-list-items-with-tall-marker.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/multicol/balance-tables-with-break-inside-avoidance.html"
     },
     {
@@ -1172,11 +1172,11 @@
         "name": "blink_perf.layout/multicol/large-inline-formatting-context.html"
     },
     {
-        "duration": "7.0",
+        "duration": "6.0",
         "name": "blink_perf.layout/multicol/lots-of-small-nested-unbreakable-blocks-autofill.html"
     },
     {
-        "duration": "9.0",
+        "duration": "8.0",
         "name": "blink_perf.layout/multicol/lots-of-small-unbreakable-blocks-autofill.html"
     },
     {
@@ -1444,7 +1444,7 @@
         "name": "blink_perf.shadow_dom/imperative-api-custom-detail-summary-large.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.shadow_dom/imperative-api-custom-detail-summary.html"
     },
     {
@@ -1532,7 +1532,7 @@
         "name": "blink_perf.shadow_dom/v1-large-shallow-prepend-layout.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.shadow_dom/v1-mutate-deep-tree-then-re-layout.html"
     },
     {
@@ -1736,11 +1736,11 @@
         "name": "media.desktop/mse.html?media=tulip2.vp9.webm"
     },
     {
-        "duration": "134.0",
+        "duration": "133.0",
         "name": "media.desktop/video.html?src=boat_1080p60fps_vp9.webm"
     },
     {
-        "duration": "21.0",
+        "duration": "20.0",
         "name": "media.desktop/video.html?src=crowd1080.mp4"
     },
     {
@@ -1748,11 +1748,11 @@
         "name": "media.desktop/video.html?src=crowd1080.webm"
     },
     {
-        "duration": "20.0",
+        "duration": "19.0",
         "name": "media.desktop/video.html?src=crowd1080_vp9.webm"
     },
     {
-        "duration": "134.0",
+        "duration": "133.0",
         "name": "media.desktop/video.html?src=foodmarket_720p30fps.mp4"
     },
     {
@@ -1772,7 +1772,7 @@
         "name": "media.desktop/video.html?src=tulip0.av1.mp4"
     },
     {
-        "duration": "9.0",
+        "duration": "10.0",
         "name": "media.desktop/video.html?src=tulip0.av1.mp4&seek"
     },
     {
@@ -1812,7 +1812,7 @@
         "name": "media.desktop/video.html?src=tulip2.vp9.webm&background"
     },
     {
-        "duration": "28.0",
+        "duration": "27.0",
         "name": "media.desktop/video.html?src=tulip2.vp9.webm_WiFi"
     },
     {
@@ -1832,7 +1832,7 @@
         "name": "memory.desktop/TrivialCanvasPageSharedPageState"
     },
     {
-        "duration": "17.0",
+        "duration": "16.0",
         "name": "memory.desktop/TrivialFullscreenVideoPageSharedPageState"
     },
     {
@@ -1888,11 +1888,11 @@
         "name": "power.desktop/TrivialWebGLPageSharedPageState"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "power.desktop/abcnews"
     },
     {
-        "duration": "38.0",
+        "duration": "39.0",
         "name": "power.desktop/indiatimes"
     },
     {
@@ -1900,7 +1900,7 @@
         "name": "power.desktop/instagram"
     },
     {
-        "duration": "38.0",
+        "duration": "39.0",
         "name": "power.desktop/microsoft"
     },
     {
@@ -1920,7 +1920,7 @@
         "name": "rendering.desktop.notracing/motionmark_ramp_composite"
     },
     {
-        "duration": "2.0",
+        "duration": "3.0",
         "name": "rendering.desktop/accu_weather_2018"
     },
     {
@@ -1956,7 +1956,7 @@
         "name": "rendering.desktop/animometer_webgl_indexed"
     },
     {
-        "duration": "22.0",
+        "duration": "21.0",
         "name": "rendering.desktop/animometer_webgl_indexed_fast_call"
     },
     {
@@ -2028,11 +2028,11 @@
         "name": "rendering.desktop/blob"
     },
     {
-        "duration": "17.0",
+        "duration": "18.0",
         "name": "rendering.desktop/blogspot_2018"
     },
     {
-        "duration": "15.0",
+        "duration": "16.0",
         "name": "rendering.desktop/blogspot_pinch_2018"
     },
     {
@@ -2080,11 +2080,11 @@
         "name": "rendering.desktop/canvas2d_to_texture.html"
     },
     {
-        "duration": "30.0",
+        "duration": "31.0",
         "name": "rendering.desktop/canvas_05000_pixels_per_second"
     },
     {
-        "duration": "29.0",
+        "duration": "28.0",
         "name": "rendering.desktop/canvas_10000_pixels_per_second"
     },
     {
@@ -2092,7 +2092,7 @@
         "name": "rendering.desktop/canvas_20000_pixels_per_second"
     },
     {
-        "duration": "26.0",
+        "duration": "25.0",
         "name": "rendering.desktop/canvas_40000_pixels_per_second"
     },
     {
@@ -2148,7 +2148,7 @@
         "name": "rendering.desktop/chip_tune"
     },
     {
-        "duration": "17.0",
+        "duration": "16.0",
         "name": "rendering.desktop/cnn_2018"
     },
     {
@@ -2208,7 +2208,7 @@
         "name": "rendering.desktop/css_animations_triggered_inline_style"
     },
     {
-        "duration": "20.0",
+        "duration": "19.0",
         "name": "rendering.desktop/css_animations_triggered_new_element"
     },
     {
@@ -2256,7 +2256,7 @@
         "name": "rendering.desktop/css_transitions_triggered_inline_style"
     },
     {
-        "duration": "20.0",
+        "duration": "19.0",
         "name": "rendering.desktop/css_transitions_triggered_new_element"
     },
     {
@@ -2272,7 +2272,7 @@
         "name": "rendering.desktop/css_transitions_updating_class"
     },
     {
-        "duration": "19.0",
+        "duration": "18.0",
         "name": "rendering.desktop/css_value_type_color"
     },
     {
@@ -2404,7 +2404,7 @@
         "name": "rendering.desktop/get_image_data_gpu.html"
     },
     {
-        "duration": "11.0",
+        "duration": "12.0",
         "name": "rendering.desktop/gmail_2018"
     },
     {
@@ -2412,15 +2412,15 @@
         "name": "rendering.desktop/gmail_move_2018"
     },
     {
-        "duration": "14.0",
+        "duration": "15.0",
         "name": "rendering.desktop/gmail_pinch_2018"
     },
     {
-        "duration": "13.0",
+        "duration": "12.0",
         "name": "rendering.desktop/google_calendar_2018"
     },
     {
-        "duration": "17.0",
+        "duration": "16.0",
         "name": "rendering.desktop/google_calendar_pinch_2018"
     },
     {
@@ -2436,7 +2436,7 @@
         "name": "rendering.desktop/google_image_search_2018"
     },
     {
-        "duration": "15.0",
+        "duration": "14.0",
         "name": "rendering.desktop/google_plus_2018"
     },
     {
@@ -2444,11 +2444,11 @@
         "name": "rendering.desktop/google_search_pinch_2018"
     },
     {
-        "duration": "13.0",
+        "duration": "12.0",
         "name": "rendering.desktop/google_web_search_2018"
     },
     {
-        "duration": "20.0",
+        "duration": "19.0",
         "name": "rendering.desktop/gpu_bound_shader.html"
     },
     {
@@ -2540,7 +2540,7 @@
         "name": "rendering.desktop/linkedin_2018"
     },
     {
-        "duration": "15.0",
+        "duration": "16.0",
         "name": "rendering.desktop/linkedin_pinch_2018"
     },
     {
@@ -2592,7 +2592,7 @@
         "name": "rendering.desktop/main_60fps_impl_60fps"
     },
     {
-        "duration": "20.0",
+        "duration": "19.0",
         "name": "rendering.desktop/main_60fps_impl_60fps_no_update"
     },
     {
@@ -2616,7 +2616,7 @@
         "name": "rendering.desktop/main_animations_half_presented"
     },
     {
-        "duration": "20.0",
+        "duration": "19.0",
         "name": "rendering.desktop/man_in_blue"
     },
     {
@@ -2624,7 +2624,7 @@
         "name": "rendering.desktop/many_images"
     },
     {
-        "duration": "21.0",
+        "duration": "22.0",
         "name": "rendering.desktop/many_planets_deep"
     },
     {
@@ -2632,7 +2632,7 @@
         "name": "rendering.desktop/maps_move_2018"
     },
     {
-        "duration": "18.0",
+        "duration": "19.0",
         "name": "rendering.desktop/maps_perf_test"
     },
     {
@@ -2640,7 +2640,7 @@
         "name": "rendering.desktop/medium_texture_uploads"
     },
     {
-        "duration": "18.0",
+        "duration": "19.0",
         "name": "rendering.desktop/megi_dish"
     },
     {
@@ -2672,7 +2672,7 @@
         "name": "rendering.desktop/microsoft_snow"
     },
     {
-        "duration": "18.0",
+        "duration": "19.0",
         "name": "rendering.desktop/microsoft_speed_reading"
     },
     {
@@ -2752,7 +2752,7 @@
         "name": "rendering.desktop/motionmark_ramp_canvas_arcs"
     },
     {
-        "duration": "42.0",
+        "duration": "41.0",
         "name": "rendering.desktop/motionmark_ramp_canvas_lines"
     },
     {
@@ -2772,11 +2772,11 @@
         "name": "rendering.desktop/motionmark_ramp_multiply"
     },
     {
-        "duration": "42.0",
+        "duration": "41.0",
         "name": "rendering.desktop/motionmark_ramp_paths"
     },
     {
-        "duration": "38.0",
+        "duration": "37.0",
         "name": "rendering.desktop/motionmark_ramp_suits"
     },
     {
@@ -2812,7 +2812,7 @@
         "name": "rendering.desktop/offscreen_animation_no_damage"
     },
     {
-        "duration": "20.0",
+        "duration": "19.0",
         "name": "rendering.desktop/overlay_background_color_css_transitions_page"
     },
     {
@@ -2844,19 +2844,19 @@
         "name": "rendering.desktop/raf"
     },
     {
-        "duration": "16.0",
+        "duration": "15.0",
         "name": "rendering.desktop/raf_animation"
     },
     {
-        "duration": "16.0",
+        "duration": "15.0",
         "name": "rendering.desktop/raf_canvas"
     },
     {
-        "duration": "16.0",
+        "duration": "15.0",
         "name": "rendering.desktop/raf_touch_animation"
     },
     {
-        "duration": "15.0",
+        "duration": "14.0",
         "name": "rendering.desktop/repaint_amazon_2018"
     },
     {
@@ -2872,7 +2872,7 @@
         "name": "rendering.desktop/repaint_google_search_2018"
     },
     {
-        "duration": "14.0",
+        "duration": "13.0",
         "name": "rendering.desktop/repaint_instagram_2018"
     },
     {
@@ -2924,7 +2924,7 @@
         "name": "rendering.desktop/simple_text_page"
     },
     {
-        "duration": "8.0",
+        "duration": "9.0",
         "name": "rendering.desktop/simple_touch_drag"
     },
     {
@@ -2964,7 +2964,7 @@
         "name": "rendering.desktop/sync_scroll_offset"
     },
     {
-        "duration": "19.0",
+        "duration": "20.0",
         "name": "rendering.desktop/techcrunch_2018"
     },
     {
@@ -3012,7 +3012,7 @@
         "name": "rendering.desktop/text_constant_full_page_raster_40000_pixels_per_second"
     },
     {
-        "duration": "25.0",
+        "duration": "26.0",
         "name": "rendering.desktop/text_constant_full_page_raster_60000_pixels_per_second"
     },
     {
@@ -3100,27 +3100,27 @@
         "name": "rendering.desktop/text_scroll_input_two_per_vsync_plus_0us"
     },
     {
-        "duration": "3.0",
+        "duration": "2.0",
         "name": "rendering.desktop/text_scrollbar_100_pixels_per_second"
     },
     {
-        "duration": "3.0",
+        "duration": "2.0",
         "name": "rendering.desktop/text_scrollbar_1200_pixels_per_second"
     },
     {
-        "duration": "3.0",
+        "duration": "2.0",
         "name": "rendering.desktop/text_scrollbar_200_pixels_per_second"
     },
     {
-        "duration": "3.0",
+        "duration": "2.0",
         "name": "rendering.desktop/text_scrollbar_2300_pixels_per_second"
     },
     {
-        "duration": "3.0",
+        "duration": "2.0",
         "name": "rendering.desktop/text_scrollbar_700_pixels_per_second"
     },
     {
-        "duration": "22.0",
+        "duration": "23.0",
         "name": "rendering.desktop/throughput_scrolling_active_handler"
     },
     {
@@ -3128,11 +3128,11 @@
         "name": "rendering.desktop/throughput_scrolling_composited"
     },
     {
-        "duration": "22.0",
+        "duration": "23.0",
         "name": "rendering.desktop/throughput_scrolling_passive_handler"
     },
     {
-        "duration": "22.0",
+        "duration": "23.0",
         "name": "rendering.desktop/throughput_scrolling_uncomposited"
     },
     {
@@ -3156,7 +3156,7 @@
         "name": "rendering.desktop/toBlob_small_canvas_in_worker.html"
     },
     {
-        "duration": "16.0",
+        "duration": "15.0",
         "name": "rendering.desktop/touch_handler_scrolling"
     },
     {
@@ -3180,7 +3180,7 @@
         "name": "rendering.desktop/twitch_pinch_2018"
     },
     {
-        "duration": "17.0",
+        "duration": "18.0",
         "name": "rendering.desktop/twitter_2018"
     },
     {
@@ -3240,7 +3240,7 @@
         "name": "rendering.desktop/web_animation_value_type_transform_complex"
     },
     {
-        "duration": "20.0",
+        "duration": "19.0",
         "name": "rendering.desktop/web_animation_value_type_transform_simple"
     },
     {
@@ -3276,11 +3276,11 @@
         "name": "rendering.desktop/webp_decoding_rgb_and_gpu_rasterization"
     },
     {
-        "duration": "14.0",
+        "duration": "13.0",
         "name": "rendering.desktop/webp_decoding_yuv_and_gpu_rasterization"
     },
     {
-        "duration": "19.0",
+        "duration": "18.0",
         "name": "rendering.desktop/wikipedia_2018"
     },
     {

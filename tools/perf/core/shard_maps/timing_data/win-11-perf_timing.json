@@ -1,18 +1,18 @@
 [
     {
-        "duration": "31.0",
+        "duration": "32.0",
         "name": "blink_perf.accessibility/build-table.html"
     },
     {
-        "duration": "20.0",
+        "duration": "21.0",
         "name": "blink_perf.accessibility/focus-links.html"
     },
     {
-        "duration": "19.0",
+        "duration": "20.0",
         "name": "blink_perf.accessibility/insert-block-child-after-many-inline-children.html"
     },
     {
-        "duration": "20.0",
+        "duration": "21.0",
         "name": "blink_perf.accessibility/line-breaks.html"
     },
     {
@@ -20,31 +20,31 @@
         "name": "blink_perf.accessibility/location-changes-css-animation.html"
     },
     {
-        "duration": "25.0",
+        "duration": "26.0",
         "name": "blink_perf.accessibility/location-changes-js-animation.html"
     },
     {
-        "duration": "162.0",
+        "duration": "158.0",
         "name": "blink_perf.accessibility/location-changes-scrolling-content-visibility-auto.html"
     },
     {
-        "duration": "161.0",
+        "duration": "158.0",
         "name": "blink_perf.accessibility/location-changes-scrolling.html"
     },
     {
-        "duration": "22.0",
+        "duration": "21.0",
         "name": "blink_perf.accessibility/many-nested-click-listeners.html"
     },
     {
-        "duration": "23.0",
+        "duration": "21.0",
         "name": "blink_perf.accessibility/many-nodes-toggle-aria-hidden.html"
     },
     {
-        "duration": "25.0",
+        "duration": "23.0",
         "name": "blink_perf.accessibility/many-nodes-toggle-content-visibility-auto.html"
     },
     {
-        "duration": "24.0",
+        "duration": "22.0",
         "name": "blink_perf.accessibility/many-nodes-toggle-content-visibility-hidden.html"
     },
     {
@@ -56,7 +56,7 @@
         "name": "blink_perf.accessibility/many-nodes-toggle-display-none.html"
     },
     {
-        "duration": "22.0",
+        "duration": "23.0",
         "name": "blink_perf.accessibility/many-text-changes-deep-block-subtree.html"
     },
     {
@@ -400,7 +400,7 @@
         "name": "blink_perf.css/ChangeStyleNestedPseudoSelector.html"
     },
     {
-        "duration": "11.0",
+        "duration": "10.0",
         "name": "blink_perf.css/ChangeStyleNewRuleInExistingStylesheet.html"
     },
     {
@@ -480,7 +480,7 @@
         "name": "blink_perf.css/CustomPropertiesNonRootInheritance.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.css/CustomPropertiesPendingSubstitution.html"
     },
     {
@@ -556,7 +556,7 @@
         "name": "blink_perf.css/HighlightInheritanceSelected.html"
     },
     {
-        "duration": "1.0",
+        "duration": "3.0",
         "name": "blink_perf.css/ImplicitAtScope.html"
     },
     {
@@ -572,7 +572,7 @@
         "name": "blink_perf.css/ImplicitScopeShared.html"
     },
     {
-        "duration": "3.0",
+        "duration": "4.0",
         "name": "blink_perf.css/LoadBootstrapBlog.html"
     },
     {
@@ -632,7 +632,7 @@
         "name": "blink_perf.dom/custom-element-default-style.html"
     },
     {
-        "duration": "23.0",
+        "duration": "22.0",
         "name": "blink_perf.dom/customizable-select-single-add.html"
     },
     {
@@ -660,19 +660,19 @@
         "name": "blink_perf.dom/dom-parts-api-manual-append.html"
     },
     {
-        "duration": "17.0",
+        "duration": "18.0",
         "name": "blink_perf.dom/dom-parts-api-manual-clone.html"
     },
     {
-        "duration": "17.0",
+        "duration": "18.0",
         "name": "blink_perf.dom/dom-parts-api-manual-parts.html"
     },
     {
-        "duration": "19.0",
+        "duration": "17.0",
         "name": "blink_perf.dom/dom-parts-api-nested-append.html"
     },
     {
-        "duration": "16.0",
+        "duration": "17.0",
         "name": "blink_perf.dom/dom-parts-api-nested-clone.html"
     },
     {
@@ -680,7 +680,7 @@
         "name": "blink_perf.dom/dom-parts-api-nested-parts.html"
     },
     {
-        "duration": "18.0",
+        "duration": "17.0",
         "name": "blink_perf.dom/insert-text-with-dir-auto.html"
     },
     {
@@ -800,7 +800,7 @@
         "name": "blink_perf.layout/SimpleTextPathLineLayout.html"
     },
     {
-        "duration": "4.0",
+        "duration": "5.0",
         "name": "blink_perf.layout/abspos.html"
     },
     {
@@ -912,7 +912,7 @@
         "name": "blink_perf.layout/fit-content-change-available-size-text.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.layout/fixed-grid-lots-of-data.html"
     },
     {
@@ -1080,11 +1080,11 @@
         "name": "blink_perf.layout/latin-ebook-resize.html"
     },
     {
-        "duration": "1.0",
+        "duration": "2.0",
         "name": "blink_perf.layout/latin-ebook.html"
     },
     {
-        "duration": "25.0",
+        "duration": "24.0",
         "name": "blink_perf.layout/layer-overhead.html"
     },
     {
@@ -1204,7 +1204,7 @@
         "name": "blink_perf.layout/multicol/tall-content-short-columns-realistic.html"
     },
     {
-        "duration": "7.0",
+        "duration": "6.0",
         "name": "blink_perf.layout/multicol/tall-content-short-columns.html"
     },
     {
@@ -1236,7 +1236,7 @@
         "name": "blink_perf.layout/ruby.html"
     },
     {
-        "duration": "7.0",
+        "duration": "6.0",
         "name": "blink_perf.layout/subtree-detaching.html"
     },
     {
@@ -1272,7 +1272,7 @@
         "name": "blink_perf.owp_storage/blob-perf-ipc.html"
     },
     {
-        "duration": "11.0",
+        "duration": "10.0",
         "name": "blink_perf.owp_storage/blob-perf-shm.html"
     },
     {
@@ -1292,11 +1292,11 @@
         "name": "blink_perf.owp_storage/mail-client-sync.html"
     },
     {
-        "duration": "67.0",
+        "duration": "69.0",
         "name": "blink_perf.owp_storage/mail-client-version-upgrade.html"
     },
     {
-        "duration": "42.0",
+        "duration": "43.0",
         "name": "blink_perf.owp_storage/mail-client-write.html"
     },
     {
@@ -1316,7 +1316,7 @@
         "name": "blink_perf.parser/html-parser.html"
     },
     {
-        "duration": "11.0",
+        "duration": "12.0",
         "name": "blink_perf.parser/html5-full-render.html"
     },
     {
@@ -1404,7 +1404,7 @@
         "name": "blink_perf.parser/simple-url.html"
     },
     {
-        "duration": "10.0",
+        "duration": "9.0",
         "name": "blink_perf.parser/textarea-parsing.html"
     },
     {
@@ -1416,7 +1416,7 @@
         "name": "blink_perf.parser/url-parser.html"
     },
     {
-        "duration": "7.0",
+        "duration": "6.0",
         "name": "blink_perf.parser/xml-parser.html"
     },
     {
@@ -1704,7 +1704,7 @@
         "name": "dummy_benchmark.stable_benchmark_1/dummy_page.html"
     },
     {
-        "duration": "62.0",
+        "duration": "63.0",
         "name": "jetstream2/JetStream2"
     },
     {
@@ -1740,7 +1740,7 @@
         "name": "media.desktop/video.html?src=crowd1080.webm"
     },
     {
-        "duration": "13.0",
+        "duration": "12.0",
         "name": "media.desktop/video.html?src=crowd1080_vp9.webm"
     },
     {
@@ -1748,7 +1748,7 @@
         "name": "media.desktop/video.html?src=foodmarket_720p30fps.mp4"
     },
     {
-        "duration": "6.0",
+        "duration": "5.0",
         "name": "media.desktop/video.html?src=garden2_10s.mp4&seek"
     },
     {
@@ -1768,31 +1768,31 @@
         "name": "media.desktop/video.html?src=tulip0.av1.mp4&seek"
     },
     {
-        "duration": "21.0",
+        "duration": "20.0",
         "name": "media.desktop/video.html?src=tulip2.m4a&type=audio"
     },
     {
-        "duration": "21.0",
+        "duration": "20.0",
         "name": "media.desktop/video.html?src=tulip2.mp3&type=audio"
     },
     {
-        "duration": "5.0",
+        "duration": "4.0",
         "name": "media.desktop/video.html?src=tulip2.mp3&type=audio&seek"
     },
     {
-        "duration": "21.0",
+        "duration": "20.0",
         "name": "media.desktop/video.html?src=tulip2.mp4"
     },
     {
-        "duration": "63.0",
+        "duration": "62.0",
         "name": "media.desktop/video.html?src=tulip2.mp4&busyjs"
     },
     {
-        "duration": "21.0",
+        "duration": "20.0",
         "name": "media.desktop/video.html?src=tulip2.ogg&type=audio"
     },
     {
-        "duration": "5.0",
+        "duration": "4.0",
         "name": "media.desktop/video.html?src=tulip2.ogg&type=audio&seek"
     },
     {
@@ -1836,7 +1836,7 @@
         "name": "memory.desktop/TrivialScrollingPageSharedPageState"
     },
     {
-        "duration": "13.0",
+        "duration": "14.0",
         "name": "memory.desktop/TrivialWebGLPageSharedPageState"
     },
     {
@@ -1844,7 +1844,7 @@
         "name": "memory.desktop/WebWorker"
     },
     {
-        "duration": "37.0",
+        "duration": "36.0",
         "name": "octane/Octane"
     },
     {
@@ -1864,7 +1864,7 @@
         "name": "power.desktop/TrivialCanvasPageSharedPageState"
     },
     {
-        "duration": "34.0",
+        "duration": "37.0",
         "name": "power.desktop/TrivialFullscreenVideoPageSharedPageState"
     },
     {
@@ -1872,7 +1872,7 @@
         "name": "power.desktop/TrivialGifPageSharedPageState"
     },
     {
-        "duration": "39.0",
+        "duration": "38.0",
         "name": "power.desktop/TrivialScrollingPageSharedPageState"
     },
     {
@@ -1884,15 +1884,15 @@
         "name": "power.desktop/abcnews"
     },
     {
-        "duration": "36.0",
+        "duration": "35.0",
         "name": "power.desktop/indiatimes"
     },
     {
-        "duration": "36.0",
+        "duration": "37.0",
         "name": "power.desktop/instagram"
     },
     {
-        "duration": "36.0",
+        "duration": "35.0",
         "name": "power.desktop/microsoft"
     },
     {
@@ -1904,7 +1904,7 @@
         "name": "power.desktop/slideshare"
     },
     {
-        "duration": "46.0",
+        "duration": "39.0",
         "name": "power.desktop/uol"
     },
     {
@@ -1944,7 +1944,7 @@
         "name": "webrtc/codec_constraints_vp9"
     },
     {
-        "duration": "23.0",
+        "duration": "22.0",
         "name": "webrtc/encoded_insertable_streams"
     },
     {
@@ -1996,8 +1996,8 @@
         "name": "tint_benchmark/_gtest_"
     },
     {
-        "duration": "7.0",
-        "name": "views_perftests/_gtest_"
+        "duration": "125.0",
+        "name": "components_perftests/_gtest_"
     },
     {
         "duration": "600.0",
@@ -2008,7 +2008,7 @@
         "name": "base_perftests/_gtest_"
     },
     {
-        "duration": "125.0",
-        "name": "components_perftests/_gtest_"
+        "duration": "7.0",
+        "name": "views_perftests/_gtest_"
     }
 ]

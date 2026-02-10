@@ -12,7 +12,7 @@
         "name": "media.mobile/mse.html?media=h264_video.mp4"
     },
     {
-        "duration": "15.0",
+        "duration": "16.0",
         "name": "media.mobile/mse.html?media=tulip2.vp9.webm"
     },
     {
@@ -64,7 +64,7 @@
         "name": "media.mobile/video.html?src=tulip2.vp9.webm_WiFi"
     },
     {
-        "duration": "276.0",
+        "duration": "275.0",
         "name": "speedometer2/Speedometer2"
     }
 ]

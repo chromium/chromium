@@ -264,8 +264,6 @@ OFFICIAL_BENCHMARK_CONFIGS = PerfSuite(
 OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
     'blink_perf.svg',
     'blink_perf.paint',
-    'speedometer2-predictable',
-    'speedometer3-predictable',
 ])
 # TODO(crbug.com/40628256): Remove OFFICIAL_BENCHMARK_NAMES once sharding
 # scripts are no longer using it.
@@ -398,6 +396,7 @@ def _speedometer3_crossbench(estimated_runtime=60, arguments=()):
 
 
 def _speedometer_main_crossbench(estimated_runtime=60, arguments=()):
+  # The latest WIP speedometer version
   arguments += ("--detailed-metrics")
   return CrossbenchConfig('speedometer_main.crossbench',
                           'speedometer_main',
@@ -563,7 +562,6 @@ _CROSSBENCH_MOTIONMARK_SPEEDOMETER = frozenset([
 ])
 
 _CROSSBENCH_BENCHMARKS_ALL = frozenset([
-    _speedometer2_crossbench(),
     _speedometer3_crossbench(),
     _motionmark1_3_crossbench(),
     _jetstream2_crossbench(),
@@ -678,11 +676,7 @@ _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.svg',
     'blink_perf.paint',
 ])
-_LINUX_BENCHMARK_CONFIGS_WITH_PREDICTABLE = PerfSuite(
-    _LINUX_BENCHMARK_CONFIGS).Add([
-        'speedometer2-predictable',
-        'speedometer3-predictable',
-    ])
+
 _LINUX_EXECUTABLE_CONFIGS = frozenset([
     # TODO(crbug.com/40562709): Add views_perftests.
     _base_perftests(200),
@@ -690,12 +684,11 @@ _LINUX_EXECUTABLE_CONFIGS = frozenset([
     _tint_benchmark(),
     _tracing_perftests(5),
 ])
-_LINUX_R350_BENCHMARK_CONFIGS = PerfSuite(
-    _LINUX_BENCHMARK_CONFIGS_WITH_PREDICTABLE).Remove([
-        'rendering.desktop',
-        'rendering.desktop.notracing',
-        'system_health.common_desktop',
-    ])
+_LINUX_R350_BENCHMARK_CONFIGS = PerfSuite(_LINUX_BENCHMARK_CONFIGS).Remove([
+    'rendering.desktop',
+    'rendering.desktop.notracing',
+    'system_health.common_desktop',
+])
 # For linux-perf, which runs benchmarks that are skipped on linux-r350-perf.
 _LINUX_GPU_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('rendering.desktop'),
@@ -720,7 +713,6 @@ _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
         'jetstream2-no-field-trials',
         'speedometer3-no-field-trials',
     ]).Repeat([
-        'speedometer2',
         'rendering.desktop.notracing',
     ], 2).Repeat([
         'speedometer3',
@@ -731,12 +723,10 @@ _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
     ], 11)
 _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2', pageset_repeat=11),
-    _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer3', pageset_repeat=22),
     _GetBenchmarkConfig('rendering.desktop.notracing'),
 ])
 _MAC_M1_MINI_2020_NO_BRP_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('speedometer2', pageset_repeat=2),
     _GetBenchmarkConfig('speedometer3', pageset_repeat=2),
     _GetBenchmarkConfig('rendering.desktop.notracing', pageset_repeat=2),
 ])
@@ -774,7 +764,6 @@ _WIN_10_LOW_END_HP_CANDIDATE_BENCHMARK_CONFIGS = PerfSuite([
 ])
 _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
-    _GetBenchmarkConfig('octane'),
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer3'),
 ])
@@ -797,7 +786,6 @@ _WIN_ARM64_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('media.desktop'),
     _GetBenchmarkConfig('rendering.desktop', abridged=True),
     _GetBenchmarkConfig('rendering.desktop.notracing'),
-    _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer3'),
     _GetBenchmarkConfig('system_health.common_desktop'),
     _GetBenchmarkConfig('v8.browsing_desktop'),
@@ -813,7 +801,6 @@ _FALCON_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('media.desktop'),
     _GetBenchmarkConfig('rendering.desktop', abridged=True),
     _GetBenchmarkConfig('rendering.desktop.notracing'),
-    _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer3'),
     _GetBenchmarkConfig('system_health.common_desktop'),
     _GetBenchmarkConfig('v8.browsing_desktop'),
@@ -831,8 +818,6 @@ _ANDROID_GO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('startup.mobile'),
     _GetBenchmarkConfig('system_health.webview_startup'),
     _GetBenchmarkConfig('v8.browsing_mobile'),
-    _GetBenchmarkConfig('speedometer'),
-    _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer3'),
 ])
 _ANDROID_DEFAULT_EXECUTABLE_CONFIGS = frozenset([
@@ -854,9 +839,7 @@ _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('rendering.mobile'),
     _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('speedometer2-predictable'),
     _GetBenchmarkConfig('speedometer3', pageset_repeat=16),
-    _GetBenchmarkConfig('speedometer3-predictable'),
 ])
 # TODO(crbug.com/409326154): Remove these for the crossbench variants when
 # supported.

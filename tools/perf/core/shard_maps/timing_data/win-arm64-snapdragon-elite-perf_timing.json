@@ -12,15 +12,15 @@
         "name": "blink_perf.dom/custom-element-default-style.html"
     },
     {
-        "duration": "37.0",
+        "duration": "35.0",
         "name": "blink_perf.dom/customizable-select-single-add.html"
     },
     {
-        "duration": "33.0",
+        "duration": "31.0",
         "name": "blink_perf.dom/customizable-select-single-remove.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.dom/deep-tree-clonenode.html"
     },
     {
@@ -44,19 +44,19 @@
         "name": "blink_perf.dom/dom-parts-api-manual-clone.html"
     },
     {
-        "duration": "15.0",
+        "duration": "16.0",
         "name": "blink_perf.dom/dom-parts-api-manual-parts.html"
     },
     {
-        "duration": "15.0",
+        "duration": "16.0",
         "name": "blink_perf.dom/dom-parts-api-nested-append.html"
     },
     {
-        "duration": "14.0",
+        "duration": "15.0",
         "name": "blink_perf.dom/dom-parts-api-nested-clone.html"
     },
     {
-        "duration": "15.0",
+        "duration": "16.0",
         "name": "blink_perf.dom/dom-parts-api-nested-parts.html"
     },
     {
@@ -64,11 +64,11 @@
         "name": "blink_perf.dom/insert-text-with-dir-auto.html"
     },
     {
-        "duration": "6.0",
+        "duration": "5.0",
         "name": "blink_perf.dom/long-sibling-list.html"
     },
     {
-        "duration": "2.0",
+        "duration": "1.0",
         "name": "blink_perf.dom/modify-element-classname.html"
     },
     {
@@ -100,7 +100,7 @@
         "name": "blink_perf.dom/select-single-remove.html"
     },
     {
-        "duration": "53.0",
+        "duration": "52.0",
         "name": "jetstream2/JetStream2"
     },
     {
@@ -136,7 +136,7 @@
         "name": "media.desktop/video.html?src=crowd1080.webm"
     },
     {
-        "duration": "18.0",
+        "duration": "17.0",
         "name": "media.desktop/video.html?src=crowd1080_vp9.webm"
     },
     {
@@ -168,7 +168,7 @@
         "name": "media.desktop/video.html?src=tulip2.m4a&type=audio"
     },
     {
-        "duration": "26.0",
+        "duration": "25.0",
         "name": "media.desktop/video.html?src=tulip2.mp3&type=audio"
     },
     {
@@ -214,10 +214,6 @@
     {
         "duration": "19.0",
         "name": "rendering.desktop/main_30fps_impl_60fps"
-    },
-    {
-        "duration": "24.0",
-        "name": "speedometer2/Speedometer2"
     },
     {
         "duration": "26.0",

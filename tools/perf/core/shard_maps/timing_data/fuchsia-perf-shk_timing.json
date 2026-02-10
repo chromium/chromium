@@ -1,6 +1,6 @@
 [
     {
-        "duration": "13.0",
+        "duration": "14.0",
         "name": "media.mobile/mse.html?media=aac_audio.mp4"
     },
     {
@@ -48,7 +48,7 @@
         "name": "media.mobile/video.html?src=tulip2.ogg&type=audio"
     },
     {
-        "duration": "9.0",
+        "duration": "10.0",
         "name": "media.mobile/video.html?src=tulip2.ogg&type=audio&seek"
     },
     {

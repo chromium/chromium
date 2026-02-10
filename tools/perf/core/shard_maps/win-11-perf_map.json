@@ -32,9 +32,6 @@
             },
             "speedometer2": {
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
             }
         }
     },
@@ -71,9 +68,6 @@
             },
             "speedometer2": {
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
             }
         }
     },
@@ -96,12 +90,6 @@
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
                 "arguments": []
-            },
-            "speedometer3.a11y.crossbench": {
-                "crossbench_name": "speedometer_3",
-                "arguments": [
-                    "--extra-browser-args=--force-renderer-accessibility"
-                ]
             }
         },
         "benchmarks": {
@@ -109,49 +97,41 @@
                 "abridged": false
             },
             "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         }
     },
     "3": {
-        "crossbench": {
-            "jetstream2.crossbench": {
-                "crossbench_name": "jetstream_2",
-                "arguments": []
-            },
-            "jetstream3.crossbench": {
-                "crossbench_name": "jetstream_3",
-                "arguments": []
-            },
-            "jetstream3-turbolev_future.crossbench": {
-                "crossbench_name": "jetstream_3",
-                "arguments": [
-                    "--js-flags=--turbolev-future"
-                ]
-            },
-            "speedometer3.crossbench": {
-                "crossbench_name": "speedometer_3",
-                "arguments": []
-            },
-            "speedometer3.a11y.crossbench": {
-                "crossbench_name": "speedometer_3",
-                "arguments": [
-                    "--extra-browser-args=--force-renderer-accessibility"
-                ]
-            }
-        },
         "benchmarks": {
+            "ad_frames.fencedframe": {
+                "abridged": false
+            },
+            "blink_perf.accessibility": {
+                "end": 7,
+                "abridged": false
+            },
             "jetstream2": {
                 "abridged": false
             },
             "speedometer2": {
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
+            }
+        },
+        "executables": {
+            "base_perftests": {
+                "arguments": [
+                    "--test-launcher-jobs=1",
+                    "--test-launcher-retry-limit=0"
+                ],
+                "path": "base_perftests"
+            }
+        },
+        "crossbench": {
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
+                "arguments": [
+                    "--extra-browser-args=--force-renderer-accessibility"
+                ]
             }
         }
     },
@@ -188,38 +168,25 @@
             },
             "speedometer2": {
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
             }
         }
     },
     "5": {
-        "benchmarks": {
-            "ad_frames.fencedframe": {
-                "abridged": false
-            },
-            "blink_perf.accessibility": {
-                "end": 7,
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
-            }
-        },
-        "executables": {
-            "base_perftests": {
-                "arguments": [
-                    "--test-launcher-jobs=1",
-                    "--test-launcher-retry-limit=0"
-                ],
-                "path": "base_perftests"
-            }
-        },
         "crossbench": {
+            "jetstream2.crossbench": {
+                "crossbench_name": "jetstream_2",
+                "arguments": []
+            },
+            "jetstream3.crossbench": {
+                "crossbench_name": "jetstream_3",
+                "arguments": []
+            },
+            "jetstream3-turbolev_future.crossbench": {
+                "crossbench_name": "jetstream_3",
+                "arguments": [
+                    "--js-flags=--turbolev-future"
+                ]
+            },
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
                 "arguments": []
@@ -229,6 +196,11 @@
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
+            }
+        },
+        "benchmarks": {
+            "speedometer2": {
+                "abridged": false
             }
         }
     },
@@ -240,9 +212,6 @@
                 "abridged": false
             },
             "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         },
@@ -269,13 +238,10 @@
                 "abridged": false
             },
             "blink_perf.css": {
-                "end": 59,
+                "end": 61,
                 "abridged": false
             },
             "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         },
@@ -295,7 +261,7 @@
     "8": {
         "benchmarks": {
             "blink_perf.css": {
-                "begin": 59,
+                "begin": 61,
                 "abridged": false
             },
             "blink_perf.dom": {
@@ -312,9 +278,6 @@
                 "abridged": false
             },
             "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         },
@@ -338,13 +301,10 @@
                 "abridged": false
             },
             "blink_perf.owp_storage": {
-                "end": 7,
+                "end": 8,
                 "abridged": false
             },
             "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         },
@@ -364,7 +324,7 @@
     "10": {
         "benchmarks": {
             "blink_perf.owp_storage": {
-                "begin": 7,
+                "begin": 8,
                 "abridged": false
             },
             "blink_perf.parser": {
@@ -387,9 +347,14 @@
             },
             "speedometer2": {
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
+            }
+        },
+        "executables": {
+            "components_perftests": {
+                "arguments": [
+                    "--xvfb"
+                ],
+                "path": "components_perftests"
             }
         },
         "crossbench": {
@@ -407,12 +372,6 @@
     },
     "11": {
         "executables": {
-            "components_perftests": {
-                "arguments": [
-                    "--xvfb"
-                ],
-                "path": "components_perftests"
-            },
             "dawn_perf_tests": {
                 "arguments": [
                     "--test-launcher-jobs=1",
@@ -436,9 +395,6 @@
         "benchmarks": {
             "speedometer2": {
                 "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
             }
         }
     },
@@ -457,13 +413,10 @@
                 "abridged": false
             },
             "media.desktop": {
-                "end": 8,
+                "end": 10,
                 "abridged": false
             },
             "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         },
@@ -487,17 +440,14 @@
     "13": {
         "benchmarks": {
             "media.desktop": {
-                "begin": 8,
+                "begin": 10,
                 "abridged": false
             },
             "memory.desktop": {
-                "end": 3,
+                "end": 4,
                 "abridged": false
             },
             "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         },
@@ -517,42 +467,10 @@
     "14": {
         "benchmarks": {
             "memory.desktop": {
-                "begin": 3,
+                "begin": 4,
                 "abridged": false
             },
             "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
-                "abridged": false
-            }
-        },
-        "crossbench": {
-            "speedometer3.crossbench": {
-                "crossbench_name": "speedometer_3",
-                "arguments": []
-            },
-            "speedometer3.a11y.crossbench": {
-                "crossbench_name": "speedometer_3",
-                "arguments": [
-                    "--extra-browser-args=--force-renderer-accessibility"
-                ]
-            }
-        }
-    },
-    "15": {
-        "benchmarks": {
-            "octane": {
-                "abridged": false
-            },
-            "power.desktop": {
-                "end": 5,
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         },
@@ -573,13 +491,39 @@
             }
         }
     },
-    "16": {
+    "15": {
         "benchmarks": {
+            "octane": {
+                "abridged": false
+            },
             "power.desktop": {
-                "begin": 5,
                 "abridged": false
             },
             "rasterize_and_record_micro.top_25": {
+                "end": 3,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
+                "arguments": []
+            },
+            "speedometer3.a11y.crossbench": {
+                "crossbench_name": "speedometer_3",
+                "arguments": [
+                    "--extra-browser-args=--force-renderer-accessibility"
+                ]
+            }
+        }
+    },
+    "16": {
+        "benchmarks": {
+            "rasterize_and_record_micro.top_25": {
+                "begin": 3,
                 "abridged": false
             },
             "speedometer": {
@@ -594,7 +538,20 @@
             "speedometer2-future": {
                 "abridged": false
             },
+            "speedometer2-predictable": {
+                "abridged": false
+            },
             "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-future": {
+                "abridged": false
+            },
+            "speedometer3-predictable": {
+                "abridged": false
+            },
+            "system_health.memory_desktop": {
+                "end": 18,
                 "abridged": false
             }
         },
@@ -613,14 +570,9 @@
     },
     "17": {
         "benchmarks": {
-            "speedometer3": {
-                "abridged": false
-            },
-            "speedometer3-future": {
-                "abridged": false
-            },
             "system_health.memory_desktop": {
-                "end": 49,
+                "begin": 18,
+                "end": 71,
                 "abridged": false
             },
             "speedometer2": {
@@ -637,27 +589,20 @@
                 "arguments": [
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
-            },
-            "speedometer2.crossbench": {
-                "crossbench_name": "speedometer_2",
-                "arguments": []
             }
         }
     },
     "18": {
         "benchmarks": {
             "system_health.memory_desktop": {
-                "begin": 49,
+                "begin": 71,
                 "abridged": false
             },
             "v8.browsing_desktop": {
-                "end": 10,
+                "end": 27,
                 "abridged": false
             },
             "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         },
@@ -685,7 +630,7 @@
     "19": {
         "benchmarks": {
             "v8.browsing_desktop": {
-                "begin": 10,
+                "begin": 27,
                 "abridged": false
             },
             "v8.browsing_desktop-future": {
@@ -698,9 +643,6 @@
                 "abridged": false
             },
             "speedometer2": {
-                "abridged": false
-            },
-            "speedometer3": {
                 "abridged": false
             }
         },
@@ -726,30 +668,30 @@
         }
     },
     "extra_infos": {
-        "num_stories": 801,
-        "predicted_min_shard_time": 616.0,
-        "predicted_min_shard_index": 14,
-        "predicted_max_shard_time": 901.0,
-        "predicted_max_shard_index": 11,
-        "shard #0": 778.0,
-        "shard #1": 778.0,
-        "shard #2": 778.0,
-        "shard #3": 778.0,
-        "shard #4": 778.0,
-        "shard #5": 733.0,
-        "shard #6": 725.0,
-        "shard #7": 750.0,
-        "shard #8": 752.0,
-        "shard #9": 720.0,
-        "shard #10": 741.0,
-        "shard #11": 901.0,
-        "shard #12": 740.0,
-        "shard #13": 747.0,
-        "shard #14": 616.0,
-        "shard #15": 748.0,
-        "shard #16": 766.0,
-        "shard #17": 756.0,
-        "shard #18": 756.0,
-        "shard #19": 819.0
+        "num_stories": 778,
+        "predicted_min_shard_time": 618.0,
+        "predicted_min_shard_index": 19,
+        "predicted_max_shard_time": 881.0,
+        "predicted_max_shard_index": 14,
+        "shard #0": 749.0,
+        "shard #1": 749.0,
+        "shard #2": 689.0,
+        "shard #3": 707.0,
+        "shard #4": 749.0,
+        "shard #5": 686.0,
+        "shard #6": 686.0,
+        "shard #7": 724.0,
+        "shard #8": 721.0,
+        "shard #9": 757.0,
+        "shard #10": 769.0,
+        "shard #11": 746.0,
+        "shard #12": 697.0,
+        "shard #13": 742.0,
+        "shard #14": 881.0,
+        "shard #15": 675.0,
+        "shard #16": 672.0,
+        "shard #17": 676.0,
+        "shard #18": 676.0,
+        "shard #19": 618.0
     }
 }

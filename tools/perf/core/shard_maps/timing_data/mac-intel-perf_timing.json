@@ -1,6 +1,6 @@
 [
     {
-        "duration": "36.0",
+        "duration": "33.0",
         "name": "blink_perf.accessibility/build-table.html"
     },
     {
@@ -12,23 +12,23 @@
         "name": "blink_perf.accessibility/insert-block-child-after-many-inline-children.html"
     },
     {
-        "duration": "23.0",
+        "duration": "22.0",
         "name": "blink_perf.accessibility/line-breaks.html"
     },
     {
-        "duration": "23.0",
+        "duration": "27.0",
         "name": "blink_perf.accessibility/location-changes-css-animation.html"
     },
     {
-        "duration": "25.0",
+        "duration": "24.0",
         "name": "blink_perf.accessibility/location-changes-js-animation.html"
     },
     {
-        "duration": "123.0",
+        "duration": "121.0",
         "name": "blink_perf.accessibility/location-changes-scrolling-content-visibility-auto.html"
     },
     {
-        "duration": "128.0",
+        "duration": "124.0",
         "name": "blink_perf.accessibility/location-changes-scrolling.html"
     },
     {
@@ -56,11 +56,11 @@
         "name": "blink_perf.accessibility/many-nodes-toggle-display-none.html"
     },
     {
-        "duration": "31.0",
+        "duration": "26.0",
         "name": "blink_perf.accessibility/many-text-changes-deep-block-subtree.html"
     },
     {
-        "duration": "21.0",
+        "duration": "27.0",
         "name": "blink_perf.accessibility/many-text-changes-deep-hidden-subtree.html"
     },
     {
@@ -72,7 +72,7 @@
         "name": "blink_perf.accessibility/many-text-changes-small-wait-between.html"
     },
     {
-        "duration": "21.0",
+        "duration": "22.0",
         "name": "blink_perf.accessibility/slot-updates.html"
     },
     {
@@ -80,7 +80,7 @@
         "name": "blink_perf.accessibility/text-changes-ignored-in-focusable.html"
     },
     {
-        "duration": "23.0",
+        "duration": "22.0",
         "name": "blink_perf.accessibility/text-changes-unignored-in-focusable-scrollable.html"
     },
     {
@@ -96,15 +96,15 @@
         "name": "blink_perf.accessibility/unassignable-slots-deep-tree.html"
     },
     {
-        "duration": "33.0",
+        "duration": "27.0",
         "name": "blink_perf.accessibility/unassignable-slots-focusable-containers.html"
     },
     {
-        "duration": "23.0",
+        "duration": "22.0",
         "name": "blink_perf.accessibility/unassignable-slots-wide-tree.html"
     },
     {
-        "duration": "35.0",
+        "duration": "33.0",
         "name": "blink_perf.accessibility/very-many-nodes.html"
     },
     {
@@ -136,7 +136,7 @@
         "name": "blink_perf.bindings/gc-mini-tree.html"
     },
     {
-        "duration": "10.0",
+        "duration": "9.0",
         "name": "blink_perf.bindings/gc-tree.html"
     },
     {
@@ -156,7 +156,7 @@
         "name": "blink_perf.bindings/get-elements-by-tag-name.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.bindings/id-getter.html"
     },
     {
@@ -252,7 +252,7 @@
         "name": "blink_perf.bindings/typed-array-set-from-typed.html"
     },
     {
-        "duration": "17.0",
+        "duration": "12.0",
         "name": "blink_perf.bindings/undefined-first-child.html"
     },
     {
@@ -260,7 +260,7 @@
         "name": "blink_perf.bindings/undefined-get-element-by-id.html"
     },
     {
-        "duration": "7.0",
+        "duration": "12.0",
         "name": "blink_perf.bindings/undefined-id-getter.html"
     },
     {
@@ -344,7 +344,7 @@
         "name": "blink_perf.css/CSSCountersCreate.html"
     },
     {
-        "duration": "2.0",
+        "duration": "3.0",
         "name": "blink_perf.css/CSSLogicalDirection.html"
     },
     {
@@ -364,7 +364,7 @@
         "name": "blink_perf.css/CSSQuotesCreate.html"
     },
     {
-        "duration": "4.0",
+        "duration": "3.0",
         "name": "blink_perf.css/ChangeStyleCSSVariableRecalc.html"
     },
     {
@@ -552,7 +552,7 @@
         "name": "blink_perf.css/HighlightInheritanceRecalc.html"
     },
     {
-        "duration": "6.0",
+        "duration": "5.0",
         "name": "blink_perf.css/HighlightInheritanceSelected.html"
     },
     {
@@ -560,7 +560,7 @@
         "name": "blink_perf.css/ImplicitAtScope.html"
     },
     {
-        "duration": "2.0",
+        "duration": "3.0",
         "name": "blink_perf.css/ImplicitAtScopeInsertion.html"
     },
     {
@@ -636,15 +636,15 @@
         "name": "blink_perf.dom/customizable-select-single-add.html"
     },
     {
-        "duration": "18.0",
+        "duration": "19.0",
         "name": "blink_perf.dom/customizable-select-single-remove.html"
     },
     {
-        "duration": "11.0",
+        "duration": "10.0",
         "name": "blink_perf.dom/deep-tree-clonenode.html"
     },
     {
-        "duration": "21.0",
+        "duration": "27.0",
         "name": "blink_perf.dom/dom-parts-api-flat-append.html"
     },
     {
@@ -652,31 +652,31 @@
         "name": "blink_perf.dom/dom-parts-api-flat-clone.html"
     },
     {
-        "duration": "20.0",
+        "duration": "21.0",
         "name": "blink_perf.dom/dom-parts-api-flat-parts.html"
     },
     {
-        "duration": "21.0",
+        "duration": "22.0",
         "name": "blink_perf.dom/dom-parts-api-manual-append.html"
     },
     {
-        "duration": "21.0",
+        "duration": "22.0",
         "name": "blink_perf.dom/dom-parts-api-manual-clone.html"
     },
     {
-        "duration": "21.0",
+        "duration": "22.0",
         "name": "blink_perf.dom/dom-parts-api-manual-parts.html"
     },
     {
-        "duration": "20.0",
+        "duration": "22.0",
         "name": "blink_perf.dom/dom-parts-api-nested-append.html"
     },
     {
-        "duration": "21.0",
+        "duration": "22.0",
         "name": "blink_perf.dom/dom-parts-api-nested-clone.html"
     },
     {
-        "duration": "20.0",
+        "duration": "22.0",
         "name": "blink_perf.dom/dom-parts-api-nested-parts.html"
     },
     {
@@ -684,7 +684,7 @@
         "name": "blink_perf.dom/insert-text-with-dir-auto.html"
     },
     {
-        "duration": "19.0",
+        "duration": "13.0",
         "name": "blink_perf.dom/long-sibling-list.html"
     },
     {
@@ -704,7 +704,7 @@
         "name": "blink_perf.dom/replace-text-with-dir-auto.html"
     },
     {
-        "duration": "8.0",
+        "duration": "7.0",
         "name": "blink_perf.dom/select-multiple-add.html"
     },
     {
@@ -720,7 +720,7 @@
         "name": "blink_perf.dom/select-single-remove.html"
     },
     {
-        "duration": "11.0",
+        "duration": "12.0",
         "name": "blink_perf.events/EventsDispatching.html"
     },
     {
@@ -728,7 +728,7 @@
         "name": "blink_perf.events/EventsDispatchingInDeeplyNestedV1ShadowTrees.html"
     },
     {
-        "duration": "23.0",
+        "duration": "25.0",
         "name": "blink_perf.events/EventsDispatchingInV1ShadowTrees.html"
     },
     {
@@ -748,7 +748,7 @@
         "name": "blink_perf.image_decoder/decode-gif.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.image_decoder/decode-jpeg-h1v1.html"
     },
     {
@@ -764,7 +764,7 @@
         "name": "blink_perf.image_decoder/decode-jpeg-h2v2.html"
     },
     {
-        "duration": "10.0",
+        "duration": "9.0",
         "name": "blink_perf.image_decoder/decode-lossless-webp.html"
     },
     {
@@ -800,7 +800,7 @@
         "name": "blink_perf.layout/SimpleTextPathLineLayout.html"
     },
     {
-        "duration": "6.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/abspos.html"
     },
     {
@@ -824,15 +824,15 @@
         "name": "blink_perf.layout/attach-inlines.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.layout/auto-grid-lots-of-data.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.layout/auto-grid-lots-of-spanning-data.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.layout/chapter-reflow-once-random.html"
     },
     {
@@ -872,7 +872,7 @@
         "name": "blink_perf.layout/css-contain-change-text.html"
     },
     {
-        "duration": "2.0",
+        "duration": "3.0",
         "name": "blink_perf.layout/culled-inline-bounding-rects.html"
     },
     {
@@ -884,7 +884,7 @@
         "name": "blink_perf.layout/deeply-nested-grid.html"
     },
     {
-        "duration": "7.0",
+        "duration": "12.0",
         "name": "blink_perf.layout/editing_append.html"
     },
     {
@@ -892,7 +892,7 @@
         "name": "blink_perf.layout/editing_append_single_line.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.layout/editing_delete.html"
     },
     {
@@ -964,7 +964,7 @@
         "name": "blink_perf.layout/flexbox-row-stretch-height-indefinite.html"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "blink_perf.layout/flexbox-row-wrap.html"
     },
     {
@@ -1084,7 +1084,7 @@
         "name": "blink_perf.layout/latin-ebook.html"
     },
     {
-        "duration": "34.0",
+        "duration": "35.0",
         "name": "blink_perf.layout/layer-overhead.html"
     },
     {
@@ -1152,7 +1152,7 @@
         "name": "blink_perf.layout/multicol/balance-list-items-with-tall-marker.html"
     },
     {
-        "duration": "17.0",
+        "duration": "12.0",
         "name": "blink_perf.layout/multicol/balance-tables-with-break-inside-avoidance.html"
     },
     {
@@ -1196,7 +1196,7 @@
         "name": "blink_perf.layout/multicol/lots-of-text-balanced.html"
     },
     {
-        "duration": "8.0",
+        "duration": "7.0",
         "name": "blink_perf.layout/multicol/nested-forced-breaks.html"
     },
     {
@@ -1208,7 +1208,7 @@
         "name": "blink_perf.layout/multicol/tall-content-short-columns.html"
     },
     {
-        "duration": "7.0",
+        "duration": "12.0",
         "name": "blink_perf.layout/nested-blocks-with-percent-height-and-max-height.html"
     },
     {
@@ -1232,7 +1232,7 @@
         "name": "blink_perf.layout/nested-tables-with-overflow-auto.html"
     },
     {
-        "duration": "11.0",
+        "duration": "12.0",
         "name": "blink_perf.layout/ruby.html"
     },
     {
@@ -1248,7 +1248,7 @@
         "name": "blink_perf.layout/text-wrap-balance.html"
     },
     {
-        "duration": "3.0",
+        "duration": "4.0",
         "name": "blink_perf.layout/vertical-japanese-kokoro-insert.html"
     },
     {
@@ -1284,19 +1284,19 @@
         "name": "blink_perf.owp_storage/idb-load-docs.html"
     },
     {
-        "duration": "18.0",
+        "duration": "17.0",
         "name": "blink_perf.owp_storage/mail-client-read.html"
     },
     {
-        "duration": "89.0",
+        "duration": "87.0",
         "name": "blink_perf.owp_storage/mail-client-sync.html"
     },
     {
-        "duration": "102.0",
+        "duration": "100.0",
         "name": "blink_perf.owp_storage/mail-client-version-upgrade.html"
     },
     {
-        "duration": "81.0",
+        "duration": "79.0",
         "name": "blink_perf.owp_storage/mail-client-write.html"
     },
     {
@@ -1368,7 +1368,7 @@
         "name": "blink_perf.parser/query-selector-all-id-deep.html"
     },
     {
-        "duration": "7.0",
+        "duration": "13.0",
         "name": "blink_perf.parser/query-selector-all-id-first.html"
     },
     {
@@ -1480,7 +1480,7 @@
         "name": "blink_perf.shadow_dom/shadow-style-share-attr-selectors.html"
     },
     {
-        "duration": "12.0",
+        "duration": "7.0",
         "name": "blink_perf.shadow_dom/shadow-style-share-media-query.html"
     },
     {
@@ -1580,7 +1580,7 @@
         "name": "blink_perf.webaudio/audio-buffer-source-node.html"
     },
     {
-        "duration": "48.0",
+        "duration": "47.0",
         "name": "blink_perf.webaudio/audio-worklet-node.html"
     },
     {
@@ -1604,7 +1604,7 @@
         "name": "blink_perf.webaudio/gain-node.html"
     },
     {
-        "duration": "18.0",
+        "duration": "17.0",
         "name": "blink_perf.webaudio/panner-node.html"
     },
     {
@@ -1644,7 +1644,7 @@
         "name": "blink_perf.webcodecs/videoFrame-createImageBitmap-videoDecoder.html"
     },
     {
-        "duration": "2.0",
+        "duration": "3.0",
         "name": "blink_perf.webcodecs/videoFrame-drawImage-imageDecoder.html"
     },
     {
@@ -1660,7 +1660,7 @@
         "name": "blink_perf.webcodecs/videoFrame-texImage2d.html"
     },
     {
-        "duration": "7.0",
+        "duration": "10.0",
         "name": "blink_perf.webgl/binding-bind-buffer.html"
     },
     {
@@ -1668,11 +1668,11 @@
         "name": "blink_perf.webgl/binding-buffer-sub-data.html"
     },
     {
-        "duration": "3.0",
+        "duration": "4.0",
         "name": "blink_perf.webgl/binding-draw-arrays.html"
     },
     {
-        "duration": "3.0",
+        "duration": "5.0",
         "name": "blink_perf.webgl/binding-typed-array-uniforms.html"
     },
     {
@@ -1712,7 +1712,7 @@
         "name": "dummy_benchmark.stable_benchmark_1/dummy_page.html"
     },
     {
-        "duration": "88.0",
+        "duration": "89.0",
         "name": "jetstream2/JetStream2"
     },
     {
@@ -1736,11 +1736,11 @@
         "name": "media.desktop/mse.html?media=tulip2.vp9.webm"
     },
     {
-        "duration": "131.0",
+        "duration": "134.0",
         "name": "media.desktop/video.html?src=boat_1080p60fps_vp9.webm"
     },
     {
-        "duration": "18.0",
+        "duration": "19.0",
         "name": "media.desktop/video.html?src=crowd1080.mp4"
     },
     {
@@ -1752,19 +1752,19 @@
         "name": "media.desktop/video.html?src=crowd1080_vp9.webm"
     },
     {
-        "duration": "137.0",
+        "duration": "134.0",
         "name": "media.desktop/video.html?src=foodmarket_720p30fps.mp4"
     },
     {
-        "duration": "10.0",
+        "duration": "9.0",
         "name": "media.desktop/video.html?src=garden2_10s.mp4&seek"
     },
     {
-        "duration": "11.0",
+        "duration": "10.0",
         "name": "media.desktop/video.html?src=garden2_10s.webm&seek"
     },
     {
-        "duration": "11.0",
+        "duration": "10.0",
         "name": "media.desktop/video.html?src=smpte_3840x2160_60fps_vp9.webm&seek"
     },
     {
@@ -1772,15 +1772,15 @@
         "name": "media.desktop/video.html?src=tulip0.av1.mp4"
     },
     {
-        "duration": "9.0",
+        "duration": "8.0",
         "name": "media.desktop/video.html?src=tulip0.av1.mp4&seek"
     },
     {
-        "duration": "24.0",
+        "duration": "25.0",
         "name": "media.desktop/video.html?src=tulip2.m4a&type=audio"
     },
     {
-        "duration": "24.0",
+        "duration": "25.0",
         "name": "media.desktop/video.html?src=tulip2.mp3&type=audio"
     },
     {
@@ -1788,19 +1788,19 @@
         "name": "media.desktop/video.html?src=tulip2.mp3&type=audio&seek"
     },
     {
-        "duration": "24.0",
+        "duration": "25.0",
         "name": "media.desktop/video.html?src=tulip2.mp4"
     },
     {
-        "duration": "64.0",
+        "duration": "66.0",
         "name": "media.desktop/video.html?src=tulip2.mp4&busyjs"
     },
     {
-        "duration": "24.0",
+        "duration": "25.0",
         "name": "media.desktop/video.html?src=tulip2.ogg&type=audio"
     },
     {
-        "duration": "10.0",
+        "duration": "9.0",
         "name": "media.desktop/video.html?src=tulip2.ogg&type=audio&seek"
     },
     {
@@ -1812,7 +1812,7 @@
         "name": "media.desktop/video.html?src=tulip2.vp9.webm&background"
     },
     {
-        "duration": "25.0",
+        "duration": "26.0",
         "name": "media.desktop/video.html?src=tulip2.vp9.webm_WiFi"
     },
     {
@@ -1824,7 +1824,7 @@
         "name": "memory.desktop/TrivialBlinkingCursorPageSharedPageState"
     },
     {
-        "duration": "14.0",
+        "duration": "15.0",
         "name": "memory.desktop/TrivialBlurAnimationPageSharedPageState"
     },
     {
@@ -1832,7 +1832,7 @@
         "name": "memory.desktop/TrivialCanvasPageSharedPageState"
     },
     {
-        "duration": "17.0",
+        "duration": "15.0",
         "name": "memory.desktop/TrivialFullscreenVideoPageSharedPageState"
     },
     {
@@ -1852,7 +1852,7 @@
         "name": "memory.desktop/WebWorker"
     },
     {
-        "duration": "46.0",
+        "duration": "45.0",
         "name": "octane/Octane"
     },
     {
@@ -1860,11 +1860,11 @@
         "name": "power.desktop/TrivialAnimationPageSharedPageState"
     },
     {
-        "duration": "37.0",
+        "duration": "38.0",
         "name": "power.desktop/TrivialBlinkingCursorPageSharedPageState"
     },
     {
-        "duration": "38.0",
+        "duration": "41.0",
         "name": "power.desktop/TrivialBlurAnimationPageSharedPageState"
     },
     {
@@ -1884,7 +1884,7 @@
         "name": "power.desktop/TrivialScrollingPageSharedPageState"
     },
     {
-        "duration": "38.0",
+        "duration": "39.0",
         "name": "power.desktop/TrivialWebGLPageSharedPageState"
     },
     {
@@ -1908,7 +1908,7 @@
         "name": "power.desktop/sina"
     },
     {
-        "duration": "40.0",
+        "duration": "41.0",
         "name": "power.desktop/slideshare"
     },
     {
@@ -1932,7 +1932,7 @@
         "name": "speedometer3-future/Speedometer3"
     },
     {
-        "duration": "39.0",
+        "duration": "40.0",
         "name": "speedometer3/Speedometer3"
     },
     {
@@ -1940,11 +1940,11 @@
         "name": "webrtc/10s_datachannel_transfer"
     },
     {
-        "duration": "17.0",
+        "duration": "16.0",
         "name": "webrtc/canvas_capture_peer_connection"
     },
     {
-        "duration": "27.0",
+        "duration": "26.0",
         "name": "webrtc/codec_constraints_h264"
     },
     {
@@ -1960,7 +1960,7 @@
         "name": "webrtc/encoded_insertable_streams"
     },
     {
-        "duration": "17.0",
+        "duration": "16.0",
         "name": "webrtc/hd_local_stream_10s"
     },
     {
@@ -2004,23 +2004,23 @@
         "name": "webrtc/pause_play_peerconnections"
     },
     {
-        "duration": "330.0",
-        "name": "dawn_perf_tests/_gtest_"
-    },
-    {
-        "duration": "3.0",
-        "name": "load_library_perf_tests/_gtest_"
+        "duration": "300.0",
+        "name": "base_perftests/_gtest_"
     },
     {
         "duration": "180.0",
         "name": "tint_benchmark/_gtest_"
     },
     {
-        "duration": "300.0",
-        "name": "base_perftests/_gtest_"
+        "duration": "3.0",
+        "name": "load_library_perf_tests/_gtest_"
     },
     {
         "duration": "7.0",
         "name": "views_perftests/_gtest_"
+    },
+    {
+        "duration": "330.0",
+        "name": "dawn_perf_tests/_gtest_"
     }
 ]
