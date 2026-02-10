@@ -326,6 +326,7 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
+#include "chrome/browser/startup/startup_features.h"
 #include "chrome/browser/tracing/tracing_features.h"
 #include "chrome/browser/win/mica_titlebar.h"
 #include "components/stylus_handwriting/win/features.h"
@@ -1061,6 +1062,24 @@ const FeatureEntry::FeatureVariation kTextSafetyClassifierVariations[] = {
     {"Executes safety classifier but no retraction of output",
      kTextSafetyClassifierNoRetractParams, nullptr},
 };
+
+#if BUILDFLAG(IS_WIN)
+const FeatureEntry::FeatureParam kStartupLaunchForegroundEnabledParams[] = {
+    {"mode", "foreground"},
+    {"default_preference", "enabled"},
+};
+
+const FeatureEntry::FeatureParam kStartupLaunchForegroundDisabledParams[] = {
+    {"mode", "foreground"},
+    {"default_preference", "disabled"},
+};
+const FeatureEntry::FeatureVariation kStartupLaunchVariations[] = {
+    {"with Foreground launch enabled by default",
+     kStartupLaunchForegroundEnabledParams, nullptr},
+    {"with Foreground launch disabled by default",
+     kStartupLaunchForegroundDisabledParams, nullptr},
+};
+#endif  // BUILDFLAG(IS_WIN)
 
 const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"ai_mode", "true"},
@@ -11570,7 +11589,13 @@ const FeatureEntry kFeatureEntries[] = {
         kOsAll,
         FEATURE_VALUE_TYPE(features::kNewContentForCheckerboardedScrolls),
     },
-
+#if BUILDFLAG(IS_WIN)
+    {"startup-launch", flag_descriptions::kStartupLaunchName,
+     flag_descriptions::kStartupLaunchDescription, kOsWin,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kLaunchOnStartup,
+                                    kStartupLaunchVariations,
+                                    "LaunchOnStartup")},
+#endif  // BUILDFLAG(IS_WIN)
     {"page-actions-migration", flag_descriptions::kPageActionsMigrationName,
      flag_descriptions::kPageActionsMigrationDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kPageActionsMigration,

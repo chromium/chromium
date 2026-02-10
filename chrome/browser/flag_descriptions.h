@@ -2454,6 +2454,12 @@ inline constexpr char kStartSurfaceReturnTimeName[] =
 inline constexpr char kStartSurfaceReturnTimeDescription[] =
     "Enable showing start surface at startup after specified time has elapsed";
 
+inline constexpr char kStartupLaunchName[] =
+    "Enable launching Chrome on Windows startup";
+
+inline constexpr char kStartupLaunchDescription[] =
+    "When enabled, Launch Chrome on Startup can be turned on from Settings";
+
 inline constexpr char kHttpsFirstBalancedModeName[] =
     "Allow enabling Balanced Mode for HTTPS-First Mode.";
 inline constexpr char kHttpsFirstBalancedModeDescription[] =

@@ -17142,6 +17142,7 @@ from previous Chrome versions.
   <int value="946922321" label="LacrosForkZygotesAtLoginScreen:disabled"/>
   <int value="946998724" label="SiteIsolationForGuests:enabled"/>
   <int value="947323794" label="BruschettaAlphaMigrate:disabled"/>
+  <int value="947405827" label="LaunchOnStartup:enabled"/>
   <int value="947684823" label="BookmarkTriggerForPrefetch:disabled"/>
   <int value="948085015" label="WebFilterInterstitialRefresh:disabled"/>
   <int value="948351976" label="WallpaperWebUI:disabled"/>
@@ -17872,6 +17873,7 @@ from previous Chrome versions.
   <int value="1201008500"
       label="EnableAmbientAuthenticationInIncognito:enabled"/>
   <int value="1201619786" label="ShoppingIconColorVariant:disabled"/>
+  <int value="1201786914" label="LaunchOnStartup:disabled"/>
   <int value="1202058349" label="BookmarkTabGroupConversion:disabled"/>
   <int value="1203002682"
       label="CmdDecoderAlwaysGetSizeFromSourceTexture:disabled"/>
