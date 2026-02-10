@@ -219,15 +219,24 @@ export class ActorOverlayAppElement extends CrLitElement {
     const targetX = point.x / scale;
     const targetY = point.y / scale;
 
+    const prefersReducedMotion =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     // Initialize cursor position and state if first movement.
     if (!this.isCursorInitialized_) {
       this.$.magicCursor.style.opacity = '1';
       this.isCursorInitialized_ = true;
-      // Initialize cursor at the top-left or top-right corner, whichever is
-      // closer to the target.
-      this.currentX_ =
-          (targetX < window.innerWidth / 2) ? 0 : window.innerWidth;
-      this.currentY_ = 0;
+      // Check if the user prefers reduced motion to determine start position.
+      if (prefersReducedMotion) {
+        this.currentX_ = targetX;
+        this.currentY_ = targetY;
+      } else {
+        // Initialize cursor at the top-left or top-right corner, whichever is
+        // closer to the target.
+        this.currentX_ =
+            (targetX < window.innerWidth / 2) ? 0 : window.innerWidth;
+        this.currentY_ = 0;
+      }
       this.setCursorTransform(this.currentX_, this.currentY_);
       // Querying `offsetWidth` forces a page reflow to render the magic cursor
       // before calculating the cursor movement to the target.
@@ -238,6 +247,16 @@ export class ActorOverlayAppElement extends CrLitElement {
     // event will fire.
     if (Math.round(targetX) === Math.round(this.currentX_) &&
         Math.round(targetY) === Math.round(this.currentY_)) {
+      this.currentX_ = targetX;
+      this.currentY_ = targetY;
+      return Promise.resolve();
+    }
+
+    // If reduced motion is enabled, skip the movement animation and update
+    // coordinates of cursor instantly to the target position.
+    if (prefersReducedMotion) {
+      this.$.magicCursor.style.transitionDuration = '0ms';
+      this.setCursorTransform(targetX, targetY);
       this.currentX_ = targetX;
       this.currentY_ = targetY;
       return Promise.resolve();
@@ -274,6 +293,13 @@ export class ActorOverlayAppElement extends CrLitElement {
   private startLoadingTimer_() {
     if (this.loadingTimerId_) {
       clearTimeout(this.loadingTimerId_);
+    }
+
+    // Skip the loading animation when reduced motion is enabled.
+    const prefersReducedMotion =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      return;
     }
 
     this.loadingTimerId_ = setTimeout(() => {
