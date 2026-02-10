@@ -80,14 +80,12 @@ class PLATFORM_EXPORT SegmentedSubstring {
   int NumberOfCharactersConsumed() const { return offset(); }
 
   void AppendTo(StringBuilder& builder) const {
-    int off = offset();
     int len = length();
-
-    if (!off) {
+    if (offset() == 0) {
       if (len)
         builder.Append(string_);
     } else {
-      builder.Append(string_.Substring(off, len));
+      builder.Append(CurrentSubString(len));
     }
   }
 
