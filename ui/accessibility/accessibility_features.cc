@@ -413,7 +413,7 @@ bool IsReadAnythingReadAloudPhraseHighlightingEnabled() {
 }
 
 BASE_FEATURE(kReadAnythingReadAloudTSTextSegmentation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAnythingReadAloudTSTextSegmentationEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud) &&
          base::FeatureList::IsEnabled(
