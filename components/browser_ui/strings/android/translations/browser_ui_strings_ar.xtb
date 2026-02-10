@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">‏يمكنك السماح لمتصفِّح Chrome بمشاركة علامات التبويب الأخيرة مع جهازك لعرضها في قائمة التطبيقات ونتائج البحث. ويمكنك تفعيل أو إيقاف هذه الميزة من خلال إعدادات Chrome.</translation>
 <translation id="1420688843103859429">تنقَّل للأمام والخلف من خلال التمرير سريعًا بإصبعَين على لوحة اللمس</translation>
 <translation id="1432650420699700107">السماح للمواقع الإلكترونية بطلب الاتصال بأي جهاز على الشبكة المحلية</translation>
+<translation id="1442081309487427303">تفعيل روابط "وضع القراءة"</translation>
 <translation id="1448064542941920355">تصغير</translation>
 <translation id="1464044141348608623">عدم السماح للمواقع الإلكترونية بمعرفة متى تستخدم جهازك بشكل نشط</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{موقع إلكتروني واحد (<ph name="SITE_COUNT" />)}zero{<ph name="SITE_COUNT" /> موقع إلكتروني}two{موقعَين إلكترونيَين (<ph name="SITE_COUNT" />)}few{<ph name="SITE_COUNT" /> مواقع إلكترونية}many{<ph name="SITE_COUNT" /> موقعًا إلكترونيًا}other{<ph name="SITE_COUNT" /> موقع إلكتروني}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">‏تلقّي إشعارات النصائح من Chrome</translation>
 <translation id="1777815584158991902">البطاقة السفلية لخلاصة "استكشاف"</translation>
 <translation id="1779089405699405702">أداة فك ترميز الصور</translation>
+<translation id="1781533683087883868">إيقاف الروابط في "وضع القراءة"</translation>
 <translation id="1785415724048343560">ننصحك بهذا الخيار للحصول على أفضل تجربة</translation>
 <translation id="1796588414813960292">لن تعمل الميزات التي تحتاج إلى استخدام الصوت.</translation>
 <translation id="1799920918471566157">‏نصائح قيّمة من Chrome</translation>

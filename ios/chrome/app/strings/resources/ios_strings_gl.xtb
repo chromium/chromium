@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="201759455285471444">Despregar o grupo de pestanas.</translation>
 <translation id="202070562065520783">Explícame isto</translation>
-<translation id="2023713324775943812">Accede ao modo de lectura desde a barra de enderezos cando estea dispoñible</translation>
 <translation id="2044394949148788042">Abre a grade de pestanas</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> xestiona a conta <ph name="USER_EMAIL" />, polo que é posible que poida ver parte da información. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">novo elemento</translation>
@@ -1860,6 +1859,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7772032839648071052">Confirmar frase de acceso</translation>
 <translation id="7772948288262733182">Dámosche a benvida de novo</translation>
 <translation id="777637629667389858">Cando teñas a sesión iniciada, ofrecerache protección nos servizos de Google.</translation>
+<translation id="7776604279034196531">Accede ao modo de lectura desde a barra de enderezos cando estea dispoñible</translation>
 <translation id="7781829728241885113">Onte</translation>
 <translation id="7788868432173225918">Pechar a vista ampliada</translation>
 <translation id="7791543448312431591">Engadir</translation>

@@ -240,6 +240,7 @@
 <translation id="1151917987301063366">Всегда разрешать сайту <ph name="HOST" /> использовать датчики</translation>
 <translation id="1152346050262092795">Чтобы подтвердить аккаунт, снова введите пароль.</translation>
 <translation id="1153636665119721804">Программа Дополнительной защиты Google</translation>
+<translation id="1153802775114315167">Как начать работу с расширениями</translation>
 <translation id="1155816283571436363">Подключение к телефону…</translation>
 <translation id="1157952955648710254">Закрыть боковую панель Google Поиска</translation>
 <translation id="1158080958325422608">Заменить на прописные</translation>
@@ -2767,6 +2768,7 @@
 <translation id="2842013086666334835">Войдите в сеть "<ph name="NETWORK_ID" />".</translation>
 <translation id="2843560154284403323">Чтобы завершить настройку Linux, обновите Chrome OS и повторите попытку.</translation>
 <translation id="2843698124892775282">Освобождено <ph name="MEMORY_SAVINGS" /></translation>
+<translation id="2844154481025280030">Правило настроено</translation>
 <translation id="2844169650293029770">Устройство USB-C (ближний порт слева)</translation>
 <translation id="2844809857160214557">Просмотр заданий печати и управление ими</translation>
 <translation id="2845276301195220700">Другие действия для Google Календаря</translation>
@@ -3206,6 +3208,7 @@
 <translation id="3151539355209957474">Время начала</translation>
 <translation id="3151786313568798007">Ориентация</translation>
 <translation id="3152356229013609796">Просматривать и скрывать уведомления с телефона, а также отвечать на них</translation>
+<translation id="3152545926232662879">Игнорируется:</translation>
 <translation id="3154754096046236400">Персональный контекст</translation>
 <translation id="3155163173539279776">Перезапустить Chromium</translation>
 <translation id="3155394504825881014">Преобразовать группу вкладок в папку с закладками</translation>
@@ -5746,6 +5749,7 @@
 <translation id="4868284252360267853">Это диалоговое окно находится не в фокусе. Чтобы это исправить, нажмите Command + Shift + Option + A.</translation>
 <translation id="4868351661310357223">Устанавливайте приложения и игры из Google Play на устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Чтение данных сети ChromeOS</translation>
+<translation id="4869175799055761881">Пользователи не могут установить это приложение. Свяжитесь с разработчиком.</translation>
 <translation id="4870724079713069532">Вы можете открывать и редактировать поддерживаемые файлы в этом приложении из Проводника и других приложений. Указать, какие типы файлов по умолчанию будут открываться в этом приложении, можно в <ph name="BEGIN_LINK" />настройках Windows<ph name="END_LINK" />.</translation>
 <translation id="4870995365819149457">Некоторые поддерживаемые ссылки будут по-прежнему открываться в приложениях "<ph name="APP_NAME" />", "<ph name="APP_NAME_2" />", "<ph name="APP_NAME_3" />" и ещё в 1 сервисе.</translation>
 <translation id="4871308555310586478">Не из Интернет-магазина Chrome.</translation>
@@ -8655,6 +8659,7 @@
 <translation id="6896758677409633944">Скопировать</translation>
 <translation id="6897363604023044284">Выбрать сайты</translation>
 <translation id="6897688156970667447">Рекомендуется использовать при плохом освещении. Позволяет экономить заряд батареи.</translation>
+<translation id="6897756054229464646">В Gemini</translation>
 <translation id="6897972855231767338">Подробнее о гостевом режиме</translation>
 <translation id="6898438890765871056">Открыть папку OneDrive</translation>
 <translation id="6898440773573063262">Автозапуск киоск-приложений на этом устройстве разрешен</translation>
@@ -9157,6 +9162,7 @@
 <translation id="7250616558727237648">Устройство, на которое вы отправляете файлы, не отвечает. Повторите попытку.</translation>
 <translation id="725109152065019550">Администратор запретил использовать внешний накопитель для этого аккаунта.</translation>
 <translation id="7251635775446614726">Сообщение от администратора: "<ph name="CUSTOM_MESSAGE" />".</translation>
+<translation id="725310308981256997">Спросить об этой странице?</translation>
 <translation id="7253521419891527137">&amp;Подробнее</translation>
 <translation id="7254951428499890870">Запустить приложение "<ph name="APP_NAME" />" в режиме диагностики?</translation>
 <translation id="725497546968438223">Кнопка папки с закладками</translation>
@@ -10645,6 +10651,7 @@
 <translation id="8244201515061746038">Кнопка для просмотра дополнительных сведений об автозамене. Открывает страницу настроек автозамены. Нажмите Ввод, чтобы нажать на кнопку, или Escape, чтобы выйти.</translation>
 <translation id="8244514732452879619">Пора ложиться спать</translation>
 <translation id="8246776524656196770">Защитите электронный ключ при помощи PIN-кода.</translation>
+<translation id="824713170151383793">В инструментах разработчика</translation>
 <translation id="8247795734638043885">Скачать небезопасный файл</translation>
 <translation id="8248050856337841185">&amp;Вставить</translation>
 <translation id="8248381369318572865">Доступ к микрофону и анализ речи</translation>
@@ -11335,7 +11342,6 @@
 <translation id="8707562594602678416">Места</translation>
 <translation id="8708000541097332489">Удалять при выходе</translation>
 <translation id="870805141700401153">Подпись отдельного кода Microsoft</translation>
-<translation id="8708088555926718398">Ошибка: категория – <ph name="CATEGORY" />, код – <ph name="CODE" />, дополнительный код – <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp;Дополнительная информация</translation>
 <translation id="8709368517685334931">Другие цвета можно найти в интернет-магазине Chrome.</translation>
 <translation id="8710414664106871428">Фэнтези</translation>
@@ -11563,6 +11569,7 @@
 <translation id="885746075120788020">Сохраненные параметры и действия будут доступны на всех устройствах с Chrome OS, где выполнен вход в аккаунт Google. В настройках вы можете выбрать, что синхронизировать.</translation>
 <translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{Установить приложение?}one{Установить приложения?}few{Установить приложения?}many{Установить приложения?}other{Установить приложения?}}</translation>
 <translation id="8858369206579825206">Настройки конфиденциальности</translation>
+<translation id="8858449624332155432">В правиле используются конфликтующие значения из нескольких источников</translation>
 <translation id="8859174528519900719">Субфрейм: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Не удалось загрузить Условия использования</translation>
 <translation id="8859662783913000679">Аккаунт родителя</translation>

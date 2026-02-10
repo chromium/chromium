@@ -2140,6 +2140,17 @@ Wird diese Richtlinie nicht konfiguriert oder auf „False“ festgelegt, wird d
 <translation id="2466131534462628618">Captive-Portal-Authentifizierung ignoriert Proxy</translation>
 <translation id="2467181864598429837">Standardverhalten des Browsers</translation>
 <translation id="2467896267442150508">Zeitintervall, das maximal eine Woche abdeckt. Wenn die angegebene Startzeit nach der Endzeit liegt, läuft das Intervall über die natürliche Intervallgrenze hinaus.</translation>
+<translation id="2475594733565572760">Diese Richtlinie definiert die Standardeinstellung für alle abgedeckten Funktionen, die auf generativer KI basieren. Wenn diese Richtlinie beispielsweise auf den Wert „1“ gesetzt ist, ist dies die Standardeinstellung für alle abgedeckten Funktionen, die auf generativer KI basieren. Manuell festgelegte Richtlinienwerte sind davon nicht betroffen. Mit dieser Einstellung werden die Standardeinstellungen für die abgedeckten Funktionen in Chrome definiert, die auf generativer KI basieren. Unter https://support.google.com/chrome/a?p=generative_ai_settings findest du eine Liste der abgedeckten Funktionen.
+
+Einige Richtlinien, z. B. „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“, unterstützen nur die Status „Zugelassen“ und „Nicht zulassen“. Wenn die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ auf „0“ oder „1“ gesetzt ist, wird diese Funktion aktiviert. Wenn „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ auf „2“ gesetzt ist, wird diese Funktion deaktiviert. Die Dokumentation für jede Funktion enthält weitere Informationen dazu, wie sie mit Werten in dieser Richtlinie interagiert (z. B. Gemini in Chrome: https://support.google.com/chrome/a/?p=gemini_in_chrome). Dies gilt für die folgenden Funktionen: Gemini in Chrome, Google Lens und den KI-Modus, da sie eigenen Garantien und/oder Nutzungsbedingungen unterliegen (https://support.google.com/chrome/a/?p=genai_features_chrome).
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI-Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI-Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2476249479201711962">Zugriff auf das Kontextmenü des Standardsuchanbieters erlauben</translation>
 <translation id="2478756867046106663">Zulassen, dass Websites mit irreführenden Inhalten neue Fenster oder Tabs öffnen</translation>
 <translation id="2479760962196319822">Mit dieser Richtlinie wird festgelegt, ob <ph name="PRODUCT_OS_NAME" />-Nutzer Daten lokal speichern können.
@@ -4275,6 +4286,7 @@ Die Richtlinie kann mit <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_
 <translation id="3927291637826333102">Desktop-, Fenster- und Tabaufnahme für diese Ursprünge zulassen</translation>
 <translation id="3928726028264020458">Melden der VPD-Informationen auf Geräten aktivieren</translation>
 <translation id="3935592079035695061">Millisekunden seit Mitternacht.</translation>
+<translation id="3937800910397007337">Vordergrundpriorität für alle Tabs erzwingen</translation>
 <translation id="3941289958028934630">Gesprochenes Feedback auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="3943930334592166130">Diese Richtlinie legt fest, ob Nutzer aufgefordert werden, ein Clientzertifikat auszuwählen, wenn mehrere Zertifikate zu <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> passen.
       Ist die Richtlinie aktiviert, werden Nutzer aufgefordert, immer dann ein Clientzertifikat auszuwählen, wenn die Richtlinie für die automatische Auswahl zu mehreren Zertifikaten passt.
@@ -6213,6 +6225,7 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
       * auf "Moderat" festgelegt, kann der Nutzer auf YouTube nur den moderaten eingeschränkten Modus und den strikten eingeschränkten Modus auswählen, den eingeschränkten Modus aber nicht deaktivieren.
 
       * auf "Aus" festgelegt oder ist kein Wert angegeben, wird der eingeschränkte Modus auf YouTube nicht durch Chrome erzwungen. Der eingeschränkte Modus wird jedoch möglicherweise trotzdem durch externe Richtlinien wie YouTube-Richtlinien erzwungen.</translation>
+<translation id="5191007233343702012">Standardpriorisierung von Tabs verwenden</translation>
 <translation id="5191476996923842491">Standardverhalten für die Mindestverzögerung der Funktion setTimeout().</translation>
 <translation id="519247340330463721">Hiermit werden die Safe Browsing-Richtlinien konfiguriert.</translation>
 <translation id="5192555640439947289">Ist die Richtlinie aktiviert, fragt <ph name="PRODUCT_OS_NAME" /> Nutzer zum Entsperren des Geräts nach einem Passwort, wenn es sich im Ruhemodus befindet oder zugeklappt wurde.
@@ -6432,6 +6445,7 @@ Hinweis: Diese Richtlinie gilt nicht für HSTS-Umstellungen.</translation>
 <translation id="530949964068726932">Bedienungshilfen im Taskleistenmenü ausblenden</translation>
 <translation id="5309944663104291505">Isolierten Web-Apps mit erzwungener Installation und Kiosk-Apps nicht erlauben, die Device Attributes API zu verwenden</translation>
 <translation id="5311275381462687162">Einstellung für das alte Standardverhalten des "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Cookies</translation>
+<translation id="5311430612584074035">Vordergrundpriorität für alle Tabs im Profil erzwingen</translation>
 <translation id="5312253627576569499">Prozentsatz, um den die Verzögerung für die Bildschirmabdunkelung skaliert wird, wenn bei abgedunkeltem Bildschirm oder kurz nach dem Abschalten des Bildschirms Nutzeraktivität erkannt wird.</translation>
 <translation id="5316856058059940708">Großen Cursor deaktivieren</translation>
 <translation id="5318185076587284965">Verwendung von Relayservern durch den Host für den Remote-Zugriff gestatten</translation>
@@ -6469,6 +6483,15 @@ Verwaltete Konten können keiner Familiengruppe beitreten oder eine erstellen un
 <translation id="5345892164332459671">Floating-SSO deaktivieren und die Webdienst-Authentifizierungen des Nutzers nicht auf ein neues Gerät verschieben</translation>
 <translation id="5345910753471481870">Button „Google Lens“ nicht im Suchfeld auf der Seite „Neuer Tab“ anzeigen.</translation>
 <translation id="5346587320074666194">Den Zugriff auf Sensoren für diese Websites sperren</translation>
+<translation id="5347735051291224683">Mit dieser Richtlinie wird festgelegt, ob im Hintergrund ausgeführte Webinhalte mit Vordergrundpriorität ausgeführt werden müssen.
+
+Standardmäßig optimiert der Browser Ressourcen, indem er Inhalte von im Hintergrund ausgeführten Tabs weniger priorisiert. Wenn du diese Richtlinie aktivierst, wird dieses Verhalten überschrieben und Tabs im Hintergrund werden genauso geplant wie der aktive Tab.
+
+Beachte, dass das Erzwingen der Vordergrundpriorität für im Hintergrund ausgeführte Inhalte die Reaktionsfähigkeit des aktiven Tabs leicht beeinträchtigen kann.
+
+Wenn diese Richtlinie aktiviert ist, werden alle Webinhalte mit Vordergrundpriorität ausgeführt, unabhängig von ihrem Sichtbarkeitsstatus.
+
+Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, bestimmt der Browser die Priorität anhand der Standardheuristik (z. B. indem Inhalte weniger priorisiert werden, die nicht sichtbar sind, keinen Ton wiedergeben oder nicht an Videoanrufen beteiligt sind).</translation>
 <translation id="534836255587440809">„Automatischer Klick“ auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="5348658899015174540">Die <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API erlaubt Web-Apps, mehrere Oberflächen gleichzeitig aufzunehmen.
       Diese Richtlinie macht das Attribut <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> für Web-Apps an definierten Ursprüngen verfügbar.

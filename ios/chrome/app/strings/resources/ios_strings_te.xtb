@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">పాస్‌వర్డ్‌లను చూడటానికి, మీరు ముందుగా తప్పక మీ పరికరంలో పాస్‌కోడ్‌ను సెట్ చేయాలి.</translation>
 <translation id="201759455285471444">ట్యాబ్ గ్రూప్‌ను విస్తరించండి.</translation>
 <translation id="202070562065520783">దీన్ని నాకు వివరించు</translation>
-<translation id="2023713324775943812">అందుబాటులో ఉన్నప్పుడు అడ్రస్ బార్ నుండి రీడింగ్ మోడ్‌ను యాక్సెస్ చేయండి</translation>
 <translation id="2044394949148788042">ట్యాబ్ గ్రిడ్‌ను తెరవండి</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> ఖాతా <ph name="HOSTED_DOMAIN" /> ద్వారా మేనేజ్ చేయబడుతుంది, ఇది కొంత సమాచారాన్ని చూడగలదు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">కొత్త ఐటెమ్</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">సేవ్ చేసిన పాస్‌వర్డ్‌లు, పాస్-కీలు</translation>
 <translation id="3143515551205905069">సింక్‌ను రద్దు చేయండి</translation>
 <translation id="3144126448740580210">పూర్తయింది</translation>
+<translation id="3147521114983561406">పాస్-కీలు మీ పాస్‌వర్డ్ మేనేజర్‌లో సేవ్ చేయబడతాయి. అవి అజ్ఞాత, సాధారణ ట్యాబ్‌లలో యాక్సెస్ చేయబడతాయి.</translation>
 <translation id="3148052723910099040">సాధారణ ట్యాబ్ గ్రిడ్</translation>
 <translation id="3148237711805373460">నన్ను అక్కడికి తీసుకెళ్లండి</translation>
 <translation id="3157387275655328056">పఠన లిస్ట్‌కు జోడించండి</translation>
@@ -1860,6 +1860,7 @@
 <translation id="7772032839648071052">రహస్య పదబంధాన్ని నిర్ధారించండి</translation>
 <translation id="7772948288262733182">తిరిగి స్వాగతం</translation>
 <translation id="777637629667389858">మీరు సైన్ ఇన్ చేసినప్పుడు, Google సర్వీస్‌లన్నింటిలో మిమ్మల్ని సురక్షితంగా ఉంచుతుంది.</translation>
+<translation id="7776604279034196531">అందుబాటులో ఉన్నప్పుడు అడ్రస్ బార్ నుండి రీడింగ్ మోడ్‌ను యాక్సెస్ చేయండి</translation>
 <translation id="7781829728241885113">నిన్న</translation>
 <translation id="7788868432173225918">విస్తరించిన వీక్షణను విస్మరించండి</translation>
 <translation id="7791543448312431591">జోడించండి</translation>
@@ -2097,6 +2098,7 @@
 <translation id="8587001564479545614">రికవరీ PINను క్రియేట్ చేయండి</translation>
 <translation id="8588404856427128947">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="8590286732816598906">ట్యాబ్ గ్రూప్, <ph name="GROUP_TITLE" />, మెనూ.</translation>
+<translation id="8593317261815647019">అజ్ఞాత మోడ్ వెలుపల పాస్-కీని క్రియేట్ చేయాలా?</translation>
 <translation id="8600272508328041907">పూర్తి పేజీ అనువాదానికి మారండి</translation>
 <translation id="860043288473659153">కార్డుదారుని పేరు</translation>
 <translation id="8601611099293226919">Google Lens సహాయంతో మీ స్క్రీన్‌ను సెర్చ్ చేయండి</translation>

@@ -2868,6 +2868,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5570825185877910964">Protéger le compte</translation>
 <translation id="5571083550517324815">Enlèvement impossible à cette adresse. Sélectionnez-en une autre.</translation>
 <translation id="5572434905385510939">22 x 28 pouces</translation>
+<translation id="5573090972398558474">Votre organisation a bloqué cette page en mode navigation privée.</translation>
 <translation id="5573641252776268565">Modifier le passeport</translation>
 <translation id="5578606540385219379">Fournisseurs de services</translation>
 <translation id="5580958916614886209">Veuillez vérifier le mois d'expiration, puis réessayer</translation>
@@ -4296,6 +4297,7 @@ Informations supplémentaires :
 <translation id="7844689747373518809">{COUNT,plural, =0{Aucune}=1{1 application (<ph name="EXAMPLE_APP_1" />)}=2{2 applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# application (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Une erreur s'est produite. Réessayez.</translation>
 <translation id="784623644169604270">Aucune activité récente</translation>
+<translation id="7848926355794727168">Navigation automatique</translation>
 <translation id="7853222852810008596">Payer plus tard n'est pas disponible dans cette devise</translation>
 <translation id="785476343534277563">Sports universitaires</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> : <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
@@ -4525,6 +4527,7 @@ Informations supplémentaires :
 <translation id="8241707690549784388">La page que vous recherchez a utilisé des informations que vous avez envoyées. Si vous revenez sur cette page, chaque action précédemment effectuée sera répétée. Souhaitez-vous continuer ?</translation>
 <translation id="8241712895048303527">Bloquer sur ce site</translation>
 <translation id="8242426110754782860">Continuer</translation>
+<translation id="824620968958405573">Tâche de navigation automatique</translation>
 <translation id="8246482227229072868">Anneaux</translation>
 <translation id="8248406213705193919">Enregistrer la carte de manière sécurisée ?</translation>
 <translation id="8249296373107784235">Annuler</translation>

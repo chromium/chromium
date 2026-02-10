@@ -240,6 +240,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1151917987301063366">Zawsze zezwalaj witrynie <ph name="HOST" /> na dostęp do czujników</translation>
 <translation id="1152346050262092795">Ponownie wpisz hasło, aby potwierdzić, że konto należy do Ciebie.</translation>
 <translation id="1153636665119721804">Program Ochrony zaawansowanej Google</translation>
+<translation id="1153802775114315167">Pierwsze kroki z rozszerzeniami</translation>
 <translation id="1155816283571436363">Łączę z Twoim telefonem</translation>
 <translation id="1157952955648710254">Zamknij panel boczny wyszukiwarki Google</translation>
 <translation id="1158080958325422608">Wielkimi literami</translation>
@@ -586,6 +587,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1384849755549338773">Proponuj użycie Tłumacza Google na stronach w innych językach</translation>
 <translation id="1384959399684842514">Pobieranie wstrzymane</translation>
+<translation id="1386966479075994683">Rozwiń karty</translation>
 <translation id="1388253969141979417">Zezwolono na używanie mikrofonu</translation>
 <translation id="1388728792929436380">Po ukończeniu aktualizacji <ph name="DEVICE_TYPE" /> uruchomi się ponownie.</translation>
 <translation id="1390113502208199250">Aby używać funkcji licencji na Chrome Education, musisz przywrócić urządzenie do ustawień fabrycznych.</translation>
@@ -2569,6 +2571,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2727633948226935816">Nie przypominaj więcej</translation>
 <translation id="2727712005121231835">Rzeczywisty rozmiar</translation>
 <translation id="2727744317940422214">Coś poszło nie tak. Prześlij opinię z hashtagiem #bruschetta w opisie. Kod błędu: <ph name="ERROR" />. Nie udało się wyczyścić – być może trzeba to będzie zrobić ręcznie.</translation>
+<translation id="2729310339366257582">Zwiń karty</translation>
 <translation id="2729577602370119849">Łatwy dostęp do drukarek i proste zarządzanie nimi</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Gdy ustawienie Dokładność lokalizacji jest włączone, wykorzystywane są dane o sygnałach bezprzewodowych pochodzących np. z punktów dostępu do Wi-Fi czy masztów sieci komórkowych, a także dane z czujników urządzenia takich jak akcelerometr i żyroskop. Pozwala to dokładniej określać lokalizację urządzenia, dzięki czemu aplikacje i usługi na Androida mogą udostępniać funkcje oparte na lokalizacji. W tym celu Google okresowo zbiera dane z czujników urządzenia i informacje o sygnałach bezprzewodowych w pobliżu tego urządzenia, aby pomóc ustalać lokalizacje sygnałów bezprzewodowych na zasadzie crowdsourcingu.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google wykorzystuje te informacje zebrane z tego urządzenia do zwiększania dokładności lokalizacji i usprawniania działania usług wykorzystujących lokalizację oraz ogólnie do ulepszania, świadczenia i utrzymywania usług Google. Przetwarzamy te dane na podstawie uzasadnionego interesu Google i innych firm w spełnianiu potrzeb użytkowników. Te informacje nie są używane do identyfikacji osób.<ph name="END_PARAGRAPH2" />
@@ -5104,6 +5107,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="443031431654216610">Używaj tylko cyfr</translation>
 <translation id="4430369329743628066">Dodano zakładkę</translation>
 <translation id="4430422687972614133">Włącz kartę wirtualną</translation>
+<translation id="4431962107539413562">Korzystaj z haseł na wszystkich swoich urządzeniach</translation>
 <translation id="443196770280837407">Otwieraj Gemini za pomocą skrótu klawiszowego.</translation>
 <translation id="4432621511648257259">Nieprawidłowe hasło</translation>
 <translation id="4434611816075088065">Nic więcej nie wymaga teraz Twojej uwagi</translation>
@@ -6201,6 +6205,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5203035663139409780">Możliwość edytowania plików i folderów na urządzeniu</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Kliknij, by wyświetlić rozszerzenie}few{Kliknij, by wyświetlić te rozszerzenia}many{Kliknij, by wyświetlić te rozszerzenia}other{Kliknij, by wyświetlić te rozszerzenia}}</translation>
 <translation id="5204282224596194174">Hasło zapasowe do konta <ph name="USER_EMAIL" /></translation>
+<translation id="5204584298075822291">Zwiń karty</translation>
 <translation id="5204673965307125349">Wykonaj Powerwash urządzenia i spróbuj jeszcze raz.</translation>
 <translation id="5204967432542742771">Wpisz hasło</translation>
 <translation id="5205484256512407285">Nigdy nie używaj mobilnej transmisji danych</translation>
@@ -9045,6 +9050,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7193051357671784796">Tę aplikację dodała Twoja organizacja. Uruchom ją ponownie, by dokończyć jej instalowanie.</translation>
 <translation id="7193374945610105795">Nie zapisano żadnych haseł do <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Wyślij opinię na temat sugerowanych grup</translation>
+<translation id="7194343495483122559">Rozwiń karty</translation>
 <translation id="7194873994243265344">Twoja organizacja zablokowała ten plik, ponieważ jest on zaszyfrowany. Poproś właściciela, aby go odszyfrował.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{Pobieram 1 plik}few{Pobieram # pliki}many{Pobieram # plików}other{Pobieram # pliku}}</translation>
 <translation id="7196272782924897510">Czy chcesz użyć klucza z innego urządzenia?</translation>
@@ -11300,7 +11306,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8707562594602678416">Miejsca</translation>
 <translation id="8708000541097332489">Wyczyść przy zamykaniu</translation>
 <translation id="870805141700401153">Podpisywanie kodu indywidualnego firmy Microsoft</translation>
-<translation id="8708088555926718398">Błąd: kategoria: <ph name="CATEGORY" />, kod: <ph name="CODE" />, kod dodatkowy: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp;Więcej informacji</translation>
 <translation id="8709368517685334931">Starsze kolory znajdziesz w sklepie Chrome Web Store</translation>
 <translation id="8710414664106871428">Fantasy</translation>

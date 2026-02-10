@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="201759455285471444">Expandir grupo de pestañas.</translation>
 <translation id="202070562065520783">Explícame esto</translation>
-<translation id="2023713324775943812">Accede al Modo de lectura desde la barra de direcciones cuando esté disponible</translation>
 <translation id="2044394949148788042">Abre la cuadrícula de pestañas</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> administra la cuenta <ph name="USER_EMAIL" />, por lo que es posible que pueda ver cierta información. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nuevo elemento</translation>
@@ -1860,6 +1859,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7772032839648071052">Confirmar frase de contraseña</translation>
 <translation id="7772948288262733182">Te damos la bienvenida nuevamente</translation>
 <translation id="777637629667389858">Cuando accedes a tu cuenta, te protege en todos los servicios de Google.</translation>
+<translation id="7776604279034196531">Accede al modo de lectura desde la barra de direcciones cuando esté disponible</translation>
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7788868432173225918">Descartar vista expandida</translation>
 <translation id="7791543448312431591">Agregar</translation>

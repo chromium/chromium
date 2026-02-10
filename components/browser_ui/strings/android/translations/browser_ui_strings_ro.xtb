@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">Permite ca Chrome să-ți trimită filele recente pe dispozitiv ca să le vezi în lista de aplicații și în rezultatele căutării pe dispozitiv. Poți să activezi sau să dezactivezi opțiunea din setările Chrome.</translation>
 <translation id="1420688843103859429">Navighează înainte și înapoi glisând cu două degete pe touchpad</translation>
 <translation id="1432650420699700107">Site-urile pot solicita permisiunea de a se conecta la orice dispozitiv din rețeaua locală</translation>
+<translation id="1442081309487427303">Activează linkurile în modul de lectură</translation>
 <translation id="1448064542941920355">Micșorează nivelul de zoom</translation>
 <translation id="1464044141348608623">Nu permite site-urilor să afle când folosești activ dispozitivul</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}few{<ph name="SITE_COUNT" /> site-uri}other{<ph name="SITE_COUNT" /> de site-uri}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">Primește notificări cu sfaturi pentru Chrome</translation>
 <translation id="1777815584158991902">Foaia din partea de jos a feedului Discover</translation>
 <translation id="1779089405699405702">Decodor de imagini</translation>
+<translation id="1781533683087883868">Dezactivează linkurile în modul de lectură</translation>
 <translation id="1785415724048343560">Se recomandă pentru o experiență optimă</translation>
 <translation id="1796588414813960292">Opțiunile care au nevoie de sunet nu vor funcționa</translation>
 <translation id="1799920918471566157">Sfaturi Chrome</translation>

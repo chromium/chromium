@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">Consenti a Chrome di condividere le schede recenti con il tuo dispositivo per visualizzarle nell'elenco di app e nei risultati di ricerca del dispositivo. Puoi attivare o disattivare questa funzionalità nelle impostazioni di Chrome.</translation>
 <translation id="1420688843103859429">Vai avanti e indietro scorrendo con due dita sul touchpad</translation>
 <translation id="1432650420699700107">I siti possono chiedere di connettersi a qualsiasi dispositivo sulla rete locale</translation>
+<translation id="1442081309487427303">Attiva i link della modalità Lettura</translation>
 <translation id="1448064542941920355">Diminuisci lo zoom</translation>
 <translation id="1464044141348608623">Non consentire ai siti di sapere quando stai utilizzando attivamente il tuo dispositivo</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sito}other{<ph name="SITE_COUNT" /> siti}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">Ricevi notifiche sui suggerimenti per Chrome</translation>
 <translation id="1777815584158991902">Riquadro inferiore del Feed personalizzato</translation>
 <translation id="1779089405699405702">Decoder di immagini</translation>
+<translation id="1781533683087883868">Disattiva i link della modalità Lettura</translation>
 <translation id="1785415724048343560">Consigliato per un'esperienza ottimale</translation>
 <translation id="1796588414813960292">Le funzionalità che richiedono l'audio non funzioneranno</translation>
 <translation id="1799920918471566157">Suggerimenti per Chrome</translation>

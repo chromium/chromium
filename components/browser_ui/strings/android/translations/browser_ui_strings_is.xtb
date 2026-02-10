@@ -295,6 +295,7 @@
 <translation id="3903738175795615004">Strjúktu niður frá efsta hluta skjásins eða ýttu á Esc-lykilinn til að hætta að nota allan skjáinn.</translation>
 <translation id="3905475044299942653">Stöðva mikið magn tilkynninga</translation>
 <translation id="3922092564198021702">Opnaðu Stillingar í símanum</translation>
+<translation id="3924858949939391676">Sýna tengla þegar kveikt er á lesstillingu</translation>
 <translation id="3933121352599513978">Minnka óumbeðnar beiðnir (ráðlagt)</translation>
 <translation id="3934905113567851655">Færðu fingur saman til að breyta stærð</translation>
 <translation id="3955193568934677022">Leyfa vefsvæðum að spila varið efni (ráðlagt)</translation>
@@ -358,6 +359,7 @@
 <translation id="4644713492825682049">Eyða og endurstilla</translation>
 <translation id="4645575059429386691">Stjórnað af foreldri þínu</translation>
 <translation id="4652266463001779298">Ekki heimilað</translation>
+<translation id="4655846733459137112">Ýttu á „Já“ til að nota þetta aðgangsorð á auðveldan hátt næst þegar þú skráir þig inn</translation>
 <translation id="4663373278480897665">Myndavél er leyfð</translation>
 <translation id="4670064810192446073">Sýndarveruleiki</translation>
 <translation id="4672315773691449562">Ýttu á „Vafraforrit“ og síðan á „Chrome“</translation>
@@ -464,6 +466,7 @@
 <translation id="5804241973901381774">Heimildir</translation>
 <translation id="5817042798620209981">Upplýsingar um vefsvæði, gluggi</translation>
 <translation id="5822675474983796325">Sérsníða blað neðst á síðu nýrra flipa opið til fulls</translation>
+<translation id="5826403277762134844">Leiðbeiningablað neðst fyrir vistun aðgangsorða í Chrome</translation>
 <translation id="5833899990800318936">Ekki leyfa vefsvæðum að nota JavaScript</translation>
 <translation id="583673505367439042">Vefsvæði geta beðið um leyfi til að breyta skrám og möppum í tækinu þínu</translation>
 <translation id="5844448279347999754">Þegar kveikt er á þessu geta vefsvæði beðið um að sjá texta og myndir sem vistaðar eru á klippiborðinu. Þegar slökkt er á þessu geta vefsvæði ekki séð texta og myndir sem vistaðar eru á klippiborðinu.</translation>
@@ -643,6 +646,7 @@
 <translation id="775043444390799886">Afturkalla heimild</translation>
 <translation id="7758789811447313947">Fjólublátt þema</translation>
 <translation id="7759147511335618829">Stjórn og endurforritun MIDI-tækja</translation>
+<translation id="7771089277295008211">Leiðbeiningablaði neðst um vistun aðgangsorða var lokað</translation>
 <translation id="7781829728241885113">Í gær</translation>
 <translation id="7791543448312431591">Bæta við</translation>
 <translation id="780301667611848630">Nei, takk</translation>
@@ -660,6 +664,7 @@
 <translation id="7940722705963108451">Minna mig á</translation>
 <translation id="7948081750384205628">Nánar um <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Vefsvæði geta beðið um að sjá texta og myndir á klippiborðinu</translation>
+<translation id="7958779728312669715">Leiðbeiningablað neðst um vistun aðgangsorða er opið að fullu</translation>
 <translation id="798299424881500862">Appelsínugult þema</translation>
 <translation id="7986741934819883144">Velja tengilið</translation>
 <translation id="7990211076305263060">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota hljóðnemann þinn. Þegar slökkt er á þessu geta vefsvæði ekki notað hljóðnemann þinn.</translation>
@@ -756,6 +761,7 @@
 <translation id="8889294078294184559">Þegar þú heldur áfram að vafra geta vefsvæði athugað upplýsingarnar hjá Chrome og staðfest frá fyrra vefsvæði að þú sért líklega mennskur notandi</translation>
 <translation id="8899807382908246773">Ágengar auglýsingar</translation>
 <translation id="8903921497873541725">Auka aðdrátt</translation>
+<translation id="8919911527569629802">Skráðu þig inn á hvaða vefsvæði sem er</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Ekki spyrja aftur</translation>
 <translation id="8926666909099850184">Slökkt er á NFC fyrir þetta tæki. Kveiktu á því í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
@@ -783,6 +789,7 @@
 <translation id="9182556968660520230">Ekki leyfa vefsvæðum að spila varið efni</translation>
 <translation id="947156494302904893">Vefsvæði geta staðfest að þú sért manneskja en ekki botti</translation>
 <translation id="959682366969460160">Skipulag</translation>
+<translation id="960590623979248167">Sýna textatengla</translation>
 <translation id="961930410699694996">Staðsetning leyfð í þetta skipti</translation>
 <translation id="967624055006145463">Vistuð gögn</translation>
 <translation id="969975166333045662">Koma í veg fyrir að vefsvæði noti V8 optimizer.</translation>

@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">หากต้องการดูรหัสผ่าน คุณต้องตั้งพาสโค้ดในอุปกรณ์ก่อน</translation>
 <translation id="201759455285471444">ขยายกลุ่มแท็บ</translation>
 <translation id="202070562065520783">อธิบายให้ฉันฟังหน่อย</translation>
-<translation id="2023713324775943812">เข้าถึงโหมดการอ่านจากแถบที่อยู่เมื่อพร้อมใช้งาน</translation>
 <translation id="2044394949148788042">เปิดตารางกริดของแท็บ</translation>
 <translation id="2044681667265133332">บัญชี <ph name="USER_EMAIL" /> จัดการโดย <ph name="HOSTED_DOMAIN" /> ซึ่งอาจดูข้อมูลบางอย่างได้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">รายการใหม่</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">รหัสผ่านและพาสคีย์ที่บันทึกไว้</translation>
 <translation id="3143515551205905069">ยกเลิกการซิงค์</translation>
 <translation id="3144126448740580210">เสร็จสิ้น</translation>
+<translation id="3147521114983561406">ระบบจะบันทึกพาสคีย์ไว้ในเครื่องมือจัดการรหัสผ่าน โดยจะเข้าถึงได้ในแท็บที่ไม่ระบุตัวตนและแท็บปกติ</translation>
 <translation id="3148052723910099040">ตารางกริดของแท็บปกติ</translation>
 <translation id="3148237711805373460">นำฉันไป</translation>
 <translation id="3157387275655328056">เพิ่มไปยังเรื่องรออ่าน</translation>
@@ -1860,6 +1860,7 @@
 <translation id="7772032839648071052">ยืนยันข้อความรหัสผ่าน</translation>
 <translation id="7772948288262733182">ยินดีต้อนรับกลับมาอีกครั้ง</translation>
 <translation id="777637629667389858">เมื่อลงชื่อเข้าใช้ ฟีเจอร์จะปกป้องคุณในบริการต่างๆ ของ Google</translation>
+<translation id="7776604279034196531">เข้าถึงโหมดการอ่านจากแถบที่อยู่เมื่อพร้อมใช้งาน</translation>
 <translation id="7781829728241885113">เมื่อวานนี้</translation>
 <translation id="7788868432173225918">ปิดมุมมองแบบขยาย</translation>
 <translation id="7791543448312431591">เพิ่ม</translation>
@@ -2097,6 +2098,7 @@
 <translation id="8587001564479545614">สร้าง PIN สำหรับการกู้คืน</translation>
 <translation id="8588404856427128947">ปิด</translation>
 <translation id="8590286732816598906">กลุ่มแท็บ, <ph name="GROUP_TITLE" />, เมนู</translation>
+<translation id="8593317261815647019">สร้างพาสคีย์นอกโหมดไม่ระบุตัวตนไหม</translation>
 <translation id="8600272508328041907">เปลี่ยนเป็นการแปลภาษาทั้งหน้า</translation>
 <translation id="860043288473659153">ชื่อผู้ถือบัตร</translation>
 <translation id="8601611099293226919">ค้นหาบนหน้าจอของคุณด้วย Google Lens</translation>

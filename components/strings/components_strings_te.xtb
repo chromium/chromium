@@ -2786,6 +2786,7 @@
 <translation id="5466018172325111652">మీ కోడ్ అందలేదా? <ph name="BEGIN_LINK" />కొత్త కోడ్‌ను పొందండి<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">పేమెంట్‌ల యాప్‌లు</translation>
 <translation id="5470861586879999274">&amp;సవరించడాన్ని రిపీట్‌ చేయి</translation>
+<translation id="5471158297908124590">పేమెంట్ ఆప్షన్‌లను ఎడిట్ చేయడానికి ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="5472588168895083535">హ్యాండ్ ట్రాకింగ్ బ్లాక్ అయింది</translation>
 <translation id="5477756102936130143">సపోర్ట్ చేసే పేమెంట్ యాప్‌లకు రీడైరెక్షన్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="5479505548832623900">ఎక్స్‌టెన్షన్ విస్మరించే అవకాశం ఉంది</translation>
@@ -2863,6 +2864,7 @@
 <translation id="5570825185877910964">ఖాతాను సంరక్షించు</translation>
 <translation id="5571083550517324815">ఈ అడ్రస్‌ నుండి పికప్ చేసుకోవడం సాధ్యం కాదు. వేరే అడ్రస్‌ను ఎంచుకోండి.</translation>
 <translation id="5572434905385510939">22 x 28 అంగుళాలు</translation>
+<translation id="5573090972398558474">మీ సంస్థ, అజ్ఞాత మోడ్‌లో ఈ పేజీని బ్లాక్ చేసింది.</translation>
 <translation id="5573641252776268565">పాస్‌పోర్ట్‌ను ఎడిట్ చేయండి</translation>
 <translation id="5578606540385219379">సర్వీస్ ప్రొవైడర్‌లు</translation>
 <translation id="5580958916614886209">మీ గడువు ముగింపు నెలను చెక్ చేసి, మళ్లీ ట్రై చేయండి</translation>
@@ -3169,6 +3171,7 @@
 <translation id="6093795393556121384">మీ కార్డ్ ధృవీకరించబడింది</translation>
 <translation id="6094253940069566294">వెహిక‌ల్ వివ‌రాలను ఎడిట్ చేయండి</translation>
 <translation id="6094290315941448991">గోప్యమైన కంటెంట్ కనిపించినప్పుడు, అడ్మినిస్ట్రేటర్ పాలసీ స్క్రీన్ రికార్డింగ్‌ను డిజేబుల్ చేస్తుంది</translation>
+<translation id="6097297436119286254">మీ పేమెంట్ సమాచారాన్ని ఫిల్ చేయడానికి ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="6099269767116481177">22 x 29.5 అంగుళాలు</translation>
 <translation id="6101583188322746099">కిరాణా డెలివరీ సర్వీస్‌లు</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4290,6 +4293,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{ఏదీ వద్దు}=1{1 యాప్ (<ph name="EXAMPLE_APP_1" />)}=2{2 యాప్‌లు (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# యాప్‌లు (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">ఎర్రర్ ఏర్పడింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="784623644169604270">ఇటీవలి యాక్టివిటీ ఏదీ లేదు</translation>
+<translation id="7848926355794727168">ఆటోమేటిక్ బ్రౌజింగ్</translation>
 <translation id="7853222852810008596">ఈ కరెన్సీలో తర్వాత పేమెంట్ చేసే ఆప్షన్ అందుబాటులో లేదు</translation>
 <translation id="785476343534277563">కాలేజ్ క్రీడలు</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4519,6 +4523,7 @@
 <translation id="8241707690549784388">మీరు వెతికే పేజీ మీరు ఎంటర్ చేసిన సమాచారాన్ని ఉపయోగించుకుంది. ఆ పేజీకి తిరిగి వెళ్ల‌డం ద్వారా మీరు చేసిన ఏ చర్య అయినా రిపీట్‌ చేయ‌వలసి వస్తుంది. మీరు కొనసాగాలని అనుకుంటున్నారా?</translation>
 <translation id="8241712895048303527">ఈ సైట్‌లో బ్లాక్ చేయండి</translation>
 <translation id="8242426110754782860">కొనసాగు</translation>
+<translation id="824620968958405573">ఆటోమేటిక్ బ్రౌజ్ టాస్క్</translation>
 <translation id="8246482227229072868">రింగ్‌లు</translation>
 <translation id="8248406213705193919">కార్డ్‌ను సురక్షితంగా సేవ్ చేయాలా?</translation>
 <translation id="8249296373107784235">రద్దుచేయి</translation>
@@ -4916,6 +4921,7 @@
 <translation id="8897428486789851669">ఈత</translation>
 <translation id="8899807382908246773">అనుచితమైన యాడ్‌లు</translation>
 <translation id="8903921497873541725">దగ్గరికి జూమ్ చేయి</translation>
+<translation id="8903998444169664879">మీ పేమెంట్ సెట్టింగ్‌లను మార్చడానికి ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="890493561996401738">సూచన బటన్‌ను తీసివేయండి, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />ను తీసివేయడానికి ఎంటర్ నొక్కండి</translation>
 <translation id="8910898109640902752">8 x 10 అం.</translation>
 <translation id="8914504000324227558">Chromeను పునఃప్రారంభించు</translation>

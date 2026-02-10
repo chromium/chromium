@@ -2792,6 +2792,7 @@
 <translation id="5466018172325111652">کد را دریافت نکردید؟ <ph name="BEGIN_LINK" />کد جدید دریافت کنید<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">برنامه‌های پرداخت</translation>
 <translation id="5470861586879999274">&amp;انجام مجدد ویرایش</translation>
+<translation id="5471158297908124590">برای ویرایش روش‌های پرداخت، هویتتان را درستی‌سنجی کنید</translation>
 <translation id="5472588168895083535">ردیابی دست مسدود شد</translation>
 <translation id="5477756102936130143">فعال کردن بازهدایت به برنامه‌های پرداخت پشتیبانی‌شده</translation>
 <translation id="5479505548832623900">احتمالاً افزونه آن را نادیده گرفته است.</translation>
@@ -3175,6 +3176,7 @@
 <translation id="6093795393556121384">کارت شما تأیید شده است</translation>
 <translation id="6094253940069566294">ویرایش وسیله نقلیه</translation>
 <translation id="6094290315941448991">خط‌مشی سرپرست ضبط صفحه‌نمایش را هنگامی که محتوای محرمانه نمایان باشد غیرفعال می‌کند</translation>
+<translation id="6097297436119286254">برای تکمیل اطلاعات پرداخت، هویتتان را درستی‌سنجی کنید</translation>
 <translation id="6099269767116481177">۲۹٫۵ × ۲۲ اینچ</translation>
 <translation id="6101583188322746099">خدمات تحویل خواربار</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4525,6 +4527,7 @@
 <translation id="8241707690549784388">صفحه‌ای که جستجو می‌کنید از اطلاعاتی استفاده می‌کند که شما وارد کرده‌اید. بازگشت به آن صفحه ممکن است باعث شود اقدامی را که قبلاً انجام دادید دوباره تکرار کنید. آیا می‌خواهید ادامه دهید؟</translation>
 <translation id="8241712895048303527">مسدود کردن در این سایت</translation>
 <translation id="8242426110754782860">ادامه دادن</translation>
+<translation id="824620968958405573">تکلیف مرور خودکار</translation>
 <translation id="8246482227229072868">حلقه</translation>
 <translation id="8248406213705193919">کارت به‌طور ایمن ذخیره شود؟</translation>
 <translation id="8249296373107784235">لغو</translation>
@@ -4922,6 +4925,7 @@
 <translation id="8897428486789851669">شنا</translation>
 <translation id="8899807382908246773">آگهی‌های مزاحم</translation>
 <translation id="8903921497873541725">بزرگ‌نمایی</translation>
+<translation id="8903998444169664879">برای تغییر تنظیمات پرداخت، هویتتان را درستی‌سنجی کنید</translation>
 <translation id="890493561996401738">‏برداشتن دکمه «پیشنهاد»، برای برداشتن، دکمه Enter را فشار دهید، <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">۱۰ × ۸ اینچ</translation>
 <translation id="8914504000324227558">‏راه‌اندازی مجدد Chrome</translation>

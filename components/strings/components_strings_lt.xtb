@@ -2870,6 +2870,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5570825185877910964">Apsaugoti paskyrą</translation>
 <translation id="5571083550517324815">Negalima paimti šiuo adresu. Pasirinkite kitą adresą.</translation>
 <translation id="5572434905385510939">22 x 28 col.</translation>
+<translation id="5573090972398558474">Jūsų organizacija užblokavo šį puslapį inkognito režimu.</translation>
 <translation id="5573641252776268565">Paso redagavimas</translation>
 <translation id="5578606540385219379">Paslaugų teikėjai</translation>
 <translation id="5580958916614886209">Patikrinkite galiojimo pabaigos mėnesį ir bandykite dar kartą</translation>
@@ -4298,6 +4299,7 @@ Papildoma išsami informacija:
 <translation id="7844689747373518809">{COUNT,plural, =0{Nėra}=1{1 programa („<ph name="EXAMPLE_APP_1" />“)}=2{2 programos („<ph name="EXAMPLE_APP_1" />“, „<ph name="EXAMPLE_APP_2" />“)}one{# programa („<ph name="EXAMPLE_APP_1" />“, „<ph name="EXAMPLE_APP_2" />“ <ph name="AND_MORE" />)}few{# programos („<ph name="EXAMPLE_APP_1" />“, „<ph name="EXAMPLE_APP_2" />“ <ph name="AND_MORE" />)}many{# programos („<ph name="EXAMPLE_APP_1" />“, „<ph name="EXAMPLE_APP_2" />“ <ph name="AND_MORE" />)}other{# programų („<ph name="EXAMPLE_APP_1" />“, „<ph name="EXAMPLE_APP_2" />“ <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Įvyko klaida. Bandykite dar kartą.</translation>
 <translation id="784623644169604270">Nėra naujausios veiklos</translation>
+<translation id="7848926355794727168">Automatinis naršymas</translation>
 <translation id="7853222852810008596">Galimybė mokėti vėliau nepasiekiama šia valiuta</translation>
 <translation id="785476343534277563">Kolegijų sportas</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>

@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">I weld cyfrineiriau, rhaid i chi osod cod pas ar eich dyfais yn gyntaf.</translation>
 <translation id="201759455285471444">Ehangu'r grŵp tab.</translation>
 <translation id="202070562065520783">Eglurwch hyn i mi</translation>
-<translation id="2023713324775943812">Cael mynediad at y Modd Darllen o'r bar cyfeiriad pan fydd ar gael</translation>
 <translation id="2044394949148788042">Agorwch y grid tabiau</translation>
 <translation id="2044681667265133332">Mae'r cyfrif <ph name="USER_EMAIL" /> yn cael ei reoli gan <ph name="HOSTED_DOMAIN" />, a allai weld rhywfaint o wybodaeth. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">eitem newydd</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Cyfrineiriau a chodau pas wedi'u cadw</translation>
 <translation id="3143515551205905069">Canslo cysoni</translation>
 <translation id="3144126448740580210">WEDI GORFFEN</translation>
+<translation id="3147521114983561406">Mae cyfrineiriau'n cael eu cadw i'ch rheolwr cyfrineiriau. Maent yn hygyrch mewn tabiau Anhysbys ac arferol.</translation>
 <translation id="3148052723910099040">Grid Tabiau Rheolaidd</translation>
 <translation id="3148237711805373460">Ewch â fi yno</translation>
 <translation id="3157387275655328056">Ychwanegu at y Rhestr Ddarllen</translation>
@@ -1860,6 +1860,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7772032839648071052">Cadarnhau cyfrinymadrodd</translation>
 <translation id="7772948288262733182">Croeso'n ôl</translation>
 <translation id="777637629667389858">Pan fyddwch wedi mewngofnodi, mae'n eich diogelu ar draws gwasanaethau Google.</translation>
+<translation id="7776604279034196531">Cael mynediad at y modd darllen o'r bar cyfeiriad pan fydd ar gael</translation>
 <translation id="7781829728241885113">Ddoe</translation>
 <translation id="7788868432173225918">Diystyru'r wedd estynedig</translation>
 <translation id="7791543448312431591">Ychwanegu</translation>
@@ -2097,6 +2098,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="8587001564479545614">Creu PIN adfer</translation>
 <translation id="8588404856427128947">Diffodd</translation>
 <translation id="8590286732816598906">Grŵp tabiau, <ph name="GROUP_TITLE" />, Dewislen.</translation>
+<translation id="8593317261815647019">Creu cod pas y tu allan i'r modd Anhysbys?</translation>
 <translation id="8600272508328041907">Newid i gyfieithu tudalen lawn</translation>
 <translation id="860043288473659153">Enw deiliad y cerdyn</translation>
 <translation id="8601611099293226919">Chwiliwch eich sgrîn â Google Lens</translation>

@@ -2219,6 +2219,17 @@ que uma seleção seja feita como de costume.</translation>
 <translation id="2466131534462628618">A autenticação de portal cativo ignora o proxy</translation>
 <translation id="2467181864598429837">Comportamento padrão do navegador</translation>
 <translation id="2467896267442150508">Intervalo de tempo que dura no máximo uma semana. Se o horário de início for posterior ao de término, o intervalo será contínuo.</translation>
+<translation id="2475594733565572760">Esta política define a configuração padrão para todos os recursos de IA generativa cobertos. Por exemplo, se esta política for definida com o valor 1, então 1 será a configuração padrão para todos os recursos de IA generativa cobertos. Isso não afeta os valores de política definidos manualmente. Essa configuração vai definir os padrões para os recursos de IA generativa cobertos no Chrome. Consulte https://support.google.com/chrome/a?p=generative_ai_settings para conferir a lista de recursos cobertos.
+
+Algumas políticas, como a <ph name="GEMINI_SETTINGS_POLICY_NAME" />, só aceitam as definições "Permitido" e "Não permitido". Nesse caso, se a política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> estiver definida como 0 ou 1, o recurso estará ativado. Se <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> estiver definida como 2, o recurso estará desativado. A documentação de cada recurso contém mais informações sobre a interação com os valores nesta política (por exemplo, Gemini no Chrome: https://support.google.com/chrome/a/?p=gemini_in_chrome). Isso se aplica aos seguintes recursos: Gemini no Chrome, Google Lens e Modo IA, pois estão sujeitos às próprias garantias e/ou Termos de Serviço (https://support.google.com/chrome/a/?p=genai_features_chrome).
+
+Definir a política como 0 habilita o recurso e permite que os dados relevantes sejam usados pelo Google para melhorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de fonte e feedback por escrito, dependendo do recurso. Eles também podem ser analisados por humanos para melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+Definir a política como 1 habilita o recurso, mas não permite que o Google use o conteúdo dos usuários para melhorar os modelos (incluindo comandos, entradas, saídas, material de fonte e feedback por escrito). O valor 1 é o padrão para usuários corporativos, gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />, e contas de ensino, gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Definir a política como 2 não permite que o recurso seja habilitado.
+
+Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2476249479201711962">Ativar o acesso ao menu de contexto do provedor de pesquisa padrão</translation>
 <translation id="2478756867046106663">Permitir que sites com experiências abusivas abram novas janelas ou guias</translation>
 <translation id="2479760962196319822">Esta política controla se os usuários do <ph name="PRODUCT_OS_NAME" /> podem armazenar dados localmente.
@@ -4432,6 +4443,7 @@ A política pode ser combinada com <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATF
 <translation id="3927291637826333102">Permitir captura de área de trabalho, janela e guia por estas origens</translation>
 <translation id="3928726028264020458">Ativar relatórios de informações VPD do dispositivo</translation>
 <translation id="3935592079035695061">Milissegundos desde a meia-noite.</translation>
+<translation id="3937800910397007337">Forçar a prioridade de primeiro plano para todas as guias</translation>
 <translation id="3941289958028934630">Desativar a resposta falada na tela de login</translation>
 <translation id="3943930334592166130">Esta política controla se o usuário receberá uma solicitação para selecionar um certificado de cliente quando a <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> corresponder a mais de um certificado.
       Se esta política for definida como "Ativada", o usuário receberá uma solicitação para selecionar um certificado de cliente sempre que a política de seleção automática corresponder a vários certificados.
@@ -6446,6 +6458,7 @@ política enquanto o navegador estiver em execução.</translation>
       * moderada, os usuários poderão escolher apenas o Modo restrito moderado e o Modo restrito rigoroso no YouTube, e não poderão desativar o Modo restrito;
 
       * desativada ou se nenhum valor for definido, o Modo restrito no YouTube não será aplicado pelo Chrome. Políticas externas, como as do YouTube, ainda poderão aplicar o Modo restrito.</translation>
+<translation id="5191007233343702012">Usar a priorização padrão de guias</translation>
 <translation id="5191476996923842491">Comportamento padrão para o tempo limite mínimo da função setTimeout().</translation>
 <translation id="519247340330463721">Configura as políticas relacionadas ao Safe Browsing.</translation>
 <translation id="5192555640439947289">Se a política for ativada, o <ph name="PRODUCT_OS_NAME" /> vai pedir que os usuários desbloqueiem o dispositivo com uma senha quando ele for suspenso ou a tampa for fechada.
@@ -6672,6 +6685,7 @@ Observação: esta política não se aplica a HSTS Upgrades.</translation>
 <translation id="530949964068726932">Ocultar opções de acessibilidade no menu da bandeja do sistema</translation>
 <translation id="5309944663104291505">Não permitir que aplicativos de quiosque e Apps Isolados da Web instalados à força usem a API Device Attributes</translation>
 <translation id="5311275381462687162">Configuração padrão do comportamento de cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado.</translation>
+<translation id="5311430612584074035">Forçar a prioridade de primeiro plano para todas as guias no perfil</translation>
 <translation id="5312253627576569499">Porcentagem de aumento do intervalo de escurecimento da tela quando a atividade do usuário é observada enquanto a tela está escurecida ou pouco depois de ela ter sido desligada.</translation>
 <translation id="5316856058059940708">Desativar o cursor grande</translation>
 <translation id="5318185076587284965">Ativar o uso de servidores relay pelo host de acesso remoto</translation>
@@ -6709,6 +6723,15 @@ As contas gerenciadas não podem participar nem criar um grupo familiar. Por iss
 <translation id="5345892164332459671">Desativar o SSO flutuante e não mover as autenticações do serviço da Web do usuário para um novo dispositivo</translation>
 <translation id="5345910753471481870">Não mostrar o botão do Google Lens na caixa de pesquisa da página "Nova guia".</translation>
 <translation id="5346587320074666194">Bloquear acesso a sensores nesses sites</translation>
+<translation id="5347735051291224683">Esta política define se o conteúdo da web em segundo plano é forçado a ser executado com prioridade de primeiro plano.
+
+Por padrão, o navegador reduz a prioridade das guias em segundo plano para otimizar recursos. Ativar esta política mudará o comportamento padrão, e as guias em segundo plano serão processadas da mesma forma que a guia ativa.
+
+Forçar a priorização do conteúdo em segundo plano pode afetar a capacidade de resposta da guia ativa.
+
+Se esta política estiver ativada, todo o conteúdo da web será executado com prioridade de primeiro plano, mesmo que esteja em outra guia.
+
+Se esta política estiver desativada ou sem uma configuração definida, o navegador determinará a prioridade de forma prática (por exemplo, desconsiderando conteúdo que não esteja visível, reproduzindo áudio ou sendo usado em videochamadas).</translation>
 <translation id="534836255587440809">Desativar o clique automático na tela de login</translation>
 <translation id="5348658899015174540">A API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permite que aplicativos da Web capturem várias superfícies ao mesmo tempo.
       Esta política desbloqueia a propriedade <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> para aplicativos da Web em origens definidas.

@@ -2788,6 +2788,7 @@
 <translation id="5466018172325111652">ನಿಮ್ಮ ಕೋಡ್ ಸ್ವೀಕರಿಸಲಿಲ್ಲವೇ? <ph name="BEGIN_LINK" />ಹೊಸ ಕೋಡ್ ಅನ್ನು ಪಡೆದುಕೊಳ್ಳಿ<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">ಪಾವತಿ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="5470861586879999274">&amp;ಎಡಿಟ್ ಮಾಡುವುದನ್ನು ಪುನಃ ಮಾಡು</translation>
+<translation id="5471158297908124590">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಇದು ನೀವೇ ಹೌದು ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="5472588168895083535">ಹ್ಯಾಂಡ್ ಟ್ರ್ಯಾಕಿಂಗ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5477756102936130143">ಬೆಂಬಲಿತ ಪಾವತಿ ಆ್ಯಪ್‌ಗಳಿಗೆ ರೀಡೈರೆಕ್ಷನ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5479505548832623900">ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ನಿಂದ ನಿರ್ಲಕ್ಷಿಸಲ್ಪಟ್ಟಿರುವ ಸಾಧ್ಯತೆ ಹೆಚ್ಚು.</translation>
@@ -3171,6 +3172,7 @@
 <translation id="6093795393556121384">ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ</translation>
 <translation id="6094253940069566294">ವಾಹನ ಮಾಹಿತಿಯನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6094290315941448991">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಗೌಪ್ಯ ಕಂಟೆಂಟ್‌ ಗೋಚರಿಸುತ್ತಿರುವಾಗ ಸ್ಕ್ರೀನ್‌‌ ರೆಕಾರ್ಡಿಂಗ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
+<translation id="6097297436119286254">ನಿಮ್ಮ ಪಾವತಿ ಮಾಹಿತಿಯನ್ನು ಭರ್ತಿ ಮಾಡಲು ಇದು ನೀವೇ ಹೌದು ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="6099269767116481177">22 x 29.5 ಇಂಚು</translation>
 <translation id="6101583188322746099">ದಿನಸಿ ವಿತರಣಾ ಸೇವೆಗಳು</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4919,6 +4921,7 @@
 <translation id="8897428486789851669">ಈಜು</translation>
 <translation id="8899807382908246773">ಅತಿಕ್ರಮಣಕಾರಿಯಾಗಿರುವ ಜಾಹೀರಾತುಗಳು</translation>
 <translation id="8903921497873541725">ಝೂಮ್ ಇನ್</translation>
+<translation id="8903998444169664879">ನಿಮ್ಮ ಪಾವತಿಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಲು ಇದು ನೀವೇ ಹೌದು ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="890493561996401738">ಸಲಹೆ ಬಟನ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ, ತೆಗೆದುಹಾಕಲು Enter ಅನ್ನು ಒತ್ತಿರಿ, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 ಇಂಚು</translation>
 <translation id="8914504000324227558">Chrome ಮರುಪ್ರಾರಂಭಿಸಿ</translation>

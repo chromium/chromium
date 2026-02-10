@@ -2790,6 +2790,7 @@
 <translation id="5466018172325111652">หากไม่ได้รับรหัส ให้<ph name="BEGIN_LINK" />ขอรหัสใหม่<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">แอปการชำระเงิน</translation>
 <translation id="5470861586879999274">&amp;ทำซ้ำการแก้ไข</translation>
+<translation id="5471158297908124590">ยืนยันตัวตนเพื่อแก้ไขวิธีการชำระเงิน</translation>
 <translation id="5472588168895083535">การติดตามการเคลื่อนไหวของมือถูกบล็อก</translation>
 <translation id="5477756102936130143">เปิดใช้การเปลี่ยนเส้นทางไปยังแอปการชำระเงินที่รองรับ</translation>
 <translation id="5479505548832623900">ส่วนขยายอาจไม่สนใจ</translation>
@@ -3173,6 +3174,7 @@
 <translation id="6093795393556121384">ยืนยันบัตรของคุณแล้ว</translation>
 <translation id="6094253940069566294">แก้ไขยานพาหนะ</translation>
 <translation id="6094290315941448991">นโยบายของผู้ดูแลระบบปิดใช้การบันทึกหน้าจอเมื่อมีเนื้อหาที่เป็นความลับแสดงอยู่</translation>
+<translation id="6097297436119286254">ยืนยันตัวตนเพื่อกรอกข้อมูลการชำระเงิน</translation>
 <translation id="6099269767116481177">22 x 29.5 นิ้ว</translation>
 <translation id="6101583188322746099">บริการจัดส่งของกินของใช้ในครัวเรือน</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4523,6 +4525,7 @@
 <translation id="8241707690549784388">หน้าที่คุณกำลังมองหาใช้ข้อมูลที่คุณได้ป้อนไว้แล้ว การกลับไปสู่หน้านั้นอาจทำให้คุณต้องทำซ้ำการดำเนินการใดๆ ที่คุณทำแล้ว คุณต้องการดำเนินการต่อหรือไม่</translation>
 <translation id="8241712895048303527">บล็อกในไซต์นี้</translation>
 <translation id="8242426110754782860">ดำเนินการต่อ</translation>
+<translation id="824620968958405573">งานท่องเว็บอัตโนมัติ</translation>
 <translation id="8246482227229072868">แหวน</translation>
 <translation id="8248406213705193919">บันทึกบัตรไว้อย่างปลอดภัยไหม</translation>
 <translation id="8249296373107784235">ล้มเลิก</translation>
@@ -4921,6 +4924,7 @@
 <translation id="8897428486789851669">ว่ายน้ำ</translation>
 <translation id="8899807382908246773">โฆษณาที่รบกวน</translation>
 <translation id="8903921497873541725">ขยาย</translation>
+<translation id="8903998444169664879">ยืนยันตัวตนเพื่อเปลี่ยนการตั้งค่าการชำระเงิน</translation>
 <translation id="890493561996401738">ปุ่ม "นำคำแนะนำออก" กด Enter เพื่อนำออก <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 นิ้ว</translation>
 <translation id="8914504000324227558">เปิด Chrome ขึ้นใหม่</translation>

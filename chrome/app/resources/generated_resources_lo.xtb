@@ -240,6 +240,7 @@
 <translation id="1151917987301063366">ອະນຸຍາດໃຫ້ <ph name="HOST" /> ເຂົ້າເຖິງເຊັນເຊີ</translation>
 <translation id="1152346050262092795">ປ້ອນລະຫັດຜ່ານຂອງທ່ານອີກເທື່ອໜຶ່ງເພື່ອຢັ້ງຢືນບັນຊີຂອງທ່ານ.</translation>
 <translation id="1153636665119721804">ໂປຣແກຣມການປົກປ້ອງຂັ້ນສູງຂອງ Google</translation>
+<translation id="1153802775114315167">ເລີ່ມຕົ້ນນຳໃຊ້ສ່ວນຂະຫຍາຍ</translation>
 <translation id="1155816283571436363">ກຳລັງເຊື່ອມຕໍ່ກັບໂທລະສັບຂອງທ່ານ</translation>
 <translation id="1157952955648710254">ປິດແຜງຄວບຄຸມດ້ານຂ້າງຂອງ Google ຊອກຫາ</translation>
 <translation id="1158080958325422608">ເຮັດໃຫ້ເປັນຕົວພິມໃຫຍ່</translation>
@@ -11336,7 +11337,6 @@
 <translation id="8707562594602678416">ສະຖານທີ່</translation>
 <translation id="8708000541097332489">ລຶບຕເມື່ອອອກ</translation>
 <translation id="870805141700401153">ການເຊັນລະຫັດບຸກຄົນຂອງ Microsoft</translation>
-<translation id="8708088555926718398">ຂໍ້ຜິດພາດ: ໝວດໝູ່: <ph name="CATEGORY" />, ລະຫັດ: <ph name="CODE" />, ລະຫັດເພີ່ມເຕີມ: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">ຂໍ້ມູນເພີ່ມເຕີມ</translation>
 <translation id="8709368517685334931">ທ່ານສາມາດຊອກຫາສີເກົ່າໄດ້ໃນ Chrome Web Store</translation>
 <translation id="8710414664106871428">ແຟນຕາຊີ</translation>

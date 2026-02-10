@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Als je wachtwoorden wilt zien, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="201759455285471444">Tabbladgroep uitvouwen.</translation>
 <translation id="202070562065520783">Leg dit aan me uit</translation>
-<translation id="2023713324775943812">Open de leesmodus via de adresbalk als deze beschikbaar is</translation>
 <translation id="2044394949148788042">Open het tabbladraster</translation>
 <translation id="2044681667265133332">Het account <ph name="USER_EMAIL" /> wordt beheerd door <ph name="HOSTED_DOMAIN" />. Dit domein kan bepaalde informatie bekijken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nieuw item</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Opgeslagen wachtwoorden en toegangssleutels</translation>
 <translation id="3143515551205905069">Synchronisatie annuleren</translation>
 <translation id="3144126448740580210">KLAAR</translation>
+<translation id="3147521114983561406">Toegangssleutels worden opgeslagen in je wachtwoordmanager. Je kunt ze openen in incognito- en normale tabbladen.</translation>
 <translation id="3148052723910099040">Raster met normale tabbladen</translation>
 <translation id="3148237711805373460">Ernaartoe gaan</translation>
 <translation id="3157387275655328056">Toevoegen aan leeslijst</translation>
@@ -1860,6 +1860,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="7772032839648071052">Bevestig de wachtwoordzin</translation>
 <translation id="7772948288262733182">Welkom terug</translation>
 <translation id="777637629667389858">Als je bent ingelogd, word je beschermd in Google-services.</translation>
+<translation id="7776604279034196531">Toegang tot de leesmodus vanuit de adresbalk als deze beschikbaar is</translation>
 <translation id="7781829728241885113">Gisteren</translation>
 <translation id="7788868432173225918">Uitgevouwen weergave sluiten</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
@@ -2097,6 +2098,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="8587001564479545614">Een herstelpincode maken</translation>
 <translation id="8588404856427128947">Uit</translation>
 <translation id="8590286732816598906">Tabbladgroep, <ph name="GROUP_TITLE" />, menu.</translation>
+<translation id="8593317261815647019">Een toegangssleutel maken buiten de incognitomodus om?</translation>
 <translation id="8600272508328041907">Overschakelen naar vertaling van volledige pagina</translation>
 <translation id="860043288473659153">Naam kaarthouder</translation>
 <translation id="8601611099293226919">Zoeken op je scherm met Google Lens</translation>

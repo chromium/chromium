@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">Chrome에서 내 기기와 최근 탭을 공유하도록 허용하면 기기의 앱 목록과 검색 결과에서 최근 탭을 볼 수 있습니다. 이 기능은 Chrome 설정에서 사용 또는 사용 중지할 수 있습니다.</translation>
 <translation id="1420688843103859429">터치패드에서 두 손가락으로 스와이프하여 앞뒤로 이동</translation>
 <translation id="1432650420699700107">사이트에서 로컬 네트워크의 모든 기기에 연결하도록 요청할 수 있음</translation>
+<translation id="1442081309487427303">읽기 모드 링크 켜기</translation>
 <translation id="1448064542941920355">축소</translation>
 <translation id="1464044141348608623">사용자가 현재 기기를 사용 중인지 사이트에서 알 수 없도록 함</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 사이트}other{<ph name="SITE_COUNT" /> 사이트}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">Chrome 도움말 알림 받기</translation>
 <translation id="1777815584158991902">디스커버 피드 하단 시트</translation>
 <translation id="1779089405699405702">이미지 디코더</translation>
+<translation id="1781533683087883868">읽기 모드 링크 끄기</translation>
 <translation id="1785415724048343560">최적의 경험을 위해 권장됨</translation>
 <translation id="1796588414813960292">소리가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="1799920918471566157">Chrome 사용 팁</translation>

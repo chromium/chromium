@@ -240,6 +240,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1151917987301063366">Selalu izinkan <ph name="HOST" /> mengakses sensor</translation>
 <translation id="1152346050262092795">Masukkan sandi lagi untuk memverifikasi akun Anda.</translation>
 <translation id="1153636665119721804">Program Perlindungan Lanjutan Google</translation>
+<translation id="1153802775114315167">Mulai menggunakan ekstensi</translation>
 <translation id="1155816283571436363">Menghubungkan ke ponsel Anda</translation>
 <translation id="1157952955648710254">Tutup panel samping Google Penelusuran</translation>
 <translation id="1158080958325422608">Jadikan Huruf Besar</translation>
@@ -584,6 +585,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1384849755549338773">Tawarkan Google Terjemahan untuk situs dalam bahasa lain</translation>
 <translation id="1384959399684842514">Download dijeda</translation>
+<translation id="1386966479075994683">Luaskan Tab</translation>
 <translation id="1388253969141979417">Diizinkan menggunakan mikrofon Anda</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> akan dimulai ulang saat update selesai.</translation>
 <translation id="1390113502208199250">Anda harus mereset perangkat ini ke setelan pabrik untuk menggunakan fitur Chrome Education Upgrade.</translation>
@@ -2596,6 +2598,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2727633948226935816">Jangan ingatkan saya lagi</translation>
 <translation id="2727712005121231835">Ukuran Sebenarnya</translation>
 <translation id="2727744317940422214">Maaf, terjadi error. Berikan masukan dan cantumkan #bruschetta di deskripsi. Kode error adalah <ph name="ERROR" />. Pembersihan gagal, Anda mungkin perlu melakukannya secara manual.</translation>
+<translation id="2729310339366257582">Ciutkan tab</translation>
 <translation id="2729577602370119849">Akses dan kelola printer dengan mudah</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Jika Akurasi Lokasi diaktifkan, informasi tentang sinyal nirkabel, seperti titik akses Wi-Fi dan menara BTS, serta data sensor perangkat, seperti akselerometer dan giroskop, akan digunakan untuk memperkirakan lokasi perangkat dengan lebih akurat, yang kemudian dimanfaatkan aplikasi dan layanan untuk menyediakan fitur berbasis lokasi. Untuk melakukannya, Google secara berkala memproses informasi tentang sensor perangkat dan sinyal nirkabel di dekat perangkat ini untuk ikut memberikan lokasi sinyal nirkabel secara crowdsource.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google menggunakan informasi yang dikumpulkan dari perangkat ini untuk: meningkatkan akurasi lokasi serta layanan yang berbasis lokasi; dan secara umum meningkatkan, menyediakan, serta mengelola layanan Google. Kami memproses informasi ini berdasarkan kepentingan sah Google dan pihak ketiga untuk melayani kebutuhan pengguna. Informasi ini tidak digunakan untuk mengidentifikasi individu mana pun.<ph name="END_PARAGRAPH2" />
@@ -2934,7 +2937,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2950666755714083615">Daftar</translation>
 <translation id="2953210795988451570">Update keamanan telah berakhir. Upgrade ke Chromebook baru.</translation>
 <translation id="2953218713108551165">Notifikasi tidak diizinkan untuk <ph name="SITE" />. Anda akan ditanyai lagi pada kunjungan berikutnya.</translation>
-<translation id="2954777802959138493">Gagal melakukan kueri status updater.</translation>
+<translation id="2954777802959138493">Gagal melakukan kueri status pengupdate.</translation>
 <translation id="2955048943983973430">Layanan Google terkait</translation>
 <translation id="2956070239128776395">Bagian tersarang dalam grup: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Aktifkan mode developer untuk menggunakan ekstensi ini, yang tidak dapat ditinjau oleh Chrome Web Store.</translation>
@@ -5139,6 +5142,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="443031431654216610">Hanya gunakan digit angka</translation>
 <translation id="4430369329743628066">Bookmark ditambahkan</translation>
 <translation id="4430422687972614133">Aktifkan kartu virtual</translation>
+<translation id="4431962107539413562">Dapatkan sandi Anda di semua perangkat Anda</translation>
 <translation id="443196770280837407">Buka Gemini dengan pintasan keyboard.</translation>
 <translation id="4432621511648257259">Sandi salah</translation>
 <translation id="4434611816075088065">Tidak ada yang perlu Anda perhatikan untuk saat ini</translation>
@@ -6238,6 +6242,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5203035663139409780">Dapat mengedit file atau folder di perangkat Anda</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Klik untuk melihat ekstensi}other{Klik untuk melihat ekstensi}}</translation>
 <translation id="5204282224596194174">Sandi pemulihan untuk <ph name="USER_EMAIL" /></translation>
+<translation id="5204584298075822291">Ciutkan Tab</translation>
 <translation id="5204673965307125349">Harap powerwash perangkat, lalu coba lagi.</translation>
 <translation id="5204967432542742771">Masukkan sandi</translation>
 <translation id="5205484256512407285">Jangan gunakan data seluler untuk mentransfer</translation>
@@ -9083,6 +9088,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7193051357671784796">Aplikasi ini ditambahkan oleh organisasi Anda. Mulai ulang aplikasi untuk menyelesaikan penginstalannya.</translation>
 <translation id="7193374945610105795">Tidak ada sandi yang tersimpan untuk <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Kirim masukan untuk Grup yang Disarankan</translation>
+<translation id="7194343495483122559">Luaskan tab</translation>
 <translation id="7194873994243265344">Organisasi Anda memblokir file ini karena file dienkripsi. Minta pemiliknya untuk mendekripsi.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{1 download sedang berlangsung}other{# download sedang berlangsung}}</translation>
 <translation id="7196272782924897510">Gunakan kunci sandi dari perangkat lain?</translation>
@@ -11342,7 +11348,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8707562594602678416">Tempat</translation>
 <translation id="8708000541097332489">Hapus saat keluar</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
-<translation id="8708088555926718398">Error: Kategori: <ph name="CATEGORY" />, Kode: <ph name="CODE" />, Kode Tambahan: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">Informasi Selengkapnya</translation>
 <translation id="8709368517685334931">Anda dapat menemukan warna lama di Chrome Web Store</translation>
 <translation id="8710414664106871428">Fantasi</translation>
@@ -11652,7 +11657,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8911914282056933784">Sembunyikan project</translation>
 <translation id="8912362522468806198">Akun Google</translation>
 <translation id="8912810933860534797">Aktifkan pindai otomatis</translation>
-<translation id="8913485523736543337">Updater</translation>
+<translation id="8913485523736543337">Pengupdate</translation>
 <translation id="8914030287343429787">Lihat sandi Anda bahkan saat Anda tidak menggunakan Chrome atau Android dengan login ke <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Luncurkan Ulang Chrome</translation>
 <translation id="8915307125957890427">Klik kanan tab dan pilih "Tambahkan tab ke grup", lalu pilih "Grup baru"</translation>
@@ -11794,7 +11799,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8999560016882908256">Sintaksis bagian error: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Pengurangan gerakan di layar</translation>
 <translation id="9000185763019430629">Sentuh sensor sidik jari di sisi kanan <ph name="DEVICE_TYPE" />. Data sidik jari Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" />.</translation>
-<translation id="9000529821022336229">Penginstalan updater tidak ditemukan.</translation>
+<translation id="9000529821022336229">Penginstalan pengupdate tidak ditemukan.</translation>
 <translation id="900267527532832868">Kunci sandi ini tidak berfungsi lagi. Kunci sandi ini akan segera dihapus dari <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Masukkan digit PIN ke-<ph name="NUM_DIGIT" /> dari 6. Gunakan tombol backspace atau delete untuk menghapus digit terakhir.</translation>
 <translation id="9003185744423389627">Koneksi ke Server Pengelolaan Perangkat gagal dengan status '<ph name="STATUS_TEXT" />' pada <ph name="FAILURE_TIME" /></translation>

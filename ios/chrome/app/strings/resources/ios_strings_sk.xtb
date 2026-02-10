@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Ak si chcete zobraziť heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="201759455285471444">Rozbaliť skupinu kariet</translation>
 <translation id="202070562065520783">Vysvetli mi</translation>
-<translation id="2023713324775943812">Keď je režim čítania k dispozícii, prístup k nemu získate na paneli s adresou</translation>
 <translation id="2044394949148788042">Otvorte mriežku kariet</translation>
 <translation id="2044681667265133332">Účet <ph name="USER_EMAIL" /> spravuje doména <ph name="HOSTED_DOMAIN" />, ktorá si môže zobraziť určité informácie. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nová položka</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Uložené heslá a prístupové kľúče</translation>
 <translation id="3143515551205905069">Zrušiť synchronizáciu</translation>
 <translation id="3144126448740580210">OK</translation>
+<translation id="3147521114983561406">Prístupové kľúče sa ukladajú do vášho správcu hesiel. Sú prístupné na kartách inkognito aj bežných kartách.</translation>
 <translation id="3148052723910099040">Mriežka bežných kariet</translation>
 <translation id="3148237711805373460">Prejsť tam</translation>
 <translation id="3157387275655328056">Pridať do čitateľského zoznamu</translation>
@@ -1860,6 +1860,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="7772032839648071052">Potvrďte prístupovú frázu</translation>
 <translation id="7772948288262733182">Vitajte späť</translation>
 <translation id="777637629667389858">Keď sa prihlásite, chráni váš v službách Googlu.</translation>
+<translation id="7776604279034196531">Získajte prístup k režimu čítania na paneli s adresou, ak je k dispozícii</translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7788868432173225918">Zavrieť rozbalené zobrazenie</translation>
 <translation id="7791543448312431591">Pridať</translation>
@@ -2097,6 +2098,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="8587001564479545614">Vytvorenie kódu PIN na obnovenie</translation>
 <translation id="8588404856427128947">Vypnúť</translation>
 <translation id="8590286732816598906">Skupina kariet <ph name="GROUP_TITLE" />, ponuka.</translation>
+<translation id="8593317261815647019">Chcete vytvoriť prístupový kľúč mimo režimu inkognito?</translation>
 <translation id="8600272508328041907">Prepnite na preklad celej stránky</translation>
 <translation id="860043288473659153">Meno držiteľa karty</translation>
 <translation id="8601611099293226919">Hľadať na obrazovke pomocou funkcie Google Lens</translation>

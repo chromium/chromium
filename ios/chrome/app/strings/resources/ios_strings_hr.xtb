@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Da biste vidjeli zaporke, najprije morate postaviti šifru zaporke na uređaju.</translation>
 <translation id="201759455285471444">Proširite grupu kartica.</translation>
 <translation id="202070562065520783">Objasni mi ovo</translation>
-<translation id="2023713324775943812">Pristupite čitačkom načinu s adresne trake kad je ta opcija dostupna</translation>
 <translation id="2044394949148788042">Otvorite rešetku kartica</translation>
 <translation id="2044681667265133332">Računom <ph name="USER_EMAIL" /> upravlja domena <ph name="HOSTED_DOMAIN" /> koja možda može pregledavati neke podatke. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nova stavka</translation>
@@ -1860,6 +1859,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="7772032839648071052">Potvrdi zaporku</translation>
 <translation id="7772948288262733182">Dobro došli natrag</translation>
 <translation id="777637629667389858">Kad ste prijavljeni, štiti vas na svim Googleovim uslugama.</translation>
+<translation id="7776604279034196531">Pristupite čitačkom načinu s adresne trake kad je ta opcija dostupna</translation>
 <translation id="7781829728241885113">Danas</translation>
 <translation id="7788868432173225918">Odbaci prošireni prikaz</translation>
 <translation id="7791543448312431591">Dodajte</translation>

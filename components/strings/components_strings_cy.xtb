@@ -2791,6 +2791,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5466018172325111652">Heb dderbyn eich cod? <ph name="BEGIN_LINK" />Cael cod newydd<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Apiau taliadau</translation>
 <translation id="5470861586879999274">&amp;Ailwneud golygu</translation>
+<translation id="5471158297908124590">Cadarnhewch mai chi sydd yno i olygu dulliau talu</translation>
 <translation id="5472588168895083535">Olrhain dwylo wedi'i rwystro</translation>
 <translation id="5477756102936130143">Galluogi ailgyfeirio i apiau talu a gefnogir</translation>
 <translation id="5479505548832623900">Yn debygol o gael ei anwybyddu gan yr estyniad.</translation>
@@ -2868,6 +2869,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5570825185877910964">Diogelu'r cyfrif</translation>
 <translation id="5571083550517324815">Ni allaf gasglu o'r cyfeiriad hwn. Dewiswch gyfeiriad gwahanol.</translation>
 <translation id="5572434905385510939">22 x 28 modfedd</translation>
+<translation id="5573090972398558474">Mae eich sefydliad wedi rhwystro'r dudalen hon yn y modd Anhysbys.</translation>
 <translation id="5573641252776268565">Golygu'r pasbort</translation>
 <translation id="5578606540385219379">Darparwyr Gwasanaeth</translation>
 <translation id="5580958916614886209">Gwiriwch eich mis darfod a rhowch gynnig arall arni</translation>
@@ -3174,6 +3176,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6093795393556121384">Mae eich cerdyn wedi'i ddilysu</translation>
 <translation id="6094253940069566294">Golygu'r cerbyd</translation>
 <translation id="6094290315941448991">Mae polisi gweinyddwr yn analluogi recordio'r sgrîn pan fydd cynnwys cyfrinachol yn weladwy</translation>
+<translation id="6097297436119286254">Cadarnhewch mai chi sydd yno i lenwi'ch gwybodaeth talu</translation>
 <translation id="6099269767116481177">22 x 29.5 modfedd</translation>
 <translation id="6101583188322746099">Gwasanaethau Cyflenwi Bwydydd</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4294,6 +4297,7 @@ Manylion ychwanegol:
 <translation id="7844689747373518809">{COUNT,plural, =0{Dim}=1{1 ap (<ph name="EXAMPLE_APP_1" />)}=2{2 ap (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}few{# ap (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}many{# ap (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ap (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Bu gwall. Rhowch gynnig arall arni.</translation>
 <translation id="784623644169604270">Nid oes unrhyw weithgarwch diweddar</translation>
+<translation id="7848926355794727168">Awto-bori</translation>
 <translation id="7853222852810008596">Nid yw talu'n nes ymlaen ar gael yn yr arian cyfred hwn</translation>
 <translation id="785476343534277563">Chwaraeon Coleg</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4921,6 +4925,7 @@ Manylion ychwanegol:
 <translation id="8897428486789851669">Nofio</translation>
 <translation id="8899807382908246773">Hysbysebion ymwthiol</translation>
 <translation id="8903921497873541725">Chwyddo</translation>
+<translation id="8903998444169664879">Cadarnhewch mai chi sydd yno i newid eich gosodiadau talu</translation>
 <translation id="890493561996401738">Tynnwch y botwm Awgrym, pwyswch Enter i dynnu, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 modfedd</translation>
 <translation id="8914504000324227558">Ail-lansio Chrome</translation>

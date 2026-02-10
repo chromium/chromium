@@ -2791,6 +2791,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5466018172325111652">Har du ikke modtaget din kode? <ph name="BEGIN_LINK" />Få en ny kode<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Betalingsapps</translation>
 <translation id="5470861586879999274">&amp;Annuller fortryd redigering</translation>
+<translation id="5471158297908124590">Verificer din identitet for at redigere betalingsmetoder</translation>
 <translation id="5472588168895083535">Registrering af håndbevægelser er blokeret</translation>
 <translation id="5477756102936130143">Aktivér omdirigering til understøttede betalingsapps</translation>
 <translation id="5479505548832623900">Sandsynligvis ignoreret af udvidelsen.</translation>
@@ -3174,6 +3175,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6093795393556121384">Dit kort er bekræftet</translation>
 <translation id="6094253940069566294">Rediger køretøj</translation>
 <translation id="6094290315941448991">Administratorpolitikken deaktiverer skærmoptagelse, når fortroligt indhold er synligt</translation>
+<translation id="6097297436119286254">Verificer din identitet for at udfylde dine betalingsoplysninger</translation>
 <translation id="6099269767116481177">22 x 29,5 tommer</translation>
 <translation id="6101583188322746099">Udbringning af dagligvarer</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4524,6 +4526,7 @@ Yderligere oplysninger:
 <translation id="8241707690549784388">Siden, du søger, benyttede oplysninger, du har indtastet. Vender du tilbage til denne side kan det betyde, at enhver handling, du har foretaget, skal gentages. Vil du fortsætte?</translation>
 <translation id="8241712895048303527">Bloker på dette website</translation>
 <translation id="8242426110754782860">Fortsæt</translation>
+<translation id="824620968958405573">Opgave med automatisk browsing</translation>
 <translation id="8246482227229072868">Ringe</translation>
 <translation id="8248406213705193919">Vil du gemme kortet på en sikker måde?</translation>
 <translation id="8249296373107784235">Annuller</translation>
@@ -4922,6 +4925,7 @@ Yderligere oplysninger:
 <translation id="8897428486789851669">Svømning</translation>
 <translation id="8899807382908246773">Påtrængende annoncer</translation>
 <translation id="8903921497873541725">Zoom ind</translation>
+<translation id="8903998444169664879">Verificer din identitet for at ændre dine betalingsindstillinger</translation>
 <translation id="890493561996401738">Knappen Fjern forslag. Tryk på Enter for at fjerne, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 tommer</translation>
 <translation id="8914504000324227558">Genstart Chrome</translation>

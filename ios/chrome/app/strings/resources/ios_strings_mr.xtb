@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">पासवर्ड पाहण्यासाठी, तुम्ही प्रथम तुमच्या डीव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
 <translation id="201759455285471444">टॅब गटाचा विस्तार करा.</translation>
 <translation id="202070562065520783">मला हे समजवा</translation>
-<translation id="2023713324775943812">उपलब्ध असेल, तेव्हा अ‍ॅड्रेस बारमधून वाचन मोड अ‍ॅक्सेस करा</translation>
 <translation id="2044394949148788042">टॅब ग्रिड उघडा</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> हे खाते <ph name="HOSTED_DOMAIN" /> द्वारे व्यवस्थापित केले आहे, ज्याला काही माहिती दिसू शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">नवीन आयटम</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">सेव्ह केलेले पासवर्ड आणि पासकी</translation>
 <translation id="3143515551205905069">सिंक रद्द करा</translation>
 <translation id="3144126448740580210">पूर्ण झाले</translation>
+<translation id="3147521114983561406">पासकी तुमच्या Password Manager मध्ये सेव्ह केल्या जातात. ते गुप्त मोडआणि नियमित टॅबमध्ये अ‍ॅक्सेस करण्यायोग्य आहेत.</translation>
 <translation id="3148052723910099040">नियमित टॅब ग्रिड</translation>
 <translation id="3148237711805373460">मला तिथे न्या</translation>
 <translation id="3157387275655328056">वाचन सूचीमध्ये जोडा</translation>
@@ -1861,6 +1861,7 @@
 <translation id="7772032839648071052">सांकेतिक पासफ्रेझ निश्चित करा</translation>
 <translation id="7772948288262733182">तुमचे पुन्हा स्वागत आहे</translation>
 <translation id="777637629667389858">तुम्ही साइन इन केलेले असते, तेव्हा संपूर्ण Google सेवांवर तुमचे संरक्षण करते.</translation>
+<translation id="7776604279034196531">उपलब्ध असेल, तेव्हा अ‍ॅड्रेस बारमधून वाचन मोड अ‍ॅक्सेस करा</translation>
 <translation id="7781829728241885113">काल</translation>
 <translation id="7788868432173225918">विस्तारित दृश्य डिसमिस करा</translation>
 <translation id="7791543448312431591">जोडा</translation>
@@ -2098,6 +2099,7 @@
 <translation id="8587001564479545614">रिकव्‍हरी पिन तयार करा</translation>
 <translation id="8588404856427128947">बंद करा</translation>
 <translation id="8590286732816598906">टॅब गट, <ph name="GROUP_TITLE" />, मेनू.</translation>
+<translation id="8593317261815647019">गुप्त मोडच्या बाहेर पासकी तयार करायची आहे का?</translation>
 <translation id="8600272508328041907">पूर्ण पेज चे भाषांतर यावर स्विच करा</translation>
 <translation id="860043288473659153">कार्डधारकाचे नाव</translation>
 <translation id="8601611099293226919">Google Lens वापरून तुमच्या स्क्रीनवरील गोष्टी शोधा</translation>

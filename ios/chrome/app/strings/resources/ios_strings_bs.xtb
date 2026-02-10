@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Postavite šifru na uređaju da vidite lozinke.</translation>
 <translation id="201759455285471444">Proširivanje grupe kartica.</translation>
 <translation id="202070562065520783">Objasni mi ovo</translation>
-<translation id="2023713324775943812">Pristupajte načinu rada za čitanje s trake za adresu kada je dostupan</translation>
 <translation id="2044394949148788042">Otvorite mrežu kartica.</translation>
 <translation id="2044681667265133332">Računom <ph name="USER_EMAIL" /> upravlja domena <ph name="HOSTED_DOMAIN" />, koja će možda moći pregledati određene informacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nova stavka</translation>
@@ -1860,6 +1859,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="7772032839648071052">Potvrdite pristupni izraz</translation>
 <translation id="7772948288262733182">Dobro došli nazad</translation>
 <translation id="777637629667389858">Kada ste prijavljeni, štiti vas na svim Googleovim uslugama.</translation>
+<translation id="7776604279034196531">Pristupajte načinu rada za čitanje s trake za adresu kada je dostupan</translation>
 <translation id="7781829728241885113">Jučer</translation>
 <translation id="7788868432173225918">Odbacivanje proširenog prikaza</translation>
 <translation id="7791543448312431591">Dodaj</translation>

@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">Tillåt att Chrome delar dina senaste flikar med enheten så att du kan se dem i enhetens applista och sökresultat. Du kan aktivera eller inaktivera detta i Chrome-inställningarna.</translation>
 <translation id="1420688843103859429">Navigera framåt och bakåt genom att svepa med två fingrar på styrplattan</translation>
 <translation id="1432650420699700107">Webbplatser får begära tillstånd att ansluta till enheter i det lokala nätverket</translation>
+<translation id="1442081309487427303">Aktivera länkar i läsläget</translation>
 <translation id="1448064542941920355">Minska zoom</translation>
 <translation id="1464044141348608623">Tillåt inte att webbplatser vet om du använder din enhet aktivt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webbplats}other{<ph name="SITE_COUNT" /> webbplatser}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">Få aviseringar om Chrome-tips</translation>
 <translation id="1777815584158991902">Arket på nedre delen av skärmen för flödet Upptäck</translation>
 <translation id="1779089405699405702">Bildavkodare</translation>
+<translation id="1781533683087883868">Inaktivera länkar i läsläget</translation>
 <translation id="1785415724048343560">Rekommenderas för bästa upplevelse</translation>
 <translation id="1796588414813960292">Funktioner som kräver ljud slutar fungera</translation>
 <translation id="1799920918471566157">Chrome-tips</translation>
@@ -293,6 +295,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="3903738175795615004">Dra uppifrån eller tryck på tangenten Esc om du vill avsluta helskärmsläget.</translation>
 <translation id="3905475044299942653">Stoppa många aviseringar</translation>
 <translation id="3922092564198021702">Öppna Inställningar på telefonen</translation>
+<translation id="3924858949939391676">Visa länkar när läsläget är aktiverat</translation>
 <translation id="3933121352599513978">Komprimera oönskade begäranden (rekommenderas)</translation>
 <translation id="3934905113567851655">Nyp för att ändra storlek</translation>
 <translation id="3955193568934677022">Tillåt att skyddat innehåll spelas upp på webbplatser (rekommenderas)</translation>
@@ -356,6 +359,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="4644713492825682049">Radera och återställ</translation>
 <translation id="4645575059429386691">Hanteras av din förälder</translation>
 <translation id="4652266463001779298">Tillåts inte</translation>
+<translation id="4655846733459137112">Tryck på Ja om du vill använda det här lösenordet nästa gång du loggar in</translation>
 <translation id="4663373278480897665">Kamera är tillåten</translation>
 <translation id="4670064810192446073">Virtuell verklighet</translation>
 <translation id="4672315773691449562">Tryck på webbläsarappen och sedan på Chrome</translation>
@@ -462,6 +466,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="5804241973901381774">Behörigheter</translation>
 <translation id="5817042798620209981">Webbplatsinformation, dialogruta</translation>
 <translation id="5822675474983796325">Arket på nedre delen av skärmen för att anpassa sidan ny flik har öppnats över hela skärmen</translation>
+<translation id="5826403277762134844">Ark på nedre delen av skärmen med anvisningar om att spara lösenord i Chrome</translation>
 <translation id="5833899990800318936">Tillåt inte att webbplatser använder JavaScript</translation>
 <translation id="583673505367439042">Webbplatser får begära tillstånd att redigera filer eller mappar på enheten</translation>
 <translation id="5844448279347999754">När detta är aktiverat kan webbplatser be om att få se text och bilder som har sparats i urklipp. När detta är inaktiverat får webbplatser inte läsa text och bilder som du har sparat i urklipp.</translation>
@@ -641,6 +646,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="775043444390799886">Återkalla behörighet</translation>
 <translation id="7758789811447313947">Lila tema</translation>
 <translation id="7759147511335618829">Styra/omprogrammera MIDI-enheter</translation>
+<translation id="7771089277295008211">Arket på nedre delen av skärmen med anvisningar om att spara lösenord har stängts</translation>
 <translation id="7781829728241885113">Igår</translation>
 <translation id="7791543448312431591">Lägg till</translation>
 <translation id="780301667611848630">Nej tack</translation>
@@ -658,6 +664,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="7940722705963108451">Påminn mig</translation>
 <translation id="7948081750384205628">Läs mer om <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Webbplatser får begära tillstånd att läsa text och bilder i Urklipp</translation>
+<translation id="7958779728312669715">Arket på nedre delen av skärmen med anvisningar om att spara lösenord har öppnats helt</translation>
 <translation id="798299424881500862">Orange tema</translation>
 <translation id="7986741934819883144">Välj en kontakt</translation>
 <translation id="7990211076305263060">När detta är aktiverat kan webbplatser be om att få använda mikrofonen. När detta är inaktiverat får webbplatser inte använda mikrofonen.</translation>
@@ -754,6 +761,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="8889294078294184559">När du fortsätter surfa kan webbplatser kontrollera informationen med Chrome och verifiera med den föregående webbplatsen du besökte att du troligen är en riktig person.</translation>
 <translation id="8899807382908246773">Påträngande annonser</translation>
 <translation id="8903921497873541725">Zooma in</translation>
+<translation id="8919911527569629802">Logga in på vilken webbplats som helst</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Fråga inte igen.</translation>
 <translation id="8926666909099850184">NFC är inte aktiverat på enheten. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
@@ -781,6 +789,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="9182556968660520230">Tillåt inte att webbplatser spelar upp skyddat innehåll</translation>
 <translation id="947156494302904893">Webbplatser du besöker kan verifiera att du är en riktig person och inte en bot</translation>
 <translation id="959682366969460160">Håll ordning</translation>
+<translation id="960590623979248167">Visa hyperlänkar</translation>
 <translation id="961930410699694996">Plats tillåts den här gången</translation>
 <translation id="967624055006145463">Sparad data</translation>
 <translation id="969975166333045662">Blockera webbplatsen från att använda V8-optimeraren.</translation>

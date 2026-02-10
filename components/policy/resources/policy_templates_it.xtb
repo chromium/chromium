@@ -2188,6 +2188,17 @@ l'utente deve effettuare una selezione come di consueto.</translation>
 <translation id="2466131534462628618">L'autenticazione tramite captive portal ignora il proxy</translation>
 <translation id="2467181864598429837">Comportamento predefinito del browser</translation>
 <translation id="2467896267442150508">L'intervallo di tempo (massimo una settimana). Se l'ora di inizio è successiva all'ora di fine, l'intervallo verrà chiuso il giorno successivo.</translation>
+<translation id="2475594733565572760">Questa policy definisce l'impostazione predefinita per tutte le funzionalità di AI generativa incluse. Ad esempio, se questa policy viene impostata sul valore 1, 1 sarà l'impostazione predefinita per tutte le funzionalità di AI generativa incluse. Non inciderà sui valori delle policy impostate manualmente. Questa impostazione definisce i valori predefiniti per le funzionalità di AI generativa incluse in Chrome. Per un elenco delle funzionalità incluse, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.
+
+Alcune policy, ad es. <ph name="GEMINI_SETTINGS_POLICY_NAME" />, supportano solo gli stati Consentita e Non consentita. In questo caso, se <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> viene impostata su 0 o 1, questa funzionalità sarà attivata. Se <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> viene impostata su 2, questa funzionalità sarà disattivata. La documentazione relativa a ciascuna funzionalità contiene ulteriori dettagli su come interagisce con i valori in questa policy (ad es. Gemini in Chrome - https://support.google.com/chrome/a/?p=gemini_in_chrome). Questo vale per le seguenti funzionalità: Gemini in Chrome, Google Lens e AI Mode, in quanto sono soggette a garanzie e/o termini di servizio propri (https://support.google.com/chrome/a/?p=genai_features_chrome).
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, contenuti originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, contenuti originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2476249479201711962">Attiva l'accesso al menu contestuale del provider di ricerca predefinito</translation>
 <translation id="2478756867046106663">Consenti ai siti con esperienze intrusive di aprirsi in nuove finestre o schede</translation>
 <translation id="2479760962196319822">Questa policy consente di stabilire se gli utenti di <ph name="PRODUCT_OS_NAME" /> possono archiviare i dati localmente o meno.
@@ -4344,6 +4355,7 @@ La policy può essere combinata con <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLAT
 <translation id="3927291637826333102">Consenti acquisizione schermate desktop, schede e finestre in base a queste origini</translation>
 <translation id="3928726028264020458">Attiva i report sulle informazioni VPD del dispositivo</translation>
 <translation id="3935592079035695061">Millisecondi dalla mezzanotte.</translation>
+<translation id="3937800910397007337">Forza la priorità in primo piano per tutte le schede</translation>
 <translation id="3941289958028934630">Disattiva la funzione di lettura vocale nella schermata di accesso</translation>
 <translation id="3943930334592166130">Questa policy controlla se all'utente viene richiesto di selezionare un certificato client quando più certificati corrispondono a <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Se la policy viene impostata su Attivata, all'utente viene richiesto di selezionare un certificato client quando la policy di selezione automatica corrisponde a più certificati.
@@ -6308,6 +6320,7 @@ NOTA: le modifiche apportate a questa policy verranno applicate soltanto ai proc
       * Restrizione moderata, l'utente può scegliere solo le modalità Restrizione moderata e Restrizione massima su YouTube, ma non può disattivare la Modalità con restrizioni.
 
       * Off, o se il valore non viene configurato, la Modalità con restrizioni su YouTube non viene applicata da Chrome. Le policy esterne, come quelle di YouTube, potrebbero applicare comunque la Modalità con restrizioni.</translation>
+<translation id="5191007233343702012">Utilizza la priorità delle schede standard</translation>
 <translation id="5191476996923842491">Comportamento predefinito per l'impostazione della funzione setTimeout().</translation>
 <translation id="519247340330463721">Configura le norme relative alla Navigazione sicura.</translation>
 <translation id="5192555640439947289">Se la policy viene impostata su Attivata, <ph name="PRODUCT_OS_NAME" /> richiede agli utenti una password per sbloccare il dispositivo quando questo viene sospeso o il coperchio viene chiuso.
@@ -6527,6 +6540,7 @@ Nota: questa policy non viene applicata agli upgrade a HSTS.</translation>
 <translation id="530949964068726932">Nascondi opzioni di accessibilità nel menu della barra delle applicazioni</translation>
 <translation id="5309944663104291505">Non consentire alle app web isolate e alle applicazioni kiosk con installazione forzata di utilizzare l'API Device Attributes</translation>
 <translation id="5311275381462687162">Impostazione del comportamento precedente predefinito <ph name="ATTRIBUTE_SAMESITE_NAME" /> per i cookie</translation>
+<translation id="5311430612584074035">Forza la priorità in primo piano per tutte le schede nel profilo</translation>
 <translation id="5312253627576569499">La percentuale di regolazione del ritardo di oscuramento dello schermo quando viene osservata l'attività dell'utente mentre lo schermo è oscurato o subito dopo la disattivazione dello schermo.</translation>
 <translation id="5316856058059940708">Disabilita cursore grande</translation>
 <translation id="5318185076587284965">Attiva l'utilizzo dei server relay per l'host di accesso remoto</translation>
@@ -6564,6 +6578,15 @@ Gli account gestiti non sono idonei a far parte di un gruppo Famiglia o a crearl
 <translation id="5345892164332459671">Disattiva il servizio SSO mobile e non trasferire le autenticazioni del web service dell'utente su un nuovo dispositivo</translation>
 <translation id="5345910753471481870">Non mostrare il pulsante di Google Lens nella casella di ricerca della pagina Nuova scheda.</translation>
 <translation id="5346587320074666194">Blocca l'accesso ai sensori su questi siti</translation>
+<translation id="5347735051291224683">Questa policy consente di stabilire se i contenuti web in background devono essere eseguiti con priorità in primo piano.
+
+Per impostazione predefinita, il browser ottimizza le risorse abbassando la priorità dei contenuti nelle schede in background. Se abiliti questa policy, questo comportamento viene ignorato e le schede in background vengono pianificate come la scheda attiva.
+
+Tieni presente che forzare l'esecuzione di contenuti in background con priorità in primo piano potrebbe influire leggermente sulla reattività della scheda attiva.
+
+Se questa policy viene impostata su Attivata, tutti i contenuti web vengono eseguiti con priorità in primo piano, indipendentemente dallo stato di visibilità.
+
+Se questa policy viene impostata su Disattivata o non viene configurata, il browser determina la priorità in base all'euristica standard (ad es. abbassando la priorità dei contenuti non visibili, non riproducendo l'audio, non partecipando a videochiamate e così via).</translation>
 <translation id="534836255587440809">Disattiva i clic automatici nella schermata di accesso</translation>
 <translation id="5348658899015174540">L'API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> consente alle applicazioni web di acquisire più schermate contemporaneamente.
       Questa policy sblocca la proprietà <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> per le applicazioni web di origini definite.

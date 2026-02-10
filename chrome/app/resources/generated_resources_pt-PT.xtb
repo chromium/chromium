@@ -240,6 +240,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1151917987301063366">Permitir sempre que <ph name="HOST" /> aceda aos sensores</translation>
 <translation id="1152346050262092795">Introduza novamente a palavra-passe para validar a sua conta.</translation>
 <translation id="1153636665119721804">Programa de Proteção avançada da Google</translation>
+<translation id="1153802775114315167">Comece a usar extensões</translation>
 <translation id="1155816283571436363">A ligar ao seu telemóvel…</translation>
 <translation id="1157952955648710254">Fechar o painel lateral da Pesquisa Google</translation>
 <translation id="1158080958325422608">Colocar em maiúsculas</translation>
@@ -584,6 +585,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1384849755549338773">Disponibilizar o Google Tradutor para Websites noutros idiomas</translation>
 <translation id="1384959399684842514">Transferência interrompida</translation>
+<translation id="1386966479075994683">Expandir Separadores</translation>
 <translation id="1388253969141979417">Com autorização para usar o seu microfone</translation>
 <translation id="1388728792929436380">O <ph name="DEVICE_TYPE" /> irá reiniciar quando as atualizações estiverem concluídas.</translation>
 <translation id="1390113502208199250">Tem de fazer uma reposição de fábrica neste dispositivo para usar as funcionalidades da Atualização do Chrome Education.</translation>
@@ -2583,6 +2585,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2727633948226935816">Não lembrar novamente</translation>
 <translation id="2727712005121231835">Tamanho real</translation>
 <translation id="2727744317940422214">Desculpe, mas algo correu mal. Envie feedback com #bruschetta na descrição. O código de erro é <ph name="ERROR" />. A limpeza falhou. Pode ter de a fazer manualmente.</translation>
+<translation id="2729310339366257582">Reduzir separadores</translation>
 <translation id="2729577602370119849">Aceda e faça a gestão das impressoras facilmente</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Quando a Precisão da localização está ativada, são usadas informações sobre sinais sem fios, como pontos de acesso Wi‑Fi e torres de redes móveis, juntamente com dados de sensores do dispositivo, como o acelerómetro e o giroscópio, para calcular uma localização do dispositivo mais precisa, que os serviços e as apps Android usam para oferecer funcionalidades baseadas na localização. Para isso, a Google trata periodicamente informações sobre os sensores do dispositivo e os sinais sem fios próximos deste dispositivo para contribuir para a recolha de localizações de sinais sem fios.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />A Google usa estas informações recolhidas deste dispositivo para o seguinte: melhorar a Precisão da localização e os serviços baseados na localização; e melhorar, oferecer e manter, de forma geral, os serviços Google. A Google trata estas informações com base nos interesses legítimos da Google e de terceiros para atender às necessidades dos utilizadores. Estas informações não são usadas para identificar nenhum indivíduo.<ph name="END_PARAGRAPH2" />
@@ -5125,6 +5128,7 @@ Quer pará-lo?</translation>
 <translation id="443031431654216610">Use apenas dígitos numéricos</translation>
 <translation id="4430369329743628066">Marcador adicionado</translation>
 <translation id="4430422687972614133">Ativar cartão virtual</translation>
+<translation id="4431962107539413562">Tenha as suas palavras-passe em todos os seus dispositivos</translation>
 <translation id="443196770280837407">Abra o Gemini com um atalho de teclado.</translation>
 <translation id="4432621511648257259">Palavra-passe incorreta</translation>
 <translation id="4434611816075088065">Neste momento, nada mais precisa da sua atenção</translation>
@@ -6223,6 +6227,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5203035663139409780">Pode editar ficheiros ou pastas no seu dispositivo</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Clique para ver a extensão.}other{Clique para ver estas extensões.}}</translation>
 <translation id="5204282224596194174">Palavra-passe de recuperação para <ph name="USER_EMAIL" /></translation>
+<translation id="5204584298075822291">Reduzir Separadores</translation>
 <translation id="5204673965307125349">Efetue um Powerwash ao dispositivo e tente novamente.</translation>
 <translation id="5204967432542742771">Introduzir palavra-passe</translation>
 <translation id="5205484256512407285">Nunca utilizar dados móveis para transferir</translation>
@@ -9068,6 +9073,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7193051357671784796">Esta aplicação foi adicionada pela sua organização. Reinicie a aplicação para concluir a instalação da mesma.</translation>
 <translation id="7193374945610105795">Sem palavras-passe guardadas para <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Envie feedback sobre os grupos sugeridos</translation>
+<translation id="7194343495483122559">Expandir separadores</translation>
 <translation id="7194873994243265344">A sua organização bloqueou este ficheiro porque está encriptado. Peça ao proprietário para o desencriptar.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{1 transferência em curso}other{# transferências em curso}}</translation>
 <translation id="7196272782924897510">Usar uma token de acesso de outro dispositivo?</translation>
@@ -11326,7 +11332,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8707562594602678416">Locais</translation>
 <translation id="8708000541097332489">Limpar à saída</translation>
 <translation id="870805141700401153">Assinatura de código individual Microsoft</translation>
-<translation id="8708088555926718398">Erro: categoria: <ph name="CATEGORY" />, código: <ph name="CODE" />, código adicional: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp;Mais Informações</translation>
 <translation id="8709368517685334931">Pode encontrar as cores mais antigas na Web Store do Chrome</translation>
 <translation id="8710414664106871428">Fantasia</translation>

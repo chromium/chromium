@@ -240,6 +240,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1151917987301063366">Permitir sempre a <ph name="HOST" /> acceder aos sensores</translation>
 <translation id="1152346050262092795">Escribe de novo o contrasinal para verificar a conta.</translation>
 <translation id="1153636665119721804">Programa Protección avanzada de Google</translation>
+<translation id="1153802775114315167">Comezar a usar as extensións</translation>
 <translation id="1155816283571436363">Conectando co teu teléfono</translation>
 <translation id="1157952955648710254">Pechar o panel lateral da Busca de Google</translation>
 <translation id="1158080958325422608">Escribir en maiúsculas</translation>
@@ -584,6 +585,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384849755549338773">Ofrecer uso do Tradutor de Google para os sitios web que estean noutros idiomas</translation>
 <translation id="1384959399684842514">Pausouse a descarga</translation>
+<translation id="1386966479075994683">Despregar as pestanas</translation>
 <translation id="1388253969141979417">Permiso concedido para usar o micrófono</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> reiniciarase cando se completen as actualizacións.</translation>
 <translation id="1390113502208199250">Terás que restablecer a configuración de fábrica deste dispositivo para usar as funcións de Chrome Education Upgrade.</translation>
@@ -2582,6 +2584,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2727633948226935816">Non volver lembrar</translation>
 <translation id="2727712005121231835">Tamaño real</translation>
 <translation id="2727744317940422214">Vaia, produciuse un erro. Envía un comentario que inclúa "#bruschetta" na descrición. Código de erro: <ph name="ERROR" />. Non se puido borrar. Pode que teñas que facelo manualmente.</translation>
+<translation id="2729310339366257582">Contraer as pestanas</translation>
 <translation id="2729577602370119849">Accede ás impresoras e xestiónaas facilmente</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Cando está activada a opción Precisión da localización, a información dos sinais sen fíos (os puntos de acceso wifi, as torres das redes de telefonía móbil…) e os datos dos sensores do dispositivo, como o acelerómetro e o xiroscopio, utilízanse para calcular con maior exactitude onde está dispositivo, un dato que empregan os servizos e as aplicacións para Android para ofrecer funcións baseadas na localización. Con este fin, Google recompila periodicamente a información captada polos sensores e os sinais sen fíos que estean preto deste dispositivo para obter con participación colectiva as localizacións deses sinais.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google usa a información recollida deste dispositivo para mellorar a precisión da localización e os servizos baseados nela, así como para perfeccionar, proporcionar e manter os servizos de Google en xeral. Procesamos esta información, que non se usará para identificar a ninguén, en función dos intereses lexítimos de Google e de terceiros coa finalidade de satisfacer as necesidades dos usuarios.<ph name="END_PARAGRAPH2" />
@@ -4734,6 +4737,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4169535189173047238">Non permitir</translation>
 <translation id="4170314459383239649">Borrar as cookies ao saír</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Compartir pestana con Gemini}other{Compartir # pestanas con Gemini}}</translation>
+<translation id="4172944993779635350">O teu contrasinal de <ph name="URL" /> está gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa conta.</translation>
 <translation id="4173129130568053653">Gemini pode axudarche a reservar citas, crear carros da compra ou realizar outras tarefas que lle encomendes.</translation>
 <translation id="4175137578744761569">Púrpura claro e branco</translation>
 <translation id="4176463684765177261">Desactivado</translation>
@@ -5050,6 +5054,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4386604394450371010">vista xeral</translation>
 <translation id="4387890294700445764">Contrasinais vulnerados</translation>
 <translation id="4388650384344483842">Usar como mínimo 8 caracteres</translation>
+<translation id="4388700905120039425">{COUNT,plural, =1{Contrasinal de <ph name="URL" />}other{Contrasinais de <ph name="URL" /> ({COUNT})}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e <ph name="NUMBER_OF_OTHER_SWITCHES" /> interruptores máis</translation>
 <translation id="439266289085815679">A configuración de Bluetooth contrólaa <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Edita o ficheiro de configuración</translation>
@@ -5124,6 +5129,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="443031431654216610">Utiliza só díxitos</translation>
 <translation id="4430369329743628066">Engadiuse o marcador</translation>
 <translation id="4430422687972614133">Activar tarxeta virtual</translation>
+<translation id="4431962107539413562">Accede aos teus contrasinais en todos os teus dispositivos</translation>
 <translation id="443196770280837407">Abre Gemini cun atallo de teclado.</translation>
 <translation id="4432621511648257259">O contrasinal non é correcto</translation>
 <translation id="4434611816075088065">Agora mesmo non hai nada que precise a túa atención</translation>
@@ -5579,6 +5585,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4762849514113423887">Contrasinal incorrecto. Téntao de novo.</translation>
 <translation id="4763408175235639573">Establecéronse as seguintes cookies cando visualizaches esta páxina</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> non é unha conta de Google for Education válida. Ponte en contacto co teu administrador. Se es administrador, podes configurar a túa organización en g.co/workspace/edusignup</translation>
+<translation id="4765053150631027076">{COUNT,plural, =1{Hai {COUNT} contrasinal de <ph name="URL" /> gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa conta.}other{Hai {COUNT} contrasinais de <ph name="URL" /> gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa conta.}}</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Este dispositivo gardarase durante 1 mes e poderás conectarte sen código a próxima vez. Esta preferencia definiuna o teu administrador.}other{Este dispositivo gardarase durante {MONTHS} meses e poderás conectarte sen código a próxima vez. Esta preferencia definiuna o teu administrador.}}</translation>
 <translation id="476563889641554689">Selecciona unha área para buscar con Lens</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Comprobando clave pública e bloqueo de integridade... Queda menos de 1 minuto}=1{Comprobando clave pública e bloqueo de integridade... Queda 1 minuto}other{Comprobando clave pública e bloqueo de integridade... Queda # minutos}}</translation>
@@ -6051,6 +6058,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5088534251099454936">PKCS n.º 1 SHA-512 con cifrado RSA</translation>
 <translation id="5090637338841444533">Permiso denegado para facer un seguimento da posición da cámara</translation>
 <translation id="5091636240353511739">Mostrar o PIN</translation>
+<translation id="5093447877601682598">Enviar comentarios sobre a franxa de pestanas</translation>
 <translation id="5093477827231450397">Lista de sitios que bloqueaches e que non queres que lles suxiran anuncios a outros sitios</translation>
 <translation id="5093569275467863761">Submarco de incógnito almacenado na memoria caché de páxinas anteriores e seguintes: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Podes abrir e editar ficheiros compatibles con esta aplicación desde Ficheiros ou outras aplicacións. Para controlar os ficheiros que se abren nesta aplicación de forma predeterminada, consulta <ph name="BEGIN_LINK" />como definir aplicacións predeterminadas no teu dispositivo<ph name="END_LINK" />.</translation>
@@ -6220,6 +6228,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5203035663139409780">Permiso para editar os ficheiros ou os cartafoles do teu dispositivo</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Fai clic para ver a extensión}other{Fai clic para ver estas extensións}}</translation>
 <translation id="5204282224596194174">Contrasinal de recuperación de <ph name="USER_EMAIL" /></translation>
+<translation id="5204584298075822291">Contraer as pestanas</translation>
 <translation id="5204673965307125349">Leva a cabo un Powerwash do dispositivo e téntao de novo.</translation>
 <translation id="5204967432542742771">Introduce o contrasinal</translation>
 <translation id="5205484256512407285">Non utilizar nunca os datos móbiles para realizar transferencias</translation>
@@ -8879,6 +8888,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7057567173736333354">Describe a imaxe</translation>
 <translation id="70577934383983846">Usar este contrasinal en todos os teus dispositivos</translation>
 <translation id="7058024590501568315">Rede oculta</translation>
+<translation id="7058325593717863084">Enviar comentarios sobre a franxa de pestanas</translation>
 <translation id="7059858479264779982">Establecer en inicio automático</translation>
 <translation id="7063129466199351735">Procesando atallos...</translation>
 <translation id="7063311912041006059">URL co símbolo <ph name="SPECIAL_SYMBOL" /> no lugar da consulta</translation>
@@ -9058,6 +9068,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7193051357671784796">Esta aplicación engadiuna a túa organización. Reiníciaa para acabar de instalala.</translation>
 <translation id="7193374945610105795">Non se gardou ningún contrasinal para <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Envía comentarios para grupos suxeridos</translation>
+<translation id="7194343495483122559">Despregar as pestanas</translation>
 <translation id="7194873994243265344">A túa organización bloqueou este ficheiro porque está encriptado. Pídelle ao seu propietario que o desencripte.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{1 descarga en curso}other{# descargas en curso}}</translation>
 <translation id="7196272782924897510">Queres usar unha clave de acceso doutro dispositivo?</translation>
@@ -11315,7 +11326,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8707562594602678416">Lugares</translation>
 <translation id="8708000541097332489">Borrar ao saír</translation>
 <translation id="870805141700401153">Sinatura de código individual de Microsoft</translation>
-<translation id="8708088555926718398">Erro: categoría <ph name="CATEGORY" />, código <ph name="CODE" />, código adicional <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp;Máis información</translation>
 <translation id="8709368517685334931">Podes atopar as cores máis antigas en Chrome Web Store</translation>
 <translation id="8710414664106871428">Fantástico</translation>

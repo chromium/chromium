@@ -5,7 +5,7 @@
 <translation id="1076643793026027628">O Chrome abre automaticamente os links anônimos do YouTube na navegação anônima.</translation>
 <translation id="1081114897601629648">As senhas a seguir não foram importadas para o Gerenciador de Senhas do Google porque não atendem aos requisitos.</translation>
 <translation id="1086486568852410168">Pesquisar com o Lens</translation>
-<translation id="1088490543924960890">Comece a salvar chaves de acesso com o Gerenciador de senhas do Google</translation>
+<translation id="1088490543924960890">Comece a salvar chaves de acesso com o Gerenciador de Senhas do Google</translation>
 <translation id="1143896152279775643">A senha será salva no Gerenciador de senhas do Google da conta <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Abrir nova guia no Chrome</translation>
 <translation id="1158134713295836892">Gemini no Chrome</translation>
@@ -280,13 +280,13 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="7284245284340063465">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome para iOS</translation>
 <translation id="7299681342915173313">Agora você pode usar o Chrome sempre que toca em links em e-mails, documentos e outros apps</translation>
-<translation id="7334364820047587268">Você já tem senhas dessas contas no Gerenciador de Senhas do Google. Se decidir importar uma das senhas abaixo, ela vai substituir a atual.</translation>
+<translation id="7334364820047587268">Você já tem senhas destas contas no Gerenciador de Senhas do Google. Se decidir importar uma das senhas abaixo, ela vai substituir a atual.</translation>
 <translation id="7344094882820374540">Aproveite a segurança mais avançada do Chrome em sites perigosos</translation>
 <translation id="7349129508108954623">Permita que o Chrome use o Google Maps para fornecer rotas e informações locais sobre os endereços detectados.</translation>
 <translation id="7371674917547846460">Receba dicas úteis sobre o Chrome e muito mais.</translation>
 <translation id="7394108421562933108">Maps no Chrome</translation>
 <translation id="7400722733683201933">Sobre o Google Chrome</translation>
-<translation id="7444830584401232881">A chave de acesso será salva no Gerenciador de senhas do Google da conta <ph name="USER_EMAIL" /></translation>
+<translation id="7444830584401232881">A chave de acesso será salva no Gerenciador de Senhas do Google da conta <ph name="USER_EMAIL" /></translation>
 <translation id="7466693328838535498">Na caixa "Widgets da Pesquisa", digite "Chrome".</translation>
 <translation id="7477056987201678345">Excluindo dados do Chrome…</translation>
 <translation id="7492574581995589075">Sua organização desativou a capacidade de usar e salvar dados do Chrome na Conta do Google. Novos favoritos, senhas e outros itens serão salvos apenas neste dispositivo.</translation>
@@ -373,6 +373,6 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="948597495737267756">Abre a página de histórico do Chrome.</translation>
 <translation id="954347330803595209">Importe seus dados para usar senhas, histórico, favoritos e cartões de crédito no Chrome</translation>
 <translation id="97300214378190234">Use o Chrome sempre que abrir links em outros apps.</translation>
-<translation id="997929539742564806">Preencha automaticamente suas senhas e chaves de acesso do Chrome para fazer login em apps e sites com rapidez</translation>
+<translation id="997929539742564806">Preencha automaticamente suas senhas e chaves de acesso do Chrome para fazer login em apps e sites com rapidez.</translation>
 <translation id="998677222109959694">Gerenciar as configurações do Chrome</translation>
 </translationbundle>

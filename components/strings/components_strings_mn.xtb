@@ -2792,6 +2792,7 @@
 <translation id="5466018172325111652">Кодоо хүлээн аваагүй юу? <ph name="BEGIN_LINK" />Шинэ код авах<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Төлбөрийн апп</translation>
 <translation id="5470861586879999274">&amp; Засварлах үйлдлийг дахин хийх</translation>
+<translation id="5471158297908124590">Төлбөрийн хэрэгслийг засахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="5472588168895083535">Гар хянахыг блоклосон</translation>
 <translation id="5477756102936130143">Дэмжигдсэн төлбөрийн апп руу дахин чиглүүлэхийг идэвхжүүлнэ үү</translation>
 <translation id="5479505548832623900">Өргөтгөлөөс үл хэрэгсэх магадлалтай.</translation>
@@ -3176,6 +3177,7 @@
 <translation id="6093795393556121384">Таны картыг баталгаажууллаа</translation>
 <translation id="6094253940069566294">Тээврийн хэрэгслийг засах</translation>
 <translation id="6094290315941448991">Администраторын бодлого нь нууцлалтай контентыг харагдаж байх үед дэлгэцийн үйлдэл бичихийг идэвхгүй болгодог</translation>
+<translation id="6097297436119286254">Төлбөрийн мэдээллээ бөглөхийн тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="6099269767116481177">22 x 29.5 инч</translation>
 <translation id="6101583188322746099">Хүнсний хүргэлтийн үйлчилгээнүүд</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4923,6 +4925,7 @@
 <translation id="8897428486789851669">Усанд сэлэлт</translation>
 <translation id="8899807382908246773">Төвөгтэй зар</translation>
 <translation id="8903921497873541725">Томруулж харах</translation>
+<translation id="8903998444169664879">Төлбөрийн тохиргоогоо өөрчлөхийн тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="890493561996401738">Зөвлөмж устгах товчлуур, устгахын тулд Enter дээр дарна уу, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 инч</translation>
 <translation id="8914504000324227558">Chrome-г дахин эхлүүлэх</translation>

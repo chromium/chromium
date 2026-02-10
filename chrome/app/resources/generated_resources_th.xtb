@@ -240,6 +240,7 @@
 <translation id="1151917987301063366">อนุญาตให้ <ph name="HOST" /> เข้าถึงเซ็นเซอร์เสมอ</translation>
 <translation id="1152346050262092795">ป้อนรหัสผ่านอีกครั้งเพื่อยืนยันบัญชี</translation>
 <translation id="1153636665119721804">โปรแกรมการปกป้องขั้นสูงของ Google</translation>
+<translation id="1153802775114315167">เริ่มต้นใช้งานส่วนขยาย</translation>
 <translation id="1155816283571436363">กำลังเชื่อมต่อกับโทรศัพท์ของคุณ</translation>
 <translation id="1157952955648710254">ปิดแผงด้านข้างของ Google Search</translation>
 <translation id="1158080958325422608">Make Uppercase</translation>
@@ -584,6 +585,7 @@
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1384849755549338773">เสนอ Google แปลภาษาสำหรับเว็บไซต์ในภาษาอื่นๆ</translation>
 <translation id="1384959399684842514">หยุดดาวน์โหลดไว้ชั่วคราว</translation>
+<translation id="1386966479075994683">ขยายแท็บ</translation>
 <translation id="1388253969141979417">ได้รับอนุญาตให้ใช้ไมโครโฟน</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> จะรีสตาร์ทเมื่อการอัปเดตเสร็จสมบูรณ์</translation>
 <translation id="1390113502208199250">หากต้องการใช้ฟีเจอร์ของ Chrome Education Upgrade คุณจะต้องรีเซ็ตอุปกรณ์นี้เป็นค่าเริ่มต้น</translation>
@@ -2583,6 +2585,7 @@
 <translation id="2727633948226935816">ไม่ต้องเตือนฉันอีก</translation>
 <translation id="2727712005121231835">ขนาดจริง</translation>
 <translation id="2727744317940422214">ขออภัย มีข้อผิดพลาดเกิดขึ้น โปรดส่งความคิดเห็นพร้อมใส่ #bruschetta ในคำอธิบาย รหัสข้อผิดพลาดคือ <ph name="ERROR" /> ล้างข้อมูลไม่สําเร็จ คุณอาจต้องดำเนินการด้วยตนเอง</translation>
+<translation id="2729310339366257582">ยุบแท็บ</translation>
 <translation id="2729577602370119849">เข้าถึงและจัดการเครื่องพิมพ์ได้อย่างง่ายดาย</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />เมื่อความแม่นยำของตำแหน่งเปิดอยู่ จะมีการใช้ข้อมูลเกี่ยวกับสัญญาณไร้สาย เช่น จุดเข้าใช้งาน Wi-Fi และเสาเครือข่ายมือถือ ตลอดจนข้อมูลเซ็นเซอร์ของอุปกรณ์ เช่น ตัวตรวจวัดความเร่งและเครื่องวัดการหมุน เพื่อประมาณตำแหน่งที่แม่นยำยิ่งขึ้นของอุปกรณ์ ซึ่งแอปและบริการต่างๆ ของ Android ใช้ในการให้บริการฟีเจอร์ตามตำแหน่ง Google ทำเช่นนี้ได้ด้วยการรวบรวมข้อมูลเกี่ยวกับเซ็นเซอร์ของอุปกรณ์และสัญญาณไร้สายใกล้อุปกรณ์นี้เป็นระยะเพื่อร่วมให้ข้อมูลตำแหน่งของสัญญาณไร้สายจากมวลชน<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google ใช้ข้อมูลที่รวบรวมจากอุปกรณ์นี้เพื่อปรับปรุงความแม่นยำของตำแหน่งและบริการตามตำแหน่ง รวมถึงปรับปรุง จัดหา และดูแลรักษาบริการของเราโดยทั่วไป เราประมวลผลข้อมูลนี้โดยอิงตามประโยชน์โดยชอบด้วยกฎหมายของ Google และของบุคคลที่สามในการตอบสนองความต้องการของผู้ใช้ ข้อมูลนี้ไม่ได้ใช้เพื่อระบุตัวตนบุคคลใด<ph name="END_PARAGRAPH2" />
@@ -2763,6 +2766,7 @@
 <translation id="2842013086666334835">ลงชื่อเข้าใช้ "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843560154284403323">โปรดอัปเดต Chrome OS แล้วลองอีกครั้งเพื่อให้การตั้งค่า Linux เสร็จสิ้น</translation>
 <translation id="2843698124892775282">เพิ่มพื้นที่ว่าง <ph name="MEMORY_SAVINGS" /> แล้ว</translation>
+<translation id="2844154481025280030">กำหนดค่านโยบายแล้ว</translation>
 <translation id="2844169650293029770">อุปกรณ์ USB-C (พอร์ตด้านหน้าซ้าย)</translation>
 <translation id="2844809857160214557">ดูและจัดการงานพิมพ์</translation>
 <translation id="2845276301195220700">การดำเนินการเพิ่มเติมสำหรับ Google ปฏิทิน</translation>
@@ -3202,6 +3206,7 @@
 <translation id="3151539355209957474">เวลาเริ่มต้น</translation>
 <translation id="3151786313568798007">การวางแนว</translation>
 <translation id="3152356229013609796">ดู ปิด และตอบกลับการแจ้งเตือนของโทรศัพท์</translation>
+<translation id="3152545926232662879">ละเว้น:</translation>
 <translation id="3154754096046236400">บริบทส่วนบุคคล</translation>
 <translation id="3155163173539279776">เรียกใช้งาน Chromium อีกครั้ง</translation>
 <translation id="3155394504825881014">แปลงกลุ่มแท็บเป็นโฟลเดอร์บุ๊กมาร์ก</translation>
@@ -5122,6 +5127,7 @@
 <translation id="443031431654216610">ใส่เฉพาะตัวเลขเท่านั้น</translation>
 <translation id="4430369329743628066">เพิ่มบุ๊กมาร์กแล้ว</translation>
 <translation id="4430422687972614133">เปิดใช้บัตรเสมือน</translation>
+<translation id="4431962107539413562">รับรหัสผ่านในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="443196770280837407">เปิด Gemini ด้วยแป้นพิมพ์ลัด</translation>
 <translation id="4432621511648257259">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="4434611816075088065">ไม่มีกิจกรรมใดที่คุณต้องตรวจสอบในขณะนี้</translation>
@@ -5739,6 +5745,7 @@
 <translation id="4868284252360267853">ไม่ได้โฟกัสกล่องโต้ตอบนี้อยู่ กด Command-Shift-Option A เพื่อโฟกัสกล่องโต้ตอบนี้</translation>
 <translation id="4868351661310357223">ติดตั้งแอปและเกมจาก Google Play ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="4869170227080975044">อ่านข้อมูลเครือข่าย ChromeOS</translation>
+<translation id="4869175799055761881">ผู้ใช้ติดตั้งแอปพลิเคชันนี้ไม่ได้ โปรดติดต่อนักพัฒนาแอป</translation>
 <translation id="4870724079713069532">คุณสามารถเปิดและแก้ไขไฟล์ที่ระบบรองรับด้วยแอปนี้ได้จากโปรแกรมสำรวจไฟล์หรือจากแอปอื่นๆ หากต้องการควบคุมว่ามีไฟล์ใดบ้างที่เปิดในแอปนี้ได้โดยค่าเริ่มต้น ให้ไปที่<ph name="BEGIN_LINK" />การตั้งค่าหน้าต่าง<ph name="END_LINK" /></translation>
 <translation id="4870995365819149457">ลิงก์ที่รองรับบางลิงก์จะยังคงเปิดใน <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> และอีก 1 แอป</translation>
 <translation id="4871308555310586478">ไม่ได้มาจาก Chrome เว็บสโตร์</translation>
@@ -6219,6 +6226,7 @@
 <translation id="5203035663139409780">แก้ไขไฟล์หรือโฟลเดอร์ในอุปกรณ์ได้</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{คลิกเพื่อดูส่วนขยาย}other{คลิกเพื่อดูส่วนขยายเหล่านี้}}</translation>
 <translation id="5204282224596194174">รหัสผ่านสำหรับการกู้คืนของ <ph name="USER_EMAIL" /></translation>
+<translation id="5204584298075822291">ยุบแท็บ</translation>
 <translation id="5204673965307125349">โปรดทำ Powerwash อุปกรณ์และลองอีกครั้ง</translation>
 <translation id="5204967432542742771">ป้อนรหัสผ่าน</translation>
 <translation id="5205484256512407285">ไม่ใช้อินเทอร์เน็ตมือถือในการโอน</translation>
@@ -8637,6 +8645,7 @@
 <translation id="6896758677409633944">คัดลอก</translation>
 <translation id="6897363604023044284">เลือกเว็บไซต์เพื่อล้างข้อมูล</translation>
 <translation id="6897688156970667447">มีประโยชน์ในสภาวะแสงน้อยและประหยัดแบตเตอรี่</translation>
+<translation id="6897756054229464646">โดยใช้ Gemini</translation>
 <translation id="6897972855231767338">ดูข้อมูลเพิ่มเติมเกี่ยวกับการท่องเว็บในฐานะผู้มาเยือน</translation>
 <translation id="6898438890765871056">เปิดโฟลเดอร์ OneDrive</translation>
 <translation id="6898440773573063262">แอปพลิเคชันคีออสก์สามารถกำหนดค่าให้เปิดอัตโนมัติบนอุปกรณ์นี้ได้แล้ว</translation>
@@ -9059,6 +9068,7 @@
 <translation id="7193051357671784796">องค์กรของคุณเป็นผู้เพิ่มแอปนี้ รีสตาร์ทแอปเพื่อติดตั้งให้เสร็จ</translation>
 <translation id="7193374945610105795">ไม่มีรหัสผ่านบันทึกไว้สำหรับ <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">ส่งความคิดเห็นสำหรับกลุ่มที่แนะนำ</translation>
+<translation id="7194343495483122559">ขยายแท็บ</translation>
 <translation id="7194873994243265344">องค์กรบล็อกไฟล์นี้เนื่องจากไฟล์มีการเข้ารหัส โปรดขอให้เจ้าของไฟล์ถอดรหัส</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{อยู่ระหว่างการดาวน์โหลด 1 รายการ}other{อยู่ระหว่างการดาวน์โหลด # รายการ}}</translation>
 <translation id="7196272782924897510">ใช้พาสคีย์จากอุปกรณ์อื่นไหม</translation>
@@ -9138,6 +9148,7 @@
 <translation id="7250616558727237648">อุปกรณ์ที่คุณกำลังแชร์ด้วยไม่ตอบสนอง โปรดลองอีกครั้ง</translation>
 <translation id="725109152065019550">ขออภัย ผู้ดูแลระบบของคุณได้ปิดใช้งานพื้นที่เก็บข้อมูลภายนอกกับบัญชีของคุณ</translation>
 <translation id="7251635775446614726">ผู้ดูแลระบบบอกว่า "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="725310308981256997">สอบถามเกี่ยวกับหน้านี้ไหม</translation>
 <translation id="7253521419891527137">&amp;ดูข้อมูลเพิ่มเติม</translation>
 <translation id="7254951428499890870">คุณแน่ใจไหมว่าต้องการเปิด "<ph name="APP_NAME" />" ในโหมดการวินิจฉัย</translation>
 <translation id="725497546968438223">ปุ่มโฟลเดอร์บุ๊กมาร์ก</translation>
@@ -10626,6 +10637,7 @@
 <translation id="8244201515061746038">ปุ่มดูข้อมูลเพิ่มเติมเกี่ยวกับการแก้ไขอัตโนมัติ ไปที่หน้าการตั้งค่าการแก้ไขอัตโนมัติ กด Enter เพื่อเปิดใช้งาน หรือกด ESC เพื่อปิด</translation>
 <translation id="8244514732452879619">อีกสักพักก็นอนได้แล้ว</translation>
 <translation id="8246776524656196770">ปกป้องคีย์ความปลอดภัยด้วย PIN (หมายเลขประจำตัวส่วนบุคคล)</translation>
+<translation id="824713170151383793">โดยใช้เครื่องมือสำหรับนักพัฒนาเว็บ</translation>
 <translation id="8247795734638043885">ดาวน์โหลดไฟล์ที่ไม่ปลอดภัย</translation>
 <translation id="8248050856337841185">&amp;วาง</translation>
 <translation id="8248381369318572865">เข้าถึงไมโครโฟนและวิเคราะห์คำพูด</translation>
@@ -11316,7 +11328,6 @@
 <translation id="8707562594602678416">สถานที่</translation>
 <translation id="8708000541097332489">ล้างเมื่อออก</translation>
 <translation id="870805141700401153">การรับรองรหัสบุคคลของ Microsoft</translation>
-<translation id="8708088555926718398">ข้อผิดพลาด: หมวดหมู่: <ph name="CATEGORY" />, รหัส: <ph name="CODE" />, รหัสเพิ่มเติม: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp;ข้อมูลเพิ่มเติม</translation>
 <translation id="8709368517685334931">คุณค้นหาสีที่เก่ากว่าได้ใน Chrome เว็บสโตร์</translation>
 <translation id="8710414664106871428">แฟนตาซี</translation>
@@ -11541,6 +11552,7 @@
 <translation id="885746075120788020">ค่ากำหนดและกิจกรรมที่คุณบันทึกไว้จะพร้อมใช้งานในอุปกรณ์ Chrome OS ทุกเครื่องเมื่อลงชื่อเข้าใช้ด้วยบัญชี Google คุณเลือกสิ่งที่ต้องการซิงค์ได้ในการตั้งค่า</translation>
 <translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{ติดตั้งแอปไหม}other{ติดตั้งแอปไหม}}</translation>
 <translation id="8858369206579825206">การควบคุมความเป็นส่วนตัว</translation>
+<translation id="8858449624332155432">นโยบายที่กำหนดค่าไว้มีค่าที่ขัดแย้งกันจากแหล่งที่มาหลายแห่ง</translation>
 <translation id="8859174528519900719">เฟรมย่อย: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">โหลดข้อกำหนดในการให้บริการไม่สำเร็จ</translation>
 <translation id="8859662783913000679">บัญชีผู้ปกครอง</translation>

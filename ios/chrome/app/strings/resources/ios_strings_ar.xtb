@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">للاطّلاع على كلمات المرور، يجب أولاً ضبط رمز مرور على جهازك.</translation>
 <translation id="201759455285471444">توسيع مجموعة علامات التبويب</translation>
 <translation id="202070562065520783">أريد شرحًا لهذا</translation>
-<translation id="2023713324775943812">يسمح لك بالوصول إلى "وضع القراءة" من شريط العناوين عندما يكون متاحًا</translation>
 <translation id="2044394949148788042">فتح شبكة علامات التبويب</translation>
 <translation id="2044681667265133332">يتولّى النطاق <ph name="HOSTED_DOMAIN" /> إدارة الحساب <ph name="USER_EMAIL" />، وقد يكون بإمكانه الاطّلاع على بعض البيانات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">عنصر جديد</translation>
@@ -783,7 +782,7 @@
 <translation id="3934905113567851655">يمكنك تصغير أو تكبير الصورة بإصبعين لتغيير حجمها</translation>
 <translation id="3940195383040445971">تتبُّع الأسعار في علامات التبويب</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{إغلاق علامة تبويب واحدة ({COUNT})}zero{إغلاق {COUNT} علامة تبويب}two{إغلاق علامتَي تبويب ({COUNT})}few{إغلاق {COUNT} علامات تبويب}many{إغلاق {COUNT} علامة تبويب}other{إغلاق {COUNT} علامة تبويب}}</translation>
-<translation id="3946483119107054883">‏تنزيل كملف CSV</translation>
+<translation id="3946483119107054883">‏التنزيل كملف CSV</translation>
 <translation id="3948600256434252210">يمكنك التمرير سريعًا إلى اليسار للتصفُّح في "وضع التصفّح المتخفي".</translation>
 <translation id="3949712484278252781">‏لن يدقّق المراجعون في محادثاتك مع Gemini أو في <ph name="GOOGLE_WORKSPACE_DATA" />، ولن تُستخدَم لتحسين نماذج الذكاء الاصطناعي التوليدي.</translation>
 <translation id="3950479158728806902">إنشاء مفتاح مرور تلقائيًا لتسجيل الدخول بشكل أسرع</translation>
@@ -960,7 +959,7 @@
 <translation id="4607887340472970274">تتبُّع الأسعار</translation>
 <translation id="4619564267100705184">إثبات هويّتك</translation>
 <translation id="4621768135601674446">فتح خيارات "وضع القراءة"</translation>
-<translation id="4627107755957573804">يمكن السماح للمواقع الإلكترونية والتطبيقات بترقية الحسابات الحالية لاستخدام مفاتيح المرور</translation>
+<translation id="4627107755957573804">للسماح للمواقع الإلكترونية والتطبيقات بترقية الحسابات الحالية لكي تستخدم مفاتيح المرور</translation>
 <translation id="4629065796475200039">لم يتم استيراد كلمة المرور</translation>
 <translation id="4630212057753624203">فقاعة معلوماتية</translation>
 <translation id="4631335160486397366">هناك <ph name="COUNT" /> كلمة مرور مستخدَمة لحساب آخر</translation>
@@ -1124,7 +1123,7 @@
 <translation id="514154868070499296">الخط: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">الخروج من "أداة التبديل بين علامات التبويب"</translation>
 <translation id="5148717509369231739">‏استيراد بيانات Safari</translation>
-<translation id="5152483358138813104">تسجيل الدخول بشكل أسرع على جميع أجهزتك</translation>
+<translation id="5152483358138813104">سجِّل الدخول بسرعة أكبر على جميع أجهزتك</translation>
 <translation id="5155502059906700593">يمكنك تبديل موضع شريط العناوين إلى أعلى الشاشة أو أسفلها.</translation>
 <translation id="5157638238828697074">حدث خطأ. تعذَّر فتح التطبيق.</translation>
 <translation id="5163417375525818870">‏ملفات PDF</translation>
@@ -1135,7 +1134,7 @@
 <translation id="5177141896043341906">لديك كلمات مرور ضعيفة يبلغ عددها <ph name="NUMBER_OF_PASSWORDS" /> ويمكن أن تعرّضك لمشاكل أمنية.</translation>
 <translation id="5181140330217080051">تنزيل</translation>
 <translation id="5186185447130319458">خاص</translation>
-<translation id="5189431381114029336">حفظ مفتاح المرور الأول</translation>
+<translation id="5189431381114029336">احفظ مفتاح المرور الأول</translation>
 <translation id="518997337573684769">جارٍ إرسال تقارير الأعطال…</translation>
 <translation id="519530786644929958">تعذّر تنزيل الملف ولا يمكن إعادة المحاولة.</translation>
 <translation id="5197255632782567636">الإنترنت</translation>
@@ -1858,6 +1857,7 @@
 <translation id="7772032839648071052">تأكيد عبارة المرور</translation>
 <translation id="7772948288262733182">مرحبًا بك من جديد</translation>
 <translation id="777637629667389858">‏عندما تكون مسجّلاً الدخول، تتم حماية حسابك على خدمات Google.</translation>
+<translation id="7776604279034196531">يتيح لك الوصول إلى "وضع القراءة" من شريط العناوين عندما يكون متاحًا</translation>
 <translation id="7781829728241885113">أمس</translation>
 <translation id="7788868432173225918">إغلاق العرض الموسَّع</translation>
 <translation id="7791543448312431591">إضافة</translation>
@@ -2093,7 +2093,7 @@
 <translation id="8571019948162152515">حذف <ph name="FILENAME" />؟</translation>
 <translation id="8571213806525832805">آخر 4 أسابيع</translation>
 <translation id="8577056989960190117">الملء التلقائي لسنة انتهاء الصلاحية <ph name="YEAR" /></translation>
-<translation id="8587001564479545614">إنشاء رقم تعريف شخصي لاسترداد الحساب</translation>
+<translation id="8587001564479545614">أنشئ رقم تعريف شخصي لاسترداد الحساب</translation>
 <translation id="8588404856427128947">غير مفعَّل</translation>
 <translation id="8590286732816598906">مجموعة علامات التبويب "<ph name="GROUP_TITLE" />"، القائمة.</translation>
 <translation id="8600272508328041907">التبديل إلى خيار "ترجمة الصفحة بأكملها"</translation>

@@ -240,6 +240,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1151917987301063366"><ph name="HOST" /> saytiga sensorlardan foydalanishga doim ruxsat berilsin</translation>
 <translation id="1152346050262092795">Hisobingizni tasdiqlash uchun parolingizni qayta kiriting.</translation>
 <translation id="1153636665119721804">Google Kengaytirilgan himoya dasturi</translation>
+<translation id="1153802775114315167">Kengaytmalar bilan ishni boshlash</translation>
 <translation id="1155816283571436363">Telefonga ulanilmoqda</translation>
 <translation id="1157952955648710254">Google Qidiruv yon panelini yopish</translation>
 <translation id="1158080958325422608">Katta harflarda boʻlsin</translation>
@@ -584,6 +585,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1383876407941801731">Qidiruv</translation>
 <translation id="1384849755549338773">Boshqa tillardagi saytlarda Google Tarjima taklif qilinsin</translation>
 <translation id="1384959399684842514">Yuklab olish pauza qilindi.</translation>
+<translation id="1386966479075994683">Varaqlarni yoyish</translation>
 <translation id="1388253969141979417">Mikrofondan foydalanishga ruxsat berilgan</translation>
 <translation id="1388728792929436380">Yangilanishlar tugasa, <ph name="DEVICE_TYPE" /> qurilmasi qayta ishga tushiriladi.</translation>
 <translation id="1390113502208199250">Chrome Education yangilanishi funksiyalaridan foydalanish uchun qurilma sozlamalarini asliga qaytarish lozim.</translation>
@@ -2585,6 +2587,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2727633948226935816">Boshqa eslatilmasin</translation>
 <translation id="2727712005121231835">Asl hajmi</translation>
 <translation id="2727744317940422214">Xatolik yuz berdi. Fikr-mulohaza yuborish orqali bizga xabar bering. Uning tavsifiga #bruschetta tegini qoʻshing. Xatolik kodi: <ph name="ERROR" /> Tozalanmadi, mustaqil urinib koʻring.</translation>
+<translation id="2729310339366257582">Varaqlarni yigʻish</translation>
 <translation id="2729577602370119849">Printerlarni oson ochish va boshqarish</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Joylashuv aniqligi yoqilganda simsiz signallar haqidagi axborot jamlanadi, jumladan, Wi-Fi ulanish nuqtalari, mobil tarmoq antennalari va hokazo. Shuningdek, funksiya akselerometr va giroskop kabi sensorlardan axborot olishi mumkin. Bunday maʼlumotlar geojoylashuv funksiyali ilova va xizmatlarga qurilma joylashuvini aniqroq aniqlashga yordam beradi. Buning uchun Google vaqti-vaqti bilan simsiz signallar joylashuvlarining umumiy omborini jamlash orqali atrofdagi qurilma sensorlari hamda simsiz aloqa haqidagi maʼlumotlardan foydalanadi.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google bu qurilmada jamlangan axborotlardan joylashuv aniqligi va joylashuv asosidagi xizmatlarni yaxshilash, umumiy tarzda Google xizmatlarini yaxshilash, taqdim etish hamda dastaklash maqsadlarida foydalanadi. Bunday maʼlumotlar foydalanuvchilar ehtiyojini qondirish maqsadida Google va tashqi tomonlar tomonidan qonun doirasida qayta ishlanadi. Bu maʼlumotlardan faqat anonim tarzda foydalaniladi.<ph name="END_PARAGRAPH2" />
@@ -5126,6 +5129,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="443031431654216610">Faqat raqamlardan foydalaning</translation>
 <translation id="4430369329743628066">Xatcho‘p qo‘shildi</translation>
 <translation id="4430422687972614133">Virtual kartani yoqish</translation>
+<translation id="4431962107539413562">Parollarni barcha qurilmalarda ishlating</translation>
 <translation id="443196770280837407">Gemini panelini tezkor tugma orqali ochish</translation>
 <translation id="4432621511648257259">Parol xato kiritildi</translation>
 <translation id="4434611816075088065">Hozircha hammasi joyida</translation>
@@ -6224,6 +6228,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5203035663139409780">Qurilmadagi fayl yoki jildlarni tahrirlash mumkin</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Kengaytmani ochish uchun bosing}other{Bu kengaytmalarni ochish uchun bosing}}</translation>
 <translation id="5204282224596194174"><ph name="USER_EMAIL" /> zaxiraviy paroli</translation>
+<translation id="5204584298075822291">Varaqlarni yigʻish</translation>
 <translation id="5204673965307125349">Qurilmani zavod sozlamalariga qaytaring va qaytadan urining.</translation>
 <translation id="5204967432542742771">Parolni kiriting</translation>
 <translation id="5205484256512407285">Hech qachon mobil internetdan yuborilmasin</translation>
@@ -9068,6 +9073,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7193051357671784796">Bu ilova tashkilotingiz tomonidan kiritildi. Ilova oʻrnatilishini yakunlash uchun uni oʻchirib yoqing.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> uchun birorta ham parol saqlanmagan</translation>
 <translation id="7193663868864659844">Taklif qilingan guruhlar yuzasidan fikr-mulohaza yuborish</translation>
+<translation id="7194343495483122559">Varaqlarni yoyish</translation>
 <translation id="7194873994243265344">Bu fayl shifrlangani uchun tashkilotingiz uni bloklagan. Egasidan uning shifrini yechishini soʻrang.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{Yuklab olinmoqda (1)}other{Yuklab olinmoqda (#)}}</translation>
 <translation id="7196272782924897510">Boshqa qurilma kodi ishlatilsinmi?</translation>
@@ -11327,7 +11333,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8707562594602678416">Joylar</translation>
 <translation id="8708000541097332489">Chiqish vaqtida tozalansin</translation>
 <translation id="870805141700401153">Microsoft shaxsiy kod imzosi</translation>
-<translation id="8708088555926718398">Xato: Turkum: <ph name="CATEGORY" />, Kod: <ph name="CODE" />, Qoʻshimcha kod: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp;Qo‘shimcha ma’lumot</translation>
 <translation id="8709368517685334931">Eski ranglarni Chrome internet doʻkoni orqali topish mumkin</translation>
 <translation id="8710414664106871428">Fentezi</translation>

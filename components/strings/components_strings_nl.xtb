@@ -2785,6 +2785,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5466018172325111652">Heb je de code niet gekregen? <ph name="BEGIN_LINK" />Nieuwe code ophalen<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Betalingsapps</translation>
 <translation id="5470861586879999274">&amp;Opnieuw bewerken</translation>
+<translation id="5471158297908124590">Laat verifiëren dat jij het bent om betaalmethoden te bewerken</translation>
 <translation id="5472588168895083535">Handen volgen geblokkeerd</translation>
 <translation id="5477756102936130143">Omleiding naar ondersteunde betalingsapps aanzetten</translation>
 <translation id="5479505548832623900">Waarschijnlijk genegeerd door de extensie.</translation>
@@ -3168,6 +3169,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6093795393556121384">Je pas is geverifieerd</translation>
 <translation id="6094253940069566294">Voertuig bewerken</translation>
 <translation id="6094290315941448991">Op basis van het beheerdersbeleid wordt schermopname uitgezet als er vertrouwelijke content zichtbaar is</translation>
+<translation id="6097297436119286254">Laat verifiëren dat jij het bent om je betalingsgegevens in te vullen</translation>
 <translation id="6099269767116481177">22 x 29,5 inch</translation>
 <translation id="6101583188322746099">Boodschappenbezorgdiensten</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4915,6 +4917,7 @@ Aanvullende informatie:
 <translation id="8897428486789851669">Zwemmen</translation>
 <translation id="8899807382908246773">Opdringerige advertenties</translation>
 <translation id="8903921497873541725">Inzoomen</translation>
+<translation id="8903998444169664879">Laat verifiëren dat jij het bent om je betaalinstellingen te wijzigen</translation>
 <translation id="890493561996401738">Suggestieknop verwijderen, druk op Enter om te verwijderen, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 inch</translation>
 <translation id="8914504000324227558">Chrome opnieuw starten</translation>

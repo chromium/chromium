@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Chcete-li zobrazit hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
 <translation id="201759455285471444">Rozbalit skupinu karet.</translation>
 <translation id="202070562065520783">Vysvětli mi tohle</translation>
-<translation id="2023713324775943812">Přístup k režimu čtení z adresního řádku, když je k dispozici</translation>
 <translation id="2044394949148788042">Otevřít mřížku karet</translation>
 <translation id="2044681667265133332">Účet <ph name="USER_EMAIL" /> spravuje doména <ph name="HOSTED_DOMAIN" />, která může mít přístup k některým informacím. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nová položka</translation>
@@ -1860,6 +1859,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7772032839648071052">Potvrďte heslovou frázi</translation>
 <translation id="7772948288262733182">Vítejte zpět</translation>
 <translation id="777637629667389858">Když jste přihlášeni, chrání vás ve službách Google.</translation>
+<translation id="7776604279034196531">Přístup k režimu čtení z adresního řádku, když je k dispozici</translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7788868432173225918">Zavřít rozbalené zobrazení</translation>
 <translation id="7791543448312431591">Přidat</translation>

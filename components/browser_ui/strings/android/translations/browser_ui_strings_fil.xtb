@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">Hayaang i-share ng Chrome ang iyong mga kamakailang tab gamit ang device mo para makita ang mga ito sa listahan ng app at mga resulta ng paghahanap ng iyong device. Puwede mo itong i-on o i-off sa mga setting ng Chrome.</translation>
 <translation id="1420688843103859429">Mag-navigate pabalik-balik sa pamamagitan ng pag-swipe gamit ang dalawang daliri sa touchpad</translation>
 <translation id="1432650420699700107">Puwedeng hilingin ng mga site na kumonekta sa anumang device sa iyong lokal na network</translation>
+<translation id="1442081309487427303">I-on ang mga link sa Reading Mode</translation>
 <translation id="1448064542941920355">Bawasan ang pag-zoom</translation>
 <translation id="1464044141348608623">Huwag payagan ang mga site na malaman kung aktibo mong ginagamit ang iyong device</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> na site}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">Makakuha ng mga notification sa mga tip sa Chrome</translation>
 <translation id="1777815584158991902">Bottom sheet ng feed ng Discover</translation>
 <translation id="1779089405699405702">Pang-decode ng larawan</translation>
+<translation id="1781533683087883868">I-off ang mga link sa Reading Mode</translation>
 <translation id="1785415724048343560">Inirerekomenda para sa pinakamagandang experience</translation>
 <translation id="1796588414813960292">Hindi gagana ang mga feature na nangangailangan ng tunog</translation>
 <translation id="1799920918471566157">Mga Tip sa Chrome</translation>

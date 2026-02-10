@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">Dozvolite Chromeu da dijeli nedavne kartice s uređajem da ih vidite na listi aplikacija i u rezultatima pretraživanja na uređaju. Možete uključiti ili isključiti u postavkama Chromea.</translation>
 <translation id="1420688843103859429">Krećite se naprijed-nazad prevlačenjem s dva prsta na dodirnoj podlozi</translation>
 <translation id="1432650420699700107">Web lokacije mogu zatražiti da se povežu s bilo kojim uređajem na lokalnoj mreži</translation>
+<translation id="1442081309487427303">Uključivanje linkova u načinu rada za čitanje</translation>
 <translation id="1448064542941920355">Smanjenje zumiranja</translation>
 <translation id="1464044141348608623">Nemoj dozvoliti web lokacijama da znaju kada se uređaj aktivno koristi</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web lokacija}one{<ph name="SITE_COUNT" /> web lokacija}few{<ph name="SITE_COUNT" /> web lokacije}other{<ph name="SITE_COUNT" /> web lokacija}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">Dobijajte obavještenja o savjetima za Chrome</translation>
 <translation id="1777815584158991902">Donja tabela sažetka sadržaja Discover</translation>
 <translation id="1779089405699405702">Dekoder slike</translation>
+<translation id="1781533683087883868">Isključivanje linkova u načinu rada za čitanje</translation>
 <translation id="1785415724048343560">Preporučeno za najbolje iskustvo</translation>
 <translation id="1796588414813960292">Funkcije za koje je potreban zvuk neće funkcionirati</translation>
 <translation id="1799920918471566157">Savjeti za Chrome</translation>

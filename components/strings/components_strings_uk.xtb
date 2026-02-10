@@ -2791,6 +2791,7 @@
 <translation id="5466018172325111652">Не отримали код? <ph name="BEGIN_LINK" />Отримати новий<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Додатки для оплати</translation>
 <translation id="5470861586879999274">&amp;Повторити редагування</translation>
+<translation id="5471158297908124590">Щоб змінити способи оплати, підтвердьте свою особу</translation>
 <translation id="5472588168895083535">Відстеження рук заблоковано</translation>
 <translation id="5477756102936130143">Дозволити переспрямування в підтримувані додатки для оплати</translation>
 <translation id="5479505548832623900">Імовірно, розширення ігнорує це правило.</translation>
@@ -3174,6 +3175,7 @@
 <translation id="6093795393556121384">Картку підтверджено</translation>
 <translation id="6094253940069566294">Змінити відомості про транспортний засіб</translation>
 <translation id="6094290315941448991">Адміністратор заборонив запис екрана, якщо видно конфіденційний контент</translation>
+<translation id="6097297436119286254">Щоб заповнити платіжну інформацію, підтвердьте свою особу</translation>
 <translation id="6099269767116481177">22 x 29,5 дюйм.</translation>
 <translation id="6101583188322746099">Доставка бакалійних товарів</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4923,6 +4925,7 @@
 <translation id="8897428486789851669">Плавання</translation>
 <translation id="8899807382908246773">Нав’язливі оголошення</translation>
 <translation id="8903921497873541725">Збільшити масштаб</translation>
+<translation id="8903998444169664879">Щоб змінити налаштування платежів, підтвердьте свою особу</translation>
 <translation id="890493561996401738">Кнопка видалення підказки: натисніть Enter, щоб видалити, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 дюйм.</translation>
 <translation id="8914504000324227558">Перезапустити Chrome</translation>

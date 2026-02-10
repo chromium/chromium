@@ -240,6 +240,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1151917987301063366"><ph name="HOST" /> immer den Zugriff auf Sensoren erlauben</translation>
 <translation id="1152346050262092795">Gib das Passwort noch einmal ein, um dein Konto zu bestätigen.</translation>
 <translation id="1153636665119721804">Erweitertes Sicherheitsprogramm von Google</translation>
+<translation id="1153802775114315167">Einführung in Erweiterungen</translation>
 <translation id="1155816283571436363">Verbindung zu deinem Smartphone wird hergestellt</translation>
 <translation id="1157952955648710254">Seitenleiste der Google Suche schließen</translation>
 <translation id="1158080958325422608">Großschreibung verwenden</translation>
@@ -584,6 +585,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1383876407941801731">Suchen</translation>
 <translation id="1384849755549338773">Google Übersetzer für Websites in anderen Sprachen anbieten</translation>
 <translation id="1384959399684842514">Download angehalten</translation>
+<translation id="1386966479075994683">Tabs maximieren</translation>
 <translation id="1388253969141979417">Dürfen mein Mikrofon verwenden</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> wird neu gestartet, wenn die Updates abgeschlossen sind.</translation>
 <translation id="1390113502208199250">Wenn du die Funktionen des Chrome Education-Upgrades nutzen möchtest, musst du das Gerät auf die Werkseinstellungen zurücksetzen.</translation>
@@ -2580,6 +2582,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2727633948226935816">Nicht mehr erinnern</translation>
 <translation id="2727712005121231835">Originalgröße</translation>
 <translation id="2727744317940422214">Ein Fehler ist aufgetreten. Gib bitte Feedback und verwende #bruschetta in der Beschreibung. Fehlercode: <ph name="ERROR" /> Die Bereinigung ist fehlgeschlagen. Du musst sie gegebenenfalls manuell vornehmen.</translation>
+<translation id="2729310339366257582">Tabs minimieren</translation>
 <translation id="2729577602370119849">Einfach auf deine Drucker zugreifen und diese verwalten</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Wenn die Standortgenauigkeit aktiviert ist, werden Informationen über Funksignale, wie WLAN‑Zugangspunkte und Mobilfunkmasten zusammen mit den Daten der Gerätesensoren, wie Beschleunigungsmesser und Gyroskop, verwendet, um den Gerätestandort genauer zu bestimmen. Android-Apps und ‑Dienste nutzen diese Daten, um standortbezogene Funktionen bereitzustellen. Dafür erhebt Google in regelmäßigen Abständen Informationen über Gerätesensoren und Funksignale in der Nähe dieses Geräts, die zum Bestimmen der Standorte von Funksignalen per Crowdsourcing verwendet werden.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google nutzt diese von diesem Gerät erhobenen Informationen dafür, die Standortgenauigkeit und standortbezogene Dienste zu verbessern sowie die Dienste von Google allgemein zu optimieren, bereitzustellen und zu verwalten. Wir verarbeiten diese Daten auf Grundlage der berechtigten Interessen von Google und Dritten, um den Anforderungen von Nutzern gerecht zu werden. Diese Informationen werden nicht zur Identifizierung von Personen verwendet.<ph name="END_PARAGRAPH2" />
@@ -4727,6 +4730,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4169535189173047238">Nicht zulassen</translation>
 <translation id="4170314459383239649">Beim Beenden löschen</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Tab mit Gemini teilen}other{# Tabs mit Gemini teilen}}</translation>
+<translation id="4172944993779635350">Dein Passwort für <ph name="URL" /> ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Konto.</translation>
 <translation id="4173129130568053653">Gemini kann dir helfen, Termine zu buchen, Warenkörbe zusammenzustellen oder andere Aufgaben zu erledigen.</translation>
 <translation id="4175137578744761569">Hellviolett und Weiß</translation>
 <translation id="4176463684765177261">Deaktiviert</translation>
@@ -5043,6 +5047,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4386604394450371010">Übersicht</translation>
 <translation id="4387890294700445764">Kompromittierte Passwörter</translation>
 <translation id="4388650384344483842">Gib mindestens 8 Zeichen ein</translation>
+<translation id="4388700905120039425">{COUNT,plural, =1{Passwort für <ph name="URL" />}other{Passwörter für <ph name="URL" /> ({COUNT})}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> und <ph name="NUMBER_OF_OTHER_SWITCHES" /> weitere Schalter</translation>
 <translation id="439266289085815679">Die Bluetooth-Konfiguration wird von <ph name="USER_EMAIL" /> festgelegt.</translation>
 <translation id="4392896746540753732">Konfigurationsdatei bearbeiten</translation>
@@ -5117,6 +5122,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="443031431654216610">Darf nur aus Ziffern bestehen</translation>
 <translation id="4430369329743628066">Lesezeichen hinzugefügt</translation>
 <translation id="4430422687972614133">Virtuelle Karte aktivieren</translation>
+<translation id="4431962107539413562">Passwörter auf allen deinen Geräten abrufen</translation>
 <translation id="443196770280837407">Gemini mit einer Tastenkombination öffnen.</translation>
 <translation id="4432621511648257259">Falsches Passwort</translation>
 <translation id="4434611816075088065">Derzeit musst du nichts überprüfen</translation>
@@ -5572,6 +5578,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4762849514113423887">Falsches Passwort. Versuche es noch einmal.</translation>
 <translation id="4763408175235639573">Beim Anzeigen dieser Seite wurden die folgenden Cookies eingerichtet</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> ist kein gültiges Google for Education-Konto. Wende dich an deinen Admin. Wenn du ein/e Admin bist, kannst du deine Organisation unter g.co/workspace/edusignup einrichten.</translation>
+<translation id="4765053150631027076">{COUNT,plural, =1{{COUNT} Passwort für <ph name="URL" /> ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Konto.}other{{COUNT} Passwörter für <ph name="URL" /> sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Konto.}}</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Dieses Gerät wird für einen Monat gespeichert und du kannst dich das nächste Mal ohne einen Code verbinden. Dies wird von deinem Administrator festgelegt.}other{Dieses Gerät wird für {MONTHS} Monate gespeichert und du kannst dich das nächste Mal ohne einen Code verbinden. Dies wird von deinem Administrator festgelegt.}}</translation>
 <translation id="476563889641554689">Wähle einen Bereich aus, um mit Lens zu suchen</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Öffentlicher Schlüssel und Integritätsblock werden überprüft… Noch weniger als 1 Minute}=1{Öffentlicher Schlüssel und Integritätsblock werden überprüft… Noch 1 Minute}other{Öffentlicher Schlüssel und Integritätsblock werden überprüft… Noch # Minuten}}</translation>
@@ -6043,6 +6050,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5088534251099454936">PKCS #1 SHA-512 mit RSA-Verschlüsselung</translation>
 <translation id="5090637338841444533">Dürfen meine Kameraposition nicht erfassen</translation>
 <translation id="5091636240353511739">PIN anzeigen</translation>
+<translation id="5093447877601682598">Feedback zur Tableiste senden</translation>
 <translation id="5093477827231450397">Liste der Websites, die du blockiert hast und die anderen Websites keine Werbung vorschlagen dürfen</translation>
 <translation id="5093569275467863761">Inkognito-Subframe im Back-Forward-Cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Du kannst unterstützte Dateien mit dieser App aus „Dateien“ oder anderen Apps öffnen und bearbeiten. Wenn du festlegen möchtest, welche Dateien standardmäßig in dieser App geöffnet werden sollen, <ph name="BEGIN_LINK" />lies diesen Artikel<ph name="END_LINK" />. Darin erfährst du, wie du Standard-Apps auf deinem Gerät einrichtest.</translation>
@@ -6212,6 +6220,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5203035663139409780">Können Dateien oder Ordner auf meinem Gerät bearbeiten</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Zum Ansehen der Erweiterung klicken}other{Zum Ansehen dieser Erweiterungen klicken}}</translation>
 <translation id="5204282224596194174">Wiederherstellungspasswort für <ph name="USER_EMAIL" /></translation>
+<translation id="5204584298075822291">Tabs minimieren</translation>
 <translation id="5204673965307125349">Bitte führe einen Powerwash auf dem Gerät durch und versuche es noch einmal.</translation>
 <translation id="5204967432542742771">Passwort eingeben</translation>
 <translation id="5205484256512407285">Nie mobile Daten benutzen, um Daten zu übertragen</translation>
@@ -8872,6 +8881,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7057567173736333354">Bild beschreiben</translation>
 <translation id="70577934383983846">Dieses Passwort auf allen deinen Geräten verwenden</translation>
 <translation id="7058024590501568315">Verborgenes Netzwerk</translation>
+<translation id="7058325593717863084">Feedback zur Tableiste senden</translation>
 <translation id="7059858479264779982">Automatisch starten</translation>
 <translation id="7063129466199351735">Verknüpfungen werden bearbeitet...</translation>
 <translation id="7063311912041006059">URL mit <ph name="SPECIAL_SYMBOL" /> statt der Suchanfrage</translation>
@@ -9051,6 +9061,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7193051357671784796">Diese App wurde von deiner Organisation hinzugefügt. Starte die App neu, um die Installation abzuschließen.</translation>
 <translation id="7193374945610105795">Für <ph name="ORIGIN" /> sind keine Passwörter gespeichert</translation>
 <translation id="7193663868864659844">Feedback zu vorgeschlagenen Gruppen senden</translation>
+<translation id="7194343495483122559">Tabs maximieren</translation>
 <translation id="7194873994243265344">Deine Organisation hat diese Datei blockiert, weil sie verschlüsselt ist. Bitte den Inhaber, sie zu entschlüsseln.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{1 Download wird durchgeführt}other{# Downloads werden durchgeführt}}</translation>
 <translation id="7196272782924897510">Passkey auf einem anderen Gerät verwenden?</translation>
@@ -11309,7 +11320,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8707562594602678416">Orte</translation>
 <translation id="8708000541097332489">Beim Beenden löschen</translation>
 <translation id="870805141700401153">Microsoft-Einzelcodesignatur</translation>
-<translation id="8708088555926718398">Fehler: Kategorie: <ph name="CATEGORY" />, Code: <ph name="CODE" />, zusätzlicher Code: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp;Weitere Informationen</translation>
 <translation id="8709368517685334931">Ältere Farben findest du im Chrome Web Store</translation>
 <translation id="8710414664106871428">Fantasy</translation>

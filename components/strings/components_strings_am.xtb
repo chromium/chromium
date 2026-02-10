@@ -2790,6 +2790,7 @@
 <translation id="5466018172325111652">ኮድ አልደረሰዎትም? <ph name="BEGIN_LINK" />አዲስ ኮድ ያግኙ<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">የክፍያዎች መተግበሪያ</translation>
 <translation id="5470861586879999274">&amp;አርትዕን ድገም</translation>
+<translation id="5471158297908124590">የመክፈያ ዘዴዎችን ለማርትዕ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="5472588168895083535">የእጅ ክትትል ታግዷል</translation>
 <translation id="5477756102936130143">ወደ የሚደገፉ የክፍያ መተግበሪያዎች አቅጣጫ ማዞርን ያንቁ</translation>
 <translation id="5479505548832623900">በቅጥያው ችላ ተብሎ ሊሆን ይችላል።</translation>
@@ -3173,6 +3174,7 @@
 <translation id="6093795393556121384">የእርስዎ ካርድ ተረጋግጧል</translation>
 <translation id="6094253940069566294">ተሽከርካሪ ያርትዑ</translation>
 <translation id="6094290315941448991">ሚስጥራዊ ይዘት በሚታይበት ጊዜ የአስተዳዳሪ መመሪያ የማያ ገፅ ቀረጻን ያሰናክላል</translation>
+<translation id="6097297436119286254">የክፍያ መረጃዎን ለመሙላት እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="6099269767116481177">22 x 29.5 ኢንች</translation>
 <translation id="6101583188322746099">የአስቤዛ ማድረስ አገልግሎቶች</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4523,6 +4525,7 @@
 <translation id="8241707690549784388">እየፈለጉት ያሉት ገፅ ያስገቡትን መረጃ ተጥቅሟል። ወደዛ ገፅ መመለስ ወስደውት የነበረውን ርምጃ እንዲደገም ሊያደርግ ይችላል። ለመቀጠል ይፈልጋሉ?</translation>
 <translation id="8241712895048303527">በዚህ ጣቢያ ላይ አግድ</translation>
 <translation id="8242426110754782860">ቀጥል</translation>
+<translation id="824620968958405573">የራስ-ሰር ማሰስ ተግባር</translation>
 <translation id="8246482227229072868">ቀለበቶች</translation>
 <translation id="8248406213705193919">ካርድ ደህንነቱ በተጠበቀ ሁኔታ ይቀመጥ?</translation>
 <translation id="8249296373107784235">አጨንግፍ</translation>
@@ -4921,6 +4924,7 @@
 <translation id="8897428486789851669">ዋና</translation>
 <translation id="8899807382908246773">ጣልቃ ገቢ ማስታወቂያዎች</translation>
 <translation id="8903921497873541725">አጉላ</translation>
+<translation id="8903998444169664879">የክፍያዎች ቅንብሮችዎን ለመለወጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="890493561996401738">የአስተያየት ጥቆማ አስወግድ አዝራር፣ ለማስወገድ አስገባን ይጫኑ፣ <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 ኢንች</translation>
 <translation id="8914504000324227558">Chromeን ዳግም አስጀምር</translation>

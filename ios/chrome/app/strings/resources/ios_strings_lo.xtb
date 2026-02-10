@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">ເພື່ອເບິ່ງລະຫັດຜ່ານ, ກ່ອນອື່ນທາງຕ້ອງຕັ້ງລະຫັດຜ່ານໃນອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="201759455285471444">ຂະຫຍາຍກຸ່ມແຖບ.</translation>
 <translation id="202070562065520783">ອະທິບາຍສິ່ງນີ້ໃຫ້ຂ້ອຍຟັງ</translation>
-<translation id="2023713324775943812">ເຂົ້າເຖິງໂໝດການອ່ານຈາກແຖບທີ່ຢູ່ເມື່ອພ້ອມໃຫ້ນຳໃຊ້</translation>
 <translation id="2044394949148788042">ເປີດຕາຕະລາງຂອງແຖບ</translation>
 <translation id="2044681667265133332">ບັນຊີ <ph name="USER_EMAIL" /> ໄດ້ຮັບການຈັດການໂດຍ <ph name="HOSTED_DOMAIN" />, ເຊິ່ງອາດຈະສາມາດເບິ່ງຂໍ້ມູນບາງສ່ວນໄດ້. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">ລາຍການໃໝ່</translation>
@@ -1860,6 +1859,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7772032839648071052">ຢືນ​ຢັນວະລີຜ່ານ</translation>
 <translation id="7772948288262733182">ຍິນດີຕ້ອນຮັບກັບມາ</translation>
 <translation id="777637629667389858">ປົກປ້ອງທ່ານໃນທົ່ວບໍລິການ Google ເມື່ອທ່ານເຂົ້າສູ່ລະບົບ.</translation>
+<translation id="7776604279034196531">ເຂົ້າເຖິງໂໝດການອ່ານຈາກແຖບທີ່ຢູ່ເມື່ອພ້ອມໃຫ້ນຳໃຊ້</translation>
 <translation id="7781829728241885113">ມື້​ວານ​ນີ້</translation>
 <translation id="7788868432173225918">ປິດມຸມມອງແບບຂະຫຍາຍ</translation>
 <translation id="7791543448312431591">ເພີ່ມ</translation>

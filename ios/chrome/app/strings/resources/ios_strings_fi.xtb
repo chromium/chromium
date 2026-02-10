@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Jos haluat nähdä salasanat, sinun on ensin määritettävä tunnuskoodi laitteellesi.</translation>
 <translation id="201759455285471444">Laajenna välilehtiryhmä.</translation>
 <translation id="202070562065520783">Selitä tämä minulle</translation>
-<translation id="2023713324775943812">Käytä lukutilaa osoitepalkista, kun se on saatavilla</translation>
 <translation id="2044394949148788042">Avaa välilehtiruudukko</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> ylläpitää tiliä <ph name="USER_EMAIL" /> ja voi nähdä joitakin tietoja. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">uusi tuote</translation>
@@ -1860,6 +1859,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7772032839648071052">Vahvista tunnuslause</translation>
 <translation id="7772948288262733182">Tervetuloa takaisin</translation>
 <translation id="777637629667389858">Kun olet kirjautuneena sisään, se suojaa sinua kaikissa Googlen palveluissa.</translation>
+<translation id="7776604279034196531">Käytä lukutilaa osoitepalkista, kun se on saatavilla</translation>
 <translation id="7781829728241885113">Eilen</translation>
 <translation id="7788868432173225918">Sulje laajennettu näkymä</translation>
 <translation id="7791543448312431591">Lisää</translation>

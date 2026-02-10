@@ -2790,6 +2790,7 @@
 <translation id="5466018172325111652">Вам не пришел код? <ph name="BEGIN_LINK" />Получить новый<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Платежные приложения</translation>
 <translation id="5470861586879999274">&amp;Повторить изменения</translation>
+<translation id="5471158297908124590">Чтобы изменить способы оплаты, подтвердите личность.</translation>
 <translation id="5472588168895083535">Отслеживание рук заблокировано</translation>
 <translation id="5477756102936130143">Разрешить переадресацию в поддерживаемые платежные приложения</translation>
 <translation id="5479505548832623900">Вероятно, правила не действуют в этом расширении.</translation>
@@ -3173,6 +3174,7 @@
 <translation id="6093795393556121384">Карта проверена</translation>
 <translation id="6094253940069566294">Редактировать данные о транспортном средстве</translation>
 <translation id="6094290315941448991">Администратор запретил запись видео с экрана, когда показаны конфиденциальные данные.</translation>
+<translation id="6097297436119286254">Чтобы подставить платежные данные, подтвердите личность.</translation>
 <translation id="6099269767116481177">22 x 29,5 дюйма</translation>
 <translation id="6101583188322746099">Службы доставки продуктов</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4921,6 +4923,7 @@
 <translation id="8897428486789851669">Плавание</translation>
 <translation id="8899807382908246773">Навязчивая реклама</translation>
 <translation id="8903921497873541725">Увеличить</translation>
+<translation id="8903998444169664879">Чтобы изменить платежные настройки, подтвердите личность.</translation>
 <translation id="890493561996401738">Кнопка удаления подсказки. Нажмите Ввод, чтобы удалить. <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="8910898109640902752">8 x 10 дюймов</translation>
 <translation id="8914504000324227558">Перезапустить Chrome</translation>

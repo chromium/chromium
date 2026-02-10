@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
-<translation id="1007349221964075684">需解开屏锁才能查看打开的无痕式窗口</translation>
+<translation id="1007349221964075684">需使用屏幕解锁方式解锁才能查看打开的无痕式窗口</translation>
 <translation id="1010283278930414892">此设备上没有任何保存的密码</translation>
 <translation id="1011749477052068769">移至这里</translation>
 <translation id="1014083013111769343">已打开阅读模式偏好设置，并以最大高度显示</translation>

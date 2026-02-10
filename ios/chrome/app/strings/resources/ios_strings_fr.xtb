@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Pour afficher les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="201759455285471444">Développer le groupe d'onglets.</translation>
 <translation id="202070562065520783">Explique-moi</translation>
-<translation id="2023713324775943812">Accéder au mode Lecture depuis la barre d'adresse lorsqu'il est disponible</translation>
 <translation id="2044394949148788042">Ouvrez la grille d'onglets</translation>
 <translation id="2044681667265133332">Le compte <ph name="USER_EMAIL" /> est géré par <ph name="HOSTED_DOMAIN" />, qui pourrait voir certaines informations. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nouvel élément</translation>
@@ -1860,6 +1859,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7772032839648071052">Confirmez la phrase secrète</translation>
 <translation id="7772948288262733182">Heureux de vous retrouver</translation>
 <translation id="777637629667389858">Lorsque vous êtes connecté, vous êtes protégé dans tous les services Google.</translation>
+<translation id="7776604279034196531">Accéder au mode Lecture depuis la barre d'adresse lorsqu'il est disponible</translation>
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7788868432173225918">Fermer la vue détaillée</translation>
 <translation id="7791543448312431591">Ajouter</translation>

@@ -2791,6 +2791,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5466018172325111652">Fékkstu ekki kóðann? <ph name="BEGIN_LINK" />Fá nýjan kóða<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Greiðsluforrit</translation>
 <translation id="5470861586879999274">&amp;Endurtaka breytingu</translation>
+<translation id="5471158297908124590">Staðfestu að þetta sért þú til að breyta greiðslumátum</translation>
 <translation id="5472588168895083535">Lokað á rakningu handahreyfinga</translation>
 <translation id="5477756102936130143">Kveikja á framsendingu í studd greiðsluforrit</translation>
 <translation id="5479505548832623900">Líklega hunsað af viðbótinni.</translation>
@@ -2868,6 +2869,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5570825185877910964">Vernda reikning</translation>
 <translation id="5571083550517324815">Ekki er hægt að sækja frá þessu heimilisfangi. Veldu annað heimilisfang.</translation>
 <translation id="5572434905385510939">22 x 28 to.</translation>
+<translation id="5573090972398558474">Fyrirtækið þitt hefur lokað á þessa síðu í huliðsstillingu.</translation>
 <translation id="5573641252776268565">Breyttu upplýsingum um vegabréfið</translation>
 <translation id="5578606540385219379">Þjónustuaðilar</translation>
 <translation id="5580958916614886209">Athugaðu mánuð gildistímans og reyndu aftur</translation>
@@ -3174,6 +3176,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6093795393556121384">Kortið er staðfest</translation>
 <translation id="6094253940069566294">Breyttu upplýsingum um bílinn</translation>
 <translation id="6094290315941448991">Slökkt er á skjáupptöku þegar trúnaðarefni er sýnilegt vegna reglu kerfisstjóra</translation>
+<translation id="6097297436119286254">Staðfestu að þetta sért þú til að fylla út greiðsluupplýsingarnar þínar</translation>
 <translation id="6099269767116481177">22 x 29,5 to.</translation>
 <translation id="6101583188322746099">Matvörusendingaþjónusta</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4294,6 +4297,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7844689747373518809">{COUNT,plural, =0{Ekkert}=1{1 forrit (<ph name="EXAMPLE_APP_1" />)}=2{2 forrit (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# forrit (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# forrit (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Villa kom upp. Reyndu aftur.</translation>
 <translation id="784623644169604270">Engin nýleg virkni</translation>
+<translation id="7848926355794727168">Sjálfvirk vöfrun</translation>
 <translation id="7853222852810008596">Greiðslufrestur er ekki í boði þegar greitt er með þessum gjaldmiðli</translation>
 <translation id="785476343534277563">Háskólaíþróttir</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4921,6 +4925,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8897428486789851669">Sund</translation>
 <translation id="8899807382908246773">Ágengar auglýsingar</translation>
 <translation id="8903921497873541725">Auka aðdrátt</translation>
+<translation id="8903998444169664879">Staðfestu að þetta sért þú til að breyta greiðslustillingunum þínum</translation>
 <translation id="890493561996401738">Hnappur til að fjarlægja tillögu, ýttu á færslulykilinn til að fjarlægja, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 to.</translation>
 <translation id="8914504000324227558">Endurræsa Chrome</translation>

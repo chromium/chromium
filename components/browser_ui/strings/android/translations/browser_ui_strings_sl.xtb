@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">Chrome naj deli vaše nedavne zavihke z napravo, da si jih boste lahko ogledali na seznamu aplikacij in v rezultatih iskanja naprave. To lahko kadar koli vklopite ali izklopite v nastavitvah Chroma.</translation>
 <translation id="1420688843103859429">Pomikajte se nazaj in naprej tako, da s prstoma povlečete po sledilni ploščici</translation>
 <translation id="1432650420699700107">Spletna mesta lahko zahtevajo vzpostavitev povezave s katero koli napravo v lokalnem omrežju</translation>
+<translation id="1442081309487427303">Vklop povezav načina za branje</translation>
 <translation id="1448064542941920355">Zmanjšanje povečave/pomanjšave</translation>
 <translation id="1464044141348608623">Spletnim mestom ni dovoljeno vedeti, kdaj aktivno uporabljate napravo</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> spletnem mestu}one{<ph name="SITE_COUNT" /> spletnem mestu}two{<ph name="SITE_COUNT" /> spletnih mestih}few{<ph name="SITE_COUNT" /> spletnih mestih}other{<ph name="SITE_COUNT" /> spletnih mestih}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">Prejemanje obvestil z nasveti za Chrome</translation>
 <translation id="1777815584158991902">Razdelek na dnu zaslona za vir Odkrivanje</translation>
 <translation id="1779089405699405702">Slikovni dekodirnik</translation>
+<translation id="1781533683087883868">Izklop povezav načina za branje</translation>
 <translation id="1785415724048343560">Priporočljivo za najboljšo izkušnjo</translation>
 <translation id="1796588414813960292">Funkcije, ki potrebujejo zvok, ne bodo delovale.</translation>
 <translation id="1799920918471566157">Nasveti za Chrome</translation>

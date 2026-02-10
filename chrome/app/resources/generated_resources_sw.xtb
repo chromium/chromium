@@ -240,6 +240,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1151917987301063366">Ruhusu <ph name="HOST" /> ifikie vitambuzi kila wakati</translation>
 <translation id="1152346050262092795">Weka nenosiri lako tena ili uthibitishe akaunti yako.</translation>
 <translation id="1153636665119721804">Mpango wa Google wa Ulinzi wa Hali ya Juu</translation>
+<translation id="1153802775114315167">Anza kutumia viendelezi</translation>
 <translation id="1155816283571436363">Inaunganisha simu yako</translation>
 <translation id="1157952955648710254">Funga kidirisha cha pembeni cha huduma ya Tafuta na Google</translation>
 <translation id="1158080958325422608">Fanya Ziwe Herufi Kubwa</translation>
@@ -4742,6 +4743,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4169535189173047238">Usiruhusu</translation>
 <translation id="4170314459383239649">Futa Unapofunga</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Ruhusu Gemini ifikie kichupo}other{Ruhusu Gemini ifikie vichupo #}}</translation>
+<translation id="4172944993779635350">Nenosiri lako la "<ph name="URL" />" limehifadhiwa kwenye kifaa hiki pekee. Ili ulitumie kwenye vifaa vyako vingine, lihifadhi katika akaunti yako.</translation>
 <translation id="4173129130568053653">Gemini inaweza kukusaidia kuweka miadi, kutayarisha vikapu vya ununuzi au kufanya majukumu mengine unayoipa.</translation>
 <translation id="4175137578744761569">Zambarau hafifu na nyeupe</translation>
 <translation id="4176463684765177261">Imezimwa</translation>
@@ -5058,6 +5060,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4386604394450371010">muhtasari</translation>
 <translation id="4387890294700445764">Manenosiri yaliyoathiriwa</translation>
 <translation id="4388650384344483842">Tumia angalau herufi 8</translation>
+<translation id="4388700905120039425">{COUNT,plural, =1{Nenosiri la <ph name="URL" />}other{Manenosiri ya <ph name="URL" /> ({COUNT})}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> na swichi zingine <ph name="NUMBER_OF_OTHER_SWITCHES" /></translation>
 <translation id="439266289085815679">Mipangilio ya Bluetooth inadhibitiwa na <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Badilisha faili ya mipangilio</translation>
@@ -5588,6 +5591,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4762849514113423887">Nenosiri hilo si sahihi. Jaribu tena.</translation>
 <translation id="4763408175235639573">Vidakuzi vifuatavyo viliwekwa ulipofungua ukurasa huu</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> si akaunti sahihi ya Google for Education. Wasiliana na msimamizi wako. Iwapo wewe ni msimamizi, unaweza kuweka mipangilio ya shirika lako kwa kutembelea: g.co/workspace/edusignup</translation>
+<translation id="4765053150631027076">{COUNT,plural, =1{Nenosiri {COUNT} la "<ph name="URL" />" limehifadhiwa kwenye kifaa hiki pekee. Ili ulitumie kwenye vifaa vyako vingine, lihifadhi katika akaunti yako.}other{Manenosiri {COUNT} ya "<ph name="URL" />" yamehifadhiwa kwenye kifaa hiki pekee. Ili uyatumie kwenye vifaa vyako vingine, yahifadhi katika akaunti yako.}}</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Kifaa hiki kitahifadhiwa kwa mwezi 1 na unaweza kuunganisha bila msimbo wakati mwingine. Mipangilio hii imewekwa na msimamizi wako.}other{Kifaa hiki kitahifadhiwa kwa miezi {MONTHS} na unaweza kuunganisha bila msimbo wakati mwingine. Mipangilio hii imewekwa na msimamizi wako.}}</translation>
 <translation id="476563889641554689">Chagua eneo ili utafute ukitumia Lenzi</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Inakagua ufunguo wa umma na kizuizi cha uadilifu... Imesalia chini ya dakika 1}=1{Inakagua ufunguo wa umma na kizuizi cha uadilifu... Imesalia dakika 1}other{Inakagua ufunguo wa umma na kizuizi cha uadilifu... Zimesalia dakika #}}</translation>
@@ -6060,6 +6064,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5088534251099454936">PKCS #1 SHA-512 Na Usimbaji wa RSA</translation>
 <translation id="5090637338841444533">Zisizoruhusiwa kufuatilia mkao wa kamera yako</translation>
 <translation id="5091636240353511739">Onyesha PIN</translation>
+<translation id="5093447877601682598">Tuma maoni kuhusu ukanda wa vichupo</translation>
 <translation id="5093477827231450397">Orodha za tovuti ulizozuia ambazo usingependa zipendekeze matangazo kwenye tovuti zingine</translation>
 <translation id="5093569275467863761">Fremu ndogo fiche Iliyohifadhiwa kwenye Kipengele cha Kuakibisha Ukurasa Kamili: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Unaweza kufungua na kubadilisha faili zinazotumika ukitumia programu hii kutoka katika programu ya File Explorer au programu nyinginezo. Ili kudhibiti faili zipi zinazofungua programu hii kwa chaguomsingi, <ph name="BEGIN_LINK" />pata maelezo ya jinsi ya kuweka programu chaguomsingi kwenye kifaa chako<ph name="END_LINK" />.</translation>
@@ -8894,6 +8899,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7057567173736333354">Elezea picha yako</translation>
 <translation id="70577934383983846">Tumia nenosiri hili kwenye vifaa vyako vyote</translation>
 <translation id="7058024590501568315">Mtandao uliofichwa</translation>
+<translation id="7058325593717863084">Tuma Maoni Kuhusu Ukanda wa Vichupo</translation>
 <translation id="7059858479264779982">Weka kwenye uzinduzi otomatiki</translation>
 <translation id="7063129466199351735">Inachakata mikato...</translation>
 <translation id="7063311912041006059">URL iliyo na <ph name="SPECIAL_SYMBOL" /> katika nafasi ya hoja</translation>
@@ -11332,7 +11338,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8707562594602678416">Maeneo</translation>
 <translation id="8708000541097332489">Futa unapotoka</translation>
 <translation id="870805141700401153">Uwekaji Sahihi Binafsi wa Misimbo kutoka Microsoft</translation>
-<translation id="8708088555926718398">Hitilafu: Aina: <ph name="CATEGORY" />, Msimbo: <ph name="CODE" />, Msimbo wa Ziada: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp;Maelezo Zaidi</translation>
 <translation id="8709368517685334931">Unaweza kupata rangi za zamani zaidi kwenye Duka la Chrome kwenye Wavuti</translation>
 <translation id="8710414664106871428">Dhahania</translation>

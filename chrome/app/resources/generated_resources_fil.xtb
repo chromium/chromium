@@ -240,6 +240,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1151917987301063366">Palaging payagan ang <ph name="HOST" /> na i-access ang mga sensor</translation>
 <translation id="1152346050262092795">Ilagay ulit ang iyong password para i-verify ang account mo.</translation>
 <translation id="1153636665119721804">Programa ng Advanced na Proteksyon ng Google</translation>
+<translation id="1153802775114315167">Magsimula sa mga extension</translation>
 <translation id="1155816283571436363">Pagkonekta sa iyong telepono</translation>
 <translation id="1157952955648710254">Isara ang panel sa gilid ng Google Search</translation>
 <translation id="1158080958325422608">Gawing Malalaking Titik</translation>
@@ -585,6 +586,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1383876407941801731">Hanapin</translation>
 <translation id="1384849755549338773">Ialok ang Google Translate para sa mga website sa iba pang wika</translation>
 <translation id="1384959399684842514">Na-pause ang pag-download</translation>
+<translation id="1386966479075994683">I-expand ang Mga Tab</translation>
 <translation id="1388253969141979417">Pinapayagang gamitin ang iyong mikropono</translation>
 <translation id="1388728792929436380">Magre-restart ang <ph name="DEVICE_TYPE" /> kapag kumpleto na ang mga update.</translation>
 <translation id="1390113502208199250">Kakailanganin mong i-factory reset ang device na ito para gumamit ng mga feature ng Chrome Education Upgrade.</translation>
@@ -2597,6 +2599,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2727633948226935816">Huwag akong paalalahanang muli</translation>
 <translation id="2727712005121231835">Actual Size</translation>
 <translation id="2727744317940422214">Pasensya na, nagkaproblema. Mag-file ng feedback nang may #bruschetta sa paglalarawan. Ang code ng error ay <ph name="ERROR" />. Hindi nilinis, posibleng kailanganin mong gawin ito nang manual.</translation>
+<translation id="2729310339366257582">I-collapse ang mga tab</translation>
 <translation id="2729577602370119849">Madaling ma-access at mapamahalaan ang mga printer</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Kapag naka-on ang Katumpakan ng Lokasyon, gagamitin ang impormasyon tungkol sa mga wireless na signal, gaya ng mga access point ng Wi-Fi at tower ng cellular network, pati ang data ng sensor ng device, gaya ng accelerometer at gyroscope, para matantya ang mas tumpak na lokasyon ng device, na ginagamit ng mga app at serbisyo ng Android para magbigay ng mga feature na batay sa lokasyon. Para magawa ito, pana-panahong kinokolekta ng Google ang impormasyon tungkol sa mga sensor ng device at wireless na signal malapit sa device na ito para mag-ambag sa mga na-crowdsource na lokasyon ng wireless na signal.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ginagamit ng Google ang impormasyong ito na kinolekta mula sa device na ito para: mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon; at mapahusay, maibigay, at mapanatili sa pangkalahatan ang mga serbisyo ng Google. Pinoproseso namin ang impormasyong ito batay sa mga lehitimong interes ng Google at mga third party para tugunan ang mga pangangailangan ng mga user. Hindi ginagamit ang impormasyong ito para tumukoy ng sinumang indibidwal.<ph name="END_PARAGRAPH2" />
@@ -5138,6 +5141,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="443031431654216610">Mga numerical na digit lang ang gamitin</translation>
 <translation id="4430369329743628066">Naidagdag na ang bookmark</translation>
 <translation id="4430422687972614133">I-on ang virtual card</translation>
+<translation id="4431962107539413562">Makuha ang iyong mga password sa lahat ng device mo</translation>
 <translation id="443196770280837407">Buksan ang Gemini gamit ang keyboard shortcut.</translation>
 <translation id="4432621511648257259">Mali ang password</translation>
 <translation id="4434611816075088065">Wala nang ibang nangangailangan ng atensyon mo sa ngayon</translation>
@@ -6236,6 +6240,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5203035663139409780">Puwedeng mag-edit ng mga file o folder sa iyong device</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{I-click para matingnan ang extension}one{I-click para matingnan ang mga extension na ito}other{I-click para matingnan ang mga extension na ito}}</translation>
 <translation id="5204282224596194174">Password sa pag-recover para sa <ph name="USER_EMAIL" /></translation>
+<translation id="5204584298075822291">I-collapse ang Mga Tab</translation>
 <translation id="5204673965307125349">Paki-powerwash ang device at subukan ulit.</translation>
 <translation id="5204967432542742771">Ipasok ang password</translation>
 <translation id="5205484256512407285">Huwag gumamit ng mobile data para maglipat</translation>
@@ -9082,6 +9087,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7193051357671784796">Idinagdag ng iyong organisasyon ang app na ito. I-restart ang app para tapusin ang pag-install nito.</translation>
 <translation id="7193374945610105795">Walang naka-save na password para sa <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Magpadala ng feedback para sa Mga Iminumungkahing Grupo</translation>
+<translation id="7194343495483122559">I-expand ang mga tab</translation>
 <translation id="7194873994243265344">Na-block ng iyong organisasyon ang file na ito dahil naka-encrypt ito. Hilingin sa may-ari nitong i-decrypt ito.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{1 nagda-download}one{# nagda-download}other{# na nagda-download}}</translation>
 <translation id="7196272782924897510">Gumamit ng passkey mula sa ibang device?</translation>
@@ -11341,7 +11347,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8707562594602678416">Mga Lugar</translation>
 <translation id="8708000541097332489">I-clear sa paglabas</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
-<translation id="8708088555926718398">Error: Kategorya: <ph name="CATEGORY" />, Code: <ph name="CODE" />, Karagdagang Code: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp;Higit Pang Impormasyon</translation>
 <translation id="8709368517685334931">Makakakita ka ng mga mas lumang kulay sa Chrome Web Store</translation>
 <translation id="8710414664106871428">Fantasy</translation>

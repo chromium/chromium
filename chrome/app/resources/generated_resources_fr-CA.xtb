@@ -240,6 +240,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1151917987301063366">Toujours autoriser le site <ph name="HOST" /> à accéder aux capteurs</translation>
 <translation id="1152346050262092795">Entrez à nouveau votre mot de passe pour vérifier votre compte.</translation>
 <translation id="1153636665119721804">Programme de protection avancée de Google</translation>
+<translation id="1153802775114315167">Premiers pas avec les extensions</translation>
 <translation id="1155816283571436363">Connexion à votre téléphone en cours…</translation>
 <translation id="1157952955648710254">Fermer le panneau latéral de la recherche Google</translation>
 <translation id="1158080958325422608">Mettre en majuscules</translation>
@@ -585,6 +586,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1384849755549338773">Offrir d'utiliser Google Traduction pour les sites Web qui s'affichent dans d'autres langues</translation>
 <translation id="1384959399684842514">Téléchargement interrompu</translation>
+<translation id="1386966479075994683">Développer les onglets</translation>
 <translation id="1388253969141979417">Autorisés à utiliser votre microphone</translation>
 <translation id="1388728792929436380">L'appareil <ph name="DEVICE_TYPE" /> redémarrera lorsque l'installation des mises à jour sera terminée.</translation>
 <translation id="1390113502208199250">Vous devrez rétablir les paramètres par défaut de cet appareil pour utiliser les fonctionnalités de mise à niveau de Chrome Education.</translation>
@@ -2585,6 +2587,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2727633948226935816">Ne pas me le rappeler</translation>
 <translation id="2727712005121231835">Taille réelle</translation>
 <translation id="2727744317940422214">Désolés, une erreur s'est produite. Veuillez soumettre vos commentaires en indiquant #bruschetta dans la description. Le code d'erreur est <ph name="ERROR" />. Le nettoyage a échoué, vous devrez peut-être le faire manuellement.</translation>
+<translation id="2729310339366257582">Réduire les onglets</translation>
 <translation id="2729577602370119849">Accédez aux imprimantes et gérez-les facilement</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Lorsque la précision de la localisation est activée, les informations relatives aux signaux sans fil, tels que les points d'accès Wi-Fi et les tours de réseau cellulaire ainsi que les données des capteurs de l'appareil, tels que l'accéléromètre et le gyroscope, sont utilisées pour estimer plus précisément la position de l'appareil, que les applis et les services Android utilisent pour fournir des fonctionnalités basées sur l'emplacement. Pour ce faire, Google collecte périodiquement des informations sur les capteurs de l'appareil et les signaux sans fil à proximité de cet appareil pour contribuer à la localisation des signaux sans fil participative.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google utilise ces informations collectées à partir de cet appareil afin : d'améliorer la précision de la localisation et les services basés sur l'emplacement; et de manière générale, d'améliorer, de fournir et de maintenir les services de Google. Nous traitons ces informations en fonction des intérêts légitimes de Google et de tiers envers la satisfaction des besoins des utilisateurs. Ces informations ne sont pas utilisées pour identifier qui que ce soit.<ph name="END_PARAGRAPH2" />
@@ -4735,6 +4738,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4169535189173047238">Ne pas autoriser</translation>
 <translation id="4170314459383239649">Effacement à la sortie</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Partager l'onglet avec Gemini}one{Partager # onglet avec Gemini}other{Partager # onglets avec Gemini}}</translation>
+<translation id="4172944993779635350">Votre mot de passe pour « <ph name="URL" /> » est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte.</translation>
 <translation id="4173129130568053653">Gemini peut vous aider à prendre des rendez-vous, à créer des paniers pour vos achats ou à effectuer d'autres tâches que vous lui confiez.</translation>
 <translation id="4175137578744761569">Violet clair et blanc</translation>
 <translation id="4176463684765177261">Désactivé</translation>
@@ -5051,6 +5055,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4386604394450371010">aperçu</translation>
 <translation id="4387890294700445764">Mots de passe compromis</translation>
 <translation id="4388650384344483842">Utiliser au moins huit caractères</translation>
+<translation id="4388700905120039425">{COUNT,plural, =1{Mot de passe pour <ph name="URL" />}one{Mot de passe pour <ph name="URL" /> ({COUNT})}other{Mots de passe pour <ph name="URL" /> ({COUNT})}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et <ph name="NUMBER_OF_OTHER_SWITCHES" /> autres commutateurs</translation>
 <translation id="439266289085815679">La configuration du Bluetooth est contrôlée par <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Modifier le fichier de configuration</translation>
@@ -5125,6 +5130,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="443031431654216610">Utiliser uniquement des caractères numériques</translation>
 <translation id="4430369329743628066">Favori ajouté</translation>
 <translation id="4430422687972614133">Activer la carte virtuelle</translation>
+<translation id="4431962107539413562">Obtenir vos mots de passe sur tous vos appareils</translation>
 <translation id="443196770280837407">Ouvrez Gemini avec un raccourci-clavier.</translation>
 <translation id="4432621511648257259">Mot de passe incorrect</translation>
 <translation id="4434611816075088065">Rien d'autre n'a besoin de votre attention pour le moment</translation>
@@ -5580,6 +5586,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4762849514113423887">Mot de passe incorrect. Réessayez.</translation>
 <translation id="4763408175235639573">Les témoins suivants ont été définis lorsque vous avez consulté cette page</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> n'est pas un compte Google for Education valide. Communiquez avec votre administrateur. Si vous êtes administrateur, vous pouvez configurer votre organisation en accédant à la page g.co/workspace/edusignup</translation>
+<translation id="4765053150631027076">{COUNT,plural, =1{{COUNT} mot de passe pour « <ph name="URL" /> » est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte.}one{{COUNT} mot de passe pour « <ph name="URL" /> » est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte.}other{{COUNT} mots de passe pour « <ph name="URL" /> » sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte.}}</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Cet appareil sera mémorisé pendant 1 mois, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}one{Cet appareil sera mémorisé pendant {MONTHS} mois, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}other{Cet appareil sera mémorisé pendant {MONTHS} mois, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}}</translation>
 <translation id="476563889641554689">Sélectionnez une zone à rechercher avec Lentille</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Vérification de la clé publique et du bloc d'intégrité en cours… Il reste moins de 1 minute}=1{Vérification de la clé publique et du bloc d'intégrité en cours… Il reste 1 minute}one{Vérification de la clé publique et du bloc d'intégrité en cours… Il reste # minute}other{Vérification de la clé publique et du bloc d'intégrité en cours… Il reste # minutes}}</translation>
@@ -6051,6 +6058,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 avec chiffrement RSA</translation>
 <translation id="5090637338841444533">Non autorisés à suivre la position de votre caméra</translation>
 <translation id="5091636240353511739">Afficher le NIP</translation>
+<translation id="5093447877601682598">Envoyer des commentaires concernant la barre d'onglets</translation>
 <translation id="5093477827231450397">Liste des sites bloqués pour ne pas qu'ils suggèrent des annonces à d'autres sites</translation>
 <translation id="5093569275467863761">Sous-cadre de navigation privée de la mise en cache complète bidirectionnelle : <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Vous pouvez ouvrir et modifier les fichiers pris en charge avec cette application à partir de l'application Fichiers ou d'autres applications. Pour contrôler quels fichiers ouvrent cette application par défaut, <ph name="BEGIN_LINK" />découvrez comment définir des applications par défaut sur votre appareil<ph name="END_LINK" />.</translation>
@@ -6220,6 +6228,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5203035663139409780">Peut modifier des fichiers ou des dossiers sur votre appareil</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Cliquer pour afficher l'extension}one{Cliquer pour afficher cette extension}other{Cliquer pour afficher ces extensions}}</translation>
 <translation id="5204282224596194174">Mot de passe de récupération pour <ph name="USER_EMAIL" /></translation>
+<translation id="5204584298075822291">Réduire les onglets</translation>
 <translation id="5204673965307125349">Veuillez effectuer un Powerwash sur l'appareil et réessayer.</translation>
 <translation id="5204967432542742771">Entrez le mot de passe</translation>
 <translation id="5205484256512407285">Ne jamais utiliser les données cellulaires pour effectuer les transferts</translation>
@@ -8883,6 +8892,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7057567173736333354">Décrivez votre image</translation>
 <translation id="70577934383983846">Utiliser ce mot de passe sur tous vos appareils</translation>
 <translation id="7058024590501568315">Réseau masqué</translation>
+<translation id="7058325593717863084">Envoyer des commentaires concernant la barre d'onglets</translation>
 <translation id="7059858479264779982">Activer le lancement automatique</translation>
 <translation id="7063129466199351735">Traitement des raccourcis en cours…</translation>
 <translation id="7063311912041006059">Adresse URL contenant <ph name="SPECIAL_SYMBOL" /> à la place de la requête</translation>
@@ -9062,6 +9072,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7193051357671784796">Cette application a été ajoutée par votre organisation Redémarrez-la pour terminer l'installation.</translation>
 <translation id="7193374945610105795">Aucun mot de passe enregistré pour <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Envoyez des commentaires sur les groupes suggérés</translation>
+<translation id="7194343495483122559">Développer les onglets</translation>
 <translation id="7194873994243265344">Votre organisation a bloqué ce fichier parce qu'il est chiffré. Demandez à son propriétaire de le déchiffrer.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{1 téléchargement en cours…}one{# téléchargements en cours…}other{# téléchargements en cours…}}</translation>
 <translation id="7196272782924897510">Utiliser une clé d'accès d'un autre appareil?</translation>
@@ -11319,7 +11330,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="8707562594602678416">Lieux</translation>
 <translation id="8708000541097332489">Effacement à la sortie</translation>
 <translation id="870805141700401153">Signature du code individuel Microsoft</translation>
-<translation id="8708088555926718398">Erreur : Catégorie : <ph name="CATEGORY" />, code : <ph name="CODE" />, code supplémentaire : <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">Infor&amp;mation supplémentaire</translation>
 <translation id="8709368517685334931">Vous pouvez trouver des couleurs plus anciennes dans la boutique en ligne Chrome Web Store</translation>
 <translation id="8710414664106871428">Fantastique</translation>

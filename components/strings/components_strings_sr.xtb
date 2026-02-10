@@ -2868,6 +2868,7 @@
 <translation id="5570825185877910964">Заштити налог</translation>
 <translation id="5571083550517324815">Преузимање са ове адресе није могуће. Изаберите другу адресу.</translation>
 <translation id="5572434905385510939">22×28 in</translation>
+<translation id="5573090972398558474">Организација је блокирала ову страницу у режиму без архивирања.</translation>
 <translation id="5573641252776268565">Измените пасош</translation>
 <translation id="5578606540385219379">Добављачи услуга</translation>
 <translation id="5580958916614886209">Проверите месец истека и пробајте поново</translation>
@@ -4294,6 +4295,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Ниједна}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликације (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# апликације (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Дошло је до грешке. Пробајте поново.</translation>
 <translation id="784623644169604270">Нема недавних активности</translation>
+<translation id="7848926355794727168">Аутоматско прегледање</translation>
 <translation id="7853222852810008596">Опција за плаћање касније није доступна у овој валути</translation>
 <translation id="785476343534277563">Факултетски спортови</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>

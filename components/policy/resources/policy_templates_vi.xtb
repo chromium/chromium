@@ -2155,6 +2155,17 @@ Nếu bạn không đặt chính sách này hoặc đặt chính sách này thà
 <translation id="2466131534462628618">Xác thực cổng cố định bỏ qua proxy</translation>
 <translation id="2467181864598429837">Hành vi mặc định của trình duyệt</translation>
 <translation id="2467896267442150508">Khoảng thời gian kéo dài tối đa 1 tuần. Nếu thời gian bắt đầu ở sau thời gian kết thúc, thì khoảng thời gian này sẽ kéo dài trong khoảng đó.</translation>
+<translation id="2475594733565572760">Chính sách này xác định chế độ cài đặt mặc định cho tất cả các tính năng AI tạo sinh được đề cập đến trong chính sách. Ví dụ: Nếu bạn đặt chính sách này thành giá trị 1, thì 1 sẽ là chế độ cài đặt mặc định cho tất cả các tính năng AI tạo sinh được đề cập. Các giá trị chính sách được đặt thủ công sẽ không bị ảnh hưởng. Chế độ cài đặt này sẽ xác định chế độ mặc định cho các tính năng AI tạo sinh được đề cập trong Chrome. Hãy truy cập vào https://support.google.com/chrome/a?p=generative_ai_settings để xem danh sách các tính năng được đề cập.
+
+Một số chính sách, chẳng hạn như <ph name="GEMINI_SETTINGS_POLICY_NAME" />, chỉ hỗ trợ các trạng thái Được phép và Không cho phép. Trong trường hợp này, nếu bạn đặt <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> thành 0 hoặc 1 thì tính năng này sẽ bật. Nếu bạn đặt <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> thành 2 thì tính năng này sẽ tắt. Tài liệu hướng dẫn cho từng tính năng bao gồm nhiều thông tin chi tiết hơn về cách tính năng tương tác với các giá trị trong chính sách này (ví dụ: Gemini trong Chrome – https://support.google.com/chrome/a/?p=gemini_in_chrome). Điều này áp dụng cho các tính năng sau đây: Gemini trong Chrome, Google Ống kính và Chế độ AI vì các tính nằng đó tuân theo những đảm bảo và/hoặc điều khoản dịch vụ riêng (https://support.google.com/chrome/a/?p=genai_features_chrome).
+
+0 = Cho phép sử dụng tính năng này và cho phép Google sử dụng dữ liệu liên quan để cải tiến các mô hình AI. Tuỳ thuộc vào tính năng, dữ liệu liên quan có thể bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản. Dữ liệu này cũng có thể được nhân viên xem xét để cải tiến các mô hình AI. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
+
+1 = Cho phép sử dụng tính năng nhưng không cho phép Google sử dụng nội dung của người dùng (bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản) để cải tiến các mô hình. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
+
+2 = Không cho phép sử dụng tính năng này.
+
+Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2476249479201711962">Bật quyền truy cập trình đơn theo bối cảnh của nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="2478756867046106663">Cho phép trang web có trải nghiệm lừa gạt mở cửa sổ hoặc thẻ mới</translation>
 <translation id="2479760962196319822">Chính sách này kiểm soát việc người dùng <ph name="PRODUCT_OS_NAME" /> có thể lưu trữ dữ liệu trên máy hay không.
@@ -4315,6 +4326,7 @@ Bạn có thể kết hợp chính sách này với <ph name="POLICY_CLOUD_POLIC
 <translation id="3927291637826333102">Cho phép chụp Màn hình, Cửa sổ và Thẻ theo các nguồn gốc này</translation>
 <translation id="3928726028264020458">Bật tính năng báo cáo thông tin về VPD của thiết bị</translation>
 <translation id="3935592079035695061">Số mili giây kể từ nửa đêm.</translation>
+<translation id="3937800910397007337">Buộc chế độ ưu tiên nền trước đối với tất cả các thẻ</translation>
 <translation id="3941289958028934630">Tắt tính năng phản hồi bằng giọng nói trên màn hình đăng nhập</translation>
 <translation id="3943930334592166130">Chính sách này kiểm soát việc người dùng có được nhắc chọn chứng chỉ máy khách hay không khi nhiều chứng chỉ khớp <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Nếu bạn bật chính sách này, thì người dùng sẽ được nhắc chọn chứng chỉ máy khách mỗi khi chính sách tự động chọn khớp với nhiều chứng chỉ.
@@ -6300,6 +6312,7 @@ chính sách này trong khi trình duyệt đang chạy.</translation>
       * Trung bình, thì người dùng chỉ có thể chọn Chế độ hạn chế trung bình và Chế độ hạn chế nghiêm ngặt trên YouTube, nhưng không thể tắt Chế độ hạn chế.
 
       * Tắt hoặc nếu bạn không đặt giá trị nào, thì Chrome sẽ không thực thi Chế độ hạn chế trên YouTube. Những chính sách bên ngoài, chẳng hạn như các chính sách của YouTube, có thể vẫn thực thi Chế độ hạn chế.</translation>
+<translation id="5191007233343702012">Sử dụng mức độ ưu tiên tiêu chuẩn đối với thẻ</translation>
 <translation id="5191476996923842491">Hành vi mặc định cho thời gian chờ tối thiểu trong hàm setTimeout().</translation>
 <translation id="519247340330463721">Định cấu hình các chính sách liên quan đến Duyệt web an toàn.</translation>
 <translation id="5192555640439947289">Nếu bạn đặt chính sách này thành Enabled (Bật) thì <ph name="PRODUCT_OS_NAME" /> sẽ yêu cầu người dùng nhập mật khẩu để mở khoá thiết bị khi thiết bị đang tạm ngưng hoặc đang đóng nắp.
@@ -6526,6 +6539,7 @@ Lưu ý: Chính sách này không áp dụng cho bản nâng cấp HSTS.</transl
 <translation id="530949964068726932">Ẩn các tuỳ chọn hỗ trợ tiếp cận trong trình đơn ở khay hệ thống</translation>
 <translation id="5309944663104291505">Không cho phép các Ứng dụng web tách biệt và ứng dụng kiosk bị buộc cài đặt sử dụng Device Attributes API</translation>
 <translation id="5311275381462687162">Tùy chọn cài đặt mặc định cho hành vi <ph name="ATTRIBUTE_SAMESITE_NAME" /> cũ của cookie</translation>
+<translation id="5311430612584074035">Buộc chế độ ưu tiên nền trước đối với tất cả các thẻ trong hồ sơ</translation>
 <translation id="5312253627576569499">Tỷ lệ phần trăm mà theo đó độ trễ làm tối màn hình sẽ thay đổi khi phát hiện thấy hoạt động của người dùng trong khi màn hình ở chế độ tối hoặc ngay sau khi màn hình tắt hẳn</translation>
 <translation id="5316856058059940708">Tắt tính năng con trỏ lớn</translation>
 <translation id="5318185076587284965">Cho phép máy chủ truy cập từ xa sử dụng máy chủ chuyển tiếp</translation>
@@ -6563,6 +6577,22 @@ Các tài khoản được quản lý không đủ điều kiện tham gia hoặ
 <translation id="5345892164332459671">Tắt dịch vụ SSO di động và không chuyển trạng thái xác thực dịch vụ web của người dùng sang thiết bị mới</translation>
 <translation id="5345910753471481870">Không hiện nút Google Ống kính trong hộp tìm kiếm trên trang Thẻ mới.</translation>
 <translation id="5346587320074666194">Chặn quyền sử dụng cảm biến trên các trang web này</translation>
+<translation id="5347735051291224683">Chính sách này kiểm soát việc nội dung trên web chạy nền có bị buộc phải chạy ở
+chế độ ưu tiên nền trước hay không.
+
+Theo mặc định, trình duyệt sẽ tối ưu hoá tài nguyên bằng cách giảm mức độ ưu tiên của nội dung trong
+các thẻ chạy nền. Nếu bạn bật chính sách này, hành vi đó sẽ được ghi đè, khiến
+các thẻ chạy nền được lên lịch giống như thẻ đang hoạt động.
+
+Lưu ý rằng việc buộc nội dung chạy nền chạy ở chế độ ưu tiên nền trước có thể
+ảnh hưởng đôi chút đến khả năng phản hồi của thẻ đang hoạt động.
+
+Nếu bạn đặt chính sách này thành Enabled (Bật), tất cả nội dung trên web sẽ chạy ở chế độ ưu tiên nền trước
+bất kể trạng thái hiển thị của nội dung.
+
+Nếu bạn đặt thành Disabled (Tắt) hoặc không đặt chính sách này, trình duyệt sẽ xác định mức độ ưu tiên
+dựa trên suy đoán tiêu chuẩn (ví dụ: giảm mức độ ưu tiên của nội dung không
+hiển thị, không phát âm thanh, không tham gia cuộc gọi video...).</translation>
 <translation id="534836255587440809">Tắt tính năng tự động nhấp trên màn hình đăng nhập</translation>
 <translation id="5348658899015174540">API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> cho phép các ứng dụng web chụp nhiều bề mặt cùng lúc.
       Chính sách này mở khoá thuộc tính <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> cho các ứng dụng web có nguồn gốc xác định.

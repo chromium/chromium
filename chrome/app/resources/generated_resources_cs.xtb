@@ -240,6 +240,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1151917987301063366">Vždy povolit webu <ph name="HOST" /> přístup k senzorům</translation>
 <translation id="1152346050262092795">Pokud chcete ověřit účet, znovu zadejte heslo.</translation>
 <translation id="1153636665119721804">Program pokročilé ochrany Google</translation>
+<translation id="1153802775114315167">Začínáme s rozšířeními</translation>
 <translation id="1155816283571436363">Připojování k telefonu</translation>
 <translation id="1157952955648710254">Zavřít boční panel Vyhledávání Google</translation>
 <translation id="1158080958325422608">Změnit na velká písmena</translation>
@@ -11326,7 +11327,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8707562594602678416">Místa</translation>
 <translation id="8708000541097332489">Smazat při ukončení</translation>
 <translation id="870805141700401153">Podepisování kódu Microsoft pro jednotlivce</translation>
-<translation id="8708088555926718398">Chyba: kategorie: <ph name="CATEGORY" />, kód: <ph name="CODE" />, extra kód: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp;Další informace</translation>
 <translation id="8709368517685334931">Starší barvy najdete v Internetovém obchodě Chrome</translation>
 <translation id="8710414664106871428">Fantasy</translation>

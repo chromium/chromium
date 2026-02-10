@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">允许 Chrome 与您的设备分享您近期打开的标签页，以便在设备的应用列表和搜索结果中查看这些标签页。您可以在 Chrome 设置中开启或关闭此功能。</translation>
 <translation id="1420688843103859429">在触控板上用两根手指滑动，即可向后/向前导航</translation>
 <translation id="1432650420699700107">网站可以请求连接到本地网络上的任何设备</translation>
+<translation id="1442081309487427303">打开阅读模式下的链接</translation>
 <translation id="1448064542941920355">缩小</translation>
 <translation id="1464044141348608623">不允许网站了解您何时在主动使用自己的设备</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 个网站}other{<ph name="SITE_COUNT" /> 个网站}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">接收 Chrome 提示通知</translation>
 <translation id="1777815584158991902">探索信息流底部动作条</translation>
 <translation id="1779089405699405702">图片解码器</translation>
+<translation id="1781533683087883868">关闭阅读模式下的链接</translation>
 <translation id="1785415724048343560">建议勾选此选项以获得最佳体验</translation>
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
 <translation id="1799920918471566157">Chrome 提示</translation>

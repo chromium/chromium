@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">পাছৱৰ্ড চাবলৈ আপুনি প্ৰথমে এই ডিভাইচটোত এটা পাছক‘ড ছেট কৰিব লাগিব।</translation>
 <translation id="201759455285471444">টেবৰ গোট বিস্তাৰ কৰক।</translation>
 <translation id="202070562065520783">এইটো মোৰ বাবে বর্ণনা কৰক</translation>
-<translation id="2023713324775943812">উপলব্ধ হ’লে ঠিকনাৰ বাৰৰ পৰা ৰীডিং ম’ড এক্সেছ কৰক</translation>
 <translation id="2044394949148788042">টেব গ্ৰীডটো খোলক</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> একাউণ্টটো <ph name="HOSTED_DOMAIN" />এ পৰিচালনা কৰে, যি হয়তো কিছুমান তথ্য চাব পাৰিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">নতুন বস্তু</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">ছেভ কৰি থোৱা পাছৱৰ্ড আৰু পাছকী</translation>
 <translation id="3143515551205905069">ছিংক বাতিল কৰক</translation>
 <translation id="3144126448740580210">কৰা হ’ল</translation>
+<translation id="3147521114983561406">পাছকীসমূহ আপোনাৰ পাছৱৰ্ড পৰিচালকত ছেভ হয়। সেইসমূহ ইনক’গনিট’ আৰু নিয়মীয়া টেবত এক্সেছ কৰিব পৰা যায়।</translation>
 <translation id="3148052723910099040">নিয়মীয়া টেবৰ গ্ৰিড</translation>
 <translation id="3148237711805373460">মোক তালৈ নিয়ক</translation>
 <translation id="3157387275655328056">পঢ়াৰ সূচীত যোগ দিয়ক</translation>
@@ -1860,6 +1860,7 @@
 <translation id="7772032839648071052">পাছফ্ৰেজ নিশ্চিত কৰক</translation>
 <translation id="7772948288262733182">পুনৰ স্বাগতম</translation>
 <translation id="777637629667389858">আপুনি ছাইন ইন হৈ থকা অৱস্থাত, Googleৰ সমগ্ৰ সেৱাত আপোনাক সুৰক্ষা প্ৰদান কৰে।</translation>
+<translation id="7776604279034196531">উপলব্ধ হ’লে ঠিকনাৰ বাৰৰ পৰা ৰীডিং ম’ড এক্সেছ কৰক</translation>
 <translation id="7781829728241885113">কালি</translation>
 <translation id="7788868432173225918">বিস্তৃত ভিউ অগ্ৰাহ্য কৰক</translation>
 <translation id="7791543448312431591">যোগ কৰক</translation>
@@ -2103,6 +2104,7 @@
 <translation id="8587001564479545614">পুনৰুদ্ধাৰৰ পিন এটা সৃষ্টি কৰক</translation>
 <translation id="8588404856427128947">অফ আছে</translation>
 <translation id="8590286732816598906">টেবৰ গোট, <ph name="GROUP_TITLE" />, মেনু।</translation>
+<translation id="8593317261815647019">ইনক’গনিট’ৰ বাহিৰত এটা পাছকী সৃষ্টি কৰিবনে?</translation>
 <translation id="8600272508328041907">সম্পূৰ্ণ পৃষ্ঠাৰ অনুবাদলৈ সলনি কৰক</translation>
 <translation id="860043288473659153">কার্ডৰ গৰাকীৰ নাম</translation>
 <translation id="8601611099293226919">Google Lensৰ জৰিয়তে আপোনাৰ স্ক্ৰীনত সন্ধান কৰক</translation>

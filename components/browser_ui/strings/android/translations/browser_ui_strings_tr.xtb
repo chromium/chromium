@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">Chrome'un son sekmelerinizi cihazınızla paylaşmasına izin verdiğinizde bu sekmeleri cihazınızın uygulama listesinde ve arama sonuçlarında görebilirsiniz. Bu özelliği Chrome ayarlarından etkinleştirebilir veya devre dışı bırakabilirsiniz.</translation>
 <translation id="1420688843103859429">Dokunmatik alanda iki parmağınızla kaydırarak ileri ve geri gidin</translation>
 <translation id="1432650420699700107">Siteler, yerel ağınızdaki cihazlara bağlanmak isteyebilir</translation>
+<translation id="1442081309487427303">Okuma Modu bağlantılarını etkinleştir</translation>
 <translation id="1448064542941920355">Yakınlaştırmayı azalt</translation>
 <translation id="1464044141348608623">Cihazımı etkin olarak kullandığımda sitelerin bilmesine izin verme</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> site}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">Chrome ipuçları bildirimlerini alın</translation>
 <translation id="1777815584158991902">Keşfet feed'i alt sayfası</translation>
 <translation id="1779089405699405702">Görsel kod çözücüsü</translation>
+<translation id="1781533683087883868">Okuma Modu bağlantılarını devre dışı bırak</translation>
 <translation id="1785415724048343560">En iyi deneyim için önerilir</translation>
 <translation id="1796588414813960292">Ses kullanılmasını gerektiren özellikler çalışmaz</translation>
 <translation id="1799920918471566157">Chrome ipuçları</translation>

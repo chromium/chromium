@@ -240,6 +240,7 @@
 <translation id="1151917987301063366">ಸೆನ್ಸರ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು <ph name="HOST" /> ಗೆ ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="1152346050262092795">ನಿಮ್ಮ ಖಾತೆಯನ್ನು ದೃಢೀಕರಿಸಲು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಇನ್ನೊಮ್ಮೆ ನಮೂದಿಸಿ.</translation>
 <translation id="1153636665119721804">Google ಸುಧಾರಿತ ರಕ್ಷಣೆ ಪ್ರೋಗ್ರಾಂ</translation>
+<translation id="1153802775114315167">ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಬಳಕೆಯನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="1155816283571436363">ನಿಮ್ಮ ಫೋನ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1157952955648710254">Google Search ಸೈಡ್ ಪ್ಯಾನೆಲ್ ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="1158080958325422608">ಅಪ್ಪರ್‌ಕೇಸ್ ಮಾಡಿ</translation>
@@ -2771,6 +2772,7 @@
 <translation id="2842013086666334835">"<ph name="NETWORK_ID" />" ಗೆ ಸೈನ್‌ ಇನ್‌ ಮಾಡಿ</translation>
 <translation id="2843560154284403323">Linux ಸೆಟಪ್ ಮಾಡುವುದನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು, ChromeOS ಅಪ್‌ಡೇಟ್ ಮಾಡಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> ಯಷ್ಟು ಮುಕ್ತಗೊಳಿಸಿದೆ</translation>
+<translation id="2844154481025280030">ನೀತಿಯನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="2844169650293029770">USB-C ಸಾಧನ (ಎಡ ಭಾಗದ ಮುಂದಿನ ಪೋರ್ಟ್‌)</translation>
 <translation id="2844809857160214557">ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2845276301195220700">Google Calendar ಗಾಗಿ ಹೆಚ್ಚಿನ ಕ್ರಮಗಳು</translation>
@@ -3210,6 +3212,7 @@
 <translation id="3151539355209957474">ಪ್ರಾರಂಭ ಸಮಯ</translation>
 <translation id="3151786313568798007">ಓರಿಯಂಟೇಶನ್</translation>
 <translation id="3152356229013609796">ನಿಮ್ಮ ಫೋನ್‌ನ ಅಧಿಸೂಚನೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ, ವಜಾಗೊಳಿಸಿ ಮತ್ತು ಪ್ರತ್ಯುತ್ತರಿಸಿ</translation>
+<translation id="3152545926232662879">ನಿರ್ಲಕ್ಷಿಸಿರುವುದು:</translation>
 <translation id="3154754096046236400">ವೈಯಕ್ತಿಕ ಕಾಂಟೆಕ್ಸ್ಟ್</translation>
 <translation id="3155163173539279776">Chromium ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="3155394504825881014">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಫೋಲ್ಡರ್‌ಗೆ ಪರಿವರ್ತಿಸಿ</translation>
@@ -5750,6 +5753,7 @@
 <translation id="4868284252360267853">ಈ ಡೈಲಾಗ್ ಅನ್ನು ಪ್ರಸ್ತುತ ಫೋಕಸ್ ಮಾಡಲಾಗಿಲ್ಲ. ಈ ಡೈಲಾಗ್ ಅನ್ನು ಫೋಕಸ್ ಮಾಡಲು Command-Shift-ಆಯ್ಕೆ A ಅನ್ನು ಒತ್ತಿ.</translation>
 <translation id="4868351661310357223">Google Play ನಿಂದ ಆ್ಯಪ್‌ಗಳು ಹಾಗೂ ಗೇಮ್‌ಗಳನ್ನು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ.</translation>
 <translation id="4869170227080975044">ChromeOS ನೆಟ್‌ವರ್ಕ್ ಮಾಹಿತಿಯನ್ನು ಓದಿ</translation>
+<translation id="4869175799055761881">ಈ ಆ್ಯಪ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಬಳಕೆದಾರರಿಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. ಡೆವಲಪರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="4870724079713069532">File Explorer ಅಥವಾ ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿರುವ ಈ ಆ್ಯಪ್ ಬಳಸಿಕೊಂಡು ನೀವು ಬೆಂಬಲಿತ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಬಹುದು ಮತ್ತು ಎಡಿಟ್ ಮಾಡಬಹುದು. ಈ ಆ್ಯಪ್‌ನಲ್ಲಿ ಡೀಫಾಲ್ಟ್ ಆಗಿ ಯಾವ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಬೇಕು ಎಂಬುದನ್ನು ನಿಯಂತ್ರಿಸಲು, <ph name="BEGIN_LINK" />Windows ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="END_LINK" /> ಹೋಗಿ.</translation>
 <translation id="4870995365819149457">ಕೆಲವು ಬೆಂಬಲಿಸಿದ ಲಿಂಕ್‌ಗಳು ಈಗಲೂ <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> ಮತ್ತು ಇನ್ನೂ 1 ಇತರ ಆ್ಯಪ್‌ನಲ್ಲಿ ತೆರೆದುಕೊಳ್ಳುತ್ತವೆ.</translation>
 <translation id="4871308555310586478">Chrome ವೆಬ್ ಸ್ಟೋರ್‌ನಿಂದ ಅಲ್ಲ.</translation>
@@ -8655,6 +8659,7 @@
 <translation id="6896758677409633944">ನಕಲಿಸು</translation>
 <translation id="6897363604023044284">ಸೈಟ್‌ಗಳನ್ನು ತೆರವುಗೊಳಿಸಲು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6897688156970667447">ಕಡಿಮೆ ಬೆಳಕಿದ್ದಾಗ ಉಪಯುಕ್ತ ಮತ್ತು ಬ್ಯಾಟರಿ ಉಳಿಸುತ್ತದೆ</translation>
+<translation id="6897756054229464646">Gemini ಮೂಲಕ</translation>
 <translation id="6897972855231767338">ಅತಿಥಿಯಾಗಿ ಬ್ರೌಸಿಂಗ್ ಮಾಡುವ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6898438890765871056">OneDrive ಫೋಲ್ಡರ್ ತೆರೆಯಿರಿ</translation>
 <translation id="6898440773573063262">ಕಿಯೋಸ್ಕ್ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಇದೀಗ ಈ ಸಾಧನದಲ್ಲಿ ಸ್ವಯಂ-ಪ್ರಾರಂಭಿಸಲು ಕಾನ್ಫಿಗರ್ ಮಾಡಬಹುದು.</translation>
@@ -9158,6 +9163,7 @@
 <translation id="7250616558727237648">ನೀವು ಯಾವ ಸಾಧನದೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳುತ್ತಿರುವಿರೋ ಅದು ಪ್ರತಿಕ್ರಿಯಿಸಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="725109152065019550">ಕ್ಷಮಿಸಿ, ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿರುವ ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆಯನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
 <translation id="7251635775446614726">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಹೀಗೆ ಹೇಳುತ್ತಾರೆ: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="725310308981256997">ಈ ಪುಟದ ವಿವರವನ್ನು ಕೇಳಬೇಕೇ?</translation>
 <translation id="7253521419891527137">&amp;ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="7254951428499890870">ಖಚಿತವಾಗಿ ಡೈಯೋಗ್ನೋಸ್ಟಿಕ್ ಮೋಡ್‍‍ನಲ್ಲಿ "<ph name="APP_NAME" />" ಲಾಂಚ್ ಮಾಡಲು ನೀವು ಬಯಸುವಿರಾ?</translation>
 <translation id="725497546968438223">ಬುಕ್‌ಮಾರ್ಕ್ ಫೋಲ್ಡರ್ ಬಟನ್</translation>
@@ -10643,6 +10649,7 @@
 <translation id="8244201515061746038">ಆಟೋಕರೆಕ್ಟ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ ಎಂಬ ಬಟನ್. ಆಟೋಕರೆಕ್ಷನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಪುಟಕ್ಕೆ ಹೋಗಿ. ಸಕ್ರಿಯಗೊಳಿಸಲು Enter ಕೀ ಒತ್ತಿರಿ, ವಜಾಗೊಳಿಸಲು Escape ಕೀ ಒತ್ತಿರಿ.</translation>
 <translation id="8244514732452879619">ಶೀಘ್ರದಲ್ಲೇ ಲೈಟ್‌ಗಳು ಆಫ್ ಆಗುತ್ತವೆ</translation>
 <translation id="8246776524656196770">ಪಿನ್ (ವೈಯಕ್ತಿಕ ಗುರುತಿಸುವಿಕೆ ಸಂಖ್ಯೆ) ಮೂಲಕ ನಿಮ್ಮ ಭದ್ರತೆ ಕೀ ಅನ್ನು ಸಂರಕ್ಷಿಸಿ</translation>
+<translation id="824713170151383793">DevTools ಮೂಲಕ</translation>
 <translation id="8247795734638043885">ಅಸುರಕ್ಷಿತ ಫೈಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="8248050856337841185">&amp;ಅಂಟಿಸಿ</translation>
 <translation id="8248381369318572865">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಪ್ರವೇಶಿಸಿ ಹಾಗೂ ನಿಮ್ಮ ಧ್ವನಿಯನ್ನು ವಿಶ್ಲೇಷಿಸಿ</translation>
@@ -11333,7 +11340,6 @@
 <translation id="8707562594602678416">ಸ್ಥಳಗಳು</translation>
 <translation id="8708000541097332489">ನಿರ್ಗಮಿಸುವಲ್ಲಿ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
-<translation id="8708088555926718398">ದೋಷ: ವರ್ಗ: <ph name="CATEGORY" />, ಕೋಡ್: <ph name="CODE" />, ಹೆಚ್ಚುವರಿ ಕೋಡ್: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp;ಹೆಚ್ಚಿನ ಮಾಹಿತಿ</translation>
 <translation id="8709368517685334931">Chrome ವೆಬ್‌ ಸ್ಟೋರ್‌ನಲ್ಲಿ ನೀವು ಹಳೆಯ ಬಣ್ಣಗಳನ್ನು ಕಾಣಬಹುದು</translation>
 <translation id="8710414664106871428">ಫ್ಯಾಂಟಸಿ</translation>
@@ -11559,6 +11565,7 @@
 <translation id="885746075120788020">ನಿಮ್ಮ Google ಖಾತೆಯ ಮೂಲಕ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, ನಿಮ್ಮ ಉಳಿಸಲಾದ ಆದ್ಯತೆಗಳು ಮತ್ತು ಚಟುವಟಿಕೆ ಯಾವುದೇ ChromeOS ಸಾಧನದಲ್ಲಿ ಸಿದ್ಧವಾಗಿರುತ್ತವೆ. ಏನನ್ನು ಸಿಂಕ್ ಮಾಡಬೇಕು ಎಂಬುದನ್ನು ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಆರಿಸಿಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{ಆ್ಯಪ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೆ?}one{ಆ್ಯಪ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೆ?}other{ಆ್ಯಪ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೆ?}}</translation>
 <translation id="8858369206579825206">ಗೌಪ್ಯತೆ ನಿಯಂತ್ರಣಗಳು</translation>
+<translation id="8858449624332155432">ಹಲವಾರು ಸೋರ್ಸ್‌ಗಳಲ್ಲಿನ ಸಂಘರ್ಷದ ಮೌಲ್ಯಗಳಿರುವ ನೀತಿಯನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="8859174528519900719">ಉಪಫ್ರೇಮ್‌: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">ಸೇವಾ ನಿಯಮಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="8859662783913000679">ಪೋಷಕರ ಖಾತೆ</translation>

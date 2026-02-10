@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Pasahitzak ikusteko, lehenik, pasakode bat ezarri behar duzu gailuan.</translation>
 <translation id="201759455285471444">Zabaldu fitxa taldea.</translation>
 <translation id="202070562065520783">Azal iezadazu hau</translation>
-<translation id="2023713324775943812">Erabili irakurtzeko modua helbide-barratik erabilgarri dagoenean</translation>
 <translation id="2044394949148788042">Ireki fitxen sareta</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen du <ph name="USER_EMAIL" /> kontua, eta agian zenbait datu ikus ditzake. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">elementu berria</translation>
@@ -1860,6 +1859,7 @@
 <translation id="7772032839648071052">Berretsi pasaesaldia</translation>
 <translation id="7772948288262733182">Ongi etorri berriro</translation>
 <translation id="777637629667389858">Saioa hasita daukazunean, Google-ren zerbitzu guztietan babesten zaitu.</translation>
+<translation id="7776604279034196531">Erabili irakurtzeko modua helbide-barratik erabilgarri dagoenean</translation>
 <translation id="7781829728241885113">Atzo</translation>
 <translation id="7788868432173225918">Baztertu ikuspegi zabaldua</translation>
 <translation id="7791543448312431591">Gehitu</translation>

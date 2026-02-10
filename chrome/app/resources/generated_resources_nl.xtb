@@ -18,7 +18,7 @@
 <translation id="1006873397406093306">Deze extensie kan je gegevens op sites lezen en wijzigen. Je bepaalt tot welke sites de extensie toegang heeft.</translation>
 <translation id="1007057452468855774">Google Play Store aanzetten</translation>
 <translation id="1008186147501209563">Bookmarks exporteren</translation>
-<translation id="1008261151167010035"><ph name="BRAND" /> onthoudt hoe je bent ingelogd en logt je automatisch in als dat mogelijk is. Als dit uitstaat, wordt je elke keer om bevestiging gevraagd.</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> onthoudt hoe je bent ingelogd en logt je automatisch in als dat mogelijk is. Als dit uitstaat, word je elke keer om bevestiging gevraagd.</translation>
 <translation id="1008557486741366299">Niet nu</translation>
 <translation id="100881991356161927">Sitenaam</translation>
 <translation id="1009663062402466586">Gamebediening nu beschikbaar</translation>
@@ -240,6 +240,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1151917987301063366"><ph name="HOST" /> altijd toegang tot sensoren geven</translation>
 <translation id="1152346050262092795">Geef je wachtwoord opnieuw op om je account te verifiëren.</translation>
 <translation id="1153636665119721804">Geavanceerde beveiliging van Google</translation>
+<translation id="1153802775114315167">Aan de slag met extensies</translation>
 <translation id="1155816283571436363">Verbinding maken met je telefoon</translation>
 <translation id="1157952955648710254">Zijvenster van Google Zoeken sluiten</translation>
 <translation id="1158080958325422608">Hoofdletters van maken</translation>
@@ -2765,6 +2766,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2842013086666334835">Inloggen bij <ph name="NETWORK_ID" /></translation>
 <translation id="2843560154284403323">Als je de installatie van Linux wilt afronden, update je Chrome OS en probeer je het opnieuw.</translation>
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> vrijgemaakt</translation>
+<translation id="2844154481025280030">Beleid ingesteld.</translation>
 <translation id="2844169650293029770">USB-C-apparaat (poort links aan de voorkant)</translation>
 <translation id="2844809857160214557">Afdruktaken bekijken en beheren</translation>
 <translation id="2845276301195220700">Meer acties voor Google Agenda</translation>
@@ -3107,7 +3109,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3074499504015191586">Hele pagina vertalen</translation>
 <translation id="3075144191779656260">Raak de vingerafdruksensor aan de linkerkant van je <ph name="DEVICE_TYPE" /> aan. Je vingerafdrukgegevens worden beveiligd opgeslagen en blijven uitsluitend op je <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="3075740753681485522">Uit • Deze extensie bevat malware</translation>
-<translation id="3075874217500066906">Apparaat moet opnieuw worden opgestart om met het Powerwash-proces te beginnen. Na het opnieuw opstarten wordt je gevraagd om te bevestigen dat je wilt doorgaan.</translation>
+<translation id="3075874217500066906">Apparaat moet opnieuw worden opgestart om met het Powerwash-proces te beginnen. Na het opnieuw opstarten word je gevraagd om te bevestigen dat je wilt doorgaan.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Alleen opslaan op dit apparaat</translation>
 <translation id="3076977359333237641">Je inloggegevens zijn verwijderd</translation>
@@ -3204,6 +3206,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3151539355209957474">Begintijd</translation>
 <translation id="3151786313568798007">Stand</translation>
 <translation id="3152356229013609796">Bekijk, sluit en beantwoord meldingen van je telefoon</translation>
+<translation id="3152545926232662879">Genegeerd:</translation>
 <translation id="3154754096046236400">Persoonlijke context</translation>
 <translation id="3155163173539279776">Chromium opnieuw starten</translation>
 <translation id="3155394504825881014">Tabbladgroep converteren naar bookmarkmap</translation>
@@ -5741,6 +5744,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4868284252360267853">De focus staat momenteel niet op dit dialoogvenster. Druk op Command-Shift-Option A om de focus op dit dialoogvenster te zetten.</translation>
 <translation id="4868351661310357223">Installeer apps en games van Google Play op je <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">ChromeOS-netwerkgegevens lezen</translation>
+<translation id="4869175799055761881">Deze app kan niet worden geïnstalleerd door de gebruiker. Neem contact op met de ontwikkelaar.</translation>
 <translation id="4870724079713069532">Je kunt ondersteunde bestanden openen en bewerken met deze app vanuit de bestandsverkenner of andere apps. Ga naar de <ph name="BEGIN_LINK" />Windows-instellingen<ph name="END_LINK" /> om te bepalen welke bestanden standaard worden geopend in deze app.</translation>
 <translation id="4870995365819149457">Bepaalde ondersteunde links worden nog steeds geopend in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> en 1 andere app.</translation>
 <translation id="4871308555310586478">Niet via de Chrome Web Store.</translation>
@@ -8640,6 +8644,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6896758677409633944">Kopiëren</translation>
 <translation id="6897363604023044284">Sites kiezen om te wissen</translation>
 <translation id="6897688156970667447">Handig bij weinig licht en spaart de batterij</translation>
+<translation id="6897756054229464646">Met Gemini</translation>
 <translation id="6897972855231767338">Meer informatie over browsen als gast</translation>
 <translation id="6898438890765871056">OneDrive-map openen</translation>
 <translation id="6898440773573063262">Kiosk-apps kunnen nu worden geconfigureerd voor automatisch starten op dit apparaat.</translation>
@@ -9142,6 +9147,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7250616558727237648">Het apparaat waarmee je deelt, reageert niet. Probeer het opnieuw.</translation>
 <translation id="725109152065019550">Je beheerder heeft externe opslag uitgezet voor je account.</translation>
 <translation id="7251635775446614726">Je beheerder zegt: '<ph name="CUSTOM_MESSAGE" />'</translation>
+<translation id="725310308981256997">Vraag stellen over deze pagina?</translation>
 <translation id="7253521419891527137">&amp;Meer informatie</translation>
 <translation id="7254951428499890870">Weet je zeker dat je '<ph name="APP_NAME" />' in diagnostische modus wilt starten?</translation>
 <translation id="725497546968438223">Knop voor bookmarkmap</translation>
@@ -10443,7 +10449,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8110489095782891123">Contactenlijst downloaden...</translation>
 <translation id="8114925369073821854">Microfoonrechten voor <ph name="APP_NAME" /></translation>
 <translation id="8116972784401310538">&amp;Bookmarkmanager</translation>
-<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> onthoudt hoe je bent ingelogd en logt je automatisch in als dat mogelijk is. Als dit uitstaat, wordt je elke keer om bevestiging gevraagd.</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> onthoudt hoe je bent ingelogd en logt je automatisch in als dat mogelijk is. Als dit uitstaat, word je elke keer om bevestiging gevraagd.</translation>
 <translation id="8118362518458010043">Uitgezet door Chrome. Deze extensie kan onveilig zijn.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# bookmark}other{# bookmarks}}</translation>
 <translation id="8118488170956489476">Je <ph name="BEGIN_LINK" />browser wordt beheerd<ph name="END_LINK" /> door je organisatie</translation>
@@ -10630,6 +10636,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8244201515061746038">Knop voor meer informatie over autocorrectie. Ga naar de pagina met instellingen voor autocorrectie. Druk op Enter om te activeren of op Escape om te sluiten.</translation>
 <translation id="8244514732452879619">Bijna tijd om het licht uit te doen</translation>
 <translation id="8246776524656196770">Bescherm je beveiligingssleutel met een pincode</translation>
+<translation id="824713170151383793">Met DevTools</translation>
 <translation id="8247795734638043885">Onveilig bestand downloaden</translation>
 <translation id="8248050856337841185">&amp;Plakken</translation>
 <translation id="8248381369318572865">Toegang krijgen tot je microfoon en je spraak analyseren</translation>
@@ -11320,7 +11327,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="8707562594602678416">Plaatsen</translation>
 <translation id="8708000541097332489">Wissen bij het verlaten</translation>
 <translation id="870805141700401153">Individuele handtekening bij programmacode van Microsoft</translation>
-<translation id="8708088555926718398">Fout: Categorie: <ph name="CATEGORY" />, Code: <ph name="CODE" />, Extra code: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp;Meer informatie</translation>
 <translation id="8709368517685334931">Oudere kleuren vind je in de Chrome Web Store</translation>
 <translation id="8710414664106871428">Fantasy</translation>
@@ -11546,6 +11552,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="885746075120788020">Je opgeslagen voorkeuren en activiteit zijn klaar voor gebruik op elk Chrome OS-apparaat als je inlogt met je Google-account. Je kunt in de instellingen bepalen wat je wilt synchroniseren.</translation>
 <translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{App installeren?}other{Apps installeren?}}</translation>
 <translation id="8858369206579825206">Privacyopties</translation>
+<translation id="8858449624332155432">Beleid ingesteld met conflicterende waarden uit meerdere bronnen.</translation>
 <translation id="8859174528519900719">Subframe: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Servicevoorwaarden kunnen niet worden geladen</translation>
 <translation id="8859662783913000679">Ouderaccount</translation>

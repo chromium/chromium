@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">Ļaujiet pārlūkam Chrome kopīgot jūsu nesen atvērtās cilnes ar ierīci, lai tās tiktu rādītas ierīces lietotņu sarakstā un meklēšanas rezultātos. Chrome iestatījumos varat ieslēgt vai izslēgt šo funkciju.</translation>
 <translation id="1420688843103859429">Pārejiet atpakaļ un uz priekšu, skārienpaliktnī velkot ar diviem pirkstiem.</translation>
 <translation id="1432650420699700107">Vietnes var pieprasīt atļauju izveidot savienojumu ar jebkuru ierīci jūsu lokālajā tīklā</translation>
+<translation id="1442081309487427303">Ieslēgt saites lasīšanas režīmā</translation>
 <translation id="1448064542941920355">Tuvināt</translation>
 <translation id="1464044141348608623">Nerādīt vietnēm, kad jūs aktīvi lietojat savu ierīci</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> vietne}zero{<ph name="SITE_COUNT" /> vietņu}one{<ph name="SITE_COUNT" /> vietne}other{<ph name="SITE_COUNT" /> vietnes}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">Saņemiet paziņojumus par Chrome padomiem</translation>
 <translation id="1777815584158991902">Discover plūsmas ekrāna apakšdaļas lapa</translation>
 <translation id="1779089405699405702">Attēlu dekodētājs</translation>
+<translation id="1781533683087883868">Izslēgt saites lasīšanas režīmā</translation>
 <translation id="1785415724048343560">Ieteicams labākai pieredzei</translation>
 <translation id="1796588414813960292">Funkcijas, kurām nepieciešama skaņa, nedarbosies</translation>
 <translation id="1799920918471566157">Chrome padomi</translation>

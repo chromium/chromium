@@ -295,6 +295,7 @@
 <translation id="3903738175795615004">從頂部拖曳或按 Esc 鍵以退出全螢幕。</translation>
 <translation id="3905475044299942653">禁止傳送大量通知</translation>
 <translation id="3922092564198021702">在手機開啟「設定」</translation>
+<translation id="3924858949939391676">開啟「閱讀模式」後顯示連結</translation>
 <translation id="3933121352599513978">收合不需要的要求 (建議)</translation>
 <translation id="3934905113567851655">兩指縮放即可調整大小</translation>
 <translation id="3955193568934677022">允許網站播放受保護的內容 (建議)</translation>
@@ -358,6 +359,7 @@
 <translation id="4644713492825682049">刪除並重設</translation>
 <translation id="4645575059429386691">由您的家長管理</translation>
 <translation id="4652266463001779298">不允許</translation>
+<translation id="4655846733459137112">輕按 [是]，下次登入時就能輕鬆取用此密碼</translation>
 <translation id="4663373278480897665">已允許使用相機</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
 <translation id="4672315773691449562">㩒一下 [瀏覽器應用程式] 同 [Chrome]</translation>
@@ -464,6 +466,7 @@
 <translation id="5804241973901381774">權限</translation>
 <translation id="5817042798620209981">網站資料，對話框</translation>
 <translation id="5822675474983796325">自訂新分頁頁底面板宜家顯示喺成個畫面</translation>
+<translation id="5826403277762134844">喺 Chrome 儲存密碼嘅指示頁底面板</translation>
 <translation id="5833899990800318936">不允許網站使用 JavaScript</translation>
 <translation id="583673505367439042">網站可要求編輯裝置中的檔案和資料夾</translation>
 <translation id="5844448279347999754">開咗之後，網站可以要求睇儲存喺剪貼簿嘅文字同圖片。閂咗之後，網站唔可以睇儲存喺剪貼簿嘅文字同圖片。</translation>
@@ -643,6 +646,7 @@
 <translation id="775043444390799886">撤回權限</translation>
 <translation id="7758789811447313947">紫色主題</translation>
 <translation id="7759147511335618829">MIDI 裝置控制和重新編程</translation>
+<translation id="7771089277295008211">閂咗儲存密碼指示頁底面板</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
@@ -660,6 +664,7 @@
 <translation id="7940722705963108451">提醒我</translation>
 <translation id="7948081750384205628">進一步瞭解<ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">網站可要求查看剪貼簿上的文字和圖片</translation>
+<translation id="7958779728312669715">儲存密碼指示頁底面板宜家顯示喺成個畫面</translation>
 <translation id="798299424881500862">橙色主題</translation>
 <translation id="7986741934819883144">選取聯絡人</translation>
 <translation id="7990211076305263060">開咗之後，網站可以要求使用麥克風。閂咗之後，網站唔可以使用麥克風。</translation>
@@ -756,6 +761,7 @@
 <translation id="8889294078294184559">您隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資料，確認您應該是真人</translation>
 <translation id="8899807382908246773">滋擾性廣告</translation>
 <translation id="8903921497873541725">放大</translation>
+<translation id="8919911527569629802">登入任何網站</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">不要再問我</translation>
 <translation id="8926666909099850184">此裝置的 NFC 已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟。</translation>
@@ -783,6 +789,7 @@
 <translation id="9182556968660520230">不允許網站播放受保護的內容</translation>
 <translation id="947156494302904893">您瀏覽的網站可驗證您是真人，而不是機器人</translation>
 <translation id="959682366969460160">讓所有內容變得井井有條</translation>
+<translation id="960590623979248167">顯示連結</translation>
 <translation id="961930410699694996">呢次批准存取位置</translation>
 <translation id="967624055006145463">已儲存的資料</translation>
 <translation id="969975166333045662">禁止網站使用 V8 優化工具。</translation>

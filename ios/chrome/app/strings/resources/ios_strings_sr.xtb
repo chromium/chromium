@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Да бисте видели лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="201759455285471444">Проширите групу картица.</translation>
 <translation id="202070562065520783">Објасни ми ово</translation>
-<translation id="2023713324775943812">Приступите Режиму читања са траке за адресу ако је доступан</translation>
 <translation id="2044394949148788042">Отворите мрежу за картице</translation>
 <translation id="2044681667265133332">Налогом <ph name="USER_EMAIL" /> управља <ph name="HOSTED_DOMAIN" />, који може да прегледа одређене информације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">нова ставка</translation>
@@ -1860,6 +1859,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7772032839648071052">Потврди приступну фразу</translation>
 <translation id="7772948288262733182">Добро дошли назад</translation>
 <translation id="777637629667389858">Кад сте пријављени, штити вас у свим Google услугама.</translation>
+<translation id="7776604279034196531">Приступите режиму за читање са траке за адресу ако је доступан</translation>
 <translation id="7781829728241885113">Јуче</translation>
 <translation id="7788868432173225918">Одбаци проширени приказ</translation>
 <translation id="7791543448312431591">Додај</translation>

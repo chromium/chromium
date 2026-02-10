@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">רוצה להציג את הסיסמאות? תחילה עליך להגדיר קוד גישה במכשיר.</translation>
 <translation id="201759455285471444">הרחבה של קבוצת הכרטיסיות.</translation>
 <translation id="202070562065520783">אשמח לקבל הסבר</translation>
-<translation id="2023713324775943812">פותחים את מצב הקריאה מסרגל הכתובות כשזה אפשרי</translation>
 <translation id="2044394949148788042">פתיחה של תצוגת הכרטיסיות</translation>
 <translation id="2044681667265133332">החשבון <ph name="USER_EMAIL" /> מנוהל על ידי <ph name="HOSTED_DOMAIN" />, שיכול להיות שיש לו גישה לחלק מהמידע. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">פריט חדש</translation>
@@ -1860,6 +1859,7 @@
 <translation id="7772032839648071052">אישור משפט-סיסמה</translation>
 <translation id="7772948288262733182">ברוך שובך</translation>
 <translation id="777637629667389858">‏אחרי שנכנסת לחשבון, המערכת מגינה עליך בשירותי Google.</translation>
+<translation id="7776604279034196531">ההגדרה הזאת מאפשרת לפתוח את מצב הקריאה מסרגל הכתובות, כשזה אפשרי</translation>
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7788868432173225918">סגירת התצוגה המורחבת</translation>
 <translation id="7791543448312431591">הוספה</translation>

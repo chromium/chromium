@@ -39,6 +39,7 @@
 <translation id="1415855080660575082">Pozwól Chrome udostępniać ostatnie karty swojemu urządzeniu, aby były one widoczne na nim na liście aplikacji i w wynikach wyszukiwania. Tę funkcję możesz w każdej chwili włączyć lub wyłączyć w ustawieniach Chrome.</translation>
 <translation id="1420688843103859429">Przechodź do przodu i do tyłu, przesuwając 2 palcami po touchpadzie</translation>
 <translation id="1432650420699700107">Strony mogą prosić o zgodę na połączenie z dowolnym urządzeniem w sieci lokalnej</translation>
+<translation id="1442081309487427303">Włącz linki w Trybie czytania</translation>
 <translation id="1448064542941920355">Zmniejsz powiększenie</translation>
 <translation id="1464044141348608623">Nie zezwalaj witrynom na sprawdzanie, kiedy używasz urządzenia</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> witryna}few{<ph name="SITE_COUNT" /> witryny}many{<ph name="SITE_COUNT" /> witryn}other{<ph name="SITE_COUNT" /> witryny}}</translation>
@@ -73,6 +74,7 @@
 <translation id="1766455884659449403">Otrzymuj powiadomienia o wskazówkach dotyczących Chrome</translation>
 <translation id="1777815584158991902">Plansza dolna karty Discover</translation>
 <translation id="1779089405699405702">Dekoder obrazów</translation>
+<translation id="1781533683087883868">Wyłącz linki w Trybie czytania</translation>
 <translation id="1785415724048343560">Polecane dla wygody przeglądania</translation>
 <translation id="1796588414813960292">Funkcje, które wymagają dźwięku, nie będą działać</translation>
 <translation id="1799920918471566157">Chrome – wskazówki</translation>

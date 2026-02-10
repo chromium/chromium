@@ -2787,6 +2787,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5466018172325111652">Nedostali ste kód? <ph name="BEGIN_LINK" />Získať nový kód<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Platobné aplikácie</translation>
 <translation id="5470861586879999274">&amp;Znova upraviť</translation>
+<translation id="5471158297908124590">Overte svoju totožnosť, aby ste mohli upraviť spôsoby platby</translation>
 <translation id="5472588168895083535">Sledovanie rúk je blokované</translation>
 <translation id="5477756102936130143">Povoliť presmerovanie do podporovaných platobných aplikácií</translation>
 <translation id="5479505548832623900">Pravdepodobne ignorované rozšírením.</translation>
@@ -2864,6 +2865,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5570825185877910964">Ochrániť účet</translation>
 <translation id="5571083550517324815">Vyzdvihnutie na tejto adrese nie je možné. Vyberte inú adresu.</translation>
 <translation id="5572434905385510939">22 × 28 palcov</translation>
+<translation id="5573090972398558474">Vaša organizácia zablokovala túto stránku v režime inkognito.</translation>
 <translation id="5573641252776268565">Úprava pasu</translation>
 <translation id="5578606540385219379">Poskytovatelia služieb</translation>
 <translation id="5580958916614886209">Skontrolujte mesiac vypršania platnosti a skúste to znova</translation>
@@ -3170,6 +3172,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6093795393556121384">Vaša karta je overená</translation>
 <translation id="6094253940069566294">Úprava vozidla</translation>
 <translation id="6094290315941448991">Pravidlo správcu zakazuje nahrávanie obrazovky, keď je viditeľný dôverný obsah</translation>
+<translation id="6097297436119286254">Overte svoju totožnosť, aby sa mohli doplniť vaše platobné údaje</translation>
 <translation id="6099269767116481177">22 × 29,5 palca</translation>
 <translation id="6101583188322746099">Donáška potravín</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4290,6 +4293,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7844689747373518809">{COUNT,plural, =0{Žiadne}=1{1 aplikácia (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikácie (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}few{# aplikácie (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}many{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikácií (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Vyskytla sa chyba. Skúste to znova.</translation>
 <translation id="784623644169604270">Žiadna nedávna aktivita</translation>
+<translation id="7848926355794727168">Automatická navigácia</translation>
 <translation id="7853222852810008596">Platba neskôr nie je v tejto mene k dispozícii</translation>
 <translation id="785476343534277563">Školské športy</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
@@ -4519,6 +4523,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8241707690549784388">Vami hľadaná stránka použila informácie, ktoré ste zadali. Návrat na túto stránku môže spôsobiť zopakovanie akcie, ktorú ste vykonali. Chcete pokračovať?</translation>
 <translation id="8241712895048303527">Blokovať na tomto webe</translation>
 <translation id="8242426110754782860">Pokračovať</translation>
+<translation id="824620968958405573">Úloha automatickej navigácie</translation>
 <translation id="8246482227229072868">Prstene</translation>
 <translation id="8248406213705193919">Chcete kartu bezpečne uložiť?</translation>
 <translation id="8249296373107784235">Prerušiť</translation>
@@ -4917,6 +4922,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8897428486789851669">Plávanie</translation>
 <translation id="8899807382908246773">Obťažujúce reklamy</translation>
 <translation id="8903921497873541725">Priblížiť</translation>
+<translation id="8903998444169664879">Overte svoju totožnosť, aby ste mohli zmeniť nastavenia platieb</translation>
 <translation id="890493561996401738">Tlačidlo odstránenia návrhu, odstránenie vykonáte stlačením klávesa Enter, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 palcov</translation>
 <translation id="8914504000324227558">Znova spustiť prehliadač Chrome</translation>

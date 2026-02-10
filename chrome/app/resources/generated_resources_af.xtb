@@ -240,6 +240,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1151917987301063366">Gee <ph name="HOST" /> altyd toegang tot sensors</translation>
 <translation id="1152346050262092795">Voer jou wagwoord weer in om jou rekening te verifieer.</translation>
 <translation id="1153636665119721804">Google se Gevorderde Beskerming-program</translation>
+<translation id="1153802775114315167">Begin met uitbreidings</translation>
 <translation id="1155816283571436363">Koppel tans aan jou foon</translation>
 <translation id="1157952955648710254">Maak Google Search-kantpaneel toe</translation>
 <translation id="1158080958325422608">Maak dit hoofletters</translation>
@@ -584,6 +585,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1383876407941801731">Soek</translation>
 <translation id="1384849755549338773">Bied Google Vertaal aan vir webwerwe in ander tale</translation>
 <translation id="1384959399684842514">Aflaai is onderbreek</translation>
+<translation id="1386966479075994683">Vou oortjies uit</translation>
 <translation id="1388253969141979417">Mag jou mikrofoon gebruik</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> sal herbegin wanneer opdaterings voltooi is.</translation>
 <translation id="1390113502208199250">Jy sal ’n fabriekterugstelling op hierdie toestel moet uitvoer om Chrome Education se opgraderingkenmerke te gebruik.</translation>
@@ -2596,6 +2598,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2727633948226935816">Moet my nie weer herinner nie</translation>
 <translation id="2727712005121231835">Werklike grootte</translation>
 <translation id="2727744317940422214">Jammer, iets is fout. Dien asseblief terugvoer in met #bruschetta in die beskrywing. Foutkode is <ph name="ERROR" />. Kon nie skoonmaak nie; jy moet dit dalk handmatig doen.</translation>
+<translation id="2729310339366257582">Vou oortjies in</translation>
 <translation id="2729577602370119849">Kry maklik toegang tot drukkers en bestuur dit</translation>
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Wanneer Liggingakkuraatheid aan is, word inligting oor draadlose seine, soos wi-fi-toegangspunte en selnetwerktorings, saam met toestelsensordata, soos versnellingsmeter en giroskoop, gebruik om akkurater toestelligging te skat wat deur Android-apps en -dienste gebruik word om ligginggebaseerde kenmerke te verskaf. Om dit te doen, samel Google van tyd tot tyd inligting in oor toestelsensors en draadlose seine naby hierdie toestel om by te dra tot draadloseseinliggings wat deur skareverkryging gekry word.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google gebruik hierdie inligting wat van hierdie toestel af ingesamel word om: liggingakkuraatheid en ligginggegronde dienste te verbeter; en oor die algemeen Google se dienste te verbeter, te verskaf en te handhaaf. Ons verwerk hierdie inligting op grond van die wettige belange van Google en derde partye om in gebruikers se behoeftes te voorsien. Hierdie inligting word nie gebruik om enige individu te identifiseer nie.<ph name="END_PARAGRAPH2" />
@@ -4745,6 +4748,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4169535189173047238">Moenie toelaat nie</translation>
 <translation id="4170314459383239649">Vee uit wanneer uitgegaan is</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Deel oortjie met Gemini}other{Deel # oortjies met Gemini}}</translation>
+<translation id="4172944993779635350">Jou wagwoord vir “<ph name="URL" />” word net op hierdie toestel gestoor. Stoor dit in jou Google-rekening om dit op jou ander toestelle te gebruik.</translation>
 <translation id="4173129130568053653">Gemini kan jou help om afsprake te maak, inkopiemandjies te skep, of ander take te doen wat jy vir dit gee.</translation>
 <translation id="4175137578744761569">Ligpers en wit</translation>
 <translation id="4176463684765177261">Gedeaktiveer</translation>
@@ -5061,6 +5065,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4386604394450371010">oorsig</translation>
 <translation id="4387890294700445764">Gekompromitteerde wagwoorde</translation>
 <translation id="4388650384344483842">Gebruik minstens 8 karakters</translation>
+<translation id="4388700905120039425">{COUNT,plural, =1{Wagwoord vir <ph name="URL" />}other{2 wagwoorde vir <ph name="URL" /> ({COUNT})}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> en nog <ph name="NUMBER_OF_OTHER_SWITCHES" /> skakelaars</translation>
 <translation id="439266289085815679">Bluetooth-opstelling word beheer deur <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Wysig die opstellinglêer</translation>
@@ -5135,6 +5140,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="443031431654216610">Gebruk net syfers</translation>
 <translation id="4430369329743628066">Boekmerk is bygevoeg</translation>
 <translation id="4430422687972614133">Skakel virtuele kaart aan</translation>
+<translation id="4431962107539413562">Kry jou wagwoorde op al jou toestelle</translation>
 <translation id="443196770280837407">Maak Gemini met ’n kortpadsleutel oop.</translation>
 <translation id="4432621511648257259">Wagwoord is verkeerd</translation>
 <translation id="4434611816075088065">Niks anders het nou jou aandag nodig nie</translation>
@@ -5590,6 +5596,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4762849514113423887">Verkeerde wagwoord. Probeer weer.</translation>
 <translation id="4763408175235639573">Die volgende webkoekies is gestel toe jy hierdie bladsy bekyk het</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> is nie ’n geldige Google for Education-rekening nie. Kontak jou administrateur. As jy ’n administrateur is, kan jy jou organisasie opstel deur te gaan na: g.co/workspace/edusignup</translation>
+<translation id="4765053150631027076">{COUNT,plural, =1{{COUNT} wagwoord vir “<ph name="URL" />” word net op hierdie toestel gestoor. Stoor dit in jou Google-rekening om dit op jou ander toestelle te gebruik.}other{{COUNT} wagwoorde vir “<ph name="URL" />” word net op hierdie toestel gestoor. As jy hulle op jou ander toestelle wil gebruik, moet jy hulle in jou Google-rekening, , stoor.}}</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Hierdie toestel sal 1 maand lank gestoor word en jy kan volgende keer sonder ’n kode koppel. Dit word deur jou administrateur gestel.}other{Hierdie toestel sal {MONTHS} maande lank gestoor word en jy kan volgende keer sonder ’n kode koppel. Dit word deur jou administrateur gestel.}}</translation>
 <translation id="476563889641554689">Kies ’n gebied om met Lens te deursoek.</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Gaan tans publieke sleutel en integriteitblok na … Minder as 1 minuut oor}=1{Gaan tans publieke sleutel en integriteitblok na … 1 minuut oor}other{Gaan tans publieke sleutel en integriteitblok na … # minute oor}}</translation>
@@ -6062,6 +6069,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 met RSA-enkripsie</translation>
 <translation id="5090637338841444533">Mag nie jou kameraposisie naspoor nie</translation>
 <translation id="5091636240353511739">Wys PIN</translation>
+<translation id="5093447877601682598">Stuur terugvoer oor die oortjiestrook</translation>
 <translation id="5093477827231450397">Lys werwe wat jy geblokkeer het wat jy nie wil hê advertensies aan ander werwe moet voorstel nie</translation>
 <translation id="5093569275467863761">Incognito-terug-vorentoe-kasgegeue-subraam: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Jy kan met hierdie app gesteunde lêers uit die Lêers-app of ander apps oopmaak en wysig. <ph name="BEGIN_LINK" />Vind uit hoe om verstekapps op jou toestel te stel<ph name="END_LINK" /> om te beheer watter lêers hierdie app by verstek oopmaak.</translation>
@@ -6231,6 +6239,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5203035663139409780">Kan lêers of vouers op jou toestel wysig</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Klik om die uitbreiding te bekyk}other{Klik om hierdie uitbreidings te bekyk}}</translation>
 <translation id="5204282224596194174">Terugstelwagwoord vir <ph name="USER_EMAIL" /></translation>
+<translation id="5204584298075822291">Vou oortjies in</translation>
 <translation id="5204673965307125349">Powerwash die toestel en probeer weer.</translation>
 <translation id="5204967432542742771">Voer wagwoord in</translation>
 <translation id="5205484256512407285">Moet nooit mobiele data vir oordrag gebruik nie</translation>
@@ -8894,6 +8903,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7057567173736333354">Beskryf jou prent</translation>
 <translation id="70577934383983846">Gebruik hierdie wagwoord op al jou toestelle</translation>
 <translation id="7058024590501568315">Versteekte netwerk</translation>
+<translation id="7058325593717863084">Stuur terugvoer oor die oortjiestrook</translation>
 <translation id="7059858479264779982">Stel na outo-begin</translation>
 <translation id="7063129466199351735">Verwerk tans kortpaaie …</translation>
 <translation id="7063311912041006059">URL met <ph name="SPECIAL_SYMBOL" /> in die plek van 'n navraag</translation>
@@ -9073,6 +9083,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7193051357671784796">Hierdie app is deur jou organisasie bygevoeg. Herbegin die app om installering te voltooi.</translation>
 <translation id="7193374945610105795">Geen wagwoorde vir <ph name="ORIGIN" /> is gestoor nie</translation>
 <translation id="7193663868864659844">Stuur terugvoer vir voorgestelde groepe</translation>
+<translation id="7194343495483122559">Vou oortjies uit</translation>
 <translation id="7194873994243265344">Jou organisasie het hierdie lêer geblokkeer omdat dit geënkripteer is. Vra die eienaar om dit te dekripteer.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{1 aflaai is aan die gang}other{# aflaaie is aan die gang}}</translation>
 <translation id="7196272782924897510">Gebruik ’n toegangsleutel van ’n ander toestel af?</translation>
@@ -11330,7 +11341,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8707562594602678416">Plekke</translation>
 <translation id="8708000541097332489">Vee uit met uitgang</translation>
 <translation id="870805141700401153">Ondertekening van Microsoft se individuele kode</translation>
-<translation id="8708088555926718398">Fout: Kategorie: <ph name="CATEGORY" />, Kode: <ph name="CODE" />, Ekstra kode: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">Meer inligting</translation>
 <translation id="8709368517685334931">Jy kan ouer kleure in die Chrome Webwinkel kry</translation>
 <translation id="8710414664106871428">Fantasie</translation>

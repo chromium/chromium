@@ -240,6 +240,7 @@
 <translation id="1151917987301063366"><ph name="HOST" /> ला नेहमी सेन्सर ॲक्सेस करू द्या</translation>
 <translation id="1152346050262092795">तुमच्या खात्याची पडताळणी करण्यासाठी तुमचा पासवर्ड पुन्हा एंटर करा.</translation>
 <translation id="1153636665119721804">Google प्रगत संरक्षण प्रोग्राम</translation>
+<translation id="1153802775114315167">एक्स्टेंशन वापरण्यास सुरुवात करा</translation>
 <translation id="1155816283571436363">तुमच्या फोनशी कनेक्ट करत आहे</translation>
 <translation id="1157952955648710254">Google Search साइड पॅनल बंद करा</translation>
 <translation id="1158080958325422608">अप्परकेस करा</translation>
@@ -2778,6 +2779,7 @@
 <translation id="2842013086666334835">"<ph name="NETWORK_ID" />" मध्ये साइन इन करा</translation>
 <translation id="2843560154284403323">Linux सेट करणे पूर्ण करण्यासाठी, ChromeOS अपडेट करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> मोकळी केली</translation>
+<translation id="2844154481025280030">धोरण कॉन्फिगर केले आहे.</translation>
 <translation id="2844169650293029770">USB-C डिव्‍हाइस (डाव्‍या बाजूचे पुढील पोर्ट)</translation>
 <translation id="2844809857160214557">प्रिंट कार्ये पहा आणि व्यवस्थापित करा</translation>
 <translation id="2845276301195220700">Google Calendar साठी आणखी कृती</translation>
@@ -3217,6 +3219,7 @@
 <translation id="3151539355209957474">सुरू वेळ</translation>
 <translation id="3151786313568798007">अभिमुखता</translation>
 <translation id="3152356229013609796">तुमच्या फोनमधील सूचना पहा, त्या डिसमिस करा आणि त्यांना उत्तर द्या</translation>
+<translation id="3152545926232662879">दुर्लक्ष केले</translation>
 <translation id="3154754096046236400">वैयक्तिक संदर्भ</translation>
 <translation id="3155163173539279776">Chromium पुन्हा लाँच करा</translation>
 <translation id="3155394504825881014">टॅब गट याचे रूपांतर बुकमार्क फोल्डर यामध्ये करा</translation>
@@ -5756,6 +5759,7 @@
 <translation id="4868284252360267853">हा डायलॉग सध्या फोकस केलेला नाही. हा डायलॉग फोकस करण्यासाठी, Command-Shift-Option A प्रेस करा.</translation>
 <translation id="4868351661310357223">Google Play वरून तुमच्या <ph name="DEVICE_TYPE" /> वर ॲप्स आणि गेम इंस्टॉल करा.</translation>
 <translation id="4869170227080975044">ChromeOS नेटवर्कशी संबंधित सूचना वाचा</translation>
+<translation id="4869175799055761881">हे अ‍ॅप्लिकेशन वापरकर्त्याद्वारे इंस्टॉल केले जाऊ शकत नाही. कृपया डेव्हलपरशी संपर्क साधा</translation>
 <translation id="4870724079713069532">तुम्ही सपोर्ट असलेल्या फाइल या अ‍ॅपद्वारे File Explorer किंवा इतर अ‍ॅप्समध्ये उघडू शकता आणि संपादित करू शकता. या ॲपमध्ये कोणत्या फाइल बाय डीफॉल्ट उघडल्या जाव्यात हे नियंत्रित करण्यासाठी, <ph name="BEGIN_LINK" />Windows सेटिंग्ज<ph name="END_LINK" /> वर जा.</translation>
 <translation id="4870995365819149457">सपोर्ट असलेल्या काही लिंक तरीही <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> आणि आणखी एका अ‍ॅपमध्ये उघडतील.</translation>
 <translation id="4871308555310586478">Chrome वेब स्टोअरमधून नाही.</translation>
@@ -8662,6 +8666,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6896758677409633944">कॉपी करा</translation>
 <translation id="6897363604023044284">साफ करण्यासाठी साइट निवडा</translation>
 <translation id="6897688156970667447">कमी प्रकाशात उपयुक्त आहे आणि बॅटरी वाचवते</translation>
+<translation id="6897756054229464646">Gemini सह</translation>
 <translation id="6897972855231767338">अतिथी म्हणून ब्राउझ करण्याबद्दल अधिक जाणून घ्या</translation>
 <translation id="6898438890765871056">OneDrive फोल्डर उघडा</translation>
 <translation id="6898440773573063262">आता या डिव्हाइसवर ऑटो-लाँच करण्यासाठी कियोस्क ॲप्लिकेशन कॉन्फिगर केले जाऊ शकतात.</translation>
@@ -9164,6 +9169,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7250616558727237648">तुम्ही ज्या डिव्हाइससह शेअर करत आहात त्याने प्रतिसाद दिला नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="725109152065019550">क्षमस्व, तुमच्या ॲडमिनिस्ट्रेटरने तुमच्या खात्यावरील बाह्य स्टोरेज अक्षम केले आहे.</translation>
 <translation id="7251635775446614726">तुमच्या अ‍ॅडमिनिस्ट्रेटरनुसार: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="725310308981256997">या पेजविषयी माहिती विचारा</translation>
 <translation id="7253521419891527137">&amp;अधिक जाणून घ्या</translation>
 <translation id="7254951428499890870">तुम्ही निदान मोडमध्ये "<ph name="APP_NAME" />" लाँच करू इच्छिता याची तुम्हाला खात्री आहे?</translation>
 <translation id="725497546968438223">बुकमार्क फोल्डरचे बटण</translation>
@@ -10653,6 +10659,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8244201515061746038">ऑटोकरेक्टबद्दल अधिक जाणून घ्या बटण. ऑटोकरेक्शन सेटिंग्ज पेजवर जा. अ‍ॅक्टिव्हेट करण्यासाठी एंटर, डिसमिस करण्यासाठी एस्केप प्रेस करा.</translation>
 <translation id="8244514732452879619">लवकरच दिवे बंद होतील</translation>
 <translation id="8246776524656196770">पिन (वैयक्तिक ओळख क्रमांक) सह तुमची सिक्युरिटी की संरक्षित करा</translation>
+<translation id="824713170151383793">DevTools सह</translation>
 <translation id="8247795734638043885">असुरक्षित फाइल डाउनलोड करा</translation>
 <translation id="8248050856337841185">&amp;पेस्ट करा</translation>
 <translation id="8248381369318572865">तुमचा मायक्रोफोन अ‍ॅक्सेस करा आणि तुमच्या स्पीचचे विश्लेषण करा</translation>
@@ -11343,7 +11350,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8707562594602678416">ठिकाणे</translation>
 <translation id="8708000541097332489">बाहर पडताना साफ करा</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
-<translation id="8708088555926718398">एरर: वर्गवारी: <ph name="CATEGORY" />, कोड: <ph name="CODE" />, अतिरिक्त कोड: <ph name="EXTRA_CODE" /></translation>
 <translation id="8708671767545720562">&amp;अधिक माहिती</translation>
 <translation id="8709368517685334931">तुम्ही Chrome वेब स्टोअर मध्ये जुने रंग शोधू शकता</translation>
 <translation id="8710414664106871428">फँटसी</translation>
@@ -11569,6 +11575,7 @@ I feel - विटांची इमारत</translation>
 <translation id="885746075120788020">तुम्ही तुमचे Google खाते वापरून साइन इन कराल, तेव्हा तुमची सेव्ह केलेली प्राधान्ये आणि अ‍ॅक्टिव्हिटी या गोष्टी कोणत्याही ChromeOS डिव्हाइसवर तयार असतील. काय सिंक करायचे हे तुम्ही सेटिंग्ज मध्ये निवडू शकता.</translation>
 <translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{अ‍ॅप इंस्टॉल करायचे आहे का?}other{अ‍ॅप्स इंस्टॉल करायची आहेत का?}}</translation>
 <translation id="8858369206579825206">गोपनीयता नियंत्रणे</translation>
+<translation id="8858449624332155432">एकाहून अधिक स्रोतांवरील परस्परविरोधी मूल्यांसह धोरण कॉन्फिगर केले आहे.</translation>
 <translation id="8859174528519900719">सबफ्रेम: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">सेवा अटी लोड करता आल्या नाहीत</translation>
 <translation id="8859662783913000679">पालक खाते</translation>

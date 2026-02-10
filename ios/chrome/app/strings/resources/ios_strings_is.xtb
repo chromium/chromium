@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Til að sjá aðgangsorð þarftu fyrst að stilla aðgangsorð á tækinu þínu.</translation>
 <translation id="201759455285471444">Stækka flipahóp.</translation>
 <translation id="202070562065520783">Útskýrðu þetta fyrir mér</translation>
-<translation id="2023713324775943812">Opna lesstillingu á veffangastikunni þegar hún er í boði</translation>
 <translation id="2044394949148788042">Opna flipayfirlit</translation>
 <translation id="2044681667265133332">Reikningnum <ph name="USER_EMAIL" /> er stjórnað af <ph name="HOSTED_DOMAIN" />, sem getur hugsanlega skoðað tilteknar upplýsingar. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nýtt atriði</translation>
@@ -585,6 +584,7 @@
 <translation id="3140825265190223781">Vistuð aðgangsorð og aðgangslyklar</translation>
 <translation id="3143515551205905069">Hætta við samstillingu</translation>
 <translation id="3144126448740580210">LOKIÐ</translation>
+<translation id="3147521114983561406">Aðgangslyklar eru vistaðir í aðgangsorðastjórnun. Þú getur opnað þær í huliðsflipum og venjulegum flipum.</translation>
 <translation id="3148052723910099040">Töfluyfirlit yfir venjulega flipa</translation>
 <translation id="3148237711805373460">Fara þangað</translation>
 <translation id="3157387275655328056">Bæta við leslista</translation>
@@ -1860,6 +1860,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7772032839648071052">Staðfestu aðgangsorðið</translation>
 <translation id="7772948288262733182">Velkomin(n) aftur</translation>
 <translation id="777637629667389858">Verndar þig í Google-þjónustum þegar þú ert innskráð(ur).</translation>
+<translation id="7776604279034196531">Opnaðu lesstillingu af veffangastikunni þegar hún er í boði</translation>
 <translation id="7781829728241885113">Í gær</translation>
 <translation id="7788868432173225918">Loka stækkaðri sýn</translation>
 <translation id="7791543448312431591">Bæta við</translation>
@@ -2097,6 +2098,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8587001564479545614">Búa til PIN-númer fyrir endurheimt</translation>
 <translation id="8588404856427128947">Slökkt</translation>
 <translation id="8590286732816598906">Valmynd flipahópsins „<ph name="GROUP_TITLE" />“.</translation>
+<translation id="8593317261815647019">Búa til aðgangslykil utan huliðsstillingar?</translation>
 <translation id="8600272508328041907">Skipta yfir í þýðingu á allri síðunni</translation>
 <translation id="860043288473659153">Nafn korthafa</translation>
 <translation id="8601611099293226919">Leitaðu á skjánum með Google linsu</translation>

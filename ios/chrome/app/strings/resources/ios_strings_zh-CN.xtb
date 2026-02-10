@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">要想查看密码，您必须先在设备上设置密码。</translation>
 <translation id="201759455285471444">展开标签页分组。</translation>
 <translation id="202070562065520783">向我解释</translation>
-<translation id="2023713324775943812">从地址栏中启用阅读模式（如果可用）</translation>
 <translation id="2044394949148788042">打开标签页网格</translation>
 <translation id="2044681667265133332">账号 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，后者或许可以查看某些信息。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新项</translation>
@@ -557,7 +556,7 @@
 <translation id="3032704072014531631">您将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且<ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 将无法再在各项 Google 服务中与您互动</translation>
 <translation id="3034496853223708513"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，也不能再在各项 Google 服务中与您互动</translation>
 <translation id="3037177537145227281">正在跟踪价格</translation>
-<translation id="3038136505713492417">请验证您的身份，以便在此设备上使用您的通行密钥</translation>
+<translation id="3038136505713492417">如需在此设备上使用通行密钥，请先验证身份</translation>
 <translation id="3039671569659952257">删除文件夹</translation>
 <translation id="3053332585453689122">将您访问过的网址以及网页内容、下载内容、扩展程序活动和系统信息的少量样本发送至“Google 安全浏览”功能，以检查这些内容是否有害。</translation>
 <translation id="3055102495753300780">信息存储空间</translation>
@@ -1860,6 +1859,7 @@
 <translation id="7772032839648071052">确认密码</translation>
 <translation id="7772948288262733182">欢迎回来</translation>
 <translation id="777637629667389858">当您登录后，在各种 Google 服务中保护您。</translation>
+<translation id="7776604279034196531">在地址栏中访问阅读模式（如果可用）</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7788868432173225918">关闭展开的视图</translation>
 <translation id="7791543448312431591">添加</translation>
@@ -1924,7 +1924,7 @@
 <translation id="797874245254030665">从任意应用中获取您的密码和通行密钥</translation>
 <translation id="7982789257301363584">网络</translation>
 <translation id="798299424881500862">橙色主题</translation>
-<translation id="7987685713885608670">为了提高安全性，请先在设备上对密码进行加密，然后再将其保存到 Google 密码管理工具中。</translation>
+<translation id="7987685713885608670">为提升安全性，请先在设备上将密码加密，然后再保存到 Google 密码管理工具中。</translation>
 <translation id="798991908416757345">标签页分组不可用</translation>
 <translation id="7993170188789685695">点按两次即可关闭此通知。</translation>
 <translation id="7996239959906074962">设置…</translation>

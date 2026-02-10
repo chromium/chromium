@@ -295,7 +295,6 @@
 <translation id="2015722694326466240">Para ver as palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="201759455285471444">Expandir grupo de separadores.</translation>
 <translation id="202070562065520783">Explica-me isto</translation>
-<translation id="2023713324775943812">Aceda ao modo de leitura a partir da barra de endereço, quando disponível</translation>
 <translation id="2044394949148788042">Abra a grelha de separadores</translation>
 <translation id="2044681667265133332">A conta <ph name="USER_EMAIL" /> é gerida por <ph name="HOSTED_DOMAIN" />, que pode ver algumas informações. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">novo item</translation>
@@ -1860,6 +1859,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7772032839648071052">Confirmar frase de acesso</translation>
 <translation id="7772948288262733182">Damos-lhe as boas-vindas de volta</translation>
 <translation id="777637629667389858">Quando tem sessão iniciada, obtém proteção nos serviços Google.</translation>
+<translation id="7776604279034196531">Aceda ao modo de leitura a partir da barra de endereço, quando disponível</translation>
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7788868432173225918">Ignorar vista expandida</translation>
 <translation id="7791543448312431591">Adicionar</translation>
