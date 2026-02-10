@@ -124,6 +124,7 @@ export class OmniboxAimAppElement extends CrLitElement {
       // context on close as this indicates that the user is returning to the
       // widget after adding context.
       this.$.composebox.playGlowAnimation();
+      this.$.composebox.setDefaultModel();
     }
     this.$.composebox.addSearchContext(context);
     this.$.composebox.focusInput();
@@ -141,6 +142,7 @@ export class OmniboxAimAppElement extends CrLitElement {
       this.$.composebox.clearAllInputs(/* querySubmitted= */ false);
       this.$.composebox.clearAutocompleteMatches();
       this.$.composebox.resetModes();
+      this.$.composebox.resetToolsAndModels();
     }
     // Transfer input text to the location bar.
     return Promise.resolve({input});
