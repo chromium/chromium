@@ -752,32 +752,14 @@ std::vector<PrefetchRearchParam> PrefetchRearchParam::Params() {
   return {PrefetchRearchParam{
               .prefetch_scheduler = false,
               .prefetch_scheduler_progress_sync_best_effort = false,
-              .graceful_notification = false,
           },
           PrefetchRearchParam{
               .prefetch_scheduler = true,
               .prefetch_scheduler_progress_sync_best_effort = false,
-              .graceful_notification = false,
           },
           PrefetchRearchParam{
               .prefetch_scheduler = true,
               .prefetch_scheduler_progress_sync_best_effort = true,
-              .graceful_notification = false,
-          },
-          PrefetchRearchParam{
-              .prefetch_scheduler = false,
-              .prefetch_scheduler_progress_sync_best_effort = false,
-              .graceful_notification = true,
-          },
-          PrefetchRearchParam{
-              .prefetch_scheduler = true,
-              .prefetch_scheduler_progress_sync_best_effort = false,
-              .graceful_notification = true,
-          },
-          PrefetchRearchParam{
-              .prefetch_scheduler = true,
-              .prefetch_scheduler_progress_sync_best_effort = true,
-              .graceful_notification = true,
           }};
 }
 
@@ -793,10 +775,6 @@ void WithPrefetchRearchParam::InitRearchFeatures() {
             },
         }},
         {});
-  }
-  if (!param_.graceful_notification) {
-    feature_list_graceful_notification_.InitAndDisableFeature(
-        features::kPrefetchGracefulNotification);
   }
 }
 

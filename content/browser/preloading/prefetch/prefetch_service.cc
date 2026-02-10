@@ -1237,13 +1237,11 @@ void PrefetchService::OnGotEligibilityForRedirect(
     return false;
   };
 
-  if (base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)) {
-    if (!check_streaming_loader()) {
-      // TODO(crbug.com/400761083): Turn this into `CHECK_EQ()`.
-      DUMP_WILL_BE_CHECK_EQ(prefetch_container->GetLoadState(),
-                            PrefetchContainer::LoadState::kFailed);
-      return;
-    }
+  if (!check_streaming_loader()) {
+    // TODO(crbug.com/400761083): Turn this into `CHECK_EQ()`.
+    DUMP_WILL_BE_CHECK_EQ(prefetch_container->GetLoadState(),
+                          PrefetchContainer::LoadState::kFailed);
+    return;
   }
 
   const bool eligible = eligibility == PreloadingEligibility::kEligible;
@@ -1262,11 +1260,6 @@ void PrefetchService::OnGotEligibilityForRedirect(
   // Inform the prefetch container of the result of the eligibility check
   prefetch_container->OnEligibilityCheckComplete(eligibility);
 
-  if (!base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)) {
-    if (!check_streaming_loader()) {
-      return;
-    }
-  }
   auto streaming_url_loader = prefetch_container->GetStreamingURLLoader();
   CHECK(streaming_url_loader);
 

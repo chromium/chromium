@@ -6857,7 +6857,6 @@ std::vector<Event> CalculateOutputEventSequence(
   bool prefetch_completed = false;
   bool determined_head_issued = false;
   bool prefetch_container_destroyed = false;
-  bool during_redirect_eligibility_check = false;
   for (const Event event : input_event_sequence) {
     output_event_sequence.push_back(event);
 
@@ -6884,8 +6883,6 @@ std::vector<Event> CalculateOutputEventSequence(
           // eligibility check results are ignored (e.g. doesn't crash).
           break;
         }
-        CHECK(during_redirect_eligibility_check);
-        during_redirect_eligibility_check = false;
         if (event == Event::kRedirectEligibilityCheckCompleteFailure) {
           // We reach `PrefetchResponseReader::kFailedRedirect`, so we
           // currently issue `OnDeterminedHead()` observer call here.
@@ -6908,8 +6905,6 @@ std::vector<Event> CalculateOutputEventSequence(
       case Event::kPrefetchURLLoaderOnReceiveRedirect:
       case Event::kPrefetchURLLoaderOnReceiveRedirectCrossSite:
         CHECK(!prefetch_completed);
-        CHECK(!during_redirect_eligibility_check);
-        during_redirect_eligibility_check = true;
         break;
 
       case Event::kPrefetchURLLoaderOnReceiveResponseSuccess:
@@ -6936,36 +6931,11 @@ std::vector<Event> CalculateOutputEventSequence(
 
         // Otherwise, it's unexpected disconnection and should be considered as
         // a failure and the observer should be notified of the failure.
-        if (!base::FeatureList::IsEnabled(
-                features::kPrefetchGracefulNotification)) {
-          prefetch_completed = true;
-
-          if (!during_redirect_eligibility_check) {
-            // TODO(https://crbug.com/400761083): However, currently no
-            // notifications are made if not during redirect eligibility check.
-            // Fix this.
-            break;
-          }
-
-          if (!determined_head_issued) {
-            determined_head_issued = true;
-            output_event_sequence.push_back(Event::kObserverOnDeterminedHead);
-          }
-
-          // TODO(https://crbug.com/400761083): Disconnection during redirect
-          // eligibility check should be handled in the same way as
-          // `kPrefetchURLLoaderOnCompleteFailure` case below (because it should
-          // be handled as a general error), but currently we don't issue
-          // `PrefetchCompletedOrFailed()` observer call. Fix this.
-          break;
-        }
-
         [[fallthrough]];
 
       case Event::kPrefetchURLLoaderOnCompleteFailure:
         CHECK(!prefetch_completed);
         prefetch_completed = true;
-        during_redirect_eligibility_check = false;
         if (!determined_head_issued) {
           determined_head_issued = true;
           output_event_sequence.push_back(Event::kObserverOnDeterminedHead);
@@ -6985,20 +6955,6 @@ std::vector<Event> CalculateOutputEventSequence(
       case Event::kResetPrefetchContainer:
         prefetch_container_destroyed = true;
         output_event_sequence.push_back(Event::kObserverOnWillBeDestroyed);
-
-        if (!base::FeatureList::IsEnabled(
-                features::kPrefetchGracefulNotification) &&
-            !prefetch_completed && during_redirect_eligibility_check) {
-          // TODO(https://crbug.com/400761083): Currently we issue
-          // `OnDeterminedHead()` upon `PrefetchStreamingURLLoader` cancellation
-          // during redirect eligibility check. Fix this, i.e. no observer call
-          // should be made after `OnWillBeDestroyed()` observer call. Note
-          // that, at the time of redirect eligibility check, serving must be
-          // not yet started, and thus the cancellation always occurs.
-          CHECK(!determined_head_issued);
-          determined_head_issued = true;
-          output_event_sequence.push_back(Event::kObserverOnDeterminedHead);
-        }
         break;
 
       case Event::kObserverOnWillBeDestroyed:
@@ -7344,7 +7300,6 @@ TEST_P(PrefetchServiceEventTest, ActualObserverCallbacks) {
   const bool use_prefetch_proxy = true;
 
   const auto& input_event_sequence = std::get<1>(GetParam());
-  bool on_complete_failure_called = false;
 
   for (const Event event : input_event_sequence) {
     observer.AddEvent(event);
@@ -7363,17 +7318,7 @@ TEST_P(PrefetchServiceEventTest, ActualObserverCallbacks) {
         auto eligibility = is_eligible
                                ? PreloadingEligibility::kEligible
                                : PreloadingEligibility::kHostIsNonUnique;
-        if (!base::FeatureList::IsEnabled(
-                features::kPrefetchGracefulNotification) &&
-            !is_eligible && on_complete_failure_called) {
-          // TODO(https://crbug.com/433114485): Eligibility check is not
-          // cancelled on unexpected failed completion and causes crashes. Fix
-          // this.
-          EXPECT_DEATH_IF_SUPPORTED(
-              eligibility_check_callback_future->Take().Run(eligibility), "");
-        } else {
-          eligibility_check_callback_future->Take().Run(eligibility);
-        }
+        eligibility_check_callback_future->Take().Run(eligibility);
         // Wait for the remaining eligiblity check and subsequent network
         // request to settle.
         task_environment()->RunUntilIdle();
@@ -7404,7 +7349,6 @@ TEST_P(PrefetchServiceEventTest, ActualObserverCallbacks) {
         break;
 
       case Event::kPrefetchURLLoaderOnCompleteFailure:
-        on_complete_failure_called = true;
         CompleteResponseAndWait(net::ERR_FAILED, std::size(kHTMLBody));
         break;
 

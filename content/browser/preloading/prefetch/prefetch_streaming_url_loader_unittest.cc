@@ -1023,12 +1023,7 @@ TEST_P(PrefetchStreamingURLLoaderTest,
   if (ShouldWaitForHeadReceived()) {
     on_head_received_loop.Run();
   }
-  if (base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)) {
-    ASSERT_TRUE(on_complete.Wait());
-  } else {
-    // The callback is unreachable.
-    ASSERT_FALSE(on_complete.IsReady());
-  }
+  ASSERT_TRUE(on_complete.Wait());
   task_environment()->RunUntilIdle();
 
   // Streaming loader deletes itself asynchronously once prefetching URL loader
@@ -1043,10 +1038,7 @@ TEST_P(PrefetchStreamingURLLoaderTest,
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
-      base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)
-          ? PrefetchStreamingURLLoaderStatus::kFailedNetError
-          : PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect,
-      1);
+      PrefetchStreamingURLLoaderStatus::kFailedNetError, 1);
 }
 
 TEST_P(PrefetchStreamingURLLoaderTest, UnexpectedUrlLoaderDisconnect) {
@@ -1063,23 +1055,12 @@ TEST_P(PrefetchStreamingURLLoaderTest, UnexpectedUrlLoaderDisconnect) {
   OnPrefetchCompleteTestFuture on_complete;
   base::RunLoop on_deletion_scheduled_loop;
 
-  // TODO(https://crbug.com/400761083): Without `kPrefetchGracefulNotification`,
-  // `on_complete` and `on_head_received_loop` aren't called upon unexpected
-  // mojo disconnection, but for completeness we might want to call these
-  // callbacks (or another new callback).
   auto [response_reader, streaming_loader] =
-      base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)
-          ? CreateStreamingURLLoaderWithoutPrefetchContainerForTests(
-                shared_test_url_loader_factory(), *prefetch_request,
-                /*on_response_received=*/NotReachedTagForTests(), &on_complete,
-                /*on_receive_redirect=*/NotReachedTagForTests(),
-                &on_head_received_loop)
-          : CreateStreamingURLLoaderWithoutPrefetchContainerForTests(
-                shared_test_url_loader_factory(), *prefetch_request,
-                /*on_response_received=*/NotReachedTagForTests(),
-                /*on_complete=*/NotReachedTagForTests(),
-                /*on_receive_redirect=*/NotReachedTagForTests(),
-                /*on_head_received=*/NotReachedTagForTests());
+      CreateStreamingURLLoaderWithoutPrefetchContainerForTests(
+          shared_test_url_loader_factory(), *prefetch_request,
+          /*on_response_received=*/NotReachedTagForTests(), &on_complete,
+          /*on_receive_redirect=*/NotReachedTagForTests(),
+          &on_head_received_loop);
 
   streaming_loader->SetOnDeletionScheduledForTests(
       on_deletion_scheduled_loop.QuitClosure());
@@ -1094,10 +1075,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, UnexpectedUrlLoaderDisconnect) {
   // is disconnected.
   EXPECT_FALSE(streaming_loader);
 
-  if (base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)) {
-    if (ShouldWaitForHeadReceived()) {
-      on_head_received_loop.Run();
-    }
+  if (ShouldWaitForHeadReceived()) {
+    on_head_received_loop.Run();
   }
 
   // Since the network URL loader was disconnected, then prefetch should not be
@@ -1106,19 +1085,10 @@ TEST_P(PrefetchStreamingURLLoaderTest, UnexpectedUrlLoaderDisconnect) {
 
   response_reader.reset();
 
-  if (base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)) {
-    // Unexpected disconnection is considered as a network failure.
-    histogram_tester.ExpectUniqueSample(
-        "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
-        PrefetchStreamingURLLoaderStatus::kFailedNetError, 1);
-  } else {
-    // TODO(https://crbug.com/400761083): Also this remains `kWaitingOnHead`,
-    // but
-    // this probably should be set to a failure status.
-    histogram_tester.ExpectUniqueSample(
-        "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
-        PrefetchStreamingURLLoaderStatus::kWaitingOnHead, 1);
-  }
+  // Unexpected disconnection is considered as a network failure.
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
+      PrefetchStreamingURLLoaderStatus::kFailedNetError, 1);
 }
 
 TEST_P(PrefetchStreamingURLLoaderTest, Decoy) {

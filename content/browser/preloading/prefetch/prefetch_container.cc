@@ -614,9 +614,7 @@ void PrefetchContainer::CloseIdleConnections() {
 void PrefetchContainer::SetLoadState(LoadState new_load_state) {
   TRACE_EVENT_END("loading", request_->preload_pipeline_info().GetTrack());
 
-  if (base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)) {
-    CHECK(!is_in_dtor_);
-  }
+  CHECK(!is_in_dtor_);
 
   // `LoadState` transitions are disallowed during observer notification.
   DUMP_WILL_BE_CHECK(!during_observer_notification_);
@@ -1044,8 +1042,7 @@ void PrefetchContainer::OnDeterminedHead(bool is_successful_determined_head) {
   TRACE_EVENT("loading", "PrefetchContainer::OnDeterminedHead",
               request_->preload_pipeline_info().GetFlow());
 
-  if (base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification) &&
-      is_in_dtor_) {
+  if (is_in_dtor_) {
     // This can be called due to the loader cancellation during the
     // `PrefetchContainer` destruction. No state changes should be made and
     // observers shouldn't be notified during destruction.
