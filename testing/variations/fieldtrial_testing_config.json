@@ -30109,6 +30109,21 @@
             ]
         }
     ],
+    "WebViewTestNonembeddedLowEntropySource": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260209",
+                    "enable_features": [
+                        "WebViewTestNonembeddedLowEntropySource"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewThreadReduction": [
         {
             "platforms": [
