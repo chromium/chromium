@@ -667,7 +667,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_nil()];
 }
 
-- (void)testCachePositionIsRecreatedWhenNodeIsMoved {
+// TODO(crbug.com/483351045): Re-enable this flaky test.
+- (void)FLAKY_testCachePositionIsRecreatedWhenNodeIsMoved {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [ChromeCoordinatorAppInterface startBookmarksCoordinator];
