@@ -409,7 +409,7 @@ void InputStateModel::UpdateDisabledInputTypes() {
 
     bool incompatible_with_tool =
         state_.active_tool != omnibox::ToolMode::TOOL_MODE_UNSPECIFIED &&
-        active_tool_rule &&
+        active_tool_rule && !active_tool_rule->allow_all_input_types() &&
         !IsItemAllowed(input_type, active_tool_rule->allowed_input_types());
 
     if (input_limit_reached || incompatible_with_model ||
