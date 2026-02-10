@@ -28,7 +28,7 @@ class WalletPassAccessManagerImpl : public WalletPassAccessManager {
       const EntityInstance& entity,
       UpsertEntityInstanceCallback callback) override;
   void GetUnmaskedWalletEntityInstance(
-      const EntityId& entity_id,
+      const EntityInstance::EntityId& entity_id,
       GetUnmaskedEntityInstanceCallback callback) override;
 
  private:

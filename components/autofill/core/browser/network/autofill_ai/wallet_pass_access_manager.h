@@ -7,13 +7,11 @@
 
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 
 namespace autofill {
-
-class EntityId;
-class EntityInstance;
 
 // A client interface that allows Autofill AI to communicate with the Wallet
 // backend via `wallet::WalletHttpClient`.
@@ -47,7 +45,7 @@ class WalletPassAccessManager : public KeyedService {
   // Issues a GetUnmaskedPass request to the Wallet backend for the given
   // `entity_id`.
   virtual void GetUnmaskedWalletEntityInstance(
-      const EntityId& entity_id,
+      const EntityInstance::EntityId& entity_id,
       GetUnmaskedEntityInstanceCallback callback) = 0;
 };
 

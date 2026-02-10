@@ -31,7 +31,7 @@ void WalletPassAccessManagerImpl::UpdateWalletEntityInstance(
 }
 
 void WalletPassAccessManagerImpl::GetUnmaskedWalletEntityInstance(
-    const EntityId& entity_id,
+    const EntityInstance::EntityId& entity_id,
     GetUnmaskedEntityInstanceCallback callback) {
   NOTIMPLEMENTED();
 }
