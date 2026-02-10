@@ -32,7 +32,7 @@ export function getHtml(this: TopToolbarElement) {
     </cr-icon-button>
     <cr-icon-button id="threadHistoryButton"
         @click="${this.onThreadHistoryClick_}"
-        iron-icon="contextual_tasks:schedule_auto"
+        iron-icon="contextual_tasks:notes_spark"
         class="no-overlap" title="$i18n{threadHistoryTooltip}"
         aria-label="i18n{threadHistoryTooltip}">
     </cr-icon-button>
