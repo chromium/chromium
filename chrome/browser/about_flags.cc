@@ -382,6 +382,10 @@
 #include "device/vr/public/cpp/switches.h"
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/public/features.h"
+#endif
+
 #if defined(TOOLKIT_VIEWS)
 #include "ui/views/views_features.h"
 #include "ui/views/views_switches.h"
@@ -10728,6 +10732,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"glic-panel-reset-on-start", flag_descriptions::kGlicPanelResetOnStartName,
      flag_descriptions::kGlicPanelResetOnStartDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicPanelResetOnStart)},
+    {"glic-tab-restoration", flag_descriptions::kGlicTabRestorationName,
+     flag_descriptions::kGlicTabRestorationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kGlicTabRestoration)},
     {"glic-panel-set-position-on-drag",
      flag_descriptions::kGlicPanelSetPositionOnDragName,
      flag_descriptions::kGlicPanelSetPositionOnDragDescription, kOsDesktop,
