@@ -56,24 +56,11 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
                         crosapi::mojom::DiagnosticsRoutineCommandEnum command,
                         bool include_output,
                         GetRoutineUpdateCallback callback) override;
-  void RunBluetoothPairingRoutine(
-      const std::string& peripheral_id,
-      RunBluetoothPairingRoutineCallback callback) override;
-  void RunBluetoothScanningRoutine(
-      uint32_t length_seconds,
-      RunBluetoothScanningRoutineCallback callback) override;
-  void RunCpuCacheRoutine(uint32_t length_seconds,
-                          RunCpuCacheRoutineCallback callback) override;
-  void RunCpuStressRoutine(uint32_t length_seconds,
-                           RunCpuStressRoutineCallback callback) override;
   void RunDiskReadRoutine(
       crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum type,
       uint32_t length_seconds,
       uint32_t file_size_mb,
       RunDiskReadRoutineCallback callback) override;
-  void RunFloatingPointAccuracyRoutine(
-      uint32_t length_seconds,
-      RunFloatingPointAccuracyRoutineCallback callback) override;
   void RunNvmeSelfTestRoutine(
       crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum nvme_self_test_type,
       RunNvmeSelfTestRoutineCallback callback) override;
@@ -82,8 +69,6 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
   void RunSmartctlCheckRoutine(
       crosapi::mojom::UInt32ValuePtr percentage_used_threshold,
       RunSmartctlCheckRoutineCallback callback) override;
-  void RunPowerButtonRoutine(uint32_t timeout_seconds,
-                             RunPowerButtonRoutineCallback callback) override;
 
   // Pointer to real implementation.
   mojo::Remote<cros_healthd::mojom::CrosHealthdDiagnosticsService> service_;

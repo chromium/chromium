@@ -66,54 +66,6 @@ void FakeDiagnosticsService::GetRoutineUpdate(
       base::BindOnce(std::move(callback), routine_update_response_->Clone()));
 }
 
-void FakeDiagnosticsService::RunBluetoothPairingRoutine(
-    const std::string& peripheral_id,
-    RunBluetoothPairingRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kBluetoothPairing;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
-void FakeDiagnosticsService::RunBluetoothScanningRoutine(
-    uint32_t length_seconds,
-    RunBluetoothScanningRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kBluetoothScanning;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
-void FakeDiagnosticsService::RunCpuCacheRoutine(
-    uint32_t length_seconds,
-    RunCpuCacheRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_passed_parameters_.Set("length_seconds",
-                                static_cast<int32_t>(length_seconds));
-
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kCpuCache;
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
-void FakeDiagnosticsService::RunCpuStressRoutine(
-    uint32_t length_seconds,
-    RunCpuStressRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_passed_parameters_.Set("length_seconds",
-                                static_cast<int32_t>(length_seconds));
-
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kCpuStress;
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
 void FakeDiagnosticsService::RunDiskReadRoutine(
     crosapi::DiagnosticsDiskReadRoutineTypeEnum type,
     uint32_t length_seconds,
@@ -127,21 +79,6 @@ void FakeDiagnosticsService::RunDiskReadRoutine(
                                 static_cast<int32_t>(file_size_mb));
 
   actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kDiskRead;
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
-void FakeDiagnosticsService::RunFloatingPointAccuracyRoutine(
-    uint32_t length_seconds,
-    RunFloatingPointAccuracyRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_passed_parameters_.Set("length_seconds",
-                                static_cast<int32_t>(length_seconds));
-
-  actual_called_routine_ =
-      crosapi::DiagnosticsRoutineEnum::kFloatingPointAccuracy;
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -191,19 +128,6 @@ void FakeDiagnosticsService::RunSmartctlCheckRoutine(
     actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kSmartctlCheck;
   }
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
-void FakeDiagnosticsService::RunPowerButtonRoutine(
-    uint32_t timeout_seconds,
-    RunPowerButtonRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_passed_parameters_.Set("timeout_seconds",
-                                static_cast<int32_t>(timeout_seconds));
-
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kPowerButton;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));

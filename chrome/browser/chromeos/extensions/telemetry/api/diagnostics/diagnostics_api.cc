@@ -305,8 +305,9 @@ void OsDiagnosticsRunBluetoothPairingRoutineFunction::RunIfAllowed() {
   if (!params) {
     return;
   }
-  GetRemoteService()->RunBluetoothPairingRoutine(params->request.peripheral_id,
-                                                 GetOnResult());
+
+  GetService()->RunBluetoothPairingRoutine(params->request.peripheral_id,
+                                           GetOnResponse());
 }
 
 // OsDiagnosticsRunBluetoothPowerRoutineFunction -------------------------------
@@ -334,8 +335,10 @@ void OsDiagnosticsRunBluetoothScanningRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  GetRemoteService()->RunBluetoothScanningRoutine(
-      params->request.length_seconds, GetOnResult());
+  GetService()->RunBluetoothScanningRoutine(
+      ash::cros_healthd::mojom::NullableUint32::New(
+          params->request.length_seconds),
+      GetOnResponse());
 }
 
 // OsDiagnosticsRunCpuCacheRoutineFunction -------------------------------------
@@ -346,8 +349,10 @@ void OsDiagnosticsRunCpuCacheRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  GetRemoteService()->RunCpuCacheRoutine(params->request.length_seconds,
-                                         GetOnResult());
+  GetService()->RunCpuCacheRoutine(
+      ash::cros_healthd::mojom::NullableUint32::New(
+          params->request.length_seconds),
+      GetOnResponse());
 }
 
 // OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction ---------------------
@@ -359,8 +364,10 @@ void OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  GetRemoteService()->RunFloatingPointAccuracyRoutine(
-      params->request.length_seconds, GetOnResult());
+  GetService()->RunFloatingPointAccuracyRoutine(
+      ash::cros_healthd::mojom::NullableUint32::New(
+          params->request.length_seconds),
+      GetOnResponse());
 }
 
 // OsDiagnosticsRunCpuPrimeSearchRoutineFunction -------------------------------
@@ -383,8 +390,10 @@ void OsDiagnosticsRunCpuStressRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  GetRemoteService()->RunCpuStressRoutine(params->request.length_seconds,
-                                          GetOnResult());
+  GetService()->RunCpuStressRoutine(
+      ash::cros_healthd::mojom::NullableUint32::New(
+          params->request.length_seconds),
+      GetOnResponse());
 }
 
 // OsDiagnosticsRunDiskReadRoutineFunction -------------------------------------
@@ -502,8 +511,8 @@ void OsDiagnosticsRunPowerButtonRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  GetRemoteService()->RunPowerButtonRoutine(params->request.timeout_seconds,
-                                            GetOnResult());
+  GetService()->RunPowerButtonRoutine(params->request.timeout_seconds,
+                                      GetOnResponse());
 }
 
 // OsDiagnosticsRunAudioDriverRoutineFunction -------------------------------
