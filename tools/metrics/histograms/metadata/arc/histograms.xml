@@ -2160,7 +2160,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.Runtime.Performance.JanksPerMinute2{ArcPerformanceAppCategories}"
-    units="count" expires_after="2026-06-07">
+    units="count" expires_after="2026-08-09">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>

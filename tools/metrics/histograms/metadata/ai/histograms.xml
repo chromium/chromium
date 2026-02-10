@@ -86,7 +86,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.LanguageModel.APIUsage.Messages.Type"
-    enum="LanguageModelInputType" expires_after="2026-04-27">
+    enum="LanguageModelInputType" expires_after="2026-08-09">
   <owner>btriebw@chromium.org</owner>
   <owner>ayui@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
