@@ -31,6 +31,9 @@ class GlicStatusIconWin : public GlicStatusIcon,
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
  private:
+  // GlicStatusIcon:
+  gfx::ImageSkia GetIcon() const override;
+
   void RegisterThemesRegkeyObserver();
   void UpdateForThemesRegkey();
 

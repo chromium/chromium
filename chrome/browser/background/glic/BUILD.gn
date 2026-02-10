@@ -43,6 +43,12 @@ source_set("impl") {
       "glic_status_icon_win.h",
     ]
   }
+  if (is_chromeos) {
+    sources += [
+      "glic_status_icon_chromeos.cc",
+      "glic_status_icon_chromeos.h",
+    ]
+  }
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 

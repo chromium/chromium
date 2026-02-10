@@ -14,11 +14,6 @@
 #include "chrome/browser/status_icons/status_icon_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_observer.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 class StatusIcon;
 class StatusIconMenuModel;
 class StatusTray;
@@ -35,9 +30,6 @@ class GlicController;
 // status icon being clicked or menu item being triggered.
 class GlicStatusIcon : public StatusIconObserver,
                        public StatusIconMenuModel::Delegate,
-#if BUILDFLAG(IS_CHROMEOS)
-                       public ui::NativeThemeObserver,
-#endif
                        public BrowserCollectionObserver,
                        public GlicProfileManager::Observer,
                        public GlicWindowController::StateObserver {
@@ -57,11 +49,6 @@ class GlicStatusIcon : public StatusIconObserver,
 
   // StatusIconMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // ui::NativeThemeObserver
-  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // BrowserCollectionObserver:
   void OnBrowserCreated(BrowserWindowInterface* browser) override;
@@ -86,21 +73,9 @@ class GlicStatusIcon : public StatusIconObserver,
   StatusIcon* status_icon() { return status_icon_; }
 
  private:
-  gfx::ImageSkia GetIcon() const;
+  virtual gfx::ImageSkia GetIcon() const;
 
   std::unique_ptr<StatusIconMenuModel> CreateStatusIconMenu();
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Theme change observer. Used only if registry key cannot be opened.
-  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
-      native_theme_observer_{this};
-
-  // Whether the system is in dark mode. The registry key takes precedence, if
-  // available.
-  bool in_dark_mode_ =
-      ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
-      ui::NativeTheme::PreferredColorScheme::kDark;
-#endif  //  BUILDFLAG(IS_CHROMEOS)
 
   raw_ptr<GlicController> controller_;
 

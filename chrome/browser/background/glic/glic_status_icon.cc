@@ -42,14 +42,13 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_observer.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/background/glic/glic_status_icon_win.h"
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/background/glic/glic_status_icon_chromeos.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -100,6 +99,8 @@ std::unique_ptr<GlicStatusIcon> GlicStatusIcon::Create(
     StatusTray* status_tray) {
 #if BUILDFLAG(IS_WIN)
   return std::make_unique<GlicStatusIconWin>(controller, status_tray);
+#elif BUILDFLAG(IS_CHROMEOS)
+  return std::make_unique<GlicStatusIconChromeOS>(controller, status_tray);
 #else
   return std::make_unique<GlicStatusIcon>(controller, status_tray);
 #endif
@@ -108,12 +109,6 @@ std::unique_ptr<GlicStatusIcon> GlicStatusIcon::Create(
 GlicStatusIcon::GlicStatusIcon(GlicController* controller,
                                StatusTray* status_tray)
     : controller_(controller), status_tray_(status_tray) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!base::FeatureList::IsEnabled(features::kGlicShowStatusTrayIcon)) {
-    return;
-  }
-#endif
-
   status_icon_ = status_tray_->CreateStatusIcon(
       StatusTray::GLIC_ICON, GetIcon(),
       l10n_util::GetStringUTF16(GetTooltipMessageId(controller_->IsShowing())));
@@ -139,12 +134,7 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   // This sets the NSImage template property which makes the icon light/dark
   // based on contrast with the wallpaper.
   status_icon_->SetImageTemplate(true);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  native_theme_observer_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
-#endif
-
+#endif  // BUILDFLAG(IS_MAC)
   std::unique_ptr<StatusIconMenuModel> menu = CreateStatusIconMenu();
   context_menu_ = menu.get();
   status_icon_->SetContextMenu(std::move(menu));
@@ -230,14 +220,6 @@ void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
     }
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void GlicStatusIcon::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
-  in_dark_mode_ = observed_theme->preferred_color_scheme() ==
-                  ui::NativeTheme::PreferredColorScheme::kDark;
-  status_icon_->SetImage(GetIcon());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void GlicStatusIcon::OnBrowserCreated(BrowserWindowInterface* browser) {
   UpdateVisibilityOfExitInContextMenu();
@@ -347,18 +329,12 @@ void GlicStatusIcon::UpdateVisibilityOfShowAndCloseInContextMenu() {
 }
 
 gfx::ImageSkia GlicStatusIcon::GetIcon() const {
-#if BUILDFLAG(IS_CHROMEOS)
-  const auto& icon =
-      glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_STATUS_ICON);
-  return gfx::CreateVectorIcon(icon,
-                               in_dark_mode_ ? SK_ColorWHITE : SK_ColorBLACK);
-#else
-  // On Mac and Linux, theming is handled by the system and does not require
-  // different images for light/dark mode.
+  // On Mac and Linux, theming is handled by the system,. whereas ChromeOS and
+  // Win need theme aware icons. (See GetIcon() implementations of
+  // GlicStatusIconWin and GlicStatusIconChromeOS)
   const auto& icon =
       glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_STATUS_ICON);
   return gfx::CreateVectorIcon(icon, SK_ColorWHITE);
-#endif
 }
 
 std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {
