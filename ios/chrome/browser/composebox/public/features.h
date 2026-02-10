@@ -40,6 +40,9 @@ bool ShowComposeboxAdditionalAdvancedTools();
 // Whether to show the deep search advanced tool.
 bool ShowDeepSearchTool();
 
+// Whether to enable the server side state.
+bool EnableComposeboxServerSideState();
+
 // Whether to enable compact mode.
 bool IsComposeboxCompactModeEnabled();
 
@@ -54,6 +57,9 @@ BASE_DECLARE_FEATURE(kComposeboxCompactMode);
 
 // Used to enable deep search in the composebox.
 BASE_DECLARE_FEATURE(kComposeboxDeepSearch);
+
+// Used to enable server side state in the composebox.
+BASE_DECLARE_FEATURE(kComposeboxServerSideState);
 
 // Used to force top input plate in the composebox.
 BASE_DECLARE_FEATURE(kComposeboxForceTop);

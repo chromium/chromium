@@ -363,6 +363,11 @@ const char kComposeboxMenuTitleName[] = "ComposeboxMenuTitle";
 const char kComposeboxMenuTitleDescription[] =
     "Enables the ComposeboxMenuTitle feature.";
 
+const char kComposeboxServerSideStateName[] =
+    "Enable server side state in Composebox";
+extern const char kComposeboxServerSideStateDescription[] =
+    "When enabled, the server side state will be used in the composebox";
+
 const char kComposeboxTabPickerVariationName[] =
     "Enable tab picker variation in the composebox";
 const char kComposeboxTabPickerVariationDescription[] =
