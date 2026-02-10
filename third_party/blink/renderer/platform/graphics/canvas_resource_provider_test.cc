@@ -146,6 +146,29 @@ class CanvasResourceProviderTest : public Test {
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform_;
 };
 
+TEST_F(CanvasResourceProviderTest, GetBackingClientSharedImage) {
+  const gpu::SharedImageUsageSet shared_image_usage_flags =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
+      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+
+  Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
+                                   CanvasPixelFormat::kUint8,
+                                   /*has_alpha=*/true);
+  auto provider = CanvasNon2DResourceProviderSharedImage::Create(
+      gfx::Size(10, 10), color_params,
+      CanvasResourceProvider::ShouldInitialize::kCallClear,
+      context_provider_wrapper_, RasterMode::kGPU, shared_image_usage_flags);
+
+  gpu::SyncToken sync_token;
+
+  // The same ClientSharedImage should be returned from sequential calls to
+  // GetBackingClientSharedImage().
+  auto client_si = provider->GetBackingClientSharedImage(sync_token);
+  auto client_si_from_second_call =
+      provider->GetBackingClientSharedImage(sync_token);
+  EXPECT_EQ(client_si_from_second_call, client_si);
+}
+
 TEST_F(CanvasResourceProviderTest,
        GetBackingClientSharedImageForExternalWrite) {
   const gpu::SharedImageUsageSet shared_image_usage_flags =
