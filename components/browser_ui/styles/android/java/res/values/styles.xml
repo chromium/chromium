@@ -245,7 +245,7 @@ found in the LICENSE file.
         <item name="android:textColor">@color/default_text_color_list</item>
     </style>
 
-    <style name="TextAppearance.TextMedium.Primary.OnAccent1Container" parent="TextAppearance.TextMedium" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextMedium.OnAccent1Container" parent="TextAppearance.TextMedium" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_on_accent1_container_list</item>
     </style>
 
