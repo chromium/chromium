@@ -1221,8 +1221,6 @@ static_library("browser") {
     "profiles/renderer_updater.h",
     "profiles/renderer_updater_factory.cc",
     "profiles/renderer_updater_factory.h",
-    "profiles/sql_init_error_message_ids.cc",
-    "profiles/sql_init_error_message_ids.h",
     "profiles/storage_partition_descriptor.h",
     "push_messaging/budget_database.cc",
     "push_messaging/budget_database.h",
@@ -1516,7 +1514,6 @@ static_library("browser") {
     "webauthn/password_credential_fetcher.h",
     "webauthn/webauthn_metrics_util.cc",
     "webauthn/webauthn_switches.cc",
-    "webdata_services/web_data_service_factory.cc",
   ]
 
   configs += [
@@ -1996,6 +1993,7 @@ static_library("browser") {
     "//chrome/browser/webauthn",
     "//chrome/browser/webauthn:chrome_web_authentication_delegate",
     "//chrome/browser/webdata_services",
+    "//chrome/browser/webdata_services:impl",
     "//chrome/browser/webid",
     "//chrome/browser/webid:impl",
     "//components/activity_reporter",

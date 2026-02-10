@@ -20,6 +20,8 @@ source_set("profiles") {
     "profile_key.cc",
     "profile_key.h",
     "profiles_state.h",
+    "sql_init_error_message_ids.cc",
+    "sql_init_error_message_ids.h",
   ]
 
   if (is_android) {
@@ -31,7 +33,11 @@ source_set("profiles") {
   }
 
   # Cannot depend on //chrome/browser:browser.
-  deps = []
+  deps = [
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//sql",
+  ]
   if (is_android) {
     deps += [
       "//chrome/browser/profiles/android:jni_headers",

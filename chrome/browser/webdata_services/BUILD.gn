@@ -11,3 +11,23 @@ source_set("webdata_services") {
     "//components/webdata_services",
   ]
 }
+
+source_set("impl") {
+  sources = [ "web_data_service_factory.cc" ]
+
+  deps = [
+    ":webdata_services",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/profiles",
+    "//components/autofill/core/browser",
+    "//components/plus_addresses/core/browser",
+    "//components/plus_addresses/core/browser/webdata",
+    "//components/prefs",
+    "//components/search_engines",
+    "//components/signin/public/base",
+    "//components/signin/public/webdata",
+    "//content/public/browser",
+  ]
+}
