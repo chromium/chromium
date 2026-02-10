@@ -50,11 +50,6 @@
 - (void)start {
   raw_ptr<BwgService> BWGService =
       BwgServiceFactory::GetForProfile(self.profile);
-
-  // TODO(crbug.com/474126721): Understand if/when the PageActionMenu is started
-  // while BWGService is nullptr. Remove when investigation is complete.
-  CHECK(BWGService != nullptr, base::NotFatalUntil::M150);
-
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
 
