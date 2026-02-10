@@ -373,7 +373,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
 
     private static int getTextAppearance(Snackbar snackbar) {
         if (snackbar.getTheme() == Snackbar.Theme.GOOGLE) {
-            return R.style.TextAppearance_TextMedium_Primary_OnAccent1;
+            return R.style.TextAppearance_TextMedium_OnAccent1;
         }
 
         assert snackbar.getTheme() == Snackbar.Theme.BASIC;
