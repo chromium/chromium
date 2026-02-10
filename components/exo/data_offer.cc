@@ -96,7 +96,7 @@ void ReadTextFromClipboard(const std::string& charset,
                            const ui::DataTransferEndpoint data_dst,
                            DataOffer::SendDataCallback callback) {
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst,
+      ui::ClipboardBuffer::kCopyPaste, data_dst,
       base::BindOnce(&OnReceiveTextFromClipboard, charset,
                      std::move(callback)));
 }
@@ -114,7 +114,7 @@ void ReadHTMLFromClipboard(const std::string& charset,
                            const ui::DataTransferEndpoint data_dst,
                            DataOffer::SendDataCallback callback) {
   ui::Clipboard::GetForCurrentThread()->ReadHTML(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst,
+      ui::ClipboardBuffer::kCopyPaste, data_dst,
       base::BindOnce(&OnReceiveHTMLFromClipboard, charset,
                      std::move(callback)));
 }
@@ -128,7 +128,7 @@ void OnReceiveRTFFromClipboard(DataOffer::SendDataCallback callback,
 void ReadRTFFromClipboard(const ui::DataTransferEndpoint data_dst,
                           DataOffer::SendDataCallback callback) {
   ui::Clipboard::GetForCurrentThread()->ReadRTF(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst,
+      ui::ClipboardBuffer::kCopyPaste, data_dst,
       base::BindOnce(&OnReceiveRTFFromClipboard, std::move(callback)));
 }
 
@@ -149,7 +149,7 @@ void ReadFilenamesFromClipboard(ui::EndpointType endpoint_type,
                                 const ui::DataTransferEndpoint data_dst,
                                 DataOffer::SendDataCallback callback) {
   ui::Clipboard::GetForCurrentThread()->ReadFilenames(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst,
+      ui::ClipboardBuffer::kCopyPaste, data_dst,
       base::BindOnce(&OnReceiveFilenamesFromClipboard, endpoint_type,
                      security_delegate, std::move(callback)));
 }
@@ -164,7 +164,7 @@ void OnReceivePNGFromClipboard(DataOffer::SendDataCallback callback,
 void ReadPNGFromClipboard(const ui::DataTransferEndpoint data_dst,
                           DataOffer::SendDataCallback callback) {
   ui::Clipboard::GetForCurrentThread()->ReadPng(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst,
+      ui::ClipboardBuffer::kCopyPaste, data_dst,
       base::BindOnce(&OnReceivePNGFromClipboard, std::move(callback)));
 }
 

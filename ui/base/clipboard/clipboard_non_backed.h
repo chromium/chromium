@@ -109,7 +109,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
                const DataTransferEndpoint* data_dst,
                std::string* result) const override;
   void ReadPng(ClipboardBuffer buffer,
-               const DataTransferEndpoint* data_dst,
+               const std::optional<DataTransferEndpoint>& data_dst,
                ReadPngCallback callback) const override;
   void ReadDataTransferCustomData(ClipboardBuffer buffer,
                                   const std::u16string& type,

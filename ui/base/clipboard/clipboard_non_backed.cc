@@ -759,14 +759,15 @@ void ClipboardNonBacked::ReadRTF(ClipboardBuffer buffer,
 #endif
 }
 
-void ClipboardNonBacked::ReadPng(ClipboardBuffer buffer,
-                                 const DataTransferEndpoint* data_dst,
-                                 ReadPngCallback callback) const {
+void ClipboardNonBacked::ReadPng(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadPngCallback callback) const {
   DCHECK(CalledOnValidThread());
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
-  if (!clipboard_internal.IsReadAllowed(data_dst,
+  if (!clipboard_internal.IsReadAllowed(base::OptionalToPtr(data_dst),
                                         ClipboardInternalFormat::kPng)) {
     std::move(callback).Run(std::vector<uint8_t>());
     return;

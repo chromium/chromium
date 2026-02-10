@@ -224,10 +224,10 @@ void TestClipboard::ReadRTF(ClipboardBuffer buffer,
 }
 
 void TestClipboard::ReadPng(ClipboardBuffer buffer,
-                            const DataTransferEndpoint* data_dst,
+                            const std::optional<DataTransferEndpoint>& data_dst,
                             ReadPngCallback callback) const {
   const DataStore& store = GetStore(buffer);
-  if (!IsReadAllowed(store.data_src, data_dst)) {
+  if (!IsReadAllowed(store.data_src, base::OptionalToPtr(data_dst))) {
     std::move(callback).Run(std::vector<uint8_t>());
     return;
   }

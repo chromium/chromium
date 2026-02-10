@@ -136,7 +136,7 @@ void ClipboardRecentContentGeneric::GetRecentImageFromClipboard(
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, {.notify_if_restricted = false});
   ui::Clipboard::GetForCurrentThread()->ReadPng(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst,
+      ui::ClipboardBuffer::kCopyPaste, data_dst,
       base::BindOnce(&OnGetRecentImageFromClipboard, std::move(callback)));
 }
 

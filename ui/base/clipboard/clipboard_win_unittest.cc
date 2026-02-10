@@ -117,7 +117,7 @@ TEST_F(ClipboardWinTest, NoDataChangedNotificationOnRead) {
   ASSERT_EQ(data_changed_count(), 0);
 
   base::test::TestFuture<const std::vector<uint8_t>&> png_future;
-  clipboard->ReadPng(ClipboardBuffer::kCopyPaste, nullptr,
+  clipboard->ReadPng(ClipboardBuffer::kCopyPaste, std::nullopt,
                      png_future.GetCallback());
   ASSERT_TRUE(png_future.Wait());
   ASSERT_EQ(data_changed_count(), 0);
@@ -185,8 +185,8 @@ TEST_F(ClipboardWinTest, InvalidBitmapDoesNotCrash) {
 
   // Reading PNG should not crash.
   base::test::TestFuture<const std::vector<uint8_t>&> png_future;
-  Clipboard::GetForCurrentThread()->ReadPng(ClipboardBuffer::kCopyPaste,
-                                            nullptr, png_future.GetCallback());
+  Clipboard::GetForCurrentThread()->ReadPng(
+      ClipboardBuffer::kCopyPaste, std::nullopt, png_future.GetCallback());
   ASSERT_TRUE(png_future.Wait());
   const auto& png = png_future.Get();
   ASSERT_GE(png.size(), 0u);

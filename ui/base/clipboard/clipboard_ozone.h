@@ -46,38 +46,38 @@ class ClipboardOzone : public Clipboard {
                          const DataTransferEndpoint* data_dst) const override;
   void Clear(ClipboardBuffer buffer) override;
   void ReadAvailableTypes(ClipboardBuffer buffer,
-                          const DataTransferEndpoint* data_dst,
+                          const std::optional<DataTransferEndpoint>& data_dst,
                           ReadAvailableTypesCallback callback) const override;
   void ReadText(ClipboardBuffer buffer,
-                const DataTransferEndpoint* data_dst,
+                const std::optional<DataTransferEndpoint>& data_dst,
                 ReadTextCallback callback) const override;
   void ReadAsciiText(ClipboardBuffer buffer,
-                     const DataTransferEndpoint* data_dst,
+                     const std::optional<DataTransferEndpoint>& data_dst,
                      ReadAsciiTextCallback callback) const override;
   void ReadHTML(ClipboardBuffer buffer,
-                const DataTransferEndpoint* data_dst,
+                const std::optional<DataTransferEndpoint>& data_dst,
                 ReadHtmlCallback callback) const override;
   void ReadSvg(ClipboardBuffer buffer,
-               const DataTransferEndpoint* data_dst,
+               const std::optional<DataTransferEndpoint>& data_dst,
                ReadSvgCallback callback) const override;
   void ReadRTF(ClipboardBuffer buffer,
-               const DataTransferEndpoint* data_dst,
+               const std::optional<DataTransferEndpoint>& data_dst,
                ReadRTFCallback callback) const override;
   void ReadPng(ClipboardBuffer buffer,
-               const DataTransferEndpoint* data_dst,
+               const std::optional<DataTransferEndpoint>& data_dst,
                ReadPngCallback callback) const override;
   void ReadDataTransferCustomData(
       ClipboardBuffer buffer,
       const std::u16string& type,
-      const DataTransferEndpoint* data_dst,
+      const std::optional<DataTransferEndpoint>& data_dst,
       ReadDataTransferCustomDataCallback callback) const override;
   void ReadFilenames(ClipboardBuffer buffer,
-                     const DataTransferEndpoint* data_dst,
+                     const std::optional<DataTransferEndpoint>& data_dst,
                      ReadFilenamesCallback callback) const override;
-  void ReadBookmark(const DataTransferEndpoint* data_dst,
+  void ReadBookmark(const std::optional<DataTransferEndpoint>& data_dst,
                     ReadBookmarkCallback callback) const override;
   void ReadData(const ClipboardFormatType& format,
-                const DataTransferEndpoint* data_dst,
+                const std::optional<DataTransferEndpoint>& data_dst,
                 ReadDataCallback callback) const override;
   void ReadAvailableTypes(ClipboardBuffer buffer,
                           const DataTransferEndpoint* data_dst,
@@ -150,21 +150,21 @@ class ClipboardOzone : public Clipboard {
   template <typename Callback, typename ProcessCallback>
   void ReadAsync(ClipboardBuffer buffer,
                  const std::string& mime_type,
-                 std::optional<DataTransferEndpoint> data_dst,
+                 const std::optional<DataTransferEndpoint>& data_dst,
                  ClipboardFormatMetric metric,
                  Callback callback,
                  ProcessCallback process_cb) const;
 
   template <typename Callback, typename ProcessCallback>
   void OnReadAsync(ClipboardBuffer buffer,
-                   std::optional<DataTransferEndpoint> data_dst,
+                   const std::optional<DataTransferEndpoint>& data_dst,
                    ClipboardFormatMetric metric,
                    Callback callback,
                    ProcessCallback process_cb,
                    const PlatformClipboard::Data& data) const;
 
   template <typename Callback, typename ProcessCallback>
-  void OnReadAsyncSource(std::optional<DataTransferEndpoint> data_dst,
+  void OnReadAsyncSource(const std::optional<DataTransferEndpoint>& data_dst,
                          ClipboardFormatMetric metric,
                          Callback callback,
                          ProcessCallback process_cb,

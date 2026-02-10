@@ -248,7 +248,7 @@ TEST_F(ClipboardNonBackedTest, ImageEncoding) {
   base::RunLoop loop;
   clipboard()->ReadPng(
       ClipboardBuffer::kCopyPaste,
-      /*data_dst=*/nullptr,
+      /*data_dst=*/std::nullopt,
       base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
         png = png_data;
         loop.Quit();
@@ -281,19 +281,19 @@ TEST_F(ClipboardNonBackedTest, EncodeImageOnce) {
   // Read from the clipboard many times in a row.
   clipboard()->ReadPng(
       ClipboardBuffer::kCopyPaste,
-      /*data_dst=*/nullptr,
+      /*data_dst=*/std::nullopt,
       base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
         pngs.emplace_back(png_data);
       }));
   clipboard()->ReadPng(
       ClipboardBuffer::kCopyPaste,
-      /*data_dst=*/nullptr,
+      /*data_dst=*/std::nullopt,
       base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
         pngs.emplace_back(png_data);
       }));
   clipboard()->ReadPng(
       ClipboardBuffer::kCopyPaste,
-      /*data_dst=*/nullptr,
+      /*data_dst=*/std::nullopt,
       base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
         pngs.emplace_back(png_data);
         // Read operations should be ordered. This callback will be called last.
@@ -340,13 +340,13 @@ TEST_F(ClipboardNonBackedTest, EncodeMultipleImages) {
   // Read from the clipboard many times in a row.
   clipboard()->ReadPng(
       ClipboardBuffer::kCopyPaste,
-      /*data_dst=*/nullptr,
+      /*data_dst=*/std::nullopt,
       base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
         pngs.emplace_back(png_data);
       }));
   clipboard()->ReadPng(
       ClipboardBuffer::kCopyPaste,
-      /*data_dst=*/nullptr,
+      /*data_dst=*/std::nullopt,
       base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
         pngs.emplace_back(png_data);
       }));
@@ -356,7 +356,7 @@ TEST_F(ClipboardNonBackedTest, EncodeMultipleImages) {
 
   clipboard()->ReadPng(
       ClipboardBuffer::kCopyPaste,
-      /*data_dst=*/nullptr,
+      /*data_dst=*/std::nullopt,
       base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
         pngs.emplace_back(png_data);
         // Read operations should be ordered. This callback will be called last.
@@ -475,7 +475,7 @@ TEST_F(ClipboardNonBackedMockTimeTest,
       }),
       base::BindLambdaForTesting([&]() {
         clipboard->ReadPng(ClipboardBuffer::kCopyPaste,
-                           /*data_dst=*/nullptr,
+                           /*data_dst=*/std::nullopt,
                            /*callback=*/base::DoNothing());
       }),
       base::BindLambdaForTesting([&]() {

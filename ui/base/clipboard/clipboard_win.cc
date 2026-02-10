@@ -573,7 +573,7 @@ void ClipboardWin::ReadRTF(ClipboardBuffer buffer,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardWin::ReadPng(ClipboardBuffer buffer,
-                           const DataTransferEndpoint* data_dst,
+                           const std::optional<DataTransferEndpoint>& data_dst,
                            ReadPngCallback callback) const {
   RecordRead(ClipboardFormatMetric::kPng);
   std::vector<uint8_t> data = ReadPngInternal(buffer);

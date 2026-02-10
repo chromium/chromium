@@ -28,7 +28,7 @@ class ReadImageHelper {
     std::vector<uint8_t> png;
     clipboard->ReadPng(
         ClipboardBuffer::kCopyPaste,
-        /* data_dst = */ nullptr,
+        /* data_dst = */ std::nullopt,
         base::BindLambdaForTesting([&](const std::vector<uint8_t>& result) {
           png = result;
           loop.Quit();

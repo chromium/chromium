@@ -780,7 +780,7 @@ TYPED_TEST(ClipboardTest, DataTest) {
 
   base::test::TestFuture<std::map<std::string, std::string>> future;
   this->clipboard().ExtractCustomPlatformNames(ClipboardBuffer::kCopyPaste,
-                                               /* data_dst = */ nullptr,
+                                               /* data_dst = */ std::nullopt,
                                                future.GetCallback());
   std::map<std::string, std::string> custom_format_names = future.Take();
   EXPECT_TRUE(custom_format_names.find(kFormatString) !=
@@ -818,7 +818,7 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
   // Check format 1.
   base::test::TestFuture<std::vector<std::u16string>> future_names;
   this->clipboard().ReadAvailableStandardAndCustomFormatNames(
-      ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+      ClipboardBuffer::kCopyPaste, /* data_dst = */ std::nullopt,
       future_names.GetCallback());
   EXPECT_THAT(future_names.Take(), Contains(u"web chromium/x-test-format1"));
   std::string custom_format_json;
@@ -826,7 +826,7 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
                              /* data_dst = */ nullptr, &custom_format_json);
   base::test::TestFuture<std::map<std::string, std::string>> future;
   this->clipboard().ExtractCustomPlatformNames(ClipboardBuffer::kCopyPaste,
-                                               /* data_dst = */ nullptr,
+                                               /* data_dst = */ std::nullopt,
                                                future.GetCallback());
   std::map<std::string, std::string> custom_format_names = future.Take();
   EXPECT_TRUE(custom_format_names.find(kFormatString1) !=
@@ -840,7 +840,7 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
   // Check format 2.
   base::test::TestFuture<std::vector<std::u16string>> future_names2;
   this->clipboard().ReadAvailableStandardAndCustomFormatNames(
-      ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+      ClipboardBuffer::kCopyPaste, /* data_dst = */ std::nullopt,
       future_names2.GetCallback());
   EXPECT_THAT(future_names2.Take(), Contains(u"web chromium/x-test-format2"));
   EXPECT_TRUE(custom_format_names.find(kFormatString2) !=
@@ -877,7 +877,7 @@ TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
   // Check format 1.
   base::test::TestFuture<std::vector<std::u16string>> future_names;
   this->clipboard().ReadAvailableStandardAndCustomFormatNames(
-      ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+      ClipboardBuffer::kCopyPaste, /* data_dst = */ std::nullopt,
       future_names.GetCallback());
   EXPECT_THAT(future_names.Take(), Contains(u"web chromium/x-test-format1"));
   std::string custom_format_json;
@@ -885,7 +885,7 @@ TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
                              /* data_dst = */ nullptr, &custom_format_json);
   base::test::TestFuture<std::map<std::string, std::string>> future;
   this->clipboard().ExtractCustomPlatformNames(ClipboardBuffer::kCopyPaste,
-                                               /* data_dst = */ nullptr,
+                                               /* data_dst = */ std::nullopt,
                                                future.GetCallback());
   std::map<std::string, std::string> custom_format_names = future.Take();
   EXPECT_TRUE(custom_format_names.find(kFormatString1) !=
@@ -899,7 +899,7 @@ TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
   // Check format 2.
   base::test::TestFuture<std::vector<std::u16string>> future_names2;
   this->clipboard().ReadAvailableStandardAndCustomFormatNames(
-      ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+      ClipboardBuffer::kCopyPaste, /* data_dst = */ std::nullopt,
       future_names2.GetCallback());
   EXPECT_THAT(future_names2.Take(), Contains(u"web text/plain"));
   EXPECT_TRUE(custom_format_names.find(kFormatString2) !=
@@ -949,7 +949,7 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
                              /* data_dst = */ nullptr, &custom_format_json);
   base::test::TestFuture<std::map<std::string, std::string>> future;
   this->clipboard().ExtractCustomPlatformNames(ClipboardBuffer::kCopyPaste,
-                                               /* data_dst = */ nullptr,
+                                               /* data_dst = */ std::nullopt,
                                                future.GetCallback());
   std::map<std::string, std::string> custom_format_names = future.Take();
 

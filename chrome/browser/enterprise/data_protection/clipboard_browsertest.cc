@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   // No data should be written into the clipboard while the dialog is present.
   base::test::TestFuture<std::u16string> first_future;
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
       first_future.GetCallback());
   EXPECT_TRUE(first_future.Wait());
   EXPECT_TRUE(first_future.Get().empty());
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   // verdict was "block".
   base::test::TestFuture<std::u16string> second_future;
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
       second_future.GetCallback());
   EXPECT_TRUE(second_future.Wait());
   EXPECT_TRUE(second_future.Get().empty());
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   // No data should be written into the clipboard while the dialog is present.
   base::test::TestFuture<std::u16string> first_future;
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
       first_future.GetCallback());
   EXPECT_TRUE(first_future.Wait());
   EXPECT_TRUE(first_future.Get().empty());
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   // bypassed.
   base::test::TestFuture<std::u16string> second_future;
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
       second_future.GetCallback());
   EXPECT_TRUE(second_future.Wait());
   EXPECT_TRUE(second_future.Get().empty());
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   // No data should be written into the clipboard while the dialog is present.
   base::test::TestFuture<std::u16string> first_future;
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
       first_future.GetCallback());
   EXPECT_TRUE(first_future.Wait());
   EXPECT_TRUE(first_future.Get().empty());
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   // bypassed.
   base::test::TestFuture<std::u16string> second_future;
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
       second_future.GetCallback());
   EXPECT_TRUE(second_future.Wait());
   EXPECT_EQ(second_future.Get(), u"Bypassed");
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   ASSERT_FALSE(helper.dialog());
   base::test::TestFuture<std::u16string> future;
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
       future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(), u"Allowed");
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   // Verify that nothing was written to the clipboard.
   base::test::TestFuture<std::u16string> future;
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
       future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(
   // primary main frame when matching Data Control rules.
   base::test::TestFuture<std::u16string> future;
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
       future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());

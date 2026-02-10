@@ -662,9 +662,10 @@ void ClipboardAndroid::ReadRTF(ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardAndroid::ReadPng(ClipboardBuffer buffer,
-                               const DataTransferEndpoint* data_dst,
-                               ReadPngCallback callback) const {
+void ClipboardAndroid::ReadPng(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadPngCallback callback) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kPng);
