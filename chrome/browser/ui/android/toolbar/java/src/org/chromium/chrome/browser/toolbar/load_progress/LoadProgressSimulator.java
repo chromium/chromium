@@ -12,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -68,8 +67,7 @@ class LoadProgressSimulator {
 
     /** Cancels simulating load progress. */
     public void cancel() {
-        if (!ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()
-                || (mIsStarted && !MathUtils.areFloatsEqual(mProgress, 1.0f))) {
+        if (mIsStarted && !MathUtils.areFloatsEqual(mProgress, 1.0f)) {
             mModel.set(
                     LoadProgressProperties.COMPLETION_STATE,
                     LoadProgressProperties.CompletionState.FINISHED_DONT_ANIMATE);
