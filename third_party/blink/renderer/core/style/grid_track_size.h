@@ -47,14 +47,12 @@ enum GridTrackSizeType {
 static bool IsTrackSizeIntrinsic(const Length& length,
                                  GridTrackSizeType track_size_type) {
   switch (track_size_type) {
-    case kLengthTrackSizing: {
+    case kLengthTrackSizing:
+    case kMinMaxTrackSizing: {
       const Length::Type type = length.GetType();
       return type == Length::Type::kAuto || type == Length::Type::kMinContent ||
              type == Length::Type::kMaxContent;
     }
-    // TODO(almaher): This should no longer return false always.
-    case kMinMaxTrackSizing:
-      return false;
     case kFitContentTrackSizing:
       return true;
     default:
@@ -105,8 +103,9 @@ class GridTrackSize {
         max_track_breadth_(max_track_breadth),
         fit_content_track_breadth_(Length::Fixed()),
         type_(kMinMaxTrackSizing),
-        // TODO(almaher): Update this to check if both min/max are intrinsic.
-        track_size_definition_is_intrinsic_(false) {
+        track_size_definition_is_intrinsic_(
+            IsTrackSizeIntrinsic(min_track_breadth, kMinMaxTrackSizing) &&
+            IsTrackSizeIntrinsic(max_track_breadth, kMinMaxTrackSizing)) {
     CacheMinMaxTrackBreadthTypes();
   }
 
