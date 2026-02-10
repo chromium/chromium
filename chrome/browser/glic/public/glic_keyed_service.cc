@@ -181,12 +181,10 @@ GlicKeyedService::GlicKeyedService(
     contextual_cueing::ContextualCueingService* contextual_cueing_service,
     actor::ActorKeyedService* actor_keyed_service)
     : profile_(profile),
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: Actor
       actor_policy_checker_(
           actor_keyed_service
               ? std::make_unique<GlicActorPolicyChecker>(*profile_)
               : nullptr),
-#endif
       enabling_(std::make_unique<GlicEnabling>(
           profile,
           &profile_manager->GetProfileAttributesStorage())),
