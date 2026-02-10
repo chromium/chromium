@@ -39,18 +39,18 @@ public class StringUtilsTest {
         Assert.assertEquals(
                 "Downloading…", StringUtils.getProgressTextForUi(ProgressBuilder.bytes(0, null)));
         Assert.assertEquals(
-                "1.00 KB / ?", StringUtils.getProgressTextForUi(ProgressBuilder.bytes(1024, null)));
+                "1.00 KB / ?", StringUtils.getProgressTextForUi(ProgressBuilder.bytes(1000, null)));
         Assert.assertEquals(
-                "0.50 KB / ?", StringUtils.getProgressTextForUi(ProgressBuilder.bytes(512, null)));
+                "0.51 KB / ?", StringUtils.getProgressTextForUi(ProgressBuilder.bytes(512, null)));
         Assert.assertEquals(
                 "1.00 MB / ?",
-                StringUtils.getProgressTextForUi(ProgressBuilder.bytes(1024 * 1024, null)));
+                StringUtils.getProgressTextForUi(ProgressBuilder.bytes(1_000_000, null)));
         Assert.assertEquals(
                 "1.00 GB / ?",
-                StringUtils.getProgressTextForUi(ProgressBuilder.bytes(1024 * 1024 * 1024, null)));
+                StringUtils.getProgressTextForUi(ProgressBuilder.bytes(1_000_000_000L, null)));
         Assert.assertEquals(
                 "1.00 KB / 2.00 KB",
-                StringUtils.getProgressTextForUi(ProgressBuilder.bytes(1024, 2048L)));
+                StringUtils.getProgressTextForUi(ProgressBuilder.bytes(1000, 2000L)));
         Assert.assertEquals(
                 "Downloading…", StringUtils.getProgressTextForUi(ProgressBuilder.files(0, null)));
         Assert.assertEquals(
@@ -105,13 +105,12 @@ public class StringUtilsTest {
     public void testGetAvailableBytesForUi() {
         final Context context = ApplicationProvider.getApplicationContext();
         Assert.assertEquals("0.00 KB available", StringUtils.getAvailableBytesForUi(context, 0));
-        Assert.assertEquals("0.50 KB available", StringUtils.getAvailableBytesForUi(context, 512));
-        Assert.assertEquals("1.00 KB available", StringUtils.getAvailableBytesForUi(context, 1024));
+        Assert.assertEquals("0.51 KB available", StringUtils.getAvailableBytesForUi(context, 512));
+        Assert.assertEquals("1.00 KB available", StringUtils.getAvailableBytesForUi(context, 1000));
         Assert.assertEquals(
-                "1.00 MB available", StringUtils.getAvailableBytesForUi(context, 1024 * 1024));
+                "1.00 MB available", StringUtils.getAvailableBytesForUi(context, 1_000_000));
         Assert.assertEquals(
-                "1.00 GB available",
-                StringUtils.getAvailableBytesForUi(context, 1024 * 1024 * 1024));
+                "1.00 GB available", StringUtils.getAvailableBytesForUi(context, 1_000_000_000L));
     }
 
     @Test
@@ -120,11 +119,11 @@ public class StringUtilsTest {
     public void testDownloadUtilsGetStringForBytes() {
         final Context context = ApplicationProvider.getApplicationContext();
         Assert.assertEquals("0.00 KB", DownloadUtils.getStringForBytes(context, 0));
-        Assert.assertEquals("0.50 KB", DownloadUtils.getStringForBytes(context, 512));
-        Assert.assertEquals("1.00 KB", DownloadUtils.getStringForBytes(context, 1024));
-        Assert.assertEquals("1.00 MB", DownloadUtils.getStringForBytes(context, 1024 * 1024));
-        Assert.assertEquals(
-                "1.00 GB", DownloadUtils.getStringForBytes(context, 1024 * 1024 * 1024));
+        Assert.assertEquals("0.51 KB", DownloadUtils.getStringForBytes(context, 512));
+        Assert.assertEquals("1.00 KB", DownloadUtils.getStringForBytes(context, 1000));
+        Assert.assertEquals("1.00 MB", DownloadUtils.getStringForBytes(context, 1_000_000));
+        Assert.assertEquals("10.00 MB", DownloadUtils.getStringForBytes(context, 10_000_000));
+        Assert.assertEquals("1.00 GB", DownloadUtils.getStringForBytes(context, 1_000_000_000L));
     }
 
     @Test
