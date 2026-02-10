@@ -5,6 +5,7 @@
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
@@ -15,6 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
+#include "components/skills/public/skills_metrics.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -86,6 +88,9 @@ class SkillsUiTabControllerBrowserTest : public InProcessBrowserTest {
     return view->GetWidget();
   }
 
+ protected:
+  base::HistogramTester histogram_tester_;
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -94,12 +99,15 @@ class SkillsUiTabControllerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        ShowDialogOpensWidget) {
   EXPECT_FALSE(IsDialogVisible());
-
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Actions", skills::SkillsActions::kOpenedCreationDialog, 0);
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
   skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
 
   EXPECT_TRUE(IsDialogVisible());
   EXPECT_NE(nullptr, GetDialogWebContents());
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Actions", skills::SkillsActions::kOpenedCreationDialog, 1);
 }
 
 // Verify calling ShowDialog twice doesn't open two dialogs.
@@ -251,6 +259,11 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   ASSERT_TRUE(web_contents);
   ASSERT_TRUE(content::WaitForLoadStop(web_contents));
 
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Actions", skills::SkillsActions::kClickedCancelInCreationDialog,
+      0);
+
+  // Setup Listener.
   base::test::TestFuture<void> close_future;
   skills_ui_tab_controller()->SetOnDialogClosedCallbackForTesting(
       close_future.GetCallback());
@@ -272,6 +285,10 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   // Wait for native close.
   ASSERT_TRUE(close_future.Wait());
   EXPECT_FALSE(IsDialogVisible());
+
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Actions", skills::SkillsActions::kClickedCancelInCreationDialog,
+      1);
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
 #endif
 }

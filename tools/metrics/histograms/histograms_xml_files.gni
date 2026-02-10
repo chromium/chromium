@@ -266,6 +266,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/simple/histograms.xml",
   "//tools/metrics/histograms/metadata/skia/enums.xml",
   "//tools/metrics/histograms/metadata/skia/histograms.xml",
+  "//tools/metrics/histograms/metadata/skills/enums.xml",
+  "//tools/metrics/histograms/metadata/skills/histograms.xml",
   "//tools/metrics/histograms/metadata/sql/enums.xml",
   "//tools/metrics/histograms/metadata/sql/histograms.xml",
   "//tools/metrics/histograms/metadata/stability/enums.xml",

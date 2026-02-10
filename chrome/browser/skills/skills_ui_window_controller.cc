@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "components/skills/public/skills_metrics.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace skills {
@@ -44,6 +45,7 @@ void SkillsUiWindowController::ShowSkillToast(ToastId toast_id) {
 }
 
 void SkillsUiWindowController::InvokeLastSavedSkill() {
+  RecordSkillsAction(skills::SkillsActions::kClickedTryItNow);
   InvokeSkill(last_saved_skill_id_);
 }
 

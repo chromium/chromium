@@ -91,7 +91,8 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
   virtual bool IsClientReady();
   // Notify skill to invoke changed to the glic client
   virtual void NotifySkillToInvokeChanged();
-
+  // Helper to retrieve a skill by ID.
+  virtual const skills::Skill* GetSkill(std::string_view skill_id);
   // Helper to retrieve the service on demand.
   glic::GlicKeyedService* GetGlicService();
 
