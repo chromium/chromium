@@ -19,6 +19,21 @@ enum class EntryPoint;
 enum class FloatyUpdateSource;
 enum class ImageActionButtonType;
 enum class InputPlateAttachmentOption;
+// Encapsulates a set of ineligibility reasons computed during a single Gemini
+// eligibility check.
+struct IneligibilityReasons {
+  bool workspace = false;
+  bool chrome_enterprise = false;
+  bool account_capability = false;
+  bool authentication = false;
+
+  IneligibilityReasons() = default;
+
+  IneligibilityReasons& set_workspace(bool value);
+  IneligibilityReasons& set_chrome_enterprise(bool value);
+  IneligibilityReasons& set_account_capability(bool value);
+  IneligibilityReasons& set_authentication(bool value);
+};
 }  // namespace gemini
 
 namespace ios::provider {
@@ -74,6 +89,20 @@ void RecordFREPromoAction(IOSGeminiFREAction action);
 
 // Records the user action on the FRE Consent Screen.
 void RecordFREConsentAction(IOSGeminiFREAction action);
+
+// Enum for tracking Gemini ineligibility reasons.
+// LINT.IfChange(IOSGeminiIneligibilityReason)
+enum class IOSGeminiIneligibilityReason {
+  kWorkspaceRestricted = 0,
+  kChromeEnterpriseDisabled = 1,
+  kInsufficientAccountCapability = 2,
+  kAccountUnauthenticated = 3,
+  kMaxValue = kAccountUnauthenticated
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiIneligibilityReason)
+
+// UMA histogram key for IOS.Gemini.IneligibilityReason.
+extern const char kGeminiIneligibilityReasonHistogram[];
 
 // UMA histogram key for IOS.Gemini.StartupTime.FirstRun.
 extern const char kStartupTimeWithFREHistogram[];
@@ -416,6 +445,13 @@ void RecordFloatyDismissedWhileCollapsed();
 
 // Records the length of time a floaty is minimized until it is expanded.
 void RecordFloatyMinimizedTime(base::TimeTicks elapsed_minimized_floaty_time);
+
+// Records whether a Gemini eligibility check was successful.
+void RecordGeminiEligibility(bool eligible);
+
+// Records all of the Gemini ineligibility reasons. One record will be sent at
+// most per associated value of IOSGeminiIneligibilityReason.
+void RecordGeminiIneligibilityReasons(gemini::IneligibilityReasons reasons);
 
 // Records the Gemini floaty view state transition.
 void RecordGeminiViewStateTransition(IOSGeminiViewStateTransition transition);

@@ -872,6 +872,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h:ImageActionButtonType) -->
 
+<!-- LINT.IfChange(IOSGeminiIneligibilityReason) -->
+
+<enum name="IOSGeminiIneligibilityReason">
+  <int value="0" label="Workspace Restricted"/>
+  <int value="1" label="Chrome Enterprise Disabled"/>
+  <int value="2" label="Insufficient Account Capability"/>
+  <int value="3" label="Account Unauthenticated"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiIneligibilityReason) -->
+
 <!-- LINT.IfChange(IOSGeminiInputPlateAttachmentOption) -->
 
 <enum name="IOSGeminiInputPlateAttachmentOption">

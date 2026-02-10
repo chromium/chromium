@@ -49,6 +49,28 @@ IOSGeminiAspectRatioBucket GetAspectRatioBucket(double aspect_ratio) {
 
 }  // namespace
 
+namespace gemini {
+IneligibilityReasons& IneligibilityReasons::set_workspace(bool value) {
+  workspace = value;
+  return *this;
+}
+
+IneligibilityReasons& IneligibilityReasons::set_chrome_enterprise(bool value) {
+  chrome_enterprise = value;
+  return *this;
+}
+
+IneligibilityReasons& IneligibilityReasons::set_account_capability(bool value) {
+  account_capability = value;
+  return *this;
+}
+
+IneligibilityReasons& IneligibilityReasons::set_authentication(bool value) {
+  authentication = value;
+  return *this;
+}
+}  // namespace gemini
+
 const char kEligibilityHistogram[] = "IOS.Gemini.Eligibility";
 
 const char kEntryPointHistogram[] = "IOS.Gemini.EntryPoint";
@@ -65,6 +87,9 @@ const char kFREEntryPointHistogram[] = "IOS.Gemini.FRE.EntryPoint";
 const char kPromoActionHistogram[] = "IOS.Gemini.FRE.PromoAction";
 
 const char kConsentActionHistogram[] = "IOS.Gemini.FRE.ConsentAction";
+
+const char kGeminiIneligibilityReasonHistogram[] =
+    "IOS.Gemini.IneligibilityReason";
 
 const char kStartupTimeWithFREHistogram[] = "IOS.Gemini.StartupTime.FirstRun";
 
@@ -182,6 +207,33 @@ void RecordFREConsentAction(IOSGeminiFREAction action) {
       break;
   }
   base::UmaHistogramEnumeration(kConsentActionHistogram, action);
+}
+
+void RecordGeminiEligibility(bool eligible) {
+  base::UmaHistogramBoolean(kEligibilityHistogram, eligible);
+}
+
+void RecordGeminiIneligibilityReasons(gemini::IneligibilityReasons reasons) {
+  if (reasons.workspace) {
+    base::UmaHistogramEnumeration(
+        kGeminiIneligibilityReasonHistogram,
+        IOSGeminiIneligibilityReason::kWorkspaceRestricted);
+  }
+  if (reasons.chrome_enterprise) {
+    base::UmaHistogramEnumeration(
+        kGeminiIneligibilityReasonHistogram,
+        IOSGeminiIneligibilityReason::kChromeEnterpriseDisabled);
+  }
+  if (reasons.account_capability) {
+    base::UmaHistogramEnumeration(
+        kGeminiIneligibilityReasonHistogram,
+        IOSGeminiIneligibilityReason::kInsufficientAccountCapability);
+  }
+  if (reasons.authentication) {
+    base::UmaHistogramEnumeration(
+        kGeminiIneligibilityReasonHistogram,
+        IOSGeminiIneligibilityReason::kAccountUnauthenticated);
+  }
 }
 
 void RecordGeminiSessionCancellation(

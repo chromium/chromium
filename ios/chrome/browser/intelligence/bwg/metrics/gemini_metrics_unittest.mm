@@ -357,3 +357,26 @@ TEST_F(GeminiMetricsTest, RecordGeminiInputPlateAttachmentOptionTapped) {
   EXPECT_EQ(
       5, user_action_tester_.GetActionCount(kInputPlateAttachmentOptionTapped));
 }
+
+// Tests that the Gemini ineligibility reasons are recorded correctly.
+TEST_F(GeminiMetricsTest, RecordGeminiIneligibilityReasons) {
+  const char* histogram = kGeminiIneligibilityReasonHistogram;
+  RecordGeminiIneligibilityReasons(gemini::IneligibilityReasons());
+  histogram_tester_.ExpectTotalCount(histogram, 0);
+
+  gemini::IneligibilityReasons reasons =
+      gemini::IneligibilityReasons()
+        .set_workspace(true)
+        .set_account_capability(true);
+
+  RecordGeminiIneligibilityReasons(reasons);
+
+  histogram_tester_.ExpectBucketCount(
+      histogram, IOSGeminiIneligibilityReason::kWorkspaceRestricted, 1);
+
+  histogram_tester_.ExpectBucketCount(
+      histogram, IOSGeminiIneligibilityReason::kInsufficientAccountCapability,
+      1);
+
+  histogram_tester_.ExpectTotalCount(histogram, 2);
+}

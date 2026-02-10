@@ -91,7 +91,7 @@ bool BwgService::IsProfileEligibleForGemini() {
   bool is_eligible = can_use_model_execution && !is_disabled_by_policy &&
                      tokens_ok && !profile_->IsOffTheRecord();
 
-  base::UmaHistogramBoolean(kEligibilityHistogram, is_eligible);
+  RecordGeminiEligibility(is_eligible);
 
   return is_eligible;
 }

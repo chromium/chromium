@@ -2623,6 +2623,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.IneligibilityReason"
+    enum="IOSGeminiIneligibilityReason" expires_after="2027-02-03">
+  <owner>fbeauchamp@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records a single ineligibility reason for Gemini. Logged whenever
+    eligibility checks fail. Each ineligibility reason gets recorded
+    individually and can't be meaningfully used for eligibility distribution.
+    Instead use the IOS.Gemini.Eligibility histogram for that purpose.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.InputPlateAttachmentOption"
     enum="IOSGeminiInputPlateAttachmentOption" expires_after="2027-02-02">
   <owner>joepeplowski@google.com</owner>
