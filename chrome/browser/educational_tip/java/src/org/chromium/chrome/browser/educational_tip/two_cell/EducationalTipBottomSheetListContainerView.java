@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.educational_tip.two_cell;
 
 import android.content.Context;
+import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * The container view holding multiple {@link EducationalTipBottomSheetListItemView} in a bottom
@@ -17,8 +19,9 @@ import org.chromium.build.annotations.NullMarked;
 public class EducationalTipBottomSheetListContainerView extends LinearLayout {
     // TODO(crbug.com/479597724): Implement container view.
 
-    public EducationalTipBottomSheetListContainerView(Context context) {
-        super(context);
+    public EducationalTipBottomSheetListContainerView(
+            Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
     }
 
     /** Adds list items views to this container view. */

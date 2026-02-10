@@ -7,14 +7,13 @@ found in the LICENSE file.
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="UnusedResources"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 <!--    TODO(crbug.com/479597724): Implement bottom sheet layout.-->
 
     <ImageView
+        android:id="@+id/setup_list_bottom_sheet_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@null"/>
@@ -30,6 +29,8 @@ found in the LICENSE file.
         android:layout_height="wrap_content"/>
 
     <org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetListContainerView
+        android:id="@+id/setup_list_bottom_sheet_container_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
+    </org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetListContainerView>
 </LinearLayout>
