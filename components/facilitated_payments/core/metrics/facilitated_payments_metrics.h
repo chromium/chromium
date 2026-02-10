@@ -168,7 +168,9 @@ enum class PixFlowExitedReason {
   kCctWithGboardAsDefaultIme = 18,
   // Pix code was static and not supported.
   kStaticCode = 19,
-  kMaxValue = kStaticCode
+  // Pix code was copied within an iframe whose URL is not in the allowlist.
+  kIframeUrlNotAllowlisted = 20,
+  kMaxValue = kIframeUrlNotAllowlisted
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.PixFlowExitedReason)
 

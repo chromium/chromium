@@ -575,6 +575,65 @@ TEST_P(PixManagerTestWithAccountLinkingEnabled,
   task_environment_.RunUntilIdle();
 }
 
+TEST_P(
+    PixManagerTestWithAccountLinkingEnabled,
+    CopyTrigger_InIframe_IframeUrlNotAllowlisted_PayflowExitedHistogramLogged) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
+
+  GURL main_frame_url("https://merchant.com/");
+  GURL iframe_url("https://unknown-psp.com/");
+  url::Origin origin = url::Origin::Create(main_frame_url);
+
+  // Mock allowlist check to return false.
+  EXPECT_CALL(*optimization_guide_decider_,
+              CanApplyOptimization(
+                  testing::Eq(iframe_url),
+                  testing::Eq(optimization_guide::proto::PIX_PSP_ALLOWLIST),
+                  testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                      testing::Eq(nullptr))))
+      .WillOnce(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kFalse));
+
+  pix_manager_->OnPixCodeCopiedToClipboard(
+      main_frame_url, iframe_url, origin, PixCodeRustValidationResult::kDynamic,
+      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+      ukm::UkmRecorder::GetNewSourceID());
+
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PixFlowExitedReason::kIframeUrlNotAllowlisted,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_P(PixManagerTestWithAccountLinkingEnabled,
+       CopyTrigger_InIframe_FeatureDisabled_PayflowExitedHistogramNotLogged) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kEnableIframeForPix);
+
+  GURL main_frame_url("https://merchant.com/");
+  GURL iframe_url("https://unknown-psp.com/");
+  url::Origin origin = url::Origin::Create(main_frame_url);
+
+  // Mock optimization guide is not called.
+  EXPECT_CALL(*optimization_guide_decider_,
+              CanApplyOptimization(
+                  testing::Eq(iframe_url),
+                  testing::Eq(optimization_guide::proto::PIX_PSP_ALLOWLIST),
+                  testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                      testing::Eq(nullptr))))
+      .Times(0);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PixFlowExitedReason::kIframeUrlNotAllowlisted,
+      /*expected_bucket_count=*/0);
+}
+
 TEST_P(PixManagerTestWithAccountLinkingEnabled,
        CopyTrigger_InIframe_IframeUrlAllowlisted_PixValidationTriggered) {
   base::test::ScopedFeatureList scoped_feature_list;

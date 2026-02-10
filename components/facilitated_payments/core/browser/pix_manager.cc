@@ -108,7 +108,8 @@ void PixManager::OnPixCodeCopiedToClipboard(
   // is allowlisted. Otherwise, check whether the main frame URL is allowlisted.
   if (iframe_url.has_value()) {
     if (!IsIframeUrlAllowlisted(iframe_url.value())) {
-      // TODO(crbug.com/479520609): Log pix flow exited reason.
+      // The iframe URL is not part of the allowlist, ignore the copy event.
+      LogPixFlowExitedReason(PixFlowExitedReason::kIframeUrlNotAllowlisted);
       return;
     }
     // Set psp hostname to initiate payment request details.
