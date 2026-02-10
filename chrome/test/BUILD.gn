@@ -4951,6 +4951,7 @@ if (!is_android) {
       if (is_win || is_linux || is_mac) {
         sources += [
           "../browser/extensions/api/experimental_actor/experimental_actor_apitest.cc",
+          "../browser/extensions/api/proxy_override_rules_private_apitest.cc",
           "../browser/supervised_user/supervised_user_pending_state_navigation_browsertest.cc",
           "../browser/ui/views/web_apps/file_handler_launch_dialog_browsertest.cc",
         ]
