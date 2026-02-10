@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -150,7 +151,23 @@ void ScrollTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
 }
 
 Element* ScrollTimeline::source() const {
-  return ComputeSource();
+  Element* source = ComputeSource();
+
+  if (!source) {
+    return nullptr;
+  }
+
+  ShadowRoot* containing_shadow_root = source->ContainingShadowRoot();
+  while (containing_shadow_root && containing_shadow_root->IsUserAgent()) {
+    source = &containing_shadow_root->host();
+    containing_shadow_root = source->ContainingShadowRoot();
+  }
+
+  if (PseudoElement* pseudo = DynamicTo<PseudoElement>(source)) {
+    source = &(pseudo->UltimateOriginatingElement());
+  }
+
+  return source;
 }
 
 Element* ScrollTimeline::ComputeSource() const {
