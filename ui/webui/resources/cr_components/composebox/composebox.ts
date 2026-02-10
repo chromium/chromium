@@ -195,7 +195,10 @@ export class ComposeboxElement extends I18nMixinLit
       },
       disableComposeboxAnimation: {type: Boolean},
       fileUploadsComplete: {type: Boolean},
-      canSubmitFilesAndInput_: {type: Boolean},
+      canSubmitFilesAndInput_: {
+        type: Boolean,
+        reflect: true,
+      },
       showModelPicker: {type: Boolean},
       inputState_: {type: Object},
       showModelPicker_: {
@@ -687,12 +690,10 @@ export class ComposeboxElement extends I18nMixinLit
         tabId: null,
         isDeletable: true,
       };
-      this.pendingUploads_.add(token);
       composeboxFiles.set(token, attachment);
       const announcer = getAnnouncerInstance();
       announcer.announce(this.i18n('composeboxFileUploadStartedText'));
     }
-    this.fileUploadsComplete = false;
     e.detail.onContextAdded(composeboxFiles);
     this.focusInput();
   }
@@ -747,6 +748,7 @@ export class ComposeboxElement extends I18nMixinLit
       tabId: e.detail.id,
       isDeletable: true,
     };
+
     e.detail.onContextAdded(attachment);
     this.focusInput();
   }
@@ -1302,15 +1304,21 @@ export class ComposeboxElement extends I18nMixinLit
         this.$.context.updateFileStatus(token, status, errorType);
     if (errorMessage) {
       this.errorMessage_ = errorMessage;
+      this.pendingUploads_.delete(token);
+      this.fileUploadsComplete = this.pendingUploads_.size === 0;
     } else if (file) {
       if (status === FileUploadStatus.kProcessingSuggestSignalsReady &&
           this.showZps && !file.type.includes('image')) {
         // Query autocomplete to get contextual suggestions for files.
         this.queryAutocomplete_(/* clearMatches= */ true);
       }
+      // `NotUploaded`, `UploadStarted` come before and after `kProcessing`
+      //  respectively, so we only need to add to `pendingUploads_` when in a
+      //  type of processing state.
       if (file.status === FileUploadStatus.kProcessing ||
           file.status === FileUploadStatus.kProcessingSuggestSignalsReady) {
         this.pendingUploads_.add(file.uuid);
+        this.fileUploadsComplete = this.pendingUploads_.size === 0;
       }
       const isFinished = file?.status === FileUploadStatus.kValidationFailed ||
           file.status === FileUploadStatus.kUploadSuccessful ||
