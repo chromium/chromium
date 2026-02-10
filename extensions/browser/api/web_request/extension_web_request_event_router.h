@@ -27,6 +27,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/url_pattern_set.h"
 #include "net/base/completion_once_callback.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -452,7 +453,7 @@ class WebRequestEventRouter : public KeyedService {
     events::HistogramValue histogram_value = events::UNKNOWN;
     RequestFilter filter;
     int extra_info_spec = 0;
-    std::unordered_set<uint64_t> blocked_requests;
+    absl::flat_hash_set<uint64_t> blocked_requests;
   };
 
   using RawListeners = std::vector<EventListener*>;
