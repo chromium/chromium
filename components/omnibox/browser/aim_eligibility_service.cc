@@ -220,6 +220,11 @@ void BuildFallbackConfig(const omnibox::AimEligibilityResponse& response,
 
   if (response.is_deep_search_eligible()) {
     rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+    auto* tool_config = fallback_config.add_tool_configs();
+    tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+    auto* deep_search_rule = rule_set->add_tool_rules();
+    deep_search_rule->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+    deep_search_rule->set_allow_all_input_types(false);
   }
   if (response.is_canvas_eligible()) {
     rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_CANVAS);
@@ -227,6 +232,12 @@ void BuildFallbackConfig(const omnibox::AimEligibilityResponse& response,
   if (response.is_image_generation_eligible()) {
     rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
     rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
+    auto* tool_config = fallback_config.add_tool_configs();
+    tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+    auto* image_gen_rule = rule_set->add_tool_rules();
+    image_gen_rule->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+    image_gen_rule->add_allowed_input_types(
+        omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
   }
   if (response.is_pdf_upload_eligible()) {
     rule_set->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_FILE);
