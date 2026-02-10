@@ -327,9 +327,6 @@ void ShowWindow(Profile* profile,
                                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                             std::string());
 
-// TODO(https://crbug.com/482495837): Investigate and unify into single code
-// path.
-#if BUILDFLAG(IS_MAC)
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(process_id, routing_id);
   if (!rfh) {
@@ -343,11 +340,7 @@ void ShowWindow(Profile* profile,
 
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       std::move(delegate_ptr), inspected_contents->GetTopLevelNativeWindow(),
-      inspected_contents->GetNativeView());
-#else
-  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-      std::move(delegate_ptr), nullptr, nullptr);
-#endif
+      gfx::NativeView());
   if (!widget) {
     return;
   }
