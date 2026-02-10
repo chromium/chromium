@@ -486,7 +486,10 @@ void ContextualSearchboxHandler::SetActiveToolMode(omnibox::ToolMode tool) {
     return;
   }
   if (auto* metrics_recorder = GetMetricsRecorder()) {
-    metrics_recorder->RecordToolMode(tool);
+    composebox_query::mojom::ToolMode mojom_tool_mode =
+        mojo::EnumTraits<composebox_query::mojom::ToolMode,
+                         omnibox::ToolMode>::ToMojom(tool);
+    metrics_recorder->RecordToolMode(mojom_tool_mode);
   }
   input_state_model_->setActiveTool(tool);
 }
@@ -496,7 +499,10 @@ void ContextualSearchboxHandler::SetActiveModelMode(omnibox::ModelMode model) {
     return;
   }
   if (auto* metrics_recorder = GetMetricsRecorder()) {
-    metrics_recorder->RecordModelMode(model);
+    composebox_query::mojom::ModelMode mojom_model_mode =
+        mojo::EnumTraits<composebox_query::mojom::ModelMode,
+                         omnibox::ModelMode>::ToMojom(model);
+    metrics_recorder->RecordModelMode(mojom_model_mode);
   }
   input_state_model_->setActiveModel(model);
 }

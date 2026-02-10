@@ -141,10 +141,10 @@ class ContextualSearchMetricsRecorder {
                                        bool success);
 
   // Records the tool mode (i.e. Deep Search, Create Images, etc.).
-  virtual void RecordToolMode(omnibox::ToolMode tool_mode);
+  virtual void RecordToolMode(composebox_query::mojom::ToolMode tool_mode);
 
   // Records the model mode (i.e. Gemini Pro, Gemini Pro Autoroute, etc.).
-  virtual void RecordModelMode(omnibox::ModelMode model_mode);
+  virtual void RecordModelMode(composebox_query::mojom::ModelMode model_mode);
 
  private:
   // Called when the session starts to correctly track session
