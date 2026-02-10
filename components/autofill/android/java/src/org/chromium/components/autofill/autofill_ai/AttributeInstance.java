@@ -66,8 +66,8 @@ public class AttributeInstance {
         }
     }
 
-    public final AttributeType attributeType;
-    public final AttributeValue attributeValue;
+    private final AttributeType mAttributeType;
+    private final AttributeValue mAttributeValue;
 
     @CalledByNative
     public AttributeInstance(
@@ -75,23 +75,23 @@ public class AttributeInstance {
             @JniType("std::u16string") String day,
             @JniType("std::u16string") String month,
             @JniType("std::u16string") String year) {
-        this.attributeType = attributeType;
-        this.attributeValue = new DateValue(day, month, year);
+        mAttributeType = attributeType;
+        mAttributeValue = new DateValue(day, month, year);
     }
 
     @CalledByNative
     public AttributeInstance(AttributeType attributeType, @JniType("std::u16string") String value) {
-        this.attributeType = attributeType;
-        this.attributeValue = new StringValue(value);
+        mAttributeType = attributeType;
+        mAttributeValue = new StringValue(value);
     }
 
     @CalledByNative
     public AttributeType getAttributeType() {
-        return attributeType;
+        return mAttributeType;
     }
 
     @CalledByNative
     public boolean isDateType() {
-        return attributeValue instanceof DateValue;
+        return mAttributeValue instanceof DateValue;
     }
 }

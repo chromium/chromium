@@ -15,25 +15,33 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class AttributeType {
     // This maps to a C++ enum which defines the name/type of the attribute.
-    public final @AttributeTypeName int typeName;
+    private final @AttributeTypeName int mTypeName;
     // The name of the attribute as displayed to the user.
-    public final String typeNameAsString;
+    private final String mTypeNameAsString;
     // The `dataType` defined whether the input rendered for the attribute should be a country
     // selector, a date picker or a simple text field.
-    public final @DataType int dataType;
+    private final @DataType int mDataType;
 
     @CalledByNative
     public AttributeType(
             @AttributeTypeName int typeName,
             @JniType("std::u16string") String typeNameAsString,
             @DataType int dataType) {
-        this.typeName = typeName;
-        this.typeNameAsString = typeNameAsString;
-        this.dataType = dataType;
+        mTypeName = typeName;
+        mTypeNameAsString = typeNameAsString;
+        mDataType = dataType;
     }
 
     @CalledByNative
     public @AttributeTypeName int getTypeName() {
-        return typeName;
+        return mTypeName;
+    }
+
+    public String getTypeNameAsString() {
+        return mTypeNameAsString;
+    }
+
+    public @DataType int getDataType() {
+        return mDataType;
     }
 }

@@ -18,13 +18,13 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class EntityInstanceWithLabels {
     // The entity ID.
-    public final String guid;
+    private final String mGuid;
     // The label to be displayed in the UI surface, for example "Vehicle".
-    public final String entityInstanceLabel;
+    private final String mEntityInstanceLabel;
     // The sublabel to be displayed in the UI surface, for example "Fiat".
-    public final String entityInstanceSubLabel;
+    private final String mEntityInstanceSubLabel;
     // Whether the entity is a server or a local entity.
-    public final boolean storedInWallet;
+    private final boolean mStoredInWallet;
 
     @CalledByNative
     public EntityInstanceWithLabels(
@@ -32,9 +32,25 @@ public class EntityInstanceWithLabels {
             @JniType("std::u16string") String entityInstanceLabel,
             @JniType("std::u16string") String entityInstanceSubLabel,
             boolean storedInWallet) {
-        this.guid = guid;
-        this.entityInstanceLabel = entityInstanceLabel;
-        this.entityInstanceSubLabel = entityInstanceSubLabel;
-        this.storedInWallet = storedInWallet;
+        mGuid = guid;
+        mEntityInstanceLabel = entityInstanceLabel;
+        mEntityInstanceSubLabel = entityInstanceSubLabel;
+        mStoredInWallet = storedInWallet;
+    }
+
+    public String getGuid() {
+        return mGuid;
+    }
+
+    public String getEntityInstanceLabel() {
+        return mEntityInstanceLabel;
+    }
+
+    public String getEntityInstanceSubLabel() {
+        return mEntityInstanceSubLabel;
+    }
+
+    public boolean isStoredInWallet() {
+        return mStoredInWallet;
     }
 }
