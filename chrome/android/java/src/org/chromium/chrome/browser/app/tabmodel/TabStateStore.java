@@ -14,6 +14,7 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.CombinedTabRestorer.CombinedTabRestorerDelegate;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -385,6 +386,12 @@ public class TabStateStore implements TabPersistentStore {
         assert windowId != TabWindowManager.INVALID_WINDOW_ID;
         String windowTag = Integer.toString(windowId);
         mTabStateStorageService.clearWindow(windowTag);
+
+        PersistentStoreMigrationManager migrationManager =
+                TabWindowManagerSingleton.getInstance()
+                        .getPersistentStoreMigrationManagerById(windowId);
+        assert migrationManager != null;
+        migrationManager.onShadowStoreRazed();
     }
 
     @Override

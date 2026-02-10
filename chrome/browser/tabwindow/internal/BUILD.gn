@@ -45,7 +45,6 @@ android_library("java") {
 
 robolectric_library("junit") {
   sources = [
-    "android/java/src/org/chromium/chrome/browser/tabwindow/PersistentStoreMigrationManagerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerUtilsUnitTest.java",
   ]
@@ -57,7 +56,6 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
     "//chrome/browser/flags:java",
-    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tab_group_sync:factory_java",
