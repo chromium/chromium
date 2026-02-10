@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/threading/hang_watcher.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #include "chrome/browser/platform_util.h"
@@ -82,7 +83,17 @@ bool CanShare() {
                       action:(SEL*)action {
   // Load the menu if it hasn't loaded already.
   if (!menu.numberOfItems) {
-    [self menuNeedsUpdate:menu];
+    // Only populate the "Email Link" item, as it is the only item with a key
+    // equivalent. We defer the expensive population of sharing services until
+    // the menu is actually opened (see menuNeedsUpdate:).
+    // This prevents hangs on key presses when the menu is not open.
+    // See https://crbug.com/1309422.
+    NSMenuItem* email = [[NSMenuItem alloc]
+        initWithTitle:l10n_util::GetNSString(IDS_EMAIL_LINK_MAC)
+               action:@selector(emailLink:)
+        keyEquivalent:[self keyEquivalentForMail]];
+    email.target = self;
+    [menu addItem:email];
   }
   // Per tapted@'s comment in BookmarkMenuCocoaController, it's fine
   // to return NO here if an item will handle this. This is why it's
@@ -92,6 +103,13 @@ bool CanShare() {
 
 - (void)menuNeedsUpdate:(NSMenu*)menu {
   [menu removeAllItems];
+
+  // Fetching sharing services can take unbounded time since ShareKit enumerates
+  // sharing service plugins from the filesystem. This can hang due to TCC
+  // (Transparency, Consent, and Control) permissions or slow disk I/O. Never
+  // consider the current WatchHangsInScope as hung. HangWatching will resume
+  // when the next task is pumped. See https://crbug.com/1309422.
+  base::HangWatcher::InvalidateActiveExpectations();
 
   // Using a real URL instead of empty string to avoid system log about relative
   // URLs in the pasteboard. This URL will not actually be shared to, just used

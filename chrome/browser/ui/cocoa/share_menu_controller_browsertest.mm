@@ -215,7 +215,8 @@ IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, MenuHasKeyEquivalent) {
                            (menuHasKeyEquivalent:forEvent:target:action:)]);
 
   // Ensure that calling |menuHasKeyEquivalent:...| the first time populates the
-  // menu.
+  // menu. It should only populate the static "Email Link" item to avoid
+  // blocking on sharing service lookup.
   NSMenu* menu = [[NSMenu alloc] initWithTitle:@"Share"];
   EXPECT_EQ(menu.numberOfItems, 0);
   NSEvent* event = cocoa_test_event_utils::KeyEventWithKeyCode(
@@ -227,7 +228,8 @@ IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, MenuHasKeyEquivalent) {
                                         forEvent:event
                                           target:&ignored_target
                                           action:&ignored_action]);
-  EXPECT_GT([menu numberOfItems], 0);
+  EXPECT_EQ([menu numberOfItems], 1);
+  EXPECT_EQ([[menu itemAtIndex:0] action], @selector(emailLink:));
 
   NSMenuItem* item = [menu itemAtIndex:0];
   // |menuHasKeyEquivalent:....| shouldn't populate the menu after the first
