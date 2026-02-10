@@ -9,7 +9,9 @@ import os
 import unittest
 from unittest import mock
 
-import main as autotest
+import finders.file_finder as file_finder
+import finders.target_finder as target_finder
+from utils.command_error import AutotestError
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -27,51 +29,52 @@ class FindMatchingTestFilesTest(TestCase):
   def test_cc_test(self):
     self.create_cc_test('foo_unittest.cc')
     self.assertEqual(['foo_unittest.cc'],
-                     autotest.FindMatchingTestFiles('foo_unittest.cc'))
+                     file_finder.FindMatchingTestFiles('foo_unittest.cc'))
 
   def test_mm_test(self):
     self.create_cc_test('foo_unittest.mm')
     self.assertEqual(['foo_unittest.mm'],
-                     autotest.FindMatchingTestFiles('foo_unittest.mm'))
+                     file_finder.FindMatchingTestFiles('foo_unittest.mm'))
 
   def test_cc_alt_test(self):
     self.fs.create_file('foo.cc')
     self.create_cc_test('foo_unittest.cc')
     self.assertEqual(['foo_unittest.cc'],
-                     autotest.FindMatchingTestFiles('foo.cc'))
+                     file_finder.FindMatchingTestFiles('foo.cc'))
 
   def test_cc_maybe_test(self):
     self.fs.create_file('foo_unittest.cc')
     self.assertEqual(['foo_unittest.cc'],
-                     autotest.FindMatchingTestFiles('foo_unittest.cc'))
+                     file_finder.FindMatchingTestFiles('foo_unittest.cc'))
 
   def test_cc_alt_maybe_test(self):
     self.fs.create_file('foo.cc')
     self.fs.create_file('foo_unittest.cc')
     self.assertEqual(['foo_unittest.cc'],
-                     autotest.FindMatchingTestFiles('foo.cc'))
+                     file_finder.FindMatchingTestFiles('foo.cc'))
 
   def test_cc_no_test(self):
     self.fs.create_file('foo.cc')
-    with self.assertRaises(autotest.AutotestError) as cm:
-      autotest.FindMatchingTestFiles('foo.cc')
+    with self.assertRaises(AutotestError) as cm:
+      file_finder.FindMatchingTestFiles('foo.cc')
     self.assertEqual(str(cm.exception), "foo.cc doesn't look like a test file")
 
   def test_h_for_cc_test(self):
     self.fs.create_file('foo.h')
     self.create_cc_test('foo_unittest.cc')
     self.assertEqual(['foo_unittest.cc'],
-                     autotest.FindMatchingTestFiles('foo.h'))
+                     file_finder.FindMatchingTestFiles('foo.h'))
 
   def test_h_for_mm_test(self):
     self.fs.create_file('foo.h')
     self.create_cc_test('foo_unittest.mm')
     self.assertEqual(['foo_unittest.mm'],
-                     autotest.FindMatchingTestFiles('foo.h'))
+                     file_finder.FindMatchingTestFiles('foo.h'))
 
   def test_java(self):
     self.fs.create_file('Foo.java')
-    self.assertEqual(['Foo.java'], autotest.FindMatchingTestFiles('Foo.java'))
+    self.assertEqual(['Foo.java'],
+                     file_finder.FindMatchingTestFiles('Foo.java'))
 
 
 class FindTestTargetsTest(unittest.TestCase):
@@ -98,10 +101,11 @@ class FindTestTargetsTest(unittest.TestCase):
     mock_cache.Find.return_value = []  # Cache miss.
     mock_args = mock.Mock()
 
-    targets, used_cache = autotest.FindTestTargets(mock_cache, 'out/Default', [
-        'chrome/browser/ui/browser_browsertest.cc',
-        'third_party/blink/renderer/platform/wtf/vector_test.cc'
-    ], mock_args)
+    targets, used_cache = target_finder.FindTestTargets(
+        mock_cache, 'out/Default', [
+            'chrome/browser/ui/browser_browsertest.cc',
+            'third_party/blink/renderer/platform/wtf/vector_test.cc'
+        ], mock_args)
 
     # Verify that both targets are identified.
     self.assertIn('chrome/test:browser_tests', targets)
