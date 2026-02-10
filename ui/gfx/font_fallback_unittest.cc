@@ -6,6 +6,7 @@
 #include <tuple>
 
 #include "base/compiler_specific.h"
+#include "base/i18n/char_iterator.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -92,10 +93,9 @@ class GetFallbackFontTest
   bool EnsuresScriptSupportCodePoints(const std::u16string& text,
                                       UScriptCode script,
                                       const std::string& script_name) {
-    size_t i = 0;
-    while (i < text.length()) {
-      UChar32 code_point;
-      UNSAFE_TODO(U16_NEXT(text.c_str(), i, text.size(), code_point));
+    base::i18n::UTF16CharIterator iter(text);
+    while (!iter.end()) {
+      UChar32 code_point = iter.get();
       if (!uscript_hasScript(code_point, script)) {
         // Retrieve the appropriate script
         UErrorCode script_error;
@@ -108,6 +108,7 @@ class GetFallbackFontTest
                       << "' detected.";
         return false;
       }
+      iter.Advance();
     }
     return true;
   }
@@ -120,14 +121,14 @@ class GetFallbackFontTest
       return false;
     }
 
-    size_t i = 0;
+    base::i18n::UTF16CharIterator iter(text);
     const SkGlyphID kUnsupportedGlyph = 0;
-    while (i < text.length()) {
-      UChar32 code_point;
-      UNSAFE_TODO(U16_NEXT(text.c_str(), i, text.size(), code_point));
+    while (!iter.end()) {
+      UChar32 code_point = iter.get();
       SkGlyphID glyph_id = skia_face->unicharToGlyph(code_point);
       if (glyph_id == kUnsupportedGlyph)
         return false;
+      iter.Advance();
     }
     return true;
   }
