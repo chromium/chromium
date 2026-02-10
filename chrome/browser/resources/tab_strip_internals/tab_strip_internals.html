@@ -7,15 +7,103 @@
   <head>
   <meta charset="utf-8">
   <title>DebugUI TabStrip</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+    }
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: #fafafa;
+      border-bottom: 1px solid #ddd;
+    }
+    .toolbar h1 {
+      font-size: 16px;
+      margin: 0;
+      font-weight: 600;
+    }
+    .split {
+      display: grid;
+      grid-template-columns: 320px 5px 1fr;
+      height: calc(100vh - 48px);
+    }
+    .tree-view-pane {
+      border-right: 1px solid #ddd;
+      overflow: auto;
+      padding: 6px;
+    }
+    .divider {
+      cursor: col-resize;
+      background: #f0f0f0;
+    }
+    .divider:hover {
+      background: #e0e0e0;
+    }
+    .json-pane {
+      overflow: auto;
+      padding: 10px;
+    }
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: #323232;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* Dark Theme */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #1e1e1e;
+        color: #e6e6e6;
+      }
+      .toolbar {
+        background: #2a2a2a;
+        border-bottom: 1px solid #3a3a3a;
+      }
+      .tree-view-pane {
+        border-right: 1px solid #3a3a3a;
+      }
+      .divider {
+        background: #333;
+      }
+      .divider:hover {
+        background: #3a3a3a;
+      }
+      .json-pane {
+        background: #252526;
+        border: 1px solid #3a3a3a;
+      }
+      .toast {
+        background: #444;
+        color: #fff;
+      }
+    }
+  </style>
   </head>
   <body>
     <header class="toolbar">
       <h1>TabStrip Internals</h1>
     </header>
-    <main id="split" class="split" style="grid-template-columns:320px 5px 1fr;">
-      <aside id="treeViewPane" class="left" role="tree"></aside>
+    <main id="split" class="split">
+      <aside id="treeViewPane" class="tree-view-pane" role="tree"></aside>
       <div id="divider" class="divider" role="separator" tabindex="0"></div>
-      <section id="jsonPane" class="right">
+      <section id="jsonPane" class="json-pane">
       </section>
     </main>
     <div id="toast" class="toast"></div>
