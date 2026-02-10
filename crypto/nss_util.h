@@ -71,6 +71,10 @@ CRYPTO_EXPORT base::Time PRTimeToBaseTime(int64_t prtime);
 // We use a int64_t instead of PRTime here to avoid depending on NSPR headers.
 CRYPTO_EXPORT int64_t BaseTimeToPRTime(base::Time time);
 
+#if !BUILDFLAG(IS_CHROMEOS)
+CRYPTO_EXPORT base::FilePath GetDefaultNSSConfigDirectory();
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace crypto
 
 #endif  // CRYPTO_NSS_UTIL_H_

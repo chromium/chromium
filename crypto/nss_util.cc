@@ -19,9 +19,11 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/alias.h"
+#include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
@@ -36,14 +38,43 @@ namespace crypto {
 namespace {
 
 #if !BUILDFLAG(IS_CHROMEOS)
-base::FilePath GetDefaultConfigDirectory() {
-  base::FilePath dir;
-  base::PathService::Get(base::DIR_HOME, &dir);
+base::FilePath GetXdgDataNssdbDirectory() {
+  std::unique_ptr<base::Environment> env = base::Environment::Create();
+  return base::nix::GetXDGDataWriteLocation(env.get()).AppendASCII("pki/nssdb");
+}
+
+base::FilePath GetHomeNssdbDirectory() {
+  base::FilePath home_dir;
+  base::PathService::Get(base::DIR_HOME, &home_dir);
+  if (home_dir.empty()) {
+    return {};
+  }
+
+  return home_dir.AppendASCII(".pki/nssdb");
+}
+
+}  // namespace
+
+base::FilePath GetDefaultNSSConfigDirectory() {
+  // If the $HOME/.pki/nssdb directory already exists, use it
+  // for backwards compatibility.
+  if (auto nssdb_home = GetHomeNssdbDirectory();
+      !nssdb_home.empty() && base::DirectoryExists(nssdb_home)) {
+    return nssdb_home;
+  }
+
+  // Otherwise, use ${XDG_DATA_HOME:-$HOME/.local/share}/pki/nssdb.
+  return GetXdgDataNssdbDirectory();
+}
+
+namespace {
+
+base::FilePath PrepareDefaultConfigDirectory() {
+  base::FilePath dir = GetDefaultNSSConfigDirectory();
   if (dir.empty()) {
-    LOG(ERROR) << "Failed to get home directory.";
+    LOG(ERROR) << "Failed to get PKI directory.";
     return dir;
   }
-  dir = dir.AppendASCII(".pki").AppendASCII("nssdb");
   if (!base::CreateDirectory(dir)) {
     LOG(ERROR) << "Failed to create " << dir.value() << " directory.";
     dir.clear();
@@ -60,7 +91,7 @@ base::FilePath GetInitialConfigDirectory() {
 #if BUILDFLAG(IS_CHROMEOS)
   return base::FilePath();
 #else
-  return GetDefaultConfigDirectory();
+  return PrepareDefaultConfigDirectory();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
