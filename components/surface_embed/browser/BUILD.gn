@@ -10,3 +10,28 @@ source_set("browser") {
   sources = []
   deps = [ "//components/surface_embed/common" ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "surface_embed_plugin_browsertest.cc" ]
+
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//components/surface_embed/common",
+    "//components/viz/common",
+    "//content/public/browser",
+    "//content/shell:content_shell_lib",
+    "//content/test:browsertest_support",
+    "//content/test:test_support",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//url",
+  ]
+}

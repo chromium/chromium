@@ -1,0 +1,14 @@
+include_rules = [
+  "+components/surface_embed/common",
+  "+content/public/browser",
+]
+
+specific_include_rules = {
+  ".*_browsertest\.cc": [
+    "+components/viz/common",
+    "+content/public/test",
+    "+content/shell/browser",
+    "+third_party/skia/include",
+    "+ui/gfx/geometry",
+  ]
+}
