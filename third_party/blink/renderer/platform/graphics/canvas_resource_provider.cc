@@ -727,6 +727,13 @@ bool CanvasNon2DResourceProviderSharedImage::OverwriteImage(
   return true;
 }
 
+scoped_refptr<gpu::ClientSharedImage>
+CanvasNon2DResourceProviderSharedImage::GetBackingClientSharedImage(
+    gpu::SyncToken& internal_access_sync_token) {
+  return GetBackingClientSharedImageForExternalWrite(
+      gpu::SharedImageUsageSet(), internal_access_sync_token);
+}
+
 base::ByteSize CanvasResourceProviderSharedImage::EstimatedSizeInBytes() const {
   base::ByteSize result;
   if (resource_) {

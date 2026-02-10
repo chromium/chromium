@@ -920,8 +920,7 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
 
   gpu::SyncToken sync_token;
   auto dst_client_si =
-      resource_provider->GetBackingClientSharedImageForExternalWrite(
-          gpu::SharedImageUsageSet(), sync_token);
+      resource_provider->GetBackingClientSharedImage(sync_token);
   if (!dst_client_si) {
     return false;
   }

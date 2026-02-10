@@ -714,6 +714,13 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   // copying is effectively skipped due to a dummy WebGPU texture.
   void PrepareForWebGPUDummyMailbox();
 
+  // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
+  // exists, after flushing the resource and signaling that an external write
+  // will occur on it. The caller should wait on `internal_access_sync_token`
+  // before writing the contents.
+  scoped_refptr<gpu::ClientSharedImage> GetBackingClientSharedImage(
+      gpu::SyncToken& internal_access_sync_token);
+
   // Overwrites the current image (either completely or partially) with the
   // passed-in SharedImage. Waits on `ready_sync_token` before copying; pass
   // SyncToken() if no sync is required. Synthesizes a new sync token in
