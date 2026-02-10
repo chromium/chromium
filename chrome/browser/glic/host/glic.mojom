@@ -76,6 +76,7 @@ struct ConfigInfo {
   // User configured preset URLs for different environments of the guest web
   // client.
   url.mojom.Url autopush_guest_url;
+  url.mojom.Url staging_guest_url;
   url.mojom.Url preprod_guest_url;
   url.mojom.Url prod_guest_url;
 };
@@ -256,7 +257,8 @@ interface PageHandler {
 
   // Sets the guest URL presets for the internals page.
   SetGuestUrlPresets(
-      url.mojom.Url autopush, url.mojom.Url preprod, url.mojom.Url prod);
+      url.mojom.Url autopush, url.mojom.Url staging, url.mojom.Url preprod,
+      url.mojom.Url prod);
 };
 
 // @generate glic_api

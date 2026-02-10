@@ -49,6 +49,10 @@ export class GlicInternalsAppElement extends CrLitElement {
     this.data_!.config.autopushGuestUrl = (e.target as HTMLInputElement).value;
   }
 
+  protected onStagingInputChange(e: Event) {
+    this.data_!.config.stagingGuestUrl = (e.target as HTMLInputElement).value;
+  }
+
   protected onPreprodInputChange(e: Event) {
     this.data_!.config.preprodGuestUrl = (e.target as HTMLInputElement).value;
   }
@@ -65,6 +69,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       // Validate the URL. If we don't validate here, IPC will kill this
       // renderer on invalid URLs.
       new URL(this.data_!.config.autopushGuestUrl);
+      new URL(this.data_!.config.stagingGuestUrl);
       new URL(this.data_!.config.preprodGuestUrl);
       new URL(this.data_!.config.prodGuestUrl);
     } catch {
@@ -74,8 +79,8 @@ export class GlicInternalsAppElement extends CrLitElement {
     }
     errorMsg!.classList.add('hiddenElement');
     this.browserProxy_.pageHandler.setGuestUrlPresets(
-        this.data_!.config.autopushGuestUrl, this.data_!.config.preprodGuestUrl,
-        this.data_!.config.prodGuestUrl);
+        this.data_!.config.autopushGuestUrl, this.data_!.config.stagingGuestUrl,
+        this.data_!.config.preprodGuestUrl, this.data_!.config.prodGuestUrl);
   }
 
   protected getActuationEligibilityString_(eligibility: ActuationEligibility):

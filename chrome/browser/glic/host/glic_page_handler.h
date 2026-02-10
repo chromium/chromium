@@ -91,6 +91,7 @@ class GlicPageHandler : public glic::mojom::PageHandler,
       GetInternalsDataPayloadCallback callback) override;
 
   void SetGuestUrlPresets(const GURL& autopush_url,
+                          const GURL& staging_url,
                           const GURL& preprod_url,
                           const GURL& prod_url) override;
 

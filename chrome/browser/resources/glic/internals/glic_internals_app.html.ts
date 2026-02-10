@@ -74,6 +74,11 @@ export function getHtml(this: GlicInternalsAppElement) {
             id="autopushInput" .value="${this.data_.config.autopushGuestUrl}"
             @change="${this.onAutopushInputChange}">
         </input>
+        <label for="stagingInput">Staging</label>
+        <input
+            id="stagingInput" .value="${this.data_.config.stagingGuestUrl}"
+            @change="${this.onStagingInputChange}">
+        </input>
         <label for="preprodInput">Preprod</label>
         <input
             id="preprodInput" .value="${this.data_.config.preprodGuestUrl}"

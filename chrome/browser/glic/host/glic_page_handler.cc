@@ -2523,6 +2523,8 @@ void GlicPageHandler::GetInternalsDataPayload(
 
   config->autopush_guest_url = GURL(g_browser_process->local_state()->GetString(
       prefs::kGlicGuestUrlPresetAutopush));
+  config->staging_guest_url = GURL(g_browser_process->local_state()->GetString(
+      prefs::kGlicGuestUrlPresetStaging));
   config->preprod_guest_url = GURL(g_browser_process->local_state()->GetString(
       prefs::kGlicGuestUrlPresetPreprod));
   config->prod_guest_url = GURL(g_browser_process->local_state()->GetString(
@@ -2534,10 +2536,13 @@ void GlicPageHandler::GetInternalsDataPayload(
 }
 
 void GlicPageHandler::SetGuestUrlPresets(const GURL& autopush_url,
+                                         const GURL& staging_url,
                                          const GURL& preprod_url,
                                          const GURL& prod_url) {
   g_browser_process->local_state()->SetString(
       prefs::kGlicGuestUrlPresetAutopush, autopush_url.spec());
+  g_browser_process->local_state()->SetString(prefs::kGlicGuestUrlPresetStaging,
+                                              staging_url.spec());
   g_browser_process->local_state()->SetString(prefs::kGlicGuestUrlPresetPreprod,
                                               preprod_url.spec());
   g_browser_process->local_state()->SetString(prefs::kGlicGuestUrlPresetProd,
