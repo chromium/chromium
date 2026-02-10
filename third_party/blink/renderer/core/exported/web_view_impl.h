@@ -580,13 +580,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // adjacent UI element in the containing window.
   void TakeFocus(bool reverse);
 
-  // Shows a previously created WebView (via window.open()).
-  void Show(const LocalFrameToken& opener_frame_token,
-            NavigationPolicy policy,
-            const gfx::Rect& requested_rect,
-            const gfx::Rect& adjusted_rect,
-            bool opened_by_user_gesture);
-
   // Send the window rect to the browser and call `ack_callback` when the
   // browser has processed it.
   void SendWindowRectToMainFrameHost(const gfx::Rect& bounds,

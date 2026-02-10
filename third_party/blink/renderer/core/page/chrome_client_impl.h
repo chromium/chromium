@@ -117,10 +117,6 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                              network::mojom::blink::WebSandboxFlags,
                              const SessionStorageNamespaceId&,
                              bool& consumed_user_gesture) override;
-  void Show(LocalFrame& frame,
-            LocalFrame& opener_frame,
-            NavigationPolicy navigation_policy,
-            bool user_gesture) override;
   void SetOverscrollBehavior(LocalFrame& main_frame,
                              const cc::OverscrollBehavior&) override;
   void InjectScrollbarGestureScroll(

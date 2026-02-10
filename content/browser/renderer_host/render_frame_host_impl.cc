@@ -7608,31 +7608,6 @@ void RenderFrameHostImpl::ClosePageTimeout(
   ClosePageIgnoringUnloadEvents(source, completion_callback);
 }
 
-void RenderFrameHostImpl::ShowCreatedWindow(
-    const blink::LocalFrameToken& opener_frame_token,
-    WindowOpenDisposition disposition,
-    blink::mojom::WindowFeaturesPtr window_features,
-    bool user_gesture,
-    ShowCreatedWindowCallback callback) {
-  CHECK(!base::FeatureList::IsEnabled(blink::features::kCombineNewWindowIPCs));
-  // This needs to be sent to the opener frame's delegate since it stores
-  // the handle to this class's associated RenderWidgetHostView.
-  RenderFrameHostImpl* opener_frame_host =
-      FromFrameToken(GetProcess()->GetDeprecatedID(), opener_frame_token);
-
-  // If |opener_frame_host| has been destroyed, just return. The opener frame is
-  // needed to find the newly created web contents. See crbug.com/40158114 for
-  // context.
-  if (!opener_frame_host) {
-    std::move(callback).Run();
-    return;
-  }
-  opener_frame_host->delegate()->ShowCreatedWindow(
-      opener_frame_host, GetRenderWidgetHost()->GetRoutingID(), disposition,
-      *window_features, user_gesture);
-  std::move(callback).Run();
-}
-
 void RenderFrameHostImpl::SetWindowRect(const gfx::Rect& bounds,
                                         SetWindowRectCallback callback) {
   // Prerendering pages should not reach this code.
@@ -10177,27 +10152,24 @@ void RenderFrameHostImpl::CreateNewWindow(
 
   new_main_rfh->render_view_host()->RenderViewCreated(new_main_rfh);
 
-  if (base::FeatureList::IsEnabled(blink::features::kCombineNewWindowIPCs)) {
-    // ShowCreatedWindow will return nullptr if the new WebContents has been
-    // destroyed, as described above (see NOTE).
-    WebContents* shown_contents = delegate()->ShowCreatedWindow(
-        this, new_rwh->GetRoutingID(), params->disposition, *params->features,
-        params->consumes_user_activation);
+  // ShowCreatedWindow will return nullptr if the new WebContents has been
+  // destroyed, as described above (see NOTE).
+  WebContents* shown_contents = delegate()->ShowCreatedWindow(
+      this, new_rwh->GetRoutingID(), params->disposition, *params->features,
+      params->consumes_user_activation);
 
-    if (!shown_contents) {
-      // These point to freed memory, so null them out to prevent inadvertent
-      // UAF in the future (see NOTE above).
-      new_frame_tree = nullptr;
-      new_main_rfh = nullptr;
-      new_rwh = nullptr;
-    } else if (new_main_rfh->GetView()) {
-      // Cannot populate window geometry until after ShowCreatedWindow().
-      reply->widget_screen_rect.emplace(
-          new_main_rfh->GetView()->GetViewBounds());
-      reply->window_screen_rect.emplace(
-          new_main_rfh->GetView()->GetBoundsInRootWindow());
-      reply->visual_properties = new_rwh->GetVisualProperties();
-    }
+  if (!shown_contents) {
+    // These point to freed memory, so null them out to prevent inadvertent
+    // UAF in the future (see NOTE above).
+    new_frame_tree = nullptr;
+    new_main_rfh = nullptr;
+    new_rwh = nullptr;
+  } else if (new_main_rfh->GetView()) {
+    // Cannot populate window geometry until after ShowCreatedWindow().
+    reply->widget_screen_rect.emplace(new_main_rfh->GetView()->GetViewBounds());
+    reply->window_screen_rect.emplace(
+        new_main_rfh->GetView()->GetBoundsInRootWindow());
+    reply->visual_properties = new_rwh->GetVisualProperties();
   }
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,

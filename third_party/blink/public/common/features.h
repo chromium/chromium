@@ -255,8 +255,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                                kMaxDiskDataAllocatorCapacityMB);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLessAggressiveParkableString);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCombineNewWindowIPCs);
-
 // Controls whether blink main thread rendering updates are forced while
 // compositor-thread animations are running, for the purpose of keeeping
 // IntersectionObserver and anchor positioning correctly up to date.

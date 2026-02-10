@@ -427,39 +427,6 @@ void ChromeClientImpl::SetOverscrollBehavior(
       overscroll_behavior);
 }
 
-void ChromeClientImpl::Show(LocalFrame& frame,
-                            LocalFrame& opener_frame,
-                            NavigationPolicy navigation_policy,
-                            bool user_gesture) {
-  DCHECK(web_view_);
-  const WebWindowFeatures& features = frame.GetPage()->GetWindowFeatures();
-  gfx::Rect bounds(features.x, features.y, features.width, features.height);
-
-  // The minimum size from popups opened from borderless apps differs from
-  // normal apps. When window.open is called, display-mode for the new frame is
-  // still undefined as the app hasn't loaded yet, thus opener frame is used.
-  int minimum_size =
-      navigation_policy == NavigationPolicy::kNavigationPolicyNewPopup &&
-              DisplayModeIsBorderless(opener_frame)
-          ? blink::kMinimumBorderlessWindowSize
-          : blink::kMinimumWindowSize;
-
-  // TODO(crbug.com/1515106): Refactor so that the limits only live browser-side
-  // instead of now partly being duplicated browser-side and renderer side.
-  const gfx::Rect rect_adjusted_for_minimum =
-      AdjustWindowRectForMinimum(bounds, minimum_size);
-  const gfx::Rect adjusted_rect = AdjustWindowRectForDisplay(
-      rect_adjusted_for_minimum, frame, minimum_size);
-  // Request the unadjusted rect if the browser may honor cross-screen bounds.
-  // Permission state is not readily available, so adjusted bounds are clamped
-  // to the same-screen, to retain legacy behavior of synchronous pending values
-  // and to avoid exposing other screen details to frames without permission.
-  // TODO(crbug.com/897300): Use permission state for better sync estimates or
-  // store unadjusted pending window rects if that will not break many sites.
-  web_view_->Show(opener_frame.GetLocalFrameToken(), navigation_policy,
-                  rect_adjusted_for_minimum, adjusted_rect, user_gesture);
-}
-
 bool ChromeClientImpl::ShouldReportDetailedMessageForSourceAndSeverity(
     LocalFrame& local_frame,
     mojom::blink::ConsoleMessageLevel log_level,

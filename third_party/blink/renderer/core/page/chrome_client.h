@@ -284,16 +284,6 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                      const SessionStorageNamespaceId&,
                      bool& consumed_user_gesture);
 
-  // Show a previously created Page that was created via CreateWindow. This
-  // should only be called once the newly created window when it is ready to be
-  // shown. Under some circumstances CreateWindow's implementation may return a
-  // previously shown page. Calling this method should still work and the
-  // browser will discard the unnecessary show request.
-  virtual void Show(LocalFrame& frame,
-                    LocalFrame& opener_frame,
-                    NavigationPolicy navigation_policy,
-                    bool consumed_user_gesture) = 0;
-
   // For a scrollbar scroll action, injects a gesture event of |injected_type|
   // to be dispatched at a later point in time. |injected_type| is required to
   // be one of GestureScroll{Begin,Update,End}. If the main thread is currently

@@ -2676,11 +2676,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
                        blink::mojom::LocalMainFrameHost::UpdateTargetURLCallback
                            callback) override;
   void RequestClose() override;
-  void ShowCreatedWindow(const blink::LocalFrameToken& opener_frame_token,
-                         WindowOpenDisposition disposition,
-                         blink::mojom::WindowFeaturesPtr window_features,
-                         bool user_gesture,
-                         ShowCreatedWindowCallback callback) override;
   void SetWindowRect(const gfx::Rect& bounds,
                      SetWindowRectCallback callback) override;
   void DidFirstVisuallyNonEmptyPaint() override;

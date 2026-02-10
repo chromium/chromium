@@ -116,10 +116,6 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void TakeFocus(mojom::blink::FocusType) override {}
   bool SupportsDraggableRegions() override { return false; }
   void DraggableRegionsChanged() override {}
-  void Show(LocalFrame& frame,
-            LocalFrame& opener_frame,
-            NavigationPolicy navigation_policy,
-            bool consumed_user_gesture) override {}
   void SetOverscrollBehavior(LocalFrame& frame,
                              const cc::OverscrollBehavior&) override {}
   void BeginLifecycleUpdates(LocalFrame& main_frame) override {}

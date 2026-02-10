@@ -434,10 +434,6 @@ BASE_FEATURE_PARAM(int,
                    "max_disk_capacity_mb",
                    -1);
 
-// When enabled, CreateNewWindow() and ShowCreatedWindow() mojo calls are
-// coalesced into a single call to CreateNewWindow().
-BASE_FEATURE(kCombineNewWindowIPCs, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls off-thread code cache consumption.
 BASE_FEATURE(kConsumeCodeCacheOffThread, base::FEATURE_ENABLED_BY_DEFAULT);
 

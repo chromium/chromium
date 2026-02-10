@@ -396,12 +396,6 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
 
   frame.View()->SetCanHaveScrollbars(!features.is_popup);
 
-  if (!base::FeatureList::IsEnabled(features::kCombineNewWindowIPCs)) {
-    page->GetChromeClient().Show(frame, opener_frame,
-                                 request.GetNavigationPolicy(),
-                                 consumed_user_gesture);
-  }
-
   // GetWebView() may return nullptr in tests
   if (auto* web_view = page->GetChromeClient().GetWebView()) {
     if (auto* dev_tools_agent = web_view->MainFrameImpl()->DevToolsAgentImpl(

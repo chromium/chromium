@@ -7302,13 +7302,6 @@ class TestAccessInitialDocumentLocalFrameHost
     std::move(callback).Run();
   }
   void RequestClose() override {}
-  void ShowCreatedWindow(const ::blink::LocalFrameToken& opener_frame_token,
-                         ::ui::mojom::blink::WindowOpenDisposition disposition,
-                         const mojom::blink::WindowFeaturesPtr window_features,
-                         bool opened_by_user_gesture,
-                         ShowCreatedWindowCallback callback) override {
-    std::move(callback).Run();
-  }
   void SetWindowRect(const ::gfx::Rect& bounds,
                      SetWindowRectCallback callback) override {
     std::move(callback).Run();

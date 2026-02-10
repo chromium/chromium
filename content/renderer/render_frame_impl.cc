@@ -6992,7 +6992,6 @@ WebView* RenderFrameImpl::CreateNewWindow(
 
   if (reply->widget_screen_rect.has_value() &&
       reply->window_screen_rect.has_value()) {
-    CHECK(base::FeatureList::IsEnabled(blink::features::kCombineNewWindowIPCs));
     web_view->MainFrameWidget()->SetScreenRects(*reply->widget_screen_rect,
                                                 *reply->window_screen_rect);
   } else {

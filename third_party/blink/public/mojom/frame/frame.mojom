@@ -1397,14 +1397,6 @@ interface LocalMainFrameHost {
   // Frame unload handlers should have already been called before this method is called.
   RequestClose();
 
-  // Causes a window previously opened via content.mojom.FrameHost::CreateNewWindow
-  // to be shown on the screen. This message contains the opener_frame_token
-  // which is always set. This is called on the main frame of the window to be shown.
-  ShowCreatedWindow(blink.mojom.LocalFrameToken opener_frame_token,
-                    ui.mojom.WindowOpenDisposition disposition,
-                    blink.mojom.WindowFeatures window_features,
-                    bool opened_by_user_gesture) => ();
-
   // Request that the browser change the bounds of the window.
   // This corresponds to the window.resizeTo() and window.moveTo() APIs, and the browser
   // may ignore this message.

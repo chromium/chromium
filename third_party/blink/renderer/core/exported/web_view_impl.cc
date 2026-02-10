@@ -384,29 +384,6 @@ void ApplyCommandLineToSettings(WebSettings* settings) {
   }
 }
 
-ui::mojom::blink::WindowOpenDisposition NavigationPolicyToDisposition(
-    NavigationPolicy policy) {
-  switch (policy) {
-    case kNavigationPolicyDownload:
-      return ui::mojom::blink::WindowOpenDisposition::SAVE_TO_DISK;
-    case kNavigationPolicyCurrentTab:
-      return ui::mojom::blink::WindowOpenDisposition::CURRENT_TAB;
-    case kNavigationPolicyNewBackgroundTab:
-      return ui::mojom::blink::WindowOpenDisposition::NEW_BACKGROUND_TAB;
-    case kNavigationPolicyNewForegroundTab:
-      return ui::mojom::blink::WindowOpenDisposition::NEW_FOREGROUND_TAB;
-    case kNavigationPolicyNewWindow:
-      return ui::mojom::blink::WindowOpenDisposition::NEW_WINDOW;
-    case kNavigationPolicyNewPopup:
-      return ui::mojom::blink::WindowOpenDisposition::NEW_POPUP;
-    case kNavigationPolicyPictureInPicture:
-      return ui::mojom::blink::WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
-    case kNavigationPolicyLinkPreview:
-      NOTREACHED();
-  }
-  NOTREACHED() << "Unexpected NavigationPolicy";
-}
-
 // Records the queuing duration for activation IPC.
 void RecordPrerenderActivationSignalDelay(const String& metric_suffix) {
   auto* task = base::TaskAnnotator::CurrentTaskForThread();
@@ -3170,30 +3147,6 @@ void WebViewImpl::TakeFocus(bool reverse) {
     DCHECK(remote_main_frame_host_remote_);
     remote_main_frame_host_remote_->TakeFocus(reverse);
   }
-}
-
-void WebViewImpl::Show(const LocalFrameToken& opener_frame_token,
-                       NavigationPolicy policy,
-                       const gfx::Rect& requested_rect,
-                       const gfx::Rect& adjusted_rect,
-                       bool opened_by_user_gesture) {
-  // This is only called on local main frames.
-  DCHECK(local_main_frame_host_remote_);
-  DCHECK(web_widget_);
-  web_widget_->SetPendingWindowRect(adjusted_rect);
-  const WebWindowFeatures& web_window_features = page_->GetWindowFeatures();
-  mojom::blink::WindowFeaturesPtr window_features =
-      mojom::blink::WindowFeatures::New();
-  window_features->bounds = requested_rect;
-  window_features->has_x = web_window_features.x_set;
-  window_features->has_y = web_window_features.y_set;
-  window_features->has_width = web_window_features.width_set;
-  window_features->has_height = web_window_features.height_set;
-  window_features->is_popup = web_window_features.is_popup;
-  local_main_frame_host_remote_->ShowCreatedWindow(
-      opener_frame_token, NavigationPolicyToDisposition(policy),
-      std::move(window_features), opened_by_user_gesture,
-      BindOnce(&WebViewImpl::DidShowCreatedWindow, Unretained(this)));
 }
 
 void WebViewImpl::DidShowCreatedWindow() {
