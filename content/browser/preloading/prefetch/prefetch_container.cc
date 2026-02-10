@@ -1486,15 +1486,10 @@ void PrefetchContainer::OnDetectedCookiesChange(
   SetPrefetchStatus(PrefetchStatus::kPrefetchNotUsedCookiesChanged);
   UpdateServingPageMetrics();
 
-  if (base::FeatureList::IsEnabled(
-          features::kPrefetchAsyncCancelOnCookiesChange)) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&PrefetchContainer::CancelStreamingURLLoaderIfNotServing,
-                       GetWeakPtr()));
-  } else {
-    CancelStreamingURLLoaderIfNotServing();
-  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PrefetchContainer::CancelStreamingURLLoaderIfNotServing,
+                     GetWeakPtr()));
 }
 
 void PrefetchContainer::OnPrefetchStarted() {

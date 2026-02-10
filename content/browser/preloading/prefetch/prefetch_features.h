@@ -108,10 +108,6 @@ CONTENT_EXPORT extern const base::FeatureParam<size_t>
 // TODO(crbug.com/360094997): Remove it after confirming stability.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreloadServingMetrics);
 
-// Kill switch for making the cancelling of `PrefetchStreamingURLLoader` async.
-// TODO(crbug.com/400761083): Remove it after confirming stability.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchAsyncCancelOnCookiesChange);
-
 // Kill switch for fixing header modifications upon redirects.
 // TODO(crbug.com/467177773): Remove it after confirming stability.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchFixHeaderUpdatesOnRedirect);
