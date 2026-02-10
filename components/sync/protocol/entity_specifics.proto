@@ -69,6 +69,7 @@ import "components/sync/protocol/workspace_desk_specifics.proto";
 import "components/sync/protocol/shared_tab_group_account_data_specifics.proto";
 import "components/sync/protocol/skill_specifics.proto";
 import "components/sync/protocol/gemini_thread_specifics.proto";
+import "components/sync/protocol/theme_specifics_ios.proto";
 
 message EntitySpecifics {
   // If a datatype is encrypted, this field will contain the encrypted
@@ -112,6 +113,7 @@ message EntitySpecifics {
     BookmarkSpecifics bookmark = 32904;
     PreferenceSpecifics preference = 37702;
     ThemeSpecifics theme = 41210;
+    ThemeSpecificsIos theme_ios = 1577986;
     PasswordSpecifics password = 45873;
     NigoriSpecifics nigori = 47745;
     ExtensionSpecifics extension = 48119;

@@ -69,6 +69,10 @@ class UserSelectableTypeTest : public ::testing::Test {
     // selectable type or to a new one and remove it from here (unless it's
     // ambiguous).
     data_types.Put(GEMINI_THREAD);
+    // TODO(crbug.com/481713548): In CL #3, map THEMES_IOS to an existing
+    // selectable type or to a new one and remove it from here (unless it's
+    // ambiguous).
+    data_types.Put(THEMES_IOS);
 
     return data_types;
   }

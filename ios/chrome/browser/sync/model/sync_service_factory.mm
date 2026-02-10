@@ -151,6 +151,9 @@ syncer::DataTypeController::TypeVector CreateControllers(
   syncer::DataTypeController::TypeVector controllers = builder.Build(
       /*disabled_types=*/{}, sync_service, ::GetChannel());
 
+  // TODO(crbug.com/481713548): In CL #4, instantiate the controller for
+  // `THEMES_IOS` here and push it into the `controllers` vector.
+
   return controllers;
 }
 

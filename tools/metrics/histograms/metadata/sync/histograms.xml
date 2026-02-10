@@ -92,6 +92,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".SHARING_MESSAGE" summary="SHARING_MESSAGE"/>
   <variant name=".SKILL" summary="SKILL"/>
   <variant name=".THEME" summary="THEME"/>
+  <variant name=".THEME_IOS" summary="THEME_IOS"/>
   <variant name=".USER_CONSENT" summary="USER_CONSENT"/>
   <variant name=".USER_EVENT" summary="USER_EVENT"/>
   <variant name=".WALLET_METADATA" summary="WALLET_METADATA"/>

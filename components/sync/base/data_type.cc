@@ -16,11 +16,11 @@ namespace syncer {
 
 namespace {
 
-static_assert(61 == syncer::GetNumDataTypes(),
+static_assert(62 == syncer::GetNumDataTypes(),
               "When adding a new type, update enum SyncDataTypes in enums.xml "
               "and suffix SyncDataType in histograms.xml.");
 
-static_assert(61 == syncer::GetNumDataTypes(),
+static_assert(62 == syncer::GetNumDataTypes(),
               "When adding a new type, follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
               "integration-checklist/");
@@ -118,6 +118,7 @@ constexpr kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
         {sync_pb::EntitySpecifics::kContextualTaskFieldNumber, CONTEXTUAL_TASK},
         {sync_pb::EntitySpecifics::kSkillFieldNumber, SKILL},
         {sync_pb::EntitySpecifics::kGeminiThreadFieldNumber, GEMINI_THREAD},
+        {sync_pb::EntitySpecifics::kThemeIosFieldNumber, THEMES_IOS},
         // ---- Control Types ----
         {sync_pb::EntitySpecifics::kNigoriFieldNumber, NIGORI},
     });
@@ -161,6 +162,9 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
       break;
     case THEMES:
       specifics->mutable_theme();
+      break;
+    case THEMES_IOS:
+      specifics->mutable_theme_ios();
       break;
     case EXTENSIONS:
       specifics->mutable_extension();
@@ -347,6 +351,8 @@ int GetSpecificsFieldNumberFromDataType(DataType data_type) {
       return sync_pb::EntitySpecifics::kAutofillWalletUsageFieldNumber;
     case THEMES:
       return sync_pb::EntitySpecifics::kThemeFieldNumber;
+    case THEMES_IOS:
+      return sync_pb::EntitySpecifics::kThemeIosFieldNumber;
     case EXTENSIONS:
       return sync_pb::EntitySpecifics::kExtensionFieldNumber;
     case SEARCH_ENGINES:
@@ -501,7 +507,7 @@ DataTypeSet AlwaysPreferredUserTypes() {
 }
 
 DataTypeSet EncryptableUserTypes() {
-  static_assert(61 == syncer::GetNumDataTypes(),
+  static_assert(62 == syncer::GetNumDataTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   DataTypeSet encryptable_user_types = UserTypes();
@@ -576,6 +582,8 @@ const char* DataTypeToDebugString(DataType data_type) {
       return "Autofill Wallet Usage";
     case THEMES:
       return "Themes";
+    case THEMES_IOS:
+      return "Themes (iOS)";
     case EXTENSIONS:
       return "Extensions";
     case SEARCH_ENGINES:
@@ -705,6 +713,8 @@ const char* DataTypeToHistogramSuffix(DataType data_type) {
       return "AUTOFILL_WALLET_USAGE";
     case THEMES:
       return "THEME";
+    case THEMES_IOS:
+      return "THEME_IOS";
     case EXTENSIONS:
       return "EXTENSION";
     case SEARCH_ENGINES:
@@ -834,6 +844,8 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kAutofillWalletUsage;
     case THEMES:
       return DataTypeForHistograms::kThemes;
+    case THEMES_IOS:
+      return DataTypeForHistograms::kThemesIos;
     case EXTENSIONS:
       return DataTypeForHistograms::kExtensions;
     case SEARCH_ENGINES:
@@ -980,6 +992,8 @@ const char* DataTypeToStableLowerCaseString(DataType data_type) {
       return "autofill_wallet_usage";
     case THEMES:
       return "themes";
+    case THEMES_IOS:
+      return "themes_ios";
     case EXTENSIONS:
       return "extensions";
     case SEARCH_ENGINES:

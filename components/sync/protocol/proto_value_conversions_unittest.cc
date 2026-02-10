@@ -69,7 +69,7 @@ using testing::Not;
 
 DEFINE_SPECIFICS_TO_VALUE_TEST(encrypted)
 
-static_assert(61 == syncer::GetNumDataTypes(),
+static_assert(62 == syncer::GetNumDataTypes(),
               "When adding a new field, add a DEFINE_SPECIFICS_TO_VALUE_TEST "
               "for your field below, and optionally a test for the specific "
               "conversions.");
@@ -118,6 +118,7 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(session)
 DEFINE_SPECIFICS_TO_VALUE_TEST(shared_tab_group_data)
 DEFINE_SPECIFICS_TO_VALUE_TEST(sharing_message)
 DEFINE_SPECIFICS_TO_VALUE_TEST(theme)
+DEFINE_SPECIFICS_TO_VALUE_TEST(theme_ios)
 DEFINE_SPECIFICS_TO_VALUE_TEST(typed_url)
 DEFINE_SPECIFICS_TO_VALUE_TEST(user_consent)
 DEFINE_SPECIFICS_TO_VALUE_TEST(user_event)
