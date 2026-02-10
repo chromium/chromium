@@ -89,7 +89,7 @@
 //! [prettyplease]: https://github.com/dtolnay/prettyplease
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/quote/1.0.43")]
+#![doc(html_root_url = "https://docs.rs/quote/1.0.44")]
 #![allow(
     clippy::doc_markdown,
     clippy::elidable_lifetime_names,

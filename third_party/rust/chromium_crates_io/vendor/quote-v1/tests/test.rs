@@ -541,6 +541,12 @@ fn test_quote_raw_id() {
 }
 
 #[test]
+fn test_quote_raw_lifetime() {
+    let lifetime = quote!('r#async);
+    assert_eq!(lifetime.to_string(), "'r#async");
+}
+
+#[test]
 fn test_type_inference_for_span() {
     trait CallSite {
         fn get() -> Self;

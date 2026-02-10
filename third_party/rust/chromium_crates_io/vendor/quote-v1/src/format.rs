@@ -4,8 +4,8 @@
 ///
 /// # Syntax
 ///
-/// Syntax is copied from the [`format_args!`] macro, supporting both positional
-/// and named arguments.
+/// Syntax is copied from the [`format!`][alloc::format!] macro, supporting both
+/// positional and named arguments.
 ///
 /// Only a limited set of formatting traits are supported. The current mapping
 /// of format types to traits is:
