@@ -249,7 +249,6 @@ public class TabModelOrchestrator {
 
     /**
      * Clean up persistent state for a given instance.
-     *
      * @param instanceId Instance ID.
      */
     public void cleanupInstance(int instanceId) {
@@ -257,17 +256,6 @@ public class TabModelOrchestrator {
                 TabWindowManagerSingleton.getInstance()
                         .getPersistentStoreMigrationManagerById(instanceId);
         assumeNonNull(migrationManager).onWindowCleared();
-    }
-
-    /** Clean up persisted state for this orchestrator. */
-    public void clearCurrentWindow() {
-        assertInitialized();
-        if (!mTabPersistentStoreDestroyedEarly) {
-            mTabPersistentStore.clearCurrentWindow();
-            if (mShadowTabPersistentStore != null) {
-                mShadowTabPersistentStore.clearCurrentWindow();
-            }
-        }
     }
 
     /**
