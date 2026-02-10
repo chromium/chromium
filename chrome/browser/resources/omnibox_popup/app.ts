@@ -122,8 +122,6 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor isAimEligible_: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor inputState_: InputState|null = null;
-  protected accessor showModelPicker_: boolean =
-      loadTimeData.getBoolean('contextualMenuShowModelPicker');
   protected accessor usePecApi_: boolean =
       loadTimeData.getBoolean('contextualMenuUsePecApi');
 

@@ -436,8 +436,6 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       profile->GetPrefs()->GetInteger(
           prefs::kNtpComposeButtonShownCountPrefName) <
           composebox_config.entry_point().num_page_load_animations());
-  source->AddBoolean("contextualMenuShowModelPicker",
-                     ntp_composebox::kShowModelPicker.Get());
   source->AddBoolean("contextualMenuUsePecApi",
                      base::FeatureList::IsEnabled(omnibox::kAimUsePecApi));
   source->AddBoolean("ShowContextMenuHeaders",

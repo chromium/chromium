@@ -121,6 +121,7 @@ suite('NewTabPageRealboxTest', () => {
 
   setup(async () => {
     loadTimeData.overrideValues({
+      contextualMenuUsePecApi: false,
       isLensSearchbox: false,
       searchboxCyclingPlaceholders: false,
       searchboxDefaultIcon: 'search.svg',

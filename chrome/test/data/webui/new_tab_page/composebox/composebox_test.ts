@@ -48,6 +48,7 @@ suite('NewTabPageComposeboxTest', () => {
      loadTimeData.overrideValues({
     'composeboxImageFileTypes': 'image/avif,image/bmp,image/jpeg,image/png,image/webp,image/heif,image/heic',
     'composeboxAttachmentFileTypes': '.pdf,application/pdf',
+    'contextualMenuUsePecApi': false,
   });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(

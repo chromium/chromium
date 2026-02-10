@@ -333,10 +333,6 @@ const base::FeatureParam<bool> kShowToolsAndModels(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ShowToolsAndModels",
     true);
-const base::FeatureParam<bool> kShowModelPicker(
-    &internal::kWebUIOmniboxAimPopup,
-    "Omnibox_ShowModelPicker",
-    false);
 const base::FeatureParam<bool> kShowContextMenuHeaders(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ShowContextMenuHeaders",
