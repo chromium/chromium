@@ -567,12 +567,10 @@ public class ImeAdapterImpl
         mInputConnectionFactory = factory;
     }
 
-    @VisibleForTesting
     void setAutocorrectManagerForTesting(AutocorrectManager autocorrectManager) {
         mAutocorrectManager = autocorrectManager;
     }
 
-    @VisibleForTesting
     @Nullable AutocorrectManager getAutocorrectManagerForTesting() {
         return mAutocorrectManager;
     }
