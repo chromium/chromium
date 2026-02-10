@@ -1,6 +1,6 @@
 [package]
 name = "regex-syntax"
-version = "0.8.8"  #:version
+version = "0.8.9"  #:version
 authors = ["The Rust Project Developers", "Andrew Gallant <jamslam@gmail.com>"]
 license = "MIT OR Apache-2.0"
 homepage = "https://github.com/rust-lang/regex/tree/master/regex-syntax"
@@ -10,6 +10,7 @@ description = "A regular expression parser."
 workspace = ".."
 edition = "2021"
 rust-version = "1.65"
+include.workspace = true
 
 # Features are documented in the "Crate features" section of the crate docs:
 # https://docs.rs/regex-syntax/*/#crate-features
