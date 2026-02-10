@@ -336,10 +336,8 @@ Element* FocusgroupControllerUtils::NextFocusgroupItemInDirection(
       current_item, focus_direction, /*skip_subtree=*/false);
   while (next_element &&
          FlatTreeTraversal::IsDescendantOf(*next_element, *owner)) {
-    FocusgroupData next_data = next_element->GetFocusgroupData();
-
     // Handle opted-out subtrees: skip entirely.
-    if (next_data.behavior == FocusgroupBehavior::kOptOut) {
+    if (HasExplicitOptOut(next_element)) {
       next_element =
           traversal_context.NextInDirection(next_element, focus_direction,
                                             /*skip_subtree=*/true);
@@ -349,6 +347,7 @@ Element* FocusgroupControllerUtils::NextFocusgroupItemInDirection(
     // Handle nested focusgroups: they can participate as items in the parent
     // focusgroup if they are keyboard focusable. After checking, we always
     // skip their subtree since their contents belong to the nested focusgroup.
+    FocusgroupData next_data = next_element->GetFocusgroupData();
     if (IsActualFocusgroup(next_data)) {
       if (next_element->IsKeyboardFocusableSlow()) {
         return next_element;
@@ -378,11 +377,14 @@ Element* FocusgroupControllerUtils::GetFocusgroupOwnerOfItem(
   }
 
   // An element with focusgroup="none" is opted out of focusgroup management.
-  // It should not be considered a focusgroup item.
-  if (element->GetFocusgroupData().behavior == FocusgroupBehavior::kOptOut) {
+  // It and its subtree should not be considered a focusgroup item.
+  // Note: We only check for explicit opt-out here, not focused arrow key
+  // handlers. Arrow key handlers are still focusgroup items for the purpose
+  // of memory tracking and segment computation; they just have special
+  // behavior during navigation.
+  if (IsInExplicitlyOptedOutSubtree(element)) {
     return nullptr;
   }
-
   return focusgroup::FindFocusgroupOwner(element);
 }
 
@@ -508,7 +510,8 @@ const Element* FocusgroupControllerUtils::GetEntryElementForFocusgroupSegment(
   DCHECK(IsFocusgroupItemWithOwner(&item, &owner));
 
   // Always start from the beginning of the segment.
-  const Element* first_item_in_segment = FirstFocusgroupItemInSegment(item);
+  const Element* first_item_in_segment =
+      FocusgroupItemInSegment(item, FocusgroupItemPosition::kFirst);
 
   if (!first_item_in_segment) {
     return nullptr;
@@ -524,7 +527,8 @@ FocusgroupControllerUtils::GetEntryElementForFocusgroupSegmentFromFirst(
     const Element& owner) {
   DCHECK(IsFocusgroupItemWithOwner(&first_item_in_segment, &owner));
   // Validate precondition: element must be the first item in its segment.
-  DCHECK_EQ(FirstFocusgroupItemInSegment(first_item_in_segment),
+  DCHECK_EQ(FocusgroupItemInSegment(first_item_in_segment,
+                                    FocusgroupItemPosition::kFirst),
             &first_item_in_segment)
       << "GetEntryElementForFocusgroupSegmentFromFirst called with element "
          "that is not the first item in its segment.";
@@ -544,17 +548,10 @@ FocusgroupControllerUtils::GetEntryElementForFocusgroupSegmentFromFirst(
     if (item_in_segment->IsFocusedElementInDocument()) {
       // If another item in the segment is already focused, return it, as
       // only one focusgroup item per segment can be in the sequential focus
-      // order. However, if the focused item is an arrow key handler, don't
-      // return it - the arrow key handler is treated as if it has
-      // focusgroup="none", so the segment's normal entry logic should apply.
-      if (!IsInArrowKeyHandler(item_in_segment)) {
-        return item_in_segment;
-      }
-      // Skip this focused arrow key handler entirely; don't consider it for
-      // entry priority or first item tracking.
-      item_in_segment = NextFocusgroupItemInSegmentInDirection(
-          *item_in_segment, owner, mojom::blink::FocusType::kForward);
-      continue;
+      // order. This applies even to focused arrow key handlers - the focused
+      // element is always the entry point for its segment during Tab
+      // navigation.
+      return item_in_segment;
     }
 
     if (memory_item && item_in_segment == memory_item) {
@@ -595,13 +592,18 @@ FocusgroupControllerUtils::GetEntryElementForFocusgroupSegmentFromFirst(
   return nullptr;
 }
 
-bool FocusgroupControllerUtils::IsElementInOptedOutSubtree(
+bool FocusgroupControllerUtils::HasExplicitOptOut(const Element* element) {
+  return element &&
+         element->GetFocusgroupData().behavior == FocusgroupBehavior::kOptOut;
+}
+
+bool FocusgroupControllerUtils::IsInExplicitlyOptedOutSubtree(
     const Element* element) {
   // Starting with this element, walk up the ancestor chain looking for an
-  // opted-out focusgroup. Stop when we reach a focusgroup root or the document
-  // root.
+  // element with focusgroup="none". Stop when we reach a focusgroup root or
+  // the document root.
   while (element) {
-    if (element->GetFocusgroupData().behavior == FocusgroupBehavior::kOptOut) {
+    if (HasExplicitOptOut(element)) {
       return true;
     }
     // Stop at the first focusgroup root.
@@ -635,9 +637,10 @@ Element* FocusgroupControllerUtils::WrappedFocusgroupCandidate(
 
   Element* wrap_candidate = nullptr;
   if (IsDirectionForward(direction)) {
-    wrap_candidate = FirstFocusgroupItemWithin(owner);
+    wrap_candidate =
+        FocusgroupItemWithin(owner, FocusgroupItemPosition::kFirst);
   } else if (IsDirectionBackward(direction)) {
-    wrap_candidate = LastFocusgroupItemWithin(owner);
+    wrap_candidate = FocusgroupItemWithin(owner, FocusgroupItemPosition::kLast);
   }
 
   // If the wrap candidate is valid and isn't the current element, return it.
@@ -647,72 +650,56 @@ Element* FocusgroupControllerUtils::WrappedFocusgroupCandidate(
   return nullptr;
 }
 
-Element* FocusgroupControllerUtils::FirstFocusgroupItemWithin(
-    const Element* owner) {
+namespace {
+
+// Finds the first or last focusgroup item within |owner|'s scope.
+Element* FindFocusgroupItemWithin(const Element* owner,
+                                  FocusgroupItemPosition position) {
   if (!owner || !IsActualFocusgroup(owner->GetFocusgroupData())) {
     return nullptr;
   }
   FocusgroupVisualOrderTraversalContext traversal_context;
+  Element* result = nullptr;
   Element* el = traversal_context.Next(owner, /*skip_subtree=*/false);
   while (el && FlatTreeTraversal::IsDescendantOf(*el, *owner)) {
     bool skip_subtree = false;
-    FocusgroupData data = el->GetFocusgroupData();
 
-    if (data.behavior == FocusgroupBehavior::kOptOut) {
+    if (FocusgroupControllerUtils::HasExplicitOptOut(el)) {
       // Skip opted-out subtree entirely.
       skip_subtree = true;
-    } else if (IsActualFocusgroup(data)) {
+    } else if (IsActualFocusgroup(el->GetFocusgroupData())) {
       // Nested focusgroup: check if the owner itself is a focusgroup item, but
       // skip its subtree as its contents belong to the nested focusgroup.
       if (el->IsKeyboardFocusableSlow()) {
+        if (position == FocusgroupItemPosition::kFirst) {
+          return el;
+        }
+        result = el;
+      }
+      skip_subtree = true;
+    } else if (FocusgroupControllerUtils::IsFocusgroupItemWithOwner(el,
+                                                                    owner) &&
+               el->IsKeyboardFocusableSlow()) {
+      if (position == FocusgroupItemPosition::kFirst) {
         return el;
       }
-      // Skip nested focusgroup subtree.
-      skip_subtree = true;
-    } else if (IsFocusgroupItemWithOwner(el, owner) &&
-               el->IsKeyboardFocusableSlow()) {
-      return el;
+      result = el;
     }
 
     el = traversal_context.Next(el, skip_subtree);
   }
-  return nullptr;
+  return result;
 }
 
-Element* FocusgroupControllerUtils::LastFocusgroupItemWithin(
-    const Element* owner) {
-  if (!owner || !IsActualFocusgroup(owner->GetFocusgroupData())) {
-    return nullptr;
-  }
+}  // namespace
 
-  FocusgroupVisualOrderTraversalContext traversal_context;
-  Element* last = nullptr;
-  Element* el = traversal_context.Next(owner, /*skip_subtree=*/false);
-  while (el && FlatTreeTraversal::IsDescendantOf(*el, *owner)) {
-    bool skip_subtree = false;
-    FocusgroupData data = el->GetFocusgroupData();
-
-    if (data.behavior == FocusgroupBehavior::kOptOut) {
-      // Skip opted-out subtree entirely.
-      skip_subtree = true;
-    } else if (IsActualFocusgroup(data)) {
-      // Nested focusgroup: check if the owner itself is a focusgroup item, but
-      // skip its subtree as its contents belong to the nested focusgroup.
-      if (el->IsKeyboardFocusableSlow()) {
-        last = el;
-      }
-      skip_subtree = true;
-    } else if (IsFocusgroupItemWithOwner(el, owner) &&
-               el->IsKeyboardFocusableSlow()) {
-      last = el;
-    }
-
-    el = traversal_context.Next(el, skip_subtree);
-  }
-  return last;
+Element* FocusgroupControllerUtils::FocusgroupItemWithin(
+    const Element* owner,
+    FocusgroupItemPosition position) {
+  return FindFocusgroupItemWithin(owner, position);
 }
 
-bool FocusgroupControllerUtils::DoesElementContainBarrier(
+bool FocusgroupControllerUtils::ContainsKeyboardFocusableContent(
     const Element& element) {
   // Check if the element itself is keyboard focusable.
   if (element.IsKeyboardFocusableSlow()) {
@@ -736,8 +723,10 @@ FocusgroupControllerUtils::NextFocusgroupItemInSegmentInDirection(
   DCHECK(IsFocusgroupItemWithOwner(&item, &owner));
 
   // Walk in the given direction from the item to find the next item in its
-  // segment. A segment is bounded by barriers (nested focusgroups or opted-out
-  // subtrees) or by the focusgroup scope boundaries.
+  // segment. A segment is bounded by barriers (nested focusgroups, opted-out
+  // subtrees, or focused native arrow key handlers) or by the focusgroup scope
+  // boundaries. Focused arrow key handlers act as segment boundaries to ensure
+  // content after them remains reachable via Tab navigation.
   FocusgroupVisualOrderTraversalContext traversal_context;
   const Element* element =
       traversal_context.NextInDirection(&item, direction,
@@ -747,39 +736,41 @@ FocusgroupControllerUtils::NextFocusgroupItemInSegmentInDirection(
     const Element* nested_focusgroup_owner = nullptr;
     if (direction == mojom::blink::FocusType::kBackward) {
       // When going backwards, we need to check the entire subtree of the
-      // current element to see if it contains a barrier.
-      opted_out_subtree_root = GetOptedOutSubtreeRoot(element);
+      // current element to see if it is in an excluded subtree.
+      opted_out_subtree_root = FindExcludedSubtreeRoot(element);
       nested_focusgroup_owner = focusgroup::FindFocusgroupOwner(element);
       if (nested_focusgroup_owner == &owner) {
         nested_focusgroup_owner = nullptr;
       }
     } else {
-      // When going forward, we only care if the element itself is a barrier.
-      if (element->GetFocusgroupData().behavior ==
-          FocusgroupBehavior::kOptOut) {
+      // When going forward, we only care if the element itself is an
+      // excluded subtree root. Check for both explicit opt-out and focused
+      // arrow key handlers, which are excluded to allow using Tab to navigate
+      // out of them.
+      if (IsExcludedSubtreeRoot(element)) {
         opted_out_subtree_root = element;
       } else if (IsActualFocusgroup(element->GetFocusgroupData())) {
         nested_focusgroup_owner = element;
       }
     }
-    // Check if this element contains a barrier.
+    // Check if this subtree contains focusable content, making it a barrier.
     if (nested_focusgroup_owner) {
-      if (DoesElementContainBarrier(*nested_focusgroup_owner)) {
+      if (ContainsKeyboardFocusableContent(*nested_focusgroup_owner)) {
         return nullptr;
       }
-      // Since we've determined this nested focusgroup is not a barrier, we can
-      // skip its children.
+      // Since we've determined this nested focusgroup has no focusable content,
+      // we can skip its children.
       element =
           traversal_context.NextInDirection(nested_focusgroup_owner, direction,
                                             /*skip_subtree=*/true);
       continue;
     }
     if (opted_out_subtree_root) {
-      if (DoesElementContainBarrier(*opted_out_subtree_root)) {
+      if (ContainsKeyboardFocusableContent(*opted_out_subtree_root)) {
         return nullptr;
       }
-      // Since we've determined this opted-out subtree is not a barrier, we can
-      // skip its children.
+      // Since we've determined this excluded subtree has no focusable content,
+      // we can skip its children.
       element =
           traversal_context.NextInDirection(opted_out_subtree_root, direction,
                                             /*skip_subtree=*/true);
@@ -797,53 +788,37 @@ FocusgroupControllerUtils::NextFocusgroupItemInSegmentInDirection(
   return nullptr;
 }
 
-const Element* FocusgroupControllerUtils::FirstFocusgroupItemInSegment(
-    const Element& item) {
+const Element* FocusgroupControllerUtils::FocusgroupItemInSegment(
+    const Element& item,
+    FocusgroupItemPosition position) {
   const Element* owner = focusgroup::FindFocusgroupOwner(&item);
   if (!owner || !item.IsKeyboardFocusableSlow()) {
     return nullptr;
   }
 
-  // Walk backward from the item to find the start of its segment.
-  // A segment starts after a barrier or at the beginning of the focusgroup
-  // scope.
-  const Element* result = &item;
-  for (const Element* previous = NextFocusgroupItemInSegmentInDirection(
-           item, *owner, mojom::blink::FocusType::kBackward);
-       previous; previous = NextFocusgroupItemInSegmentInDirection(
-                     *previous, *owner, mojom::blink::FocusType::kBackward)) {
-    result = previous;
-  }
-  return result;
-}
+  mojom::blink::FocusType direction = position == FocusgroupItemPosition::kFirst
+                                          ? mojom::blink::FocusType::kBackward
+                                          : mojom::blink::FocusType::kForward;
 
-const Element* FocusgroupControllerUtils::LastFocusgroupItemInSegment(
-    const Element& item) {
-  const Element* owner = focusgroup::FindFocusgroupOwner(&item);
-  if (!owner || !item.IsKeyboardFocusableSlow()) {
-    return nullptr;
-  }
-
-  // Walk forward from the item to find the end of its segment.
-  // A segment ends before a barrier or at the end of the focusgroup scope.
+  // Walk in the appropriate direction from the item to find the segment
+  // boundary.
   const Element* result = &item;
-  for (const Element* next = NextFocusgroupItemInSegmentInDirection(
-           item, *owner, mojom::blink::FocusType::kForward);
-       next; next = NextFocusgroupItemInSegmentInDirection(
-                 *next, *owner, mojom::blink::FocusType::kForward)) {
+  for (const Element* next =
+           NextFocusgroupItemInSegmentInDirection(item, *owner, direction);
+       next; next = NextFocusgroupItemInSegmentInDirection(*next, *owner,
+                                                           direction)) {
     result = next;
   }
   return result;
 }
 
-const Element* FocusgroupControllerUtils::GetOptedOutSubtreeRoot(
+const Element* FocusgroupControllerUtils::FindExcludedSubtreeRoot(
     const Element* element) {
-  // Starting with this element, walk up the ancestor chain looking for an
-  // opted-out focusgroup. Stop when we reach a focusgroup root or the document
-  // root.
+  // Walk up the ancestor chain looking for an excluded subtree root. Stop when
+  // we reach a focusgroup root or the document root.
   const Element* current = element;
   while (current) {
-    if (current->GetFocusgroupData().behavior == FocusgroupBehavior::kOptOut) {
+    if (IsExcludedSubtreeRoot(current)) {
       return current;
     }
     // Stop at the first focusgroup root.
@@ -855,32 +830,21 @@ const Element* FocusgroupControllerUtils::GetOptedOutSubtreeRoot(
   return nullptr;
 }
 
-bool FocusgroupControllerUtils::IsEffectivelyOptedOut(const Element* element) {
-  return GetEffectiveOptOutRoot(element) != nullptr;
-}
-
-const Element* FocusgroupControllerUtils::GetEffectiveOptOutRoot(
-    const Element* element) {
+bool FocusgroupControllerUtils::IsExcludedSubtreeRoot(const Element* element) {
   if (!element) {
-    return nullptr;
+    return false;
   }
-
-  // Check for explicit opt-out first.
-  const Element* opt_out_root = GetOptedOutSubtreeRoot(element);
-  if (opt_out_root) {
-    return opt_out_root;
+  // Check for explicit opt-out via focusgroup="none".
+  if (HasExplicitOptOut(element)) {
+    return true;
   }
-
-  // Check for focused arrow key handler. When an arrow key handler is
-  // focused, it acts as if opted out to allow normal Tab navigation.
-  if (element->IsFocusedElementInDocument()) {
-    const Element* handler_root = GetArrowKeyHandlerRoot(element);
-    if (handler_root) {
-      return handler_root;
-    }
+  // Check for focused native arrow key handler (temporary exclusion).
+  // Only the root of the arrow key handler subtree is an excluded root.
+  const Element* arrow_key_handler = GetArrowKeyHandlerRoot(element);
+  if (arrow_key_handler == element && element->IsFocusedElementInDocument()) {
+    return true;
   }
-
-  return nullptr;
+  return false;
 }
 
 // static

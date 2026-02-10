@@ -42,10 +42,10 @@
     var before = document.getElementById("before");
 
     after.focus();
-    await navigateFocusBackward();
+    await sendTabBackward();
     assert_equals(document.activeElement, item1, "Shift+Tab should enter focusgroup at first item in tree order");
 
-    await navigateFocusBackward();
+    await sendTabBackward();
     assert_equals(document.activeElement, before, "Shift+Tab should exit focusgroup to previous focusable element");
   }, "Shift+Tab enters focusgroup at first item in tree order and exits normally");
 

@@ -63,7 +63,7 @@
     await navigateFocusForward();
     assert_equals(document.activeElement, between, "Tab should exit to between element");
 
-    await navigateFocusBackward();
+    await sendTabBackward();
     assert_equals(document.activeElement, memoryItem3, "Re-entering should focus last focused item (Item 3) due to memory");
   }, "Focusgroup with memory remembers last focused item on re-entry");
 
@@ -84,7 +84,7 @@
     await navigateFocusForward();
     assert_equals(document.activeElement, afterNoMemory, "Tab should exit focusgroup");
 
-    await navigateFocusBackward();
+    await sendTabBackward();
     assert_equals(document.activeElement, noMemoryItem2, "Re-entering should use focusgroupstart, not remember last focus");
   }, "Focusgroup with no-memory does not remember last focused item");
 
@@ -109,7 +109,7 @@
     await navigateFocusForward();
     assert_equals(document.activeElement, afterSegments, "Should exit focusgroup");
 
-    await navigateFocusBackward();
+    await sendTabBackward();
     assert_equals(document.activeElement, segItem3, "Should remember last focused item in the second segment");
   }, "Memory behavior with focusgroup segments remembers per-segment");
 
@@ -120,10 +120,10 @@
 
     segOptedOut.focus();
 
-    await navigateFocusBackward();
+    await sendTabBackward();
     assert_equals(document.activeElement, segItem2, "Shift+Tab from opted-out should enter first segment at focusgroupstart element");
 
-    await navigateFocusBackward();
+    await sendTabBackward();
     assert_equals(document.activeElement, beforeSegments, "Should exit to before element");
 
     await navigateFocusForward();
@@ -141,7 +141,7 @@
 
     document.getElementById("between").focus();
 
-    await navigateFocusBackward();
+    await sendTabBackward();
     assert_equals(document.activeElement, memoryItem1, "Should remember Item 1 as last focused");
   }, "Last focused item is updated by arrow key navigation");
 </script>

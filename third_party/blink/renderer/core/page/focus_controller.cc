@@ -789,11 +789,11 @@ bool ScopedFocusNavigation::IsNonEntryFocusgroupItem(const Element& element) {
     return false;
   }
 
-  // When an element is effectively opted out (either explicitly via
-  // focusgroup="none", or because it's a focused arrow key handler),
+  // When an element is in an excluded subtree (either explicitly via
+  // focusgroup="none", or because it's inside a focused arrow key handler),
   // treat it as not a focusgroup item for sequential navigation purposes.
   // This allows normal Tab order to apply.
-  if (FocusgroupControllerUtils::IsEffectivelyOptedOut(&element)) {
+  if (FocusgroupControllerUtils::FindExcludedSubtreeRoot(&element)) {
     return false;
   }
 
@@ -809,7 +809,8 @@ bool ScopedFocusNavigation::IsNonEntryFocusgroupItem(const Element& element) {
 
   // Find the first item in this element's segment to use as the cache key.
   const Element* segment_first_item =
-      FocusgroupControllerUtils::FirstFocusgroupItemInSegment(element);
+      FocusgroupControllerUtils::FocusgroupItemInSegment(
+          element, FocusgroupItemPosition::kFirst);
   // An element in a focusgroup defines a segment, so this should never be null.
   CHECK(segment_first_item);
 

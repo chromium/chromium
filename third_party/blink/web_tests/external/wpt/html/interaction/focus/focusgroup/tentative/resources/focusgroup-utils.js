@@ -1,8 +1,8 @@
 /*
   Methods for testing the focusgroup feature.
 
-  This file requires focus-utils.js to be loaded first for:
-  - navigateFocusForward() / navigateFocusBackward()
+  This file requires testdriver-actions.js for the Actions API used by
+  sendTabForward() and sendTabBackward().
 */
 
 // https://w3c.github.io/webdriver/#keyboard-actions
@@ -47,10 +47,34 @@ async function assert_arrow_navigation_bidirectional(elements, shouldWrap = fals
   }
 }
 
+// Send a Tab key press using the Actions API. Unlike navigateFocusForward()
+// from focus-utils.js (which uses send_keys(document.body, Tab) and may call
+// body.focus() before dispatching the key), the Actions API dispatches keys
+// without changing focus first. This is critical for focusgroup tests where
+// the focused element's identity affects segment boundary detection.
+async function sendTabForward() {
+  const kTab = '\uE004';
+  await new test_driver.Actions().keyDown(kTab).keyUp(kTab).send();
+}
+
+// Send a Shift+Tab key press using the Actions API. Mirrors sendTabForward()
+// for backward navigation. Uses the same Actions API approach to avoid timing
+// issues with focus state propagation in slower CI environments.
+async function sendTabBackward() {
+  const kShift = '\uE008';
+  const kTab = '\uE004';
+  await new test_driver.Actions()
+    .keyDown(kShift)
+    .keyDown(kTab)
+    .keyUp(kTab)
+    .keyUp(kShift)
+    .send();
+}
+
 // Test Tab navigation through DOM elements. Unlike assert_focus_navigation_forward
 // in shadow-dom's focus-utils.js (which takes string paths and requires shadow-dom.js),
-// this takes direct element references. Depends on navigateFocusForward() from
-// /resources/focus-utils.js for the actual Tab key logic.
+// this takes direct element references. Uses the Actions API to send Tab keys
+// without disturbing focus state (see sendTabForward).
 async function assert_focusgroup_tab_navigation(elements) {
   if (elements.length === 0) {
     return;
@@ -61,9 +85,28 @@ async function assert_focusgroup_tab_navigation(elements) {
     `Failed to focus starting element ${elements[0].id}`);
 
   for (let i = 0; i < elements.length - 1; i++) {
-    await navigateFocusForward();
+    await sendTabForward();
     assert_equals(document.activeElement, elements[i + 1],
       `Tab from ${elements[i].id} should move to ${elements[i + 1].id}`);
+  }
+}
+
+// Test Shift+Tab navigation through a list of elements in reverse.
+// Mirrors assert_focusgroup_tab_navigation but navigates backward.
+async function assert_focusgroup_shift_tab_navigation(elements) {
+  if (elements.length === 0) {
+    return;
+  }
+
+  // Focus the first element to establish starting point.
+  elements[0].focus();
+  assert_equals(document.activeElement, elements[0],
+    `Failed to focus starting element ${elements[0].id}`);
+
+  for (let i = 0; i < elements.length - 1; i++) {
+    await sendTabBackward();
+    assert_equals(document.activeElement, elements[i + 1],
+      `Shift+Tab from ${elements[i].id} should move to ${elements[i + 1].id}`);
   }
 }
 

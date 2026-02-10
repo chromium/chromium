@@ -29,6 +29,9 @@ enum class FocusgroupType {
   kLinear,
 };
 
+// Used to specify whether to find the first or last item in a collection.
+enum class FocusgroupItemPosition { kFirst, kLast };
+
 // Focusgroup Terminology:
 //
 // - Focusgroup Owner: An element with a focusgroup attribute that creates
@@ -44,16 +47,15 @@ enum class FocusgroupType {
 //   that participate in focusgroup arrow key navigation.
 //
 // - Focusgroup Segment: A contiguous sequence of focusgroup items within a
-//   focusgroup scope, bounded by barriers. Barriers include nested focusgroup
-//   owners and opted-out subtrees that contain focusable elements participating
-//   in sequential focus navigation (Tab/Shift+Tab). Segments are used to
-//   determine guaranteed tab stops during sequential navigation.
+//   focusgroup scope, bounded by barriers. Barriers include items in nested
+//   focusgroups, opted-out subtrees, and focused native arrow key handlers.
+//   Segments determine guaranteed tab stops during sequential navigation.
 //
 // Example:
 //   <div focusgroup="toolbar">           <!-- Focusgroup Owner -->
 //     <button>A</button>                 <!-- Item in segment 1 -->
 //     <button>B</button>                 <!-- Item in segment 1 -->
-//     <div focusgroup="none">
+//     <div tabindex=0 focusgroup="none"> <!-- Item in segment 1 -->
 //       <button>Help</button>            <!-- Barrier -->
 //     </div>
 //     <button>C</button>                 <!-- Item in segment 2 -->
@@ -114,17 +116,21 @@ class CORE_EXPORT FocusgroupControllerUtils {
 
   // Returns the first/last focusgroup item within |owner|'s scope, or nullptr
   // if no eligible item exists. |owner| must itself be a focusgroup owner.
-  static Element* FirstFocusgroupItemWithin(const Element* owner);
-  static Element* LastFocusgroupItemWithin(const Element* owner);
+  static Element* FocusgroupItemWithin(const Element* owner,
+                                       FocusgroupItemPosition position);
 
-  static bool DoesElementContainBarrier(const Element& element);
+  // Returns true if |element| or any of its descendants are keyboard
+  // focusable. Used to determine whether an excluded subtree or nested
+  // focusgroup actually creates a segment boundary (only subtrees with
+  // focusable content act as barriers in the tab order).
+  static bool ContainsKeyboardFocusableContent(const Element& element);
 
-  // These helpers work on segments, not entire focusgroups. (see class comment
-  // above for definition of segment).
-  // If item is a focusgroup item, returns the first item in its segment.
-  static const Element* FirstFocusgroupItemInSegment(const Element& item);
-  // If item is a focusgroup item, returns the last item in its segment.
-  static const Element* LastFocusgroupItemInSegment(const Element& item);
+  // Returns the first/last item in the segment containing |item|, or nullptr
+  // if |item| is not a focusgroup item. See class comment for segment
+  // definition.
+  static const Element* FocusgroupItemInSegment(
+      const Element& item,
+      FocusgroupItemPosition position);
 
   // |item| must be a focusgroup item. Returns the next item in its segment in
   // the given direction. Returns nullptr if |item| is not a focusgroup item or
@@ -152,17 +158,13 @@ class CORE_EXPORT FocusgroupControllerUtils {
   // that tab stop.
   //
   // Selection priority (highest to lowest):
-  // 1. Last focused item (if memory is enabled and item is in this segment).
-  // 2. First item with focusgroupstart attribute.
-  // 3. First item in segment.
+  // 1. Currently focused item in the segment (if any).
+  // 2. Last focused item (if memory is enabled and item is in this segment).
+  // 3. First item with focusgroupstart attribute.
+  // 4. First item in segment.
   //
   // Note: Elements with tabindex=-1 are not focusgroup items and do not
   // participate in focusgroup navigation.
-  //
-  // Returns nullptr if:
-  // - |item| is not a focusgroup item
-  // - Another item in the segment is already focused. In this case, the
-  //   segment is not eligible for a new tab stop.
   //
   // |item|: Any focusgroup item in the segment to query.
   // |owner|: The focusgroup owner of |item| (must be valid).
@@ -174,20 +176,18 @@ class CORE_EXPORT FocusgroupControllerUtils {
 
   // Optimized version of GetEntryElementForFocusgroupSegment that assumes
   // |first_item_in_segment| is already the first item in its segment.
-  // Skips the call to FirstFocusgroupItemInSegment to avoid redundant work.
+  // Skips the call to FocusgroupItemInSegment to avoid redundant work.
   // |first_item_in_segment|: The first focusgroup item in the segment.
   // |owner|: The focusgroup owner of |first_item_in_segment| (must be valid).
   static const Element* GetEntryElementForFocusgroupSegmentFromFirst(
       const Element& first_item_in_segment,
       const Element& owner);
 
-  // Returns true if the element is opted out or within an opted-out focusgroup
-  // subtree.
-  static bool IsElementInOptedOutSubtree(const Element* element);
-  // Returns the root of the opted-out subtree containing |element|, or nullptr
-  // if |element| is not in an opted-out subtree. The root of an opted-out
-  // subtree is the nearest ancestor (or self) with focusgroup="none".
-  static const Element* GetOptedOutSubtreeRoot(const Element* element);
+  // Returns true if the element has focusgroup="none".
+  static bool HasExplicitOptOut(const Element* element);
+  // Returns true if element or any ancestor (up to focusgroup root) has
+  // focusgroup="none".
+  static bool IsInExplicitlyOptedOutSubtree(const Element* element);
 
   // Returns true if |element| is itself a native arrow key handler or is
   // within a subtree rooted at one for its nearest ancestor focusgroup owner.
@@ -211,21 +211,16 @@ class CORE_EXPORT FocusgroupControllerUtils {
   // for |element|'s nearest focusgroup owner, or nullptr if none exists.
   static const Element* GetArrowKeyHandlerRoot(const Element* element);
 
-  // Returns true if the element should be treated as opted out of focusgroup
-  // navigation. This is true when:
-  // 1. The element has focusgroup="none" (kOptOut behavior), OR
-  // 2. The element is currently focused AND is a native arrow key handler.
-  //
-  // Native arrow key handlers (inputs, textareas, selects, etc.) are treated
-  // as opted-out when focused, allowing normal Tab order to apply and
-  // providing an escape mechanism from controls that capture arrow keys.
-  static bool IsEffectivelyOptedOut(const Element* element);
+  // Returns true if |element| itself is an excluded subtree root:
+  // 1. Has focusgroup="none" (explicit opt-out), OR
+  // 2. Is the root of a focused native arrow key handler subtree.
+  // These are subtrees excluded from the focusgroup scope but are not nested
+  // focusgroups (which are checked separately during traversal).
+  static bool IsExcludedSubtreeRoot(const Element* element);
 
-  // Returns the root element that causes |element| to be effectively opted
-  // out, or nullptr if not effectively opted out. This returns:
-  // - The opted-out subtree root (element with focusgroup="none"), OR
-  // - The focused native arrow key handler root element.
-  static const Element* GetEffectiveOptOutRoot(const Element* element);
+  // Returns the nearest excluded subtree root ancestor (or self), stopping at
+  // focusgroup boundaries. Returns nullptr if not in an excluded subtree.
+  static const Element* FindExcludedSubtreeRoot(const Element* element);
 
   // Returns true if the element has the focusgroupstart attribute.
   // This boolean attribute marks an element as the preferred entry point when

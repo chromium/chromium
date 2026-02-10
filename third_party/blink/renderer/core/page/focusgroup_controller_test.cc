@@ -68,16 +68,16 @@ void ExpectLinearDirectionalOrder(Element* owner,
 
   // Ordered is a sequence of items only. Helper should not treat owner as an
   // item; verify by calling item helpers for expected front/back items.
-  Element* first_item =
-      FocusgroupControllerUtils::FirstFocusgroupItemWithin(owner);
-  Element* last_item =
-      FocusgroupControllerUtils::LastFocusgroupItemWithin(owner);
+  Element* first_item = FocusgroupControllerUtils::FocusgroupItemWithin(
+      owner, FocusgroupItemPosition::kFirst);
+  Element* last_item = FocusgroupControllerUtils::FocusgroupItemWithin(
+      owner, FocusgroupItemPosition::kLast);
   ASSERT_TRUE(first_item);
   ASSERT_TRUE(last_item);
   EXPECT_EQ(first_item, ordered.front().Get())
-      << "FirstFocusgroupItemWithin mismatch";
+      << "FocusgroupItemWithin(kFirst) mismatch";
   EXPECT_EQ(last_item, ordered.back().Get())
-      << "LastFocusgroupItemWithin mismatch";
+      << "FocusgroupItemWithin(kLast) mismatch";
 
   // Forward traversal assertions.
   for (wtf_size_t i = 0; i < ordered.size() - 1; ++i) {
@@ -194,12 +194,14 @@ void ExpectSegmentDirectionalOrder(
   for (const auto& member : segment_items) {
     const Element* item = member.Get();
     ASSERT_TRUE(item);
-    EXPECT_EQ(FocusgroupControllerUtils::FirstFocusgroupItemInSegment(*item),
+    EXPECT_EQ(FocusgroupControllerUtils::FocusgroupItemInSegment(
+                  *item, FocusgroupItemPosition::kFirst),
               expected_first)
         << "Segment first mismatch for item " << item->GetIdAttribute()
         << " expected segment=" << SegmentToString(segment_items)
         << " actual segment=" << ActualSegmentFor(item);
-    EXPECT_EQ(FocusgroupControllerUtils::LastFocusgroupItemInSegment(*item),
+    EXPECT_EQ(FocusgroupControllerUtils::FocusgroupItemInSegment(
+                  *item, FocusgroupItemPosition::kLast),
               expected_last)
         << "Segment last mismatch for item " << item->GetIdAttribute()
         << " expected segment=" << SegmentToString(segment_items)
@@ -631,7 +633,7 @@ TEST_F(FocusgroupControllerTest, PreviousElement) {
   ASSERT_EQ(utils::PreviousElement(fg3), item3);
 }
 
-TEST_F(FocusgroupControllerTest, LastFocusgroupItemWithin) {
+TEST_F(FocusgroupControllerTest, FocusgroupItemWithinLast) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=fg1 focusgroup="toolbar">
       <span id=item1></span>
@@ -656,12 +658,15 @@ TEST_F(FocusgroupControllerTest, LastFocusgroupItemWithin) {
   ASSERT_TRUE(item2);
   ASSERT_TRUE(item4);
 
-  EXPECT_EQ(utils::LastFocusgroupItemWithin(fg1), item2);
-  EXPECT_EQ(utils::LastFocusgroupItemWithin(fg2), item4);
-  EXPECT_EQ(utils::LastFocusgroupItemWithin(item4), nullptr);
+  EXPECT_EQ(utils::FocusgroupItemWithin(fg1, FocusgroupItemPosition::kLast),
+            item2);
+  EXPECT_EQ(utils::FocusgroupItemWithin(fg2, FocusgroupItemPosition::kLast),
+            item4);
+  EXPECT_EQ(utils::FocusgroupItemWithin(item4, FocusgroupItemPosition::kLast),
+            nullptr);
 }
 
-TEST_F(FocusgroupControllerTest, FirstFocusgroupItemWithin) {
+TEST_F(FocusgroupControllerTest, FocusgroupItemWithinFirst) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=fg1 focusgroup="toolbar">
       <span id=item1></span>
@@ -689,9 +694,12 @@ TEST_F(FocusgroupControllerTest, FirstFocusgroupItemWithin) {
   ASSERT_TRUE(item3);
   ASSERT_TRUE(item4);
 
-  EXPECT_EQ(utils::FirstFocusgroupItemWithin(fg1), item2);
-  EXPECT_EQ(utils::FirstFocusgroupItemWithin(fg2), item3);
-  EXPECT_EQ(utils::FirstFocusgroupItemWithin(item4), nullptr);
+  EXPECT_EQ(utils::FocusgroupItemWithin(fg1, FocusgroupItemPosition::kFirst),
+            item2);
+  EXPECT_EQ(utils::FocusgroupItemWithin(fg2, FocusgroupItemPosition::kFirst),
+            item3);
+  EXPECT_EQ(utils::FocusgroupItemWithin(item4, FocusgroupItemPosition::kFirst),
+            nullptr);
 }
 
 TEST_F(FocusgroupControllerTest, IsFocusgroupItemWithOwner) {
@@ -764,10 +772,12 @@ TEST_F(FocusgroupControllerTest, NestedFocusgroupParticipatesAsItem) {
   ASSERT_TRUE(btn3);
 
   // The nested focusgroup (inner) should be the first item if it comes first.
-  EXPECT_EQ(utils::FirstFocusgroupItemWithin(outer), btn1);
+  EXPECT_EQ(utils::FocusgroupItemWithin(outer, FocusgroupItemPosition::kFirst),
+            btn1);
 
   // The nested focusgroup should be the last item if it comes last.
-  EXPECT_EQ(utils::LastFocusgroupItemWithin(outer), btn3);
+  EXPECT_EQ(utils::FocusgroupItemWithin(outer, FocusgroupItemPosition::kLast),
+            btn3);
 
   // Arrow navigation from btn2 should reach the nested focusgroup element.
   EXPECT_EQ(utils::NextFocusgroupItemInDirection(
@@ -1107,14 +1117,26 @@ TEST_F(FocusgroupControllerTest, SegmentDetectionBasic) {
   auto* item2 = GetElementById("item2");
   auto* item3 = GetElementById("item3");
 
-  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item1), item1);
-  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item1), item3);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item1, FocusgroupItemPosition::kFirst),
+      item1);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item1, FocusgroupItemPosition::kLast),
+      item3);
 
-  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item2), item1);
-  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item2), item3);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item2, FocusgroupItemPosition::kFirst),
+      item1);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item2, FocusgroupItemPosition::kLast),
+      item3);
 
-  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item3), item1);
-  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item3), item3);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item3, FocusgroupItemPosition::kFirst),
+      item1);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item3, FocusgroupItemPosition::kLast),
+      item3);
 }
 
 TEST_F(FocusgroupControllerTest, SegmentDetectionWithOptedOutBoundary) {
@@ -1140,21 +1162,37 @@ TEST_F(FocusgroupControllerTest, SegmentDetectionWithOptedOutBoundary) {
   auto* item4 = GetElementById("item4");
 
   // Segment 1: [item1, item2].
-  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item1), item1);
-  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item1), item2);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item1, FocusgroupItemPosition::kFirst),
+      item1);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item1, FocusgroupItemPosition::kLast),
+      item2);
 
-  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item2), item1);
-  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item2), item2);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item2, FocusgroupItemPosition::kFirst),
+      item1);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item2, FocusgroupItemPosition::kLast),
+      item2);
 
   // Boundary element is not a focusgroup item (opted out).
   EXPECT_EQ(utils::GetFocusgroupOwnerOfItem(boundary), nullptr);
 
   // Segment 2: [item3, item4].
-  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item3), item3);
-  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item3), item4);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item3, FocusgroupItemPosition::kFirst),
+      item3);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item3, FocusgroupItemPosition::kLast),
+      item4);
 
-  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item4), item3);
-  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item4), item4);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item4, FocusgroupItemPosition::kFirst),
+      item3);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item4, FocusgroupItemPosition::kLast),
+      item4);
 }
 
 TEST_F(FocusgroupControllerTest, SegmentDetectionMultipleBoundaries) {
@@ -1179,12 +1217,24 @@ TEST_F(FocusgroupControllerTest, SegmentDetectionMultipleBoundaries) {
   auto* item2 = GetElementById("item2");
   auto* item3 = GetElementById("item3");
 
-  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item1), item1);
-  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item1), item1);
-  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item2), item2);
-  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item2), item2);
-  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item3), item3);
-  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item3), item3);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item1, FocusgroupItemPosition::kFirst),
+      item1);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item1, FocusgroupItemPosition::kLast),
+      item1);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item2, FocusgroupItemPosition::kFirst),
+      item2);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item2, FocusgroupItemPosition::kLast),
+      item2);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item3, FocusgroupItemPosition::kFirst),
+      item3);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item3, FocusgroupItemPosition::kLast),
+      item3);
 }
 
 TEST_F(FocusgroupControllerTest, SegmentDetectionOptedOutNotFocusable) {
@@ -1211,11 +1261,19 @@ TEST_F(FocusgroupControllerTest, SegmentDetectionOptedOutNotFocusable) {
   // All items remain in one segment.
   EXPECT_FALSE(not_boundary->IsFocusable());
 
-  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item1), item1);
-  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item1), item4);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item1, FocusgroupItemPosition::kFirst),
+      item1);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item1, FocusgroupItemPosition::kLast),
+      item4);
 
-  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*item4), item1);
-  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*item4), item4);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item4, FocusgroupItemPosition::kFirst),
+      item1);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*item4, FocusgroupItemPosition::kLast),
+      item4);
 }
 
 TEST_F(FocusgroupControllerTest, SegmentDetectionNonFocusgroupItem) {
@@ -1235,11 +1293,19 @@ TEST_F(FocusgroupControllerTest, SegmentDetectionNonFocusgroupItem) {
   auto* outside = GetElementById("outside");
 
   // Non-focusgroup items should return nullptr.
-  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*not_item), nullptr);
-  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*not_item), nullptr);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*not_item, FocusgroupItemPosition::kFirst),
+      nullptr);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*not_item, FocusgroupItemPosition::kLast),
+      nullptr);
 
-  EXPECT_EQ(utils::FirstFocusgroupItemInSegment(*outside), nullptr);
-  EXPECT_EQ(utils::LastFocusgroupItemInSegment(*outside), nullptr);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*outside, FocusgroupItemPosition::kFirst),
+      nullptr);
+  EXPECT_EQ(
+      utils::FocusgroupItemInSegment(*outside, FocusgroupItemPosition::kLast),
+      nullptr);
 }
 
 TEST_F(FocusgroupControllerTest, EntryElementFirstInSegment) {
@@ -2251,7 +2317,7 @@ TEST_F(FocusgroupControllerTest, IsFocusgroupStartAttributeDynamic) {
   EXPECT_TRUE(utils::IsFocusgroupStart(*btn2));
 }
 
-TEST_F(FocusgroupControllerTest, DoesElementContainBarrierWithOptOut) {
+TEST_F(FocusgroupControllerTest, ContainsKeyboardFocusableContentWithOptOut) {
   SetBodyInnerHTML(R"HTML(
     <div id="fg" focusgroup="toolbar">
       <button id="btn1">1</button>
@@ -2265,16 +2331,16 @@ TEST_F(FocusgroupControllerTest, DoesElementContainBarrierWithOptOut) {
   auto* fg = GetElementById("fg");
   ASSERT_TRUE(fg);
 
-  // The focusgroup contains a barrier because the opted-out subtree contains a
-  // focusable element.
-  EXPECT_TRUE(utils::DoesElementContainBarrier(*fg));
+  // The focusgroup contains focusable content because the opted-out subtree
+  // contains a focusable element.
+  EXPECT_TRUE(utils::ContainsKeyboardFocusableContent(*fg));
 }
 
 // Exercises arrow key handler behavior with select elements.
 // Select elements are arrow key handlers because they consume arrow keys
 // on both axes for option navigation. When an arrow key handler is focused,
-// it is treated as if it has focusgroup="none", so Tab follows normal document
-// order (skipping non-entry focusgroup items).
+// Tab should enter the following focusgroup segment to ensure content after
+// the arrow key handler remains reachable.
 TEST_F(FocusgroupControllerTest, FocusgroupWithSelect) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div focusgroup="toolbar inline">
@@ -2306,12 +2372,13 @@ TEST_F(FocusgroupControllerTest, FocusgroupWithSelect) {
   EXPECT_EQ(GetDocument().FocusedElement(), sel1)
       << "Arrow right should navigate to select (entry allowed)";
 
-  // Tab from select: arrow key handler is treated as if it has
-  // focusgroup="none". Normal Tab order applies, skipping non-entry items.
+  // Tab from select: focus should enter the following focusgroup segment
+  // (btn2) rather than exiting the focusgroup, ensuring content after the
+  // arrow key handler remains reachable.
   auto* tab_event = KeyDownEvent(ui::DomKey::TAB, sel1);
   SendEvent(tab_event);
-  EXPECT_EQ(GetDocument().FocusedElement(), after)
-      << "Tab from arrow key handler should follow normal Tab order";
+  EXPECT_EQ(GetDocument().FocusedElement(), btn2)
+      << "Tab from arrow key handler should enter following focusgroup segment";
 }
 
 // Exercises Shift+Tab from an arrow key handler in a separate test
