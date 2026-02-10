@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tabmodel;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
@@ -74,7 +73,7 @@ public class TabGroupTitleUtils {
                 tabGroupExists
                         ? tabGroupModelFilter.getTabGroupTitle(assumeNonNull(tabGroupId))
                         : UNSET_TAB_GROUP_TITLE;
-        if (TextUtils.isEmpty(explicitTitle)) {
+        if (isTitleUnset(explicitTitle)) {
             int tabCount = 0;
             List<Tab> tabsInGroup = tabGroupModelFilter.getTabsInGroup(assumeNonNull(tabGroupId));
             for (Tab tab : tabsInGroup) {

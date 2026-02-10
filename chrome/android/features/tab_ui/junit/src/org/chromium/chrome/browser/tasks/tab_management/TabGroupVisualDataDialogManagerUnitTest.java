@@ -11,6 +11,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
+
 import android.app.Activity;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -94,6 +96,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
 
         doReturn(true).when(mTabGroupModelFilter).tabGroupExists(TAB_GROUP_ID);
+        doReturn(UNSET_TAB_GROUP_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(TAB_GROUP_ID);
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doReturn(mProfile).when(mTabModel).getProfile();
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
