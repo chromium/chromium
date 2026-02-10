@@ -96,10 +96,10 @@ gfx::Image ExtensionsMenuTestUtil::GetIcon(const extensions::ExtensionId& id) {
 void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
   OpenExtensionsMenu();
 
-  HoverButton* primary_button = GetPrimaryButton(id);
-  CHECK(primary_button);
+  HoverButton* action_button = GetActionButton(id);
+  CHECK(action_button);
 
-  views::test::ButtonTestApi(primary_button).NotifyDefaultMouseClick();
+  views::test::ButtonTestApi(action_button).NotifyDefaultMouseClick();
 }
 
 gfx::NativeView ExtensionsMenuTestUtil::GetPopupNativeView() {
@@ -183,7 +183,7 @@ bool ExtensionsMenuTestUtil::IsExtensionsMenuShowing() {
              : menu_view_;
 }
 
-HoverButton* ExtensionsMenuTestUtil::GetPrimaryButton(
+HoverButton* ExtensionsMenuTestUtil::GetActionButton(
     const extensions::ExtensionId& id) {
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
@@ -200,9 +200,8 @@ HoverButton* ExtensionsMenuTestUtil::GetPrimaryButton(
                                return entry->extension_id() == id;
                              });
 
-    return (iter == menu_entries.end())
-               ? nullptr
-               : (*iter)->primary_action_button_for_testing();
+    return (iter == menu_entries.end()) ? nullptr
+                                        : (*iter)->action_button_for_testing();
   }
 
   base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>> menu_items =

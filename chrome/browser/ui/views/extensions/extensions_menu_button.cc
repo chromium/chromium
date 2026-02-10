@@ -11,14 +11,8 @@
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "extensions/common/extension_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 
@@ -36,15 +30,7 @@ ExtensionsMenuButton::ExtensionsMenuButton(Browser* browser,
 ExtensionsMenuButton::~ExtensionsMenuButton() = default;
 
 void ExtensionsMenuButton::AddedToWidget() {
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionsMenuAccessControl)) {
-    SetFocusRingCornerRadius(
-        views::LayoutProvider::Get()->GetCornerRadiusMetric(
-            views::ShapeContextTokens::kExtensionsMenuButtonRadius));
-    SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  } else {
     ConfigureBubbleMenuItem(this, 0);
-  }
   UpdateState();
 }
 
@@ -60,12 +46,6 @@ void ExtensionsMenuButton::UpdateState() {
   SetTooltipText(model_->GetTooltip(GetCurrentWebContents()));
   SetEnabled(model_->IsEnabled(GetCurrentWebContents()));
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionsMenuAccessControl)) {
-    // Remove the button's border since we are adding margins in between menu
-    // items.
-    SetBorder(views::CreateEmptyBorder(gfx::Insets(0)));
-  } else {
     // The vertical insets need to take into account the icon spacing, since
     // this button's icon is larger, to align with others buttons heights. The
     // horizontal insets was previously added to the parent view.
@@ -73,7 +53,6 @@ void ExtensionsMenuButton::UpdateState() {
         provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN) -
         provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_ICON_SPACING);
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(vertical_inset, 0)));
-  }
 }
 
 content::WebContents* ExtensionsMenuButton::GetCurrentWebContents() const {

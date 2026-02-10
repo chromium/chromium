@@ -51,7 +51,7 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper,
   bool IsExtensionsMenuShowing();
 
   // Returns the action button for the given `id` from the `menu_view_`.
-  HoverButton* GetPrimaryButton(const extensions::ExtensionId& id);
+  HoverButton* GetActionButton(const extensions::ExtensionId& id);
 
   // An override to allow test instances of the ExtensionsMenuView.
   // This has to be defined before |menu_view_| below.

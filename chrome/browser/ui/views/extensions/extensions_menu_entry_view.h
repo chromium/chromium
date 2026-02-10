@@ -56,7 +56,7 @@ class ExtensionsMenuEntryView
 
   // Accessors for testing.
   bool IsContextMenuRunningForTesting() const;
-  HoverButton* primary_action_button_for_testing() { return action_button_; }
+  HoverButton* action_button_for_testing() { return action_button_; }
   views::ToggleButton* site_access_toggle_for_testing() {
     return site_access_toggle_;
   }

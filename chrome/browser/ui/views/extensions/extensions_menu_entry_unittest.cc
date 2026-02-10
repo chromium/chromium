@@ -32,8 +32,8 @@ class ExtensionsMenuEntryViewTest : public ExtensionsToolbarUnitTest {
                                                         std::u16string tooltip,
                                                         bool is_enabled);
 
-  HoverButton* primary_button() {
-    return menu_entry_->primary_action_button_for_testing();
+  HoverButton* action_button() {
+    return menu_entry_->action_button_for_testing();
   }
   HoverButton* context_menu_button() {
     return menu_entry_->context_menu_button_for_testing();
@@ -126,28 +126,27 @@ ExtensionsMenuEntryViewTest::GenerateState(std::u16string name,
 }
 
 TEST_F(ExtensionsMenuEntryViewTest, UpdatesToDisplayCorrectActionText) {
-  EXPECT_EQ(primary_button()->GetText(), initial_extension_name_);
+  EXPECT_EQ(action_button()->GetText(), initial_extension_name_);
 
   std::u16string new_extension_name = u"Extension Name";
   std::u16string new_tooltip = u"New Tooltip";
   menu_entry_->Update(
       GenerateState(new_extension_name, new_tooltip, /*is_enabled=*/true));
 
-  EXPECT_EQ(primary_button()->GetText(), new_extension_name);
-  EXPECT_EQ(primary_button()->GetRenderedTooltipText(gfx::Point()),
-            new_tooltip);
+  EXPECT_EQ(action_button()->GetText(), new_extension_name);
+  EXPECT_EQ(action_button()->GetRenderedTooltipText(gfx::Point()), new_tooltip);
 }
 
 TEST_F(ExtensionsMenuEntryViewTest, ButtonMatchesEnabledStateOfExtension) {
-  EXPECT_TRUE(primary_button()->GetEnabled());
+  EXPECT_TRUE(action_button()->GetEnabled());
 
   menu_entry_->Update(GenerateState(initial_extension_name_, initial_tooltip_,
                                     /*is_enabled=*/false));
-  EXPECT_FALSE(primary_button()->GetEnabled());
+  EXPECT_FALSE(action_button()->GetEnabled());
 
   menu_entry_->Update(GenerateState(initial_extension_name_, initial_tooltip_,
                                     /*is_enabled=*/true));
-  EXPECT_TRUE(primary_button()->GetEnabled());
+  EXPECT_TRUE(action_button()->GetEnabled());
 }
 
 TEST_F(ExtensionsMenuEntryViewTest, NotifyClickExecutesAction) {
@@ -158,8 +157,8 @@ TEST_F(ExtensionsMenuEntryViewTest, NotifyClickExecutesAction) {
   // previously done).
   EXPECT_EQ(0, action_callback_count_);
 
-  primary_button()->SetBounds(0, 0, 100, 100);
-  ClickButton(primary_button());
+  action_button()->SetBounds(0, 0, 100, 100);
+  ClickButton(action_button());
 
   EXPECT_EQ(1, action_callback_count_);
 }
