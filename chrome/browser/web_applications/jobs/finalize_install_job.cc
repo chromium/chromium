@@ -318,13 +318,6 @@ void FinalizeInstallJob::OnOriginAssociationValidated(
   if (existing_web_app) {
     web_app = std::make_unique<WebApp>(*existing_web_app);
   } else {
-    // Must drop the fragments and queries per `scope` rules
-    // https://w3c.github.io/manifest/#scope-member
-    GURL::Replacements replacements;
-    replacements.ClearRef();
-    replacements.ClearQuery();
-    web_app_info_.scope = web_app_info_.scope.ReplaceComponents(replacements);
-
     // TODO(crbug.com/344718166): Ensure that manifest_id corresponds to app_id
     // here.
     web_app = std::make_unique<WebApp>(

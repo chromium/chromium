@@ -270,11 +270,18 @@ WebApp::WebApp(const webapps::AppId& app_id,
       << manifest_id_.spec() << " vs " << start_url_.spec();
   CHECK(url::IsSameOriginWith(start_url_, scope_))
       << start_url_.spec() << " vs " << scope_.spec();
-  CHECK(!scope_.has_ref() && !scope_.has_query());
   CHECK(!manifest_id_.has_ref());
+
+  // Must drop the fragments and queries per `scope` rules
+  // https://w3c.github.io/manifest/#scope-member
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  replacements.ClearQuery();
+  scope_ = scope.ReplaceComponents(replacements);
   CHECK(base::StartsWith(start_url_.spec(), scope_.spec(),
                          base::CompareCase::SENSITIVE))
       << "Start URL " << start_url_ << " must be nested in scope " << scope_;
+
   // Ensure sync proto is initialized.
   SetSyncProto(sync_proto_);
 }
