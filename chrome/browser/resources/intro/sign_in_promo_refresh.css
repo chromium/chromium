@@ -1,0 +1,249 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --product-logo-size: 4.5rem;
+  --card-background-color: var(--google-white);
+  --card-description-color: var(--cr-secondary-text-color);
+  --card-description-font-size: 0.81rem;
+  --card-title-font-size: 1rem;
+  --card-width: 15rem;
+  --disclaimer-border-color: var(--google-grey-200);
+  --disclaimer-color: var(--google-grey-700);
+  --gap-between-cards: 0.5rem;
+  --icon-color: var(--google-blue-600);
+  --icon-container-color: var(--google-grey-100);
+  --card-horizontal-padding: 0;
+  --card-horizontal-size:
+      calc(var(--card-width) + 2 * var(--card-horizontal-padding));
+  --content-width:
+      calc(3 * var(--card-horizontal-size) + 2 * var(--gap-between-cards));
+  align-items: center;
+  box-sizing: border-box;
+  color: var(--cr-primary-text-color);
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  height: 100%;
+  justify-content: center;
+  overflow-y: auto;
+  text-align: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --card-background-color: var(--google-grey-800);
+    --card-description-color: white;
+    --icon-color: var(--google-blue-300);
+    --icon-container-color: var(--google-grey-700);
+    --disclaimer-border-color: var(--google-grey-600);
+    --disclaimer-color: var(--google-grey-100);
+  }
+}
+
+@media screen and ((max-width: 780px) or (max-height: 600px)) {
+  :host {
+    --card-description-font-size: 0.75rem;
+    --card-title-font-size: 0.81rem;
+    --card-width: 152px;
+    --product-logo-size: 60px;
+    gap: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 780px) {
+  :host {
+    --card-horizontal-padding: 8px;
+  }
+}
+
+@media screen and (max-height: 600px) {
+  :host {
+    --card-bottom-padding: 12px;
+    --card-top-padding: 15px;
+  }
+}
+
+@keyframes fade-in-animation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 100%;
+  }
+}
+
+p {
+  margin: 0;
+}
+
+.title {
+  font-size: 3.75rem;
+  font-weight: 700;
+  margin: 0;
+  max-width: var(--content-width);
+}
+
+h2 {
+  font-size: var(--card-title-font-size);
+  font-weight: 500;
+  line-height: 22px;
+  margin: 0 0 4px;
+}
+
+.fade-in {
+  animation: fade-in-animation 500ms ease-in-out;
+}
+
+.fast-fade-in {
+  animation: fade-in-animation 300ms ease-in-out;
+}
+
+#illustrationContainer {
+  display: flex;
+}
+
+#textContainer  {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: var(--content-width);
+}
+
+@media screen and ((max-width: 780px) or (max-height: 600px)) {
+  .title {
+    font-size: 2.5rem;
+  }
+
+  h2 {
+    font-size: 0.81rem;
+  }
+
+   #textContainer {
+    gap: 1rem;
+  }
+}
+
+#productLogo {
+  height: var(--product-logo-size);
+  width: var(--product-logo-size);
+}
+
+#benefitCardsContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: var(--gap-between-cards);
+  height: 10rem;
+}
+
+.benefit-card {
+  align-items: center;
+  background: var(--card-background-color);
+  border-radius: 1.5rem;
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  width: var(--card-width);
+}
+
+.benefit-card-description {
+  color: var(--card-description-color);
+  font-size: var(--card-description-font-size);
+  font-weight: 400;
+  line-height: 20px;
+}
+
+#buttonContainer {
+  display: flex;
+  gap: 12px;
+  <if expr="not is_win">
+  flex-direction: row;
+  </if>
+  <if expr="is_win">
+  flex-direction: row-reverse;
+  </if>
+}
+
+.tangible-button {
+  min-width: 133px;
+}
+
+#managedDeviceDisclaimer {
+  align-items: center;
+  align-self: stretch;
+  border: 1px solid var(--disclaimer-border-color);
+  border-radius: 1.5rem;
+  box-sizing: border-box;
+  color: var(--disclaimer-color);
+  display: flex;
+  flex-direction: row;
+  padding-block: 1.5rem;
+  padding-inline-end: 18px;
+
+  font-size: var(--card-description-font-size);
+}
+
+#managedDeviceDisclaimer.temporarily-hidden {
+  visibility: hidden;
+}
+
+#managedDeviceDisclaimer > p {
+  flex-grow: 1;
+  text-align: start;
+}
+
+#iconContainer {
+  --icon-container-size: 28px;
+  background-color: var(--icon-container-color);
+  border-radius: 50%;
+  height: var(--icon-container-size);
+  margin-inline: 16px;
+  width: var(--icon-container-size);
+}
+
+#iconContainer cr-icon {
+  --iron-icon-width: 16px;
+  --iron-icon-height: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#security {
+  <if expr="not _google_chrome">
+  --cr-icon-image: url(images/security.svg);
+  </if>
+  <if expr="_google_chrome">
+  --cr-icon-image: url(images/gshield.svg);
+  </if>
+}
+
+#devices {
+  --cr-icon-image: url(images/devices.svg);
+}
+
+#cloud-upload {
+  --cr-icon-image: url(images/cloud_upload.svg);
+}
+
+.cr-icon {
+  --cr-icon-size: 36px;
+  margin: 0 0 16px;
+}
+
+/* Prevent the icons from being flipped in RTL mode. */
+:host-context([dir=rtl]) .cr-icon {
+  transform: scaleX(1);
+}
