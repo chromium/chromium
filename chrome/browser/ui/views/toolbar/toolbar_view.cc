@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -82,6 +83,8 @@
 #include "chrome/browser/ui/views/toolbar/split_tabs_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_divider.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
@@ -129,6 +132,7 @@
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 
@@ -146,6 +150,98 @@ using content::WebContents;
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kActionItemUnderlineIndicatorKey, false)
 
 namespace {
+
+// Intermediate data for determining whether a point should be considered in the
+// caption are when the toolbar is the top element in the browser.
+struct CaptionHitTestData {
+  raw_ptr<const views::View> at = nullptr;
+  bool is_direct_hit = false;
+  raw_ptr<const views::View> before = nullptr;
+  int before_dist = 0;
+  raw_ptr<const views::View> after = nullptr;
+  int after_dist = 0;
+};
+
+// Calculates the `CaptionHitTestData` (`data`) starting at `view` for `point`,
+// which should be in `view`'s local coordinates. Bails out immediately if a
+// View is hit; may traverse into icon containers.
+void CalculateIsPositionInWindowCaption(CaptionHitTestData& data,
+                                        const views::View* view,
+                                        const gfx::Point& point) {
+  for (auto& child : view->children()) {
+    if (!child->GetVisible()) {
+      continue;
+    }
+    const gfx::Rect bounds = child->bounds();
+
+    if (views::IsViewClass<ToolbarIconContainerView>(child) ||
+        views::IsViewClass<page_actions::PageActionContainerView>(child)) {
+      // Traverse into known icon containers.
+      const auto in_child =
+          views::View::ConvertPointToTarget(view, child, point);
+      CalculateIsPositionInWindowCaption(data, child, in_child);
+    } else if (bounds.x() <= point.x() && bounds.right() >= point.x()) {
+      // This point is in/above/below the child.
+      data.at = child;
+      data.is_direct_hit = bounds.Contains(point);
+    } else {
+      // See if the view is the closest before or after the target point in the
+      // layout.
+      if (bounds.right() < point.x()) {
+        const int dist = point.x() - bounds.right();
+        if (!data.before || data.before_dist > dist) {
+          data.before = child;
+          data.before_dist = dist;
+        }
+      } else if (bounds.x() > point.x()) {
+        const int dist = bounds.x() - point.x();
+        if (!data.after || data.after_dist > dist) {
+          data.after = child;
+          data.after_dist = dist;
+        }
+      }
+    }
+
+    // If a view was hit at any level, stop processing.
+    if (data.at) {
+      break;
+    }
+  }
+}
+
+// Returns whether `point` should be treated as part of the caption area in
+// `view`, which should be the topmost view in the browser.
+bool IsPositionInWindowCaption(const views::View* view,
+                               const gfx::Point& point) {
+  CaptionHitTestData data;
+  CalculateIsPositionInWindowCaption(data, view, point);
+
+  const bool is_above_centerline =
+      point.y() <= view->GetLocalBounds().CenterPoint().y();
+  const auto is_separator = [](const views::View* view) {
+    return views::IsViewClass<views::Separator>(view) ||
+           views::IsViewClass<ToolbarDivider>(view);
+  };
+
+  // If the point is in a view, then it's not in the caption unless the view is
+  // a separator. If the point is at a view but not in it, then it is caption if
+  // the point is centerline; otherwise it's not.
+  if (data.at) {
+    return is_separator(data.at) ||
+           (!data.is_direct_hit && is_above_centerline);
+  }
+
+  // If the point is not in a view but it is next to a separator or the edge of
+  // the toolbar, it is caption.
+  if (!data.before || is_separator(data.before) || !data.after ||
+      is_separator(data.after)) {
+    return true;
+  }
+
+  // All remaining points (between non-separator views) are caption if they are
+  // above centerline.
+  return is_above_centerline;
+}
 
 // Gets the display mode for a given browser.
 ToolbarView::DisplayMode GetDisplayMode(Browser* browser) {
@@ -287,14 +383,14 @@ void ToolbarView::Init() {
   PrefService* const prefs = browser_->profile()->GetPrefs();
 
   std::unique_ptr<ExtensionsToolbarDesktop> extensions_container;
-  std::unique_ptr<views::View> toolbar_divider;
+  std::unique_ptr<ToolbarDivider> toolbar_divider;
 
   // Do not create the extensions or browser actions container if it is a guest
   // profile (only regular and incognito profiles host extensions).
   if (!browser_->profile()->IsGuestSession()) {
     extensions_container = std::make_unique<ExtensionsToolbarDesktop>(browser_);
 
-    toolbar_divider = std::make_unique<views::View>();
+    toolbar_divider = std::make_unique<ToolbarDivider>();
   }
 
   std::unique_ptr<MediaToolbarButtonView> media_button;
@@ -355,12 +451,6 @@ void ToolbarView::Init() {
 
   if (toolbar_divider) {
     toolbar_divider_ = AddChildView(std::move(toolbar_divider));
-    toolbar_divider_->SetPreferredSize(
-        gfx::Size(GetLayoutConstant(LayoutConstant::kToolbarDividerWidth),
-                  GetLayoutConstant(LayoutConstant::kToolbarDividerHeight)));
-    toolbar_divider_->SetBackground(views::CreateRoundedRectBackground(
-        kColorToolbarExtensionSeparatorEnabled,
-        GetLayoutConstant(LayoutConstant::kToolbarDividerCornerRadius)));
   }
 
   pinned_toolbar_actions_container_ = AddChildView(
@@ -629,22 +719,7 @@ void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
 
 bool ToolbarView::IsPositionInWindowCaption(
     const gfx::Point& test_point) const {
-  // Only points above the centerline are considered candidates for the caption
-  // area.
-  if (test_point.y() > GetLocalBounds().CenterPoint().y()) {
-    return false;
-  }
-
-  // Check each visible child to see if the point is in the child.
-  for (auto& child : children()) {
-    if (child->GetVisible() && !views::IsViewClass<views::Separator>(child) &&
-        child->bounds().Contains(test_point)) {
-      return false;
-    }
-  }
-
-  // If it's not in a child, the point is in the caption area.
-  return true;
+  return ::IsPositionInWindowCaption(this, test_point);
 }
 
 views::Button* ToolbarView::GetChromeLabsButton() const {

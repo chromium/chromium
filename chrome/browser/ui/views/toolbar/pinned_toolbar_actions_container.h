@@ -22,6 +22,7 @@
 
 class BrowserView;
 class ToolbarButtonProvider;
+class ToolbarDivider;
 
 namespace base {
 class ScopedClosureRunner;
@@ -67,7 +68,6 @@ class PinnedToolbarActionsContainer
   void UpdateAllIcons() override;
 
   // views::View:
-  void OnThemeChanged() override;
   void AddedToWidget() override;
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;
@@ -181,7 +181,7 @@ class PinnedToolbarActionsContainer
   std::vector<raw_ptr<PinnedActionToolbarButton, VectorExperimental>>
       popped_out_buttons_;
   std::vector<std::unique_ptr<PinnedActionToolbarButton>> permanent_buttons_;
-  raw_ptr<views::View> toolbar_divider_;
+  raw_ptr<ToolbarDivider> toolbar_divider_;
   raw_ptr<PinnedToolbarActionsModel> model_;
 
   base::ScopedObservation<PinnedToolbarActionsModel,
