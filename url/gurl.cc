@@ -421,7 +421,7 @@ std::string_view GURL::HostNoBracketsPiece() const {
     h.begin++;
     h.len -= 2;
   }
-  return ComponentStringPiece(h);
+  return ComponentStringView(h);
 }
 
 std::string GURL::GetContent() const {
@@ -434,7 +434,7 @@ std::string_view GURL::GetContentPiece() const {
   url::Component content_component = parsed_.GetContent();
   if (!SchemeIs(url::kJavaScriptScheme) && parsed_.ref.is_valid())
     content_component.len -= parsed_.ref.len + 1;
-  return ComponentStringPiece(content_component);
+  return ComponentStringView(content_component);
 }
 
 bool GURL::HostIsIPAddress() const {

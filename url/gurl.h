@@ -305,19 +305,19 @@ class COMPONENT_EXPORT(URL) GURL {
   bool has_scheme() const { return parsed_.scheme.is_valid(); }
   std::string GetScheme() const { return ComponentString(parsed_.scheme); }
   std::string_view scheme() const LIFETIME_BOUND {
-    return ComponentStringPiece(parsed_.scheme);
+    return ComponentStringView(parsed_.scheme);
   }
 
   bool has_username() const { return parsed_.username.is_valid(); }
   std::string GetUsername() const { return ComponentString(parsed_.username); }
   std::string_view username() const LIFETIME_BOUND {
-    return ComponentStringPiece(parsed_.username);
+    return ComponentStringView(parsed_.username);
   }
 
   bool has_password() const { return parsed_.password.is_valid(); }
   std::string GetPassword() const { return ComponentString(parsed_.password); }
   std::string_view password() const LIFETIME_BOUND {
-    return ComponentStringPiece(parsed_.password);
+    return ComponentStringView(parsed_.password);
   }
 
   // The host may be a hostname, an IPv4 address, or an IPv6 literal surrounded
@@ -329,7 +329,7 @@ class COMPONENT_EXPORT(URL) GURL {
   }
   std::string GetHost() const { return ComponentString(parsed_.host); }
   std::string_view host() const LIFETIME_BOUND {
-    return ComponentStringPiece(parsed_.host);
+    return ComponentStringView(parsed_.host);
   }
 
   // The port if one is explicitly specified. Most callers will want IntPort()
@@ -338,7 +338,7 @@ class COMPONENT_EXPORT(URL) GURL {
   bool has_port() const { return parsed_.port.is_valid(); }
   std::string GetPort() const { return ComponentString(parsed_.port); }
   std::string_view port() const LIFETIME_BOUND {
-    return ComponentStringPiece(parsed_.port);
+    return ComponentStringView(parsed_.port);
   }
 
   // Including first slash following host, up to the query. The URL
@@ -346,14 +346,14 @@ class COMPONENT_EXPORT(URL) GURL {
   bool has_path() const { return parsed_.path.is_valid(); }
   std::string GetPath() const { return ComponentString(parsed_.path); }
   std::string_view path() const LIFETIME_BOUND {
-    return ComponentStringPiece(parsed_.path);
+    return ComponentStringView(parsed_.path);
   }
 
   // Stuff following '?' up to the ref. The getters will not include the '?'.
   bool has_query() const { return parsed_.query.is_valid(); }
   std::string GetQuery() const { return ComponentString(parsed_.query); }
   std::string_view query() const LIFETIME_BOUND {
-    return ComponentStringPiece(parsed_.query);
+    return ComponentStringView(parsed_.query);
   }
 
   // Stuff following '#' to the end of the string. This will be %-escaped UTF-8.
@@ -361,7 +361,7 @@ class COMPONENT_EXPORT(URL) GURL {
   bool has_ref() const { return parsed_.ref.is_valid(); }
   std::string GetRef() const { return ComponentString(parsed_.ref); }
   std::string_view ref() const LIFETIME_BOUND {
-    return ComponentStringPiece(parsed_.ref);
+    return ComponentStringView(parsed_.ref);
   }
 
   // Returns a parsed version of the port. Can also be any of the special
@@ -467,13 +467,13 @@ class COMPONENT_EXPORT(URL) GURL {
 
   // Returns the substring of the input identified by the given component.
   std::string ComponentString(const url::Component& comp) const {
-    return std::string(ComponentStringPiece(comp));
+    return std::string(ComponentStringView(comp));
   }
-  std::string_view ComponentStringPiece(const url::Component& comp) const LIFETIME_BOUND {
+  std::string_view ComponentStringView(const url::Component& comp) const
+      LIFETIME_BOUND {
     if (comp.is_empty())
       return std::string_view();
-    return std::string_view(spec_).substr(static_cast<size_t>(comp.begin),
-                                          static_cast<size_t>(comp.len));
+    return comp.AsViewOn(spec_);
   }
 
   void ProcessFileSystemURLAfterReplaceComponents();
