@@ -754,10 +754,6 @@ TEST_P(WindowPerformanceTest, OneKeyboardInteraction) {
       ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName, 7);
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
-      ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
-      10);
-  GetUkmRecorder()->ExpectEntryMetric(
-      ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
       static_cast<int64_t>(UserInteractionType::kKeyboard));
 
@@ -822,20 +818,13 @@ TEST_P(WindowPerformanceTest, HoldingDownAKey) {
   entries = GetUkmRecorder()->GetEntriesByName(
       ukm::builders::Responsiveness_UserInteraction::kEntryName);
   EXPECT_EQ(3u, entries.size());
-  std::vector<std::pair<int, int>> expected_durations;
-  expected_durations.emplace_back(std::make_pair(5, 5));
-  expected_durations.emplace_back(std::make_pair(6, 6));
-  expected_durations.emplace_back(std::make_pair(10, 11));
+  std::vector<int> expected_durations = {5, 6, 10};
   for (std::size_t i = 0; i < entries.size(); ++i) {
     auto* entry = entries[i].get();
     GetUkmRecorder()->ExpectEntryMetric(
         entry,
         ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName,
-        expected_durations[i].first);
-    GetUkmRecorder()->ExpectEntryMetric(
-        entry,
-        ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
-        expected_durations[i].second);
+        expected_durations[i]);
     GetUkmRecorder()->ExpectEntryMetric(
         entry,
         ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
@@ -905,19 +894,13 @@ TEST_P(WindowPerformanceTest, PressMultipleKeys) {
   entries = GetUkmRecorder()->GetEntriesByName(
       ukm::builders::Responsiveness_UserInteraction::kEntryName);
   EXPECT_EQ(2u, entries.size());
-  std::vector<std::pair<int, int>> expected_durations;
-  expected_durations.emplace_back(std::make_pair(10, 13));
-  expected_durations.emplace_back(std::make_pair(15, 20));
+  std::vector<int> expected_durations = {10, 15};
   for (std::size_t i = 0; i < entries.size(); ++i) {
     auto* entry = entries[i].get();
     GetUkmRecorder()->ExpectEntryMetric(
         entry,
         ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName,
-        expected_durations[i].first);
-    GetUkmRecorder()->ExpectEntryMetric(
-        entry,
-        ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
-        expected_durations[i].second);
+        expected_durations[i]);
     GetUkmRecorder()->ExpectEntryMetric(
         entry,
         ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
@@ -975,10 +958,6 @@ TEST_P(WindowPerformanceTest, KeyupFinishLastButCallbackInvokedFirst) {
       ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName, 7);
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
-      ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
-      8);
-  GetUkmRecorder()->ExpectEntryMetric(
-      ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
       static_cast<int64_t>(UserInteractionType::kKeyboard));
 
@@ -1034,10 +1013,6 @@ TEST_P(WindowPerformanceTest, TapOrClick) {
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName, 7);
-  GetUkmRecorder()->ExpectEntryMetric(
-      ukm_entry,
-      ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
-      17);
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
@@ -1104,13 +1079,6 @@ TEST_P(WindowPerformanceTest, PageVisibilityChanged) {
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName, 5);
-  // The total duration should be 9ms, which is the sum of time from time 0 of
-  // pointer down creation time to the processingEnd of pointer up 6ms +
-  // duration of click which is 16-13 = 3ms.
-  GetUkmRecorder()->ExpectEntryMetric(
-      ukm_entry,
-      ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
-      9);
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
@@ -1201,12 +1169,6 @@ TEST_P(WindowPerformanceTest, GPUCrashedAndFrameSourceIdChanged) {
       ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName,
       expected_max_duration.InMilliseconds());
-  auto expected_total_duration =
-      commit_time_pointerup_and_click - pointerdown_timestamp;
-  GetUkmRecorder()->ExpectEntryMetric(
-      ukm_entry,
-      ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
-      expected_total_duration.InMilliseconds());
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 1);
@@ -1332,10 +1294,6 @@ TEST_P(WindowPerformanceTest, ArtificialPointerupOrClick) {
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName, 12);
-  GetUkmRecorder()->ExpectEntryMetric(
-      ukm_entry,
-      ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
-      12);
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
@@ -1700,12 +1658,11 @@ TEST_P(WindowPerformanceTest, InteractionID) {
   // Check UKM values.
   struct ExpectedUkm {
     int max_duration;
-    int total_duration;
     UserInteractionType type;
   };
   auto expected_ukm = std::to_array<ExpectedUkm>({
-      {25, 40, UserInteractionType::kKeyboard},
-      {70, 90, UserInteractionType::kTapOrClick},
+      {25, UserInteractionType::kKeyboard},
+      {70, UserInteractionType::kTapOrClick},
   });
   auto entries = GetUkmRecorder()->GetEntriesByName(
       ukm::builders::Responsiveness_UserInteraction::kEntryName);
@@ -1716,10 +1673,6 @@ TEST_P(WindowPerformanceTest, InteractionID) {
         ukm_entry,
         ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName,
         expected_ukm[i].max_duration);
-    GetUkmRecorder()->ExpectEntryMetric(
-        ukm_entry,
-        ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
-        expected_ukm[i].total_duration);
     GetUkmRecorder()->ExpectEntryMetric(
         ukm_entry,
         ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
@@ -1787,7 +1740,6 @@ class InteractionIdTest : public WindowPerformanceTest {
 
   struct ExpectedUkmValue {
     int max_duration_;
-    int total_duration_;
     UserInteractionType interaction_type_;
   };
 
@@ -1822,11 +1774,6 @@ class InteractionIdTest : public WindowPerformanceTest {
           ukm_entry,
           ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName,
           expected_ukms[i].max_duration_);
-      GetUkmRecorder()->ExpectEntryMetric(
-          ukm_entry,
-          ukm::builders::Responsiveness_UserInteraction::
-              kTotalEventDurationName,
-          expected_ukms[i].total_duration_);
       GetUkmRecorder()->ExpectEntryMetric(
           ukm_entry,
           ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
@@ -1882,9 +1829,9 @@ TEST_P(InteractionIdTest, InputOutsideComposition) {
   EXPECT_NE(ids2[0], ids3[0])
       << "Second and third keydown have different interactionId";
 
-  CheckUKMValues({{50, 50, UserInteractionType::kKeyboard},
-                  {40, 60, UserInteractionType::kKeyboard},
-                  {25, 25, UserInteractionType::kKeyboard}});
+  CheckUKMValues({{50, UserInteractionType::kKeyboard},
+                  {40, UserInteractionType::kKeyboard},
+                  {25, UserInteractionType::kKeyboard}});
 }
 
 // Tests Japanese on Mac.
@@ -1931,8 +1878,8 @@ TEST_P(InteractionIdTest, CompositionSingleKeydown) {
   EXPECT_NE(ids1[3], ids2[2])
       << "First and second inputs have different interactionIds";
 
-  CheckUKMValues({{100, 120, UserInteractionType::kKeyboard},
-                  {100, 170, UserInteractionType::kKeyboard}});
+  CheckUKMValues({{100, UserInteractionType::kKeyboard},
+                  {100, UserInteractionType::kKeyboard}});
 }
 
 // Tests Chinese on Mac. Windows is similar, but has more keyups inside the
@@ -1981,9 +1928,9 @@ TEST_P(InteractionIdTest, CompositionToFinalInput) {
 
   performance_->GetResponsivenessMetrics().FlushAllEventsForTesting();
 
-  CheckUKMValues({{90, 90, UserInteractionType::kKeyboard},
-                  {90, 90, UserInteractionType::kKeyboard},
-                  {140, 140, UserInteractionType::kKeyboard}});
+  CheckUKMValues({{90, UserInteractionType::kKeyboard},
+                  {90, UserInteractionType::kKeyboard},
+                  {140, UserInteractionType::kKeyboard}});
 }
 
 // Tests Chinese on Windows.
@@ -2039,9 +1986,9 @@ TEST_P(InteractionIdTest, CompositionToFinalInputMultipleKeyUps) {
       << "First and third inputs have different interactionIds";
   EXPECT_NE(ids2[2], ids3[1])
       << "Second and third inputs have different interactionIds";
-  CheckUKMValues({{100, 100, UserInteractionType::kKeyboard},
-                  {100, 100, UserInteractionType::kKeyboard},
-                  {85, 85, UserInteractionType::kKeyboard}});
+  CheckUKMValues({{100, UserInteractionType::kKeyboard},
+                  {100, UserInteractionType::kKeyboard},
+                  {85, UserInteractionType::kKeyboard}});
 }
 
 // Tests Android smart suggestions (similar to Android Chinese).
@@ -2089,9 +2036,9 @@ TEST_P(InteractionIdTest, SmartSuggestion) {
   EXPECT_EQ(ids3[0], ids3[2]) << "Keydown and keyup have some id";
   EXPECT_EQ(ids3[1], 0u) << "Third input has zero id";
 
-  CheckUKMValues({{16, 16, UserInteractionType::kKeyboard},
-                  {14, 14, UserInteractionType::kKeyboard},
-                  {43, 70, UserInteractionType::kKeyboard}});
+  CheckUKMValues({{16, UserInteractionType::kKeyboard},
+                  {14, UserInteractionType::kKeyboard},
+                  {43, UserInteractionType::kKeyboard}});
 }
 
 TEST_P(InteractionIdTest, TapWithoutClick) {
@@ -2112,7 +2059,7 @@ TEST_P(InteractionIdTest, TapWithoutClick) {
 
   // After a wait, we should see the UKM.
   test::RunDelayedTasks(base::Seconds(1));
-  CheckUKMValues({{40, 50, UserInteractionType::kTapOrClick}});
+  CheckUKMValues({{40, UserInteractionType::kTapOrClick}});
 }
 
 TEST_P(InteractionIdTest, PointerupClick) {
@@ -2126,7 +2073,7 @@ TEST_P(InteractionIdTest, PointerupClick) {
   EXPECT_GT(ids[1], 0u) << "Nonzero interaction id for click";
   // Flush UKM logging mojo request.
   RunPendingTasks();
-  CheckUKMValues({{30, 30, UserInteractionType::kTapOrClick}});
+  CheckUKMValues({{30, UserInteractionType::kTapOrClick}});
 }
 
 TEST_P(InteractionIdTest, JustClick) {
@@ -2138,7 +2085,7 @@ TEST_P(InteractionIdTest, JustClick) {
   EXPECT_GT(ids[0], 0u) << "Nonzero interaction id";
   // Flush UKM logging mojo request.
   RunPendingTasks();
-  CheckUKMValues({{30, 30, UserInteractionType::kTapOrClick}});
+  CheckUKMValues({{30, UserInteractionType::kTapOrClick}});
 }
 
 TEST_P(InteractionIdTest, PointerdownClick) {
@@ -2153,7 +2100,7 @@ TEST_P(InteractionIdTest, PointerdownClick) {
   EXPECT_EQ(ids[0], ids[1]) << "Pointerdown and click have same interaction id";
   // Flush UKM logging mojo request.
   RunPendingTasks();
-  CheckUKMValues({{40, 50, UserInteractionType::kTapOrClick}});
+  CheckUKMValues({{40, UserInteractionType::kTapOrClick}});
 }
 
 TEST_P(InteractionIdTest, MultiTouch) {
@@ -2177,8 +2124,8 @@ TEST_P(InteractionIdTest, MultiTouch) {
   EXPECT_EQ(ids[1], ids[2]);
   // After a wait, flush UKM logging mojo request.
   test::RunDelayedTasks(base::Seconds(1));
-  CheckUKMValues({{30, 50, UserInteractionType::kTapOrClick},
-                  {50, 60, UserInteractionType::kTapOrClick}});
+  CheckUKMValues({{30, UserInteractionType::kTapOrClick},
+                  {50, UserInteractionType::kTapOrClick}});
 }
 
 TEST_P(InteractionIdTest, ClickIncorrectPointerId) {
@@ -2196,7 +2143,7 @@ TEST_P(InteractionIdTest, ClickIncorrectPointerId) {
   EXPECT_GT(ids[1], 0u) << "Nonzero interaction id for click";
   // Flush UKM logging mojo request.
   RunPendingTasks();
-  CheckUKMValues({{40, 40, UserInteractionType::kTapOrClick}});
+  CheckUKMValues({{40, UserInteractionType::kTapOrClick}});
 }
 
 INSTANTIATE_TEST_SUITE_P(All, InteractionIdTest, ::testing::Bool());

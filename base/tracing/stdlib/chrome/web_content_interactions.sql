@@ -25,8 +25,6 @@ CREATE PERFETTO TABLE chrome_web_content_interactions (
   dur DURATION,
   -- The interaction type.
   interaction_type STRING,
-  -- The total duration of all events that occurred for the same interaction.
-  total_duration_ms LONG,
   -- The process id this event occurred on.
   renderer_upid LONG
 ) AS
@@ -35,7 +33,6 @@ SELECT
   ts,
   dur,
   extract_arg(arg_set_id, 'web_content_interaction.type') AS interaction_type,
-  extract_arg(arg_set_id, 'web_content_interaction.total_duration_ms') AS total_duration_ms,
   upid AS renderer_upid
 FROM process_slice
 WHERE

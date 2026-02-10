@@ -88,35 +88,12 @@ ResponsivenessMetrics::EventTimestamps LongestEvent(
       });
 }
 
-base::TimeDelta TotalEventDuration(
-    // timestamps is sorted by the start_time of EventTimestamps.
-    const Vector<ResponsivenessMetrics::EventTimestamps>& timestamps) {
-  DCHECK(timestamps.size());
-  // TODO(crbug.com/1229668): Once the event timestamp bug is fixed, add a
-  // DCHECK(IsSorted) here.
-  base::TimeDelta total_duration =
-      timestamps[0].end_time - timestamps[0].creation_time;
-  base::TimeTicks current_end_time = timestamps[0].end_time;
-  for (wtf_size_t i = 1; i < timestamps.size(); ++i) {
-    total_duration += timestamps[i].end_time - timestamps[i].creation_time;
-    if (timestamps[i].creation_time < current_end_time) {
-      total_duration -= std::min(current_end_time, timestamps[i].end_time) -
-                        timestamps[i].creation_time;
-    }
-    current_end_time = std::max(current_end_time, timestamps[i].end_time);
-  }
-  return total_duration;
-}
-
 std::unique_ptr<TracedValue> UserInteractionTraceData(
     base::TimeDelta max_duration,
-    base::TimeDelta total_duration,
     bool is_pointer) {
   auto traced_value = std::make_unique<TracedValue>();
   traced_value->SetInteger("maxDuration",
                            static_cast<int>(max_duration.InMilliseconds()));
-  traced_value->SetInteger("totalDuration",
-                           static_cast<int>(total_duration.InMilliseconds()));
   traced_value->SetString("interactionType",
                           is_pointer ? "tapOrClick" : "keyboard");
   return traced_value;
@@ -177,7 +154,6 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
       longest_event.queued_to_main_thread_time;
   base::TimeTicks max_event_commit_finish = longest_event.commit_finish_time;
   base::TimeDelta max_event_duration = longest_event.duration();
-  base::TimeDelta total_event_duration = TotalEventDuration(timestamps);
   // We found some negative values in the data. Before figuring out the root
   // cause, we need this check to avoid sending nonsensical data.
   if (max_event_duration.InMilliseconds() >= 0) {
@@ -190,12 +166,10 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
 
   TRACE_EVENT2("devtools.timeline", "Responsiveness.Renderer.UserInteraction",
                "data",
-               UserInteractionTraceData(max_event_duration,
-                                        total_event_duration, is_pointer_event),
+               UserInteractionTraceData(max_event_duration, is_pointer_event),
                "frame", GetFrameIdForTracing(window->GetFrame()));
 
-  EmitInteractionToNextPaintTraceEvent(longest_event, is_pointer_event,
-                                       total_event_duration);
+  EmitInteractionToNextPaintTraceEvent(longest_event, is_pointer_event);
 
   // Emit a trace event when "interaction to next paint" is considered "slow"
   // according to RAIL guidelines (web.dev/rail).
@@ -223,7 +197,6 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
     ukm::builders::Responsiveness_UserInteraction(source_id)
         .SetInteractionType(static_cast<int64_t>(interaction_type))
         .SetMaxEventDuration(max_event_duration.InMilliseconds())
-        .SetTotalEventDuration(total_event_duration.InMilliseconds())
         .Record(ukm_recorder);
   }
 }
@@ -731,8 +704,7 @@ void ResponsivenessMetrics::Trace(Visitor* visitor) const {
 
 void ResponsivenessMetrics::EmitInteractionToNextPaintTraceEvent(
     const ResponsivenessMetrics::EventTimestamps& event,
-    bool is_pointer_event,
-    base::TimeDelta total_event_duration) {
+    bool is_pointer_event) {
   const perfetto::Track track(base::trace_event::GetNextGlobalTraceId(),
                               perfetto::ProcessTrack::Current());
   TRACE_EVENT_BEGIN(
@@ -746,8 +718,6 @@ void ResponsivenessMetrics::EmitInteractionToNextPaintTraceEvent(
         web_content_interaction->set_type(
             is_pointer_event ? Interaction::INTERACTION_CLICK_TAP
                              : Interaction::INTERACTION_KEYBOARD);
-        web_content_interaction->set_total_duration_ms(
-            total_event_duration.InMilliseconds());
       });
 
   TRACE_EVENT_END("interactions", track, event.end_time);

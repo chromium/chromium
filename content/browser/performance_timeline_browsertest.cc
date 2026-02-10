@@ -531,14 +531,10 @@ IN_PROC_BROWSER_TEST_F(PerformanceEventTimingBrowserTest,
       ukm_entry.get(),
       ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 1);
 
-  // The max duration and total duration is non-determinstic. We only verify
-  // they exist.
+  // The max duration is non-determinstic. We only verify it exists.
   ukm::TestUkmRecorder::EntryHasMetric(
       ukm_entry.get(),
       ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName);
-  ukm::TestUkmRecorder::EntryHasMetric(
-      ukm_entry.get(),
-      ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName);
 }
 
 class LongAnimationFrameStyleDurationBrowserTest

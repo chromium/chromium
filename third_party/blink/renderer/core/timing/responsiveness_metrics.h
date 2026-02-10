@@ -143,8 +143,7 @@ class CORE_EXPORT ResponsivenessMetrics
 
   void EmitInteractionToNextPaintTraceEvent(
       const ResponsivenessMetrics::EventTimestamps& event,
-      bool is_pointer_event,
-      base::TimeDelta total_event_duration);
+      bool is_pointer_event);
 
   void SetCurrentInteractionEventQueuedTimestamp(base::TimeTicks queued_time);
   base::TimeTicks CurrentInteractionEventQueuedTimestamp() const;

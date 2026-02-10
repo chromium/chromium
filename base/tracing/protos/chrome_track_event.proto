@@ -1802,7 +1802,8 @@ message WebContentInteraction {
   }
 
   optional Type type = 1;
-  optional int64 total_duration_ms = 2;
+  reserved 2;
+  reserved "total_duration_ms";
 }
 
 // Deprecated in favor of the Perfetto Scroll Jank plugin which has a more

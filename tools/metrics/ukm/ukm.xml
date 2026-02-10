@@ -22184,15 +22184,6 @@ be describing additional metrics about the same event.
       this metric will be duration(keydown).
     </summary>
   </metric>
-  <metric name="TotalEventDuration">
-    <summary>
-      The sum of input event durations within the user interaction without
-      double counting the overlap. The unit of duration is ms. For example, if a
-      user pressed a key, we can get a keydown and a keyup. The value of this
-      metric will be duration(keydown) + duration(keyup) -
-      duration(intersection(keydown, keyup)).
-    </summary>
-  </metric>
 </event>
 
 <event name="ResponsivenessMeasurement">
