@@ -85,7 +85,6 @@ found in the LICENSE file.
     <color name="tab_strip_reorder_shadow_color">@color/black_alpha_11</color>
 
     <!-- Tab strip media indicators-->
-    <!-- TODO(crbug.com/454048975): Check with UX about the color.  -->
     <color name="tab_recording_media_color">@color/google_red_600</color>
     <color name="tab_sharing_media_color">@color/tab_group_color_picker_blue_dark</color>
 </resources>
