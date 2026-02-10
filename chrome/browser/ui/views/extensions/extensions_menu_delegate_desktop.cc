@@ -322,10 +322,21 @@ void ExtensionsMenuDelegateDesktop::OnActionIconUpdated(
       (*it)->UpdateActionButton(menu_model_->GetActionButtonState(
           action_id, GetMenuExtensionIconSize()));
     }
+    return;
   }
 
-  // TODO(crbug.com/482460728): Update the icon if the site permissions page is
-  // opened for the same extension.
+  // Do nothing when the site permissions page is opened for a different
+  // extension.
+  auto* site_permissions_page = GetSitePermissionsPage(current_page_.view());
+  CHECK(site_permissions_page);
+  if (site_permissions_page->extension_id() != action_id) {
+    return;
+  }
+
+  // Update the icon for the extension's site permission page
+  // TODO(crbug.com/431902556): consider updating only the icon and not the
+  // whole site permissions page.
+  UpdateSitePermissionsPage(site_permissions_page);
 }
 
 void ExtensionsMenuDelegateDesktop::OnActionsInitialized() {
