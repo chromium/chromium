@@ -365,7 +365,7 @@ void ActorTask::OnFinishedAct(
     // purposes.
     journal_->Log(GURL(), id(), "ActorTask::OnFinishedAct",
                   JournalDetailsBuilder()
-                      .Add("result", ToDebugString(*result))
+                      .Add("result", result ? ToDebugString(*result) : "null")
                       .Add("Not in kActing state", base::ToString(state_))
                       .Build());
   }
@@ -382,17 +382,23 @@ void ActorTask::OnFinishedAct(
 
   // The callback may already have been called, if the task was stopped or
   // paused.
+  const bool is_paused_result =
+      result && result->code == mojom::ActionResultCode::kTaskPaused;
   if (callback_for_act_) {
     // Interruption (WaitingOnUser) can happen while acting, but in that case
     // the tool is the source and must not finish before uninterrupting.
-    DCHECK(state_ == State::kCreated || state_ == State::kActing);
-    action_tracker_for_metrics_->OnFinishedAct(*result);
+    DCHECK(state_ == State::kCreated || state_ == State::kActing ||
+           IsUnderUserControl());
+    if (result) {
+      action_tracker_for_metrics_->OnFinishedAct(*result);
+    }
     std::move(callback_for_act_)
         .Run(std::move(result), index_of_failed_action,
              std::move(action_results));
   }
 
-  if (state_ == State::kActing) {
+  if (state_ == State::kActing ||
+      (state_ == State::kPausedByActor && !is_paused_result)) {
     SetState(State::kReflecting);
   }
 }
@@ -431,14 +437,14 @@ void ActorTask::Stop(StoppedReason stop_reason) {
         .last_acted_on_tab_handle = last_tab_handle});
 }
 
-void ActorTask::Pause(bool from_actor) {
+void ActorTask::Pause(bool from_actor, bool cancel_existing_action) {
   if (IsCompleted()) {
     return;
   }
 
   // Invoke the callback before changing states so that the client sees the Act
   // result before seeing the state transition.
-  if (callback_for_act_) {
+  if (callback_for_act_ && cancel_existing_action) {
     DCHECK(state_ == State::kActing || state_ == State::kWaitingOnUser ||
            state_ == State::kCreated);
     mojom::ActionResultPtr result =
@@ -449,8 +455,9 @@ void ActorTask::Pause(bool from_actor) {
              /*index_of_failed_action=*/std::nullopt, /*action_results=*/{});
   }
 
-  CancelOngoingActions(mojom::ActionResultCode::kTaskPaused);
-
+  if (cancel_existing_action) {
+    CancelOngoingActions(mojom::ActionResultCode::kTaskPaused);
+  }
   if (from_actor) {
     SetState(State::kPausedByActor);
   } else {

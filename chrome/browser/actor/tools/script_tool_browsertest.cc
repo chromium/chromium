@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -242,6 +243,66 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeToolCrossDocument) {
 )JSON");
 
   EXPECT_EQ(actual_json, expected_json);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
+                       DeclarativeToolCrossDocument_No_Autosubmit) {
+  const GURL url = embedded_test_server()->GetURL(
+      "/actor/declarative_script_tool_pause.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string declarative_input =
+      R"JSON(
+        {
+          "echo": "hello world"
+        }
+      )JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
+                                      declarative_input);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  // Wait for the task to be paused. The Act() call has not returned yet.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return actor_task().GetState() == ActorTask::State::kPausedByActor;
+  }));
+
+  // Trigger the submission manually.
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "document.querySelector('button').click()"));
+
+  // The Act() call should now complete successfully with the result of the
+  // navigation.
+  ExpectOkResult(result);
+  EXPECT_EQ(actor_task().GetState(), ActorTask::State::kReflecting);
+
+  const auto& action_results = result.Get<2>();
+  ASSERT_EQ(action_results.size(), 1u);
+  ASSERT_TRUE(action_results.at(0).result->script_tool_response);
+  base::Value actual_json = base::test::ParseJson(
+      *action_results.at(0).result->script_tool_response->result);
+
+  // The result should match the static content of the page.
+  base::Value expected_json = base::test::ParseJson(R"JSON(
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "Message",
+      "text": "echoed value"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Message",
+      "text": "extra stuff"
+    }
+  ]
+)JSON");
+
+  EXPECT_EQ(actual_json, expected_json);
+
+  // Verify that the task can be stopped cleanly.
+  actor_task().Stop(ActorTask::StoppedReason::kTaskComplete);
+  EXPECT_EQ(actor_task().GetState(), ActorTask::State::kFinished);
 }
 
 }  // namespace

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<title>Declarative Script Tool Pause and Resume Test</title>
+
+<!-- Note: toolautosubmit is missing, so this should pause -->
+<form toolname="declarative_tool"
+      tooldescription="A declarative WebMCP tool"
+      action="declarative_script_tool_cross_document_result.html"
+      method="GET">
+
+  <label for="echo">Value to echo</label>
+  <input id="echo" type="text" name="echo" required>
+
+  <button type="submit" name="submitname">Submit Content</button>
+</form>

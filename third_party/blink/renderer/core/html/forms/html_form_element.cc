@@ -622,9 +622,6 @@ void HTMLFormElement::PrepareForSubmission(
     if (cancel_last_submission_)
       std::move(cancel_last_submission_).Run();
     ScheduleFormSubmission(event, submit_button);
-    // TODO(khushal). This sends back "success" to the agent, but it should
-    // wait for the new page to load, and send back the response then, based on
-    // page content.
     if (IsValidWebMCPForm() && active_webmcp_tool_->CurrentlyRunning()) {
       CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
       // Return a null string to indicate that a navigation has been

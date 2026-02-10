@@ -38,7 +38,8 @@ void ActorScriptToolReceiver::PauseExecution() {
   if (const auto* task =
           service->GetActingActorTaskForWebContents(web_contents)) {
     if (auto* mutable_task = service->GetTask(task->id())) {
-      mutable_task->Pause(/*from_actor=*/true);
+      mutable_task->Pause(/*from_actor=*/true,
+                          /*cancel_existing_action=*/false);
     }
   }
 }

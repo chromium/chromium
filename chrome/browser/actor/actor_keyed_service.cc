@@ -526,6 +526,8 @@ void ActorKeyedService::OnActionsFinished(
     std::move(callback).Run(result->code, index_of_failed_action,
                             std::move(action_results));
   } else {
+    // RunLater is load bearing. See:
+    // https://chromium-review.googlesource.com/c/chromium/src/+/7552225/comment/b0b7f011_71da3233/
     RunLater(base::BindOnce(std::move(callback), result->code,
                             index_of_failed_action, std::move(action_results)));
   }
