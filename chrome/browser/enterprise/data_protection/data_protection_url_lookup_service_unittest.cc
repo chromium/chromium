@@ -66,22 +66,15 @@ class MockRealTimeUrlLookupService
 namespace enterprise_data_protection {
 
 struct UrlLookupTestCase {
-  bool verdict_cache_enabled;
   int cache_duration_sec;
   int second_do_lookup_delay_sec;
   int do_lookup_call_count;
 };
 
-UrlLookupTestCase kUrlLookupTestCases[] = {{.verdict_cache_enabled = true,
-                                            .cache_duration_sec = 90,
+UrlLookupTestCase kUrlLookupTestCases[] = {{.cache_duration_sec = 90,
                                             .second_do_lookup_delay_sec = 0,
                                             .do_lookup_call_count = 1},
-                                           {.verdict_cache_enabled = false,
-                                            .cache_duration_sec = 90,
-                                            .second_do_lookup_delay_sec = 0,
-                                            .do_lookup_call_count = 2},
-                                           {.verdict_cache_enabled = true,
-                                            .cache_duration_sec = 90,
+                                           {.cache_duration_sec = 90,
                                             .second_do_lookup_delay_sec = 100,
                                             .do_lookup_call_count = 2}};
 
@@ -120,14 +113,6 @@ class DataProtectionUrlLookupServiceTest
 TEST_P(DataProtectionUrlLookupServiceTest, VerdictCachePopulated) {
   base::test::ScopedFeatureList scoped_features;
   UrlLookupTestCase test_case = GetParam();
-
-  if (test_case.verdict_cache_enabled) {
-    scoped_features.InitAndEnableFeature(
-        enterprise_data_protection::kEnableVerdictCache);
-  } else {
-    scoped_features.InitAndDisableFeature(
-        enterprise_data_protection::kEnableVerdictCache);
-  }
 
   SetContents(CreateTestWebContents());
 

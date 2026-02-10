@@ -45,6 +45,8 @@ int GetCacheDurationSec(safe_browsing::RTLookupResponse* rt_lookup_response) {
 }  // namespace
 namespace enterprise_data_protection {
 
+const size_t kVerdictCacheMaxSize = 200;
+
 DataProtectionUrlLookupService::Verdict::Verdict() = default;
 DataProtectionUrlLookupService::Verdict::Verdict(Verdict&&) = default;
 DataProtectionUrlLookupService::Verdict::~Verdict() = default;
@@ -102,8 +104,7 @@ void DataProtectionUrlLookupService::OnRealTimeLookupComplete(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!is_success) {
     rt_lookup_response.reset();
-  } else if (base::FeatureList::IsEnabled(kEnableVerdictCache) &&
-             rt_lookup_response) {
+  } else if (rt_lookup_response) {
     // Guarantee that verdict cache contents are non-empty.
     int cache_duration_sec = GetCacheDurationSec(rt_lookup_response.get());
     if (cache_duration_sec > 0) {
@@ -158,10 +159,7 @@ DataProtectionUrlLookupServiceFactory::BuildServiceInstanceForBrowserContext(
 
 // static
 size_t DataProtectionUrlLookupService::GetVerdictCacheMaxSize() {
-  size_t max_value = enterprise_data_protection::kVerdictCacheMaxSize.Get();
-  return max_value > 0
-             ? max_value
-             : enterprise_data_protection::kVerdictCacheMaxSize.default_value;
+  return kVerdictCacheMaxSize;
 }
 
 }  // namespace enterprise_data_protection

@@ -14,10 +14,6 @@ BASE_DECLARE_FEATURE(kEnableForceDownloadToCloud);
 
 BASE_DECLARE_FEATURE(kEnableForceDownloadToOneDrive);
 
-BASE_DECLARE_FEATURE(kEnableVerdictCache);
-
-BASE_DECLARE_FEATURE_PARAM(size_t, kVerdictCacheMaxSize);
-
 }  // namespace enterprise_data_protection
 
 #endif  // CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_FEATURES_H_

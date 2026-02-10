@@ -477,12 +477,7 @@ void DataProtectionNavigationObserver::DidFinishNavigation(
 
 // static
 size_t DataProtectionNavigationObserver::GetVerdictCacheMaxSize() {
-  size_t max_value = enterprise_data_protection::kVerdictCacheMaxSize.Get();
-
-  // Defensive check to ensure a valid size for the verdict cache.
-  return max_value > 0
-             ? max_value
-             : enterprise_data_protection::kVerdictCacheMaxSize.default_value;
+  return kVerdictCacheMaxSize;
 }
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(DataProtectionNavigationObserver);
