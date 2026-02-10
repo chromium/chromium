@@ -617,21 +617,6 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesMetadata_NonAsciiPassword) {
   }
 }
 
-TEST_F(VotesUploaderTest, NoSingleUsernameDataNoUpload) {
-  VotesUploader votes_uploader(&client_, false);
-  EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
-      .Times(0);
-  base::HistogramTester histogram_tester;
-  votes_uploader.set_should_send_username_first_flow_votes(true);
-  votes_uploader.MaybeSendSingleUsernameVotes();
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.SingleUsername.VoteDataAvailability",
-      static_cast<int>(
-          VotesUploader::SingleUsernameVoteDataAvailability::kNone),
-      1);
-}
-
 TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
   VotesUploader votes_uploader(&client_, false);
 
@@ -674,14 +659,7 @@ TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
         .Times(0);
   }
 
-  base::HistogramTester histogram_tester;
   votes_uploader.MaybeSendSingleUsernameVotes();
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.SingleUsername.VoteDataAvailability",
-      static_cast<int>(VotesUploader::SingleUsernameVoteDataAvailability::
-                           kUsernameFirstOnly),
-      1);
 }
 
 // Tests that a negative vote is sent if the username candidate field
@@ -915,64 +893,9 @@ TEST_F(VotesUploaderTest, ForgotPasswordFormVote) {
               StartUploadRequest(upload_contents_matcher, _,
                                  /*is_password_manager_upload=*/true));
 
-  base::HistogramTester histogram_tester;
   votes_uploader.MaybeSendSingleUsernameVotes();
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.SingleUsername.VoteDataAvailability",
-      static_cast<int>(VotesUploader::SingleUsernameVoteDataAvailability::
-                           kForgotPasswordOnly),
-      1);
 }
 
-// Tests "PasswordManager.SingleUsername.VoteDataAvailability" UMA recording
-// when both UFF and FPF data is available and has info about the same form.
-TEST_F(VotesUploaderTest, SingleUsernameVoteDataUffOverlapsWithFpf) {
-  VotesUploader votes_uploader(&client_, false);
 
-  SingleUsernameVoteData data(kSingleUsernameRendererId, u"possible_username",
-                              MakeSimpleSingleUsernamePredictions(),
-                              /*stored_credentials=*/{},
-                              PasswordFormHadMatchingUsername(false));
-
-  votes_uploader.add_single_username_vote_data(data);
-  votes_uploader.AddForgotPasswordVoteData(data);
-
-  base::HistogramTester histogram_tester;
-  votes_uploader.MaybeSendSingleUsernameVotes();
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.SingleUsername.VoteDataAvailability",
-      static_cast<int>(
-          VotesUploader::SingleUsernameVoteDataAvailability::kBothWithOverlap),
-      1);
-}
-
-// Tests "PasswordManager.SingleUsername.VoteDataAvailability" UMA recording
-// when both UFF and FPF data is available and has info about different forms.
-TEST_F(VotesUploaderTest, SingleUsernameVoteDataUffNoOverlapWithFpf) {
-  VotesUploader votes_uploader(&client_, false);
-
-  SingleUsernameVoteData data1(FieldRendererId(100), u"maybe_username",
-                               MakeSimpleSingleUsernamePredictions(),
-                               /*stored_credentials=*/{},
-                               PasswordFormHadMatchingUsername(false));
-  votes_uploader.add_single_username_vote_data(data1);
-
-  SingleUsernameVoteData data2(FieldRendererId(200), u"also_maybe_username",
-                               MakeSimpleSingleUsernamePredictions(),
-                               /*stored_credentials=*/{},
-                               PasswordFormHadMatchingUsername(false));
-  votes_uploader.AddForgotPasswordVoteData(data2);
-
-  base::HistogramTester histogram_tester;
-  votes_uploader.MaybeSendSingleUsernameVotes();
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.SingleUsername.VoteDataAvailability",
-      static_cast<int>(
-          VotesUploader::SingleUsernameVoteDataAvailability::kBothNoOverlap),
-      1);
-}
 
 }  // namespace password_manager

@@ -3884,17 +3884,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram
-    name="PasswordManager.SingleUsername.ForgotPasswordServerPredictionUsed"
-    enum="Boolean" expires_after="2026-03-22">
-  <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Recorded when a single username form is detected using server predictions.
-    Records whether the prediction is SINGLE_USERNAME_FORGOT_PASSWORD.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.SingleUsername.PasswordFormHadUsernameField"
     enum="PasswordFormHadUsernameField" expires_after="2026-08-02">
   <owner>kazinova@google.com</owner>
@@ -3913,17 +3902,6 @@ useful for Chirp alerts (go/crca-alerts). -->
 
     This metric tracks which of the two cases the vote is coming from. Recorded
     once per vote submission.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.SingleUsername.VoteDataAvailability"
-    enum="SingleUsernameVoteDataAvailability" expires_after="2026-03-22">
-  <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    This metric records whether username first and forgot password form voting
-    data is available, and whether it contains information about the same form.
-    Recorded during single username votes uploading.
   </summary>
 </histogram>
 
@@ -4315,7 +4293,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.UsernameDetectionMethod"
-    enum="UsernameDetectionMethod" expires_after="2026-03-22">
+    enum="UsernameDetectionMethod" expires_after="2026-08-22">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>

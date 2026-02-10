@@ -1846,18 +1846,6 @@ chromium-metrics-reviews@google.com.
   <int value="8" label=":-) User used manual fallback to fill the form"/>
 </enum>
 
-<enum name="SingleUsernameVoteDataAvailability">
-  <summary>
-    Whether two existing single username detection mechanisms (UFF and FPF) have
-    data, overlapping or not.
-  </summary>
-  <int value="0" label="None"/>
-  <int value="1" label="Username First only."/>
-  <int value="2" label="Forgot password only."/>
-  <int value="3" label="Both, but for different forms."/>
-  <int value="4" label="Both, and FPF data contains UFF candidate field."/>
-</enum>
-
 <enum name="StoreAffiliationResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed to start transaction"/>

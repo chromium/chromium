@@ -4629,7 +4629,6 @@ TEST_P(PasswordManagerTest, StartLeakDetection) {
 
 // Check that a non-password form with SINGLE_USERNAME prediction is filled.
 TEST_P(PasswordManagerTest, FillSingleUsername) {
-  base::HistogramTester histogram_tester;
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   const PasswordForm saved_match(MakeSavedForm());
@@ -4654,15 +4653,11 @@ TEST_P(PasswordManagerTest, FillSingleUsername) {
             fill_data.preferred_login.password_value);
   EXPECT_TRUE(fill_data.password_element_renderer_id.is_null());
 
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.SingleUsername.ForgotPasswordServerPredictionUsed",
-      false, 1);
 }
 
 // Check that a non-password form with SINGLE_USERNAME_FORGOT_PASSWORD
 // prediction is filled.
 TEST_P(PasswordManagerTest, FillSingleUsernameForgotPassword) {
-  base::HistogramTester histogram_tester;
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   const PasswordForm saved_match(MakeSavedForm());
@@ -4687,10 +4682,6 @@ TEST_P(PasswordManagerTest, FillSingleUsernameForgotPassword) {
   EXPECT_EQ(saved_match.password_value,
             fill_data.preferred_login.password_value);
   EXPECT_TRUE(fill_data.password_element_renderer_id.is_null());
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.SingleUsername.ForgotPasswordServerPredictionUsed", true,
-      1);
 }
 
 // Checks that a password form with a clear-text account creation field results
