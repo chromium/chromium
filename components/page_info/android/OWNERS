@@ -1,6 +1,4 @@
 file://components/page_info/OWNERS
 
-per-file ...*TrackingProtection*=file://components/privacy_sandbox/OWNERS
-per-file ...*tracking_protection*=file://components/privacy_sandbox/OWNERS
 per-file ...PageInfoCookies*=file://components/privacy_sandbox/OWNERS
 per-file ...*cookie*=file://components/privacy_sandbox/OWNERS
