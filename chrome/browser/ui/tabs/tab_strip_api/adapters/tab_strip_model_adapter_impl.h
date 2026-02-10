@@ -54,6 +54,8 @@ class TabStripModelAdapterImpl : public TabStripModelAdapter {
       tab_groups::TabGroupId group_id) const override;
   tabs_api::Position GetPositionForAbsoluteIndex(
       int absolute_index) const override;
+  tabs_api::Path GetPathForCollection(
+      tabs::TabCollectionHandle collection_handle) const override;
   InsertionParams CalculateInsertionParams(
       const std::optional<tabs_api::Position>& pos) const override;
   const tabs::TabCollection* GetRoot() const override;

@@ -63,6 +63,8 @@ class TabStripModelAdapter {
       tab_groups::TabGroupId group_id) const = 0;
   virtual tabs_api::Position GetPositionForAbsoluteIndex(
       int absolute_index) const = 0;
+  virtual tabs_api::Path GetPathForCollection(
+      tabs::TabCollectionHandle collection_handle) const = 0;
   virtual InsertionParams CalculateInsertionParams(
       const std::optional<tabs_api::Position>& pos) const = 0;
   virtual const tabs::TabCollection* GetRoot() const = 0;

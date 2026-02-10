@@ -54,6 +54,10 @@ mojom("mojom") {
           cpp = "enum ::tabs_api::NodeId::Type"
         },
         {
+          mojom = "tabs_api.mojom.Path"
+          cpp = "::tabs_api::Path"
+        },
+        {
           mojom = "tabs_api.mojom.Position"
           cpp = "::tabs_api::Position"
         },
@@ -74,6 +78,8 @@ mojom("mojom") {
         "types/image_traits.h",
         "types/node_id.h",
         "types/node_id_traits.h",
+        "types/path.h",
+        "types/path_traits.h",
         "types/position.h",
         "types/position_traits.h",
         "types/tab_group_visual_data_traits.h",
@@ -85,6 +91,7 @@ mojom("mojom") {
       traits_sources = [
         "types/image_traits.cc",
         "types/node_id_traits.cc",
+        "types/path_traits.cc",
         "types/position_traits.cc",
         "types/split_tab_visual_data_traits.cc",
         "types/tab_group_visual_data_traits.cc",

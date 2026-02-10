@@ -30,13 +30,14 @@ struct NodeId {
 // Position is an ephemeral object that should not be saved nor act as an
 // identifier. It is purely used in this API to determine the position within
 // the TabstripModel.
+struct Path {
+  array<NodeId> components;
+};
+
 struct Position {
-  // The parent of the tab. This is only set if the tab is a child of a
-  // collection.
-  // TODO(crbug.com/412935315): make this a required field. All nodes should
-  // have a parent, except for the TabStripCollection which is the root. The
-  // root should never need to be moved, doing so should trigger a CHECK error.
-  NodeId? parent_id;
-  // The index of the tab within the parent.
+  // The absolute path to the parent collection of this node.
+  Path path;
+
+  // The index within the parent collection specified by the path.
   uint32 index;
 };

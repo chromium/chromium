@@ -5,6 +5,7 @@
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/browser_apis/tab_strip/types/image_traits.h"
 #include "components/browser_apis/tab_strip/types/node_id_traits.h"
+#include "components/browser_apis/tab_strip/types/path_traits.h"
 #include "components/browser_apis/tab_strip/types/position_traits.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -25,8 +26,20 @@ TEST(TabsStripServiceMojoTraitsTest, ConvertNodeId) {
   ASSERT_TRUE(original == deserialized);
 }
 
+TEST(TabsStripServiceMojoTraitsTest, ConvertPath) {
+  Path original({NodeId(NodeId::Type::kCollection, "id1"),
+                 NodeId(NodeId::Type::kCollection, "id2")});
+
+  auto serialized = mojom::Path::Serialize(&original);
+
+  Path deserialized;
+  mojom::Path::Deserialize(serialized, &deserialized);
+
+  ASSERT_TRUE(original == deserialized);
+}
+
 TEST(TabsStripServiceMojoTraitsTest, ConvertPosition) {
-  Position original(0, NodeId(NodeId::Type::kCollection, "super_secret_id"));
+  Position original(0, Path({NodeId(NodeId::Type::kCollection, "id1")}));
 
   auto serialized = mojom::Position::Serialize(&original);
 

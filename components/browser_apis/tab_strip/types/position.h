@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "components/browser_apis/tab_strip/types/node_id.h"
+#include "components/browser_apis/tab_strip/types/path.h"
 
 namespace tabs_api {
 
@@ -18,7 +19,7 @@ class Position {
  public:
   Position();
   explicit Position(size_t index);
-  Position(size_t index, std::optional<tabs_api::NodeId> parent_id);
+  Position(size_t index, tabs_api::Path path);
   ~Position();
 
   Position(const Position&);
@@ -26,16 +27,14 @@ class Position {
   Position& operator=(const Position&);
   Position& operator=(Position&&) noexcept;
 
-  const std::optional<tabs_api::NodeId>& parent_id() const {
-    return parent_id_;
-  }
+  const tabs_api::Path& path() const { return path_; }
   size_t index() const { return index_; }
 
   friend bool operator==(const Position& a, const Position& b);
 
  private:
   size_t index_;
-  std::optional<tabs_api::NodeId> parent_id_;
+  tabs_api::Path path_;
 };
 
 }  // namespace tabs_api

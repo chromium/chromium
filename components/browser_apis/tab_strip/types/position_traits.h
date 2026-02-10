@@ -23,8 +23,7 @@ using NativePosition = tabs_api::Position;
 template <>
 struct mojo::StructTraits<MojoPositionView, NativePosition> {
   // Field getters:
-  static const std::optional<tabs_api::NodeId>& parent_id(
-      const NativePosition& native);
+  static const tabs_api::Path& path(const NativePosition& native);
   static uint32_t index(const NativePosition& native);
 
   // Decoder:

@@ -127,8 +127,10 @@ export class TabListPlaygroundElement extends CustomElement implements
       const tab = container.tab;
       const tabElement = this.createTabElement_(tab, false);
       const position: Position = container.position;
-      this.placeElement_(
-          tabElement, position.index, false, null /* parent id */);
+      const parentNodeId =
+          position.path.components[position.path.components.length - 1];
+      const parentId = parentNodeId ? parentNodeId : null;
+      this.placeElement_(tabElement, position.index, false, parentId);
     });
   }
 
@@ -166,7 +168,9 @@ export class TabListPlaygroundElement extends CustomElement implements
       return;
     }
 
-    let parentId = event.to.parentId;
+    const parentNodeId =
+        event.to.path.components[event.to.path.components.length - 1];
+    let parentId = parentNodeId ? parentNodeId : null;
     if (element instanceof TabGroupElement) {
       parentId = null;
     }
@@ -240,9 +244,12 @@ export class TabListPlaygroundElement extends CustomElement implements
     if (sourceParent === targetParent && originalIndex < targetIdx) {
       targetIdx--;
     }
-    this.tabStripService_.moveNode(
-        draggedElement.dataset['nodeId']!,
-        {parentId: parentId, index: targetIdx});
+    this.tabStripService_.moveNode(draggedElement.dataset['nodeId']!, {
+      path: {
+        components: parentId ? [parentId] : [],
+      },
+      index: targetIdx,
+    });
   }
 
   private findNodeElement_(nodeId: string): HTMLElement|null {

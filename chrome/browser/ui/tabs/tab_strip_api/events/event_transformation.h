@@ -35,7 +35,8 @@ mojom::OnTabsClosedEventPtr ToEvent(
 mojom::OnNodeMovedEventPtr ToEvent(
     const tabs::TabCollection::Position& to_position,
     const tabs::TabCollection::Position& from_position,
-    const tabs::TabCollection::NodeHandle node_handle);
+    const tabs::TabCollection::NodeHandle node_handle,
+    const tabs_api::TabStripModelAdapter* adapter);
 
 mojom::OnDataChangedEventPtr ToEvent(
     const tabs_api::TabStripModelAdapter* adapter,

@@ -86,18 +86,17 @@ void TabStripModelAdapterImpl::MoveTab(tabs::TabHandle tab,
   auto maybe_index = GetIndexForHandle(tab);
   CHECK(maybe_index.has_value());
   auto index = maybe_index.value();
-  // If the position has no parent, move within the unpinned collection.
-  if (!position.parent_id().has_value()) {
-    const int to_position =
-        tab_strip_model_->IndexOfFirstNonPinnedTab() + position.index();
-    tab_strip_model_->MoveWebContentsAt(index, to_position,
-                                        /*select_after_move=*/false,
-                                        /*group=*/std::nullopt);
-    return;
+
+  NodeId parent_id;
+  if (position.path().components().empty()) {
+    parent_id =
+        NodeId::FromTabCollectionHandle(GetUnpinnedTabsCollectionHandle());
+  } else {
+    parent_id = position.path().components().back();
   }
 
   std::optional<tabs::TabCollectionHandle> collection_handle =
-      position.parent_id().value().ToTabCollectionHandle();
+      parent_id.ToTabCollectionHandle();
   CHECK(collection_handle.has_value());
   const tabs::TabCollection* collection = collection_handle.value().Get();
   const bool to_pinned =
@@ -244,22 +243,32 @@ tabs_api::Position TabStripModelAdapterImpl::GetPositionForAbsoluteIndex(
   const auto tab_group_id = GetTabGroupForTab(absolute_index);
   int relative_index =
       absolute_index - tab_strip_model_->IndexOfFirstNonPinnedTab();
-  std::optional<tabs_api::NodeId> parent_id =
-      NodeId::FromTabCollectionHandle(GetUnpinnedTabsCollectionHandle());
+  tabs::TabCollectionHandle parent_handle = GetUnpinnedTabsCollectionHandle();
 
   if (absolute_index < tab_strip_model_->IndexOfFirstNonPinnedTab()) {
     relative_index = absolute_index;
-    parent_id =
-        NodeId::FromTabCollectionHandle(GetPinnedTabsCollectionHandle());
+    parent_handle = GetPinnedTabsCollectionHandle();
   } else if (tab_group_id.has_value()) {
     const TabGroup* tab_group =
         tab_strip_model_->group_model()->GetTabGroup(tab_group_id.value());
     relative_index = absolute_index - tab_group->ListTabs().start();
-    parent_id = NodeId::FromTabCollectionHandle(
-        GetCollectionHandleForTabGroupId(tab_group_id.value()));
+    parent_handle = GetCollectionHandleForTabGroupId(tab_group_id.value());
   }
 
-  return tabs_api::Position(relative_index, parent_id);
+  return tabs_api::Position(relative_index,
+                            GetPathForCollection(parent_handle));
+}
+
+tabs_api::Path TabStripModelAdapterImpl::GetPathForCollection(
+    tabs::TabCollectionHandle collection_handle) const {
+  std::vector<tabs_api::NodeId> components;
+  const tabs::TabCollection* curr = collection_handle.Get();
+  while (curr) {
+    components.push_back(NodeId::FromTabCollectionHandle(curr->GetHandle()));
+    curr = curr->GetParentCollection();
+  }
+  std::reverse(components.begin(), components.end());
+  return tabs_api::Path(std::move(components));
 }
 
 InsertionParams TabStripModelAdapterImpl::CalculateInsertionParams(
@@ -267,17 +276,21 @@ InsertionParams TabStripModelAdapterImpl::CalculateInsertionParams(
   tabs_api::InsertionParams params;
   if (pos.has_value()) {
     params.index = pos->index();
-    const std::optional<tabs_api::NodeId>& parent_id = pos->parent_id();
-    if (parent_id.has_value()) {
-      if (parent_id.value() ==
-          NodeId::FromTabCollectionHandle(GetPinnedTabsCollectionHandle())) {
-        params.pinned = true;
-      } else {
-        std::optional<tabs::TabCollectionHandle> collection_handle =
-            parent_id.value().ToTabCollectionHandle();
-        if (collection_handle.has_value()) {
-          params.group_id = FindGroupIdFor(collection_handle.value());
-        }
+    NodeId parent_id;
+    if (pos->path().components().empty()) {
+      parent_id =
+          NodeId::FromTabCollectionHandle(GetUnpinnedTabsCollectionHandle());
+    } else {
+      parent_id = pos->path().components().back();
+    }
+    if (parent_id ==
+        NodeId::FromTabCollectionHandle(GetPinnedTabsCollectionHandle())) {
+      params.pinned = true;
+    } else {
+      std::optional<tabs::TabCollectionHandle> collection_handle =
+          parent_id.ToTabCollectionHandle();
+      if (collection_handle.has_value()) {
+        params.group_id = FindGroupIdFor(collection_handle.value());
       }
     }
   }

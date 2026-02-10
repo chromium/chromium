@@ -132,7 +132,14 @@ ToyTabStripModelAdapter::GetCollectionHandleForTabGroupId(
 tabs_api::Position ToyTabStripModelAdapter::GetPositionForAbsoluteIndex(
     int absolute_index) const {
   NOTIMPLEMENTED();
-  return tabs_api::Position();
+  return tabs_api::Position(0);
+}
+
+tabs_api::Path ToyTabStripModelAdapter::GetPathForCollection(
+    tabs::TabCollectionHandle collection_handle) const {
+  std::vector<tabs_api::NodeId> components;
+  components.push_back(NodeId::FromTabCollectionHandle(collection_handle));
+  return tabs_api::Path(std::move(components));
 }
 
 InsertionParams ToyTabStripModelAdapter::CalculateInsertionParams(

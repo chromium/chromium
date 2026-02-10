@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
   // Test creating a tab in the pinned collection
   base::RunLoop pinned_create_loop;
   observation->remote->CreateTabAt(
-      tabs_api::Position(0, pinned_node_id), url,
+      tabs_api::Position(0, tabs_api::Path({pinned_node_id})), url,
       base::BindLambdaForTesting(
           [&](TabStripService::CreateTabAtResult result) {
             ASSERT_TRUE(result.has_value());
@@ -349,13 +349,14 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
 
   const auto& pinned_event = observation->client.tab_created_events.back();
   ASSERT_EQ(1u, pinned_event->tabs.size());
-  EXPECT_EQ(pinned_node_id, pinned_event->tabs[0]->position.parent_id());
+  EXPECT_EQ(pinned_node_id,
+            pinned_event->tabs[0]->position.path().components().back());
   EXPECT_EQ(0u, pinned_event->tabs[0]->position.index());
 
   // Test creating the tab in an unpinned collection.
   base::RunLoop unpinned_create_loop;
   observation->remote->CreateTabAt(
-      tabs_api::Position(0, unpinned_node_id), url,
+      tabs_api::Position(0, tabs_api::Path({unpinned_node_id})), url,
       base::BindLambdaForTesting(
           [&](TabStripService::CreateTabAtResult result) {
             ASSERT_TRUE(result.has_value());
@@ -368,7 +369,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
   ASSERT_EQ(2u, observation->client.tab_created_events.size());
   const auto& unpinned_event = observation->client.tab_created_events.back();
   ASSERT_EQ(1u, unpinned_event->tabs.size());
-  EXPECT_EQ(unpinned_node_id, unpinned_event->tabs[0]->position.parent_id());
+  EXPECT_EQ(unpinned_node_id,
+            unpinned_event->tabs[0]->position.path().components().back());
   EXPECT_EQ(0u, unpinned_event->tabs[0]->position.index());
 
   // Test creating the tab within a tab group collection.
@@ -379,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
       base::NumberToString(group->GetCollectionHandle().raw_value()));
   base::RunLoop group_create_loop;
   observation->remote->CreateTabAt(
-      tabs_api::Position(0, group_node_id), url,
+      tabs_api::Position(0, tabs_api::Path({group_node_id})), url,
       base::BindLambdaForTesting(
           [&](TabStripService::CreateTabAtResult result) {
             ASSERT_TRUE(result.has_value());
@@ -392,7 +394,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
   ASSERT_EQ(3u, observation->client.tab_created_events.size());
   const auto& group_event = observation->client.tab_created_events.back();
   ASSERT_EQ(1u, group_event->tabs.size());
-  EXPECT_EQ(group_node_id, group_event->tabs[0]->position.parent_id());
+  EXPECT_EQ(group_node_id,
+            group_event->tabs[0]->position.path().components().back());
   EXPECT_EQ(0u, group_event->tabs[0]->position.index());
 }
 
@@ -673,8 +676,10 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTabIntoGroup) {
   const tabs_api::NodeId to_group_collection_id(
       tabs_api::NodeId::Type::kCollection,
       base::NumberToString(group->GetCollectionHandle().raw_value()));
-  auto position = tabs_api::Position(1, to_group_collection_id);
+  auto position =
+      tabs_api::Position(1, tabs_api::Path({to_group_collection_id}));
   auto* tab_to_move = GetTabStripModel()->GetTabAtIndex(2);
+
   auto to_move_id = tabs_api::NodeId(
       tabs_api::NodeId::Type::kContent,
       base::NumberToString(tab_to_move->GetHandle().raw_value()));
@@ -699,14 +704,14 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTabIntoGroup) {
   ASSERT_FALSE(observation->client.move_events.empty());
   tabs_api::mojom::OnNodeMovedEventPtr move_event;
   for (auto& event : observation->client.move_events) {
-    if (event->id == to_move_id && event->to.parent_id().has_value() &&
-        event->to.parent_id().value() == to_group_collection_id) {
+    if (event->id == to_move_id && !event->to.path().components().empty() &&
+        event->to.path().components().back() == to_group_collection_id) {
       move_event = std::move(event);
       break;
     }
   }
   EXPECT_EQ(to_move_id, move_event->id);
-  EXPECT_EQ(to_group_collection_id, move_event->to.parent_id().value());
+  EXPECT_EQ(to_group_collection_id, move_event->to.path().components().back());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveGroupCollection) {

@@ -10,12 +10,12 @@ namespace tabs_api {
 namespace {
 
 TEST(TabsApiPositionTest, Comparison) {
-  ASSERT_TRUE(Position(0, NodeId(NodeId::Type::kContent, "aaa")) ==
-              Position(0, NodeId(NodeId::Type::kContent, "aaa")));
-  ASSERT_TRUE(Position(0, NodeId(NodeId::Type::kContent, "aaa")) !=
-              Position(1, NodeId(NodeId::Type::kContent, "aaa")));
-  ASSERT_TRUE(Position(0, NodeId(NodeId::Type::kContent, "aaa")) !=
-              Position(0, NodeId(NodeId::Type::kCollection, "aaa")));
+  Path path_a({NodeId(NodeId::Type::kCollection, "aaa")});
+  Path path_b({NodeId(NodeId::Type::kCollection, "bbb")});
+
+  ASSERT_TRUE(Position(0, path_a) == Position(0, path_a));
+  ASSERT_TRUE(Position(0, path_a) != Position(1, path_a));
+  ASSERT_TRUE(Position(0, path_a) != Position(0, path_b));
 }
 
 }  // namespace

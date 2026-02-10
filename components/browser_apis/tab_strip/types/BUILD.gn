@@ -6,6 +6,8 @@ source_set("types") {
   sources = [
     "node_id.cc",
     "node_id.h",
+    "path.cc",
+    "path.h",
     "position.cc",
     "position.h",
   ]
@@ -23,6 +25,7 @@ source_set("unit_tests") {
 
   sources = [
     "node_id_unittest.cc",
+    "path_unittest.cc",
     "position_unittest.cc",
     "tab_strip_service_traits_unittest.cc",
   ]

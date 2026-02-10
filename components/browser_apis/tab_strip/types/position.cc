@@ -8,8 +8,8 @@ namespace tabs_api {
 
 Position::Position() : index_(0) {}
 Position::Position(size_t index) : index_(index) {}
-Position::Position(size_t index, std::optional<tabs_api::NodeId> parent_id)
-    : index_(index), parent_id_(std::move(parent_id)) {}
+Position::Position(size_t index, tabs_api::Path path)
+    : index_(index), path_(std::move(path)) {}
 Position::~Position() = default;
 
 Position::Position(const Position& other) = default;
@@ -18,7 +18,7 @@ Position& Position::operator=(const Position& other) = default;
 Position& Position::operator=(Position&& other) noexcept = default;
 
 bool operator==(const Position& a, const Position& b) {
-  return a.index() == b.index() && a.parent_id() == b.parent_id();
+  return a.index() == b.index() && a.path() == b.path();
 }
 
 }  // namespace tabs_api

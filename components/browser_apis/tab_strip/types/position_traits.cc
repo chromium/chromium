@@ -4,10 +4,10 @@
 
 #include "components/browser_apis/tab_strip/types/position_traits.h"
 
-const std::optional<tabs_api::NodeId>&
-mojo::StructTraits<MojoPositionView, NativePosition>::parent_id(
+const tabs_api::Path&
+mojo::StructTraits<MojoPositionView, NativePosition>::path(
     const NativePosition& native) {
-  return native.parent_id();
+  return native.path();
 }
 
 uint32_t mojo::StructTraits<MojoPositionView, NativePosition>::index(
@@ -18,11 +18,11 @@ uint32_t mojo::StructTraits<MojoPositionView, NativePosition>::index(
 bool mojo::StructTraits<MojoPositionView, NativePosition>::Read(
     MojoPositionView view,
     NativePosition* out) {
-  std::optional<tabs_api::NodeId> parent_id;
-  if (!view.ReadParentId(&parent_id)) {
+  tabs_api::Path path;
+  if (!view.ReadPath(&path)) {
     return false;
   }
 
-  *out = tabs_api::Position(view.index(), std::move(parent_id));
+  *out = tabs_api::Position(view.index(), std::move(path));
   return true;
 }

@@ -87,7 +87,8 @@ void TabStripEventRecorder::OnChildMoved(
   const tabs::TabCollection::Position& from_position = node_data.position;
   const tabs::TabCollection::NodeHandle node_handle = node_data.handle;
 
-  Handle(ToEvent(to_position, from_position, node_handle));
+  Handle(ToEvent(to_position, from_position, node_handle,
+                 tab_strip_model_adapter_));
 }
 
 void TabStripEventRecorder::OnTabStripModelChanged(
