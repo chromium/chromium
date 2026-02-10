@@ -131,10 +131,10 @@ suite('TopToolbarTest', () => {
     assertEquals(1, headers.length);
 
     // Click the first tab item.
-    const tabButton = sourcesMenuElement.shadowRoot.querySelector<HTMLElement>(
-        'button.dropdown-item');
-    assertTrue(!!tabButton);
-    tabButton.click();
+    const tabItem = sourcesMenuElement.shadowRoot.querySelector<HTMLElement>(
+        'cr-url-list-item.dropdown-item');
+    assertTrue(!!tabItem);
+    tabItem.click();
 
     const [tabId, url] =
         await proxy.handler.whenCalled('onTabClickedFromSourcesMenu');
@@ -166,10 +166,10 @@ suite('TopToolbarTest', () => {
     assertEquals(1, headers.length);
 
     // Click the first file item.
-    const fileButton = sourcesMenuElement.shadowRoot.querySelector<HTMLElement>(
-        'button.dropdown-item');
-    assertTrue(!!fileButton);
-    fileButton.click();
+    const fileItem = sourcesMenuElement.shadowRoot.querySelector<HTMLElement>(
+        'cr-url-list-item.dropdown-item');
+    assertTrue(!!fileItem);
+    fileItem.click();
 
     const url = await proxy.handler.whenCalled('onFileClickedFromSourcesMenu');
     assertDeepEquals(url, file.url);
@@ -200,11 +200,10 @@ suite('TopToolbarTest', () => {
     assertEquals(1, headers.length);
 
     // Click the first image item.
-    const imageButton =
-        sourcesMenuElement.shadowRoot.querySelector<HTMLElement>(
-            'button.dropdown-item');
-    assertTrue(!!imageButton);
-    imageButton.click();
+    const imageItem = sourcesMenuElement.shadowRoot.querySelector<HTMLElement>(
+        'cr-url-list-item.dropdown-item');
+    assertTrue(!!imageItem);
+    imageItem.click();
 
     const url = await proxy.handler.whenCalled('onImageClickedFromSourcesMenu');
     assertDeepEquals(url, image.url);
