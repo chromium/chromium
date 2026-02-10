@@ -5,7 +5,7 @@ env:
 steps:
   - label: "🔨 Chromium (linux-x86_64)"
     key: "build-chromium-linux-x86_64"
-    timeout_in_minutes: 60
+    timeout_in_minutes: 360
     plugins:
       - thedyrt/skip-checkout#v0.1.1:
           cd: /home/ubuntu/chromium/src
@@ -14,11 +14,6 @@ steps:
           env:
             BUILDEVENT_APIKEY: honeycomb-api-key
             BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-buildevents
-          file:
-            - path: "/home/ubuntu/chromium/engflow.crt"
-              secret-id: engflow-certificate
-            - path: "/home/ubuntu/chromium/engflow.key"
-              secret-id: engflow-key
       - replayio/buildevents#76b6f57: ~
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
@@ -46,11 +41,6 @@ steps:
           env:
             BUILDEVENT_APIKEY: honeycomb-api-key
             BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-buildevents
-          file:
-            - path: "/Users/administrator/chromium/engflow.crt"
-              secret-id: engflow-certificate
-            - path: "/Users/administrator/chromium/engflow.key"
-              secret-id: engflow-key
       - replayio/buildevents#76b6f57: ~
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
@@ -78,11 +68,6 @@ steps:
           env:
             BUILDEVENT_APIKEY: honeycomb-api-key
             BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-buildevents
-          file:
-            - path: "/Users/administrator/chromium/engflow.crt"
-              secret-id: engflow-certificate
-            - path: "/Users/administrator/chromium/engflow.key"
-              secret-id: engflow-key
       - replayio/buildevents#76b6f57: ~
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
