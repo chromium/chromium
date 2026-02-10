@@ -97,6 +97,14 @@ std::unique_ptr<JSONObject> ClipPaintPropertyNode::ToJSON() const {
   if (state_.clip_path) {
     json->SetBoolean("hasClipPath", true);
   }
+  if (IsForCompositeClipPathAnimation()) {
+    json->SetBoolean("isForCompositeClipPathAnimation", true);
+    json->SetString(
+        "expandedLayoutClipRect",
+        String(state_.expanded_layout_clip_rect_.Rect().ToString()));
+    json->SetString("preciseLayoutClipRect",
+                    String(state_.precise_layout_clip_rect_.Rect().ToString()));
+  }
   if (state_.pixel_moving_filter) {
     json->SetString("pixelMovingFilter",
                     String::Format("%p", state_.pixel_moving_filter.Get()));
