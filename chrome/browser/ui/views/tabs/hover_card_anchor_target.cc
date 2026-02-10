@@ -19,7 +19,8 @@ HoverCardAnchorTarget::HoverCardAnchorTarget(views::View* anchor_view)
 }
 
 views::View* HoverCardAnchorTarget::GetAnchorView() {
-  return anchor_view_;
+  return const_cast<views::View*>(
+      static_cast<const HoverCardAnchorTarget*>(this)->GetAnchorView());
 }
 
 const views::View* HoverCardAnchorTarget::GetAnchorView() const {

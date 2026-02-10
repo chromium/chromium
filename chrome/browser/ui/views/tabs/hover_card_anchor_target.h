@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_HOVER_CARD_ANCHOR_TARGET_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/views/bubble/bubble_border.h"
 
 class HoverCardAnchorTarget;
 struct TabRendererData;
@@ -35,6 +36,8 @@ class HoverCardAnchorTarget {
   virtual views::View* GetAnchorView();
   virtual const views::View* GetAnchorView() const;
   static HoverCardAnchorTarget* FromAnchorView(views::View* anchor_view);
+
+  virtual views::BubbleBorder::Arrow GetAnchorPosition() const = 0;
 
  private:
   raw_ptr<views::View> anchor_view_;

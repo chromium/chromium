@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -187,6 +188,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
 
   const raw_ptr<TabStripModel> tab_strip_model_ = nullptr;
   const raw_ptr<tabs::VerticalTabStripStateController> state_controller_;
+  std::unique_ptr<TabHoverCardController> hover_card_controller_;
   base::CallbackListSubscription collapsed_state_changed_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
   std::optional<base::CallbackListSubscription> on_children_added_subscription_;

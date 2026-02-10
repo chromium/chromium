@@ -166,11 +166,13 @@ class TabHoverCardController::EventSniffer : public ui::EventObserver {
   void OnEvent(const ui::Event& event) override {
     bool close_hover_card = true;
     if (event.IsKeyEvent()) {
+      bool is_tab_focused =
+          controller_->tab_strip_->GetFocusedTabIndex().has_value();
       // Hover card needs to be dismissed (and regenerated) if the keypress
       // would select the tab (this also takes focus out of the tabstrip).
       close_hover_card = event.AsKeyEvent()->key_code() == ui::VKEY_RETURN ||
                          event.AsKeyEvent()->key_code() == ui::VKEY_ESCAPE ||
-                         !controller_->tab_strip_->IsFocusInTabs();
+                         !is_tab_focused;
     }
 
     if (close_hover_card) {
@@ -190,8 +192,11 @@ class TabHoverCardController::EventSniffer : public ui::EventObserver {
 // static
 bool TabHoverCardController::disable_animations_for_testing_ = false;
 
-TabHoverCardController::TabHoverCardController(TabStrip* tab_strip)
+TabHoverCardController::TabHoverCardController(
+    TabStripRegionView* tab_strip,
+    BrowserWindowInterface* browser_window_interface)
     : tab_strip_(tab_strip),
+      browser_window_interface_(browser_window_interface),
       tab_resource_usage_collector_(TabResourceUsageCollector::Get()) {
   if (PrefService* pref_service = g_browser_process->local_state()) {
     // Hovercard image previews are still not fully rolled out to all platforms
@@ -212,8 +217,6 @@ TabHoverCardController::TabHoverCardController(TabStrip* tab_strip)
 
     // Register for memory usage enabled pref change events. Exclude
     // tracking them for system web apps (e.g. ChromeOS terminal app).
-    BrowserWindowInterface* browser_window_interface =
-        tab_strip_->GetBrowserWindowInterface();
     if (!browser_window_interface) {
       CHECK_IS_TEST();
     } else if (!IsBrowserForSystemWebApp(browser_window_interface)) {
@@ -325,6 +328,11 @@ void TabHoverCardController::UpdateOrShowCard(
     OnViewIsDeleting(hover_card_);
   }
 
+  if (hover_card_ && anchor_target &&
+      hover_card_->arrow() != anchor_target->GetAnchorPosition()) {
+    hover_card_->SetArrow(anchor_target->GetAnchorPosition());
+  }
+
   // If a hover card is being updated because of a data change, the hover card
   // had better already be showing for the affected tab.
   if (update_type == TabSlotController::HoverCardUpdateType::kTabDataChanged) {
@@ -379,8 +387,10 @@ void TabHoverCardController::UpdateOrShowCard(
     // Use the largest tab in the tab strip when determining the delay so that
     // the delay is consistent for all tabs within the tab strip.
     int largest_tab = anchor_target->GetAnchorView()->width();
-    for (int i = 0; i < tab_strip_->GetTabCount(); i++) {
-      largest_tab = std::max(largest_tab, tab_strip_->tab_at(i)->width());
+    for (int i = 0; i < browser_window_interface_->GetTabStripModel()->count();
+         i++) {
+      largest_tab =
+          std::max(largest_tab, tab_strip_->GetTabAnchorViewAt(i)->width());
     }
     delayed_show_timer_.Start(
         FROM_HERE, GetShowDelay(largest_tab),
@@ -482,7 +492,8 @@ void TabHoverCardController::OnCardClosing() {
 void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
   if (hover_card_ == observed_view) {
     OnCardClosing();
-  } else if (target_tab_ && target_tab_->GetAnchorView() == observed_view) {
+  } else if (target_tab_ && HoverCardAnchorTarget::FromAnchorView(
+                                observed_view) == target_tab_) {
     UpdateHoverCard(nullptr,
                     TabSlotController::HoverCardUpdateType::kTabRemoved);
     // These postconditions should always be met after calling
@@ -496,7 +507,8 @@ void TabHoverCardController::OnViewVisibilityChanged(views::View* observed_view,
                                                      views::View* starting_view,
                                                      bool visible) {
   // Only care about target tab becoming invisible.
-  if (!target_tab_ || observed_view != target_tab_->GetAnchorView()) {
+  if (!target_tab_ ||
+      HoverCardAnchorTarget::FromAnchorView(observed_view) != target_tab_) {
     return;
   }
   // If visibility anywhere in the hierarchy changed to false, then the target
@@ -522,8 +534,7 @@ void TabHoverCardController::CreateHoverCard(
   TabHoverCardBubbleView::InitParams params;
   params.use_animation = UseAnimations();
   // In some browser types (e.g. ChromeOS terminal app) hide the domain label.
-  params.show_domain =
-      !IsBrowserForSystemWebApp(tab_strip_->GetBrowserWindowInterface());
+  params.show_domain = !IsBrowserForSystemWebApp(browser_window_interface_);
   params.show_memory_usage = hover_card_memory_usage_enabled_;
   params.show_image_preview = hover_card_image_previews_enabled_;
 

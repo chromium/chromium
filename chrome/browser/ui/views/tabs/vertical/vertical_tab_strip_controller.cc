@@ -41,8 +41,12 @@ VerticalTabStripController::VerticalTabStripController(
     TabStripModel* model,
     BrowserView* browser_view,
     VerticalTabDragHandler& drag_handler,
+    TabHoverCardController* hover_card_controller,
     std::unique_ptr<TabMenuModelFactory> menu_model_factory_override)
-    : model_(model), browser_view_(browser_view), drag_handler_(drag_handler) {
+    : model_(model),
+      browser_view_(browser_view),
+      drag_handler_(drag_handler),
+      hover_card_controller_(hover_card_controller) {
   if (menu_model_factory_override) {
     menu_model_factory_ = std::move(menu_model_factory_override);
   } else {

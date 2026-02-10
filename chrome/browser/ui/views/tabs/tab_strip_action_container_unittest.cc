@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/chrome_features.h"
@@ -33,6 +34,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/test/views_test_utils.h"
@@ -50,6 +52,8 @@ static_assert(BUILDFLAG(ENABLE_GLIC));
 #else
 #define MAYBE(test_name) test_name
 #endif
+
+using ::testing::NiceMock;
 
 namespace {
 using testing::SizeIs;
@@ -148,7 +152,9 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
     auto controller = std::make_unique<FakeGlicTabStripController>(
         use_otr_profile, profile_.get());
 
-    tab_strip_ = std::make_unique<TabStrip>(std::move(controller));
+    tab_strip_ = std::make_unique<TabStrip>(
+        std::move(controller),
+        std::unique_ptr<NiceMock<TabHoverCardController>>());
 
     tab_strip_model_ = std::make_unique<TabStripModel>(
         &tab_strip_model_delegate_,

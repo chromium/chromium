@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/chrome_features.h"
@@ -26,10 +27,13 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "fake_base_tab_strip_controller.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/gfx/animation/animation_test_api.h"
+
+using ::testing::NiceMock;
 
 class FakeBaseTabStripControllerWithBWI : public FakeBaseTabStripController {
  public:
@@ -72,7 +76,8 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
 
     tab_strip_ = std::make_unique<TabStrip>(
         std::make_unique<FakeBaseTabStripControllerWithBWI>(
-            browser_window_interface_.get()));
+            browser_window_interface_.get()),
+        std::unique_ptr<NiceMock<TabHoverCardController>>());
 
     tab_declutter_controller_ = std::make_unique<tabs::TabDeclutterController>(
         browser_window_interface_.get());
