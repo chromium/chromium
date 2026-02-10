@@ -13,6 +13,7 @@ from util import jj_log
 from util import run_command
 from util import run_jj
 from util import join_revsets
+from util import percent_encode_for_git_ref
 from util import split_description
 
 _IMMUTABLE_PARENTS = 'parents.filter(|p| p.immutable()).map(|p| p.commit_id())'
@@ -55,6 +56,8 @@ def get_refspec_opts(args) -> list[str]:
     refspec_opts.append('l=Commit-Queue+2')
   elif args.cq_dry_run:
     refspec_opts.append('l=Commit-Queue+1')
+  if args.title:
+    refspec_opts.append(f'm={percent_encode_for_git_ref(args.title)}')
   for cc in args.cc:
     refspec_opts.append(f'cc={cc}')
   for reviewer in args.reviewers:
@@ -295,6 +298,11 @@ if __name__ == '__main__':
       help='Sends your change to the CQ after an approval. Only '
       'works on repos that have the Auto-Submit label '
       'enabled')
+  parser.add_argument('-t',
+                      '--title',
+                      dest='title',
+                      default="",
+                      help='Adds a title for the patchset.')
   parser.add_argument('--enable-owners-override',
                       action='store_true',
                       help='Adds the Owners-Override label to your change.')

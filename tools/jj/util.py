@@ -145,3 +145,24 @@ def add_trailers(rev: dict[str, str], trailers: dict[str, list[str]],
         ignore_working_copy=True,
     )
   return new_desc
+
+
+def percent_encode_for_git_ref(original: str) -> str:
+  """Pulled from the PercentEncodeForGitRef function in gerrit_util.py.
+
+    Applies percent-encoding for strings sent to Gerrit via git ref metadata.
+
+    The encoding used is based on but stricter than URL encoding (Section 2.1 of
+    RFC 3986). The only non-escaped characters are alphanumerics, and 'SPACE'
+    (U+0020) can be represented as 'LOW LINE' (U+005F) or 'PLUS SIGN' (U+002B).
+
+    For more information, see the Gerrit docs here:
+
+    https://gerrit-review.googlesource.com/Documentation/user-upload.html#message
+    """
+  safe = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 '
+  encoded = ''.join(c if c in safe else '%%%02X' % ord(c) for c in original)
+
+  # Spaces are not allowed in git refs; gerrit will interpret either '_' or
+  # '+' (or '%20') as space. Use '_' since that has been supported the longest.
+  return encoded.replace(' ', '_')
