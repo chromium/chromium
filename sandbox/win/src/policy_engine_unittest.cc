@@ -75,31 +75,31 @@ TEST(PolicyEngineTest, Rules1) {
   PolicyProcessor pol_ev(policy);
 
   // Test should match the first rule set.
-  pr = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  pr = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, pr);
   EXPECT_EQ(ASK_BROKER, pol_ev.GetAction());
 
   // Test should still match the first rule set.
-  pr = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  pr = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, pr);
   EXPECT_EQ(ASK_BROKER, pol_ev.GetAction());
   EXPECT_EQ(0U, pol_ev.GetConstant());
 
   // Changing creation_mode such that evaluation should not match any rule.
   creation_mode = CREATE_NEW;
-  pr = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  pr = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, pr);
 
   // Changing creation_mode such that evaluation should match rule #2.
   creation_mode = OPEN_ALWAYS;
-  pr = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  pr = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, pr);
   EXPECT_EQ(RETURN_CONST, pol_ev.GetAction());
   EXPECT_EQ(kConstantValue, pol_ev.GetConstant());
 
   // Cope ok with nullptr string fields.
   filename = std::wstring_view();
-  pr = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  pr = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, pr);
 
   delete[] reinterpret_cast<char*>(policy);

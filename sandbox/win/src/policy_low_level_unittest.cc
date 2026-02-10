@@ -78,12 +78,12 @@ TEST(PolicyEngineTest, SimpleStrMatch) {
   PolicyResult result;
   PolicyProcessor pol_ev(policy->entry[static_cast<size_t>(kFakeService)]);
 
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(ASK_BROKER, pol_ev.GetAction());
 
   filename = L"Z:\\Directory\\domo.txt.tmp";
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 }
 
@@ -107,16 +107,16 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatch) {
   PolicyProcessor pol_ev(policy->entry[static_cast<size_t>(kFakeService)]);
 
   filename = L"c:\\Microsoft\\";
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 
   filename = L"c:\\MicroNerd\\";
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(ASK_BROKER, pol_ev.GetAction());
 
   filename = L"c:\\Microsoft\\domo.txt";
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(ASK_BROKER, pol_ev.GetAction());
 }
@@ -141,11 +141,11 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatchWild1) {
   PolicyProcessor pol_ev(policy->entry[static_cast<size_t>(kFakeService)]);
 
   filename = L"c:\\Microsoft\\domo.txt";
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 
   filename = L"c:\\MicroNerd\\domo.txt";
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(ASK_BROKER, pol_ev.GetAction());
 }
@@ -170,16 +170,16 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatchWild2) {
   PolicyProcessor pol_ev(policy->entry[static_cast<size_t>(kFakeService)]);
 
   filename = L"c:\\Microsoft\\domo.txt";
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 
   filename = L"c:\\MicroNerd\\domo.txt";
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(ASK_BROKER, pol_ev.GetAction());
 
   filename = L"c:\\Microsoft\\domo.bmp";
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(ASK_BROKER, pol_ev.GetAction());
 }
@@ -208,23 +208,23 @@ TEST(PolicyEngineTest, IfNotStrMatchTwoRulesWild1) {
 
   filename = L"c:\\Microsoft\\domo.txt";
   access = 24;
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 
   filename = L"c:\\Microsoft\\domo.txt";
   access = 42;
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 
   filename = L"c:\\MicroNerd\\domo.txt";
   access = 24;
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(ASK_BROKER, pol_ev.GetAction());
 
   filename = L"c:\\Micronesia\\domo.txt";
   access = 42;
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 }
 
@@ -260,40 +260,40 @@ TEST(PolicyEngineTest, OneRuleTest) {
   PolicyResult result;
   PolicyProcessor pol_ev(policy->entry[static_cast<size_t>(kNtFakeCreateFile)]);
 
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(ASK_BROKER, pol_ev.GetAction());
 
   creation_mode = CREATE_ALWAYS;
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 
   creation_mode = OPEN_EXISTING;
   filename = L"c:\\Other\\Path\\Microsoft\\Another file.txt";
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(ASK_BROKER, pol_ev.GetAction());
 
   filename = L"c:\\Other\\Path\\Microsoft\\Another file.txt.tmp";
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 
   flags = FILE_ATTRIBUTE_DEVICE;
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 
   filename = L"c:\\Other\\Macrosoft\\Another file.txt";
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 
   filename = L"c:\\Microsoft\\1.txt";
   flags = FILE_ATTRIBUTE_NORMAL;
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(ASK_BROKER, pol_ev.GetAction());
 
   filename = L"c:\\Microsoft\\1.ttt";
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 }
 
@@ -428,58 +428,58 @@ TEST(PolicyEngineTest, ThreeRulesTest) {
       policy->entry[static_cast<size_t>(kNtFakeOpenFile)]);
   PolicyProcessor eval_None(policy->entry[static_cast<size_t>(kNtFakeNone)]);
 
-  result = eval_CreateFile.Evaluate(kShortEval, params, _countof(params));
+  result = eval_CreateFile.Evaluate(params, _countof(params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
-  result = eval_OpenFile.Evaluate(kShortEval, params, _countof(params));
+  result = eval_OpenFile.Evaluate(params, _countof(params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
-  result = eval_None.Evaluate(kShortEval, params, _countof(params));
+  result = eval_None.Evaluate(params, _countof(params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 
   filename = L"\\\\??\\c:\\Windows\\System32\\calc.exe";
   flags = FILE_ATTRIBUTE_SYSTEM;
-  result = eval_CreateFile.Evaluate(kShortEval, params, _countof(params));
+  result = eval_CreateFile.Evaluate(params, _countof(params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
-  result = eval_None.Evaluate(kShortEval, params, _countof(params));
+  result = eval_None.Evaluate(params, _countof(params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
-  result = eval_OpenFile.Evaluate(kShortEval, params, _countof(params));
+  result = eval_OpenFile.Evaluate(params, _countof(params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 
   flags += FILE_ATTRIBUTE_READONLY;
-  result = eval_CreateFile.Evaluate(kShortEval, params, _countof(params));
+  result = eval_CreateFile.Evaluate(params, _countof(params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
-  result = eval_None.Evaluate(kShortEval, params, _countof(params));
+  result = eval_None.Evaluate(params, _countof(params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(FAKE_SUCCESS, eval_None.GetAction());
-  result = eval_OpenFile.Evaluate(kShortEval, params, _countof(params));
+  result = eval_OpenFile.Evaluate(params, _countof(params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 
   flags = FILE_ATTRIBUTE_NORMAL;
-  result = eval_CreateFile.Evaluate(kShortEval, params, _countof(params));
+  result = eval_CreateFile.Evaluate(params, _countof(params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(SIGNAL_ALARM, eval_CreateFile.GetAction());
-  result = eval_None.Evaluate(kShortEval, params, _countof(params));
+  result = eval_None.Evaluate(params, _countof(params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
-  result = eval_OpenFile.Evaluate(kShortEval, params, _countof(params));
+  result = eval_OpenFile.Evaluate(params, _countof(params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 
   filename = L"\\\\??\\c:\\some path\\other path\\crash reports\\some path";
   creation_mode = CREATE_ALWAYS;
-  result = eval_CreateFile.Evaluate(kShortEval, params, _countof(params));
+  result = eval_CreateFile.Evaluate(params, _countof(params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(ASK_BROKER, eval_CreateFile.GetAction());
-  result = eval_None.Evaluate(kShortEval, params, _countof(params));
+  result = eval_None.Evaluate(params, _countof(params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
-  result = eval_OpenFile.Evaluate(kShortEval, params, _countof(params));
+  result = eval_OpenFile.Evaluate(params, _countof(params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 
   filename = L"\\\\??\\Pipe\\Chrome.12345";
   creation_mode = OPEN_EXISTING;
-  result = eval_CreateFile.Evaluate(kShortEval, params, _countof(params));
+  result = eval_CreateFile.Evaluate(params, _countof(params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(FAKE_SUCCESS, eval_CreateFile.GetAction());
-  result = eval_None.Evaluate(kShortEval, params, _countof(params));
+  result = eval_None.Evaluate(params, _countof(params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
-  result = eval_OpenFile.Evaluate(kShortEval, params, _countof(params));
+  result = eval_OpenFile.Evaluate(params, _countof(params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(FAKE_SUCCESS, eval_OpenFile.GetAction());
 }
@@ -523,11 +523,11 @@ TEST(PolicyEngineTest, PolicyGenDoneCalledTwice) {
   PolicyResult result;
   PolicyProcessor pol_ev_orig(policy->entry[1]);
   name = L"domo.txt";
-  result = pol_ev_orig.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev_orig.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 
   name = L"hello.bmp";
-  result = pol_ev_orig.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev_orig.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(ASK_BROKER, pol_ev_orig.GetAction());
 }
@@ -553,13 +553,13 @@ TEST(PolicyEngineTest, ReturnConst) {
   PolicyResult result;
   PolicyProcessor pol_ev(policy->entry[static_cast<size_t>(kFakeService)]);
 
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(RETURN_CONST, pol_ev.GetAction());
   EXPECT_EQ(kConstantValue, pol_ev.GetConstant());
 
   filename = L"XYZ";
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  result = pol_ev.Evaluate(eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 }
 

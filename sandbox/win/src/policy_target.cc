@@ -71,8 +71,7 @@ std::optional<std::tuple<EvalResult, uintptr_t>> EvaluatePolicy(
   }
 
   PolicyProcessor processor(policy);
-  PolicyResult result =
-      processor.Evaluate(kShortEval, params->parameters, params->count);
+  PolicyResult result = processor.Evaluate(params->parameters, params->count);
   DCHECK_NT(POLICY_ERROR != result);
   if (result != POLICY_MATCH) {
     return std::nullopt;

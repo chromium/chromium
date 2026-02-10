@@ -8,24 +8,9 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 
 namespace sandbox {
-
-void PolicyProcessor::SetInternalState(size_t index,
-                                       EvalResult result,
-                                       uintptr_t constant) {
-  state_.current_index_ = index;
-  state_.current_result_ = result;
-  state_.current_constant_ = constant;
-}
-
-EvalResult PolicyProcessor::GetAction() const {
-  return state_.current_result_;
-}
-
-uintptr_t PolicyProcessor::GetConstant() const {
-  return state_.current_constant_;
-}
 
 // Decides if an opcode can be skipped (not evaluated) or not. The function
 // takes as inputs the opcode and the current evaluation context and returns
@@ -45,21 +30,16 @@ bool SkipOpcode(const PolicyOpcode& opcode,
   return true;
 }
 
-PolicyResult PolicyProcessor::Evaluate(uint32_t options,
-                                       ParameterSet* parameters,
+PolicyResult PolicyProcessor::Evaluate(ParameterSet* parameters,
                                        size_t param_count) {
-  if (!policy_)
+  if (!policy_ || !policy_->opcode_count) {
     return NO_POLICY_MATCH;
-  if (0 == policy_->opcode_count)
-    return NO_POLICY_MATCH;
-  if (!(kShortEval & options))
-    return POLICY_ERROR;
-
+  }
   MatchContext context;
   bool evaluation = false;
   bool skip_group = false;
-  SetInternalState(0, EVAL_FALSE, 0U);
-  size_t count = policy_->opcode_count;
+  current_result_ = EVAL_FALSE;
+  current_constant_ = 0;
 
   // Loop over all the opcodes Evaluating in sequence. Since we only support
   // short circuit evaluation, we stop as soon as we find an 'action' opcode
@@ -70,47 +50,43 @@ PolicyResult PolicyProcessor::Evaluate(uint32_t options,
   // EVAL_TRUE. Skipping will stop at the next action opcode or at the opcode
   // after the action depending on kPolUseOREval.
 
-  for (size_t ix = 0; ix != count; ++ix) {
-    const PolicyOpcode& opcode = UNSAFE_TODO(policy_->opcodes[ix]);
+  // Safety: Policy generation should guarantee there's sufficient space in the
+  // `opcodes` buffer.
+  for (const PolicyOpcode& opcode :
+       UNSAFE_BUFFERS(base::span(policy_->opcodes, policy_->opcode_count))) {
     // Skipping block.
-    if (skip_group) {
-      if (SkipOpcode(opcode, &context, &skip_group))
-        continue;
+    if (skip_group && SkipOpcode(opcode, &context, &skip_group)) {
+      continue;
     }
     // Evaluation block.
     EvalResult result = opcode.Evaluate(parameters, param_count, &context);
-    uintptr_t constant = 0;
     switch (result) {
       case EVAL_FALSE:
         evaluation = false;
-        if (kPolUseOREval != context.options)
+        if (kPolUseOREval != context.options) {
           skip_group = true;
+        }
         break;
       case EVAL_ERROR:
-        if (kStopOnErrors & options)
-          return POLICY_ERROR;
         break;
       case EVAL_TRUE:
         evaluation = true;
-        if (kPolUseOREval == context.options)
+        if (kPolUseOREval == context.options) {
           skip_group = true;
+        }
         break;
       default:
         // We have evaluated an action.
+        current_result_ = result;
         if (result == RETURN_CONST) {
-          opcode.GetArgument(1, &constant);
+          opcode.GetArgument(1, &current_constant_);
         }
-        SetInternalState(ix, result, constant);
         return POLICY_MATCH;
     }
   }
-
-  if (evaluation) {
-    // Reaching the end of the policy with a positive evaluation is probably
-    // an error: we did not find a final action opcode?
-    return POLICY_ERROR;
-  }
-  return NO_POLICY_MATCH;
+  // Reaching the end of the policy with a positive evaluation is probably
+  // an error: we did not find a final action opcode?
+  return evaluation ? POLICY_ERROR : NO_POLICY_MATCH;
 }
 
 }  // namespace sandbox

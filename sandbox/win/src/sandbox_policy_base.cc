@@ -730,25 +730,20 @@ ResultCode PolicyBase::InitProcess(HANDLE process_handle,
 EvalResult PolicyBase::EvalPolicy(IpcTag service,
                                   CountedParameterSetBase* params) {
   PolicyGlobal* policy = config()->policy();
-  if (policy) {
-    if (!policy->entry[static_cast<size_t>(service)]) {
-      // There is no policy for this particular service. This is not a big
-      // deal.
-      return DENY_ACCESS;
-    }
-    for (size_t i = 0; i < params->count; i++) {
-      if (!params->parameters[i].IsValid()) {
-        NOTREACHED();
-      }
-    }
-    PolicyProcessor pol_evaluator(policy->GetService(service));
-    PolicyResult result =
-        pol_evaluator.Evaluate(kShortEval, params->parameters, params->count);
-    if (POLICY_MATCH == result)
-      return pol_evaluator.GetAction();
-
-    DCHECK(POLICY_ERROR != result);
+  if (!policy || !policy->NeedsIpc(service)) {
+    // There is no policy for this particular service.
+    return DENY_ACCESS;
   }
+  for (size_t i = 0; i < params->count; i++) {
+    CHECK(params->parameters[i].IsValid());
+  }
+  PolicyProcessor pol_evaluator(policy->GetService(service));
+  PolicyResult result =
+      pol_evaluator.Evaluate(params->parameters, params->count);
+  if (POLICY_MATCH == result) {
+    return pol_evaluator.GetAction();
+  }
+  DCHECK(POLICY_ERROR != result);
 
   return DENY_ACCESS;
 }
