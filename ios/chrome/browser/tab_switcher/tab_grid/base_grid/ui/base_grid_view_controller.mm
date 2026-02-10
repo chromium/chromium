@@ -930,19 +930,13 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
       [collectionView indexPathForItemAtPoint:locationInCollectionView];
   NSIndexPath* draggedItemIndexPath = [self.diffableDataSource
       indexPathForItemIdentifier:_draggedItemIdentifier];
-  BOOL isSharedGroup = NO;
-  if ([dragItem.localObject isKindOfClass:[TabGroupInfo class]]) {
-    TabGroupInfo* tabGroupInfo =
-        static_cast<TabGroupInfo*>(dragItem.localObject);
-    isSharedGroup = [self.dragDropHandler isGroupShared:tabGroupInfo];
-  }
+  BOOL isGroup = [dragItem.localObject isKindOfClass:[TabGroupInfo class]];
   // This is how the explicit forbidden icon or (+) copy icon is shown. Move
   // has no explicit icon.
   UIDropOperation dropOperation = [self.dragDropHandler
       dropOperationForDropSession:session
                           toIndex:destinationIndexPath.item];
-  if (IsTabGridDragAndDropEnabled() && !isSharedGroup &&
-      destinationItemIndexPath &&
+  if (IsTabGridDragAndDropEnabled() && !isGroup && destinationItemIndexPath &&
       draggedItemIndexPath != destinationItemIndexPath &&
       dropOperation != UIDropOperationForbidden) {
     // If the drag goes into a different cell's frame, either highlight or allow
@@ -973,14 +967,14 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
                              UICollectionViewDropIntentInsertIntoDestinationIndexPath];
     }
   }
-    if (IsTabGridDragAndDropEnabled()) {
-      [self clearCurrentlyHighlightedCell];
-    }
+  if (IsTabGridDragAndDropEnabled()) {
+    [self clearCurrentlyHighlightedCell];
+  }
 
-    return [[UICollectionViewDropProposal alloc]
-        initWithDropOperation:dropOperation
-                       intent:
-                           UICollectionViewDropIntentInsertAtDestinationIndexPath];
+  return [[UICollectionViewDropProposal alloc]
+      initWithDropOperation:dropOperation
+                     intent:
+                         UICollectionViewDropIntentInsertAtDestinationIndexPath];
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
@@ -1010,10 +1004,9 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
       _isNewGroupShiftingToDifferentFinalIndexPath = YES;
     }
     _isGroupBeingCreatedFromDragAndDrop = YES;
-    if ([dropItem.dragItem.localObject isKindOfClass:[TabGroupInfo class]]) {
-      [self.mutator mergeGroup:dropItem.dragItem.localObject
-           intoDestinationItem:destinationItem];
-    } else if ([destinationCell isKindOfClass:[GroupGridCell class]]) {
+    if ([destinationCell isKindOfClass:[GroupGridCell class]]) {
+      CHECK(
+          ![dropItem.dragItem.localObject isKindOfClass:[TabGroupInfo class]]);
       TabInfo* tabInfo = static_cast<TabInfo*>(dropItem.dragItem.localObject);
       [self.mutator addDroppedTab:tabInfo
                        sourceItem:sourceItem

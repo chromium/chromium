@@ -40,10 +40,6 @@ class TabGroup;
            sourceItem:(GridItemIdentifier*)sourceItem
               toGroup:(const TabGroup*)group;
 
-// Merge `droppedGroup` into `destinationItem`.
-- (void)mergeGroup:(TabGroupInfo*)droppedGroup
-    intoDestinationItem:(GridItemIdentifier*)destinationItem;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_GRID_GRID_VIEW_CONTROLLER_MUTATOR_H_
