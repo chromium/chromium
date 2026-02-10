@@ -6871,16 +6871,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ReadingList.Read.AgeOnFirstRead" units="hours"
-    expires_after="2026-02-11">
-  <owner>thegreenfrog@chromium.org</owner>
-  <owner>olivierrobin@google.com</owner>
-  <summary>
-    Time since the creation of the read reading list entry being read for the
-    first time.
-  </summary>
-</histogram>
-
 <histogram name="ReadingList.Read.Number" units="count"
     expires_after="2026-08-02">
   <owner>gambard@chromium.org</owner>
