@@ -64,6 +64,44 @@
       overflow: auto;
       padding: 10px;
     }
+    /* JSON colors */
+    .kv {
+      background: #f8f8f8;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 8px;
+      white-space: pre-wrap;
+      font-family: ui-monospace, monospace;
+      font-size: 12px;
+    }
+    .json .key {
+      color: #1c00cf;
+    }
+    .json .string {
+      color: #008000;
+    }
+    .json .number {
+      color: #b36b00;
+    }
+    .json .boolean {
+      color: #aa0d91;
+    }
+    .json .null {
+      color: #808080;
+      font-style: italic;
+    }
+    .json .punct {
+      color: #000;
+    }
+    .json .pair {
+      display: inline-block;
+      border-radius: 3px;
+      margin: 0 1px;
+      padding: 0 2px;
+    }
+    .json .pair:nth-child(odd) {
+      background: rgba(0, 0, 0, 0.02);
+    }
     /* Toast */
     .toast {
       position: fixed;
@@ -152,9 +190,19 @@
       .divider:hover {
         background: #3a3a3a;
       }
-      .json-pane {
+      .json-pane .kv {
         background: #252526;
         border: 1px solid #3a3a3a;
+      }
+      /* JSON colors */
+      .json .key { color: #4fc3f7; }
+      .json .string { color: #98c379; }
+      .json .number { color: #ff9d00; }
+      .json .boolean { color: #c586c0; }
+      .json .null { color: #999; font-style: italic; }
+      .json .punct { color: #ccc; }
+      .json .pair:nth-child(odd) {
+        background: rgba(255, 255, 255, 0.06);
       }
       .toast {
         background: #444;
@@ -175,6 +223,7 @@
       <aside id="treeViewPane" class="tree-view-pane" role="tree"></aside>
       <div id="divider" class="divider" role="separator" tabindex="0"></div>
       <section id="jsonPane" class="json-pane">
+        <pre id="json" class="kv json"></pre>
       </section>
     </main>
     <div id="toast" class="toast"></div>

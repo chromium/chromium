@@ -80,8 +80,8 @@ export class TabStripInternalsView implements ViewModelObserver {
    * the navigation panel present on the left side.
    */
   private renderTreeViewPane_() {
-    this.treeViewPaneEl_.replaceChildren(
-        this.renderTreeNode_(this.viewModel_.root));
+    const rootEl = this.renderTreeNode_(this.viewModel_.root);
+    this.treeViewPaneEl_.replaceChildren(rootEl);
   }
 
   /** Recursively render nodes for the tree view. */
@@ -135,9 +135,26 @@ export class TabStripInternalsView implements ViewModelObserver {
    * the content panel present on the right side.
    */
   private renderJsonViewPane_() {
-    // TODO(crbug.com/427204855): Implement logic to render a JSON-view
-    // to display the metadata of selected tab or collection.
-    this.jsonPaneEl_;
+    const preTagEl = this.jsonPaneEl_.querySelector<HTMLElement>('#json');
+    if (!preTagEl) {
+      return;
+    }
+
+    preTagEl.replaceChildren();
+
+    const selectedNodeId = this.viewModel_.selectedNode;
+    if (!selectedNodeId) {
+      preTagEl.textContent = 'Select a node to view its details.';
+      return;
+    }
+
+    const node = this.viewModel_.getNode(selectedNodeId);
+    if (!node) {
+      preTagEl.textContent = 'Selected node object could not be found.';
+      return;
+    }
+
+    preTagEl.append(this.buildHighlightedJson_(node.value ?? null));
   }
 
   /** Display a toast message. */
@@ -155,7 +172,7 @@ export class TabStripInternalsView implements ViewModelObserver {
         `${this.viewModel_.navPaneWidth}px 5px 1fr`;
   }
 
-  /** Returns a container span with all applicable icons. */
+  /** Return a container span with all applicable icons. */
   private renderNodeIcon_(node: ModelNode): HTMLElement|null {
     const value = node.value as any;
     const iconsEl: HTMLElement[] = [];
@@ -181,7 +198,7 @@ export class TabStripInternalsView implements ViewModelObserver {
     return group;
   }
 
-  /** Returns an icon element. */
+  /** Return an icon element. */
   private makeIcon(iconClass: string, iconTitle: string): HTMLElement {
     const element = document.createElement('span');
     element.className = `icon ${iconClass}`;
@@ -196,7 +213,7 @@ export class TabStripInternalsView implements ViewModelObserver {
     this.dividerEl_.onkeydown = this.handleDividerKeydown_.bind(this);
   }
 
-  /** Handles resizing of the sections via mouse events. */
+  /** Handle resizing of the sections via mouse events. */
   private handleDividerMouseDown_(e: MouseEvent) {
     let lastX = e.clientX;
     let rAF = 0;
@@ -227,7 +244,7 @@ export class TabStripInternalsView implements ViewModelObserver {
     window.addEventListener('mouseup', up);
   }
 
-  /** Handles resizing of the sections via keyboard. */
+  /** Handle resizing of the sections via keyboard. */
   private handleDividerKeydown_(e: KeyboardEvent) {
     const step = e.shiftKey ? 50 : 10;
     switch (e.key) {
@@ -274,5 +291,133 @@ export class TabStripInternalsView implements ViewModelObserver {
       return;
     }
     this.viewModel_.toggleExpanded(path);
+  }
+
+  // Utility methods to build highlighted JSON.
+  /** Build a syntax-highlighted DOM fragment for a JSON object. */
+  private buildHighlightedJson_(obj: unknown): DocumentFragment {
+    const fragment = document.createDocumentFragment();
+    this.renderJsonValue_(fragment, obj);
+    return fragment;
+  }
+
+  /**
+   * Recursively render a syntax-highlighted JSON value into given DOM fragment.
+   * - Primitives are rendered as single styled tokens.
+   * - Arrays and objects are rendered recursively with indentation.
+   */
+  private renderJsonValue_(
+      fragment: DocumentFragment, value: unknown, depth: number = 0): void {
+    if (value === null) {
+      this.appendToken_(fragment, 'null', 'null');
+      return;
+    }
+
+    switch (typeof value) {
+      case 'string':
+        this.appendToken_(fragment, 'string', `"${value}"`);
+        return;
+
+      case 'number':
+        this.appendToken_(fragment, 'number', String(value));
+        return;
+
+      case 'boolean':
+        this.appendToken_(fragment, 'boolean', String(value));
+        return;
+
+      case 'bigint':
+        this.appendToken_(fragment, 'number', value.toString());
+        return;
+
+      case 'object': {
+        if (Array.isArray(value)) {
+          this.renderJsonArray_(fragment, value, depth);
+        } else {
+          this.renderJsonObject_(
+              fragment, value as Record<string, unknown>, depth);
+        }
+        return;
+      }
+
+      default:
+        this.appendToken_(fragment, 'string', `"${String(value)}"`);
+        return;
+    }
+  }
+
+  private renderJsonArray_(
+      fragment: DocumentFragment, value: unknown[], depth: number): void {
+    // Compact arrays (all primitives, <= 3 elements) render inline.
+    const compact =
+        value.length <= 3 && value.every(v => typeof v !== 'object');
+    if (compact) {
+      this.appendToken_(fragment, 'punct', '[');
+      value.forEach((v, i) => {
+        if (i) {
+          this.appendToken_(fragment, 'punct', ', ');
+        }
+        this.renderJsonValue_(fragment, v, depth + 1);
+      });
+      this.appendToken_(fragment, 'punct', ']');
+      return;
+    }
+    // Multiline arrays.
+    this.appendToken_(fragment, 'punct', '[');
+    if (value.length) {
+      this.appendText_(fragment, '\n');
+      value.forEach((v, i) => {
+        this.appendText_(fragment, '  '.repeat(depth + 1));
+        this.renderJsonValue_(fragment, v, depth + 1);
+        if (i < value.length - 1) {
+          this.appendToken_(fragment, 'punct', ',');
+        }
+        this.appendText_(fragment, '\n');
+      });
+      this.appendText_(fragment, '  '.repeat(depth));
+    }
+    this.appendToken_(fragment, 'punct', ']');
+  }
+
+  private renderJsonObject_(
+      fragment: DocumentFragment, value: Record<string, unknown>,
+      depth: number): void {
+    const pad = '  '.repeat(depth);
+    this.appendToken_(fragment, 'punct', '{');
+    const entries = Object.entries(value);
+    if (entries.length) {
+      this.appendText_(fragment, '\n');
+    }
+    entries.forEach(([k, v], i) => {
+      this.appendText_(fragment, pad + '  ');
+      this.appendToken_(fragment, 'key', `"${k}"`);
+      this.appendToken_(fragment, 'punct', ': ');
+      this.renderJsonValue_(fragment, v, depth + 1);
+      if (i < entries.length - 1) {
+        this.appendToken_(fragment, 'punct', ',');
+      }
+      this.appendText_(fragment, '\n');
+    });
+    this.appendText_(fragment, pad);
+    this.appendToken_(fragment, 'punct', '}');
+  }
+
+  /** Create a styled span representing a JSON token. */
+  private makeSpan_(clsName: string, text: string): HTMLElement {
+    const span = document.createElement('span');
+    span.className = clsName;
+    span.textContent = text;
+    return span;
+  }
+
+  /** Append a syntax-highlighted token to the fragment. */
+  private appendToken_(
+      fragment: DocumentFragment, clsName: string, text: string): void {
+    fragment.append(this.makeSpan_(clsName, text));
+  }
+
+  /** Append plain text to the fragment. */
+  private appendText_(fragment: DocumentFragment, text: string): void {
+    fragment.append(document.createTextNode(text));
   }
 }

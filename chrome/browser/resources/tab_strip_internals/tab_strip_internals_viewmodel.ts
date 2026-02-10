@@ -70,15 +70,20 @@ export class TabStripInternalsViewModel {
     return this.selectedNodeId_;
   }
 
+  /** Get a node corresponding to given nodeId or return null. */
+  getNode(nodeId: string): ModelNode|null {
+    return this.nodeMap_.get(nodeId) ?? null;
+  }
+
   /** Return children for a given nodeId. */
   getChildren(nodeId: string): ModelNode[] {
-    const node = this.getNode_(nodeId);
+    const node = this.getNode(nodeId);
     return node ? node.children : [];
   }
 
   /** Return true if given node has any children. */
   hasChildren(nodeId: string): boolean {
-    const node = this.getNode_(nodeId);
+    const node = this.getNode(nodeId);
     return !!node && node.children.length > 0;
   }
 
@@ -171,11 +176,6 @@ export class TabStripInternalsViewModel {
     }
     this.saveState_();
     this.notifyObservers_(ViewModelChange.CONTENT);
-  }
-
-  /** Get a node corresponding to given nodeId or return null. */
-  private getNode_(nodeId: string): ModelNode|null {
-    return this.nodeMap_.get(nodeId) ?? null;
   }
 
   /** Load UI state from localStorage. */
