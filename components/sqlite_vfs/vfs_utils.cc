@@ -91,9 +91,6 @@ std::optional<PendingFileSet> MakePendingFileSet(
                     base::File::FLAG_WIN_EXCLUSIVE_WRITE;
   }
 
-  // Make sure handles to these files are safe to pass to untrusted processes.
-  create_flags = base::File::AddFlagsForPassingToUntrustedProcess(create_flags);
-
   auto db_file_path =
       directory.Append(base_name).AddExtension(kDbFileExtension);
   pending_file_set.db_file = base::File(db_file_path, create_flags);
