@@ -3417,7 +3417,7 @@ class TabListMediator implements TabListNotificationHandler {
         int textAppearanceResId =
                 isIncognito
                         ? R.style.TextAppearance_TextMedium_Primary_Baseline_Dark
-                        : R.style.TextAppearance_TextMedium_Primary_OnInverseSurface;
+                        : R.style.TextAppearance_TextMedium_OnInverseSurface;
         snackbar.setTextAppearance(textAppearanceResId);
 
         mSnackbarManager.showSnackbar(snackbar);

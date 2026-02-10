@@ -210,7 +210,7 @@ public class FuseboxMediator {
                         ? org.chromium.components.browser_ui.styles.R.style
                                 .TextAppearance_TextMedium_Primary_Baseline_Dark
                         : org.chromium.components.browser_ui.styles.R.style
-                                .TextAppearance_TextMedium_Primary_OnInverseSurface;
+                                .TextAppearance_TextMedium_OnInverseSurface;
         snackbar.setTextAppearance(textAppearanceResId);
         return snackbar;
     }
