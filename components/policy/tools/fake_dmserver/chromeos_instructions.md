@@ -89,8 +89,15 @@ policy blob. This command typically requires root permissions.
 /usr/local/libexec/chrome-binary-tests/fake_dmserver \
     --policy-blob-path=/var/tmp/dmserver_data/policy.json
 ```
+
 The server will output its address, for example:
-`{"host": "127.0.0.1", "port": 8080}`.
+`{"host": "127.0.0.1", "port": 6112}`.
+
+Optional arguments:
+- `--port=...` to set the server port. Defaults to 6112.
+- `--client-state-path=...` to tell fake_dmserver where to load/save its
+  internal state. Defaults to `state.json` in the same directory as your
+  `policy-blob-path`.
 
 ### Step 4: Configure Chrome
 Write a configuration file to tell Chrome to use your local server.
@@ -98,7 +105,7 @@ Write a configuration file to tell Chrome to use your local server.
 **Run this command on the DUT (you will need to be root):**
 ```bash
 # Replace the URL with the host and port from the previous step
-    echo "--device-management-url=http://127.0.0.1:8080/device_management" \
+    echo "--device-management-url=http://127.0.0.1:6112/device_management" \
   >> /etc/chrome_dev.conf```
 
 ### Step 5: Restart the UI

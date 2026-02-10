@@ -41,15 +41,19 @@ Manually start the `fake_dmserver` on the device, pointing it to your generated
 policy blob.
 
 ```bash
-# Build the server binary
+# Build the server binary.
 autoninja -C out/Default fake_dmserver
 
-# Start the server on your desired port.
+# Start the server.
 ./out/Default/fake_dmserver \
-    --policy-blob-path=$HOME/dmserver_data/policy.json \
-    --client_state_path=$HOME/dmserver_data/state.json \
-    --port=8080
+    --policy-blob-path=$HOME/dmserver_data/policy.json
 ```
+
+Optionally arguments:
+- `--port=...` to set the server port. Defaults to 6112.
+- `--client-state-path=...` to tell fake_dmserver where to load/save its
+  internal state. Defaults to `state.json` in the same directory as your
+  `policy-blob-path`.
 
 ### Step 5: Launch Chrome
 
@@ -60,7 +64,7 @@ Chromium builds, add `--enable-chrome-browser-cloud-management`:
 # Replace the URL with the host and port from the previous step
 ./out/Default/chrome \
   --enable-chrome-browser-cloud-management \
-  --device-management-url=http://127.0.0.1:8080/device_management"
+  --device-management-url=http://127.0.0.1:6112/device_management"
 ```
 
 ## 2. How to Set Valid Policies (`policies.json`)

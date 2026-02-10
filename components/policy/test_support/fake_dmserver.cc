@@ -64,6 +64,7 @@ constexpr char kDefaultPolicyBlobFilename[] = "policy.json";
 constexpr char kDefaultClientStateFilename[] = "state.json";
 constexpr int kDefaultMinLogLevel = logging::LOGGING_INFO;
 constexpr bool kDefaultLogToConsole = false;
+constexpr int kDefaultPort = 6112;
 
 constexpr char kPolicyBlobPathSwitch[] = "policy-blob-path";
 constexpr char kClientStatePathSwitch[] = "client-state-path";
@@ -311,9 +312,15 @@ void ParseFlags(const base::CommandLine& command_line,
   client_state_path = kDefaultClientStateFilename;
   log_to_console = kDefaultLogToConsole;
   min_log_level = kDefaultMinLogLevel;
+  port = kDefaultPort;
 
   if (command_line.HasSwitch(kPolicyBlobPathSwitch)) {
     policy_blob_path = command_line.GetSwitchValueASCII(kPolicyBlobPathSwitch);
+    // If not specified, set client_state_path to the same directory as the
+    // policy blob.
+    client_state_path =
+        base::FilePath(policy_blob_path).DirName()
+        .Append(kDefaultClientStateFilename).AsUTF8Unsafe();
   }
 
   if (command_line.HasSwitch(kLogPathSwitch)) {
