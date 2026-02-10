@@ -4,6 +4,7 @@
 
 #include "ash/system/tray/imaged_tray_icon.h"
 
+#include <string>
 #include <utility>
 
 #include "ash/constants/tray_background_view_catalog.h"

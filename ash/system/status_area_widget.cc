@@ -699,7 +699,6 @@ bool StatusAreaWidget::AddTrayIcon(const TrayIconConfiguration& configuration,
     image_model = ui::ImageModel::FromImageSkia(*configuration.image);
   }
 
-  // TODO(b:463430271): Add a new catalog name for custom icons.
   auto icon = std::make_unique<ImagedTrayIcon>(
       shelf_, std::move(image_model), std::move(tooltip_text),
       TrayBackgroundViewCatalogName::kChromeCustom);
@@ -709,7 +708,6 @@ bool StatusAreaWidget::AddTrayIcon(const TrayIconConfiguration& configuration,
 
   custom_tray_buttons_ids_.insert(icon_id);
 
-  // TODO(b:463430271): Support correct order for `custom_tray_buttons_`.
   auto* icon_ptr = AddTrayButton(std::move(icon));
   icon_ptr->Initialize();
 

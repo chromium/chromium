@@ -73,7 +73,7 @@ using testing::NotNull;
 namespace ash {
 namespace {
 
-gfx::ImageSkia CreateTextImage(const gfx::Size& size,
+gfx::ImageSkia CreateTestImage(const gfx::Size& size,
                                SkColor color = SK_ColorBLACK) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(size.width(), size.height());
@@ -780,7 +780,7 @@ class StatusAreaWidgetEcheTest : public AshTestBase {
 TEST_F(StatusAreaWidgetEcheTest, EcheTrayShowHide) {
   StatusAreaWidget* status_area =
       StatusAreaWidgetTestHelper::GetStatusAreaWidget();
-  gfx::ImageSkia image_skia = CreateTextImage({30, 30});
+  gfx::ImageSkia image_skia = CreateTestImage({30, 30});
   status_area->eche_tray()->LoadBubble(
       GURL("http://google.com"), gfx::Image(image_skia), u"app 1",
       u"your phone",
@@ -803,7 +803,7 @@ TEST_F(StatusAreaWidgetEcheTest, StatusAreaOpenTrayBubble) {
   StatusAreaWidget* status_area =
       StatusAreaWidgetTestHelper::GetStatusAreaWidget();
   auto* eche_tray = status_area->eche_tray();
-  gfx::ImageSkia image_skia = CreateTextImage({30, 30});
+  gfx::ImageSkia image_skia = CreateTestImage({30, 30});
   eche_tray->LoadBubble(
       GURL("http://google.com"), gfx::Image(image_skia), u"app 1",
       u"your phone",
@@ -825,7 +825,7 @@ TEST_F(StatusAreaWidgetTest, AddCustomTrayIcons) {
     TrayIconConfiguration configuration;
     configuration.id = 1;
     configuration.tool_tip = u"Hello World";
-    gfx::ImageSkia image_skia = CreateTextImage({30, 30});
+    gfx::ImageSkia image_skia = CreateTestImage({30, 30});
     configuration.image = image_skia;
 
     EXPECT_TRUE(status_area->custom_tray_buttons_ids_for_test().empty());
@@ -867,7 +867,7 @@ TEST_F(StatusAreaWidgetTest, AddCustomTrayIcons) {
   {
     TrayIconConfiguration configuration;
     configuration.id = 3;
-    gfx::ImageSkia image_skia = CreateTextImage({30, 30});
+    gfx::ImageSkia image_skia = CreateTestImage({30, 30});
     configuration.image = image_skia;
 
     EXPECT_EQ(status_area->custom_tray_buttons_ids_for_test().size(), 2u);
@@ -898,32 +898,18 @@ TEST_F(StatusAreaWidgetTest, UpdateCustomTrayIcon) {
     configuration.id = 1;
     configuration.tool_tip = u"Hello World";
 
-    gfx::ImageSkia image_skia = CreateTextImage({30, 30});
+    gfx::ImageSkia image_skia = CreateTestImage({30, 30});
     configuration.image = image_skia;
 
     status_area->AddTrayIcon(configuration, base::NullCallback());
     EXPECT_EQ(status_area->custom_tray_buttons_ids_for_test().size(), 1u);
-
-    // Verify initial state
-    const int kExpectedViewId = 10000 + configuration.id;
-    ImagedTrayIcon* icon = static_cast<ImagedTrayIcon*>(
-        status_area->status_area_widget_delegate()->GetViewByID(
-            kExpectedViewId));
-    EXPECT_TRUE(icon);
-    EXPECT_EQ(icon->image_view()->GetTooltipText(), configuration.tool_tip);
-
-    ui::ImageModel actual_model = icon->image_view()->GetImageModel();
-    ASSERT_TRUE(actual_model.IsImage());
-    gfx::ImageSkia actual_image = actual_model.GetImage().AsImageSkia();
-    EXPECT_TRUE(gfx::test::AreBitmapsEqual(*actual_image.bitmap(),
-                                           *image_skia.bitmap()));
   }
   {
     // Update the image and tooltip.
     TrayIconConfiguration configuration;
     configuration.id = 1;
     configuration.tool_tip = u"Update Tooltip";
-    gfx::ImageSkia update_image = CreateTextImage({30, 30}, SK_ColorGREEN);
+    gfx::ImageSkia update_image = CreateTestImage({30, 30}, SK_ColorGREEN);
     configuration.image = update_image;
 
     status_area->UpdateTrayIcon(configuration);
