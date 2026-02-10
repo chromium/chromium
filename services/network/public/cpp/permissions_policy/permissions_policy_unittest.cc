@@ -5,8 +5,8 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 
 #include <optional>
-#include <unordered_set>
 
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
@@ -3323,7 +3323,7 @@ class DeprecateUnloadTest : public PermissionsPolicyTest {
 TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Empty) {
   // Make sure the default is the empty string.
   ASSERT_EQ(network::features::kDeprecateUnloadAllowlist.Get(), "");
-  EXPECT_EQ(std::unordered_set<std::string>({}),
+  EXPECT_EQ(base::flat_set<std::string>({}),
             network::UnloadDeprecationAllowedHosts());
 }
 
@@ -3334,7 +3334,7 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Simple) {
                                 /*bucket=*/std::nullopt,
                                 /*origin_allowlist=*/"testing1,testing2");
 
-  EXPECT_EQ(std::unordered_set<std::string>({"testing1", "testing2"}),
+  EXPECT_EQ(base::flat_set<std::string>({"testing1", "testing2"}),
             network::UnloadDeprecationAllowedHosts());
 }
 
@@ -3346,7 +3346,7 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Messy) {
       /*bucket=*/std::nullopt,
       /*origin_allowlist=*/"testing1,, testing2,testing1");
 
-  EXPECT_EQ(std::unordered_set<std::string>({"testing1", "testing2"}),
+  EXPECT_EQ(base::flat_set<std::string>({"testing1", "testing2"}),
             network::UnloadDeprecationAllowedHosts());
 }
 
