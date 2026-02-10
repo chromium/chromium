@@ -50,6 +50,9 @@ const CGFloat kHorizontalSpacingBetweenCells = 0;
 // The vertical spacing below the header.
 const CGFloat kSpacingBelowHeader = 10;
 
+// The minimum padding at the bottom of the vertical list.
+const CGFloat kMinimumBottomPadding = 20;
+
 }  // namespace
 
 @interface HomeCustomizationCollectionConfigurator ()
@@ -184,10 +187,19 @@ const CGFloat kSpacingBelowHeader = 10;
 
   // Adds spacing between cells, as well as content insets so that the cells
   // have the correct width.
+  const CGFloat bottomSafeArea = _viewController.view.safeAreaInsets.bottom;
+  // Ensure total bottom spacing is at least kMinimumBottomPadding by
+  // supplementing the difference if safe area is insufficient.
+  const CGFloat bottomPadding =
+      (bottomSafeArea >= kMinimumBottomPadding)
+          ? 0
+          : (kMinimumBottomPadding - bottomSafeArea);
+
   section.interGroupSpacing = kVerticalSpacingBetweenCells;
   section.contentInsets = NSDirectionalEdgeInsetsMake(
       [self doesPageHaveHeader] ? kSpacingBelowHeader : 0,
-      kVerticalListHorizontalPadding, 0, kVerticalListHorizontalPadding);
+      kVerticalListHorizontalPadding, bottomPadding,
+      kVerticalListHorizontalPadding);
 
   if ([self doesPageHaveHeader]) {
     NSCollectionLayoutSize* headerSize = [NSCollectionLayoutSize
