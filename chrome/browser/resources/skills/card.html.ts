@@ -43,7 +43,7 @@ export function getHtml(this: SkillCardElement) {
       <cr-button id="saveButton" ?disabled="${this.saveDisabled}"
           @click="${this.onSaveButtonClick_}">
         <cr-icon icon="cr:add" slot="prefix-icon"></cr-icon>
-        $i18n{save}
+        $i18n{add}
       </cr-button>
     ` : html`
       <cr-button id="editButton" @click="${this.onEditButtonClick_}">

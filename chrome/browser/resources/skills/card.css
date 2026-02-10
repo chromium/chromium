@@ -67,10 +67,11 @@
   -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
   /* Using -webkit-box to support multi-line text truncation. */
+  color: var(--color-sys-on-surface-subtle);
   display: -webkit-box;
   font-size: 13px;
   font-weight: 400;
-  height: 110px;
+  height: 100px;
   line-height: 20px;
   overflow: hidden;
   text-overflow: ellipsis;
