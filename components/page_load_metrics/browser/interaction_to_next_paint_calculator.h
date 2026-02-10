@@ -29,6 +29,24 @@ constexpr inline uint64_t kMaxInteractions = 10;
 // is used to score the INP metrics per page load.
 class InteractionToNextPaintCalculator {
  public:
+  // Groups EventTimings for one common Interaction.
+  // Each RenderFrameHost has its own independent list of interaction IDs, so
+  // the [source_token, interaction_id] pair is needed to be used as a unique
+  // key here.
+  // Note: Interaction id is stored inside the EventTiming struct.
+  struct InteractionData {
+    // Store this token instead of using `RenderFrameHost*` directly.
+    content::GlobalRenderFrameHostToken source_token;
+    // We could store ALL EventTiming for this interaction, but we only use the
+    // single longest duration event for INP.
+    mojom::EventTiming max_event;
+    // The one-based offset of this interaction in the order it was discovered
+    // by this calculator. This is consistent with num_user_interactions().
+    // Note: while usually unique, this is not guaranteed to be strictly
+    // sequential if interactions are reported out of order.
+    uint64_t interaction_offset;
+  };
+
   InteractionToNextPaintCalculator();
   InteractionToNextPaintCalculator(const InteractionToNextPaintCalculator&) =
       delete;
@@ -43,13 +61,9 @@ class InteractionToNextPaintCalculator {
 
   void ClearEventTimings();
 
-  // Merges the other_interactions InteractionToNextPaintCalculator object
-  // into this one while clearing the other object.
-  void MergeAndClear(InteractionToNextPaintCalculator* other_interactions);
-
   // Approximate a high percentile of user interaction latency.
-  std::optional<mojom::EventTiming> ApproximateHighPercentile() const;
-  std::optional<mojom::EventTiming> worst_latency() const;
+  std::optional<InteractionData> ApproximateHighPercentile() const;
+  std::optional<InteractionData> worst_latency() const;
 
   // The number of user interactions is computed as the sum of the ranges of
   // interaction IDs seen from each renderer frame. This assumes interaction
@@ -58,21 +72,8 @@ class InteractionToNextPaintCalculator {
   uint64_t num_user_interactions() const { return num_user_interactions_; }
 
  private:
-  // This simple struct helps group EventTimings for one common Interaction.
-  // Each RenderFrameHost has its own independent list of interaction id, so
-  // the [source_token,interaction_id] pair are needed to be used as a unique
-  // id here.
-  // Note: Interaction id is stored inside the EventTiming struct.
-  struct InteractionEvents {
-    // Store this token instead of using `RenderFrameHost*` directly.
-    content::GlobalRenderFrameHostToken source_token;
-    // We could store ALL EventTiming for this interaction, but we only use the
-    // single longest duration event for INP.
-    mojom::EventTiming max_event;
-  };
-
   struct InteractionIdRange {
-    uint64_t min = std::numeric_limits<uint64_t>::max();
+    uint64_t min = 0;
     uint64_t max = 0;
   };
 
@@ -82,11 +83,9 @@ class InteractionToNextPaintCalculator {
 
   void TrimEventTimings();
 
-  void UpdateNumUserInteractions();
-
   // A sorted list of the worst ten interactions, used to approximate a high
   // percentile.
-  std::vector<InteractionEvents> event_timings_;
+  std::vector<InteractionData> event_timings_;
   std::map<content::GlobalRenderFrameHostToken, InteractionIdRange>
       interaction_id_ranges_per_source_;
   uint64_t num_user_interactions_ = 0;

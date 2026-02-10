@@ -337,15 +337,17 @@ void BackForwardCachePageLoadMetricsObserver::
       GetLastUkmSourceIdForBackForwardCacheRestore());
   builder
       .SetWorstUserInteractionLatencyAfterBackForwardCacheRestore_MaxEventDuration2(
-          inp_calculator.worst_latency().value().duration.InMilliseconds());
+          inp_calculator.worst_latency()
+              .value()
+              .max_event.duration.InMilliseconds());
   UmaHistogramCustomTimes(
       internal::
           kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore,
-      inp_calculator.worst_latency().value().duration, base::Milliseconds(1),
-      base::Seconds(60), 50);
+      inp_calculator.worst_latency().value().max_event.duration,
+      base::Milliseconds(1), base::Seconds(60), 50);
 
   base::TimeDelta high_percentile2_max_event_duration =
-      inp_calculator.ApproximateHighPercentile().value().duration;
+      inp_calculator.ApproximateHighPercentile().value().max_event.duration;
   builder
       .SetUserInteractionLatencyAfterBackForwardCacheRestore_HighPercentile2_MaxEventDuration(
           high_percentile2_max_event_duration.InMilliseconds());

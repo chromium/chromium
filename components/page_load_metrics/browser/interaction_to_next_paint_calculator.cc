@@ -14,7 +14,7 @@ namespace page_load_metrics {
 InteractionToNextPaintCalculator::InteractionToNextPaintCalculator() = default;
 InteractionToNextPaintCalculator::~InteractionToNextPaintCalculator() = default;
 
-std::optional<mojom::EventTiming>
+std::optional<InteractionToNextPaintCalculator::InteractionData>
 InteractionToNextPaintCalculator::ApproximateHighPercentile() const {
   if (event_timings_.empty()) {
     return std::nullopt;
@@ -23,15 +23,15 @@ InteractionToNextPaintCalculator::ApproximateHighPercentile() const {
       std::min(static_cast<uint64_t>(event_timings_.size() - 1),
                static_cast<uint64_t>(num_user_interactions_ /
                                      kHighPercentileUpdateFrequency));
-  return event_timings_[index].max_event;
+  return event_timings_[index];
 }
 
-std::optional<mojom::EventTiming>
+std::optional<InteractionToNextPaintCalculator::InteractionData>
 InteractionToNextPaintCalculator::worst_latency() const {
   if (event_timings_.empty()) {
     return std::nullopt;
   }
-  return event_timings_[0].max_event;
+  return event_timings_[0];
 }
 
 void InteractionToNextPaintCalculator::AddNewEventTimings(
@@ -46,15 +46,31 @@ void InteractionToNextPaintCalculator::AddNewEventTimings(
 
   InteractionIdRange& range = interaction_id_ranges_per_source_[source_token];
   for (const auto& event_timing : event_timings) {
-    if (event_timing->interaction_id == 0) {
+    uint64_t id = event_timing->interaction_id;
+    if (id == 0) {
+      // Interactions should never have id == 0, but we should still not depend
+      // that Renderers will never send such values.
       continue;
     }
-    range.min = std::min(range.min, event_timing->interaction_id);
-    range.max = std::max(range.max, event_timing->interaction_id);
+
+    // Usually ids are reported in-order and increment by 1.
+    // But there are cases where ids could be skipped or be reported out of
+    // order, so try to be resilient to this.
+    if (range.max == 0) {  // First interaction for this renderer
+      num_user_interactions_++;
+      range.min = id;
+      range.max = id;
+    } else if (id > range.max) {  // Next interaction
+      num_user_interactions_ += (id - range.max);
+      range.max = id;
+    } else if (id < range.min) {  // Rare: older interaction reported late
+      num_user_interactions_ += (range.min - id);
+      range.min = id;
+    }
+
     AddNewEventTiming(source_token, *event_timing);
   }
 
-  UpdateNumUserInteractions();
   TrimEventTimings();
 }
 
@@ -73,31 +89,13 @@ void InteractionToNextPaintCalculator::AddNewEventTiming(
       return;
     }
   }
-  event_timings_.push_back({source_token, event});
+  event_timings_.push_back({source_token, event, num_user_interactions_});
 }
 
 void InteractionToNextPaintCalculator::ClearEventTimings() {
   num_user_interactions_ = 0;
   event_timings_.clear();
   interaction_id_ranges_per_source_.clear();
-}
-
-void InteractionToNextPaintCalculator::MergeAndClear(
-    InteractionToNextPaintCalculator* other_interactions) {
-  for (const auto& [source_token, other_range] :
-       other_interactions->interaction_id_ranges_per_source_) {
-    InteractionIdRange& range = interaction_id_ranges_per_source_[source_token];
-    range.min = std::min(range.min, other_range.min);
-    range.max = std::max(range.max, other_range.max);
-  }
-
-  for (auto& other_interaction : other_interactions->event_timings_) {
-    AddNewEventTiming(other_interaction.source_token,
-                      other_interaction.max_event);
-  }
-  UpdateNumUserInteractions();
-  TrimEventTimings();
-  other_interactions->ClearEventTimings();
 }
 
 void InteractionToNextPaintCalculator::TrimEventTimings() {
@@ -108,19 +106,6 @@ void InteractionToNextPaintCalculator::TrimEventTimings() {
   if (event_timings_.size() > kMaxInteractions) {
     event_timings_.erase(std::next(event_timings_.begin(), kMaxInteractions),
                          event_timings_.end());
-  }
-}
-
-void InteractionToNextPaintCalculator::UpdateNumUserInteractions() {
-  num_user_interactions_ = 0;
-  for (const auto& [source_token, range] : interaction_id_ranges_per_source_) {
-    if (range.min == std::numeric_limits<uint64_t>::max()) {
-      continue;
-    }
-    CHECK(range.min != 0);
-    CHECK(range.max != 0);
-    CHECK(range.max >= range.min);
-    num_user_interactions_ += (range.max - range.min + 1);
   }
 }
 

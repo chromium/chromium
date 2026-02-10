@@ -1092,25 +1092,31 @@ void UmaPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
   const page_load_metrics::InteractionToNextPaintCalculator&
       interaction_to_next_paint_calculator =
           GetDelegate().GetInteractionToNextPaintCalculator();
-  std::optional<page_load_metrics::mojom::EventTiming> inp =
-      interaction_to_next_paint_calculator.ApproximateHighPercentile();
-  if (!inp.has_value()) {
+  std::optional<
+      page_load_metrics::InteractionToNextPaintCalculator::InteractionData>
+      inp_data =
+          interaction_to_next_paint_calculator.ApproximateHighPercentile();
+  if (!inp_data.has_value()) {
     return;
   }
 
+  const page_load_metrics::mojom::EventTiming& inp = inp_data->max_event;
+
   UmaHistogramCustomTimes(
       internal::kHistogramWorstUserInteractionLatencyMaxEventDuration,
-      interaction_to_next_paint_calculator.worst_latency().value().duration,
+      interaction_to_next_paint_calculator.worst_latency()
+          .value()
+          .max_event.duration,
       base::Milliseconds(1), base::Seconds(60), 50);
   UmaHistogramCustomTimes(
       internal::kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration,
-      inp->duration, base::Milliseconds(1), base::Seconds(60), 50);
+      inp.duration, base::Milliseconds(1), base::Seconds(60), 50);
   base::TimeDelta interaction_time =
-      inp->start_time - GetDelegate().GetNavigationStart();
+      inp.start_time - GetDelegate().GetNavigationStart();
   UmaHistogramCustomTimes(internal::kHistogramInpTime, interaction_time,
                           base::Milliseconds(1), base::Seconds(3600), 100);
   base::UmaHistogramCounts1000(internal::kHistogramInpOffset,
-                               inp->interaction_id);
+                               inp_data->interaction_offset);
   base::UmaHistogramCounts1000(
       internal::kHistogramNumInteractions,
       interaction_to_next_paint_calculator.num_user_interactions());

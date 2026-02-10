@@ -365,7 +365,9 @@ class PageLoadMetricsObserverInterface {
       const std::vector<mojom::EventTimingPtr>& event_timings) = 0;
 
   // OnPageEventTimingUpdate is triggered when an updated InputTiming is
-  // available at the page level.
+  // available at the page level. |num_interactions| is the number of NEW
+  // unique interactions since the last update. This value can be 0 if the
+  // update only contains duration changes for previously seen interactions.
   virtual void OnPageEventTimingUpdate(uint64_t num_interactions) = 0;
 
   // OnPageRenderDataChanged is triggered when an updated PageRenderData is

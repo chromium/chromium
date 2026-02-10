@@ -595,19 +595,22 @@ void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
       .SetSubFrame_InteractiveTiming_WorstUserInteractionLatency_MaxEventDuration2(
           interaction_to_next_paint_calculator.worst_latency()
               .value()
-              .duration.InMilliseconds());
+              .max_event.duration.InMilliseconds());
+
   base::UmaHistogramCustomTimes(
       std::string(kHistogramPrefix)
           .append(
               kHistogramAMPSubframeWorstUserInteractionLatencyMaxEventDuration)
           .append(histogram_suffix),
-      interaction_to_next_paint_calculator.worst_latency().value().duration,
+      interaction_to_next_paint_calculator.worst_latency()
+          .value()
+          .max_event.duration,
       base::Milliseconds(1), base::Seconds(60), 50);
 
   base::TimeDelta high_percentile2_max_event_duration =
       interaction_to_next_paint_calculator.ApproximateHighPercentile()
           .value()
-          .duration;
+          .max_event.duration;
 
   builder
       .SetSubFrame_InteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
