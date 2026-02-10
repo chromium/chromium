@@ -242,9 +242,7 @@ void UserScriptLoader::AddScripts(UserScriptList scripts,
   for (std::unique_ptr<UserScript>& user_script : scripts) {
     const std::string& id = user_script->id();
     removed_script_ids_.erase(id);
-    if (added_scripts_map_.count(id) == 0) {
-      added_scripts_map_[id] = std::move(user_script);
-    }
+    added_scripts_map_.try_emplace(id, std::move(user_script));
   }
 
   AttemptLoad(std::move(callback));
