@@ -141,6 +141,10 @@ export class GlicInternalsAppElement extends CrLitElement {
         label: 'User did pass the FRE',
         value: !this.data_.enablement.notConsented,
       },
+      {
+        label: 'User accepted actuation consent',
+        value: !this.data_.enablement.actuationNotConsented,
+      },
     ];
   }
 }

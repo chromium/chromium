@@ -645,7 +645,9 @@ mojom::ProfileEnablementPtr BuildProfileEnablement(
   result->disallowed_by_remote_other = enablement.disallowed_by_remote_other;
   result->not_consented = enablement.not_consented;
   result->live_disallowed = enablement.live_disallowed;
-
+  result->actuation_not_consented =
+      profile->GetPrefs()->GetBoolean(prefs::kGlicUserEnabledActuationOnWeb) ==
+      false;
   using CannotActReason = GlicActorPolicyChecker::CannotActReason;
   if (actor_policy_checker.CanActOnWeb()) {
     result->actuation_eligibility = mojom::ActuationEligibility::kEligible;
