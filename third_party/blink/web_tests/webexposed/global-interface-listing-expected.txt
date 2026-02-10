@@ -3847,6 +3847,9 @@ interface HTMLCollection
     method constructor
     method item
     method namedItem
+interface HTMLCredentialElement : HTMLElement
+    attribute @@toStringTag
+    method constructor
 interface HTMLDListElement : HTMLElement
     attribute @@toStringTag
     getter compact
@@ -4192,9 +4195,6 @@ interface HTMLEmbedElement : HTMLElement
     setter src
     setter type
     setter width
-interface HTMLFederationElement : HTMLElement
-    attribute @@toStringTag
-    method constructor
 interface HTMLFencedFrameElement : HTMLElement
     static method canLoadOpaqueURL
     attribute @@toStringTag

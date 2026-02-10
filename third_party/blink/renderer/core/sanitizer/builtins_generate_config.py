@@ -151,8 +151,7 @@ def set_elements_cpp_mapping(all_known):
         # Normalize to match C++ style. Unfortunately, some C++ names are not
         # regularly formed so we use a small table of exceptions.
         cppname = CPP_NAME_EXCEPTIONS.get(cppname, cppname)
-        if cppname.startswith("fe") and cppname not in ("fencedframe",
-                                                        "federation"):
+        if cppname.startswith("fe") and cppname not in ("fencedframe", ):
             cppname = "FE" + cppname[2:]
         cppname = cppname[0].upper() + cppname[1:]
         ELEMENT_CPP_MAP[(elem["namespace"], elem["name"])] = (

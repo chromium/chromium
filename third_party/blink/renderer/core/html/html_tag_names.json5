@@ -125,6 +125,11 @@
       interfaceName: "HTMLUnknownElement",
     },
     {
+      name: "credential",
+      interfaceName: "HTMLCredentialElement",
+      runtimeEnabled: "LoginElement",
+    },
+    {
       name: "data",
       interfaceName: "HTMLDataElement",
     },
@@ -167,11 +172,6 @@
     {
       name: "embed",
       constructorNeedsCreateElementFlags: true,
-    },
-    {
-      name: "federation",
-      interfaceName: "HTMLFederationElement",
-      runtimeEnabled: "LoginElement",
     },
     {
       name: "fencedframe",

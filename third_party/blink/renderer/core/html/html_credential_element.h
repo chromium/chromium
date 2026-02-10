@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_FEDERATION_ELEMENT_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_FEDERATION_ELEMENT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_CREDENTIAL_ELEMENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_CREDENTIAL_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 namespace blink {
 
-class CORE_EXPORT HTMLFederationElement : public HTMLElement {
+class CORE_EXPORT HTMLCredentialElement : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit HTMLFederationElement(Document&);
+  explicit HTMLCredentialElement(Document&);
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_FEDERATION_ELEMENT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_CREDENTIAL_ELEMENT_H_

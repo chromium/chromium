@@ -574,6 +574,7 @@ html element colgroup
     property span
     property vAlign
     property width
+html element credential
 html element data
     property value
 html element datalist
@@ -610,7 +611,6 @@ html element embed
     property src
     property type
     property width
-html element federation
 html element fencedframe
     property allow
     property config
