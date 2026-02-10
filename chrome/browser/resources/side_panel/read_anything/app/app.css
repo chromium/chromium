@@ -40,6 +40,7 @@
   /* Clip path ensures the box shadow doesn't go beyond the content window. */
   clip-path: inset(var(--line-focus-clip-top) 0 var(--line-focus-clip-bottom) 0 round 12px);
   pointer-events: none;
+  z-index: 9997;
 }
 
 #empty-state-container {
