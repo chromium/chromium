@@ -1492,13 +1492,6 @@
             "op": ">=",
             "value": "22.0"
           }
-        },
-        {
-          "vendor_id": "0x10de",
-          "driver_version": {
-            "op": ">=",
-            "value": "535.183.01"
-          }
         }
       ],
       "features": [
