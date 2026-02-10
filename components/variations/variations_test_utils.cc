@@ -33,10 +33,8 @@ namespace {
 //       {
 //           "platforms": [
 //               "android",
-//               "android_weblayer",
 //               "android_webview",
 //               "chromeos",
-//               "chromeos_lacros",
 //               "fuchsia",
 //               "ios",
 //               "linux",
@@ -60,10 +58,8 @@ namespace {
 
 const Study::Platform array_kFieldTrialConfig_platforms_0[] = {
     Study::PLATFORM_ANDROID,
-    Study::PLATFORM_ANDROID_WEBLAYER,
     Study::PLATFORM_ANDROID_WEBVIEW,
     Study::PLATFORM_CHROMEOS,
-    Study::PLATFORM_CHROMEOS_LACROS,
     Study::PLATFORM_FUCHSIA,
     Study::PLATFORM_IOS,
     Study::PLATFORM_LINUX,

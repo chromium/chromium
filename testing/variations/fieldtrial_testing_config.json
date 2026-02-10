@@ -566,7 +566,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "fuchsia",
@@ -4269,8 +4268,7 @@
                 "android",
                 "chromeos",
                 "linux",
-                "android_webview",
-                "android_weblayer"
+                "android_webview"
             ],
             "experiments": [
                 {
@@ -4410,7 +4408,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "linux",
@@ -4720,27 +4717,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "BorealisZinkGlDriver"
-                    ]
-                }
-            ]
-        }
-    ],
-    "BoundaryEventDispatchTracksNodeRemoval": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BoundaryEventDispatchTracksNodeRemoval"
                     ]
                 }
             ]
@@ -6975,28 +6951,6 @@
             ]
         }
     ],
-    "CoalesceSelectionchangeEvent": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CoalesceSelectionchangeEvent"
-                    ]
-                }
-            ]
-        }
-    ],
     "Collections": [
         {
             "platforms": [
@@ -7337,7 +7291,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "fuchsia",
@@ -8666,28 +8619,6 @@
             ]
         }
     ],
-    "DecommitPooledPages": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DecommitPooledPages"
-                    ]
-                }
-            ]
-        }
-    ],
     "DedicatedMediaServiceThread": [
         {
             "platforms": [
@@ -9747,7 +9678,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "linux",
@@ -11481,7 +11411,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "linux",
                 "mac",
                 "windows"
@@ -12037,23 +11966,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "GCMUseDedicatedNetworkThread"
-                    ]
-                }
-            ]
-        }
-    ],
-    "GMSCoreEmoji": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GMSCoreEmoji"
                     ]
                 }
             ]
@@ -13926,7 +13838,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "fuchsia"
             ],
@@ -13994,7 +13905,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "fuchsia",
@@ -15601,7 +15511,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "fuchsia",
@@ -15905,7 +15814,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "fuchsia",
@@ -17141,7 +17049,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "fuchsia",
@@ -19303,7 +19210,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "fuchsia",
@@ -19473,7 +19379,6 @@
     "PartitionAllocParameterTuning": [
         {
             "platforms": [
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "fuchsia",
@@ -20809,7 +20714,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview"
             ],
             "experiments": [
@@ -21488,7 +21392,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "chromeos",
                 "linux",
                 "mac",
@@ -25905,7 +25808,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "fuchsia",
@@ -27301,33 +27203,10 @@
             ]
         }
     ],
-    "UIEnableSharedImageCacheForGpu": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UIEnableSharedImageCacheForGpu"
-                    ]
-                }
-            ]
-        }
-    ],
     "UMA-NonUniformity-Trial-1-Percent": [
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "ios",
                 "chromeos",
@@ -27649,7 +27528,6 @@
             "platforms": [
                 "android",
                 "android_webview",
-                "android_weblayer",
                 "fuchsia",
                 "ios",
                 "linux",
@@ -27941,7 +27819,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "fuchsia",
@@ -28054,7 +27931,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview"
             ],
             "experiments": [
@@ -28097,7 +27973,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "fuchsia",
@@ -28119,7 +27994,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "fuchsia",
@@ -28181,7 +28055,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "fuchsia",
@@ -28272,7 +28145,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview",
                 "chromeos",
                 "fuchsia",
@@ -28302,7 +28174,6 @@
                 "mac",
                 "windows",
                 "android",
-                "android_weblayer",
                 "android_webview"
             ],
             "experiments": [
@@ -28396,7 +28267,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "android_webview"
             ],
             "experiments": [
@@ -28475,7 +28345,6 @@
                 "linux",
                 "ios",
                 "android",
-                "android_weblayer",
                 "android_webview"
             ],
             "experiments": [
@@ -28885,8 +28754,7 @@
     "WebOtpBackendAuto": [
         {
             "platforms": [
-                "android",
-                "android_weblayer"
+                "android"
             ],
             "experiments": [
                 {
@@ -29024,7 +28892,6 @@
                 "linux",
                 "ios",
                 "android",
-                "android_weblayer",
                 "android_webview"
             ],
             "experiments": [
@@ -29251,7 +29118,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "chromeos",
                 "linux",
                 "mac",
@@ -29268,7 +29134,6 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "chromeos",
                 "linux",
                 "mac",
@@ -29323,7 +29188,6 @@
                 "fuchsia",
                 "linux",
                 "android",
-                "android_weblayer",
                 "android_webview"
             ],
             "experiments": [
@@ -29342,7 +29206,6 @@
                 "fuchsia",
                 "linux",
                 "android",
-                "android_weblayer",
                 "android_webview"
             ],
             "experiments": [
@@ -29440,8 +29303,7 @@
                 "fuchsia",
                 "linux",
                 "ios",
-                "android",
-                "android_weblayer"
+                "android"
             ],
             "experiments": [
                 {
@@ -29459,7 +29321,6 @@
                 "fuchsia",
                 "linux",
                 "android",
-                "android_weblayer",
                 "android_webview"
             ],
             "experiments": [

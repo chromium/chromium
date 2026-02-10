@@ -186,8 +186,8 @@ def _ValidateStudyConfig(study_config, create_message_fn):
   if not isinstance(study_config['platforms'], list):
     return create_message_fn('Expecting list for platforms')
   supported_platforms = [
-      'android', 'android_weblayer', 'android_webview', 'chromeos',
-      'chromeos_lacros', 'fuchsia', 'ios', 'linux', 'mac', 'windows'
+      'android', 'android_webview', 'chromeos', 'fuchsia', 'ios', 'linux',
+      'mac', 'windows'
   ]
   experiment_platforms = study_config['platforms']
   unsupported_platforms = list(

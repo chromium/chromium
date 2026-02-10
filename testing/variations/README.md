@@ -67,9 +67,9 @@ array of *study configurations*. The study name in the configuration file
 Each *study configuration* is a dictionary containing `platforms` and
 `experiments`.
 
-`platforms` is an array of strings, indicating the targetted platforms. The
-strings may be `android`, `android_weblayer`, `android_webview`, `chromeos`,
-`chromeos_lacros`, `ios`, `linux`, `mac`, or `windows`.
+`platforms` is an array of strings, indicating the targeted platforms. The
+strings may be `android`, `android_webview`, `chromeos`, `ios`, `linux`, `mac`,
+or `windows`.
 
 `experiments` is an array containing the *experiments*.
 
