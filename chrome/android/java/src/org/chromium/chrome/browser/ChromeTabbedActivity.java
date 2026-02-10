@@ -1797,16 +1797,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             openTabGroupFromHubSearchSuggestion(
                                     tabGroupId, tabGroupSyncService, filter);
                         } else {
-                            if (ChromeFeatureList.isEnabled(ChromeFeatureList.HEADLESS_TAB_MODEL)) {
-                                final @WindowId int windowId =
-                                        TabWindowManagerSingleton.getInstance()
-                                                .findWindowIdForTabGroup(
-                                                        syncGroup.localId.tabGroupId);
-                                if (windowId == INVALID_WINDOW_ID) return;
+                            final @WindowId int windowId =
+                                    TabWindowManagerSingleton.getInstance()
+                                            .findWindowIdForTabGroup(syncGroup.localId.tabGroupId);
+                            if (windowId == INVALID_WINDOW_ID) return;
 
-                                MultiWindowUtils.launchIntentInMaybeClosedWindow(
-                                        this, intent, windowId);
-                            }
+                            MultiWindowUtils.launchIntentInMaybeClosedWindow(
+                                    this, intent, windowId);
                         }
                     });
         }
@@ -3713,14 +3710,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         SigninSurveyController.initialize(
                 profile, mTabModelSelector, getLifecycleDispatcher(), activity, messageDispatcher);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HEADLESS_TAB_MODEL)) {
-            Profile originalProfile = getProfileProviderSupplier().get().getOriginalProfile();
-            TabWindowManagerSingleton.getInstance()
-                    .keepAllTabModelsLoaded(
-                            mMultiInstanceManager, originalProfile, getTabModelSelector());
-        } else {
-            mMultiInstanceManager.cleanupSyncedTabGroupsIfOnlyInstance(mTabModelSelector);
-        }
+        Profile originalProfile = getProfileProviderSupplier().get().getOriginalProfile();
+        TabWindowManagerSingleton.getInstance()
+                .keepAllTabModelsLoaded(
+                        mMultiInstanceManager, originalProfile, getTabModelSelector());
 
         VersioningMessageBanner.maybeShow(
                 activity, messageDispatcher, getModalDialogManager(), profile);

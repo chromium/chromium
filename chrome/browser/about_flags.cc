@@ -11366,12 +11366,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(lens::features::kLensSearchSidePanelNewFeedback)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"headless-tab-model", flag_descriptions::kHeadlessTabModelName,
-     flag_descriptions::kHeadlessTabModelDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kHeadlessTabModel)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"autofill-vcn-enroll-strike-expiry-time",
      flag_descriptions::kAutofillVcnEnrollStrikeExpiryTimeName,
      flag_descriptions::kAutofillVcnEnrollStrikeExpiryTimeDescription, kOsAll,

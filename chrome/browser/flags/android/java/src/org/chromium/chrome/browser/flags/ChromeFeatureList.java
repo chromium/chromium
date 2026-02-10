@@ -456,7 +456,6 @@ public abstract class ChromeFeatureList {
     public static final String GROUP_SUGGESTION_SERVICE = "GroupSuggestionService";
     public static final String HASH_PREFIX_REAL_TIME_LOOKUPS =
             "SafeBrowsingHashPrefixRealTimeLookups";
-    public static final String HEADLESS_TAB_MODEL = "HeadlessTabModel";
     public static final String HISTORY_JOURNEYS = "Journeys";
     public static final String HISTORY_PANE_ANDROID = "HistoryPaneAndroid";
     public static final String HOME_MODULE_PREF_REFACTOR = "HomeModulePrefRefactor";

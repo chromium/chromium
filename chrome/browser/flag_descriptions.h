@@ -2408,10 +2408,6 @@ inline constexpr char kHardwareMediaKeyHandlingDescription[] =
     "Enables using media keys to control the active media session. This "
     "requires MediaSessionService to be enabled too";
 
-inline constexpr char kHeadlessTabModelName[] = "Headless tab model";
-inline constexpr char kHeadlessTabModelDescription[] =
-    "Enables loading and mutating tab models on Android without an activity";
-
 inline constexpr char kHeavyAdPrivacyMitigationsName[] =
     "Heavy ad privacy mitigations";
 inline constexpr char kHeavyAdPrivacyMitigationsDescription[] =

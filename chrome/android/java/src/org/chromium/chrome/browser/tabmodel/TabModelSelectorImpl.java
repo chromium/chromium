@@ -21,7 +21,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
@@ -121,9 +120,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         TabModelJniBridge model = (TabModelJniBridge) getModel(false);
         if (model != null) {
             model.completeInitialization();
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.HEADLESS_TAB_MODEL)) {
-                model.broadcastSessionRestoreComplete();
-            }
         } else {
             assert false : "Normal tab model is null after tab state loaded.";
         }
