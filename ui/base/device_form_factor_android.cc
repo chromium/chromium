@@ -6,6 +6,8 @@
 
 #include "base/android/device_info.h"
 #include "base/android/jni_android.h"
+#include "base/check.h"
+#include "base/debug/dump_without_crashing.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/base/ui_base_jni_headers/DeviceFormFactor_jni.h"
@@ -34,7 +36,18 @@ DeviceFormFactor GetDeviceFormFactor() {
     return DEVICE_FORM_FACTOR_XR;
   }
 
-  if (Java_DeviceFormFactor_isTablet(base::android::AttachCurrentThread())) {
+  bool is_tablet;
+  if (base::android::IsJavaAvailable()) {
+    is_tablet =
+        Java_DeviceFormFactor_isTablet(base::android::AttachCurrentThread());
+  } else {
+    DCHECK(false) << "Checking if tablet in the renderer process is not"
+                     "supported. See b/478256667.";
+    base::debug::DumpWithoutCrashing();
+    is_tablet = base::android::device_info::is_tablet();
+  }
+
+  if (is_tablet) {
     return DEVICE_FORM_FACTOR_TABLET;
   }
 
