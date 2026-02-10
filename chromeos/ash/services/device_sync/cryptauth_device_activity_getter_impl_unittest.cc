@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/scoped_observation.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_client.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device.h"
@@ -95,12 +96,10 @@ class DeviceSyncCryptAuthDeviceActivityGetterImplTest
   DeviceSyncCryptAuthDeviceActivityGetterImplTest()
       : client_factory_(std::make_unique<MockCryptAuthClientFactory>(
             MockCryptAuthClientFactory::MockType::MAKE_NICE_MOCKS)) {
-    client_factory_->AddObserver(this);
+    mock_cryptauth_client_factory_observation_.Observe(client_factory_.get());
   }
 
-  ~DeviceSyncCryptAuthDeviceActivityGetterImplTest() override {
-    client_factory_->RemoveObserver(this);
-  }
+  ~DeviceSyncCryptAuthDeviceActivityGetterImplTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -209,6 +208,10 @@ class DeviceSyncCryptAuthDeviceActivityGetterImplTest
   raw_ptr<base::MockOneShotTimer, DanglingUntriaged> timer_;
 
   std::unique_ptr<CryptAuthDeviceActivityGetter> device_activity_getter_;
+
+  base::ScopedObservation<MockCryptAuthClientFactory,
+                          MockCryptAuthClientFactory::Observer>
+      mock_cryptauth_client_factory_observation_{this};
 };
 
 TEST_F(DeviceSyncCryptAuthDeviceActivityGetterImplTest, Success) {

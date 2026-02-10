@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/scoped_observation.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_client.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device.h"
@@ -95,12 +96,10 @@ class DeviceSyncCryptAuthGroupPrivateKeySharerImplTest
             MockCryptAuthClientFactory::MockType::MAKE_NICE_MOCKS)),
         fake_cryptauth_ecies_encryptor_factory_(
             std::make_unique<FakeCryptAuthEciesEncryptorFactory>()) {
-    client_factory_->AddObserver(this);
+    mock_cryptauth_client_factory_observation_.Observe(client_factory_.get());
   }
 
-  ~DeviceSyncCryptAuthGroupPrivateKeySharerImplTest() override {
-    client_factory_->RemoveObserver(this);
-  }
+  ~DeviceSyncCryptAuthGroupPrivateKeySharerImplTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -286,6 +285,10 @@ class DeviceSyncCryptAuthGroupPrivateKeySharerImplTest
   raw_ptr<base::MockOneShotTimer, DanglingUntriaged> timer_;
 
   std::unique_ptr<CryptAuthGroupPrivateKeySharer> sharer_;
+
+  base::ScopedObservation<MockCryptAuthClientFactory,
+                          MockCryptAuthClientFactory::Observer>
+      mock_cryptauth_client_factory_observation_{this};
 };
 
 TEST_F(DeviceSyncCryptAuthGroupPrivateKeySharerImplTest, Success) {

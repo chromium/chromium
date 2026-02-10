@@ -147,12 +147,10 @@ CryptAuthV2EnrollmentManagerImpl::CryptAuthV2EnrollmentManagerImpl(
       scheduler_(scheduler),
       pref_service_(pref_service),
       clock_(clock) {
-  gcm_manager_->AddObserver(this);
+  gcm_manager_observation_.Observe(gcm_manager);
 }
 
-CryptAuthV2EnrollmentManagerImpl::~CryptAuthV2EnrollmentManagerImpl() {
-  gcm_manager_->RemoveObserver(this);
-}
+CryptAuthV2EnrollmentManagerImpl::~CryptAuthV2EnrollmentManagerImpl() = default;
 
 void CryptAuthV2EnrollmentManagerImpl::Start() {
   scheduler_->StartEnrollmentScheduling(

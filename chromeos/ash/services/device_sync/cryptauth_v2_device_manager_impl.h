@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/device_sync/attestation_certificates_syncer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_registry.h"
@@ -136,6 +137,9 @@ class CryptAuthV2DeviceManagerImpl
   raw_ptr<CryptAuthGCMManager> gcm_manager_ = nullptr;
   raw_ptr<CryptAuthScheduler> scheduler_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;
+
+  base::ScopedObservation<CryptAuthGCMManager, CryptAuthGCMManager::Observer>
+      gcm_manager_observation_{this};
 
   // For sending a weak pointer to the scheduler, whose lifetime exceeds that of
   // CryptAuthV2DeviceManagerImpl.

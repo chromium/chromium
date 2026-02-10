@@ -78,10 +78,8 @@ SyncedBluetoothAddressTrackerImpl::SyncedBluetoothAddressTrackerImpl(
       weak_ptr_factory_.GetWeakPtr()));
 }
 
-SyncedBluetoothAddressTrackerImpl::~SyncedBluetoothAddressTrackerImpl() {
-  if (bluetooth_adapter_)
-    bluetooth_adapter_->RemoveObserver(this);
-}
+SyncedBluetoothAddressTrackerImpl::~SyncedBluetoothAddressTrackerImpl() =
+    default;
 
 void SyncedBluetoothAddressTrackerImpl::GetBluetoothAddress(
     BluetoothAddressCallback callback) {
@@ -124,7 +122,7 @@ void SyncedBluetoothAddressTrackerImpl::AdapterPresentChanged(
 void SyncedBluetoothAddressTrackerImpl::OnBluetoothAdapterReceived(
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
   bluetooth_adapter_ = std::move(bluetooth_adapter);
-  bluetooth_adapter_->AddObserver(this);
+  bluetooth_adapter_observation_.Observe(bluetooth_adapter_.get());
 
   for (auto& callback : pending_callbacks_during_init_)
     std::move(callback).Run(GetAddress());

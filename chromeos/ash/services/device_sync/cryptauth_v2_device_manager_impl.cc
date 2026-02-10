@@ -96,12 +96,10 @@ CryptAuthV2DeviceManagerImpl::CryptAuthV2DeviceManagerImpl(
       gcm_manager_(gcm_manager),
       scheduler_(scheduler),
       pref_service_(pref_service) {
-  gcm_manager_->AddObserver(this);
+  gcm_manager_observation_.Observe(gcm_manager);
 }
 
-CryptAuthV2DeviceManagerImpl::~CryptAuthV2DeviceManagerImpl() {
-  gcm_manager_->RemoveObserver(this);
-}
+CryptAuthV2DeviceManagerImpl::~CryptAuthV2DeviceManagerImpl() = default;
 
 void CryptAuthV2DeviceManagerImpl::Start() {
   PA_LOG(VERBOSE)

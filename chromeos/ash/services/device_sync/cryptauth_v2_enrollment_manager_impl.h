@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/default_clock.h"
 #include "chromeos/ash/services/device_sync/cryptauth_enrollment_manager.h"
 #include "chromeos/ash/services/device_sync/cryptauth_enrollment_result.h"
@@ -149,6 +150,9 @@ class CryptAuthV2EnrollmentManagerImpl
   std::optional<cryptauthv2::PolicyReference>
       client_directive_policy_reference_;
   std::unique_ptr<CryptAuthV2Enroller> enroller_;
+
+  base::ScopedObservation<CryptAuthGCMManager, CryptAuthGCMManager::Observer>
+      gcm_manager_observation_{this};
 
   // For weak pointers used in callbacks. These weak pointers are invalidated
   // when the current enrollment attempt finishes in order to cancel outstanding
