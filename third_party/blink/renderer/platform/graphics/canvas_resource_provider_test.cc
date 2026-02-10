@@ -170,7 +170,7 @@ TEST_F(CanvasResourceProviderTest, GetBackingClientSharedImage) {
 }
 
 TEST_F(CanvasResourceProviderTest,
-       GetBackingClientSharedImageForExternalWrite) {
+       GetBackingClientSharedImageForTransferToWebGPU) {
   const gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
       gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
@@ -178,40 +178,43 @@ TEST_F(CanvasResourceProviderTest,
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = CanvasNon2DResourceProviderSharedImage::Create(
+  auto provider = Canvas2DResourceProviderSharedImage::Create(
       gfx::Size(10, 10), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, shared_image_usage_flags);
 
+  // When the backing SI does not support WebGPU, a new backing SI should be
+  // created that does so.
   gpu::SyncToken sync_token;
-  auto client_si = provider->GetBackingClientSharedImageForExternalWrite(
-      gpu::SharedImageUsageSet(), sync_token);
+  bool was_copy_performed = false;
+  auto client_si = provider->GetBackingClientSharedImageForTransferToWebGPU(
+      sync_token, &was_copy_performed);
+  EXPECT_TRUE(was_copy_performed);
+  EXPECT_TRUE(client_si->usage().HasAll(shared_image_usage_flags));
+  EXPECT_TRUE(client_si->usage().HasAll(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                        gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE));
 
-  // When supplied required usages that the backing SI already supports, that
-  // backing SI should be returned.
+  // That new backing SI should then be returned on subsequent calls.
   auto client_si_with_no_new_usage_required =
-      provider->GetBackingClientSharedImageForExternalWrite(
-          gpu::SHARED_IMAGE_USAGE_SCANOUT, sync_token);
+      provider->GetBackingClientSharedImageForTransferToWebGPU(
+          sync_token, &was_copy_performed);
   EXPECT_EQ(client_si_with_no_new_usage_required, client_si);
+  EXPECT_FALSE(was_copy_performed);
 
-  // When supplied required usages that the backing SI does not support, a new
-  // backing SI should be created that supports the required usages.
-  auto client_si_with_webgpu_usage_required =
-      provider->GetBackingClientSharedImageForExternalWrite(
-          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE, sync_token);
-  EXPECT_NE(client_si_with_webgpu_usage_required, client_si);
-  EXPECT_TRUE(client_si_with_webgpu_usage_required->usage().HasAll(
-      shared_image_usage_flags));
-  EXPECT_TRUE(client_si_with_webgpu_usage_required->usage().Has(
-      gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE));
-
-  // That new backing SI should then be returned on subsequent calls with
-  // already-supported usages.
-  client_si_with_no_new_usage_required =
-      provider->GetBackingClientSharedImageForExternalWrite(
-          gpu::SHARED_IMAGE_USAGE_SCANOUT, sync_token);
-  EXPECT_EQ(client_si_with_no_new_usage_required,
-            client_si_with_webgpu_usage_required);
+  // When the CRP is created with WebGPU usages, no initial copy should be
+  // necessary.
+  auto shared_image_usages_with_webgpu = shared_image_usage_flags |
+                                         gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                         gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  provider = Canvas2DResourceProviderSharedImage::Create(
+      gfx::Size(10, 10), color_params,
+      CanvasResourceProvider::ShouldInitialize::kCallClear,
+      context_provider_wrapper_, RasterMode::kGPU,
+      shared_image_usages_with_webgpu);
+  client_si = provider->GetBackingClientSharedImageForTransferToWebGPU(
+      sync_token, &was_copy_performed);
+  EXPECT_FALSE(was_copy_performed);
+  EXPECT_TRUE(client_si->usage().HasAll(shared_image_usages_with_webgpu));
 }
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
