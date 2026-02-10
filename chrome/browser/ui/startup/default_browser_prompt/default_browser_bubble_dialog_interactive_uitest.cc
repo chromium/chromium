@@ -2,10 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/default_browser/default_browser_controller.h"
+#include "chrome/browser/default_browser/test_support/fake_default_browser_setter.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_bubble_dialog.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_bubble_dialog_manager.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -73,4 +81,66 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserBubbleDialogInteractiveTest,
       WaitForShow(default_browser::kBubbleDialogSetLaterButtonId),
       PressButton(default_browser::kBubbleDialogSetLaterButtonId),
       Check([this]() { return on_dismiss_.Wait(); }, "Dismiss callback run"));
+}
+
+class DefaultBrowserDialogManagerInteractiveTest
+    : public InteractiveBrowserTest {
+ protected:
+  void ShowDialogManager() {
+    manager_ = std::make_unique<DefaultBrowserBubbleDialogManager>();
+    manager_->Show(
+        std::make_unique<default_browser::DefaultBrowserController>(
+            std::make_unique<default_browser::FakeDefaultBrowserSetter>(),
+            default_browser::DefaultBrowserEntrypointType::kBubbleDialog),
+        /*can_pin_to_taskbar=*/false);
+  }
+
+  void TearDownOnMainThread() override {
+    manager_.reset();
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
+  MultiStep VerifyHistogram(std::string histogram_name, int bucket, int count) {
+    MultiStep steps;
+
+    steps += Do([this, histogram_name, bucket, count]() {
+      histogram_tester_.ExpectBucketCount(histogram_name, bucket, count);
+    });
+    return steps;
+  }
+
+  std::unique_ptr<DefaultBrowserBubbleDialogManager> manager_;
+  base::HistogramTester histogram_tester_;
+};
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserDialogManagerInteractiveTest,
+                       ShowAndDismiss) {
+  RunTestSequence(
+      Do([this]() { ShowDialogManager(); }),
+      WaitForShow(default_browser::kBubbleDialogSetLaterButtonId),
+      VerifyHistogram("DefaultBrowser.BubbleDialog.ShellIntegration.Shown", 1,
+                      1),
+      PressButton(default_browser::kBubbleDialogSetLaterButtonId),
+      WaitForHide(default_browser::kBubbleDialogSetLaterButtonId),
+      VerifyHistogram(
+          "DefaultBrowser.BubbleDialog.ShellIntegration.Interaction",
+          std::to_underlying(
+              default_browser::DefaultBrowserInteractionType::kDismissed),
+          1));
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserDialogManagerInteractiveTest,
+                       ShowAndAccept) {
+  RunTestSequence(
+      Do([this]() { ShowDialogManager(); }),
+      WaitForShow(default_browser::kBubbleDialogOpenSettingsButtonId),
+      VerifyHistogram("DefaultBrowser.BubbleDialog.ShellIntegration.Shown", 1,
+                      1),
+      PressButton(default_browser::kBubbleDialogOpenSettingsButtonId),
+      WaitForHide(default_browser::kBubbleDialogOpenSettingsButtonId),
+      VerifyHistogram(
+          "DefaultBrowser.BubbleDialog.ShellIntegration.Interaction",
+          std::to_underlying(
+              default_browser::DefaultBrowserInteractionType::kAccepted),
+          1));
 }

@@ -29,7 +29,9 @@ enum class DefaultBrowserEntrypointType {
   kSettingsPage = 1,
   // Default browser change detected os notification.
   kChangeDetectedNotification = 2,
-  kMaxValue = kChangeDetectedNotification,
+  // Bubble dialog anchored to app menu button.
+  kBubbleDialog = 3,
+  kMaxValue = kBubbleDialog,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/histograms.xml:DefaultBrowserEntrypointType)
 

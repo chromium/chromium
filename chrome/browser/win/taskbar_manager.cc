@@ -51,8 +51,12 @@ constexpr const char* kTaskbarPinResultHistogram = "Windows.TaskbarPinResult";
 // These must be kept in sync with the enum in taskbar_manager.h as well as the
 // variants list in /tools/metrics/histograms/metadata/windows/histograms.xml.
 constexpr std::array kChannels = {
-    "DefaultBrowserInfoBar", "PinToTaskbarInfoBar", "FirstRunExperience",
-    "SettingsPage",          "PinWebApp",
+    "DefaultBrowserInfoBar",
+    "PinToTaskbarInfoBar",
+    "FirstRunExperience",
+    "SettingsPage",
+    "PinWebApp",
+    "DefaultBrowserBubbleDialog",
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/windows/histograms.xml:PinAppToTaskbarChannel)
 

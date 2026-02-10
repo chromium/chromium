@@ -26,6 +26,8 @@ chromium-metrics-reviews@google.com.
 
 <variants name="PinAppToTaskbarChannel">
   <variant name="" summary=""/>
+  <variant name=".DefaultBrowserBubbleDialog"
+      summary=", from the default browser bubble dialog"/>
   <variant name=".DefaultBrowserInfoBar"
       summary=", from the default browser infobar"/>
   <variant name=".FirstRunExperience"

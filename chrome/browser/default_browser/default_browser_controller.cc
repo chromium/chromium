@@ -35,6 +35,8 @@ std::string UiEntrypointTypeToString(
       return "InfoBar";
     case DefaultBrowserEntrypointType::kChangeDetectedNotification:
       return "ChangeDetectedNotification";
+    case DefaultBrowserEntrypointType::kBubbleDialog:
+      return "BubbleDialog";
     default:
       NOTREACHED();
   }

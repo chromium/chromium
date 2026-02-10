@@ -21,6 +21,7 @@ source_set("default_browser_prompt") {
 
   sources = [
     "default_browser_bubble_dialog.h",
+    "default_browser_bubble_dialog_manager.h",
     "default_browser_infobar_manager.h",
   ]
 
@@ -43,6 +44,7 @@ source_set("default_browser_prompt") {
 source_set("impl") {
   sources = [
     "default_browser_bubble_dialog.cc",
+    "default_browser_bubble_dialog_manager.cc",
     "default_browser_infobar_delegate.cc",
     "default_browser_infobar_manager.cc",
     "default_browser_prompt.cc",
@@ -121,6 +123,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser:shell_integration",
     "//chrome/browser/default_browser",
+    "//chrome/browser/default_browser:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/startup",

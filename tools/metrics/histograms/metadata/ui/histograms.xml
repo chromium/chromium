@@ -56,6 +56,8 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(DefaultBrowserEntrypointType) -->
 
 <variants name="DefaultBrowserEntrypointType">
+  <variant name="BubbleDialog"
+      summary="the bubble dialog anchored to app menu button"/>
   <variant name="ChangeDetectedNotification"
       summary="the change detected Os notification"/>
   <variant name="InfoBar" summary="the startup infobar"/>
