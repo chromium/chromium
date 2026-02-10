@@ -34,6 +34,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.EditorComponen
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
@@ -357,6 +358,7 @@ class AddressEditorMediator {
                                                 NOTICE_TEXT,
                                                 mContext.getString(
                                                         R.string.payments_required_field_message))
+                                        .with(SHOW_BACKGROUND, false)
                                         // Required fields are indicated by an asterisk (*) and
                                         // announced separately by screen readers. Don't announce
                                         // the message itself.
@@ -427,6 +429,7 @@ class AddressEditorMediator {
                             NOTICE,
                             new PropertyModel.Builder(NOTICE_ALL_KEYS)
                                     .with(NOTICE_TEXT, recordTypeNoticeText)
+                                    .with(SHOW_BACKGROUND, false)
                                     .with(IMPORTANT_FOR_ACCESSIBILITY, true)
                                     .build(),
                             /* isFullLine= */ true));

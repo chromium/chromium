@@ -55,11 +55,14 @@ public class EditorComponentsProperties {
         public static final ReadableObjectPropertyKey<String> NOTICE_TEXT =
                 new ReadableObjectPropertyKey<>("notice_text");
 
+        public static final ReadableBooleanPropertyKey SHOW_BACKGROUND =
+                new ReadableBooleanPropertyKey("show_background");
+
         public static final ReadableBooleanPropertyKey IMPORTANT_FOR_ACCESSIBILITY =
                 new ReadableBooleanPropertyKey("important_for_accessibility");
 
         public static final PropertyKey[] NOTICE_ALL_KEYS = {
-            NOTICE_TEXT, IMPORTANT_FOR_ACCESSIBILITY
+            NOTICE_TEXT, SHOW_BACKGROUND, IMPORTANT_FOR_ACCESSIBILITY
         };
     }
 }

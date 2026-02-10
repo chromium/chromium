@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+  <corners
+    android:radius="@dimen/autofill_editor_notice_radius"/>
+  <solid android:color="?attr/colorSurfaceContainerLowest"/>
+  <padding
+        android:left="@dimen/autofill_editor_notice_background_horizontal_padding"
+        android:top="@dimen/autofill_editor_notice_background_vertical_padding"
+        android:right="@dimen/autofill_editor_notice_background_horizontal_padding"
+        android:bottom="@dimen/autofill_editor_notice_background_vertical_padding"/>
+</shape>

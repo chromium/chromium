@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.autofill.editors.address.EditorPropert
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALIDATOR;
@@ -318,6 +319,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                                         NOTICE_TEXT,
                                         mContext.getString(
                                                 R.string.payments_required_field_message))
+                                .with(SHOW_BACKGROUND, false)
                                 // Required fields are indicated by an asterisk (*) and announced
                                 // separately by screen readers. Don't announce the message itself.
                                 .with(IMPORTANT_FOR_ACCESSIBILITY, false)
