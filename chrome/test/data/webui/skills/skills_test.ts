@@ -49,11 +49,11 @@ suite('SkillsAppPage', function() {
 
     tabs[0]!.click();
     await microtasksFinished();
-    assertEquals('/user-skills', CrRouter.getInstance().getPath());
+    assertEquals('/yourSkills', CrRouter.getInstance().getPath());
 
     tabs[1]!.click();
     await microtasksFinished();
-    assertEquals('/browse-skills', CrRouter.getInstance().getPath());
+    assertEquals('/browse', CrRouter.getInstance().getPath());
   });
 
   test('UndefinedRouteNavigatesToUserSkills', async function() {
@@ -61,16 +61,16 @@ suite('SkillsAppPage', function() {
     await microtasksFinished();
     const selectedTab =
         app.$.menu.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
-    assertEquals('chrome://skills/user-skills', window.location.href);
+    assertEquals('chrome://skills/yourSkills', window.location.href);
     assertEquals(
         loadTimeData.getString('userSkillsTitle'),
         selectedTab!.querySelector('.name')!.textContent.trim());
   });
 
   test('DiscoverSkillsPageLoadsCorrectly', async function() {
-    navigateTo('/browse-skills');
+    navigateTo('/browse');
     await eventToPromise('iron-select', app.$.menu);
-    assertEquals('chrome://skills/browse-skills', window.location.href);
+    assertEquals('chrome://skills/browse', window.location.href);
     await microtasksFinished();
     const selectedTab =
         app.$.menu.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
@@ -80,9 +80,9 @@ suite('SkillsAppPage', function() {
   });
 
   test('UserSkillsPageLoadsCorrectly', async function() {
-    navigateTo('/user-skills');
+    navigateTo('/yourSkills');
     await microtasksFinished();
-    assertEquals('chrome://skills/user-skills', window.location.href);
+    assertEquals('chrome://skills/yourSkills', window.location.href);
     await microtasksFinished();
     const selectedTab =
         app.$.menu.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
@@ -92,13 +92,13 @@ suite('SkillsAppPage', function() {
   });
 
   test('BrowseSkillsButtonNavigatesToDiscoverSkills', async function() {
-    navigateTo('/user-skills');
+    navigateTo('/yourSkills');
     await microtasksFinished();
     const button = app.$.userSkillsPage.$['browseSkillsButton'];
     assertTrue(!!button);
     (button as HTMLElement).click();
     await microtasksFinished();
-    assertEquals('/browse-skills', CrRouter.getInstance().getPath());
+    assertEquals('/browse', CrRouter.getInstance().getPath());
     const selectedTab =
         app.$.menu.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
     assertEquals(
@@ -119,7 +119,7 @@ suite('SkillsAppPage', function() {
   });
 
   test('BackNavigationWorksAfterMultipleTabClicks', async function() {
-    navigateTo('/user-skills');
+    navigateTo('/yourSkills');
     await microtasksFinished();
 
     const tabs = app.$.menu.shadowRoot.querySelectorAll<HTMLElement>(
@@ -129,28 +129,28 @@ suite('SkillsAppPage', function() {
 
     discoverSkillsTab.click();
     await microtasksFinished();
-    assertEquals('/browse-skills', CrRouter.getInstance().getPath());
+    assertEquals('/browse', CrRouter.getInstance().getPath());
     userSkillsTab.click();
     await microtasksFinished();
-    assertEquals('/user-skills', CrRouter.getInstance().getPath());
+    assertEquals('/yourSkills', CrRouter.getInstance().getPath());
     discoverSkillsTab.click();
     await microtasksFinished();
-    assertEquals('/browse-skills', CrRouter.getInstance().getPath());
+    assertEquals('/browse', CrRouter.getInstance().getPath());
 
     const backPromise = eventToPromise('popstate', window);
     window.history.back();
     await backPromise;
     await microtasksFinished();
-    assertEquals('/user-skills', CrRouter.getInstance().getPath());
+    assertEquals('/yourSkills', CrRouter.getInstance().getPath());
     const backPromise2 = eventToPromise('popstate', window);
     window.history.back();
     await backPromise2;
     await microtasksFinished();
-    assertEquals('/browse-skills', CrRouter.getInstance().getPath());
+    assertEquals('/browse', CrRouter.getInstance().getPath());
   });
 
   test('Request1PSkillsOnDiscoverSkillsNavigation', async function() {
-    navigateTo('/browse-skills');
+    navigateTo('/browse');
     await browserProxy.handler.whenCalled('request1PSkills');
   });
 });

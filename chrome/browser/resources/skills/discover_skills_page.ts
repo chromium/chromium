@@ -22,6 +22,8 @@ import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
 
 // The category name for top skills.
 const kTopPickCategoryString: string = 'Top Pick';
+// The default category name for all skills.
+const kAllCategoriesString: string = 'All';
 
 export interface DiscoverSkillsPageElement {
   $: {
@@ -104,6 +106,29 @@ export class DiscoverSkillsPageElement extends CrLitElement {
         otherCategories.length > 0 ? otherCategories[0]! : '';
   }
 
+  protected getIconForCategory_(category: string): string {
+    switch (category) {
+      case 'All':
+        return 'skills:grid';
+      case 'Fun':
+        return 'skills:celebration';
+      case 'Learn':
+        return 'skills:book';
+      case 'Protect':
+        return 'cr:add';
+      case 'Research':
+        return 'skills:search';
+      case 'Shop':
+        return 'skills:shopping';
+      case 'Understand':
+        return 'skills:lightbulb';
+      case 'Write':
+        return 'skills:write';
+      default:
+        return 'cr:add';
+    }
+  }
+
   protected isCategorySelected_(category: string): boolean {
     return this.selectedCategory_ === category;
   }
@@ -129,15 +154,37 @@ export class DiscoverSkillsPageElement extends CrLitElement {
   }
 
   protected getSelectedSkills_(): Skill[] {
+    if (this.selectedCategory_ === kAllCategoriesString) {
+      return this.getOtherSkills_();
+    }
     return this.filter_(this.skills_.get(this.selectedCategory_) || []);
+  }
+
+  // Gets all skills that are not tagged top skills.
+  protected getOtherSkills_(): Skill[] {
+    const allSkills =
+        Array.from(this.skills_.entries())
+            .filter(([category, _]) => category !== kTopPickCategoryString)
+            .flatMap(([_, skills]) => skills);
+    return this.filter_(allSkills);
   }
 
   // Gets all categories that are not tagged top skills.
   protected getOtherCategories_(): string[] {
-    return Array.from(this.skills_.keys())
-        .filter(category => category !== kTopPickCategoryString)
-        .filter(category => {
-          const skills = this.skills_.get(category) || [];
+    const filteredOtherCategories =
+        Array.from(this.skills_.keys())
+            .filter(category => category !== kTopPickCategoryString);
+
+    if (filteredOtherCategories.length === 0) {
+      return [];
+    }
+
+    return [kAllCategoriesString, ...filteredOtherCategories].filter(
+        category => {
+          if (category === kAllCategoriesString) {
+            return this.getOtherSkills_().length > 0;
+          }
+          const skills = this.skills_.get(category) ?? [];
           return this.filter_(skills).length > 0;
         });
   }
