@@ -27,21 +27,22 @@ extension CxxStringVector {
 }
 
 final class VectorTests: XCTestCase {
+  func testCxxVectorConvertibleToArray() {
+    let vectorFromCxx = [Int32](GetFortyTwoVector())
+    XCTAssertEqual(vectorFromCxx, [42])
+  }
 
-  func testVectorReturnValue() {
-    let array = GetFortyTwoVector()
-    XCTAssertEqual(array.size(), 1)
-    XCTAssertEqual(array[0], 42)
-    // TODO(crbug.com/465131182):
-    // Conformance of std::vector to the RandomAccessCollection protocol does
-    // not currently work. We probably need to get `import std` to work to
-    // solve this, which would require building it against the Chromium
-    // toolchain's version of libc++ to resolve link-time ODR violations.
+  func testCxxVectorIterable() {
+    var count = 0
+    for element in GetFortyTwoVector() {
+      XCTAssertEqual(element, 42)
+      count += 1
+    }
+    XCTAssertEqual(count, 1)
   }
 
   func testVectorArgument() {
-    var testVector = IntVector()
-    testVector.push_back(42)
+    let testVector: IntVector = [42]
     XCTAssertTrue(CheckFortyTwoInVector(testVector))
   }
 
