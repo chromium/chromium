@@ -30,7 +30,10 @@ enum class TransferInputToVizResult {
   kRIRDelegateConnectionNotSetup = 14,
   kSharedMemoryUnavailable = 15,
   kPositiveEventAndDownTimeDelta = 16,
-  kMaxValue = kPositiveEventAndDownTimeDelta,
+  // TODO(https://crbug.com/483269973): Investigate using InputEventObserver in
+  // Xr instead of blocking the transfer of input to viz.
+  kXrIsActive = 17,
+  kMaxValue = kXrIsActive,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:TransferInputToVizResult)
 

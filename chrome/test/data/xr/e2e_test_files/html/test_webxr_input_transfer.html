@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+    <style>
+      body {
+        height: 10000px;
+      }
+      #webgl-canvas {
+        width: 100%;
+        height: 100px;
+        background-color: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <div id="dom-overlay-root">
+      <button id="enter-ar" onclick="onRequestSession()">Enter AR</button>
+    </div>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script>var shouldAutoCreateNonImmersiveSession = false;</script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      immersiveArSessionInit.requiredFeatures.push('dom-overlay');
+      immersiveArSessionInit.domOverlay = { root: document.getElementById('dom-overlay-root') };
+      sessionTypeToRequest = sessionTypes.AR;
+
+      let numFramesWithInput = 0;
+      let numSelectEvents = 0;
+
+      onARFrameCallback = (session, frame, t) => {
+        if (session.inputSources.length > 0) {
+          numFramesWithInput++;
+        }
+      };
+
+      onSessionStartedCallback = (session) => {
+        session.addEventListener('select', () => {
+          numSelectEvents++;
+        });
+      };
+    </script>
+  </body>
+</html>
