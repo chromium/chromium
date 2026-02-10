@@ -59,8 +59,7 @@ pub trait DeflateBackend: Backend {
     fn reset(&mut self);
 }
 
-// Default to Rust implementation unless explicitly opted in to a different
-// backend.
+// Default to Rust implementation unless explicitly opted in to a different backend.
 #[cfg(feature = "any_c_zlib")]
 mod c;
 #[cfg(feature = "any_c_zlib")]

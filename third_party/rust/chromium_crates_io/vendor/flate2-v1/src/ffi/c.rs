@@ -85,8 +85,8 @@ impl Drop for StreamWrapper {
     fn drop(&mut self) {
         // SAFETY: At this point, every other allocation for struct has been freed by
         // `inflateEnd` or `deflateEnd`, and no copies of `inner` are retained by `C`,
-        // so it is safe to drop the struct as long as the user respects the invariant
-        // that `inner` must never be copied by Rust.
+        // so it is safe to drop the struct as long as the user respects the invariant that
+        // `inner` must never be copied by Rust.
         drop(unsafe { Box::from_raw(self.inner) });
     }
 }
@@ -271,7 +271,11 @@ impl InflateBackend for Inflate {
             let state = StreamWrapper::default();
             let ret = mz_inflateInit2(
                 state.inner,
-                if zlib_header { window_bits as c_int } else { -(window_bits as c_int) },
+                if zlib_header {
+                    window_bits as c_int
+                } else {
+                    -(window_bits as c_int)
+                },
             );
             assert_eq!(ret, 0);
             Inflate {
@@ -303,7 +307,11 @@ impl InflateBackend for Inflate {
     }
 
     fn reset(&mut self, zlib_header: bool) {
-        let bits = if zlib_header { MZ_DEFAULT_WINDOW_BITS } else { -MZ_DEFAULT_WINDOW_BITS };
+        let bits = if zlib_header {
+            MZ_DEFAULT_WINDOW_BITS
+        } else {
+            -MZ_DEFAULT_WINDOW_BITS
+        };
         unsafe {
             inflateReset2(self.inner.stream_wrapper.inner, bits);
         }
@@ -380,7 +388,11 @@ impl DeflateBackend for Deflate {
                 state.inner,
                 level.0 as c_int,
                 MZ_DEFLATED,
-                if zlib_header { window_bits as c_int } else { -(window_bits as c_int) },
+                if zlib_header {
+                    window_bits as c_int
+                } else {
+                    -(window_bits as c_int)
+                },
                 8,
                 MZ_DEFAULT_STRATEGY,
             );
@@ -433,8 +445,7 @@ impl Backend for Deflate {
 
 pub use self::c_backend::*;
 
-/// For backwards compatibility, we provide symbols as `mz_` to mimic the miniz
-/// API
+/// For backwards compatibility, we provide symbols as `mz_` to mimic the miniz API
 #[allow(bad_style)]
 #[allow(unused_imports)]
 mod c_backend {

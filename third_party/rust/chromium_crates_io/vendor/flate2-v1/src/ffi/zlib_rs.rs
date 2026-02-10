@@ -2,25 +2,20 @@
 //!
 //! Every backend must provide two types:
 //!
-//! - `Deflate` for compression, implements the `Backend` and `DeflateBackend`
-//!   trait
-//! - `Inflate` for decompression, implements the `Backend` and `InflateBackend`
-//!   trait
+//! - `Deflate` for compression, implements the `Backend` and `DeflateBackend` trait
+//! - `Inflate` for decompression, implements the `Backend` and `InflateBackend` trait
 //!
-//! Additionally the backend provides a number of constants, and a
-//! `ErrorMessage` type.
+//! Additionally the backend provides a number of constants, and a `ErrorMessage` type.
 //!
 //! ## Allocation
 //!
-//! The (de)compression state is not boxed. The C implementations require that
-//! the z_stream is pinned in memory (has a fixed address), because their
-//! z_stream is self-referential. The most convenient way in rust to guarantee a
-//! stable address is to `Box` the data, but it does add an additional
-//! allocation.
+//! The (de)compression state is not boxed. The C implementations require that the z_stream is
+//! pinned in memory (has a fixed address), because their z_stream is self-referential. The most
+//! convenient way in rust to guarantee a stable address is to `Box` the data, but it does add an
+//! additional allocation.
 //!
-//! With zlib_rs the state is not self-referential and hence no boxing is
-//! needed. The `new` methods internally do allocate space for the
-//! (de)compression state.
+//! With zlib_rs the state is not self-referential and hence no boxing is needed. The `new` methods
+//! internally do allocate space for the (de)compression state.
 
 use std::fmt;
 

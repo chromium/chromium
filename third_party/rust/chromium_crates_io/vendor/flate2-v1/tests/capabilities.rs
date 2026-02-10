@@ -11,23 +11,31 @@ fn compress_new_with_window_bits_is_present_and_works() {
     // Test with window_bits = 9 (minimum)
     let mut encoded = Vec::with_capacity(1024);
     let mut encoder = Compress::new_with_window_bits(Compression::default(), true, 9);
-    encoder.compress_vec(string, &mut encoded, FlushCompress::Finish).unwrap();
+    encoder
+        .compress_vec(string, &mut encoded, FlushCompress::Finish)
+        .unwrap();
     assert_ne!(encoded.len(), 0);
 
     let mut decoder = Decompress::new_with_window_bits(true, 9);
     let mut decoded = [0; 1024];
-    decoder.decompress(&encoded, &mut decoded, FlushDecompress::Finish).unwrap();
+    decoder
+        .decompress(&encoded, &mut decoded, FlushDecompress::Finish)
+        .unwrap();
     assert_eq!(&decoded[..string.len()], string);
 
     // Test with window_bits = 15 (maximum)
     let mut encoded = Vec::with_capacity(1024);
     let mut encoder = Compress::new_with_window_bits(Compression::default(), false, 15);
-    encoder.compress_vec(string, &mut encoded, FlushCompress::Finish).unwrap();
+    encoder
+        .compress_vec(string, &mut encoded, FlushCompress::Finish)
+        .unwrap();
     assert_ne!(encoded.len(), 0);
 
     let mut decoder = Decompress::new_with_window_bits(false, 15);
     let mut decoded = [0; 1024];
-    decoder.decompress(&encoded, &mut decoded, FlushDecompress::Finish).unwrap();
+    decoder
+        .decompress(&encoded, &mut decoded, FlushDecompress::Finish)
+        .unwrap();
     assert_eq!(&decoded[..string.len()], string);
 }
 
@@ -41,12 +49,21 @@ fn decompress_new_gzip_window_bits_is_present_and_works() {
     for window_bits in [9, 12, 15] {
         let mut encoded = Vec::with_capacity(1024);
         let mut encoder = Compress::new_gzip(Compression::default(), window_bits);
-        encoder.compress_vec(string, &mut encoded, FlushCompress::Finish).unwrap();
+        encoder
+            .compress_vec(string, &mut encoded, FlushCompress::Finish)
+            .unwrap();
 
         let mut decoder = Decompress::new_gzip(window_bits);
         let mut decoded = [0; 1024];
-        decoder.decompress(&encoded, &mut decoded, FlushDecompress::Finish).unwrap();
-        assert_eq!(&decoded[..string.len()], string, "Failed with window_bits={}", window_bits);
+        decoder
+            .decompress(&encoded, &mut decoded, FlushDecompress::Finish)
+            .unwrap();
+        assert_eq!(
+            &decoded[..string.len()],
+            string,
+            "Failed with window_bits={}",
+            window_bits
+        );
     }
 }
 
@@ -95,7 +112,9 @@ fn set_dictionary_with_zlib_header() {
 
     let dictionary_adler = encoder.set_dictionary(dictionary).unwrap();
 
-    encoder.compress_vec(string, &mut encoded, FlushCompress::Finish).unwrap();
+    encoder
+        .compress_vec(string, &mut encoded, FlushCompress::Finish)
+        .unwrap();
 
     assert_eq!(encoder.total_in(), string.len() as u64);
     assert_eq!(encoder.total_out(), encoded.len() as u64);
@@ -143,7 +162,9 @@ fn set_dictionary_raw() {
 
     encoder.set_dictionary(dictionary).unwrap();
 
-    encoder.compress_vec(string, &mut encoded, FlushCompress::Finish).unwrap();
+    encoder
+        .compress_vec(string, &mut encoded, FlushCompress::Finish)
+        .unwrap();
 
     assert_eq!(encoder.total_in(), string.len() as u64);
     assert_eq!(encoder.total_out(), encoded.len() as u64);
@@ -198,13 +219,17 @@ fn set_level_is_effective() {
     let mut encoded_none = Vec::new();
     let mut compress = Compress::new(best_compression, true);
     compress.set_level(no_compression).unwrap();
-    compress.compress_vec(input, &mut encoded_none, FlushCompress::Finish).unwrap();
+    compress
+        .compress_vec(input, &mut encoded_none, FlushCompress::Finish)
+        .unwrap();
 
     // Compress with best compression
     let mut encoded_best = Vec::new();
     let mut compress = Compress::new(no_compression, true);
     compress.set_level(best_compression).unwrap();
-    compress.compress_vec(input, &mut encoded_best, FlushCompress::Finish).unwrap();
+    compress
+        .compress_vec(input, &mut encoded_best, FlushCompress::Finish)
+        .unwrap();
 
     assert!(
         encoded_best.len() <= encoded_none.len(),

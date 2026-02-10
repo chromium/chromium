@@ -1,7 +1,7 @@
 [package]
 name = "flate2"
 authors = ["Alex Crichton <alex@alexcrichton.com>", "Josh Triplett <josh@joshtriplett.org>"]
-version = "1.1.8"
+version = "1.1.9"
 edition = "2018"
 license = "MIT OR Apache-2.0"
 readme = "README.md"
@@ -22,12 +22,12 @@ exclude = [".*"]
 libz-sys = { version = "1.1.20", optional = true, default-features = false }
 libz-ng-sys = { version = "1.1.16", optional = true }
 # this matches the default features, but we don't want to depend on the default features staying the same
-zlib-rs = { version = "0.5.5", optional = true, default-features = false, features = ["std", "rust-allocator"] }
+zlib-rs = { version = "0.6.0", optional = true, default-features = false, features = ["std", "rust-allocator"] }
 cloudflare-zlib-sys = { version = "0.3.6", optional = true }
 ## This implementation uses only safe Rust code and doesn't require a C compiler.
 ## It provides good performance for most use cases while being completely portable.
 miniz_oxide = { version = "0.8.5", optional = true, default-features = false, features = ["with-alloc", "simd"] }
-crc32fast = "1.2.0"
+crc32fast = { version = "1.2.0", optional = true }
 document-features = { version = "0.2", optional = true }
 
 [target.'cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))'.dependencies]
@@ -48,11 +48,6 @@ default = ["rust_backend"]
 #! Only one backend should be enabled at a time, or else one will see an unstable order which is currently
 #! `zlib-ng`, `zlib-rs`, `cloudflare_zlib`, `miniz_oxide` and which may change at any time.
 
-## Use the zlib-rs backend, a pure Rust rewrite of zlib.
-## This is the fastest backend overall, providing excellent performance with some `unsafe` code.
-## It does not require a C compiler but uses `unsafe` Rust for optimization.
-zlib-rs = ["any_zlib", "dep:zlib-rs"]
-
 ## Use the pure Rust `miniz_oxide` backend (default).
 ## This implementation uses only safe Rust code and doesn't require a C compiler.
 ## It provides good performance for most use cases while being completely portable.
@@ -60,14 +55,22 @@ zlib-rs = ["any_zlib", "dep:zlib-rs"]
 ## Note that this feature at some point may be switched to use `zlib-rs` instead.
 rust_backend = ["miniz_oxide", "any_impl"]
 
+## Use the zlib-rs backend, a pure Rust rewrite of zlib.
+## This is the fastest backend overall, providing excellent performance with some `unsafe` code.
+## It does not require a C compiler but uses `unsafe` Rust for optimization.
+zlib-rs = ["any_zlib", "dep:zlib-rs"] # zlib-rs uses its own crc32 implementation.
+
+## Use the pure Rust `miniz_oxide` backend.
+miniz_oxide = ["any_impl", "dep:miniz_oxide", "dep:crc32fast"]
+
 ## Use the system's installed zlib library.
 ## This is useful when you need compatibility with other C code that uses zlib,
 ## or when you want to use the system-provided zlib for consistency.
-zlib = ["any_c_zlib", "libz-sys"]
+zlib = ["any_c_zlib", "libz-sys", "dep:crc32fast"]
 
 ## Use the system's installed zlib library with default features enabled.
 ## Similar to `zlib` but enables additional features from libz-sys.
-zlib-default = ["any_c_zlib", "libz-sys/default"]
+zlib-default = ["any_c_zlib", "libz-sys/default", "dep:crc32fast"]
 
 ## Use zlib-ng in zlib-compat mode via libz-sys.
 ## This provides zlib-ng's performance improvements while maintaining compatibility.
@@ -78,18 +81,18 @@ zlib-default = ["any_c_zlib", "libz-sys/default"]
 ## See [the libz-sys README](https://github.com/rust-lang/libz-sys/blob/main/README.md) for details.
 ## To avoid that, use the `"zlib-ng"` feature instead.
 
-zlib-ng-compat = ["zlib", "libz-sys/zlib-ng"]
+zlib-ng-compat = ["zlib", "libz-sys/zlib-ng", "dep:crc32fast"]
 
 ## Use the high-performance zlib-ng library directly.
 ## This typically provides better performance than stock zlib and works even when
 ## other dependencies use zlib. Requires a C compiler.
-zlib-ng = ["any_c_zlib", "libz-ng-sys"]
+zlib-ng = ["any_c_zlib", "libz-ng-sys", "dep:crc32fast"]
 
 ## Use Cloudflare's optimized zlib implementation.
 ## This provides better performance than stock zlib on x86-64 (with SSE 4.2) and ARM64 (with NEON & CRC).
 ## * ⚠ Does not support 32-bit CPUs and is incompatible with mingw.
 ## * ⚠ May cause conflicts if other crates use different zlib versions.
-cloudflare_zlib = ["any_c_zlib", "cloudflare-zlib-sys"]
+cloudflare_zlib = ["any_c_zlib", "cloudflare-zlib-sys", "dep:crc32fast"]
 
 ## Deprecated alias for `rust_backend`, provided for backwards compatibility.
 ## Use `rust_backend` instead.

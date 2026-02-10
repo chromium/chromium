@@ -573,6 +573,165 @@ mod tests {
     }
 
     #[test]
+    fn gzip_encoder_matches_rfc1952() {
+        /// Extract CRC32 and ISIZE from gzip footer
+        fn extract_zip_footer(compressed: &[u8]) -> (u32, u32) {
+            assert!(compressed.len() >= 8, "Gzip output too short");
+            let footer_start = compressed.len() - 8;
+
+            let crc = u32::from_le_bytes([
+                compressed[footer_start],
+                compressed[footer_start + 1],
+                compressed[footer_start + 2],
+                compressed[footer_start + 3],
+            ]);
+
+            let size = u32::from_le_bytes([
+                compressed[footer_start + 4],
+                compressed[footer_start + 5],
+                compressed[footer_start + 6],
+                compressed[footer_start + 7],
+            ]);
+
+            (crc, size)
+        }
+
+        #[track_caller]
+        fn test_crc_for_write(data: &[u8], expected_crc: u32, description: &str) {
+            // Compress data using write::GzEncoder
+            let mut encoder = write::GzEncoder::new(Vec::new(), Compression::default());
+            encoder.write_all(data).unwrap();
+            let compressed = encoder.finish().unwrap();
+
+            let expected_size = data.len() as u32;
+            let (actual_crc, actual_size) = extract_zip_footer(&compressed);
+
+            assert_eq!(
+                expected_crc, actual_crc,
+                "CRC32 mismatch for write {}: expected {:#08x}, got {:#08x}",
+                description, expected_crc, actual_crc
+            );
+            assert_eq!(
+                expected_size, actual_size,
+                "Size mismatch for write {}: expected {}, got {}",
+                description, expected_size, actual_size
+            );
+        }
+
+        #[track_caller]
+        fn test_crc_for_read(data: &[u8], expected_crc: u32, description: &str) {
+            // Compress data using read::GzEncoder
+            let data_reader = std::io::Cursor::new(data);
+            let mut encoder = read::GzEncoder::new(data_reader, Compression::default());
+            let mut compressed = Vec::new();
+            encoder.read_to_end(&mut compressed).unwrap();
+
+            let expected_size = data.len() as u32;
+            let (actual_crc, actual_size) = extract_zip_footer(&compressed);
+
+            assert_eq!(
+                expected_crc, actual_crc,
+                "CRC32 mismatch for read {}: expected {:#08x}, got {:#08x}",
+                description, expected_crc, actual_crc
+            );
+            assert_eq!(
+                expected_size, actual_size,
+                "Size mismatch for read {}: expected {}, got {}",
+                description, expected_size, actual_size
+            );
+        }
+
+        #[track_caller]
+        fn test_crc_for_data(data: &[u8], description: &str) {
+            let rfc1952_crc = Rfc1952Crc::new();
+            let expected_crc = rfc1952_crc.crc(data);
+
+            test_crc_for_write(data, expected_crc, description);
+            test_crc_for_read(data, expected_crc, description);
+        }
+
+        // Edge cases
+        test_crc_for_data(&[], "empty data");
+        test_crc_for_data(&[0x00], "single zero byte");
+        test_crc_for_data(&[0xFF], "single 0xFF byte");
+
+        // Simple text patterns
+        test_crc_for_data(b"Hello World", "simple ASCII");
+        test_crc_for_data(b"AAAAAAA", "repeated 'A'");
+        test_crc_for_data(b"1234567890", "digits");
+
+        // Binary patterns
+        test_crc_for_data(&[0x00, 0x01, 0x02, 0x03, 0x04, 0x05], "sequential bytes");
+        test_crc_for_data(&[0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55], "alternating pattern");
+        test_crc_for_data(&[0x00; 10], "all zeros");
+        test_crc_for_data(&[0xFF; 10], "all ones");
+
+        // Large data
+        let large_data = vec![0x42; 10240];
+        test_crc_for_data(&large_data, "10 kiB data");
+
+        // Test multi-write scenario to ensure CRC accumulation works correctly
+        {
+            let data = b"This is a test of multi-write CRC accumulation";
+            let rfc1952_crc = Rfc1952Crc::new();
+            let expected_crc = rfc1952_crc.crc(data);
+
+            let mut encoder = write::GzEncoder::new(Vec::new(), Compression::default());
+            // Write in chunks
+            encoder.write_all(&data[..10]).unwrap();
+            encoder.write_all(&data[10..20]).unwrap();
+            encoder.write_all(&data[20..]).unwrap();
+            let compressed = encoder.finish().unwrap();
+
+            let expected_size = data.len() as u32;
+            let (actual_crc, actual_size) = extract_zip_footer(&compressed);
+
+            assert_eq!(
+                expected_crc, actual_crc,
+                "Multi-write CRC mismatch: expected {:#08x}, got {:#08x}",
+                expected_crc, actual_crc
+            );
+            assert_eq!(
+                expected_size, actual_size,
+                "Size mismatch for multi-write: expected {}, got {}",
+                expected_size, actual_size
+            );
+        }
+    }
+
+    fn gzip_corrupted_crc() -> Vec<u8> {
+        let test_data = b"The quick brown fox jumps over the lazy dog";
+
+        let mut encoder = write::GzEncoder::new(Vec::new(), Compression::default());
+        encoder.write_all(test_data).unwrap();
+        let mut compressed = encoder.finish().unwrap();
+
+        // Corrupt the CRC32 in the footer
+        let crc_offset = compressed.len() - 8;
+        compressed[crc_offset] ^= 0xFF;
+
+        compressed
+    }
+
+    #[test]
+    fn read_decoder_detects_corrupted_crc() {
+        let compressed = gzip_corrupted_crc();
+        let mut decoder = read::GzDecoder::new(&compressed[..]);
+        let mut output = Vec::new();
+        let error = decoder.read_to_end(&mut output).unwrap_err();
+        assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
+    }
+
+    #[test]
+    fn write_decoder_detects_corrupted_crc() {
+        let compressed = gzip_corrupted_crc();
+        let mut decoder = write::GzDecoder::new(Vec::new());
+        decoder.write_all(&compressed).unwrap();
+        let error = decoder.finish().unwrap_err();
+        assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
+    }
+
+    #[test]
     fn fields() {
         let r = [0, 2, 4, 6];
         let e = GzBuilder::new()

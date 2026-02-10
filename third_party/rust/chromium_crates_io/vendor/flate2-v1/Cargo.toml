@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.67.0"
 name = "flate2"
-version = "1.1.8"
+version = "1.1.9"
 authors = [
     "Alex Crichton <alex@alexcrichton.com>",
     "Josh Triplett <josh@joshtriplett.org>",
@@ -61,9 +61,15 @@ any_zlib = ["any_impl"]
 cloudflare_zlib = [
     "any_c_zlib",
     "cloudflare-zlib-sys",
+    "dep:crc32fast",
 ]
 default = ["rust_backend"]
 miniz-sys = ["rust_backend"]
+miniz_oxide = [
+    "any_impl",
+    "dep:miniz_oxide",
+    "dep:crc32fast",
+]
 rust_backend = [
     "miniz_oxide",
     "any_impl",
@@ -71,18 +77,22 @@ rust_backend = [
 zlib = [
     "any_c_zlib",
     "libz-sys",
+    "dep:crc32fast",
 ]
 zlib-default = [
     "any_c_zlib",
     "libz-sys/default",
+    "dep:crc32fast",
 ]
 zlib-ng = [
     "any_c_zlib",
     "libz-ng-sys",
+    "dep:crc32fast",
 ]
 zlib-ng-compat = [
     "zlib",
     "libz-sys/zlib-ng",
+    "dep:crc32fast",
 ]
 zlib-rs = [
     "any_zlib",
@@ -211,6 +221,7 @@ optional = true
 
 [dependencies.crc32fast]
 version = "1.2.0"
+optional = true
 
 [dependencies.document-features]
 version = "0.2"
@@ -235,7 +246,7 @@ optional = true
 default-features = false
 
 [dependencies.zlib-rs]
-version = "0.5.5"
+version = "0.6.0"
 features = [
     "std",
     "rust-allocator",
