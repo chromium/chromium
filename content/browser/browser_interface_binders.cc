@@ -104,7 +104,6 @@
 #include "media/mojo/mojom/key_system_support.mojom.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom.h"
 #include "media/mojo/mojom/media_player.mojom.h"
-#include "media/mojo/mojom/remoting.mojom.h"
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom.h"
 #include "media/mojo/mojom/video_encoder_metrics_provider.mojom.h"
@@ -229,7 +228,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
-#endif
+#include "media/mojo/mojom/remoting.mojom.h"
+#endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING)
 
 #if BUILDFLAG(ENABLE_VR)
 #include "content/browser/xr/webxr_internals/mojom/webxr_internals.mojom.h"
