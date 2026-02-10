@@ -20,7 +20,7 @@
 import {execSync} from 'child_process';
 import {writeFile, readFile} from 'fs/promises';
 
-import actions from '@actions/core';
+import * as actions from '@actions/core';
 import {SemVer} from 'semver';
 
 import packageJson from '../package.json' with {type: 'json'};
