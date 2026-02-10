@@ -141,7 +141,7 @@ export class TabStripInternalsView implements ViewModelObserver {
       }
       window.removeEventListener('mousemove', move);
       window.removeEventListener('mouseup', up);
-      this.viewModel_.saveState();
+      this.viewModel_.saveNavPaneWidthState();
     };
 
     window.addEventListener('mousemove', move);
@@ -161,7 +161,7 @@ export class TabStripInternalsView implements ViewModelObserver {
       default:
         return;
     }
-    this.viewModel_.saveState();
+    this.viewModel_.saveNavPaneWidthState();
     e.preventDefault();
   }
 }
