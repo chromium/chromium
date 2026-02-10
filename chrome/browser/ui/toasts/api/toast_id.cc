@@ -61,6 +61,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "EnhancedBundledSecuritySettings";
     case ToastId::kSavedAutofillAiEntityToWallet:
       return "SavedAutofillAiEntityToWallet";
+    case ToastId::kTranslate:
+      return "Translate";
   }
 
   NOTREACHED();

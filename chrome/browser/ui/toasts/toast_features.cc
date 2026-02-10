@@ -31,6 +31,9 @@ BASE_FEATURE(kLensOverlayToast, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enabled the clear browsing data confirmation toast.
 BASE_FEATURE(kClearBrowsingDataToast, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable the translate toast.
+BASE_FEATURE(kTranslateToast, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // static
 bool IsEnabled(const base::Feature& feature) {
   return base::FeatureList::IsEnabled(feature);

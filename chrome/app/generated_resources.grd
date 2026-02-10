@@ -19351,6 +19351,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TOAST_MENU_BUTTON_NAME" desc="Accessible name of the 3-dot button to open the menu attached to the toast.">
         More actions
       </message>
+      <message name="IDS_TRANSLATE_TOAST_BODY" desc="Text to show on the toast when a page is automatically translated.">
+        Translated to <ph name="LANGUAGE">$1<ex>Arabic</ex></ph>
+      </message>
+      <message name="IDS_TRANSLATE_TOAST_UNDO_BUTTON" desc="Button on a toast notification that allows users to undo the translation.">
+        Undo
+      </message>
       <message name="IDS_LINK_COPIED_TOAST_BODY" desc="Text on a toast notification that is shown when a link is successfully copied.">
         Link copied
       </message>

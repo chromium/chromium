@@ -843,6 +843,7 @@ should be able to be added at any place in this file.
       summary="Enhanced Protection setting has been synced to Off"/>
   <variant name=".SyncEsbOn"
       summary="Enhanced Protection setting has been synced to On"/>
+  <variant name=".Translate" summary="Translate"/>
 </variants>
 
 <variants name="UserEducation_WhatsNew_Module_Type">
