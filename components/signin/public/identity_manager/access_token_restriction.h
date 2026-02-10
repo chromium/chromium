@@ -15,10 +15,12 @@
 namespace signin {
 
 enum class OAuth2ScopeRestriction {
-  kNoRestriction = 0,
-  kSignedIn = 1,
-  kExplicitConsent = 2,
-  kPrivilegedOAuth2Consumer = 3,
+  // The scope can be used with no restriction.
+  kNoRestriction,
+  // The scope can be used when the user is signed in to Chrome.
+  kSignedIn,
+  // The scope can only be used by a OAuth2 privileged consumer.
+  kPrivilegedOAuth2Consumer,
 };
 
 OAuth2ScopeRestriction GetOAuth2ScopeRestriction(const std::string& scope);

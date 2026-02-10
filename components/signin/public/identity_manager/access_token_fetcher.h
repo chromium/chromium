@@ -176,7 +176,6 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
                      PrimaryAccountManager* primary_account_manager,
                      TokenCallback callback,
                      Mode mode,
-                     bool require_sync_consent_for_scope_verification,
                      Source token_source = Source::kProfile);
 
   // Instantiates a fetcher and immediately starts the process of obtaining an
@@ -194,7 +193,6 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       TokenCallback callback,
       Mode mode,
-      bool require_sync_consent_for_scope_verification,
       Source token_source = Source::kProfile);
 
   AccessTokenFetcher(const AccessTokenFetcher&) = delete;
@@ -244,10 +242,6 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
   TokenCallback callback_;
   const Mode mode_;
   const Source token_source_;
-
-  // TODO(crbug.com/40067025): Remove this field once
-  // kReplaceSyncPromosWithSignInPromos launches.
-  const bool require_sync_consent_for_scope_verification_;
 
   base::ScopedObservation<ProfileOAuth2TokenService,
                           ProfileOAuth2TokenServiceObserver>

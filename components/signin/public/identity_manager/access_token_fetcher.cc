@@ -50,9 +50,6 @@ std::string ErrorToString(GoogleServiceAuthError::State error_state) {
 
 namespace signin {
 
-BASE_FEATURE(kRestrictSignoutAccessTokenFetch,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 AccessTokenFetcher::AccessTokenFetcher(
     const CoreAccountId& account_id,
     OAuthConsumerId oauth_consumer_id,
@@ -61,7 +58,6 @@ AccessTokenFetcher::AccessTokenFetcher(
     PrimaryAccountManager* primary_account_manager,
     TokenCallback callback,
     Mode mode,
-    bool require_sync_consent_for_scope_verification,
     Source token_source)
     : AccessTokenFetcher(account_id,
                          oauth_consumer_id,
@@ -71,7 +67,6 @@ AccessTokenFetcher::AccessTokenFetcher(
                          /*url_loader_factory=*/nullptr,
                          std::move(callback),
                          mode,
-                         require_sync_consent_for_scope_verification,
                          token_source) {}
 
 AccessTokenFetcher::AccessTokenFetcher(
@@ -83,7 +78,6 @@ AccessTokenFetcher::AccessTokenFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     TokenCallback callback,
     Mode mode,
-    bool require_sync_consent_for_scope_verification,
     Source token_source)
     : OAuth2AccessTokenManager::Consumer(oauth_consumer.GetName()),
       account_id_(account_id),
@@ -94,8 +88,6 @@ AccessTokenFetcher::AccessTokenFetcher(
       callback_(std::move(callback)),
       mode_(mode),
       token_source_(token_source),
-      require_sync_consent_for_scope_verification_(
-          require_sync_consent_for_scope_verification),
       oauth_consumer_id_(oauth_consumer_id) {
   if (mode_ == Mode::kImmediate || IsRefreshTokenAvailable()) {
     StartAccessTokenRequest();
@@ -129,10 +121,6 @@ void AccessTokenFetcher::VerifyScopeAccess() {
   bool is_signed_in =
       primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin);
 
-  bool has_full_access =
-      require_sync_consent_for_scope_verification_
-          ? primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync)
-          : is_signed_in;
   for (const std::string& scope : scopes_) {
     OAuth2ScopeRestriction restriction = GetOAuth2ScopeRestriction(scope);
     switch (restriction) {
@@ -140,22 +128,10 @@ void AccessTokenFetcher::VerifyScopeAccess() {
         continue;
 
       case OAuth2ScopeRestriction::kSignedIn:
-        CHECK(is_signed_in ||
-              !base::FeatureList::IsEnabled(kRestrictSignoutAccessTokenFetch))
-            << base::StringPrintf(
-                   "Consumer '%s' is requesting scope '%s' that requires user "
-                   "to be signed in to the browser. "
-                   "Please check that the user is signed in to the browser "
-                   "before "
-                   "using this API.",
-                   id().c_str(), scope.c_str());
-        break;
-
-      case OAuth2ScopeRestriction::kExplicitConsent:
-        CHECK(has_full_access) << base::StringPrintf(
+        CHECK(is_signed_in) << base::StringPrintf(
             "Consumer '%s' is requesting scope '%s' that requires user "
-            "consent. "
-            "Please check that the user has consented to Sync before "
+            "to be signed in to the browser. "
+            "Please check that the user is signed in to the browser before "
             "using this API.",
             id().c_str(), scope.c_str());
         break;
