@@ -68,7 +68,34 @@ public class GeolocationHeaderUnitTest {
     private static final float LOCATION_ACCURACY = 20f;
     private static final long LOCATION_TIME = 400;
     // Encoded location for LOCATION_LAT, LOCATION_LONG, LOCATION_ACCURACY and LOCATION_TIME.
-    private static final String ENCODED_PROTO_LOCATION = "CAEQDBiAtRgqCg3AiBkMFYAx3Vw9AECcRg==";
+    // Textproto contents for precise location:
+    // {
+    //  role: CURRENT_LOCATION
+    //  producer: DEVICE_LOCATION
+    //  timestamp: 400000
+    //  latlng: {
+    //    latitude_e7 : 203000000
+    //    longitude_e7: 1558000000
+    //  }
+    //  radius: 20000.0
+    //  permission_granularity: PERMISSION_GRANULARITY_FINE
+    // }
+    private static final String ENCODED_PROTO_LOCATION_PRECISE =
+            "CAEQDBiAtRgqCg3AiBkMFYAx3Vw9AECcRsgBAg==";
+    // Textproto contents for coarse location:
+    // {
+    //  role: CURRENT_LOCATION
+    //  producer: DEVICE_LOCATION
+    //  timestamp: 400000
+    //  latlng: {
+    //    latitude_e7 : 203000000
+    //    longitude_e7: 1558000000
+    //  }
+    //  radius: 20000.0
+    //  permission_granularity: PERMISSION_GRANULARITY_COARSE
+    // }
+    private static final String ENCODED_PROTO_LOCATION_COARSE =
+            "CAEQDBiAtRgqCg3AiBkMFYAx3Vw9AECcRsgBAQ==";
     private int mRefreshLastKnownLocationCount;
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -114,8 +141,11 @@ public class GeolocationHeaderUnitTest {
     @Test
     public void testEncodeProtoLocation() {
         Location location = generateMockLocation("should_not_matter", LOCATION_TIME);
-        String encodedProtoLocation = GeolocationHeader.encodeProtoLocation(location);
-        assertEquals(ENCODED_PROTO_LOCATION, encodedProtoLocation);
+        String encodedProtoLocation = GeolocationHeader.encodeProtoLocation(location, true);
+        assertEquals(ENCODED_PROTO_LOCATION_PRECISE, encodedProtoLocation);
+        String encodedProtoLocationApproximate =
+                GeolocationHeader.encodeProtoLocation(location, false);
+        assertEquals(ENCODED_PROTO_LOCATION_COARSE, encodedProtoLocationApproximate);
     }
 
     @Test
@@ -126,12 +156,14 @@ public class GeolocationHeaderUnitTest {
         GeolocationTracker.setLocationAgeForTesting(1 * 60 * 1000L);
         String header =
                 GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
-        assertEquals("X-Geo: w " + ENCODED_PROTO_LOCATION, header);
+        assertEquals("X-Geo: w " + ENCODED_PROTO_LOCATION_PRECISE, header);
     }
 
     @Test
     public void testGetGeoHeaderOld() {
-        checkOldLocation("X-Geo: w " + ENCODED_PROTO_LOCATION);
+        checkOldLocation("X-Geo: w " + ENCODED_PROTO_LOCATION_PRECISE);
+        GeolocationHeader.setAppPermissionsForTesting(/* hasCoarse= */ true, /* hasFine= */ false);
+        checkOldLocation("X-Geo: w " + ENCODED_PROTO_LOCATION_COARSE);
     }
 
     @Test

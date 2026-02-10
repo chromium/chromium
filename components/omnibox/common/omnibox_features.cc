@@ -273,6 +273,9 @@ BASE_FEATURE(kOmniboxMobileParityUpdate, ENABLED);
 // Android and iOS, V2.
 BASE_FEATURE(kOmniboxMobileParityUpdateV2, ENABLED);
 
+// If enabled, the X-Geo header will include permission granularity.
+BASE_FEATURE(kOmniboxXGeoPermissionGranularity, ENABLED);
+
 // The features below allow tuning number of suggestions offered to users in
 // specific contexts. These features are default enabled and are used to control
 // related fieldtrial parameters.
@@ -372,6 +375,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kAndroidHubSearchTabGroups,
       &kPostDelayedTaskFocusTab,
       &kOmniboxMobileParityUpdateV2,
+      &kOmniboxXGeoPermissionGranularity,
       &kOmniboxSiteSearch,
       &kOmniboxMultimodalInput,
       &kMultilineEditField,

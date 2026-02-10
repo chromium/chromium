@@ -24,6 +24,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -79,7 +80,7 @@ public class GeolocationHeaderTest {
         long now = setMockLocationNow();
 
         // X-Geo should be sent for Google search results page URLs.
-        assertNonNullHeader(SEARCH_URL_1, false, now);
+        assertNonNullHeader(SEARCH_URL_1, false, now, /* isPrecise= */ true);
 
         // But only the current CCTLD.
         assertNullHeader(SEARCH_URL_2, false);
@@ -102,12 +103,25 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
+    @EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+    public void testConsistentHeaderApproximate() {
+        setPermission(ContentSetting.ALLOW, ContentSetting.BLOCK);
+        long now = setMockLocationNow();
+
+        // X-Geo should be sent for Google search results page URLs.
+        assertNonNullHeader(SEARCH_URL_1, false, now, /* isPrecise= */ false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Location"})
+    @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
     public void testConsistentHeaderForOneTimeGrant() {
         setOneTimeGrant();
         long now = setMockLocationNow();
 
         // X-Geo should be sent for Google search results page URLs.
-        assertNonNullHeader(SEARCH_URL_1, false, now);
+        assertNonNullHeader(SEARCH_URL_1, false, now, /* isPrecise= */ true);
 
         // But only the current CCTLD.
         assertNullHeader(SEARCH_URL_2, false);
@@ -149,7 +163,7 @@ public class GeolocationHeaderTest {
         long now = setMockLocationNow();
 
         // X-Geo should be sent for Google search results page URLs using proto encoding.
-        assertNonNullHeader(SEARCH_URL_1, false, now);
+        assertNonNullHeader(SEARCH_URL_1, false, now, /* isPrecise= */ true);
     }
 
     @Test
@@ -163,7 +177,7 @@ public class GeolocationHeaderTest {
         Location gpsLocation = generateMockLocation(LocationManager.GPS_PROVIDER, now);
         GeolocationTracker.setLocationForTesting(null, gpsLocation);
 
-        assertNonNullHeader(SEARCH_URL_1, false, now);
+        assertNonNullHeader(SEARCH_URL_1, false, now, /* isPrecise= */ true);
     }
 
     @Test
@@ -180,7 +194,7 @@ public class GeolocationHeaderTest {
         GeolocationTracker.setLocationForTesting(netLocation, gpsLocation);
 
         // The younger (GPS) should be used.
-        assertNonNullHeader(SEARCH_URL_1, false, now + 100);
+        assertNonNullHeader(SEARCH_URL_1, false, now + 100, /* isPrecise= */ true);
     }
 
     @Test
@@ -196,7 +210,7 @@ public class GeolocationHeaderTest {
         GeolocationTracker.setLocationForTesting(netLocation, gpsLocation);
 
         // The younger (Network) should be used.
-        assertNonNullHeader(SEARCH_URL_1, false, now);
+        assertNonNullHeader(SEARCH_URL_1, false, now, /* isPrecise= */ true);
     }
 
     @Test
@@ -245,7 +259,7 @@ public class GeolocationHeaderTest {
                     var profile = mCurrentWebPageStation.getTab().getProfile();
                     var service = TemplateUrlServiceFactory.getForProfile(profile);
                     String header = GeolocationHeader.getGeoHeader(SEARCH_URL_1, profile, service);
-                    assertHeaderState(header, locationTime, shouldBeNull);
+                    assertHeaderState(header, locationTime, shouldBeNull, /* isPrecise= */ true);
                 });
     }
 
@@ -259,11 +273,12 @@ public class GeolocationHeaderTest {
         Assert.assertEquals(shouldPrimeHeader, GeolocationHeader.isGeolocationPrimedForTesting());
     }
 
-    private void assertHeaderState(String header, long locationTime, boolean shouldBeNull) {
+    private void assertHeaderState(
+            String header, long locationTime, boolean shouldBeNull, boolean isPrecise) {
         if (shouldBeNull) {
             Assert.assertNull(header);
         } else {
-            assertHeaderEquals(locationTime, header);
+            assertHeaderEquals(locationTime, header, isPrecise);
         }
     }
 
@@ -300,18 +315,23 @@ public class GeolocationHeaderTest {
     }
 
     private void assertNonNullHeader(
-            final String url, final boolean isIncognito, final long locationTime) {
+            final String url,
+            final boolean isIncognito,
+            final long locationTime,
+            boolean isPrecise) {
         openBlankPage(isIncognito);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var profile = mCurrentWebPageStation.getTab().getProfile();
                     var service = TemplateUrlServiceFactory.getForProfile(profile);
                     assertHeaderEquals(
-                            locationTime, GeolocationHeader.getGeoHeader(url, profile, service));
+                            locationTime,
+                            GeolocationHeader.getGeoHeader(url, profile, service),
+                            isPrecise);
                 });
     }
 
-    private void assertHeaderEquals(long locationTime, String header) {
+    private void assertHeaderEquals(long locationTime, String header, boolean isPrecise) {
         long timestamp = locationTime * 1000;
         // Latitude times 1e7.
         int latitudeE7 = (int) (LOCATION_LAT * 10000000);
@@ -336,6 +356,12 @@ public class GeolocationHeaderTest {
                         .setProducer(PartnerLocationDescriptor.LocationProducer.DEVICE_LOCATION)
                         .setTimestamp(timestamp)
                         .setRadius((float) radius)
+                        .setPermissionGranularity(
+                                isPrecise
+                                        ? PartnerLocationDescriptor.PermissionGranularity
+                                                .PERMISSION_GRANULARITY_FINE
+                                        : PartnerLocationDescriptor.PermissionGranularity
+                                                .PERMISSION_GRANULARITY_COARSE)
                         .build();
 
         String locationProto =
@@ -346,15 +372,22 @@ public class GeolocationHeaderTest {
     }
 
     private void setPermission(final @ContentSetting int setting) {
-        setPermission(setting, SessionModel.DURABLE);
-    }
-
-    private void setOneTimeGrant() {
-        setPermission(ContentSetting.ALLOW, SessionModel.ONE_TIME);
+        setPermission(setting, setting, SessionModel.DURABLE);
     }
 
     private void setPermission(
-            final @ContentSetting int setting, @SessionModel.EnumType int sessionModel) {
+            final @ContentSetting int approximate, final @ContentSetting int precise) {
+        setPermission(approximate, precise, SessionModel.DURABLE);
+    }
+
+    private void setOneTimeGrant() {
+        setPermission(ContentSetting.ALLOW, ContentSetting.ALLOW, SessionModel.ONE_TIME);
+    }
+
+    private void setPermission(
+            final @ContentSetting int approximate,
+            final @ContentSetting int precise,
+            @SessionModel.EnumType int sessionModel) {
         final boolean approximateGelocationEnabled =
                 PermissionsAndroidFeatureMap.isEnabled(
                         PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION);
@@ -372,23 +405,30 @@ public class GeolocationHeaderTest {
                     if (approximateGelocationEnabled) {
                         infoHttps.setGeolocationSetting(
                                 ProfileManager.getLastUsedRegularProfile(),
-                                new GeolocationSetting(setting, setting));
+                                new GeolocationSetting(approximate, precise));
                     } else {
                         infoHttps.setContentSetting(
-                                ProfileManager.getLastUsedRegularProfile(), setting);
+                                ProfileManager.getLastUsedRegularProfile(), precise);
                     }
                 });
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    var expectedSetting =
-                            setting == ContentSetting.DEFAULT ? ContentSetting.ASK : setting;
                     if (approximateGelocationEnabled) {
+                        var expectedApproximate =
+                                approximate == ContentSetting.DEFAULT
+                                        ? ContentSetting.ASK
+                                        : approximate;
+                        var expectedPrecise =
+                                precise == ContentSetting.DEFAULT ? ContentSetting.ASK : precise;
                         GeolocationSetting geolocationSetting =
                                 infoHttps.getGeolocationSetting(
                                         ProfileManager.getLastUsedRegularProfile());
-                        return geolocationSetting.mPrecise == expectedSetting;
+                        return geolocationSetting.mPrecise == expectedPrecise
+                                && geolocationSetting.mApproximate == expectedApproximate;
                     } else {
+                        var expectedSetting =
+                                precise == ContentSetting.DEFAULT ? ContentSetting.ASK : precise;
                         Integer contentSetting =
                                 infoHttps.getContentSetting(
                                         ProfileManager.getLastUsedRegularProfile());

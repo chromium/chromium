@@ -117,6 +117,11 @@ public class OmniboxFeatures {
     public static final CachedFlag sUseFusedLocationProvider =
             newFlag(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER, FeatureState.ENABLED_IN_PROD);
 
+    public static final CachedFlag sOmniboxXGeoPermissionGranularity =
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_X_GEO_PERMISSION_GRANULARITY,
+                    FeatureState.ENABLED_IN_PROD);
+
     public static final CachedFlag sAsyncViewInflation =
             newFlag(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION, FeatureState.ENABLED_IN_TEST);
 
