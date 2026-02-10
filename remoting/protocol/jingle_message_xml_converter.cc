@@ -31,6 +31,7 @@ const char kJabberNamespace[] = "jabber:client";
 const jingle_xmpp::StaticQName kQNameIq = {kJabberNamespace, "iq"};
 
 const char kJingleNamespace[] = "urn:xmpp:jingle:1";
+const char kXmlNamespace[] = "http://www.w3.org/XML/1998/namespace";
 const jingle_xmpp::StaticQName kQNameJingle = {kJingleNamespace, "jingle"};
 const jingle_xmpp::StaticQName kQNameReason = {kJingleNamespace, "reason"};
 const jingle_xmpp::StaticQName kQNameContent = {kJingleNamespace, "content"};
@@ -58,6 +59,7 @@ const jingle_xmpp::StaticQName kQNameFoundation = {kEmptyNamespace,
                                                    "foundation"};
 const jingle_xmpp::StaticQName kQNameGeneration = {kEmptyNamespace,
                                                    "generation"};
+const jingle_xmpp::StaticQName kQNameId = {kEmptyNamespace, "id"};
 const jingle_xmpp::StaticQName kQNameInitiator = {kEmptyNamespace, "initiator"};
 const jingle_xmpp::StaticQName kQNameName = {kEmptyNamespace, "name"};
 const jingle_xmpp::StaticQName kQNamePassword = {kEmptyNamespace, "password"};
@@ -338,6 +340,93 @@ bool ParseSessionInfoAction(const XmlElement* jingle_tag,
 }
 
 }  // namespace
+
+std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
+    const JingleMessageReply& reply,
+    const jingle_xmpp::XmlElement* request_stanza) {
+  auto iq = std::make_unique<XmlElement>(kQNameIq, /*useDefaultNs=*/true);
+  iq->SetAttr(kQNameId, request_stanza->Attr(kQNameId));
+
+  SignalingAddress original_from =
+      SignalingAddress::Parse(request_stanza, SignalingAddress::FROM);
+  DCHECK(!original_from.empty());
+
+  if (reply.type == JingleMessageReply::REPLY_RESULT) {
+    iq->SetAttr(kQNameType, "result");
+    iq->AddElement(new XmlElement(kQNameJingle,
+                                  /*useDefaultNs=*/true));
+    original_from.SetInMessage(iq.get(), SignalingAddress::TO);
+    return iq;
+  }
+
+  DCHECK_EQ(reply.type, JingleMessageReply::REPLY_ERROR);
+
+  iq->SetAttr(kQNameType, "error");
+  original_from.SetInMessage(iq.get(), SignalingAddress::TO);
+
+  for (const XmlElement* child = request_stanza->FirstElement(); child;
+       child = child->NextElement()) {
+    iq->AddElement(new XmlElement(*child));
+  }
+
+  auto error = std::make_unique<XmlElement>(QName(kJabberNamespace, "error"));
+
+  std::string type_attr;
+  std::string error_text;
+  QName name;
+  switch (reply.error_type) {
+    case JingleMessageReply::BAD_REQUEST:
+      type_attr = "modify";
+      name = QName(kJabberNamespace, "bad-request");
+      break;
+    case JingleMessageReply::NOT_IMPLEMENTED:
+      type_attr = "cancel";
+      name = QName(kJabberNamespace, "feature-bad-request");
+      break;
+    case JingleMessageReply::INVALID_SID:
+      type_attr = "modify";
+      name = QName(kJabberNamespace, "item-not-found");
+      error_text = "Invalid SID";
+      break;
+    case JingleMessageReply::UNEXPECTED_REQUEST:
+      type_attr = "modify";
+      name = QName(kJabberNamespace, "unexpected-request");
+      break;
+    case JingleMessageReply::UNSUPPORTED_INFO:
+      type_attr = "modify";
+      name = QName(kJabberNamespace, "feature-not-implemented");
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  if (!reply.text.empty()) {
+    error_text = reply.text;
+  }
+
+  error->SetAttr(QName(kEmptyNamespace, "type"), type_attr);
+
+  // If the error name is not in the standard namespace, we have
+  // to first add some error from that namespace.
+  if (name.Namespace() != kJabberNamespace) {
+    error->AddElement(
+        new XmlElement(QName(kJabberNamespace, "undefined-condition")));
+  }
+  error->AddElement(new XmlElement(name));
+
+  if (!error_text.empty()) {
+    // It's okay to always use English here. This text is for
+    // debugging purposes only.
+    auto text_elem =
+        std::make_unique<XmlElement>(QName(kJabberNamespace, "text"));
+    text_elem->SetAttr(QName(kXmlNamespace, "lang"), "en");
+    text_elem->SetBodyText(error_text);
+    error->AddElement(text_elem.release());
+  }
+
+  iq->AddElement(error.release());
+  return iq;
+}
 
 bool IsJingleMessage(const jingle_xmpp::XmlElement* stanza) {
   return stanza->Name() == kQNameIq && stanza->Attr(kQNameType) == "set" &&

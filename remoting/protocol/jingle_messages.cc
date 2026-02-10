@@ -26,11 +26,6 @@ namespace remoting::protocol {
 
 namespace {
 
-const char kEmptyNamespace[] = "";
-const char kJabberNamespace[] = "jabber:client";
-const char kJingleNamespace[] = "urn:xmpp:jingle:1";
-const char kXmlNamespace[] = "http://www.w3.org/XML/1998/namespace";
-
 const NameMapElement<JingleMessage::ActionType> kActionTypes[] = {
     {JingleMessage::ActionType::kSessionInitiate, "session-initiate"},
     {JingleMessage::ActionType::kSessionAccept, "session-accept"},
@@ -124,94 +119,7 @@ JingleMessageReply::~JingleMessageReply() = default;
 
 std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReply::ToXml(
     const jingle_xmpp::XmlElement* request_stanza) const {
-  std::unique_ptr<XmlElement> iq(
-      new XmlElement(QName(kJabberNamespace, "iq"), true));
-
-  iq->SetAttr(QName(kEmptyNamespace, "id"),
-              request_stanza->Attr(QName(kEmptyNamespace, "id")));
-
-  SignalingAddress original_from;
-  original_from =
-      SignalingAddress::Parse(request_stanza, SignalingAddress::FROM);
-  DCHECK(!original_from.empty());
-
-  if (type == REPLY_RESULT) {
-    iq->SetAttr(QName(kEmptyNamespace, "type"), "result");
-    XmlElement* jingle =
-        new XmlElement(QName(kJingleNamespace, "jingle"), true);
-    iq->AddElement(jingle);
-    original_from.SetInMessage(iq.get(), SignalingAddress::TO);
-    return iq;
-  }
-
-  DCHECK_EQ(type, REPLY_ERROR);
-
-  iq->SetAttr(QName(kEmptyNamespace, "type"), "error");
-  original_from.SetInMessage(iq.get(), SignalingAddress::TO);
-
-  for (const jingle_xmpp::XmlElement* child = request_stanza->FirstElement();
-       child != nullptr; child = child->NextElement()) {
-    iq->AddElement(new jingle_xmpp::XmlElement(*child));
-  }
-
-  jingle_xmpp::XmlElement* error =
-      new jingle_xmpp::XmlElement(QName(kJabberNamespace, "error"));
-  iq->AddElement(error);
-
-  std::string type_attr;
-  std::string error_text;
-  QName name;
-  switch (error_type) {
-    case BAD_REQUEST:
-      type_attr = "modify";
-      name = QName(kJabberNamespace, "bad-request");
-      break;
-    case NOT_IMPLEMENTED:
-      type_attr = "cancel";
-      name = QName(kJabberNamespace, "feature-bad-request");
-      break;
-    case INVALID_SID:
-      type_attr = "modify";
-      name = QName(kJabberNamespace, "item-not-found");
-      error_text = "Invalid SID";
-      break;
-    case UNEXPECTED_REQUEST:
-      type_attr = "modify";
-      name = QName(kJabberNamespace, "unexpected-request");
-      break;
-    case UNSUPPORTED_INFO:
-      type_attr = "modify";
-      name = QName(kJabberNamespace, "feature-not-implemented");
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  if (!text.empty()) {
-    error_text = text;
-  }
-
-  error->SetAttr(QName(kEmptyNamespace, "type"), type_attr);
-
-  // If the error name is not in the standard namespace, we have
-  // to first add some error from that namespace.
-  if (name.Namespace() != kJabberNamespace) {
-    error->AddElement(new jingle_xmpp::XmlElement(
-        QName(kJabberNamespace, "undefined-condition")));
-  }
-  error->AddElement(new jingle_xmpp::XmlElement(name));
-
-  if (!error_text.empty()) {
-    // It's okay to always use English here. This text is for
-    // debugging purposes only.
-    jingle_xmpp::XmlElement* text_elem =
-        new jingle_xmpp::XmlElement(QName(kJabberNamespace, "text"));
-    text_elem->SetAttr(QName(kXmlNamespace, "lang"), "en");
-    text_elem->SetBodyText(error_text);
-    error->AddElement(text_elem);
-  }
-
-  return iq;
+  return JingleMessageReplyToXml(*this, request_stanza);
 }
 
 IceTransportInfo::IceTransportInfo() = default;
