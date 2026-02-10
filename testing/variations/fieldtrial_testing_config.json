@@ -18060,6 +18060,21 @@
             ]
         }
     ],
+    "NotificationTrampolineNoNewTask": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NotificationTrampolineNoNewTask"
+                    ]
+                }
+            ]
+        }
+    ],
     "NotificationWidthIncrease": [
         {
             "platforms": [

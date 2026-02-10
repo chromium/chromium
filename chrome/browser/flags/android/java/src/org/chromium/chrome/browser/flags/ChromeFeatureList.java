@@ -994,7 +994,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sNotificationTrampoline =
             newCachedFlag(NOTIFICATION_TRAMPOLINE, false);
     public static final CachedFlag sNotificationTrampolineNoNewTask =
-            newCachedFlag(NOTIFICATION_TRAMPOLINE_NO_NEW_TASK, false);
+            newCachedFlag(
+                    NOTIFICATION_TRAMPOLINE_NO_NEW_TASK,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sPCctMinimumHeight = newCachedFlag(PCCT_MINIMUM_HEIGHT, true);
     public static final CachedFlag sPaintPreviewDemo = newCachedFlag(PAINT_PREVIEW_DEMO, false);
     public static final CachedFlag sPersistAcrossReboots =
