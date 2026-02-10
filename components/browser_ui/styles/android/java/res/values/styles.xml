@@ -300,7 +300,7 @@ found in the LICENSE file.
 
     <!-- Formerly inverse text styles -->
     <!-- Text styles used on dark background on light theme, and light background on dark theme. -->
-    <style name="TextAppearance.Headline.Primary.OnAccent1" tools:ignore="UnusedResources">
+    <style name="TextAppearance.Headline.OnAccent1" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
     </style>
     <style name="TextAppearance.TextMediumThick.Primary.OnAccent1" tools:ignore="UnusedResources">
