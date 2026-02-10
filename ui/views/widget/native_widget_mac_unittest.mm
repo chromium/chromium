@@ -140,6 +140,10 @@ class BridgedNativeWidgetTestApi {
     return bridge_->HasWindowRestorationData();
   }
 
+  void CheckAndNotifyAllWorkspacesStateChanged() {
+    bridge_->CheckAndNotifyAllWorkspacesStateChanged();
+  }
+
  private:
   const raw_ref<remote_cocoa::NativeWidgetNSWindowBridge> bridge_;
 };
@@ -276,6 +280,26 @@ class WidgetChangeObserver : public TestWidgetObserver {
   int target_gained_visible_count_ = 0;
   int target_lost_visible_count_ = 0;
   raw_ptr<base::RunLoop> run_loop_ = nullptr;
+};
+
+class WorkspaceChangeTestWidget : public Widget {
+ public:
+  WorkspaceChangeTestWidget() = default;
+
+  WorkspaceChangeTestWidget(const WorkspaceChangeTestWidget&) = delete;
+  WorkspaceChangeTestWidget& operator=(const WorkspaceChangeTestWidget&) =
+      delete;
+
+  // Widget:
+  void OnNativeWidgetWorkspaceChanged() override {
+    Widget::OnNativeWidgetWorkspaceChanged();
+    workspace_changed_count_++;
+  }
+
+  int workspace_changed_count() const { return workspace_changed_count_; }
+
+ private:
+  int workspace_changed_count_ = 0;
 };
 
 // This class gives public access to the protected ctor of
@@ -463,6 +487,35 @@ TEST_F(NativeWidgetMacTest, WindowFrameTitlebarHeight) {
   EXPECT_EQ(0.0, titlebar_height);
 
   [native_parent close];
+}
+
+// Tests for IsVisibleOnAllWorkspaces notification.
+TEST_F(NativeWidgetMacTest, VisibleOnAllWorkspacesNotify) {
+  auto* widget = new WorkspaceChangeTestWidget;
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.native_widget =
+      CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
+  widget->Init(std::move(params));
+  widget->Show();
+
+  EXPECT_EQ(0, widget->workspace_changed_count());
+
+  // Set true.
+  widget->SetVisibleOnAllWorkspaces(true);
+  EXPECT_EQ(1, widget->workspace_changed_count());
+
+  // Set false.
+  widget->SetVisibleOnAllWorkspaces(false);
+  EXPECT_EQ(2, widget->workspace_changed_count());
+
+  // Simulating an external change.
+  NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
+  [ns_window setCollectionBehavior:[ns_window collectionBehavior] |
+                                   NSWindowCollectionBehaviorCanJoinAllSpaces];
+  BridgedNativeWidgetTestApi(widget).CheckAndNotifyAllWorkspacesStateChanged();
+  EXPECT_EQ(3, widget->workspace_changed_count());
+
+  widget->CloseNow();
 }
 
 // A view that counts calls to OnPaint().

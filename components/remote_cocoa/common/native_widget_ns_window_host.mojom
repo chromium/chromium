@@ -193,6 +193,9 @@ interface NativeWidgetNSWindowHost {
   // state has changed.
   OnWindowStateRestorationDataChanged(array<uint8> data);
 
+  // Called when the window's "visible on all workspaces" state has changed.
+  OnVisibleOnAllWorkspacesChanged(bool visible);
+
   // Called when a sheet modal is shown.
   OnSheetModalShown();
 

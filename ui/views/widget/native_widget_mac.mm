@@ -827,7 +827,7 @@ void NativeWidgetMac::SetVisibleOnAllWorkspaces(bool always_visible) {
 }
 
 bool NativeWidgetMac::IsVisibleOnAllWorkspaces() const {
-  return false;
+  return ns_window_host_ ? ns_window_host_->IsVisibleOnAllWorkspaces() : false;
 }
 
 void NativeWidgetMac::Maximize() {

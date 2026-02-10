@@ -583,6 +583,7 @@ void NativeWidgetNSWindowBridge::InitWindow(
     [window_ setMovable:NO];
   }
   [window_ setIsTooltip:params->is_tooltip];
+  CheckAndNotifyAllWorkspacesStateChanged();
 }
 
 void NativeWidgetNSWindowBridge::SetInitialBounds(
@@ -1659,6 +1660,7 @@ NSWindow* NativeWidgetNSWindowBridge::GetWindow() const {
 
 void NativeWidgetNSWindowBridge::SetVisibleOnAllSpaces(bool always_visible) {
   gfx::SetNSWindowVisibleOnAllWorkspaces(window_, always_visible);
+  CheckAndNotifyAllWorkspacesStateChanged();
 }
 
 void NativeWidgetNSWindowBridge::SetZoomed(bool zoomed) {
@@ -1918,6 +1920,20 @@ void NativeWidgetNSWindowBridge::CheckAndNotifyZoomedStateChanged() {
   host_->OnWindowZoomedChanged(window_zoomed_);
 }
 
+void NativeWidgetNSWindowBridge::CheckAndNotifyAllWorkspacesStateChanged() {
+  const bool visible_on_all_spaces =
+      ([window_ collectionBehavior] &
+       NSWindowCollectionBehaviorCanJoinAllSpaces) != 0;
+  if (visible_on_all_spaces_ == visible_on_all_spaces) {
+    return;
+  }
+
+  visible_on_all_spaces_ = visible_on_all_spaces;
+
+  // Notify that the window's "visible on all spaces" state has changed.
+  host_->OnVisibleOnAllWorkspacesChanged(visible_on_all_spaces_);
+}
+
 void NativeWidgetNSWindowBridge::NotifyVisibilityChangeDown() {
   // Child windows sometimes like to close themselves in response to visibility
   // changes. That's supported, but only with the asynchronous Widget::Close().
@@ -1954,6 +1970,7 @@ void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
   host_->OnWindowGeometryChanged(window_in_screen, content_in_screen);
 
   CheckAndNotifyZoomedStateChanged();
+  CheckAndNotifyAllWorkspacesStateChanged();
 
   if (content_resized && !ca_transaction_sync_suppressed_)
     ui::CATransactionCoordinator::Get().Synchronize();

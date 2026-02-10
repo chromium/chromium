@@ -245,6 +245,9 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   bool IsWindowKey() const { return is_window_key_; }
   bool IsMouseCaptureActive() const { return is_mouse_capture_active_; }
   bool IsZoomed() const { return is_zoomed_; }
+  bool IsVisibleOnAllWorkspaces() const {
+    return is_visible_on_all_workspaces_;
+  }
 
   // This tracks -[NSWindow isOnActiveSpace].
   // A screen has one active space and may have several hidden spaces.
@@ -368,6 +371,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
                                 bool full_keyboard_access_enabled) override;
   void OnWindowStateRestorationDataChanged(
       const std::vector<uint8_t>& data) override;
+  void OnVisibleOnAllWorkspacesChanged(bool visible) override;
   void OnSheetModalShown() override;
   void OnSheetModalClosed() override;
   void OnImmersiveFullscreenToolbarRevealChanged(bool is_revealed) override;
@@ -552,6 +556,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   bool is_window_key_ = false;
   bool is_mouse_capture_active_ = false;
   bool is_zoomed_ = false;
+  bool is_visible_on_all_workspaces_ = false;
   gfx::Rect window_bounds_before_fullscreen_;
 
   // Weak pointers to event monitors for this widget. The event monitors

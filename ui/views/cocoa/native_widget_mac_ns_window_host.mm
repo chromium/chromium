@@ -105,6 +105,7 @@ class BridgedNativeWidgetHostDummy
                                 bool full_keyboard_access_enabled) override {}
   void OnWindowStateRestorationDataChanged(
       const std::vector<uint8_t>& data) override {}
+  void OnVisibleOnAllWorkspacesChanged(bool visible) override {}
   void OnSheetModalShown() override {}
   void OnSheetModalClosed() override {}
   void OnImmersiveFullscreenToolbarRevealChanged(bool is_revealed) override {}
@@ -1404,6 +1405,17 @@ void NativeWidgetMacNSWindowHost::OnWindowZoomedChanged(bool zoomed) {
   is_zoomed_ = zoomed;
   if (Widget* widget = GetWidget()) {
     widget->OnNativeWidgetWindowShowStateChanged();
+  }
+}
+
+void NativeWidgetMacNSWindowHost::OnVisibleOnAllWorkspacesChanged(
+    bool visible) {
+  if (is_visible_on_all_workspaces_ == visible) {
+    return;
+  }
+  is_visible_on_all_workspaces_ = visible;
+  if (Widget* widget = GetWidget()) {
+    widget->OnNativeWidgetWorkspaceChanged();
   }
 }
 

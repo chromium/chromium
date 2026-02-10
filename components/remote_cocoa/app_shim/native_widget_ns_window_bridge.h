@@ -372,6 +372,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // the clients.
   void CheckAndNotifyZoomedStateChanged();
 
+  // Check if the window's "visible on all workspaces" state has changed. If
+  // changes happen, notify the host.
+  void CheckAndNotifyAllWorkspacesStateChanged();
+
   // Notify descendants of a visibility change.
   void NotifyVisibilityChangeDown();
 
@@ -455,6 +459,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // Stores the value last read from -[NSWindow isZoomed], to detect zoomed
   // state changes.
   bool window_zoomed_ = false;
+
+  // Stores the value last read from -[NSWindow collectionBehavior], to detect
+  // "visible on all spaces" state changes.
+  bool visible_on_all_spaces_ = false;
 
   // If true, the window is either visible, or wants to be visible but is
   // currently hidden due to having a hidden parent.
