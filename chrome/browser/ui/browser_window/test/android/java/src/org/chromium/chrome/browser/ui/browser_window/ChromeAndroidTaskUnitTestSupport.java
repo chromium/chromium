@@ -66,6 +66,7 @@ import org.chromium.ui.mojom.WindowShowState;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** Supports Robolectric and native unit tests relevant to {@link ChromeAndroidTask}. */
@@ -345,25 +346,27 @@ public final class ChromeAndroidTaskUnitTestSupport {
         var mockTabModel = mock(TabModel.class);
         when(mockTabModel.getProfile()).thenReturn(profile);
 
+        // Assume the regular tab model is always the current tab model.
         var mockTabModelSelector = mock(TabModelSelector.class);
         SettableMonotonicObservableSupplier<TabModel> tabModelSupplier =
                 ObservableSuppliers.createMonotonic();
         tabModelSupplier.set(mockTabModel);
+        when(mockTabModelSelector.getModel(false)).thenReturn(mockTabModel);
         when(mockTabModelSelector.getCurrentTabModelSupplier()).thenReturn(tabModelSupplier);
         when(mockTabModelSelector.getCurrentModel()).thenReturn(mockTabModel);
+
+        // Even when we have a dedicated window per-profile both TabModels will still exist;
+        // however, one will always be empty.
+        var mockIncognitoTabModel = mock(IncognitoTabModel.class);
+        when(mockTabModelSelector.getModel(true)).thenReturn(mockIncognitoTabModel);
         when(mockTabModelSelector.getModels())
-                .thenReturn(java.util.Collections.singletonList(mockTabModel));
+                .thenReturn(List.of(mockTabModel, mockIncognitoTabModel));
+
+        // Initially there is no incognito profile until an incognito tab is created.
+        when(mockIncognitoTabModel.getProfile()).thenReturn(null);
 
         var mockDesktopWindowStateManager = mock(DesktopWindowStateManager.class);
         var mockMultiInstanceManager = createMockMultiInstanceManager();
-
-        if (profileType == SupportedProfileType.MIXED) {
-            var mockIncognitoTabModel = mock(IncognitoTabModel.class);
-            when(mockTabModelSelector.getModel(false)).thenReturn(mockTabModel);
-            when(mockTabModelSelector.getModel(true)).thenReturn(mockIncognitoTabModel);
-            // Initially, no incognito profile.
-            when(mockIncognitoTabModel.getProfile()).thenReturn(null);
-        }
 
         return new ChromeAndroidTask.ActivityScopedObjects(
                 activityWindowAndroid,
