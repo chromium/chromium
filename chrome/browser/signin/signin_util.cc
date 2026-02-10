@@ -314,7 +314,8 @@ PrimaryAccountError SetPrimaryAccountWithInvalidToken(
 
   auto set_primary_account_result =
       identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-          account_id, signin::ConsentLevel::kSignin);
+          account_id, signin::ConsentLevel::kSignin,
+          signin_metrics::AccessPoint::kUnknown);
   DVLOG(1) << "Operation of setting account id <" << account_id.ToString()
            << "> received the following result: "
            << static_cast<int>(set_primary_account_result);

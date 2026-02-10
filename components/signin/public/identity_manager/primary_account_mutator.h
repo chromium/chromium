@@ -87,8 +87,7 @@ class PrimaryAccountMutator {
   virtual PrimaryAccountError SetPrimaryAccount(
       const CoreAccountId& account_id,
       ConsentLevel consent_level,
-      signin_metrics::AccessPoint access_point =
-          signin_metrics::AccessPoint::kUnknown,
+      signin_metrics::AccessPoint access_point,
       base::OnceClosure prefs_committed_callback = base::NullCallback()) = 0;
 
 #if !BUILDFLAG(IS_CHROMEOS)

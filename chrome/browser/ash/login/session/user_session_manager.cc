@@ -1556,7 +1556,8 @@ void UserSessionManager::InitProfilePreferences(
     const signin::PrimaryAccountMutator::PrimaryAccountError
         set_account_result =
             identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-                account_id, ConsentLevel::kSync);
+                account_id, ConsentLevel::kSync,
+                signin_metrics::AccessPoint::kUnknown);
     VLOG(1) << "SetPrimaryAccount result="
             << static_cast<int>(set_account_result);
 

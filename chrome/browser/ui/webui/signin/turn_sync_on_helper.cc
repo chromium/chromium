@@ -656,7 +656,8 @@ void TurnSyncOnHelper::AbortAndDelete() {
   if (!initial_primary_account_.empty() &&
       identity_manager_->HasAccountWithRefreshToken(initial_primary_account_)) {
     identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
-        initial_primary_account_, signin::ConsentLevel::kSignin);
+        initial_primary_account_, signin::ConsentLevel::kSignin,
+        signin_metrics::AccessPoint::kUnknown);
   }
 
   switch (signin_aborted_mode_) {
