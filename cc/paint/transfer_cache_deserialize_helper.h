@@ -14,7 +14,8 @@
 
 namespace cc {
 
-// Helper interface consumed by cc/paint during OOP raster deserialization.
+// Helper interface consumed by cc/paint during GPU process-side raster
+// deserialization.
 // Provides access to the transfer cache.
 // TODO(ericrk): We should use TransferCacheEntryId, not uint64_t here, but
 // we need to figure out layering. crbug.com/777622
