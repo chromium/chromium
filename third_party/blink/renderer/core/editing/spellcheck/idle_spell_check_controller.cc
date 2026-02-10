@@ -69,7 +69,7 @@ IdleSpellCheckController::~IdleSpellCheckController() = default;
 
 void IdleSpellCheckController::Trace(Visitor* visitor) const {
   visitor->Trace(cold_mode_requester_);
-  visitor->Trace(spell_check_requeseter_);
+  visitor->Trace(spell_check_requester_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
@@ -80,7 +80,7 @@ IdleSpellCheckController::IdleSpellCheckController(
       idle_callback_handle_(kInvalidHandle),
       cold_mode_requester_(
           MakeGarbageCollected<ColdModeSpellCheckRequester>(window)),
-      spell_check_requeseter_(requester) {}
+      spell_check_requester_(requester) {}
 
 LocalDOMWindow& IdleSpellCheckController::GetWindow() const {
   DCHECK(GetExecutionContext());
@@ -112,7 +112,7 @@ void IdleSpellCheckController::Deactivate() {
     cold_mode_timer_.Cancel();
   cold_mode_requester_->Deactivate();
   DisposeIdleCallback();
-  spell_check_requeseter_->Deactivate();
+  spell_check_requester_->Deactivate();
 }
 
 void IdleSpellCheckController::RespondToChangedSelection() {
@@ -279,7 +279,7 @@ void IdleSpellCheckController::HotModeInvocation(IdleDeadline* deadline) {
   // TODO(xiaochengh): Figure out if this has any performance impact.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
-  HotModeSpellCheckRequester requester(*spell_check_requeseter_);
+  HotModeSpellCheckRequester requester(*spell_check_requester_);
 
   if (NeedsHotModeCheckingUnderCurrentSelection()) {
     requester.CheckSpellingAt(
