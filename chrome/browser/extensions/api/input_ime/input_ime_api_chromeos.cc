@@ -603,7 +603,7 @@ class ImeObserverChromeOS
 
   // The component IME extensions need to know the current screen type (e.g.
   // lock screen, login screen, etc.) so that its on-screen keyboard page
-  // won't open new windows/pages. See crbug.com/395621.
+  // won't open new windows/pages. See crbug.com/40375509.
   std::string GetCurrentScreenType() {
     switch (ash::input_method::InputMethodManager::Get()
                 ->GetActiveIMEState()

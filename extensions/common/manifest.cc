@@ -245,7 +245,7 @@ bool Manifest::ShouldAlwaysLoadExtension(ManifestLocation location,
     return true;  // Themes are allowed, even with --disable-extensions.
   }
 
-  // TODO(devlin): This seems wrong. See https://crbug.com/833540.
+  // TODO(devlin): This seems wrong. See https://crbug.com/41383647.
   if (Manifest::IsExternalLocation(location)) {
     return true;
   }

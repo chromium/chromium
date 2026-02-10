@@ -460,7 +460,7 @@ void ExtensionHost::OnEventAck(int event_id,
   const auto it = unacked_messages_.find(event_id);
   if (it == unacked_messages_.end()) {
     // Ideally, we'd be able to kill the renderer in the case of it sending an
-    // ack for an event that we haven't seen. However, https://crbug.com/939279
+    // ack for an event that we haven't seen. However, crbug.com/41445461
     // demonstrates that there are cases in which this can happen in other
     // situations. We should track those down and fix them, but for now
     // log and gracefully exit.

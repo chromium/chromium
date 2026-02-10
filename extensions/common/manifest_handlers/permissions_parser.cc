@@ -246,7 +246,7 @@ bool ParseHelper(Extension* extension,
     // The feature should exist since we just got an APIPermission for it. The
     // two systems should be updated together whenever a permission is added.
     DCHECK(feature) << "Could not find feature for " << iter->name();
-    // http://crbug.com/176381
+    // http://crbug.com/40302033
     if (!feature) {
       to_remove.push_back(iter->id());
       continue;

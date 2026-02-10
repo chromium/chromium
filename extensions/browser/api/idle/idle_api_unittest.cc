@@ -473,7 +473,7 @@ TEST_F(IdleTest, UnloadWhileListening) {
 }
 
 // Verifies that re-adding a listener after a state change doesn't immediately
-// fire a change event. Regression test for http://crbug.com/366580.
+// fire a change event. Regression test for http://crbug.com/41103356.
 TEST_F(IdleTest, ReAddListener) {
   idle_provider_->set_locked(false);
 

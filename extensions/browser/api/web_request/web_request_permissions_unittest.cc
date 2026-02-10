@@ -465,7 +465,7 @@ TEST_F(ExtensionWebRequestPermissionsTest,
   // However, if a sub-resource request is made to example.com from an initiator
   // that the extension has access to, access is allowed. This is functionally
   // necessary for any extension with webRequest to work with the runtime host
-  // permissions feature. See https://crbug.com/851722.
+  // permissions feature. See https://crbug.com/40580327.
   EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
             get_access(example_com, chromium_org_origin,
                        WebRequestResourceType::OTHER));

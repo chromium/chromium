@@ -57,7 +57,7 @@ class Extension;
 // 1. This class contains the processes for hosted apps as well as extensions
 //    and packaged apps. Just because a process is present here *does not* mean
 //    it is an "extension process" (e.g., for UI purposes). It may contain only
-//    hosted apps. See crbug.com/102533.
+//    hosted apps. See crbug.com/40107820.
 //
 // 2. An extension can show up in multiple processes. That is why there is no
 //    GetExtensionProcess() method here. There are multiple such cases:

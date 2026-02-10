@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingBackgroundOnly) {
 }
 
 // TODO(kalman): Most web messaging tests disabled on windows due to extreme
-// flakiness. See http://crbug.com/350517.
+// flakiness. See http://crbug.com/40354939.
 #if !BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingUserGesture) {
@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingOnPagehide) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that messages over a certain size are not sent.
-// https://crbug.com/766713.
+// https://crbug.com/40540722.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, LargeMessages) {
   ASSERT_TRUE(RunExtensionTest("messaging/large_messages"));
 }

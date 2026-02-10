@@ -694,7 +694,7 @@ Feature::Availability SimpleFeature::GetManifestAvailability(
     return CreateAvailability(AvailabilityResult::kFoundInBlocklist);
 
   // TODO(benwells): don't grant all component extensions.
-  // See http://crbug.com/370375 for more details.
+  // See http://crbug.com/41105605 for more details.
   // Component extensions can access any feature.
   // NOTE: Deliberately does not match EXTERNAL_COMPONENT.
   if (component_extensions_auto_granted_ &&

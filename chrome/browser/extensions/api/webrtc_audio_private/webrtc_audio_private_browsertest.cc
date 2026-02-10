@@ -139,7 +139,7 @@ class WebrtcAudioPrivateTest : public AudioWaitingExtensionTest {
 };
 
 #if !BUILDFLAG(IS_MAC)
-// http://crbug.com/334579
+// http://crbug.com/40347623
 IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
   AudioDeviceDescriptions devices;
   GetAudioDeviceDescriptions(false, &devices);

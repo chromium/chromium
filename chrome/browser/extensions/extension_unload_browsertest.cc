@@ -150,7 +150,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, UnloadWithContentScripts) {
 }
 
 // Tests that windows with opaque origins opened by the extension are closed
-// when the extension is unloaded. Regression test for https://crbug.com/894477.
+// when the extension is unloaded. Regression test for
+// https://crbug.com/40092671.
 IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, OpenedOpaqueWindows) {
   TestExtensionDir test_dir;
   constexpr char kManifest[] =

@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, Stubs) {
 
 // Tests that all API features that are available to a platform app actually
 // can be used in an app. For example, this test will fail if a developer adds
-// an API feature without providing a schema. http://crbug.com/369318
+// an API feature without providing a schema. http://crbug.com/40363674
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, StubsApp) {
   ASSERT_TRUE(RunExtensionTest("stubs_app", {.launch_as_platform_app = true},
                                {.ignore_manifest_warnings = true}))

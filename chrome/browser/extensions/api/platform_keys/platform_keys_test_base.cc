@@ -78,7 +78,7 @@ void PlatformKeysTestBase::SetUp() {
 
   // Initialize the server to allocate a port, so that URLs can be pointed at it
   // in SetUpCommandLine(). Don't spin up the IO thread yet since no threads are
-  // allowed while spawning sandbox host process. See crbug.com/322732.
+  // allowed while spawning sandbox host process. See crbug.com/41076404.
   ASSERT_TRUE(gaia_server_.InitializeAndListen());
 
   ash::platform_keys::PlatformKeysServiceFactory::GetInstance()->SetTestingMode(

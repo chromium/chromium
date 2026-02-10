@@ -181,7 +181,7 @@ TEST(VerifiedContents, Simple) {
                 base::FilePath::FromUTF8Unsafe("mixedcase.html"),
                 DecodeBase64Url(hashes["mIxedcAse.Html"])));
 
-  // Regression test for https://crbug.com/776609.
+  // Regression test for https://crbug.com/40545768.
   EXPECT_FALSE(contents.TreeHashRootEquals(
       base::FilePath::FromUTF8Unsafe("allcaps.html"),
       // This is the hash of "mixedcase.html".

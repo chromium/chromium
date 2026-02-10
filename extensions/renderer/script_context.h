@@ -72,7 +72,7 @@ class ScriptContext {
 
   // Returns whether `url` from any Extension in `extension_set` is sandboxed,
   // as declared in each Extension's manifest.
-  // TODO(kalman): Delete this when crbug.com/466373 is fixed.
+  // TODO(kalman): Delete this when crbug.com/40409183 is fixed.
   // See comment in HasAccessOrThrowError.
   static bool IsSandboxedPage(const GURL& url);
 

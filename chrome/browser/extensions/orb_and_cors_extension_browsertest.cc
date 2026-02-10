@@ -647,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 // Test that verifies the current, baked-in (but not necessarily desirable
 // behavior) where a content script injected by an extension can bypass
 // CORS (and ORB) for any hosts the extension has access to.
-// See also https://crbug.com/846346.
+// See also https://crbug.com/40577839.
 IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromProgrammaticContentScript_NoSniffXml) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -679,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 }
 
 // Tests that extension permission to bypass CORS is revoked after the extension
-// is unloaded.  See also https://crbug.com/843381.
+// is unloaded.  See also https://crbug.com/41389197.
 IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromProgrammaticContentScript_UnloadedExtension) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -749,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Unload the extension and try fetching again.  The content script should
   // still be present and work, but after the extension is unloaded, the fetch
-  // should always fail.  See also https://crbug.com/843381.
+  // should always fail.  See also https://crbug.com/41389197.
   extension_registrar()->DisableExtension(
       extension->id(), {disable_reason::DISABLE_USER_ACTION});
   EXPECT_FALSE(ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
@@ -1097,7 +1097,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 // Test that verifies the current, baked-in (but not necessarily desirable
 // behavior) where a content script injected by an extension can bypass
 // CORS (and ORB) for any hosts the extension has access to.
-// See also https://crbug.com/1034408 and https://crbug.com/846346.
+// See also https://crbug.com/1034408 and https://crbug.com/40577839.
 IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromProgrammaticContentScript_RedirectToNoSniffXml) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1201,7 +1201,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
 // Tests that same-origin fetches (same-origin relative to the webpage the
 // content script is injected into) are allowed.  See also
-// https://crbug.com/918660.
+// https://crbug.com/40608046.
 IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromProgrammaticContentScript_SameOrigin) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -2140,7 +2140,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
     ReadyToCommitWaiter ready_to_commit_waiter(new_web_contents);
     content::TestNavigationObserver navigation_observer(new_web_contents, 1);
 
-    // Repro of https://crbug.com/894766 requires that no cross-process swap
+    // Repro of https://crbug.com/41420364 requires that no cross-process swap
     // takes place - this is what happens when navigating an initial/blank tab.
 
     // Wait until ReadyToCommit happens.
@@ -2353,7 +2353,7 @@ IN_PROC_BROWSER_TEST_F(OriginHeaderExtensionBrowserTest,
   // origin).
   EXPECT_EQ(url::Origin::Create(page_url).Serialize(), actual_origin_header);
 
-  // Regression test against https://crbug.com/944704.
+  // Regression test against https://crbug.com/41448402.
   EXPECT_THAT(actual_origin_header,
               ::testing::Not(::testing::HasSubstr("chrome-extension")));
 }
@@ -2403,7 +2403,7 @@ IN_PROC_BROWSER_TEST_F(OriginHeaderExtensionBrowserTest,
   // origin).
   EXPECT_EQ(url::Origin::Create(page_url).Serialize(), actual_origin_header);
 
-  // Regression test against https://crbug.com/944704.
+  // Regression test against https://crbug.com/41448402.
   EXPECT_THAT(actual_origin_header,
               ::testing::Not(::testing::HasSubstr("chrome-extension")));
 }
@@ -2446,7 +2446,7 @@ IN_PROC_BROWSER_TEST_F(OriginHeaderExtensionBrowserTest,
   EXPECT_THAT(fetch_result,
               ::testing::HasSubstr("Origin: http://fetch-initiator.com"));
 
-  // Regression test against https://crbug.com/944704.
+  // Regression test against https://crbug.com/41448402.
   EXPECT_THAT(fetch_result,
               ::testing::Not(::testing::HasSubstr("Origin: chrome-extension")));
 }

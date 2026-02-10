@@ -92,7 +92,7 @@ class ExtensionInstallUIBrowserTest : public extensions::ExtensionBrowserTest {
   }
 };
 
-// Fails on Linux and Windows (http://crbug.com/580907).
+// Fails on Linux and Windows (http://crbug.com/41236457).
 IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
                        DISABLED_TestThemeInstallUndoResetsToDefault) {
   // Install theme once and undo to verify we go back to default theme.
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
   ASSERT_FALSE(GetTheme());
 }
 
-// Flaky (http://crbug.com/851252).
+// Flaky (http://crbug.com/41393682).
 IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
                        DISABLED_TestInstallThemeInFullScreen) {
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_FULLSCREEN));

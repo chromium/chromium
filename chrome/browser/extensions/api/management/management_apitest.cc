@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, NoLaunchTabAppDeprecated) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// Flaky on MacOS: crbug.com/915339
+// Flaky on MacOS: crbug.com/41431910
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_LaunchType DISABLED_LaunchType
 #else

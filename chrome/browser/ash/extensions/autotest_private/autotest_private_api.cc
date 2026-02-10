@@ -2816,7 +2816,7 @@ ExtensionFunction::ResponseAction AutotestPrivateTakeScreenshotFunction::Run() {
   DVLOG(1) << "AutotestPrivateTakeScreenshotFunction";
   auto grabber = std::make_unique<ui::ScreenshotGrabber>();
   auto* const grabber_ptr = grabber.get();
-  // TODO(mash): Fix for mash, http://crbug.com/557397
+  // TODO(mash): Fix for mash, http://crbug.com/40445154
   aura::Window* primary_root = ash::Shell::GetPrimaryRootWindow();
   // Pass the ScreenshotGrabber to the callback so that it stays alive for the
   // duration of the operation, it'll then get deallocated when the callback

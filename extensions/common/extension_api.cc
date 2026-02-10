@@ -40,7 +40,7 @@ base::DictValue LoadSchemaDictionary(const std::string& name,
   auto result = base::JSONReader::ReadAndReturnValueWithError(
       schema, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
-  // Tracking down http://crbug.com/121424
+  // Tracking down http://crbug.com/40183984
   char buf[128];
   UNSAFE_TODO(base::SpanPrintf(
       buf, "%s: (%d) '%s'", name.c_str(),

@@ -1067,7 +1067,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
 // expected. The size of the resource is such that it would trigger
 // FileLoaderObserver::OnSeekComplete in extension_protocols.cc.
 //
-// Regression test for: http://crbug.com/965043.
+// Regression test for: http://crbug.com/41459929.
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest, TamperLargeSizedResource) {
   // This test extension is copied from the webstore that has actual
   // signatures.
@@ -1093,7 +1093,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, TamperLargeSizedResource) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that a resource reading failure due to FileURLLoader cancellation
 // does not incorrectly result in content verificaton failure.
-// Regression test for: http://crbug.com/977805.
+// Regression test for: http://crbug.com/41467403.
 // TODO(crbug.com/413122584): Port to desktop Android. The cross platform
 // navigation utilities we have don't support new tab + no wait.
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
@@ -1144,7 +1144,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
 // Tests that navigating to an extension resource with '/' at end does not
 // disable the extension.
 //
-// Regression test for: https://crbug.com/929578.
+// Regression test for: https://crbug.com/40093979.
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
                        RemainsEnabledOnNavigateToPathEndingWithSlash) {
   const Extension* extension = InstallExtensionFromWebstore(
@@ -1165,7 +1165,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
 // Tests that navigating to an extension resource with '.' at end does not
 // disable the extension.
 //
-// Regression test for https://crbug.com/696208.
+// Regression test for https://crbug.com/40086896.
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
                        RemainsEnabledOnNavigateToPathEndingWithDot) {
   const Extension* extension = InstallExtensionFromWebstore(

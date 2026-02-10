@@ -120,7 +120,7 @@ void ObjectBackedNativeHandler::Router(
     }
   }
   // This CHECK is *important*. Otherwise, we'll go around happily executing
-  // something random.  See crbug.com/548273.
+  // something random.  See crbug.com/40083092.
   CHECK(handler_function_value->IsExternal());
   static_cast<HandlerFunction*>(
       handler_function_value.As<v8::External>()->Value(

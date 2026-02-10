@@ -242,7 +242,7 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestChannelLeftOpenToReplyAsync) {
 
 // Tests that overriding the runtime equivalents of chrome.extension methods
 // with accessors that throw does not cause a crash on access. Regression test
-// for https://crbug.com/949170.
+// for https://crbug.com/41450968.
 TEST_F(ExtensionHooksDelegateTest, RuntimeAliasesCorrupted) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();

@@ -969,7 +969,7 @@ class ExtensionPrefsComponentExtension : public ExtensionPrefsTest {
                                                   valid_schemes));
 
     // Both extensions should be registered with the ExtensionPrefValueMap.
-    // See https://crbug.com/454513.
+    // See https://crbug.com/40403830.
     EXPECT_TRUE(prefs_.extension_pref_value_map()->CanExtensionControlPref(
         component_extension_->id(), "a_pref", false));
     EXPECT_TRUE(prefs_.extension_pref_value_map()->CanExtensionControlPref(

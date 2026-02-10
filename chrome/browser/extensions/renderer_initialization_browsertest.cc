@@ -13,8 +13,9 @@ namespace extensions {
 
 // Test that opening a window with an extension recorded as active, then
 // unloading the extension, all before the renderer is fully initialized,
-// doesn't crash. This addresses crbug.com/528026, where messages could be sent
-// out of order if an extension unloaded before the activation message was sent.
+// doesn't crash. This addresses crbug.com/40434302, where messages could be
+// sent out of order if an extension unloaded before the activation message was
+// sent.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
                        TestRendererStartupWithConflictingMessages) {
   // Load up an extension an begin opening an URL to a page within it. Since
@@ -40,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
 }
 
 // Tests that loading a file from a theme in a tab doesn't crash anything.
-// Another part of crbug.com/528026 and related.
+// Another part of crbug.com/40434302 and related.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
                        TestRendererInitializationWithThemesTab) {
   // Don't create "Cached Theme.pak" in the extension directory, so as not to

@@ -456,7 +456,7 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
 }
 
 // Test that using the PDF extension for tab updates is treated as a
-// renderer-initiated navigation. crbug.com/660498
+// renderer-initiated navigation. crbug.com/40085816
 TEST_F(TabsApiUnitTest, PDFExtensionNavigation) {
   auto manifest = base::DictValue()
                       .Set("name", "pdfext")
@@ -504,7 +504,7 @@ TEST_F(TabsApiUnitTest, PDFExtensionNavigation) {
 
 // Tests that non-validation failure in tabs.executeScript results in error, and
 // not bad_message.
-// Regression test for https://crbug.com/642794.
+// Regression test for https://crbug.com/40482984.
 TEST_F(TabsApiUnitTest, ExecuteScriptNoTabIsNonFatalError) {
   scoped_refptr<const Extension> extension_with_tabs_permission =
       CreateTabsExtension();

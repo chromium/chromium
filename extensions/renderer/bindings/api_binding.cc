@@ -40,7 +40,7 @@ std::string GetJSEnumEntryName(const std::string& original) {
   // The webstorePrivate API has an empty enum value for a result.
   // TODO(devlin): Work with the webstore team to see if we can move them off
   // this - they also already have a "success" result that they can use.
-  // See crbug.com/709120.
+  // See crbug.com/40514370.
   if (original.empty())
     return original;
 

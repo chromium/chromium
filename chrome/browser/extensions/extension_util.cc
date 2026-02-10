@@ -62,7 +62,7 @@ bool ExtensionsDisabledViaCommandLine(const base::CommandLine& command_line) {
 std::string ReloadExtension(const std::string& extension_id,
                             content::BrowserContext* context) {
   // When we reload the extension the ID may be invalidated if we've passed it
-  // by const ref everywhere. Make a copy to be safe. http://crbug.com/103762
+  // by const ref everywhere. Make a copy to be safe. http://crbug.com/40112884
   std::string id = extension_id;
   ExtensionRegistrar::Get(context)->ReloadExtension(extension_id);
   return id;
@@ -183,12 +183,13 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
     if (extension->location() == mojom::ManifestLocation::kComponent) {
       // This shouldn't be called for component extensions unless it is called
       // by sync, for syncable component extensions.
-      // See http://crbug.com/112290 and associated CLs for the sordid history.
+      // See http://crbug.com/40716400 and associated CLs for the sordid
+      // history.
       bool syncable = sync_helper::IsSyncableComponentExtension(extension);
 #if BUILDFLAG(IS_CHROMEOS)
       // For some users, the file manager app somehow ended up being synced even
-      // though it's supposed to be unsyncable; see crbug.com/576964. If the bad
-      // data ever gets cleaned up, this hack should be removed.
+      // though it's supposed to be unsyncable; see crbug.com/40452071. If the
+      // bad data ever gets cleaned up, this hack should be removed.
       syncable = syncable || extension->id() == file_manager::kFileManagerAppId;
 #endif
       DCHECK(syncable);

@@ -88,7 +88,7 @@ TEST(BaseSetOperatorsTest, CopyCorrectness) {
   EXPECT_EQ(3u, set2.size());
   EXPECT_EQ(1u, set2.count(3));
 
-  // Assigning should clear the set (https://crbug.com/908619).
+  // Assigning should clear the set (https://crbug.com/40603879).
   set2 = set1.Clone();
   EXPECT_EQ(set1, set2);
   EXPECT_EQ(2u, set2.size());
@@ -100,7 +100,7 @@ TEST(BaseSetOperatorsTest, CopyCorrectness) {
 // Validates that cloning the BaseSetOperators<T> (through various methods) does
 // not re-use the underlying items in the set - i.e., it should be a "deep"
 // copy.
-// Regression test for https://crbug.com/908619.
+// Regression test for https://crbug.com/40603879.
 TEST(BaseSetOperatorsTest, CloningDoesNotReuseItems) {
   TestPermissionSet set;
   set.insert(std::make_unique<TestPermission>(1));

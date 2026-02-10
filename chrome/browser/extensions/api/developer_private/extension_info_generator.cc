@@ -788,7 +788,7 @@ void ExtensionInfoGenerator::FillExtensionInfo(const Extension& extension,
           break;
         case ExtensionError::Type::kInternalError:
           // TODO(wittman): Support InternalError in developer tools:
-          // https://crbug.com/503427.
+          // https://crbug.com/41184632.
           break;
         case ExtensionError::Type::kNumErrorTypes:
           NOTREACHED();

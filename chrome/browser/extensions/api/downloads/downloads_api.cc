@@ -2112,7 +2112,7 @@ void ExtensionDownloadsEventRouter::DispatchEvent(
   // TODO(lazyboy): When |restrict_to_browser_context| is nullptr, this will
   // broadcast events to unrelated profiles, not just incognito. Fix this
   // by introducing "include incognito" option to Event constructor.
-  // https://crbug.com/726022.
+  // https://crbug.com/40522431.
   Profile* restrict_to_browser_context =
       (include_incognito && !profile_->IsOffTheRecord()) ? nullptr
                                                          : profile_.get();

@@ -122,7 +122,7 @@ void DispatchEventToExtensionsImpl(Profile* profile,
           // Furthermore, avoid calling GetPrimaryOTRProfile() if the profile
           // does not exist. Unnecessarily creating off the record profile is
           // undesirable, and can lead to a crash if incognito is disallowed for
-          // the current profile (see https://crbug.com/796814).
+          // the current profile (see https://crbug.com/41361877).
           if (!profile->HasPrimaryOTRProfile())
             continue;
           restrict_to_profile =

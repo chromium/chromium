@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_P(NativeMessagingLaunchExeTest,
 // The Host's filename deliberately contains the character '&' which causes the
 // Host to fail to launch if cmd.exe is used as an intermediary between the
 // extension and the host executable, unless extra quotes are used.
-// crbug.com/335558
+// crbug.com/41084583
 IN_PROC_BROWSER_TEST_P(NativeMessagingLaunchExeTest,
                        SendNativeMessageWinExeAmpersand) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(

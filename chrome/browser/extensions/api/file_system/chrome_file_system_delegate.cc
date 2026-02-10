@@ -117,14 +117,14 @@ bool ChromeFileSystemDelegate::ShowSelectFileDialog(
   }
 
   // TODO(asargent/benwells) - As a short term remediation for
-  // crbug.com/179010 we're adding the ability for an allowlisted extension to
+  // crbug.com/40964929 we're adding the ability for a allowlisted extension to
   // use this API since chrome.fileBrowserHandler.selectFile is ChromeOS-only.
   // Eventually we'd like a better solution and likely this code will go back
   // to being platform-app only.
 
   // Make sure there is an app window associated with the web contents, so that
   // platform apps cannot open the file picker from a background page.
-  // TODO(michaelpg): As a workaround for https://crbug.com/736930, allow this
+  // TODO(michaelpg): As a workaround for https://crbug.com/40527613, allow this
   // to work from a background page for non-platform apps (which, in practice,
   // is restricted to allowlisted extensions).
   if (extension->is_platform_app() &&

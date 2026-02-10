@@ -39,7 +39,7 @@ bool IsLocaleSupported() {
   // Don't bother installing pre-installed apps in locales where it is known
   // that they don't work.
   // TODO(rogerta): Do this check dynamically once the webstore can expose
-  // an API. See http://crbug.com/101357
+  // an API. See http://crbug.com/40102876
   std::string locale =
       extensions::ExtensionsBrowserClient::Get()->GetApplicationLocale();
   static constexpr const char* unsupported_locales[] = {"CN", "TR", "IR"};

@@ -238,7 +238,7 @@ void ChromeContentVerifierDelegate::VerifyFailed(
 
     // If a non-webstore extension has no computed hashes for content
     // verification, leave it as is for now.
-    // See https://crbug.com/958794#c22 for more details.
+    // See https://crbug.com/40625642#c22 for more details.
     // TODO(crbug.com/40669814): Schedule the extension for reinstall.
     if (!info.is_from_webstore) {
       if (!would_be_reinstalled_ids_.contains(extension_id)) {
@@ -303,7 +303,7 @@ bool ChromeContentVerifierDelegate::IsFromWebstore(
     const Extension& extension) const {
   // Use the InstallVerifier's |IsFromStore| method to avoid discrepancies
   // between which extensions are considered in-store.
-  // See https://crbug.com/766806 for details.
+  // See https://crbug.com/40540778 for details.
   if (!InstallVerifier::IsFromStore(extension, context_)) {
     // It's possible that the webstore update url was overridden for testing
     // so also consider extensions with the default (production) update url

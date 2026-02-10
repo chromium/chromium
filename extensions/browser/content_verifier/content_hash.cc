@@ -224,7 +224,7 @@ std::unique_ptr<VerifiedContents> ContentHash::StoreAndRetrieveVerifiedContents(
   // Parse the response to make sure it is valid json (on staging sometimes it
   // can be a login redirect html, xml file, etc. if you aren't logged in with
   // the right cookies).  TODO(asargent) - It would be a nice enhancement to
-  // move to parsing this in a sandboxed helper (https://crbug.com/372878).
+  // move to parsing this in a sandboxed helper (https://crbug.com/40365395).
   std::optional<base::Value> parsed = base::JSONReader::Read(
       *fetched_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed) {
@@ -429,7 +429,7 @@ void ContentHash::BuildComputedHashes(bool attempted_fetching_verified_contents,
   // However, existing behavior is to create computed_hashes.json only when
   // ContentVerifyJob's request to computed_hashes.json fails.
   // TODO(lazyboy): Fix this and use |will_create| condition from the comment
-  // above, see https://crbug.com/819832 for details.
+  // above, see https://crbug.com/40566167 for details.
   bool will_create =
       (force_build || !base::PathExists(computed_hashes_path)) &&
       // Note that we are not allowed to create computed_hashes.json file

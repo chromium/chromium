@@ -502,9 +502,9 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
   // 1. the extension has just been installed/updated
   // 2. chrome has updated and the extension had runtime.onInstalled listener.
   // TODO(devlin): Having the chrome_update event tied to onInstalled has caused
-  // some issues in the past, see crbug.com/451268. We might want to eventually
-  // decouple the chrome_updated event from onInstalled and/or throttle
-  // dispatching the chrome_updated event.
+  // some issues in the past, see crbug.com/41153454. We might want to
+  // eventually decouple the chrome_updated event from onInstalled and/or
+  // throttle dispatching the chrome_updated event.
   if (chrome_updated && !EventRouter::Get(context)->ExtensionHasEventListener(
                             extension_id, runtime::OnInstalled::kEventName)) {
     return;

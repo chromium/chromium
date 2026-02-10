@@ -75,7 +75,7 @@ class BookmarkManagerPrivateApiUnitTest : public ExtensionServiceTestBase {
 
 // Tests that running ExtensionFunction-s on deleted bookmark node gracefully
 // fails.
-// Regression test for https://crbug.com/739260.
+// Regression test for https://crbug.com/41328754.
 TEST_F(BookmarkManagerPrivateApiUnitTest, RunOnDeletedNode) {
   // Remove our only bookmark node.
   auto remove_function = base::MakeRefCounted<BookmarksRemoveFunction>();

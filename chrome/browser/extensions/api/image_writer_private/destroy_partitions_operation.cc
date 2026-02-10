@@ -17,7 +17,7 @@ namespace {
 
 // Number of bytes for the maximum partition table size.  GUID partition tables
 // reside in the second sector of the disk.  Disks can have up to 4k sectors.
-// See http://crbug.com/328246 for more information.
+// See http://crbug.com/41079977 for more information.
 constexpr size_t kPartitionTableSize = 2 * 4096;
 
 }  // namespace

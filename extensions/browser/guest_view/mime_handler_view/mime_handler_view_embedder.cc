@@ -224,7 +224,7 @@ void MimeHandlerViewEmbedder::DidCreateMimeHandlerViewGuest(
 
   // TODO(ekaramad): This URL is used to communicate with
   // MimeHandlerViewFrameContainer which is only the case if the embedder frame
-  // is the content frame of a plugin element (https://crbug.com/957373).
+  // is the content frame of a plugin element (https://crbug.com/40624996).
   guest_view->set_original_resource_url(resource_url_);
   guest_view::GuestViewManager::FromBrowserContext(
       web_contents()->GetBrowserContext())

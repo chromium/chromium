@@ -773,7 +773,7 @@ TEST_P(ExtensionProtocolsTest, InvalidBackgroundScriptRequest) {
 }
 
 // Tests that a URL request for main frame or subframe from an extension
-// succeeds, but subresources fail. See http://crbug.com/312269.
+// succeeds, but subresources fail. See http://crbug.com/40338742.
 TEST_P(ExtensionProtocolsTest, AllowFrameRequests) {
   scoped_refptr<const Extension> extension =
       CreateTestExtension("foo", false, GetParam());

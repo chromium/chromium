@@ -50,7 +50,7 @@ class ChooserDialogViewTest : public ChromeViewsTestBase {
     widget_->Show();
 #if BUILDFLAG(IS_MAC)
     // Necessary for Mac. On other platforms this happens in the focus
-    // manager, but it's disabled for Mac due to crbug.com/650859.
+    // manager, but it's disabled for Mac due to crbug.com/40486728.
     parent_widget_->Activate();
     widget_->Activate();
 #endif

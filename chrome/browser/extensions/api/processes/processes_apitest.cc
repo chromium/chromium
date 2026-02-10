@@ -32,8 +32,7 @@ class ProcessesApiTest : public extensions::ExtensionApiTest {
   }
 };
 
-
-// This test is flaky. https://crbug.com/598445
+// This test is flaky. https://crbug.com/40462635
 IN_PROC_BROWSER_TEST_F(ProcessesApiTest, DISABLED_Processes) {
   ASSERT_TRUE(RunExtensionTest("processes/api")) << message_;
 }

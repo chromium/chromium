@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_WaitForRequest) {
 
 // Tests that the lazy background page stays alive until all visible views are
 // closed.
-// http://crbug.com/175778; test fails frequently on OS X
+// http://crbug.com/40963152; test fails frequently on OS X
 // TODO: crbug.com/379109454 - Fix flakiness of the test.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_WaitForNTP DISABLED_WaitForNTP
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_WaitForNTP) {
 
 // Tests that an incognito split mode extension gets 2 lazy background pages,
 // and they each load and unload at the proper times.
-// See crbug.com/248437
+// See crbug.com/41017045
 IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_IncognitoSplitMode) {
   // Open incognito window.
   Browser* incognito_browser =
@@ -639,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, EventDispatchToTab) {
 
 // Tests that the lazy background page will be unloaded if the onSuspend event
 // handler calls an API function such as chrome.storage.local.set().
-// See: http://crbug.com/296834
+// See: http://crbug.com/40333980
 IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, OnSuspendUseStorageApi) {
   EXPECT_TRUE(LoadExtensionAndWait("on_suspend"));
 }
@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, OnSuspendUseStorageApi) {
 
 // Ensure that the events page of an extension is properly torn down and the
 // process does not linger around.
-// See https://crbug.com/612668.
+// See https://crbug.com/41254364.
 IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, EventProcessCleanup) {
   ASSERT_TRUE(LoadExtensionAndWait("event_page_with_web_iframe"));
 

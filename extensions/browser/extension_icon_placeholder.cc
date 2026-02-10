@@ -73,7 +73,7 @@ ExtensionIconPlaceholder::ExtensionIconPlaceholder(
       icon_size_(size),
       base_image_(GetBackgroundImageForIconSize(size)) {
   // Remove RTL formatting characters, if any, that may pad the extension name.
-  // See https://crbug.com/869358
+  // See https://crbug.com/41405074
   std::u16string sanitized_name = base::UTF8ToUTF16(std::string(name));
   base::i18n::UnadjustStringForLocaleDirection(&sanitized_name);
 

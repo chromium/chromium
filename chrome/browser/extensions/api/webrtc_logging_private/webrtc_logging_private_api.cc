@@ -86,7 +86,7 @@ std::string HashIdWithOrigin(const std::string& security_origin,
 }  // namespace
 
 // TODO(hlundin): Consolidate with WebrtcAudioPrivateFunction and improve.
-// http://crbug.com/710371
+// http://crbug.com/40515008
 content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
     const api::webrtc_logging_private::RequestInfo& request,
     const std::string& security_origin,

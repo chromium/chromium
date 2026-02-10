@@ -336,7 +336,7 @@ TEST(ExtensionTest, MimeTypeSniffing) {
   // Finally, an extension that we pack right. This. Instant.
   // This verifies that the modern extensions Chrome packs are always
   // recognized as the extension mime type.
-  // Regression test for https://crbug.com/831284.
+  // Regression test for https://crbug.com/40571035.
   TestExtensionDir test_dir;
   test_dir.WriteManifest(R"(
       {

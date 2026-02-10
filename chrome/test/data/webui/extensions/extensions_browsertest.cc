@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, Uninstall) {
   RunTestCase("Uninstall");
 }
 
-// Flaky since r621915: https://crbug.com/922490
+// Flaky since r621915: https://crbug.com/41435924
 IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest,
                        DISABLED_UninstallFromDetails) {
   RunTestCase("UninstallFromDetails");
@@ -777,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsPackDialogTest, Interaction) {
 }
 
 // Disabling on Windows due to flaky timeout on some build bots.
-// http://crbug.com/832885
+// http://crbug.com/41383244
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_PackSuccess DISABLED_PackSuccess
 #else
@@ -792,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsPackDialogTest, PackError) {
 }
 
 // Temporarily disabling on Mac due to flakiness.
-// http://crbug.com/877109
+// http://crbug.com/40590678
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_PackWarning DISABLED_PackWarning
 #else

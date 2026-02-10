@@ -390,7 +390,8 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, WebUIBindings) {
 }
 
 // Tests creating an API from a context that hasn't been initialized yet
-// by doing so in a parent frame. Regression test for https://crbug.com/819968.
+// by doing so in a parent frame. Regression test for
+// https://crbug.com/41375376.
 IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, APICreationFromNewContext) {
   embedded_test_server()->ServeFilesFromDirectory(test_data_dir_);
   ASSERT_TRUE(StartEmbeddedTestServer());

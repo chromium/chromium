@@ -45,7 +45,7 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
 
   // If the request was for NoStatePrefetch, abort the prefetcher and do not
   // continue. This is because plugins cancel NoStatePrefetch, see
-  // http://crbug.com/343590.
+  // http://crbug.com/40351590.
   prerender::NoStatePrefetchContents* no_state_prefetch_contents =
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           web_contents);

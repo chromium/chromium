@@ -255,7 +255,7 @@ struct FilterResponseCookie : ResponseCookie {
   FilterResponseCookie Clone() const;
 
   // This ignores all of the fields of the base class ResponseCookie. Why?
-  // https://crbug.com/916248
+  // https://crbug.com/40607023
   auto operator<=>(const FilterResponseCookie& rhs) const = default;
 
   std::optional<int> age_lower_bound;

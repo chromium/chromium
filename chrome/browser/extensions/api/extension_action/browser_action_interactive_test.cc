@@ -88,7 +88,7 @@ bool IsDownloadSurfaceVisible(BrowserWindow* window) {
 // BrowserProcessImpl::StartTearDown().
 // TODO(tapted): The existence of this helper is probably a bug. Extension
 // hosts do not currently block shutdown the way a browser tab does. Maybe they
-// should. See http://crbug.com/729476.
+// should. See http://crbug.com/41323185.
 class PopupHostWatcher : public ExtensionHostRegistry::Observer {
  public:
   explicit PopupHostWatcher(content::BrowserContext* browser_context) {
@@ -173,7 +173,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
   void TearDownOnMainThread() override {
     // Note browser windows are closed in PostRunTestOnMainThread(), which is
     // called after this. But relying on the window close to close the
-    // extension host can cause flakes. See http://crbug.com/729476.
+    // extension host can cause flakes. See http://crbug.com/41323185.
     // Waiting here requires individual tests to ensure their popup has closed.
     host_watcher_->Wait();
     EXPECT_EQ(host_watcher_->created(), host_watcher_->destroyed());
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
 
 // Tests that an extension can open a popup in the last active incognito window
 // even from a background page with a non-incognito profile.
-// (crbug.com/448853)
+// (crbug.com/40401189)
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                        TestOpenPopupIncognitoFromBackground) {
   const Extension* extension =
@@ -727,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, MAYBE_BrowserActionPopup) {
 }
 
 // Test that a browser action popup can download data URLs. See
-// https://crbug.com/821219
+// https://crbug.com/41376088
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                        BrowserActionPopupDownload) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -757,7 +757,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
 
 // Test that we don't try and show a browser action popup with
 // browserAction.openPopup if there is no toolbar (e.g., for web popup windows).
-// Regression test for crbug.com/584747.
+// Regression test for crbug.com/40455833.
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, OpenPopupOnPopup) {
   // Open a new web popup window.
   NavigateParams params(browser(), GURL("http://www.google.com/"),
@@ -821,7 +821,7 @@ class RenderFrameChangedWatcher : public content::WebContentsObserver {
 
 // Test that a browser action popup with a web iframe works correctly. The
 // iframe is expected to run in a separate process.
-// See https://crbug.com/546267.
+// See https://crbug.com/40441356.
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                        BrowserActionPopupWithIframe) {
   ASSERT_TRUE(embedded_test_server()->Start());

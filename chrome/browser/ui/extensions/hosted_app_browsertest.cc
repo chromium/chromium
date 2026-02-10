@@ -854,7 +854,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest,
 }
 
 // Check that a subframe on a regular web page can navigate to a URL that
-// redirects to a platform app.  https://crbug.com/721949.
+// redirects to a platform app.  https://crbug.com/41319247.
 IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, SubframeRedirectsToHostedApp) {
   // This test only applies to hosted apps.
   if (app_type() != AppType::HOSTED_APP) {
@@ -1385,7 +1385,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, PopupsInsideHostedApp) {
 
 // This test was flaky on Win7 because it was bumping up against a 45 second
 // timeout. If it starts flaking on Windows 10+, it should be broken up into
-// smaller tests. See https://crbug.com/807471.
+// smaller tests. See https://crbug.com/40560649.
 // TODO(crbug.com/335469702): Flaky on Linux ChromiumOS MSAN.
 #if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 #define MAYBE_FromOutsideHostedApp DISABLED_FromOutsideHostedApp
@@ -1634,7 +1634,7 @@ class HostedAppIsolatedOriginTest : public HostedAppProcessModelTest {
 // origin is allowed to load in a privileged app process. Also check that a
 // very.isolated.com URL, which corresponds to very.isolated.com isolated
 // origin but is outside the hosted app's extent, ends up in its own non-app
-// process. See https://crbug.com/799638.
+// process. See https://crbug.com/40557053.
 IN_PROC_BROWSER_TEST_P(HostedAppIsolatedOriginTest,
                        NestedIsolatedOriginStaysOutsideApp) {
   // Set up and launch the hosted app.
@@ -1786,7 +1786,7 @@ class HostedAppSitePerProcessTest : public HostedAppProcessModelTest {
 
 // Check that two different cross-site hosted apps won't share a process even
 // when over process limit, when in --site-per-process mode.  See
-// https://crbug.com/811939.
+// https://crbug.com/40562755.
 IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
                        DoNotShareProcessWhenOverProcessLimit) {
   // Set the process limit to 1.
@@ -1841,7 +1841,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
 
 // Check that when a hosted app covers multiple sites in its web extent, these
 // sites do not share a process in site-per-process mode. See
-// https://crbug.com/791796.
+// https://crbug.com/40553103.
 IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
                        DoNotShareProcessForDifferentSitesCoveredBySameApp) {
   // Set up a hosted app covering http://foo.com and http://bar.com, and launch

@@ -846,7 +846,7 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, CrossProcess) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/crossProcess")) << message_;
 }
 
-// crbug.com/708139.
+// crbug.com/40513925.
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, DISABLED_CrossProcessFragment) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 

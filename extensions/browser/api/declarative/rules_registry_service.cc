@@ -189,7 +189,7 @@ void RulesRegistryService::EnsureDefaultRulesRegistriesRegistered() {
                        rules_registry_ids::kDefaultRulesRegistryID)));
 
   // Only register the default web request rules registry if the
-  // declarativeWebRequest API is enabled. See crbug.com/693243.
+  // declarativeWebRequest API is enabled. See crbug.com/41302429.
   const bool is_api_enabled =
       FeatureProvider::GetAPIFeature("declarativeWebRequest")
           ->IsAvailableToEnvironment(

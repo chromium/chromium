@@ -500,7 +500,7 @@ void ActiveTabWithServiceTest::SetUp() {
 
 // Tests that an extension can only capture file:// URLs with the active tab
 // permission when it has file access granted.
-// Regression test for https://crbug.com/810220.
+// Regression test for https://crbug.com/40090425.
 TEST_F(ActiveTabWithServiceTest, FileURLs) {
   InitializeEmptyExtensionService();
 

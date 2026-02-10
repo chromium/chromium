@@ -566,7 +566,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Check that navigations to the Chrome Web Store succeed when the Chrome Web
 // Store URL's origin is set as an isolated origin via the
-// --isolate-origins flag.  See https://crbug.com/788837.
+// --isolate-origins flag.  See https://crbug.com/40551716.
 IN_PROC_BROWSER_TEST_P(ChromeWebStoreInIsolatedOriginTest,
                        NavigationLoadsChromeWebStore) {
   // Sanity check that a SiteInstance for a Chrome Web Store URL requires a
@@ -674,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest,
 
 // Check that whether we can access the window object of a window.open()'d url
 // to an extension is the same regardless of whether the extension is installed.
-// https://crbug.com/598265.
+// https://crbug.com/40083949.
 IN_PROC_BROWSER_TEST_F(
     ProcessManagementTest,
     TestForkingBehaviorForUninstalledAndNonAccessibleExtensions) {

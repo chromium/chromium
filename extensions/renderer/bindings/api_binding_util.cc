@@ -98,7 +98,7 @@ bool IsContextValid(v8::Local<v8::Context> context) {
   if (is_context_valid) {
     // As long as the context is valid, there should be an associated
     // JSRunner.
-    // TODO(devlin): (Likely) Remove this once https://crbug.com/819968, since
+    // TODO(devlin): (Likely) Remove this once https://crbug.com/41375376, since
     // this shouldn't necessarily be a hard dependency. At least downgrade it
     // to a DCHECK.
     CHECK(JSRunner::Get(context));

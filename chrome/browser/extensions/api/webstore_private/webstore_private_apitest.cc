@@ -394,7 +394,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
     ExtensionWebstorePrivateApiTest::SetUpCommandLine(command_line);
     // Shortens the merge session timeout from 20 to 1 seconds to speed up the
     // test by about 19 seconds.
-    // TODO (crbug.com/995575): figure out why this switch speeds up the test,
+    // TODO (crbug.com/41477104): figure out why this switch speeds up the test,
     // and fix the test setup so this is not required.
 #if BUILDFLAG(IS_CHROMEOS)
     command_line->AppendSwitch(::switches::kShortMergeSessionTimeoutForTest);

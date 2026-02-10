@@ -131,7 +131,7 @@ void ExtensionRegistrar::AddExtension(
 
   if (!Manifest::IsValidLocation(extension->location())) {
     // TODO(devlin): We should *never* add an extension with an invalid
-    // location, but some bugs (e.g. crbug.com/692069) seem to indicate we do.
+    // location, but some bugs (e.g. crbug.com/41301792) seem to indicate we do.
     // Track down the cases when this can happen, and remove this
     // DumpWithoutCrashing() (possibly replacing it with a CHECK).
     DEBUG_ALIAS_FOR_CSTR(extension_id_copy, extension->id().c_str(), 33);
@@ -642,7 +642,7 @@ bool ExtensionRegistrar::UninstallExtension(
   // managed extensions.
   // Shared modules being uninstalled will also set |external_uninstall| to true
   // so that we can guarantee users don't uninstall a shared module.
-  // (crbug.com/273300)
+  // (crbug.com/40329049)
   // TODO(rdevlin.cronin): This is probably not right. We should do something
   // else, like include an enum IS_INTERNAL_UNINSTALL or IS_USER_UNINSTALL so
   // we don't do this.
@@ -1090,7 +1090,7 @@ void ExtensionRegistrar::DoReloadExtension(
   // Ignore attempts to reload a blocklisted or blocked extension. Sometimes
   // this can happen in a convoluted reload sequence triggered by the
   // termination of a blocklisted or blocked extension and a naive attempt to
-  // reload it. For an example see http://crbug.com/373842.
+  // reload it. For an example see http://crbug.com/41107702.
   if (registry_->blocklisted_extensions().Contains(extension_id) ||
       registry_->blocked_extensions().Contains(extension_id)) {
     return;

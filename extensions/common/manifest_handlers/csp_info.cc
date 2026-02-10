@@ -95,7 +95,7 @@ const char kDefaultPlatformAppContentSecurityPolicy[] =
 int GetValidatorOptions(Extension* extension) {
   int options = csp_validator::OPTIONS_NONE;
 
-  // crbug.com/146487
+  // crbug.com/40275793
   if (extension->GetType() == Manifest::Type::kExtension ||
       extension->GetType() == Manifest::Type::kLegacyPackagedApp) {
     options |= csp_validator::OPTIONS_ALLOW_UNSAFE_EVAL;

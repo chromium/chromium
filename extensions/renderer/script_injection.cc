@@ -208,7 +208,7 @@ ScriptInjection::InjectionResult ScriptInjection::Inject(
 
   // This can happen if the extension specified a script to
   // be run in multiple rules, and the script has already run.
-  // See crbug.com/631247.
+  // See crbug.com/41265796.
   if (!should_inject_js && !should_inject_or_remove_css) {
     return InjectionResult::kFinished;
   }

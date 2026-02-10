@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   //
   // TODO(alexmos): Make this check stricter, as extensions are now fully
   // isolated. The failure mode is that the request is canceled and we stay on
-  // public.html (see https://crbug.com/656752).
+  // public.html (see https://crbug.com/40085725).
   EXPECT_NE("Private",
             EvalJs(ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0),
                    "document.body.innerText"));
@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
       non_web_accessible_url, "remote-frame", non_web_accessible_url);
 }
 
-// This is a regression test for https://crbug.com/442579.
+// This is a regression test for https://crbug.com/40081020.
 IN_PROC_BROWSER_TEST_F(
     ExtensionResourceRequestPolicyTest,
     WebNavigationToNonWebAccessibleResource_FormTargetingNewWindow) {
@@ -542,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Inject and submit a form that will navigate a new window to a
   // non-web-accessible-resource.  This replicates the repro steps
-  // from https://crbug.com/442579 (although a simpler repro might
+  // from https://crbug.com/40081020 (although a simpler repro might
   // exist - window.open(non-war-url, '_blank')).
   content::WebContentsAddedObserver new_window_observer;
   content::WebContents* old_window =
@@ -761,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(
       inaccessible_resource, "local-frame", url_blocked_by_renderer);
 }
 
-// Regression test for crbug.com/649869. Ensures that on navigation to an
+// Regression test for crbug.com/40486262. Ensures that on navigation to an
 // invalid extension resource (or more generally for navigations blocked by the
 // browser with net::ERR_BLOCKED_BY_CLIENT), the error page doesn't incorrectly
 // attribute extensions as the cause of the blocked request.

@@ -23,7 +23,7 @@ void ChromeExtensionHostDelegate::CreateTab(
     bool user_gesture) {
   // Verify that the browser is not shutting down. It can be the case if the
   // call is propagated through a posted task that was already in the queue when
-  // shutdown started. See crbug.com/625646
+  // shutdown started. See crbug.com/40475418
   if (ExtensionsBrowserClient::Get()->IsShuttingDown()) {
     return;
   }

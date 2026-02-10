@@ -1221,8 +1221,8 @@ TEST_P(SingleRulesetTest, ExtensionWithIndexedRuleset) {
   LoadAndExpectSuccess();
 }
 
-// Test for crbug.com/931967. Ensures that adding dynamic rules in the midst of
-// an initial ruleset load (in response to OnExtensionLoaded) behaves
+// Test for crbug.com/40613901. Ensures that adding dynamic rules in the midst
+// of an initial ruleset load (in response to OnExtensionLoaded) behaves
 // predictably and doesn't DCHECK.
 TEST_P(SingleRulesetTest, DynamicRulesetRace) {
   RulesetManagerObserver ruleset_waiter(manager());

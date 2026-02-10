@@ -426,7 +426,7 @@ void RendererStartupHelper::ActivateExtensionInProcess(
     const Extension& extension,
     content::RenderProcessHost* process) {
   // The extension should have been loaded already. Dump without crashing to
-  // debug crbug.com/528026.
+  // debug crbug.com/40434302.
   if (!extension_process_map_.contains(extension.id())) {
     DUMP_WILL_BE_NOTREACHED()
         << "Extension " << extension.id() << " activated before loading";

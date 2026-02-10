@@ -91,7 +91,7 @@ bool GetManifestPath(HKEY root_key,
 
 // If the Host is an executable, we will invoke it directly to avoid problems
 // if CMD.exe is unavailable due to OS policy or other configuration issues
-// on the client. See https://crbug.com/335558 for details.
+// on the client. See https://crbug.com/41084583 for details.
 base::Process LaunchNativeExeDirectly(const std::wstring& command,
                                       base::LaunchOptions& options,
                                       const std::wstring& in_pipe_name,

@@ -443,7 +443,7 @@ void ServiceWorkerTaskQueue::OnWorkerStartFail(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!IsCurrentActivation(context_id.extension_id, context_id.token)) {
     // This can happen when the registration got unregistered right before we
-    // tried to start it. See crbug.com/999027 for details.
+    // tried to start it. See crbug.com/40642623 for details.
     DCHECK(!GetWorkerState(context_id));
     // In that case, we expect `DeactivateExtension` to have been called
     // already, and for the registration records to have already been cleared.

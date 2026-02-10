@@ -94,7 +94,7 @@ void Operation::StartWriteOnUIThread(const std::string& target_path,
                                      base::OnceClosure continuation) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(haven): Image Burner cannot handle multiple burns. crbug.com/373575
+  // TODO(haven): Image Burner cannot handle multiple burns. crbug.com/41107511
   ImageBurnerClient* burner = ImageBurnerClient::Get();
 
   burner->SetEventHandlers(

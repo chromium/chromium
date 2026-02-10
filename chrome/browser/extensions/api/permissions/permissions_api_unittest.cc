@@ -216,7 +216,7 @@ TEST_F(PermissionsAPIUnitTest, Contains) {
   EXPECT_EQ(expected_has_permission, has_permission);
 
   // Tests calling contains() with <all_urls> with and without file access.
-  // Regression test for https://crbug.com/931816.
+  // Regression test for https://crbug.com/41441229.
   EXPECT_TRUE(RunContainsFunction("<all_urls>",
                                   R"([{"origins": ["<all_urls>"]}])",
                                   false /* allow file access */));
@@ -692,7 +692,7 @@ TEST_F(PermissionsAPIUnitTest, RequestingChromeURLs) {
 }
 
 // Tests requesting the a file:-scheme pattern with and without file
-// access granted. Regression test for https://crbug.com/932703.
+// access granted. Regression test for https://crbug.com/40614226.
 TEST_F(PermissionsAPIUnitTest, RequestingFilePermissions) {
   // We need a "real" extension here, since toggling file access requires
   // reloading the extension to re-initialize permissions.

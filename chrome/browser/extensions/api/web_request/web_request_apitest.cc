@@ -1222,7 +1222,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
 // Test that the webRequest events are dispatched with the expected details when
 // a frame or tab is immediately removed after starting a request.
-// Flaky on all platforms. See crbug.com/780369 for detail.
+// Flaky on all platforms. See crbug.com/40547579 for detail.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        DISABLED_WebRequestUnloadImmediately) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -1332,7 +1332,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
 }
 
 // This is flaky on wide variety of platforms (beyond that tracked previously in
-// https://crbug.com/998369). See https://crbug.com/1026001.
+// https://crbug.com/41478509). See https://crbug.com/1026001.
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
                        DISABLED_WebRequestAuthRequiredParallel) {
   const bool incognito = GetEnableIncognito();
@@ -1527,9 +1527,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       << message_;
 }
 
-// This test times out regularly on win_rel trybots. See http://crbug.com/122178
+// This test times out regularly on win_rel trybots. See crbug.com/40773655
 // Also on Linux/ChromiumOS debug, ASAN and MSAN builds.
-// https://crbug.com/670415
+// https://crbug.com/40496163
 // Slower and flaky tests should be isolated in the "slow" group of tests in
 // the JS file. This prevents losing test coverage for those tests that are
 // not causing timeouts and flakes.
@@ -1725,7 +1725,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 // This test fixture runs all of the broken and flaky tests. It's disabled
 // until these tests are fixed and moved to the set of tests that aren't
 // broken or flaky. Should tests become flaky, they can be moved here.
-// See https://crbug.com/846555.
+// See https://crbug.com/41391042.
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        DISABLED_WebRequestDeclarative1Broken) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -2160,7 +2160,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   // though the request is for b.com (and the extension only has access to
   // a.com), it should still see the request. This is necessary for extensions
   // with webRequest to work with runtime host permissions.
-  // https://crbug.com/851722.
+  // https://crbug.com/40580327.
   auto reload_page_dialog_reset =
       ReloadPageDialogController::AcceptDialogForTesting(true);
   runner->RunAction(extension, true /* grant tab permissions */);
@@ -2174,7 +2174,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
 // Tests behavior when an extension has withheld access to a request's URL, but
 // not the initiator's (tab's) URL. Regression test for
-// https://crbug.com/891586.
+// https://crbug.com/41418607.
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WithheldHostPermissionsForCrossOriginWithoutInitiator) {
   content::SetupCrossSiteRedirector(embedded_test_server());
@@ -2521,7 +2521,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebSocketRequestOnWorker) {
 
 // Tests that a clean close from the server is not reported as an error when
 // there is a race between OnDropChannel and SendFrame.
-// Regression test for https://crbug.com/937790.
+// Regression test for https://crbug.com/40616409.
 //
 // TODO(b:332825952): Flaky on linux-chromeos-dbg
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2722,7 +2722,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
   {
     // example.com should also succeed since non-navigation browser-initiated
-    // requests are hidden from extensions. See crbug.com/884932.
+    // requests are hidden from extensions. See crbug.com/40092481.
     SCOPED_TRACE("example.com with Profile's url loader");
     make_browser_request(url_loader_factory, example_url, kExampleFullContent,
                          net::OK);
@@ -2824,7 +2824,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextTypeMV3,
 #endif  // defined(MEMORY_SANITIZER) || defined(UNDEFINED_SANITIZER) ||
         // defined(ADDRESS_SANITIZER)
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// Regression test for http://crbug.com/878366.
+// Regression test for http://crbug.com/40591185.
 // TODO(crbug.com/371324825): Port to desktop Android. The test crashes during
 // Profile creation because Android requires a "startup data profile key".
 IN_PROC_BROWSER_TEST_F(
@@ -3120,7 +3120,7 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ::testing::Values(ContextType::kServiceWorker));
 
 // Ensures that requests made by the NTP Instant renderer are hidden from the
-// Web Request API. Regression test for crbug.com/797461.
+// Web Request API. Regression test for crbug.com/40089982.
 IN_PROC_BROWSER_TEST_P(NTPInterceptionWebRequestAPITest,
                        NTPRendererRequestsHidden) {
   // Loads an extension which tries to intercept requests to
@@ -4369,7 +4369,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Ensure we don't strip off initiator incorrectly in web request events when
 // both the normal and incognito contexts are active. Regression test for
-// crbug.com/934398.
+// crbug.com/40614965.
 // TODO(crbug.com/41493389): enable this flaky test
 // Both Initiator Incognito tests build but don't run on desktop android.
 #if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
@@ -4436,7 +4436,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
 // Ensure we don't strip off initiator incorrectly in web request events when
 // both the normal and incognito contexts are active. Regression test for
-// crbug.com/934398.
+// crbug.com/40614965.
 // Flaky on Linux. See http://crbug.com/1423252
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_Initiator_SplitIncognito DISABLED_Initiator_SplitIncognito
@@ -4499,7 +4499,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleXHRRequest(
   return http_response;
 }
 
-// Regression test for http://crbug.com/971206. The responseHeaders should still
+// Regression test for crbug.com/41463381. The responseHeaders should still
 // be present in onBeforeRedirect even for HSTS upgrade.
 IN_PROC_BROWSER_TEST_P(
     ExtensionWebRequestApiTestWithContextTypeForHstsTopLevelNavigationOnly,

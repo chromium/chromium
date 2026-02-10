@@ -29,7 +29,7 @@ class TestExtensionsBrowserClient;
 //
 // NOTE: Use this class only in extensions_unittests, not in Chrome unit_tests.
 // In Chrome those factories assume any BrowserContext is a Profile and will
-// cause crashes if it is not. http://crbug.com/395820
+// cause crashes if it is not. http://crbug.com/41121315
 class ExtensionsTest : public testing::Test {
  public:
   template <typename... Args>

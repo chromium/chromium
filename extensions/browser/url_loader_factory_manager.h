@@ -26,7 +26,7 @@ class ScriptInjectionTracker;
 // This class manages URLLoaderFactory objects that handle network requests that
 // require extension-specific permissions (related to relaxed ORB and CORS).
 //
-// See also https://crbug.com/846346 for motivation for having separate
+// See also https://crbug.com/40577839 for motivation for having separate
 // URLLoaderFactory objects for content scripts.
 class URLLoaderFactoryManager {
  public:

@@ -136,7 +136,7 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
   // Note: Because this requires disk I/O, the task runner passed should use
   // TaskShutdownBehavior::SKIP_ON_SHUTDOWN to ensure that either the task is
   // fully run (if initiated before shutdown) or not run at all (if shutdown is
-  // initiated first). See crbug.com/235525.
+  // initiated first). See crbug.com/41009306.
   // TODO(devlin): SKIP_ON_SHUTDOWN is also not quite sufficient for this. We
   // should probably instead be using base::ImportantFileWriter or similar.
   SandboxedUnpacker(

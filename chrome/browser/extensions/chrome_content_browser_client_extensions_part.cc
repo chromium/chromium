@@ -274,8 +274,8 @@ bool ChromeContentBrowserClientExtensionsPart::
   // transitioning from app to non-app URLs if there exists another app
   // WebContents that might script this one.  These navigations should stay in
   // the app process to not break scripting when a hosted app opens a same-site
-  // popup. See https://crbug.com/718516 and https://crbug.com/828720 and
-  // https://crbug.com/859062.
+  // popup. See https://crbug.com/40518928 and https://crbug.com/41380648 and
+  // https://crbug.com/40583115.
   if (!is_outermost_main_frame)
     return false;
   size_t candidate_active_contents_count =
@@ -284,7 +284,7 @@ bool ChromeContentBrowserClientExtensionsPart::
   // Intentionally only checks for hosted app effective URLs and not NTP-based
   // effective URLs (which ChromeContentBrowserClient::GetEffectiveURL would
   // include as well). This avoids keeping same-site popups in the NTP's
-  // process, per https://crbug.com/859062.
+  // process, per https://crbug.com/40583115.
   bool src_has_effective_url = HasEffectiveUrl(browser_context, candidate_url);
   bool dest_has_effective_url =
       HasEffectiveUrl(browser_context, destination_url);
@@ -530,7 +530,7 @@ bool ChromeContentBrowserClientExtensionsPart::
   // iframe.  This mainly reduces the likelihood of problems with main frames
   // and makes it more likely that the subframe process will be shown near the
   // extension in Chrome's task manager for blame purposes. See
-  // https://crbug.com/899418.
+  // https://crbug.com/40599941.
   const Extension* extension =
       ExtensionRegistry::Get(
           outermost_main_frame->GetSiteInstance()->GetBrowserContext())
@@ -567,7 +567,7 @@ bool ChromeContentBrowserClientExtensionsPart::
   // subframes on a web main frame are also placed in the same BrowsingInstance
   // (by the content/ part of ShouldSwapBrowsingInstancesForNavigation); this
   // check is just doing the same for top-level frames.  See
-  // https://crbug.com/590068.
+  // https://crbug.com/41241280.
 
   // First we check for navigations which are transitioning to/from the URL
   // associated with the new Webstore.
@@ -685,7 +685,7 @@ std::vector<url::Origin> ChromeContentBrowserClientExtensionsPart::
   std::vector<url::Origin> list;
 
   // Require a dedicated process for the webstore origin.  See
-  // https://crbug.com/939108.
+  // https://crbug.com/40094229.
   list.push_back(url::Origin::Create(extension_urls::GetWebstoreLaunchURL()));
   list.push_back(
       url::Origin::Create(extension_urls::GetNewWebstoreLaunchURL()));

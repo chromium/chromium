@@ -478,7 +478,7 @@ bool ExtensionDevToolsClientHost::Attach() {
   }
 
   // We allow policy-installed extensions to circumvent the normal
-  // infobar warning. See crbug.com/693621.
+  // infobar warning. See crbug.com/41302695.
   const bool suppress_infobar =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kSilentDebuggerExtensionAPI) ||

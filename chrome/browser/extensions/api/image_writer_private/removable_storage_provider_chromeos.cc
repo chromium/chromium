@@ -19,7 +19,7 @@ using ::ash::disks::DiskMountManager;
 // The Chrome OS implementation takes advantage of the Chrome OS
 // DiskMountManager.  This does not expose whether the device is a removable or
 // fixed disk.  In fact, some SD cards will present themselves as fixed disks
-// (see http://crbug.com/340761).  Thus we just expose all USB and SD drives.
+// (see http://crbug.com/41087847).  Thus we just expose all USB and SD drives.
 // static
 scoped_refptr<StorageDeviceList>
 RemovableStorageProvider::PopulateDeviceList() {

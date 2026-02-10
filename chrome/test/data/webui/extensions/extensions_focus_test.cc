@@ -32,7 +32,7 @@ class CrExtensionsOptionsPageTest : public ExtensionSettingsTestBase {
   }
 };
 
-// Disabled due to flakiness, see https://crbug.com/945654
+// Disabled due to flakiness, see https://crbug.com/40620023
 IN_PROC_BROWSER_TEST_F(CrExtensionsOptionsPageTest, DISABLED_All) {
   set_test_loader_host(chrome::kChromeUIExtensionsHost);
   InstallExtensionWithInPageOptions();

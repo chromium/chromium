@@ -47,7 +47,7 @@ class ExtensionGarbageCollectorChromeOS : public ExtensionGarbageCollector {
   // TODO(rkc): HACK alert - this is only in place to allow the
   // kiosk_mode_screensaver to prevent its extension from getting garbage
   // collected. Remove this once KioskModeScreensaver is removed.
-  // See crbug.com/280363
+  // See crbug.com/41042294
   bool disable_garbage_collection_;
 
   // Shared extensions need to be processed only once but instances of this

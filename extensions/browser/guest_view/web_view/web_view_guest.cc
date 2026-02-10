@@ -2075,7 +2075,7 @@ void WebViewGuest::EnterFullscreenModeForTab(
   // TODO(lazyboy): Right now the guest immediately goes fullscreen within its
   // bounds. If the embedder denies the permission then we will see a flicker.
   // Once we have the ability to "cancel" a renderer/ fullscreen request:
-  // http://crbug.com/466854 this won't be necessary and we should be
+  // http://crbug.com/41162545 this won't be necessary and we should be
   // Calling SetFullscreenState(true) once the embedder allowed the request.
   // Otherwise we would cancel renderer/ fullscreen if the embedder denied.
   SetFullscreenState(true);

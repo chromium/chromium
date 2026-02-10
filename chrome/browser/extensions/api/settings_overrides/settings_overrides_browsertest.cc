@@ -308,12 +308,12 @@ class ExtensionsDisabledWithSettingsOverrideAPI : public ExtensionBrowserTest {
   FeatureSwitch::ScopedOverride prompt_for_external_extensions_;
 };
 
-// The following test combo is a regression test for https://crbug.com/828295.
+// The following test combo is a regression test for https://crbug.com/41380408.
 // When extensions are disabled with --disable-extensions, no
 // extension-controlled prefs were loaded. However, external extensions (such as
 // those from policy or specified in the registry) are still loaded with
 // --disable-extensions (this itself is somewhat strange; see
-// https://crbug.com/833540). This caused a CHECK failure in the settings
+// https://crbug.com/41383647). This caused a CHECK failure in the settings
 // overrides API when an external extension used the API and
 // --disable-extensions was also used.
 // As a fix, we ensure that we load extension-controlled preferences for
@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsDisabledWithSettingsOverrideAPI,
 IN_PROC_BROWSER_TEST_F(ExtensionsDisabledWithSettingsOverrideAPI,
                        TestSettingsOverridesWithExtensionsDisabled) {
   // The external extension was actually uninstalled at this point (see
-  // https://crbug.com/833540). However, it was first loaded, before being
+  // https://crbug.com/41383647). However, it was first loaded, before being
   // orphaned, which would have caused the settings API to look at the
   // extension controlled preferences. As long as this didn't crash, the test
   // succeeded.

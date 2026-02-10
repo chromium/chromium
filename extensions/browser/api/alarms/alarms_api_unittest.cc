@@ -714,7 +714,7 @@ void FrequencyTestGetAlarmsCallback(ExtensionAlarmsTest* test, Alarm* alarm) {
 
 // Tests that alarms with very small period written to storage are also
 // subjected to minimum polling interval.
-// Regression test for https://crbug.com/618540.
+// Regression test for https://crbug.com/40472348.
 TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
   static constexpr struct {
     bool is_unpacked;

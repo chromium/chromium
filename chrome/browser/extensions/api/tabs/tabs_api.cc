@@ -1037,7 +1037,7 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
     if (set_self_as_opener_) {
       // Depending on the `setSelfAsOpener` option, we need to put the new
       // contents in the same BrowsingInstance as their opener.  See also
-      // https://crbug.com/713888.
+      // https://crbug.com/40516654.
       //
       // TODO(crbug.com/40636155): Add tests for checking opener SiteInstance
       // behavior from a SW based extension's extension frame (e.g. from popup).
@@ -1441,7 +1441,7 @@ void WindowsUpdateFunction::UpdateWindowState(
 
   if (set_window_bounds) {
     // TODO(varkha): Updating bounds during a drag can cause problems and a more
-    // general solution is needed. See http://crbug.com/251813 .
+    // general solution is needed. See http://crbug.com/40322435 .
     browser_window->SetBounds(window_bounds);
   }
 

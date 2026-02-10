@@ -54,7 +54,7 @@ class ComputedHashes {
       // Note that we use canonicalized paths as keys to HashInfo's container
       // `items_`.
       //
-      // TODO(http://crbug.com/796395#c28): Consider removing this once
+      // TODO(http://crbug.com/40555482#c28): Consider removing this once
       // ContentVerifier::ShouldVerifyAnyPaths works with canonicalized relative
       // paths.
       base::FilePath relative_unix_path;
@@ -115,7 +115,7 @@ class ComputedHashes {
   // Computes hashes for files in `extension_root`. Returns nullopt upon any
   // failure. Callback `should_compute_hashes_for` is used to determine whether
   // we need hashes for a resource or not.
-  // TODO(https://crbug.com/796395#c24) To support per-file block size instead
+  // TODO(https://crbug.com/40555482#c24) To support per-file block size instead
   // of passing `block_size` as an argument make callback
   // `should_compute_hashes_for` return optional<int>: nullopt if hashes are not
   // needed for this file, block size for this file otherwise.

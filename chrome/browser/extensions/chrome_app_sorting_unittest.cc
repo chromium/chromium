@@ -233,7 +233,7 @@ TEST_F(ChromeAppSortingInitializeWithNoApps,
 // Tests the application index to ordinal migration code for values that
 // shouldn't be converted. This should be removed when the migrate code
 // is taken out.
-// http://crbug.com/107376
+// http://crbug.com/40052100
 class ChromeAppSortingMigrateAppIndexInvalid
     : public PrefsPrepopulatedTestBase {
  public:
@@ -648,7 +648,7 @@ TEST_F(ChromeAppSortingGetMinOrMaxAppLaunchOrdinalsOnPage,
        ChromeAppSortingGetMinOrMaxAppLaunchOrdinalsOnPage) {}
 
 // Make sure that empty pages aren't removed from the integer to ordinal
-// mapping. See http://crbug.com/109802 for details.
+// mapping. See http://crbug.com/40136834 for details.
 class ChromeAppSortingKeepEmptyStringOrdinalPages
     : public ChromeAppSortingPreinstalledAppsBase {
  public:
@@ -701,7 +701,7 @@ class ChromeAppSortingMakesFillerOrdinals
     // Because the UI can add an unlimited number of empty pages without an app
     // on them, this test simulates dropping of an app on the 1st and 4th empty
     // pages (3rd and 6th pages by index) to ensure we don't crash and that
-    // filler ordinals are created as needed. See: http://crbug.com/122214
+    // filler ordinals are created as needed. See: http://crbug.com/40773838
     syncer::StringOrdinal page_three =
         app_sorting()->PageIntegerAsStringOrdinal(2);
     app_sorting()->SetPageOrdinal(app1_->id(), page_three);

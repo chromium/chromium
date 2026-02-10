@@ -937,7 +937,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
 }
 
 // Tests that file:// access checkbox shows up for extensions with activeTab
-// permission. See crbug.com/850643.
+// permission. See crbug.com/41393344.
 TEST_F(ExtensionInfoGeneratorUnitTest, ActiveTabFileUrls) {
   scoped_refptr<const Extension> extension =
       CreateExtension("activeTab", base::ListValue().Append("activeTab"),

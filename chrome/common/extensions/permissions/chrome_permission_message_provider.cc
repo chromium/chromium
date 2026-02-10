@@ -145,7 +145,7 @@ void ChromePermissionMessageProvider::AddHostPermissions(
   // Since platform apps always use isolated storage, they can't (silently)
   // access user data on other domains, so there's no need to prompt.
   // Note: this must remain consistent with IsHostPrivilegeIncrease.
-  // See crbug.com/255229.
+  // See crbug.com/40323545.
   if (extension_type == Manifest::TYPE_PLATFORM_APP)
     return;
 

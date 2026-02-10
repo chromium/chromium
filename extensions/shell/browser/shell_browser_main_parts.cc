@@ -128,7 +128,7 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
   }
 #elif BUILDFLAG(IS_LINUX)
   // app_shell doesn't need GTK, so the fake input method context can work.
-  // See crbug.com/381852 and revision fb69f142.
+  // See crbug.com/40369323 and revision fb69f142.
   // TODO(michaelpg): Verify this works for target environments.
   ui::InitializeInputMethodForTesting();
 #else

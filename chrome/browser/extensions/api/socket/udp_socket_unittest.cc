@@ -83,7 +83,7 @@ TEST_F(UDPSocketUnitTest, TestUDPSocketRecvFrom) {
   std::unique_ptr<UDPSocket> socket = CreateSocket();
 
   // Confirm that we can call two RecvFroms in quick succession without
-  // triggering crbug.com/146606.
+  // triggering crbug.com/40276233.
   socket->Connect(CreateAddressList("127.0.0.1", 40000),
                   base::BindOnce(&OnConnected));
   socket->RecvFrom(4096, base::BindOnce(&OnCompleted));

@@ -25,7 +25,7 @@ class ContextInvalidationData;
 // this point. Additionally, simply checking if gin::PerContextData exists is
 // insufficient, because gin::PerContextData is released after the notifications
 // for releasing the script context, and author script can run between those
-// points. See https://crbug.com/772071.
+// points. See https://crbug.com/41348377.
 bool IsContextValid(v8::Local<v8::Context> context);
 
 // Same as above, but throws an exception in the `context` if it is invalid.

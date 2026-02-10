@@ -354,7 +354,7 @@ void ExtensionApiFrameIdMap::OnRenderFrameDeleted(
   DCHECK(render_frame_host);
 
   const content::GlobalRenderFrameHostId key(render_frame_host->GetGlobalId());
-  // TODO(http://crbug.com/522129): This is necessary right now because beacon
+  // TODO(http://crbug.com/40431900): This is necessary right now because beacon
   // requests made in window.onunload may start after this has been called.
   // Delay the RemoveFrameData() call, so we will still have the frame data
   // cached when the beacon request comes in.

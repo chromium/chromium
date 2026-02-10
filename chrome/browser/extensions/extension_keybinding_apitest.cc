@@ -567,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, MAYBE_AllowDuplicatedMediaKeys) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
-// TODO(dtseng): Test times out on Chrome OS debug. See http://crbug.com/412456.
+// TODO(dtseng): Test times out on Chrome OS debug. See crbug.com/40383617.
 #define MAYBE_ContinuePropagation DISABLED_ContinuePropagation
 #else
 #define MAYBE_ContinuePropagation ContinuePropagation

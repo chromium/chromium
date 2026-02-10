@@ -957,7 +957,7 @@ scoped_refptr<CrxInstaller> ExtensionUpdater::CreateUpdateInstaller(
     installer->set_install_source(pending_extension_info->install_source());
     installer->set_allow_silent_install(true);
     // If the extension came in disabled due to a permission increase, then
-    // don't grant it all the permissions. crbug.com/484214
+    // don't grant it all the permissions. crbug.com/40416721
     bool has_permissions_increase =
         ExtensionPrefs::Get(profile_)->HasDisableReason(
             id, disable_reason::DISABLE_PERMISSIONS_INCREASE);

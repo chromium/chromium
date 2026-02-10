@@ -83,7 +83,7 @@ class ExternalRegistryLoaderUnittest : public testing::Test {
 };
 
 // Tests that calling StartLoading() more than once doesn't fail DCHECK.
-// Regression test for https://crbug.com/653045.
+// Regression test for https://crbug.com/40487762.
 TEST_F(ExternalRegistryLoaderUnittest, TwoStartLoadingDoesNotCrash) {
   scoped_refptr<TestExternalRegistryLoader> test_loader =
       base::MakeRefCounted<TestExternalRegistryLoader>();
@@ -98,7 +98,7 @@ TEST_F(ExternalRegistryLoaderUnittest, TwoStartLoadingDoesNotCrash) {
 
 // Tests that calling StartLoading() twice does not overwrite previous prefs
 // before LoadFinished consumes it.
-// Regression test for https://crbug.com/709304: if two StartLoading() schedules
+// Regression test for crbug.com/41311819: if two StartLoading() schedules
 // two LoadPrefsOnBlockingThread, then the second LoadPrefsOnBlockingThread
 // could overwrite the first one's prefs.
 TEST_F(ExternalRegistryLoaderUnittest, TwoStartLoadingDoesNotOverwritePrefs) {

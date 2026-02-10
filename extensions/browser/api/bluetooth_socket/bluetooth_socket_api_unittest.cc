@@ -34,7 +34,7 @@ TEST_F(BluetoothSocketApiUnittest, Permission) {
 }
 
 // Tests bluetoothSocket.create() and bluetoothSocket.close().
-// Regression test for https://crbug.com/831651.
+// Regression test for https://crbug.com/40571201.
 TEST_F(BluetoothSocketApiUnittest, CreateThenClose) {
   scoped_refptr<const Extension> extension_with_socket_permitted =
       ExtensionBuilder()

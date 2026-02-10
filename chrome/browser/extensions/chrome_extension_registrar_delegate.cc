@@ -153,7 +153,7 @@ void ChromeExtensionRegistrarDelegate::PostActivateExtension(
 
   // TODO(kalman): This is broken. The crash reporter is process-wide so doesn't
   // work properly multi-profile. Besides which, it should be using
-  // ExtensionRegistryObserver. See http://crbug.com/355029.
+  // ExtensionRegistryObserver. See http://crbug.com/41096321.
   UpdateActiveExtensionsInCrashReporter();
 
   const PermissionsData* permissions_data = extension->permissions_data();
@@ -203,7 +203,8 @@ void ChromeExtensionRegistrarDelegate::PostDeactivateExtension(
 
   // TODO(kalman): This is broken. The crash reporter is process-wide so doesn't
   // work properly multi-profile. Besides which, it should be using
-  // ExtensionRegistryObserver::OnExtensionLoaded. See http://crbug.com/355029.
+  // ExtensionRegistryObserver::OnExtensionLoaded. See
+  // http://crbug.com/41096321.
   UpdateActiveExtensionsInCrashReporter();
 }
 
@@ -374,7 +375,7 @@ void ChromeExtensionRegistrarDelegate::OnExtensionInstalled(
     if (!pending_extension_info->ShouldAllowInstall(extension, profile_)) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       // Note: Theme is unsupported on desktop Android.
-      // Hack for crbug.com/558299, see comment on DeleteThemeDoNotUse.
+      // Hack for crbug.com/40445445, see comment on DeleteThemeDoNotUse.
       if (extension->is_theme() && pending_extension_info->is_from_sync()) {
         ExtensionSyncService::Get(profile_)->DeleteThemeDoNotUse(*extension);
       }
@@ -598,7 +599,7 @@ void ChromeExtensionRegistrarDelegate::UpdateActiveExtensionsInCrashReporter() {
 
   // TODO(kalman): This is broken. ExtensionService is per-profile.
   // crash_keys::SetActiveExtensions is per-process. See
-  // http://crbug.com/355029.
+  // http://crbug.com/41096321.
   crash_keys::SetActiveExtensions(extension_ids);
 }
 

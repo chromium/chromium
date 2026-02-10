@@ -86,7 +86,7 @@ TEST_F(WebviewAccessibleResourcesManifestTest, InvalidManifest) {
     // Specifying non-relative paths as accessible resources should fail. We
     // raise a warning rather than a hard-error because existing apps do this
     // and we don't want to break them for all existing users.
-    // https://crbug.com/856948.
+    // https://crbug.com/40582582.
     scoped_refptr<const Extension> extension = LoadAndExpectWarning(
         "webview_accessible_resources_non_relative_path.json",
         ErrorUtils::FormatErrorMessage(

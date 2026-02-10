@@ -138,7 +138,7 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
           web_request_type && IsWebRequestResourceTypeFrame(*web_request_type);
 
       // Only require access to the initiator for sub-resource (non-navigation)
-      // requests. See crbug.com/918137.
+      // requests. See crbug.com/41433450.
       // TODO(karandeepb): Should service worker navigation preload requests be
       // treated similarly?
       if (is_navigation_request) {
@@ -171,7 +171,7 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
       // request is withheld but the access to initiator is allowed. In this
       // case, we allow access to the request. This is important for extensions
       // with webRequest to work well with runtime host permissions. See
-      // crbug.com/851722.
+      // crbug.com/40580327.
 
       return GetHostAccessForURL(*extension, initiator->GetURL(), tab_id);
     }
@@ -268,7 +268,7 @@ bool WebRequestPermissions::HideRequest(
       return false;
     }
 
-    // Hide all non-navigation requests made by the browser. crbug.com/884932.
+    // Hide all non-navigation requests made by the browser. crbug.com/40092481.
     if (!request.is_navigation_request) {
       return true;
     }
@@ -322,7 +322,7 @@ bool WebRequestPermissions::HideRequest(
         url.SchemeIsHTTPOrHTTPS() || url.SchemeIsWSOrWSS();
     if (is_network_request) {
       // WebUI renderers should never be making network requests, but we may
-      // make some exceptions for now. See https://crbug.com/829412 for
+      // make some exceptions for now. See https://crbug.com/40091019 for
       // details.
       //
       // The DCHECK helps avoid proliferation of such behavior.

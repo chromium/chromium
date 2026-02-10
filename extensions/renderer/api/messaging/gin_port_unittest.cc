@@ -326,7 +326,7 @@ TEST_F(GinPortTest, TestJSDisconnect) {
 }
 
 // Tests that a call of disconnect() from the listener of the onDisconnect event
-// is rejected. Regression test for crbug.com/932347.
+// is rejected. Regression test for crbug.com/40614089.
 TEST_F(GinPortTest, JSDisconnectFromOnDisconnect) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
@@ -354,7 +354,7 @@ TEST_F(GinPortTest, JSDisconnectFromOnDisconnect) {
 }
 
 // Tests that a call of postMessage() from the listener of the onDisconnect
-// event is rejected. Regression test for crbug.com/932347.
+// event is rejected. Regression test for crbug.com/40614089.
 TEST_F(GinPortTest, JSPostMessageFromOnDisconnect) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();

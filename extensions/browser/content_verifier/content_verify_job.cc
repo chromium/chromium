@@ -44,7 +44,7 @@ scoped_refptr<ContentVerifyJob::TestObserver>& GetTestObserver() {
 bool IsIgnorableReadError(MojoResult read_result) {
   // Extension reload, for example, can cause benign MOJO_RESULT_ABORTED error.
   // Do not incorrectly fail content verification in that case.
-  // See https://crbug.com/977805 for details.
+  // See https://crbug.com/41467403 for details.
   return read_result == MOJO_RESULT_ABORTED;
 }
 

@@ -1033,7 +1033,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, ExtensionAPICannotNavigateDevtools) {
 }
 
 #if BUILDFLAG(IS_MAC)
-// https://crbug.com/836327
+// https://crbug.com/41385204
 #define MAYBE_AcceptState DISABLED_AcceptState
 #else
 #define MAYBE_AcceptState AcceptState
@@ -1503,7 +1503,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps, NoTabsAppWindow) {
   CloseAppWindow(app_window);
 }
 
-// Crashes on Mac/Win only.  http://crbug.com/708996
+// Crashes on Mac/Win only.  http://crbug.com/40514319
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_FilteredEvents DISABLED_FilteredEvents
 #else
@@ -2537,7 +2537,7 @@ class ExtensionApiPdfTest : public base::test::WithFeatureOverride,
   bool UseOopif() const override { return GetParam(); }
 };
 
-// Regression test for crbug.com/660498.
+// Regression test for crbug.com/40085816.
 IN_PROC_BROWSER_TEST_P(ExtensionApiPdfTest, TemporaryAddressSpoof) {
   content::WebContents* first_web_contents = GetActiveWebContents();
   ASSERT_TRUE(first_web_contents);
@@ -2591,7 +2591,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiPdfTest, TemporaryAddressSpoof) {
   EXPECT_EQ(url, second_web_contents->GetVisibleURL());
 
   // Wait for the TestNavigationManager-monitored navigation to complete to
-  // avoid a race during browser teardown (see crbug.com/882213).
+  // avoid a race during browser teardown (see crbug.com/41412718).
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 }
 
@@ -2601,9 +2601,9 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ExtensionApiPdfTest);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 // Tests how chrome.windows.create behaves when setSelfAsOpener parameter is
-// used.  setSelfAsOpener was introduced as a fix for https://crbug.com/713888
-// and https://crbug.com/718489.  This is a (slightly morphed) regression test
-// for https://crbug.com/597750.
+// used. setSelfAsOpener was introduced as a fix for https://crbug.com/40516654
+// and https://crbug.com/40518908. This is a (slightly morphed) regression test
+// for https://crbug.com/40462301.
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, WindowsCreate_WithOpener) {
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("../simple_with_file"));
@@ -2673,8 +2673,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, WindowsCreate_WithOpener) {
 }
 
 // Tests how chrome.windows.create behaves when setSelfAsOpener parameter is not
-// used.  setSelfAsOpener was introduced as a fix for https://crbug.com/713888
-// and https://crbug.com/718489.
+// used. setSelfAsOpener was introduced as a fix for https://crbug.com/40516654
+// and https://crbug.com/40518908.
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, WindowsCreate_NoOpener) {
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("../simple_with_file"));
@@ -2707,8 +2707,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, WindowsCreate_NoOpener) {
   // Verify that the |new_contents| doesn't have |window.opener| set.
   EXPECT_EQ(false, EvalJs(new_contents, "!!window.opener"));
 
-  // TODO(lukasza): http://crbug.com/786411: Verify that |new_contents| can NOT
-  // find |old_contents| using window.open/name.  This is currently broken,
+  // TODO(lukasza): http://crbug.com/40550544: Verify that |new_contents| can
+  // NOT find |old_contents| using window.open/name.  This is currently broken,
   // because browsing instance boundaries are pierced for all extension frames
   // (we hope this can be limited to background pages / contents).
 }

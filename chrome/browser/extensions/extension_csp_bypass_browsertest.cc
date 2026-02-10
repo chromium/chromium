@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, LoadWebAccessibleScript) {
 }
 
 // Tests that an extension can add a cross-origin iframe to a page
-// whose CSP disallows iframes. Regression test for https://crbug.com/408932.
+// whose CSP disallows iframes. Regression test for https://crbug.com/41129074.
 IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, InjectIframe) {
   // Install an extension that can add a cross-origin iframe to a document.
   const Extension* extension =
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, InjectIframe) {
 
   // First, verify that adding an iframe to the page from the main world will
   // fail. Add the frame. Its onload event fires even if it's blocked
-  // (see https://crbug.com/365457), and reports back.
+  // (see https://crbug.com/40361841), and reports back.
   EXPECT_EQ(true, content::EvalJs(GetActiveWebContents(), "addIframe();"));
 
   // Use WasFrameWithScriptLoaded() to check whether the target frame really

@@ -1259,7 +1259,7 @@ TEST(ExtensionWebRequestHelpersTest,
 
 // Ensure conflicts between different extensions are handled correctly with
 // header names being interpreted in a case insensitive manner. Regression test
-// for crbug.com/956795.
+// for crbug.com/40624778.
 TEST(ExtensionWebRequestHelpersTest,
      TestMergeOnBeforeSendHeadersResponses_Conflicts) {
   // Have two extensions which both modify header "key1".

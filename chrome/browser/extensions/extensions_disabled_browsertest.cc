@@ -49,7 +49,7 @@ class ExtensionsDisabledBrowserTest : public ExtensionBrowserTest {
 };
 
 // Tests installing a number of extensions, and then restarting Chrome with the
-// --disable-extensions switch. Regression test for https://crbug.com/836624.
+// --disable-extensions switch. Regression test for https://crbug.com/41385385.
 IN_PROC_BROWSER_TEST_F(ExtensionsDisabledBrowserTest,
                        PRE_TestStartupWithInstalledExtensions) {
   const Extension* unpacked_extension =

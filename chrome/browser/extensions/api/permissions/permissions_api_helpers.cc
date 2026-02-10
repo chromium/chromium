@@ -54,7 +54,7 @@ std::unique_ptr<APIPermission> UnpackPermissionWithArguments(
   std::unique_ptr<APIPermission> permission;
 
   // Explicitly check the permissions that accept arguments until
-  // https://crbug.com/162042 is fixed.
+  // https://crbug.com/40294655 is fixed.
   const APIPermissionInfo* usb_device_permission_info =
       PermissionsInfo::GetInstance()->GetByID(
           mojom::APIPermissionID::kUsbDevice);

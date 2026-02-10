@@ -262,7 +262,7 @@ void ExtensionActionStorageManager::ReadFromStorage(
   if (!action || action->action_type() != ActionInfo::Type::kBrowser) {
     // This can happen if the extension is updated between startup and when the
     // storage read comes back, and the update removes the browser action.
-    // http://crbug.com/349371
+    // http://crbug.com/40354327
     return;
   }
 

@@ -148,8 +148,8 @@ void RemoveBackgroundPermission(extensions::ExtensionService* service,
 }  // namespace
 
 // Crashes on Mac trybots.
-// http://crbug.com/165458
-// Also crashes on Windows under Dr. Memory (https://crbug.com/606779),
+// http://crbug.com/40957323
+// Also crashes on Windows under Dr. Memory (https://crbug.com/40466773),
 // presumably broken on all platforms.
 // With minimal test logic, verifies behavior over an explicit set of
 // extensions, of which some are Background Apps and others are not.

@@ -213,7 +213,7 @@ void LazyBackgroundTaskQueue::OnExtensionLoaded(
   // If there are pending tasks for a lazy background page, and its background
   // host has not been created yet, then create it. This can happen if a pending
   // task was added while the extension is not yet enabled (e.g., component
-  // extension crashed and waiting to reload, https://crbug.com/835017).
+  // extension crashed and waiting to reload, https://crbug.com/40572722).
   if (!BackgroundInfo::HasLazyBackgroundPage(extension)) {
     return;
   }

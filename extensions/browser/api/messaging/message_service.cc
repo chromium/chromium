@@ -624,7 +624,7 @@ void MessageService::OpenChannelToExtension(
 
     // If the target extension isn't even listening for connect/message events,
     // there is no need to go any further and the connection should be
-    // rejected without showing a prompt. See http://crbug.com/442497
+    // rejected without showing a prompt. See http://crbug.com/41148316
     EventRouter* event_router = EventRouter::Get(context);
     const char* const events[] = {
         "runtime.onConnectExternal",

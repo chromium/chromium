@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiKioskTestChromeOs,
 }
 
 // TODO(rkc): Figure out how to integrate with BluetoothTestBlueZ and write
-// comprehensive tests for GATT server events. See http://crbug.com/607395 for
+// comprehensive tests for GATT server events. See http://crbug.com/40467075 for
 // details.
 
 }  // namespace

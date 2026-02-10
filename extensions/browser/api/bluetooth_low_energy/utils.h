@@ -13,7 +13,7 @@ namespace api {
 namespace bluetooth_low_energy {
 
 // TODO(armansito): Remove these functions once the described bug is fixed.
-// (See crbug.com/368368)
+// (See crbug.com/40363226)
 
 // Converts a Characteristic to a base::DictValue. This function is necessary
 // as json_schema_compiler::util::AddItemToList has no template specialization

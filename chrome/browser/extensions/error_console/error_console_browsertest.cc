@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
   // There should be exactly two errors (the warning and the TypeError). The
   // error console ignores logs - this would tend to be too noisy, and doesn't
   // jive with the big `ERRORS` button in the UI.
-  // See https://crbug.com/837401.
+  // See https://crbug.com/40573859.
   ASSERT_EQ(2u, errors.size());
 
   // The first error should be a console log.
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BrowserActionRuntimeError) {
 
   const StackTrace& stack_trace = GetStackTraceFromError(errors[1].get());
   // Note: This test used to have a stack trace of length 6 that contains stack
-  // frames in the extension code, but since crbug.com/404406 was fixed only
+  // frames in the extension code, but since crbug.com/40379861 was fixed only
   // stack frames within user-defined extension code are printed.
 
   CheckStackFrame(stack_trace[0], script_url, kAnonymousFunction);

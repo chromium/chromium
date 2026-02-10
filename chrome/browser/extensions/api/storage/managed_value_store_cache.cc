@@ -188,7 +188,7 @@ void ManagedValueStoreCache::ExtensionTracker::LoadSchemasOnFileTaskRunner(
   for (const auto& extension : extensions) {
     if (!extension->manifest()->FindStringPath(
             manifest_keys::kStorageManagedSchema)) {
-      // TODO(joaodasilva): Remove this. http://crbug.com/325349
+      // TODO(joaodasilva): Remove this. http://crbug.com/41078198
       (*components)[extension->id()] = policy::Schema();
       continue;
     }

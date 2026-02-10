@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoDisabled) {
 }
 
 // Test that opening a popup from an incognito browser window works properly.
-// http://crbug.com/180759.
+// http://crbug.com/40304461.
 IN_PROC_BROWSER_TEST_F(IncognitoApiTest, DISABLED_IncognitoPopup) {
   ResultCatcher catcher;
 

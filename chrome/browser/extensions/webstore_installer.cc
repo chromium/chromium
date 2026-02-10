@@ -97,7 +97,7 @@ const char kDefaultInstallSource[] = "ondemand";
 const char kAppLauncherInstallSource[] = "applauncher";
 
 // TODO(rockot): Share this duplicated constant with the extension updater.
-// See http://crbug.com/371398.
+// See http://crbug.com/40364679.
 const char kAuthUserQueryKey[] = "authuser";
 
 constexpr base::TimeDelta kTimeRemainingThreshold = base::Seconds(1);
@@ -153,7 +153,7 @@ void MaybeAppendAuthUserParameter(const std::string& authuser, GURL* url) {
       authuser.c_str());
 
   // TODO(rockot): Share this duplicated code with the extension updater.
-  // See http://crbug.com/371398.
+  // See http://crbug.com/40364679.
   std::string new_query_string = old_query + authuser_param;
   GURL::Replacements replacements;
   replacements.SetQueryStr(new_query_string);
@@ -505,8 +505,8 @@ void WebstoreInstaller::DownloadCrx(const extensions::ExtensionId& extension_id,
       base::BindOnce(&WebstoreInstaller::StartDownload, this, extension_id));
 }
 
-// http://crbug.com/165634
-// http://crbug.com/126013
+// http://crbug.com/40957413
+// http://crbug.com/40798038
 // The current working theory is that one of the many pointers dereferenced in
 // here is occasionally deleted before all of its referrers are nullified,
 // probably in a callback race. After this comment is released, the crash

@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(SocketsUdpApiTest, SocketsUdpExtension) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// See crbug.com/321451.
+// See crbug.com/40342086.
 IN_PROC_BROWSER_TEST_F(SocketsUdpApiTest, DISABLED_SocketsUdpMulticast) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(browser_context());

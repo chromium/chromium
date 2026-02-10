@@ -679,7 +679,7 @@ RequestCookieModification::~RequestCookieModification() = default;
 
 bool RequestCookieModification::operator==(
     const RequestCookieModification& other) const {
-  // This ignores |type|. Why? https://crbug.com/916248
+  // This ignores |type|. Why? https://crbug.com/40607023
   return std::tie(filter, modification) ==
          std::tie(other.filter, other.modification);
 }
@@ -705,7 +705,7 @@ ResponseCookieModification::~ResponseCookieModification() = default;
 
 bool ResponseCookieModification::operator==(
     const ResponseCookieModification& other) const {
-  // This ignores |type|. Why? https://crbug.com/916248
+  // This ignores |type|. Why? https://crbug.com/40607023
   return std::tie(filter, modification) ==
          std::tie(other.filter, other.modification);
 }

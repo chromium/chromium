@@ -569,7 +569,7 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
   {
     // Unserializable arguments are inserted as "null" in the argument list in
     // order to match existing JS bindings behavior.
-    // See https://crbug.com/924045.
+    // See https://crbug.com/41436737.
     auto signature = OneString();
     v8::LocalVector<v8::Value> v8_args =
         StringToV8Vector(context, "[1, undefined, 1/0]");

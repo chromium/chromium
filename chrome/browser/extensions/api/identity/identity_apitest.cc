@@ -1981,11 +1981,11 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
 #endif
 
 #if !BUILDFLAG(IS_MAC)
-// Test was originally written for http://crbug.com/753014 and subsequently
+// Test was originally written for http://crbug.com/41338040 and subsequently
 // modified to use the remote consent flow.
 //
 // On macOS, closing all browsers does not shut down the browser process.
-// TODO(http://crbug.com/756462): Figure out how to shut down the browser
+// TODO(http://crbug.com/41339839): Figure out how to shut down the browser
 // process on macOS and enable this test on macOS as well.
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
                        InteractiveSigninFailedDuringBrowserProcessShutDown) {

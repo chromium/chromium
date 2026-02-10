@@ -342,7 +342,7 @@ TEST_F(ContentVerifyJobUnittest, DeletedAndMissingFiles) {
   {
     // Ask for the root path of the extension (i.e., chrome-extension://<id>/).
     // Verification should skip this request as if the resource were
-    // non-existent. See https://crbug.com/791929.
+    // non-existent. See https://crbug.com/41359344.
     base::FilePath empty_path_resource_path(FILE_PATH_LITERAL(""));
     EXPECT_EQ(ContentVerifyJob::NONE,
               RunContentVerifyJob(*extension.get(), empty_path_resource_path,
@@ -352,7 +352,7 @@ TEST_F(ContentVerifyJobUnittest, DeletedAndMissingFiles) {
   {
     // Ask for the path of one of the extension's folders which exists on disk.
     // Verification of the folder should skip the request as if the folder
-    // was non-existent. See https://crbug.com/791929.
+    // was non-existent. See https://crbug.com/41359344.
     const base::FilePath::CharType kUnexpectedFolder[] =
         FILE_PATH_LITERAL("bar/");
     base::FilePath unexpected_folder_path(kUnexpectedFolder);
@@ -515,7 +515,7 @@ TEST_F(ContentVerifyJobUnittest, LegitimateZeroByteFile) {
 }
 
 // Tests that extension resources of different interesting sizes work properly.
-// Regression test for https://crbug.com/720597, where content verification
+// Regression test for https://crbug.com/41318287, where content verification
 // always failed for sizes multiple of content hash's block size (4096 bytes).
 TEST_F(ContentVerifyJobUnittest, DifferentSizedFiles) {
   TestExtensionDir temp_dir;
@@ -775,7 +775,7 @@ TEST_P(ContentMismatchUnittest, ContentMismatch) {
 }
 
 // Similar to ContentMismatch, but uses a file size > 4k.
-// Regression test for https://crbug.com/804630.
+// Regression test for https://crbug.com/40559301.
 TEST_P(ContentMismatchUnittest, ContentMismatchWithLargeFile) {
   std::string content_larger_than_block_size(
       extension_misc::kContentVerificationDefaultBlockSize + 1, ';');
@@ -898,7 +898,7 @@ class ContentVerifyJobWithHashFetchUnittest : public ContentVerifyJobUnittest {
   std::optional<std::string> verified_contents_;
 };
 
-// Regression test for https://crbug.com/995436.
+// Regression test for https://crbug.com/40641039.
 TEST_F(ContentVerifyJobWithHashFetchUnittest, ReadErrorBeforeHashReady) {
   TestExtensionDir temp_dir;
   scoped_refptr<Extension> extension = LoadTestExtensionFromZipPathToTempDir(

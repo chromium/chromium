@@ -155,7 +155,7 @@ CreateCorsOriginAccessBlockList(const Extension& extension) {
       network::mojom::CorsOriginAccessMatchPriority::kHighPriority));
 
   // TODO(devlin): Should we also block the webstore update URL here? See
-  // https://crbug.com/826946 for a related instance.
+  // https://crbug.com/40090956 for a related instance.
   return block_list;
 }
 

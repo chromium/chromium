@@ -191,7 +191,7 @@ TEST_P(TCPSocketUnitTest, SocketConnectAfterDisconnect) {
 }
 
 TEST_F(TCPSocketUnitTest, SocketConnectDisconnectRace) {
-  // Regression test for https://crbug.com/882585, disconnect while connect
+  // Regression test for https://crbug.com/41412911, disconnect while connect
   // is pending.
   net::IPEndPoint ip_end_point(net::IPAddress::IPv4Localhost(), 1234);
   net::StaticSocketDataProvider data_provider((base::span<net::MockRead>()),

@@ -490,7 +490,7 @@ void BluetoothEventRouter::CleanUpForExtension(
   // discovery_session_map.erase() should happen before
   // delete session_iter->second, because deleting the
   // BluetoothDiscoverySession object may trigger a chain reaction
-  // (see http://crbug.com/711484#c9) which will modify
+  // (see http://crbug.com/40515577#c9) which will modify
   // discovery_session_map_ itself.
   device::BluetoothDiscoverySession* discovery_session = session_iter->second;
   discovery_session_map_.erase(session_iter);

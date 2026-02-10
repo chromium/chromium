@@ -800,7 +800,7 @@ void DeveloperPrivateReloadFunction::OnGotManifestError(
   // function instead of through loadUnpacked(), but
   // ExtensionRegistrar::ReloadExtension doesn't behave well with an extension
   // that failed to reload, and untangling that mess is quite significant.
-  // See https://crbug.com/792277.
+  // See https://crbug.com/41359540.
   Respond(WithArguments(
       CreateLoadError(file_path, error, line_number, manifest, retry_guid)
           .ToValue()));

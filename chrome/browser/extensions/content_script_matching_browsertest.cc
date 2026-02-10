@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,
   EXPECT_FALSE(DoContentScriptsMatch_Tab2_BarBlankFrame2());
 }
 
-// Flaky on MacOS since r622662. See https://crbug.com/921883
+// Flaky on MacOS since r622662. See https://crbug.com/40609469
 // Also flaky on desktop Android.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_ContentScriptMatching_NotAllFrames \

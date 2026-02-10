@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_P(ContentVerifierHashTest,
   // In "enforce_strict" mode, hash fetch failures will cause the extension to
   // be disabled. Implementation-wise, this happens because the requested
   // resource's ContentVerifyJob will result in failure, not because the hash
-  // fetch failed. See https://crbug.com/819818 for details.
+  // fetch failed. See https://crbug.com/40566159 for details.
   //
   // In "enforce" mode, the extension won't be disabled. However, since we
   // request a resource (background.js), its corresponding ContentVerifyJob will
@@ -619,7 +619,7 @@ IN_PROC_BROWSER_TEST_P(ContentVerifierHashTest,
   // If the extension didn't explicitly request any resources, then there will
   // not be any content verification failures.
   const bool expect_disabled = false;
-  // TODO(lazyboy): https://crbug.com/819818: "enforce_strict" mode should
+  // TODO(lazyboy): https://crbug.com/40566159: "enforce_strict" mode should
   // disable the extension.
   // const bool expect_disabled = uses_enforce_strict_mode();
   EnableExtensionAndWaitForCompletion(expect_disabled);
@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_P(ContentVerifierHashTest,
   // computed_hashes.json will not compute new compute computed_hashes.json, and
   // we will not discover the tampered hash. So the extension won't be disabled.
   //
-  // TODO(lazyboy): http://crbug.com/819832: We fetched a new
+  // TODO(lazyboy): http://crbug.com/40566167: We fetched a new
   // verified_contents.json in this case. However, if we had recomputed
   // computed_hashes.json we would have discovered the tampered resource's hash
   // mismatch. Fix.
@@ -742,7 +742,7 @@ IN_PROC_BROWSER_TEST_P(ContentVerifierHashTest,
 
   // Tampering computed_hashes.json will not trigger any hash computation
   // at OnExtensionLoad, so we won't discover any hash mismatches.
-  // TODO(lazyboy): Consider fixing this, see http://crbug.com/819832 for
+  // TODO(lazyboy): Consider fixing this, see http://crbug.com/40566167 for
   // details.
   EnableExtensionAndWaitForCompletion(false /* expect_disabled */);
 
@@ -779,7 +779,7 @@ IN_PROC_BROWSER_TEST_P(
   // a hash recomputation and the requested (not-tampered) resource's
   // corresponding ContentVerifyJob succeeds because that resource's hash
   // remains fine. Therefore, the extension remains enabled. Consider disabling
-  // the extension in this case: https://crbug.com/819832.
+  // the extension in this case: https://crbug.com/40566167.
   EnableExtensionAndWaitForCompletion(false /* expect_disabled */);
 
   EXPECT_TRUE(ExtensionIsEnabled());

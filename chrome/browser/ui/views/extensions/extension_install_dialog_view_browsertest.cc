@@ -257,8 +257,8 @@ IN_PROC_BROWSER_TEST_F(ScrollbarTest, LongPromptScrollbar) {
 }
 
 // Tests that a scrollbar isn't shown for this regression case.
-// See crbug.com/385570 for details.
-// TODO(http://crbug.com/988934): Flaky on some Mac release bots.
+// See crbug.com/40370895 for details.
+// TODO(http://crbug.com/41473520): Flaky on some Mac release bots.
 #if BUILDFLAG(IS_MAC) && defined(NDEBUG)
 #define MAYBE_ScrollbarRegression DISABLED_ScrollbarRegression
 #else

@@ -379,7 +379,7 @@ class ContentVerifier::HashHelper {
         // The request might have been cancelled on IO after |content_hash| was
         // built.
         // TODO(lazyboy): Add a specific test case for this. See
-        // https://crbug.com/825470 for a likely example of this.
+        // https://crbug.com/41378691 for a likely example of this.
         checker->IsCancelled()) {
       return;
     }

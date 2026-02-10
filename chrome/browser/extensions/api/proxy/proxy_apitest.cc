@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsRemovedOnUninstall) {
 
 // Tests that proxy settings corresponding to an extension are removed when
 // the extension is blocklisted by management policy. Regression test for
-// crbug.com/709264.
+// crbug.com/41311799.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
                        PRE_SettingsRemovedOnPolicyBlocklist) {
   ASSERT_TRUE(

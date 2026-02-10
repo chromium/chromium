@@ -22,7 +22,7 @@ void AppWindowClient::Set(AppWindowClient* client) {
   // Unit tests that set the AppWindowClient should clear it afterward.
   if (g_app_window_client && client) {
     // Rarely, a test may run multiple BrowserProcesses in a single process:
-    // crbug.com/751242. This will lead to redundant calls, but the pointers
+    // crbug.com/40532890. This will lead to redundant calls, but the pointers
     // should at least be the same.
     DCHECK_EQ(g_app_window_client, client)
         << "AppWindowClient::Set called with different non-null pointers twice "

@@ -340,7 +340,7 @@ bool DoWebViewScriptsMatch(const Extension& extension,
     // for performance (to avoid creating unnecessary URLLoaderFactory via
     // URLLoaderFactoryManager), but not necessarily for security (because
     // there are anyway no OOPIFs inside the webView process -
-    // https://crbug.com/614463).  At the same time, more granular checks are
+    // https://crbug.com/40470541).  At the same time, more granular checks are
     // difficult to achieve, because the UserScript objects are not retained
     // (i.e. only UserScriptIDs are available) by WebViewContentScriptManager.
     if (!script_ids.empty()) {

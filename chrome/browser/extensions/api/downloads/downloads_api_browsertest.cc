@@ -1030,7 +1030,7 @@ class HTML5FileWriter {
 }  // namespace
 
 // Tests that Number/double properties in query are parsed correctly.
-// Regression test for https://crbug.com/617435.
+// Regression test for https://crbug.com/41257260.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, ParseSearchQuery) {
   ASSERT_TRUE(
       RunFunction(new DownloadsSearchFunction, "[{\"totalBytesLess\":1}]"));
@@ -1117,7 +1117,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   EXPECT_TRUE(download_item->IsPaused());
 
   // Calling removeFile on a non-active download yields kNotComplete
-  // and should not crash. http://crbug.com/319984
+  // and should not crash. http://crbug.com/41074456
   error = RunFunctionAndReturnError(
       base::MakeRefCounted<DownloadsRemoveFileFunction>(),
       DownloadItemIdAsArgList(download_item));
@@ -1548,7 +1548,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   // no sorters, DownloadQuery does not call sort(), so the order of the results
   // depends on the order of the items in DownloadManagerImpl::downloads_,
   // which is unspecified and differs between libc++ and libstdc++.
-  // http://crbug.com/365334
+  // http://crbug.com/40361797
 }
 
 // Test the |danger| option for search().
@@ -3128,7 +3128,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 #endif
 }
 
-// Disabled due to cross-platform flakes; http://crbug.com/370531.
+// Disabled due to cross-platform flakes; http://crbug.com/41105685.
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
     DISABLED_DownloadExtensionTest_OnDeterminingFilename_Timeout) {
@@ -3266,7 +3266,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // Tests downloadsInternal.determineFilename.
-// Regression test for https://crbug.com/815362.
+// Regression test for https://crbug.com/40564481.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadsInternalDetermineFilename) {
   GoOnTheRecord();

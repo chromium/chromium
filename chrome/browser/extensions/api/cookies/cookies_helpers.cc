@@ -180,7 +180,7 @@ GURL GetURLFromCanonicalCookie(const net::CanonicalCookie& cookie) {
   // This is only ever called for CanonicalCookies that have come from a
   // CookieStore, which means they should not have an empty domain. Only file
   // cookies are allowed to have empty domains, and those are only permitted on
-  // Android, and hopefully not for much longer (see crbug.com/582985).
+  // Android, and hopefully not for much longer (see crbug.com/41237577).
   DCHECK(!cookie.Domain().empty());
 
   return net::cookie_util::CookieOriginToURL(cookie.Domain(),

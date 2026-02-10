@@ -1494,7 +1494,7 @@ TEST_F(ExtensionServiceTest, UninstallExternalExtensionAndReinstallAsUser) {
 
 // Tests uninstalling an external extension from a higher version, and then
 // installing a lower version as a user. This should succeed.
-// Regression test for https://crbug.com/795026.
+// Regression test for https://crbug.com/40554756.
 TEST_F(ExtensionServiceTest,
        UninstallExternalExtensionAndReinstallAsUserWithLowerVersion) {
   InitializeEmptyExtensionService();
@@ -3947,7 +3947,8 @@ TEST_F(ExtensionServiceTest, BlocklistedInPrefsFromStartup) {
       good1, BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs());
 
   // Extension service hasn't loaded yet, but IsExtensionEnabled reads out of
-  // prefs. Ensure it takes into account the blocklist state (crbug.com/373842).
+  // prefs. Ensure it takes into account the blocklist state
+  // (crbug.com/41107702).
   EXPECT_FALSE(registrar()->IsExtensionEnabled(good0));
   EXPECT_FALSE(registrar()->IsExtensionEnabled(good1));
   EXPECT_TRUE(registrar()->IsExtensionEnabled(good2));
@@ -4247,7 +4248,7 @@ TEST_F(ExtensionServiceTest, ComponentExtensionAllowlisted) {
 }
 
 // Tests that active permissions are not revoked from component extensions
-// by policy when the policy is updated. https://crbug.com/746017.
+// by policy when the policy is updated. https://crbug.com/40530687.
 TEST_F(ExtensionServiceTest, ComponentExtensionAllowlistedPermission) {
   InitializeEmptyExtensionServiceWithTestingPrefs();
 
@@ -4771,7 +4772,7 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionPolicyUpdate) {
   EXPECT_FALSE(registry->enabled_extensions().GetByID(ext2_forced));
 }
 
-// Flaky on windows; http://crbug.com/309833
+// Flaky on windows; http://crbug.com/41067305
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ExternalExtensionAutoAcknowledgement DISABLED_ExternalExtensionAutoAcknowledgement
 #else
@@ -4951,7 +4952,7 @@ TEST_F(ExtensionServiceTest, ExternalExtensionRemainsDisabledIfIgnored) {
                   disable_reason::DISABLE_EXTERNAL_EXTENSION));
 
   // Then re-enabling the extension (or otherwise causing the alert to be
-  // updated again) should work. Regression test for https://crbug.com/736292.
+  // updated again) should work. Regression test for https://crbug.com/41326993.
   {
     TestExtensionRegistryObserver registry_observer(registry());
     registrar()->EnableExtension(good_crx);
@@ -7518,7 +7519,7 @@ TEST_F(ExtensionSourcePriorityTest, InstallExternalBlocksSyncRequest) {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that the blocked pending external extension should be ignored until
-// it's unblocked. (crbug.com/797369)
+// it's unblocked. (crbug.com/40556003)
 // TODO(crbug.com/405391110): Enable when the install error UI exists on desktop
 // Android.
 TEST_F(ExtensionServiceTest, BlockedExternalExtension) {
@@ -7644,9 +7645,9 @@ TEST_F(ExtensionServiceTest, DisablingComponentExtensions) {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that installing multiple external extensions works.
-// Flaky on windows; http://crbug.com/295757 .
+// Flaky on windows; http://crbug.com/41056030 .
 // Causes race conditions with an in-process utility thread, so disable under
-// TSan: https://crbug.com/518957
+// TSan: https://crbug.com/41193625
 // TODO(crbug.com/405391110): Enable when the install error UI exists on desktop
 // Android.
 #if BUILDFLAG(IS_WIN) || defined(THREAD_SANITIZER)
@@ -7774,7 +7775,7 @@ TEST_F(ExtensionServiceTest, MultipleExternalInstallErrors) {
   EXPECT_FALSE(HasExternalInstallErrors(profile()));
 }
 
-// Regression test for crbug.com/739142. Verifies that no UAF occurs when
+// Regression test for crbug.com/40528574. Verifies that no UAF occurs when
 // ExternalInstallError needs to be deleted asynchronously.
 TEST_F(ExtensionServiceTest, InstallPromptAborted) {
   FeatureSwitch::ScopedOverride prompt(
@@ -8303,7 +8304,8 @@ TEST_F(ExtensionServiceTest, CorruptExtensionUpdate) {
       prefs()->HasDisableReason(id, disable_reason::DISABLE_CORRUPTED));
 }
 
-// Try re-enabling a reloading extension. Regression test for crbug.com/676815.
+// Try re-enabling a reloading extension. Regression test for
+// crbug.com/41292656.
 TEST_F(ExtensionServiceTest, ReloadAndReEnableExtension) {
   InitializeEmptyExtensionService();
 
@@ -8327,7 +8329,7 @@ TEST_F(ExtensionServiceTest, ReloadAndReEnableExtension) {
   EXPECT_FALSE(registry()->enabled_extensions().Contains(kExtensionId));
 
   // Wait for the reload to complete. This previously crashed (see
-  // crbug.com/676815).
+  // crbug.com/41292656).
   task_environment()->RunUntilIdle();
   // The extension should be enabled again...
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kExtensionId));
@@ -8336,7 +8338,7 @@ TEST_F(ExtensionServiceTest, ReloadAndReEnableExtension) {
   EXPECT_NE(extension, registry()->enabled_extensions().GetByID(kExtensionId));
 }
 
-// Test reloading a shared module. Regression test for crbug.com/676815.
+// Test reloading a shared module. Regression test for crbug.com/41292656.
 TEST_F(ExtensionServiceTest, ReloadSharedModule) {
   InitializeEmptyExtensionService();
 
@@ -8356,7 +8358,7 @@ TEST_F(ExtensionServiceTest, ReloadSharedModule) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kExtensionId));
 
   // Reload the extension and wait for it to complete. This previously crashed
-  // (see crbug.com/676815).
+  // (see crbug.com/41292656).
   registrar()->ReloadExtension(kExtensionId);
   task_environment()->RunUntilIdle();
   // The shared module should be enabled.
@@ -8422,7 +8424,7 @@ TEST_F(ExtensionServiceTest, UninstallMigratedExtensionsMultipleCalls) {
 
 // Tests the case of a user installing a non-policy extension (e.g. through the
 // webstore), and that extension later becoming required by policy.
-// Regression test for https://crbug.com/894184.
+// Regression test for https://crbug.com/40597579.
 TEST_F(ExtensionServiceTest, UserInstalledExtensionThenRequiredByPolicy) {
   InitializeEmptyExtensionServiceWithTestingPrefs();
 
@@ -8582,7 +8584,7 @@ TEST_F(ExtensionServiceTest, InstallingUnacknowledgedExternalExtension) {
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// Regression test for crbug.com/979010.
+// Regression test for crbug.com/40633880.
 // TODO(crbug.com/414879019): Decide if we need BackgroundContentsService on
 // desktop Android.
 TEST_F(ExtensionServiceTest, ReloadingExtensionFromNotification) {
@@ -8613,7 +8615,7 @@ TEST_F(ExtensionServiceTest, ReloadingExtensionFromNotification) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that blocking extension doesn't trigger unload notification for disabled
-// extensions. (crbug.com/708230)
+// extensions. (crbug.com/40513972)
 TEST_F(ExtensionServiceTest, BlockDisabledExtensionNotification) {
   // Initialize a new extension.
   InitializeEmptyExtensionService();
@@ -8644,8 +8646,8 @@ class ExternalExtensionPriorityTest
 // Policy-forced extensions should be fetched with FOREGROUND priority,
 // otherwise they may be throttled (web store sends “noupdate” response to
 // reduce load), which is OK for updates, but not for a new install. This is
-// a regression test for problems described in https://crbug.com/904600 and
-// https://crbug.com/917700.
+// a regression test for problems described in https://crbug.com/41425994 and
+// https://crbug.com/41433204.
 TEST_P(ExternalExtensionPriorityTest, PolicyForegroundFetch) {
   ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_checks;
   ExtensionServiceInitParams params;

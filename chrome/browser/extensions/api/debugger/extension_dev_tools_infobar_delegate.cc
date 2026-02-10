@@ -94,7 +94,7 @@ gfx::ElideBehavior ExtensionDevToolsInfoBarDelegate::GetMessageElideBehavior()
     const {
   // The important part of the message text above is at the end:
   // "... is debugging the browser". If the extension name is very long,
-  // we'd rather truncate it instead. See https://crbug.com/823194.
+  // we'd rather truncate it instead. See https://crbug.com/40090846.
   // See also the comment above for the kMaxExtensionNameLength
   return gfx::ELIDE_HEAD;
 }

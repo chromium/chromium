@@ -223,7 +223,7 @@ TEST_F(APIBindingJSUtilUnittest, TestSendRequestWithOptions) {
 }
 
 // Tests that arguments passed to sendRequest that won't serialize are
-// replaced with null. Regression test for https://crbug.com/924045.
+// replaced with null. Regression test for https://crbug.com/41436737.
 TEST_F(APIBindingJSUtilUnittest, TestSendRequestSerializationFailure) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();

@@ -64,7 +64,7 @@ class FileManagerPrivateSetPreferencesFunction : public ExtensionFunction {
 // Changes the zoom level of the file manager by modifying the zoom level of the
 // WebContents.
 // TODO(hirono): Remove this function once the zoom level change is supported
-// for all apps. crbug.com/227175.
+// for all apps. crbug.com/41004082.
 class FileManagerPrivateZoomFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.zoom", FILEMANAGERPRIVATE_ZOOM)

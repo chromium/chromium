@@ -1123,7 +1123,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
 }
 
 // Test that granting <all_urls> as an optional permission, and then revoking
-// it, behaves properly. Regression test for https://crbug.com/930062.
+// it, behaves properly. Regression test for https://crbug.com/41440164.
 TEST_F(ScriptingPermissionsModifierUnitTest,
        RemoveAllURLsGrantedOptionalPermission) {
   InitializeEmptyExtensionService();

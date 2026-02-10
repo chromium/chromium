@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // TODO(dkrahn): Clean up this private API once all clients have been migrated
-// to use the public API. crbug.com/588339.
+// to use the public API. b/309464153.
 
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_PRIVATE_ENTERPRISE_PLATFORM_KEYS_PRIVATE_API_H__
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_PRIVATE_ENTERPRISE_PLATFORM_KEYS_PRIVATE_API_H__

@@ -1127,7 +1127,7 @@ using DeclarativeNetRequestBrowserTest_Unpacked =
 
 // Tests the "urlFilter" and "regexFilter" property of a declarative rule
 // condition.
-// TODO: test times out on win, mac and linux. http://crbug.com/900447.
+// TODO(crbug.com/41423578): test times out on win, mac and linux.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                        DISABLED_BlockRequests_UrlFilter) {
   struct {
@@ -2740,7 +2740,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, RendererCacheCleared) {
           ruleset_manager_observer()->GetAndResetRequestSeen(), observed_url));
 }
 
-// Tests that proxy requests aren't intercepted. See https://crbug.com/794674.
+// Tests that proxy requests aren't intercepted. See https://crbug.com/40089910.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                        PacRequestsBypassRules) {
   // Load the extension.
@@ -3819,7 +3819,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 }
 
 // Ensure web request events are still dispatched even if DNR blocks/redirects
-// the request. (Regression test for crbug.com/999744).
+// the request. (Regression test for crbug.com/40642949).
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, WebRequestEvents) {
   // Load the extension with a background script so scripts can be run from its
   // generated background page.
@@ -5881,7 +5881,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestHostPermissionsBrowserTest,
                        SubframesRequireNoInitiatorPermissions) {
   // The extension has access to requests to "frame_1.com" and "frame_2.com".
   // These should be redirected. Note: extensions don't need access to the
-  // initiator of a navigation request to redirect it (See crbug.com/918137).
+  // initiator of a navigation request to redirect it (See crbug.com/41433450).
   ASSERT_NO_FATAL_FAILURE(
       LoadExtensionWithHostPermissions({GetMatchPatternForDomain("frame_1"),
                                         GetMatchPatternForDomain("frame_2")}));
@@ -6034,7 +6034,7 @@ class DeclarativeNetRequestResourceTypeBrowserTest
   }
 };
 
-// These are split into two tests to prevent a timeout. See crbug.com/787957.
+// These are split into two tests to prevent a timeout. See crbug.com/40551307.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestResourceTypeBrowserTest, Test1) {
   ASSERT_NO_FATAL_FAILURE(LoadExtension());
   RunTests({{"block_subframe.com", kSubframe},

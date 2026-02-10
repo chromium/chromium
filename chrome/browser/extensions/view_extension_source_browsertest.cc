@@ -34,7 +34,7 @@ class ViewExtensionSourceTest : public extensions::ExtensionBrowserTest {
 };
 
 // Verify that restoring a view-source tab for a Chrome extension works
-// properly.  See https://crbug.com/699428.
+// properly.  See https://crbug.com/41306169.
 IN_PROC_BROWSER_TEST_F(ViewExtensionSourceTest, ViewSourceTabRestore) {
   ASSERT_TRUE(embedded_test_server()->Start());
 

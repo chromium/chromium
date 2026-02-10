@@ -590,7 +590,7 @@ TEST(ExtensionSettingsPolicyHandlerTest, DropInvalidKeys) {
 }
 
 // Only enterprise managed machines can auto install extensions from a location
-// other than the webstore https://crbug.com/809004.
+// other than the webstore https://crbug.com/41368809.
 TEST(ExtensionSettingsPolicyHandlerTest, NonManagedOffWebstoreExtension) {
   // Mark as not enterprise managed.
   auto policy_result = base::JSONReader::ReadAndReturnValueWithError(

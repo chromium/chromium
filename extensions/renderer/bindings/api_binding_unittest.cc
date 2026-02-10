@@ -1317,7 +1317,7 @@ TEST_F(APIBindingUnittest, TestHandleRequestHookCalledTwiceGracefulRegression) {
 }
 
 // Tests that JS custom hooks correctly handle the context being invalidated.
-// Regression test for https://crbug.com/944014.
+// Regression test for https://crbug.com/41448033.
 TEST_F(APIBindingUnittest, TestInvalidatingInCustomHook) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();

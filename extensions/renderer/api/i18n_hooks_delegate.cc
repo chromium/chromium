@@ -162,7 +162,7 @@ v8::Local<v8::Value> GetI18nMessage(const std::string& message_name,
 
   std::vector<std::string> substitutions;
   // For now, we just suppress all errors, but that's really not the best.
-  // See https://crbug.com/807769.
+  // See https://crbug.com/40560789.
   v8::TryCatch try_catch(isolate);
   if (v8_substitutions->IsArray()) {
     // chrome.i18n.getMessage("message_name", ["more", "params"]);
@@ -205,7 +205,7 @@ v8::Local<v8::Value> GetI18nMessage(const std::string& message_name,
 
   // NOTE: We call ReplaceStringPlaceholders even if |substitutions| is empty
   // because we substitute $$ to be $ (in order to display a dollar sign in a
-  // message). See https://crbug.com/127243.
+  // message). See https://crbug.com/40206032.
   message = base::ReplaceStringPlaceholders(message, substitutions, nullptr);
   return gin::StringToV8(isolate, message);
 }

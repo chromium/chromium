@@ -87,7 +87,7 @@ class ExtensionFrameHelper
   // owning `relative_to_frame` (if `relative_to_frame` is not an extension
   // frame, returns nullptr). Pierces the browsing instance boundary because
   // certain extensions rely on this behavior.
-  // TODO(devlin, lukasza): https://crbug.com/786411: Remove this behavior, and
+  // TODO(devlin, lukasza): crbug.com/40550544: Remove this behavior, and
   // make extensions follow the web standard for finding frames or use an
   // explicit API.
   static content::RenderFrame* FindFrame(

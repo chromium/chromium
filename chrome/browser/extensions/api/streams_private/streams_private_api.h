@@ -15,7 +15,7 @@
 namespace extensions {
 
 // TODO(devlin): This is now only used for the MimeTypesHandler API. We should
-// rename and move it to make that clear. https://crbug.com/890401.
+// rename and move it to make that clear. https://crbug.com/40595895.
 class StreamsPrivateAPI {
  public:
   // Send the onExecuteMimeTypeHandler event to `extension_id`. A non-empty

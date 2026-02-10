@@ -175,7 +175,7 @@ bool WebviewHandler::Parse(Extension* extension, std::u16string* error) {
       if (!pattern_url.is_valid()) {
         // NOTE: Warning instead of error because there are existing apps that
         // have this bug, and we don't want to hard-error on them.
-        // https://crbug.com/856948.
+        // https://crbug.com/40582582.
         std::string warning = ErrorUtils::FormatErrorMessage(
             errors::kInvalidWebviewAccessibleResource, base::NumberToString(i));
         extension->AddInstallWarning(
@@ -187,7 +187,7 @@ bool WebviewHandler::Parse(Extension* extension, std::u16string* error) {
           URLPattern::ParseResult::kSuccess) {
         // NOTE: Warning instead of error because there are existing apps that
         // have this bug, and we don't want to hard-error on them.
-        // https://crbug.com/856948.
+        // https://crbug.com/40582582.
         std::string warning = ErrorUtils::FormatErrorMessage(
             errors::kInvalidWebviewAccessibleResource, base::NumberToString(i));
         extension->AddInstallWarning(

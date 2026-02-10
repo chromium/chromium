@@ -458,7 +458,7 @@ bool ScriptContext::HasAccessOrThrowError(const std::string& name) {
   //
   // In any case, this check is silly. The frame's document's security origin
   // already tells us if it's sandboxed. The only problem is that until
-  // crbug.com/466373 is fixed, we don't know the security origin up-front and
+  // crbug.com/40409183 is fixed, we don't know the security origin up-front and
   // may not know it here, either.
   //
   // [1] citation needed. This ScriptContext should already be in a state that

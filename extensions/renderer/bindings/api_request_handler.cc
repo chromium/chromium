@@ -524,7 +524,7 @@ APIRequestHandler::RequestDetails APIRequestHandler::AddPendingRequest(
   // these that aren't sent to the browser. It is the caller's responsibility to
   // handle any user gesture behavior. This prevents an issue where messaging
   // handling would create an extra scoped user gesture, causing issues. See
-  // https://crbug.com/921141.
+  // https://crbug.com/41435171.
   std::unique_ptr<InteractionProvider::Token> null_user_gesture_token;
 
   pending_requests_.emplace(

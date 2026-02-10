@@ -835,7 +835,7 @@ void NativeExtensionBindingsSystem::HandleResponse(
     mojom::ExtraResponseDataPtr extra_data) {
   // Some API calls result in failure, but don't set an error. Use a generic and
   // unhelpful error string.
-  // TODO(devlin): Track these down and fix them. See crbug.com/648275.
+  // TODO(devlin): Track these down and fix them. See crbug.com/40485455.
   api_system_.CompleteRequest(
       request_id, response,
       !success && error.empty() ? "Unknown error." : error,
@@ -888,7 +888,7 @@ void NativeExtensionBindingsSystem::BindingAccessor(
   // Force binding creation in the owning context (even if another context is
   // calling in). This is also important to ensure that objects created through
   // the initialization process are all instantiated for the owning context.
-  // See https://crbug.com/819968.
+  // See https://crbug.com/41375376.
   v8::Context::Scope context_scope(context);
 
   // We use info.Data() to store a real name here instead of using the provided

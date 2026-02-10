@@ -112,7 +112,7 @@ TEST_F(RulesetMatcherTest, RedirectRule) {
       matcher->GetAction(params, RulesetMatchingStage::kOnBeforeRequest));
 }
 
-// Test that a URL cannot redirect to itself, as filed in crbug.com/954646.
+// Test that a URL cannot redirect to itself, as filed in crbug.com/40623953.
 TEST_F(RulesetMatcherTest, PreventSelfRedirect) {
   TestRule rule = CreateGenericRule();
   rule.condition->url_filter = std::string("go*");

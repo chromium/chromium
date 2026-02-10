@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, WindowOpener) {
 }
 
 // Ensure that the width and height properties of a window opened with
-// chrome.windows.create match the creation parameters. See crbug.com/173831.
+// chrome.windows.create match the creation parameters. See crbug.com/40300745.
 IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, WindowOpenSized) {
   ASSERT_TRUE(RunExtensionTest("window_open/window_size")) << message_;
   EXPECT_TRUE(WaitForTabsPopupsApps(browser(), 0, 0, 1));
@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
 }
 
 // Test that navigating to an extension URL is allowed on chrome://.
-// See https://crbug.com/662602.
+// See https://crbug.com/41284772.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
                        NavigateToInaccessibleResourceFromChromeURL) {
   // Mint an extension URL which is not web-accessible.

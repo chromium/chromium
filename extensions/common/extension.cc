@@ -327,7 +327,7 @@ bool Extension::ResourceMatches(const URLPatternSet& pattern_set,
 
 ExtensionResource Extension::GetResource(std::string_view relative_path) const {
   // We have some legacy data where resources have leading slashes.
-  // See: http://crbug.com/121164
+  // See: http://crbug.com/40767705
   if (!relative_path.empty() && relative_path[0] == '/') {
     relative_path.remove_prefix(1);
   }

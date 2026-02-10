@@ -135,7 +135,7 @@ bool ExtensionsRendererClient::AllowPopup() {
     return false;
   }
 
-  // See http://crbug.com/117446 for the subtlety of this check.
+  // See http://crbug.com/40054678 for the subtlety of this check.
   switch (current_context->context_type()) {
     case mojom::ContextType::kUnspecified:
     case mojom::ContextType::kWebPage:

@@ -260,7 +260,7 @@ class PermissionsManager : public KeyedService {
   // valid schemes for URLPatterns, which results in the chrome:-scheme being
   // included for <all_urls> when retrieving it directly from the prefs; this
   // then causes CHECKs to fail when validating that permissions being revoked
-  // are present (see https://crbug.com/930062). Returns null if there are no
+  // are present (see https://crbug.com/41440164). Returns null if there are no
   // stored runtime-granted/desired-active permissions.
   // TODO(crbug.com/41441259): ExtensionPrefs should return
   // properly-bounded permissions.

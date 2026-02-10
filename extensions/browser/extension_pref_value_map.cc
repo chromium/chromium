@@ -77,7 +77,7 @@ bool ExtensionPrefValueMap::CanExtensionControlPref(
     NOTREACHED() << "Extension " << extension_id
                  << " is not registered but accesses pref " << pref_key
                  << " (incognito: " << incognito << ")."
-                 << " http://crbug.com/454513";
+                 << " http://crbug.com/40403830";
   }
 
   if (incognito && !ext->second->incognito_enabled) {

@@ -49,7 +49,7 @@ gfx::ImageSkiaRep ScaleImageSkiaRep(const gfx::ImageSkiaRep& rep,
       target_scale);
 }
 
-// Make sure the background color is opaque. See http://crbug.com/619499
+// Make sure the background color is opaque. See http://crbug.com/40472744
 // TODO(crbug.com/441643015): Remove ui color deps and use Android color system
 SkColor GetBadgeBackgroundColor(IconWithBadgeImageSource::Badge* badge,
                                 const ui::ColorProvider* color_provider) {

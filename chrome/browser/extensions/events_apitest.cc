@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventsAreUnregistered) {
 }
 
 // Test that listeners for webview-related events are not stored (even for lazy
-// contexts). See crbug.com/736381.
+// contexts). See crbug.com/41327043.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WebViewEventRegistration) {
   ASSERT_TRUE(RunExtensionTest("events/webview_events",
                                {.launch_as_platform_app = true}))
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(EventsApiTest,
 }
 
 // This test is OK on Windows, but times out on other platforms.
-// https://crbug.com/833854
+// https://crbug.com/41383852
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_NewlyIntroducedListener NewlyIntroducedListener
 #else

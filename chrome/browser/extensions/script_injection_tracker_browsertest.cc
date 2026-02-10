@@ -599,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(
     // `child_frame` are currently hosted in the same process, but this kind of
     // verification is important if 1( we ever consider going back to per-frame
     // tracking or 2) we start isolating opaque-origin/sandboxed frames into a
-    // separate process (tracked in https://crbug.com/510122).
+    // separate process (tracked in https://crbug.com/40082497).
     EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
         *main_frame->GetProcess(), extension->id()));
     EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(

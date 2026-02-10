@@ -83,7 +83,7 @@ class BookmarksApiUnittest : public ExtensionServiceTestBase {
 };
 
 // Tests that running updating a bookmark folder's url does not succeed.
-// Regression test for https://crbug.com/818395.
+// Regression test for https://crbug.com/41374415.
 TEST_F(BookmarksApiUnittest, Update) {
   auto update_function = base::MakeRefCounted<BookmarksUpdateFunction>();
   ASSERT_EQ(R"(Can't set URL of a bookmark folder.)",

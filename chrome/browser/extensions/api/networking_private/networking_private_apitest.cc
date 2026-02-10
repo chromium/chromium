@@ -29,7 +29,7 @@ namespace extensions {
 // The implementations (which differ significantly between chromeos and
 // windows/mac) are tested independently in
 // networking_private_[chromeos|service_client]_apitest.cc.
-// See also crbug.com/460119.
+// See also crbug.com/41158448.
 
 namespace {
 

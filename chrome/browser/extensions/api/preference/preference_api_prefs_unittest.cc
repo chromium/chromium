@@ -429,9 +429,9 @@ class ControlledPrefsDisableExtensions : public ExtensionControlledPrefsTest {
     }
 
     // External extensions are loaded even when extensions are disabled (though
-    // they likely shouldn't be, see https://crbug.com/833540). Because of this,
+    // they likely shouldn't be, see crbug.com/41383647). Because of this,
     // the preference should still be controlled by the external extension.
-    // Regression test for https://crbug.com/828295.
+    // Regression test for https://crbug.com/41380408.
     std::string pref2_actual = prefs()->pref_service()->GetString(kPref2);
     EXPECT_EQ("external extension value", pref2_actual);
   }

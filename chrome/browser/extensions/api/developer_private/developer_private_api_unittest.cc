@@ -1620,7 +1620,7 @@ TEST_F(DeveloperPrivateApiUnitTest, RepairNotBrokenExtension) {
 
 // Tests that developerPrivate.private cannot repair a policy-installed
 // extension.
-// Regression test for https://crbug.com/577959.
+// Regression test for https://crbug.com/40452453.
 TEST_F(DeveloperPrivateApiUnitTest, RepairPolicyExtension) {
   ExtensionId extension_id(kGoodCrx);
 

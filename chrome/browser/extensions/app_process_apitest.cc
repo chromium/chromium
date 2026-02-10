@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, AppProcessBackgroundInstances) {
 // 3. page2 redirects back to a page in the app
 // The final navigation should end up in the app process.
 // See http://crbug.com/61757
-// Flaky.  http://crbug.com/341898
+// Flaky.  http://crbug.com/41088563
 IN_PROC_BROWSER_TEST_F(AppApiTest, DISABLED_AppProcessRedirectBack) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("app_process")));
 
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, DISABLED_AppProcessRedirectBack) {
 // Ensure that re-navigating to a URL after installing or uninstalling it as an
 // app correctly swaps the tab to the app process.  (http://crbug.com/80621)
 //
-// Fails on Windows. http://crbug.com/238670
+// Fails on Windows. http://crbug.com/41011126
 // Added logging to help diagnose the location of the problem.
 IN_PROC_BROWSER_TEST_F(AppApiTest, NavigateIntoAppProcess) {
   extensions::ProcessMap* process_map = extensions::ProcessMap::Get(profile());
@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, NavigateIntoAppProcess) {
 // correctly swaps the tab to the app process.  (http://crbug.com/80621)
 //
 // Added logging to help diagnose the location of the problem.
-// http://crbug.com/238670
+// http://crbug.com/41011126
 IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadIntoAppProcess) {
   extensions::ProcessMap* process_map = extensions::ProcessMap::Get(profile());
 
@@ -448,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadIntoAppProcess) {
 // Ensure that reloading a URL with JavaScript after installing or uninstalling
 // it as an app correctly swaps the process.  (http://crbug.com/80621)
 //
-// Crashes on Windows and Mac. http://crbug.com/238670
+// Crashes on Windows and Mac. http://crbug.com/41011126
 // Added logging to help diagnose the location of the problem.
 IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadIntoAppProcessWithJavaScript) {
   extensions::ProcessMap* process_map = extensions::ProcessMap::Get(profile());
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadIntoAppProcessWithJavaScript) {
 }
 
 // Similar to the previous test, but ensure that popup blocking bypass
-// isn't granted to the iframe.  See crbug.com/117446.
+// isn't granted to the iframe.  See crbug.com/40054678.
 IN_PROC_BROWSER_TEST_F(BlockedAppApiTest, OpenAppFromIframe) {
   // Load app and start URL (not in the app).
   const Extension* app =
@@ -711,8 +711,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, NavigatePopupFromAppToOutsideApp) {
   // browser-initiated navigation breaks the scripting relationship between the
   // popup and the app, but it currently does not, since we keep the scripting
   // relationship regardless of whether the navigation is browser or
-  // renderer-initiated (see https://crbug.com/828720).  Consider changing
-  // this in the future as part of https://crbug.com/718516.
+  // renderer-initiated (see https://crbug.com/41380648).  Consider changing
+  // this in the future as part of https://crbug.com/40518928.
   {
     content::TestNavigationObserver observer(popup_contents);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(

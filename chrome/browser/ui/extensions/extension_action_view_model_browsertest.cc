@@ -898,7 +898,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
 // ExtensionActionViewModel::GetIcon() can potentially be called with a
 // null web contents if the tab strip model doesn't know of an active tab
 // (though it's a bit unclear when this is the case).
-// See https://crbug.com/888121
+// See https://crbug.com/41416544
 IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
                        TestGetIconWithNullWebContents) {
   Init();

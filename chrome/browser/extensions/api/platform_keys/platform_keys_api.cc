@@ -125,7 +125,7 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
         return RespondNow(Error(platform_keys::kErrorInvalidX509Cert));
       }
       // Allow UTF-8 inside PrintableStrings in client certificates. See
-      // crbug.com/770323 and crbug.com/788655.
+      // crbug.com/41347446 and crbug.com/41357486.
       net::X509Certificate::UnsafeCreateOptions options;
       options.printable_string_is_utf8 = true;
       scoped_refptr<net::X509Certificate> client_cert_x509 =

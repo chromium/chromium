@@ -101,7 +101,7 @@ class ExternalInstallErrorTest : public ExtensionBrowserTest {
   }
 };
 
-// Test that global errors don't crash on shutdown. See crbug.com/720081.
+// Test that global errors don't crash on shutdown. See crbug.com/40519666.
 IN_PROC_BROWSER_TEST_F(ExternalInstallErrorTest,
                        TestShutdownWithWebstoreExtension) {
   // This relies on prompting for external extensions.

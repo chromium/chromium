@@ -275,7 +275,7 @@ TEST_F(ExtensionWebUITest, OverrideRegistrarObserverNoOverride) {
 
 TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
   // Test that duplicate entries for a single extension are removed. This could
-  // happen because of https://crbug.com/782959.
+  // happen because of https://crbug.com/41354269.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .SetManifestPath("chrome_url_overrides.newtab", "newtab.html")

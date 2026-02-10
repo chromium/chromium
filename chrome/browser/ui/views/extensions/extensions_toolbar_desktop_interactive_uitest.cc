@@ -628,7 +628,7 @@ class IncognitoExtensionsToolbarDesktopUITest
 // Tests that first loading an extension action in an incognito profile, then
 // removing the incognito profile and using the extension action in a normal
 // profile doesn't crash.
-// Regression test for crbug.com/663726.
+// Regression test for crbug.com/40085916.
 IN_PROC_BROWSER_TEST_F(IncognitoExtensionsToolbarDesktopUITest,
                        TestExtensionFirstLoadedInIncognitoMode) {
   EXPECT_TRUE(browser()->profile()->IsOffTheRecord());

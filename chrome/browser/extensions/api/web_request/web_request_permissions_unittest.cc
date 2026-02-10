@@ -109,7 +109,7 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest,
 }
 
 // Ensure requests made by the local WebUINTP are hidden from extensions.
-// Regression test for crbug.com/931013.
+// Regression test for crbug.com/40094017.
 TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest, LocalWebUINTPRequests) {
   const GURL example_com("http://example.com");
 

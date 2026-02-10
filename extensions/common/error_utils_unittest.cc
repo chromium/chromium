@@ -23,7 +23,7 @@ TEST(ErrorUtils, FormatErrorMessage_Success) {
       {"Hello * Bye *", "arg1", "arg2", "Hello arg1 Bye arg2"},
       // Ensure substitutions respect the size of the string_view.
       {"Hello * Bye *", std::string_view("12345", 2), "3", "Hello 12 Bye 3"},
-      // Regression test for crbug.com/928415.
+      // Regression test for crbug.com/41439160.
       {"Hello * Bye *", "*arg1", "*arg2", "Hello *arg1 Bye *arg2"},
   };
 

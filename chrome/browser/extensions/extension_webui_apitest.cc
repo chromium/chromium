@@ -41,7 +41,7 @@ namespace OnMessage = api::test::OnMessage;
 
 namespace {
 
-#if !BUILDFLAG(IS_WIN)  // flaky http://crbug.com/530722
+#if !BUILDFLAG(IS_WIN)  // flaky http://crbug.com/40435404
 
 // Tests running extension APIs on WebUI.
 class ExtensionWebUITest : public ExtensionApiTest {
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebUIEmbeddedOptionsTest,
   ASSERT_TRUE(onclose_listener.WaitUntilSatisfied());
 }
 
-// Regression test for crbug.com/414526.
+// Regression test for crbug.com/40384641.
 //
 // Same setup as CanEmbedExtensionOptions but disable the extension before
 // embedding.

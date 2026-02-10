@@ -361,11 +361,11 @@ TEST_F(BrowsingDataApiTest, RemoveBrowsingDataAll) {
   EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(1.0), GetBeginTime());
   EXPECT_EQ(
       // TODO(benwells): implement clearing of site usage data via the
-      // browsing data API. https://crbug.com/500801.
+      // browsing data API. https://crbug.com/41183097.
       // TODO(dmurph): implement clearing of durable storage permission
-      // via the browsing data API. https://crbug.com/500801.
+      // via the browsing data API. https://crbug.com/41183097.
       // TODO(ramyasharma): implement clearing of external protocol data
-      // via the browsing data API. https://crbug.com/692850.
+      // via the browsing data API. https://crbug.com/40506819.
       content::BrowsingDataRemover::DATA_TYPE_COOKIES |
           (content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE &
            ~content::BrowsingDataRemover::DATA_TYPE_BACKGROUND_FETCH &

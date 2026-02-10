@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
 }
 
 // Test that we don't crash when uninstalling an extension from a web app
-// window in Ash. Context: crbug.com/825554
+// window in Ash. Context: crbug.com/40568607
 // TODO(crbug.com/415937950): Fix and re-enable flaky test.
 IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
                        DISABLED_WebAppWindowAshCrash) {
@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
 
 // Tests the dialog is anchored in the correct place based on whether the
 // extensions container is visible.
-// Regression test for crbug.com/133249.
+// Regression test for crbug.com/40227690.
 IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
                        DialogAnchoredInCorrectPlace) {
   extensions::ExtensionRegistrar* extension_registrar =

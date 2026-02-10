@@ -489,7 +489,7 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   results.Set("layout", GetKeyboardLayout());
 
   // TODO(bshe): Consolidate a11y, hotrod and normal mode into a mode enum. See
-  // crbug.com/529474.
+  // crbug.com/40434838.
   results.Set("a11ymode",
               keyboard_client->IsEnableFlagSet(
                   keyboard::KeyboardEnableFlag::kAccessibilityEnabled));

@@ -295,7 +295,7 @@ TEST_F(ExtensionDownloaderTest, TestStageChangesBadQuery) {
 
 // Test that failure callback was actually called in case of empty answer from
 // the update server. Regression for problem described/fixed in
-// crbug.com/938265.
+// crbug.com/40616612.
 TEST_F(ExtensionDownloaderTest, TestNoUpdatesManifestReports) {
   ExtensionDownloaderTestHelper helper;
 

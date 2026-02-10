@@ -23,7 +23,7 @@ const scoped_refptr<base::SingleThreadTaskRunner> GetActivityLogTaskRunner();
 
 // TODO(devlin): It would be great to remove this, but we can't create a valid
 // SQL database in unittests using the normal ActivityLogTaskRunner. Might be
-// related to https://crbug.com/739945.
+// related to https://crbug.com/41329138.
 void SetActivityLogTaskRunnerForTesting(
     base::SingleThreadTaskRunner* task_runner);
 

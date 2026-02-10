@@ -423,7 +423,7 @@ TEST_F(BackgroundModeManagerTest, BackgroundAppLoadUnload) {
 }
 
 // Apps installed while background mode is disabled should cause activation
-// after it is enabled - crbug.com/527023.
+// after it is enabled - crbug.com/41198814.
 TEST_F(BackgroundModeManagerTest, DISABLED_BackgroundAppInstallWhileDisabled) {
   AdvancedTestBackgroundModeManager manager(
       *command_line_, profile_manager_->profile_attributes_storage(), true);
@@ -682,7 +682,7 @@ TEST_F(BackgroundModeManagerTest, ProfileAttributesStorageObserver) {
 TEST_F(BackgroundModeManagerTest, DeleteBackgroundProfile) {
   TestStartupLaunchManager* const launch_manager = startup_launch_manager();
   // Tests whether deleting the only profile when it is a BG profile works
-  // or not (http://crbug.com/346214).
+  // or not (http://crbug.com/40352851).
   AdvancedTestBackgroundModeManager manager(
       *command_line_, profile_manager_->profile_attributes_storage(), true);
   manager.RegisterProfile(profile_);
@@ -925,7 +925,7 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
       profile2_submenu->GetCommandIdAt(2)));
   EXPECT_EQ(profile2_submenu->GetCommandIdAt(2), 7);
 
-  // Model Adapter Checks for crbug.com/315164
+  // Model Adapter Checks for crbug.com/40339926
   // P1: Profile 1 Menu Item
   // P2: Profile 2 Menu Item
   // CE: Component Extension Menu Item
@@ -1013,7 +1013,7 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
 
   // Upgrading an extension that has background should not reshow the balloon.
   {
-    // TODO(crbug.com/41145854): Fix crbug.com/438376 and remove these checks.
+    // TODO(crbug.com/41145854): Fix crbug.com/41145854 and remove these checks.
     InSequence expected_call_sequence;
     EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
         .Times(Exactly(1));

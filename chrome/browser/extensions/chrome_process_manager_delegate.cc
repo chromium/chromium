@@ -60,7 +60,7 @@ bool ChromeProcessManagerDelegate::AreBackgroundPagesAllowedForContext(
   // Disallow if the current session is a Guest mode session or login screen but
   // the current browser context is *not* off-the-record. Such context is
   // artificial and background page shouldn't be created in it.
-  // http://crbug.com/329498
+  // http://crbug.com/41080781
   return is_normal_session || profile->IsOffTheRecord();
 }
 
@@ -165,7 +165,7 @@ void ChromeProcessManagerDelegate::OnProfileWillBeDestroyed(Profile* profile) {
 
   // If this profile owns an incognito profile, but it is destroyed before the
   // incognito profile is destroyed, then close the incognito background hosts
-  // as well. This happens in a few tests. http://crbug.com/138843
+  // as well. This happens in a few tests. http://crbug.com/40247368
   if (!profile->IsOffTheRecord() && profile->HasPrimaryOTRProfile()) {
     Profile* otr = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     close_background_hosts(otr);

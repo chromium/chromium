@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType, HostSubsets) {
 // Tests that requesting an optional permission from a background page, with
 // another window open, grants the permission and updates the bindings
 // (chrome.whatever, in this case chrome.alarms). Regression test for
-// crbug.com/435141, see details there for trickiness.
+// crbug.com/40394805, see details there for trickiness.
 // TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API
 // is available.
 IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsUpdatesBindings) {

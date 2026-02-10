@@ -49,7 +49,7 @@ using ContextType = extensions::browser_test_util::ContextType;
 class ExtensionLoadingTest : public ExtensionBrowserTest {
 };
 
-// Check the fix for http://crbug.com/178542.
+// Check the fix for http://crbug.com/40303200.
 IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
                        UpgradeAfterNavigatingFromOverriddenNewTabPage) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
               testing::ElementsAre(2));
 }
 
-// Tests the behavior described in http://crbug.com/532088.
+// Tests the behavior described in http://crbug.com/41201916.
 IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
                        KeepAliveWithDevToolsOpenOnReload) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
 
 // Tests whether the extension runtime stays valid when an extension reloads
 // while a devtools extension is hammering the frame with eval requests.
-// Regression test for https://crbug.com/544182
+// Regression test for https://crbug.com/41209887
 // TODO(crbug.com/40893499): Flaky with dbg and sanitizers.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_RuntimeValidWhileDevToolsOpen \

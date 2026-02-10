@@ -38,7 +38,7 @@ BuildApiPartitionKey(const std::optional<std::string>& top_level_site,
 
 // Tests that cookies with an expiration date too far in the future to represent
 // with base::Time serialize gracefully.
-// Regression test for https://crbug.com/848221.
+// Regression test for https://crbug.com/41392020.
 TEST(CookiesHelperUnittest, CookieConversionWithInfiniteExpirationDate) {
   // Set a cookie to expire at base::Time::Max(). This can happen when the
   // cookie is set to expire farther in the future than we can accurately

@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, NoBackgroundPage) {
 // Child extension frames should only appear if it is hosted in an extension
 // process (i.e. if the top-level frame is an extension page, or if OOP frames
 // are enabled for extensions).
-// Disabled due to flake: https://crbug.com/693287.
+// Disabled due to flake: https://crbug.com/40507025.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                        DISABLED_FrameClassification) {
   const Extension* extension1 = CreateExtension("Extension 1", false);
@@ -670,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 }
 
 // Verify correct keepalive count behavior on network request events.
-// Regression test for http://crbug.com/535716.
+// Regression test for http://crbug.com/40437330.
 // Disabled on Linux for flakiness: http://crbug.com/1030435.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_KeepaliveOnNetworkRequest DISABLED_KeepaliveOnNetworkRequest
@@ -757,7 +757,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, ExtensionProcessReuse) {
   // Interact with each extension background page by setting and reading back
   // the cookie. This would fail for one of the two extensions in a shared
   // process, if that process is locked to a single origin. This is a regression
-  // test for http://crbug.com/600441.
+  // test for http://crbug.com/40463566.
   for (const Extension* extension : installed_extensions) {
     ExtensionHost* host =
         ProcessManager::Get(profile())->GetBackgroundHostForExtension(
@@ -776,8 +776,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, ExtensionProcessReuse) {
 }
 
 // Test that navigations to blob: URLs with extension origins are disallowed
-// when initiated from non-extension processes.  See https://crbug.com/645028
-// and https://crbug.com/644426.
+// when initiated from non-extension processes.  See https://crbug.com/40085339
+// and https://crbug.com/40085322.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                        NestedURLNavigationsToExtensionBlocked) {
   // Disabling web security is necessary to test the browser enforcement;
@@ -864,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_TRUE(ExecJs(popup, "location.href = '" + blob_url.spec() + "';"));
 
   // If a navigation was started, wait for it to finish.  This can't just use
-  // a TestNavigationObserver, since after https://crbug.com/811558 blob: and
+  // a TestNavigationObserver, since after https://crbug.com/40090464 blob: and
   // filesystem: navigations have different failure modes: blob URLs will be
   // blocked on the browser side, and filesystem URLs on the renderer side,
   // without notifying the browser.  Since these navigations are scheduled in
@@ -906,7 +906,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 }
 
 // Check that browser-side restrictions on extension blob URLs allow
-// navigations that will result in downloads.  See https://crbug.com/714373.
+// navigations that will result in downloads.  See https://crbug.com/40516916.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                        BlobURLDownloadsToExtensionAllowed) {
   // Disabling web security is necessary to test the browser enforcement;
@@ -979,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
 // Test that navigations to blob: URLs with extension origins  are disallowed
 // in subframes when initiated from non-extension processes, even when the main
-// frame lies about its origin.  See https://crbug.com/836858.
+// frame lies about its origin.  See https://crbug.com/40091207.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                        NestedURLNavigationsToExtensionBlockedInSubframe) {
   // Disabling web security is necessary to test the browser enforcement;
@@ -1044,7 +1044,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
 // Test that navigations to blob: and filesystem: URLs with extension origins
 // are allowed when initiated from extension processes.  See
-// https://crbug.com/645028 and https://crbug.com/644426.
+// https://crbug.com/40085339 and https://crbug.com/40085322.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                        NestedURLNavigationsToExtensionAllowed) {
   // Create a simple extension without a background page.
@@ -1103,11 +1103,11 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 // Test that navigations to blob: and filesystem: URLs with extension origins
 // are disallowed in an unprivileged, non-guest web process when the extension
 // origin corresponds to a Chrome app with the "webview" permission.  See
-// https://crbug.com/656752.  These requests should still be allowed inside
+// https://crbug.com/40085725.  These requests should still be allowed inside
 // actual <webview> guest processes created by a Chrome app; this is checked in
 // WebViewTest.Shim_TestBlobURL.
 // TODO(alexmos): Enable this test once checks are implemented in the
-// extensions NavigationThrottle. See https://crbug.com/919194.
+// extensions NavigationThrottle. See https://crbug.com/41434069.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                        DISABLED_NestedURLNavigationsToAppBlocked) {
   // Disabling web security is necessary to test the browser enforcement;
@@ -1202,7 +1202,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 }
 
 // Test that a web frame can't navigate a proxy for an extension frame to a
-// blob/filesystem extension URL.  See https://crbug.com/656752.
+// blob/filesystem extension URL.  See https://crbug.com/40085725.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                        NestedURLNavigationsViaProxyBlocked) {
   // Create a simple extension without a background page.
@@ -1466,7 +1466,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
 // Verify that a web popup created via window.open from an extension page can
 // communicate with the extension page via window.opener.  See
-// https://crbug.com/590068.
+// https://crbug.com/41241280.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                        WebPopupFromExtensionMainFrameHasValidOpener) {
   // Create a simple extension without a background page.
@@ -1503,7 +1503,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
 // Verify that a web popup created via window.open from an extension subframe
 // can communicate with the extension page via window.opener.  Similar to the
-// test above, but for subframes.  See https://crbug.com/590068.
+// test above, but for subframes.  See https://crbug.com/41241280.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                        WebPopupFromExtensionSubframeHasValidOpener) {
   // Create a simple extension without a background page.
@@ -1550,7 +1550,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
 // Test that when a web site has an extension iframe, navigating that iframe to
 // a different web site without --site-per-process will place it in the parent
-// frame's process.  See https://crbug.com/711006.
+// frame's process.  See https://crbug.com/40515345.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                        ExtensionFrameNavigatesToParentSiteInstance) {
   // This test matters only *without* --site-per-process.
@@ -1604,7 +1604,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 // Verify that web iframes on extension frames do not attempt to aggressively
 // reuse existing processes for the same site.  This helps prevent a
 // misbehaving web iframe on an extension from slowing down other processes.
-// See https://crbug.com/899418.
+// See https://crbug.com/40599941.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                        WebSubframeOnExtensionDoesNotReuseExistingProcess) {
   // This test matters only *with* --site-per-process.  It depends on process
@@ -1659,7 +1659,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
 // Test to verify that loading a resource other than an icon file is
 // disallowed for hosted apps, while icons are allowed.
-// See https://crbug.com/717626.
+// See https://crbug.com/41316576.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HostedAppFilesAccess) {
   // Load an extension with a background page.
   scoped_refptr<const Extension> extension =
@@ -1690,7 +1690,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HostedAppFilesAccess) {
 
 // Tests that we correctly account for vanilla web URLs that may be in the
 // same SiteInstance as a hosted app, and display alerts correctly.
-// https://crbug.com/746517.
+// https://crbug.com/40088404.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HostedAppAlerts) {
   ASSERT_TRUE(embedded_test_server()->Start());
   scoped_refptr<const Extension> extension =

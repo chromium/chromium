@@ -875,7 +875,7 @@ TEST_F(APIEventHandlerTest, TestArgumentMassagersNeverDispatch) {
 }
 
 // Test that event results of dispatch are passed to the calling argument
-// massager. Regression test for https://crbug.com/867310.
+// massager. Regression test for https://crbug.com/40586543.
 TEST_F(APIEventHandlerTest, TestArgumentMassagersDispatchResult) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();

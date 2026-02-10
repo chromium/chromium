@@ -60,7 +60,7 @@ class ImageWriterUtilityClient;
 // There is probably a better way to organize this so that it can be represented
 // by a WeakPtr, but those are not thread-safe.  Additionally, if destruction is
 // done on the UI thread then that causes problems if any of the fields were
-// allocated/accessed on the blocking thread.  http://crbug.com/344713
+// allocated/accessed on the blocking thread.  http://crbug.com/41090268
 class Operation : public base::RefCountedThreadSafe<Operation> {
  public:
   using StartWriteCallback = base::OnceCallback<void(bool, const std::string&)>;

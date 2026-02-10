@@ -62,7 +62,7 @@ WebRequestResourceType ToWebRequestResourceType(
   if (request.is_fetch_like_api) {
     // This must be checked before `request.keepalive` check below, because
     // currently Fetch keepAlive is not reported as ping.
-    // See https://crbug.com/611453 for more details.
+    // See https://crbug.com/41253689 for more details.
     return WebRequestResourceType::XHR;
   }
 

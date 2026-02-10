@@ -72,7 +72,7 @@ void ChromeAppIconLoader::FetchImage(const std::string& id) {
           this, id, icon_size_in_dip(), resize_function_);
   // Triggers image loading now instead of depending on paint message. This
   // makes the temp blank image be shown for shorter time and improves user
-  // experience. See http://crbug.com/146114.
+  // experience. See http://crbug.com/40274591.
   icon->image_skia().EnsureRepsForSupportedScales();
   map_[id] = std::move(icon);
 }

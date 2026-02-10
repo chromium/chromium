@@ -180,7 +180,7 @@ TEST_F(ExtensionSettingsFrontendTest, LeveldbDatabaseDeletedFromDiskOnClear) {
   // EXPECT_FALSE(base::PathExists(temp_dir_.GetPath()));
 }
 
-// Disabled (slow), http://crbug.com/322751 .
+// Disabled (slow), http://crbug.com/40342579 .
 TEST_F(ExtensionSettingsFrontendTest,
        DISABLED_QuotaLimitsEnforcedCorrectlyForSyncAndLocal) {
   const std::string id = "ext";

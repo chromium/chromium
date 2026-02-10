@@ -82,7 +82,7 @@ class IconWithBadgeImageSource : public gfx::CanvasImageSource {
   // the current material design mode (See ToolbarActionsBar::GetViewSize()). In
   // all cases, our badges and decorations should be positions at the corners of
   // the area where the icon exists (ignoring all the paddings).
-  // https://crbug.com/831946.
+  // https://crbug.com/40571346.
   gfx::Rect GetIconAreaRect() const;
 
   GetColorProviderCallback get_color_provider_callback_;

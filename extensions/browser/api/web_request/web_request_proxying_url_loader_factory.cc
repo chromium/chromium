@@ -691,7 +691,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   // Forgetting to close the connection with the current URLLoader caused
   // bugs. The latter doesn't know anything about the redirect. Continuing
   // the load with it gives unexpected results. See
-  // https://crbug.com/882661#c72.
+  // https://crbug.com/41412957#c72.
   proxied_client_receiver_.reset();
   header_client_receiver_.reset();
   target_loader_.reset();

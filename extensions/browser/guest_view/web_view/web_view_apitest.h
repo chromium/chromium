@@ -29,7 +29,7 @@ class WebViewAPITest : public AppShellTest {
   // and execute the javascript function runTest(test_name) inside the app.
   // If `ad_hoc_framework` is true, the test app defines its own testing
   // framework, otherwise the test app uses the chrome.test framework.
-  // See https://crbug.com/876330
+  // See https://crbug.com/40590323
   void RunTest(const std::string& test_name,
                const std::string& app_location,
                bool ad_hoc_framework = true);

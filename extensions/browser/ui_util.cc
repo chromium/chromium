@@ -33,7 +33,7 @@ bool ShouldDisplayInExtensionSettings(Manifest::Type type,
   // show packaged apps and platform apps because there are some pieces of
   // functionality that are only available in chrome://extensions/ but which
   // are needed for packaged and platform apps. For example, inspecting
-  // background pages. See http://crbug.com/116134.
+  // background pages. See http://crbug.com/40162419.
   if (!Manifest::IsUnpackedLocation(location) &&
       type == Manifest::TYPE_HOSTED_APP) {
     return false;

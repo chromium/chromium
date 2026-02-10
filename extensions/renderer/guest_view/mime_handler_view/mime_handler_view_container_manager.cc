@@ -52,7 +52,7 @@ MimeHandlerViewContainerManager* MimeHandlerViewContainerManager::Get(
     bool create_if_does_not_exist) {
   if (!render_frame) {
     // Through some |adoptNode| magic, blink could still call this method for
-    // a plugin element which does not have a frame (https://crbug.com/966371).
+    // a plugin element which does not have a frame (crbug.com/40628814).
     return nullptr;
   }
   auto frame_token = render_frame->GetWebFrame()->GetLocalFrameToken();
@@ -77,8 +77,8 @@ bool MimeHandlerViewContainerManager::CreateFrameContainer(
     const std::string& mime_type,
     const content::WebPluginInfo& plugin_info) {
   if (plugin_info.type != content::WebPluginInfo::PLUGIN_TYPE_BROWSER_PLUGIN) {
-    // TODO(ekaramad): Rename this plugin type once https://crbug.com/659750 is
-    // fixed. We only create a MHVFC for the plugin types of BrowserPlugin
+    // TODO(ekaramad): Rename this plugin type once https://crbug.com/40490789
+    // is fixed. We only create a MHVFC for the plugin types of BrowserPlugin
     // (which used to create a MimeHandlerViewContainer).
     return false;
   }
@@ -92,7 +92,7 @@ bool MimeHandlerViewContainerManager::CreateFrameContainer(
     if (old_frame_container->resource_url().EqualsIgnoringRef(resource_url) &&
         old_frame_container->mime_type() == mime_type) {
       // TODO(ekaramad): Fix page transitions using the 'ref' in GURL (see
-      // https://crbug.com/318458 for context).
+      // https://crbug.com/40340995 for context).
       // This should translate into a same document navigation.
       return true;
     }
@@ -222,7 +222,7 @@ void MimeHandlerViewContainerManager::DidLoad(int32_t element_instance_id,
       guest_frame_token = content_frame->FirstChild()->GetFrameToken();
     // TODO(ekaramad); The FrameTokens here might have changed since the plugin
     // has been navigated to load MimeHandlerView. We should double check these
-    // with the browser first (https://crbug.com/957373).
+    // with the browser first (https://crbug.com/40624996).
     // This will end up activating the post_message_support(). The FrameTokens
     // are double checked in every upcoming call to GetTargetFrame() to ensure
     // postMessages are sent to the intended WebFrame only.

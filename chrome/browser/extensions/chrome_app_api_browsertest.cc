@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, IsInstalled) {
 }
 
 // Test accessing app.isInstalled when the context has been invalidated (e.g.
-// by removing the frame). Regression test for https://crbug.com/855853.
+// by removing the frame). Regression test for https://crbug.com/41396418.
 IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, IsInstalledFromRemovedFrame) {
   GURL app_url =
       embedded_test_server()->GetURL("app.com", "/extensions/test_file.html");

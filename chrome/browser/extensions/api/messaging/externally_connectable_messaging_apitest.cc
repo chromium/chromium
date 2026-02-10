@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, NotInstalled) {
 }
 
 // TODO(kalman): Most web messaging tests disabled on windows due to extreme
-// flakiness. See http://crbug.com/350517.
+// flakiness. See http://crbug.com/40354939.
 #if !BUILDFLAG(IS_WIN)
 
 // Tests two extensions on the same sites: one web connectable, one not.
@@ -449,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   EXPECT_EQ(OK, CanUseSendMessagePromise(chromium_connectable.get()));
 }
 
-// See http://crbug.com/297866
+// See http://crbug.com/41057835
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        DISABLED_BackgroundPageClosesOnMessageReceipt) {
   // Install the web connectable extension.
@@ -533,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   EXPECT_EQ(std::string(), tls_channel_id);
 }
 
-// Flaky on Linux and Windows. http://crbug.com/315264
+// Flaky on Linux and Windows. http://crbug.com/40339985
 // Tests a web connectable extension that receives TLS channel id, but
 // immediately closes its background page upon receipt of a message.
 IN_PROC_BROWSER_TEST_F(
@@ -773,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 
 // Tests connection from incognito tabs when there are multiple tabs open to the
 // same origin. The user should only need to accept the connection request once.
-// Flaky: https://crbug.com/940952.
+// Flaky: https://crbug.com/41446351.
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        DISABLED_FromIncognitoPromptApp) {
   scoped_refptr<const Extension> app = LoadChromiumConnectableApp();
@@ -841,7 +841,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, IllegalArguments) {
   // Tests that malformed arguments to connect() don't crash.
-  // Regression test for crbug.com/472700.
+  // Regression test for crbug.com/40412063.
   LoadChromiumConnectableExtension();
   auto* web_contents = GetActiveWebContents();
   ASSERT_TRUE(NavigateToURL(web_contents, chromium_org_url()));
@@ -978,7 +978,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 
 // Tests a web connectable extension that receives TLS channel id, but
 // immediately closes its background page upon receipt of a message.
-// Same flakiness seen in http://crbug.com/297866
+// Same flakiness seen in http://crbug.com/41057835
 IN_PROC_BROWSER_TEST_F(
     ExternallyConnectableMessagingTest,
     DISABLED_WebConnectableWithNonEmptyTlsChannelIdAndClosedBackgroundPage) {
@@ -1023,7 +1023,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, HostedAppOnWebsite) {
 // Tests that an invalid extension ID specified in a hosted app does not crash
 // the hosted app's renderer.
 //
-// This is a regression test for http://crbug.com/326250#c12.
+// This is a regression test for http://crbug.com/40343914#c12.
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        InvalidExtensionIDFromHostedApp) {
   // The presence of the chromium hosted app triggers this bug. The chromium

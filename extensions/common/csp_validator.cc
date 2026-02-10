@@ -200,7 +200,7 @@ bool isNonWildcardTLD(const std::string& url,
     return true;
 
   // Allow *.googleapis.com to be allowlisted for backwards-compatibility.
-  // (crbug.com/409952)
+  // (crbug.com/41129714)
   if (host == "googleapis.com")
     return true;
 

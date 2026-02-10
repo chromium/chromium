@@ -2713,7 +2713,7 @@ bool WebRequestEventRouter::ListenerMatchesRequest(
   // in case of synchronous XHR requests that block the extension renderer
   // and therefore prevent the extension from processing the request
   // handler. This is only a problem for blocking listeners.
-  // http://crbug.com/105656
+  // http://crbug.com/40120378
   bool synchronous_xhr_from_extension =
       !request.is_async && is_request_from_extension &&
       request.web_request_type == WebRequestResourceType::XHR;

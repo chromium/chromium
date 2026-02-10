@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, Overview) {
 }
 
 // Test that adds two rules pointing to single action instance.
-// Regression test for http://crbug.com/574149.
+// Regression test for http://crbug.com/41231889.
 IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
                        ReusedActionInstance) {
   static constexpr char kBackgroundScript[] =
@@ -812,7 +812,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-// http://crbug.com/304373
+// http://crbug.com/40335865
 IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
                        UninstallWhileActivePageAction) {
   ext_dir_.WriteManifest(FormatManifest(SPANNING));
@@ -1009,7 +1009,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
   CheckBookmarkEvents(false);
 }
 
-// https://crbug.com/497586
+// https://crbug.com/40421566
 IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
                        WebContentsWithoutTabAddedNotificationAtOnLoaded) {
   // Add a web contents to the tab strip in a way that doesn't trigger
@@ -1024,7 +1024,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
   ASSERT_TRUE(LoadExtension(ext_dir_.UnpackedPath()));
 }
 
-// https://crbug.com/501225
+// https://crbug.com/40423103
 IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
                        PendingWebContentsClearedOnRemoveRules) {
   ext_dir_.WriteManifest(FormatManifest(SPANNING));
@@ -1069,7 +1069,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
   EXPECT_TRUE(action->GetIsVisible(ExtensionTabUtil::GetTabId(tab1)));
 }
 
-// https://crbug.com/517492
+// https://crbug.com/40430221
 IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
                        RemoveAllRulesAfterExtensionUninstall) {
   ext_dir_.WriteManifest(FormatManifest(SPANNING));

@@ -1646,7 +1646,7 @@ TEST_F(DisplayInfoProviderChromeosTouchviewTest, GetTabletMode) {
   EXPECT_FALSE(*result[1].is_auto_rotation_allowed);
 
   // Entering tablet mode will cause DisplayConfigurationObserver to set
-  // forced mirror mode. https://crbug.com/733092.
+  // forced mirror mode. https://crbug.com/252374807.
   EnableTabletMode(true);
   // DisplayConfigurationObserver enables mirror mode asynchronously after
   // tablet mode is enabled.

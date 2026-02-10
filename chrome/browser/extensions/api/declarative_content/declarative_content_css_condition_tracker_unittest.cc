@@ -448,7 +448,7 @@ TEST_F(DeclarativeContentCssConditionTrackerTest, Navigation) {
   }
 }
 
-// https://crbug.com/497586
+// https://crbug.com/40421566
 TEST_F(DeclarativeContentCssConditionTrackerTest, WebContentsOutlivesTracker) {
   const std::unique_ptr<content::WebContents> tab = MakeTab();
 

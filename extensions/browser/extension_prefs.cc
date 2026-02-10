@@ -1147,7 +1147,7 @@ void ExtensionPrefs::ClearInapplicableDisableReasonsForComponentExtension(
       ReadDisableReasonsFromPrefs(component_extension_id);
 
   // Some disable reasons incorrectly cause component extensions to never
-  // activate on load. See https://crbug.com/946839 for more details on why we
+  // activate on load. See https://crbug.com/41449659 for more details on why we
   // do this.
   ReplaceRawDisableReasons(disable_reason_raw_manipulation_passkey_,
                            component_extension_id,
@@ -2080,7 +2080,7 @@ void ExtensionPrefs::InitPrefStore() {
     // controlled prefs from that extension. However, some extensions are
     // *always* loaded, even with e.g. --disable-extensions. For these, we
     // need to load the extension-controlled preferences.
-    // See https://crbug.com/828295.
+    // See https://crbug.com/41380408.
     auto predicate = [](const auto& info) {
       // HACK(devlin): Unpacked extensions stored in preferences do not have a
       // manifest, only a path (from which the manifest is later loaded). This

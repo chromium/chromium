@@ -42,7 +42,7 @@ class ScopedAllowActivityLogging {
 using ActivityLoggerTest = APIBindingTest;
 using ActivityLogCallType = IPCMessageSender::ActivityLogCallType;
 
-// Regression test for crbug.com/740866.
+// Regression test for crbug.com/40529428.
 TEST_F(ActivityLoggerTest, DontCrashOnUnconvertedValues) {
   TestExtensionsRendererClient client;
   std::set<ExtensionId> extension_ids;

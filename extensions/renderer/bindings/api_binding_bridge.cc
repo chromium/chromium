@@ -99,8 +99,8 @@ void APIBindingBridge::RegisterCustomHook(v8::Isolate* isolate,
 
   // TODO(devlin): The context should still be valid at this point - nothing
   // above should be able to invalidate it. But let's make extra sure.
-  // This CHECK is helping to track down https://crbug.com/819968, and should be
-  // removed when that's fixed.
+  // This CHECK is helping to track down https://crbug.com/41375376, and should
+  // be removed when that's fixed.
   CHECK(binding::IsContextValid(context));
   JSRunner::Get(context)->RunJSFunction(function, context, args);
 }

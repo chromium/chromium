@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, EmbedderVisibilityChanged) {
       guest_view::GuestViewHistogramValue::kWebView, 1);
 }
 
-// Test for http://crbug.com/419611.
+// Test for http://crbug.com/40387324.
 IN_PROC_BROWSER_TEST_F(WebViewAPITest, DisplayNoneSetSrc) {
   LaunchApp("web_view/display_none_set_src");
   // Navigate the guest while it's in "display: none" state.
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, GuestVisibilityChanged) {
 // This test ensures that closing app window on 'loadcommit' does not crash.
 // The test launches an app with guest and closes the window on loadcommit. It
 // then launches the app window again. The process is repeated 3 times.
-// TODO(http://crbug.com/291278): Re-enable this test
+// TODO(http://crbug.com/41051990): Re-enable this test
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_CloseOnLoadcommit DISABLED_CloseOnLoadcommit
 #else
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(WebViewDPIAPITest, TestAutosizeRemoveAttributes) {
   RunTest("testAutosizeRemoveAttributes", "web_view/apitest");
 }
 
-// http://crbug.com/473177
+// http://crbug.com/40412262
 IN_PROC_BROWSER_TEST_F(WebViewAPITest,
                        DISABLED_TestAutosizeWithPartialAttributes) {
   RunTest("testAutosizeWithPartialAttributes", "web_view/apitest");
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestContentLoadEvent) {
 
 #if defined(USE_AURA)
 // Verifies that trying to show the context menu doesn't crash
-// (https://crbug.com/820604).
+// (https://crbug.com/40566540).
 IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestContextMenu) {
   // Launch some test app that displays a webview.
   LaunchApp("web_view/visibility_changed");
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestDisplayNoneWebviewLoad) {
   RunTest("testDisplayNoneWebviewLoad", "web_view/apitest");
 }
 
-// Flaky. See http://crbug.com/769467.
+// Flaky. See http://crbug.com/41346989.
 IN_PROC_BROWSER_TEST_F(WebViewAPITest,
                        DISABLED_TestDisplayNoneWebviewRemoveChild) {
   RunTest("testDisplayNoneWebviewRemoveChild", "web_view/apitest");
@@ -615,7 +615,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestExecuteScriptFail) {
   RunTest("testExecuteScriptFail", "web_view/apitest");
 }
 
-// Flaky and likely not testing the right assertion.  https://crbug.com/702918
+// Flaky and likely not testing the right assertion.  https://crbug.com/41308166
 IN_PROC_BROWSER_TEST_F(
     WebViewAPITest,
     DISABLED_TestExecuteScriptIsAbortedWhenWebViewSourceIsChanged) {
@@ -692,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestCanGoBack) {
   RunTest("testCanGoBack", "web_view/apitest");
 }
 
-// Crashes on Win only.  http://crbug.com/805903
+// Crashes on Win only.  http://crbug.com/41367054
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_TestLoadStartLoadRedirect DISABLED_TestLoadStartLoadRedirect
 #else
@@ -843,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestWebRequestAPI) {
   StopTestServer();
 }
 
-// Crashes on Win only.  http://crbug.com/805903
+// Crashes on Win only.  http://crbug.com/41367054
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_TestWebRequestAPIWithHeaders DISABLED_TestWebRequestAPIWithHeaders
 #else

@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
   ASSERT_EQ(count_before, GetEnabledExtensionCount());
 }
 
-// Flaky, http://crbug.com/241573.
+// Flaky, http://crbug.com/41012851.
 IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
                        DISABLED_TwoExtensionsIgnoreFirst) {
   const size_t count_before = GetEnabledExtensionCount();

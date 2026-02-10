@@ -96,7 +96,7 @@ base::ListValue GetUsersList(content::BrowserContext* browser_context) {
   // Create one list to set. This is needed because user white list update is
   // asynchronous and sequential. Before previous write comes back, cached
   // list is stale and should not be used for appending. See
-  // http://crbug.com/127215
+  // http://crbug.com/40205960
   base::ListValue email_list;
 
   UsersPrivateDelegate* delegate =

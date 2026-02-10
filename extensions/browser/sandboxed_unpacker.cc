@@ -254,8 +254,8 @@ SandboxedUnpacker::SandboxedUnpacker(
       format_verifier_override_(g_verifier_format_override_for_test),
       unpacker_io_task_runner_(unpacker_io_task_runner),
       io_thread_state_(std::make_unique<IOThreadState>()) {
-  // Tracking for crbug.com/692069. The location must be valid. If it's invalid,
-  // the utility process kills itself for a bad IPC.
+  // Tracking for crbug.com/41301792. The location must be valid. If it's
+  // invalid, the utility process kills itself for a bad IPC.
   CHECK_GT(location, mojom::ManifestLocation::kInvalidLocation);
   CHECK_LE(location, mojom::ManifestLocation::kMaxValue);
 }

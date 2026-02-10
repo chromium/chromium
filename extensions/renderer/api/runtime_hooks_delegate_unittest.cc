@@ -278,7 +278,7 @@ TEST_F(RuntimeHooksDelegateTest, SendMessage) {
                          SendMessageTester::OPEN);
 
   // The sender could omit the ID by passing null or undefined explicitly.
-  // Regression tests for https://crbug.com/828664.
+  // Regression tests for https://crbug.com/41380613.
   tester.TestSendMessage("null, {data: 'hello'}, function() {}",
                          kStandardMessage, self_target,
                          SendMessageTester::OPEN);

@@ -542,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, RuntimeRequestUpdateCheck) {
 
 // Tests that updating a terminated extension sends runtime.onInstalled event
 // with correct previousVersion.
-// Regression test for https://crbug.com/724563.
+// Regression test for https://crbug.com/40521729.
 IN_PROC_BROWSER_TEST_F(RuntimeAPIUpdateTest,
                        TerminatedExtensionUpdateHasCorrectPreviousVersion) {
   std::vector<ExtensionCRXData> data;

@@ -65,7 +65,7 @@ base::FilePath GetDataPath() {
 #endif
 
   // TODO(michaelpg): Use a different directory for app_shell.
-  // See crbug.com/724725.
+  // See crbug.com/41320627.
   return data_dir.Append(FILE_PATH_LITERAL("content_shell"));
 }
 

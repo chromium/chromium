@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardApiTest, MAYBE_Extension) {
   ASSERT_TRUE(RunExtensionTest("clipboard/extension")) << message_;
 }
 
-// Flaky on Mac. See https://crbug.com/900301.
+// Flaky on Mac. See https://crbug.com/40600305.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ExtensionNoPermission DISABLED_ExtensionNoPermission
 #else

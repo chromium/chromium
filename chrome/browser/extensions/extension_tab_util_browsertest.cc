@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // Navigate the tab to a different extension URL, and call OpenOptionsPage().
   // We should not reuse the current tab since it's opened to a page that isn't
   // the options page, and we don't want to arbitrarily close extension content.
-  // Regression test for crbug.com/587581.
+  // Regression test for crbug.com/41239902.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), options_in_tab->GetResourceURL("other.html")));
   EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPage(options_in_tab, browser()));
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   EXPECT_EQ(options_url, GetActiveUrl(browser()));
 
   // Navigate to chrome://extensions (no options). Calling OpenOptionsPage()
-  // should override that tab rather than opening a new tab. crbug.com/595253.
+  // should override that tab rather than opening a new tab. crbug.com/41244380.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUIExtensionsURL)));
   EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPage(options_in_view, browser()));

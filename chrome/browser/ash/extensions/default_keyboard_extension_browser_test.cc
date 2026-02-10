@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(DefaultKeyboardExtensionBrowserTest, IsKeyboardLoaded) {
   content::WebContents* keyboard_wc = GetKeyboardWebContents(kExtensionId);
   ASSERT_TRUE(keyboard_wc);
   std::string script = "!!chrome.virtualKeyboardPrivate";
-  // Catches the regression in crbug.com/308653.
+  // Catches the regression in crbug.com/40337346.
   ASSERT_EQ(true, content::EvalJs(keyboard_wc, script));
 }
 

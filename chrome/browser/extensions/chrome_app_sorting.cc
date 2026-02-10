@@ -746,7 +746,7 @@ syncer::StringOrdinal ChromeAppSorting::ResolveCollision(
   // Finds the next app launcher ordinal. This is done by the following loop
   // because this function could be called before FixNTPOrdinalCollisions and
   // thus |page| might contains multiple entries with the same app launch
-  // ordinal. See http://crbug.com/155603
+  // ordinal. See http://crbug.com/40951861
   while (app_it != page.end() && app_launch_ordinal.Equals(app_it->first))
     ++app_it;
 

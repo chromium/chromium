@@ -365,7 +365,7 @@ bool GetTargetExtensionId(ScriptContext* script_context,
   std::string target_id;
   // If omitted, we use the extension associated with the context.
   // Note: we deliberately treat the empty string as omitting the id, even
-  // though it's not strictly correct. See https://crbug.com/823577.
+  // though it's not strictly correct. See https://crbug.com/41377567.
   if (v8_target_id->IsNull() ||
       (v8_target_id->IsString() &&
        v8_target_id.As<v8::String>()->Length() == 0)) {

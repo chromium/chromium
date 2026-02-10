@@ -182,7 +182,7 @@ void WebNavigationEventRouter::TabReplaced(content::WebContents* old_contents,
 
   if (!tab_observer) {
     // If you hit this DCHECK(), please add reproduction steps to
-    // http://crbug.com/109464.
+    // http://crbug.com/40135496.
     DCHECK(GetViewType(old_contents) != mojom::ViewType::kTabContents);
     return;
   }
@@ -209,7 +209,7 @@ void WebNavigationEventRouter::RecordNewWebContents(
       WebNavigationTabObserver::Get(source_web_contents);
   if (!tab_observer) {
     // If you hit this DCHECK(), please add reproduction steps to
-    // http://crbug.com/109464.
+    // http://crbug.com/40135496.
     DCHECK(GetViewType(source_web_contents) != mojom::ViewType::kTabContents);
     return;
   }

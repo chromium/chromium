@@ -86,7 +86,7 @@ bool ResourceRequestPolicy::CanRequestResource(
 
   // Navigations from chrome://, devtools://, or embedder-specified pages need
   // to be allowed, even if the target |url| is not web-accessible.  See also:
-  // - https://crbug.com/662602
+  // - https://crbug.com/41284772
   // - similar scheme checks in ExtensionNavigationThrottle
   if (frame_origin.scheme() == content::kChromeUIScheme ||
       frame_origin.scheme() == content::kChromeDevToolsScheme) {

@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest,
                        TestStartStopAudioDebugRecordings) {
   // TODO(guidou): These tests are missing verification of the actual AEC dump
   // data. This will be fixed with a separate browser test.
-  // See crbug.com/569957.
+  // See crbug.com/41228932.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableAudioDebugRecordingsFromExtension);
   ASSERT_TRUE(StartAudioDebugRecordings(0));

@@ -710,7 +710,7 @@ class ServiceWorkerRegistrationAtStartupTest
 #endif
 // Tests that Service Worker registration for existing extension isn't issued
 // upon browser restart.
-// Regression test for https://crbug.com/889687.
+// Regression test for https://crbug.com/41417476.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationAtStartupTest,
                        MAYBE_PRE_ExtensionActivationDoesNotReregister) {
   const Extension* extension = LoadExtension(
@@ -795,7 +795,7 @@ class EarlyWorkerMessageSender : public EventRouter::Observer {
 
 // Tests that extension event dispatch works correctly right after extension
 // installation registers its Service Worker.
-// Regression test for: https://crbug.com/850792.
+// Regression test for: https://crbug.com/40579908.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, EarlyEventDispatch) {
   const ExtensionId kId("pkplfbidichfdicaijlchgnapepdginl");
 

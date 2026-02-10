@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, MAYBE_ExtensionFullscreenAccessPass) {
 }
 
 #if BUILDFLAG(IS_MAC)
-// Entering fullscreen is flaky on Mac: http://crbug.com/824517
+// Entering fullscreen is flaky on Mac: http://crbug.com/41378166
 #define MAYBE_FocusWindowDoesNotExitFullscreen \
     DISABLED_FocusWindowDoesNotExitFullscreen
 #else
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
 }
 
 #if BUILDFLAG(IS_MAC)
-// Fails on MAC: http://crbug.com/480370
+// Fails on MAC: http://crbug.com/40415216
 #define MAYBE_DisplayModeWindowIsInFullscreen \
   DISABLED_DisplayModeWindowIsInFullscreen
 #else

@@ -220,7 +220,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   // If the navigation is to an unknown or disabled extension, block it.
   if (!target_extension) {
     // TODO(nick): This yields an unsatisfying error page; use a different error
-    // code once that's supported. https://crbug.com/649869
+    // code once that's supported. https://crbug.com/40486262
     return content::NavigationThrottle::BLOCK_REQUEST;
   }
   CHECK(target_extension);
@@ -237,15 +237,15 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   }
 
   // Block all navigations to blob: or filesystem: URLs with extension
-  // origin from non-extension processes.  See https://crbug.com/645028 and
-  // https://crbug.com/836858.
+  // origin from non-extension processes.  See https://crbug.com/40085339 and
+  // https://crbug.com/40091207.
   bool current_frame_is_extension_process =
       !!registry->enabled_extensions().GetExtensionOrAppByURL(
           navigation_handle()->GetStartingSiteInstance()->GetSiteURL());
 
   if (!url_has_extension_scheme && !current_frame_is_extension_process) {
     // Relax this restriction for apps that use <webview>.  See
-    // https://crbug.com/652077.
+    // https://crbug.com/41278508.
     bool has_webview_permission =
         target_extension->permissions_data()->HasAPIPermission(
             mojom::APIPermissionID::kWebView);
@@ -368,7 +368,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
 
   // Navigations from chrome://, devtools:// or chrome-search:// pages need to
   // be allowed, even if the target |url| is not web-accessible.  See also:
-  // - https://crbug.com/662602
+  // - https://crbug.com/41284772
   // - similar checks in extensions::ResourceRequestPolicy::CanRequestResource
   if (initiator_origin.scheme() == content::kChromeUIScheme ||
       initiator_origin.scheme() == content::kChromeDevToolsScheme ||

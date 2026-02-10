@@ -40,7 +40,7 @@ class ChromeTestExtensionLoaderTest : public ExtensionApiTest {
 
 // Tests that when loading an extension, the test loading code waits for
 // content scripts to be fully read and initialized before continuing.
-// Regression test for https://crbug.com/898682.
+// Regression test for https://crbug.com/40599611.
 IN_PROC_BROWSER_TEST_F(ChromeTestExtensionLoaderTest,
                        ContentScriptsAreFullyLoaded) {
   TestExtensionDir test_dir;
