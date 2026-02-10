@@ -27,6 +27,10 @@ class GlicFormParsingTracker final : public AutofillManager::Observer {
   };
 
   // AutofillManager::Observer:
+  void OnAutofillManagerStateChanged(
+      AutofillManager& manager,
+      AutofillDriver::LifecycleState previous,
+      AutofillDriver::LifecycleState current) override;
   void OnBeforeFormsSeen(AutofillManager& manager,
                          base::span<const FormGlobalId> updated_forms,
                          base::span<const FormGlobalId> removed_forms) override;

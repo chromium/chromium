@@ -14,6 +14,22 @@ GlicFormParsingTracker::GlicFormParsingTracker(AutofillClient* client) {
 
 GlicFormParsingTracker::~GlicFormParsingTracker() = default;
 
+void GlicFormParsingTracker::OnAutofillManagerStateChanged(
+    AutofillManager& manager,
+    AutofillDriver::LifecycleState previous,
+    AutofillDriver::LifecycleState current) {
+  if (previous == AutofillDriver::LifecycleState::kActive &&
+      current != AutofillDriver::LifecycleState::kActive) {
+    autofill::LocalFrameToken local_frame_token =
+        manager.driver().GetFrameToken();
+    // TODO(crbug.com/479794574): Do not wait for empty forms when notifying
+    // `ObservationDelayController`
+    absl::erase_if(form_parsing_status_, [local_frame_token](const auto& pair) {
+      return pair.first.frame_token == local_frame_token;
+    });
+  }
+}
+
 void GlicFormParsingTracker::OnBeforeFormsSeen(
     AutofillManager& manager,
     base::span<const FormGlobalId> updated_forms,
