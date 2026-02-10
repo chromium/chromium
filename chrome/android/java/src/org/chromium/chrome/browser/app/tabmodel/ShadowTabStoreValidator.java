@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateFrozenTabArguments;
-import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
@@ -33,7 +32,6 @@ public class ShadowTabStoreValidator {
     // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:TabModelOrchestratorType)
 
     private final TabPersistentStore mAuthoritativeStore;
-    private final PersistentStoreMigrationManager mMigrationManager;
     private final TabPersistentStore mShadowStore;
     private final TabModel mTabModel;
     private final AccumulatingTabCreator mShadowTabCreator;
@@ -43,7 +41,6 @@ public class ShadowTabStoreValidator {
 
     /**
      * @param authoritativeStore The primary store whose timing is used as the baseline.
-     * @param migrationManager The migration manager for the window.
      * @param shadowStore The alternative store being compared against the authoritative one.
      * @param tabModel The {@link TabModel} associated with the authoritative store.
      * @param shadowTabCreator The {@link AccumulatingTabCreator} used by the shadow store.
@@ -51,13 +48,11 @@ public class ShadowTabStoreValidator {
      */
     public ShadowTabStoreValidator(
             TabPersistentStore authoritativeStore,
-            PersistentStoreMigrationManager migrationManager,
             TabPersistentStore shadowStore,
             TabModel tabModel,
             AccumulatingTabCreator shadowTabCreator,
             String orchestratorTag) {
         mAuthoritativeStore = authoritativeStore;
-        mMigrationManager = migrationManager;
         mShadowStore = shadowStore;
         mTabModel = tabModel;
         mShadowTabCreator = shadowTabCreator;
@@ -93,8 +88,6 @@ public class ShadowTabStoreValidator {
     }
 
     private void recordDiffMetrics() {
-        if (!mMigrationManager.isShadowStoreCaughtUp()) return;
-
         int tabCountDelta =
                 mTabModel.getCount() - mShadowTabCreator.createFrozenTabArgumentsList.size();
         if (tabCountDelta > 0) {
