@@ -18,6 +18,7 @@
 #include "components/tracing/common/tracing_switches.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/histogram_samples.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/data_source_config.gen.h"
+#include "third_party/perfetto/protos/perfetto/config/etw/etw_config.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"
 #include "third_party/snappy/src/snappy.h"
@@ -113,6 +114,16 @@ constexpr const char* kBrowserCategoriesList[] = {
     "v8",
 };
 
+constexpr const char* kAlwaysOnScenarioDescription =
+    "This scenario runs at all time in circular buffer mode, and captures a "
+    "trace snapshot when a user report is created, e.g. with 'Help > Report an "
+    "Issue'.";
+
+constexpr const char* kAlwaysOnScenarioWithEtwDescription =
+    "This scenario works similarly as AlwaysOnScenario but also captures ETW "
+    "system events. This requires enabling 'System tracing', and isn't "
+    "supported on Canary.";
+
 constexpr const char* kHistogramSamplesFilterList[] = {
     "Blink.Responsiveness.UserInteraction.MaxEventDuration.AllTypes",
     "PageLoad.InteractiveTiming.InputDelay3",
@@ -144,20 +155,86 @@ void SetHistogramTriggerRule(perfetto::protos::gen::TriggerRule* rule,
   }
 }
 
-perfetto::protos::gen::ChromeFieldTracingConfig
-CreateDefaultPresetTracingScenariosConfig() {
-  perfetto::protos::gen::ChromeFieldTracingConfig config;
-  auto* scenario = config.add_scenarios();
-  scenario->set_scenario_name("AlwaysOnScenario");
-  scenario->set_scenario_description(
-      "This scenario runs at all time in circular buffer mode, and captures a "
-      "trace snapshot when a user report is created, e.g. with "
-      "'Help > Report an Issue'.");
-  scenario->add_start_rules()->set_manual_trigger_name("startup");
-  scenario->add_start_rules()->set_delay_ms(1);
-  scenario->add_start_rules()->set_manual_trigger_name("incognito-end");
-  scenario->add_stop_rules()->set_manual_trigger_name("incognito-start");
-  auto* nested_scenario = scenario->add_nested_scenarios();
+perfetto::protos::gen::TraceConfig CreateDefaultPresetTracingConfig() {
+  perfetto::protos::gen::TraceConfig trace_config;
+  {
+    auto* buffer = trace_config.add_buffers();
+    buffer->set_size_kb(64 * 1024);
+    buffer->set_fill_policy(
+        perfetto::protos::gen::TraceConfig::BufferConfig::RING_BUFFER);
+  }
+  {
+    auto* buffer = trace_config.add_buffers();
+    buffer->set_size_kb(256);
+    buffer->set_fill_policy(
+        perfetto::protos::gen::TraceConfig::BufferConfig::DISCARD);
+  }
+  {
+    auto* ds = trace_config.add_data_sources()->mutable_config();
+    ds->set_name("org.chromium.trace_metadata2");
+    ds->set_target_buffer(1);
+  }
+  {
+    auto* ds = trace_config.add_data_sources()->mutable_config();
+    ds->set_name("org.chromium.background_scenario_metadata");
+    ds->set_target_buffer(1);
+  }
+  trace_config.add_data_sources()->mutable_config()->set_name(
+      "org.chromium.triggers");
+  trace_config.add_data_sources()->mutable_config()->set_name(
+      "org.chromium.system_metrics");
+  trace_config.add_data_sources()->mutable_config()->set_name(
+      "org.chromium.sampler_profiler");
+  {
+    auto* ds = trace_config.add_data_sources()->mutable_config();
+    ds->set_name("org.chromium.histogram_sample");
+    perfetto::protos::gen::ChromiumHistogramSamplesConfig histogram_config;
+    for (auto* histogram : kHistogramSamplesFilterList) {
+      histogram_config.add_histograms()->set_histogram_name(histogram);
+    }
+    ds->set_chromium_histogram_samples_raw(
+        histogram_config.SerializeAsString());
+  }
+  {
+    auto* ds = trace_config.add_data_sources()->mutable_config();
+    ds->set_name("track_event");
+    perfetto::protos::gen::TrackEventConfig track_event_config;
+    track_event_config.add_disabled_categories("*");
+    for (auto* category : kBrowserCategoriesList) {
+      track_event_config.add_enabled_categories(category);
+    }
+    ds->set_track_event_config_raw(track_event_config.SerializeAsString());
+  }
+  return trace_config;
+}
+
+perfetto::protos::gen::TraceConfig CreatePresetTracingConfigWithEtw() {
+  auto trace_config = CreateDefaultPresetTracingConfig();
+  {
+    auto* ds = trace_config.add_data_sources()->mutable_config();
+    ds->set_name("org.chromium.etw_system");
+    perfetto::protos::gen::EtwConfig etw_config;
+    etw_config.add_scheduler_provider_events("CONTEXT_SWITCH");
+    etw_config.add_scheduler_provider_events("DISPATCHER");
+    etw_config.add_memory_provider_events("DISPATCHER");
+
+    ds->set_etw_config_raw(etw_config.SerializeAsString());
+  }
+  return trace_config;
+}
+
+perfetto::protos::gen::ScenarioConfig CreateDefaultPresetTracingScenarioConfig(
+    std::string_view name,
+    std::string_view description,
+    const perfetto::protos::gen::TraceConfig& trace_config) {
+  perfetto::protos::gen::ScenarioConfig scenario;
+  scenario.set_scenario_name(std::string(name));
+  scenario.set_scenario_description(std::string(description));
+  scenario.add_start_rules()->set_manual_trigger_name("startup");
+  scenario.add_start_rules()->set_delay_ms(1);
+  scenario.add_start_rules()->set_manual_trigger_name("incognito-end");
+  scenario.add_stop_rules()->set_manual_trigger_name("incognito-start");
+  auto* nested_scenario = scenario.add_nested_scenarios();
   nested_scenario->set_scenario_name("AlwaysOnScenario.Snapshots");
   nested_scenario->add_start_rules()->set_delay_ms(1);
 
@@ -173,56 +250,8 @@ CreateDefaultPresetTracingScenariosConfig() {
   SetHistogramTriggerRule(nested_scenario->add_upload_rules(),
                           "Stability.Counts2", 31, 32);
 
-  auto* trace_config = scenario->mutable_trace_config();
-  {
-    auto* buffer = trace_config->add_buffers();
-    buffer->set_size_kb(64 * 1024);
-    buffer->set_fill_policy(
-        perfetto::protos::gen::TraceConfig::BufferConfig::RING_BUFFER);
-  }
-  {
-    auto* buffer = trace_config->add_buffers();
-    buffer->set_size_kb(256);
-    buffer->set_fill_policy(
-        perfetto::protos::gen::TraceConfig::BufferConfig::DISCARD);
-  }
-  {
-    auto* ds = trace_config->add_data_sources()->mutable_config();
-    ds->set_name("org.chromium.trace_metadata2");
-    ds->set_target_buffer(1);
-  }
-  {
-    auto* ds = trace_config->add_data_sources()->mutable_config();
-    ds->set_name("org.chromium.background_scenario_metadata");
-    ds->set_target_buffer(1);
-  }
-  trace_config->add_data_sources()->mutable_config()->set_name(
-      "org.chromium.triggers");
-  trace_config->add_data_sources()->mutable_config()->set_name(
-      "org.chromium.system_metrics");
-  trace_config->add_data_sources()->mutable_config()->set_name(
-      "org.chromium.sampler_profiler");
-  {
-    auto* ds = trace_config->add_data_sources()->mutable_config();
-    ds->set_name("org.chromium.histogram_sample");
-    perfetto::protos::gen::ChromiumHistogramSamplesConfig histogram_config;
-    for (auto* histogram : kHistogramSamplesFilterList) {
-      histogram_config.add_histograms()->set_histogram_name(histogram);
-    }
-    ds->set_chromium_histogram_samples_raw(
-        histogram_config.SerializeAsString());
-  }
-  {
-    auto* ds = trace_config->add_data_sources()->mutable_config();
-    ds->set_name("track_event");
-    perfetto::protos::gen::TrackEventConfig track_event_config;
-    track_event_config.add_disabled_categories("*");
-    for (auto* category : kBrowserCategoriesList) {
-      track_event_config.add_enabled_categories(category);
-    }
-    ds->set_track_event_config_raw(track_event_config.SerializeAsString());
-  }
-  return config;
+  *scenario.mutable_trace_config() = trace_config;
+  return scenario;
 }
 
 }  // namespace
@@ -230,7 +259,17 @@ CreateDefaultPresetTracingScenariosConfig() {
 std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
 GetPresetTracingScenariosConfig() {
   if (!base::FeatureList::IsEnabled(kPresetTracing)) {
-    return CreateDefaultPresetTracingScenariosConfig();
+    perfetto::protos::gen::ChromeFieldTracingConfig config;
+    *config.add_scenarios() = CreateDefaultPresetTracingScenarioConfig(
+        "AlwaysOnScenario", kAlwaysOnScenarioDescription,
+        CreateDefaultPresetTracingConfig());
+    [[maybe_unused]] auto etw_config = CreateDefaultPresetTracingScenarioConfig(
+        "AlwaysOnScenarioWithEtw", kAlwaysOnScenarioWithEtwDescription,
+        CreatePresetTracingConfigWithEtw());
+#if BUILDFLAG(IS_WIN)
+    *config.add_scenarios() = etw_config;
+#endif  // BUILDFLAG(IS_WIN)
+    return config;
   }
   return ParseEncodedTracingScenariosConfig(kPresetTracingConfig.Get());
 }
