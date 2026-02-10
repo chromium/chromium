@@ -3102,11 +3102,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-desktop-pwas-sub-apps",
-    "owners": [ "giovax@google.com", "pwa-commercial@google.com", "pwa-team@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-desktop-pwas-tab-strip",
     "owners": [ "pwa-team@google.com" ],
     "expiry_milestone": 150
@@ -4057,6 +4052,11 @@
     "name": "enable-static-qr-code-for-pix",
     "owners": [ "longsheng@google.com", "siashah@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 150
+  },
+  {
+    "name": "enable-sub-apps",
+    "owners": [ "bylia@google.com", "pwa-commercial@google.com", "pwa-team@google.com" ],
+    "expiry_milestone": 160
   },
   {
     "name": "enable-swipe-to-switch-pane",
