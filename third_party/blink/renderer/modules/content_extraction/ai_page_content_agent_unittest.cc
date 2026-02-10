@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -126,6 +127,30 @@ class AIPageContentAgentTest : public testing::Test {
               mojom::blink::AIPageContentAttributeType::kText);
     ASSERT_TRUE(attributes.text_info);
     EXPECT_EQ(attributes.text_info->text_content, expected_text);
+  }
+
+  bool TreeContainsTextSubstring(const mojom::blink::AIPageContentNode& node,
+                                 const String& substring) {
+    // Many tests only care that sensitive content does (or does not) appear
+    // anywhere in the extracted tree. Implement a small recursive helper to
+    // reduce coupling to the exact tree structure.
+    //
+    // Note: we intentionally check substrings rather than exact matches because
+    // extracted text nodes sometimes include newlines inserted by layout.
+    const auto& attributes = *node.content_attributes;
+    if (attributes.attribute_type ==
+            mojom::blink::AIPageContentAttributeType::kText &&
+        attributes.text_info &&
+        attributes.text_info->text_content.Contains(substring)) {
+      return true;
+    }
+
+    for (const auto& child : node.children_nodes) {
+      if (TreeContainsTextSubstring(*child, substring)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   void CheckTextSize(const mojom::blink::AIPageContentNode& node,
@@ -2675,6 +2700,501 @@ TEST_F(AIPageContentAgentTest, FormWithPassword) {
       empty_password.content_attributes->form_control_data->redaction_decision,
       mojom::AIPageContentRedactionDecision::kUnredacted_EmptyPassword);
   EXPECT_EQ(empty_password.children_nodes.size(), 1u);
+}
+
+TEST_F(AIPageContentAgentTest, FormWithWebkitTextSecurityRedactsAndPersists) {
+  // This test covers a common custom-password pattern where authors use
+  // `-webkit-text-security` on a normal <input type="text"> to visually mask
+  // the value without using <input type="password">.
+  //
+  // Acceptance criteria:
+  // - The value is redacted when `-webkit-text-security` is not `none`.
+  // - After the style is removed (simulating JS toggling the masking), the
+  //   value remains redacted for subsequent extractions.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form>"
+      "    <input id='masked' type='text' name='Enter secret' "
+      "style='-webkit-text-security: disc;' value='supersecret'>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& form = *root.children_nodes[0];
+  ASSERT_EQ(form.children_nodes.size(), 1u);
+
+  const auto& field = *form.children_nodes[0];
+  CheckFormControlNode(field, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(field.content_attributes->form_control_data->field_name,
+            "Enter secret");
+  EXPECT_EQ(field.content_attributes->form_control_data->field_value, nullptr);
+  EXPECT_EQ(
+      field.content_attributes->form_control_data->redaction_decision,
+      mojom::AIPageContentRedactionDecision::kRedacted_CustomPassword_CSS);
+
+  // Now remove the masking style (simulating a "show password" eye icon).
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  auto* input_element =
+      To<HTMLInputElement>(document->getElementById(AtomicString("masked")));
+  ASSERT_TRUE(input_element);
+  input_element->setAttribute(html_names::kStyleAttr,
+                              AtomicString("-webkit-text-security: none;"));
+
+  // Ensure the DOM is updated.
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  // Extract again: the field should remain redacted since it was previously
+  // classified as password-like.
+  GetAIPageContent();
+
+  const auto& root2 = ContentRootNode();
+  ASSERT_EQ(root2.children_nodes.size(), 1u);
+  const auto& form2 = *root2.children_nodes[0];
+  ASSERT_EQ(form2.children_nodes.size(), 1u);
+  const auto& field2 = *form2.children_nodes[0];
+  CheckFormControlNode(field2, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(field2.content_attributes->form_control_data->field_value, nullptr);
+  EXPECT_EQ(
+      field2.content_attributes->form_control_data->redaction_decision,
+      mojom::AIPageContentRedactionDecision::kRedacted_CustomPassword_CSS);
+}
+
+TEST_F(AIPageContentAgentTest, FormWithMaskedValuePatternRedactsAndPersists) {
+  // Some custom controls implement password-style masking in JavaScript by
+  // writing a value that contains mostly mask characters (e.g. bullets) while
+  // revealing the last typed character.
+  //
+  // Acceptance criteria:
+  // - A masked-value pattern is treated as password-like and redacted.
+  // - After the value is changed to an unmasked string, the field remains
+  //   redacted for subsequent extractions.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form>"
+      "    <input id='jsmasked' type='text' name='Enter secret' "
+      "value='&#8226;&#8226;&#8226;&#8226;a'>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& form = *root.children_nodes[0];
+  ASSERT_EQ(form.children_nodes.size(), 1u);
+
+  const auto& field = *form.children_nodes[0];
+  CheckFormControlNode(field, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(field.content_attributes->form_control_data->field_value, nullptr);
+  EXPECT_EQ(field.content_attributes->form_control_data->redaction_decision,
+            mojom::AIPageContentRedactionDecision::kRedacted_CustomPassword_JS);
+
+  // Now set an unmasked value; the field should remain redacted since it was
+  // previously classified as password-like.
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  auto* input_element =
+      To<HTMLInputElement>(document->getElementById(AtomicString("jsmasked")));
+  ASSERT_TRUE(input_element);
+  input_element->SetValue("notmaskedanymore");
+
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  GetAIPageContent();
+  const auto& root2 = ContentRootNode();
+  ASSERT_EQ(root2.children_nodes.size(), 1u);
+  const auto& form2 = *root2.children_nodes[0];
+  ASSERT_EQ(form2.children_nodes.size(), 1u);
+  const auto& field2 = *form2.children_nodes[0];
+  CheckFormControlNode(field2, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(field2.content_attributes->form_control_data->field_value, nullptr);
+  EXPECT_EQ(field2.content_attributes->form_control_data->redaction_decision,
+            mojom::AIPageContentRedactionDecision::kRedacted_CustomPassword_JS);
+}
+
+TEST_F(AIPageContentAgentTest, FormWithAllMaskCharactersRedacts) {
+  // Some custom controls always fully mask the value, never revealing a
+  // character (e.g. "•••••"). This should still be treated as password-like.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form>"
+      "    <input id='jsmasked' type='text' name='Enter secret' "
+      "value='&#8226;&#8226;&#8226;&#8226;&#8226;'>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& form = *root.children_nodes[0];
+  ASSERT_EQ(form.children_nodes.size(), 1u);
+
+  const auto& field = *form.children_nodes[0];
+  CheckFormControlNode(field, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(field.content_attributes->form_control_data->field_value, nullptr);
+  EXPECT_EQ(field.content_attributes->form_control_data->redaction_decision,
+            mojom::AIPageContentRedactionDecision::kRedacted_CustomPassword_JS);
+}
+
+TEST_F(AIPageContentAgentTest, FormWithMaskedValuePatternWithSpaceNotRedacted) {
+  // Guardrail: if the value contains whitespace, treat it as non-password-like.
+  // A common rich-text pattern is a bullet used as a list marker.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form>"
+      "    <input id='maybe' type='text' name='Enter secret' "
+      "value='&#8226;&#8226; secret'>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& form = *root.children_nodes[0];
+  ASSERT_EQ(form.children_nodes.size(), 1u);
+
+  const auto& field = *form.children_nodes[0];
+  CheckFormControlNode(field, mojom::blink::FormControlType::kInputText);
+  EXPECT_NE(field.content_attributes->form_control_data->field_value, nullptr);
+  EXPECT_EQ(field.content_attributes->form_control_data->redaction_decision,
+            mojom::AIPageContentRedactionDecision::kNoRedactionNecessary);
+}
+
+TEST_F(AIPageContentAgentTest, FormWithEarlyJSMaskedValueRedacts) {
+  // Guard against leaking initial characters as the user types into a custom
+  // JS-masked password field. Some implementations show "•b" for a 2-character
+  // password while the last typed character remains visible.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form>"
+      "    <input id='early' type='text' name='Enter secret' value='&#8226;b'>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& form = *root.children_nodes[0];
+  ASSERT_EQ(form.children_nodes.size(), 1u);
+
+  const auto& field = *form.children_nodes[0];
+  CheckFormControlNode(field, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(field.content_attributes->form_control_data->field_value, nullptr);
+  EXPECT_EQ(field.content_attributes->form_control_data->redaction_decision,
+            mojom::AIPageContentRedactionDecision::kRedacted_CustomPassword_JS);
+}
+
+TEST_F(AIPageContentAgentTest, CustomPasswordJSBecomesEmptyThenRedactsAgain) {
+  // Regression coverage: once a field is classified as a JS custom password
+  // field, it stays classified even if the value becomes empty and later
+  // becomes non-empty again.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form>"
+      "    <input id='js' type='text' name='Enter secret' "
+      "value='&#8226;&#8226;&#8226;&#8226;a'>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& form = *root.children_nodes[0];
+  ASSERT_EQ(form.children_nodes.size(), 1u);
+  const auto& field = *form.children_nodes[0];
+  CheckFormControlNode(field, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(field.content_attributes->form_control_data->field_value, nullptr);
+  EXPECT_EQ(field.content_attributes->form_control_data->redaction_decision,
+            mojom::AIPageContentRedactionDecision::kRedacted_CustomPassword_JS);
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  auto* input_element =
+      To<HTMLInputElement>(document->getElementById(AtomicString("js")));
+  ASSERT_TRUE(input_element);
+  input_element->SetValue("");
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  GetAIPageContent();
+  const auto& root2 = ContentRootNode();
+  ASSERT_EQ(root2.children_nodes.size(), 1u);
+  const auto& form2 = *root2.children_nodes[0];
+  ASSERT_EQ(form2.children_nodes.size(), 1u);
+  const auto& field2 = *form2.children_nodes[0];
+  CheckFormControlNode(field2, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(field2.content_attributes->form_control_data->field_value, "");
+  EXPECT_EQ(
+      field2.content_attributes->form_control_data->redaction_decision,
+      mojom::AIPageContentRedactionDecision::kUnredacted_EmptyCustomPassword);
+
+  input_element->SetValue("notmaskedanymore");
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  GetAIPageContent();
+  const auto& root3 = ContentRootNode();
+  ASSERT_EQ(root3.children_nodes.size(), 1u);
+  const auto& form3 = *root3.children_nodes[0];
+  ASSERT_EQ(form3.children_nodes.size(), 1u);
+  const auto& field3 = *form3.children_nodes[0];
+  CheckFormControlNode(field3, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(field3.content_attributes->form_control_data->field_value, nullptr);
+  EXPECT_EQ(field3.content_attributes->form_control_data->redaction_decision,
+            mojom::AIPageContentRedactionDecision::kRedacted_CustomPassword_JS);
+}
+
+TEST_F(AIPageContentAgentTest, CustomPasswordJSPlainTextThenMaskedAgain) {
+  // Regression coverage: a JS custom password field may temporarily replace its
+  // value with plain text (e.g. "show password") and later resume masking. The
+  // value must remain redacted throughout.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form>"
+      "    <input id='js' type='text' name='Enter secret' "
+      "value='&#8226;&#8226;&#8226;&#8226;a'>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  auto* input_element =
+      To<HTMLInputElement>(document->getElementById(AtomicString("js")));
+  ASSERT_TRUE(input_element);
+
+  GetAIPageContent();
+
+  input_element->SetValue("plain-text-temporary");
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  GetAIPageContent();
+  const auto& root2 = ContentRootNode();
+  ASSERT_EQ(root2.children_nodes.size(), 1u);
+  const auto& form2 = *root2.children_nodes[0];
+  ASSERT_EQ(form2.children_nodes.size(), 1u);
+  const auto& field2 = *form2.children_nodes[0];
+  CheckFormControlNode(field2, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(field2.content_attributes->form_control_data->field_value, nullptr);
+  EXPECT_EQ(field2.content_attributes->form_control_data->redaction_decision,
+            mojom::AIPageContentRedactionDecision::kRedacted_CustomPassword_JS);
+
+  input_element->SetValue(String::FromUTF8("••••z"));
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  GetAIPageContent();
+  const auto& root3 = ContentRootNode();
+  ASSERT_EQ(root3.children_nodes.size(), 1u);
+  const auto& form3 = *root3.children_nodes[0];
+  ASSERT_EQ(form3.children_nodes.size(), 1u);
+  const auto& field3 = *form3.children_nodes[0];
+  CheckFormControlNode(field3, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(field3.content_attributes->form_control_data->field_value, nullptr);
+  EXPECT_EQ(field3.content_attributes->form_control_data->redaction_decision,
+            mojom::AIPageContentRedactionDecision::kRedacted_CustomPassword_JS);
+}
+
+TEST_F(AIPageContentAgentTest, CustomPasswordCSSBecomesEmptyThenRedactsAgain) {
+  // Regression coverage: once a field is classified as a CSS custom password
+  // field, it stays classified even if the value becomes empty and later
+  // becomes non-empty again.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form>"
+      "    <input id='css' type='text' name='Enter secret' "
+      "style='-webkit-text-security: disc;' value='supersecret'>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& form = *root.children_nodes[0];
+  ASSERT_EQ(form.children_nodes.size(), 1u);
+  const auto& field = *form.children_nodes[0];
+  CheckFormControlNode(field, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(field.content_attributes->form_control_data->field_value, nullptr);
+  EXPECT_EQ(
+      field.content_attributes->form_control_data->redaction_decision,
+      mojom::AIPageContentRedactionDecision::kRedacted_CustomPassword_CSS);
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  auto* input_element =
+      To<HTMLInputElement>(document->getElementById(AtomicString("css")));
+  ASSERT_TRUE(input_element);
+  input_element->SetValue("");
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  GetAIPageContent();
+  const auto& root2 = ContentRootNode();
+  ASSERT_EQ(root2.children_nodes.size(), 1u);
+  const auto& form2 = *root2.children_nodes[0];
+  ASSERT_EQ(form2.children_nodes.size(), 1u);
+  const auto& field2 = *form2.children_nodes[0];
+  CheckFormControlNode(field2, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(field2.content_attributes->form_control_data->field_value, "");
+  EXPECT_EQ(
+      field2.content_attributes->form_control_data->redaction_decision,
+      mojom::AIPageContentRedactionDecision::kUnredacted_EmptyCustomPassword);
+
+  input_element->setAttribute(html_names::kStyleAttr,
+                              AtomicString("-webkit-text-security: none;"));
+  input_element->SetValue("plain-text-temporary");
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  GetAIPageContent();
+  const auto& root3 = ContentRootNode();
+  ASSERT_EQ(root3.children_nodes.size(), 1u);
+  const auto& form3 = *root3.children_nodes[0];
+  ASSERT_EQ(form3.children_nodes.size(), 1u);
+  const auto& field3 = *form3.children_nodes[0];
+  CheckFormControlNode(field3, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(field3.content_attributes->form_control_data->field_value, nullptr);
+  EXPECT_EQ(
+      field3.content_attributes->form_control_data->redaction_decision,
+      mojom::AIPageContentRedactionDecision::kRedacted_CustomPassword_CSS);
+}
+
+TEST_F(AIPageContentAgentTest, CustomPasswordCSSPlainTextThenMaskedAgain) {
+  // Regression coverage: a CSS custom password field may temporarily disable
+  // masking (e.g. "show password") and later re-enable it. The value must
+  // remain redacted throughout.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form>"
+      "    <input id='css' type='text' name='Enter secret' "
+      "style='-webkit-text-security: disc;' value='supersecret'>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  auto* input_element =
+      To<HTMLInputElement>(document->getElementById(AtomicString("css")));
+  ASSERT_TRUE(input_element);
+
+  GetAIPageContent();
+
+  input_element->setAttribute(html_names::kStyleAttr,
+                              AtomicString("-webkit-text-security: none;"));
+  input_element->SetValue("plain-text-temporary");
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  GetAIPageContent();
+  const auto& root2 = ContentRootNode();
+  ASSERT_EQ(root2.children_nodes.size(), 1u);
+  const auto& form2 = *root2.children_nodes[0];
+  ASSERT_EQ(form2.children_nodes.size(), 1u);
+  const auto& field2 = *form2.children_nodes[0];
+  CheckFormControlNode(field2, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(field2.content_attributes->form_control_data->field_value, nullptr);
+  EXPECT_EQ(
+      field2.content_attributes->form_control_data->redaction_decision,
+      mojom::AIPageContentRedactionDecision::kRedacted_CustomPassword_CSS);
+
+  input_element->setAttribute(html_names::kStyleAttr,
+                              AtomicString("-webkit-text-security: disc;"));
+  input_element->SetValue("supersecret2");
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  GetAIPageContent();
+  const auto& root3 = ContentRootNode();
+  ASSERT_EQ(root3.children_nodes.size(), 1u);
+  const auto& form3 = *root3.children_nodes[0];
+  ASSERT_EQ(form3.children_nodes.size(), 1u);
+  const auto& field3 = *form3.children_nodes[0];
+  CheckFormControlNode(field3, mojom::blink::FormControlType::kInputText);
+  EXPECT_EQ(field3.content_attributes->form_control_data->field_value, nullptr);
+  EXPECT_EQ(
+      field3.content_attributes->form_control_data->redaction_decision,
+      mojom::AIPageContentRedactionDecision::kRedacted_CustomPassword_CSS);
+}
+
+TEST_F(
+    AIPageContentAgentTest,
+    DISABLED_ContentEditableWithMaskedValuePatternSingleLineRedactsAndPersists) {
+  // TODO(crbug.com/480179556): Treat contenteditable as a form control (or add
+  // a first-class editable field node) so we can attach structured redaction
+  // decisions and consistently skip editor/shadow subtrees for password-like
+  // contenteditables. This test covers a custom password control implemented
+  // with a contenteditable element. A common JS approach is to write mask
+  // characters (e.g. bullets) and reveal only the most recently typed
+  // character.
+  //
+  // Acceptance criteria:
+  // - The extracted content does not include the masked string.
+  // - After the field has been classified as password-like, it stays redacted
+  //   even if the page later writes an unmasked value.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div id='ce' "
+      "contenteditable='true'>&#8226;&#8226;&#8226;&#8226;a</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  auto* editable =
+      To<HTMLElement>(document->getElementById(AtomicString("ce")));
+  ASSERT_TRUE(editable);
+  ASSERT_TRUE(IsRichlyEditable(*editable));
+  ASSERT_EQ(RootEditableElement(*editable), editable);
+
+  GetAIPageContent();
+
+  const auto& root = ContentRootNode();
+  EXPECT_FALSE(TreeContainsTextSubstring(root, "a"));
+
+  editable->setInnerText("notmaskedanymore");
+
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  GetAIPageContent();
+  const auto& root2 = ContentRootNode();
+  EXPECT_FALSE(TreeContainsTextSubstring(root2, "notmaskedanymore"));
+}
+
+TEST_F(
+    AIPageContentAgentTest,
+    DISABLED_ContentEditableMultilineWithBulletIsNotClassifiedAsCustomPassword) {
+  // TODO(crbug.com/480179556): When adding contenteditable custom password
+  // redaction, keep a single-line guardrail to avoid false positives for rich
+  // text editors. Guardrail against false positives: rich text editors often
+  // use bullet characters (•) as list markers in normal prose, and we must not
+  // treat these as password-like fields. We require contenteditable masking
+  // heuristics to apply only to single-line fields.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div id='editor' contenteditable='true'>"
+      "    <div>&#8226; item</div>"
+      "    <div>more</div>"
+      "  </div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto& root = ContentRootNode();
+  EXPECT_TRUE(TreeContainsTextSubstring(root, "item"));
+  EXPECT_TRUE(TreeContainsTextSubstring(root, "more"));
 }
 
 TEST_F(AIPageContentAgentTest, InteractiveElementsTextArea) {

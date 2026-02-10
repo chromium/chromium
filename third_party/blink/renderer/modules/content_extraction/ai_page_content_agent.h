@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
 namespace blink {
@@ -39,6 +40,13 @@ class MODULES_EXPORT AIPageContentAgent final
       public Supplement<Document>,
       public LocalFrameView::LifecycleNotificationObserver {
  public:
+  enum class CustomPasswordSource {
+    // Non-standard CSS masking via `-webkit-text-security`.
+    kCSS,
+    // JS sets a value that is mostly mask characters.
+    kJavaScript,
+  };
+
   static const char kSupplementName[];
   static AIPageContentAgent* From(Document&);
   static void BindReceiver(
@@ -84,12 +92,16 @@ class MODULES_EXPORT AIPageContentAgent final
                             GetAIPageContentCallback callback,
                             base::TimeTicks start_time) const;
 
+  std::optional<CustomPasswordSource> CustomPasswordReason(
+      DOMNodeId dom_node_id) const;
+
   // Synchronously services a single request.
   class ContentBuilder {
     STACK_ALLOCATED();
 
    public:
-    explicit ContentBuilder(const mojom::blink::AIPageContentOptions& options);
+    ContentBuilder(const mojom::blink::AIPageContentOptions& options,
+                   const AIPageContentAgent& agent);
     ~ContentBuilder();
 
     mojom::blink::AIPageContentPtr Build(LocalFrame& frame);
@@ -169,17 +181,26 @@ class MODULES_EXPORT AIPageContentAgent final
         mojom::blink::AIPageContentAttributes& attributes,
         std::optional<gfx::Rect> visible_bounding_box = std::nullopt);
 
+    // Applies custom password-like heuristics for text fields. This covers
+    // author-defined password controls which do not use <input type=password>.
+    void ApplyCustomPasswordRedactionHeuristicsIfNeeded(
+        const LayoutObject& object,
+        DOMNodeId dom_node_id,
+        mojom::blink::AIPageContentAttributes& attributes) const;
+
     Vector<gfx::Rect> visible_bounding_box_for_passwords_;
 
     // The set of nodes which are involved in a user interaction and must
     // produce a ContentNode.
-    base::flat_set<DOMNodeId> interactive_dom_node_ids_;
+    HashSet<DOMNodeId, IntWithZeroKeyHashTraits<DOMNodeId>>
+        interactive_dom_node_ids_;
 
     // If present, the node which is accessibility focused. This is used to
     // determine which node to add geometry for in non-actionable mode.
     DOMNodeId accessibility_focused_node_id_ = kInvalidDOMNodeId;
 
     const raw_ref<const mojom::blink::AIPageContentOptions> options_;
+    const AIPageContentAgent& agent_;
 
     HashMap<DOMNodeId, int32_t, IntWithZeroKeyHashTraits<DOMNodeId>>
         dom_node_to_z_order_;
@@ -207,6 +228,15 @@ class MODULES_EXPORT AIPageContentAgent final
   Member<AutoBuildHelper> auto_build_helper_;
   friend class AutoBuildHelper;
 #endif
+
+  // Persistent set of DOM node IDs determined to be password-like via heuristic
+  // redaction (e.g. `-webkit-text-security` or JS masking patterns).
+  //
+  // This is mutable so it can be updated by const extraction calls.
+  mutable HashMap<DOMNodeId,
+                  CustomPasswordSource,
+                  IntWithZeroKeyHashTraits<DOMNodeId>>
+      custom_password_decision_;
 };
 
 }  // namespace blink

@@ -424,7 +424,17 @@ struct AIPageContentSelectOption {
 enum AIPageContentRedactionDecision {
   kNoRedactionNecessary,  // No redaction necessary for this input type.
   kUnredacted_EmptyPassword,  // Empty password inputs are not redacted.
-  kRedacted_HasBeenPassword  // Is a password input or was in the past.
+  kRedacted_HasBeenPassword,  // Is a password input or was in the past.
+  // Empty inputs which have been classified as password-like by heuristic
+  // redaction (e.g. `-webkit-text-security`). These are not redacted since they
+  // contain no sensitive content, but the classification is preserved.
+  kUnredacted_EmptyCustomPassword,
+  // Is a password-like input detected by heuristic redaction based on CSS
+  // masking (e.g. `-webkit-text-security` set to a masking value, not `none`).
+  kRedacted_CustomPassword_CSS,
+  // Is a password-like input detected by heuristic redaction based on a
+  // JavaScript-masked value (e.g. mostly bullet-like masking characters).
+  kRedacted_CustomPassword_JS
 };
 
 struct AIPageContentFormControlData {

@@ -117,9 +117,10 @@ responsibility.
 from multiple origins (e.g., in iframes). APC tags all data with its source
 origin, allowing consumers to detect and handle cross-origin information
 appropriately.
-* **Handling Password Fields:** Values from password fields are removed from
-the APC representation unless the user has explicitly made them visible on the
-page.
+* **Handling Password-Like Fields:** Values from password fields (and other
+  password-like text inputs detected via heuristics such as
+  `-webkit-text-security`) are removed from the APC representation to help
+  prevent sensitive credential leakage.
 * **Paywalled Content:** APC's design helps exclude most paywalled content.
 Websites can also use specific markup
 ([`isAccessibleForFree=false`](https://developers.google.com/search/docs/appeara

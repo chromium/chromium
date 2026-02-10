@@ -547,7 +547,21 @@ optimization_guide::proto::RedactionDecision ConvertRedactionDecision(
       return optimization_guide::proto::
           REDACTION_DECISION_UNREDACTED_EMPTY_PASSWORD;
     case blink::mojom::AIPageContentRedactionDecision::
+        kUnredacted_EmptyCustomPassword:
+      // TODO(crbug.com/480135178): Extend
+      // optimization_guide::proto::RedactionDecision with dedicated values for
+      // custom password fields (CSS/JS masked) so downstream can distinguish
+      // them from native password inputs.
+      return optimization_guide::proto::
+          REDACTION_DECISION_UNREDACTED_EMPTY_PASSWORD;
+    case blink::mojom::AIPageContentRedactionDecision::
         kRedacted_HasBeenPassword:
+      return optimization_guide::proto::
+          REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD;
+    case blink::mojom::AIPageContentRedactionDecision::
+        kRedacted_CustomPassword_CSS:
+    case blink::mojom::AIPageContentRedactionDecision::
+        kRedacted_CustomPassword_JS:
       return optimization_guide::proto::
           REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD;
   }

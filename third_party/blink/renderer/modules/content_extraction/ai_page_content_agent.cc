@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 
+#include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -71,6 +72,7 @@
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -662,11 +664,28 @@ bool ShouldSkipDescendants(
 
   // Ensure that password editor subtrees are skipped even when the password
   // is revealed.
-  if (content_node->content_attributes->form_control_data &&
-      content_node->content_attributes->form_control_data->redaction_decision ==
-          mojom::blink::AIPageContentRedactionDecision::
-              kRedacted_HasBeenPassword) {
-    return true;
+  const auto* form_control_data =
+      content_node->content_attributes->form_control_data.get();
+  if (form_control_data) {
+    const auto redaction_decision = form_control_data->redaction_decision;
+    switch (redaction_decision) {
+      case mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary:
+      case mojom::blink::AIPageContentRedactionDecision::
+          kUnredacted_EmptyPassword:
+      case mojom::blink::AIPageContentRedactionDecision::
+          kUnredacted_EmptyCustomPassword:
+        break;
+      case mojom::blink::AIPageContentRedactionDecision::
+          kRedacted_HasBeenPassword:
+      case mojom::blink::AIPageContentRedactionDecision::
+          kRedacted_CustomPassword_CSS:
+      case mojom::blink::AIPageContentRedactionDecision::
+          kRedacted_CustomPassword_JS:
+        // Custom password-like inputs (e.g. `-webkit-text-security`) can also
+        // have UA/editor subtrees which may contain sensitive text. Skip them
+        // to avoid leaking into extracted text nodes.
+        return true;
+    }
   }
 
   return false;
@@ -1364,15 +1383,137 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentInternal(
     return nullptr;
   }
 
-  ContentBuilder builder(options);
+  ContentBuilder builder(options, *this);
   return builder.Build(*frame);
 }
 
 AIPageContentAgent::ContentBuilder::ContentBuilder(
-    const mojom::blink::AIPageContentOptions& options)
-    : options_(options) {}
+    const mojom::blink::AIPageContentOptions& options,
+    const AIPageContentAgent& agent)
+    : options_(options), agent_(agent) {}
 
 AIPageContentAgent::ContentBuilder::~ContentBuilder() = default;
+
+std::optional<AIPageContentAgent::CustomPasswordSource>
+AIPageContentAgent::CustomPasswordReason(DOMNodeId dom_node_id) const {
+  DCHECK_NE(dom_node_id, kInvalidDOMNodeId);
+  auto it = custom_password_decision_.find(dom_node_id);
+  if (it == custom_password_decision_.end()) {
+    return std::nullopt;
+  }
+  return it->value;
+}
+
+namespace {
+
+bool IsCSSSecurityMaskingEnabled(const LayoutObject& object) {
+  // Checks the computed value of the non-standard CSS property
+  // `-webkit-text-security`. Authors sometimes use this on non-password
+  // elements to create custom masked "password-like" fields.
+  const ComputedStyle* style = object.Style();
+  if (!style) {
+    return false;
+  }
+  return style->TextSecurity() != ETextSecurity::kNone;
+}
+
+bool IsSecurityMaskCharacter(UChar c) {
+  switch (c) {
+    // Standard Asterisks & Stars.
+    case '*':     // U+002A
+    case 0x2731:  // Heavy Asterisk (✱)
+    case 0x2732:  // Open Centre Asterisk (✲)
+    case 0x2733:  // Eight Spoked Asterisk (✳)
+    case 0xFF0A:  // Fullwidth Asterisk (＊)
+
+    // Standard Bullets & Circles.
+    case 0x2022:  // Bullet (•)
+    case 0x25CF:  // Black Circle (●)
+    case 0x25CB:  // White Circle (○)
+    case 0x25EF:  // Large Circle (◯)
+    case 0x26AB:  // Medium Black Circle (⚫)
+    case 0x2B24:  // Black Large Circle (⬤)
+    case 0x25E6:  // White Bullet (◦)
+    case 0x25C9:  // Fisheye (◉)
+
+    // Dots & Mathematical Operators.
+    case 0x00B7:  // Middle Dot (·)
+    case 0x2219:  // Bullet Operator (∙)
+    case 0x22C5:  // Dot Operator (⋅)
+    case 0x2802:  // Braille Dot-2 (⠂)
+    case 0x2812:  // Braille Dots-2-5 (⠒)
+    case 0x2836:  // Braille Dots-2-3-5-6 (⠶)
+
+    // Squares, Blocks & Diamonds.
+    case 0x25A0:  // Black Square (■)
+    case 0x25A1:  // White Square (□)
+    case 0x25AA:  // Black Small Square (▪)
+    case 0x25AB:  // White Small Square (▫)
+    case 0x25AE:  // Black Vertical Rectangle (▮)
+    case 0x2588:  // Full Block (█)
+    case 0x2589:  // Left Seven Eighths Block (▉)
+    case 0x25C6:  // Black Diamond (◆)
+    case 0x25C7:  // White Diamond (◇)
+      return true;
+
+    default:
+      return false;
+  }
+}
+
+bool IsLikelyJSCustomPasswordField(const String& value) {
+  // Heuristic for JS-masked values where most characters are replaced by
+  // bullet-like mask characters but one character (often the last typed
+  // character) remains visible.
+  //
+  // Example: "••••a"
+  //
+  // This intentionally errs on the side of privacy: if a field *looks* like a
+  // password field, we redact it to prevent credential leakage.
+  if (value.length() < 2) {
+    return false;
+  }
+
+  wtf_size_t mask_count = 0;
+  bool has_visible_last_character = false;
+  for (wtf_size_t index = 0; index < value.length(); ++index) {
+    const UChar ch = value[index];
+    // Whitespace is a strong signal this is not a password field (e.g. a bullet
+    // used as a list marker: "• item"). Bail out early to reduce false
+    // positives and improve performance on large editor-like fields.
+    if (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r') {
+      return false;
+    }
+    if (IsSecurityMaskCharacter(ch)) {
+      ++mask_count;
+    } else {
+      // If a non-mask character appears before the final character, this is
+      // unlikely to be a password-style control (typical patterns reveal at
+      // most the last typed character). Bail out early.
+      if (index + 1 < value.length()) {
+        return false;
+      }
+      has_visible_last_character = true;
+    }
+  }
+
+  // Prefer classifying early once masking begins to prevent leaking typed
+  // characters during initial entry. For example, some JS-masked fields show:
+  // - "•b" when the user has typed 2 characters.
+  // - "••c" when the user has typed 3 characters.
+  if (has_visible_last_character) {
+    if (mask_count >= 1) {
+      return true;
+    }
+    return value.length() == 2;
+  }
+
+  // Typical patterns show only one character (often the last). Require that
+  // the value is "mostly masked" to reduce false positives.
+  return mask_count >= value.length() - 1;
+}
+
+}  // namespace
 
 mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
     LocalFrame& frame) {
@@ -1568,7 +1709,7 @@ bool AIPageContentAgent::ContentBuilder::IsGenericContainer(
 
   // Use `ExistingIdForNode` since an Id should have already been generated if
   // this node is interactive.
-  if (interactive_dom_node_ids_.contains(
+  if (interactive_dom_node_ids_.Contains(
           DOMNodeIds::ExistingIdForNode(object.GetNode()))) {
     return true;
   }
@@ -1736,6 +1877,8 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   }
   AddNodeInteractionInfo(object, attributes, recursion_data.is_aria_disabled);
 
+  const std::optional<DOMNodeId> dom_node_id = GetDomNodeId(object);
+
   // Set the attribute type and add any special attributes if the attribute type
   // requires it.
   if (const auto* iframe = GetIFrame(object)) {
@@ -1794,6 +1937,10 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   } else if (const auto* form_control =
                  DynamicTo<HTMLFormControlElement>(object.GetNode())) {
     ProcessFormControlNode(*form_control, attributes);
+    if (dom_node_id) {
+      ApplyCustomPasswordRedactionHeuristicsIfNeeded(object, *dom_node_id,
+                                                     attributes);
+    }
   } else if (element &&
              ProcessAriaFormControlNode(object, *element, attributes)) {
     // ProcessAriaFormControlNode sets the attribute type and data.
@@ -1826,7 +1973,7 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
     return nullptr;
   }
 
-  if (auto dom_node_id = GetDomNodeId(object)) {
+  if (dom_node_id) {
     attributes.dom_node_id = *dom_node_id;
   }
 
@@ -1836,6 +1983,94 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   attributes.is_ad_related = element && element->IsAdRelated();
 
   return content_node;
+}
+
+void AIPageContentAgent::ContentBuilder::
+    ApplyCustomPasswordRedactionHeuristicsIfNeeded(
+        const LayoutObject& object,
+        DOMNodeId dom_node_id,
+        mojom::blink::AIPageContentAttributes& attributes) const {
+  // Only form controls have `form_control_data`. Keep this defensive because
+  // callers may evolve and still call this helper.
+  if (!attributes.form_control_data) {
+    return;
+  }
+
+  // Only text controls can meaningfully contain sensitive freeform text.
+  const auto* text_control_element =
+      DynamicTo<TextControlElement>(object.GetNode());
+  if (!text_control_element) {
+    return;
+  }
+
+  // If this is already treated as a real password field, do not override the
+  // existing decision. The built-in HTMLInputElement::HasBeenPasswordField()
+  // logic should remain authoritative.
+  switch (attributes.form_control_data->redaction_decision) {
+    case mojom::blink::AIPageContentRedactionDecision::
+        kRedacted_HasBeenPassword:
+    case mojom::blink::AIPageContentRedactionDecision::
+        kUnredacted_EmptyPassword:
+      return;
+    case mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary:
+    case mojom::blink::AIPageContentRedactionDecision::
+        kUnredacted_EmptyCustomPassword:
+    case mojom::blink::AIPageContentRedactionDecision::
+        kRedacted_CustomPassword_CSS:
+    case mojom::blink::AIPageContentRedactionDecision::
+        kRedacted_CustomPassword_JS:
+      break;
+  }
+
+  const String value = text_control_element->Value();
+
+  const std::optional<AIPageContentAgent::CustomPasswordSource>
+      existing_custom_password_like_reason =
+          agent_.CustomPasswordReason(dom_node_id);
+  bool is_custom_password = existing_custom_password_like_reason.has_value();
+  std::optional<AIPageContentAgent::CustomPasswordSource>
+      custom_password_like_reason = existing_custom_password_like_reason;
+  if (!is_custom_password && !value.empty()) {
+    if (IsCSSSecurityMaskingEnabled(object)) {
+      custom_password_like_reason =
+          AIPageContentAgent::CustomPasswordSource::kCSS;
+    } else if (IsLikelyJSCustomPasswordField(value)) {
+      custom_password_like_reason =
+          AIPageContentAgent::CustomPasswordSource::kJavaScript;
+    }
+    if (custom_password_like_reason) {
+      agent_.custom_password_decision_.Set(dom_node_id,
+                                           *custom_password_like_reason);
+      is_custom_password = true;
+    }
+  }
+
+  if (!is_custom_password) {
+    return;
+  }
+
+  // Preserve the classification even when empty, but only redact when there is
+  // actual sensitive content present.
+  if (value.empty()) {
+    attributes.form_control_data->redaction_decision = mojom::blink::
+        AIPageContentRedactionDecision::kUnredacted_EmptyCustomPassword;
+    attributes.form_control_data->field_value = value;
+    return;
+  }
+
+  // Clear any captured value from earlier processing and redact.
+  attributes.form_control_data->field_value = String();
+  CHECK(custom_password_like_reason);
+  switch (*custom_password_like_reason) {
+    case AIPageContentAgent::CustomPasswordSource::kCSS:
+      attributes.form_control_data->redaction_decision = mojom::blink::
+          AIPageContentRedactionDecision::kRedacted_CustomPassword_CSS;
+      break;
+    case AIPageContentAgent::CustomPasswordSource::kJavaScript:
+      attributes.form_control_data->redaction_decision = mojom::blink::
+          AIPageContentRedactionDecision::kRedacted_CustomPassword_JS;
+      break;
+  }
 }
 
 void AIPageContentAgent::ContentBuilder::AddLabel(
@@ -1982,9 +2217,15 @@ void AIPageContentAgent::ContentBuilder::TrackPasswordRedactionIfNeeded(
     case mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary:
     case mojom::blink::AIPageContentRedactionDecision::
         kUnredacted_EmptyPassword:
+    case mojom::blink::AIPageContentRedactionDecision::
+        kUnredacted_EmptyCustomPassword:
       return;
     case mojom::blink::AIPageContentRedactionDecision::
         kRedacted_HasBeenPassword:
+    case mojom::blink::AIPageContentRedactionDecision::
+        kRedacted_CustomPassword_CSS:
+    case mojom::blink::AIPageContentRedactionDecision::
+        kRedacted_CustomPassword_JS:
       break;
   }
 
