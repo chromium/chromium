@@ -4,21 +4,13 @@
 
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {CrLitElement, html} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SecurityIcon} from './browser.mojom-webui.js';
 import {GuestHandlerRemote} from './browser.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './webview.css.js';
-
-const SURFACE_EMBED_MIME_TYPE = 'application/x-chromium-surface-embed';
-
-export interface WebviewElement {
-  $: {
-    iframe: HTMLIFrameElement,
-    embed: HTMLEmbedElement,
-  };
-}
+import {getHtml} from './webview.html.js';
 
 export class WebviewElement extends CrLitElement {
   static get is() {
@@ -30,30 +22,26 @@ export class WebviewElement extends CrLitElement {
   }
 
   override render() {
-    if (this.enableSurfaceEmbed) {
-      return html`<embed id="embed" type="${SURFACE_EMBED_MIME_TYPE}"
-          data-content-id="${this.guestId}"></embed>`;
-    } else {
-      return html`<iframe id="iframe"></iframe>`;
-    }
+    return getHtml.bind(this)();
   }
 
   static override get properties() {
     return {
       guestId: {type: String},
+      enableSurfaceEmbed: {type: Boolean},
     };
   }
 
   accessor guestId: string = '';
-  private attached: boolean = false;
-
   // Whether to use surface embed instead of guest contents.
-  protected enableSurfaceEmbed: boolean =
+  protected accessor enableSurfaceEmbed: boolean =
       loadTimeData.getBoolean('enableSurfaceEmbed');
 
-  override async connectedCallback() {
+  private attached: boolean = false;
+
+  override connectedCallback() {
     super.connectedCallback();
-    await this.tryToAttach();
+    this.tryToAttach();
   }
 
   protected async tryToAttach() {
@@ -68,16 +56,19 @@ export class WebviewElement extends CrLitElement {
     }
     this.attached = true;
 
+    const iframe = this.getContentElement<HTMLIFrameElement>();
     // Wait until iframe.contentWindow becomes available.
-    if (!this.$.iframe.contentWindow) {
-      await this.whenIframeContentWindowAvailable_(this.$.iframe);
+    if (!iframe.contentWindow) {
+      await this.whenIframeContentWindowAvailable_(iframe);
     }
-    this.attachGuestToIframe(this.guestId, this.$.iframe);
+    this.attachGuestToIframe(this.guestId, iframe);
   }
 
-  protected getContentElement(): HTMLElement {
-    // Returns whichever content element is currently active based on the mode.
-    return this.enableSurfaceEmbed ? this.$.embed : this.$.iframe;
+  // Returns whichever content element is currently active based on the mode.
+  protected getContentElement<T extends HTMLElement>(): T {
+    const element = this.shadowRoot.querySelector<T>('.content');
+    assert(element);
+    return element;
   }
 
   private attachGuestToIframe(guestId: string, iframe: HTMLIFrameElement) {

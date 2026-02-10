@@ -33,6 +33,7 @@ build_webui("build") {
     "tab_strip/tab_strip.html.ts",
     "tab_strip/tab_strip.ts",
     "webui_browser.ts",
+    "webview.html.ts",
     "webview.ts",
   ]
 

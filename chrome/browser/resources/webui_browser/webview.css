@@ -15,8 +15,7 @@
   width: 100%;
 }
 
-#iframe,
-#embed {
+.content {
   border: 0;
   margin: 0;
   padding: 0;
