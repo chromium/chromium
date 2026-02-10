@@ -7,6 +7,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {PresentationMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {assertCheckMarksForDropdown, assertHeadersForDropdown, stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -35,11 +36,7 @@ suite('PresentationMenuElement', () => {
         presentationMenu.$.menu, /*shouldHaveHeaders=*/ false);
   });
 
-  test('presentation change', () => {
-    let closeAllMenusCount = 0;
-    document.addEventListener(
-        ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
-
+  test('presentation change', async () => {
     const sidePanelState = chrome.readingMode.inSidePanelPresentationState;
     const immersiveState =
         chrome.readingMode.inImmersiveOverlayPresentationState;
@@ -51,17 +48,19 @@ suite('PresentationMenuElement', () => {
       }
     };
 
-    const state1 = chrome.readingMode.inSidePanelPresentationState;
+    const closeAllMenusPromise1 =
+    eventToPromise(ToolbarEvent.CLOSE_ALL_MENUS, document);
     presentationMenu.$.menu.dispatchEvent(new CustomEvent(
-        ToolbarEvent.PRESENTATION_CHANGE, {detail: {data: state1}}));
-    assertEquals(state1, presentationMenu.presentationState);
+        ToolbarEvent.PRESENTATION_CHANGE, {detail: {data: sidePanelState}}));
+    await closeAllMenusPromise1;
+    assertEquals(sidePanelState, presentationMenu.presentationState);
 
-    const state2 = chrome.readingMode.inImmersiveOverlayPresentationState;
+    const closeAllMenusPromise2 =
+    eventToPromise(ToolbarEvent.CLOSE_ALL_MENUS, document);
     presentationMenu.$.menu.dispatchEvent(new CustomEvent(
-        ToolbarEvent.PRESENTATION_CHANGE, {detail: {data: state2}}));
-    assertEquals(state2, presentationMenu.presentationState);
-
-    assertEquals(2, closeAllMenusCount);
+        ToolbarEvent.PRESENTATION_CHANGE, {detail: {data: immersiveState}}));
+    await closeAllMenusPromise2;
+    assertEquals(immersiveState, presentationMenu.presentationState);
   });
 
   test('can be closed programatically', () => {
