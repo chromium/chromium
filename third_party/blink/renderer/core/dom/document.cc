@@ -146,6 +146,7 @@
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/document_parser_timing.h"
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
+#include "third_party/blink/renderer/core/dom/document_resize_options.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -5642,7 +5643,7 @@ void Document::EvaluateMediaQueryList() {
     media_query_matcher_->MediaFeaturesChanged();
 }
 
-void Document::LayoutViewportWasResized() {
+void Document::LayoutViewportWasResized(const DocumentResizeOptions options) {
   if (!IsActive()) {
     return;
   }
@@ -5660,8 +5661,9 @@ void Document::LayoutViewportWasResized() {
   // Note that in the case of the initial empty document, the load may hav
   // completed before performing the first layout. Also, we need to fire a
   // resize event if the window size changes during load event dispatch.
-  if ((View() && View()->DidFirstLayout()) ||
-      load_event_progress_ == kLoadEventInProgress || IsLoadCompleted()) {
+  if (((View() && View()->DidFirstLayout()) ||
+       load_event_progress_ == kLoadEventInProgress || IsLoadCompleted()) &&
+      !options.should_suppress_events) {
     EnqueueResizeEvent();
     EnqueueVisualViewportResizeEvent();
     if (GetFrame()->IsMainFrame() && !Printing())

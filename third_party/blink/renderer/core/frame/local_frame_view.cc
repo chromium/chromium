@@ -1090,17 +1090,20 @@ LocalFrameView::NaturalSizeLayoutScope::NaturalSizeLayoutScope(
   view_ = view;
   is_fixed_to_frame_size_ = view->LayoutSizeFixedToFrameSize();
   saved_layout_size_ = layout_size;
-  view->SetLayoutSizeFixedToFrameSize(false);
-  view->SetLayoutSizeInternal(*view->layout_size_for_natural_size_);
+  view->SetLayoutSizeFixedToFrameSize(false, {.should_suppress_events = true});
+  view->SetLayoutSizeInternal(*view->layout_size_for_natural_size_,
+                              {.should_suppress_events = true});
 }
 
 LocalFrameView::NaturalSizeLayoutScope::~NaturalSizeLayoutScope() {
   if (!view_) {
     return;
   }
-  view_->SetLayoutSizeFixedToFrameSize(is_fixed_to_frame_size_);
+  view_->SetLayoutSizeFixedToFrameSize(is_fixed_to_frame_size_,
+                                       {.should_suppress_events = true});
   if (!is_fixed_to_frame_size_) {
-    view_->SetLayoutSizeInternal(saved_layout_size_);
+    view_->SetLayoutSizeInternal(saved_layout_size_,
+                                 {.should_suppress_events = true});
   }
 }
 
@@ -1407,13 +1410,15 @@ void LocalFrameView::SetLayoutSize(const gfx::Size& size) {
   SetLayoutSizeInternal(size);
 }
 
-void LocalFrameView::SetLayoutSizeFixedToFrameSize(bool is_fixed) {
+void LocalFrameView::SetLayoutSizeFixedToFrameSize(
+    bool is_fixed,
+    const DocumentResizeOptions options) {
   if (layout_size_fixed_to_frame_size_ == is_fixed)
     return;
 
   layout_size_fixed_to_frame_size_ = is_fixed;
   if (is_fixed)
-    SetLayoutSizeInternal(Size());
+    SetLayoutSizeInternal(Size(), options);
 }
 
 ChromeClient* LocalFrameView::GetChromeClient() const {
@@ -3901,7 +3906,8 @@ void LocalFrameView::ZoomFactorChanged(float zoom_factor) {
   GetFrame().SetLayoutZoomFactor(zoom_factor);
 }
 
-void LocalFrameView::SetLayoutSizeInternal(const gfx::Size& size) {
+void LocalFrameView::SetLayoutSizeInternal(const gfx::Size& size,
+                                           DocumentResizeOptions options) {
   if (layout_size_ == size)
     return;
   layout_size_ = size;
@@ -3909,7 +3915,7 @@ void LocalFrameView::SetLayoutSizeInternal(const gfx::Size& size) {
   Document* document = GetFrame().GetDocument();
   if (!document || !document->IsActive())
     return;
-  document->LayoutViewportWasResized();
+  document->LayoutViewportWasResized(options);
   if (frame_->IsMainFrame())
     TextAutosizer::UpdatePageInfoInAllFrames(frame_);
 }

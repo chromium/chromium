@@ -41,6 +41,7 @@
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
+#include "third_party/blink/renderer/core/dom/document_resize_options.h"
 #include "third_party/blink/renderer/core/frame/frame_view.h"
 #include "third_party/blink/renderer/core/frame/layout_subtree_root_list.h"
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
@@ -281,7 +282,7 @@ class CORE_EXPORT LocalFrameView final
 
   // If this is set to false, the layout size will need to be explicitly set by
   // the owner.  E.g. WebViewImpl sets its mainFrame's layout size manually
-  void SetLayoutSizeFixedToFrameSize(bool);
+  void SetLayoutSizeFixedToFrameSize(bool, DocumentResizeOptions = {});
   bool LayoutSizeFixedToFrameSize() const {
     return layout_size_fixed_to_frame_size_;
   }
@@ -1048,7 +1049,7 @@ class CORE_EXPORT LocalFrameView final
 
   AXObjectCache* ExistingAXObjectCache() const;
 
-  void SetLayoutSizeInternal(const gfx::Size&);
+  void SetLayoutSizeInternal(const gfx::Size&, DocumentResizeOptions = {});
 
   void CollectDraggableRegions(LayoutObject&,
                                Vector<DraggableRegionValue>&) const;

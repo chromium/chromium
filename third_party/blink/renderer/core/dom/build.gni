@@ -87,6 +87,7 @@ blink_core_sources_dom = [
   "document_parser_timing.h",
   "document_part_root.cc",
   "document_part_root.h",
+  "document_resize_options.h",
   "document_statistics_collector.cc",
   "document_statistics_collector.h",
   "document_timing.cc",

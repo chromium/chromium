@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/dom/document_encoding_data.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
+#include "third_party/blink/renderer/core/dom/document_resize_options.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
@@ -1813,7 +1814,7 @@ class CORE_EXPORT Document : public ContainerNode,
            static_cast<unsigned>(ViewportUnitFlag::kDynamic);
   }
 
-  void LayoutViewportWasResized();
+  void LayoutViewportWasResized(DocumentResizeOptions = {});
   void MarkViewportUnitsDirty();
 
   // dv*
