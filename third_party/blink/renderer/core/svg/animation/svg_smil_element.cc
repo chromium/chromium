@@ -433,11 +433,11 @@ SMILTime SVGSMILElement::ParseOffsetValue(const StringView& data) {
                             : SMILTime::Unresolved();
 }
 
-SMILTime SVGSMILElement::ParseClockValue(const String& data) {
+SMILTime SVGSMILElement::ParseClockValue(const StringView& data) {
   if (data.IsNull())
     return SMILTime::Unresolved();
 
-  String parse = data.StripWhiteSpace();
+  StringView parse = data.StripWhiteSpace();
 
   DEFINE_STATIC_LOCAL(const AtomicString, indefinite_value, ("indefinite"));
   if (parse == indefinite_value)
@@ -447,17 +447,17 @@ SMILTime SVGSMILElement::ParseClockValue(const String& data) {
   wtf_size_t double_point_one = parse.find(':');
   wtf_size_t double_point_two = parse.find(':', double_point_one + 1);
   if (double_point_one == 2 && double_point_two == 5 && parse.length() >= 8) {
-    auto parsed_hour = StringToUintStrict(parse.Substring(0, 2));
-    auto parsed_min = StringToUintStrict(parse.Substring(3, 2));
-    auto parsed_sec = StringToDouble(StringView(parse, 6));
+    auto parsed_hour = StringToUintStrict(parse.substr(0, 2));
+    auto parsed_min = StringToUintStrict(parse.substr(3, 2));
+    auto parsed_sec = StringToDouble(parse.substr(6));
     if (!parsed_hour || !parsed_min || !parsed_sec) {
       return SMILTime::Unresolved();
     }
     result += *parsed_hour * 60 * 60 + *parsed_min * 60 + *parsed_sec;
   } else if (double_point_one == 2 && double_point_two == kNotFound &&
              parse.length() >= 5) {
-    auto parsed_min = StringToUintStrict(parse.Substring(0, 2));
-    auto parsed_sec = StringToDouble(StringView(parse, 3));
+    auto parsed_min = StringToUintStrict(parse.substr(0, 2));
+    auto parsed_sec = StringToDouble(parse.substr(3));
     if (!parsed_min || !parsed_sec) {
       return SMILTime::Unresolved();
     }

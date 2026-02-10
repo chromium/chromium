@@ -127,7 +127,7 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
 
   void Reset();
 
-  static SMILTime ParseClockValue(const String&);
+  static SMILTime ParseClockValue(const StringView&);
   static SMILTime ParseOffsetValue(const StringView&);
 
   bool IsContributing(SMILTime elapsed) const;
