@@ -312,8 +312,6 @@ class TabDragController : public views::WidgetObserver,
   void OnActiveStripWebContentsReplaced(content::WebContents* previous,
                                         content::WebContents* next);
 
-  void UpdateDockInfo(const gfx::Point& point_in_screen);
-
   // Saves focus in the window that the drag initiated from. Focus will be
   // restored appropriately if the drag ends within this same window.
   [[nodiscard]] Liveness SaveFocus();
@@ -454,10 +452,6 @@ class TabDragController : public views::WidgetObserver,
 
   // Maximizes the attached window.
   void MaximizeAttachedWindow();
-
-  // Hides the frame for the window that contains the TabDragContext
-  // the current drag session was initiated from.
-  void HideFrame();
 
   void BringWindowUnderPointToFront(const gfx::Point& point_in_screen);
 
