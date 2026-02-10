@@ -210,6 +210,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
       ContextualTasksPanelController::From(browser());
   EXPECT_TRUE(coordinator->IsPanelOpenForContextualTask());
 
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
   // Verify the new tab can navigation back.
   EXPECT_TRUE(browser()
                   ->GetActiveTabInterface()
@@ -229,6 +232,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
 
   // Verify the side panel is closed.
   EXPECT_FALSE(coordinator->IsPanelOpenForContextualTask());
+
+  // Verify metrics recorded.
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.BackButton.UserAction.NavigatedFromSidePanelToFullTab",
+      true, 1);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("ContextualTasks.BackButton.UserAction."
+                                        "NavigatedFromSidePanelToFullTab"),
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,

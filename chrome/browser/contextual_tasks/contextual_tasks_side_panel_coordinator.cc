@@ -447,6 +447,23 @@ void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(
   UpdateWebContentsForActiveTab();
 }
 
+void ContextualTasksSidePanelCoordinator::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // Check if the navigation is a back/forward navigation with the resulting URL
+  // being a contextual tasks URL. If the panel is open, this indicates that the
+  // user is navigating back to the full tab contextual tasks page.
+  if (navigation_handle->GetNavigationEntry() &&
+      (navigation_handle->GetNavigationEntry()->GetTransitionType() &
+       ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK) &&
+      !navigation_handle->IsRendererInitiated() &&
+      IsPanelOpenForContextualTask() &&
+      ui_service_->IsContextualTasksUrl(navigation_handle->GetURL())) {
+    RecordUserActionAndHistogram(
+        "ContextualTasks.BackButton.UserAction."
+        "NavigatedFromSidePanelToFullTab");
+  }
+}
+
 void ContextualTasksSidePanelCoordinator::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted() ||

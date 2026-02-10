@@ -119,6 +119,8 @@ class ContextualTasksSidePanelCoordinator
   bool IsSidePanelOpen();
 
   // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(content::Page& page) override;
