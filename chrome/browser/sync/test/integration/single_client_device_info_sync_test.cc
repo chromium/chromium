@@ -17,6 +17,7 @@
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/browser_sync/browser_sync_switches.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -177,6 +178,7 @@ class SingleClientDeviceInfoSyncTest
       bool enable_device_statistics_metrics = false)
       : SyncTest(SINGLE_CLIENT) {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (enable_device_statistics_metrics) {
       enabled_features.emplace_back(
           syncer::kSyncRecordDeviceStatisticsMetrics,
@@ -186,10 +188,13 @@ class SingleClientDeviceInfoSyncTest
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       enabled_features.emplace_back(syncer::kReplaceSyncPromosWithSignInPromos,
                                     base::FieldTrialParams{});
+    } else {
+      // Skip sync-to-signin migration for sync-the-feature tests. This is to
+      // avoid the sync state changing between the PRE_ tests.
+      disabled_features.push_back(switches::kMigrateSyncingUserToSignedIn);
     }
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        enabled_features,
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 
   SingleClientDeviceInfoSyncTest(const SingleClientDeviceInfoSyncTest&) =

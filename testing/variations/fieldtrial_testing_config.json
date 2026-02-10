@@ -17314,6 +17314,23 @@
             ]
         }
     ],
+    "MigrateSyncingUserToSignedInDesktop": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MigrateSyncingUserToSignedIn"
+                    ]
+                }
+            ]
+        }
+    ],
     "MiniOriginBar": [
         {
             "platforms": [

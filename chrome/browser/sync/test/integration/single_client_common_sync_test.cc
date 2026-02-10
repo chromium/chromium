@@ -30,6 +30,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/themes_helper.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/browser_sync/browser_sync_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -135,6 +136,11 @@ class SingleClientCommonSyncTest
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       scoped_feature_list_.InitAndEnableFeature(
           syncer::kReplaceSyncPromosWithSignInPromos);
+    } else {
+      // Skip sync-to-signin migration for sync-the-feature tests. This is to
+      // avoid the sync state changing between the PRE_ tests.
+      scoped_feature_list_.InitAndDisableFeature(
+          switches::kMigrateSyncingUserToSignedIn);
     }
   }
   ~SingleClientCommonSyncTest() override = default;

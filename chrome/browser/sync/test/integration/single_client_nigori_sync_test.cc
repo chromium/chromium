@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/browser_sync/browser_sync_switches.h"
 #include "components/metrics/metrics_service.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -258,6 +259,11 @@ class SingleClientNigoriSyncTest
     if (GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly) {
       scoped_feature_list_.InitAndEnableFeature(
           syncer::kReplaceSyncPromosWithSignInPromos);
+    } else {
+      // Skip sync-to-signin migration for sync-the-feature tests. This is to
+      // avoid the sync state changing between the PRE_ tests.
+      scoped_feature_list_.InitAndDisableFeature(
+          switches::kMigrateSyncingUserToSignedIn);
     }
   }
 

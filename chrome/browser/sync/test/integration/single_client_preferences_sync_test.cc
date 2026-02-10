@@ -31,6 +31,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/browser_sync/browser_sync_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -2361,8 +2362,12 @@ class
   SingleClientPreferencesWithoutShouldUseSelectedTypesAndWithoutAccountStorageSyncTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{syncer::kSyncPreferencesUseSelectedTypes,
-                               switches::kEnablePreferencesAccountStorage});
+        /*disabled_features=*/{
+            syncer::kSyncPreferencesUseSelectedTypes,
+            switches::kEnablePreferencesAccountStorage,
+            // Skip sync-to-signin migration for sync-the-feature tests. This is
+            // to avoid the sync state changing between the PRE_ tests.
+            switches::kMigrateSyncingUserToSignedIn});
   }
 
  private:
