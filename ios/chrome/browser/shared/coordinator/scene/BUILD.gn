@@ -61,6 +61,20 @@ source_set("scene_testing") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("task_updater_scene_agent") {
+  sources = [
+    "task_updater_scene_agent.h",
+    "task_updater_scene_agent.mm",
+  ]
+  deps = [
+    ":observing_scene_agent",
+    "//ios/chrome/app:tasks_handling",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+  ]
+}
+
 source_set("scene") {
   sources = [
     "scene_controller.mm",
@@ -71,6 +85,7 @@ source_set("scene") {
   deps = [
     ":scene_state_header_for_otr_profile_deletion",
     ":scene_util",
+    ":task_updater_scene_agent",
     "//base",
     "//components/autofill/core/browser",
     "//components/breadcrumbs/core",
