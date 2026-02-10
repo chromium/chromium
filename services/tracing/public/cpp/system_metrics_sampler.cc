@@ -28,7 +28,7 @@ namespace tracing {
 
 namespace {
 
-constexpr base::TimeDelta kDefaultSamplingInterval = base::Seconds(5);
+constexpr base::TimeDelta kDefaultSamplingInterval = base::Milliseconds(500);
 
 }  // namespace
 
