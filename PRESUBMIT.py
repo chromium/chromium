@@ -2277,7 +2277,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         pattern='PageActionIconView',
         explanation=
         ('PageActionIconView will soon be removed. Use PageActionView instead. '
-         'See chrome/browser/ui/views/page_action/README.md for details.'),
+         'See chrome/browser/ui/views/page_action/README.md for details.', ),
         treat_as_error=False,
     ),
     BanRule(
