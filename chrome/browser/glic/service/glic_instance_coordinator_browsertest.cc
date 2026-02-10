@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
     SimulateLinkClick(tab1, /*ctrl_key=*/true, /*shift_key=*/false);
     tabs::TabInterface* tab2 = waiter.Wait();
 
-    GlicInstance* tab2_instance = WaitForGlicOpen(tab2);
+    auto* tab2_instance = WaitForGlicOpen(tab2);
 
     EXPECT_EQ(coordinator().GetInstanceForTab(tab1), tab2_instance);
     EXPECT_TRUE(tab2_instance->IsShowing());
@@ -298,6 +298,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
     tab2->GetContents()->GetDelegate()->ActivateContents(tab2->GetContents());
     EXPECT_TRUE(
         WaitForSidePanelState(tab2, GlicSidePanelCoordinator::State::kShown));
+    // Verify focus stays on the page contents, not the side panel.
+    EXPECT_FALSE(tab2_instance->HasFocus());
   }
 
   // Case 2: Shift+Click (New Window)
@@ -308,11 +310,13 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
     tabs::TabInterface* tab3 = waiter.Wait();
     auto* new_window = tab3->GetBrowserWindowInterface();
 
-    GlicInstance* tab3_instance = coordinator().GetInstanceForTab(tab3);
+    auto* tab3_instance = WaitForGlicOpen(tab3);
 
     EXPECT_EQ(coordinator().GetInstanceForTab(tab1), tab3_instance);
     EXPECT_TRUE(tab3_instance->IsShowing());
     EXPECT_EQ(TabListInterface::From(new_window)->GetActiveTab(), tab3);
+    // Focus should be on the new window's page contents.
+    EXPECT_FALSE(tab3_instance->HasFocus());
   }
 
   // Case 3: Ctrl+Shift+Click (Foreground Tab)
@@ -321,11 +325,13 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
     SimulateLinkClick(tab1, /*ctrl_key=*/true, /*shift_key=*/true);
     tabs::TabInterface* tab4 = waiter.Wait();
 
-    GlicInstance* tab4_instance = coordinator().GetInstanceForTab(tab4);
+    auto* tab4_instance = WaitForGlicOpen(tab4);
 
     EXPECT_EQ(coordinator().GetInstanceForTab(tab1), tab4_instance);
     EXPECT_TRUE(tab4_instance->IsShowing());
     EXPECT_EQ(GetTabListInterface()->GetActiveTab(), tab4);
+    // Focus should be on the new foreground tab's page contents.
+    EXPECT_FALSE(tab4_instance->HasFocus());
   }
 }
 
@@ -414,6 +420,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
     EXPECT_EQ(instance, coordinator().GetInstanceForTab(tab2));
     EXPECT_TRUE(coordinator().GetInstanceForTab(tab2)->IsShowing());
     EXPECT_EQ(GetTabListInterface()->GetActiveTab(), tab2);
+    // The glic embedder should not have focus when daisy chaining
+    EXPECT_FALSE(instance->HasFocus());
   }
 
   // Case 2: Create Background Tab

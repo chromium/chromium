@@ -167,7 +167,6 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
       side_panel_options.suppress_opening_animation = true;
       side_panel_options.pin_trigger = GlicPinTrigger::kDaisyChain;
       auto show_options = ShowOptions{side_panel_options};
-      show_options.focus_on_show = tab_to_bind->IsActivated();
       instance_->metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
                                          /*success=*/true, tab_to_bind,
                                          source_tab);
@@ -499,8 +498,6 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
     SidePanelShowOptions side_panel_options{*created_tab};
     side_panel_options.suppress_opening_animation = true;
     auto show_options = ShowOptions{side_panel_options};
-    show_options.focus_on_show =
-        created_tab->IsActivated() || embedder_has_focus;
     Show(show_options);
   }
   instance_metrics_.OnDaisyChain(DaisyChainSource::kGlicContents,
