@@ -272,12 +272,7 @@ TEST_F(QuicEndToEndTest, LargeGetWithNoPacketLoss) {
   CheckResponse(consumer, "HTTP/1.1 200", response);
 }
 
-// crbug.com/559173
-#if defined(THREAD_SANITIZER)
-TEST_F(QuicEndToEndTest, DISABLED_LargePostWithNoPacketLoss) {
-#else
 TEST_F(QuicEndToEndTest, LargePostWithNoPacketLoss) {
-#endif
   InitializePostRequest(1024 * 1024);
 
   AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
@@ -289,12 +284,7 @@ TEST_F(QuicEndToEndTest, LargePostWithNoPacketLoss) {
   CheckResponse(consumer, "HTTP/1.1 200", kResponseBody);
 }
 
-// crbug.com/559173
-#if defined(THREAD_SANITIZER)
-TEST_F(QuicEndToEndTest, DISABLED_LargePostWithPacketLoss) {
-#else
 TEST_F(QuicEndToEndTest, LargePostWithPacketLoss) {
-#endif
   // FLAGS_fake_packet_loss_percentage = 30;
   InitializePostRequest(1024 * 1024);
 
@@ -307,12 +297,7 @@ TEST_F(QuicEndToEndTest, LargePostWithPacketLoss) {
   CheckResponse(consumer, "HTTP/1.1 200", kResponseBody);
 }
 
-// crbug.com/536845
-#if defined(THREAD_SANITIZER)
-TEST_F(QuicEndToEndTest, DISABLED_UberTest) {
-#else
 TEST_F(QuicEndToEndTest, UberTest) {
-#endif
   // FLAGS_fake_packet_loss_percentage = 30;
 
   AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
