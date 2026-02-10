@@ -404,6 +404,10 @@ void SetFeatureFlags() {
     SetV8FlagsFormatted("--preconfigured-old-space-size=%i",
                         features::kV8PreconfigureOldGenSize.Get());
   }
+  if (base::FeatureList::IsEnabled(features::kV8MemoryReducerDelay)) {
+    SetV8FlagsFormatted("--memory-reducer-delay-ms=%i",
+                        features::kV8MemoryReducerDelayInSeconds.Get() * 1000);
+  }
   if (base::FeatureList::IsEnabled(features::kV8HighEndAndroid)) {
     SetV8FlagsFormatted("--high-end-android-physical-memory-threshold=%i",
                         features::kV8HighEndAndroidMemoryThreshold.Get());

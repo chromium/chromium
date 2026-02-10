@@ -27889,6 +27889,29 @@
             ]
         }
     ],
+    "V8DelayMemoryReducer": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "30",
+                    "params": {
+                        "V8MemoryReducerDelayInSeconds": "30"
+                    },
+                    "enable_features": [
+                        "V8MemoryReducerDelay"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8DisableEagerAllocationFailures": [
         {
             "platforms": [
