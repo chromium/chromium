@@ -27,6 +27,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;
@@ -37,12 +38,11 @@ import org.chromium.build.annotations.UsedByReflection;
 import java.util.Locale;
 
 /**
- * This class partners with native ProxyConfigServiceAndroid to listen for
- * proxy change notifications from Android.
+ * This class partners with native ProxyConfigServiceAndroid to listen for proxy change
+ * notifications from Android.
  *
- * Unfortunately this is called directly via reflection in a number of WebView applications
- * to provide a hacky way to set per-application proxy settings, so it must not be mangled by
- * Proguard.
+ * <p>Unfortunately this is called directly via reflection in a number of WebView applications to
+ * provide a hacky way to set per-application proxy settings, so it must not be mangled by Proguard.
  */
 @UsedByReflection("WebView embedders call this to override proxy settings")
 @JNINamespace("net")
@@ -264,6 +264,8 @@ public class ProxyChangeListener {
         assert mProxyReceiver == null;
         assert mRealProxyReceiver == null;
 
+        final TimeUtils.ElapsedRealtimeNanosTimer timer = new TimeUtils.ElapsedRealtimeNanosTimer();
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(Proxy.PROXY_CHANGE_ACTION);
 
@@ -291,6 +293,9 @@ public class ProxyChangeListener {
             ContextUtils.registerProtectedBroadcastReceiver(
                     ContextUtils.getApplicationContext(), mRealProxyReceiver, filter);
         }
+
+        RecordHistogram.recordMicroTimesHistogram(
+                "Net.ProxyChangeListener.RegistrationTime", timer.getElapsedMicros());
     }
 
     private void unregisterBroadcastReceiver() {
