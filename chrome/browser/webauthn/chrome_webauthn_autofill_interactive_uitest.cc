@@ -239,7 +239,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
             browser()->profile());
     identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
-        "test@gmail.com", signin::ConsentLevel::kSync);
+        "test@gmail.com", signin::ConsentLevel::kSignin);
 
     delegate_observer_ = std::make_unique<DelegateObserver>(this);
     ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(
