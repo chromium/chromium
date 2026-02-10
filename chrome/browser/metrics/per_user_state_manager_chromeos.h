@@ -57,8 +57,8 @@ namespace metrics {
 // simplifying the code by using a single class to manage both device owner
 // consent and secondary user consent.
 class PerUserStateManagerChromeOS
-    : public user_manager::UserManager::UserSessionStateObserver,
-      public user_manager::UserManager::Observer,
+    : public user_manager::UserManager::Observer,
+      public user_manager::UserManager::UserSessionStateObserver,
       public ash::SessionTerminationManager::Observer {
  public:
   // Callback to handle changes in user metrics consent.
@@ -291,6 +291,13 @@ class PerUserStateManagerChromeOS
 
   // Task runner. Used to persist state to daemon-store.
   scoped_refptr<base::SequencedTaskRunner> task_runner_ = nullptr;
+
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      user_manager_observation_{this};
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::UserSessionStateObserver>
+      user_session_state_observation_{this};
 
   base::WeakPtrFactory<PerUserStateManagerChromeOS> weak_ptr_factory_{this};
 };

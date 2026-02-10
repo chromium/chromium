@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/unsent_log_store_metrics_impl.h"
@@ -117,8 +118,8 @@ PerUserStateManagerChromeOS::PerUserStateManagerChromeOS(
       local_state_(local_state),
       storage_limits_(storage_limits),
       signing_key_(signing_key) {
-  user_manager_->AddSessionStateObserver(this);
-  user_manager_->AddObserver(this);
+  user_manager_observation_.Observe(user_manager_);
+  user_session_state_observation_.Observe(user_manager_);
   // This could be null in very narrow cases during early browser startup
   // (PreMainMessageLoopRun) or shutdown (destruction of
   // ChromeMainBrowserPartsAsh).
@@ -146,10 +147,7 @@ PerUserStateManagerChromeOS::PerUserStateManagerChromeOS(
   DCHECK(user_manager::UserManager::IsInitialized());
 }
 
-PerUserStateManagerChromeOS::~PerUserStateManagerChromeOS() {
-  user_manager_->RemoveObserver(this);
-  user_manager_->RemoveSessionStateObserver(this);
-}
+PerUserStateManagerChromeOS::~PerUserStateManagerChromeOS() = default;
 
 // static
 void PerUserStateManagerChromeOS::RegisterPrefs(PrefRegistrySimple* registry) {
