@@ -56,6 +56,9 @@ void ServiceWorkerDevToolsManager::AddAllAgentHosts(
     ServiceWorkerDevToolsAgentHost::List* result) {
   for (auto& it : live_hosts_)
     result->push_back(it.second.get());
+  for (auto& it : new_installing_hosts_) {
+    result->push_back(it.get());
+  }
 }
 
 void ServiceWorkerDevToolsManager::AddAllAgentHostsForBrowserContext(
