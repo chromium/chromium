@@ -112,6 +112,10 @@ class ComposeboxQueryController
   lens::AddedInputs CreateAddedInputs(
       const std::vector<base::UnguessableToken>& file_tokens);
 
+  // Returns the string representation of the mime type, for use in calculating
+  // the AddedInputs proto.
+  static std::optional<std::string> MimeTypeToString(lens::MimeType mime_type);
+
   // Enum for testing to track the state of the query controller.
   enum class QueryControllerState {
     // The initial state, before InitializeIfNeeded() is called.
