@@ -33,12 +33,6 @@ WebAppNavigationCapturingBrowserTestBase::
   parameters["link_capturing_state"] = "reimpl_default_on";
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       features::kPwaNavigationCapturing, parameters);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/366547977): CrOS doesn't use our nav capturing
-  // implementation.
-  NOTREACHED();
-#endif
 }
 
 WebAppNavigationCapturingBrowserTestBase::
