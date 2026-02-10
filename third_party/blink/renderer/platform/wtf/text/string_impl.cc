@@ -711,34 +711,6 @@ scoped_refptr<StringImpl> StringImpl::SimplifyWhiteSpace(
   });
 }
 
-wtf_size_t StringImpl::HexToUIntStrict(bool* ok) {
-  constexpr auto kStrict = NumberParsingOptions::Strict();
-  if (Is8Bit()) {
-    return HexCharactersToUInt(Span8(), kStrict, ok);
-  }
-  return HexCharactersToUInt(Span16(), kStrict, ok);
-}
-
-uint64_t StringImpl::HexToUInt64Strict(bool* ok) {
-  constexpr auto kStrict = NumberParsingOptions::Strict();
-  if (Is8Bit()) {
-    return HexCharactersToUInt64(Span8(), kStrict, ok);
-  }
-  return HexCharactersToUInt64(Span16(), kStrict, ok);
-}
-
-int64_t StringImpl::ToInt64(NumberParsingOptions options, bool* ok) const {
-  if (Is8Bit())
-    return CharactersToInt64(Span8(), options, ok);
-  return CharactersToInt64(Span16(), options, ok);
-}
-
-uint64_t StringImpl::ToUInt64(NumberParsingOptions options, bool* ok) const {
-  if (Is8Bit())
-    return CharactersToUInt64(Span8(), options, ok);
-  return CharactersToUInt64(Span16(), options, ok);
-}
-
 // Table is based on ftp://ftp.unicode.org/Public/UNIDATA/CaseFolding.txt
 const std::array<UChar, 256> StringImpl::kLatin1CaseFoldTable = {
     0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 0x0008,

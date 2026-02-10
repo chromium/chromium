@@ -88,6 +88,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -3973,10 +3974,10 @@ String CombineAuctionNonce(base::Uuid base_auction_nonce,
                            uint32_t auction_nonce_counter) {
   CHECK(base_auction_nonce.is_valid());
   String base_nonce_string(base_auction_nonce.AsLowercaseString());
-  bool ok;
-  uint32_t base_nonce_suffix = base_nonce_string.Right(6).HexToUIntStrict(&ok);
-  CHECK(ok) << "Unexpected: invalid base auction nonce.";
-  uint32_t nonce_suffix = base_nonce_suffix + auction_nonce_counter;
+  auto base_nonce_suffix = HexStringToUint(base_nonce_string.Right(6),
+                                           NumberParsingOptions::Strict());
+  CHECK(base_nonce_suffix) << "Unexpected: invalid base auction nonce.";
+  uint32_t nonce_suffix = *base_nonce_suffix + auction_nonce_counter;
 
   StringBuilder nonce_builder;
   nonce_builder.Append(base_nonce_string.Left(30));

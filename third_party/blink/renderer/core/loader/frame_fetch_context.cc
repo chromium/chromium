@@ -132,6 +132,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -581,12 +582,10 @@ void FrameFetchContext::CheckGuardrailsPolicyForRequest(
       const AtomicString& content_length_header =
           response.HttpHeaderField(http_names::kLowerContentLength);
       if (!content_length_header.empty()) {
-        bool conversion_ok = false;
-        int64_t size = content_length_header.Impl()->ToInt64(
-            NumberParsingOptions(), &conversion_ok);
-        if (conversion_ok) {
+        auto size = StringToInt64(content_length_header, {});
+        if (size) {
           CheckGuardrailsPolicyForAssetSize(GuardrailPolicyAssetType::kImage,
-                                            size, url);
+                                            *size, url);
         }
       }
     }

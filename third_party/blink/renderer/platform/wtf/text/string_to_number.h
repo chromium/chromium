@@ -142,11 +142,28 @@ WTF_EXPORT float CharactersToFloat(base::span<const LChar>,
 WTF_EXPORT float CharactersToFloat(base::span<const UChar>,
                                    size_t& parsed_length);
 
+// Parse `input` as a signed decimal number.
+// If the input string is not acceptable, std::nullopt is returned.
+WTF_EXPORT std::optional<int64_t> StringToInt64(const StringView& input,
+                                                NumberParsingOptions);
+// Parse `input` as an unsigned decimal number.
+// If the input string is not acceptable, std::nullopt is returned.
+WTF_EXPORT std::optional<uint64_t> StringToUint64(const StringView& input,
+                                                  NumberParsingOptions);
+// Parse `input` as a hexadecimal number.
+// If the input string is not acceptable, std::nullopt is returned.
+WTF_EXPORT std::optional<uint32_t> HexStringToUint(const StringView& input,
+                                                   NumberParsingOptions);
+// Parse `input` as a hexadecimal number.
+// If the input string is not acceptable, std::nullopt is returned.
+WTF_EXPORT std::optional<uint64_t> HexStringToUint64(const StringView& input,
+                                                     NumberParsingOptions);
+
 // The following StringToFooStrict functions accept:
 //  - leading '+'
 //  - leading Unicode whitespace
 //  - trailing Unicode whitespace
-//  - no "-0" (StringToUintStrict and StringToUint64Strict)
+//  - no "-0" (only for StringToUintStrict)
 //  - no out-of-range numbers which the resultant type can't represent
 //
 // If the input string is not acceptable, std::nullopt is returned.

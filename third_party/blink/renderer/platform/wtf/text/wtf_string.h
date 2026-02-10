@@ -458,28 +458,6 @@ class WTF_EXPORT String {
                 unsigned start = 0,
                 unsigned length = UINT_MAX) const;
 
-  // Convert the string into a number.
-
-  // The following ToFooStrict functions accept:
-  //  - leading '+'
-  //  - leading Unicode whitespace
-  //  - trailing Unicode whitespace
-  //  - no "-0" (ToUInt64Strict)
-  //  - no out-of-range numbers which the resultant type can't represent
-  //
-  // If the input string is not acceptable, 0 is returned and |*ok| becomes
-  // |false|.
-  //
-  // We can use these functions to implement a Web Platform feature only if the
-  // input string is already valid according to the specification of the
-  // feature.
-  unsigned HexToUIntStrict(bool* ok) const;
-  uint64_t HexToUInt64Strict(bool* ok) const;
-  int64_t ToInt64Strict(bool* ok = nullptr) const;
-  uint64_t ToUInt64Strict(bool* ok = nullptr) const;
-
-  // See string_to_number.h for float/double parsing.
-
 #ifdef __OBJC__
   String(NSString*);
 

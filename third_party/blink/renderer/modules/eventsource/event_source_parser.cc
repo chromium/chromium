@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/modules/eventsource/event_source.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -110,10 +111,11 @@ void EventSourceParser::ParseLine() {
     if (field_value.empty()) {
       client_->OnReconnectionTimeSet(EventSource::kDefaultReconnectDelay);
     } else if (has_only_digits) {
-      bool ok;
-      auto reconnection_time = FromUTF8(field_value).ToUInt64Strict(&ok);
-      if (ok)
-        client_->OnReconnectionTimeSet(reconnection_time);
+      auto reconnection_time =
+          StringToUint64(FromUTF8(field_value), NumberParsingOptions::Strict());
+      if (reconnection_time) {
+        client_->OnReconnectionTimeSet(*reconnection_time);
+      }
     }
     return;
   }

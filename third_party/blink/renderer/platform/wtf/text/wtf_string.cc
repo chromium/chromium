@@ -277,42 +277,6 @@ String String::NumberToStringFixedWidth(double number,
   return String(converter.ToStringWithFixedWidth(number, decimal_places));
 }
 
-unsigned String::HexToUIntStrict(bool* ok) const {
-  if (!impl_) {
-    if (ok)
-      *ok = false;
-    return 0;
-  }
-  return impl_->HexToUIntStrict(ok);
-}
-
-uint64_t String::HexToUInt64Strict(bool* ok) const {
-  if (!impl_) {
-    if (ok)
-      *ok = false;
-    return 0;
-  }
-  return impl_->HexToUInt64Strict(ok);
-}
-
-int64_t String::ToInt64Strict(bool* ok) const {
-  if (!impl_) {
-    if (ok)
-      *ok = false;
-    return 0;
-  }
-  return impl_->ToInt64(NumberParsingOptions::Strict(), ok);
-}
-
-uint64_t String::ToUInt64Strict(bool* ok) const {
-  if (!impl_) {
-    if (ok)
-      *ok = false;
-    return 0;
-  }
-  return impl_->ToUInt64(NumberParsingOptions::Strict(), ok);
-}
-
 void String::Split(const StringView& separator,
                    bool allow_empty_entries,
                    Vector<String>& result) const {

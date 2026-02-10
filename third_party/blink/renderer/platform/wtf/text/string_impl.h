@@ -426,12 +426,6 @@ class WTF_EXPORT StringImpl {
 
   bool ContainsOnlyWhitespaceOrEmpty();
 
-  int64_t ToInt64(NumberParsingOptions, bool* ok) const;
-  uint64_t ToUInt64(NumberParsingOptions, bool* ok) const;
-
-  wtf_size_t HexToUIntStrict(bool* ok);
-  uint64_t HexToUInt64Strict(bool* ok);
-
   scoped_refptr<StringImpl> LowerASCII();
   scoped_refptr<StringImpl> UpperASCII();
 

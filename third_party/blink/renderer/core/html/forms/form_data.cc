@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
 #include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -412,13 +413,13 @@ void FormData::AppendToControlState(FormControlState& state) const {
 FormData* FormData::CreateFromControlState(ExecutionContext& execution_context,
                                            const FormControlState& state,
                                            wtf_size_t& index) {
-  bool ok = false;
-  uint64_t length = state[index].ToUInt64Strict(&ok);
-  if (!ok)
+  auto length = StringToUint64(state[index], NumberParsingOptions::Strict());
+  if (!length) {
     return nullptr;
+  }
   auto* form_data = MakeGarbageCollected<FormData>();
   ++index;
-  for (uint64_t j = 0; j < length; ++j) {
+  for (uint64_t j = 0; j < *length; ++j) {
     // Need at least three items.
     if (index + 2 >= state.ValueSize())
       return nullptr;

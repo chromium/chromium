@@ -319,6 +319,42 @@ float CharactersToFloat(base::span<const UChar> data, size_t& parsed_length) {
       ToDoubleType<UChar, kAllowTrailingJunk>(data, nullptr, parsed_length));
 }
 
+std::optional<int64_t> StringToInt64(const StringView& input,
+                                     NumberParsingOptions options) {
+  bool ok = false;
+  int64_t value = input.Is8Bit()
+                      ? CharactersToInt64(input.Span8(), options, &ok)
+                      : CharactersToInt64(input.Span16(), options, &ok);
+  return ok ? std::optional<int64_t>(value) : std::nullopt;
+}
+
+std::optional<uint64_t> StringToUint64(const StringView& input,
+                                       NumberParsingOptions options) {
+  bool ok = false;
+  uint64_t value = input.Is8Bit()
+                       ? CharactersToUInt64(input.Span8(), options, &ok)
+                       : CharactersToUInt64(input.Span16(), options, &ok);
+  return ok ? std::optional<uint64_t>(value) : std::nullopt;
+}
+
+std::optional<uint32_t> HexStringToUint(const StringView& input,
+                                        NumberParsingOptions options) {
+  bool ok = false;
+  uint32_t value = input.Is8Bit()
+                       ? HexCharactersToUInt(input.Span8(), options, &ok)
+                       : HexCharactersToUInt(input.Span16(), options, &ok);
+  return ok ? std::optional<uint32_t>(value) : std::nullopt;
+}
+
+std::optional<uint64_t> HexStringToUint64(const StringView& input,
+                                          NumberParsingOptions options) {
+  bool ok = false;
+  uint64_t value = input.Is8Bit()
+                       ? HexCharactersToUInt64(input.Span8(), options, &ok)
+                       : HexCharactersToUInt64(input.Span16(), options, &ok);
+  return ok ? std::optional<uint64_t>(value) : std::nullopt;
+}
+
 std::optional<int32_t> StringToIntStrict(const StringView& input) {
   bool ok = false;
   constexpr NumberParsingOptions kOption = NumberParsingOptions::Strict();
