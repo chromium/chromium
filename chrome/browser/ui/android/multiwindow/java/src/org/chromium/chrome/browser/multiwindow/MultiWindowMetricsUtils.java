@@ -179,7 +179,9 @@ public class MultiWindowMetricsUtils {
         long modeDurationMs = prefs.readLong(modeDurationKey, 0);
         String histogramVariant = getWindowingModeHistogramName(mode);
         if (modeDurationMs > 0) {
-            assert modeDurationMs <= CYCLE_LENGTH_MS;
+            if (modeDurationMs > CYCLE_LENGTH_MS) {
+                return;
+            }
             RecordHistogram.recordLongTimesHistogram(
                     "Android.MultiWindowMode." + histogramVariant + ".Duration", modeDurationMs);
         }
