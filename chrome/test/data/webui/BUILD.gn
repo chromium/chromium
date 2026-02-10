@@ -37,6 +37,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//components/commerce/core:commerce_constants",
     "//components/webui/chrome_urls/",
+    "//ui/compositor",
   ]
 
   if (!is_android) {
