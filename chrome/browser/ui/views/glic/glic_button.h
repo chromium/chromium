@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"
-#include "chrome/browser/ui/views/tabs/glic/glic_actor_constants.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
@@ -72,6 +71,9 @@ inline constexpr ui::ColorId kForeground =
     kColorNewTabButtonForegroundFrameActive;
 inline constexpr ui::ColorId kForegroundOnAltBackground =
     ui::kColorSysOnSurface;
+
+inline constexpr int kSplitButtonFlatEdgeRadius = 2;
+inline constexpr int kSplitButtonRoundedEdgeRadius = 10;
 
 inline constexpr int kCollapsedWidth = 41;
 

@@ -4,10 +4,11 @@
 
 #include "chrome/browser/glic/browser_ui/scoped_glic_button_indicator.h"
 
-#include "chrome/browser/ui/views/tabs/glic/glic_button.h"
+#include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 
 namespace glic {
-ScopedGlicButtonIndicator::ScopedGlicButtonIndicator(GlicButton* glic_button)
+ScopedGlicButtonIndicator::ScopedGlicButtonIndicator(
+    TabStripGlicButton* glic_button)
     : glic_button_(glic_button) {
   glic_button_->SetDropToAttachIndicator(true);
 }

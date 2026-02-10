@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/views/tabs/glic/glic_button.h"
+#include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 #include "chrome/common/chrome_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
@@ -66,8 +66,8 @@ void GlicAndActorButtonsContainer::Layout(PassKey) {
   ink_drop_container_view_->SetBoundsRect(bounds);
 }
 
-glic::GlicButton* GlicAndActorButtonsContainer::InsertGlicButton(
-    glic::GlicButton* glic_button) {
+glic::TabStripGlicButton* GlicAndActorButtonsContainer::InsertGlicButton(
+    glic::TabStripGlicButton* glic_button) {
   // Insert after ink drop container.
   return AddChildViewAt(glic_button, 1ul);
 }

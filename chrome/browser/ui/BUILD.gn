@@ -5473,10 +5473,12 @@ static_library("ui") {
         "//chrome/browser/glic/browser_ui:glow_controller",
         "//chrome/browser/glic/browser_ui:glow_controller_impl",
         "//chrome/browser/glic/browser_ui:glow_impl",
+        "//chrome/browser/ui/views/glic",
         "//chrome/browser/ui/views/tabs/glic",
         "//chrome/browser/ui/views/tabs/glic:impl",
       ]
       allow_circular_includes_from += [
+        "//chrome/browser/ui/views/glic",
         "//chrome/browser/ui/views/tabs/glic",
         "//chrome/browser/ui/views/tabs/glic:impl",
         "//chrome/browser/glic/browser_ui",

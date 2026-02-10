@@ -32,7 +32,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/glic/glic_actor_task_icon.h"
-#include "chrome/browser/ui/views/tabs/glic/glic_button.h"
+#include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -149,8 +149,9 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  glic::GlicButton* GlicNudgeButton() {
-    return tab_strip_action_container()->GetGlicButton();
+  glic::TabStripGlicButton* GlicNudgeButton() {
+    return static_cast<glic::TabStripGlicButton*>(
+        tab_strip_action_container()->GetGlicButton());
   }
 
   glic::GlicActorTaskIcon* GlicActorTaskIcon() {
@@ -354,17 +355,13 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   GetExpansionAnimation(GlicNudgeButton())->Reset(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
-  EXPECT_EQ(1, tab_strip_action_container()
-                   ->GetGlicButton()
-                   ->width_factor_for_testing());
+  EXPECT_EQ(1, GlicNudgeButton()->width_factor_for_testing());
   SetLockedExpansionMode(LockedExpansionMode::kWillHide, GlicNudgeButton());
 
   OnButtonDismissed(GlicNudgeButton());
 
   GetExpansionAnimation(GlicNudgeButton())->Reset(0);
-  EXPECT_EQ(0, tab_strip_action_container()
-                   ->GetGlicButton()
-                   ->width_factor_for_testing());
+  EXPECT_EQ(0, GlicNudgeButton()->width_factor_for_testing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
@@ -373,15 +370,11 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   ShowTabStripNudgeButton(GlicNudgeButton());
   GetExpansionAnimation(GlicNudgeButton())->Reset(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
-  EXPECT_EQ(1, tab_strip_action_container()
-                   ->GetGlicButton()
-                   ->width_factor_for_testing());
+  EXPECT_EQ(1, GlicNudgeButton()->width_factor_for_testing());
 
   // Show again. Since we're already showing, the button should remain expanded.
   ShowTabStripNudgeButton(GlicNudgeButton());
-  EXPECT_EQ(1, tab_strip_action_container()
-                   ->GetGlicButton()
-                   ->width_factor_for_testing());
+  EXPECT_EQ(1, GlicNudgeButton()->width_factor_for_testing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
@@ -390,23 +383,17 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   ShowTabStripNudgeButton(GlicNudgeButton());
   GetExpansionAnimation(GlicNudgeButton())->Reset(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
-  EXPECT_EQ(1, tab_strip_action_container()
-                   ->GetGlicButton()
-                   ->width_factor_for_testing());
+  EXPECT_EQ(1, GlicNudgeButton()->width_factor_for_testing());
 
   // Collapse.
   SetLockedExpansionMode(LockedExpansionMode::kWillHide, GlicNudgeButton());
   OnButtonDismissed(GlicNudgeButton());
   GetExpansionAnimation(GlicNudgeButton())->Reset(0);
-  EXPECT_EQ(0, tab_strip_action_container()
-                   ->GetGlicButton()
-                   ->width_factor_for_testing());
+  EXPECT_EQ(0, GlicNudgeButton()->width_factor_for_testing());
 
   // Collapse again. The button should remain collapsed.
   OnButtonDismissed(GlicNudgeButton());
-  EXPECT_EQ(0, tab_strip_action_container()
-                   ->GetGlicButton()
-                   ->width_factor_for_testing());
+  EXPECT_EQ(0, GlicNudgeButton()->width_factor_for_testing());
 }
 
 // TODO(crbug.com/451697169): Fix this test for Windows and Linux.
@@ -423,9 +410,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        MAYBE_GlicLabelEnablementFollowsWindowActivation) {
   tab_strip_action_container()->GetWidget()->Activate();
-  EXPECT_TRUE(tab_strip_action_container()
-                  ->GetGlicButton()
-                  ->GetLabelEnabledForTesting());
+  EXPECT_TRUE(GlicNudgeButton()->GetLabelEnabledForTesting());
 
   // Create/activate a different widget (just calling Deactivate() on the
   // browser window isn't enough, since it will have no effect if there isn't
@@ -434,15 +419,11 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
       views::Widget::InitParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                                 views::Widget::InitParams::TYPE_WINDOW));
   widget_2->Activate();
-  EXPECT_FALSE(tab_strip_action_container()
-                   ->GetGlicButton()
-                   ->GetLabelEnabledForTesting());
+  EXPECT_FALSE(GlicNudgeButton()->GetLabelEnabledForTesting());
 
   // Activate the browser. The button label should be enabled again.
   tab_strip_action_container()->GetWidget()->Activate();
-  EXPECT_TRUE(tab_strip_action_container()
-                  ->GetGlicButton()
-                  ->GetLabelEnabledForTesting());
+  EXPECT_TRUE(GlicNudgeButton()->GetLabelEnabledForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,

@@ -32,8 +32,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
-#include "chrome/browser/ui/views/tabs/glic/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -70,7 +70,7 @@ using policy::PolicyTest;
 
 namespace glic {
 
-class GlicButton;
+class GlicButtonInterface;
 
 namespace {
 
@@ -246,8 +246,8 @@ class GlicPolicyTest : public PolicyTest {
     profile_2_ = nullptr;
   }
 
-  GlicButton* GetGlicButtonForBrowser(Browser* browser) {
-    return glic::GlicButton::FromBrowser(browser);
+  views::LabelButton* GetGlicButtonForBrowser(Browser* browser) {
+    return glic::GlicButtonInterface::FromBrowser(browser);
   }
 
   void SetGlicPolicy(

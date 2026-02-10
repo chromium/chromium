@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_BUTTON_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_BUTTON_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLIC_TAB_STRIP_GLIC_BUTTON_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_TAB_STRIP_GLIC_BUTTON_H_
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
+#include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -24,27 +25,27 @@ class Profile;
 
 namespace glic {
 
-// GlicButton should leverage the look and feel of the existing
+// TabStripGlicButton should leverage the look and feel of the existing
 // TabSearchButton for sizing and appropriate theming.
 
-class GlicButton : public TabStripNudgeButton,
-                   public views::ContextMenuController,
-                   public ui::SimpleMenuModel::Delegate {
-  METADATA_HEADER(GlicButton, TabStripNudgeButton)
+class TabStripGlicButton : public TabStripNudgeButton,
+                           public GlicButtonInterface,
+                           public views::ContextMenuController,
+                           public ui::SimpleMenuModel::Delegate {
+  METADATA_HEADER(TabStripGlicButton, TabStripNudgeButton)
 
  public:
-  explicit GlicButton(BrowserWindowInterface* browser_window_interface,
-                      PressedCallback pressed_callback,
-                      PressedCallback close_pressed_callback,
-                      base::RepeatingClosure hovered_callback,
-                      base::RepeatingClosure mouse_down_callback,
-                      base::RepeatingClosure expansion_animation_done_callback,
-                      const std::u16string& tooltip);
-  GlicButton(const GlicButton&) = delete;
-  GlicButton& operator=(const GlicButton&) = delete;
-  ~GlicButton() override;
-
-  static GlicButton* FromBrowser(BrowserWindowInterface* browser);
+  explicit TabStripGlicButton(
+      BrowserWindowInterface* browser_window_interface,
+      PressedCallback pressed_callback,
+      PressedCallback close_pressed_callback,
+      base::RepeatingClosure hovered_callback,
+      base::RepeatingClosure mouse_down_callback,
+      base::RepeatingClosure expansion_animation_done_callback,
+      const std::u16string& tooltip);
+  TabStripGlicButton(const TabStripGlicButton&) = delete;
+  TabStripGlicButton& operator=(const TabStripGlicButton&) = delete;
+  ~TabStripGlicButton() override;
 
   // These states represent the button's width and label contents.
   enum class WidthState {
@@ -228,9 +229,9 @@ class GlicButton : public TabStripNudgeButton,
   base::CallbackListSubscription window_did_become_active_subscription_;
   base::CallbackListSubscription window_did_become_inactive_subscription_;
 
-  base::WeakPtrFactory<GlicButton> weak_ptr_factory_{this};
+  base::WeakPtrFactory<TabStripGlicButton> weak_ptr_factory_{this};
 };
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_BUTTON_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_GLIC_TAB_STRIP_GLIC_BUTTON_H_

@@ -24,9 +24,9 @@
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/glic_nudge_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
-#include "chrome/browser/ui/views/tabs/glic/glic_button.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
+#include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -123,8 +123,9 @@ class ContextualCueingHelperBrowserTest
     glic_nudge_controller()->SetDelegate(&nudge_delegate);
   }
 
-  glic::GlicButton* GetGlicButtonForBrowser(Browser* browser) {
-    return glic::GlicButton::FromBrowser(browser);
+  glic::TabStripGlicButton* GetGlicButtonForBrowser(Browser* browser) {
+    return static_cast<glic::TabStripGlicButton*>(
+        glic::TabStripGlicButton::FromBrowser(browser));
   }
 
  protected:
@@ -596,7 +597,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest, NudgeHideAfterUnpin) {
   SetUpEnabledHints();
 
   PrefService* const pref_service = browser()->profile()->GetPrefs();
-  glic::GlicButton* const glic_button = GetGlicButtonForBrowser(browser());
+  glic::TabStripGlicButton* const glic_button =
+      GetGlicButtonForBrowser(browser());
   ASSERT_TRUE(glic_button->GetVisible());
 
   // Trigger the nudge to show
@@ -621,7 +623,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   SetUpEnabledHints();
 
   PrefService* const pref_service = browser()->profile()->GetPrefs();
-  glic::GlicButton* const glic_button = GetGlicButtonForBrowser(browser());
+  glic::TabStripGlicButton* const glic_button =
+      GetGlicButtonForBrowser(browser());
   EXPECT_TRUE(glic_button->GetVisible());
 
   // Unpin the glic button

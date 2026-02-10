@@ -391,7 +391,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/ui/views/tabs/glic/glic_button.h"
+#include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -1294,7 +1294,7 @@ TabStripRegionView* BrowserView::tab_strip_view() const {
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
-glic::GlicButton* BrowserView::GetGlicButton() {
+views::LabelButton* BrowserView::GetGlicButton() {
   auto* controller = tabs::VerticalTabStripStateController::From(browser_);
   if (vertical_tab_strip_region_view_ && controller &&
       controller->ShouldDisplayVerticalTabs()) {

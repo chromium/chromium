@@ -9,20 +9,20 @@
 
 namespace glic {
 
-class GlicButton;
+class TabStripGlicButton;
 
 // Helper class to temporarily set the indicator status of a glic button.
 class ScopedGlicButtonIndicator {
  public:
-  explicit ScopedGlicButtonIndicator(GlicButton* glic_button);
+  explicit ScopedGlicButtonIndicator(TabStripGlicButton* glic_button);
   ScopedGlicButtonIndicator(const ScopedGlicButtonIndicator&) = delete;
   ScopedGlicButtonIndicator& operator=(const ScopedGlicButtonIndicator&) =
       delete;
   ~ScopedGlicButtonIndicator();
-  GlicButton* GetGlicButton() { return glic_button_; }
+  TabStripGlicButton* GetGlicButton() { return glic_button_; }
 
  private:
-  raw_ptr<GlicButton> glic_button_;
+  raw_ptr<TabStripGlicButton> glic_button_;
 };
 
 }  // namespace glic

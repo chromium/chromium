@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/glic/glic_button.h"
-
 #include "base/test/run_until.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
@@ -18,7 +16,9 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
@@ -41,8 +41,9 @@ class GlicButtonTest : public InProcessBrowserTest {
   }
 
  protected:
-  glic::GlicButton* glic_button() {
-    return glic::GlicButton::FromBrowser(browser());
+  glic::TabStripGlicButton* glic_button() {
+    return static_cast<glic::TabStripGlicButton*>(
+        glic::GlicButtonInterface::FromBrowser(browser()));
   }
 
   GlicKeyedService* glic_service() {

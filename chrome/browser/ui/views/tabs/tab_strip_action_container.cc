@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/glic/glic_actor_task_icon.h"
-#include "chrome/browser/ui/views/tabs/glic/glic_button.h"
+#include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -335,14 +335,15 @@ TabStripActionContainer::~TabStripActionContainer() {
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
-std::unique_ptr<glic::GlicButton> TabStripActionContainer::CreateGlicButton() {
+std::unique_ptr<glic::TabStripGlicButton>
+TabStripActionContainer::CreateGlicButton() {
   glic::GlicKeyedService* service =
       glic::GlicKeyedService::Get(browser_window_interface_->GetProfile());
   std::u16string tooltip_text = l10n_util::GetStringUTF16(
       service->IsWindowOrFreShowing() ? IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE
                                       : IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP);
-  std::unique_ptr<glic::GlicButton> glic_button =
-      std::make_unique<glic::GlicButton>(
+  std::unique_ptr<glic::TabStripGlicButton> glic_button =
+      std::make_unique<glic::TabStripGlicButton>(
           browser_window_interface_,
           base::BindRepeating(&TabStripActionContainer::OnGlicButtonClicked,
                               base::Unretained(this)),

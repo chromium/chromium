@@ -4053,6 +4053,7 @@ if (!is_android) {
         "//chrome/browser/glic/test_support",
         "//chrome/browser/legion",
         "//chrome/browser/ui/omnibox",
+        "//chrome/browser/ui/views/glic",
         "//chrome/browser/ui/views/tabs/glic",
         "//chrome/renderer/actor:browser_tests",
         "//chrome/renderer/webui_browser:browser_tests",
@@ -7591,7 +7592,10 @@ test("unit_tests") {
       "//chrome/browser/glic/test_support",
     ]
     if (!is_android) {
-      deps += [ "//chrome/browser/ui/views/tabs/glic" ]
+      deps += [
+        "//chrome/browser/ui/views/glic",
+        "//chrome/browser/ui/views/tabs/glic",
+      ]
     }
   }
 
@@ -12459,6 +12463,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/glic:interactive_ui_tests",
         "//chrome/browser/glic/test_support",
         "//chrome/browser/ui/tabs:glic",
+        "//chrome/browser/ui/views/glic",
         "//chrome/browser/ui/views/tabs/glic",
       ]
       if (enterprise_cloud_content_analysis) {

@@ -48,11 +48,12 @@
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/views/tabs/glic/glic_button.h"
+#include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/tabs/window_finder.h"
 #include "chrome/common/chrome_features.h"
@@ -70,6 +71,7 @@
 #include "ui/events/event_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -836,7 +838,7 @@ void GlicWindowControllerImpl::SidePanelShown(BrowserWindowInterface* browser) {
 
   // Trigger custom event for testing.
   views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-      kGlicWidgetAttached, GlicButton::FromBrowser(browser));
+      kGlicWidgetAttached, GlicButtonInterface::FromBrowser(browser));
   AfterViewShown();
 }
 
@@ -1119,7 +1121,9 @@ void GlicWindowControllerImpl::HandleGlicButtonIndicator() {
     scoped_glic_button_indicator_.reset();
     return;
   }
-  GlicButton* glic_button = GlicButton::FromBrowser(browser);
+  glic::TabStripGlicButton* glic_button =
+      static_cast<glic::TabStripGlicButton*>(
+          glic::GlicButtonInterface::FromBrowser(browser));
   // If there isn't an existing scoped indicator for this button, create one.
   if (!scoped_glic_button_indicator_ ||
       scoped_glic_button_indicator_->GetGlicButton() != glic_button) {
@@ -1161,9 +1165,10 @@ BrowserWindowInterface* GlicWindowControllerImpl::FindBrowserForAttachment() {
         CHECK(tab_strip_view);
 
         // If the profile is enabled, the Glic button must be available.
-        glic::GlicButton* glic_button =
-            BrowserElementsViews::From(browser)->GetViewAs<glic::GlicButton>(
-                kGlicButtonElementId);
+        views::LabelButton* glic_button =
+            glic::GlicButtonInterface::FromBrowser(browser);
+        BrowserElementsViews::From(browser)->GetViewAs<views::LabelButton>(
+            kGlicButtonElementId);
         CHECK(glic_button);
 
         // Define attachment zone as the right of the tab strip. It either is

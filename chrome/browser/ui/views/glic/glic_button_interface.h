@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_GLIC_GLIC_BUTTON_INTERFACE_H_
 #define CHROME_BROWSER_UI_VIEWS_GLIC_GLIC_BUTTON_INTERFACE_H_
 
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/views/view.h"
 
 class BrowserWindowInterface;
@@ -16,7 +17,15 @@ class LabelButton;
 namespace glic {
 class GlicButtonInterface {
  public:
-  static views::LabelButton* FromBrowser(BrowserWindowInterface* browser);
+  static views::LabelButton* FromBrowser(BrowserWindowInterface* browser) {
+    if (!browser) {
+      return nullptr;
+    }
+
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    CHECK(browser_view);
+    return browser_view->GetGlicButton();
+  }
 };
 }  // namespace glic
 

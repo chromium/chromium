@@ -21,6 +21,7 @@ class BrowserView;
 namespace views {
 class ActionViewController;
 class Button;
+class LabelButton;
 }
 class NewTabButton;
 class TabStripActionContainer;
@@ -29,12 +30,6 @@ class TabStrip;
 class TabStripScrollContainer;
 class TabSearchPositionMetricsLogger;
 class TabStripControlButton;
-
-#if BUILDFLAG(ENABLE_GLIC)
-namespace glic {
-class GlicButton;
-}
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
@@ -103,7 +98,7 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   TabStrip* tab_strip() { return tab_strip_; }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  glic::GlicButton* GetGlicButton();
+  views::LabelButton* GetGlicButton();
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
   // TabStripRegionView:

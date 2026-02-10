@@ -71,10 +71,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/ui/views/tabs/glic/glic_button.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
 namespace {
 
 class FrameGrabHandle : public views::View {
@@ -513,7 +509,7 @@ views::View* HorizontalTabStripRegionView::GetDefaultFocusableChild() {
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
-glic::GlicButton* HorizontalTabStripRegionView::GetGlicButton() {
+views::LabelButton* HorizontalTabStripRegionView::GetGlicButton() {
   return tab_strip_action_container_->GetGlicButton();
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
