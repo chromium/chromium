@@ -5,6 +5,7 @@
 #include "components/sync/base/user_selectable_type.h"
 
 #include "base/containers/enum_set.h"
+#include "build/build_config.h"
 #include "components/sync/base/data_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,10 +70,6 @@ class UserSelectableTypeTest : public ::testing::Test {
     // selectable type or to a new one and remove it from here (unless it's
     // ambiguous).
     data_types.Put(GEMINI_THREAD);
-    // TODO(crbug.com/481713548): In CL #3, map THEMES_IOS to an existing
-    // selectable type or to a new one and remove it from here (unless it's
-    // ambiguous).
-    data_types.Put(THEMES_IOS);
 
     return data_types;
   }

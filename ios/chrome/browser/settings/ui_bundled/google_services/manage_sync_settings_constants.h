@@ -25,6 +25,7 @@ extern NSString* const kSyncAutofillIdentifier;
 extern NSString* const kSyncPreferencesIdentifier;
 extern NSString* const kSyncReadingListIdentifier;
 extern NSString* const kSyncErrorButtonIdentifier;
+extern NSString* const kSyncThemesIdentifier;
 
 // Accessibility identifier for Encryption item.
 extern NSString* const kEncryptionAccessibilityIdentifier;
@@ -75,6 +76,8 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   SettingsDataTypeItemType,
   // kPayments.
   PaymentsDataTypeItemType,
+  // `kThemes`
+  ThemesDataTypeItemType,
   // Item for the header and the footer of the types list.
   TypesListHeaderOrFooterType,
   // ManageAndSignOutSectionIdentifier section.

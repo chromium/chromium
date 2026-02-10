@@ -79,7 +79,8 @@ static const syncer::UserSelectableType kAccountSwitchItems[] = {
     syncer::UserSelectableType::kAutofill,
     syncer::UserSelectableType::kPasswords,
     syncer::UserSelectableType::kPayments,
-    syncer::UserSelectableType::kPreferences};
+    syncer::UserSelectableType::kPreferences,
+    syncer::UserSelectableType::kThemes};
 
 constexpr CGFloat kErrorSymbolPointSize = 22.;
 constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
@@ -787,6 +788,10 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       accessibilityIdentifier = kSyncReadingListIdentifier;
       break;
     case syncer::UserSelectableType::kThemes:
+      itemType = ThemesDataTypeItemType;
+      textStringID = IDS_IOS_SYNC_DATATYPE_IOS_THEME;
+      accessibilityIdentifier = kSyncThemesIdentifier;
+      break;
     case syncer::UserSelectableType::kExtensions:
     case syncer::UserSelectableType::kApps:
     case syncer::UserSelectableType::kSavedTabGroups:
@@ -896,7 +901,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case OpenTabsDataTypeItemType:
     case PasswordsDataTypeItemType:
     case ReadingListDataTypeItemType:
-    case SettingsDataTypeItemType: {
+    case SettingsDataTypeItemType:
+    case ThemesDataTypeItemType: {
       // Don't try to toggle if item is managed.
       DCHECK(syncSwitchItem);
       syncer::UserSelectableType dataType =
@@ -1136,6 +1142,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case TypesListHeaderOrFooterType:
     case AccountErrorMessageItemType:
     case BatchUploadRecommendationItemType:
+    case ThemesDataTypeItemType:
       // Nothing to do.
       break;
   }

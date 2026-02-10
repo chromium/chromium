@@ -495,6 +495,13 @@ TEST_F(SyncPrefsTest,
 
   EXPECT_THAT(sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
               ContainerEq(expected_types));
+
+#if BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
+    EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
+        UserSelectableType::kThemes));
+  }
+#endif
 }
 
 TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
