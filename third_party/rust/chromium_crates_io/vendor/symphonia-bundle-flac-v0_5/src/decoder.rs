@@ -119,6 +119,17 @@ impl FlacDecoder {
         self.buf
             .render_reserved(Some(header.block_num_samples as usize));
 
+        let frame_channels = match header.channel_assignment {
+            ChannelAssignment::Independant(c) => c as usize,
+            ChannelAssignment::LeftSide
+            | ChannelAssignment::MidSide
+            | ChannelAssignment::RightSide => 2,
+        };
+
+        if frame_channels != self.buf.spec().channels.count() {
+            return decode_error("flac: frame channel count does not match stream info");
+        }
+
         // Only Bitstream reading for subframes.
         {
             // Sub-frames don't have any byte-aligned content, so use a BitReader.

@@ -1,0 +1,33 @@
+From 8d0c1d581ca237db714b2bf68164020de42a0fca Mon Sep 17 00:00:00 2001
+From: Jordan Bayles <jophba@chromium.org>
+Date: Wed, 17 Dec 2025 21:16:14 -0800
+Subject: [PATCH] fix fuzzer decoder crash
+
+---
+ .../vendor/symphonia-bundle-flac-v0_5/src/decoder.rs      | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-flac-v0_5/src/decoder.rs b/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-flac-v0_5/src/decoder.rs
+index f0000000..f0000000 100644
+--- a/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-flac-v0_5/src/decoder.rs
++++ b/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-flac-v0_5/src/decoder.rs
+@@ -120,6 +120,17 @@ impl FlacDecoder {
+         self.buf.clear();
+         self.buf.render_reserved(Some(header.block_num_samples as usize));
+ 
++        let frame_channels = match header.channel_assignment {
++            ChannelAssignment::Independant(c) => c as usize,
++            ChannelAssignment::LeftSide
++            | ChannelAssignment::MidSide
++            | ChannelAssignment::RightSide => 2,
++        };
++
++        if frame_channels != self.buf.spec().channels.count() {
++            return decode_error("flac: frame channel count does not match stream info");
++        }
++
+         // Only Bitstream reading for subframes.
+         {
+             // Sub-frames don't have any byte-aligned content, so use a BitReader.
+-- 
+2.50.0.727.gbf7dc18ff4-goog
