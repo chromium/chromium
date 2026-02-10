@@ -404,42 +404,43 @@ void OsDiagnosticsRunDiskReadRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunDnsResolutionRoutineFunction --------------------------------
 
 void OsDiagnosticsRunDnsResolutionRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunDnsResolutionRoutine(GetOnResult());
+  GetService()->RunDnsResolutionRoutine(GetOnResponse());
 }
 
 // OsDiagnosticsRunDnsResolverPresentRoutineFunction ---------------------------
 void OsDiagnosticsRunDnsResolverPresentRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunDnsResolverPresentRoutine(GetOnResult());
+  GetService()->RunDnsResolverPresentRoutine(GetOnResponse());
 }
 
 // OsDiagnosticsRunEmmcLifetimeRoutineFunction ---------------------------
 
 void OsDiagnosticsRunEmmcLifetimeRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunEmmcLifetimeRoutine(GetOnResult());
+  GetService()->RunEmmcLifetimeRoutine(GetOnResponse());
 }
 
 // OsDiagnosticsRunGatewayCanBePingedRoutineFunction ---------------------------
 
 void OsDiagnosticsRunGatewayCanBePingedRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunGatewayCanBePingedRoutine(GetOnResult());
+  GetService()->RunGatewayCanBePingedRoutine(GetOnResponse());
 }
 
 // OsDiagnosticsRunFingerprintAliveRoutineFunction -----------------------------
 
 void OsDiagnosticsRunFingerprintAliveRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunFingerprintAliveRoutine(GetOnResult());
+  GetService()->RunFingerprintAliveRoutine(GetOnResponse());
 }
 
 // OsDiagnosticsRunLanConnectivityRoutineFunction ------------------------------
 
 void OsDiagnosticsRunLanConnectivityRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunLanConnectivityRoutine(GetOnResult());
+  GetService()->RunLanConnectivityRoutine(GetOnResponse());
 }
 
 // OsDiagnosticsRunMemoryRoutineFunction ---------------------------------------
 
 void OsDiagnosticsRunMemoryRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunMemoryRoutine(GetOnResult());
+  GetService()->RunMemoryRoutine(/*max_testing_mem_kib=*/std::nullopt,
+                                 GetOnResponse());
 }
 
 // OsDiagnosticsRunNvmeSelfTestRoutineFunction ---------------------------------
@@ -459,13 +460,13 @@ void OsDiagnosticsRunNvmeSelfTestRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunSensitiveSensorRoutineFunction -----------------------------
 
 void OsDiagnosticsRunSensitiveSensorRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunSensitiveSensorRoutine(GetOnResult());
+  GetService()->RunSensitiveSensorRoutine(GetOnResponse());
 }
 
 // OsDiagnosticsRunSignalStrengthRoutineFunction -------------------------------
 
 void OsDiagnosticsRunSignalStrengthRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunSignalStrengthRoutine(GetOnResult());
+  GetService()->RunSignalStrengthRoutine(GetOnResponse());
 }
 
 // OsDiagnosticsRunSmartctlCheckRoutineFunction --------------------------------
@@ -490,7 +491,7 @@ void OsDiagnosticsRunSmartctlCheckRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunUfsLifetimeRoutineFunction -------------------------------
 
 void OsDiagnosticsRunUfsLifetimeRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunUfsLifetimeRoutine(GetOnResult());
+  GetService()->RunUfsLifetimeRoutine(GetOnResponse());
 }
 
 // OsDiagnosticsRunPowerButtonRoutineFunction -----------------------------
@@ -508,13 +509,13 @@ void OsDiagnosticsRunPowerButtonRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunAudioDriverRoutineFunction -------------------------------
 
 void OsDiagnosticsRunAudioDriverRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunAudioDriverRoutine(GetOnResult());
+  GetService()->RunAudioDriverRoutine(GetOnResponse());
 }
 
 // OsDiagnosticsRunFanRoutineFunction -------------------------------
 
 void OsDiagnosticsRunFanRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunFanRoutine(GetOnResult());
+  GetService()->RunFanRoutine(GetOnResponse());
 }
 
 // OsDiagnosticsCreateRoutineFunction ------------------------------------

@@ -60,7 +60,6 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
       crosapi::mojom::DiagnosticsAcPowerStatusEnum expected_status,
       const std::optional<std::string>& expected_power_type,
       RunAcPowerRoutineCallback callback) override;
-  void RunAudioDriverRoutine(RunAudioDriverRoutineCallback callback) override;
   void RunBatteryChargeRoutine(
       uint32_t length_seconds,
       uint32_t minimum_charge_percent_required,
@@ -84,35 +83,17 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
       uint32_t length_seconds,
       uint32_t file_size_mb,
       RunDiskReadRoutineCallback callback) override;
-  void RunDnsResolutionRoutine(
-      RunDnsResolutionRoutineCallback callback) override;
-  void RunDnsResolverPresentRoutine(
-      RunDnsResolverPresentRoutineCallback callback) override;
-  void RunEmmcLifetimeRoutine(RunEmmcLifetimeRoutineCallback callback) override;
-  void RunFanRoutine(RunFanRoutineCallback callback) override;
-  void RunFingerprintAliveRoutine(
-      RunFingerprintAliveRoutineCallback callback) override;
   void RunFloatingPointAccuracyRoutine(
       uint32_t length_seconds,
       RunFloatingPointAccuracyRoutineCallback callback) override;
-  void RunGatewayCanBePingedRoutine(
-      RunGatewayCanBePingedRoutineCallback callback) override;
-  void RunLanConnectivityRoutine(
-      RunLanConnectivityRoutineCallback callback) override;
-  void RunMemoryRoutine(RunMemoryRoutineCallback callback) override;
   void RunNvmeSelfTestRoutine(
       crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum nvme_self_test_type,
       RunNvmeSelfTestRoutineCallback callback) override;
   void RunPrimeSearchRoutine(uint32_t length_seconds,
                              RunPrimeSearchRoutineCallback callback) override;
-  void RunSensitiveSensorRoutine(
-      RunSensitiveSensorRoutineCallback callback) override;
-  void RunSignalStrengthRoutine(
-      RunSignalStrengthRoutineCallback callback) override;
   void RunSmartctlCheckRoutine(
       crosapi::mojom::UInt32ValuePtr percentage_used_threshold,
       RunSmartctlCheckRoutineCallback callback) override;
-  void RunUfsLifetimeRoutine(RunUfsLifetimeRoutineCallback callback) override;
   void RunPowerButtonRoutine(uint32_t timeout_seconds,
                              RunPowerButtonRoutineCallback callback) override;
 

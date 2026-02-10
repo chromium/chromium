@@ -241,125 +241,17 @@ interface DiagnosticsService {
                           uint32 minimum_charge_percent_required)
       => (DiagnosticsRunRoutineResponse response);
 
-  // Requests that the Memory routine is created and started on the platform.
-  // This routine checks that the device's memory is working correctly.
-  // The availability of this routine can be determined by checking that
-  // kMemory is returned by GetAvailableRoutines.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  RunMemoryRoutine@15() => (DiagnosticsRunRoutineResponse response);
-
-  // Requests that the LanConnectivity routine is created and started on the
-  // platform. This routine checks whether the device is connected to a LAN.
-  // The availability of this routine can be determined by checking that
-  // kLanConnectivity is returned by GetAvailableRoutines.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  RunLanConnectivityRoutine@16() => (DiagnosticsRunRoutineResponse response);
-
-  // TODO(b/245293243): Rephrase to express sufficiency instead of necessity.
-  // Requests that the DnsResolution routine is created and started on the
-  // platform. This routine checks whether a DNS resolution can be completed
-  // successfully.
-  // The availability of this routine can be determined by checking that
-  // kDnsResolution is returned by GetAvailableRoutines.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  RunDnsResolutionRoutine@17() => (DiagnosticsRunRoutineResponse response);
-
-  // Requests that the SignalStrength routine is created and started on the
-  // platform. This routine checks whether there is an acceptable signal
-  // strength on wireless networks.
-  // The availability of this routine can be determined by checking that
-  // kSignalStrength is returned by GetAvailableRoutines.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  RunSignalStrengthRoutine@18() => (DiagnosticsRunRoutineResponse response);
-
-  // TODO(b/245293243): Rephrase to express sufficiency instead of necessity.
-  // Requests that the GatewayCanBePinged routine is created and started on the
-  // platform. This routine checks whether the gateway of connected networks is
-  // pingable.
-  // The availability of this routine can be determined by checking that
-  // kGatewayCanBePinged is returned by GetAvailableRoutines.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  RunGatewayCanBePingedRoutine@19() => (DiagnosticsRunRoutineResponse response);
-
-  // TODO(b/245293243): Rephrase to express sufficiency instead of necessity.
-  // Requests that the DnsResolverPresent routine is created and started on the
-  // platform. This routine checks whether a DNS resolver is available to the
-  // browser.
-  // The availability of this routine can be determined by checking that
-  // kDnsResolverPresent is returned by GetAvailableRoutines.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  RunDnsResolverPresentRoutine@20() => (DiagnosticsRunRoutineResponse response);
-
-  // Requests that the SensitiveSensor routine is created and started on the
-  // platform. This routine checks that the device's sensors are working
-  // correctly by monitoring the sensor sample data without user interaction.
-  // This routine only support sensitive sensors including accelerometers,
-  // gyro sensors, gravity sensors and magnetometers.
-  // The availability of this routine can be determined by checking that
-  // kSensitiveSensor is returned by GetAvailableRoutines.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  RunSensitiveSensorRoutine@21()
-      => (DiagnosticsRunRoutineResponse response);
-
-  // Requests that the FingerprintAlive routine is created and started on the
-  // platform. This routine checks whether the fingerprint module is alive or
-  // not. Alive means the sensor is responsive and the firmware version is RW.
-  // The availability of this routine can be determined by checking that
-  // kFingerprintAlive is returned by GetAvailableRoutines.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  RunFingerprintAliveRoutine@22()
-      => (DiagnosticsRunRoutineResponse response);
-
-  // Requests that the EmmcLifetime routine is created and started on the
-  // platform. This routine checks the lifetime of the eMMC drive. The routine
-  // will pass if PRE_EOL_INFO is 0x01 (normal). In addition, the value of
-  // DEVICE_LIFE_TIME_EST_TYP_A and DEVICE_LIFE_TIME_EST_TYP_B will be
-  // included in the output.
-  // The availability of this routine can be determined by checking that
-  // kEmmcLifetime is returned by GetAvailableRoutines.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  RunEmmcLifetimeRoutine@23()
-      => (DiagnosticsRunRoutineResponse response);
-
+  // RunMemoryRoutine@15() was removed.
+  // RunLanConnectivityRoutine@16() was removed.
+  // RunDnsResolutionRoutine@17() was removed.
+  // RunSignalStrengthRoutine@18() was removed.
+  // RunGatewayCanBePingedRoutine@19() was removed.
+  // RunDnsResolverPresentRoutine@20() was removed.
+  // RunSensitiveSensorRoutine@21() was removed.
+  // RunFingerprintAliveRoutine@22 was removed.
+  // RunEmmcLifetimeRoutine@23 was removed.
   // RunBluetoothPowerRoutine@24 was removed.
-
-  // Requests that the UfsLifetime routine is created and started on the
-  // platform. This routine checks the UFS drive's life time.
-  // The availability of this routine can be determined by checking that
-  // kUfsLifetime is returned by GetAvailableRoutines.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  [MinVersion=3] RunUfsLifetimeRoutine@25()
-      => (DiagnosticsRunRoutineResponse response);
+  // RunUfsLifetimeRoutine@25 was removed.
 
   // Requests that the PowerButton routine is created and started on the
   // platform. This routine checks the functionality of the power button. The
@@ -378,18 +270,7 @@ interface DiagnosticsService {
   [MinVersion=4] RunPowerButtonRoutine@26(uint32 timeout_seconds)
       => (DiagnosticsRunRoutineResponse response);
 
-  // Requests that the AudioDriver routine is created and started on the
-  // platform. This routine checks whether there is any errors about the audio
-  // driver.
-  // The availability of this routine can be determined by checking that
-  // kAudioDriver is returned by GetAvailableRoutines.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  [MinVersion=5] RunAudioDriverRoutine@27()
-      => (DiagnosticsRunRoutineResponse response);
-
+  // RunAudioDriverRoutine@27 was removed.
   // RunBluetoothDiscoveryRoutine@28 was removed.
 
   // Requests that the BluetoothScanning routine is created and started on the
@@ -425,16 +306,7 @@ interface DiagnosticsService {
   [MinVersion=7] RunBluetoothPairingRoutine@30(string peripheral_id)
       => (DiagnosticsRunRoutineResponse response);
 
-  // Requests that the Fan routine is created and started on the
-  // platform. This routine checks whether the fan is controllable.
-  // The availability of this routine can be determined by checking that
-  // kFan is returned by GetAvailableRoutines.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  [MinVersion=8] RunFanRoutine@31()
-      => (DiagnosticsRunRoutineResponse response);
+  // RunFanRoutine@31 was removed.
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.

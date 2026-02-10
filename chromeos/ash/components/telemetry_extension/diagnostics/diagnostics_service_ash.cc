@@ -114,18 +114,6 @@ void DiagnosticsServiceAsh::RunAcPowerRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsServiceAsh::RunAudioDriverRoutine(
-    RunAudioDriverRoutineCallback callback) {
-  GetService()->RunAudioDriverRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunAudioDriverRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
 void DiagnosticsServiceAsh::RunBatteryChargeRoutine(
     uint32_t length_seconds,
     uint32_t minimum_charge_percent_required,
@@ -235,64 +223,6 @@ void DiagnosticsServiceAsh::RunDiskReadRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsServiceAsh::RunDnsResolutionRoutine(
-    RunDnsResolutionRoutineCallback callback) {
-  GetService()->RunDnsResolutionRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunDnsResolutionRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunDnsResolverPresentRoutine(
-    RunDnsResolverPresentRoutineCallback callback) {
-  GetService()->RunDnsResolverPresentRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::
-             RunDnsResolverPresentRoutineCallback callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunEmmcLifetimeRoutine(
-    RunEmmcLifetimeRoutineCallback callback) {
-  GetService()->RunEmmcLifetimeRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunEmmcLifetimeRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunFanRoutine(RunFanRoutineCallback callback) {
-  GetService()->RunFanRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunFanRoutineCallback callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunFingerprintAliveRoutine(
-    RunFingerprintAliveRoutineCallback callback) {
-  GetService()->RunFingerprintAliveRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunFingerprintAliveRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
 void DiagnosticsServiceAsh::RunFloatingPointAccuracyRoutine(
     uint32_t length_seconds,
     RunFloatingPointAccuracyRoutineCallback callback) {
@@ -301,44 +231,6 @@ void DiagnosticsServiceAsh::RunFloatingPointAccuracyRoutine(
       base::BindOnce(
           [](crosapi::mojom::DiagnosticsService::
                  RunFloatingPointAccuracyRoutineCallback callback,
-             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-            std::move(callback).Run(
-                converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-          },
-          std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunGatewayCanBePingedRoutine(
-    RunGatewayCanBePingedRoutineCallback callback) {
-  GetService()->RunGatewayCanBePingedRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::
-             RunGatewayCanBePingedRoutineCallback callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunLanConnectivityRoutine(
-    RunLanConnectivityRoutineCallback callback) {
-  GetService()->RunLanConnectivityRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunLanConnectivityRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunMemoryRoutine(
-    RunMemoryRoutineCallback callback) {
-  GetService()->RunMemoryRoutine(
-      std::nullopt,
-      base::BindOnce(
-          [](crosapi::mojom::DiagnosticsService::RunMemoryRoutineCallback
-                 callback,
              cros_healthd::mojom::RunRoutineResponsePtr ptr) {
             std::move(callback).Run(
                 converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
@@ -376,30 +268,6 @@ void DiagnosticsServiceAsh::RunPrimeSearchRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsServiceAsh::RunSensitiveSensorRoutine(
-    RunSensitiveSensorRoutineCallback callback) {
-  GetService()->RunSensitiveSensorRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunSensitiveSensorRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunSignalStrengthRoutine(
-    RunSignalStrengthRoutineCallback callback) {
-  GetService()->RunSignalStrengthRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunSignalStrengthRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
 void DiagnosticsServiceAsh::RunSmartctlCheckRoutine(
     crosapi::mojom::UInt32ValuePtr percentage_used_threshold,
     RunSmartctlCheckRoutineCallback callback) {
@@ -414,18 +282,6 @@ void DiagnosticsServiceAsh::RunSmartctlCheckRoutine(
                 converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
           },
           std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunUfsLifetimeRoutine(
-    RunUfsLifetimeRoutineCallback callback) {
-  GetService()->RunUfsLifetimeRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunUfsLifetimeRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
 }
 
 void DiagnosticsServiceAsh::RunPowerButtonRoutine(

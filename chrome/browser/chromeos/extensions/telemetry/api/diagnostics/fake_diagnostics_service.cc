@@ -188,35 +188,6 @@ void FakeDiagnosticsService::RunDiskReadRoutine(
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
 }
 
-void FakeDiagnosticsService::RunDnsResolutionRoutine(
-    RunDnsResolutionRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kDnsResolution;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
-void FakeDiagnosticsService::RunDnsResolverPresentRoutine(
-    RunDnsResolverPresentRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kDnsResolverPresent;
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_.Clone()));
-}
-
-void FakeDiagnosticsService::RunEmmcLifetimeRoutine(
-    RunEmmcLifetimeRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kEmmcLifetime;
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_.Clone()));
-}
-
 void FakeDiagnosticsService::RunFloatingPointAccuracyRoutine(
     uint32_t length_seconds,
     RunFloatingPointAccuracyRoutineCallback callback) {
@@ -227,44 +198,6 @@ void FakeDiagnosticsService::RunFloatingPointAccuracyRoutine(
   actual_called_routine_ =
       crosapi::DiagnosticsRoutineEnum::kFloatingPointAccuracy;
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
-void FakeDiagnosticsService::RunFingerprintAliveRoutine(
-    RunFingerprintAliveRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kFingerprintAlive;
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_.Clone()));
-}
-
-void FakeDiagnosticsService::RunGatewayCanBePingedRoutine(
-    RunGatewayCanBePingedRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kGatewayCanBePinged;
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_.Clone()));
-}
-
-void FakeDiagnosticsService::RunLanConnectivityRoutine(
-    RunLanConnectivityRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kLanConnectivity;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
-void FakeDiagnosticsService::RunMemoryRoutine(
-    RunMemoryRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kMemory;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
@@ -298,24 +231,6 @@ void FakeDiagnosticsService::RunPrimeSearchRoutine(
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
 }
 
-void FakeDiagnosticsService::RunSensitiveSensorRoutine(
-    RunSensitiveSensorRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kSensitiveSensor;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
-void FakeDiagnosticsService::RunSignalStrengthRoutine(
-    RunSignalStrengthRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kSignalStrength;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
 void FakeDiagnosticsService::RunSmartctlCheckRoutine(
     crosapi::UInt32ValuePtr percentage_used_threshold,
     RunSmartctlCheckRoutineCallback callback) {
@@ -336,15 +251,6 @@ void FakeDiagnosticsService::RunSmartctlCheckRoutine(
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
 }
 
-void FakeDiagnosticsService::RunUfsLifetimeRoutine(
-    RunUfsLifetimeRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kUfsLifetime;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
 void FakeDiagnosticsService::RunPowerButtonRoutine(
     uint32_t timeout_seconds,
     RunPowerButtonRoutineCallback callback) {
@@ -353,23 +259,6 @@ void FakeDiagnosticsService::RunPowerButtonRoutine(
                                 static_cast<int32_t>(timeout_seconds));
 
   actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kPowerButton;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
-void FakeDiagnosticsService::RunAudioDriverRoutine(
-    RunAudioDriverRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kAudioDriver;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
-void FakeDiagnosticsService::RunFanRoutine(RunFanRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kFan;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
