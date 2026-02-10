@@ -4,6 +4,7 @@ include_rules = [
   '+components/browser_ui/device_lock/android',
   '+components/one_time_tokens/core',
   '+components/optimization_guide/content/browser',
+  '+components/wallet/core/browser/network',
 ]
 
 specific_include_rules = {

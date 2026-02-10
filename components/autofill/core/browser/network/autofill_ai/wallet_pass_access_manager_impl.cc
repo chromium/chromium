@@ -4,9 +4,17 @@
 
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager_impl.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/notimplemented.h"
+#include "components/wallet/core/browser/network/wallet_http_client.h"
 
 namespace autofill {
+
+WalletPassAccessManagerImpl::WalletPassAccessManagerImpl(
+    std::unique_ptr<wallet::WalletHttpClient> http_client)
+    : http_client_(std::move(http_client)) {}
 
 WalletPassAccessManagerImpl::~WalletPassAccessManagerImpl() = default;
 

@@ -82,6 +82,7 @@ static_library("autofill") {
     "//components/prefs",
     "//components/strings:components_strings_grit",
     "//components/variations/service",
+    "//components/wallet/core/browser",
     "//third_party/libphonenumber",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
