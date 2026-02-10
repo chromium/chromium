@@ -4,7 +4,7 @@
 
 import type {TokenMojoType} from '//resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
-import type {Container, Node, SplitTabVisualData, Tab, TabGroupVisualData, TabRestoreEntry, TabRestoreGroup, TabRestoreTab, TabRestoreWindow, WindowNode} from './tab_strip_internals.mojom-webui.js';
+import type {Container, Node, SessionSplitTab, SessionTab, SessionTabGroup, SessionWindow, SplitTabVisualData, Tab, TabGroupVisualData, TabRestoreEntry, TabRestoreGroup, TabRestoreTab, TabRestoreWindow, WindowNode} from './tab_strip_internals.mojom-webui.js';
 
 /**
  * Model layer: Represents a UI node used by the ViewModel to build a semantic
@@ -49,12 +49,15 @@ export class DataModelAdapter {
       displayName: 'Container',
     };
 
-    // TODO(crbug.com/427204855): Add adapter logic to map SavedSession and
-    // RestoredSession data.
     const tabstripNode = this.buildTabStripTree(container.tabstripTree);
     const tabRestoreNode = this.buildTabRestore(container.tabRestore);
+    const restoredSessionNode =
+        this.buildSessionRestore(container.restoredSession, 'Restored Session');
+    const savedSessionNode =
+        this.buildSessionRestore(container.savedSession, 'Saved Session');
 
-    root.children.push(tabstripNode, tabRestoreNode);
+    root.children.push(
+        tabstripNode, tabRestoreNode, restoredSessionNode, savedSessionNode);
     return root;
   }
 
@@ -265,9 +268,135 @@ export class DataModelAdapter {
     return node;
   }
 
-  // TODO(crbug.com/427204855): Add support for SessionRestore
-  // tabs.
-  private static formatTabLabel(tab: Partial<Tab|TabRestoreTab>): string {
+  /**
+   * Build a sub-tree representing SessionRestore data (either saved or
+   * restored session).
+   */
+  private static buildSessionRestore(
+      session: Container['restoredSession']|Container['savedSession'],
+      label: string): ModelNode {
+    // Regex removes whitespaces from label to build path string.
+    const labelToPathStr = label.replace(/\s+/g, '').toLowerCase();
+    const node: ModelNode = {
+      path: `Container.${labelToPathStr}`,
+      value: session,
+      children: [],
+      label: label,
+      displayName: label,
+    };
+
+    if (!session || !session.entries?.length) {
+      return node;
+    }
+
+    session.entries.forEach((window: SessionWindow, windowIndex: number) => {
+      const windowNode: ModelNode = {
+        path: `${node.path}.entries[${windowIndex}]`,
+        value: window,
+        children: [],
+        label: `Window ${window.windowId.id}`,
+        displayName: `Window ${window.windowId.id}`,
+      };
+
+      const tabGroups: SessionTabGroup[] = window.tabGroups ?? [];
+      const splitTabs: SessionSplitTab[] = window.splitTabs ?? [];
+      const tabs: SessionTab[] = window.tabs ?? [];
+
+      // TokenMojoType is converted to a string representation so it can be
+      // safely used as the map key.
+      const groupVisualsMap = new Map<string, TabGroupVisualData>();
+      for (const group of tabGroups) {
+        groupVisualsMap.set(
+            this.tokenToString_(group.groupId), group.visualData);
+      }
+      const splitVisualsMap = new Map<string, SplitTabVisualData>();
+      for (const split of splitTabs) {
+        splitVisualsMap.set(
+            this.tokenToString_(split.splitId), split.splitVisualData);
+      }
+
+      // Building group as you go along.
+      const groupNodes = new Map<string, ModelNode>();
+      const splitNodes = new Map<string, ModelNode>();
+
+      for (const tab of tabs) {
+        // Convert TokenMojoType to a string representation to use it as the
+        // map key.
+        const groupKey = tab.groupId ? this.tokenToString_(tab.groupId) : null;
+        const splitKey = tab.splitId ? this.tokenToString_(tab.splitId) : null;
+
+        // Tab is a Grouped tab.
+        if (groupKey && groupVisualsMap.has(groupKey)) {
+          let groupNode = groupNodes.get(groupKey);
+          if (!groupNode) {
+            const visualData =
+                groupVisualsMap.get(groupKey) as TabGroupVisualData;
+            groupNode = {
+              path: `${windowNode.path}.groups[${groupKey}]`,
+              value: visualData,
+              children: [],
+              label: this.formatGroupLabel(visualData),
+              displayName: visualData.title,
+            };
+            groupNodes.set(groupKey, groupNode);
+            windowNode.children.push(groupNode);
+          }
+
+          groupNode.children.push({
+            path: `${groupNode.path}.tabs[${groupNode.children.length}]`,
+            value: tab,
+            children: [],
+            label: this.formatTabLabel(tab),
+            displayName: tab.title,
+          });
+          continue;
+        }
+
+        // Tab is a Split tab.
+        if (splitKey && splitVisualsMap.has(splitKey)) {
+          let splitNode = splitNodes.get(splitKey);
+          if (!splitNode) {
+            const visualData =
+                splitVisualsMap.get(splitKey) as SplitTabVisualData;
+            splitNode = {
+              path: `${windowNode.path}.splits[${splitKey}]`,
+              value: visualData,
+              children: [],
+              label: this.formatSplitLabel(visualData),
+              displayName: 'Split',
+            };
+            splitNodes.set(splitKey, splitNode);
+            windowNode.children.push(splitNode);
+          }
+
+          splitNode.children.push({
+            path: `${splitNode.path}.tabs[${splitNode.children.length}]`,
+            value: tab,
+            children: [],
+            label: this.formatTabLabel(tab),
+            displayName: tab.title,
+          });
+          continue;
+        }
+
+        // Tab is a regular tab (unpinned or pinned).
+        windowNode.children.push({
+          path: `${windowNode.path}.tabs[${windowNode.children.length}]`,
+          value: tab,
+          children: [],
+          label: this.formatTabLabel(tab),
+          displayName: tab.title,
+        });
+      }
+
+      node.children.push(windowNode);
+    });
+
+    return node;
+  }
+
+  private static formatTabLabel(tab: Partial<Tab|TabRestoreTab|SessionTab>):
+      string {
     return `Tab: ${tab.title}`;
   }
 
