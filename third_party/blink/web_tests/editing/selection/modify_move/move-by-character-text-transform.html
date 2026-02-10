@@ -39,5 +39,31 @@ selection_test(
   selection => selection.modify('move', 'left', 'character'),
   '<div contenteditable lang="lt" style="text-transform:uppercase">|i\u0307bar</div>',
   'Move-left should assume i\u0307 as a single character');
+
+// Test cursor movement with text-transform: full-size-kana.
+// U+3041 HIRAGANA SMALL A (BMP) transforms to U+3042 HIRAGANA A (BMP).
+// U+30A1 KATAKANA SMALL A (BMP) transforms to U+30A2 KATAKANA A (BMP).
+// U+1B132 HIRAGANA SMALL KO (surrogate pair) transforms to U+3053 HIRAGANA KO (BMP).
+selection_test(
+  '<div contenteditable style="text-transform:full-size-kana">|\uD82C\uDF32bar</div>',
+  selection => selection.modify('move', 'right', 'character'),
+  '<div contenteditable style="text-transform:full-size-kana">\uD82C\uDF32|bar</div>',
+  'full-size-kana: Move-right over U+1B132 HIRAGANA SMALL KO (surrogate pair)');
+
+selection_test(
+  '<div contenteditable style="text-transform:full-size-kana">\uD82C\uDF32|bar</div>',
+  selection => selection.modify('move', 'left', 'character'),
+  '<div contenteditable style="text-transform:full-size-kana">|\uD82C\uDF32bar</div>',
+  'full-size-kana: Move-left over U+1B132 HIRAGANA SMALL KO (surrogate pair)');
+
+selection_test(
+  '<div contenteditable style="text-transform:full-size-kana">|\u3041\uD82C\uDF32\u30A1bar</div>',
+  selection => {
+    selection.modify('move', 'right', 'character');
+    selection.modify('move', 'right', 'character');
+    selection.modify('move', 'right', 'character');
+  },
+  '<div contenteditable style="text-transform:full-size-kana">\u3041\uD82C\uDF32\u30A1|bar</div>',
+  'full-size-kana: Move-right over U+3041, U+1B132, U+30A1');
 </script>
 

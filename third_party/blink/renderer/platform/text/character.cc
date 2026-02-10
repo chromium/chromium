@@ -447,4 +447,127 @@ bool Character::IsVerticalMathCharacter(UChar32 text_content) {
              text_content);
 }
 
+UChar32 Character::FullSizeKanaVariant(UChar32 code_point) {
+  switch (code_point) {
+    case 0x3041:  // Hiragana small a
+      return 0x3042;
+    case 0x3043:  // Hiragana small i
+      return 0x3044;
+    case 0x3045:  // Hiragana small u
+      return 0x3046;
+    case 0x3047:  // Hiragana small e
+      return 0x3048;
+    case 0x3049:  // Hiragana small o
+      return 0x304A;
+    case 0x3063:  // Hiragana small tu
+      return 0x3064;
+    case 0x3083:  // Hiragana small ya
+      return 0x3084;
+    case 0x3085:  // Hiragana small yu
+      return 0x3086;
+    case 0x3087:  // Hiragana small yo
+      return 0x3088;
+    case 0x308E:  // Hiragana small wa
+      return 0x308F;
+    case 0x3095:  // Hiragana small ka
+      return 0x304B;
+    case 0x3096:  // Hiragana small ke
+      return 0x3051;
+    case 0x30A1:  // Katakana small a
+      return 0x30A2;
+    case 0x30A3:  // Katakana small i
+      return 0x30A4;
+    case 0x30A5:  // Katakana small u
+      return 0x30A6;
+    case 0x30A7:  // Katakana small e
+      return 0x30A8;
+    case 0x30A9:  // Katakana small o
+      return 0x30AA;
+    case 0x30C3:  // Katakana small tu
+      return 0x30C4;
+    case 0x30E3:  // Katakana small ya
+      return 0x30E4;
+    case 0x30E5:  // Katakana small yu
+      return 0x30E6;
+    case 0x30E7:  // Katakana small yo
+      return 0x30E8;
+    case 0x30EE:  // Katakana small wa
+      return 0x30EF;
+    case 0x30F5:  // Katakana small ka
+      return 0x30AB;
+    case 0x30F6:  // Katakana small ke
+      return 0x30B1;
+    case 0x31F0:  // Katakana small ku
+      return 0x30AF;
+    case 0x31F1:  // Katakana small si
+      return 0x30B7;
+    case 0x31F2:  // Katakana small su
+      return 0x30B9;
+    case 0x31F3:  // Katakana small to
+      return 0x30C8;
+    case 0x31F4:  // Katakana small nu
+      return 0x30CC;
+    case 0x31F5:  // Katakana small ha
+      return 0x30CF;
+    case 0x31F6:  // Katakana small hi
+      return 0x30D2;
+    case 0x31F7:  // Katakana small hu
+      return 0x30D5;
+    case 0x31F8:  // Katakana small he
+      return 0x30D8;
+    case 0x31F9:  // Katakana small ho
+      return 0x30DB;
+    case 0x31FA:  // Katakana small mu
+      return 0x30E0;
+    case 0x31FB:  // Katakana small ra
+      return 0x30E9;
+    case 0x31FC:  // Katakana small ri
+      return 0x30EA;
+    case 0x31FD:  // Katakana small ru
+      return 0x30EB;
+    case 0x31FE:  // Katakana small re
+      return 0x30EC;
+    case 0x31FF:  // Katakana small ro
+      return 0x30ED;
+    case 0x1B132:  // Hiragana small ko
+      return 0x3053;
+    case 0x1B150:  // Hiragana small wi
+      return 0x3090;
+    case 0x1B151:  // Hiragana small we
+      return 0x3091;
+    case 0x1B152:  // Hiragana small wo
+      return 0x3092;
+    case 0x1B155:  // Katakana small ko
+      return 0x30B3;
+    case 0x1B164:  // Katakana small wi
+      return 0x30F0;
+    case 0x1B165:  // Katakana small we
+      return 0x30F1;
+    case 0x1B166:  // Katakana small wo
+      return 0x30F2;
+    case 0x1B167:  // Katakana small n
+      return 0x30F3;
+    case 0xFF67:  // Halfwidth katakana small a
+      return 0xFF71;
+    case 0xFF68:  // Halfwidth katakana small i
+      return 0xFF72;
+    case 0xFF69:  // Halfwidth katakana small u
+      return 0xFF73;
+    case 0xFF6A:  // Halfwidth katakana small e
+      return 0xFF74;
+    case 0xFF6B:  // Halfwidth katakana small o
+      return 0xFF75;
+    case 0xFF6C:  // Halfwidth katakana small ya
+      return 0xFF94;
+    case 0xFF6D:  // Halfwidth katakana small yu
+      return 0xFF95;
+    case 0xFF6E:  // Halfwidth katakana small yo
+      return 0xFF96;
+    case 0xFF6F:  // Halfwidth katakana small tu
+      return 0xFF82;
+  }
+
+  return code_point;
+}
+
 }  // namespace blink

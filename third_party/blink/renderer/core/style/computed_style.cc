@@ -2056,12 +2056,9 @@ String ApplyFullwidthTransform(const String& text,
   StringBuilder result;
   result.ReserveCapacity(text.length());
 
-  CodePointIterator begin(text);
-  CodePointIterator end = CodePointIterator::End(text);
-  for (auto it = begin; it != end; ++it) {
-    UChar32 code_point = *it;
-
-    // Surrogate pairs are not affected by full-width.
+  for (UChar32 code_point : text) {
+    // Non-BMP characters are not affected by full-width. Since all the
+    // transformations are from BMP to BMP, offset_map remains unchanged.
     if (!U_IS_BMP(code_point)) {
       result.Append(code_point);
       continue;
@@ -2079,11 +2076,35 @@ String ApplyFullwidthTransform(const String& text,
     result.Append(transformed_char);
   }
 
-  String transformed_string = result.ReleaseString();
-  if (offset_map) {
-    offset_map->Append(text.length(), transformed_string.length());
+  return result.ReleaseString();
+}
+
+String ApplyFullSizeKanaTransform(const String& text,
+                                  TextOffsetMap* offset_map) {
+  StringBuilder result;
+  result.ReserveCapacity(text.length());
+
+  wtf_size_t source_offset = 0;
+  wtf_size_t target_offset = 0;
+
+  for (UChar32 code_point : text) {
+    UChar32 transformed = Character::FullSizeKanaVariant(code_point);
+
+    wtf_size_t source_len = U16_LENGTH(code_point);
+    wtf_size_t target_len = U16_LENGTH(transformed);
+
+    source_offset += source_len;
+    target_offset += target_len;
+
+    // Update offset_map when the transform changes the UTF-16 length.
+    if (offset_map && source_len != target_len) {
+      offset_map->Append(source_offset, target_offset);
+    }
+
+    result.Append(transformed);
   }
-  return transformed_string;
+
+  return result.ReleaseString();
 }
 
 String ApplyMathAutoTransform(const String& text, TextOffsetMap* offset_map) {
@@ -2136,6 +2157,8 @@ String ComputedStyle::ApplyTextTransform(const String& text,
     case ETextTransform::kFullWidth:
       return ApplyFullwidthTransform(text, offset_map,
                                      ShouldPreserveWhiteSpaces());
+    case ETextTransform::kFullSizeKana:
+      return ApplyFullSizeKanaTransform(text, offset_map);
     case ETextTransform::kMathAuto:
       return ApplyMathAutoTransform(text, offset_map);
   }

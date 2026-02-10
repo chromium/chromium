@@ -271,6 +271,12 @@ class PLATFORM_EXPORT Character {
 
   static bool IsVerticalMathCharacter(UChar32);
 
+  // Returns the full-size kana variant of a small kana character, or the
+  // original code point if no variant exists.
+  // See CSS Text Level 3, Appendix G:
+  // https://drafts.csswg.org/css-text-3/#small-kana-mappings
+  static UChar32 FullSizeKanaVariant(UChar32);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(CharacterTest, Derived);
 

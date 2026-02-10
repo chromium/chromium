@@ -1790,6 +1790,11 @@
       status: "test",
     },
     {
+      // https://crbug.com/40928177: Support of `text-transform: full-size-kana`
+      name: "CSSTextTransformFullSizeKana",
+      status: "experimental",
+    },
+    {
       // https://issues.chromium.org/41297237: CSS `text-transform: full-width` value
       name: "CSSTextTransformFullWidth",
       status: "experimental",
