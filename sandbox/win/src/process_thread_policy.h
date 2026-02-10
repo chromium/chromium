@@ -28,9 +28,8 @@ class ProcessPolicy {
 
   // Opens the token associated with the process and returns the duplicated
   // handle to the child. We only allow the child processes to open its own
-  // token (using ::GetCurrentProcess()).
+  // token (using ::GetCurrentProcess()) so we don't pass the process handle.
   static NTSTATUS OpenProcessTokenExAction(const ClientInfo& client_info,
-                                           HANDLE process,
                                            uint32_t desired_access,
                                            uint32_t attributes,
                                            HANDLE* handle);

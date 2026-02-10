@@ -79,17 +79,10 @@ NTSTATUS ProcessPolicy::OpenThreadAction(const ClientInfo& client_info,
 }
 
 NTSTATUS ProcessPolicy::OpenProcessTokenExAction(const ClientInfo& client_info,
-                                                 HANDLE process,
                                                  uint32_t desired_access,
                                                  uint32_t attributes,
                                                  HANDLE* handle) {
   *handle = nullptr;
-  // This fakes the local version of this call so `process` here must be the
-  // current process pseudohandle.
-  if (CURRENT_PROCESS != process) {
-    return STATUS_ACCESS_DENIED;
-  }
-
   HANDLE local_handle = nullptr;
   NTSTATUS status = GetNtExports()->OpenProcessTokenEx(
       client_info.process, desired_access, attributes, &local_handle);

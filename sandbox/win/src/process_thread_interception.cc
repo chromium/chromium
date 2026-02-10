@@ -80,8 +80,8 @@ NTSTATUS CallNtOpenProcessTokenEx(NTSTATUS status,
 
   SharedMemIPCClient ipc(memory);
   CrossCallReturn answer = {0};
-  ResultCode code = CrossCall(ipc, IpcTag::NTOPENPROCESSTOKENEX, process,
-                              desired_access, handle_attributes, &answer);
+  ResultCode code = CrossCall(ipc, IpcTag::NTOPENPROCESSTOKENEX, desired_access,
+                              handle_attributes, &answer);
   if (SBOX_ALL_OK != code) {
     return status;
   }

@@ -32,7 +32,6 @@ class ThreadProcessDispatcher : public Dispatcher {
 
   // Processes IPC requests from calls to NtOpenProcessTokenEx() in the target.
   bool NtOpenProcessTokenEx(IPCInfo* ipc,
-                            HANDLE process,
                             uint32_t desired_access,
                             uint32_t attributes);
 
