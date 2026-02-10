@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_GAP_DECORATION_PROPERTY_UTILS_H_
 
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/gap_data_list.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
@@ -64,8 +65,13 @@ class CORE_EXPORT CSSGapDecorationUtils {
       const CSSValueList& list,
       const StyleResolverState& state);
 
-  static RuleBreak ResolveRuleBreakValue(const ComputedStyle& style,
-                                         GridTrackSizingDirection direction);
+  // Resolves the `rule-break` value for a given direction and container type.
+  // For multicol containers, we treat `normal` as `none` for
+  // `row-rule-break` and as `intersection` for `column-rule-break`.
+  static RuleBreak ResolveRuleBreakValue(
+      const ComputedStyle& style,
+      GridTrackSizingDirection direction,
+      GapGeometry::ContainerType container_type);
 };
 
 }  // namespace blink

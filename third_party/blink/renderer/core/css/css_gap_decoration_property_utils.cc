@@ -179,9 +179,20 @@ CSSGapDecorationUtils::GetExpandedGapDataList(
 
 RuleBreak CSSGapDecorationUtils::ResolveRuleBreakValue(
     const ComputedStyle& style,
-    GridTrackSizingDirection direction) {
-  return direction == kForColumns ? style.ColumnRuleBreak()
-                                  : style.RowRuleBreak();
+    GridTrackSizingDirection direction,
+    GapGeometry::ContainerType container_type) {
+  RuleBreak rule_break =
+      direction == kForColumns ? style.ColumnRuleBreak() : style.RowRuleBreak();
+
+  // For multicol containers, `normal` resolves to `none` for row-rule-break
+  // and `intersection` for column-rule-break.
+  if (container_type == GapGeometry::ContainerType::kMultiColumn &&
+      rule_break == RuleBreak::kNormal) {
+    return direction == kForColumns ? RuleBreak::kIntersection
+                                    : RuleBreak::kNone;
+  }
+
+  return rule_break;
 }
 
 // Explicit template instantiations

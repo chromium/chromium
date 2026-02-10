@@ -209,8 +209,8 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       is_column_gap ? style.ColumnRuleStyle() : style.RowRuleStyle();
   GapDataList<int> rule_widths =
       is_column_gap ? style.ColumnRuleWidth() : style.RowRuleWidth();
-  RuleBreak rule_break =
-      CSSGapDecorationUtils::ResolveRuleBreakValue(style, track_direction);
+  RuleBreak rule_break = CSSGapDecorationUtils::ResolveRuleBreakValue(
+      style, track_direction, gap_geometry.GetContainerType());
 
   RuleVisibilityItems rule_visibility = is_column_gap
                                             ? style.ColumnRuleVisibilityItems()
