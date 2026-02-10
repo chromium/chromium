@@ -2403,7 +2403,7 @@ bool TemplateURL::CanPolicyBeOverridden() const {
 std::u16string TemplateURL::GetFullName() const {
   std::u16string short_name = AdjustedShortNameForLocaleDirection();
 
-  if (is_ask_starter_pack()) {
+  if (is_ask_type()) {
     return l10n_util::GetStringFUTF16(IDS_OMNIBOX_SELECTED_KEYWORD_ASK_TEXT,
                                       short_name);
   } else if (starter_pack_id() ==

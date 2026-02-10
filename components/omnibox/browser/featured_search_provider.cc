@@ -100,7 +100,7 @@ int StarterPackRelevance(
 // Returns description for starter pack suggestions.
 std::u16string StarterPackDescription(const AutocompleteInput& input,
                                       const TemplateURL& template_url) {
-  if (template_url.is_ask_starter_pack()) {
+  if (template_url.is_ask_type()) {
     return l10n_util::GetStringFUTF16(IDS_OMNIBOX_INSTANT_KEYWORD_ASK_TEXT,
                                       template_url.keyword(),
                                       template_url.short_name());
@@ -423,7 +423,7 @@ void FeaturedSearchProvider::AddFeaturedEnterpriseSearchMatch(
   match.destination_url = GURL(template_url.url());
   match.transition = ui::PAGE_TRANSITION_GENERATED;
   match.description = l10n_util::GetStringFUTF16(
-      IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT, template_url.keyword(),
+      IDS_OMNIBOX_INSTANT_KEYWORD_ASK_TEXT, template_url.keyword(),
       template_url.short_name());
   match.description_class = {
       {0, ACMatchClassification::NONE},

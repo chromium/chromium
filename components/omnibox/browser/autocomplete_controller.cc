@@ -1936,7 +1936,7 @@ void AutocompleteController::UpdateKeywordDescriptions(
           if (is_contextual) {
             i->description = l10n_util::GetStringUTF16(
                 IDS_AUTOCOMPLETE_SEARCH_IN_SIDE_PANEL_DESCRIPTION);
-          } else if (template_url->is_ask_starter_pack()) {
+          } else if (template_url->is_ask_type()) {
             i->description = l10n_util::GetStringFUTF16(
                 IDS_AUTOCOMPLETE_ASK_DESCRIPTION, i->description);
           } else if (template_url->type() !=
