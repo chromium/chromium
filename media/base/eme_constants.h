@@ -57,6 +57,8 @@ enum EmeCodec : uint32_t {
   EME_CODEC_DTSE = 1 << 21,
   EME_CODEC_AC4 = 1 << 22,
   EME_CODEC_IAMF = 1 << 23,
+  EME_CODEC_DOLBY_VISION_PROFILE10 = 1 << 24,
+  EME_CODEC_DOLBY_VISION_PROFILE20 = 1 << 25,
 };
 
 // *_ALL values should only be used for masking, do not use them to specify
@@ -64,13 +66,15 @@ enum EmeCodec : uint32_t {
 
 using SupportedCodecs = uint32_t;
 
-// Dolby Vision profile 0 and 9 are based on AVC while profile 4, 5, 7 and 8 are
-// based on HEVC.
+// Dolby Vision profiles 0 and 9 are based on AVC, profiles 4, 5, 7, 8 and 20
+// are based on HEVC, and profile 10 is based on AV1.
 constexpr SupportedCodecs EME_CODEC_DOLBY_VISION_AVC =
     EME_CODEC_DOLBY_VISION_PROFILE0 | EME_CODEC_DOLBY_VISION_PROFILE9;
 constexpr SupportedCodecs EME_CODEC_DOLBY_VISION_HEVC =
     EME_CODEC_DOLBY_VISION_PROFILE5 | EME_CODEC_DOLBY_VISION_PROFILE7 |
-    EME_CODEC_DOLBY_VISION_PROFILE8;
+    EME_CODEC_DOLBY_VISION_PROFILE8 | EME_CODEC_DOLBY_VISION_PROFILE20;
+constexpr SupportedCodecs EME_CODEC_DOLBY_VISION_AV1 =
+    EME_CODEC_DOLBY_VISION_PROFILE10;
 
 namespace {
 
@@ -113,6 +117,7 @@ constexpr SupportedCodecs GetMp4VideoCodecs() {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   codecs |= EME_CODEC_DOLBY_VISION_HEVC;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  codecs |= EME_CODEC_DOLBY_VISION_AV1;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
   return codecs;

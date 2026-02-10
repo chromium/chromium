@@ -1326,16 +1326,23 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       break;
     }
 #if BUILDFLAG(ENABLE_AV1_DECODER)
-    case FOURCC_AV01: {
+    case FOURCC_AV01:
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    case FOURCC_DAV1:
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+    {
       DVLOG(2) << __func__ << " reading AV1CodecConfigurationRecord (av1C)";
       AV1CodecConfigurationRecord av1_config;
       RCHECK(reader->ReadChild(&av1_config));
       video_info.codec = VideoCodec::kAV1;
       video_info.profile = av1_config.profile;
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+      std::tie(video_info, dv_info) = MaybeParseDOVI(reader, video_info);
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
       frame_bitstream_converter = nullptr;
       break;
     }
-#endif
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
     default:
       // Unknown/unsupported format
       MEDIA_LOG(ERROR, reader->media_log())
@@ -1400,8 +1407,11 @@ bool VideoSampleEntry::IsFormatValid() const {
       return true;
 #if BUILDFLAG(ENABLE_AV1_DECODER)
     case FOURCC_AV01:
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    case FOURCC_DAV1:
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
       return true;
-#endif
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
     default:
       return false;
   }

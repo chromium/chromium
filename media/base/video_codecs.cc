@@ -138,6 +138,10 @@ std::string GetProfileName(VideoCodecProfile profile) {
       return "dolby vision profile 8";
     case DOLBYVISION_PROFILE9:
       return "dolby vision profile 9";
+    case DOLBYVISION_PROFILE10:
+      return "dolby vision profile 10";
+    case DOLBYVISION_PROFILE20:
+      return "dolby vision profile 20";
     case THEORAPROFILE_ANY:
       return "theora";
     case AV1PROFILE_PROFILE_MAIN:
@@ -234,6 +238,8 @@ VideoCodec VideoCodecProfileToVideoCodec(VideoCodecProfile profile) {
     case DOLBYVISION_PROFILE7:
     case DOLBYVISION_PROFILE8:
     case DOLBYVISION_PROFILE9:
+    case DOLBYVISION_PROFILE10:
+    case DOLBYVISION_PROFILE20:
       return VideoCodec::kDolbyVision;
     case THEORAPROFILE_ANY:
       return VideoCodec::kTheora;

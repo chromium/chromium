@@ -1032,8 +1032,10 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
   if (video) {
     if (runs_->video_description().video_info.codec == VideoCodec::kH264 ||
         runs_->video_description().video_info.codec == VideoCodec::kHEVC ||
-        runs_->video_description().video_info.codec ==
-            VideoCodec::kDolbyVision) {
+        (runs_->video_description().video_info.codec ==
+             VideoCodec::kDolbyVision &&
+         runs_->video_description().video_info.profile !=
+             VideoCodecProfile::DOLBYVISION_PROFILE10)) {
       DCHECK(runs_->video_description().frame_bitstream_converter);
       BitstreamConverter::AnalysisResult analysis;
       frame_buf = base::ToVector(buf.first(sample_size));

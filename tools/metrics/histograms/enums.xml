@@ -26981,6 +26981,8 @@ Called by update_net_error_codes.py.-->
   <int value="34" label="HEVC ScreenExtended"/>
   <int value="35" label="HEVC ScalableRext"/>
   <int value="36" label="HEVC HighThroughputScreenExtended"/>
+  <int value="37" label="DolbyVision profile10"/>
+  <int value="38" label="DolbyVision profile20"/>
 </enum>
 
 <!-- LINT.ThenChange(//gpu/config/gpu_info.h:VideoCodecProfile, //media/base/video_codecs.h:VideoCodecProfile) -->

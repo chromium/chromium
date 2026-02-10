@@ -107,8 +107,9 @@ EmeCodec ToVideoEmeCodec(VideoCodec codec, VideoCodecProfile profile) {
         return EME_CODEC_HEVC_PROFILE_MAIN10;
       return EME_CODEC_NONE;
     case VideoCodec::kDolbyVision:
-      // Only profiles 0, 5, 7, 8, 9 are valid. Profile 0 and 9 are encoded
-      // based on AVC while profile 5, 7 and 8 are based on HEVC.
+      // Only profiles 0, 5, 7, 8, 9, 10 and 20 are valid. Profiles 0 and 9
+      // are encoded based on AVC, profiles 5, 7, 8 and 20 are based on HEVC,
+      // and profile 10 is based on AV1.
       if (profile == DOLBYVISION_PROFILE0)
         return EME_CODEC_DOLBY_VISION_PROFILE0;
       if (profile == DOLBYVISION_PROFILE5)
@@ -119,6 +120,12 @@ EmeCodec ToVideoEmeCodec(VideoCodec codec, VideoCodecProfile profile) {
         return EME_CODEC_DOLBY_VISION_PROFILE8;
       if (profile == DOLBYVISION_PROFILE9)
         return EME_CODEC_DOLBY_VISION_PROFILE9;
+      if (profile == DOLBYVISION_PROFILE10) {
+        return EME_CODEC_DOLBY_VISION_PROFILE10;
+      }
+      if (profile == DOLBYVISION_PROFILE20) {
+        return EME_CODEC_DOLBY_VISION_PROFILE20;
+      }
       return EME_CODEC_NONE;
     case VideoCodec::kAV1:
       return EME_CODEC_AV1;

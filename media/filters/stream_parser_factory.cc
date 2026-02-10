@@ -200,6 +200,8 @@ static const CodecInfo kDolbyVisionHEVCCodecInfo1 = {
 static const CodecInfo kDolbyVisionHEVCCodecInfo2 = {
     "dvhe.*", CodecInfo::VIDEO, nullptr, CodecInfo::HISTOGRAM_DOLBYVISION};
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+static const CodecInfo kDolbyVisionAV1CodecInfo = {
+    "dav1.*", CodecInfo::VIDEO, nullptr, CodecInfo::HISTOGRAM_DOLBYVISION};
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 static const CodecInfo kMPEG4AACCodecInfo = {"mp4a.40.*", CodecInfo::AUDIO,
                                              &ValidateMP4ACodecID,
@@ -328,6 +330,7 @@ static const auto kVideoMP4Codecs = std::to_array<const CodecInfo* const>({
     &kDolbyVisionHEVCCodecInfo1,
     &kDolbyVisionHEVCCodecInfo2,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    &kDolbyVisionAV1CodecInfo,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
     &kMPEG4AACCodecInfo,
     &kMPEG2AACLCCodecInfo,
@@ -466,7 +469,8 @@ static StreamParser* BuildMP4Parser(base::span<const std::string> codecs,
                                      kDolbyVisionHEVCCodecInfo1.pattern) ||
                base::MatchPattern(codec_id, kDolbyVisionHEVCCodecInfo2.pattern)
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    ) {
+               ||
+               base::MatchPattern(codec_id, kDolbyVisionAV1CodecInfo.pattern)) {
       has_dv = true;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)

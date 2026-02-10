@@ -881,7 +881,7 @@ TEST(ParseDolbyVisionCodecIdTest, InvalidDolbyVisionCodecIds) {
   EXPECT_FALSE(ParseDolbyVisionCodecId("dvav.07.07"));
   EXPECT_FALSE(ParseDolbyVisionCodecId("dva1.07.07"));
 
-  // Codec dvhe/dvh1 should only contain profile 5, and 7.
+  // Codec dvhe/dvh1 should only contain profile 5, 7 and 20.
   {
     auto result = ParseDolbyVisionCodecId("dvhe.05.07");
     ASSERT_TRUE(result);
@@ -900,8 +900,24 @@ TEST(ParseDolbyVisionCodecIdTest, InvalidDolbyVisionCodecIds) {
     EXPECT_EQ(DOLBYVISION_PROFILE7, result->profile);
     EXPECT_EQ(7u, result->level);
   }
+  {
+    auto result = ParseDolbyVisionCodecId("dvh1.20.07");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(DOLBYVISION_PROFILE20, result->profile);
+    EXPECT_EQ(7u, result->level);
+  }
   EXPECT_FALSE(ParseDolbyVisionCodecId("dvhe.00.07"));
   EXPECT_FALSE(ParseDolbyVisionCodecId("dvh1.00.07"));
+
+  // Codec dav1 should only contain profile 10.
+  {
+    auto result = ParseDolbyVisionCodecId("dav1.10.07");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(DOLBYVISION_PROFILE10, result->profile);
+    EXPECT_EQ(7u, result->level);
+  }
+  EXPECT_FALSE(ParseDolbyVisionCodecId("dav1.05.07"));
+  EXPECT_FALSE(ParseDolbyVisionCodecId("dav1.07.07"));
 
   // Profiles 1, 2, 3, 4 and 6 are deprecated.
   EXPECT_FALSE(ParseDolbyVisionCodecId("dvav.01.07"));

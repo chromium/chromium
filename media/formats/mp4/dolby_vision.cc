@@ -34,7 +34,7 @@ FourCC DolbyVisionConfiguration8::BoxType() const {
 
 bool DolbyVisionConfiguration8::Parse(BoxReader* reader) {
   return dovi_config.Parse(reader, reader->media_log()) &&
-         dovi_config.dv_profile > 7 && dovi_config.dv_profile < 10;
+         dovi_config.dv_profile > 7 && dovi_config.dv_profile <= 20;
 }
 
 bool DOVIDecoderConfigurationRecord::ParseForTesting(const uint8_t* data,
@@ -75,6 +75,12 @@ bool DOVIDecoderConfigurationRecord::Parse(BufferReader* reader,
       break;
     case 9:
       codec_profile = DOLBYVISION_PROFILE9;
+      break;
+    case 10:
+      codec_profile = DOLBYVISION_PROFILE10;
+      break;
+    case 20:
+      codec_profile = DOLBYVISION_PROFILE20;
       break;
     default:
       DVLOG(2) << "Deprecated or invalid Dolby Vision profile:"

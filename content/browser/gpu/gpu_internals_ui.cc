@@ -520,6 +520,10 @@ const char* GetProfileName(gpu::VideoCodecProfile profile) {
       return "dolby vision profile 8";
     case gpu::DOLBYVISION_PROFILE9:
       return "dolby vision profile 9";
+    case gpu::DOLBYVISION_PROFILE10:
+      return "dolby vision profile 10";
+    case gpu::DOLBYVISION_PROFILE20:
+      return "dolby vision profile 20";
     case gpu::THEORAPROFILE_ANY:
       return "theora";
     case gpu::AV1PROFILE_PROFILE_MAIN:

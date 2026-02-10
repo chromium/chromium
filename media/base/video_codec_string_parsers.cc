@@ -27,6 +27,10 @@ bool IsDolbyVisionHEVCCodecId(std::string_view codec_id) {
          base::StartsWith(codec_id, "dvhe.", base::CompareCase::SENSITIVE);
 }
 
+bool IsDolbyVisionAV1CodecId(std::string_view codec_id) {
+  return base::StartsWith(codec_id, "dav1.", base::CompareCase::SENSITIVE);
+}
+
 }  // namespace
 
 namespace media {
@@ -779,7 +783,8 @@ std::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
 // https://professional.dolby.com/siteassets/content-creation/dolby-vision-for-content-creators/dolbyvisioninmpegdashspecification_v2_0_public_20190107.pdf
 std::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
   if (!IsDolbyVisionAVCCodecId(codec_id) &&
-      !IsDolbyVisionHEVCCodecId(codec_id)) {
+      !IsDolbyVisionHEVCCodecId(codec_id) &&
+      !IsDolbyVisionAV1CodecId(codec_id)) {
     return std::nullopt;
   }
 
@@ -797,7 +802,7 @@ std::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
   std::vector<std::string> elem = base::SplitString(
       codec_id, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   DCHECK(elem[0] == "dvh1" || elem[0] == "dvhe" || elem[0] == "dva1" ||
-         elem[0] == "dvav");
+         elem[0] == "dvav" || elem[0] == "dav1");
 
   if (elem.size() != 3) {
     DVLOG(4) << __func__ << ": invalid dolby vision codec id " << codec_id;
@@ -807,7 +812,7 @@ std::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
   // Profile string should be two digits.
   unsigned profile_id = 0;
   if (elem[1].size() != 2 || !base::StringToUint(elem[1], &profile_id) ||
-      profile_id > 9) {
+      profile_id > 20) {
     DVLOG(4) << __func__ << ": invalid format or profile_id=" << elem[1];
     return std::nullopt;
   }
@@ -816,8 +821,9 @@ std::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
       .codec = VideoCodec::kDolbyVision,
   };
 
-  // Only profiles 0, 4, 5, 7, 8 and 9 are valid. Profile 0 and 9 are encoded
-  // based on AVC while profile 4, 5, 7 and 8 are based on HEVC.
+  // Only profiles 0, 4, 5, 7, 8, 9, 10 and 20 are valid. Profile 0 and 9 are
+  // encoded based on AVC, profile 4, 5, 7, 8 and 20 are based on HEVC, profile
+  // 10 is based on AV1.
   switch (profile_id) {
     case 0:
     case 9:
@@ -835,6 +841,7 @@ std::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
     case 5:
     case 7:
     case 8:
+    case 20:
       if (!IsDolbyVisionHEVCCodecId(codec_id)) {
         DVLOG(4) << __func__
                  << ": codec id is mismatched with profile_id=" << profile_id;
@@ -846,6 +853,18 @@ std::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
         result.profile = DOLBYVISION_PROFILE7;
       } else if (profile_id == 8) {
         result.profile = DOLBYVISION_PROFILE8;
+      } else if (profile_id == 20) {
+        result.profile = DOLBYVISION_PROFILE20;
+      }
+      break;
+    case 10:
+      if (!IsDolbyVisionAV1CodecId(codec_id)) {
+        DVLOG(4) << __func__
+                 << ": codec id is mismatched with profile_id=" << profile_id;
+        return std::nullopt;
+      }
+      if (profile_id == 10) {
+        result.profile = DOLBYVISION_PROFILE10;
       }
       break;
     default:

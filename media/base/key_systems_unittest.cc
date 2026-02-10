@@ -46,11 +46,11 @@ const char kRobustnessNotSupported[] = "not-supported";
 // long as they are not in conflict with the real ones (static_asserted below).
 // TODO(crbug.com/40521627): Remove container type (FOO) from codec enums.
 enum TestCodec : uint32_t {
-  TEST_CODEC_FOO_AUDIO = 1 << 25,
+  TEST_CODEC_FOO_AUDIO = 1 << 26,
   TEST_CODEC_FOO_AUDIO_ALL = TEST_CODEC_FOO_AUDIO,
-  TEST_CODEC_FOO_VIDEO = 1 << 26,
+  TEST_CODEC_FOO_VIDEO = 1 << 27,
   // Only supported by hardware secure codec in kExternal key system.
-  TEST_CODEC_FOO_SECURE_VIDEO = 1 << 27,
+  TEST_CODEC_FOO_SECURE_VIDEO = 1 << 28,
   TEST_CODEC_FOO_VIDEO_ALL = TEST_CODEC_FOO_VIDEO | TEST_CODEC_FOO_SECURE_VIDEO,
   TEST_CODEC_FOO_ALL = TEST_CODEC_FOO_AUDIO_ALL | TEST_CODEC_FOO_VIDEO_ALL
 };

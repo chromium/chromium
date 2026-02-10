@@ -67,6 +67,8 @@ CHECK_PROFILE_ENUM(HEVCPROFILE_SCREEN_EXTENDED);
 CHECK_PROFILE_ENUM(HEVCPROFILE_SCALABLE_REXT);
 CHECK_PROFILE_ENUM(HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED);
 CHECK_PROFILE_ENUM(HEVCPROFILE_EXT_MAX);
+CHECK_PROFILE_ENUM(DOLBYVISION_PROFILE10);
+CHECK_PROFILE_ENUM(DOLBYVISION_PROFILE20);
 CHECK_PROFILE_ENUM(VIDEO_CODEC_PROFILE_MAX);
 
 #undef CHECK_PROFILE_ENUM
@@ -121,6 +123,8 @@ bool EnumTraits<arc::mojom::VideoCodecProfile, media::VideoCodecProfile>::
     case arc::mojom::VideoCodecProfile::AV1PROFILE_PROFILE_MAIN:
     case arc::mojom::VideoCodecProfile::AV1PROFILE_PROFILE_HIGH:
     case arc::mojom::VideoCodecProfile::AV1PROFILE_PROFILE_PRO:
+    case arc::mojom::VideoCodecProfile::DOLBYVISION_PROFILE10:
+    case arc::mojom::VideoCodecProfile::DOLBYVISION_PROFILE20:
       *output = static_cast<media::VideoCodecProfile>(input);
       return true;
   }
