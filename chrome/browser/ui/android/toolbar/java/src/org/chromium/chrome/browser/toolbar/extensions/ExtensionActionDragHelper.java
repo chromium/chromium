@@ -21,8 +21,6 @@ import org.chromium.ui.util.MotionEventUtils;
 @NullMarked
 public class ExtensionActionDragHelper implements View.OnAttachStateChangeListener {
 
-    private static final int LONGPRESS_DELAY_MS = 500;
-
     private final ItemTouchHelper mItemTouchHelper;
     private final RecyclerView.ViewHolder mViewHolder;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
@@ -76,7 +74,7 @@ public class ExtensionActionDragHelper implements View.OnAttachStateChangeListen
 
             mIsLongPressTriggered = false;
 
-            mHandler.postDelayed(mLongPressRunnable, LONGPRESS_DELAY_MS);
+            mHandler.postDelayed(mLongPressRunnable, ViewConfiguration.getLongPressTimeout());
 
             return true;
         } else if (action == MotionEvent.ACTION_MOVE) {

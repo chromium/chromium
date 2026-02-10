@@ -94,8 +94,8 @@ public class ExtensionActionDragHelperTest {
         mDragHelper.onTouch(
                 mItemView, obtainEvent(MotionEvent.ACTION_DOWN, /* x= */ 50f, /* y= */ 50f));
 
-        // Advance time past the 500ms threshold.
-        ShadowLooper.idleMainLooper(500, TimeUnit.MILLISECONDS);
+        // Advance time past the system long press threshold.
+        ShadowLooper.idleMainLooper(ViewConfiguration.getLongPressTimeout(), TimeUnit.MILLISECONDS);
 
         // Verify Long Click triggered.
         verify(mItemView).performLongClick();
@@ -130,7 +130,8 @@ public class ExtensionActionDragHelperTest {
         verify(mItemView).setPressed(false);
 
         // Verify drag cancels the long press timer (advance time to check).
-        ShadowLooper.idleMainLooper(1000, TimeUnit.MILLISECONDS);
+        ShadowLooper.idleMainLooper(
+                ViewConfiguration.getLongPressTimeout() * 2, TimeUnit.MILLISECONDS);
         verify(mItemView, never()).performLongClick();
     }
 
@@ -146,7 +147,8 @@ public class ExtensionActionDragHelperTest {
         verify(mItemView, never()).performClick();
 
         // Ensure timer is killed.
-        ShadowLooper.idleMainLooper(1000, TimeUnit.MILLISECONDS);
+        ShadowLooper.idleMainLooper(
+                ViewConfiguration.getLongPressTimeout() * 2, TimeUnit.MILLISECONDS);
         verify(mItemView, never()).performLongClick();
     }
 
