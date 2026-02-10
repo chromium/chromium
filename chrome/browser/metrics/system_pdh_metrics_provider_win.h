@@ -36,6 +36,8 @@ class SystemPdhMetricsProvider : public metrics::MetricsProvider {
 
   static constexpr std::string_view kHardFaultCountHistogram =
       "Memory.Experimental.Windows.HardFaultsFulfilledPerSecond";
+  static constexpr std::string_view kDemandZeroFaultCountHistogram =
+      "Memory.Experimental.Windows.DemandZeroFaultsFulfilledPerSecond";
   static constexpr std::string_view kPagefileUtilizationHistogram =
       "Memory.Experimental.Windows.PagefileUtilization";
   static constexpr std::string_view kUserTimeHistogram =
@@ -75,10 +77,11 @@ class SystemPdhMetricsProvider : public metrics::MetricsProvider {
     // These 'handles' do not need to be freed. Their lifetime is associated
     // with pdh_query_. They are reinitialized every time recording is
     // enabled/disabled.
-    PDH_HCOUNTER pages_input_per_second_;
-    PDH_HCOUNTER pagefile_utilization_;
-    PDH_HCOUNTER user_cpu_time_;
-    PDH_HCOUNTER kernel_cpu_time_;
+    PDH_HCOUNTER pages_input_per_second_ = {};
+    PDH_HCOUNTER demand_zero_faults_per_second_ = {};
+    PDH_HCOUNTER pagefile_utilization_ = {};
+    PDH_HCOUNTER user_cpu_time_ = {};
+    PDH_HCOUNTER kernel_cpu_time_ = {};
 
     // Used to Sample() on a timer.
     base::RepeatingTimer timer_;

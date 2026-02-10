@@ -62,6 +62,19 @@ SystemPdhMetricsProvider::PdhQueryHandler::PdhQueryHandler() {
     return;
   }
 
+  // Demand Zero Faults/sec is the rate at which page faults which must be
+  // fulfilled with a zero page are demanded from the operating system, system
+  // wide. Demand zero faults occur whenever a zero page must be provided, which
+  // includes every single private memory allocation.
+  static constexpr wchar_t kDemandZeroFaultsPerSecond[] =
+      L"\\Memory\\Demand Zero Faults/sec";
+  status =
+      ::PdhAddEnglishCounter(pdh_query_.get(), kDemandZeroFaultsPerSecond,
+                             /*dwUserData=*/0, &demand_zero_faults_per_second_);
+  if (!VerifyPdhResult(status, nullptr)) {
+    return;
+  }
+
   // The amount of the Page File in use in percent.
   static constexpr wchar_t kPagingFileUsage[] =
       L"\\Paging File(_Total)\\% Usage";
@@ -127,6 +140,15 @@ void SystemPdhMetricsProvider::PdhQueryHandler::Sample() {
     return;
   }
   base::UmaHistogramCounts100000(kHardFaultCountHistogram,
+                                 counter_value.longValue);
+
+  // Demand zero fault counts are absolute and can be seen in LONG.
+  status = ::PdhGetFormattedCounterValue(demand_zero_faults_per_second_,
+                                         PDH_FMT_LONG, nullptr, &counter_value);
+  if (!VerifyPdhResult(status, &counter_value)) {
+    return;
+  }
+  base::UmaHistogramCounts100000(kDemandZeroFaultCountHistogram,
                                  counter_value.longValue);
 
   // Since pagefile utilization is a percentage in the range [0,100], read it as
