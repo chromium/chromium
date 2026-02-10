@@ -22,10 +22,13 @@ source_set("diagnostics") {
 
   deps = [
     "//base",
+    "//chrome/browser/ash/crosapi",
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
     "//chrome/browser/chromeos/extensions/telemetry/api/routines:routine_manager",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/ash/components/telemetry_extension/diagnostics",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",
     "//extensions/browser",
     "//extensions/common",
@@ -55,6 +58,8 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/telemetry_extension/diagnostics",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",
     "//content/test:test_support",
     "//extensions/common",

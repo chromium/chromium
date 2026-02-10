@@ -43,11 +43,12 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
   void BindReceiver(
       mojo::PendingReceiver<crosapi::mojom::DiagnosticsService> receiver);
 
- private:
   // Ensures that |service_| created and connected to the
   // CrosHealthdDiagnosticsService.
-  cros_healthd::mojom::CrosHealthdDiagnosticsService* GetService();
+  const mojo::Remote<cros_healthd::mojom::CrosHealthdDiagnosticsService>&
+  GetService();
 
+ private:
   void OnDisconnect();
 
   void GetAvailableRoutines(GetAvailableRoutinesCallback callback) override;
@@ -60,8 +61,6 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
       const std::optional<std::string>& expected_power_type,
       RunAcPowerRoutineCallback callback) override;
   void RunAudioDriverRoutine(RunAudioDriverRoutineCallback callback) override;
-  void RunBatteryCapacityRoutine(
-      RunBatteryCapacityRoutineCallback callback) override;
   void RunBatteryChargeRoutine(
       uint32_t length_seconds,
       uint32_t minimum_charge_percent_required,
@@ -70,14 +69,9 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
       uint32_t length_seconds,
       uint32_t maximum_discharge_percent_allowed,
       RunBatteryDischargeRoutineCallback callback) override;
-  void RunBatteryHealthRoutine(
-      RunBatteryHealthRoutineCallback callback) override;
-  void RunBluetoothDiscoveryRoutine(
-      RunBluetoothDiscoveryRoutineCallback) override;
   void RunBluetoothPairingRoutine(
       const std::string& peripheral_id,
       RunBluetoothPairingRoutineCallback callback) override;
-  void RunBluetoothPowerRoutine(RunBluetoothPowerRoutineCallback) override;
   void RunBluetoothScanningRoutine(
       uint32_t length_seconds,
       RunBluetoothScanningRoutineCallback callback) override;
@@ -109,9 +103,6 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
   void RunNvmeSelfTestRoutine(
       crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum nvme_self_test_type,
       RunNvmeSelfTestRoutineCallback callback) override;
-  void DEPRECATED_RunNvmeWearLevelRoutine(
-      uint32_t wear_level_threshold,
-      DEPRECATED_RunNvmeWearLevelRoutineCallback callback) override;
   void RunPrimeSearchRoutine(uint32_t length_seconds,
                              RunPrimeSearchRoutineCallback callback) override;
   void RunSensitiveSensorRoutine(

@@ -85,15 +85,6 @@ void FakeDiagnosticsService::RunAcPowerRoutine(
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
 }
 
-void FakeDiagnosticsService::RunBatteryCapacityRoutine(
-    RunBatteryCapacityRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kBatteryCapacity;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
 void FakeDiagnosticsService::RunBatteryChargeRoutine(
     uint32_t length_seconds,
     uint32_t minimum_charge_percent_required,
@@ -130,38 +121,11 @@ void FakeDiagnosticsService::RunBatteryDischargeRoutine(
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
 }
 
-void FakeDiagnosticsService::RunBatteryHealthRoutine(
-    RunBatteryHealthRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kBatteryHealth;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
-void FakeDiagnosticsService::RunBluetoothDiscoveryRoutine(
-    RunBluetoothDiscoveryRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kBluetoothDiscovery;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
 void FakeDiagnosticsService::RunBluetoothPairingRoutine(
     const std::string& peripheral_id,
     RunBluetoothPairingRoutineCallback callback) {
   actual_passed_parameters_.clear();
   actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kBluetoothPairing;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
-void FakeDiagnosticsService::RunBluetoothPowerRoutine(
-    RunBluetoothPowerRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kBluetoothPower;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
@@ -318,12 +282,6 @@ void FakeDiagnosticsService::RunNvmeSelfTestRoutine(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
-void FakeDiagnosticsService::DEPRECATED_RunNvmeWearLevelRoutine(
-    uint32_t wear_level_threshold,
-    DEPRECATED_RunNvmeWearLevelRoutineCallback callback) {
-  std::move(callback).Run(nullptr);
 }
 
 void FakeDiagnosticsService::RunPrimeSearchRoutine(

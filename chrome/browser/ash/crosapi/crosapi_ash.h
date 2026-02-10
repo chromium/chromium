@@ -112,6 +112,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   ash::ProbeServiceAsh* probe_service_ash() { return probe_service_ash_.get(); }
 
+  ash::DiagnosticsServiceAsh* diagnostics_service_ash() {
+    return diagnostics_service_ash_.get();
+  }
+
  private:
   // Called when a connection is lost.
   void OnDisconnected();

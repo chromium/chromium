@@ -15,11 +15,17 @@
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_converters.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_metrics.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/remote_diagnostics_service_strategy.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_manager.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
+#include "chromeos/ash/components/telemetry_extension/diagnostics/diagnostics_service_ash.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
@@ -90,6 +96,18 @@ mojo::Remote<crosapi::mojom::DiagnosticsService>&
 DiagnosticsApiFunctionBase::GetRemoteService() {
   DCHECK(remote_diagnostics_service_strategy_);
   return remote_diagnostics_service_strategy_->GetRemoteService();
+}
+
+const mojo::Remote<ash::cros_healthd::mojom::CrosHealthdDiagnosticsService>&
+DiagnosticsApiFunctionBase::GetService() {
+  // As long as some of the API implementations still go through
+  // DiagnosticsServiceAsh (crosapi::mojom::DiagnosticsService), we must use the
+  // same pipe to cros_healthd that DiagnosticsServiceAsh uses for requests to
+  // arrive in order.
+  return crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->diagnostics_service_ash()
+      ->GetService();
 }
 
 // OsDiagnosticsGetAvailableRoutinesFunction -----------------------------------
@@ -186,9 +204,30 @@ void DiagnosticsApiRunRoutineFunctionBase::OnResult(
   Respond(WithArguments(result.ToValue()));
 }
 
+void DiagnosticsApiRunRoutineFunctionBase::OnResponse(
+    ash::cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+  if (!ptr) {
+    // |ptr| should never be null, otherwise Mojo validation will fail.
+    // However it's safer to handle it in case of API changes.
+    Respond(Error("API internal error"));
+    return;
+  }
+
+  cx_diag::RunRoutineResponse result;
+  result.id = ptr->id;
+  result.status = converters::diagnostics::ConvertRoutineStatus(ptr->status);
+  Respond(WithArguments(result.ToValue()));
+}
+
 base::OnceCallback<void(crosapi::mojom::DiagnosticsRunRoutineResponsePtr)>
 DiagnosticsApiRunRoutineFunctionBase::GetOnResult() {
   return base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+}
+
+base::OnceCallback<void(ash::cros_healthd::mojom::RunRoutineResponsePtr)>
+DiagnosticsApiRunRoutineFunctionBase::GetOnResponse() {
+  return base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResponse,
+                        this);
 }
 
 // OsDiagnosticsRunAcPowerRoutineFunction ------------------------------
@@ -207,7 +246,7 @@ void OsDiagnosticsRunAcPowerRoutineFunction::RunIfAllowed() {
 
 // OsDiagnosticsRunBatteryCapacityRoutineFunction ------------------------------
 void OsDiagnosticsRunBatteryCapacityRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunBatteryCapacityRoutine(GetOnResult());
+  GetService()->RunBatteryCapacityRoutine(GetOnResponse());
 }
 
 // OsDiagnosticsRunBatteryChargeRoutineFunction --------------------------------
@@ -239,13 +278,13 @@ void OsDiagnosticsRunBatteryDischargeRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunBatteryHealthRoutineFunction --------------------------------
 
 void OsDiagnosticsRunBatteryHealthRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunBatteryHealthRoutine(GetOnResult());
+  GetService()->RunBatteryHealthRoutine(GetOnResponse());
 }
 
 // OsDiagnosticsRunBluetoothDiscoveryRoutineFunction ---------------------------
 
 void OsDiagnosticsRunBluetoothDiscoveryRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunBluetoothDiscoveryRoutine(GetOnResult());
+  GetService()->RunBluetoothDiscoveryRoutine(GetOnResponse());
 }
 
 // OsDiagnosticsRunBluetoothPairingRoutineFunction -----------------------------
@@ -273,7 +312,7 @@ void OsDiagnosticsRunBluetoothPairingRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunBluetoothPowerRoutineFunction -------------------------------
 
 void OsDiagnosticsRunBluetoothPowerRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunBluetoothPowerRoutine(GetOnResult());
+  GetService()->RunBluetoothPowerRoutine(GetOnResponse());
 }
 
 // OsDiagnosticsRunBluetoothScanningRoutineFunction ----------------------------

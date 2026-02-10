@@ -41,8 +41,6 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
       crosapi::mojom::DiagnosticsAcPowerStatusEnum expected_status,
       const std::optional<std::string>& expected_power_type,
       RunAcPowerRoutineCallback callback) override;
-  void RunBatteryCapacityRoutine(
-      RunBatteryCapacityRoutineCallback callback) override;
   void RunBatteryChargeRoutine(
       uint32_t length_seconds,
       uint32_t minimum_charge_percent_required,
@@ -51,15 +49,9 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
       uint32_t length_seconds,
       uint32_t maximum_discharge_percent_allowed,
       RunBatteryDischargeRoutineCallback callback) override;
-  void RunBatteryHealthRoutine(
-      RunBatteryHealthRoutineCallback callback) override;
-  void RunBluetoothDiscoveryRoutine(
-      RunBluetoothDiscoveryRoutineCallback callback) override;
   void RunBluetoothPairingRoutine(
       const std::string& peripheral_id,
       RunBluetoothPairingRoutineCallback callback) override;
-  void RunBluetoothPowerRoutine(
-      RunBluetoothPowerRoutineCallback callback) override;
   void RunBluetoothScanningRoutine(
       uint32_t length_seconds,
       RunBluetoothScanningRoutineCallback callback) override;
@@ -90,9 +82,6 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
   void RunNvmeSelfTestRoutine(
       crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum nvme_self_test_type,
       RunNvmeSelfTestRoutineCallback callback) override;
-  void DEPRECATED_RunNvmeWearLevelRoutine(
-      uint32_t wear_level_threshold,
-      DEPRECATED_RunNvmeWearLevelRoutineCallback callback) override;
   void RunPrimeSearchRoutine(uint32_t length_seconds,
                              RunPrimeSearchRoutineCallback callback) override;
   void RunSensitiveSensorRoutine(

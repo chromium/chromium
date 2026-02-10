@@ -54,7 +54,7 @@ void DiagnosticsServiceAsh::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-cros_healthd::mojom::CrosHealthdDiagnosticsService*
+const mojo::Remote<cros_healthd::mojom::CrosHealthdDiagnosticsService>&
 DiagnosticsServiceAsh::GetService() {
   if (!service_ || !service_.is_connected()) {
     cros_healthd::ServiceConnection::GetInstance()->BindDiagnosticsService(
@@ -62,7 +62,7 @@ DiagnosticsServiceAsh::GetService() {
     service_.set_disconnect_handler(base::BindOnce(
         &DiagnosticsServiceAsh::OnDisconnect, base::Unretained(this)));
   }
-  return service_.get();
+  return service_;
 }
 
 void DiagnosticsServiceAsh::OnDisconnect() {
@@ -126,18 +126,6 @@ void DiagnosticsServiceAsh::RunAudioDriverRoutine(
       std::move(callback)));
 }
 
-void DiagnosticsServiceAsh::RunBatteryCapacityRoutine(
-    RunBatteryCapacityRoutineCallback callback) {
-  GetService()->RunBatteryCapacityRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunBatteryCapacityRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
 void DiagnosticsServiceAsh::RunBatteryChargeRoutine(
     uint32_t length_seconds,
     uint32_t minimum_charge_percent_required,
@@ -170,30 +158,6 @@ void DiagnosticsServiceAsh::RunBatteryDischargeRoutine(
           std::move(callback)));
 }
 
-void DiagnosticsServiceAsh::RunBatteryHealthRoutine(
-    RunBatteryHealthRoutineCallback callback) {
-  GetService()->RunBatteryHealthRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunBatteryHealthRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunBluetoothDiscoveryRoutine(
-    RunBluetoothDiscoveryRoutineCallback callback) {
-  GetService()->RunBluetoothDiscoveryRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::
-             RunBluetoothDiscoveryRoutineCallback callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
-}
-
 void DiagnosticsServiceAsh::RunBluetoothPairingRoutine(
     const std::string& peripheral_id,
     RunBluetoothPairingRoutineCallback callback) {
@@ -207,18 +171,6 @@ void DiagnosticsServiceAsh::RunBluetoothPairingRoutine(
                 converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
           },
           std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunBluetoothPowerRoutine(
-    RunBluetoothPowerRoutineCallback callback) {
-  GetService()->RunBluetoothPowerRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunBluetoothPowerRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
 }
 
 void DiagnosticsServiceAsh::RunBluetoothScanningRoutine(
@@ -407,13 +359,6 @@ void DiagnosticsServiceAsh::RunNvmeSelfTestRoutine(
                 converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
           },
           std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::DEPRECATED_RunNvmeWearLevelRoutine(
-    uint32_t wear_level_threshold,
-    DEPRECATED_RunNvmeWearLevelRoutineCallback callback) {
-  // This routine is deprecated.
-  std::move(callback).Run(nullptr);
 }
 
 void DiagnosticsServiceAsh::RunPrimeSearchRoutine(

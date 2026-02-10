@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 
@@ -273,6 +274,7 @@ bool ConvertMojoRoutine(crosapi::DiagnosticsRoutineEnum in,
     case crosapi::DiagnosticsRoutineEnum::kUnknown:
       return false;
   }
+  NOTREACHED();
 }
 
 cx_diag::RoutineStatus ConvertRoutineStatus(
@@ -305,6 +307,40 @@ cx_diag::RoutineStatus ConvertRoutineStatus(
     case crosapi::DiagnosticsRoutineStatusEnum::kNotRun:
       return cx_diag::RoutineStatus::kNotRun;
   }
+  NOTREACHED();
+}
+
+cx_diag::RoutineStatus ConvertRoutineStatus(
+    ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum status) {
+  switch (status) {
+    case ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kUnknown:
+      return cx_diag::RoutineStatus::kUnknown;
+    case ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady:
+      return cx_diag::RoutineStatus::kReady;
+    case ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kRunning:
+      return cx_diag::RoutineStatus::kRunning;
+    case ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kWaiting:
+      return cx_diag::RoutineStatus::kWaitingUserAction;
+    case ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kPassed:
+      return cx_diag::RoutineStatus::kPassed;
+    case ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kFailed:
+      return cx_diag::RoutineStatus::kFailed;
+    case ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kError:
+      return cx_diag::RoutineStatus::kError;
+    case ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kCancelled:
+      return cx_diag::RoutineStatus::kCancelled;
+    case ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kFailedToStart:
+      return cx_diag::RoutineStatus::kFailedToStart;
+    case ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kRemoved:
+      return cx_diag::RoutineStatus::kRemoved;
+    case ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kCancelling:
+      return cx_diag::RoutineStatus::kCancelling;
+    case ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kUnsupported:
+      return cx_diag::RoutineStatus::kUnsupported;
+    case ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kNotRun:
+      return cx_diag::RoutineStatus::kNotRun;
+  }
+  NOTREACHED();
 }
 
 crosapi::DiagnosticsRoutineCommandEnum ConvertRoutineCommand(
@@ -349,6 +385,7 @@ cx_diag::UserMessageType ConvertRoutineUserMessage(
     case crosapi::DiagnosticsRoutineUserMessageEnum::kPressPowerButton:
       return cx_diag::UserMessageType::kPressPowerButton;
   }
+  NOTREACHED();
 }
 
 crosapi::DiagnosticsDiskReadRoutineTypeEnum ConvertDiskReadRoutineType(
@@ -374,6 +411,7 @@ crosapi::DiagnosticsNvmeSelfTestTypeEnum ConvertNvmeSelfTestRoutineType(
     case cx_diag::NvmeSelfTestType::kLongTest:
       return crosapi::DiagnosticsNvmeSelfTestTypeEnum::kLongSelfTest;
   }
+  NOTREACHED();
 }
 
 crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType
@@ -390,6 +428,7 @@ ConvertVolumeButtonRoutineButtonType(
       return crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
           ButtonType::kVolumeDown;
   }
+  NOTREACHED();
 }
 
 crosapi::TelemetryDiagnosticLedName ConvertLedName(cx_diag::LedName led_name) {
@@ -407,6 +446,7 @@ crosapi::TelemetryDiagnosticLedName ConvertLedName(cx_diag::LedName led_name) {
     case cx_diag::LedName::kRight:
       return crosapi::TelemetryDiagnosticLedName::kRight;
   }
+  NOTREACHED();
 }
 
 crosapi::TelemetryDiagnosticLedColor ConvertLedColor(
@@ -427,6 +467,7 @@ crosapi::TelemetryDiagnosticLedColor ConvertLedColor(
     case cx_diag::LedColor::kAmber:
       return crosapi::TelemetryDiagnosticLedColor::kAmber;
   }
+  NOTREACHED();
 }
 
 crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State ConvertLedLitUpState(
@@ -442,6 +483,7 @@ crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State ConvertLedLitUpState(
       return crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::
           kNotLitUp;
   }
+  NOTREACHED();
 }
 
 crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::State
@@ -458,6 +500,7 @@ ConvertKeyboardBacklightState(
       return crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::
           State::kAnyNotLitUp;
   }
+  NOTREACHED();
 }
 
 std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
@@ -501,6 +544,7 @@ ConvertRoutineArgumentsUnion(
       return ConvertExtensionUnionToMojoUnion(
           extension_union.keyboard_backlight.value());
   }
+  NOTREACHED();
 }
 
 std::optional<crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr>
@@ -531,6 +575,7 @@ ConvertRoutineInquiryReplyUnion(
       return ConvertExtensionUnionToMojoUnion(
           extension_union.check_keyboard_backlight_state.value());
   }
+  NOTREACHED();
 }
 
 }  // namespace chromeos::converters::diagnostics

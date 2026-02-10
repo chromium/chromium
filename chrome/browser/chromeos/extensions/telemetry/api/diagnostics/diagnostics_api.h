@@ -10,6 +10,7 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_api_guard_function.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/remote_diagnostics_service_strategy.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "extensions/browser/extension_function.h"
@@ -37,7 +38,10 @@ class DiagnosticsApiFunctionBase : public DiagnosticsApiFunctionV1AndV2Base {
  protected:
   ~DiagnosticsApiFunctionBase() override;
 
+  // GetRemoteService is getting gradually replaced by GetService.
   mojo::Remote<crosapi::mojom::DiagnosticsService>& GetRemoteService();
+  const mojo::Remote<ash::cros_healthd::mojom::CrosHealthdDiagnosticsService>&
+  GetService();
 
  private:
   std::unique_ptr<RemoteDiagnosticsServiceStrategy>
@@ -83,7 +87,9 @@ class OsDiagnosticsGetRoutineUpdateFunction
 
 class DiagnosticsApiRunRoutineFunctionBase : public DiagnosticsApiFunctionBase {
  public:
+  // OnResult is gradually getting replaced by OnResponse.
   void OnResult(crosapi::mojom::DiagnosticsRunRoutineResponsePtr ptr);
+  void OnResponse(ash::cros_healthd::mojom::RunRoutineResponsePtr ptr);
 
  protected:
   ~DiagnosticsApiRunRoutineFunctionBase() override = default;
@@ -92,6 +98,8 @@ class DiagnosticsApiRunRoutineFunctionBase : public DiagnosticsApiFunctionBase {
   // the response passed to the callback.
   base::OnceCallback<void(crosapi::mojom::DiagnosticsRunRoutineResponsePtr)>
   GetOnResult();
+  base::OnceCallback<void(ash::cros_healthd::mojom::RunRoutineResponsePtr)>
+  GetOnResponse();
 };
 
 class OsDiagnosticsRunAcPowerRoutineFunction
