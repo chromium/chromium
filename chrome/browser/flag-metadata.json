@@ -4990,11 +4990,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "gemini-cross-tab",
-    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "gemini-dynamic-settings",
     "owners": [ "joepeplowski@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 160
@@ -5034,11 +5029,6 @@
   },
   {
     "name": "gemini-navigation-promo",
-    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 148
-  },
-  {
-    "name": "gemini-onboarding-cards",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 148
   },
@@ -7401,14 +7391,6 @@
   {
     "name": "page-content-cache",
     "owners": [ "haileywang@google.com", "ssid@chromium.org" ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "page-context-anchor-tags",
-    "owners": [
-      "nicolasmacbeth@google.com",
-      "bling-alchemy-eng@google.com"
-    ],
     "expiry_milestone": 150
   },
   {

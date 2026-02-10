@@ -393,9 +393,6 @@ extern const char kFullscreenTransitionSpeedDescription[];
 extern const char kGeminiCopresenceName[];
 extern const char kGeminiCopresenceDescription[];
 
-extern const char kGeminiCrossTabName[];
-extern const char kGeminiCrossTabDescription[];
-
 extern const char kGeminiDynamicSettingsName[];
 extern const char kGeminiDynamicSettingsDescription[];
 
@@ -419,9 +416,6 @@ extern const char kGeminiLoadingStateRedesignDescription[];
 
 extern const char kGeminiNavigationPromoName[];
 extern const char kGeminiNavigationPromoDescription[];
-
-extern const char kGeminiOnboardingCardsName[];
-extern const char kGeminiOnboardingCardsDescription[];
 
 extern const char kGeminiPersonalizationName[];
 extern const char kGeminiPersonalizationDescription[];
@@ -782,9 +776,6 @@ extern const char kPageContentAnnotationsDescription[];
 
 extern const char kPageContentAnnotationsRemotePageMetadataName[];
 extern const char kPageContentAnnotationsRemotePageMetadataDescription[];
-
-extern const char kPageContextAnchorTagsName[];
-extern const char kPageContextAnchorTagsDescription[];
 
 extern const char kPageVisibilityPageContentAnnotationsName[];
 extern const char kPageVisibilityPageContentAnnotationsDescription[];

@@ -66,13 +66,6 @@ void BwgService::Shutdown() {
 #pragma mark - Public
 
 bool BwgService::IsProfileEligibleForGemini() {
-  if (!IsGeminiAvailableForManagedAccounts()) {
-    if (auth_service_ && auth_service_->HasPrimaryIdentityManaged(
-                             signin::ConsentLevel::kSignin)) {
-      return false;
-    }
-  }
-
   AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   bool tokens_ok =

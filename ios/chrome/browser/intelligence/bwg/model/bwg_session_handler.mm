@@ -152,12 +152,10 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   _hasReceivedFirstResponse = NO;
   // Reset first prompt flag for new session.
   _hasSubmittedFirstPrompt = NO;
-
-  if (IsGeminiCrossTabEnabled()) {
-    [self dismissOtherActiveSessionsUsingClientID:clientID];
-  }
   // Reset prompt counters for new session.
   _totalPromptsInSession = 0;
+
+  [self dismissOtherActiveSessionsUsingClientID:clientID];
 }
 
 - (void)UIDidDisappearWithClientID:(NSString*)clientID

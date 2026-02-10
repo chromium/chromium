@@ -563,7 +563,7 @@ result.links = linksArray;
       }));
 
   std::string nonce = base::Token::CreateRandom().ToString();
-  bool includeAnchors = IsPageContextAnchorTagsEnabled();
+  bool includeAnchors = IsPageActionMenuEnabled();
 
   if (_config->use_refactored_extractor()) {
     // Use the new way for extracting context.
@@ -649,7 +649,7 @@ result.links = linksArray;
     // Construct the JavaScript script to be executed on each Web Frame with a
     // random token as nonce to differentiate between runs/executions.
     std::u16string maybeAnchorTagsJavaScript =
-        IsPageContextAnchorTagsEnabled() ? kAnchorTagsJavaScript : u"";
+        IsPageActionMenuEnabled() ? kAnchorTagsJavaScript : u"";
     std::u16string script = base::ReplaceStringPlaceholders(
         kInnerTextTreeJavaScript,
         base::span<const std::u16string>(
@@ -1037,7 +1037,7 @@ result.links = linksArray;
                            parentNode:_rootAPCNode->mutable_root_node()];
 
   // Set its children anchor nodes.
-  if (IsPageContextAnchorTagsEnabled()) {
+  if (IsPageActionMenuEnabled()) {
     [self
         populateAnchorNodeChildrenWithValue:value
                                  parentNode:_rootAPCNode->mutable_root_node()];
@@ -1154,7 +1154,7 @@ result.links = linksArray;
                            parentNode:childRootNode];
 
   // Create the children anchor nodes.
-  if (IsPageContextAnchorTagsEnabled()) {
+  if (IsPageActionMenuEnabled()) {
     [self populateAnchorNodeChildrenWithValue:value parentNode:childRootNode];
   }
 

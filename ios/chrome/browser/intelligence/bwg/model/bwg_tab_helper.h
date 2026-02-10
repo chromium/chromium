@@ -203,16 +203,13 @@ class BwgTabHelper : public web::WebStateObserver,
                                     std::string server_id);
 
   // Removes the BWG session from the prefs.
-  void CleanupSessionFromPrefs(std::string session_id);
+  void CleanupSessionFromPrefs();
 
   // Updates the snapshot in storage for the associated Web State. If a snapshot
   // is cached (cropped fullscreen screenshot), use it to update the storage,
   // otherwise generate one normally for the content area.
   void UpdateWebStateSnapshotInStorage();
 
-  // Gets the associated WebState's visible URL during the last interaction, if
-  // present and not expired, from storage.
-  std::optional<std::string> GetURLOnLastInteraction();
 
   // Parses the response of a zero state suggestions execution.
   void ParseSuggestionsResponse(

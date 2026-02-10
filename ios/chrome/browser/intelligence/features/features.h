@@ -69,12 +69,6 @@ extern const char kAskGeminiChipPrepopulateAndIgnoreCriteria[];
 bool IsAskGeminiChipAllowNonconsentedUsersEnabled();
 extern const char kAskGeminiChipAllowNonconsentedUsers[];
 
-// Feature flag controlling the cross-tab floaty chat persistence.
-BASE_DECLARE_FEATURE(kGeminiCrossTab);
-
-// Returns true if the cross-tab chat persistence is enabled for the floaty.
-bool IsGeminiCrossTabEnabled();
-
 // Whether the omnibox entry point opens the BWG overlay immediately, skipping
 // the AI hub.
 bool IsDirectBWGEntryPoint();
@@ -128,20 +122,6 @@ BASE_DECLARE_FEATURE(kBWGPreciseLocation);
 
 // Returns true if the precise location setting is enabled.
 bool IsBWGPreciseLocationEnabled();
-
-// Feature flag controlling the inclusion of anchor tags (links) in Page
-// Context.
-BASE_DECLARE_FEATURE(kPageContextAnchorTags);
-
-// Returns true if the anchor tags are enabled in Page Context.
-bool IsPageContextAnchorTagsEnabled();
-
-// Feature flag controlling whether Gemini is available for managed accounts.
-BASE_DECLARE_FEATURE(kGeminiForManagedAccounts);
-
-// Returns true if Gemini is available for managed accounts. If true, can still
-// be disabled by an Enterprise policy.
-bool IsGeminiAvailableForManagedAccounts();
 
 // Feature flag to show the AI Hub new badge.
 BASE_DECLARE_FEATURE(kAIHubNewBadge);
@@ -256,10 +236,6 @@ bool IsGeminiLatencyImprovementEnabled();
 // page to finish loading.
 BASE_DECLARE_FEATURE(kGeminiImmediateOverlay);
 bool IsGeminiImmediateOverlayEnabled();
-
-// Feature flag for the discovery onboarding cards.
-BASE_DECLARE_FEATURE(kGeminiOnboardingCards);
-bool IsGeminiOnboardingCardsEnabled();
 
 // Feature flag to use the new refactored version of the page context extractor.
 // Acts as a killswitch where the feature is enabled by default.

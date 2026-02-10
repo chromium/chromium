@@ -91,9 +91,6 @@ extern NSString* const kLottieAnimationFREBannerName;
 // Session map dictionary key for the last interaction timestamp.
 extern const char kLastInteractionTimestampDictKey[];
 
-// Session map dictionary key for the server ID.
-extern const char kServerIDDictKey[];
-
 // The accessibility ID of the bwg consent FootNote textView.
 extern NSString* const kBwgFootNoteTextViewAccessibilityIdentifier;
 

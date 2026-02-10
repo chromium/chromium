@@ -10,7 +10,6 @@ NSString* const kBWGPromoConsentFullDetentIdentifier =
 NSString* const kLottieAnimationFREBannerName = @"FRE_Banner";
 
 const char kLastInteractionTimestampDictKey[] = "last_interaction_timestamp";
-const char kServerIDDictKey[] = "server_id";
 const char kURLOnLastInteractionDictKey[] = "url_on_last_interaction";
 
 // Links for attributed links.

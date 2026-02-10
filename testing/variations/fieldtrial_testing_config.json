@@ -14484,10 +14484,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AIHubNewBadge",
-                        "GeminiCrossTab",
-                        "GeminiForManagedAccounts",
-                        "PageActionMenu",
-                        "PageContextAnchorTags"
+                        "PageActionMenu"
                     ]
                 }
             ]
