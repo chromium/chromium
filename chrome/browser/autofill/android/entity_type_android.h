@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "chrome/browser/autofill/android/attribute_type_android.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -40,6 +41,7 @@ struct EntityTypeAndroid {
   std::string add_entity_type_string;
   std::string edit_entity_type_string;
   std::string delete_entity_type_string;
+  std::vector<AttributeTypeAndroid> attribute_types;
 };
 
 }  // namespace autofill

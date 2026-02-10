@@ -55,6 +55,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Collections;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -68,7 +69,8 @@ public class EntityEditorModuleTest {
                     /* typeNameAsString= */ "Passport",
                     /* addEntityTypeString= */ "Add passport",
                     /* editEntityTypeString= */ "Edit passport",
-                    /* deleteEntityTypeString= */ "Delete passport");
+                    /* deleteEntityTypeString= */ "Delete passport",
+                    /* attributeTypes= */ Collections.emptyList());
 
     private static final EntityInstance LOCAL_PASSPORT =
             new EntityInstance.Builder(PASSPORT_TYPE)

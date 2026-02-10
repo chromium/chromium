@@ -10,6 +10,8 @@ import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 
+import java.util.List;
+
 /**
  * Represents information of an Autofill AI entity type, used in the management page to build the
  * UI.
@@ -30,6 +32,8 @@ public class EntityType {
     private final String mEditEntityTypeString;
     // Used as title in the delete entity dialog.
     private final String mDeleteEntityTypeString;
+    // The complete list of attribute types this entity type supports.
+    private final List<AttributeType> mAttributeTypes;
 
     @CalledByNative
     public EntityType(
@@ -38,13 +42,16 @@ public class EntityType {
             @JniType("std::u16string") String typeNameAsString,
             @JniType("std::string") String addEntityTypeString,
             @JniType("std::string") String editEntityTypeString,
-            @JniType("std::string") String deleteEntityTypeString) {
+            @JniType("std::string") String deleteEntityTypeString,
+            @JniType("std::vector<autofill::AttributeTypeAndroid>")
+                    List<AttributeType> attributeTypes) {
         mTypeName = typeName;
         mIsReadOnly = isReadOnly;
         mTypeNameAsString = typeNameAsString;
         mAddEntityTypeString = addEntityTypeString;
         mEditEntityTypeString = editEntityTypeString;
         mDeleteEntityTypeString = deleteEntityTypeString;
+        mAttributeTypes = attributeTypes;
     }
 
     @CalledByNative
@@ -70,5 +77,9 @@ public class EntityType {
 
     public String getDeleteEntityTypeString() {
         return mDeleteEntityTypeString;
+    }
+
+    public List<AttributeType> getAttributeTypes() {
+        return mAttributeTypes;
     }
 }
