@@ -153,8 +153,8 @@ ExecutionEngine::ExecutionEngine(base::PassKey<ExecutionEngine> pass_key,
     : ExecutionEngine(
           pass_key,
           owner_task,
-          ui::NewUiEventDispatcher(ActorKeyedService::Get(owner_task.profile())
-                                       ->GetActorUiStateManager())) {}
+          ui::NewUiEventDispatcher(
+              owner_task.actor_keyed_service().GetActorUiStateManager())) {}
 
 // Protected constructor without pass key to allow subclassing.
 ExecutionEngine::ExecutionEngine(ActorTask& owner_task)
@@ -165,8 +165,7 @@ ExecutionEngine::ExecutionEngine(
     ActorTask& owner_task,
     std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher)
     : task_(owner_task),
-      journal_(
-          ActorKeyedService::Get(task_->profile())->GetJournal().GetSafeRef()),
+      journal_(task_->actor_keyed_service().GetJournal().GetSafeRef()),
       tool_controller_(std::make_unique<ToolController>(*task_, *this)),
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
       actor_login_service_(
@@ -380,7 +379,7 @@ void ExecutionEngine::CheckNavigationSensitiveUrlList(
   }
   base::expected<void, DecisionCallback> sensitive_check_result =
       MaybeCheckOptimizationGuideForSensitiveUrl(
-          navigation_url, task_->profile(),
+          navigation_url, task_->GetProfile(),
           base::BindOnce(&ExecutionEngine::OnNavigationSensitiveUrlListChecked,
                          GetWeakPtr(), initiator_origin,
                          url::Origin::Create(navigation_url), skip_prompt,
@@ -978,18 +977,18 @@ bool ExecutionEngine::HasActionSequence() const {
 
 favicon::FaviconService* ExecutionEngine::GetFaviconService() {
   return FaviconServiceFactory::GetForProfile(
-      task_->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+      task_->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
 }
 
 void ExecutionEngine::IsAcceptableNavigationDestination(
     const GURL& url,
     DecisionCallbackWithReason callback) {
-  MayActOnUrl(url, /*allow_insecure_http=*/true, task_->profile(), *journal_,
+  MayActOnUrl(url, /*allow_insecure_http=*/true, task_->GetProfile(), *journal_,
               task_->id(), task_->policy_checker(), std::move(callback));
 }
 
 Profile& ExecutionEngine::GetProfile() {
-  return *task_->profile();
+  return *task_->GetProfile();
 }
 
 AggregatedJournal& ExecutionEngine::GetJournal() {
@@ -1032,7 +1031,7 @@ void ExecutionEngine::SetUserSelectedCredential(
   user_selected_credentials_[origin] = credential_with_permission;
 
   affiliations::AffiliationService* affiliation_service =
-      AffiliationServiceFactory::GetForProfile(task_->profile());
+      AffiliationServiceFactory::GetForProfile(task_->GetProfile());
   // Fetch strongly affiliated domains, in order to be able to reuse the
   // permission for sites that do not have the exact same origin but are
   // strongly affiliated.

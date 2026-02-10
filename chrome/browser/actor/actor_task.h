@@ -67,7 +67,7 @@ class ActorTask {
   // Created only via ActorKeyedService::CreateTask or the CreateForTesting
   // method in this class.
   ActorTask(base::PassKey<ActorKeyedService, ActorTask>,
-            Profile* profile,
+            ActorKeyedService& service,
             TaskId id,
             std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
             webui::mojom::TaskOptionsPtr options,
@@ -80,7 +80,7 @@ class ActorTask {
   ActorTask& operator=(const ActorTask&) = delete;
 
   static std::unique_ptr<ActorTask> CreateForTesting(
-      Profile* profile,
+      ActorKeyedService& service,
       TaskId id,
       std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
       webui::mojom::TaskOptionsPtr options,
@@ -217,7 +217,9 @@ class ActorTask {
 
   base::WeakPtr<ActorTask> GetWeakPtr();
 
-  Profile* profile() const { return profile_; }
+  Profile* GetProfile() const;
+
+  ActorKeyedService& actor_keyed_service() const { return service_.get(); }
 
  private:
   class ActorControlledTabState : public content::WebContentsObserver {
@@ -283,7 +285,8 @@ class ActorTask {
                        std::vector<mojom::ActionResultPtr> add_tab_results);
 
   State state_ = State::kCreated;
-  raw_ptr<Profile> profile_;
+
+  const raw_ref<ActorKeyedService> service_;
 
   TaskId id_;
 

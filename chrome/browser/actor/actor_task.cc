@@ -133,25 +133,24 @@ void ActorTask::ActorControlledTabState::OnVisibilityChanged(
 }
 
 ActorTask::ActorTask(base::PassKey<ActorKeyedService, ActorTask>,
-                     Profile* profile,
+                     ActorKeyedService& service,
                      TaskId id,
                      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
                      webui::mojom::TaskOptionsPtr options,
                      const EnterprisePolicyUrlChecker* policy_checker,
                      base::WeakPtr<ActorTaskDelegate> delegate)
-    : profile_(profile),
+    : service_(service),
       id_(id),
       create_time_(base::TimeTicks::Now()),
       action_tracker_for_metrics_(std::make_unique<ActionTrackerForMetrics>()),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)),
-      journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
+      journal_(service_->GetJournal().GetSafeRef()),
       title_(options && options->title.has_value() ? options->title.value()
                                                    : ""),
       policy_checker_(*policy_checker),
       delegate_(std::move(delegate)),
       ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {
   CHECK(policy_checker);
-  CHECK(profile_);
   CHECK(!id_.is_null());
   execution_engine_ = ExecutionEngine::Create(*this);
 }
@@ -164,14 +163,14 @@ ActorTask::~ActorTask() {
 
 // static
 std::unique_ptr<ActorTask> ActorTask::CreateForTesting(
-    Profile* profile,
+    ActorKeyedService& service,
     TaskId id,
     std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
     webui::mojom::TaskOptionsPtr options,
     const EnterprisePolicyUrlChecker* policy_checker,
     base::WeakPtr<ActorTaskDelegate> delegate) {
   return std::make_unique<ActorTask>(
-      base::PassKey<ActorTask>(), profile, id, std::move(ui_event_dispatcher),
+      base::PassKey<ActorTask>(), service, id, std::move(ui_event_dispatcher),
       std::move(options), policy_checker, std::move(delegate));
 }
 
@@ -186,6 +185,10 @@ ActorTask::State ActorTask::GetState() const {
 
 base::WeakPtr<ActorTask> ActorTask::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+Profile* ActorTask::GetProfile() const {
+  return service_->GetProfile();
 }
 
 void ActorTask::SetState(State new_state) {
@@ -272,7 +275,7 @@ void ActorTask::SetState(State new_state) {
         ui::UiEventDispatcher::ChangeTaskState{
             .task_id = id_, .old_state = old_state, .new_state = new_state});
   }
-  actor::ActorKeyedService::Get(profile_)->NotifyTaskStateChanged(id_, state_);
+  service_->NotifyTaskStateChanged(id_, state_);
 
   // If the state is to be finished/cancelled record a histogram.
   if (state_ == kFinished || state_ == kCancelled || state_ == kFailed) {
@@ -670,8 +673,7 @@ void ActorTask::OnTabWillDetach(tabs::TabInterface* tab,
                     .Add("tab_id", tab->GetHandle().raw_value())
                     .Build());
 
-  actor::ActorKeyedService::Get(profile_)->StopTask(
-      id(), StoppedReason::kTabDetached);
+  service_->StopTask(id(), StoppedReason::kTabDetached);
 }
 
 void ActorTask::DidEarlyAddTabs(
