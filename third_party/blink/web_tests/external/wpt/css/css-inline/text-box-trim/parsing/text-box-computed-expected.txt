@@ -1,11 +1,33 @@
 This is a testharness.js-based test.
 [FAIL] Property text-box value 'ideographic'
   assert_true: 'ideographic' is a supported value for text-box. expected true got false
+[FAIL] Property text-box value 'text alphabetic'
+  assert_equals: expected "alphabetic" but got "text alphabetic"
+[FAIL] Property text-box value 'none cap text'
+  assert_equals: expected "none cap" but got "none cap text"
 [FAIL] Property text-box value 'ideographic none'
   assert_true: 'ideographic none' is a supported value for text-box. expected true got false
 [FAIL] Property text-box value 'trim-start ideographic ideographic'
   assert_true: 'trim-start ideographic ideographic' is a supported value for text-box. expected true got false
 [FAIL] Property text-box value 'trim-start ideographic-ink ideographic-ink'
   assert_true: 'trim-start ideographic-ink ideographic-ink' is a supported value for text-box. expected true got false
+[FAIL] Property text-box value 'trim-end cap text'
+  assert_equals: expected "trim-end cap" but got "trim-end cap text"
+[FAIL] Property text-box value 'trim-end ex text'
+  assert_equals: expected "trim-end ex" but got "trim-end ex text"
+[FAIL] Property text-box value 'trim-end text alphabetic'
+  assert_equals: expected "trim-end alphabetic" but got "trim-end text alphabetic"
+[FAIL] Property text-box value 'cap text trim-end'
+  assert_equals: expected "trim-end cap" but got "trim-end cap text"
+[FAIL] Property text-box value 'ex text trim-end'
+  assert_equals: expected "trim-end ex" but got "trim-end ex text"
+[FAIL] Property text-box value 'text alphabetic trim-end'
+  assert_equals: expected "trim-end alphabetic" but got "trim-end text alphabetic"
+[FAIL] Property text-box value 'cap text trim-both'
+  assert_equals: expected "cap" but got "cap text"
+[FAIL] Property text-box value 'ex text trim-both'
+  assert_equals: expected "ex" but got "ex text"
+[FAIL] Property text-box value 'text alphabetic trim-both'
+  assert_equals: expected "alphabetic" but got "text alphabetic"
 Harness: the test ran to completion.
 

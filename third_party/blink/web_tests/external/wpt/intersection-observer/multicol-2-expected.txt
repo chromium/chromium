@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] IntersectionObserver with a fragmented intersection root.
+  assert_true: Should be intersecting the root expected true got false
+Harness: the test ran to completion.
+

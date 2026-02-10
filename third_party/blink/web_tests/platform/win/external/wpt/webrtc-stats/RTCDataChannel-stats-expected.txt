@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] neither on worker: Check that RTCDataChannelStats messages/bytes Sent/Received are correct for various strings
+  assert_equals: Got expected sender bytesSent expected 5 but got 0
+[FAIL] neither on worker: Check that RTCDataChannelStats messages/bytes Sent/Received are correct for various binary messages received as arraybuffer
+  assert_equals: Got expected sender bytesSent expected 5 but got 0
+[FAIL] neither on worker: Check that RTCDataChannelStats messages/bytes Sent/Received are correct for various binary messages received as blob
+  assert_equals: Got expected sender bytesSent expected 5 but got 0
+[FAIL] offerer on worker: Check that RTCDataChannelStats messages/bytes Sent/Received are correct for various strings
+  assert_equals: Got expected sender bytesSent expected 5 but got 0
+[FAIL] offerer on worker: Check that RTCDataChannelStats messages/bytes Sent/Received are correct for various binary messages received as arraybuffer
+  assert_equals: Got expected sender bytesSent expected 5 but got 0
+[FAIL] offerer on worker: Check that RTCDataChannelStats messages/bytes Sent/Received are correct for various binary messages received as blob
+  assert_equals: Got expected sender bytesSent expected 5 but got 0
+[FAIL] answerer on worker: Check that RTCDataChannelStats messages/bytes Sent/Received are correct for various strings
+  assert_equals: Got expected sender bytesSent expected 5 but got 0
+[FAIL] answerer on worker: Check that RTCDataChannelStats messages/bytes Sent/Received are correct for various binary messages received as arraybuffer
+  assert_equals: Got expected sender bytesSent expected 5 but got 0
+[FAIL] answerer on worker: Check that RTCDataChannelStats messages/bytes Sent/Received are correct for various binary messages received as blob
+  assert_equals: Got expected sender bytesSent expected 5 but got 0
+Harness: the test ran to completion.
+

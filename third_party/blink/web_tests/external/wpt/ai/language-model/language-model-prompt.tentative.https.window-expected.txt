@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Check capital of France
+  assert_regexp_match: expected object "/paris/i" but got "On-device model is not available in Chromium, this API is just echoing back the input:\\nWhat is the capital of France?"
+Harness: the test ran to completion.
+

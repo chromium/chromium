@@ -3,6 +3,12 @@ This is a testharness.js-based test.
   assert_true: 'ideographic' is a supported value for text-box-edge. expected true got false
 [FAIL] Property text-box-edge value 'ideographic-ink'
   assert_true: 'ideographic-ink' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'cap'
+  assert_true: 'cap' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'ex'
+  assert_true: 'ex' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'alphabetic'
+  assert_true: 'alphabetic' is a supported value for text-box-edge. expected true got false
 [FAIL] Property text-box-edge value 'text ideographic'
   assert_true: 'text ideographic' is a supported value for text-box-edge. expected true got false
 [FAIL] Property text-box-edge value 'text ideographic-ink'
@@ -31,5 +37,11 @@ This is a testharness.js-based test.
   assert_true: 'ideographic-ink ideographic' is a supported value for text-box-edge. expected true got false
 [FAIL] Property text-box-edge value 'ideographic-ink ideographic-ink'
   assert_true: 'ideographic-ink ideographic-ink' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'cap text'
+  assert_equals: expected "cap" but got "cap text"
+[FAIL] Property text-box-edge value 'ex text'
+  assert_equals: expected "ex" but got "ex text"
+[FAIL] Property text-box-edge value 'text alphabetic'
+  assert_equals: expected "alphabetic" but got "text alphabetic"
 Harness: the test ran to completion.
 

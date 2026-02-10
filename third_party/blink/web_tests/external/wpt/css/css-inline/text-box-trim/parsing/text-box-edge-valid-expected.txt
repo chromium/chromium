@@ -3,6 +3,12 @@ This is a testharness.js-based test.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-box-edge'] = "ideographic-ink" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "cap" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "ex" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "alphabetic" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-box-edge'] = "text ideographic" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-box-edge'] = "text ideographic-ink" should set the property value
@@ -31,5 +37,11 @@ This is a testharness.js-based test.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-box-edge'] = "ideographic-ink ideographic-ink" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box-edge'] = "cap text" should set the property value
+  assert_equals: serialization should be canonical expected "cap" but got "cap text"
+[FAIL] e.style['text-box-edge'] = "ex text" should set the property value
+  assert_equals: serialization should be canonical expected "ex" but got "ex text"
+[FAIL] e.style['text-box-edge'] = "text alphabetic" should set the property value
+  assert_equals: serialization should be canonical expected "alphabetic" but got "text alphabetic"
 Harness: the test ran to completion.
 

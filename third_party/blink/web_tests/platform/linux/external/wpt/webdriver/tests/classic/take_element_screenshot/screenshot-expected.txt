@@ -1,4 +1,7 @@
 This is a wdspec test.
 [FAIL] test_no_such_element_with_shadow_root
   assert 500 == 404
+[FAIL] test_clip_huge_element_to_viewport
+  assert (777, 490) == (800, 513)
 Harness: the test ran to completion.
+

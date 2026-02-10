@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] e.style['text-box'] = "ex text" should set text-box-edge
+  assert_equals: text-box-edge should be canonical expected "ex" but got "ex text"
+[FAIL] e.style['text-box'] = "cap" should set text-box-edge
+  assert_equals: text-box-edge should be canonical expected "cap" but got ""
+[FAIL] e.style['text-box'] = "cap" should set text-box-trim
+  assert_equals: text-box-trim should be canonical expected "trim-both" but got ""
+[FAIL] e.style['text-box'] = "cap" should not set unrelated longhands
+  assert_true: expected true got false
+[FAIL] e.style['text-box'] = "trim-end alphabetic" should set text-box-edge
+  assert_equals: text-box-edge should be canonical expected "alphabetic" but got ""
+[FAIL] e.style['text-box'] = "trim-end alphabetic" should set text-box-trim
+  assert_equals: text-box-trim should be canonical expected "trim-end" but got ""
+[FAIL] e.style['text-box'] = "trim-end alphabetic" should not set unrelated longhands
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

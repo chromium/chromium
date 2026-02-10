@@ -1,11 +1,33 @@
 This is a testharness.js-based test.
 [FAIL] e.style['text-box'] = "ideographic" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box'] = "text alphabetic" should set the property value
+  assert_equals: serialization should be canonical expected "alphabetic" but got "text alphabetic"
+[FAIL] e.style['text-box'] = "none cap text" should set the property value
+  assert_equals: serialization should be canonical expected "none cap" but got "none cap text"
 [FAIL] e.style['text-box'] = "ideographic none" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-box'] = "trim-start ideographic ideographic" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['text-box'] = "trim-start ideographic-ink ideographic-ink" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-box'] = "trim-end cap text" should set the property value
+  assert_equals: serialization should be canonical expected "trim-end cap" but got "trim-end cap text"
+[FAIL] e.style['text-box'] = "trim-end ex text" should set the property value
+  assert_equals: serialization should be canonical expected "trim-end ex" but got "trim-end ex text"
+[FAIL] e.style['text-box'] = "trim-end text alphabetic" should set the property value
+  assert_equals: serialization should be canonical expected "trim-end alphabetic" but got "trim-end text alphabetic"
+[FAIL] e.style['text-box'] = "cap text trim-end" should set the property value
+  assert_equals: serialization should be canonical expected "trim-end cap" but got "trim-end cap text"
+[FAIL] e.style['text-box'] = "ex text trim-end" should set the property value
+  assert_equals: serialization should be canonical expected "trim-end ex" but got "trim-end ex text"
+[FAIL] e.style['text-box'] = "text alphabetic trim-end" should set the property value
+  assert_equals: serialization should be canonical expected "trim-end alphabetic" but got "trim-end text alphabetic"
+[FAIL] e.style['text-box'] = "cap text trim-both" should set the property value
+  assert_equals: serialization should be canonical expected "cap" but got "cap text"
+[FAIL] e.style['text-box'] = "ex text trim-both" should set the property value
+  assert_equals: serialization should be canonical expected "ex" but got "ex text"
+[FAIL] e.style['text-box'] = "text alphabetic trim-both" should set the property value
+  assert_equals: serialization should be canonical expected "alphabetic" but got "text alphabetic"
 Harness: the test ran to completion.
 
