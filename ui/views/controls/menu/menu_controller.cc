@@ -1753,11 +1753,17 @@ void MenuController::SetSelection(MenuItemView* menu_item,
     // submenu.
     if (menu_item->GetParentMenuItem() &&
         menu_item->GetParentMenuItem()->GetSubmenu()) {
-      menu_item->GetParentMenuItem()
-          ->GetSubmenu()
-          ->NotifyAccessibilityEventDeprecated(
-              ax::mojom::Event::kSelectedChildrenChanged,
-              /*send_native_event=*/true);
+      SubmenuView* submenu = menu_item->GetParentMenuItem()->GetSubmenu();
+      submenu->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kSelectedChildrenChanged,
+          /*send_native_event=*/true);
+
+      // Update the active descendant on the containing SubmenuView to point to
+      // the selected menu item, unless a hot button has focus (in which case
+      // the hot button is the active descendant).
+      if (!hot_button_) {
+        submenu->GetViewAccessibility().SetActiveDescendant(*menu_item);
+      }
     }
   }
 }
@@ -3740,8 +3746,26 @@ void MenuController::SetHotTrackedButton(Button* new_hot_button) {
   if (hot_button_) {
     hot_button_->GetViewAccessibility().SetPopupFocusOverride();
     hot_button_->SetHotTracked(true);
-    hot_button_->NotifyAccessibilityEventDeprecated(
-        ax::mojom::Event::kSelection, true);
+
+    // Update the active descendant on the containing SubmenuView to point to
+    // the hot button. This informs assistive technologies which element is
+    // currently active within the menu.
+    if (pending_state_.item && pending_state_.item->GetParentMenuItem()) {
+      if (SubmenuView* submenu =
+              pending_state_.item->GetParentMenuItem()->GetSubmenu()) {
+        submenu->GetViewAccessibility().SetActiveDescendant(*hot_button_);
+      }
+    }
+  } else {
+    // When clearing the hot button, restore active descendant to the selected
+    // menu item if one exists.
+    if (pending_state_.item && pending_state_.item->GetParentMenuItem()) {
+      if (SubmenuView* submenu =
+              pending_state_.item->GetParentMenuItem()->GetSubmenu()) {
+        submenu->GetViewAccessibility().SetActiveDescendant(
+            *pending_state_.item);
+      }
+    }
   }
 }
 

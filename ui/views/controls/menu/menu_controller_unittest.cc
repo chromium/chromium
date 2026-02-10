@@ -3745,4 +3745,177 @@ TEST_F(MenuControllerTest, ContextMenuShownOnShiftF10Key) {
 #endif
 }
 
+// Test that the active descendant on the SubmenuView is updated to the
+// selected menu item when selection changes.
+TEST_F(MenuControllerTest, ActiveDescendantUpdatedOnMenuItemSelection) {
+  menu_controller()->Run(owner(), nullptr, menu_item(), gfx::Rect(),
+                         MenuAnchorPosition::kTopLeft);
+
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  const MenuItemView* const item1 = submenu->GetMenuItemAt(0);
+  const MenuItemView* const item2 = submenu->GetMenuItemAt(1);
+
+  // Arrow down to select the first item.
+  DispatchKey(ui::VKEY_DOWN);
+  EXPECT_EQ(item1, pending_state_item());
+
+  // Verify active descendant is set to item1 on the SubmenuView.
+  ui::AXNodeData submenu_data;
+  submenu->GetViewAccessibility().GetAccessibleNodeData(&submenu_data);
+  EXPECT_TRUE(submenu_data.HasIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId));
+  EXPECT_EQ(submenu_data.GetIntAttribute(
+                ax::mojom::IntAttribute::kActivedescendantId),
+            item1->GetViewAccessibility().GetUniqueId());
+
+  // Arrow down to select the second item.
+  DispatchKey(ui::VKEY_DOWN);
+  EXPECT_EQ(item2, pending_state_item());
+
+  // Verify active descendant is now set to item2.
+  submenu_data = ui::AXNodeData();
+  submenu->GetViewAccessibility().GetAccessibleNodeData(&submenu_data);
+  EXPECT_TRUE(submenu_data.HasIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId));
+  EXPECT_EQ(submenu_data.GetIntAttribute(
+                ax::mojom::IntAttribute::kActivedescendantId),
+            item2->GetViewAccessibility().GetUniqueId());
+}
+
+// Test that the active descendant on the SubmenuView is updated to the
+// hot-tracked button when a button inside a menu item is hot tracked.
+TEST_F(MenuControllerTest, ActiveDescendantUpdatedOnHotButtonSet) {
+  AddButtonMenuItems(/*single_child=*/false);
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+
+  // Select the menu item containing buttons (item at index 4, command 5).
+  const View* const buttons_view = submenu->children()[4];
+  ASSERT_NE(nullptr, buttons_view);
+  GET_CHILD_BUTTON(button1, buttons_view, 0);
+  GET_CHILD_BUTTON(button2, buttons_view, 1);
+
+  // Navigate to "Four", then increment into the button item.
+  SelectByChar('f');
+  EXPECT_EQ(4, pending_state_item()->GetCommand());
+  IncrementSelection();
+  EXPECT_EQ(5, pending_state_item()->GetCommand());
+  EXPECT_TRUE(button1->IsHotTracked());
+  EXPECT_EQ(button1, hot_button());
+
+  // Verify active descendant is set to button1 on the SubmenuView.
+  ui::AXNodeData submenu_data;
+  submenu->GetViewAccessibility().GetAccessibleNodeData(&submenu_data);
+  EXPECT_TRUE(submenu_data.HasIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId));
+  EXPECT_EQ(submenu_data.GetIntAttribute(
+                ax::mojom::IntAttribute::kActivedescendantId),
+            button1->GetViewAccessibility().GetUniqueId());
+
+  // Move to the next button (button2).
+  IncrementSelection();
+  EXPECT_TRUE(button2->IsHotTracked());
+  EXPECT_EQ(button2, hot_button());
+
+  // Verify active descendant is now set to button2.
+  submenu_data = ui::AXNodeData();
+  submenu->GetViewAccessibility().GetAccessibleNodeData(&submenu_data);
+  EXPECT_TRUE(submenu_data.HasIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId));
+  EXPECT_EQ(submenu_data.GetIntAttribute(
+                ax::mojom::IntAttribute::kActivedescendantId),
+            button2->GetViewAccessibility().GetUniqueId());
+}
+
+// Test that when the hot button is cleared, the active descendant is restored
+// to the selected menu item.
+TEST_F(MenuControllerTest, ActiveDescendantRestoredWhenHotButtonCleared) {
+  AddButtonMenuItems(/*single_child=*/false);
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  const MenuItemView* const item_with_buttons = submenu->GetMenuItemAt(4);
+
+  const View* const buttons_view = submenu->children()[4];
+  ASSERT_NE(nullptr, buttons_view);
+  GET_CHILD_BUTTON(button1, buttons_view, 0);
+
+  // Navigate to "Four", then increment into the button item.
+  SelectByChar('f');
+  EXPECT_EQ(4, pending_state_item()->GetCommand());
+  IncrementSelection();
+  EXPECT_EQ(item_with_buttons, pending_state_item());
+  EXPECT_EQ(button1, hot_button());
+
+  // Verify active descendant is button1.
+  ui::AXNodeData submenu_data;
+  submenu->GetViewAccessibility().GetAccessibleNodeData(&submenu_data);
+  EXPECT_EQ(submenu_data.GetIntAttribute(
+                ax::mojom::IntAttribute::kActivedescendantId),
+            button1->GetViewAccessibility().GetUniqueId());
+
+  // Clear the hot button.
+  SetHotTrackedButton(nullptr);
+  EXPECT_EQ(nullptr, hot_button());
+
+  // Verify active descendant is now set back to the menu item.
+  submenu_data = ui::AXNodeData();
+  submenu->GetViewAccessibility().GetAccessibleNodeData(&submenu_data);
+  EXPECT_TRUE(submenu_data.HasIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId));
+  EXPECT_EQ(submenu_data.GetIntAttribute(
+                ax::mojom::IntAttribute::kActivedescendantId),
+            item_with_buttons->GetViewAccessibility().GetUniqueId());
+}
+
+// Test that the kActiveDescendantChanged event is emitted when the selection
+// changes.
+TEST_F(MenuControllerTest, ActiveDescendantChangedEventOnSelection) {
+  const test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
+  menu_controller()->Run(owner(), nullptr, menu_item(), gfx::Rect(),
+                         MenuAnchorPosition::kTopLeft);
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
+
+  // Arrow down to select an item, verifying the event is emitted.
+  DispatchKey(ui::VKEY_DOWN);
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 1);
+
+  DispatchKey(ui::VKEY_DOWN);
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 2);
+}
+
+// Test that the kActiveDescendantChanged event is emitted when the hot button
+// changes.
+TEST_F(MenuControllerTest, ActiveDescendantChangedEventOnHotButton) {
+  const test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
+  AddButtonMenuItems(/*single_child=*/false);
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+
+  const View* const buttons_view = submenu->children()[4];
+  ASSERT_NE(nullptr, buttons_view);
+  GET_CHILD_BUTTON(button1, buttons_view, 0);
+  GET_CHILD_BUTTON(button2, buttons_view, 1);
+
+  // Navigate to "Four", then increment into the button item.
+  SelectByChar('f');
+  EXPECT_EQ(4, pending_state_item()->GetCommand());
+  IncrementSelection();
+  EXPECT_EQ(button1, hot_button());
+
+  // Record the count after navigating to the button item.
+  const int initial_count =
+      ax_counter.GetCount(ax::mojom::Event::kActiveDescendantChanged);
+
+  // Move to the next button - should emit kActiveDescendantChanged.
+  IncrementSelection();
+  EXPECT_EQ(button2, hot_button());
+  EXPECT_GT(ax_counter.GetCount(ax::mojom::Event::kActiveDescendantChanged),
+            initial_count);
+
+  // Clear the hot button - should emit kActiveDescendantChanged when restoring
+  // to the menu item.
+  const int count_before_clear =
+      ax_counter.GetCount(ax::mojom::Event::kActiveDescendantChanged);
+  SetHotTrackedButton(nullptr);
+  EXPECT_GT(ax_counter.GetCount(ax::mojom::Event::kActiveDescendantChanged),
+            count_before_clear);
+}
+
 }  // namespace views
