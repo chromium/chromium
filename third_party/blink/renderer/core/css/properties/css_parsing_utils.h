@@ -385,7 +385,8 @@ inline bool IsDashedFunctionName(const CSSParserToken& token) {
          token.Value()[0] == '-' && token.Value()[1] == '-';
 }
 
-CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream&);
+CORE_EXPORT CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream&,
+                                            const CSSParserContext& context);
 
 // This function returns false for CSS-wide keywords, 'default', and any
 // template parameters provided.

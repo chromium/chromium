@@ -4131,7 +4131,16 @@ bool IsDashedIdent(const CSSParserToken& token) {
   return token.Value().starts_with(kTwoDashes);
 }
 
-CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream& stream) {
+CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream& stream,
+                                const CSSParserContext& context) {
+  if (!RuntimeEnabledFeatures::CSSRevertRuleEnabled()) {
+    // Support this in UA sheets, even if the flag is disabled.
+    if (stream.Peek().Id() == CSSValueID::kRevertRule &&
+        IsUASheetBehavior(context.Mode())) {
+      stream.ConsumeIncludingWhitespace();
+      return cssvalue::CSSRevertRuleValue::Create();
+    }
+  }
   if (!IsCSSWideKeyword(stream.Peek().Id())) {
     return nullptr;
   }

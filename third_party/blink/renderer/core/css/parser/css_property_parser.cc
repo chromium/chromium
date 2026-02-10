@@ -106,7 +106,8 @@ const CSSValue* CSSPropertyParser::ParseSingleValue(
   DCHECK(context);
   stream.ConsumeWhitespace();
 
-  const CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(stream);
+  const CSSValue* value =
+      css_parsing_utils::ConsumeCSSWideKeyword(stream, *context);
   if (!value) {
     auto local_context = CSSParserLocalContext(CSSPropertyName(property));
     value = ParseLonghand(property, *context, local_context, stream);
@@ -413,11 +414,13 @@ CSSValueID CssValueKeywordID(StringView string) {
 
 const CSSValue* CSSPropertyParser::ConsumeCSSWideKeyword(
     CSSParserTokenStream& stream,
+    const CSSParserContext& context,
     bool allow_important_annotation,
     bool& important) {
   CSSParserTokenStream::State savepoint = stream.Save();
 
-  const CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(stream);
+  const CSSValue* value =
+      css_parsing_utils::ConsumeCSSWideKeyword(stream, context);
   if (!value) {
     // No need to Restore(), we are at the right spot anyway.
     // (We do this instead of relying on CSSParserTokenStream's
@@ -438,8 +441,8 @@ const CSSValue* CSSPropertyParser::ConsumeCSSWideKeyword(
 bool CSSPropertyParser::ParseCSSWideKeyword(CSSPropertyID unresolved_property,
                                             bool allow_important_annotation) {
   bool important;
-  const CSSValue* value =
-      ConsumeCSSWideKeyword(stream_, allow_important_annotation, important);
+  const CSSValue* value = ConsumeCSSWideKeyword(
+      stream_, *context_, allow_important_annotation, important);
   if (!value) {
     return false;
   }

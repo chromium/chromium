@@ -73,6 +73,7 @@ class CORE_EXPORT CSSPropertyParser {
   // in an undeterminate state). Unlike the ParseFoo() functions,
   // this is static, so does not touch parsed_properties_.
   static const CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream& stream,
+                                               const CSSParserContext& context,
                                                bool allow_important_annotation,
                                                bool& important);
 

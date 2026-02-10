@@ -58,7 +58,8 @@ const CSSValue* CSSVariableParser::ParseDeclarationIncludingCSSWide(
   stream.EnsureLookAhead();
   bool important_ignored;
   if (const CSSValue* css_wide = CSSPropertyParser::ConsumeCSSWideKeyword(
-          stream, /*allow_important_annotation=*/true, important_ignored)) {
+          stream, context, /*allow_important_annotation=*/true,
+          important_ignored)) {
     return css_wide;
   }
   CSSVariableData* variable_data = ConsumeUnparsedDeclaration(
@@ -755,7 +756,7 @@ CSSUnparsedDeclarationValue* CSSVariableParser::ParseUniversalSyntaxValue(
 
   bool important;
   if (CSSPropertyParser::ConsumeCSSWideKeyword(
-          stream, /*allow_important_annotation=*/false, important)) {
+          stream, context, /*allow_important_annotation=*/false, important)) {
     return nullptr;
   }
 

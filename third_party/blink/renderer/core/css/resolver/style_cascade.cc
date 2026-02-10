@@ -120,10 +120,11 @@ bool ConsumeComma(CSSParserTokenStream& stream) {
   return false;
 }
 
-const CSSValue* ParseAsCSSWideKeyword(const CSSVariableData& data) {
+const CSSValue* ParseAsCSSWideKeyword(const CSSVariableData& data,
+                                      const CSSParserContext& context) {
   CSSParserTokenStream stream(data.OriginalText());
   stream.ConsumeWhitespace();
-  CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(stream);
+  CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(stream, context);
   return stream.AtEnd() ? value : nullptr;
 }
 
@@ -1349,7 +1350,8 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
   {
     CSSParserTokenStream stream(data->OriginalText());
     stream.ConsumeWhitespace();
-    CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(stream);
+    CSSValue* value =
+        css_parsing_utils::ConsumeCSSWideKeyword(stream, *decl.ParserContext());
     if (value && stream.AtEnd()) {
       return value;
     }
@@ -2191,7 +2193,7 @@ CSSVariableData* StyleCascade::ResolveLocalVariable(
   // frame.
   //
   // https://drafts.csswg.org/css-mixins-1/#resolve-function-styles
-  if (const CSSValue* css_wide = ParseAsCSSWideKeyword(*resolved)) {
+  if (const CSSValue* css_wide = ParseAsCSSWideKeyword(*resolved, context)) {
     return GetKeywordVariableData(name, *css_wide, resolver, context,
                                   &function_context);
   }

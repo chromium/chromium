@@ -3386,7 +3386,7 @@ bool CSSParserImpl::ConsumeVariableValue(CSSParserTokenStream& stream,
   // First, see if this is (only) a CSS-wide keyword.
   bool important;
   const CSSValue* value = CSSPropertyParser::ConsumeCSSWideKeyword(
-      stream, allow_important_annotation, important);
+      stream, *context_, allow_important_annotation, important);
   if (!value) {
     // It was not, so try to parse it as an unparsed declaration value
     // (which is pretty free-form).

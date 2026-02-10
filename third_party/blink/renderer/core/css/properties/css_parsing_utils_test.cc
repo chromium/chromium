@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_progress_value.h"
+#include "third_party/blink/renderer/core/css/css_revert_rule_value.h"
 #include "third_party/blink/renderer/core/css/css_scroll_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_view_value.h"
@@ -472,6 +473,49 @@ TEST_P(PositionAreaXYSelfParseTest, ConsumeLegacyXYSelfPositionArea) {
   CSSValue* val = css_parsing_utils::ConsumePositionArea(stream);
   ASSERT_TRUE(val);
   EXPECT_EQ(val->CssText(), String(param.expected));
+}
+
+TEST(CSSParsingUtilsTest, ConsumeRevertRuleUnderFlags) {
+  test::TaskEnvironment task_environment;
+
+  // Disabled feature, kHTMLStandardMode.
+  {
+    ScopedCSSRevertRuleForTest scoped_feature(false);
+    const CSSParserContext* context = MakeContext(kHTMLStandardMode);
+    String text = "revert-rule";
+    CSSParserTokenStream stream(text);
+    EXPECT_FALSE(css_parsing_utils::ConsumeCSSWideKeyword(stream, *context));
+  }
+
+  // Disabled feature, kUASheetMode.
+  {
+    ScopedCSSRevertRuleForTest scoped_feature(false);
+    const CSSParserContext* context = MakeContext(kUASheetMode);
+    String text = "revert-rule";
+    CSSParserTokenStream stream(text);
+    EXPECT_TRUE(IsA<cssvalue::CSSRevertRuleValue>(
+        css_parsing_utils::ConsumeCSSWideKeyword(stream, *context)));
+  }
+
+  // Enabled feature, kHTMLStandardMode.
+  {
+    ScopedCSSRevertRuleForTest scoped_feature(true);
+    const CSSParserContext* context = MakeContext(kHTMLStandardMode);
+    String text = "revert-rule";
+    CSSParserTokenStream stream(text);
+    EXPECT_TRUE(IsA<cssvalue::CSSRevertRuleValue>(
+        css_parsing_utils::ConsumeCSSWideKeyword(stream, *context)));
+  }
+
+  // Enabled feature, kUASheetMode.
+  {
+    ScopedCSSRevertRuleForTest scoped_feature(true);
+    const CSSParserContext* context = MakeContext(kUASheetMode);
+    String text = "revert-rule";
+    CSSParserTokenStream stream(text);
+    EXPECT_TRUE(IsA<cssvalue::CSSRevertRuleValue>(
+        css_parsing_utils::ConsumeCSSWideKeyword(stream, *context)));
+  }
 }
 
 }  // namespace

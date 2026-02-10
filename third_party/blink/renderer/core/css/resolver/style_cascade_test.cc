@@ -4460,6 +4460,59 @@ TEST_F(StyleCascadeTest, AutoBaseCycle) {
   EXPECT_EQ("none", cascade.ComputedValue("appearance"));
 }
 
+TEST_F(StyleCascadeTest, RevertRuleInInternalAutoBase_NoBase) {
+  // This should work even with the flag *disabled*.
+  //
+  // When this flag is enabled by default, don't remove this test.
+  // (Just remove this comment and the line below.)
+  ScopedCSSRevertRuleForTest revert_rule_feature(false);
+
+  SetBodyInnerHTML("<select id=select></select>");
+  Element* select = GetDocument().getElementById(AtomicString("select"));
+  ASSERT_TRUE(select);
+
+  const CSSPropertyValueSet* ua_set = css_test_helpers::ParseDeclarationBlock(
+      R"CSS(
+      left:-internal-auto-base(revert-rule, 13px) !important;
+    )CSS",
+      kUASheetMode);
+
+  TestCascade cascade(GetDocument(), select);
+
+  cascade.Add(ua_set, {.origin = CascadeOrigin::kUserAgent});
+  cascade.Add("left:300px", {.origin = CascadeOrigin::kAuthor});
+
+  cascade.Apply();
+  EXPECT_EQ("300px", cascade.ComputedValue("left"));
+}
+
+TEST_F(StyleCascadeTest, RevertRuleInInternalAutoBase_Base) {
+  // This should work even with the flag *disabled*.
+  //
+  // When this flag is enabled by default, don't remove this test.
+  // (Just remove this comment and the line below.)
+  ScopedCSSRevertRuleForTest revert_rule_feature(false);
+
+  SetBodyInnerHTML("<select id=select></select>");
+  Element* select = GetDocument().getElementById(AtomicString("select"));
+  ASSERT_TRUE(select);
+
+  const CSSPropertyValueSet* ua_set = css_test_helpers::ParseDeclarationBlock(
+      R"CSS(
+      appearance:base;
+      left:-internal-auto-base(revert-rule, 42px) !important;
+    )CSS",
+      kUASheetMode);
+
+  TestCascade cascade(GetDocument(), select);
+
+  cascade.Add(ua_set, {.origin = CascadeOrigin::kUserAgent});
+  cascade.Add("left:300px", {.origin = CascadeOrigin::kAuthor});
+
+  cascade.Apply();
+  EXPECT_EQ("42px", cascade.ComputedValue("left"));
+}
+
 TEST_F(StyleCascadeTest, LhUnitCycle) {
   RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
 
