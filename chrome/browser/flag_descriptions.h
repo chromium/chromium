@@ -4882,18 +4882,6 @@ inline constexpr char kAndroidNewMediaPickerName[] =
 inline constexpr char kAndroidNewMediaPickerDescription[] =
     "Enables the new media capture picker UI on Android.";
 
-inline constexpr char kAndroidPbDisablePulseAnimationName[] =
-    "Android progress bar disable pulse animation";
-inline constexpr char kAndroidPbDisablePulseAnimationDescription[] =
-    "When enabled, there will no longer be a pulse on android progress bar for "
-    "slow loading pages";
-
-inline constexpr char kAndroidPbDisableSmoothAnimationName[] =
-    "Android Progress Bar Disable Smooth Animation";
-inline constexpr char kAndroidPbDisableSmoothAnimationDescription[] =
-    "When enabled, there will no longer be a smooth progress animation for the "
-    "android progress bar for slow loading pages";
-
 inline constexpr char kAndroidPinnedTabsName[] = "Android pinned tabs";
 inline constexpr char kAndroidPinnedTabsDescription[] =
     "Enables the ability to pin tabs through various entry points like context "

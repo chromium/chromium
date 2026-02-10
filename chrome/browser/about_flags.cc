@@ -12569,18 +12569,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayNonBlockingPrivacyNotice)},
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-    {"android-pb-disable-pulse-animation",
-     flag_descriptions::kAndroidPbDisablePulseAnimationName,
-     flag_descriptions::kAndroidPbDisablePulseAnimationDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidPbDisablePulseAnimation)},
-
-    {"android-pb-disable-smooth-animation",
-     flag_descriptions::kAndroidPbDisableSmoothAnimationName,
-     flag_descriptions::kAndroidPbDisableSmoothAnimationDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidPbDisableSmoothAnimation)},
-#endif
-
     {"migrate-syncing-user-to-signed-in",
      flag_descriptions::kMigrateSyncingUserToSignedInName,
      flag_descriptions::kMigrateSyncingUserToSignedInDescription,

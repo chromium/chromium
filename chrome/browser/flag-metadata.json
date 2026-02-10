@@ -307,16 +307,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "android-pb-disable-pulse-animation",
-    "owners": ["peilinwang@google.com", "clank-performance-team@google.com"],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "android-pb-disable-smooth-animation",
-    "owners": ["peilinwang@google.com", "clank-performance-team@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "android-pinned-tabs",
     "owners": [ "madhavpruthi@google.com", "ckitagawa@chromium.org" ],
     "expiry_milestone": 148
