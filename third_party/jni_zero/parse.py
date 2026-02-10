@@ -516,8 +516,9 @@ def parse_javap(filename, contents):
   fields = []
   for match in _JAVAP_FIELD_REGEX.finditer(contents):
     modifiers, name, value, descriptor = match.groups()
-    if descriptor[0] == 'J' and value:
-      value = value.rstrip('lL')
+    # Strip long / double / float suffix letters.
+    if value:
+      value = value.rstrip('LlDdFf')
     fields.append(
         ParsedField(name=name,
                     java_type=java_types.JavaType.from_descriptor(descriptor),

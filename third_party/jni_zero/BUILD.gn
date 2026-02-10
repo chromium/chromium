@@ -24,6 +24,8 @@ generate_jar_jni("system_jni") {
     "android/os/Process.class",
     "java/lang/Boolean.class",
     "java/lang/Integer.class",
+    "java/lang/Float.class",
+    "java/lang/Double.class",
     "java/lang/Long.class",
     "java/lang/Runnable.class",
     "java/util/Arrays.class",

@@ -8,6 +8,8 @@
 #include "third_party/jni_zero/system_jni/Arrays_jni.h"
 #include "third_party/jni_zero/system_jni/Boolean_jni.h"
 #include "third_party/jni_zero/system_jni/Collection_jni.h"
+#include "third_party/jni_zero/system_jni/Double_jni.h"
+#include "third_party/jni_zero/system_jni/Float_jni.h"
 #include "third_party/jni_zero/system_jni/Integer_jni.h"
 #include "third_party/jni_zero/system_jni/List_jni.h"
 #include "third_party/jni_zero/system_jni/Long_jni.h"
@@ -131,28 +133,44 @@ int32_t MapSize(JNIEnv* env, const JavaRef<jobject>& map) {
 // Boxed types
 //
 
-bool FromJavaBoolean(JNIEnv* env, const JavaRef<jobject>& j_bool) {
-  return static_cast<bool>(JNI_Boolean::Java_Boolean_booleanValue(env, j_bool));
+bool FromJavaBoolean(JNIEnv* env, const JavaRef<jobject>& val) {
+  return JNI_Boolean::Java_Boolean_booleanValue(env, val);
 }
 
 ScopedJavaLocalRef<jobject> ToJavaBoolean(JNIEnv* env, bool val) {
   return JNI_Boolean::Java_Boolean_valueOf__boolean(env, val);
 }
 
-int32_t FromJavaInteger(JNIEnv* env, const JavaRef<jobject>& j_int) {
-  return static_cast<int32_t>(JNI_Integer::Java_Integer_intValue(env, j_int));
+int32_t FromJavaInteger(JNIEnv* env, const JavaRef<jobject>& val) {
+  return JNI_Integer::Java_Integer_intValue(env, val);
 }
 
 ScopedJavaLocalRef<jobject> ToJavaInteger(JNIEnv* env, int32_t val) {
   return JNI_Integer::Java_Integer_valueOf__int(env, val);
 }
 
-int64_t FromJavaLong(JNIEnv* env, const JavaRef<jobject>& j_long) {
-  return static_cast<int64_t>(JNI_Long::Java_Long_longValue(env, j_long));
+int64_t FromJavaLong(JNIEnv* env, const JavaRef<jobject>& val) {
+  return JNI_Long::Java_Long_longValue(env, val);
 }
 
 ScopedJavaLocalRef<jobject> ToJavaLong(JNIEnv* env, int64_t val) {
   return JNI_Long::Java_Long_valueOf__long(env, val);
+}
+
+float FromJavaFloat(JNIEnv* env, const JavaRef<jobject>& val) {
+  return JNI_Float::Java_Float_floatValue(env, val);
+}
+
+ScopedJavaLocalRef<jobject> ToJavaFloat(JNIEnv* env, float val) {
+  return JNI_Float::Java_Float_valueOf__float(env, val);
+}
+
+double FromJavaDouble(JNIEnv* env, const JavaRef<jobject>& val) {
+  return JNI_Double::Java_Double_doubleValue(env, val);
+}
+
+ScopedJavaLocalRef<jobject> ToJavaDouble(JNIEnv* env, double val) {
+  return JNI_Double::Java_Double_valueOf__double(env, val);
 }
 
 //

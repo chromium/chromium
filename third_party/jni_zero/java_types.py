@@ -467,6 +467,8 @@ OBJECT = JavaType(java_class=OBJECT_CLASS)
 CLASS = JavaType(java_class=CLASS_CLASS)
 LIST = JavaType(java_class=_LIST_CLASS)
 INT = JavaType(primitive_name='int', nullable=False)
+DOUBLE = JavaType(primitive_name='double', nullable=False)
+FLOAT = JavaType(primitive_name='float', nullable=False)
 LONG = JavaType(primitive_name='long', nullable=False)
 VOID = JavaType(primitive_name='void', nullable=False)
 

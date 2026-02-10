@@ -257,8 +257,8 @@ inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env,
 }
 
 template <>
-inline bool FromJniType<bool>(JNIEnv* env, const JavaRef<jobject>& j_bool) {
-  return FromJavaBoolean(env, j_bool);
+inline bool FromJniType<bool>(JNIEnv* env, const JavaRef<jobject>& val) {
+  return FromJavaBoolean(env, val);
 }
 
 template <>
@@ -267,9 +267,8 @@ inline ScopedJavaLocalRef<jobject> ToJniType<bool>(JNIEnv* env, bool val) {
 }
 
 template <>
-inline int32_t FromJniType<int32_t>(JNIEnv* env,
-                                    const JavaRef<jobject>& j_int) {
-  return FromJavaInteger(env, j_int);
+inline int32_t FromJniType<int32_t>(JNIEnv* env, const JavaRef<jobject>& val) {
+  return FromJavaInteger(env, val);
 }
 
 template <>
@@ -279,15 +278,34 @@ inline ScopedJavaLocalRef<jobject> ToJniType<int32_t>(JNIEnv* env,
 }
 
 template <>
-inline int64_t FromJniType<int64_t>(JNIEnv* env,
-                                    const JavaRef<jobject>& j_long) {
-  return FromJavaLong(env, j_long);
+inline int64_t FromJniType<int64_t>(JNIEnv* env, const JavaRef<jobject>& val) {
+  return FromJavaLong(env, val);
 }
 
 template <>
 inline ScopedJavaLocalRef<jobject> ToJniType<int64_t>(JNIEnv* env,
                                                       int64_t val) {
   return ToJavaLong(env, val);
+}
+
+template <>
+inline float FromJniType<float>(JNIEnv* env, const JavaRef<jobject>& val) {
+  return FromJavaFloat(env, val);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<float>(JNIEnv* env, float val) {
+  return ToJavaFloat(env, val);
+}
+
+template <>
+inline double FromJniType<double>(JNIEnv* env, const JavaRef<jobject>& val) {
+  return FromJavaDouble(env, val);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<double>(JNIEnv* env, double val) {
+  return ToJavaDouble(env, val);
 }
 
 }  // namespace jni_zero

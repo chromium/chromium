@@ -130,25 +130,41 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT int32_t MapSize(JNIEnv* env,
 //
 JNI_ZERO_COMPONENT_BUILD_EXPORT bool FromJavaBoolean(
     JNIEnv* env,
-    const JavaRef<jobject>& j_bool);
+    const JavaRef<jobject>& val);
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ToJavaBoolean(
     JNIEnv* env,
     bool val);
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT int32_t
-FromJavaInteger(JNIEnv* env, const JavaRef<jobject>& j_int);
+FromJavaInteger(JNIEnv* env, const JavaRef<jobject>& val);
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ToJavaInteger(
     JNIEnv* env,
     int32_t val);
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT int64_t
-FromJavaLong(JNIEnv* env, const JavaRef<jobject>& j_long);
+FromJavaLong(JNIEnv* env, const JavaRef<jobject>& val);
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ToJavaLong(
     JNIEnv* env,
     int64_t val);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT float FromJavaFloat(
+    JNIEnv* env,
+    const JavaRef<jobject>& val);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ToJavaFloat(
+    JNIEnv* env,
+    float val);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT double FromJavaDouble(
+    JNIEnv* env,
+    const JavaRef<jobject>& val);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ToJavaDouble(
+    JNIEnv* env,
+    double val);
 
 //
 // android.os.Process

@@ -43,6 +43,33 @@ def field_accessors(sb, java_class, fields):
     sb('}\n\n')
 
 
+def _const_value(field):
+  value = field.const_value
+  if field.java_type == java_types.LONG:
+    # C++ parser can't parse MIN_VALUE :P.
+    if value == '-9223372036854775808':
+      value = '-9223372036854775807LL - 1LL'
+    else:
+      value = value + 'LL'
+  elif field.java_type == java_types.FLOAT:
+    if value == 'Infinity':
+      value = 'std::numeric_limits<float>::infinity()'
+    elif value == '-Infinity':
+      value = '-std::numeric_limits<float>::infinity()'
+    elif value == 'NaN':
+      value = 'std::numeric_limits<float>::quiet_NaN()'
+    else:
+      value += 'f'
+  elif field.java_type == java_types.DOUBLE:
+    if value == 'Infinity':
+      value = 'std::numeric_limits<double>::infinity()'
+    elif value == '-Infinity':
+      value = '-std::numeric_limits<double>::infinity()'
+    elif value == 'NaN':
+      value = 'std::numeric_limits<double>::quiet_NaN()'
+  return value
+
+
 def field_definition(sb, java_class, field):
   static_str = 'Static' if field.static else 'Instance'
   field_id_type = f'jni_zero::internal::FieldID::TYPE_{static_str.upper()}'
@@ -59,14 +86,7 @@ def field_definition(sb, java_class, field):
 
   with sb.block(after='\n'):
     if field.const_value is not None:
-      value = field.const_value
-      if field.java_type == java_types.LONG:
-        # C++ parser can't parse MIN_VALUE :P.
-        if value.upper() == '-9223372036854775808':
-          value = '-9223372036854775807LL - 1LL'
-        else:
-          value = value + 'LL'
-      sb(f'return {value};\n')
+      sb(f'return {_const_value(field)};\n')
       return
 
     if field.static:

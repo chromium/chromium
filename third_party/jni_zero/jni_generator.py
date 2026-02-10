@@ -353,10 +353,16 @@ def _generate_header(jni_mode,
   user_includes = [f'{include_path_prefix}jni_zero_internal.h']
   if extra_includes:
     user_includes += extra_includes
+  system_includes = ['jni.h']
+
+  if any(f.const_value in ('Infinity', '-Infinity', 'NaN')
+         for f in jni_obj.fields):
+    system_includes.append('limits')
+
   preamble, epilogue = header_common.header_preamble(
       GetScriptName(),
       jni_obj.java_class,
-      system_includes=['jni.h'],
+      system_includes=system_includes,
       user_includes=user_includes)
   sb = common.StringBuilder()
   sb(preamble)
