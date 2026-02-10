@@ -248,8 +248,12 @@ class WTF_EXPORT String {
                   wtf_size_t index = 0) const;
 
   // Find substrings.
+  // TODO(crbug.com/473854537): Remove this Find().
   wtf_size_t Find(const StringView& value, wtf_size_t start = 0) const {
     return impl_ ? impl_->Find(value, start) : kNotFound;
+  }
+  size_type find(const StringView& value, size_type start = 0) const {
+    return Find(value, start);
   }
   wtf_size_t Find(const StringView& value,
                   wtf_size_t start,

@@ -56,6 +56,36 @@ namespace blink {
 
 ASSERT_SIZE(String, void*);
 
+namespace {
+
+template <typename QueryType>
+Vector<String> SplitInternal(const String& input,
+                             QueryType separator,
+                             bool allow_empty_entries) {
+  Vector<String> result;
+
+  String::size_type separator_length;
+  if constexpr (requires { separator.length(); }) {
+    separator_length = separator.length();
+  } else {
+    separator_length = 1;
+  }
+  String::size_type start_pos = 0;
+  String::size_type end_pos;
+  while ((end_pos = input.find(separator, start_pos)) != kNotFound) {
+    if (allow_empty_entries || start_pos != end_pos) {
+      result.push_back(input.Substring(start_pos, end_pos - start_pos));
+    }
+    start_pos = end_pos + separator_length;
+  }
+  if (allow_empty_entries || start_pos != input.length()) {
+    result.push_back(input.Substring(start_pos));
+  }
+  return result;
+}
+
+}  // namespace
+
 // Construct a string with UTF-16 data.
 String::String(base::span<const UChar> utf16_data)
     : impl_(utf16_data.data() ? StringImpl::Create(utf16_data) : nullptr) {}
@@ -280,33 +310,14 @@ String String::NumberToStringFixedWidth(double number,
 void String::Split(const StringView& separator,
                    bool allow_empty_entries,
                    Vector<String>& result) const {
-  result.clear();
-
-  unsigned start_pos = 0;
-  wtf_size_t end_pos;
-  while ((end_pos = Find(separator, start_pos)) != kNotFound) {
-    if (allow_empty_entries || start_pos != end_pos)
-      result.push_back(Substring(start_pos, end_pos - start_pos));
-    start_pos = end_pos + separator.length();
-  }
-  if (allow_empty_entries || start_pos != length())
-    result.push_back(Substring(start_pos));
+  DCHECK(!separator.empty());
+  result = SplitInternal(*this, separator, allow_empty_entries);
 }
 
 void String::Split(UChar separator,
                    bool allow_empty_entries,
                    Vector<String>& result) const {
-  result.clear();
-
-  unsigned start_pos = 0;
-  wtf_size_t end_pos;
-  while ((end_pos = find(separator, start_pos)) != kNotFound) {
-    if (allow_empty_entries || start_pos != end_pos)
-      result.push_back(Substring(start_pos, end_pos - start_pos));
-    start_pos = end_pos + 1;
-  }
-  if (allow_empty_entries || start_pos != length())
-    result.push_back(Substring(start_pos));
+  result = SplitInternal(*this, separator, allow_empty_entries);
 }
 
 std::string String::Ascii() const {

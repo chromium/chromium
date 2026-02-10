@@ -307,6 +307,44 @@ TEST(StringTest, SplitByChar) {
   EXPECT_EQ("bar", result[2]);
 }
 
+TEST(StringTest, SplitByString) {
+  Vector<String> result;
+  String("").Split(" ", false, result);
+  EXPECT_EQ(0u, result.size());
+  String("").Split(" ", true, result);
+  EXPECT_EQ(1u, result.size());
+  EXPECT_EQ("", result[0]);
+
+  String("  foo  bar").Split(" ", false, result);
+  EXPECT_EQ(2u, result.size());
+  EXPECT_EQ("foo", result[0]);
+  EXPECT_EQ("bar", result[1]);
+
+  String("  foo  bar").Split(" ", true, result);
+  EXPECT_EQ(5u, result.size());
+  EXPECT_EQ("", result[0]);
+  EXPECT_EQ("", result[1]);
+  EXPECT_EQ("foo", result[2]);
+  EXPECT_EQ("", result[3]);
+  EXPECT_EQ("bar", result[4]);
+
+  String("  foo  bar").Split("  ", false, result);
+  EXPECT_EQ(2u, result.size());
+  EXPECT_EQ("foo", result[0]);
+  EXPECT_EQ("bar", result[1]);
+
+  String("  foo   bar").Split("  ", false, result);
+  EXPECT_EQ(2u, result.size());
+  EXPECT_EQ("foo", result[0]);
+  EXPECT_EQ(" bar", result[1]);
+
+  String("  foo   bar").Split("  ", true, result);
+  EXPECT_EQ(3u, result.size());
+  EXPECT_EQ("", result[0]);
+  EXPECT_EQ("foo", result[1]);
+  EXPECT_EQ(" bar", result[2]);
+}
+
 TEST(StringTest, StartsWithIgnoringUnicodeCase) {
   // [U+017F U+212A i a] starts with "sk".
   EXPECT_TRUE(String::FromUTF8("\xC5\xBF\xE2\x84\xAAia")
