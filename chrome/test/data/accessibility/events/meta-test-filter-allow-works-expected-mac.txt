@@ -1,1 +1,4 @@
-AXFocusedUIElementChanged on AXButton AXDescription='Test Button'
+# This filter restricts output to only focus-related events.
+@MAC-ALLOW:AXFocusedUIElementChanged*
+
+AXFocusedUIElementChanged on AXButton "Test Button"

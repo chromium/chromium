@@ -1,1 +1,2 @@
-# No events expected — focus events are filtered out by the test.
+# This filter excludes focus-related events, resulting in no output.
+@WIN-DENY:EVENT_OBJECT_FOCUS*

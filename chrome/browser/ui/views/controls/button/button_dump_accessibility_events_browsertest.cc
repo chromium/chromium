@@ -49,13 +49,13 @@ IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest, ButtonClick) {
   generator.MoveMouseTo(button_->GetBoundsInScreen().CenterPoint());
   generator.ClickLeftButton();
 
-  EndTestAndCompareEvents("button-click");
+  EXPECT_TRUE(EndTestAndCompareEvents("button-click"));
 }
 
 IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest, ButtonFocus) {
   SKIP_IF_VIEWS_AX_ENABLED();
   button_->RequestFocus();
-  EndTestAndCompareEvents("button-focus");
+  EXPECT_TRUE(EndTestAndCompareEvents("button-focus"));
 }
 
 INSTANTIATE_TEST_SUITE_P(
