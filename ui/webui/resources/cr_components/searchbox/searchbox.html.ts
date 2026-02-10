@@ -151,7 +151,7 @@ export function getHtml(this: SearchboxElement) {
         </div>
         <div class="dropdownContainer" ?inert="${this.errorMessage_}">
           ${dropdown}
-          ${this.recentTabForChip_ && this.dropdownIsVisible && this.isInputEmpty() ? html`
+          ${this.shouldShowRecentTabChipInDropdown_() ? html`
           <div id="recentTabChipContainer">
             <composebox-recent-tab-chip
                 .recentTab="${this.recentTabForChip_}"

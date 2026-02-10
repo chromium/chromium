@@ -27,7 +27,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {ComposeboxFile, ContextualUpload} from './common.js';
 import {recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
-import {FileUploadErrorType, FileUploadStatus, ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
+import {FileUploadErrorType, FileUploadStatus, InputType, ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
 import {type ContextMenuEntrypointElement, GlifAnimationState} from './context_menu_entrypoint.js';
 import {getCss} from './contextual_entrypoint_and_carousel.css.js';
 import {getHtml} from './contextual_entrypoint_and_carousel.html.js';
@@ -227,8 +227,12 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   protected get shouldShowRecentTabChip_(): boolean {
+    const isBrowserTabAllowed = !this.showModelPicker ||
+        (!!this.inputState &&
+         this.inputState.allowedInputTypes.includes(InputType.kBrowserTab));
     return this.shouldShowContextualSearchChips_() &&
-        !!this.recentTabForChip_ && this.showRecentTabChip;
+        !!this.recentTabForChip_ && this.showRecentTabChip &&
+        isBrowserTabAllowed;
   }
 
   protected get shouldShowLensSearchChip_(): boolean {
