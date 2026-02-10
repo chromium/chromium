@@ -3430,7 +3430,20 @@ TEST_F(ReadAnythingAppControllerImmersiveTest,
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
-TEST_F(ReadAnythingAppControllerTest, ReadAloudStateResetsOnNewPageNavigation) {
+class ReadAnythingAppControllerV8SegmentationTest
+    : public ReadAnythingAppControllerTest {
+ public:
+  void SetUp() override {
+    ReadAnythingAppControllerTest::SetUp();
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingReadAloud},
+        {features::kReadAnythingReadAloudTSTextSegmentation});
+  }
+};
+
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       ReadAloudStateResetsOnNewPageNavigation) {
   // Create two distinct "web pages" as AXTreeUpdate objects.
   const std::u16string first_page_sentence = u"Hello world.";
   auto const first_page_tree_id = ui::AXTreeID::CreateNewAXTreeID();
@@ -3477,18 +3490,6 @@ TEST_F(ReadAnythingAppControllerTest, ReadAloudStateResetsOnNewPageNavigation) {
   ASSERT_TRUE(controller().IsSpeechTreeInitialized());
   ASSERT_EQ(controller().GetCurrentTextContent(), second_page_sentence);
 }
-
-class ReadAnythingAppControllerV8SegmentationTest
-    : public ReadAnythingAppControllerTest {
- public:
-  void SetUp() override {
-    ReadAnythingAppControllerTest::SetUp();
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud},
-        {features::kReadAnythingReadAloudTSTextSegmentation});
-  }
-};
 
 TEST_F(ReadAnythingAppControllerV8SegmentationTest,
        GetCurrentText_SuperscriptIncludedWhenEntireNodeAndMoreTextAfterScript) {

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import {getReadAloudModel, ReadAloudNode, setInstance} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {DomReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 
@@ -2097,4 +2097,21 @@ suite('ReadAloudModel', () => {
         getReadAloudModel().moveSpeechForward();
         assertTextEmpty();
       });
+
+  test('resetModel resets initialized and current text content', async () => {
+    const paragraph = document.createElement('p');
+    paragraph.textContent = 'Hello world.';
+    document.body.appendChild(paragraph);
+    await microtasksFinished();
+
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertTrue(getReadAloudModel().isInitialized());
+    assertEquals(
+        'Hello world.', getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().resetModel?.();
+
+    assertFalse(getReadAloudModel().isInitialized());
+    assertEquals('', getReadAloudModel().getCurrentTextContent());
+  });
 });
