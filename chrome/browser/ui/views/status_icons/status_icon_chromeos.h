@@ -35,7 +35,7 @@ class StatusIconChromeOS : public StatusIcon, public display::DisplayObserver {
 
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& new_display) override;
-  void OnDisplaysRemoved(const display::Displays& removed_displays) override;
+  void OnWillRemoveDisplays(const display::Displays& removed_displays) override;
 
  protected:
   void UpdatePlatformContextMenu(StatusIconMenuModel* model) override;
