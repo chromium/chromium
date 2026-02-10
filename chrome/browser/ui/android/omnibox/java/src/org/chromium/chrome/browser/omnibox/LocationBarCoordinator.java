@@ -942,6 +942,15 @@ public class LocationBarCoordinator
                 shouldShowMicButtonWhenUnfocused);
     }
 
+    /**
+     * Toggles the lens button being shown when the location bar is not focused. By default the lens
+     * button is not shown.
+     */
+    public void setShouldShowLensButtonWhenUnfocused(boolean shouldShowLensButtonWhenUnfocused) {
+        mLocationBarMediator.setShouldShowLensButtonWhenUnfocusedForPhone(
+                shouldShowLensButtonWhenUnfocused);
+    }
+
     /** Updates the visibility of the buttons inside the location bar. */
     public void updateButtonVisibility() {
         mLocationBarMediator.updateButtonVisibility();

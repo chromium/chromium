@@ -112,6 +112,8 @@ public class TabBottomSheetFusebox {
                         bottomContainer,
                         /* omniboxChipManager= */ null);
         mLocationBarCoordinator.setUrlBarFocusable(true);
+        mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
+        mLocationBarCoordinator.setShouldShowLensButtonWhenUnfocused(true);
         mLocationBarCoordinator.onFinishNativeInitialization();
     }
 
@@ -123,15 +125,5 @@ public class TabBottomSheetFusebox {
     /* Returns the fusebox view */
     View getFuseboxView() {
         return mContentView;
-    }
-
-    /* Called when the bottom sheet is shown */
-    void onBottomSheetShown() {
-        if (mLocationBarCoordinator != null) {
-            // When the locationBar is first inflated, it has the width of 0. This causes the
-            // locationBar to enter narrow mode, which hides all buttons.
-            // This forces the locationBar to remeasure its width and show the required buttons.
-            mLocationBarCoordinator.setUrlFocusChangeFraction(1.0f, 1.0f);
-        }
     }
 }

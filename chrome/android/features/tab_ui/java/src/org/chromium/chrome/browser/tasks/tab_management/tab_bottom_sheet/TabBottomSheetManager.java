@@ -174,13 +174,6 @@ public class TabBottomSheetManager implements Destroyable {
     private BottomSheetObserver buildBottomSheetObserver() {
         return new EmptyBottomSheetObserver() {
             @Override
-            public void onSheetOpened(@StateChangeReason int reason) {
-                if (mFusebox != null) {
-                    mFusebox.onBottomSheetShown();
-                }
-            }
-
-            @Override
             public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {}
 
             @Override
