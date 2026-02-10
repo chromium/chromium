@@ -1097,7 +1097,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Cookie.SQLitePersistentCookieStore.Backend.LoadAndNotifyInBackground"
+    name="Cookie.SQLitePersistentCookieStore.Backend.LoadAndNotifyInBackground.First"
+    units="ms" expires_after="2026-09-22">
+  <owner>yoichio@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The amount of time taken to load cookies from the SQLite database and notify
+    the caller. This is recorded on a background thread during the initial load
+    of the persistent cookie store, specifically for the first time this
+    operation is called (which is usually the full load or the first keyed
+    load).
+  </summary>
+</histogram>
+
+<histogram
+    name="Cookie.SQLitePersistentCookieStore.Backend.LoadAndNotifyInBackground2"
     units="ms" expires_after="2026-09-22">
   <owner>yoichio@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>

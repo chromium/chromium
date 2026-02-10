@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -34,6 +35,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "crypto/aes_cbc.h"
 #include "net/base/features.h"
 #include "net/base/test_completion_callback.h"
@@ -278,6 +280,25 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
 
   void InitializeStore(bool crypt, bool restore_old_session_cookies) {
     EXPECT_EQ(0U, CreateAndLoad(crypt, restore_old_session_cookies).size());
+  }
+
+  void WaitForHistogramTotalCount(base::HistogramTester& tester,
+                                  std::string_view histogram_name,
+                                  base::HistogramBase::Count32 expected_count) {
+    base::RunLoop run_loop;
+    base::RepeatingTimer repeating_timer;
+    repeating_timer.Start(
+        FROM_HERE, base::Milliseconds(10), base::BindLambdaForTesting([&]() {
+          base::HistogramBase::Count32 total_count = 0;
+          for (const auto& bucket : tester.GetAllSamples(histogram_name)) {
+            total_count += bucket.count;
+          }
+          if (total_count >= expected_count) {
+            repeating_timer.Stop();
+            run_loop.Quit();
+          }
+        }));
+    run_loop.Run();
   }
 
   void WaitOnDBEvent() {
@@ -2782,6 +2803,39 @@ TEST_F(SQLitePersistentCookieStoreTest, OverridePlaintextValue) {
         /*CookieLoadProblem::kValuesExistInBothEncryptedAndPlaintext*/ 8, 1u);
     DestroyStore();
   }
+}
+
+TEST_F(SQLitePersistentCookieStoreTest, LoadAndNotifyInBackgroundMetrics) {
+  InitializeStore(/*crypt=*/false, /*restore_old_session_cookies=*/false);
+  AddCookie("A", "B", "example.com", "/", base::Time::Now());
+  DestroyStore();
+
+  base::HistogramTester histogram_tester;
+
+  CreateAndLoad(/*crypt_cookies=*/false,
+                /*restore_old_session_cookies=*/false);
+
+  static constexpr std::string_view kLoadAndNotifyInBackground =
+      "Cookie.SQLitePersistentCookieStore.Backend.LoadAndNotifyInBackground2";
+  static constexpr std::string_view kLoadAndNotifyInBackgroundFirst =
+      "Cookie.SQLitePersistentCookieStore.Backend.LoadAndNotifyInBackground."
+      "First";
+
+  WaitForHistogramTotalCount(histogram_tester, kLoadAndNotifyInBackground, 1);
+  histogram_tester.ExpectTotalCount(kLoadAndNotifyInBackground, 1);
+  histogram_tester.ExpectTotalCount(
+      std::string(kLoadAndNotifyInBackgroundFirst), 1);
+
+  // Second load (Keyed load on the same store).
+  Load();
+
+  WaitForHistogramTotalCount(histogram_tester, kLoadAndNotifyInBackground, 2);
+  histogram_tester.ExpectTotalCount(kLoadAndNotifyInBackground, 2);
+  // Should still be 1.
+  histogram_tester.ExpectTotalCount(
+      std::string(kLoadAndNotifyInBackgroundFirst), 1);
+
+  DestroyStore();
 }
 
 }  // namespace net

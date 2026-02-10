@@ -426,6 +426,8 @@ class SQLitePersistentCookieStore::Backend
   void LoadAndNotifyInBackground(base::optional_ref<const std::string> key,
                                  LoadedCallback loaded_callback);
 
+  void RecordLoadAndNotifyInBackgroundMetrics(base::TimeDelta elapsed);
+
   // Notifies the CookieMonster when loading completes for a specific domain key
   // or for all domain keys. Triggers the callback and passes it all cookies
   // that have been loaded from DB since last IO notification.
@@ -497,6 +499,9 @@ class SQLitePersistentCookieStore::Backend
 
   // Crypto instance, or nullptr if encryption is disabled.
   std::unique_ptr<CookieCryptoDelegate> crypto_;
+
+  // If true, LoadAndNotifyInBackground has not yet been called.
+  bool first_load_and_notify_in_background_ = true;
 };
 
 namespace {
@@ -766,6 +771,7 @@ void SQLitePersistentCookieStore::Backend::LoadAndNotifyInBackground(
   if (InitializeDatabase()) {
     if (!key.has_value()) {
       ChainLoadCookies(std::move(loaded_callback));
+      RecordLoadAndNotifyInBackgroundMetrics(timer.Elapsed());
       return;
     }
 
@@ -779,9 +785,21 @@ void SQLitePersistentCookieStore::Backend::LoadAndNotifyInBackground(
   }
 
   FinishedLoadingCookies(std::move(loaded_callback), success);
+  RecordLoadAndNotifyInBackgroundMetrics(timer.Elapsed());
+}
+
+void SQLitePersistentCookieStore::Backend::
+    RecordLoadAndNotifyInBackgroundMetrics(base::TimeDelta elapsed) {
   base::UmaHistogramTimes(
-      "Cookie.SQLitePersistentCookieStore.Backend.LoadAndNotifyInBackground",
-      timer.Elapsed());
+      "Cookie.SQLitePersistentCookieStore.Backend.LoadAndNotifyInBackground2",
+      elapsed);
+  if (first_load_and_notify_in_background_) {
+    base::UmaHistogramTimes(
+        "Cookie.SQLitePersistentCookieStore.Backend."
+        "LoadAndNotifyInBackground.First",
+        elapsed);
+    first_load_and_notify_in_background_ = false;
+  }
 }
 
 void SQLitePersistentCookieStore::Backend::NotifyLoadCompleteInForeground(
