@@ -577,7 +577,7 @@ found in the LICENSE file.
     </style>
 
      <!-- Bookmark styles -->
-    <style name="TextAppearance.SpecialFolderChildCount" parent="TextAppearance.TextLarge.Primary.OnAccent1Container" tools:ignore="SpUsage">
+    <style name="TextAppearance.SpecialFolderChildCount" parent="TextAppearance.TextLarge.OnAccent1Container" tools:ignore="SpUsage">
         <!-- The same as the regular style, but using dp instead of sp. -->
         <item name="android:textSize">16dp</item>
     </style>

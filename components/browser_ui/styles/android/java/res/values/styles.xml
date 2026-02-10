@@ -221,7 +221,7 @@ found in the LICENSE file.
         <item name="android:textColor">@color/default_text_color_list</item>
     </style>
 
-    <style name="TextAppearance.TextLarge.Primary.OnAccent1Container" parent="TextAppearance.TextLarge" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextLarge.OnAccent1Container" parent="TextAppearance.TextLarge" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_on_accent1_container_list</item>
     </style>
 
