@@ -28,12 +28,14 @@ public class ExtensionsToolbarBridge implements Destroyable {
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     private long mNativeExtensionsToolbarAndroid;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
+    private final Profile mProfile;
 
     // The delegate is set via a setter because of a bidirectional dependency
     // with {@code ExtensionActionListMediator}.
     private @Nullable Delegate mDelegate;
 
     public ExtensionsToolbarBridge(ChromeAndroidTask task, Profile profile) {
+        mProfile = profile;
         mNativeExtensionsToolbarAndroid =
                 ExtensionsToolbarBridgeJni.get()
                         .init(this, task.getOrCreateNativeBrowserWindowPtr(profile));
@@ -61,6 +63,12 @@ public class ExtensionsToolbarBridge implements Destroyable {
 
     @Nullable
     public ExtensionAction getAction(String actionId) {
+        if (mProfile.shutdownStarted()) {
+            // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
+            // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
+            // ChromeAndroidTask}'s destruction, and it is currently being worked on.
+            return null;
+        }
         return ExtensionsToolbarBridgeJni.get()
                 .getAction(mNativeExtensionsToolbarAndroid, actionId);
     }
@@ -72,6 +80,12 @@ public class ExtensionsToolbarBridge implements Destroyable {
             int canvasWidthDp,
             int canvasHeightDp,
             float scaleFactor) {
+        if (mProfile.shutdownStarted()) {
+            // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
+            // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
+            // ChromeAndroidTask}'s destruction, and it is currently being worked on.
+            return null;
+        }
         return ExtensionsToolbarBridgeJni.get()
                 .getIcon(
                         mNativeExtensionsToolbarAndroid,
@@ -83,19 +97,43 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     public String[] getAllActionIds() {
+        if (mProfile.shutdownStarted()) {
+            // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
+            // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
+            // ChromeAndroidTask}'s destruction, and it is currently being worked on.
+            return new String[0];
+        }
         return ExtensionsToolbarBridgeJni.get().getAllActionIds(mNativeExtensionsToolbarAndroid);
     }
 
     public String[] getPinnedActionIds() {
+        if (mProfile.shutdownStarted()) {
+            // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
+            // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
+            // ChromeAndroidTask}'s destruction, and it is currently being worked on.
+            return new String[0];
+        }
         return ExtensionsToolbarBridgeJni.get().getPinnedActionIds(mNativeExtensionsToolbarAndroid);
     }
 
     public void executeUserAction(String actionId, @InvocationSource int source) {
+        if (mProfile.shutdownStarted()) {
+            // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
+            // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
+            // ChromeAndroidTask}'s destruction, and it is currently being worked on.
+            return;
+        }
         ExtensionsToolbarBridgeJni.get()
                 .executeUserAction(mNativeExtensionsToolbarAndroid, actionId, source);
     }
 
     public void movePinnedAction(String actionId, int targetIndex) {
+        if (mProfile.shutdownStarted()) {
+            // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
+            // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
+            // ChromeAndroidTask}'s destruction, and it is currently being worked on.
+            return;
+        }
         ExtensionsToolbarBridgeJni.get()
                 .movePinnedAction(mNativeExtensionsToolbarAndroid, actionId, targetIndex);
     }
