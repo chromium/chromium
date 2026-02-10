@@ -12,6 +12,7 @@
 
 #include "base/time/time.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
@@ -26,9 +27,18 @@ class MEDIA_EXPORT AudioDecoderConfig {
   AudioDecoderConfig();
 
   // Constructs an initialized object.
+  // TODO(crbug.com/481380798): This ChannelLayout constructor is deprecated in
+  // favor of the ChannelLayoutConfig constructor. To be removed once all call
+  // sites have been updated.
   AudioDecoderConfig(AudioCodec codec,
                      SampleFormat sample_format,
                      ChannelLayout channel_layout,
+                     int samples_per_second,
+                     const std::vector<uint8_t>& extra_data,
+                     EncryptionScheme encryption_scheme);
+  AudioDecoderConfig(AudioCodec codec,
+                     SampleFormat sample_format,
+                     ChannelLayoutConfig channel_layout_config,
                      int samples_per_second,
                      const std::vector<uint8_t>& extra_data,
                      EncryptionScheme encryption_scheme);
@@ -41,9 +51,20 @@ class MEDIA_EXPORT AudioDecoderConfig {
   ~AudioDecoderConfig();
 
   // Resets the internal state of this object. |codec_delay| is in frames.
+  // TODO(crbug.com/481380798): This ChannelLayout Initialize() is deprecated in
+  // favor of the ChannelLayoutConfig Initialize(). To be removed once all call
+  // sites have been updated.
   void Initialize(AudioCodec codec,
                   SampleFormat sample_format,
                   ChannelLayout channel_layout,
+                  int samples_per_second,
+                  const std::vector<uint8_t>& extra_data,
+                  EncryptionScheme encryption_scheme,
+                  base::TimeDelta seek_preroll,
+                  int codec_delay);
+  void Initialize(AudioCodec codec,
+                  SampleFormat sample_format,
+                  ChannelLayoutConfig channel_layout_config,
                   int samples_per_second,
                   const std::vector<uint8_t>& extra_data,
                   EncryptionScheme encryption_scheme,

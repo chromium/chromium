@@ -23,6 +23,17 @@ AudioDecoderConfig::AudioDecoderConfig(AudioCodec codec,
              extra_data, encryption_scheme, base::TimeDelta(), 0);
 }
 
+AudioDecoderConfig::AudioDecoderConfig(
+    AudioCodec codec,
+    SampleFormat sample_format,
+    ChannelLayoutConfig channel_layout_config,
+    int samples_per_second,
+    const std::vector<uint8_t>& extra_data,
+    EncryptionScheme encryption_scheme) {
+  Initialize(codec, sample_format, channel_layout_config, samples_per_second,
+             extra_data, encryption_scheme, base::TimeDelta(), 0);
+}
+
 AudioDecoderConfig::AudioDecoderConfig(const AudioDecoderConfig& other) =
     default;
 
@@ -33,6 +44,20 @@ AudioDecoderConfig& AudioDecoderConfig::operator=(
 
 AudioDecoderConfig& AudioDecoderConfig::operator=(AudioDecoderConfig&& other) =
     default;
+
+void AudioDecoderConfig::Initialize(AudioCodec codec,
+                                    SampleFormat sample_format,
+                                    ChannelLayoutConfig channel_layout_config,
+                                    int samples_per_second,
+                                    const std::vector<uint8_t>& extra_data,
+                                    EncryptionScheme encryption_scheme,
+                                    base::TimeDelta seek_preroll,
+                                    int codec_delay) {
+  Initialize(codec, sample_format, channel_layout_config.channel_layout(),
+             samples_per_second, extra_data, encryption_scheme, seek_preroll,
+             codec_delay);
+  SetChannelsForDiscrete(channel_layout_config.channels());
+}
 
 void AudioDecoderConfig::Initialize(AudioCodec codec,
                                     SampleFormat sample_format,
