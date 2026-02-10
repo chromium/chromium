@@ -133,6 +133,16 @@ def BuildCrubit(rust_sysroot, out_dir, skip_checkout):
         print(f'    Copying {bin} ...')
         shutil.copy(os.path.join(release_dir, bin),
                     os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', bin))
+
+    print(f'Installing `crubit/support` to {RUST_TOOLCHAIN_OUT_DIR} ...')
+    crubit_support_install_dir = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'lib',
+                                              'crubit', 'support')
+    os.makedirs(crubit_support_install_dir, exist_ok=True)
+    crubit_support_src_dir = os.path.join(CRUBIT_SRC_DIR, 'support')
+    shutil.copytree(crubit_support_src_dir,
+                    crubit_support_install_dir,
+                    dirs_exist_ok=True)
+
     return 0
 
 
