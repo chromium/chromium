@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/paint/text_overflow_post_layout_snapshot.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator.h"
 #include "third_party/blink/renderer/core/scroll/programmatic_scroll_animator.h"
@@ -1337,6 +1338,7 @@ void ScrollableArea::Trace(Visitor* visitor) const {
   visitor->Trace(mac_scrollbar_animator_);
   visitor->Trace(programmatic_scroll_animator_);
   visitor->Trace(fade_overlay_scrollbars_timer_);
+  visitor->Trace(text_overflow_snapshot_);
 }
 
 void ScrollableArea::InjectScrollbarGestureScroll(

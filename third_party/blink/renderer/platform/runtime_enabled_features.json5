@@ -1994,6 +1994,12 @@
       status: "stable",
     },
     {
+      // Switch from ellipsis to clip when a container is scrolled.
+      // This shipped in M146 and the flag can be removed in M148.
+      name: "DisableEllipsisWhenScrolled",
+      status: "experimental",
+    },
+    {
       name: "DisableReduceAcceptLanguage",
       origin_trial_feature_name: "DisableReduceAcceptLanguage",
       origin_trial_type: "deprecation",

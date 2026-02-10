@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/paint/text_overflow_post_layout_snapshot.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -660,8 +661,23 @@ bool LayoutBlockFlow::ShouldTruncateOverflowingText() const {
     }
     object_to_check = parent;
   }
-  return object_to_check->HasNonVisibleOverflow() &&
-         !object_to_check->StyleRef().TextOverflow().IsClip();
+  if (!object_to_check->HasNonVisibleOverflow() ||
+      object_to_check->StyleRef().TextOverflow().IsClip()) {
+    return false;
+  }
+  if (RuntimeEnabledFeatures::DisableEllipsisWhenScrolledEnabled()) {
+    if (const auto* box = DynamicTo<LayoutBox>(object_to_check)) {
+      if (auto* scrollable_area = box->GetScrollableArea()) {
+        auto* snapshot = scrollable_area->GetTextOverflowPostLayoutSnapshot();
+        if (!snapshot) {
+          snapshot = MakeGarbageCollected<TextOverflowPostLayoutSnapshot>(
+              *scrollable_area);
+        }
+        return !snapshot->IsScrolled();
+      }
+    }
+  }
+  return true;
 }
 
 Node* LayoutBlockFlow::NodeForHitTest() const {

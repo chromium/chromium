@@ -183,6 +183,8 @@ blink_core_sources_paint = [
   "text_decoration_painter.h",
   "text_fragment_painter.cc",
   "text_fragment_painter.h",
+  "text_overflow_post_layout_snapshot.cc",
+  "text_overflow_post_layout_snapshot.h",
   "text_paint_style.h",
   "text_painter.cc",
   "text_painter.h",

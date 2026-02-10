@@ -79,6 +79,7 @@ class ScrollAnchor;
 class ScrollAnimatorBase;
 struct SerializedAnchor;
 class ScrollMarkerGroupPseudoElement;
+class TextOverflowPostLayoutSnapshot;
 
 using MainThreadScrollingReasons = uint32_t;
 
@@ -619,6 +620,14 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // Callback whenever the visual viewport changes scroll position or scale.
   virtual void DidUpdateVisualViewport() {}
 
+  void RegisterTextOverflowPostLayoutSnapshot(
+      TextOverflowPostLayoutSnapshot* snapshot) {
+    text_overflow_snapshot_ = snapshot;
+  }
+  TextOverflowPostLayoutSnapshot* GetTextOverflowPostLayoutSnapshot() const {
+    return text_overflow_snapshot_.Get();
+  }
+
  protected:
   virtual bool SetScrollOffsetInternal(const ScrollOffset&,
                                        mojom::blink::ScrollType,
@@ -778,6 +787,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   Member<DisallowNewWrapper<HeapTaskRunnerTimer<ScrollableArea>>>
       fade_overlay_scrollbars_timer_;
+
+  Member<TextOverflowPostLayoutSnapshot> text_overflow_snapshot_;
 
   Vector<ScrollCallback> pending_scroll_complete_callbacks_;
 
