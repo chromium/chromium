@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,10 +23,8 @@
 #include "chrome/browser/ui/views/passwords/account_chooser_dialog_view.h"
 #include "chrome/browser/ui/views/passwords/auto_signin_first_run_dialog_view.h"
 #include "chrome/browser/ui/views/passwords/credential_leak_dialog_view.h"
-#include "chrome/browser/ui/views/passwords/password_combined_selector_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -39,7 +36,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/views/controls/button/radio_button.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -52,10 +48,6 @@ using ::testing::Field;
 using ::testing::ReturnRef;
 
 namespace {
-
-constexpr std::u16string_view kFirstDisplayName = u"Frank Sinatra";
-constexpr std::u16string_view kFirstUsername = u"frank@sinat.ra";
-constexpr std::u16string_view kSecondUsername = u"nancy@sinat.ra";
 
 password_manager::PasswordForm CreatePasswordForm(
     const GURL& url,
@@ -634,23 +626,6 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
     }
     SetupChooseCredentials(std::move(local_credentials),
                            url::Origin::Create(origin));
-  } else if (name == "MultipleCredentials" || name == "SingleCredential") {
-    form.url = origin;
-    form.display_name = kFirstDisplayName;
-    form.username_value = kFirstUsername;
-    form.match_type = password_manager::PasswordForm::MatchType::kExact;
-
-    local_credentials.push_back(
-        std::make_unique<password_manager::PasswordForm>(form));
-
-    if (name == "MultipleCredentials") {
-      form.username_value = kSecondUsername;
-      local_credentials.push_back(
-          std::make_unique<password_manager::PasswordForm>(form));
-    }
-
-    SetupChooseCredentials(std::move(local_credentials),
-                           url::Origin::Create(origin));
   } else {
     ADD_FAILURE() << "Unknown dialog type";
     return;
@@ -679,91 +654,6 @@ IN_PROC_BROWSER_TEST_F(
     PasswordDialogViewTest,
     InvokeUi_PopupAccountChooserWithMultipleCredentialClickSignIn) {
   ShowAndVerifyUi();
-}
-
-class PasswordCombinedSelectorViewTest : public PasswordDialogViewTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      password_manager::features::kCredentialManagementUnifiedUi};
-};
-
-IN_PROC_BROWSER_TEST_F(PasswordCombinedSelectorViewTest,
-                       ShowMultipleCredentials) {
-  ShowUi("MultipleCredentials");
-
-  AccountChooserPrompt* prompt = controller()->current_account_chooser();
-  ASSERT_TRUE(prompt);
-  PasswordCombinedSelectorView* view =
-      static_cast<PasswordCombinedSelectorView*>(prompt);
-
-  EXPECT_CALL(*this, OnChooseCredential(testing::Pointee(testing::Field(
-                         &password_manager::PasswordForm::username_value,
-                         testing::Eq(kFirstUsername)))));
-  views::test::WidgetDestroyedWaiter waiter(view->GetWidget());
-  view->Accept();
-  waiter.Wait();
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordCombinedSelectorViewTest,
-                       ChooseSecondCredential) {
-  ShowUi("MultipleCredentials");
-
-  AccountChooserPrompt* prompt = controller()->current_account_chooser();
-  ASSERT_TRUE(prompt);
-  PasswordCombinedSelectorView* view =
-      static_cast<PasswordCombinedSelectorView*>(prompt);
-
-  const auto& radio_buttons = view->GetRadioButtonsForTesting();
-  ASSERT_EQ(2u, radio_buttons.size());
-
-  // Click the second radio button.
-  radio_buttons[1]->OnMousePressed(ui::MouseEvent(
-      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  radio_buttons[1]->OnMouseReleased(ui::MouseEvent(
-      ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
-      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-
-  EXPECT_CALL(*this, OnChooseCredential(testing::Pointee(testing::Field(
-                         &password_manager::PasswordForm::username_value,
-                         testing::Eq(kSecondUsername)))));
-  views::test::WidgetDestroyedWaiter waiter(view->GetWidget());
-  view->Accept();
-  waiter.Wait();
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordCombinedSelectorViewTest,
-                       ShowCombinedSelectorWithSingleCredential) {
-  ShowUi("SingleCredential");
-
-  AccountChooserPrompt* prompt = controller()->current_account_chooser();
-  ASSERT_TRUE(prompt);
-  PasswordCombinedSelectorView* view =
-      static_cast<PasswordCombinedSelectorView*>(prompt);
-
-  // No radio buttons should be shown for a single credential.
-  EXPECT_TRUE(view->GetRadioButtonsForTesting().empty());
-
-  EXPECT_CALL(*this, OnChooseCredential(testing::Pointee(testing::Field(
-                         &password_manager::PasswordForm::username_value,
-                         testing::Eq(kFirstUsername)))));
-  views::test::WidgetDestroyedWaiter waiter(view->GetWidget());
-  view->Accept();
-  waiter.Wait();
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordCombinedSelectorViewTest, CancelDialog) {
-  ShowUi("MultipleCredentials");
-
-  AccountChooserPrompt* prompt = controller()->current_account_chooser();
-  ASSERT_TRUE(prompt);
-  PasswordCombinedSelectorView* view =
-      static_cast<PasswordCombinedSelectorView*>(prompt);
-
-  EXPECT_CALL(*this, OnChooseCredential(nullptr));
-  views::test::WidgetDestroyedWaiter waiter(view->GetWidget());
-  view->GetWidget()->Close();
-  waiter.Wait();
 }
 
 }  // namespace

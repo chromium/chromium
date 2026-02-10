@@ -41,7 +41,6 @@ class CredentialManagerDialogControllerImpl
 
   // CredentialManagerDialogController:
   const FormsVector& GetLocalForms() const override;
-  url::Origin GetOrigin() const override;
   std::u16string GetAccountChooserTitle() const override;
   bool IsShowingAccountChooser() const override;
   bool ShouldShowSignInButton() const override;

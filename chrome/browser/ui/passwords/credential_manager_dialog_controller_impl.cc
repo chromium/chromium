@@ -26,7 +26,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "url/origin.h"
 
 namespace {
 
@@ -88,10 +87,6 @@ bool CredentialManagerDialogControllerImpl::IsShowingAccountChooser() const {
 const CredentialManagerDialogController::FormsVector&
 CredentialManagerDialogControllerImpl::GetLocalForms() const {
   return local_credentials_;
-}
-
-url::Origin CredentialManagerDialogControllerImpl::GetOrigin() const {
-  return delegate_->GetOrigin();
 }
 
 std::u16string CredentialManagerDialogControllerImpl::GetAccountChooserTitle()
