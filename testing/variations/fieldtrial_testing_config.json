@@ -8352,22 +8352,6 @@
     "CrossDevicePrefTracker": [
         {
             "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableCrossDevicePrefTracker"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
                 "android"
             ],
             "experiments": [
@@ -17241,36 +17225,39 @@
             ]
         }
     ],
-    "MobilePromoOnDesktopWithQRCode": [
+    "MobilePromoOnDesktop": [
         {
             "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MobilePromoOnDesktopWithQRCode"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MobilePromoOnDesktopWithReminder": [
-        {
-            "platforms": [
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "ios"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
                     "enable_features": [
                         "MobilePromoOnDesktopWithReminder"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_ESB",
+                    "params": {
+                        "mobile_promo_on_desktop_promo_type": "2"
+                    },
+                    "enable_features": [
+                        "EnableCrossDevicePrefTracker",
+                        "MobilePromoOnDesktopWithReminder"
+                    ],
+                    "disable_features": [
+                        "MobilePromoOnDesktopWithQRCode"
                     ]
                 }
             ]
