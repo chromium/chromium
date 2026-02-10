@@ -82,6 +82,7 @@ source_set("unit_tests") {
     ":diagnostics",
     "//base/test:test_support",
     "//chrome/common/chromeos/extensions/api",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",
     "//testing/gtest",
   ]

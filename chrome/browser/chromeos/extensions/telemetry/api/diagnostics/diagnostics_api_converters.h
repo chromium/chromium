@@ -25,7 +25,7 @@ chromeos::api::os_diagnostics::RoutineStatus ConvertRoutineStatus(
 crosapi::mojom::DiagnosticsRoutineCommandEnum ConvertRoutineCommand(
     chromeos::api::os_diagnostics::RoutineCommandType commandType);
 
-crosapi::mojom::DiagnosticsAcPowerStatusEnum ConvertAcPowerStatusRoutineType(
+ash::cros_healthd::mojom::AcPowerStatusEnum ConvertAcPowerStatusRoutineType(
     chromeos::api::os_diagnostics::AcPowerStatus routineType);
 
 chromeos::api::os_diagnostics::UserMessageType ConvertRoutineUserMessage(

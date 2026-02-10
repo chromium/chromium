@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/telemetry_extension/diagnostics/diagnostics_service_ash.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-shared.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
@@ -56,6 +57,11 @@ class TelemetryExtensionDiagnosticsApiBrowserTest
         ash::cros_healthd::mojom::RunRoutineResponse::New(id, status);
     ash::cros_healthd::FakeCrosHealthd::Get()->SetRunRoutineResponseForTesting(
         response);
+  }
+
+  void SetExpectedLastPassedParameters(base::DictValue dict) {
+    ash::cros_healthd::FakeCrosHealthd::Get()
+        ->SetExpectedLastPassedDiagnosticsParametersForTesting(std::move(dict));
   }
 
   FakeDiagnosticsServiceFactory fake_diagnostics_service_factory_;
@@ -265,28 +271,17 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunAcPowerRoutineSuccess) {
-  // Configure FakeDiagnosticsService.
-  {
-    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
-    expected_response->id = 0;
-    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
+  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
 
-    // Set the return value for a call to RunAcPowerRoutine.
-    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
-    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
-
-    // Set the expected runtime actions.
-    fake_service_impl->SetExpectedLastPassedParameters(
-        base::DictValue()
-            .Set("expected_status",
-                 static_cast<int32_t>(
-                     crosapi::DiagnosticsAcPowerStatusEnum::kConnected))
-            .Set("expected_power_type", "ac_power"));
-    fake_service_impl->SetExpectedLastCalledRoutine(
-        crosapi::DiagnosticsRoutineEnum::kAcPower);
-
-    SetServiceForTesting(std::move(fake_service_impl));
-  }
+  base::DictValue expected_parameters;
+  expected_parameters.Set(
+      "expected_status",
+      static_cast<int32_t>(
+          ash::cros_healthd::mojom::AcPowerStatusEnum::kConnected));
+  expected_parameters.Set("expected_power_type", "ac_power");
+  SetExpectedLastPassedParameters(std::move(expected_parameters));
+  SetRunRoutineResponse(
+      0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -303,6 +298,11 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
+
+  EXPECT_EQ(ash::cros_healthd::FakeCrosHealthd::Get()->GetLastRunRoutine(),
+            ash::cros_healthd::mojom::DiagnosticRoutineEnum::kAcPower);
+  EXPECT_TRUE(ash::cros_healthd::FakeCrosHealthd::Get()
+                  ->DidExpectedDiagnosticsParametersMatch());
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
@@ -328,26 +328,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBatteryChargeRoutineSuccess) {
-  // Configure FakeDiagnosticsService.
-  {
-    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
-    expected_response->id = 0;
-    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
+  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
 
-    // Set the return value for a call to RunBatteryChargeRoutine.
-    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
-    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
-
-    // Set the expected runtime actions.
-    fake_service_impl->SetExpectedLastPassedParameters(
-        base::DictValue()
-            .Set("length_seconds", 1000)
-            .Set("minimum_charge_percent_required", 1));
-    fake_service_impl->SetExpectedLastCalledRoutine(
-        crosapi::DiagnosticsRoutineEnum::kBatteryCharge);
-
-    SetServiceForTesting(std::move(fake_service_impl));
-  }
+  base::DictValue expected_parameters;
+  expected_parameters.Set("length_seconds", 1000);
+  expected_parameters.Set("minimum_charge_percent_required", 1);
+  SetExpectedLastPassedParameters(std::move(expected_parameters));
+  SetRunRoutineResponse(
+      0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -364,30 +352,23 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
+
+  EXPECT_EQ(ash::cros_healthd::FakeCrosHealthd::Get()->GetLastRunRoutine(),
+            ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge);
+  EXPECT_TRUE(ash::cros_healthd::FakeCrosHealthd::Get()
+                  ->DidExpectedDiagnosticsParametersMatch());
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBatteryDischargeRoutineSuccess) {
-  // Configure FakeDiagnosticsService.
-  {
-    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
-    expected_response->id = 0;
-    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
+  SetServiceForTesting(std::make_unique<FakeDiagnosticsService>());
 
-    // Set the return value for a call to RunBatteryDischargeRoutine.
-    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
-    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
-
-    // Set the expected runtime actions.
-    fake_service_impl->SetExpectedLastPassedParameters(
-        base::DictValue()
-            .Set("length_seconds", 10)
-            .Set("maximum_discharge_percent_allowed", 15));
-    fake_service_impl->SetExpectedLastCalledRoutine(
-        crosapi::DiagnosticsRoutineEnum::kBatteryDischarge);
-
-    SetServiceForTesting(std::move(fake_service_impl));
-  }
+  base::DictValue expected_parameters;
+  expected_parameters.Set("length_seconds", 10);
+  expected_parameters.Set("maximum_discharge_percent_allowed", 15);
+  SetExpectedLastPassedParameters(std::move(expected_parameters));
+  SetRunRoutineResponse(
+      0, ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady);
 
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -404,6 +385,11 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
+
+  EXPECT_EQ(ash::cros_healthd::FakeCrosHealthd::Get()->GetLastRunRoutine(),
+            ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge);
+  EXPECT_TRUE(ash::cros_healthd::FakeCrosHealthd::Get()
+                  ->DidExpectedDiagnosticsParametersMatch());
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,

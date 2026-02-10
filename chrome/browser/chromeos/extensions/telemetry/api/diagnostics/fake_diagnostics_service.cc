@@ -66,61 +66,6 @@ void FakeDiagnosticsService::GetRoutineUpdate(
       base::BindOnce(std::move(callback), routine_update_response_->Clone()));
 }
 
-void FakeDiagnosticsService::RunAcPowerRoutine(
-    crosapi::DiagnosticsAcPowerStatusEnum expected_status,
-    const std::optional<std::string>& expected_power_type,
-    RunAcPowerRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_passed_parameters_.Set("expected_status",
-                                static_cast<int32_t>(expected_status));
-  if (expected_power_type.has_value()) {
-    actual_passed_parameters_.Set("expected_power_type",
-                                  expected_power_type.value());
-  }
-
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kAcPower;
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
-void FakeDiagnosticsService::RunBatteryChargeRoutine(
-    uint32_t length_seconds,
-    uint32_t minimum_charge_percent_required,
-    RunBatteryChargeRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_passed_parameters_.Set("length_seconds",
-                                static_cast<int32_t>(length_seconds));
-  actual_passed_parameters_.Set(
-      "minimum_charge_percent_required",
-      static_cast<int32_t>(minimum_charge_percent_required));
-
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kBatteryCharge;
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
-void FakeDiagnosticsService::RunBatteryDischargeRoutine(
-    uint32_t length_seconds,
-    uint32_t maximum_discharge_percent_allowed,
-    RunBatteryDischargeRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_passed_parameters_.Set("length_seconds",
-                                static_cast<int32_t>(length_seconds));
-  actual_passed_parameters_.Set(
-      "maximum_discharge_percent_allowed",
-      static_cast<int32_t>(maximum_discharge_percent_allowed));
-
-  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kBatteryDischarge;
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
-}
-
 void FakeDiagnosticsService::RunBluetoothPairingRoutine(
     const std::string& peripheral_id,
     RunBluetoothPairingRoutineCallback callback) {

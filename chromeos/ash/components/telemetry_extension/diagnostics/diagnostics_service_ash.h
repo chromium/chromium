@@ -56,18 +56,6 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
                         crosapi::mojom::DiagnosticsRoutineCommandEnum command,
                         bool include_output,
                         GetRoutineUpdateCallback callback) override;
-  void RunAcPowerRoutine(
-      crosapi::mojom::DiagnosticsAcPowerStatusEnum expected_status,
-      const std::optional<std::string>& expected_power_type,
-      RunAcPowerRoutineCallback callback) override;
-  void RunBatteryChargeRoutine(
-      uint32_t length_seconds,
-      uint32_t minimum_charge_percent_required,
-      RunBatteryChargeRoutineCallback callback) override;
-  void RunBatteryDischargeRoutine(
-      uint32_t length_seconds,
-      uint32_t maximum_discharge_percent_allowed,
-      RunBatteryDischargeRoutineCallback callback) override;
   void RunBluetoothPairingRoutine(
       const std::string& peripheral_id,
       RunBluetoothPairingRoutineCallback callback) override;

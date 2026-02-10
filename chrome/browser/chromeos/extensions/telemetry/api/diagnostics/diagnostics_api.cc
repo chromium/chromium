@@ -238,10 +238,10 @@ void OsDiagnosticsRunAcPowerRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  GetRemoteService()->RunAcPowerRoutine(
+  GetService()->RunAcPowerRoutine(
       converters::diagnostics::ConvertAcPowerStatusRoutineType(
           params->request.expected_status),
-      params->request.expected_power_type, GetOnResult());
+      params->request.expected_power_type, GetOnResponse());
 }
 
 // OsDiagnosticsRunBatteryCapacityRoutineFunction ------------------------------
@@ -257,9 +257,9 @@ void OsDiagnosticsRunBatteryChargeRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  GetRemoteService()->RunBatteryChargeRoutine(
+  GetService()->RunBatteryChargeRoutine(
       params->request.length_seconds,
-      params->request.minimum_charge_percent_required, GetOnResult());
+      params->request.minimum_charge_percent_required, GetOnResponse());
 }
 
 // OsDiagnosticsRunBatteryDischargeRoutineFunction -----------------------------
@@ -270,9 +270,9 @@ void OsDiagnosticsRunBatteryDischargeRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  GetRemoteService()->RunBatteryDischargeRoutine(
+  GetService()->RunBatteryDischargeRoutine(
       params->request.length_seconds,
-      params->request.maximum_discharge_percent_allowed, GetOnResult());
+      params->request.maximum_discharge_percent_allowed, GetOnResponse());
 }
 
 // OsDiagnosticsRunBatteryHealthRoutineFunction --------------------------------

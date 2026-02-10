@@ -98,54 +98,6 @@ void DiagnosticsServiceAsh::GetRoutineUpdate(
           std::move(callback)));
 }
 
-void DiagnosticsServiceAsh::RunAcPowerRoutine(
-    crosapi::mojom::DiagnosticsAcPowerStatusEnum expected_status,
-    const std::optional<std::string>& expected_power_type,
-    RunAcPowerRoutineCallback callback) {
-  GetService()->RunAcPowerRoutine(
-      converters::diagnostics::Convert(expected_status), expected_power_type,
-      base::BindOnce(
-          [](crosapi::mojom::DiagnosticsService::RunAcPowerRoutineCallback
-                 callback,
-             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-            std::move(callback).Run(
-                converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-          },
-          std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunBatteryChargeRoutine(
-    uint32_t length_seconds,
-    uint32_t minimum_charge_percent_required,
-    RunBatteryChargeRoutineCallback callback) {
-  GetService()->RunBatteryChargeRoutine(
-      length_seconds, minimum_charge_percent_required,
-      base::BindOnce(
-          [](crosapi::mojom::DiagnosticsService::RunBatteryChargeRoutineCallback
-                 callback,
-             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-            std::move(callback).Run(
-                converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-          },
-          std::move(callback)));
-}
-
-void DiagnosticsServiceAsh::RunBatteryDischargeRoutine(
-    uint32_t length_seconds,
-    uint32_t maximum_discharge_percent_allowed,
-    RunBatteryDischargeRoutineCallback callback) {
-  GetService()->RunBatteryDischargeRoutine(
-      length_seconds, maximum_discharge_percent_allowed,
-      base::BindOnce(
-          [](crosapi::mojom::DiagnosticsService::
-                 RunBatteryDischargeRoutineCallback callback,
-             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-            std::move(callback).Run(
-                converters::diagnostics::ConvertDiagnosticsPtr(std::move(ptr)));
-          },
-          std::move(callback)));
-}
-
 void DiagnosticsServiceAsh::RunBluetoothPairingRoutine(
     const std::string& peripheral_id,
     RunBluetoothPairingRoutineCallback callback) {

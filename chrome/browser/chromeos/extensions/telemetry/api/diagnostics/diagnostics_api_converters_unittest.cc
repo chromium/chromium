@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-shared.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -243,10 +244,10 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
      ConvertAcPowerStatusRoutineType) {
   EXPECT_EQ(ConvertAcPowerStatusRoutineType(cx_diag::AcPowerStatus::kConnected),
-            crosapi::DiagnosticsAcPowerStatusEnum::kConnected);
+            ash::cros_healthd::mojom::AcPowerStatusEnum::kConnected);
   EXPECT_EQ(
       ConvertAcPowerStatusRoutineType(cx_diag::AcPowerStatus::kDisconnected),
-      crosapi::DiagnosticsAcPowerStatusEnum::kDisconnected);
+      ash::cros_healthd::mojom::AcPowerStatusEnum::kDisconnected);
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,

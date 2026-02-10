@@ -72,24 +72,7 @@ interface DiagnosticsService {
   RunSmartctlCheckRoutine@4([MinVersion=1] UInt32Value?
       percentage_used_threshold) => (DiagnosticsRunRoutineResponse response);
 
-  // Requests that the AcPower routine is created and started on the
-  // platform. This routine checks the status of the power supply, and if
-  // |expected_power_type| is specified, checks to see that
-  // |expected_power_type| matches the type reported by the power supply.
-  // The availability of this routine can be determined by checking that
-  // kAcPower is returned by GetAvailableRoutines.
-  //
-  // The request:
-  // * |expected_status| - whether or not the adapter is expected to be online.
-  // * |expected_power_type| - if specified, must match the type of the power
-  //                           supply for the routine to succeed.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  RunAcPowerRoutine@5(DiagnosticsAcPowerStatusEnum expected_status,
-                    string? expected_power_type)
-      => (DiagnosticsRunRoutineResponse response);
+  // RunAcPowerRoutine@5 was removed.
 
   // Requests that the CPU cache routine is created and started on the
   // platform. This routine runs the stressapptest to test the CPU caches.
@@ -204,43 +187,8 @@ interface DiagnosticsService {
   RunPrimeSearchRoutine@12(uint32 length_seconds)
       => (DiagnosticsRunRoutineResponse response);
 
-  // Requests that the BatteryDischarge routine is created and started on the
-  // platform. This routine checks the battery's discharge rate over a period of
-  // time.
-  // The availability of this routine can be determined by checking that
-  // kBatteryDischarge is returned by GetAvailableRoutines.
-  //
-  // The request:
-  // * |length_seconds| - length of time to run the routine for.
-  // * |maximum_discharge_percent_allowed| - the routine will fail if the
-  //                                         battery discharges by more than
-  //                                         this percentage.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  RunBatteryDischargeRoutine@13(uint32 length_seconds,
-                             uint32 maximum_discharge_percent_allowed)
-      => (DiagnosticsRunRoutineResponse response);
-
-  // Requests that the BatteryCharge routine is created and started on the
-  // platform. This routine checks the battery's charge rate over a period of
-  // time.
-  // The availability of this routine can be determined by checking that
-  // kBatteryCharge is returned by GetAvailableRoutines.
-  //
-  // The request:
-  // * |length_seconds| - length of time to run the routine for.
-  // * |minimum_charge_percent_required| - the routine will fail if the battery
-  //                                       charges by less than this percentage.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  RunBatteryChargeRoutine@14(uint32 length_seconds,
-                          uint32 minimum_charge_percent_required)
-      => (DiagnosticsRunRoutineResponse response);
-
+  // RunBatteryDischargeRoutine@13 was removed.
+  // RunBatteryChargeRoutine@14 was removed.
   // RunMemoryRoutine@15() was removed.
   // RunLanConnectivityRoutine@16() was removed.
   // RunDnsResolutionRoutine@17() was removed.

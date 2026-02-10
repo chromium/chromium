@@ -360,13 +360,13 @@ crosapi::DiagnosticsRoutineCommandEnum ConvertRoutineCommand(
   NOTREACHED();
 }
 
-crosapi::DiagnosticsAcPowerStatusEnum ConvertAcPowerStatusRoutineType(
+ash::cros_healthd::mojom::AcPowerStatusEnum ConvertAcPowerStatusRoutineType(
     cx_diag::AcPowerStatus routineType) {
   switch (routineType) {
     case cx_diag::AcPowerStatus::kConnected:
-      return crosapi::DiagnosticsAcPowerStatusEnum::kConnected;
+      return ash::cros_healthd::mojom::AcPowerStatusEnum::kConnected;
     case cx_diag::AcPowerStatus::kDisconnected:
-      return crosapi::DiagnosticsAcPowerStatusEnum::kDisconnected;
+      return ash::cros_healthd::mojom::AcPowerStatusEnum::kDisconnected;
     case cx_diag::AcPowerStatus::kNone:
       break;
   }
