@@ -2416,12 +2416,6 @@
       status: "stable",
     },
     {
-      name: "FederationElement",
-      depends_on: ["FedCm"],
-      status: "experimental",
-      base_feature: "none",
-    },
-    {
       name: "FencedFrames",
       base_feature: "none",
       // This helps enable and expose the <fencedframe> element, but note that
@@ -3361,6 +3355,12 @@
       status: "test",
       // Enabled by features::kLockedMode.
       public: true,
+    },
+    {
+      name: "LoginElement",
+      depends_on: ["FedCm"],
+      status: "experimental",
+      base_feature: "none",
     },
     {
       // Enable sourceCharPosition for the invoke-type resolve-promise

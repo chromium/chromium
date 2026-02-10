@@ -171,7 +171,7 @@
     {
       name: "federation",
       interfaceName: "HTMLFederationElement",
-      runtimeEnabled: "FederationElement",
+      runtimeEnabled: "LoginElement",
     },
     {
       name: "fencedframe",
@@ -310,6 +310,11 @@
     {
       name: "li",
       interfaceName: "HTMLLIElement",
+    },
+    {
+      name: "login",
+      interfaceName: "HTMLLoginElement",
+      runtimeEnabled: "LoginElement",
     },
     {
       name: "link",

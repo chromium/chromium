@@ -4688,6 +4688,9 @@ interface HTMLLinkElement : HTMLElement
     setter sizes
     setter target
     setter type
+interface HTMLLoginElement : HTMLElement
+    attribute @@toStringTag
+    method constructor
 interface HTMLMapElement : HTMLElement
     attribute @@toStringTag
     getter areas
