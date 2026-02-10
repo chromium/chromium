@@ -394,23 +394,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
                                     Delegate*);
   ~CanvasResourceProviderSharedImage() override;
 
-  // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
-  // exists, after flushing the resource and signaling that an external write
-  // will occur on it. The caller should wait on `internal_access_sync_token`
-  // before writing the contents unless the caller's usage model makes such a
-  // wait unnecessary (in which case the client should pass `nullptr` for the
-  // token together with an explanation at the callsite).
-  // `required_shared_image_usages` is a set of usages that the passed-back
-  // ClientSharedImage must support. A copy will be performed if either (a) the
-  // display compositor is reading the current resource or (b) the current
-  // resource does not support `required_shared_image_usages.` In these cases,
-  // `was_copy_performed` will be set to true if it is non-null.
-  scoped_refptr<gpu::ClientSharedImage>
-  GetBackingClientSharedImageForExternalWrite(
-      gpu::SharedImageUsageSet required_shared_image_usages,
-      gpu::SyncToken& internal_access_sync_token,
-      bool* was_copy_performed = nullptr);
-
   // Signals that an external write has completed, passing the token that should
   // be waited on to ensure that the service-side operations of the external
   // write have completed. Ensures that the next read of this resource (whether
@@ -476,6 +459,21 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void OnContextDestroyed() override;
 
  protected:
+  // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
+  // exists, after flushing the resource and signaling that an external write
+  // will occur on it. The caller should wait on `internal_access_sync_token`
+  // before writing the contents.
+  // `required_shared_image_usages` is a set of usages that the passed-back
+  // ClientSharedImage must support. A copy will be performed if either (a) the
+  // display compositor is reading the current resource or (b) the current
+  // resource does not support `required_shared_image_usages.` In these cases,
+  // `was_copy_performed` will be set to true if it is non-null.
+  scoped_refptr<gpu::ClientSharedImage>
+  GetBackingClientSharedImageForExternalWrite(
+      gpu::SharedImageUsageSet required_shared_image_usages,
+      gpu::SyncToken& internal_access_sync_token,
+      bool* was_copy_performed = nullptr);
+
   CanvasResourceSharedImage* resource() {
     return static_cast<CanvasResourceSharedImage*>(resource_.get());
   }
