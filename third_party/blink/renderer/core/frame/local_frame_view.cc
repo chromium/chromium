@@ -776,13 +776,13 @@ void LocalFrameView::PerformLayout() {
           container->SetShouldCheckForPaintInvalidation();
       }
       layout_subtree_root_list_.Clear();
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
       // Ensure fragment-tree consistency after a subtree layout.
       for (const auto& p : fragment_tree_spines) {
         p.key->AssertFragmentTree();
         DCHECK_EQ(p.value, 0u);
       }
-#endif
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
       fragment_tree_spines.clear();
     } else {
       GetLayoutView()->LayoutRoot();
@@ -3274,7 +3274,9 @@ void LocalFrameView::UpdateStyleAndLayoutIfNeededRecursive() {
   CheckDoesNotNeedLayout();
 #if DCHECK_IS_ON()
   frame_->GetDocument()->GetLayoutView()->AssertLaidOut();
+#if EXPENSIVE_DCHECKS_ARE_ON()
   frame_->GetDocument()->GetLayoutView()->AssertFragmentTree();
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 #endif
 
   if (Lifecycle().GetState() < DocumentLifecycle::kLayoutClean)

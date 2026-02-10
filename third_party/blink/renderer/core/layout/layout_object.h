@@ -505,12 +505,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     }
   }
 
+#if EXPENSIVE_DCHECKS_ARE_ON()
   // This function checks if the fragment tree is consistent with the
   // |LayoutObject| tree. This consistency is critical, as sometimes we traverse
   // the fragment tree, sometimes the |LayoutObject| tree, or mix the
   // traversals. Also we rely on the consistency to avoid using fragments whose
   // |LayoutObject| were destroyed.
   void AssertFragmentTree(bool display_locked = false) const;
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   void AssertClearedPaintInvalidationFlags() const;
 
