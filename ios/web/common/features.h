@@ -113,6 +113,10 @@ bool CreateTabHelperOnlyForRealizedWebStates();
 // lazy creation. This is intended to be used as a kill switch.
 BASE_DECLARE_FEATURE(kUpdateSSLStatusOnNavigationItemLazyCreation);
 
+// Feature flag to enable a fix for a crash in
+// DownloadTaskImpl::GenerateFileName.
+BASE_DECLARE_FEATURE(kIOSDownloadSanitizeFilename);
+
 }  // namespace web::features
 
 #endif  // IOS_WEB_COMMON_FEATURES_H_
