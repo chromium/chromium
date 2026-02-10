@@ -8,7 +8,6 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/functional/function_ref.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/threading/platform_thread.h"
@@ -19,17 +18,28 @@ namespace installer {
 
 namespace {
 
-// Calls `operation` up to three times with a 100ms pause between each until it
-// returns true.
-bool RetryOnFailure(base::FunctionRef<bool()> operation) {
+enum class OperationResult {
+  kSucceeded,
+  kPersistentFailure,
+  kTransientFailure,
+};
+
+// Calls `operation` up to three times with a 100ms pause between each while it
+// returns `OperationResult::kTransientFailure`.
+bool RetryOnFailure(base::FunctionRef<OperationResult()> operation) {
   static constexpr int kFileSystemAttempts = 3;
 
   for (int i = 0; i < kFileSystemAttempts; ++i) {
-    if (operation()) {
-      return true;
-    }
-    if (i != kFileSystemAttempts - 1) {
-      base::PlatformThread::Sleep(base::Milliseconds(100));
+    switch (operation()) {
+      case OperationResult::kSucceeded:
+        return true;
+      case OperationResult::kPersistentFailure:
+        return false;
+      case OperationResult::kTransientFailure:
+        if (i != kFileSystemAttempts - 1) {
+          base::PlatformThread::Sleep(base::Milliseconds(100));
+        }
+        break;
     }
   }
   return false;
@@ -38,20 +48,51 @@ bool RetryOnFailure(base::FunctionRef<bool()> operation) {
 bool CreateDirectoryWithRetry(const base::FilePath& path) {
   return RetryOnFailure([&path]() {
     return ::CreateDirectory(path.value().c_str(),
-                             /*lpSecurityAttributes=*/nullptr);
+                             /*lpSecurityAttributes=*/nullptr) != 0
+               ? OperationResult::kSucceeded
+               : OperationResult::kTransientFailure;
   });
 }
 
 bool RemoveDirectoryWithRetry(const base::FilePath& path) {
-  return RetryOnFailure(
-      [&path]() { return ::RemoveDirectory(path.value().c_str()) != 0; });
+  return RetryOnFailure([&path]() {
+    return ::RemoveDirectory(path.value().c_str()) != 0
+               ? OperationResult::kSucceeded
+               : OperationResult::kTransientFailure;
+  });
 }
 
 bool MoveFileWithRetry(const base::FilePath& source,
                        const base::FilePath& destination) {
   return RetryOnFailure([&source, &destination]() {
-    return ::MoveFileEx(source.value().c_str(), destination.value().c_str(),
-                        /*dwFlags=*/0) != 0;
+    if (::MoveFileEx(source.value().c_str(), destination.value().c_str(),
+                     /*dwFlags=*/0) != 0) {
+      return OperationResult::kSucceeded;
+    }
+    return ::GetLastError() == ERROR_NOT_SAME_DEVICE
+               ? OperationResult::kPersistentFailure
+               : OperationResult::kTransientFailure;
+  });
+}
+
+bool CopyFileWithRetry(const base::FilePath& source,
+                       const base::FilePath& destination) {
+  return RetryOnFailure([&source, &destination]() {
+    if (::CopyFile(source.value().c_str(), destination.value().c_str(),
+                   /*bFailIfExists=*/TRUE) != 0) {
+      return OperationResult::kSucceeded;
+    }
+    const auto error = ::GetLastError();
+    return (error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND)
+               ? OperationResult::kPersistentFailure
+               : OperationResult::kTransientFailure;
+  });
+}
+
+bool DeleteFileWithRetry(const base::FilePath& path) {
+  return RetryOnFailure([&path]() {
+    return base::DeleteFile(path) ? OperationResult::kSucceeded
+                                  : OperationResult::kTransientFailure;
   });
 }
 
@@ -71,6 +112,10 @@ FileConductor::~FileConductor() {
 bool FileConductor::DeleteEntry(const base::FilePath& path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
+
+  if (!path.IsAbsolute()) {
+    return false;
+  }
 
   // Proactively create a directory into which `path` will be moved.
   base::FilePath backup_dir = CreateBackupDirectory();
@@ -98,6 +143,9 @@ bool FileConductor::MoveEntry(const base::FilePath& source,
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
+  if (!source.IsAbsolute() || !destination.IsAbsolute()) {
+    return false;
+  }
   return RobustMove(source, destination, /*cleanup=*/false) ==
          MoveResult::kSucceeded;
 }
@@ -111,21 +159,8 @@ void FileConductor::Undo() {
     undo_items_.pop();
   }
   // Do not clean up on destruction following undo.
-  std::stack<base::FilePath> empty;
+  base::stack<base::FilePath> empty;
   cleanup_paths_.swap(empty);
-}
-
-DWORD FileConductor::TrivialMove(const base::FilePath& source,
-                                 const base::FilePath& destination,
-                                 bool cleanup) {
-  if (!MoveFileWithRetry(source, destination)) {
-    const auto error = ::GetLastError();
-    PLOG(ERROR) << "Failed to move " << source << " to " << destination;
-    return error;
-  }
-  EntryMoved(source, destination, cleanup);
-  VLOG(1) << "Moved " << source << " to " << destination;
-  return ERROR_SUCCESS;
 }
 
 base::FilePath FileConductor::CreateBackupDirectory() {
@@ -149,10 +184,134 @@ bool FileConductor::CreateDirectory(const base::FilePath& path, bool cleanup) {
   return true;
 }
 
-bool FileConductor::MoveDirectoryRecursive(const base::FilePath& source,
-                                           const base::FilePath& destination,
-                                           bool cleanup) {
-  // Move each file/directory; creating the destination directory on demand.
+FileConductor::MoveResult FileConductor::RobustMove(
+    const base::FilePath& source,
+    const base::FilePath& destination,
+    bool cleanup) {
+  if (MoveFileWithRetry(source, destination)) {
+    EntryMoved(source, destination, cleanup);
+    VLOG(1) << "Moved " << source << " to " << destination;
+    return MoveResult::kSucceeded;
+  }
+
+  const DWORD error = ::GetLastError();
+  if (error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND) {
+    VLOG(1) << "Could not move " << source << ", as it does not exist";
+    return MoveResult::kNoSource;
+  }
+
+  if (error == ERROR_ALREADY_EXISTS) {
+    // It is a programmer error if `destination` exists. Since the filesystem is
+    // a shared resource, it's always possible that some other program has put
+    // a file/directory in place, so crashing via CHECK is not the right way to
+    // handle this.
+    PLOG(ERROR) << "Failed to move " << source << " to " << destination;
+    return MoveResult::kFailed;
+  }
+
+  // `source` cannot be moved if it is a simple file that is open without
+  // `FILE_SHARE_DELETE` (`ERROR_SHARING_VIOLATION`), `source` and `destination`
+  // are on different volumes (`ERROR_NOT_SAME_DEVICE`), or `source` is a
+  // directory containing an open file (`ERROR_ACCESS_DENIED`). Assume that it
+  // names a directory and attempt to move all of its contents (recursively),
+  // deleting its directories as their contents are moved. Don't unconditionally
+  // switch to `CopyAndDelete` at this point since it's possible that moving
+  // each item in `source` to destination may succeed without further recursion.
+  // This will attempt to move each item before falling back to copy-n-delete in
+  // the degenerate cross-volume case, but both paths are highly likely to
+  // reside on the same volume due to the way this class is used in Chrome's
+  // installer.
+  VLOG(1) << "Attempting manual move of directory " << source << " to "
+          << destination;
+
+  // Recursively move the contents of `source` to `destination` and delete
+  // `source` once it is empty.
+  switch (ProcessDirectory(source, destination, cleanup,
+                           [this](const base::FilePath& move_from,
+                                  const base::FilePath& move_to, bool cleanup) {
+                             return RobustMove(move_from, move_to, cleanup) !=
+                                    MoveResult::kFailed;
+                           })) {
+    case ProcessDirectoryResult::kSucceeded:
+      // Delete the empty `source` directory now that everything within has been
+      // moved.
+      if (!RemoveDirectoryWithRetry(source)) {
+        PLOG(ERROR) << "Failed to delete empty directory " << source;
+        return MoveResult::kFailed;
+      }
+      DirectoryRemoved(source);
+      return MoveResult::kSucceeded;
+
+    case ProcessDirectoryResult::kCantEnumerate:
+      // Perhaps `source` isn't a directory after all. Try to copy it to
+      // `destination` and delete it.
+      return CopyAndDelete(source, destination, cleanup)
+                 ? MoveResult::kSucceeded
+                 : MoveResult::kFailed;
+
+    case ProcessDirectoryResult::kFailed:
+      return MoveResult::kFailed;
+  }
+}
+
+bool FileConductor::CopyAndDelete(const base::FilePath& source,
+                                  const base::FilePath& destination,
+                                  bool cleanup) {
+  if (CopyFileWithRetry(source, destination)) {
+    // `source` is positively a file rather than a directory at this point.
+    if (DeleteFileWithRetry(source)) {
+      VLOG(1) << "Copied " << source << " to " << destination
+              << " and deleted the source";
+      EntryCopiedAndDeleted(source, destination, cleanup);
+      return true;
+    }
+    PLOG(ERROR) << "Failed to delete " << source << " after copying it to "
+                << destination;
+    EntryCopied(destination, cleanup);
+    return false;
+  }
+  // Else `source` might be a directory or this process might lack permission to
+  // copy it.
+  VLOG(1) << "Attempting manual copy of directory " << source << " to "
+          << destination;
+
+  // Recursively copy the contents of `source` to `destination`, deleting each
+  // item as it goes and deleting `source` once it is empty.
+  switch (ProcessDirectory(source, destination, cleanup,
+                           [this](const base::FilePath& copy_from,
+                                  const base::FilePath& copy_to, bool cleanup) {
+                             return CopyAndDelete(copy_from, copy_to, cleanup);
+                           })) {
+    case ProcessDirectoryResult::kSucceeded:
+      // Delete the empty `source` directory.
+      if (!RemoveDirectoryWithRetry(source)) {
+        PLOG(ERROR) << "Failed to delete empty directory " << source;
+        return false;
+      }
+      DirectoryRemoved(source);
+      return true;
+
+    case ProcessDirectoryResult::kCantEnumerate:
+      // `source` doesn't appear to be a directory, or the process has
+      // insufficient permission to enumerate its contents.
+      PLOG(ERROR) << "Failed to either copy " << source << " to " << destination
+                  << " or enumerate its contents to copy it recursively";
+      return false;
+
+    case ProcessDirectoryResult::kFailed:
+      // Failed while recursing.
+      return false;
+  }
+}
+
+FileConductor::ProcessDirectoryResult FileConductor::ProcessDirectory(
+    const base::FilePath& source,
+    const base::FilePath& destination,
+    bool cleanup,
+    base::FunctionRef<bool(const base::FilePath&, const base::FilePath&, bool)>
+        operation) {
+  // Process each file/directory in `source`; creating the destination directory
+  // on demand.
   bool destination_created = false;
   base::FileEnumerator file_enumerator(
       source, /*recursive=*/false,
@@ -162,75 +321,34 @@ bool FileConductor::MoveDirectoryRecursive(const base::FilePath& source,
   for (auto entry = file_enumerator.Next(); !entry.empty();
        entry = file_enumerator.Next()) {
     if (!destination_created) {
-      // Create the target `destination` directory now that a first item to move
-      // has been found.
+      // Create the target `destination` directory now that a first item has
+      // been found.
       if (!CreateDirectory(destination, cleanup)) {
-        return false;
+        return ProcessDirectoryResult::kFailed;
       }
       destination_created = true;
     }
 
-    if (RobustMove(entry, destination.Append(entry.BaseName()), cleanup) ==
-        MoveResult::kFailed) {
-      return false;
+    if (!operation(entry, destination.Append(entry.BaseName()), cleanup)) {
+      return ProcessDirectoryResult::kFailed;
     }
   }
   if (file_enumerator.GetError() != base::File::FILE_OK) {
+    const auto error = ::GetLastError();
     // `source` could not be fully enumerated; possibly because it is not a
     // directory.
-    PLOG(ERROR) << "Failed to enumerate contents of directory " << source;
-    return false;
+    PLOG_IF(ERROR, error != ERROR_DIRECTORY)
+        << "Failed to enumerate contents of directory " << source;
+    return ProcessDirectoryResult::kCantEnumerate;
   }
 
   // `destination_created` is false if `source` was an empty directory. Create
-  // the destination now before trying to delete `source`.
+  // the destination now to complete processing.
   if (!destination_created && !CreateDirectory(destination, cleanup)) {
-    return false;
+    return ProcessDirectoryResult::kFailed;
   }
 
-  // Delete the empty `source` directory.
-  if (!RemoveDirectoryWithRetry(source)) {
-    PLOG(ERROR) << "Failed to delete empty directory " << source;
-    return false;
-  }
-  DirectoryRemoved(source);
-
-  return true;
-}
-
-FileConductor::MoveResult FileConductor::RobustMove(
-    const base::FilePath& source,
-    const base::FilePath& destination,
-    bool cleanup) {
-  DWORD move_result = TrivialMove(source, destination, cleanup);
-  if (move_result == ERROR_SUCCESS) {
-    return MoveResult::kSucceeded;
-  }
-  if (move_result == ERROR_FILE_NOT_FOUND ||
-      move_result == ERROR_PATH_NOT_FOUND) {
-    VLOG(1) << "Could not move " << source << ", as it does not exist";
-    return MoveResult::kNoSource;
-  }
-
-  if (move_result == ERROR_ALREADY_EXISTS) {
-    // It is a programmer error if `destination` exists. Since the filesystem is
-    // a shared resource, it's always possible that some other program has put
-    // a file/directory in place, so crashing via CHECK is not the right way to
-    // handle this.
-    LOG(ERROR) << "Failed to move " << source << " to " << destination;
-    return MoveResult::kFailed;
-  }
-
-  // `source` cannot be moved if it is a simple file that is open without
-  // `FILE_SHARE_DELETE` (`ERROR_SHARING_VIOLATION`) or is a directory
-  // containing an open file (`ERROR_ACCESS_DENIED`). Assume that it names a
-  // directory and attempt to move all of its contents (recursively), deleting
-  // its directories as their contents are moved.
-  VLOG(1) << "Attempting manual move of directory " << source << " to "
-          << destination;
-  return MoveDirectoryRecursive(source, destination, cleanup)
-             ? MoveResult::kSucceeded
-             : MoveResult::kFailed;
+  return ProcessDirectoryResult::kSucceeded;
 }
 
 void FileConductor::EntryMoved(const base::FilePath& source,
@@ -252,6 +370,23 @@ void FileConductor::DirectoryCreated(const base::FilePath& directory,
 
 void FileConductor::DirectoryRemoved(const base::FilePath& directory) {
   undo_items_.emplace(RemovedState{directory});
+}
+
+void FileConductor::EntryCopied(const base::FilePath& destination,
+                                bool cleanup) {
+  undo_items_.emplace(CopiedState{destination});
+  if (cleanup) {
+    cleanup_paths_.push(destination);
+  }
+}
+
+void FileConductor::EntryCopiedAndDeleted(const base::FilePath& source,
+                                          const base::FilePath& destination,
+                                          bool cleanup) {
+  undo_items_.emplace(CopiedAndDeletedState{source, destination});
+  if (cleanup) {
+    cleanup_paths_.push(destination);
+  }
 }
 
 // static
@@ -276,6 +411,25 @@ void FileConductor::Undo(const RemovedState& state) {
                          /*lpSecurityAttributes=*/nullptr)) {
     PLOG(ERROR) << "CreateDirectory failed while reversing removal of "
                 << state.directory;
+  }
+}
+
+// static
+void FileConductor::Undo(const CopiedState& state) {
+  if (!DeleteFileWithRetry(state.destination)) {
+    PLOG(ERROR) << "DeleteFile failed while reversing copy to "
+                << state.destination;
+  }
+}
+
+// static
+void FileConductor::Undo(const CopiedAndDeletedState& state) {
+  if (!CopyFileWithRetry(state.destination, state.source)) {
+    PLOG(ERROR) << "CopyFile failed while reversing copy-and-move of "
+                << state.source << " to " << state.destination;
+  } else if (!DeleteFileWithRetry(state.destination)) {
+    PLOG(ERROR) << "DeleteFile failed while reversing copy-and-move of "
+                << state.source << " to " << state.destination;
   }
 }
 
