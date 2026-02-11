@@ -175,11 +175,13 @@ GraphiteSharedContext::GraphiteSharedContext(
     GpuProcessShmCount* use_shader_cache_shm_count,
     bool is_thread_safe,
     size_t max_pending_recordings,
-    FlushCallback backend_flush_callback)
+    FlushCallback backend_flush_callback,
+    MarkContextLostCallback mark_context_lost_callback)
     : graphite_context_(std::move(graphite_context)),
       use_shader_cache_shm_count_(use_shader_cache_shm_count),
       max_pending_recordings_(max_pending_recordings),
-      backend_flush_callback_(std::move(backend_flush_callback)) {
+      backend_flush_callback_(std::move(backend_flush_callback)),
+      mark_context_lost_callback_(std::move(mark_context_lost_callback)) {
   DCHECK(graphite_context_);
   if (is_thread_safe) {
     lock_.emplace();
@@ -277,18 +279,21 @@ bool GraphiteSharedContext::InsertRecordingImpl(
   // kAsyncShaderCompilesFailed and kOutOfOrderRecording are unrecoverable
   // failures because they cause future recordings to be rendered incorrectly.
   // TODO(433845560): Check the kAddCommandsFailed failures.
-  const bool is_unrecoverable_failure =
-      insert_status ==
-          skgpu::graphite::InsertStatus::kAsyncShaderCompilesFailed ||
-      insert_status == skgpu::graphite::InsertStatus::kOutOfOrderRecording;
-  // For kAsyncShaderCompilesFailed, we should also clear the disk shader
-  // cache in case the error was due to a corrupted cached shader blob.
-  std::optional<GpuProcessShmCount::ScopedIncrement> use_shader_cache;
   if (insert_status ==
       skgpu::graphite::InsertStatus::kAsyncShaderCompilesFailed) {
-    use_shader_cache.emplace(use_shader_cache_shm_count_);
+    // For kAsyncShaderCompilesFailed, we should also clear the disk shader
+    // cache in case the error was due to a corrupted cached shader blob.
+    GpuProcessShmCount::ScopedIncrement use_shader_cache(
+        use_shader_cache_shm_count_);
+    CHECK(simulating_insert_failure);
+  } else if (insert_status ==
+             skgpu::graphite::InsertStatus::kOutOfOrderRecording) {
+    if (mark_context_lost_callback_) {
+      // TODO(crbug.com/478211694): assume the reason of out of order is OOM for
+      // now.
+      mark_context_lost_callback_.Run(error::kOutOfMemory);
+    }
   }
-  CHECK(simulating_insert_failure || !is_unrecoverable_failure);
 
   // All other failure modes are recoverable in the sense that future recordings
   // will be rendered correctly, so merely return a boolean here so that callers

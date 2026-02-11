@@ -38,6 +38,11 @@ class MockBackendFlushCallback {
   MOCK_METHOD(void, Flush, ());
 };
 
+class MockMarkContextLostCallback {
+ public:
+  MOCK_METHOD(void, MarkContextLost, (error::ContextLostReason reason));
+};
+
 // Test fixture for GraphiteSharedContext with thread safety enabled.
 class GraphiteSharedContextTest : public testing::TestWithParam<bool> {
  protected:
@@ -105,11 +110,14 @@ class GraphiteSharedContextTest : public testing::TestWithParam<bool> {
                                                   context_options),
         &use_shader_cache_shm_count_, is_thread_safe(), kMaxPendingRecordings,
         base::BindRepeating(&MockBackendFlushCallback::Flush,
-                            base::Unretained(&backend_flush_callback_)));
+                            base::Unretained(&backend_flush_callback_)),
+        base::BindRepeating(&MockMarkContextLostCallback::MarkContextLost,
+                            base::Unretained(&mark_context_lost_callback_)));
   }
 
   MockGpuProcessShmCount use_shader_cache_shm_count_;
   NiceMock<MockBackendFlushCallback> backend_flush_callback_;
+  NiceMock<MockMarkContextLostCallback> mark_context_lost_callback_;
   std::unique_ptr<GraphiteSharedContext> graphite_shared_context_;
   std::unique_ptr<base::Thread> secondary_thread_;
 };
@@ -219,8 +227,8 @@ TEST_P(GraphiteSharedContextTest, OutOfOrderRecording) {
   graphite_shared_context_->insertRecording(info);
 
   info.fRecording = recording1.get();
-  EXPECT_DEATH_IF_SUPPORTED(graphite_shared_context_->insertRecording(info),
-                            "");
+  EXPECT_CALL(mark_context_lost_callback_, MarkContextLost(testing::_)).Times(1);
+  EXPECT_FALSE(graphite_shared_context_->insertRecording(info));
 }
 
 TEST_P(GraphiteSharedContextTest, AddCommandsFailed) {
