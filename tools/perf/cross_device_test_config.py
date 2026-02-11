@@ -208,6 +208,12 @@ TARGET_DEVICES = {
         'speedometer3.a11y.crossbench': 20,
         'speedometer_main.crossbench': 20,
     },
+    'win-arm64-snapdragon-elite-perf': {
+        'jetstream2.crossbench': 5,
+        'jetstream3.crossbench': 5,
+        'jetstream3-turbolev_future.crossbench': 5,
+        'speedometer3.crossbench': 20,
+    },
     'mac-laptop_high_end-perf': {
         'jetstream2': {
             'JetStream2': 5,

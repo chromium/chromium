@@ -1028,8 +1028,8 @@ WIN_FALCON_RAK_5070 = PerfPlatform('win-falcon-rak-5070-perf',
 WIN_ARM64_SNAPDRAGON_ELITE = PerfPlatform(
     'win-arm64-snapdragon-elite-perf',
     'Windows Dell Snapdragon Elite',
-    _WIN_ARM64_BENCHMARK_CONFIGS,
-    1,
+    OFFICIAL_BENCHMARK_CONFIGS,
+    28,
     'win',
     executables=_WIN_ARM64_EXECUTABLE_CONFIGS,
     crossbench=_CROSSBENCH_BENCHMARKS_ALL)
