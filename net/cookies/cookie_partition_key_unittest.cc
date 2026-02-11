@@ -305,7 +305,6 @@ TEST(CookiePartitionKeyTest, FromWire) {
         want.site(), want.IsThirdParty() ? kCrossSite : kSameSite,
         want.nonce());
     EXPECT_EQ(want, got);
-    EXPECT_FALSE(got.from_script());
   }
 }
 
@@ -329,20 +328,6 @@ TEST(CookiePartitionKeyTest, FromStorageKeyComponents) {
             want.nonce());
     EXPECT_EQ(got, want);
   }
-}
-
-TEST(CookiePartitionKeyTest, FromScript) {
-  auto key = CookiePartitionKey::FromScript();
-  EXPECT_TRUE(key.from_script());
-  EXPECT_TRUE(key.site().opaque());
-  EXPECT_TRUE(key.IsThirdParty());
-
-  auto key2 = CookiePartitionKey::FromScript();
-  EXPECT_TRUE(key2.from_script());
-  EXPECT_TRUE(key2.site().opaque());
-  EXPECT_TRUE(key2.IsThirdParty());
-
-  EXPECT_EQ(key, key2);
 }
 
 TEST(CookiePartitionKeyTest, IsSerializeable) {

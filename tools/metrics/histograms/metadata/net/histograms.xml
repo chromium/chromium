@@ -7228,23 +7228,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.RestrictedCookieManager.CookiePartitionKeyOK.Subsampled"
-    enum="Boolean" expires_after="2026-02-22">
-  <owner>dylancutler@google.com</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    Logged whenever a partitioned cookie is set from a renderer process, which
-    can be from either document.cookie or the CookieStore API. True if the
-    partition key was set with the FromScript constructor (used by the
-    CookieStore API) or if the partition key matches the
-    RestrictedCookieManager's internal partition key (which is the case for
-    cookies set/modified by document.cookie).
-
-    Subsampled to 1/1000. See kHistogramSampleProbability in
-    net/cookies/cookie_constants.h for details.
-  </summary>
-</histogram>
-
 <histogram name="Net.RestrictedCookieManager.GetCookiesString.Count30Seconds"
     units="IPCs" expires_after="2026-04-26">
   <owner>olivierli@chromium.org</owner>

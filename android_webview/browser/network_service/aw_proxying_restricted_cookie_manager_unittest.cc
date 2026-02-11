@@ -56,15 +56,15 @@ class MockRestrictedCookieManager
     std::move(callback).Run(std::vector<net::CookieWithAccessResult>());
   }
 
-  void SetCanonicalCookie(const net::CanonicalCookie& cookie,
-                          const GURL& url,
-                          const net::SiteForCookies& site_for_cookies,
-                          const url::Origin& top_frame_origin,
-                          net::StorageAccessApiStatus storage_access_api_status,
-                          net::CookieInclusionStatus status,
-                          bool is_ad_tagged,
-                          bool apply_devtools_overrides,
-                          SetCanonicalCookieCallback callback) override {
+  void SetCanonicalCookie(
+      network::mojom::RestrictedCanonicalCookieParamsPtr cookie_params,
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_frame_origin,
+      net::StorageAccessApiStatus storage_access_api_status,
+      bool is_ad_tagged,
+      bool apply_devtools_overrides,
+      SetCanonicalCookieCallback callback) override {
     std::move(callback).Run(true);
   }
 

@@ -26,7 +26,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/cookies/parsed_cookie.h"
 #include "net/storage_access_api/status.h"
-#include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace android_webview {
@@ -139,12 +139,11 @@ void AwProxyingRestrictedCookieManager::GetAllForUrl(
 }
 
 void AwProxyingRestrictedCookieManager::SetCanonicalCookie(
-    const net::CanonicalCookie& cookie,
+    network::mojom::RestrictedCanonicalCookieParamsPtr cookie_params,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
     net::StorageAccessApiStatus storage_access_api_status,
-    net::CookieInclusionStatus status,
     bool is_ad_tagged,
     bool apply_devtools_overrides,
     SetCanonicalCookieCallback callback) {
@@ -157,11 +156,13 @@ void AwProxyingRestrictedCookieManager::SetCanonicalCookie(
     return;
   }
 
-  if (cookie.IsPartitioned() || cookieState == PrivacySetting::kStateAllowed) {
+  if (cookie_params->partitioned ==
+          network::mojom::RestrictedCookiePartition::PARTITIONED ||
+      cookieState == PrivacySetting::kStateAllowed) {
     underlying_restricted_cookie_manager_->SetCanonicalCookie(
-        cookie, url, site_for_cookies, top_frame_origin,
-        storage_access_api_status, status, is_ad_tagged,
-        apply_devtools_overrides, std::move(callback));
+        std::move(cookie_params), url, site_for_cookies, top_frame_origin,
+        storage_access_api_status, is_ad_tagged, apply_devtools_overrides,
+        std::move(callback));
   } else {
     std::move(callback).Run(false);
   }

@@ -721,6 +721,45 @@ void RestrictedCookieManager::UpdateSharedMemoryVersionInvalidationTimer(
 }
 
 void RestrictedCookieManager::SetCanonicalCookie(
+    mojom::RestrictedCanonicalCookieParamsPtr cookie_params,
+    const GURL& url,
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin& top_frame_origin,
+    net::StorageAccessApiStatus storage_access_api_status,
+    bool is_ad_tagged,
+    bool apply_devtools_overrides,
+    SetCanonicalCookieCallback callback) {
+  std::optional<net::CookiePartitionKey> cookie_partition_key =
+      cookie_params->partitioned ==
+                  mojom::RestrictedCookiePartition::PARTITIONED ||
+              net::CookiePartitionKey::HasNonce(cookie_partition_key_)
+          ? cookie_partition_key_
+          : std::nullopt;
+  net::CookieInclusionStatus status;
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      net::CanonicalCookie::CreateSanitizedCookie(
+          url, cookie_params->name, cookie_params->value, cookie_params->domain,
+          cookie_params->path, cookie_params->creation, cookie_params->expires,
+          cookie_params->last_access, cookie_params->secure,
+          cookie_params->http_only, cookie_params->same_site,
+          cookie_params->priority, cookie_partition_key, &status);
+  if (status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                    EXCLUDE_DOMAIN_MISMATCH)) {
+    receiver_.ReportBadMessage(
+        "Setting cookies on other domains is disallowed.");
+    std::move(callback).Run(false);
+    return;
+  }
+  if (!cookie) {
+    std::move(callback).Run(false);
+    return;
+  }
+  SetCanonicalCookie(*cookie, url, site_for_cookies, top_frame_origin,
+                     storage_access_api_status, status, is_ad_tagged,
+                     apply_devtools_overrides, std::move(callback));
+}
+
+void RestrictedCookieManager::SetCanonicalCookie(
     const net::CanonicalCookie& cookie,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
@@ -731,16 +770,12 @@ void RestrictedCookieManager::SetCanonicalCookie(
     bool apply_devtools_overrides,
     SetCanonicalCookieCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(status.IsInclude());
+  CHECK((!cookie.IsPartitioned() &&
+         !net::CookiePartitionKey::HasNonce(cookie_partition_key_)) ||
+        cookie.PartitionKey() == cookie_partition_key_);
   bool collect_metrics =
       metrics_subsampler_.ShouldSample(net::kHistogramSampleProbability);
-  // Don't allow a status that has an exclusion reason as they should have
-  // already been taken care of on the renderer side.
-  if (!status.IsInclude()) {
-    receiver_.ReportBadMessage(
-        "RestrictedCookieManager: unexpected cookie inclusion status");
-    std::move(callback).Run(false);
-    return;
-  }
   if (!ValidateAccessToCookiesAt(url, site_for_cookies, top_frame_origin,
                                  &cookie)) {
     std::move(callback).Run(false);
@@ -812,49 +847,10 @@ void RestrictedCookieManager::SetCanonicalCookie(
           ? net::CookieSourceScheme::kSecure
           : net::CookieSourceScheme::kNonSecure;
 
-  // If the renderer's cookie has a partition key that was not created using
-  // CookiePartitionKey::FromScript, then the cookie's partition key should be
-  // equal to RestrictedCookieManager's partition key.
-  std::optional<net::CookiePartitionKey> cookie_partition_key =
-      cookie.PartitionKey();
-
-  // If the `cookie_partition_key_` has a nonce then force all cookie writes to
-  // be in the nonce based partition even if the cookie was not set with the
-  // Partitioned attribute.
-  if (net::CookiePartitionKey::HasNonce(cookie_partition_key_)) {
-    cookie_partition_key = cookie_partition_key_;
-  }
-  if (cookie_partition_key) {
-    // RestrictedCookieManager having a null partition key strictly implies the
-    // feature is disabled. If that is the case, we treat the cookie as
-    // unpartitioned.
-    if (!cookie_partition_key_) {
-      cookie_partition_key = std::nullopt;
-    } else {
-      bool cookie_partition_key_ok =
-          cookie_partition_key->from_script() ||
-          cookie_partition_key.value() == cookie_partition_key_.value();
-      if (collect_metrics) {
-        base::UmaHistogramBoolean(
-            "Net.RestrictedCookieManager.CookiePartitionKeyOK.Subsampled",
-            cookie_partition_key_ok);
-      }
-      if (!cookie_partition_key_ok) {
-        receiver_.ReportBadMessage(
-            "RestrictedCookieManager: unexpected cookie partition key");
-        std::move(callback).Run(false);
-        return;
-      }
-      if (cookie_partition_key->from_script()) {
-        cookie_partition_key = cookie_partition_key_;
-      }
-    }
-  }
-
   if (IsPartitionedCookiesEnabled() && collect_metrics) {
     base::UmaHistogramBoolean(
         "Net.RestrictedCookieManager.SetPartitionedCookie.Subsampled",
-        cookie_partition_key.has_value());
+        cookie.IsPartitioned());
   }
 
   std::unique_ptr<net::CanonicalCookie> sanitized_cookie =
@@ -862,7 +858,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
           cookie.Name(), cookie.Value(), cookie.Domain(), cookie.Path(), now,
           cookie.ExpiryDate(), now, now, cookie.SecureAttribute(),
           cookie.IsHttpOnly(), cookie.SameSite(), cookie.Priority(),
-          cookie_partition_key, source_scheme, origin_.port(),
+          cookie.PartitionKey(), source_scheme, origin_.port(),
           cookie.SourceType(),
           net::CanonicalCookieFromStorageCallSite::kRestrictedCookieManager);
   DCHECK(sanitized_cookie);

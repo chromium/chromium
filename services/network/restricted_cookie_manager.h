@@ -134,15 +134,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                     bool force_disable_third_party_cookies,
                     GetAllForUrlCallback callback) override;
 
-  void SetCanonicalCookie(const net::CanonicalCookie& cookie,
-                          const GURL& url,
-                          const net::SiteForCookies& site_for_cookies,
-                          const url::Origin& top_frame_origin,
-                          net::StorageAccessApiStatus storage_access_api_status,
-                          net::CookieInclusionStatus status,
-                          bool is_ad_tagged,
-                          bool apply_devtools_overrides,
-                          SetCanonicalCookieCallback callback) override;
+  void SetCanonicalCookie(
+      mojom::RestrictedCanonicalCookieParamsPtr cookie_params,
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_frame_origin,
+      net::StorageAccessApiStatus storage_access_api_status,
+      bool is_ad_tagged,
+      bool apply_devtools_overrides,
+      SetCanonicalCookieCallback callback) override;
 
   void AddChangeListener(
       const GURL& url,
@@ -237,6 +237,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // every time the full cookie list is retrieved.
   void UpdateSharedMemoryVersionInvalidationTimer(
       const std::vector<net::CookieWithAccessResult>& cookies);
+
+  // Callers must ensure that `status.IsInclude()` returns true; and that
+  // `cookie` is either unpartitioned or is partitioned with the appropriate
+  // key.
+  void SetCanonicalCookie(const net::CanonicalCookie& cookie,
+                          const GURL& url,
+                          const net::SiteForCookies& site_for_cookies,
+                          const url::Origin& top_frame_origin,
+                          net::StorageAccessApiStatus storage_access_api_status,
+                          net::CookieInclusionStatus status,
+                          bool is_ad_tagged,
+                          bool apply_devtools_overrides,
+                          SetCanonicalCookieCallback callback);
 
   // Reports the result of setting the cookie to |network_context_client_|, and
   // invokes the user callback.

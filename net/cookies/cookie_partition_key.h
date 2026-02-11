@@ -71,8 +71,10 @@ class NET_EXPORT CookiePartitionKey {
   CookiePartitionKey& operator=(CookiePartitionKey&& other);
   ~CookiePartitionKey();
 
-  bool operator==(const CookiePartitionKey& other) const;
-  std::strong_ordering operator<=>(const CookiePartitionKey& other) const;
+  friend bool operator==(const CookiePartitionKey&,
+                         const CookiePartitionKey&) = default;
+  friend auto operator<=>(const CookiePartitionKey&,
+                          const CookiePartitionKey&) = default;
 
   // Methods for serializing and deserializing a partition key to/from a string.
   // This is currently used for:
@@ -117,20 +119,6 @@ class NET_EXPORT CookiePartitionKey {
     return CookiePartitionKey(site, nonce, ancestor_chain_bit);
   }
 
-  // Create a new CookiePartitionKey in a script running in a renderer. We do
-  // not trust the renderer to provide us with a cookie partition key, so we let
-  // the renderer use this method to indicate the cookie is partitioned but the
-  // key still needs to be determined.
-  //
-  // When the browser is ingesting cookie partition keys from the renderer,
-  // either the `from_script_` flag should be set or the cookie partition key
-  // should match the browser's. Otherwise the renderer may be compromised.
-  //
-  // TODO(crbug.com/40188414) Consider removing this factory method and
-  // `from_script_` flag when BlinkStorageKey is available in
-  // ServiceWorkerGlobalScope.
-  static CookiePartitionKey FromScript() { return CookiePartitionKey(true); }
-
   // Create a new CookiePartitionKey from the components of a StorageKey.
   // Forwards to FromWire, but unlike that method in this one the optional nonce
   // argument has no default. It also checks that cookie partitioning is enabled
@@ -161,8 +149,6 @@ class NET_EXPORT CookiePartitionKey {
                      bool has_cross_site_ancestor);
 
   const SchemefulSite& site() const { return site_; }
-
-  bool from_script() const { return from_script_; }
 
   // Returns true if the current partition key can be serialized to a string.
   // Cookie partition keys whose internal site is opaque cannot be serialized.
@@ -214,7 +200,6 @@ class NET_EXPORT CookiePartitionKey {
   explicit CookiePartitionKey(const SchemefulSite& site,
                               std::optional<base::UnguessableToken> nonce,
                               AncestorChainBit ancestor_chain_bit);
-  explicit CookiePartitionKey(bool from_script);
 
   // This method holds the deserialization logic for validating input from
   // DeserializeForTesting and FromUntrustedInput which can be used to pass
@@ -233,7 +218,6 @@ class NET_EXPORT CookiePartitionKey {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   SchemefulSite site_;
-  bool from_script_ = false;
 
   // Having a nonce is a way to force a transient opaque `CookiePartitionKey`
   // for non-opaque origins.

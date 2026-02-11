@@ -98,13 +98,6 @@ CookiePartitionKey::CookiePartitionKey(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-CookiePartitionKey::CookiePartitionKey(bool from_script)
-    : from_script_(from_script) {
-#if BUILDFLAG(IS_ANDROID)
-  g_constructor_called_ = true;
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
 CookiePartitionKey::CookiePartitionKey(const CookiePartitionKey& other) =
     default;
 
@@ -117,19 +110,6 @@ CookiePartitionKey& CookiePartitionKey::operator=(CookiePartitionKey&& other) =
     default;
 
 CookiePartitionKey::~CookiePartitionKey() = default;
-
-bool CookiePartitionKey::operator==(const CookiePartitionKey& other) const {
-  return (*this <=> other) == 0;
-}
-
-std::strong_ordering CookiePartitionKey::operator<=>(
-    const CookiePartitionKey& other) const {
-  if (from_script_ || other.from_script_) {
-    return from_script_ <=> other.from_script_;
-  }
-  return std::tie(site_, nonce_, ancestor_chain_bit_) <=>
-         std::tie(other.site_, other.nonce_, other.ancestor_chain_bit_);
-}
 
 // static
 base::expected<CookiePartitionKey::SerializedCookiePartitionKey, std::string>
@@ -273,8 +253,6 @@ CookiePartitionKey::DeserializeInternal(
 }
 
 bool CookiePartitionKey::IsSerializeable() const {
-  // We should not try to serialize a partition key created by a renderer.
-  DCHECK(!from_script_);
   return !site_.opaque() && !nonce_.has_value();
 }
 
@@ -284,9 +262,6 @@ std::ostream& operator<<(std::ostream& os, const CookiePartitionKey& cpk) {
     os << ",nonced";
   }
   os << (cpk.IsThirdParty() ? ",cross_site" : ",same_site");
-  if (cpk.from_script()) {
-    os << ",from_script";
-  }
   return os;
 }
 

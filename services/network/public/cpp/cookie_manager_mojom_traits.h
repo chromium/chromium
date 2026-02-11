@@ -220,9 +220,6 @@ struct StructTraits<network::mojom::CookiePartitionKeyDataView,
   static const net::SchemefulSite& site(const net::CookiePartitionKey& cpk) {
     return cpk.site();
   }
-  static bool from_script(const net::CookiePartitionKey& cpk) {
-    return cpk.from_script();
-  }
 
   static const std::optional<base::UnguessableToken>& nonce(
       const net::CookiePartitionKey& cpk) {

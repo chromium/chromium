@@ -691,10 +691,6 @@ bool StructTraits<network::mojom::CookiePartitionKeyDataView,
                  net::CookiePartitionKey::AncestorChainBit>::
           FromMojom(partition_key.ancestor_chain_bit());
 
-  if (partition_key.from_script()) {
-    *out = net::CookiePartitionKey::FromScript();
-    return true;
-  }
   net::SchemefulSite site;
   if (!partition_key.ReadSite(&site)) {
     return false;

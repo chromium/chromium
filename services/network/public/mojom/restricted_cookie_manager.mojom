@@ -6,6 +6,7 @@ module network.mojom;
 
 import "services/network/public/mojom/cookie_manager.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/storage_access_api.mojom";
 import "url/mojom/url.mojom";
@@ -49,6 +50,35 @@ enum RestrictedCookieManagerRole {
   //
   // Should only be used within the browser.
   NETWORK
+};
+
+// Affects whether a cookie will be partitioned or unpartitioned. Note that it
+// is up to the RestrictedCookieManager to choose an appropriate partition key,
+// if any; this enum is advisory only.
+enum RestrictedCookiePartition {
+  // The cookie _may_ be unpartitioned.
+  UNPARTITIONED,
+  // The cookie _may_ be partitioned.
+  PARTITIONED,
+};
+
+// These params mostly mirror those of `CanonicalCookie::CreateSanitizedCookie`.
+// Note that the URL is passed separately via
+// `RestrictedCookieManager::SetCanonicalCookie`, and that the
+// RestrictedCanonicalCookieParams do not specify the PartitionKey.
+struct RestrictedCanonicalCookieParams {
+  string name;
+  string value;
+  string domain;
+  string path;
+  mojo_base.mojom.Time creation;
+  mojo_base.mojom.Time expires;
+  mojo_base.mojom.Time last_access;
+  bool secure;
+  bool http_only;
+  network.mojom.CookieSameSite same_site;
+  network.mojom.CookiePriority priority;
+  RestrictedCookiePartition partitioned;
 };
 
 // Capability to access the cookie store on behalf of a single origin.
@@ -101,15 +131,12 @@ interface RestrictedCookieManager {
       bool force_disable_third_party_cookies) => (
       array<CookieWithAccessResult> cookies);
 
-  // Sets a canonical cookie. |status| must be an inclusion status as defined
-  // by the C++ net::CookieInclusionStatus::IsInclude() method. It is expected
-  // that exclusion reasons have been taken care of on the renderer side.
-  SetCanonicalCookie(CanonicalCookie cookie,
+  // Sets a canonical cookie.
+  SetCanonicalCookie(RestrictedCanonicalCookieParams canonical_cookie_params,
                      url.mojom.Url url,
                      SiteForCookies site_for_cookies,
                      url.mojom.Origin top_frame_origin,
                      StorageAccessApiStatus storage_access_api_status,
-                     CookieInclusionStatus status,
                      bool is_ad_tagged,
                      bool apply_devtools_overrides) => (bool success);
 
