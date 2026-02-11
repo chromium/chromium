@@ -101,10 +101,6 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // The time when the phish guard check was started.
   base::TimeTicks phish_guard_check_start_time_;
 
-  // The last received OTP. This is used to store the OTP between the phishing
-  // check and the actual display of the suggestions.
-  std::optional<one_time_tokens::OneTimeToken> last_received_otp_;
-
   base::ScopedObservation<BrowserAutofillManager, AutofillManager::Observer>
       autofill_manager_observation_{this};
 
