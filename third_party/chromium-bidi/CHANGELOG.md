@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [15.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v14.0.0...chromium-bidi-v15.0.0) (2026-02-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 147.0.7681.0 ([#4058](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4058))
+
+### Features
+
+* **chrome:** update the pinned browser version to 147.0.7681.0 ([#4058](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4058)) ([fc034f3](https://github.com/GoogleChromeLabs/chromium-bidi/commit/fc034f3910f7eac64e0aa52c531b331cdad010cb))
+* use CDP for a11y selectors ([#4059](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4059)) ([9df3580](https://github.com/GoogleChromeLabs/chromium-bidi/commit/9df3580eb4f48c3c7a5d813f92b404aa78dbc07e))
+
 ## [14.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v13.1.1...chromium-bidi-v14.0.0) (2026-02-11)
 
 
