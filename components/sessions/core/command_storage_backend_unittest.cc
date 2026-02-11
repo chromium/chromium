@@ -376,10 +376,10 @@ TEST_F(CommandStorageBackendTest, MaxSizeType) {
 
 TEST_F(CommandStorageBackendTest, IsValidFileWithInvalidFiles) {
   base::WriteFile(file_path(), "z");
-  EXPECT_FALSE(CommandStorageBackend::IsValidFile(file_path()));
+  EXPECT_FALSE(CommandStorageBackend::IsValidFileForTest(file_path()));
 
   base::WriteFile(file_path(), "a longer string that does not match header");
-  EXPECT_FALSE(CommandStorageBackend::IsValidFile(file_path()));
+  EXPECT_FALSE(CommandStorageBackend::IsValidFileForTest(file_path()));
 }
 
 TEST_F(CommandStorageBackendTest, IsNotValidFileWithoutMarker) {
@@ -388,7 +388,7 @@ TEST_F(CommandStorageBackendTest, IsNotValidFileWithoutMarker) {
   backend->AppendCommands({}, true, base::DoNothing());
   backend = nullptr;
 
-  EXPECT_FALSE(CommandStorageBackend::IsValidFile(path));
+  EXPECT_FALSE(CommandStorageBackend::IsValidFileForTest(path));
 }
 
 TEST_F(CommandStorageBackendTest, SimpleReadWriteWithRestoreType) {

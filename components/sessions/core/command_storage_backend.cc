@@ -87,8 +87,8 @@ class SessionFileReader {
 
   // Returns true if the header is valid. If false, the file does not contain
   // a valid sessions file.
-  static bool IsHeaderValid(const base::FilePath& path,
-                            const std::vector<uint8_t>& crypto_key) {
+  static bool IsHeaderValidForTest(const base::FilePath& path,
+                                   const std::vector<uint8_t>& crypto_key) {
     SessionFileReader reader(path, crypto_key);
     return reader.IsHeaderValid();
   }
@@ -514,8 +514,8 @@ CommandStorageBackend::CommandStorageBackend(
 }
 
 // static
-bool CommandStorageBackend::IsValidFile(const base::FilePath& path) {
-  return SessionFileReader::IsHeaderValid(path, {});
+bool CommandStorageBackend::IsValidFileForTest(const base::FilePath& path) {
+  return SessionFileReader::IsHeaderValidForTest(path, {});
 }
 
 void CommandStorageBackend::AppendCommands(
