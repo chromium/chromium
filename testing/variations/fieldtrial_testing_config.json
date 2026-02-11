@@ -2476,26 +2476,6 @@
             ]
         }
     ],
-    "AutofillAllowFillingModifiedInitialValues": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAllowFillingModifiedInitialValues"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAndroidKeyboardAccessoryDynamicPositioning": [
         {
             "platforms": [
@@ -2513,26 +2493,6 @@
                         "AutofillAndroidDesktopKeyboardAccessoryRevamp",
                         "AutofillAndroidDesktopSuppressAccessoryOnEmpty",
                         "AutofillAndroidKeyboardAccessoryDynamicPositioning"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillBetterLocalHeuristicPlaceholderSupport": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillBetterLocalHeuristicPlaceholderSupport"
                     ]
                 }
             ]
@@ -2619,79 +2579,6 @@
             ]
         }
     ],
-    "AutofillEnableBuyNowPayLaterDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableAmountExtractionDesktop",
-                        "AutofillEnableBuyNowPayLater"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableBuyNowPayLaterForExternallyLinked": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableBuyNowPayLaterForExternallyLinked"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableBuyNowPayLaterForKlarna": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableBuyNowPayLaterForKlarna"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableCvcStorage": [
         {
             "platforms": [
@@ -2705,28 +2592,6 @@
                         "AutofillEnableCvcStorageAndFillingEnhancement",
                         "AutofillEnableCvcStorageAndFillingStandaloneFormEnhancement",
                         "SyncAutofillWalletCredentialData"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableExpirationDateImprovements": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableExpirationDateImprovements"
                     ]
                 }
             ]
@@ -2748,45 +2613,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillEnableFillingPhoneCountryCodesByAddressCountryCodes"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableFpanRiskBasedAuthentication": [
-        {
-            "platforms": [
-                "android",
-                "ios",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableFpanRiskBasedAuthentication"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableLabelPrecedenceForTurkishAddresses": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableLabelPrecedenceForTurkishAddresses"
                     ]
                 }
             ]
@@ -2882,27 +2708,6 @@
                     "enable_features": [
                         "AutofillEnableSupportForNameAndEmail",
                         "IPH_AutofillAccountNameEmailSuggestion"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableSupportForParsingWithSharedLabels": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableSupportForParsingWithSharedLabels"
                     ]
                 }
             ]
@@ -3050,27 +2855,6 @@
             ]
         }
     ],
-    "AutofillI18nINAddressModel": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillUseINAddressModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillImproveAddressFieldSwapping": [
         {
             "platforms": [
@@ -3200,27 +2984,6 @@
             ]
         }
     ],
-    "AutofillPageLanguageDetection": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillPageLanguageDetection"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillPasswordUserPerceptionSurvey": [
         {
             "platforms": [
@@ -3258,21 +3021,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillPaymentsFieldSwapping"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillPaymentsSheetV2Ios": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillPaymentsSheetV2Ios"
                     ]
                 }
             ]
@@ -3571,29 +3319,6 @@
             ]
         }
     ],
-    "AutofillUKMExperimentalFields": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "autofill_experimental_regex_bucket1": "test1"
-                    },
-                    "enable_features": [
-                        "AutofillUKMExperimentalFields"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillUnmaskCardRequestTimeout": [
         {
             "platforms": [
@@ -3630,29 +3355,6 @@
                     "name": "Enabled_20220124",
                     "enable_features": [
                         "AutofillUpstream"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillVcnEnrollStrikeExpiryTime": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "autofill_vcn_strike_expiry_time_days": "180"
-                    },
-                    "enable_features": [
-                        "AutofillVcnEnrollStrikeExpiryTime"
                     ]
                 }
             ]
