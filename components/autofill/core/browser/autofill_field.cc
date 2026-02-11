@@ -725,6 +725,16 @@ AutofillField::PredictionResult AutofillField::GetComputedPredictionResult()
               AutofillPredictionSource::kHeuristics};
     }
 
+    // TODO(crbug.com/479503511): Convert to PredictionPrecedenceException after
+    // launch.
+    if (heuristic_type_local == PHONE_HOME_COUNTRY_CODE &&
+        html_type_local == HtmlFieldType::kCountryCode && IsSelectElement() &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillPreferPhoneCountryCodeTypeOverCountryHtmlType)) {
+      return {MakeAutofillType(PHONE_HOME_COUNTRY_CODE),
+              AutofillPredictionSource::kHeuristics};
+    }
+
     if (PreferTypeAccordingToExceptions(kPreferredHeuristicTypesOverHtmlTypes,
                                         heuristic_type_local,
                                         html_type_local)) {

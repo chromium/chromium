@@ -830,6 +830,11 @@ BASE_FEATURE(kAutofillPopupDontAcceptNonVisibleEnoughSuggestion,
 BASE_FEATURE(kAutofillPopupZOrderSecuritySurface,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, we prefer a `PHONE_HOME_COUNTRY_CODE` heuristic type over a
+// `HtmlFieldType::kCountryCode`.
+BASE_FEATURE(kAutofillPreferPhoneCountryCodeTypeOverCountryHtmlType,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Replaces cached web elements in AutofillAgent and FormTracker by their
 // renderer ids.
 BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,

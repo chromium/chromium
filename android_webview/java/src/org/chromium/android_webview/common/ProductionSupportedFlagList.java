@@ -312,6 +312,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_PAGE_LANGUAGE_DETECTION,
                 "Enables Autofill to retrieve the page language for form parsing."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_PREFER_PHONE_COUNTRY_CODE_TYPE_OVER_COUNTRY_HTML_TYPE,
+                "Prioritizes PHONE_HOME_COUNTRY_CODE heuristic type over kCountryName html type"),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_REPLACE_CACHED_WEB_ELEMENTS_BY_RENDERER_IDS,
                 "When enabled, AutofillAgent will store its cached form and fields as renderer ids "
                         + "instead of holding strong references to blink::WebElement objects."),

@@ -231,6 +231,8 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillImprovePhoneFieldParser,
           // TODO(crbug.com/479503511): Remove once launched.
           features::kAutofillNewAugmentedPhoneCountryCodeRegex,
+          // TODO(crbug.com/479503511): Remove once launched.
+          features::kAutofillPreferPhoneCountryCodeTypeOverCountryHtmlType,
       },
       // Disabled
       {

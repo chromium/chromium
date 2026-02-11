@@ -284,6 +284,8 @@ BASE_DECLARE_FEATURE(kAutofillPopupDontAcceptNonVisibleEnoughSuggestion);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillPopupZOrderSecuritySurface);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillPreferPhoneCountryCodeTypeOverCountryHtmlType);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillReplaceFormElementObserver);

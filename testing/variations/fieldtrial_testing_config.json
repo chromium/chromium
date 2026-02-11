@@ -2892,7 +2892,8 @@
                     "enable_features": [
                         "AutofillImprovePhoneFieldParser",
                         "AutofillNewAugmentedPhoneCountryCodeRegex",
-                        "AutofillNewRegexForPhoneCountryCode"
+                        "AutofillNewRegexForPhoneCountryCode",
+                        "AutofillPreferPhoneCountryCodeTypeOverCountryHtmlType"
                     ]
                 }
             ]
