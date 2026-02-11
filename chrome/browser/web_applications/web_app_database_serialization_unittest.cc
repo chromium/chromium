@@ -1628,7 +1628,7 @@ TEST_F(WebAppDatabaseSerializationTest,
   const std::vector<DisplayOverride>& overrides =
       web_app->display_mode_override();
   ASSERT_EQ(1u, overrides.size());
-  EXPECT_EQ(DisplayMode::kBorderless, overrides[0].display_mode());
+  EXPECT_EQ(DisplayMode::kUnframed, overrides[0].display_mode());
   ASSERT_EQ(1u, overrides[0].url_patterns().size());
 
   std::unique_ptr<proto::WebApp> round_trip_proto = WebAppToProto(*web_app);

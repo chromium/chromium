@@ -2625,7 +2625,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_Borderless, Borderless) {
       provider->registrar_unsafe().GetAppDisplayModeOverride(app_id);
 
   ASSERT_EQ(1u, app_display_mode_override.size());
-  EXPECT_EQ(DisplayMode::kBorderless, app_display_mode_override[0]);
+  EXPECT_EQ(DisplayMode::kUnframed, app_display_mode_override[0]);
 
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   app_browser->app_controller()->SetIsolatedWebAppTrueForTesting();

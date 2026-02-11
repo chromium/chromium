@@ -816,7 +816,7 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   }
   for (const auto& override_item : manifest_->display_override) {
     install_info().display_override.push_back(
-        override_item.display() == DisplayMode::kBorderless
+        override_item.display() == DisplayMode::kUnframed
             ? DisplayOverride::CreateUnframed(override_item.url_patterns())
             : DisplayOverride::Create(override_item.display()));
   }

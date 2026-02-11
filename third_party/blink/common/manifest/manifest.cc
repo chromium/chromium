@@ -177,7 +177,7 @@ Manifest::DisplayOverride Manifest::DisplayOverride::Create(
 // static
 Manifest::DisplayOverride Manifest::DisplayOverride::CreateUnframed(
     std::vector<SafeUrlPattern> url_patterns) {
-  return DisplayOverride(blink::mojom::DisplayMode::kBorderless,
+  return DisplayOverride(blink::mojom::DisplayMode::kUnframed,
                          std::move(url_patterns));
 }
 
@@ -186,7 +186,7 @@ Manifest::DisplayOverride::DisplayOverride(
     std::vector<SafeUrlPattern> patterns)
     : display_(display_mode), url_patterns_(std::move(patterns)) {
   CHECK(url_patterns_.empty() ||
-        display_ == blink::mojom::DisplayMode::kBorderless)
+        display_ == blink::mojom::DisplayMode::kUnframed)
       << "url_patterns is not allowed in display modes other than 'unframed'";
 }
 

@@ -87,7 +87,7 @@ std::string DisplayModeToString(blink::mojom::DisplayMode display) {
       return "window-controls-overlay";
     case blink::mojom::DisplayMode::kTabbed:
       return "tabbed";
-    case blink::mojom::DisplayMode::kBorderless:
+    case blink::mojom::DisplayMode::kUnframed:
       return "unframed";
     case blink::mojom::DisplayMode::kPictureInPicture:
       return "picture-in-picture";
@@ -110,10 +110,10 @@ blink::mojom::DisplayMode DisplayModeFromString(const std::string& display) {
     return blink::mojom::DisplayMode::kTabbed;
   // TODO(crbug.com/466441366): Stop accepting "borderless".
   if (base::EqualsCaseInsensitiveASCII(display, "borderless")) {
-    return blink::mojom::DisplayMode::kBorderless;
+    return blink::mojom::DisplayMode::kUnframed;
   }
   if (base::EqualsCaseInsensitiveASCII(display, "unframed")) {
-    return blink::mojom::DisplayMode::kBorderless;
+    return blink::mojom::DisplayMode::kUnframed;
   }
   if (base::EqualsCaseInsensitiveASCII(display, "picture-in-picture")) {
     return blink::mojom::DisplayMode::kPictureInPicture;

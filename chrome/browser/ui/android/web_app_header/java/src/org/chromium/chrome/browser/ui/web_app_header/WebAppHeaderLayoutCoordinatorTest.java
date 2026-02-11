@@ -745,8 +745,8 @@ public class WebAppHeaderLayoutCoordinatorTest {
     }
 
     @Test
-    public void testDisplayModeBorderlessUMA() {
-        testDisplayModeUMA(DisplayMode.BORDERLESS);
+    public void testDisplayModeUnframedUMA() {
+        testDisplayModeUMA(DisplayMode.UNFRAMED);
     }
 
     @Test

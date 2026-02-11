@@ -164,7 +164,7 @@ bool IsInstallableDisplayMode(blink::mojom::DisplayMode display_mode) {
          display_mode == blink::mojom::DisplayMode::kFullscreen ||
          display_mode == blink::mojom::DisplayMode::kMinimalUi ||
          display_mode == blink::mojom::DisplayMode::kWindowControlsOverlay ||
-         display_mode == blink::mojom::DisplayMode::kBorderless ||
+         display_mode == blink::mojom::DisplayMode::kUnframed ||
          display_mode == blink::mojom::DisplayMode::kTabbed;
 }
 

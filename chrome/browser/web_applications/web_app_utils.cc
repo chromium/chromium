@@ -492,7 +492,7 @@ apps::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
     case DisplayMode::kFullscreen:
     case DisplayMode::kWindowControlsOverlay:
     case DisplayMode::kTabbed:
-    case DisplayMode::kBorderless:
+    case DisplayMode::kUnframed:
     case DisplayMode::kPictureInPicture:
       return apps::LaunchContainer::kLaunchContainerWindow;
   }

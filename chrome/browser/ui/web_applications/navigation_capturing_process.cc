@@ -695,7 +695,7 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
     case blink::mojom::DisplayMode::kMinimalUi:
     case blink::mojom::DisplayMode::kStandalone:
     case blink::mojom::DisplayMode::kWindowControlsOverlay:
-    case blink::mojom::DisplayMode::kBorderless:
+    case blink::mojom::DisplayMode::kUnframed:
       host_window = CreateWebAppWindowFromNavigationParams(app_id, params);
       break;
     case blink::mojom::DisplayMode::kTabbed:
@@ -731,7 +731,7 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
   const DisplayMode& app_display_mode = *first_navigation_app_display_mode_;
 
   CHECK(app_display_mode == DisplayMode::kStandalone ||
-        app_display_mode == DisplayMode::kBorderless);
+        app_display_mode == DisplayMode::kUnframed);
 
   // Prefer `params.browser` if it's a compatible IWA browser.
   bool iwa_browser =
@@ -1392,7 +1392,7 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
       case blink::mojom::DisplayMode::kMinimalUi:
       case blink::mojom::DisplayMode::kStandalone:
       case blink::mojom::DisplayMode::kWindowControlsOverlay:
-      case blink::mojom::DisplayMode::kBorderless:
+      case blink::mojom::DisplayMode::kUnframed:
       case blink::mojom::DisplayMode::kTabbed: {
         // First try to choose an existing app host based on whether the
         // params.browser is populated and belongs to the same `app_id`.
@@ -1473,7 +1473,7 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
     case blink::mojom::DisplayMode::kMinimalUi:
     case blink::mojom::DisplayMode::kStandalone:
     case blink::mojom::DisplayMode::kWindowControlsOverlay:
-    case blink::mojom::DisplayMode::kBorderless:
+    case blink::mojom::DisplayMode::kUnframed:
       // Non-tabbed standalone modes do not support opening a new tab in an
       // existing browser. So never return a browser in this case.
       break;

@@ -205,7 +205,7 @@ void WebAppBrowserController::ToggleWindowControlsOverlayEnabled(
 
 bool WebAppBrowserController::AppUsesBorderlessMode() const {
   return IsIsolatedWebApp() &&
-         effective_display_mode_ == DisplayMode::kBorderless;
+         effective_display_mode_ == DisplayMode::kUnframed;
 }
 
 bool WebAppBrowserController::UrlMatchesBorderlessPattern(
@@ -217,7 +217,7 @@ bool WebAppBrowserController::UrlMatchesBorderlessPattern(
 
   auto it = std::ranges::find_if(
       app->display_mode_override(), [](const DisplayOverride& item) {
-        return item.display_mode() == DisplayMode::kBorderless;
+        return item.display_mode() == DisplayMode::kUnframed;
       });
   if (it == app->display_mode_override().end()) {
     return false;

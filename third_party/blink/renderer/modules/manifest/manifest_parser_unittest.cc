@@ -1321,7 +1321,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     EXPECT_EQ(0u, GetErrorCount());
   }
 
-  // Accept 'borderless' when Borderless flag is enabled.
+  // Accept 'borderless' as an alias for `kUnframed` when flag is enabled.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(blink::features::kWebAppBorderless);
@@ -1329,7 +1329,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
         ParseManifest(R"({ "display_override": [ "borderless" ] })");
     EXPECT_THAT(manifest->display_override,
                 ElementsAre(DisplayOverrideItemIs(
-                    blink::mojom::DisplayMode::kBorderless)));
+                    blink::mojom::DisplayMode::kUnframed)));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -1342,14 +1342,14 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     EXPECT_EQ(0u, GetErrorCount());
   }
 
-  // Accept 'unframed' as an alias for `kBorderless` when flag is enabled.
+  // Accept 'unframed' when flag is enabled.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(blink::features::kUnframedIwa);
     auto& manifest = ParseManifest(R"({ "display_override": [ "unframed" ] })");
     EXPECT_THAT(manifest->display_override,
                 ElementsAre(DisplayOverrideItemIs(
-                    blink::mojom::DisplayMode::kBorderless)));
+                    blink::mojom::DisplayMode::kUnframed)));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -1388,7 +1388,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     EXPECT_THAT(
         manifest->display_override,
         ElementsAre(DisplayOverrideItemIs(
-            blink::mojom::DisplayMode::kBorderless,
+            blink::mojom::DisplayMode::kUnframed,
             {PatternDataEq({.protocol = {"https"}, .hostname = {"foo.com"}}),
              PatternDataEq({.protocol = {"http"},
                             .hostname = {"foo.com"},
@@ -1410,7 +1410,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     })");
     EXPECT_THAT(manifest->display_override,
                 ElementsAre(DisplayOverrideItemIs(
-                    blink::mojom::DisplayMode::kBorderless,
+                    blink::mojom::DisplayMode::kUnframed,
                     {PatternDataEq({.protocol = {"http"},
                                     .hostname = {"foo.com"},
                                     .pathname = {"/bar"}})})));
@@ -1462,7 +1462,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
         manifest->display_override,
         ElementsAre(
             DisplayOverrideItemIs(blink::mojom::DisplayMode::kMinimalUi),
-            DisplayOverrideItemIs(blink::mojom::DisplayMode::kBorderless,
+            DisplayOverrideItemIs(blink::mojom::DisplayMode::kUnframed,
                                   {PatternDataEq({.protocol = {"http"},
                                                   .hostname = {"foo.com"},
                                                   .pathname = {"/bar"}})}),
@@ -1492,7 +1492,7 @@ TEST_F(ManifestParserTest, DisplayOverrideAcceptsOutOfScopeUrlPatterns) {
   EXPECT_THAT(
       manifest->display_override,
       ElementsAre(DisplayOverrideItemIs(
-          blink::mojom::DisplayMode::kBorderless,
+          blink::mojom::DisplayMode::kUnframed,
           {PatternDataEq({.protocol = {"http"},
                           .hostname = {"foo.com"},
                           .pathname = {"/bar"}}),

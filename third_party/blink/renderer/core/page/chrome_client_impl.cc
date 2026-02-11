@@ -168,7 +168,7 @@ String TruncateDialogMessage(const String& message) {
 
 bool DisplayModeIsBorderless(LocalFrame& frame) {
   FrameWidget* widget = frame.GetWidgetForLocalRoot();
-  return widget->DisplayMode() == mojom::blink::DisplayMode::kBorderless;
+  return widget->DisplayMode() == mojom::blink::DisplayMode::kUnframed;
 }
 
 gfx::Rect AdjustWindowRectForMinimum(const gfx::Rect& pending_rect,

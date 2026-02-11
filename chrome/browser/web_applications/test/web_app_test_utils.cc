@@ -971,7 +971,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
   std::vector<DisplayOverride> override_items;
   for (DisplayMode display_mode : display_mode_override) {
     override_items.push_back(
-        display_mode == DisplayMode::kBorderless && random.next_bool()
+        display_mode == DisplayMode::kUnframed && random.next_bool()
             ? DisplayOverride::CreateUnframed(CreateRandomUrlPatterns(random))
             : DisplayOverride::Create(display_mode));
   }

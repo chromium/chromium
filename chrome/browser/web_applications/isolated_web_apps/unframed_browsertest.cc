@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(UnframedTest, AppCanCreateUnframedWindow) {
   SetAppWindowManagementPermission(CONTENT_SETTING_ALLOW);
 
   Browser& browser = LaunchAppInPathAndWait(kUnframedPagePath);
-  EXPECT_EQ(DisplayModeOf(browser), blink::mojom::DisplayMode::kBorderless);
+  EXPECT_EQ(DisplayModeOf(browser), blink::mojom::DisplayMode::kUnframed);
   EXPECT_EQ(ReadAppMessage(browser), kUnframedMessage);
 }
 
@@ -198,10 +198,10 @@ IN_PROC_BROWSER_TEST_F(UnframedTest, DisplayModeDoesNotChangeOnNavigation) {
 
   {
     Browser& browser = LaunchAppInPathAndWait(kUnframedPagePath);
-    EXPECT_EQ(DisplayModeOf(browser), blink::mojom::DisplayMode::kBorderless);
+    EXPECT_EQ(DisplayModeOf(browser), blink::mojom::DisplayMode::kUnframed);
 
     EXPECT_TRUE(NavigateToAppPathAndWait(browser, kStandalonePagePath));
-    EXPECT_EQ(DisplayModeOf(browser), blink::mojom::DisplayMode::kBorderless);
+    EXPECT_EQ(DisplayModeOf(browser), blink::mojom::DisplayMode::kUnframed);
   }
 }
 

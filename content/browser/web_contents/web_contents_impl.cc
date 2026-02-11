@@ -5601,7 +5601,7 @@ int64_t WebContentsImpl::AdjustWindowRect(gfx::Rect* bounds,
     // `blink::kMinimumBorderlessWindowSize` instead of the default
     // `blink::kMinimumWindowSize`.
     int minimum_size =
-        GetDisplayMode() == blink::mojom::DisplayMode::kBorderless &&
+        GetDisplayMode() == blink::mojom::DisplayMode::kUnframed &&
                 IsWindowManagementGranted(opener)
             ? blink::kMinimumBorderlessWindowSize
             : blink::kMinimumWindowSize;

@@ -219,7 +219,7 @@ void InternalSettings::setDisplayModeOverride(const String& display_mode,
   } else if (token == "window-controls-overlay") {
     mode = blink::mojom::DisplayMode::kWindowControlsOverlay;
   } else if (token == "borderless") {
-    mode = blink::mojom::DisplayMode::kBorderless;
+    mode = blink::mojom::DisplayMode::kUnframed;
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,

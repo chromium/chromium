@@ -331,8 +331,7 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
                    NavigationPolicy::kNavigationPolicyNewPopup;
   bool borderless = false;
   if (auto* widget = opener_frame.GetWidgetForLocalRoot()) {
-    borderless =
-        widget->DisplayMode() == mojom::blink::DisplayMode::kBorderless;
+    borderless = widget->DisplayMode() == mojom::blink::DisplayMode::kUnframed;
   }
   if (new_popup && borderless) {
     min_size = kMinimumBorderlessWindowSize;

@@ -466,11 +466,11 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
   manifest->display = display_mode_;
   for (const auto& item : display_mode_override_) {
     if (!item.url_patterns().empty()) {
-      CHECK_EQ(item.display_mode(), blink::mojom::DisplayMode::kBorderless)
+      CHECK_EQ(item.display_mode(), blink::mojom::DisplayMode::kUnframed)
           << "Only the 'unframed' display override can have URL patterns.";
     }
     manifest->display_override.push_back(
-        item.display_mode() == blink::mojom::DisplayMode::kBorderless
+        item.display_mode() == blink::mojom::DisplayMode::kUnframed
             ? blink::Manifest::DisplayOverride::CreateUnframed(
                   item.url_patterns())
             : blink::Manifest::DisplayOverride::Create(item.display_mode()));

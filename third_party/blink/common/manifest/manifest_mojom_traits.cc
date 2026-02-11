@@ -368,13 +368,13 @@ bool StructTraits<blink::mojom::DisplayOverrideItemDataView,
     return false;
   }
 
-  // `url_patterns` are only allowed in `kBorderless` display mode.
-  if (display_mode != blink::mojom::DisplayMode::kBorderless &&
+  // `url_patterns` are only allowed in `kUnframed` display mode.
+  if (display_mode != blink::mojom::DisplayMode::kUnframed &&
       !url_patterns.empty()) {
     return false;
   }
 
-  if (display_mode == blink::mojom::DisplayMode::kBorderless) {
+  if (display_mode == blink::mojom::DisplayMode::kUnframed) {
     *out = ::blink::Manifest::DisplayOverride::CreateUnframed(
         std::move(url_patterns));
   } else {

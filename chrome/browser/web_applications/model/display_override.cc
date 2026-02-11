@@ -65,7 +65,7 @@ DisplayOverride DisplayOverride::Create(
 // static
 DisplayOverride DisplayOverride::CreateUnframed(
     std::vector<blink::SafeUrlPattern> url_patterns) {
-  return DisplayOverride(blink::mojom::DisplayMode::kBorderless,
+  return DisplayOverride(blink::mojom::DisplayMode::kUnframed,
                          std::move(url_patterns));
 }
 
@@ -74,7 +74,7 @@ DisplayOverride::DisplayOverride(
     std::vector<blink::SafeUrlPattern> url_patterns)
     : display_mode_(display_mode), url_patterns_(std::move(url_patterns)) {
   if (!url_patterns_.empty()) {
-    CHECK_EQ(display_mode_, blink::mojom::DisplayMode::kBorderless);
+    CHECK_EQ(display_mode_, blink::mojom::DisplayMode::kUnframed);
   }
 }
 
@@ -102,7 +102,7 @@ std::optional<DisplayOverride> DisplayOverride::Parse(
     return std::nullopt;
   }
   if (!url_patterns->empty() &&
-      display_mode != blink::mojom::DisplayMode::kBorderless) {
+      display_mode != blink::mojom::DisplayMode::kUnframed) {
     return std::nullopt;
   }
   return DisplayOverride(display_mode, std::move(*url_patterns));

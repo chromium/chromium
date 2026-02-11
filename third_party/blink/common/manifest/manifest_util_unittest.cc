@@ -24,7 +24,7 @@ TEST(ManifestUtilTest, DisplayModeConversions) {
       {blink::mojom::DisplayMode::kWindowControlsOverlay,
        "window-controls-overlay"},
       {blink::mojom::DisplayMode::kTabbed, "tabbed"},
-      {blink::mojom::DisplayMode::kBorderless, "unframed"},
+      {blink::mojom::DisplayMode::kUnframed, "unframed"},
   };
 
   for (const ReversibleConversion& conversion : reversible_conversions) {
@@ -39,7 +39,7 @@ TEST(ManifestUtilTest, DisplayModeConversions) {
             DisplayModeFromString("Fullscreen"));
 
   // TODO(crbug.com/466441366): Stop accepting "borderless".
-  EXPECT_EQ(blink::mojom::DisplayMode::kBorderless,
+  EXPECT_EQ(blink::mojom::DisplayMode::kUnframed,
             DisplayModeFromString("borderless"));
 
   // DisplayModeFromString() should return

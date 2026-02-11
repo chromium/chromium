@@ -176,7 +176,7 @@ class ChromeAppForLinkDelegate : public AppForLinkDelegate {
       // These modes are not supported by the extension app backend.
       case web_app::DisplayMode::kWindowControlsOverlay:
       case web_app::DisplayMode::kTabbed:
-      case web_app::DisplayMode::kBorderless:
+      case web_app::DisplayMode::kUnframed:
       case web_app::DisplayMode::kPictureInPicture:
       case web_app::DisplayMode::kUndefined:
         info.launch_type = api::management::LaunchType::kNone;

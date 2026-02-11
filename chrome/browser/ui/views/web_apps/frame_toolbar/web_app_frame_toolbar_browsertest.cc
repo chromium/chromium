@@ -733,7 +733,7 @@ class BorderlessIsolatedWebAppBrowserTest
             ? web_app::IsolatedWebAppBuilder(
                   web_app::ManifestBuilder()
                       .SetDisplayModeOverride({web_app::DisplayOverride::Create(
-                          blink::mojom::DisplayMode::kBorderless)})
+                          blink::mojom::DisplayMode::kUnframed)})
                       .AddPermissionsPolicy(
                           network::mojom::PermissionsPolicyFeature::
                               kWindowManagement,
