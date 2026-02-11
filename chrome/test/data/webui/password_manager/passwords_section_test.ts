@@ -626,8 +626,7 @@ suite('PasswordsSectionTest', function() {
 
     // Click the button to open the dialog.
     const cloudUploadButton =
-        listEntry.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#cloudUploadButton');
+        listEntry.shadowRoot!.querySelector<HTMLElement>('#cloudUploadButton');
     assertTrue(!!cloudUploadButton);
     cloudUploadButton.click();
     await flushTasks();
@@ -640,7 +639,7 @@ suite('PasswordsSectionTest', function() {
     assertTrue(movePasswordsDialog.$.dialog.open);
   });
 
-  test('Upload icon tooltip text', async function() {
+  test('Upload icon tooltip and accessibility text', async function() {
     passwordManager.setAccountStorageEnabled(true);
     passwordManager.data.groups = [
       createCredentialGroup({
@@ -655,9 +654,14 @@ suite('PasswordsSectionTest', function() {
     const listEntry =
         section.shadowRoot!.querySelector<HTMLElement>('password-list-item');
     assertTrue(!!listEntry);
+
     assertEquals(
         listEntry.shadowRoot!.querySelector<HTMLElement>(
                                  'cr-tooltip')!.innerHTML,
+        'Save in your Google Account');
+    assertEquals(
+        listEntry.shadowRoot!.querySelector<HTMLElement>(
+                                 '#cloudUploadButton')!.ariaLabel,
         'Save in your Google Account');
   });
 });

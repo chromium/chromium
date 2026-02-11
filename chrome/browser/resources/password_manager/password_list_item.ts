@@ -63,6 +63,12 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
 
       tooltipText_: String,
       deviceOnlyCredentialsAccessibilityLabelText_: String,
+
+      passwordUploadUiUpdate_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('passwordUploadUiUpdate'),
+      },
+
     };
   }
 
@@ -74,6 +80,7 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
   declare private tooltipText_: string;
   declare private deviceOnlyCredentialsAccessibilityLabelText_: string;
   declare private showMovePasswordDialog_: boolean;
+  declare private passwordUploadUiUpdate_: boolean;
 
   private getElementClass_(): string {
     return this.first ? 'flex-centered' : 'flex-centered hr';
@@ -127,19 +134,22 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
               'numberOfAccounts', this.item.entries.length);
     }
 
-    if (this.shouldShowDeviceOnlyCredentialsIcon_()) {
-      this.tooltipText_ =
-          await PluralStringProxyImpl.getInstance().getPluralString(
-              'deviceOnlyPasswordsIconTooltip',
-              this.getCredentialsOnDevice_().length);
+    if (this.hasUploadablePasswords_()) {
       this.deviceOnlyCredentialsAccessibilityLabelText_ =
           await PluralStringProxyImpl.getInstance()
               .getPluralString(
                   'deviceOnlyListItemAriaLabel', this.item.entries.length)
               .then(label => label.replace('$1', this.item.name));
-    } else if (this.shouldShowUploadPasswordsIcon_()) {
-      this.tooltipText_ = this.i18n('movePasswordToAccountIconTooltip');
-      // TODO(crbug.com/479142155): Set the accessibility label.
+
+      if (this.passwordUploadUiUpdate_) {
+        this.tooltipText_ = this.i18n('movePasswordToAccountIconTooltip');
+        return;
+      }
+
+      this.tooltipText_ =
+          await PluralStringProxyImpl.getInstance().getPluralString(
+              'deviceOnlyPasswordsIconTooltip',
+              this.getCredentialsOnDevice_().length);
     }
   }
 
@@ -182,19 +192,22 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
             entry.storedIn === chrome.passwordsPrivate.PasswordStoreSet.DEVICE);
   }
 
-  private hasOnlyOneDeviceCredential(): boolean {
+  private hasOnlyOneDeviceCredential_(): boolean {
     return this.getCredentialsOnDevice_().length === this.item.entries.length &&
         this.getCredentialsOnDevice_().length === 1;
   }
 
+  private hasUploadablePasswords_(): boolean {
+    return this.isAccountStoreUser &&
+        (this.getCredentialsOnDevice_().length > 0);
+  }
+
   private shouldShowDeviceOnlyCredentialsIcon_(): boolean {
-    return !loadTimeData.getBoolean('passwordUploadUiUpdate') &&
-        this.isAccountStoreUser && (this.getCredentialsOnDevice_().length > 0);
+    return !this.passwordUploadUiUpdate_ && this.hasUploadablePasswords_();
   }
 
   private shouldShowUploadPasswordsIcon_(): boolean {
-    return loadTimeData.getBoolean('passwordUploadUiUpdate') &&
-        this.isAccountStoreUser && (this.getCredentialsOnDevice_().length > 0);
+    return this.passwordUploadUiUpdate_ && this.hasUploadablePasswords_();
   }
 
   private onMovePasswordDialogClose_(): void {
@@ -202,21 +215,20 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
   }
 
   private onUploadButtonClick_(): void {
-    assert(loadTimeData.getBoolean('passwordUploadUiUpdate'));
+    assert(this.passwordUploadUiUpdate_);
     this.showMovePasswordDialog_ = true;
   }
 
   private getAriaLabel_(): string {
-    if (this.shouldShowDeviceOnlyCredentialsIcon_()) {
+    if (this.hasUploadablePasswords_()) {
       return this.deviceOnlyCredentialsAccessibilityLabelText_;
     }
     return this.i18n('viewPasswordAriaDescription', htmlEscape(this.item.name));
   }
 
   private getLocalPasswordsIcon_(): string {
-    return loadTimeData.getBoolean('passwordUploadUiUpdate') ?
-        'cloudUploadButton' :
-        'localPasswordsIcon';
+    return this.passwordUploadUiUpdate_ ? 'cloudUploadButton' :
+                                          'localPasswordsIcon';
   }
 }
 
