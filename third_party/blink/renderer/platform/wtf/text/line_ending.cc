@@ -91,6 +91,45 @@ void NormalizeToCRLF(base::span<const CharType> src, base::span<CharType> dst) {
   }
 }
 
+template <typename CharType>
+std::optional<wtf_size_t> RequiredSizeForLF(base::span<const CharType> src) {
+  bool need_change = false;
+  wtf_size_t new_len = 0;
+  wtf_size_t index = 0;
+  while (index < src.size()) {
+    const CharType c = src[index++];
+    // Replace CR or CRLF.
+    if (c == '\r') {
+      // If CR is followed by LF, skip the LF as well, and thus only count one
+      // character in the output.
+      if (index < src.size() && src[index] == '\n') {
+        ++index;
+      }
+      need_change = true;
+    }
+    ++new_len;
+  }
+  return need_change ? std::make_optional(new_len) : std::nullopt;
+}
+
+template <typename CharType>
+void NormalizeToLF(base::span<const CharType> src, base::span<CharType> dst) {
+  wtf_size_t index = 0;
+  wtf_size_t index_out = 0;
+  while (index < src.size()) {
+    CharType c = src[index++];
+    // Replace CR or CRLF.
+    if (c == '\r') {
+      // If CR is followed by LF, skip the LF as well.
+      if (index < src.size() && src[index] == '\n') {
+        ++index;
+      }
+      c = '\n';
+    }
+    dst[index_out++] = c;
+  }
+}
+
 #if BUILDFLAG(IS_WIN)
 void InternalNormalizeLineEndingsToCRLF(const std::string& from,
                                         Vector<char>& buffer) {
@@ -113,48 +152,21 @@ void InternalNormalizeLineEndingsToCRLF(const std::string& from,
 }  // namespace
 
 void NormalizeLineEndingsToLF(const std::string& from, Vector<char>& result) {
-  // Compute the new length.
-  wtf_size_t new_len = 0, index = 0;
-  bool need_fix = false;
-  char from_ending_char = '\r';
-  char to_ending_char = '\n';
-  while (index < from.length()) {
-    char c = from[index++];
-    if (c == '\r' && from[index] == '\n') {
-      // Turn CRLF into CR or LF.
-      index++;
-      need_fix = true;
-    } else if (c == from_ending_char) {
-      // Turn CR/LF into LF/CR.
-      need_fix = true;
-    }
-    new_len += 1;
-  }
+  // Compute the new length. Use byte-spans to avoid unnecessary instances.
+  std::optional<wtf_size_t> new_len = RequiredSizeForLF(base::span(from));
 
   // If no need to fix the string, just copy the string over.
-  if (!need_fix) {
+  if (!new_len) {
     result.AppendSpan(base::span(from));
     return;
   }
 
-  index = 0;
-  wtf_size_t old_result_size = result.size();
-  wtf_size_t index_out = old_result_size;
-  result.Grow(old_result_size + new_len);
+  const wtf_size_t old_result_size = result.size();
+  result.Grow(old_result_size + *new_len);
+  auto dst = base::span(result).subspan(old_result_size);
 
-  // Make a copy of the string.
-  while (index < from.length()) {
-    char c = from[index++];
-    if (c == '\r' && from[index] == '\n') {
-      // Turn CRLF or CR into CR or LF.
-      index++;
-      c = to_ending_char;
-    } else if (c == from_ending_char) {
-      // Turn CR/LF into LF/CR.
-      c = to_ending_char;
-    }
-    result[index_out++] = c;
-  }
+  // Copy and normalize.
+  NormalizeToLF(base::span(from), dst);
 }
 
 String NormalizeLineEndingsToLF(const String& src) {
