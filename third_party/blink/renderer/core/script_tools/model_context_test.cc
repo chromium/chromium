@@ -258,7 +258,8 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_InvalidSelectValue) {
             EXPECT_FALSE(res.has_value());
             EXPECT_EQ(res.error(),
                       WebDocument::ScriptToolError::kInvalidInputArguments);
-            EXPECT_EQ(res.error().message, "Parameter didn't validate: choice");
+            EXPECT_EQ(res.error().message,
+                      "Invalid value \"c\" for parameter choice");
             run_loop.Quit();
           }));
   run_loop.Run();

@@ -129,7 +129,7 @@ class CORE_EXPORT FormMCPSchema {
   void FillSelectData(const ControlVector& controls_for_name, const JSONValue&);
 
   void AddTitle(HTMLFormControlElement&, JSONObject&);
-  void AddDescription(HTMLFormControlElement&, JSONObject&);
+  void AddDescription(HTMLFormControlElement&, JSONObject&, String = String());
 
   // It's not clear yet where to host the toolparamtitle/description
   // attributes for <input type=radio>, or other parameters that are

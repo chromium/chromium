@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -124,9 +125,16 @@ std::optional<WebDocument::ScriptToolError> FormMCPSchema::FillData(
                  "\" but there is no such parameter for the tool"));
     }
     if (!ValidateParameterData(parameter_name, *entry.second)) {
+      String string_value;
+      if (ToString(*entry.second, string_value)) {
+        return WebDocument::ScriptToolError(
+            WebDocument::ScriptToolError::kInvalidInputArguments,
+            String("Invalid value \"" + string_value + "\" for parameter " +
+                   parameter_name));
+      }
       return WebDocument::ScriptToolError(
           WebDocument::ScriptToolError::kInvalidInputArguments,
-          String("Parameter didn't validate: " + parameter_name));
+          String("Invalid value for parameter " + parameter_name));
     }
   }
 
@@ -427,7 +435,8 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeDateParameterSchema(
   // Note that the "minimum" and "maximum" fields must contains numbers;
   // they cannot be used for dates.
   AddTitle(*element, *schema);
-  AddDescription(*element, *schema);
+  AddDescription(*element, *schema,
+                 "Dates MUST be provided in 'YYYY-MM-DD' format.");
   required = element->IsRequired();
   return schema;
 }
@@ -829,8 +838,17 @@ void FormMCPSchema::AddTitle(HTMLFormControlElement& control, JSONObject& obj) {
 }
 
 void FormMCPSchema::AddDescription(HTMLFormControlElement& control,
-                                   JSONObject& obj) {
-  if (String description = ComputeDescription(control); !description.empty()) {
+                                   JSONObject& obj,
+                                   String extra_context) {
+  String description = ComputeDescription(control);
+  if (!extra_context.empty()) {
+    if (!description.empty()) {
+      description = description + " (" + extra_context + ")";
+    } else {
+      description = extra_context;
+    }
+  }
+  if (!description.empty()) {
     obj.SetString("description", description);
   }
 }

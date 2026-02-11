@@ -1625,7 +1625,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_DateInput) {
       "properties": {
          "date1": {
            "type": "string",
-           "format": "date"
+           "format": "date",
+           "description": "Dates MUST be provided in 'YYYY-MM-DD' format."
          }
       },
       "required": []
