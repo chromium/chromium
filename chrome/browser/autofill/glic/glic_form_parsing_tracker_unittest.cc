@@ -6,7 +6,6 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/autofill/glic/glic_form_parsing_tracker_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
