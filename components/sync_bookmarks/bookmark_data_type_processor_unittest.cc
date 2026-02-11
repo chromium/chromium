@@ -2167,6 +2167,27 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldClearMetadataIfStopped) {
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 1);
 }
 
+TEST_F(BookmarkDataTypeProcessorTest, ShouldClearMetadataAfterError) {
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateOnSyncStarting();
+
+  // Simulate an error (e.g. limit exceeded).
+  EXPECT_CALL(*error_handler(), Run);
+  processor()->ReportBridgeErrorForTest();
+  ASSERT_FALSE(processor()->IsConnectedForTest());
+
+  base::HistogramTester histogram_tester;
+
+  // Expect saving empty metadata upon call to ClearMetadataIfStopped().
+  EXPECT_CALL(*schedule_save_closure(), Run);
+
+  processor()->ClearMetadataIfStopped();
+  // Should clear the tracker even though an error occurred.
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
+  // Expect an entry to the histogram.
+  histogram_tester.ExpectTotalCount("Sync.ClearMetadataWhileStopped", 1);
+}
+
 TEST_F(BookmarkDataTypeProcessorTest,
        ShouldClearMetadataIfStoppedUponModelReadyToSync) {
   ASSERT_FALSE(processor()->IsTrackingMetadata());

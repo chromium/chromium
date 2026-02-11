@@ -156,6 +156,9 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   // entities.
   void NudgeForCommitIfNeeded();
 
+  // Disconnects from sync and reports an error to the controller.
+  void DisconnectAndReportError(const syncer::ModelError& error);
+
   // Performs the required clean up when bookmark model is being deleted.
   void OnBookmarkModelBeingDeleted();
 

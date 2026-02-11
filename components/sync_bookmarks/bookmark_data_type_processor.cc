@@ -404,8 +404,7 @@ void BookmarkDataTypeProcessor::ClearMetadataIfStopped() {
 void BookmarkDataTypeProcessor::ReportBridgeErrorForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DisconnectSync();
-  activation_request_.error_handler.Run(syncer::ModelError(
+  DisconnectAndReportError(syncer::ModelError(
       FROM_HERE, syncer::ModelError::Type::
                      kBookmarksInitialMergePermanentEntitiesMissing));
 }
@@ -655,8 +654,7 @@ void BookmarkDataTypeProcessor::ConnectIfReady() {
     // `initial_merge_remote_updates_exceeded_limit_timestamp_` is only set
     // in error case and thus tracker should be empty.
     DCHECK(!bookmark_tracker_);
-    start_callback_.Reset();
-    activation_request_.error_handler.Run(syncer::ModelError(
+    DisconnectAndReportError(syncer::ModelError(
         FROM_HERE, syncer::ModelError::Type::
                        kBookmarksRemoteCountExceededLimitLastInitialMerge));
     return;
@@ -729,14 +727,28 @@ bool BookmarkDataTypeProcessor::
     // exists, local changes will continue
     // to be tracked in order order to allow users to delete bookmarks and
     // recover upon restart.
-    DisconnectSync();
-    start_callback_.Reset();
-
-    activation_request_.error_handler.Run(
-        syncer::ModelError(FROM_HERE, error_type));
+    DisconnectAndReportError(syncer::ModelError(FROM_HERE, error_type));
     return true;
   }
   return false;
+}
+
+void BookmarkDataTypeProcessor::DisconnectAndReportError(
+    const syncer::ModelError& error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DisconnectSync();
+  start_callback_.Reset();
+
+  // Clear the activation request to ensure the processor is considered
+  // stopped/disconnected, which is a prerequisite for
+  // ClearMetadataIfStopped() to work (e.g. when the controller is in FAILED
+  // state and a dashboard reset or sign-out occurs).
+  auto error_handler = activation_request_.error_handler;
+  activation_request_ = syncer::DataTypeActivationRequest{};
+  if (error_handler) {
+    error_handler.Run(error);
+  }
 }
 
 void BookmarkDataTypeProcessor::NudgeForCommitIfNeeded() {
@@ -787,9 +799,8 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
   if (ExceedsRemoteUpdatesLimit(updates.size())) {
     base::UmaHistogramCounts1M("Sync.BookmarksCountAtLimitExceeded.Remote",
                                updates.size());
-    DisconnectSync();
     initial_merge_remote_updates_exceeded_limit_timestamp_ = base::Time::Now();
-    activation_request_.error_handler.Run(syncer::ModelError(
+    DisconnectAndReportError(syncer::ModelError(
         FROM_HERE, syncer::ModelError::Type::
                        kBookmarksRemoteCountExceededLimitInitialMerge));
     schedule_save_closure_.Run();
@@ -816,11 +827,10 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
           bookmark_model_->other_node()) ||
       !bookmark_tracker_->GetEntityForBookmarkNode(
           bookmark_model_->mobile_node())) {
-    DisconnectSync();
-    StopTrackingMetadataAndResetTracker();
-    activation_request_.error_handler.Run(syncer::ModelError(
+    DisconnectAndReportError(syncer::ModelError(
         FROM_HERE, syncer::ModelError::Type::
                        kBookmarksInitialMergePermanentEntitiesMissing));
+    StopTrackingMetadataAndResetTracker();
     return;
   }
 

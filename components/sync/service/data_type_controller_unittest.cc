@@ -106,7 +106,6 @@ class DataTypeControllerTest : public testing::Test {
 
  private:
   NiceMock<MockDataTypeControllerDelegate> mock_delegate_;
-  FakeDataTypeProcessor processor_;
   TestDataTypeController controller_;
 };
 
@@ -282,8 +281,7 @@ TEST_F(DataTypeControllerTest, StopBeforeLoadModels) {
   EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 }
 
-// Test emulates disabling sync when datatype is in error state. Metadata should
-// not be cleared as the delegate is potentially not ready to handle it.
+// Test emulates disabling sync when datatype is in error state.
 TEST_F(DataTypeControllerTest, StopDuringFailedState) {
   EXPECT_CALL(*delegate(), OnSyncStopping(CLEAR_METADATA)).Times(0);
 
@@ -291,25 +289,58 @@ TEST_F(DataTypeControllerTest, StopDuringFailedState) {
   EXPECT_CALL(*delegate(), OnSyncStarting)
       .WillOnce(SaveArg<0>(&activation_request));
 
-  controller()->LoadModels(MakeConfigureContext(), base::DoNothing());
+  base::MockCallback<DataTypeController::ModelLoadCallback> load_models_done;
+  controller()->LoadModels(MakeConfigureContext(), load_models_done.Get());
   ASSERT_EQ(DataTypeController::MODEL_STARTING, controller()->state());
   ASSERT_TRUE(activation_request.error_handler);
+
   // Mimic completion for OnSyncStarting(), with an error.
+  EXPECT_CALL(load_models_done, Run(/*error=*/Ne(std::nullopt)));
   activation_request.error_handler.Run(
       ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
 
   ASSERT_EQ(DataTypeController::FAILED, controller()->state());
 
+  // ClearMetadataIfStopped() should be called on Stop() if the state is
+  // FAILED and fate is CLEAR_METADATA.
+  EXPECT_CALL(*delegate(), ClearMetadataIfStopped);
   base::MockCallback<base::OnceClosure> stop_completion;
   EXPECT_CALL(stop_completion, Run());
   controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA,
                      stop_completion.Get());
 
+  // The state should remain FAILED.
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
 }
 
-// Test emulates disabling sync when datatype is loading. The controller should
-// wait for completion of the delegate, before stopping it.
+// Test emulates disabling sync when datatype is in error state and metadata
+// should be kept.
+TEST_F(DataTypeControllerTest, StopDuringFailedStateWithKeepMetadata) {
+  DataTypeActivationRequest activation_request;
+  EXPECT_CALL(*delegate(), OnSyncStarting)
+      .WillOnce(SaveArg<0>(&activation_request));
+
+  base::MockCallback<DataTypeController::ModelLoadCallback> load_models_done;
+  controller()->LoadModels(MakeConfigureContext(), load_models_done.Get());
+  ASSERT_EQ(DataTypeController::MODEL_STARTING, controller()->state());
+
+  // Mimic completion for OnSyncStarting(), with an error.
+  EXPECT_CALL(load_models_done, Run(/*error=*/Ne(std::nullopt)));
+  activation_request.error_handler.Run(
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
+  ASSERT_EQ(DataTypeController::FAILED, controller()->state());
+
+  // Stop with KEEP_METADATA should NOT trigger ClearMetadataIfStopped().
+  EXPECT_CALL(*delegate(), ClearMetadataIfStopped).Times(0);
+  base::MockCallback<base::OnceClosure> stop_completion;
+  EXPECT_CALL(stop_completion, Run());
+  controller()->Stop(SyncStopMetadataFate::KEEP_METADATA,
+                     stop_completion.Get());
+  ASSERT_EQ(DataTypeController::FAILED, controller()->state());
+}
+
+// Test emulates disabling sync when datatype is in loading state. The
+// controller should wait for completion of the delegate, before stopping it.
 TEST_F(DataTypeControllerTest, StopWhileStarting) {
   DataTypeControllerDelegate::StartCallback start_callback;
   EXPECT_CALL(*delegate(), OnSyncStarting)
@@ -612,30 +643,6 @@ TEST_F(DataTypeControllerTest, ClearMetadataWhenDatatypeNotRunning) {
   // NOT_RUNNING.
   controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA, base::DoNothing());
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
-}
-
-TEST_F(DataTypeControllerTest,
-       ShouldNotClearMetadataWhenDatatypeInFailedState) {
-  EXPECT_CALL(*delegate(), OnSyncStopping(CLEAR_METADATA)).Times(0);
-
-  // Start sync and simulate an error to bring it to a FAILED state.
-  DataTypeActivationRequest activation_request;
-  EXPECT_CALL(*delegate(), OnSyncStarting)
-      .WillOnce(SaveArg<0>(&activation_request));
-
-  controller()->LoadModels(MakeConfigureContext(), base::DoNothing());
-  ASSERT_EQ(DataTypeController::MODEL_STARTING, controller()->state());
-  ASSERT_TRUE(activation_request.error_handler);
-  // Mimic completion for OnSyncStarting(), with an error.
-  activation_request.error_handler.Run(
-      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
-
-  // ClearMetadataIfStopped() should not be called on Stop() if the state is
-  // FAILED.
-  ASSERT_EQ(DataTypeController::FAILED, controller()->state());
-  EXPECT_CALL(*delegate(), ClearMetadataIfStopped).Times(0);
-  controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA, base::DoNothing());
-  ASSERT_EQ(DataTypeController::FAILED, controller()->state());
 }
 
 }  // namespace syncer
