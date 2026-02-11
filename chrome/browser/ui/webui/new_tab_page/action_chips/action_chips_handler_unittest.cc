@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_mojo_test_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/fake_tab_id_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/search/ntp_features.h"
@@ -257,6 +258,8 @@ class ActionChipsHandlerTest : public testing::Test {
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
     profile_builder.SetPath(profile_dir_.GetPath());
     profile_ = profile_builder.Build();
+
+    profile_->GetPrefs()->SetBoolean(prefs::kNtpToolChipsVisible, true);
 
     tab_strip_model_fixture_ =
         std::make_unique<TabStripModelFixture>(profile_.get());
@@ -664,5 +667,15 @@ TEST_F(ActionChipsHandlerTest, ContextSharingDisabled) {
                  [](const ActionChipPtr& chip) { return Eq(std::cref(chip)); });
 
   EXPECT_THAT(actual_chips, ElementsAreArray(matchers));
+}
+
+TEST_F(ActionChipsHandlerTest, ActionChipVisbilityChanged) {
+  // Set visibility to false.
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpToolChipsVisible, false);
+  EXPECT_CALL(page_, OnActionChipsChanged(_)).Times(0);
+
+  // Ensure `OnActionChipsChanged` is called when visibility changes to true.
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpToolChipsVisible, true);
+  EXPECT_CALL(page_, OnActionChipsChanged(_)).Times(1);
 }
 }  // namespace

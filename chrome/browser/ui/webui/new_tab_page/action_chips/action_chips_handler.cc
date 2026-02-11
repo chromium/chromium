@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_metrics.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "chrome/common/pref_names.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
@@ -123,6 +124,11 @@ ActionChipsHandler::ActionChipsHandler(
   // No need to call RemoveObserver later since TabStripModelObserver takes care
   // of it in its destructor.
   browser_window_interface->GetTabStripModel()->AddObserver(this);
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kNtpToolChipsVisible,
+      base::BindRepeating(&ActionChipsHandler::OnVisibilityChanged,
+                          base::Unretained(this)));
 }
 
 ActionChipsHandler::~ActionChipsHandler() = default;
@@ -206,4 +212,11 @@ bool ActionChipsHandler::ShouldThrottleRetrieval(const GURL& current_url) {
   }
   last_processed_url_ = current_url;
   return false;
+}
+
+void ActionChipsHandler::OnVisibilityChanged() {
+  if (profile_->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible)) {
+    last_processed_url_.reset();
+    StartActionChipsRetrieval();
+  }
 }
