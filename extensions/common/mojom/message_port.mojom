@@ -7,14 +7,16 @@ module extensions.mojom;
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "third_party/blink/public/mojom/messaging/cloneable_message.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 // IPC messages will fail at > 128 MiB. Restrict extension messages to 64 MiB.
 // A 64 MiB JSON serialized object is scary enough as it is.
 // TODO(crbug.com/40321352): The 64 MiB limit also applies to structured clone
-// messages. Can we unrestrict that since it uses `mojom_base::BigBuffer` which
-// has shared memory benefits for large messages?
+// messages. Can we unrestrict that since it uses
+// `blink.mojom.CloneableMessage` (which contains `mojo_base.mojom.BigBuffer`
+// that has shared memory benefits for large messages)?
 const uint64 kMaxMessageBytes = 67108864;  // 64 * 1024 * 1024
 
 // The serialization format of the message.
@@ -102,7 +104,7 @@ struct ExternalConnectionInfo {
 // The data payload of a message.
 union MessageData {
   string json;
-  mojo_base.mojom.BigBuffer structured_clone;
+  blink.mojom.CloneableMessage structured_message;
 };
 
 // A message that is serialized across the channel.

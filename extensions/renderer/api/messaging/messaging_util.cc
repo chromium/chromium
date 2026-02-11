@@ -141,9 +141,9 @@ MessageMetadata GetMessageMetadata(v8::Local<v8::Context> context) {
 
 // Serializes the given `value` using structured cloning and returns it wrapped
 // in a `Message object`. This also populates user gesture and context privilege
-// information. Returns empty `StructuredCloneMessageWireData` on failure, and
+// information. Returns empty `StructuredCloneMessageData` on failure, and
 // populates `error` with the failure reason.
-StructuredCloneMessageWireData MessageFromV8UsingStructuredClone(
+StructuredCloneMessageData MessageFromV8UsingStructuredClone(
     v8::Isolate& isolate,
     v8::Local<v8::Value> value,
     std::string* error) {
@@ -151,9 +151,9 @@ StructuredCloneMessageWireData MessageFromV8UsingStructuredClone(
       blink::WebSerializedScriptValue::Serialize(&isolate, value);
   if (!serialized.IsValid()) {
     *error = kErrorCouldNotSerialize;
-    return StructuredCloneMessageWireData();
+    return StructuredCloneMessageData();
   }
-  return StructuredCloneMessageWireData(serialized.WireData());
+  return serialized.GetCloneableMessage(base::UnguessableToken::Create());
 }
 
 }  // namespace
@@ -186,7 +186,7 @@ std::optional<Message> MessageFromV8(v8::Local<v8::Context> context,
 
   size_t message_size = 0;
   std::string json_message;
-  StructuredCloneMessageWireData structured_message;
+  StructuredCloneMessageData structured_message;
   switch (format) {
     case mojom::SerializationFormat::kJson: {
       json_message = MessageFromV8UsingJSON(context, *isolate, value, error);
@@ -202,7 +202,7 @@ std::optional<Message> MessageFromV8(v8::Local<v8::Context> context,
       if (!error->empty()) {
         return std::nullopt;
       }
-      message_size = structured_message.size();
+      message_size = structured_message.encoded_message.size();
       break;
     }
   }
@@ -210,8 +210,9 @@ std::optional<Message> MessageFromV8(v8::Local<v8::Context> context,
   // IPC messages will fail at > 128 MiB. Restrict extension messages to 64 MiB.
   // A 64 MiB JSON serialized object is scary enough as it is.
   // TODO(crbug.com/40321352): The 64 MiB limit also applies to structured
-  // messages. Can we unrestrict that since it uses `mojom_base::BigBuffer`
-  // which has shared memory benefits for large messages?
+  // messages. Can we unrestrict that since it uses `blink::CloneableMessage`
+  // (which contains `mojo_base::BigBuffer` that has shared memory benefits for
+  // large messages)?
   if (message_size > mojom::kMaxMessageBytes) {
     *error = "Message exceeded maximum allowed size of 64MiB.";
     return std::nullopt;
@@ -239,11 +240,13 @@ std::optional<Message> MessageFromV8(v8::Local<v8::Context> context,
 // Deserializes the given `message` using structured cloning and returns it as a
 // v8::Value. Returns an empty handle on failure, and populates `error`.
 v8::Local<v8::Value> MessageToV8UsingStructuredClone(v8::Isolate& isolate,
-                                                     const Message& message,
+                                                     Message message,
                                                      std::string* error) {
   blink::WebSerializedScriptValue serialized =
-      blink::WebSerializedScriptValue::Create(
-          base::span<const uint8_t>(message.structured_data()));
+      blink::WebSerializedScriptValue::CreateFromCloneableMessage(
+          message.TakeStructuredMessage());
+  // `message` no longer has valid message data because we've just taken it to
+  // create `serialized`.
   return serialized.Deserialize(&isolate);
 }
 
@@ -283,7 +286,8 @@ v8::Local<v8::Value> MessageToV8(v8::Local<v8::Context> context,
 
   switch (message.format()) {
     case mojom::SerializationFormat::kStructuredClone:
-      return MessageToV8UsingStructuredClone(*isolate, message, error);
+      return MessageToV8UsingStructuredClone(*isolate, std::move(message),
+                                             error);
     case mojom::SerializationFormat::kJson:
       return MessageToV8UsingJSON(context, *isolate, message,
                                   is_parsing_fail_safe, error);

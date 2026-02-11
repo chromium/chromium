@@ -122,17 +122,18 @@ export function getMessageSerializationTestCases(
 
       // Test `Blob`.
       let blobMessage = new Blob(['hello!'], {type: 'text/plain'});
-      let blobMessagePromise = sendMessage(blobMessage);
-      let blobResponse = await blobMessagePromise;
-      // TODO(crbug.com/40321352): Once the `extensions::Message` class supports
-      // `blink::mojom::CloneableMessage` for message transfer then we can
-      // assert the below. Until then the response will default to `null` since
-      // the wire data doesn't have the internal `Blob` metadata.
-      chrome.test.assertEq(null, blobResponse, 'Test: Blob');
-      // chrome.test.assertEq(
-      //     blobMessage.arrayBuffer(), blobResponse.arrayBuffer(), 'Test:
-      //     Blob');
+      let blobResponse = await sendMessage(blobMessage);
 
+      // We can't `use chrome.test.assertEq` for Blobs since they are
+      // effectively pointers so we check the content instead.
+      chrome.test.assertTrue(
+          blobResponse instanceof Blob, 'Response should be a Blob');
+      chrome.test.assertEq(
+          blobMessage.arrayBuffer(), blobResponse.arrayBuffer(), 'Test: Blob');
+      let text = await blobResponse.text();
+      chrome.test.assertEq('hello!', text, 'Blob content mismatch');
+      chrome.test.assertEq(
+          'text/plain', blobResponse.type, 'Blob type mismatch');
       chrome.test.succeed();
     },
 

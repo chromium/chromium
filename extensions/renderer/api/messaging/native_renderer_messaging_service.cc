@@ -524,7 +524,7 @@ void NativeRendererMessagingService::DeliverMessageToScriptContext(
 }
 
 void NativeRendererMessagingService::DeliverMessageToWorker(
-    const Message& message,
+    Message message,
     const PortId& target_port_id,
     ScriptContext* script_context) {
   // Note |scoped_extension_interaction| requires a HandleScope.
@@ -540,11 +540,12 @@ void NativeRendererMessagingService::DeliverMessageToWorker(
             script_context->v8_context());
   }
 
-  DispatchOnMessageToListeners(script_context, message.Clone(), target_port_id);
+  DispatchOnMessageToListeners(script_context, std::move(message),
+                               target_port_id);
 }
 
 void NativeRendererMessagingService::DeliverMessageToBackgroundPage(
-    const Message& message,
+    Message message,
     const PortId& target_port_id,
     ScriptContext* script_context) {
   std::unique_ptr<blink::WebScopedWindowFocusAllowedIndicator>
@@ -590,7 +591,8 @@ void NativeRendererMessagingService::DeliverMessageToBackgroundPage(
             &document);
   }
 
-  DispatchOnMessageToListeners(script_context, message.Clone(), target_port_id);
+  DispatchOnMessageToListeners(script_context, std::move(message),
+                               target_port_id);
 }
 
 void NativeRendererMessagingService::DispatchOnDisconnectToScriptContext(
@@ -728,13 +730,9 @@ void NativeRendererMessagingService::DispatchOnMessageToListeners(
   v8::HandleScope handle_scope(isolate);
   v8::Context::Scope context_scope(script_context->v8_context());
 
-  // We must clone the message here because it could be delivered to both the
-  // one-time handler and a long-lived port.
-  // `one_time_message_handler_.DeliverMessage` consumes the message, so we
-  // clone it to ensure the message remains valid for `port->DispatchOnMessage`
-  // below if both handlers exist.
-  if (one_time_message_handler_.DeliverMessage(script_context, message.Clone(),
-                                               target_port_id)) {
+  if (one_time_message_handler_.HasPort(script_context, target_port_id)) {
+    one_time_message_handler_.DeliverMessage(script_context, std::move(message),
+                                             target_port_id);
     return;
   }
 

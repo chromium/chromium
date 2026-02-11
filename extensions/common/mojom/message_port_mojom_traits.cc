@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "mojo/public/mojom/base/unguessable_token.mojom.h"
+#include "third_party/blink/public/common/messaging/cloneable_message_mojom_traits.h"
 
 namespace mojo {
 
@@ -19,7 +20,7 @@ extensions::mojom::MessageDataDataView::Tag UnionTraits<
   if (std::holds_alternative<std::string>(data)) {
     return extensions::mojom::MessageDataDataView::Tag::kJson;
   }
-  return extensions::mojom::MessageDataDataView::Tag::kStructuredClone;
+  return extensions::mojom::MessageDataDataView::Tag::kStructuredMessage;
 }
 
 // static
@@ -36,12 +37,12 @@ bool UnionTraits<
       *out = std::move(json);
       return true;
     }
-    case extensions::mojom::MessageDataDataView::Tag::kStructuredClone: {
-      extensions::StructuredCloneMessageWireData structured_clone;
-      if (!data.ReadStructuredClone(&structured_clone)) {
+    case extensions::mojom::MessageDataDataView::Tag::kStructuredMessage: {
+      extensions::StructuredCloneMessageData structured_message;
+      if (!data.ReadStructuredMessage(&structured_message)) {
         return false;
       }
-      *out = std::move(structured_clone);
+      *out = std::move(structured_message);
       return true;
     }
   }

@@ -14,11 +14,14 @@
 #include "extensions/common/mojom/message_port.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
+#include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 
 namespace extensions {
 
 TEST(MessagePortMojomTraitsTest, PortId) {
-  PortId input(base::UnguessableToken::Create(), 32, true,
+  PortId input(base::UnguessableToken::Create(), /*port_number=*/32,
+               /*is_opener=*/true,
                mojom::SerializationFormat::kStructuredClone);
   PortId output;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<extensions::mojom::PortId>(
@@ -63,7 +66,7 @@ TEST(MessagePortMojomTraitsTest, MessageEmpty) {
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<extensions::mojom::Message>(
       input, output));
 
-  EXPECT_EQ(input, output);
+  EXPECT_TRUE(input.EqualsForTesting(output));
   EXPECT_EQ(input.from_privileged_context(), output.from_privileged_context());
 }
 
@@ -74,7 +77,7 @@ TEST(MessagePortMojomTraitsTest, JSONMessageValues) {
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<extensions::mojom::Message>(
       input, output));
 
-  EXPECT_EQ(input, output);
+  EXPECT_TRUE(input.EqualsForTesting(output));
   EXPECT_EQ(input.from_privileged_context(), output.from_privileged_context());
 }
 
@@ -101,29 +104,57 @@ class StructuredMessagePortMojomTraitsTest : public testing::Test {
 
 TEST_F(StructuredMessagePortMojomTraitsTest, StructuredMessageValues) {
   const std::string kData("text");
-  StructuredCloneMessageWireData wire_format_data(base::as_byte_span(kData));
-  Message input(std::move(wire_format_data),
+  StructuredCloneMessageData message_data;
+  message_data.owned_encoded_message =
+      std::vector<uint8_t>(kData.begin(), kData.end());
+  message_data.encoded_message = message_data.owned_encoded_message;
+  message_data.sender_agent_cluster_id = base::UnguessableToken::Create();
+
+  mojo::PendingRemote<blink::mojom::Blob> blob_remote;
+  std::ignore = blob_remote.InitWithNewPipeAndPassReceiver();
+  message_data.blobs.push_back(blink::mojom::SerializedBlob::New(
+      "uuid", "content_type", /*size=*/10, std::move(blob_remote)));
+
+  Message input(std::move(message_data),
                 mojom::SerializationFormat::kStructuredClone,
                 /*user_gesture=*/true, /*from_privileged_context=*/true);
   Message output;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<extensions::mojom::Message>(
       input, output));
 
-  EXPECT_EQ(input, output);
+  EXPECT_TRUE(input.EqualsForTesting(output));
   EXPECT_EQ(input.from_privileged_context(), output.from_privileged_context());
 }
 
 TEST_F(StructuredMessagePortMojomTraitsTest, MessageDataStructured) {
   const std::string kData("text");
-  StructuredCloneMessageWireData wire_format_data(base::as_byte_span(kData));
-  MessageData input = std::move(wire_format_data);
-  MessageData output;
+  StructuredCloneMessageData message_data;
+  message_data.owned_encoded_message =
+      std::vector<uint8_t>(kData.begin(), kData.end());
+  message_data.encoded_message = message_data.owned_encoded_message;
+  message_data.sender_agent_cluster_id = base::UnguessableToken::Create();
+
+  mojo::PendingRemote<blink::mojom::Blob> blob_remote;
+  std::ignore = blob_remote.InitWithNewPipeAndPassReceiver();
+  message_data.blobs.push_back(blink::mojom::SerializedBlob::New(
+      "uuid", "content_type", /*size=*/10, std::move(blob_remote)));
+
+  MessageData input_data = std::move(message_data);
+  MessageData output_data;
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<extensions::mojom::MessageData>(
-          input, output));
-  EXPECT_TRUE(std::holds_alternative<StructuredCloneMessageWireData>(output));
-  EXPECT_EQ(base::span(std::get<StructuredCloneMessageWireData>(input)),
-            base::span(std::get<StructuredCloneMessageWireData>(output)));
+          input_data, output_data));
+
+  // We can't compare `MessageData` directly, so wrap them in `Message` objects
+  // and use `Message::EqualsForTesting()` which handles blob comparison.
+  Message input(std::move(input_data),
+                mojom::SerializationFormat::kStructuredClone,
+                /*user_gesture=*/true, /*from_privileged_context=*/true);
+  Message output(std::move(output_data),
+                 mojom::SerializationFormat::kStructuredClone,
+                 /*user_gesture=*/true, /*from_privileged_context=*/true);
+
+  EXPECT_TRUE(input.EqualsForTesting(output));
 }
 
 }  // namespace extensions
