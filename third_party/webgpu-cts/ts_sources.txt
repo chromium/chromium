@@ -961,6 +961,7 @@ src/webgpu/shader/validation/statement/phony.spec.ts
 src/webgpu/shader/validation/statement/return.spec.ts
 src/webgpu/shader/validation/statement/statement_behavior.spec.ts
 src/webgpu/shader/validation/statement/switch.spec.ts
+src/webgpu/shader/validation/statement/swizzle_assignment.spec.ts
 src/webgpu/shader/validation/statement/while.spec.ts
 src/webgpu/shader/validation/types/alias.spec.ts
 src/webgpu/shader/validation/types/array.spec.ts
