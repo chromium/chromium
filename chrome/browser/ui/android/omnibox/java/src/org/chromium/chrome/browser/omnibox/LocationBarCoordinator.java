@@ -75,6 +75,7 @@ import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordin
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
@@ -620,11 +621,6 @@ public class LocationBarCoordinator
     @Override
     public void clearUrlBarCursorWithoutFocusAnimations() {
         mLocationBarMediator.clearUrlBarCursorWithoutFocusAnimations();
-    }
-
-    @Override
-    public void selectAll() {
-        mUrlCoordinator.selectAll();
     }
 
     @Override
@@ -1190,5 +1186,19 @@ public class LocationBarCoordinator
      */
     public void setUrlActionContainerVisibility(boolean shouldShow) {
         mLocationBarMediator.setUrlActionContainerVisibility(shouldShow);
+    }
+
+    /**
+     * Set the omnibox to have focus or not.
+     *
+     * <p>Updates passed AutocompleteInput instance so it correctly reflects the current page URL,
+     * title, classification, and focus time, bringing the Fusebox to focus with the supplied data.
+     * When null instance is passed the focus is cleared.
+     *
+     * @param input The AutocompleteInput object with all the details for the focus operation. If
+     *     null, the focus will be cleared.
+     */
+    public void setUrlBarFocus(@Nullable AutocompleteInput input) {
+        mLocationBarMediator.setUrlBarFocus(input);
     }
 }
