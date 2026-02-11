@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -123,6 +124,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POWER) DarkResumeController
   // Used for checking if HandleDarkResumeWakeLockCheckTimeout and
   // HandleDarkResumeHardTimeout run on the same sequence.
   SEQUENCE_CHECKER(dark_resume_tasks_sequence_checker_);
+
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_client_observation_{this};
 
   // This is invalidated in ClearDarkResumeState as a fail safe measure to clear
   // any lingering timer callbacks or wake lock observer callbacks. This is a

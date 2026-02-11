@@ -144,7 +144,7 @@ void PasswordAuthView::CreateAndConfigureTextfieldContainer() {
   auth_textfield_ = textfield_container->AddChildView(
       std::make_unique<AuthTextfield>(AuthTextfield::AuthType::kPassword));
 
-  auth_textfield_->AddObserver(this);
+  auth_textfield_observer_.Observe(auth_textfield_.get());
 
   auth_textfield_->SetPlaceholderText(
       l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_PASSWORD_PLACEHOLDER));
@@ -215,9 +215,7 @@ PasswordAuthView::PasswordAuthView(AuthPanelEventDispatcher* dispatcher,
   CreateAndConfigureSubmitButton();
 }
 
-PasswordAuthView::~PasswordAuthView() {
-  auth_textfield_->RemoveObserver(this);
-}
+PasswordAuthView::~PasswordAuthView() = default;
 
 AshAuthFactor PasswordAuthView::GetFactor() {
   return AshAuthFactor::kGaiaPassword;

@@ -124,6 +124,8 @@ class PasswordAuthView : public FactorAuthView,
 
   base::ScopedObservation<ImeController, ImeController::Observer>
       input_methods_observer_{this};
+  base::ScopedObservation<AuthTextfield, AuthTextfield::Observer>
+      auth_textfield_observer_{this};
 
   ui::ImageModel capslock_icon_highlighted_;
 

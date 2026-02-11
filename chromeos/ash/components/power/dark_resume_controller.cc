@@ -27,12 +27,11 @@ DarkResumeController::DarkResumeController(
     : wake_lock_provider_(std::move(wake_lock_provider)),
       dark_resume_hard_timeout_(kDefaultDarkResumeHardTimeout) {
   DCHECK(!dark_resume_hard_timeout_.is_zero());
-  chromeos::PowerManagerClient::Get()->AddObserver(this);
+  power_manager_client_observation_.Observe(
+      chromeos::PowerManagerClient::Get());
 }
 
-DarkResumeController::~DarkResumeController() {
-  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
-}
+DarkResumeController::~DarkResumeController() = default;
 
 void DarkResumeController::PowerManagerInitialized() {
   dark_resume_hard_timeout_ =

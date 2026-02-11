@@ -29,6 +29,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -239,12 +240,14 @@ void FixPermissions(const std::string_view path) {
 class DiskMountManagerImpl : public DiskMountManager,
                              public CrosDisksClient::Observer {
  public:
-  DiskMountManagerImpl() { cros_disks_client_->AddObserver(this); }
+  DiskMountManagerImpl() {
+    cros_disks_client_observation_.Observe(cros_disks_client_);
+  }
 
   DiskMountManagerImpl(const DiskMountManagerImpl&) = delete;
   DiskMountManagerImpl& operator=(const DiskMountManagerImpl&) = delete;
 
-  ~DiskMountManagerImpl() override { cros_disks_client_->RemoveObserver(this); }
+  ~DiskMountManagerImpl() override = default;
 
  private:
   using DiskMountManager::Observer;
@@ -1335,6 +1338,9 @@ class DiskMountManagerImpl : public DiskMountManager,
   std::vector<EnsureMountInfoRefreshedCallback> refresh_callbacks_;
 
   SuspendUnmountManager suspend_unmount_manager_{this};
+
+  base::ScopedObservation<CrosDisksClient, CrosDisksClient::Observer>
+      cros_disks_client_observation_{this};
 
   base::WeakPtrFactory<DiskMountManagerImpl> weak_ptr_factory_{this};
 };

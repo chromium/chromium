@@ -51,12 +51,10 @@ MessengerImpl::MessengerImpl(
     std::unique_ptr<ash::secure_channel::ClientChannel> channel)
     : channel_(std::move(channel)) {
   DCHECK(!channel_->is_disconnected());
-  channel_->AddObserver(this);
+  channel_observation_.Observe(channel_.get());
 }
 
-MessengerImpl::~MessengerImpl() {
-  channel_->RemoveObserver(this);
-}
+MessengerImpl::~MessengerImpl() = default;
 
 void MessengerImpl::AddObserver(MessengerObserver* observer) {
   observers_.AddObserver(observer);

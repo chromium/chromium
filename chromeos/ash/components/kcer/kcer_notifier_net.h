@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_KCER_KCER_NOTIFIER_NET_H_
 
 #include "base/callback_list.h"
+#include "base/scoped_observation.h"
 #include "net/cert/cert_database.h"
 
 namespace kcer::internal {
@@ -31,6 +32,9 @@ class KcerNotifierNet : public net::CertDatabase::Observer {
 
  private:
   base::RepeatingCallbackList<void()> observers_;
+
+  base::ScopedObservation<net::CertDatabase, net::CertDatabase::Observer>
+      cert_database_observation_{this};
 };
 
 }  // namespace kcer::internal

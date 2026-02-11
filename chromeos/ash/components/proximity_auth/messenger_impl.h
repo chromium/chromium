@@ -11,6 +11,7 @@
 #include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chromeos/ash/components/proximity_auth/messenger.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/client_channel.h"
@@ -99,6 +100,10 @@ class MessengerImpl : public Messenger,
   // The current message being sent or waiting on the remote device for a
   // response. Null if there is no message currently in this state.
   std::unique_ptr<PendingMessage> pending_message_;
+
+  base::ScopedObservation<ash::secure_channel::ClientChannel,
+                          ash::secure_channel::ClientChannel::Observer>
+      channel_observation_{this};
 
   base::WeakPtrFactory<MessengerImpl> weak_ptr_factory_{this};
 };

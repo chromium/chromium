@@ -10,12 +10,10 @@ namespace kcer::internal {
 
 KcerNotifierNet::KcerNotifierNet() = default;
 
-KcerNotifierNet::~KcerNotifierNet() {
-  net::CertDatabase::GetInstance()->RemoveObserver(this);
-}
+KcerNotifierNet::~KcerNotifierNet() = default;
 
 void KcerNotifierNet::Initialize() {
-  net::CertDatabase::GetInstance()->AddObserver(this);
+  cert_database_observation_.Observe(net::CertDatabase::GetInstance());
 }
 
 base::CallbackListSubscription KcerNotifierNet::AddObserver(

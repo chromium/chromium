@@ -291,9 +291,7 @@ KcerTokenImpl::KcerTokenImpl(Token token, HighLevelChapsClient* chaps_client)
       kcer_utils_(token, chaps_client) {
   CHECK(chaps_client_);
 }
-KcerTokenImpl::~KcerTokenImpl() {
-  net::CertDatabase::GetInstance()->RemoveObserver(this);
-}
+KcerTokenImpl::~KcerTokenImpl() = default;
 
 // Returns a weak pointer for the token. The pointer can be used to post tasks
 // for the token.
@@ -308,7 +306,8 @@ void KcerTokenImpl::InitializeWithoutNss(
     SessionChapsClient::SlotId pkcs11_slot_id) {
   pkcs_11_slot_id_ = pkcs11_slot_id;
   kcer_utils_.Initialize(pkcs_11_slot_id_);
-  net::CertDatabase::GetInstance()->AddObserver(this);
+
+  cert_database_observation_.Observe(net::CertDatabase::GetInstance());
   // This is supposed to be the first time the task queue is unblocked, no
   // other tasks should be already running.
   UnblockQueueProcessNextTask();
