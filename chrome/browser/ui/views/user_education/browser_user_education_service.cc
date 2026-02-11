@@ -1668,6 +1668,21 @@ void MaybeRegisterChromeFeaturePromos(
                                    "Triggered when a password is saved.")));
   }
 
+  // kIPHiOSTabGroupsDesktopFeature
+  if (MobilePromoOnDesktopTypeEnabled(
+          MobilePromoOnDesktopPromoType::kTabGroups)) {
+    registry.RegisterFeature(std::move(
+        FeaturePromoSpecification::CreateForCustomUi(
+            feature_engagement::kIPHiOSTabGroupsDesktopFeature,
+            kToolbarAvatarButtonElementId,
+            user_education::CreateCustomHelpBubbleViewFactoryCallback(
+                base::BindRepeating(
+                    &IOSPromoBubbleView::Create,
+                    desktop_to_mobile_promos::PromoType::kTabGroups)))
+            .SetMetadata(146, "bmcclure@google.com",
+                         "Triggered when Tab Groups are interacted with.")));
+  }
+
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_COMPOSE)

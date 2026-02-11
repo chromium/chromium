@@ -553,6 +553,8 @@ should be able to be added at any place in this file.
       summary="For switching accounts via the account particle disc."/>
   <variant name="_iOSTabGridSwipeRightForIncognito"
       summary="For iOSTabGridSwipeRightForIncognito feature"/>
+  <variant name="_iOSTabGroupsDesktop"
+      summary="For iOSTabGroupsDesktopFeature"/>
   <variant name="_iOSWelcomeBackFeature"
       summary="For iOSWelcomeBackFeature feature"/>
   <variant name="_KeyboardAccessoryAddressFilling"
