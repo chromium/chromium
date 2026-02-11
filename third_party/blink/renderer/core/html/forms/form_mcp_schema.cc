@@ -161,6 +161,9 @@ bool FormMCPSchema::ValidateParameterData(const String& name,
   if (IsMonth(*controls_for_name)) {
     return ValidateTextData(*controls_for_name, value);
   }
+  if (IsWeek(*controls_for_name)) {
+    return ValidateTextData(*controls_for_name, value);
+  }
   if (IsTime(*controls_for_name)) {
     return ValidateTextData(*controls_for_name, value);
   }
@@ -327,6 +330,8 @@ void FormMCPSchema::FillParameterData(const String& name,
     FillTextData(*controls_for_name, value);
   } else if (IsMonth(*controls_for_name)) {
     FillTextData(*controls_for_name, value);
+  } else if (IsWeek(*controls_for_name)) {
+    FillTextData(*controls_for_name, value);
   } else if (IsTime(*controls_for_name)) {
     FillTextData(*controls_for_name, value);
   } else if (IsNumber(*controls_for_name)) {
@@ -368,6 +373,9 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeParameterSchema(
   }
   if (IsMonth(*controls_for_name)) {
     return ComputeMonthParameterSchema(*controls_for_name, required);
+  }
+  if (IsWeek(*controls_for_name)) {
+    return ComputeWeekParameterSchema(*controls_for_name, required);
   }
   if (IsTime(*controls_for_name)) {
     return ComputeTimeParameterSchema(*controls_for_name, required);
@@ -454,6 +462,22 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeMonthParameterSchema(
   // The regex format is based on the valid time microsyntax in HTML:
   // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#months
   schema->SetString("format", "^[0-9]{4}-(0[1-9]|1[0-2])$");
+  AddTitle(*element, *schema);
+  AddDescription(*element, *schema);
+  required = element->IsRequired();
+  return schema;
+}
+
+std::unique_ptr<JSONObject> FormMCPSchema::ComputeWeekParameterSchema(
+    const ControlVector& controls_for_name,
+    bool& required) {
+  HTMLFormControlElement* element = controls_for_name.front().Get();
+  CHECK(element);
+  auto schema = std::make_unique<JSONObject>();
+  schema->SetString("type", "string");
+  // The regex format is based on the valid time microsyntax in HTML:
+  // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks
+  schema->SetString("format", "^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])$");
   AddTitle(*element, *schema);
   AddDescription(*element, *schema);
   required = element->IsRequired();
@@ -932,6 +956,11 @@ bool FormMCPSchema::IsMonth(HTMLFormControlElement& control) const {
   return input && input->FormControlType() == FormControlType::kInputMonth;
 }
 
+bool FormMCPSchema::IsWeek(HTMLFormControlElement& control) const {
+  auto* input = DynamicTo<HTMLInputElement>(control);
+  return input && input->FormControlType() == FormControlType::kInputWeek;
+}
+
 bool FormMCPSchema::IsTime(HTMLFormControlElement& control) const {
   auto* input = DynamicTo<HTMLInputElement>(control);
   return input && input->FormControlType() == FormControlType::kInputTime;
@@ -982,6 +1011,10 @@ bool FormMCPSchema::IsDatetimeLocal(
 
 bool FormMCPSchema::IsMonth(const ControlVector& controls_for_name) const {
   return controls_for_name.size() == 1u && IsMonth(*controls_for_name.front());
+}
+
+bool FormMCPSchema::IsWeek(const ControlVector& controls_for_name) const {
+  return controls_for_name.size() == 1u && IsWeek(*controls_for_name.front());
 }
 
 bool FormMCPSchema::IsTime(const ControlVector& controls_for_name) const {
