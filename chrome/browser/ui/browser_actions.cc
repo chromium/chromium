@@ -13,6 +13,8 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
@@ -656,7 +658,12 @@ void BrowserActions::InitializeBrowserActions() {
                    actions::ActionInvocationContext context) {
                   auto* controller =
                       tabs::VerticalTabStripStateController::From(bwi);
-                  controller->SetCollapsed(!controller->IsCollapsed());
+                  bool collapse = !controller->IsCollapsed();
+                  controller->SetCollapsed(collapse);
+                  base::RecordAction(base::UserMetricsAction(
+                      collapse
+                          ? "VerticalTabs_TabStrip_ButtonToggleCollapsed"
+                          : "VerticalTabs_TabStrip_ButtonToggleUncollapsed"));
                 },
                 bwi))
             .SetActionId(kActionToggleCollapseVertical)
