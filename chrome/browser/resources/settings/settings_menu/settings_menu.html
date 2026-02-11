@@ -59,7 +59,10 @@
         </a>
         <a role="menuitem" id="autofill" href="/autofill"
             on-click="onAutofillClick_"
-            class="cr-nav-menu-item">
+            class="cr-nav-menu-item"
+            hidden="[[!showAutofillMenuItem_(
+                enableYourSavedInfoSettingsPage_,
+                pageVisibility_.yourSavedInfo, pageVisibility_.autofill)]]">
           <cr-icon icon="settings:assignment"></cr-icon>
           $i18n{autofillPageTitle}
           <cr-ripple></cr-ripple>

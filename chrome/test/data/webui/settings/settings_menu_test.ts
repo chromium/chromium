@@ -186,13 +186,13 @@ suite('SettingsMenu', function() {
     await flushTasks();
 
     const entry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
-      'a[href=\'/autofill\']');
+        'a[href=\'/autofill\']');
     assertTrue(!!entry);
     assertTrue(isVisible(entry));
 
     entry.click();
-    const [histogramName, referrer] = await metricsBrowserProxy.whenCalled(
-        'recordAutofillSettingsReferrer');
+    const [histogramName, referrer] =
+        await metricsBrowserProxy.whenCalled('recordAutofillSettingsReferrer');
     assertEquals(
         'Autofill.AutofillAndPasswordsSettingsPage.VisitReferrer',
         histogramName);
@@ -226,5 +226,62 @@ suite('SettingsMenu', function() {
     assertEquals('/autofill', selector.selected.toString());
     assertEquals(
         routes.YOUR_SAVED_INFO, Router.getInstance().getCurrentRoute());
+  });
+});
+
+suite('SettingsMenuAutofill', () => {
+  let settingsMenu: SettingsMenuElement;
+
+  function createSettingsMenu() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    settingsMenu = document.createElement('settings-menu');
+    document.body.appendChild(settingsMenu);
+    flush();
+  }
+
+  test('Update yourSavedInfo visibility', async () => {
+    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: true});
+    resetRouterForTesting();
+    createSettingsMenu();
+    await flushTasks();
+
+    const autofillEntry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+        'a[href=\'/autofill\']');
+    assertTrue(!!autofillEntry);
+    assertTrue(isVisible(autofillEntry));
+
+    // Hide the your saved info page.
+    resetPageVisibilityForTesting({
+      yourSavedInfo: false,
+    });
+    createSettingsMenu();
+    const newAutofillEntry =
+        settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+            'a[href=\'/autofill\']');
+    assertTrue(!!newAutofillEntry);
+    assertFalse(isVisible(newAutofillEntry));
+  });
+
+  test('Update autofill visibility', async () => {
+    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: false});
+    resetRouterForTesting();
+    createSettingsMenu();
+    await flushTasks();
+
+    const autofillEntry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+        'a[href=\'/autofill\']');
+    assertTrue(!!autofillEntry);
+    assertTrue(isVisible(autofillEntry));
+
+    // Hide the autofill page.
+    resetPageVisibilityForTesting({
+      autofill: false,
+    });
+    createSettingsMenu();
+    const newAutofillEntry =
+        settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+            'a[href=\'/autofill\']');
+    assertTrue(!!newAutofillEntry);
+    assertFalse(isVisible(newAutofillEntry));
   });
 });

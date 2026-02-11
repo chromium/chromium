@@ -90,6 +90,14 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         (!this.pageVisibility_ || this.pageVisibility_.ai !== false);
   }
 
+  private showAutofillMenuItem_(): boolean {
+    const showYourSavedInfo = this.enableYourSavedInfoSettingsPage_ &&
+        this.pageVisibility_?.yourSavedInfo !== false;
+    const showAutofill = !this.enableYourSavedInfoSettingsPage_ &&
+        this.pageVisibility_?.autofill !== false;
+    return showYourSavedInfo || showAutofill;
+  }
+
   override currentRouteChanged(newRoute: Route) {
     // Focus the initially selected path.
     const anchors = this.shadowRoot!.querySelectorAll('a');
@@ -154,12 +162,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         'Autofill.AutofillAndPasswordsSettingsPage.VisitReferrer';
     this.metricsBrowserProxy_.recordAutofillSettingsReferrer(
         metricName, AutofillSettingsReferrer.SETTINGS_MENU);
-  }
-
-  private onYourSavedInfoClick_() {
-    this.metricsBrowserProxy_.recordAutofillSettingsReferrer(
-        'Autofill.YourSavedInfoSettingsPage.VisitReferrer',
-        AutofillSettingsReferrer.SETTINGS_MENU);
   }
 
   private onAiPageClick_() {
