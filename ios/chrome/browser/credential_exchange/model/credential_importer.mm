@@ -22,6 +22,7 @@
 #import "components/webauthn/core/browser/import/passkey_importer.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
+#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_password.h"
 #import "ios/chrome/browser/credential_exchange/model/import_stats.h"
@@ -103,7 +104,7 @@ std::string DataToString(NSData* data) {
 #pragma mark - Public
 
 - (void)startImportingCredentialsWithTrustedVaultKeys:
-    (NSArray<NSData*>*)trustedVaultKeys {
+    (webauthn::SharedKeyList)trustedVaultKeys {
   __weak __typeof(self) weakSelf = self;
   _allCredentialTypesProcessedClosure =
       base::BarrierClosure(kSupportedCredentialTypesCount, base::BindOnce(^{
@@ -111,7 +112,8 @@ std::string DataToString(NSData* data) {
                            }));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE}, base::BindOnce(^{
-        return [weakSelf translateCredentialExchangePasskeys:trustedVaultKeys];
+        return [weakSelf
+            translateCredentialExchangePasskeys:std::move(trustedVaultKeys)];
       }),
       base::BindOnce(
           ^(std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys) {
@@ -238,15 +240,15 @@ std::string DataToString(NSData* data) {
 
 // Converts `_passkeys` into structures used by `_passkeyImporter`.
 - (std::vector<sync_pb::WebauthnCredentialSpecifics>)
-    translateCredentialExchangePasskeys:(NSArray<NSData*>*)trustedVaultKeys {
+    translateCredentialExchangePasskeys:
+        (webauthn::SharedKeyList)trustedVaultKeys {
   if (_passkeys.count == 0) {
     return {};
   }
 
   // `hw_protected` security domain currently supports a single key.
-  CHECK(trustedVaultKeys.count == 1);
-  base::span<const uint8_t> trustedVaultKey =
-      base::apple::NSDataToSpan(trustedVaultKeys[0]);
+  CHECK_EQ(trustedVaultKeys.size(), 1u);
+  base::span<const uint8_t> trustedVaultKey = std::move(trustedVaultKeys[0]);
   int64_t timeNow = base::Time::Now().InMillisecondsSinceUnixEpoch();
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;
 

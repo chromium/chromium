@@ -14,31 +14,16 @@
 
 typedef void (^CheckEnrolledCompletionBlock)(BOOL is_enrolled, NSError* error);
 typedef void (^ErrorCompletionBlock)(NSError* error);
-typedef void (^FetchKeysCompletionBlock)(
-    const webauthn::SharedKeyList& key_list,
-    NSError* error);
 
 namespace {
 
-// Returns an array of trusted vault keys.
-NSArray<NSData*>* GetTrustedVaultKeys(const webauthn::SharedKeyList& keys) {
-  NSMutableArray<NSData*>* trustedVaultKeys =
-      [NSMutableArray arrayWithCapacity:keys.size()];
-  for (const webauthn::SharedKey& key : keys) {
-    [trustedVaultKeys addObject:[NSData dataWithBytes:key.data()
-                                               length:key.size()]];
-  }
-  return trustedVaultKeys;
-}
-
 // Returns whether there's at least one valid key in the keys array.
-bool ContainsValidKey(const webauthn::SharedKeyList keys,
+bool ContainsValidKey(const webauthn::SharedKeyList& keys,
                       id<Credential> credential) {
-  for (NSData* trustedVaultKey in GetTrustedVaultKeys(keys)) {
+  for (const webauthn::SharedKey& key : keys) {
     sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
     if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-            base::ToVector(base::apple::NSDataToSpan(trustedVaultKey)),
-            PasskeyFromCredential(credential), &decrypted)) {
+            key, PasskeyFromCredential(credential), &decrypted)) {
       return true;
     }
   }
@@ -134,7 +119,7 @@ bool ContainsValidKey(const webauthn::SharedKeyList keys,
   if (isEnrolled) {
     if (error != nil) {
       // Skip fetching keys if there was an error.
-      fetchTrustedVaultKeysCompletion(/*trustedVaultKeys=*/nil, error);
+      fetchTrustedVaultKeysCompletion(/*trustedVaultKeys=*/{}, error);
       return;
     }
 
@@ -195,19 +180,19 @@ bool ContainsValidKey(const webauthn::SharedKeyList keys,
                    error:(NSError*)error {
   if (error != nil) {
     // Skip fetching keys if there was an error.
-    fetchTrustedVaultKeysCompletion(/*trustedVaultKeys=*/nil, error);
+    fetchTrustedVaultKeysCompletion(/*trustedVaultKeys=*/{}, error);
     return;
   }
 
   __weak __typeof(self) weakSelf = self;
   auto fetchKeysCompletion =
-      ^(const webauthn::SharedKeyList& key_list, NSError* fetchKeysError) {
+      ^(webauthn::SharedKeyList key_list, NSError* fetchKeysError) {
         [weakSelf onKeysFetchedForGaia:gaia
                             credential:credential
                     canMarkKeysAsStale:canMarkKeysAsStale
                                purpose:purpose
                             completion:fetchTrustedVaultKeysCompletion
-                               keyList:key_list
+                               keyList:std::move(key_list)
                      canReauthenticate:canReauthenticate
                                  error:fetchKeysError];
       };
@@ -218,12 +203,12 @@ bool ContainsValidKey(const webauthn::SharedKeyList keys,
 // gaia ID and calls the completion block.
 - (void)fetchKeysForGaia:(NSString*)gaia
                  purpose:(webauthn::ReauthenticatePurpose)purpose
-              completion:(FetchKeysCompletionBlock)completion {
+              completion:(FetchTrustedVaultKeysCompletionBlock)completion {
   _passkeyKeychainProvider->FetchKeys(
       gaia, purpose,
       base::BindOnce(
-          ^(const webauthn::SharedKeyList& key_list, NSError* error) {
-            completion(key_list, error);
+          ^(webauthn::SharedKeyList trustedVaultKeys, NSError* error) {
+            completion(std::move(trustedVaultKeys), error);
           }));
 }
 
@@ -235,7 +220,7 @@ bool ContainsValidKey(const webauthn::SharedKeyList keys,
           canMarkKeysAsStale:(BOOL)canMarkKeysAsStale
                      purpose:(webauthn::ReauthenticatePurpose)purpose
                   completion:(FetchTrustedVaultKeysCompletionBlock)completion
-                     keyList:(const webauthn::SharedKeyList&)keyList
+                     keyList:(webauthn::SharedKeyList)keyList
            canReauthenticate:(BOOL)canReauthenticate
                        error:(NSError*)error {
   __weak __typeof(self) weakSelf = self;
@@ -258,18 +243,16 @@ bool ContainsValidKey(const webauthn::SharedKeyList keys,
       return;
     }
 
-    const webauthn::SharedKeyList keys = std::move(keyList);
     // On success, check degraded recoverability.
     auto degradedRecoverabilityCompletion = ^(
         NSError* degradedRecoverabilityError) {
       if (degradedRecoverabilityError) {
-        completion(nil, degradedRecoverabilityError);
+        completion(/*trustedVaultKeys=*/{}, degradedRecoverabilityError);
       } else {
-        [weakSelf
-            performUserVerificationIfNeededAndCallCompletionWithKeys:std::move(
-                                                                         keys)
-                                                          completion:
-                                                              completion];
+        [weakSelf performUserVerificationIfNeededAndCallCompletionWithKeys:
+                      std::move(keyList)
+                                                                completion:
+                                                                    completion];
       }
     };
     [self checkDegradedRecoverabilityForGaia:gaia
@@ -290,7 +273,7 @@ bool ContainsValidKey(const webauthn::SharedKeyList keys,
                                              completion:completion];
                             }];
     } else {
-      completion(/*trustedVaultKeys=*/nil, error);
+      completion(/*trustedVaultKeys=*/{}, error);
     }
   }
 }
@@ -306,23 +289,22 @@ bool ContainsValidKey(const webauthn::SharedKeyList keys,
   __weak __typeof(self) weakSelf = self;
   _passkeyKeychainProvider->Reauthenticate(
       gaia, navigationController, _navigationItemTitleView, purpose,
-      base::BindOnce(
-          ^(const webauthn::SharedKeyList& key_list, NSError* error) {
-            // If we got nonempty keys, that means the reauthentication was a
-            // success. Report this back to the delegate.
-            if (!key_list.empty()) {
-              [weakSelf.delegate providerDidCompleteReauthentication];
-            }
+      base::BindOnce(^(webauthn::SharedKeyList key_list, NSError* error) {
+        // If we got nonempty keys, that means the reauthentication was a
+        // success. Report this back to the delegate.
+        if (!key_list.empty()) {
+          [weakSelf.delegate providerDidCompleteReauthentication];
+        }
 
-            [weakSelf onKeysFetchedForGaia:gaia
-                                credential:credential
-                        canMarkKeysAsStale:canMarkKeysAsStale
-                                   purpose:purpose
-                                completion:completion
-                                   keyList:key_list
-                         canReauthenticate:NO
-                                     error:error];
-          }));
+        [weakSelf onKeysFetchedForGaia:gaia
+                            credential:credential
+                    canMarkKeysAsStale:canMarkKeysAsStale
+                               purpose:purpose
+                            completion:completion
+                               keyList:std::move(key_list)
+                     canReauthenticate:NO
+                                 error:error];
+      }));
 }
 
 // Checks if the account associated with the provided gaia ID is in degraded
@@ -369,12 +351,12 @@ bool ContainsValidKey(const webauthn::SharedKeyList keys,
 // completion block.
 - (void)
     performUserVerificationIfNeededAndCallCompletionWithKeys:
-        (const webauthn::SharedKeyList)keys
+        (webauthn::SharedKeyList)keys
                                                   completion:
                                                       (FetchTrustedVaultKeysCompletionBlock)
                                                           completion {
   [self.delegate performUserVerificationIfNeeded:^{
-    completion(GetTrustedVaultKeys(std::move(keys)), /*error=*/nil);
+    completion(std::move(keys), /*error=*/nil);
   }];
 }
 

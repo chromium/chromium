@@ -91,7 +91,7 @@ NSData* MakeAuthenticatorDataForAssertion(NSString* rp_id,
 }
 
 // Generates the signature during the passkey assertion process by decrypting
-// the passkey using the security domain secret and then using the decrypted
+// the passkey using the trusted vault key and then using the decrypted
 // passkey to call passkey_model_utils's GenerateEcSignature function.
 NSData* GenerateSignature(NSData* authenticator_data,
                           NSData* client_data_hash,
@@ -145,12 +145,12 @@ void SaveToIdentityStore(id<Credential> credential,
 
 std::optional<sync_pb::WebauthnCredentialSpecifics_Encrypted>
 DecryptCredentialSecrets(id<Credential> credential,
-                         NSArray<NSData*>* security_domain_secrets) {
-  if ([security_domain_secrets count] == 0) {
+                         webauthn::SharedKeyList trusted_vault_keys) {
+  if (trusted_vault_keys.empty()) {
     return std::nullopt;
   }
 
-  // Decrypt the private key using the security domain secret.
+  // Decrypt the private key using the trusted vault key.
   sync_pb::WebauthnCredentialSpecifics credential_specifics;
   if ([credential.privateKey length] > 0) {
     credential_specifics.set_private_key(credential.privateKey.bytes,
@@ -162,10 +162,7 @@ DecryptCredentialSecrets(id<Credential> credential,
     return std::nullopt;
   }
 
-  for (NSData* security_domain_secret in security_domain_secrets) {
-    std::vector<uint8_t> trusted_vault_key;
-    Append(trusted_vault_key, security_domain_secret);
-
+  for (const webauthn::SharedKey& trusted_vault_key : trusted_vault_keys) {
     sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
     if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
             trusted_vault_key, credential_specifics, &credential_secrets)) {
@@ -182,15 +179,12 @@ PasskeyCreationOutput PerformPasskeyCreation(
     NSString* user_name,
     NSData* user_handle,
     NSString* gaia,
-    NSArray<NSData*>* security_domain_secrets,
+    webauthn::SharedKeyList trusted_vault_keys,
     NSArray<NSData*>* prf_inputs,
     bool did_complete_uv) {
-  if ([security_domain_secrets count] == 0) {
+  if (trusted_vault_keys.empty()) {
     return {};
   }
-
-  std::vector<uint8_t> trusted_vault_key;
-  Append(trusted_vault_key, security_domain_secrets[0]);
 
   // Convert input arguments to std equivalents for use in functions below.
   std::vector<uint8_t> user_id;
@@ -208,7 +202,7 @@ PasskeyCreationOutput PerformPasskeyCreation(
           rp_id_str,
           webauthn::PasskeyModel::UserEntity(user_id, user_name_str,
                                              user_name_str),
-          trusted_vault_key, /*trusted_vault_key_version=*/0,
+          std::move(trusted_vault_keys[0]), /*trusted_vault_key_version=*/0,
           extension_input_data, &extension_output_data);
 
   base::span<const uint8_t> cred_id =
@@ -239,10 +233,10 @@ PasskeyAssertionOutput PerformPasskeyAssertion(
     id<Credential> credential,
     NSData* client_data_hash,
     NSArray<NSData*>* allowed_credentials,
-    NSArray<NSData*>* security_domain_secrets,
+    webauthn::SharedKeyList trusted_vault_keys,
     NSArray<NSData*>* prf_inputs,
     bool did_complete_uv) {
-  if ([security_domain_secrets count] == 0) {
+  if (trusted_vault_keys.empty()) {
     return {};
   }
 
@@ -255,7 +249,7 @@ PasskeyAssertionOutput PerformPasskeyAssertion(
 
   std::optional<sync_pb::WebauthnCredentialSpecifics_Encrypted>
       credential_secrets =
-          DecryptCredentialSecrets(credential, security_domain_secrets);
+          DecryptCredentialSecrets(credential, std::move(trusted_vault_keys));
   if (!credential_secrets) {
     return {};
   }

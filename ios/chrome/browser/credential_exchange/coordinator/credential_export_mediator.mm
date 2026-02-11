@@ -11,6 +11,7 @@
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/sync/service/sync_service.h"
 #import "components/webauthn/core/browser/passkey_model.h"
+#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exporter.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_group_identifier.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -124,26 +125,27 @@ const CGFloat kMinFaviconSize = 16.0;
   }
 
   if (passkeysToExport.empty()) {
-    [self startExportWithTrustedVaultKeys:nil
+    [self startExportWithTrustedVaultKeys:{}
                                 passwords:std::move(passwordsToExport)
                                  passkeys:std::move(passkeysToExport)];
   } else {
     __weak __typeof(self) weakSelf = self;
 
-    base::OnceCallback<void(NSArray<NSData*>*)> fetchSecretsCallback =
+    base::OnceCallback<void(webauthn::SharedKeyList)> fetchSecretsCallback =
         base::BindOnce(
             [](__weak CredentialExportMediator* mediator,
                std::vector<password_manager::CredentialUIEntry> passwords,
                std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
-               NSArray<NSData*>* trustedVaultKeys) {
-              [mediator startExportWithTrustedVaultKeys:trustedVaultKeys
-                                              passwords:std::move(passwords)
-                                               passkeys:std::move(passkeys)];
+               webauthn::SharedKeyList trustedVaultKeys) {
+              [mediator
+                  startExportWithTrustedVaultKeys:std::move(trustedVaultKeys)
+                                        passwords:std::move(passwords)
+                                         passkeys:std::move(passkeys)];
             },
             weakSelf, std::move(passwordsToExport),
             std::move(passkeysToExport));
 
-    void (^completionBlock)(NSArray<NSData*>*) =
+    void (^completionBlock)(webauthn::SharedKeyList) =
         base::CallbackToBlock(std::move(fetchSecretsCallback));
 
     [self.delegate fetchTrustedVaultKeysWithCompletion:completionBlock];
@@ -188,7 +190,7 @@ const CGFloat kMinFaviconSize = 16.0;
 #pragma mark - Private
 
 - (void)
-    startExportWithTrustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys
+    startExportWithTrustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys
                           passwords:
                               (std::vector<password_manager::CredentialUIEntry>)
                                   passwords
@@ -199,7 +201,7 @@ const CGFloat kMinFaviconSize = 16.0;
     _credentialExporter = [[CredentialExporter alloc] initWithWindow:_window];
     [_credentialExporter startExportWithPasswords:std::move(passwords)
                                          passkeys:std::move(passkeys)
-                                 trustedVaultKeys:trustedVaultKeys
+                                 trustedVaultKeys:std::move(trustedVaultKeys)
                                         userEmail:_userEmail];
   }
 }

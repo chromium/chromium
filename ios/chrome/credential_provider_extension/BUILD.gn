@@ -145,6 +145,7 @@ source_set("passkey_util") {
     "//base",
     "//components/sync/protocol",
     "//components/webauthn/core/browser:passkey_model",
+    "//components/webauthn/ios:passkey_types",
     "//device/fido",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
@@ -200,6 +201,7 @@ source_set("passkey_request_details") {
     ":passkey_util_swift",
     "//base",
     "//components/webauthn/core/browser:passkey_model",
+    "//components/webauthn/ios:passkey_types",
     "//ios/chrome/common/credential_provider:ui",
     "//ios/chrome/credential_provider_extension/ui:feature_flags",
   ]

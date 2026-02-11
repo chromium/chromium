@@ -14,7 +14,7 @@
 @protocol Credential;
 
 typedef void (^FetchTrustedVaultKeysCompletionBlock)(
-    NSArray<NSData*>* trustedVaultKeys,
+    webauthn::SharedKeyList trustedVaultKeys,
     NSError* error);
 
 // Delegate for the PasskeyKeychainProviderBridge.

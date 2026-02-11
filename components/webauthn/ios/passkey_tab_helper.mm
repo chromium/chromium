@@ -652,11 +652,10 @@ std::optional<bool> PasskeyTabHelper::ShouldPerformUserVerification(
 }
 
 // TODO(crbug.com/460485614): Handle error here or in the passkey client.
-void PasskeyTabHelper::CompletePasskeyCreation(
-    RegistrationRequestParams params,
-    std::string client_data_json,
-    const SharedKeyList& shared_key_list,
-    NSError* error) {
+void PasskeyTabHelper::CompletePasskeyCreation(RegistrationRequestParams params,
+                                               std::string client_data_json,
+                                               SharedKeyList shared_key_list,
+                                               NSError* error) {
   web::WebFrame* web_frame = GetWebFrame(params.FrameId());
   if (!web_frame) {
     return;
@@ -728,7 +727,7 @@ void PasskeyTabHelper::CompletePasskeyAssertion(
     AssertionRequestParams params,
     sync_pb::WebauthnCredentialSpecifics passkey,
     std::string client_data_json,
-    const SharedKeyList& shared_key_list,
+    SharedKeyList shared_key_list,
     NSError* error) {
   web::WebFrame* web_frame = GetWebFrame(params.FrameId());
   if (!web_frame) {

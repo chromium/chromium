@@ -8,6 +8,8 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <Foundation/Foundation.h>
 
+#import "components/webauthn/ios/passkey_types.h"
+
 @protocol Credential;
 
 // This class represents a passkey credential request (attestation or
@@ -27,13 +29,13 @@
 // Performs passkey creation and returns the new credential.
 - (ASPasskeyRegistrationCredential*)
            createPasskeyForGaia:(NSString*)gaia
-               trustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys
+               trustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys
     didCompleteUserVerification:(BOOL)didCompleteUserVerification;
 
 // Performs passkey assertion and returns the assertion response.
 - (ASPasskeyAssertionCredential*)
         assertPasskeyCredential:(id<Credential>)credential
-               trustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys
+               trustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys
     didCompleteUserVerification:(BOOL)didCompleteUserVerification;
 
 // Returns whether the list of credentials contains a password that has eTLD+1

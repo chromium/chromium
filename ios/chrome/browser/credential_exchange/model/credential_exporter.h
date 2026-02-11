@@ -12,6 +12,7 @@
 
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "components/webauthn/ios/passkey_types.h"
 
 // Handles exporting credentials using the Credential Exchange format
 // (https://fidoalliance.org/specifications-credential-exchange-specifications).
@@ -29,7 +30,7 @@
                         passkeys:
                             (std::vector<sync_pb::WebauthnCredentialSpecifics>)
                                 passkeys
-                trustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys
+                trustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys
                        userEmail:(NSString*)userEmail API_AVAILABLE(ios(26.0));
 
 @end

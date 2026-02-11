@@ -10,6 +10,7 @@
 #import <memory>
 #import <string>
 
+#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_mutator.h"
 
 namespace password_manager {
@@ -90,7 +91,7 @@ class PrefService;
 // `trustedVaultKeys` are needed to encrypt passkeys if there are any to be
 // imported.
 - (void)startImportingCredentialsWithTrustedVaultKeys:
-    (NSArray<NSData*>*)trustedVaultKeys;
+    (webauthn::SharedKeyList)trustedVaultKeys;
 
 @end
 

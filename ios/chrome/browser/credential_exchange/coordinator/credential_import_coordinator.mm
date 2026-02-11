@@ -202,7 +202,7 @@
       // If no passkeys are being imported, there is no point in fetching the
       // trusted vault keys Proceed to start the importing process.
       if (!_mediator.importingPasskeys) {
-        [_mediator startImportingCredentialsWithTrustedVaultKeys:nil];
+        [_mediator startImportingCredentialsWithTrustedVaultKeys:{}];
         break;
       }
 
@@ -220,16 +220,18 @@
           IdentityManagerFactory::GetForProfile(self.profile)
               ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
       __weak __typeof(self) weakSelf = self;
+      auto completion_block = base::CallbackToBlock(base::BindOnce(
+          [](__weak __typeof(self) weakSelf,
+             webauthn::SharedKeyList trustedVaultKeys, NSError* error) {
+            [weakSelf onTrustedVaultKeysFetched:std::move(trustedVaultKeys)
+                                          error:error];
+          },
+          weakSelf));
       [_passkeyKeychainProviderBridge
           fetchTrustedVaultKeysForGaia:account.gaia.ToNSString()
                             credential:nil
                                purpose:webauthn::ReauthenticatePurpose::kEncrypt
-                            completion:^(NSArray<NSData*>* trustedVaultKeys,
-                                         NSError* error) {
-                              [weakSelf
-                                  onTrustedVaultKeysFetched:trustedVaultKeys
-                                                      error:error];
-                            }];
+                            completion:completion_block];
       break;
     }
     case CredentialImportStage::kImporting:
@@ -329,19 +331,20 @@
 // Called when fetching trusted vault keys for passkeys finishes. If there are
 // no unexpected errors and the keys are present, informs the mediator to start
 // importing credentials.
-- (void)onTrustedVaultKeysFetched:(NSArray<NSData*>*)trustedVaultKeys
+- (void)onTrustedVaultKeysFetched:(webauthn::SharedKeyList)trustedVaultKeys
                             error:(NSError*)error {
   // First, dismiss welcome screens if there are any presented.
   if (_viewController.presentedViewController) {
     __weak __typeof(self) weakSelf = self;
     [self dismissPasskeyWelcomeScreenWithCompletion:^{
-      [weakSelf onTrustedVaultKeysFetched:trustedVaultKeys error:error];
+      [weakSelf onTrustedVaultKeysFetched:std::move(trustedVaultKeys)
+                                    error:error];
     }];
     return;
   }
 
   // Display an alert if there is a real error (not just user cancellation).
-  if (trustedVaultKeys.count == 0 && error &&
+  if (trustedVaultKeys.empty() && error &&
       error.code != webauthn::kErrorUserDismissedGPMPinFlow) {
     NSString* title =
         l10n_util::GetNSString(IDS_IOS_CREDENTIAL_EXCHANGE_GENERIC_ERROR_TITLE);
@@ -351,8 +354,10 @@
     return;
   }
 
-  if (trustedVaultKeys.count > 0) {
-    [_mediator startImportingCredentialsWithTrustedVaultKeys:trustedVaultKeys];
+  if (!trustedVaultKeys.empty()) {
+    [_mediator
+        startImportingCredentialsWithTrustedVaultKeys:std::move(
+                                                          trustedVaultKeys)];
   }
 }
 

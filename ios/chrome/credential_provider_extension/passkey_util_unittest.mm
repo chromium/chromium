@@ -41,13 +41,13 @@ NSData* ClientDataHash() {
   return Sha256(StringToData("ClientDataHash"));
 }
 
-NSArray<NSData*>* TrustedVaultKeys() {
-  std::vector<uint8_t> sds;
-  base::HexStringToBytes(
-      "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF", &sds);
-  return [NSArray arrayWithObjects:[NSData dataWithBytes:sds.data()
-                                                  length:sds.size()],
-                                   nil];
+std::vector<std::vector<uint8_t>> TrustedVaultKeys() {
+  const std::vector<char> key_values = {
+      '\x1f', '\xfa', '\x97', '\x98', '\xdf', '\n',   '\xc7', '\xe4',
+      '\xf6', 'G',    '\xd5', 'm',    'C',    '\xa2', 'P',    '\xe0',
+      '\xa2', 'E',    '\x90', '\xb2', '\x86', '\xbf', '\xfc', 'E',
+      '\e',   'N',    '\x15', '\xea', 'G',    '\x9b', '\x9b', '\xc8'};
+  return {std::vector<uint8_t>(key_values.begin(), key_values.end())};
 }
 
 NSArray<NSData*>* PRFInputs() {
@@ -59,10 +59,6 @@ NSArray<NSData*>* PRFInputs() {
 }
 
 ArchivableCredential* TestPasskeyCredential() {
-  std::vector<uint8_t> trusted_vault_key;
-  NSArray<NSData*>* trusted_vault_keys = TrustedVaultKeys();
-  Append(trusted_vault_key, trusted_vault_keys[0]);
-
   std::vector<uint8_t> user_id;
   Append(user_id, StringToData("userId"));
   std::string rp_id_str("rpId");
@@ -75,7 +71,7 @@ ArchivableCredential* TestPasskeyCredential() {
               rp_id_str,
               webauthn::PasskeyModel::UserEntity(user_id, user_name_str,
                                                  user_name_str),
-              trusted_vault_key,
+              TrustedVaultKeys()[0],
               /*trusted_vault_key_version=*/0, /*extension_input_data=*/{},
               /*extension_output_data=*/nullptr);
 

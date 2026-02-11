@@ -110,11 +110,12 @@ bool ImportBlockedByPolicy(const PrefService* pref_service,
 #pragma mark - Public
 
 - (void)startImportingCredentialsWithTrustedVaultKeys:
-    (NSArray<NSData*>*)trustedVaultKeys {
+    (webauthn::SharedKeyList)trustedVaultKeys {
   self.importStage = CredentialImportStage::kImporting;
   [_consumer transitionToImportStage:self.importStage];
   [_credentialImporter
-      startImportingCredentialsWithTrustedVaultKeys:trustedVaultKeys];
+      startImportingCredentialsWithTrustedVaultKeys:std::move(
+                                                        trustedVaultKeys)];
 }
 
 #pragma mark - CredentialImporterDelegate

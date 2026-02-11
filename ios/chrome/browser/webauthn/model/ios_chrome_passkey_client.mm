@@ -35,22 +35,6 @@
 #import "ios/chrome/browser/credential_provider/model/credential_provider_browser_agent.h"
 #endif
 
-namespace {
-
-// Returns a list of shared keys from the trusted vault keys.
-// TODO(crbug.com/460485614): Clean up FetchTrustedVaultKeysCompletionBlock.
-webauthn::SharedKeyList SharedKeyListFromTrustedVaultKeys(
-    NSArray<NSData*>* trusted_vault_keys) {
-  webauthn::SharedKeyList key_list;
-  for (NSData* data in trusted_vault_keys) {
-    base::span<const uint8_t> data_span = base::apple::NSDataToSpan(data);
-    key_list.emplace_back(data_span.begin(), data_span.end());
-  }
-  return key_list;
-}
-
-}  // namespace
-
 // Helper class to act as a delegate for the PasskeyKeychainProviderBridge.
 @interface IOSChromePasskeyClientBridgeDelegate
     : NSObject <PasskeyKeychainProviderBridgeDelegate>
@@ -148,9 +132,8 @@ void IOSChromePasskeyClient::FetchKeys(webauthn::ReauthenticatePurpose purpose,
   auto completion_block = base::CallbackToBlock(base::BindOnce(
       [](id<IOSPasskeyClientCommands> handler,
          webauthn::KeysFetchedCallback inner_callback,
-         NSArray<NSData*>* trusted_vault_keys, NSError* error) {
-        std::move(inner_callback)
-            .Run(SharedKeyListFromTrustedVaultKeys(trusted_vault_keys), error);
+         webauthn::SharedKeyList trusted_vault_keys, NSError* error) {
+        std::move(inner_callback).Run(std::move(trusted_vault_keys), error);
         [handler dismissPasskeyWelcomeScreen];
       },
       command_handler_, std::move(callback)));

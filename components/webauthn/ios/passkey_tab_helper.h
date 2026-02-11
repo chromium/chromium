@@ -13,6 +13,7 @@
 #import "components/webauthn/core/browser/remote_validation.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
 #import "components/webauthn/ios/passkey_request_params.h"
+#import "components/webauthn/ios/passkey_types.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -142,7 +143,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // PasskeyJavaScriptFeature.
   void CompletePasskeyCreation(RegistrationRequestParams params,
                                std::string client_data_json,
-                               const SharedKeyList& shared_key_list,
+                               SharedKeyList shared_key_list,
                                NSError* error);
 
   // Callback which uses the provided passkey for assertion given the provided
@@ -151,7 +152,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
   void CompletePasskeyAssertion(AssertionRequestParams params,
                                 sync_pb::WebauthnCredentialSpecifics passkey,
                                 std::string client_data_json,
-                                const SharedKeyList& shared_key_list,
+                                SharedKeyList shared_key_list,
                                 NSError* error);
 
   // Starts remote validation for the given origin and RP ID. If validation

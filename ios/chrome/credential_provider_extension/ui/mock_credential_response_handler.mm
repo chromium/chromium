@@ -9,13 +9,13 @@
 
 namespace {
 
-NSArray<NSData*>* TrustedVaultKeys() {
-  std::vector<uint8_t> sds;
-  base::HexStringToBytes(
-      "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF", &sds);
-  return [NSArray arrayWithObjects:[NSData dataWithBytes:sds.data()
-                                                  length:sds.size()],
-                                   nil];
+std::vector<std::vector<uint8_t>> TrustedVaultKeys() {
+  const std::vector<char> key_values = {
+      '\x1f', '\xfa', '\x97', '\x98', '\xdf', '\n',   '\xc7', '\xe4',
+      '\xf6', 'G',    '\xd5', 'm',    'C',    '\xa2', 'P',    '\xe0',
+      '\xa2', 'E',    '\x90', '\xb2', '\x86', '\xbf', '\xfc', 'E',
+      '\e',   'N',    '\x15', '\xea', 'G',    '\x9b', '\x9b', '\xc8'};
+  return {std::vector<uint8_t>(key_values.begin(), key_values.end())};
 }
 
 }  // namespace

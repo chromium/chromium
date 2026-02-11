@@ -47,8 +47,7 @@ using SharedKey = std::vector<uint8_t>;
 using SharedKeyList = std::vector<SharedKey>;
 
 // Callback to be called once keys are fetched.
-using KeysFetchedCallback =
-    base::OnceCallback<void(const SharedKeyList&, NSError*)>;
+using KeysFetchedCallback = base::OnceCallback<void(SharedKeyList, NSError*)>;
 
 }  // namespace webauthn
 

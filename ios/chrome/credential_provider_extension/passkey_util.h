@@ -11,6 +11,8 @@
 #import <optional>
 #import <string>
 
+#import "components/webauthn/ios/passkey_types.h"
+
 namespace sync_pb {
 class WebauthnCredentialSpecifics_Encrypted;
 }  // namespace sync_pb
@@ -18,12 +20,12 @@ class WebauthnCredentialSpecifics_Encrypted;
 @protocol Credential;
 
 // Decrypts the credential's secrets, like the private key and the hmac secret.
-// Can be used to verify if any of the security_domain_secrets from the provided
-// array is valid. If the decryption is successful, the results will be stored
-// in the provided `credential_secrets` structure.
+// Can be used to verify if any of the provided `trusted_vault_keys` is valid.
+// If the decryption is successful, the results will be stored in the provided
+// `credential_secrets` structure.
 std::optional<sync_pb::WebauthnCredentialSpecifics_Encrypted>
 DecryptCredentialSecrets(id<Credential> credential,
-                         NSArray<NSData*>* security_domain_secrets);
+                         webauthn::SharedKeyList trusted_vault_keys);
 
 // Credential and extension data returned by the passkey creation process.
 struct PasskeyCreationOutput {
@@ -44,7 +46,7 @@ PasskeyCreationOutput PerformPasskeyCreation(
     NSString* user_name,
     NSData* user_handle,
     NSString* gaia,
-    NSArray<NSData*>* security_domain_secrets,
+    webauthn::SharedKeyList trusted_vault_keys,
     NSArray<NSData*>* prf_inputs,
     bool did_complete_uv);
 
@@ -66,7 +68,7 @@ PasskeyAssertionOutput PerformPasskeyAssertion(
     id<Credential> credential,
     NSData* client_data_hash,
     NSArray<NSData*>* allowed_credentials,
-    NSArray<NSData*>* security_domain_secrets,
+    webauthn::SharedKeyList trusted_vault_keys,
     NSArray<NSData*>* prf_inputs,
     bool did_complete_uv);
 

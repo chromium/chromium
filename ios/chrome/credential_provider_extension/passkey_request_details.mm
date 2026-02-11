@@ -156,7 +156,7 @@
 
 - (ASPasskeyRegistrationCredential*)
            createPasskeyForGaia:(NSString*)gaia
-               trustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys
+               trustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys
     didCompleteUserVerification:(BOOL)didCompleteUserVerification {
   NSArray<NSData*>* prfInputs = nil;
   if (@available(iOS 18.0, *)) {
@@ -170,7 +170,7 @@
   }
   PasskeyCreationOutput passkeyCreationOutput = PerformPasskeyCreation(
       self.clientDataHash, self.relyingPartyIdentifier, self.userName,
-      self.userHandle, gaia, trustedVaultKeys, prfInputs,
+      self.userHandle, gaia, std::move(trustedVaultKeys), prfInputs,
       didCompleteUserVerification);
   if (@available(iOS 18.0, *)) {
     if (passkeyCreationOutput.credential) {
@@ -192,7 +192,7 @@
 
 - (ASPasskeyAssertionCredential*)
         assertPasskeyCredential:(id<Credential>)credential
-               trustedVaultKeys:(NSArray<NSData*>*)trustedVaultKeys
+               trustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys
     didCompleteUserVerification:(BOOL)didCompleteUserVerification {
   NSArray<NSData*>* prfInputs = nil;
   PRFInputValues* inputValues = nil;
@@ -212,7 +212,7 @@
   }
   PasskeyAssertionOutput passkeyAssertionOutput = PerformPasskeyAssertion(
       credential, self.clientDataHash, self.allowedCredentials,
-      trustedVaultKeys, prfInputs, didCompleteUserVerification);
+      std::move(trustedVaultKeys), prfInputs, didCompleteUserVerification);
   if (@available(iOS 18.0, *)) {
     if (passkeyAssertionOutput.credential &&
         [passkeyAssertionOutput.prf_outputs count]) {

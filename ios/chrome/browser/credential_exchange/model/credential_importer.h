@@ -9,6 +9,7 @@
 
 #import <vector>
 
+#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_import_manager_swift.h"
 
 namespace webauthn {
@@ -72,7 +73,7 @@ class SavedPasswordsPresenter;
 // type is handled in a separate async task. Results are analyzed once all tasks
 // complete.
 - (void)startImportingCredentialsWithTrustedVaultKeys:
-    (NSArray<NSData*>*)trustedVaultKeys;
+    (webauthn::SharedKeyList)trustedVaultKeys;
 
 // Triggers storing data for all supported credential types in the user's
 // account. This should be called after conflicts with existing credential data
