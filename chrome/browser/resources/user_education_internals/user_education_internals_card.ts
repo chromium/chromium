@@ -45,7 +45,18 @@ export class UserEducationInternalsCardElement extends CrLitElement {
     };
   }
 
-  accessor promo: FeaturePromoDemoPageInfo|null = null;
+  accessor promo: FeaturePromoDemoPageInfo = {
+    displayTitle: '',
+    displayDescription: '',
+    internalName: '',
+    type: '',
+    addedMilestone: 0,
+    supportedPlatforms: [],
+    instructions: [],
+    followedByInternalName: '',
+    data: [],
+    requiredFeatures: [],
+  };
   accessor showAction: boolean = false;
   protected accessor instructionsExpanded_: boolean = false;
   protected accessor dataExpanded_: boolean = false;

@@ -42,9 +42,14 @@ export class UserEducationWhatsNewInternalsCardElement extends CrLitElement {
     };
   }
 
-  accessor item: WhatsNewModuleDemoPageInfo|WhatsNewEditionDemoPageInfo|null =
-      null;
-  accessor type: 'module'|'edition'|null = null;
+  accessor item: WhatsNewModuleDemoPageInfo|WhatsNewEditionDemoPageInfo = {
+    displayTitle: '',
+    moduleName: '',
+    hasBrowserCommand: false,
+    isFeatureEnabled: false,
+    queuePosition: 0,
+  };
+  accessor type: 'module'|'edition' = 'module';
   protected accessor dataExpanded_: boolean = false;
 
   protected clearData_() {

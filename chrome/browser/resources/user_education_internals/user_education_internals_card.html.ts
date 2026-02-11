@@ -7,9 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {UserEducationInternalsCardElement} from './user_education_internals_card.ts';
 
 export function getHtml(this: UserEducationInternalsCardElement) {
-  if (!this.promo) {
-    return '';
-  }
   // clang-format off
   return html`
 <div class="card-content">
@@ -55,6 +52,7 @@ export function getHtml(this: UserEducationInternalsCardElement) {
 <cr-button class="action-button" ?hidden="${!this.showAction}" id="launch"
     @click="${this.launchPromo_}">
   Launch
-</cr-button>`;
+</cr-button>
+`;
   // clang-format on
 }

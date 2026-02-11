@@ -66,6 +66,7 @@ export class UserEducationInternalsElement extends
       featurePromos_: {type: Array},
       featurePromoErrorMessage_: {type: String},
       narrow_: {type: Boolean},
+      newBadges_: {type: Array},
 
       /**
        * Indicates if the information about session data is expanded or
@@ -86,7 +87,7 @@ export class UserEducationInternalsElement extends
   accessor filter: string = '';
   protected accessor tutorials_: FeaturePromoDemoPageInfo[] = [];
   protected accessor featurePromos_: FeaturePromoDemoPageInfo[] = [];
-  protected newBadges_: FeaturePromoDemoPageInfo[] = [];
+  protected accessor newBadges_: FeaturePromoDemoPageInfo[] = [];
   protected whatsNewModules_: WhatsNewModuleDemoPageInfo[] = [];
   protected whatsNewEditions_: WhatsNewEditionDemoPageInfo[] = [];
   protected ntpPromos_: FeaturePromoDemoPageInfo[] = [];

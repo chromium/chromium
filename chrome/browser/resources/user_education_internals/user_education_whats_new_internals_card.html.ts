@@ -7,9 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {UserEducationWhatsNewInternalsCardElement} from './user_education_whats_new_internals_card.ts';
 
 export function getHtml(this: UserEducationWhatsNewInternalsCardElement) {
-  if (!(this.item && this.type)) {
-    return '';
-  }
   // clang-format off
   return html`
 <div class="card-content">
@@ -36,6 +33,7 @@ export function getHtml(this: UserEducationWhatsNewInternalsCardElement) {
       Clear Data
     </cr-button>
   </div>
-</div>`;
+</div>
+`;
   // clang-format on
 }
