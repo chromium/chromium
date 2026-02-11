@@ -750,6 +750,9 @@ const base::FeatureParam<bool>
         &kGlicClientResponsivenessCheck,
         "glic-client-responsiveness-check-ignore-when-debugger-attached", true};
 
+BASE_FEATURE(kGlicEnableCachedGetUserProfileInfo,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicUseShaderCache, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicKeyboardShortcutNewBadge, base::FEATURE_ENABLED_BY_DEFAULT);

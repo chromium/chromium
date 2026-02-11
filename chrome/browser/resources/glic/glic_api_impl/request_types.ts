@@ -1032,6 +1032,7 @@ export type WebClientInitialStatePrivate =
       focusedTabData: FocusedTabDataPrivate,
       loggingEnabled: boolean,
       enableZeroStateSuggestions: boolean,
+      enableCachedGetUserProfileInfo: boolean,
       hostCapabilities: HostCapability[],
       rgbaToBmp: boolean,
     }>;

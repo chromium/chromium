@@ -168,6 +168,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithOneTab",
       "GlicApiTestWithFastTimeout",
       "GlicApiTestSystemSettingsTest",
+      "GlicApiTestWithOneTabAndCachedUserProfile",
       "GlicApiTestWithOneTabAndContextualCueing",
       "GlicApiTestWithOneTabAndPreloading",
       "GlicApiTestUserStatusCheckTest",
@@ -2186,6 +2187,22 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetUserProfileInfo) {
   ExecuteJsTest();
 }
 
+class GlicApiTestWithOneTabAndCachedUserProfile : public GlicApiTestWithOneTab {
+ public:
+  GlicApiTestWithOneTabAndCachedUserProfile() {
+    feature_list_.InitAndEnableFeature(
+        features::kGlicEnableCachedGetUserProfileInfo);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndCachedUserProfile,
+                       testGetUserProfileInfoCached) {
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetUserProfileInfoDoesNotDeferWhenInactive) {
   ExecuteJsTest();
@@ -3949,6 +3966,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithMqlsIdGetterDisabled,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestWithOneTabAndCachedUserProfile,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(
