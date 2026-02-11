@@ -98,6 +98,7 @@ TEST_F(SkillsDialogHandlerTest, RefineSkillSuccess) {
             auto* suggestion = response.add_suggestions();
             suggestion->set_prompt("refined prompt");
             suggestion->set_name("suggested name");
+            suggestion->set_icon("🤖");
 
             std::string serialized;
             response.SerializeToString(&serialized);
@@ -114,7 +115,8 @@ TEST_F(SkillsDialogHandlerTest, RefineSkillSuccess) {
   EXPECT_CALL(
       callback,
       Run(Optional(AllOf(Field(&skills::Skill::prompt, "refined prompt"),
-                         Field(&skills::Skill::name, "suggested name")))));
+                         Field(&skills::Skill::name, "suggested name"),
+                         Field(&skills::Skill::icon, "🤖")))));
 
   handler_->RefineSkill(std::move(skill), callback.Get());
 }

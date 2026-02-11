@@ -19,19 +19,34 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
     <div class="form-group">
     <div id="nameLabel" class="cr-form-field-label" aria-hidden="true">$i18n{name}
     </div>
-    <cr-input class="no-error stroked" id="nameText" type="text"
+    ${this.isAutoGenerationLoading_ ? html`
+        <div id="nameLoaderContainer">
+          <cr-loading-gradient>
+            <svg width="100%" height="38">
+              <clipPath>
+                <circle cx="20" cy="19" r="8"></circle>
+
+                <rect x="40" y="13" width="100%" height="12" rx="4"></rect>
+              </clipPath>
+            </svg>
+          </cr-loading-gradient>
+        </div>
+      `
+      : html`
+      <cr-input class="no-error stroked" id="nameText" type="text"
           placeholder="$i18n{namePlaceholder}" .value="${this.skill_.name}"
           @value-changed="${this.onNameChanged_}" aria-labelledby="nameLabel">
-      <input id="emojiTrigger" class="emoji-trigger"
-          type="text"
-          .value="${this.skill_.icon}"
-          @click="${this.onEmojiBtnClick_}"
-          @input="${this.onEmojiChanged_}"
-          @keydown="${this.onEmojiKeyDown_}"
-          title="$i18n{chooseIcon}"
-          aria-label="$i18n{chooseIcon}"
-          slot="inline-prefix">
-    </cr-input>
+        <input id="emojiTrigger" class="emoji-trigger"
+            type="text"
+            .value="${this.skill_.icon}"
+            @click="${this.onEmojiBtnClick_}"
+            @input="${this.onEmojiChanged_}"
+            @keydown="${this.onEmojiKeyDown_}"
+            title="$i18n{chooseIcon}"
+            aria-label="$i18n{chooseIcon}"
+            slot="inline-prefix">
+      </cr-input>
+      `}
     <div id="instructionsLabel" class="cr-form-field-label" aria-hidden="true">
       $i18n{instructions}
     </div>

@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './error_page.js';
 
@@ -60,6 +61,7 @@ export interface SkillsDialogAppElement {
     nameText: CrInputElement,
     saveButton: CrButtonElement,
     textareaWrapper: HTMLElement,
+    nameLoaderContainer: HTMLElement,
   };
 }
 
@@ -86,6 +88,7 @@ export class SkillsDialogAppElement extends CrLitElement {
       signedInEmail_: {type: String},
       hasRefineError_: {type: Boolean},
       isRefineLoading_: {type: Boolean},
+      isAutoGenerationLoading_: {type: Boolean},
     };
   }
 
@@ -111,6 +114,7 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected accessor signedInEmail_: string = '';
   protected accessor hasRefineError_: boolean = false;
   protected accessor isRefineLoading_: boolean = false;
+  protected accessor isAutoGenerationLoading_: boolean = false;
 
   private originalPrompt_: string = '';
   private refinedPrompt_: string = '';
@@ -133,6 +137,7 @@ export class SkillsDialogAppElement extends CrLitElement {
             if (!skill.id || skill.source === SkillSource.kFirstParty) {
               // Creating a new skill or remixing a first party skill.
               this.dialogTitle_ = loadTimeData.getString('addSkillHeader');
+              this.autoPopulateNameAndIcon_();
             } else {
               // Editing a user created skill.
               this.dialogTitle_ = loadTimeData.getString('editSkillHeader');
@@ -289,6 +294,43 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected cancel_(e: Event) {
     e.preventDefault();
     SkillsDialogBrowserProxy.getInstance().handler.closeDialog();
+  }
+
+  protected autoPopulateNameAndIcon_() {
+    if (!this.skill_.prompt) {
+      return;
+    }
+
+    this.isAutoGenerationLoading_ = true;
+    SkillsDialogBrowserProxy.getInstance()
+        .handler.refineSkill(this.skill_)
+        .then(({refinedSkill}) => {
+          if (refinedSkill) {
+            const newName =
+                (!this.skill_.name || this.skill_.name.trim() === '') ?
+                refinedSkill.name :
+                this.skill_.name;
+            const newIcon =
+                (this.skill_.icon === DEFAULT_EMOJI && refinedSkill.icon) ?
+                refinedSkill.icon :
+                this.skill_.icon;
+            if (newName !== this.skill_.name || newIcon !== this.skill_.icon) {
+              this.skill_ = {
+                ...this.skill_,
+                name: newName || '',
+                icon: newIcon || DEFAULT_EMOJI,
+              };
+            }
+          }
+        })
+        .catch(
+            () => {
+                // Silently fail for auto-population; do not show error UI to
+                // user as this is a background enhancement.
+            })
+        .finally(() => {
+          this.isAutoGenerationLoading_ = false;
+        });
   }
 }
 
