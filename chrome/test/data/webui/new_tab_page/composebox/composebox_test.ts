@@ -221,6 +221,7 @@ suite('NewTabPageComposeboxTest', () => {
         eventToPromise('close-composebox', composeboxElement);
     $$<HTMLElement>(composeboxElement, '#cancelIcon')!.click();
     await whenCloseComposebox;
+    assertEquals(searchboxHandler.getCallCount('clearFiles'), 2);
   });
 
   test('upload image', async () => {
@@ -864,6 +865,7 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
     const event = await whenCloseComposebox;
     assertEquals(event.detail.composeboxText, 'test');
+    assertEquals(searchboxHandler.getCallCount('clearFiles'), 1);
   });
 
   test('escape key behavior with suggestions', async () => {
@@ -894,6 +896,7 @@ suite('NewTabPageComposeboxTest', () => {
         'keydown', {key: 'Escape', bubbles: true, composed: true}));
     await microtasksFinished();
 
+    assertEquals(searchboxHandler.getCallCount('clearFiles'), 1);
     assertFalse(closed);
     assertEquals('', composeboxElement.$.input.value);
 
@@ -905,6 +908,7 @@ suite('NewTabPageComposeboxTest', () => {
     composeboxElement.$.input.dispatchEvent(new KeyboardEvent(
         'keydown', {key: 'Escape', bubbles: true, composed: true}));
     await whenCloseComposebox;
+    assertEquals(searchboxHandler.getCallCount('clearFiles'), 2);
   });
 
   test('session abandoned on cancel button click', async () => {
@@ -921,6 +925,7 @@ suite('NewTabPageComposeboxTest', () => {
     cancelIcon.click();
     const event = await whenCloseComposebox;
     assertEquals(event.detail.composeboxText, '');
+    assertEquals(searchboxHandler.getCallCount('clearFiles'), 1);
   });
 
   test('submit button click leads to handler called', async () => {
