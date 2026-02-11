@@ -142,6 +142,9 @@ void DeriveCommandLine(const GURL& start_url,
 #if BUILDFLAG(USE_CRAS)
       ::switches::kUseCras,
 #endif
+#if BUILDFLAG(USE_VAAPI)
+      ::switches::kHardwareVideoDevicePath,
+#endif
       ::switches::kUseGL,
       ::switches::kUserDataDir,
       ::switches::kV,

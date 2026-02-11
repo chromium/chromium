@@ -328,6 +328,9 @@ static const char* const kSwitchNames[] = {
 #if BUILDFLAG(USE_V4L2_CODEC)
     switches::kHardwareVideoDecodeFrameRate,
 #endif
+#if BUILDFLAG(USE_VAAPI)
+    switches::kHardwareVideoDevicePath,
+#endif
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
