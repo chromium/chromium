@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
@@ -114,7 +113,7 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
          password_manager::features::kActorLoginQualityLogs,
          password_manager::features::kActorLoginGetCredentialsNoLoginForm,
          actor::kGlicEnableAutoLoginDialogs,
-         actor::kGlicEnableAutoLoginPersistedPermissions, features::kGlicActor},
+         actor::kGlicEnableAutoLoginPersistedPermissions},
         /*disabled_features=*/{kGlicCrossOriginNavigationGating});
   }
 

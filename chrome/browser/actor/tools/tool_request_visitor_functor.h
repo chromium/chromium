@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_TOOL_REQUEST_VISITOR_FUNCTOR_H_
 
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
-#include "chrome/browser/actor/tools/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
@@ -24,6 +23,7 @@
 #include "chrome/common/buildflags.h"
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#include "chrome/browser/actor/tools/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
 #endif
@@ -35,8 +35,8 @@ class ToolRequestVisitorFunctor {
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   virtual void Apply(const ActivateTabToolRequest&) = 0;
   virtual void Apply(const ActivateWindowToolRequest&) = 0;
-#endif
   virtual void Apply(const AttemptLoginToolRequest&) = 0;
+#endif
   virtual void Apply(const AttemptFormFillingToolRequest&) = 0;
   virtual void Apply(const ClickToolRequest&) = 0;
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)

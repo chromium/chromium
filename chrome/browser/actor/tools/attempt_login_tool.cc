@@ -18,6 +18,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/actor.mojom-shared.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor_webui.mojom.h"
@@ -28,12 +29,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
-
-// TODO(crbug.com/482430429): Reconsider the use of BrowserWindowInterface on
-// Android.
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#endif
 
 namespace actor {
 
@@ -452,9 +447,6 @@ void AttemptLoginTool::ObserveTabToAwaitFocus() {
       &AttemptLoginTool::OnWillDetach, base::Unretained(this)));
   tab_did_activate_subscription_ = tab->RegisterDidActivate(base::BindRepeating(
       &AttemptLoginTool::HandleTabActivatedChange, base::Unretained(this)));
-// TODO(crbug.com/482430429): Reconsider the use of BrowserWindowInterface on
-// Android.
-#if !BUILDFLAG(IS_ANDROID)
   BrowserWindowInterface* browser_window = tab->GetBrowserWindowInterface();
   // TODO(mcnee): Should we update the window subscription if the tab is moved?
   // The tab would probably be focused first which would cause us to stop
@@ -463,7 +455,6 @@ void AttemptLoginTool::ObserveTabToAwaitFocus() {
       browser_window->RegisterDidBecomeActive(
           base::BindRepeating(&AttemptLoginTool::HandleWindowActivatedChange,
                               base::Unretained(this)));
-#endif
 }
 
 void AttemptLoginTool::StopObservingTab() {
@@ -479,23 +470,15 @@ void AttemptLoginTool::MaybeRetryCredentialNeedingFocus() {
 
   tabs::TabInterface* tab = tab_handle_.Get();
   CHECK(tab);
+  BrowserWindowInterface* browser_window = tab->GetBrowserWindowInterface();
 
   // Note that this is more specific than the conditions checked in
   // `ActorLoginDelegateImpl::IsTaskInFocus`, but for simplicity we check for
   // the specific tab being activated, since the task nudge will take the user
   // there anyway.
-  if (!tab->IsActivated()) {
+  if (!browser_window->IsActive() || !tab->IsActivated()) {
     return;
   }
-
-  // TODO(crbug.com/482430429): Reconsider the use of BrowserWindowInterface on
-  // Android.
-#if !BUILDFLAG(IS_ANDROID)
-  BrowserWindowInterface* browser_window = tab->GetBrowserWindowInterface();
-  if (!browser_window->IsActive()) {
-    return;
-  }
-#endif
 
   StopObservingTab();
   tool_delegate().UninterruptFromTool();

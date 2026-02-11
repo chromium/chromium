@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 import("//chrome/common/features.gni")
 
+assert(!is_android)
+
 source_set("delegate") {
   sources = [
     "actor_login_delegate_impl.cc",
@@ -44,36 +46,34 @@ source_set("delegate") {
   }
 }
 
-if (!skip_android_unmigrated_actor_files) {
-  source_set("unit_tests") {
-    testonly = true
-    sources = [
-      "actor_login_delegate_impl_unittest.cc",
-      "actor_login_federated_credentials_fetcher_unittest.cc",
-      "actor_login_siwg_controller_unittest.cc",
-      "siwg_button_finder_unittest.cc",
-    ]
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "actor_login_delegate_impl_unittest.cc",
+    "actor_login_federated_credentials_fetcher_unittest.cc",
+    "actor_login_siwg_controller_unittest.cc",
+    "siwg_button_finder_unittest.cc",
+  ]
 
-    deps = [
-      ":delegate",
-      "//base/test:test_support",
-      "//chrome/browser/ui/tabs:test_support",
-      "//chrome/browser/webid",
-      "//chrome/common:mojo_bindings",
-      "//chrome/test:test_support",
-      "//components/autofill/content/browser:test_support",
-      "//components/autofill/content/common/mojom",
-      "//components/optimization_guide/proto:optimization_guide_proto",
-      "//components/password_manager/core/browser/actor_login:common",
-      "//components/password_manager/core/browser/actor_login/test:test_support",
-      "//components/password_manager/core/browser/features:password_features",
-      "//components/tabs:test_support",
-      "//content/public/browser",
-      "//content/public/common",
-      "//content/test:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//third_party/blink/public/mojom:mojom_platform_headers",
-    ]
-  }
+  deps = [
+    ":delegate",
+    "//base/test:test_support",
+    "//chrome/browser/ui/tabs:test_support",
+    "//chrome/browser/webid",
+    "//chrome/common:mojo_bindings",
+    "//chrome/test:test_support",
+    "//components/autofill/content/browser:test_support",
+    "//components/autofill/content/common/mojom",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/password_manager/core/browser/actor_login:common",
+    "//components/password_manager/core/browser/actor_login/test:test_support",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/tabs:test_support",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
+  ]
 }

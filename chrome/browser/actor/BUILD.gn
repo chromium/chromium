@@ -26,7 +26,6 @@ source_set("actor") {
     "origin_checker.h",
     "site_policy.h",
     "tools/attempt_form_filling_tool_request.h",
-    "tools/attempt_login_tool_request.h",
     "tools/click_tool_request.h",
     "tools/drag_and_release_tool_request.h",
     "tools/history_tool_request.h",
@@ -51,7 +50,6 @@ source_set("actor") {
     "//base",
     "//chrome/browser/actor/ui:dom_node_geometry",
     "//chrome/browser/page_content_annotations:fetcher",
-    "//chrome/browser/password_manager/actor_login:service",
     "//chrome/browser/profiles",
     "//chrome/browser/search",
     "//chrome/browser/subscription_eligibility",
@@ -73,6 +71,7 @@ source_set("actor") {
       ":browser_tests",
     ]
     public += [
+      "tools/attempt_login_tool_request.h",
       "tools/load_and_extract_content_tool_request.h",
       "tools/tab_management_tool_request.h",
       "tools/window_management_tool_request.h",
@@ -80,6 +79,7 @@ source_set("actor") {
     public_deps += [
       "//chrome/browser/actor/resources:browser_resources",
       "//chrome/browser/actor/ui:states",
+      "//chrome/browser/password_manager/actor_login:service",
       "//content/public/browser",
       "//content/public/common:buildflags",
     ]
@@ -117,9 +117,6 @@ source_set("impl") {
     "tools/attempt_form_filling_tool.cc",
     "tools/attempt_form_filling_tool.h",
     "tools/attempt_form_filling_tool_request.cc",
-    "tools/attempt_login_tool.cc",
-    "tools/attempt_login_tool.h",
-    "tools/attempt_login_tool_request.cc",
     "tools/click_tool_request.cc",
     "tools/drag_and_release_tool_request.cc",
     "tools/history_tool.cc",
@@ -206,10 +203,7 @@ source_set("impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   if (enable_glic) {
-    deps += [
-      "//chrome/browser/autofill/glic",
-      "//chrome/browser/glic",
-    ]
+    deps += [ "//chrome/browser/glic" ]
   }
 
   if (is_android) {
@@ -218,6 +212,9 @@ source_set("impl") {
 
   if (!skip_android_unmigrated_actor_files) {
     sources += [
+      "tools/attempt_login_tool.cc",
+      "tools/attempt_login_tool.h",
+      "tools/attempt_login_tool_request.cc",
       "tools/load_and_extract_content_tool.cc",
       "tools/load_and_extract_content_tool.h",
       "tools/load_and_extract_content_tool_request.cc",
@@ -229,6 +226,7 @@ source_set("impl") {
       "tools/window_management_tool_request.cc",
     ]
     deps += [
+      "//chrome/browser/autofill/glic",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
@@ -387,7 +385,6 @@ source_set("browser_tests") {
 
   sources = [
     "actor_keyed_service_browsertest.cc",
-    "tools/attempt_login_tool_browsertest.cc",
     "tools/navigate_tool_browsertest.cc",
   ]
   deps = [
@@ -443,6 +440,7 @@ source_set("browser_tests") {
       "site_policy_browsertest.cc",
       "tools/action_tracker_for_metrics_browsertest.cc",
       "tools/attempt_form_filling_tool_browsertest.cc",
+      "tools/attempt_login_tool_browsertest.cc",
       "tools/click_tool_browsertest.cc",
       "tools/drag_and_release_tool_browsertest.cc",
       "tools/history_tool_browsertest.cc",
