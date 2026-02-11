@@ -14,82 +14,6 @@
 
 import("../build/crashpad_buildconfig.gni")
 
-static_library("handler") {
-  sources = [
-    "handler_main.cc",
-    "handler_main.h",
-    "prune_crash_reports_thread.cc",
-    "prune_crash_reports_thread.h",
-  ]
-
-  if (crashpad_is_mac) {
-    sources += [
-      "mac/crash_report_exception_handler.cc",
-      "mac/crash_report_exception_handler.h",
-      "mac/exception_handler_server.cc",
-      "mac/exception_handler_server.h",
-    ]
-  }
-
-  if (crashpad_is_linux || crashpad_is_android) {
-    sources += [
-      "linux/capture_snapshot.cc",
-      "linux/capture_snapshot.h",
-      "linux/crash_report_exception_handler.cc",
-      "linux/crash_report_exception_handler.h",
-      "linux/exception_handler_server.cc",
-      "linux/exception_handler_server.h",
-    ]
-  }
-
-  if (crashpad_is_linux) {
-    sources += [
-      "linux/cros_crash_report_exception_handler.cc",
-      "linux/cros_crash_report_exception_handler.h",
-    ]
-
-    # TODO(https://crbug.com/1420445): Remove this config when M115 branches.
-    configs += [ "../build:crashpad_is_in_chromium" ]
-  }
-
-  if (crashpad_is_win) {
-    sources += [
-      "win/crash_report_exception_handler.cc",
-      "win/crash_report_exception_handler.h",
-    ]
-  }
-
-  public_configs = [ "..:crashpad_config" ]
-
-  public_deps = [
-    ":common",
-    "../client",
-    "../third_party/mini_chromium:base",
-    "../util",
-  ]
-
-  deps = [
-    ":common",
-    "../minidump",
-    "../snapshot",
-    "../tools:tool_support",
-  ]
-
-  if (crashpad_is_win) {
-    cflags = [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
-  }
-}
-
-if (crashpad_is_android) {
-  # CrashpadHandlerMain is defined in a separate target so that it can be
-  # overriden by implementers
-  source_set("crashpad_handler_main") {
-    sources = [ "crashpad_handler_main.cc" ]
-
-    deps = [ ":handler" ]
-  }
-}
-
 static_library("common") {
   sources = [
     "crash_report_upload_rate_limit.cc",
@@ -124,48 +48,124 @@ static_library("common") {
   }
 }
 
-source_set("handler_test") {
-  testonly = true
-
-  sources = [
-    "crash_report_upload_rate_limit_test.cc",
-    "minidump_to_upload_parameters_test.cc",
-  ]
-
-  if (crashpad_is_linux || crashpad_is_android) {
-    sources += [ "linux/exception_handler_server_test.cc" ]
-  }
-
-  if (crashpad_is_win) {
-    sources += [ "crashpad_handler_test.cc" ]
-  }
-
-  deps = [
-    ":handler",
-    "../client",
-    "../compat",
-    "../snapshot",
-    "../snapshot:test_support",
-    "../test",
-    "../third_party/googletest",
-    "../third_party/mini_chromium:base",
-    "../util",
-  ]
-
-  if (crashpad_is_win) {
-    deps += [
-      "../minidump:test_support",
-      "win/wer:crashpad_wer_test",
-    ]
-
-    data_deps = [
-      ":crashpad_handler_test_extended_handler",
-      ":fake_handler_that_crashes_at_startup",
-    ]
-  }
-}
-
 if (!crashpad_is_ios) {
+  static_library("handler") {
+    sources = [
+      "handler_main.cc",
+      "handler_main.h",
+      "prune_crash_reports_thread.cc",
+      "prune_crash_reports_thread.h",
+    ]
+
+    if (crashpad_is_mac) {
+      sources += [
+        "mac/crash_report_exception_handler.cc",
+        "mac/crash_report_exception_handler.h",
+        "mac/exception_handler_server.cc",
+        "mac/exception_handler_server.h",
+      ]
+    }
+
+    if (crashpad_is_linux || crashpad_is_android) {
+      sources += [
+        "linux/capture_snapshot.cc",
+        "linux/capture_snapshot.h",
+        "linux/crash_report_exception_handler.cc",
+        "linux/crash_report_exception_handler.h",
+        "linux/exception_handler_server.cc",
+        "linux/exception_handler_server.h",
+      ]
+    }
+
+    if (crashpad_is_linux) {
+      sources += [
+        "linux/cros_crash_report_exception_handler.cc",
+        "linux/cros_crash_report_exception_handler.h",
+      ]
+
+      # TODO(https://crbug.com/1420445): Remove this config when M115 branches.
+      configs += [ "../build:crashpad_is_in_chromium" ]
+    }
+
+    if (crashpad_is_win) {
+      sources += [
+        "win/crash_report_exception_handler.cc",
+        "win/crash_report_exception_handler.h",
+      ]
+    }
+
+    public_configs = [ "..:crashpad_config" ]
+
+    public_deps = [
+      ":common",
+      "../client",
+      "../third_party/mini_chromium:base",
+      "../util",
+    ]
+
+    deps = [
+      ":common",
+      "../minidump",
+      "../snapshot",
+      "../tools:tool_support",
+    ]
+
+    if (crashpad_is_win) {
+      cflags = [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
+    }
+  }
+
+  if (crashpad_is_android) {
+    # CrashpadHandlerMain is defined in a separate target so that it can be
+    # overriden by implementers
+    source_set("crashpad_handler_main") {
+      sources = [ "crashpad_handler_main.cc" ]
+
+      deps = [ ":handler" ]
+    }
+  }
+
+  source_set("handler_test") {
+    testonly = true
+
+    sources = [
+      "crash_report_upload_rate_limit_test.cc",
+      "minidump_to_upload_parameters_test.cc",
+    ]
+
+    if (crashpad_is_linux || crashpad_is_android) {
+      sources += [ "linux/exception_handler_server_test.cc" ]
+    }
+
+    if (crashpad_is_win) {
+      sources += [ "crashpad_handler_test.cc" ]
+    }
+
+    deps = [
+      ":handler",
+      "../client",
+      "../compat",
+      "../snapshot",
+      "../snapshot:test_support",
+      "../test",
+      "../third_party/googletest",
+      "../third_party/mini_chromium:base",
+      "../util",
+    ]
+
+    if (crashpad_is_win) {
+      deps += [
+        "../minidump:test_support",
+        "win/wer:crashpad_wer_test",
+      ]
+
+      data_deps = [
+        ":crashpad_handler_test_extended_handler",
+        ":fake_handler_that_crashes_at_startup",
+      ]
+    }
+  }
+
   crashpad_executable("crashpad_handler") {
     sources = [ "main.cc" ]
 

@@ -97,7 +97,6 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
         "snapshot:crashpad_snapshot_test_module_large",
         "snapshot:crashpad_snapshot_test_module_small",
         "test:crashpad_test_test_multiprocess_exec_test_child",
-        "util:http_transport_test_server",
       ]
     }
 

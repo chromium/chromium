@@ -98,32 +98,31 @@ httplib::Client cli("https://example.com");
 auto res = cli.Get("/");
 if (!res) {
   // Check the error type
-  auto err = res.error();
+  const auto err = res.error();
 
   switch (err) {
     case httplib::Error::SSLConnection:
       std::cout << "SSL connection failed, SSL error: "
-                << res->ssl_error() << std::endl;
+                << res.ssl_error() << std::endl;
       break;
 
     case httplib::Error::SSLLoadingCerts:
       std::cout << "SSL cert loading failed, OpenSSL error: "
-                << std::hex << res->ssl_openssl_error() << std::endl;
+                << std::hex << res.ssl_openssl_error() << std::endl;
       break;
 
     case httplib::Error::SSLServerVerification:
       std::cout << "SSL verification failed, X509 error: "
-                << res->ssl_openssl_error() << std::endl;
+                << res.ssl_openssl_error() << std::endl;
       break;
 
     case httplib::Error::SSLServerHostnameVerification:
       std::cout << "SSL hostname verification failed, X509 error: "
-                << res->ssl_openssl_error() << std::endl;
+                << res.ssl_openssl_error() << std::endl;
       break;
 
     default:
       std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
-    }
   }
 }
 ```

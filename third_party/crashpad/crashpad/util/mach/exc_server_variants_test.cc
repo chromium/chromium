@@ -225,6 +225,9 @@ struct __attribute__((packed, aligned(4))) ExceptionRaiseStateReply {
       case EXCEPTION_STATE_IDENTITY | kMachExceptionCodes:
         EXPECT_EQ(Head.msgh_id, 2507);
         break;
+      case EXCEPTION_STATE_IDENTITY_PROTECTED | kMachExceptionCodes:
+        EXPECT_EQ(Head.msgh_id, 2510);
+        break;
       default:
         ADD_FAILURE() << "behavior " << behavior << ", Head.msgh_id "
                       << Head.msgh_id;
@@ -422,6 +425,58 @@ MachExceptionRaiseStateIdentityRequest {
 // The reply messages for exception_raise_state_identity and
 // mach_exception_raise_state_identity are identical.
 using MachExceptionRaiseStateIdentityReply = ExceptionRaiseStateIdentityReply;
+
+struct __attribute__((packed, aligned(4)))
+MachExceptionRaiseStateIdentityProtectedRequest {
+  MachExceptionRaiseStateIdentityProtectedRequest() {
+    memset(this, 0xa5, sizeof(*this));
+    Head.msgh_bits =
+        MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE, MACH_MSG_TYPE_PORT_SEND) |
+        MACH_MSGH_BITS_COMPLEX;
+    Head.msgh_size = sizeof(*this) - sizeof(trailer);
+    Head.msgh_remote_port = kClientRemotePort;
+    Head.msgh_local_port = kServerLocalPort;
+    Head.msgh_id = 2410;
+    msgh_body.msgh_descriptor_count = 1;
+    thread_id = 0;
+    InitializeMachMsgPortDescriptor(&task_id_token_t, kExceptionTaskPort);
+    NDR = NDR_record;
+    exception = kExceptionType;
+    codeCnt = 2;
+    code[0] = kTestMachExceptionCodes[0];
+    code[1] = kTestMachExceptionCodes[1];
+    flavor = kThreadStateFlavor;
+    old_stateCnt = kThreadStateFlavorCount;
+
+    // Adjust the message size for the data that it’s actually carrying, which
+    // may be smaller than the maximum that it can carry.
+    Head.msgh_size += sizeof(old_state[0]) * old_stateCnt - sizeof(old_state);
+  }
+
+  // Because the message size has been adjusted, the trailer may not appear in
+  // its home member variable. This computes the actual address of the trailer.
+  const mach_msg_trailer_t* Trailer() const {
+    return MachMessageTrailerFromHeader(&Head);
+  }
+
+  mach_msg_header_t Head;
+  mach_msg_body_t msgh_body;
+  mach_msg_port_descriptor_t task_id_token_t;
+  NDR_record_t NDR;
+  int64_t thread_id;
+  exception_type_t exception;
+  mach_msg_type_number_t codeCnt;
+  int64_t code[2];
+  int flavor;
+  mach_msg_type_number_t old_stateCnt;
+  natural_t old_state[THREAD_STATE_MAX];
+  mach_msg_trailer_t trailer;
+};
+
+// The reply messages for mach_exception_raise_state_identity_protected and
+// mach_exception_raise_state_identity are identical.
+using MachExceptionRaiseStateIdentityProtectedReply =
+    MachExceptionRaiseStateIdentityReply;
 
 // InvalidRequest and BadIDErrorReply are used to test that
 // UniversalMachExcServer deals appropriately with messages that it does not
@@ -621,6 +676,53 @@ TEST(ExcServerVariants, MockExceptionRaise) {
                                      IsThreadStateAndCount(0u),
                                      IsThreadStateAndCount(0u),
                                      Eq(&request.trailer)))
+      .WillOnce(Return(KERN_SUCCESS))
+      .RetiresOnSaturation();
+
+  bool destroy_complex_request = false;
+  EXPECT_TRUE(universal_mach_exc_server.MachMessageServerFunction(
+      reinterpret_cast<mach_msg_header_t*>(&request),
+      reinterpret_cast<mach_msg_header_t*>(&reply),
+      &destroy_complex_request));
+  EXPECT_TRUE(destroy_complex_request);
+
+  reply.Verify(kExceptionBehavior);
+}
+
+TEST(ExcServerVariants, MockMachExceptionRaiseStateIdentityProtected) {
+  ScopedDefaultValue<kern_return_t> default_kern_return_t(KERN_FAILURE);
+
+  MockUniversalMachExcServer server;
+  UniversalMachExcServer universal_mach_exc_server(&server);
+
+  std::set<mach_msg_id_t> ids =
+      universal_mach_exc_server.MachMessageServerRequestIDs();
+  EXPECT_NE(ids.find(2410), ids.end());  // There is no constant for this.
+
+  MachExceptionRaiseStateIdentityProtectedRequest request;  // Protected
+  EXPECT_LE(request.Head.msgh_size,
+            universal_mach_exc_server.MachMessageServerRequestSize());
+
+  MachExceptionRaiseStateIdentityProtectedReply reply;
+  EXPECT_LE(sizeof(reply),
+            universal_mach_exc_server.MachMessageServerReplySize());
+
+  constexpr exception_behavior_t kExceptionBehavior =
+      EXCEPTION_STATE_IDENTITY_PROTECTED | MACH_EXCEPTION_CODES;
+
+  EXPECT_CALL(
+      server,
+      MockCatchMachException(kExceptionBehavior,
+                             kServerLocalPort,
+                             0,  // kExceptionThreadPort,
+                             0,  // kExceptionTaskPort,
+                             kExceptionType,
+                             AreExceptionCodes(kTestMachExceptionCodes[0],
+                                               kTestMachExceptionCodes[1]),
+                             Pointee(Eq(kThreadStateFlavor)),
+                             IsThreadStateAndCount(kThreadStateFlavorCount),
+                             IsThreadStateAndCount(std::size(reply.new_state)),
+                             Eq(request.Trailer())))
       .WillOnce(Return(KERN_SUCCESS))
       .RetiresOnSaturation();
 
@@ -955,6 +1057,8 @@ TEST(ExcServerVariants, MachMessageServerRequestIDs) {
   expect_request_ids.insert(2405);
   expect_request_ids.insert(2406);
   expect_request_ids.insert(2407);
+  expect_request_ids.insert(2410);
+  expect_request_ids.insert(2411);
 
   MockUniversalMachExcServer server;
   UniversalMachExcServer universal_mach_exc_server(&server);

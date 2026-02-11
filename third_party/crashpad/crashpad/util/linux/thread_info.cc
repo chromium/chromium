@@ -19,13 +19,13 @@
 namespace crashpad {
 
 ThreadContext::ThreadContext() {
-  memset(this, 0, sizeof(*this));
+  memset(static_cast<void*>(this), 0, sizeof(*this));
 }
 
 ThreadContext::~ThreadContext() {}
 
 FloatContext::FloatContext() {
-  memset(this, 0, sizeof(*this));
+  memset(static_cast<void*>(this), 0, sizeof(*this));
 }
 
 FloatContext::~FloatContext() {}

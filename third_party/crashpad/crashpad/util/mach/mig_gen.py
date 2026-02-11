@@ -26,13 +26,12 @@ MigInterface = collections.namedtuple(
 
 def generate_interface(defs,
                        interface,
-                       includes=[],
-                       defines=[],
                        sdk=None,
                        clang_path=None,
                        mig_path=None,
                        migcom_path=None,
-                       arch=None):
+                       arch=None,
+                       mig_args=None):
     if mig_path is None:
         mig_path = 'mig'
 
@@ -54,16 +53,18 @@ def generate_interface(defs,
         command.extend(['-arch', arch])
     if sdk is not None:
         command.extend(['-isysroot', sdk])
-    for include in includes:
-        command.extend(['-I' + include])
-    for define in defines:
-        command.extend(['-D' + define])
+    if mig_args:
+        command.extend(mig_args)
     command.append(defs)
     subprocess.check_call(command)
 
 
 def parse_args(args, multiple_arch=False):
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description="A utility for Mach Interface Generator (MIG) compilation.",
+        usage=
+        "%(prog)s [OPTIONS] <defs> <user_c> <server_c> <user_h> <server_h> -- [mig arguments]"
+    )
     parser.add_argument('--clang-path', help='Path to clang')
     parser.add_argument('--mig-path', help='Path to mig')
     parser.add_argument('--migcom-path', help='Path to migcom')
@@ -76,20 +77,12 @@ def parse_args(args, multiple_arch=False):
             action='append',
             help='Target architecture (may appear multiple times)')
     parser.add_argument('--sdk', help='Path to SDK')
-    parser.add_argument(
-        '--include',
-        default=[],
-        action='append',
-        help='Additional include directory (may appear multiple times)')
-    parser.add_argument('--define',
-                        default=[],
-                        action='append',
-                        help='Additional define (may appear multiple times)')
     parser.add_argument('defs')
     parser.add_argument('user_c')
     parser.add_argument('server_c')
     parser.add_argument('user_h')
     parser.add_argument('server_h')
+    parser.add_argument('mig_args', nargs="*")
     return parser.parse_args(args)
 
 
@@ -97,9 +90,14 @@ def main(args):
     parsed = parse_args(args)
     interface = MigInterface(parsed.user_c, parsed.server_c, parsed.user_h,
                              parsed.server_h)
-    generate_interface(parsed.defs, interface, parsed.include, parsed.define,
-                       parsed.sdk, parsed.clang_path, parsed.mig_path,
-                       parsed.migcom_path, parsed.arch)
+    generate_interface(parsed.defs,
+                       interface,
+                       sdk=parsed.sdk,
+                       clang_path=parsed.clang_path,
+                       mig_path=parsed.mig_path,
+                       migcom_path=parsed.migcom_path,
+                       arch=parsed.arch,
+                       mig_args=parsed.mig_args)
 
 
 if __name__ == '__main__':

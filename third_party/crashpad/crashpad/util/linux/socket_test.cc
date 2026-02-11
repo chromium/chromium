@@ -124,7 +124,7 @@ TEST(Socket, RecvClosesFileDescriptors) {
   for (size_t index = 0; index < UnixCredentialSocket::kMaxSendRecvMsgFDs;
        ++index) {
     recv_fds[index].reset();
-    char c;
+    char c = 0;
     EXPECT_EQ(
         HANDLE_EINTR(send(send_fds[index].get(), &c, sizeof(c), MSG_NOSIGNAL)),
         -1);

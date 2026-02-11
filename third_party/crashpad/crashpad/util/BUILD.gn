@@ -56,7 +56,6 @@ if (crashpad_is_apple && !crashpad_is_tvos) {
     ]
 
     args = [ "{{source}}" ]
-    args += rebase_path(outputs, root_build_dir)
     if (crashpad_is_in_chromium) {
       if (!use_system_xcode) {
         import("//build/config/clang/clang.gni")
@@ -105,24 +104,6 @@ if (crashpad_is_apple && !crashpad_is_tvos) {
         ]
       }
     }
-    args += [
-      "--include",
-      rebase_path("..", root_build_dir),
-      "--include",
-      rebase_path("../compat/mac", root_build_dir),
-    ]
-    if (crashpad_is_ios) {
-      args += [
-        "--include",
-        rebase_path("../compat/ios", root_build_dir),
-
-        # Needed for mach_exception_raise_*_protected
-        "--define",
-        "MACH_EXC_SERVER_TASKIDTOKEN",
-        "--define",
-        "MACH_EXC_SERVER_TASKIDTOKEN_STATE",
-      ]
-    }
     if (current_cpu == "x86") {
       args += [
         "--arch",
@@ -157,6 +138,22 @@ if (crashpad_is_apple && !crashpad_is_tvos) {
       ]
     } else {
       assert(false, "Unsupported architecture")
+    }
+    args += rebase_path(outputs, root_build_dir)
+    args += [
+      "--",
+      "-I" + rebase_path("..", root_build_dir),
+      "-I" + rebase_path("../compat/mac", root_build_dir),
+    ]
+    if (crashpad_is_ios) {
+      args += [ "-I" + rebase_path("../compat/ios", root_build_dir) ]
+    }
+    if (crashpad_is_mac || crashpad_is_ios) {
+      # Needed for mach_exception_raise_*_protected
+      args += [
+        "-DMACH_EXC_SERVER_TASKIDTOKEN",
+        "-DMACH_EXC_SERVER_TASKIDTOKEN_STATE",
+      ]
     }
   }
 
@@ -819,7 +816,7 @@ source_set("util_test") {
     "thread/worker_thread_test.cc",
   ]
 
-  if (!crashpad_is_android && !crashpad_is_ios) {
+  if (!crashpad_is_android && !crashpad_is_ios && !crashpad_is_fuchsia) {
     # Android requires an HTTPTransport implementation.
     sources += [ "net/http_transport_test.cc" ]
   }
@@ -950,7 +947,7 @@ source_set("util_test") {
     "../third_party/zlib",
   ]
 
-  if (!crashpad_is_android && !crashpad_is_ios) {
+  if (!crashpad_is_android && !crashpad_is_ios && !crashpad_is_fuchsia) {
     data_deps = [ ":http_transport_test_server" ]
 
     if (crashpad_use_boringssl_for_http_transport_socket) {

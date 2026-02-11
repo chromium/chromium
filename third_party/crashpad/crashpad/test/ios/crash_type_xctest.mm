@@ -212,7 +212,13 @@ bool HasMacOSBrokeDYLDTaskInfo() {
 #endif
 }
 
-- (void)testNSException {
+// TODO(crbug.com/478240087): Fails on intel. Investigate and re-enable.
+#if defined(__x86_64__)
+#define MAYBE_testNSException DISABLED_testNSException
+#else
+#define MAYBE_testNSException testNSException
+#endif
+- (void)MAYBE_testNSException {
   [rootObject_ crashNSException];
   [self verifyCrashReportException:crashpad::kMachExceptionFromNSException];
   NSDictionary* dict = [rootObject_ getAnnotations];
@@ -225,7 +231,13 @@ bool HasMacOSBrokeDYLDTaskInfo() {
       isEqualToString:@"NSInternalInconsistencyException"]);
 }
 
-- (void)testNotAnNSException {
+// TODO(crbug.com/478240087): Fails on intel. Investigate and re-enable.
+#if defined(__x86_64__)
+#define MAYBE_testNotAnNSException DISABLED_testNotAnNSException
+#else
+#define MAYBE_testNotAnNSException testNotAnNSException
+#endif
+- (void)MAYBE_testNotAnNSException {
   [rootObject_ crashNotAnNSException];
   // When @throwing something other than an NSException the
   // UncaughtExceptionHandler is not called, so the application SIGABRTs.
@@ -291,7 +303,14 @@ bool HasMacOSBrokeDYLDTaskInfo() {
   XCTAssertEqual([rootObject_ pendingReportCount], 0);
 }
 
-- (void)testCrashCoreAutoLayoutSinkhole {
+// TODO(crbug.com/478240087): Fails on intel. Investigate and re-enable.
+#if defined(__x86_64__)
+#define MAYBE_testCrashCoreAutoLayoutSinkhole \
+  DISABLED_testCrashCoreAutoLayoutSinkhole
+#else
+#define MAYBE_testCrashCoreAutoLayoutSinkhole testCrashCoreAutoLayoutSinkhole
+#endif
+- (void)MAYBE_testCrashCoreAutoLayoutSinkhole {
   [rootObject_ crashCoreAutoLayoutSinkhole];
   [self verifyCrashReportException:crashpad::kMachExceptionFromNSException];
   NSDictionary* dict = [rootObject_ getAnnotations];

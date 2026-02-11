@@ -155,7 +155,7 @@ bool CrashHandler::InstallMachExceptionHandler() {
       !exception_ports.SetExceptionPort(
           mask,
           exception_port,
-          EXCEPTION_STATE_IDENTITY | MACH_EXCEPTION_CODES,
+          EXCEPTION_STATE_IDENTITY_PROTECTED | MACH_EXCEPTION_CODES,
           MACHINE_THREAD_STATE)) {
     return false;
   }

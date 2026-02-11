@@ -1,8 +1,8 @@
 Name: cpp-httplib
 Short Name: cpp-httplib
 URL: https://github.com/yhirose/cpp-httplib
-Version: 0.25.0
-Revision: 3f44c80fd345e859d6f61b2dda566aa3329ce35e
+Version: 0.27.0
+Revision: eacc1ca98e5fef25184c7d417e8417225e05e65d
 Update Mechanism: Manual
 License: MIT
 License File: cpp-httplib/LICENSE
@@ -25,3 +25,6 @@ Local Modifications:
                    except 32-bit Windows
     - 0b3758ec36be Fix problem with Windows version check
     - fbee136dca54 Fix #2193. Allow _WIN32
+    - dffce89514c2 Fix 32-bit MSVC compiler error due to unknown command
+                   #warning (#2202)
+ - Fix sign compare error with sk_X509_OBJECT_num from BoringSSL.

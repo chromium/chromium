@@ -31,6 +31,12 @@
 #include "util/mach/mach_excServer.h"
 #include "util/mach/mach_message.h"
 
+#if BUILDFLAG(IS_IOS)
+#include "util/ios/raw_logging.h"
+#else
+#include "base/apple/mach_logging.h"
+#endif
+
 namespace crashpad {
 
 namespace {
@@ -83,6 +89,8 @@ struct ExcTraits {
   static const mach_msg_id_t kMachMessageIDExceptionRaise = 2401;
   static const mach_msg_id_t kMachMessageIDExceptionRaiseState = 2402;
   static const mach_msg_id_t kMachMessageIDExceptionRaiseStateIdentity = 2403;
+  static const mach_msg_id_t
+      kMachMessageIDExceptionRaiseStateIdentityProtected = 2411;
 
   static const exception_behavior_t kExceptionBehavior = 0;
 };
@@ -99,11 +107,15 @@ struct MachExcTraits {
   using ExceptionRaiseStateRequest = __Request__mach_exception_raise_state_t;
   using ExceptionRaiseStateIdentityRequest =
       __Request__mach_exception_raise_state_identity_t;
+  using ExceptionRaiseStateIdentityProtectedRequest =
+      __Request__mach_exception_raise_state_identity_protected_t;
 
   using ExceptionRaiseReply = __Reply__mach_exception_raise_t;
   using ExceptionRaiseStateReply = __Reply__mach_exception_raise_state_t;
   using ExceptionRaiseStateIdentityReply =
       __Reply__mach_exception_raise_state_identity_t;
+  using ExceptionRaiseStateIdentityProtectedReply =
+      __Reply__mach_exception_raise_state_identity_protected_t;
 
   // The MIG-generated __MIG_check__Request__*() functions are not declared as
   // accepting const data, but they could have been because they in fact do not
@@ -131,10 +143,23 @@ struct MachExcTraits {
         const_cast<ExceptionRaiseStateIdentityRequest**>(in_request_1));
   }
 
+  static kern_return_t MIGCheckRequestExceptionRaiseStateIdentityProtected(
+      const ExceptionRaiseStateIdentityProtectedRequest* in_request,
+      const ExceptionRaiseStateIdentityProtectedRequest** in_request_1) {
+    return
+        __MIG_check__Request__mach_exception_raise_state_identity_protected_t(
+            const_cast<ExceptionRaiseStateIdentityProtectedRequest*>(
+                in_request),
+            const_cast<ExceptionRaiseStateIdentityProtectedRequest**>(
+                in_request_1));
+  }
+
   // There are no predefined constants for these.
   static const mach_msg_id_t kMachMessageIDExceptionRaise = 2405;
   static const mach_msg_id_t kMachMessageIDExceptionRaiseState = 2406;
   static const mach_msg_id_t kMachMessageIDExceptionRaiseStateIdentity = 2407;
+  static const mach_msg_id_t
+      kMachMessageIDExceptionRaiseStateIdentityProtected = 2410;
 
   static const exception_behavior_t kExceptionBehavior = MACH_EXCEPTION_CODES;
 };
@@ -220,6 +245,32 @@ class ExcServer : public MachMessageServer::Interface {
         const mach_msg_trailer_t* trailer,
         bool* destroy_request) = 0;
 
+    //! \brief Handles exceptions raised by
+    //!     `mach_exception_raise_state_identity_protected()`.
+    //!
+    //! This behaves equivalently to a
+    //! `catch_mach_exception_raise_state_identity_protected()` function used
+    //! with `mach_exc_server()`.
+    //!
+    //! \param[in] trailer The trailer received with the request message.
+    //! \param[out] destroy_request `true` if the request message is to be
+    //!     destroyed even when this method returns success. See
+    //!     MachMessageServer::Interface.
+    virtual kern_return_t CatchExceptionRaiseStateIdentityProtected(
+        exception_handler_t exception_port,
+        thread_t thread,
+        task_t task,
+        exception_type_t exception,
+        const typename Traits::ExceptionCode* code,
+        mach_msg_type_number_t code_count,
+        thread_state_flavor_t* flavor,
+        ConstThreadState old_state,
+        mach_msg_type_number_t old_state_count,
+        thread_state_t new_state,
+        mach_msg_type_number_t* new_state_count,
+        const mach_msg_trailer_t* trailer,
+        bool* destroy_request) = 0;
+
    protected:
     ~Interface() {}
   };
@@ -244,6 +295,7 @@ class ExcServer : public MachMessageServer::Interface {
         Traits::kMachMessageIDExceptionRaise,
         Traits::kMachMessageIDExceptionRaiseState,
         Traits::kMachMessageIDExceptionRaiseStateIdentity,
+        Traits::kMachMessageIDExceptionRaiseStateIdentityProtected,
     };
     return std::set<mach_msg_id_t>(&request_ids[0],
                                    &request_ids[std::size(request_ids)]);
@@ -389,6 +441,113 @@ bool ExcServer<Traits>::MachMessageServerFunction(
       return true;
     }
 
+    case MachExcTraits::kMachMessageIDExceptionRaiseStateIdentityProtected: {
+      // mach_exception_raise_state_identity_protected(),
+      // catch_mach_exception_raise_state_identity_protected().
+      using Request =
+          typename MachExcTraits::ExceptionRaiseStateIdentityProtectedRequest;
+      const Request* in_request = reinterpret_cast<const Request*>(in_header);
+
+      // in_request_1 is used for the portion of the request after the codes,
+      // which in theory can be variable-length. The check function will set it.
+      const Request* in_request_1;
+      kern_return_t kr =
+          MachExcTraits::MIGCheckRequestExceptionRaiseStateIdentityProtected(
+              in_request, &in_request_1);
+      if (kr != MACH_MSG_SUCCESS) {
+        SetMIGReplyError(out_header, kr);
+        return true;
+      }
+
+      task_t task_port = TASK_NULL;
+      if (in_request->task_id_token_t.name != MACH_PORT_NULL) {
+        kr = task_identity_token_get_task_port(
+            in_request->task_id_token_t.name, TASK_FLAVOR_CONTROL, &task_port);
+        if (kr != MACH_MSG_SUCCESS) {
+          // If this fails, pass TASK_NULL to
+          // CatchExceptionRaiseStateIdentityProtected
+#if BUILDFLAG(IS_IOS)
+          CRASHPAD_RAW_LOG_ERROR(kr, "task_identity_token_get_task_port");
+#else
+          MACH_LOG(WARNING, kr) << "task_identity_token_get_task_port";
+#endif
+        }
+      }
+
+      // Get the thread_t matching in_request->thread_id.
+      thread_t thread_port = THREAD_NULL;
+      if (task_port != TASK_NULL) {
+        thread_act_array_t threads;
+        mach_msg_type_number_t thread_count;
+        kr = task_threads(task_port, &threads, &thread_count);
+        if (kr == KERN_SUCCESS) {
+          for (mach_msg_type_number_t thread_index = 0;
+               thread_index < thread_count;
+               ++thread_index) {
+            if (thread_port != THREAD_NULL) {
+              mach_port_deallocate(mach_task_self(), threads[thread_index]);
+              continue;
+            }
+            thread_identifier_info_data_t thread_id_info;
+            mach_msg_type_number_t count = THREAD_IDENTIFIER_INFO_COUNT;
+            kr = thread_info(threads[thread_index],
+                             THREAD_IDENTIFIER_INFO,
+                             (thread_info_t)&thread_id_info,
+                             &count);
+            if (kr != KERN_SUCCESS) {
+              mach_port_deallocate(mach_task_self(), threads[thread_index]);
+              continue;
+            }
+            if (thread_id_info.thread_id == in_request->thread_id) {
+              thread_port = threads[thread_index];
+            } else {
+              mach_port_deallocate(mach_task_self(), threads[thread_index]);
+            }
+          }
+          vm_deallocate(mach_task_self(),
+                        (vm_address_t)threads,
+                        thread_count * sizeof(thread_t));
+        }
+      }
+
+      using Reply = MachExcTraits::ExceptionRaiseStateIdentityProtectedReply;
+      Reply* out_reply = reinterpret_cast<Reply*>(out_header);
+      out_reply->flavor = in_request_1->flavor;
+      out_reply->new_stateCnt = std::size(out_reply->new_state);
+      out_reply->RetCode =
+          interface_->CatchExceptionRaiseStateIdentityProtected(
+              in_header->msgh_local_port,
+              thread_port,
+              task_port,
+              in_request->exception,
+              (const typename Traits::ExceptionCode*)in_request->code,
+              in_request->codeCnt,
+              &out_reply->flavor,
+              in_request_1->old_state,
+              in_request_1->old_stateCnt,
+              out_reply->new_state,
+              &out_reply->new_stateCnt,
+              in_trailer,
+              destroy_complex_request);
+
+      if (task_port != TASK_NULL) {
+        mach_port_deallocate(mach_task_self(), task_port);
+      }
+
+      if (thread_port != THREAD_NULL) {
+        mach_port_deallocate(mach_task_self(), thread_port);
+      }
+
+      if (out_reply->RetCode != KERN_SUCCESS) {
+        return true;
+      }
+
+      out_header->msgh_size =
+          sizeof(*out_reply) - sizeof(out_reply->new_state) +
+          sizeof(out_reply->new_state[0]) * out_reply->new_stateCnt;
+      return true;
+    }
+
     default: {
       SetMIGReplyError(out_header, MIG_BAD_ID);
       return false;
@@ -421,11 +580,12 @@ class SimplifiedExcServer final : public ExcServer<Traits>,
     //! The meanings of most parameters are identical to that of
     //! ExcServer<>::Interface::CatchExceptionRaiseStateIdentity().
     //!
-    //! \param[in] behavior `EXCEPTION_DEFAULT`, `EXCEPTION_STATE`, or
-    //!     `EXCEPTION_STATE_IDENTITY`, identifying which exception request
-    //!     message was processed and thus which other parameters are valid.
-    //!     When used with the `mach_exc` subsystem, `MACH_EXCEPTION_CODES` will
-    //!     be ORed in to this parameter.
+    //! \param[in] behavior `EXCEPTION_DEFAULT`, `EXCEPTION_STATE`,
+    //!     `EXCEPTION_STATE_IDENTITY`, or
+    //!     `EXCEPTION_STATE_IDENTITY_PROTECTED` identifying which exception
+    //!     request message was processed and thus which other parameters are
+    //!     valid. When used with the `mach_exc` subsystem,
+    //!     `MACH_EXCEPTION_CODES` will be ORed in to this parameter.
     virtual kern_return_t CatchException(
         exception_behavior_t behavior,
         exception_handler_t exception_port,
@@ -531,6 +691,37 @@ class SimplifiedExcServer final : public ExcServer<Traits>,
       bool* destroy_request) override {
     return interface_->CatchException(
         Traits::kExceptionBehavior | EXCEPTION_STATE_IDENTITY,
+        exception_port,
+        thread,
+        task,
+        exception,
+        code_count ? code : nullptr,
+        code_count,
+        flavor,
+        old_state_count ? old_state : nullptr,
+        old_state_count,
+        new_state_count ? new_state : nullptr,
+        new_state_count,
+        trailer,
+        destroy_request);
+  }
+
+  kern_return_t CatchExceptionRaiseStateIdentityProtected(
+      exception_handler_t exception_port,
+      thread_t thread,
+      task_t task,
+      exception_type_t exception,
+      const typename Traits::ExceptionCode* code,
+      mach_msg_type_number_t code_count,
+      thread_state_flavor_t* flavor,
+      ConstThreadState old_state,
+      mach_msg_type_number_t old_state_count,
+      thread_state_t new_state,
+      mach_msg_type_number_t* new_state_count,
+      const mach_msg_trailer_t* trailer,
+      bool* destroy_request) override {
+    return interface_->CatchException(
+        Traits::kExceptionBehavior | EXCEPTION_STATE_IDENTITY_PROTECTED,
         exception_port,
         thread,
         task,

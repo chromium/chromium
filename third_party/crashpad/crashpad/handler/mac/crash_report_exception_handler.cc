@@ -19,6 +19,7 @@
 
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_mach_port.h"
+#include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "client/settings.h"
@@ -27,6 +28,9 @@
 #include "minidump/minidump_user_extension_stream_data_source.h"
 #include "snapshot/crashpad_info_client_options.h"
 #include "snapshot/mac/process_snapshot_mac.h"
+#include "util/file/file_helper.h"
+#include "util/file/file_io.h"
+#include "util/file/file_reader.h"
 #include "util/file/file_writer.h"
 #include "util/mach/bootstrap.h"
 #include "util/mach/exc_client_variants.h"
@@ -47,10 +51,12 @@ CrashReportExceptionHandler::CrashReportExceptionHandler(
     CrashReportDatabase* database,
     CrashReportUploadThread* upload_thread,
     const std::map<std::string, std::string>* process_annotations,
+    const std::vector<base::FilePath>* attachments,
     const UserStreamDataSources* user_stream_data_sources)
     : database_(database),
       upload_thread_(upload_thread),
       process_annotations_(process_annotations),
+      attachments_(attachments),
       user_stream_data_sources_(user_stream_data_sources) {}
 
 CrashReportExceptionHandler::~CrashReportExceptionHandler() {
@@ -168,6 +174,21 @@ kern_return_t CrashReportExceptionHandler::CatchMachException(
     minidump.InitializeFromSnapshot(&process_snapshot);
     AddUserExtensionStreams(
         user_stream_data_sources_, &process_snapshot, &minidump);
+
+    for (const auto& attachment : *attachments_) {
+      base::FilePath name = attachment.BaseName();
+      FileWriter* writer = new_report->AddAttachment(name.value());
+      if (!writer) {
+        LOG(WARNING) << "Failed to add attachment";
+        continue;
+      }
+      FileReader reader;
+      if (!reader.Open(attachment)) {
+        LOG(WARNING) << "Failed to open attachment " << attachment.value();
+        continue;
+      }
+      CopyFileContent(&reader, writer);
+    }
 
     if (!minidump.WriteEverything(new_report->Writer())) {
       Metrics::ExceptionCaptureResult(
