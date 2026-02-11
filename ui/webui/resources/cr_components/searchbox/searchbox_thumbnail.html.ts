@@ -10,9 +10,9 @@ export function getHtml(this: SearchboxThumbnailElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container" aria-hidden="true">
-  <img id="image" src="${this.thumbnailUrl_}">
+  <img id="image" src="${this.thumbnailUrl}">
   <div class="overlay">
-    ${this.isDeletable_ ? html`
+    ${this.isDeletable ? html`
       <cr-icon-button id="remove" class="action-icon icon-clear"
           @click="${this.onRemoveButtonClick_}">
       </cr-icon-button>

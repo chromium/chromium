@@ -26,16 +26,16 @@ export class SearchboxThumbnailElement extends CrLitElement {
 
   static override get properties() {
     return {
-      //========================================================================
-      // Private properties
-      //========================================================================
-      thumbnailUrl_: {type: String},
+      thumbnailUrl: {type: String},
 
-      isDeletable_: {
+      isDeletable: {
         type: Boolean,
         reflect: true,
       },
 
+      //========================================================================
+      // Private properties
+      //========================================================================
       enableThumbnailSizingTweaks_: {
         type: Boolean,
         reflect: true,
@@ -44,9 +44,9 @@ export class SearchboxThumbnailElement extends CrLitElement {
   }
 
   // The URL of the thumbnail to display.
-  protected accessor thumbnailUrl_: string = '';
+  accessor thumbnailUrl: string = '';
   // Whether the user can delete the thumbnail.
-  protected accessor isDeletable_: boolean = false;
+  accessor isDeletable: boolean = false;
   // Whether to enable thumbnail sizing tweaks.
   protected accessor enableThumbnailSizingTweaks_: boolean =
       loadTimeData.getBoolean('enableThumbnailSizingTweaks');

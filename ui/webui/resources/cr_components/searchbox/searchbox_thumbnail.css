@@ -55,7 +55,7 @@
   height: 100%;
 }
 
-:host([is-deletable_]:hover) .overlay,
+:host([is-deletable]:hover) .overlay,
 :host(:focus-visible) .overlay {
   background-color: var(--color-searchbox-thumbnail-overlay);
 }

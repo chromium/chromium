@@ -1451,6 +1451,14 @@ export class SearchboxElement extends SearchboxElementBase implements
   protected onHasSecondarySideChanged_(e: CustomEvent<{value: boolean}>) {
     this.hasSecondarySide = e.detail.value;
   }
+
+  protected useCompactLayout_(): boolean {
+    return this.searchboxLayoutMode === 'Compact';
+  }
+
+  protected getInnerInputInert_(): boolean {
+    return !!this.errorMessage_ && this.ntpRealboxNextEnabled;
+  }
 }
 
 declare global {
