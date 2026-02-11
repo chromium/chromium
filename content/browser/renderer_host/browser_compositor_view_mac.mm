@@ -116,7 +116,6 @@ void BrowserCompositorMac::UpdateSurfaceFromNSView(
     const gfx::Size& new_size_dip) {
   display::ScreenInfo current = client_->GetCurrentScreenInfo();
 
-  bool is_resize = !dfh_size_dip_.IsEmpty() && new_size_dip != dfh_size_dip_;
   bool needs_new_surface_id =
       new_size_dip != dfh_size_dip_ ||
       current.device_scale_factor != dfh_device_scale_factor_;
@@ -134,7 +133,7 @@ void BrowserCompositorMac::UpdateSurfaceFromNSView(
     dfh_local_surface_id_allocator_.GenerateId();
     delegated_frame_host_->EmbedSurface(
         dfh_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
-        dfh_size_dip_, GetDeadlinePolicy(is_resize));
+        dfh_size_dip_, cc::DeadlinePolicy::UseSpecifiedDeadline(0u));
   }
 
   if (recyclable_compositor_) {
@@ -167,7 +166,7 @@ void BrowserCompositorMac::UpdateSurfaceFromChild(
     }
     delegated_frame_host_->EmbedSurface(
         dfh_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
-        dfh_size_dip_, GetDeadlinePolicy(true /* is_resize */));
+        dfh_size_dip_, cc::DeadlinePolicy::UseDefaultDeadline());
   }
   client_->OnBrowserCompositorSurfaceIdChanged();
 }
@@ -417,21 +416,6 @@ ui::Compositor* BrowserCompositorMac::GetCompositor() const {
 void BrowserCompositorMac::InvalidateSurfaceAllocationGroup() {
   dfh_local_surface_id_allocator_.Invalidate(
       /*also_invalidate_allocation_group=*/true);
-}
-
-cc::DeadlinePolicy BrowserCompositorMac::GetDeadlinePolicy(
-    bool is_resize) const {
-  // Determined empirically for smoothness. Don't wait for non-resize frames,
-  // as it can cause jank at new tab creation.
-  // https://crbug.com/855364
-  uint32_t frames_to_wait = is_resize ? 8 : 0;
-
-  // When using the RecyclableCompositor, never wait for frames to arrive
-  // (surface sync is managed by the Suspend/Unsuspend lock).
-  if (recyclable_compositor_)
-    frames_to_wait = 0;
-
-  return cc::DeadlinePolicy::UseSpecifiedDeadline(frames_to_wait);
 }
 
 }  // namespace content
