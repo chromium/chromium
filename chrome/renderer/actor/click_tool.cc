@@ -114,13 +114,13 @@ void ClickTool::Cancel() {
   }
 }
 
-mojom::ActionResultPtr ClickTool::Validate() {
+ValidationResult ClickTool::Validate() {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
   auto resolved_target = ValidateAndResolveTarget();
   if (!resolved_target.has_value()) {
-    return std::move(resolved_target.error());
+    return ValidationResult(std::move(resolved_target.error()));
   }
 
   // Perform click validation on the resolved node.
@@ -129,15 +129,15 @@ mojom::ActionResultPtr ClickTool::Validate() {
     WebFormControlElement form_element =
         node.DynamicTo<WebFormControlElement>();
     if (!form_element.IsNull() && !form_element.IsEnabled()) {
-      return MakeResult(
+      return ValidationResult(MakeResult(
           mojom::ActionResultCode::kElementDisabled,
           /*requires_page_stabilization=*/false,
-          absl::StrFormat("[Element %s]", base::ToString(form_element)));
+          absl::StrFormat("[Element %s]", base::ToString(form_element))));
     }
   }
 
   validated_target_ = std::move(resolved_target.value());
-  return MakeOkResult();
+  return ValidationResult(MakeOkResult(), validated_target_->widget_point);
 }
 
 }  // namespace actor

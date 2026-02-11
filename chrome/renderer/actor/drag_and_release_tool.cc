@@ -199,7 +199,7 @@ std::string DragAndReleaseTool::DebugString() const {
                          ToDebugString(action_->to_target));
 }
 
-mojom::ActionResultPtr DragAndReleaseTool::Validate() {
+ValidationResult DragAndReleaseTool::Validate() {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
@@ -213,11 +213,11 @@ mojom::ActionResultPtr DragAndReleaseTool::Validate() {
   ResolveResult resolved_to = ResolveTarget(*to_target);
 
   if (!resolved_from.has_value()) {
-    return std::move(resolved_from.error());
+    return ValidationResult(std::move(resolved_from.error()));
   }
 
   if (!resolved_to.has_value()) {
-    return std::move(resolved_to.error());
+    return ValidationResult(std::move(resolved_to.error()));
   }
 
   if (resolved_from->GetWidget(*this) != resolved_to->GetWidget(*this)) {
@@ -226,8 +226,9 @@ mojom::ActionResultPtr DragAndReleaseTool::Validate() {
     static constexpr std::string_view kErrorMessage =
         "Drag across widgets is not supported.";
     NOTIMPLEMENTED() << kErrorMessage;
-    return MakeResult(mojom::ActionResultCode::kNotImplemented,
-                      /*requires_page_stabilization=*/false, kErrorMessage);
+    return ValidationResult(MakeResult(mojom::ActionResultCode::kNotImplemented,
+                                       /*requires_page_stabilization=*/false,
+                                       kErrorMessage));
   }
 
   // TODO(b/450018073): This should be checking the targets for time-of-use
@@ -235,7 +236,7 @@ mojom::ActionResultPtr DragAndReleaseTool::Validate() {
 
   validated_drag_params_ =
       DragParams{resolved_from.value(), resolved_to.value()};
-  return MakeOkResult();
+  return ValidationResult(MakeOkResult());
 }
 
 bool DragAndReleaseTool::InjectMouseEvent(WebWidget& widget,

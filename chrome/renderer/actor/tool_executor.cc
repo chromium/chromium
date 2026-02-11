@@ -148,8 +148,8 @@ mojom::ActionResultPtr ToolExecutor::InitializeTool(
   if (tool_->EnsureTargetInView()) {
     performed_scroll_into_view_ = true;
   }
-
-  return tool_->Validate();
+  ValidationResult validation = tool_->Validate();
+  return std::move(validation.result);
 }
 
 void ToolExecutor::ExecuteTool(const actor::TaskId& task_id,

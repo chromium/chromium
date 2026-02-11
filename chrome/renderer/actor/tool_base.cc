@@ -414,4 +414,14 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
   return MakeOkResult();
 }
 
+ValidationResult::ValidationResult(mojom::ActionResultPtr result,
+                                   std::optional<gfx::PointF> target_point)
+    : result(std::move(result)), target_point(target_point) {}
+
+ValidationResult::~ValidationResult() = default;
+
+ValidationResult::ValidationResult(ValidationResult&&) = default;
+
+ValidationResult& ValidationResult::operator=(ValidationResult&&) = default;
+
 }  // namespace actor

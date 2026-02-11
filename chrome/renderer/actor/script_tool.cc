@@ -109,8 +109,8 @@ std::string ScriptTool::DebugString() const {
                          action_->name, action_->input_arguments);
 }
 
-mojom::ActionResultPtr ScriptTool::Validate() {
-  return MakeOkResult();
+ValidationResult ScriptTool::Validate() {
+  return ValidationResult(MakeOkResult());
 }
 
 }  // namespace actor

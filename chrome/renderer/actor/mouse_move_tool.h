@@ -33,7 +33,7 @@ class MouseMoveTool : public ToolBase {
   ~MouseMoveTool() override;
 
   // actor::ToolBase
-  mojom::ActionResultPtr Validate() override;
+  ValidationResult Validate() override;
   void Execute(ToolFinishedCallback callback) override;
   std::string DebugString() const override;
 

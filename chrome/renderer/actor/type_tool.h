@@ -46,7 +46,7 @@ class TypeTool : public ToolBase {
   ~TypeTool() override;
 
   // actor::ToolBase
-  mojom::ActionResultPtr Validate() override;
+  ValidationResult Validate() override;
   void Execute(ToolFinishedCallback callback) override;
   void Cancel() override;
   std::string DebugString() const override;

@@ -64,7 +64,7 @@ std::string SelectTool::DebugString() const {
                          action_->value);
 }
 
-mojom::ActionResultPtr SelectTool::Validate() {
+ValidationResult SelectTool::Validate() {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
@@ -72,28 +72,31 @@ mojom::ActionResultPtr SelectTool::Validate() {
     static constexpr std::string_view kErrorMessage =
         "Coordinate-based target is not yet supported.";
     NOTIMPLEMENTED() << kErrorMessage;
-    return MakeResult(mojom::ActionResultCode::kNotImplemented,
-                      /*requires_page_stabilization=*/false, kErrorMessage);
+    return ValidationResult(MakeResult(mojom::ActionResultCode::kNotImplemented,
+                                       /*requires_page_stabilization=*/false,
+                                       kErrorMessage));
   }
 
   auto resolved_target = ValidateAndResolveTarget();
   if (!resolved_target.has_value()) {
-    return std::move(resolved_target.error());
+    return ValidationResult(std::move(resolved_target.error()));
   }
 
   // Perform select validation on the resolved node.
   const WebNode& node = resolved_target->node;
   WebSelectElement select = node.DynamicTo<WebSelectElement>();
   if (!select) {
-    return MakeResult(mojom::ActionResultCode::kSelectInvalidElement,
-                      /*requires_page_stabilization=*/false,
-                      absl::StrFormat("Element [%s]", base::ToString(node)));
+    return ValidationResult(
+        MakeResult(mojom::ActionResultCode::kSelectInvalidElement,
+                   /*requires_page_stabilization=*/false,
+                   absl::StrFormat("Element [%s]", base::ToString(node))));
   }
 
   if (!select.IsEnabled()) {
-    return MakeResult(mojom::ActionResultCode::kElementDisabled,
-                      /*requires_page_stabilization=*/false,
-                      absl::StrFormat("Element [%s]", base::ToString(select)));
+    return ValidationResult(
+        MakeResult(mojom::ActionResultCode::kElementDisabled,
+                   /*requires_page_stabilization=*/false,
+                   absl::StrFormat("Element [%s]", base::ToString(select))));
   }
 
   WebString value(WebString::FromUTF8(action_->value));
@@ -101,20 +104,20 @@ mojom::ActionResultPtr SelectTool::Validate() {
     auto option = e.DynamicTo<WebOptionElement>();
     if (option && option.Value() == value) {
       if (!option.IsEnabled()) {
-        return MakeResult(
+        return ValidationResult(MakeResult(
             mojom::ActionResultCode::kSelectOptionDisabled,
             /*requires_page_stabilization=*/false,
             absl::StrFormat("SelectElement[%s] OptionElement [%s]",
-                            base::ToString(select), base::ToString(option)));
+                            base::ToString(select), base::ToString(option))));
       }
       validated_target_and_value_.emplace(TargetAndValue{select, value});
-      return MakeOkResult();
+      return ValidationResult(MakeOkResult());
     }
   }
-  return MakeResult(
-      mojom::ActionResultCode::kSelectNoSuchOption,
-      /*requires_page_stabilization=*/false,
-      absl::StrFormat("SelectElement[%s]", base::ToString(select)));
+  return ValidationResult(
+      MakeResult(mojom::ActionResultCode::kSelectNoSuchOption,
+                 /*requires_page_stabilization=*/false,
+                 absl::StrFormat("SelectElement[%s]", base::ToString(select))));
 }
 
 }  // namespace actor

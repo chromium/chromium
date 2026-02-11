@@ -41,17 +41,17 @@ std::string NoOpTool::DebugString() const {
   return absl::StrFormat("NoOpTool[%s]", ToDebugString(target_));
 }
 
-mojom::ActionResultPtr NoOpTool::Validate() {
+ValidationResult NoOpTool::Validate() {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
   auto resolved_target = ValidateAndResolveTarget();
   if (!resolved_target.has_value()) {
-    return std::move(resolved_target.error());
+    return ValidationResult(std::move(resolved_target.error()));
   }
 
   validated_target_ = std::move(resolved_target.value());
-  return MakeOkResult();
+  return ValidationResult(MakeOkResult());
 }
 
 }  // namespace actor
