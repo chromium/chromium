@@ -60,7 +60,9 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
 
   ~ChildMemoryConsumerRegistryHost() override;
 
-  // Sets a callback that will be run when the coordinator remote disconnects.
+  // Sets a callback that will be run when the connection is lost (i.e. the
+  // remote is closed, or the child process exited). This must delete the
+  // instance.
   void SetDisconnectHandler(base::OnceClosure handler);
 
   // mojom::ChildMemoryConsumerRegistryHost:
@@ -72,6 +74,9 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
 
  private:
   class ChildMemoryConsumer;
+  class RenderProcessExitedObserver;
+
+  void RunDisconnectHandler();
 
   void NotifyReleaseMemory(const std::string& consumer_id);
   void NotifyUpdateMemoryLimit(const std::string& consumer_id, int percentage);
@@ -90,6 +95,8 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
   // child process.
   absl::flat_hash_map<std::string, std::unique_ptr<ChildMemoryConsumer>>
       consumers_;
+
+  std::unique_ptr<RenderProcessExitedObserver> process_observer_;
 };
 
 }  // namespace content

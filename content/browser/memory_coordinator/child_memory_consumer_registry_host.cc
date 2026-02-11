@@ -7,6 +7,10 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
+#include "base/scoped_observation.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace content {
@@ -35,6 +39,50 @@ class ChildMemoryConsumerRegistryHost::ChildMemoryConsumer
   const std::string consumer_id_;
 };
 
+// ChildMemoryConsumerRegistryHost::RenderProcessExitedObserver ----------------
+
+// Helper class that observes a `RenderProcessHost` for exit signals.
+//
+// In general, `RenderProcessHost` instances can be reused after shutdown. In
+// a normal configuration, the child process is forcefully terminated and all
+// associated Mojo pipes are closed before a new child is spawned. This
+// ensures a 1:1 mapping between a `ChildProcessId` and an active Mojo
+// connection: an invariant the memory coordinator relies on to track the
+// hosting process of a child `MemoryConsumer`.
+//
+// However, if `ChildProcessLauncher::terminate_child_on_shutdown_` is false,
+// the initial child process may outlive the start of the new one. Because
+// the old Mojo pipe isn't closed immediately, the new process binds its own
+// pipe while the old one is still active, breaking the 1:1 invariant.
+//
+// This class uses `RenderProcessHostObserver` to bridge that gap, as
+// `RenderProcessExited` provides the reliable signal needed to clean up
+// state even when the process outlives its host's initial shutdown phase.
+class ChildMemoryConsumerRegistryHost::RenderProcessExitedObserver
+    : public RenderProcessHostObserver {
+ public:
+  RenderProcessExitedObserver(RenderProcessHost* host,
+                              base::OnceClosure on_exited)
+      : on_exited_(std::move(on_exited)) {
+    observation_.Observe(host);
+  }
+
+  void RenderProcessExited(RenderProcessHost* host,
+                           const ChildProcessTerminationInfo& info) override {
+    // Calling `on_exited_` will delete `this`.
+    std::move(on_exited_).Run();
+  }
+
+  void RenderProcessHostDestroyed(RenderProcessHost* host) override {
+    NOTREACHED();
+  }
+
+ private:
+  base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
+      observation_{this};
+  base::OnceClosure on_exited_;
+};
+
 // ChildMemoryConsumerRegistryHost --------------------------------------------
 
 ChildMemoryConsumerRegistryHost::ChildMemoryConsumerRegistryHost(
@@ -43,7 +91,18 @@ ChildMemoryConsumerRegistryHost::ChildMemoryConsumerRegistryHost(
     ChildProcessId child_process_id)
     : delegate_(delegate),
       process_type_(process_type),
-      child_process_id_(child_process_id) {}
+      child_process_id_(child_process_id) {
+  if (process_type_ == PROCESS_TYPE_RENDERER) {
+    RenderProcessHost* rph = RenderProcessHost::FromID(child_process_id_);
+    CHECK(rph);
+    // The use of Unretained is safe here because `this` owns the observer and
+    // will always outlive it.
+    process_observer_ = std::make_unique<RenderProcessExitedObserver>(
+        rph,
+        base::BindOnce(&ChildMemoryConsumerRegistryHost::RunDisconnectHandler,
+                       base::Unretained(this)));
+  }
+}
 
 ChildMemoryConsumerRegistryHost::~ChildMemoryConsumerRegistryHost() {
   for (auto& [consumer_id, consumer] : consumers_) {
@@ -64,9 +123,12 @@ void ChildMemoryConsumerRegistryHost::BindCoordinator(
     mojo::ReportBadMessage("BindCoordinator called more than once");
     return;
   }
-  CHECK(disconnect_handler_);
   coordinator_remote_.Bind(std::move(coordinator_remote));
-  coordinator_remote_.set_disconnect_handler(std::move(disconnect_handler_));
+  // The use of Unretained is safe here because `this` owns the remote and
+  // will always outlive it.
+  coordinator_remote_.set_disconnect_handler(
+      base::BindOnce(&ChildMemoryConsumerRegistryHost::RunDisconnectHandler,
+                     base::Unretained(this)));
 }
 
 void ChildMemoryConsumerRegistryHost::Register(
@@ -102,6 +164,11 @@ void ChildMemoryConsumerRegistryHost::Unregister(
   delegate_->RemoveMemoryConsumerFromChildProcess(
       consumer_id, child_process_id_, it->second.get());
   consumers_.erase(it);
+}
+
+void ChildMemoryConsumerRegistryHost::RunDisconnectHandler() {
+  // Calling `disconnect_handler_` will delete `this`.
+  std::move(disconnect_handler_).Run();
 }
 
 void ChildMemoryConsumerRegistryHost::NotifyReleaseMemory(

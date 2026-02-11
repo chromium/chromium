@@ -13,9 +13,11 @@
 #include "base/memory_coordinator/memory_consumer_registry.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/task_environment.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/process_type.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -97,7 +99,7 @@ class ChildMemoryConsumerRegistryHostTest : public Test {
         &hosts_, id));
   }
 
-  base::test::TaskEnvironment task_environment_;
+  BrowserTaskEnvironment task_environment_;
   MockDelegate delegate_;
   mojo::UniqueReceiverSet<mojom::ChildMemoryConsumerRegistryHost> hosts_;
   TestMemoryConsumerRegistry registry_helper_;
@@ -105,7 +107,7 @@ class ChildMemoryConsumerRegistryHostTest : public Test {
 
 TEST_F(ChildMemoryConsumerRegistryHostTest, RegisterAndUnregister) {
   mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> remote_host;
-  BindHost(PROCESS_TYPE_RENDERER, ChildProcessId(1),
+  BindHost(PROCESS_TYPE_UTILITY, ChildProcessId(1),
            remote_host.BindNewPipeAndPassReceiver());
 
   MockChildMemoryCoordinator mock_coordinator;
@@ -116,7 +118,7 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, RegisterAndUnregister) {
   base::MemoryConsumer* host_side_consumer = nullptr;
   EXPECT_CALL(delegate_,
               AddMemoryConsumerFromChildProcess(
-                  "consumer", _, PROCESS_TYPE_RENDERER, ChildProcessId(1), _))
+                  "consumer", _, PROCESS_TYPE_UTILITY, ChildProcessId(1), _))
       .WillOnce(SaveArg<4>(&host_side_consumer));
 
   remote_host->Register("consumer", {});
@@ -134,7 +136,7 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, RegisterAndUnregister) {
 
 TEST_F(ChildMemoryConsumerRegistryHostTest, NotifyReleaseMemory) {
   mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> remote_host;
-  BindHost(PROCESS_TYPE_RENDERER, ChildProcessId(1),
+  BindHost(PROCESS_TYPE_UTILITY, ChildProcessId(1),
            remote_host.BindNewPipeAndPassReceiver());
 
   MockChildMemoryCoordinator mock_coordinator;
@@ -164,7 +166,7 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, NotifyReleaseMemory) {
 // data associated with that process.
 TEST_F(ChildMemoryConsumerRegistryHostTest, DisconnectCoordinator) {
   mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> remote_host;
-  BindHost(PROCESS_TYPE_RENDERER, ChildProcessId(1),
+  BindHost(PROCESS_TYPE_UTILITY, ChildProcessId(1),
            remote_host.BindNewPipeAndPassReceiver());
 
   MockChildMemoryCoordinator mock_coordinator;
@@ -182,6 +184,35 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, DisconnectCoordinator) {
       .WillOnce(base::test::RunOnceClosure(task_environment_.QuitClosure()));
 
   coordinator_receiver.reset();
+  task_environment_.RunUntilQuit();
+}
+
+TEST_F(ChildMemoryConsumerRegistryHostTest, RenderProcessExited) {
+  TestBrowserContext browser_context;
+  MockRenderProcessHost rph(&browser_context);
+  rph.Init();
+  const ChildProcessId kChildId = rph.GetID();
+
+  EXPECT_CALL(delegate_,
+              AddMemoryConsumerFromChildProcess(_, _, _, kChildId, _));
+  mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> remote_host;
+  BindHost(PROCESS_TYPE_RENDERER, kChildId,
+           remote_host.BindNewPipeAndPassReceiver());
+
+  MockChildMemoryCoordinator mock_coordinator;
+  mojo::Receiver<mojom::ChildMemoryCoordinator> coordinator_receiver(
+      &mock_coordinator);
+  remote_host->BindCoordinator(coordinator_receiver.BindNewPipeAndPassRemote());
+
+  remote_host->Register("consumer", {});
+  remote_host.FlushForTesting();
+
+  EXPECT_CALL(delegate_, RemoveMemoryConsumerFromChildProcess(_, kChildId, _))
+      .WillOnce(base::test::RunOnceClosure(task_environment_.QuitClosure()));
+
+  rph.SimulateRenderProcessExit(base::TERMINATION_STATUS_PROCESS_CRASHED, 0);
+
+  // We need to wait for the host to be destroyed.
   task_environment_.RunUntilQuit();
 }
 
