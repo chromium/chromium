@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility/aim_eligibility.mojom.h"
+#include "chrome/browser/ui/webui/omnibox/logging/logs.mojom.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_internals.mojom-forward.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/internal_webui_config.h"
@@ -17,6 +18,11 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class AimEligibilityPageHandler;
+
+namespace omnibox::logging {
+class LogsPageHandler;
+}  // namespace omnibox::logging
+
 class OmniboxPageHandler;
 
 class OmniboxUI;
@@ -29,7 +35,8 @@ class OmniboxUIConfig : public content::DefaultInternalWebUIConfig<OmniboxUI> {
 
 // The UI for chrome://omnibox/
 class OmniboxUI : public ui::MojoWebUIController,
-                  public aim_eligibility::mojom::PageHandlerFactory {
+                  public aim_eligibility::mojom::PageHandlerFactory,
+                  public omnibox::logging::mojom::PageHandlerFactory {
  public:
   explicit OmniboxUI(content::WebUI* contents);
 
@@ -46,10 +53,20 @@ class OmniboxUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<aim_eligibility::mojom::PageHandlerFactory>
           receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<omnibox::logging::mojom::PageHandlerFactory>
+          receiver);
+
   // aim_eligibility::mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingRemote<aim_eligibility::mojom::Page> page,
       mojo::PendingReceiver<aim_eligibility::mojom::PageHandler> handler)
+      override;
+
+  // omnibox::logging::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<omnibox::logging::mojom::Page> page,
+      mojo::PendingReceiver<omnibox::logging::mojom::PageHandler> handler)
       override;
 
  private:
@@ -57,6 +74,10 @@ class OmniboxUI : public ui::MojoWebUIController,
   std::unique_ptr<AimEligibilityPageHandler> aim_eligibility_page_handler_;
   mojo::Receiver<aim_eligibility::mojom::PageHandlerFactory>
       aim_eligibility_factory_receiver_{this};
+
+  std::unique_ptr<omnibox::logging::LogsPageHandler> logs_page_handler_;
+  mojo::Receiver<omnibox::logging::mojom::PageHandlerFactory>
+      logs_factory_receiver_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

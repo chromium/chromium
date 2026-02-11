@@ -17932,6 +17932,7 @@ from previous Chrome versions.
   <int value="1262469513" label="GesturePropertiesDBusService:disabled"/>
   <int value="1262747485"
       label="ForceSupervisedUserReauthenticationForYouTube:disabled"/>
+  <int value="1262757386" label="OmniboxDebugLogs:disabled"/>
   <int value="1264183726" label="kOmniboxCR23SteadyStateIcons:enabled"/>
   <int value="1265411197" label="EdgeToEdgeBottomChin:disabled"/>
   <int value="1265457230" label="MultiZoneRgbKeyboard:disabled"/>
@@ -19985,6 +19986,7 @@ from previous Chrome versions.
   <int value="1951466218" label="enable-data-reduction-proxy-lite-page"/>
   <int value="1951645673" label="PasswordsKeyboardAccessory:disabled"/>
   <int value="1952004191" label="CCTGoogleBottomBar:disabled"/>
+  <int value="1952027204" label="OmniboxDebugLogs:enabled"/>
   <int value="1952183277" label="CrOSLateBootCrOSSOUL:enabled"/>
   <int value="1952339754"
       label="SignedExchangePrefetchCacheForNavigations:enabled"/>

@@ -329,6 +329,8 @@ BASE_FEATURE(kComposeboxAttachmentsTypedState, DISABLED);
 // Enables passthrough params to be sent to the AIM eligibility service.
 BASE_FEATURE(kAimUrlInterceptPassthrough, DISABLED);
 
+BASE_FEATURE(kOmniboxDebugLogs, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Accelerates time from cold start to focused Omnibox on low-end devices,
 // prioritizing Omnibox focus and background initialization.
@@ -383,6 +385,13 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
 }  // namespace android
 #endif  // BUILDFLAG(IS_ANDROID)
 // Note: no new flags beyond this point.
+
+namespace flag_descriptions {
+const char kOmniboxDebugLogsName[] = "Omnibox debug logs";
+const char kOmniboxDebugLogsDescription[] =
+    "Enables logging that can be read from an internals page.";
+}  // namespace flag_descriptions
+
 }  // namespace omnibox
 
 #if BUILDFLAG(IS_ANDROID)
