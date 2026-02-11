@@ -392,12 +392,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
                                     Delegate*);
   ~CanvasResourceProviderSharedImage() override;
 
-  // Signals that an external write has completed, passing the token that should
-  // be waited on to ensure that the service-side operations of the external
-  // write have completed. Ensures that the next read of this resource (whether
-  // via raster or the compositor) waits on this token.
-  void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
-
   void ClearUnusedResources() { unused_resources_.clear(); }
   void OnResourceRefReturned(
       scoped_refptr<CanvasResourceSharedImage>&& resource);
@@ -632,6 +626,13 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       bool* was_copy_performed);
 
   void SetResourceRecyclingEnabled(bool value);
+
+  // Signals that the ongoing transfer of this resource to WebGPU has completed,
+  // passing the token that should be waited on to ensure that the service-side
+  // operations of the WebGPU write have completed. Ensures that the next read
+  // of this resource (whether via raster or the compositor) waits on this
+  // token.
+  void TransferBackFromWebGPU(const gpu::SyncToken& webgpu_write_sync_token);
 };
 
 // * Subclass of CanvasResourceProviderSharedImage that is specialized for usage
@@ -736,6 +737,12 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
                       const gfx::Rect& copy_rect,
                       const gpu::SyncToken& ready_sync_token,
                       gpu::SyncToken& completion_sync_token);
+
+  // Signals that an external write has completed, passing the token that should
+  // be waited on to ensure that the service-side operations of the external
+  // write have completed. Ensures that the next read of this resource (whether
+  // via raster or the compositor) waits on this token.
+  void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
 };
 
 }  // namespace blink

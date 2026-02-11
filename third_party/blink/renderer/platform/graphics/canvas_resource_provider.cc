@@ -842,7 +842,16 @@ CanvasResourceProviderSharedImage::GetBackingClientSharedImageForExternalWrite(
   return resource_->GetClientSharedImage();
 }
 
-void CanvasResourceProviderSharedImage::EndExternalWrite(
+void Canvas2DResourceProviderSharedImage::TransferBackFromWebGPU(
+    const gpu::SyncToken& webgpu_write_sync_token) {
+  if (IsGpuContextLost()) {
+    return;
+  }
+
+  resource()->EndExternalWrite(webgpu_write_sync_token);
+}
+
+void CanvasNon2DResourceProviderSharedImage::EndExternalWrite(
     const gpu::SyncToken& external_write_sync_token) {
   if (IsGpuContextLost()) {
     return;

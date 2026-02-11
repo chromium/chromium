@@ -1524,10 +1524,10 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
   gpu::SyncToken webgpu_completion_sync_token =
       webgpu_access_texture_->GetMailboxTexture()->Dissociate();
 
-  // Signal to the resource provider that the external write to the resource has
-  // completed to ensure that it waits on the WebGPU service-side operations to
-  // complete before any further canvas operations occur.
-  resource_provider->EndExternalWrite(webgpu_completion_sync_token);
+  // Signal to the resource provider that the transfer to WebGPU has completed
+  // to ensure that it waits on the WebGPU service-side operations to complete
+  // before any further canvas operations occur.
+  resource_provider->TransferBackFromWebGPU(webgpu_completion_sync_token);
 
   // Destroy the WebGPU texture to prevent it from being used after
   // `transferBackFromGPUTexture`.
