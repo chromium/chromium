@@ -8,7 +8,7 @@ use core::num::TryFromIntError;
 use std::borrow::Cow;
 use std::io;
 
-/// Generic result type with ZipError as its error variant
+/// Generic result type with `ZipError` as its error variant
 pub type ZipResult<T> = Result<T, ZipError>;
 
 /// Error type for Zip
@@ -114,7 +114,7 @@ impl From<TryFromIntError> for DateTimeRangeError {
 }
 
 impl fmt::Display for DateTimeRangeError {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             fmt,
             "a date could not be represented within the bounds the MS-DOS date range (1980-2107)"

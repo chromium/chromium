@@ -1,6 +1,6 @@
 [package]
 name = "zip"
-version = "7.2.0"
+version = "7.3.0"
 authors = [
     "Mathijs van de Nes <git@mathijs.vd-nes.nl>",
     "Marli Frost <marli@frost.red>",
@@ -18,7 +18,7 @@ description = """
 Library to support the reading and writing of zip files.
 """
 edition = "2021"
-exclude = ["tests/**", "examples/**", ".github/**", "fuzz_read/**", "fuzz_write/**"]
+exclude = ["tests/**", "examples/**", ".github/**", "fuzz/**", ".amazonq/**", "benches/**"]
 
 [package.metadata.docs.rs]
 all-features = true
@@ -32,7 +32,6 @@ chrono = { version = "^0.4.27", optional = true, default-features = false, featu
 constant_time_eq = { version = "0.3", optional = true }
 crc32fast = "1.5"
 flate2 = { version = "1.1", default-features = false, optional = true }
-generic-array = { version = "=0.14.7", optional = true }
 hmac = { version = "0.12", optional = true, features = ["reset"] }
 indexmap = "2"
 jiff = { version = "0.2.4", optional = true }
@@ -41,7 +40,7 @@ nt-time = { version = "0.10.6", default-features = false, optional = true }
 ppmd-rust = { version = "1.3", optional = true }
 pbkdf2 = { version = "0.12", optional = true }
 sha1 = { version = "0.10", optional = true }
-time = { version = "0.3", default-features = false, optional = true, features = [
+time = { version = "=0.3.45", default-features = false, optional = true, features = [
     "std",
 ] }
 zeroize = { version = "1.8", optional = true, features = ["zeroize_derive"] }
@@ -55,7 +54,7 @@ typed-path = "0.12"
 # native:
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 getrandom = { version = "0.3", default-features = false, optional = true }
-time = { version = "0.3", default-features = false, optional = true, features = [
+time = { version = "=0.3.45", default-features = false, optional = true, features = [
     "wasm-bindgen"
 ] }
 
@@ -65,7 +64,7 @@ getrandom = { version = "0.3", default-features = false }
 # wasm32
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 getrandom = { version = "0.3", default-features = false, features = ["wasm_js"], optional = true }
-time = { version = "0.3", default-features = false, optional = true, features = [
+time = { version = "=0.3.45", default-features = false, optional = true, features = [
     "std",
     "wasm-bindgen"
 ] }
@@ -76,19 +75,18 @@ wasm-bindgen-test = "^0.3.56"
 
 [dev-dependencies]
 bencher = "0.1"
-getrandom = { version = "0.3", default-features = false, features = [] }
+getrandom = { version = "0.3", default-features = false }
 walkdir = "2.5"
-time = { version = "0.3", features = ["formatting", "macros"] }
+time = { version = "=0.3.45", features = ["formatting", "macros"] }
 clap = { version = "=4.4.18", features = ["derive"] }
 tempfile = "3.15"
 rayon = "1.11"
 
 [features]
 _arbitrary = ["dep:arbitrary"]
-aes-crypto = ["dep:aes", "dep:constant_time_eq", "dep:generic-array", "getrandom/std", "dep:hmac", "dep:pbkdf2", "dep:sha1", "dep:zeroize"]
+aes-crypto = ["dep:aes", "dep:constant_time_eq", "getrandom/std", "dep:hmac", "dep:pbkdf2", "dep:sha1", "dep:zeroize"]
 chrono = ["dep:chrono"]
 _deflate-any = []
-_all-features = [] # Detect when --all-features is used
 deflate = ["deflate-zopfli", "deflate-flate2-zlib-rs"]
 # Pull in flate2, but don't choose a backend; useful if you want to choose your own flate2 backend
 deflate-flate2 = ["_deflate-any", "dep:flate2"]
@@ -100,6 +98,7 @@ jiff-02 = ["dep:jiff"]
 nt-time = ["dep:nt-time"]
 lzma = ["dep:lzma-rust2"]
 ppmd = ["dep:ppmd-rust"]
+# This feature allows writing custom extra-data field IDs in file headers.
 unreserved = []
 xz = ["dep:lzma-rust2"]
 _bzip2_any = []

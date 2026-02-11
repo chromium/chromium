@@ -109,7 +109,7 @@ fn read_code<T: std::io::Read, E: Endianness>(
     queue: &mut CodeQueue,
 ) -> io::Result<Option<u16>> {
     // assert(sizeof(code) * CHAR_BIT >= *code_size);
-    let code = is.read_var::<u16>(*code_size as u32)?;
+    let code = is.read_var::<u16>(u32::from(*code_size))?;
 
     // Handle regular codes (the common case).
     if code != CONTROL_CODE as u16 {
@@ -117,7 +117,7 @@ fn read_code<T: std::io::Read, E: Endianness>(
     }
 
     // Handle control codes.
-    if let Ok(control_code) = is.read_var::<u16>(*code_size as u32) {
+    if let Ok(control_code) = is.read_var::<u16>(u32::from(*code_size)) {
         match control_code {
             INC_CODE_SIZE => {
                 if *code_size >= MAX_CODE_SIZE {
@@ -156,7 +156,7 @@ fn output_code(
     first_byte: u8,
 ) -> io::Result<u8> {
     debug_assert!(code <= MAX_CODE as u16 && code != CONTROL_CODE as u16);
-    if code <= u8::MAX as u16 {
+    if code <= u16::from(u8::MAX) {
         dst.push(code as u8);
         return Ok(code as u8);
     }
@@ -180,11 +180,19 @@ fn output_code(
     // was invalid (due to partial clearing) when the code was inserted into
     // the table. The prefix can then become valid when it's added to the
     // table at a later point.
-    let prefix_code = codetab[code as usize].prefix_code.unwrap();
+    let prefix_code = codetab[code as usize]
+        .prefix_code
+        .ok_or_else(|| std::io::Error::other("Cannot get prefix code"))?;
     if cfg!(debug_assertions) {
         let tab_entry = codetab[code as usize];
         assert!(tab_entry.len == UNKNOWN_LEN);
-        assert!(tab_entry.prefix_code.unwrap() as usize > CONTROL_CODE);
+        assert!(
+            tab_entry
+                .prefix_code
+                .ok_or_else(|| std::io::Error::other("Cannot get prefix code"))?
+                as usize
+                > CONTROL_CODE
+        );
     }
 
     if Some(prefix_code) == queue.next() {
@@ -236,7 +244,7 @@ fn hwunshrink(src: &[u8], uncompressed_size: usize, dst: &mut Vec<u8>) -> io::Re
     };
 
     debug_assert!(curr_code != CONTROL_CODE as u16);
-    if curr_code > u8::MAX as u16 {
+    if curr_code > u16::from(u8::MAX) {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
             "the first code must be a literal",

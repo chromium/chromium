@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.83.0"
 name = "zip"
-version = "7.2.0"
+version = "7.3.0"
 authors = [
     "Mathijs van de Nes <git@mathijs.vd-nes.nl>",
     "Marli Frost <marli@frost.red>",
@@ -25,8 +25,9 @@ exclude = [
     "tests/**",
     "examples/**",
     ".github/**",
-    "fuzz_read/**",
-    "fuzz_write/**",
+    "fuzz/**",
+    ".amazonq/**",
+    "benches/**",
 ]
 autolib = false
 autobins = false
@@ -58,14 +59,12 @@ rustdoc-args = [
 ]
 
 [features]
-_all-features = []
 _arbitrary = ["dep:arbitrary"]
 _bzip2_any = []
 _deflate-any = []
 aes-crypto = [
     "dep:aes",
     "dep:constant_time_eq",
-    "dep:generic-array",
     "getrandom/std",
     "dep:hmac",
     "dep:pbkdf2",
@@ -134,21 +133,6 @@ xz = ["dep:lzma-rust2"]
 name = "zip"
 path = "src/lib.rs"
 
-[[bench]]
-name = "merge_archive"
-path = "benches/merge_archive.rs"
-harness = false
-
-[[bench]]
-name = "read_entry"
-path = "benches/read_entry.rs"
-harness = false
-
-[[bench]]
-name = "read_metadata"
-path = "benches/read_metadata.rs"
-harness = false
-
 [dependencies.aes]
 version = "0.8"
 optional = true
@@ -188,10 +172,6 @@ optional = true
 version = "1.1"
 optional = true
 default-features = false
-
-[dependencies.generic-array]
-version = "=0.14.7"
-optional = true
 
 [dependencies.hmac]
 version = "0.12"
@@ -237,7 +217,7 @@ version = "0.10"
 optional = true
 
 [dependencies.time]
-version = "0.3"
+version = "=0.3.45"
 features = ["std"]
 optional = true
 default-features = false
@@ -268,7 +248,6 @@ features = ["derive"]
 
 [dev-dependencies.getrandom]
 version = "0.3"
-features = []
 default-features = false
 
 [dev-dependencies.rayon]
@@ -278,7 +257,7 @@ version = "1.11"
 version = "3.15"
 
 [dev-dependencies.time]
-version = "0.3"
+version = "=0.3.45"
 features = [
     "formatting",
     "macros",
@@ -293,7 +272,7 @@ optional = true
 default-features = false
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies.time]
-version = "0.3"
+version = "=0.3.45"
 features = ["wasm-bindgen"]
 optional = true
 default-features = false
@@ -309,7 +288,7 @@ optional = true
 default-features = false
 
 [target.'cfg(target_arch = "wasm32")'.dependencies.time]
-version = "0.3"
+version = "=0.3.45"
 features = [
     "std",
     "wasm-bindgen",

@@ -70,7 +70,7 @@ impl HuffmanDecoder {
             // First canonical codeword of this length.
             code[l] = (code[l - 1] + count[l - 1]) << 1;
 
-            if count[l] != 0 && code[l] as u32 + count[l] as u32 - 1 > (1u32 << l) - 1 {
+            if count[l] != 0 && u32::from(code[l]) + u32::from(count[l]) - 1 > (1u32 << l) - 1 {
                 // The last codeword is longer than l bits.
                 return Err(Error::new(
                     io::ErrorKind::InvalidData,
@@ -78,9 +78,9 @@ impl HuffmanDecoder {
                 ));
             }
 
-            let s = (code[l] as u32 + count[l] as u32) << (MAX_HUFFMAN_BITS - l);
+            let s = (u32::from(code[l]) + u32::from(count[l])) << (MAX_HUFFMAN_BITS - l);
             self.sentinel_bits[l] = s;
-            debug_assert!(self.sentinel_bits[l] >= code[l] as u32, "No overflow!");
+            debug_assert!(self.sentinel_bits[l] >= u32::from(code[l]), "No overflow!");
 
             sym_idx[l] = sym_idx[l - 1] + count[l - 1];
             self.offset_first_sym_idx[l] = sym_idx[l].wrapping_sub(code[l]);
@@ -138,19 +138,19 @@ impl HuffmanDecoder {
         is: &mut BitReader<T, E>,
     ) -> std::io::Result<u16> {
         // First try the lookup table.
-        let read_bits1 = (HUFFMAN_LOOKUP_TABLE_BITS as u64).min(length - is.position_in_bits()?);
+        let read_bits1 = u64::from(HUFFMAN_LOOKUP_TABLE_BITS).min(length - is.position_in_bits()?);
         let lookup_bits = !is.read_var::<u8>(read_bits1 as u32)? as usize;
         debug_assert!(lookup_bits < self.table.len());
         if self.table[lookup_bits].len != 0 {
             debug_assert!(self.table[lookup_bits].len <= HUFFMAN_LOOKUP_TABLE_BITS);
             is.seek_bits(io::SeekFrom::Current(
-                -(read_bits1 as i64) + self.table[lookup_bits].len as i64,
+                -(read_bits1 as i64) + i64::from(self.table[lookup_bits].len),
             ))?;
             return Ok(self.table[lookup_bits].sym);
         }
 
         // Then do canonical decoding with the bits in MSB-first order.
-        let read_bits2 = (HUFFMAN_LOOKUP_TABLE_BITS as u64).min(length - is.position_in_bits()?);
+        let read_bits2 = u64::from(HUFFMAN_LOOKUP_TABLE_BITS).min(length - is.position_in_bits()?);
         let mut bits = reverse_lsb(
             (lookup_bits | ((!is.read_var::<u8>(read_bits2 as u32)? as usize) << read_bits1))
                 as u16,
@@ -158,7 +158,7 @@ impl HuffmanDecoder {
         );
 
         for l in (HUFFMAN_LOOKUP_TABLE_BITS as usize + 1)..=MAX_HUFFMAN_BITS {
-            if (bits as u32) < self.sentinel_bits[l] {
+            if u32::from(bits) < self.sentinel_bits[l] {
                 bits >>= MAX_HUFFMAN_BITS - l;
                 let sym_idx = (self.offset_first_sym_idx[l] as usize + bits as usize) & 0xFFFF;
                 //assert(sym_idx < self.num_syms);

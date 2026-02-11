@@ -1,16 +1,10 @@
 //! Macros used internally.
-//!
-//! These may technically be exported, but that's only to make them available to internal
-//! project dependencies. The `#[doc(hidden)]` mark indicates that these are not stable or supported
-//! APIs, and should not be relied upon by external dependees.
 
 /// The single macro export of the [`cfg-if`](https://docs.rs/cfg-if) crate.
 ///
 /// It is packaged here to avoid pulling in another dependency. The stdlib does the same[^1].
 ///
 /// [^1]: https://github.com/rust-lang/rust/blob/a2db9280539229a3b8a084a09886670a57bc7e9c/library/compiler-builtins/libm/src/math/support/macros.rs#L1
-#[doc(hidden)]
-#[macro_export]
 macro_rules! cfg_if {
     // match if/else chains with a final `else`
     (
@@ -78,6 +72,7 @@ macro_rules! cfg_if {
         $( $tokens )*
     };
 }
+pub(crate) use cfg_if;
 
 /// Similar to [`cfg_if`](cfg_if), but accepts a list of expressions, and generates an internal
 /// closure to return each value.
@@ -92,8 +87,6 @@ macro_rules! cfg_if {
 /// control flow.
 ///
 /// The generated closure is non-[`const`](const@keyword), so cannot be used inside `const` methods.
-#[doc(hidden)]
-#[macro_export]
 macro_rules! cfg_if_expr {
     // Match =>, chains, maybe with a final _ => catchall clause.
     (
@@ -160,3 +153,4 @@ macro_rules! cfg_if_expr {
         $( $tokens )*
     };
 }
+pub(crate) use cfg_if_expr;

@@ -2,7 +2,7 @@
 //!
 //! This was implemented since the zip specification requires the mode to not use a nonce and uses a
 //! different byte order (little endian) than NIST (big endian).
-//! See [AesCtrZipKeyStream] for more information.
+//! See [`AesCtrZipKeyStream`] for more information.
 
 use crate::result::{ZipError, ZipResult};
 use aes::cipher::{BlockEncrypt, KeyInit};
@@ -46,9 +46,9 @@ impl AesKind for Aes256 {
 
 /// An AES-CTR key stream generator.
 ///
-/// Implements the slightly non-standard AES-CTR variant used by WinZip AES encryption.
+/// Implements the slightly non-standard AES-CTR variant used by `WinZip` AES encryption.
 ///
-/// Typical AES-CTR implementations combine a nonce with a 64 bit counter. WinZIP AES instead uses
+/// Typical AES-CTR implementations combine a nonce with a 64 bit counter. `WinZIP` AES instead uses
 /// no nonce and also uses a different byte order (little endian) than NIST (big endian).
 ///
 /// The stream implements the `Read` trait; encryption or decryption is performed by XOR-ing the

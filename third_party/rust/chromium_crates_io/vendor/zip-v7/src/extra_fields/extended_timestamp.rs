@@ -17,6 +17,11 @@ impl ExtendedTimestamp {
     ///
     /// This method assumes that the length has already been read, therefore
     /// it must be passed as an argument
+    ///
+    /// # Errors
+    ///
+    /// Fails if the len is empty or a read fails
+    ///
     pub fn try_from_reader<R>(reader: &mut R, len: u16) -> ZipResult<Self>
     where
         R: Read,
@@ -39,30 +44,29 @@ impl ExtendedTimestamp {
         // > present without access time, for example.)  TSize should equal
         // > (1 + 4*(number of set bits in Flags)), as the block is currently
         // > defined.
-        if len != 5 && len as u32 != 1 + 4 * flags.count_ones() {
-            //panic!("found len {len} and flags {flags:08b}");
-            return Err(ZipError::UnsupportedArchive(
-                "flags and len don't match in extended timestamp field",
-            ));
+        if len != 5 && u32::from(len) != 1 + 4 * flags.count_ones() {
+            return Err(ZipError::Io(std::io::Error::other(format!(
+                "flags and len don't match in extended timestamp field len={len} flags={flags:08b}"
+            ))));
         }
 
         // allow unsupported/undocumented flags
 
-        let mod_time = if (flags & 0b00000001u8 == 0b00000001u8) || len == 5 {
+        let mod_time = if (flags & 0b0000_0001_u8 == 0b0000_0001_u8) || len == 5 {
             bytes_to_read -= size_of::<u32>();
             Some(reader.read_u32_le()?)
         } else {
             None
         };
 
-        let ac_time = if flags & 0b00000010u8 == 0b00000010u8 && len > 5 {
+        let ac_time = if flags & 0b0000_0010_u8 == 0b0000_0010_u8 && len > 5 {
             bytes_to_read -= size_of::<u32>();
             Some(reader.read_u32_le()?)
         } else {
             None
         };
 
-        let cr_time = if flags & 0b00000100u8 == 0b00000100u8 && len > 5 {
+        let cr_time = if flags & 0b0000_0100_u8 == 0b0000_0100_u8 && len > 5 {
             bytes_to_read -= size_of::<u32>();
             Some(reader.read_u32_le()?)
         } else {
@@ -71,7 +75,7 @@ impl ExtendedTimestamp {
 
         if bytes_to_read > 0 {
             // ignore undocumented bytes
-            reader.read_exact(&mut vec![0; bytes_to_read])?
+            reader.read_exact(&mut vec![0; bytes_to_read])?;
         }
 
         Ok(Self {
@@ -82,30 +86,36 @@ impl ExtendedTimestamp {
     }
 
     /// returns the last modification timestamp, if defined, as UNIX epoch seconds
+    #[must_use]
     pub fn mod_time(&self) -> Option<u32> {
         self.mod_time
     }
 
     /// returns the last access timestamp, if defined, as UNIX epoch seconds
+    #[must_use]
     pub fn ac_time(&self) -> Option<u32> {
         self.ac_time
     }
 
     /// returns the creation timestamp, if defined, as UNIX epoch seconds
+    #[must_use]
     pub fn cr_time(&self) -> Option<u32> {
         self.cr_time
     }
 }
 
-#[test]
-/// Ensure we don't panic or read garbage data if the field body is empty
-pub fn test_bad_extended_timestamp() -> ZipResult<()> {
-    use crate::ZipArchive;
-    use std::io::Cursor;
+#[cfg(test)]
+mod test {
 
-    assert!(ZipArchive::new(Cursor::new(include_bytes!(
-        "../../tests/data/extended_timestamp_bad.zip"
-    )))
-    .is_err());
-    Ok(())
+    #[test]
+    /// Ensure we don't panic or read garbage data if the field body is empty
+    pub fn test_bad_extended_timestamp() {
+        use crate::ZipArchive;
+        use std::io::Cursor;
+
+        assert!(ZipArchive::new(Cursor::new(include_bytes!(
+            "../../tests/data/extended_timestamp_bad.zip"
+        )))
+        .is_err());
+    }
 }

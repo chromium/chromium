@@ -64,7 +64,7 @@ fn read_huffman_code<T: std::io::Read, E: Endianness>(
     for i in 1..=16 {
         debug_assert!(avail_codewords >= 0);
         avail_codewords *= 2;
-        avail_codewords -= len_count[i - 1] as i32;
+        avail_codewords -= i32::from(len_count[i - 1]);
         if avail_codewords < 0 {
             return Err(Error::new(
                 io::ErrorKind::InvalidData,
@@ -120,9 +120,9 @@ fn hwexplode(
             if let Some(lit_decoder) = &mut lit_decoder_opt {
                 sym = lit_decoder.huffman_decode(bit_length, &mut is)?;
             } else {
-                sym = is.read::<8, u8>()? as u16;
+                sym = u16::from(is.read::<8, u8>()?);
             }
-            debug_assert!(sym <= u8::MAX as u16);
+            debug_assert!(sym <= u16::from(u8::MAX));
             dst.push(sym as u8);
             continue;
         }

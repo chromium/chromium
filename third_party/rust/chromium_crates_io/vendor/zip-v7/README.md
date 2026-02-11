@@ -3,6 +3,7 @@ zip
 
 [![Build Status](https://github.com/zip-rs/zip2/actions/workflows/ci.yaml/badge.svg)](https://github.com/zip-rs/zip2/actions?query=branch%3Amaster+workflow%3ACI)
 [![Crates.io version](https://img.shields.io/crates/v/zip.svg)](https://crates.io/crates/zip)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11847/badge)](https://www.bestpractices.dev/projects/11847)
 
 [Documentation](https://docs.rs/zip/latest/zip/)
 

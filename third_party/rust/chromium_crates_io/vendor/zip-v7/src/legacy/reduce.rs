@@ -66,7 +66,7 @@ fn read_next_byte<T: std::io::Read, E: Endianness>(
 
     // The bits represent the index of a follower byte.
     let idx_bitlen = fsets[prev_byte as usize].idx_bitlen;
-    let follower_idx = is.read_var::<u16>(idx_bitlen as u32)? as usize;
+    let follower_idx = is.read_var::<u16>(u32::from(idx_bitlen))? as usize;
     if follower_idx >= fsets[prev_byte as usize].size as usize {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,

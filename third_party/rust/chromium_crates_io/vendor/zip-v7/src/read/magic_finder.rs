@@ -190,18 +190,15 @@ impl<'a, T: FinderDirection<'a>> MagicFinder<T> {
 
             self.mid_buffer_offset = None;
 
-            match self
-                .finder
-                .move_cursor(self.cursor, self.bounds, self.buffer.len())
+            if let Some(new_cursor) =
+                self.finder
+                    .move_cursor(self.cursor, self.bounds, self.buffer.len())
             {
-                Some(new_cursor) => {
-                    self.cursor = new_cursor;
-                }
-                None => {
-                    // Destroy the finder when we've reached the end of the bounds.
-                    self.bounds.0 = self.bounds.1;
-                    break;
-                }
+                self.cursor = new_cursor;
+            } else {
+                // Destroy the finder when we've reached the end of the bounds.
+                self.bounds.0 = self.bounds.1;
+                break;
             }
         }
 
@@ -215,7 +212,7 @@ impl<'a, T: FinderDirection<'a>> MagicFinder<T> {
 /// found directly.
 ///
 /// The guess can be marked as mandatory to produce an error. This is useful
-/// if the ArchiveOffset is known and auto-detection is not desired.
+/// if the `ArchiveOffset` is known and auto-detection is not desired.
 pub struct OptimisticMagicFinder<Direction> {
     inner: MagicFinder<Direction>,
     initial_guess: Option<(u64, bool)>,

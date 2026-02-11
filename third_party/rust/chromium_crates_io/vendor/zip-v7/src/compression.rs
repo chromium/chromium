@@ -34,7 +34,7 @@ pub enum CompressionMethod {
     /// or from `ZipFileData`.
     #[cfg(feature = "aes-crypto")]
     Aes,
-    /// Compress the file using ZStandard
+    /// Compress the file using `ZStandard`
     #[cfg(feature = "zstd")]
     Zstd,
     /// Compress the file using LZMA
@@ -52,7 +52,7 @@ pub enum CompressionMethod {
     /// Compress the file using XZ
     #[cfg(feature = "xz")]
     Xz,
-    /// Compress the file using PPMd
+    /// Compress the file using `PPMd`
     #[cfg(feature = "ppmd")]
     Ppmd,
     /// Unsupported compression method
@@ -187,11 +187,12 @@ impl CompressionMethod {
         }
     }
 
-    /// Converts a u16 to its corresponding CompressionMethod
+    /// Converts a u16 to its corresponding `CompressionMethod`
     #[deprecated(
         since = "0.5.7",
         note = "use a constant to construct a compression method"
     )]
+    #[must_use]
     pub const fn from_u16(val: u16) -> CompressionMethod {
         Self::parse_from_u16(val)
     }
@@ -227,11 +228,12 @@ impl CompressionMethod {
         }
     }
 
-    /// Converts a CompressionMethod to a u16
+    /// Converts a `CompressionMethod` to a u16
     #[deprecated(
         since = "0.5.7",
         note = "to match on other compression methods, use a constant"
     )]
+    #[must_use]
     pub const fn to_u16(self) -> u16 {
         self.serialize_to_u16()
     }
@@ -334,8 +336,14 @@ impl<R: io::BufRead> io::Read for Decompressor<R> {
                     // 5.8.8.1 LZMA Version Information & 5.8.8.2 LZMA Properties Size
                     let mut header = [0; 4];
                     reader.read_exact(&mut header)?;
-                    let _version_information = u16::from_le_bytes(header[0..2].try_into().unwrap());
-                    let properties_size = u16::from_le_bytes(header[2..4].try_into().unwrap());
+                    let _version_information =
+                        u16::from_le_bytes(header[0..2].try_into().map_err(|e| {
+                            std::io::Error::other(format!("Cannot transform header to u16: {e}"))
+                        })?);
+                    let properties_size =
+                        u16::from_le_bytes(header[2..4].try_into().map_err(|e| {
+                            std::io::Error::other(format!("Cannot transform header to u16: {e}"))
+                        })?);
                     if properties_size != 5 {
                         return Err(io::Error::new(
                             io::ErrorKind::InvalidInput,
@@ -346,7 +354,10 @@ impl<R: io::BufRead> io::Read for Decompressor<R> {
                     let mut props_data = [0; 5];
                     reader.read_exact(&mut props_data)?;
                     let props = props_data[0];
-                    let dict_size = u32::from_le_bytes(props_data[1..5].try_into().unwrap());
+                    let dict_size =
+                        u32::from_le_bytes(props_data[1..5].try_into().map_err(|e| {
+                            std::io::Error::other(format!("Cannot transform header to u32: {e}"))
+                        })?);
 
                     // We don't need to handle the end-of-stream marker here, since the LZMA reader
                     // stops at the end-of-stream marker OR when it has decoded uncompressed_size bytes, whichever comes first.
@@ -379,8 +390,8 @@ impl<R: io::BufRead> io::Read for Decompressor<R> {
                     reader.read_exact(&mut buffer)?;
                     let parameters = u16::from_le_bytes(buffer);
 
-                    let order = ((parameters & 0x0F) + 1) as u32;
-                    let memory_size = 1024 * 1024 * (((parameters >> 4) & 0xFF) + 1) as u32;
+                    let order = u32::from((parameters & 0x0F) + 1);
+                    let memory_size = 1024 * 1024 * u32::from(((parameters >> 4) & 0xFF) + 1);
                     let restoration_method = (parameters >> 12) & 0x0F;
 
                     let mut decompressor = ppmd_rust::Ppmd8Decoder::new(
@@ -521,9 +532,9 @@ mod test {
 
     #[test]
     fn from_eq_to() {
-        for v in 0..(u16::MAX as u32 + 1) {
+        for v in 0..(u32::from(u16::MAX) + 1) {
             let from = CompressionMethod::parse_from_u16(v as u16);
-            let to = from.serialize_to_u16() as u32;
+            let to = u32::from(from.serialize_to_u16());
             assert_eq!(v, to);
         }
     }

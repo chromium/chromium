@@ -1,0 +1,14 @@
+repos:
+- repo: https://github.com/gitleaks/gitleaks
+  rev: v8.18.2
+  hooks:
+  - id: gitleaks
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.6.0
+  hooks:
+  - id: end-of-file-fixer
+  - id: trailing-whitespace
+  - id: fix-byte-order-marker
+  - id: mixed-line-ending --fix=lf
+  - id: check-toml
+  - id: check-yaml

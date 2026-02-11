@@ -12,7 +12,7 @@ use std::path::{Path, PathBuf};
 pub struct ZipStreamReader<R>(R);
 
 impl<R> ZipStreamReader<R> {
-    /// Create a new ZipStreamReader
+    /// Create a new `ZipStreamReader`
     pub const fn new(reader: R) -> Self {
         Self(reader)
     }
@@ -111,7 +111,7 @@ impl<R: Read> ZipStreamReader<R> {
     }
 }
 
-/// Visitor for ZipStreamReader
+/// Visitor for `ZipStreamReader`
 pub trait ZipStreamVisitor {
     ///  * `file` - contains the content of the file and most of the metadata,
     ///    except:
@@ -157,7 +157,7 @@ impl ZipStreamFileMetadata {
     /// Rewrite the path, ignoring any path components with special meaning.
     ///
     /// - Absolute paths are made relative
-    /// - [std::path::Component::ParentDir]s are ignored
+    /// - [`std::path::Component::ParentDir`]s are ignored
     /// - Truncates the filename at a NULL byte
     ///
     /// This is appropriate if you need to be able to extract *something* from

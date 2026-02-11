@@ -113,7 +113,11 @@ impl<R: Read> AesReader<R> {
         }
 
         let cipher = Cipher::from_mode(self.aes_mode, decrypt_key)?;
-        let hmac = Hmac::<Sha1>::new_from_slice(hmac_key).unwrap();
+        let hmac = Hmac::<Sha1>::new_from_slice(hmac_key).map_err(|e| {
+            ZipError::Io(std::io::Error::other(format!(
+                "Cannot create hmac with key: {e}"
+            )))
+        })?;
 
         Ok(AesReaderValid {
             reader: self.reader,
@@ -253,13 +257,14 @@ impl<W: Write> AesWriter<W> {
         encrypted_file_header.write_all(&pwd_verify)?;
 
         let cipher = Cipher::from_mode(aes_mode, encryption_key)?;
-        let hmac = Hmac::<Sha1>::new_from_slice(hmac_key).unwrap();
+        let hmac = Hmac::<Sha1>::new_from_slice(hmac_key)
+            .map_err(|e| std::io::Error::other(format!("Cannot create hmac with key: {e}")))?;
 
         Ok(Self {
             writer,
             cipher,
             hmac,
-            buffer: Default::default(),
+            buffer: Zeroizing::default(),
             encrypted_file_header: Some(encrypted_file_header),
         })
     }
