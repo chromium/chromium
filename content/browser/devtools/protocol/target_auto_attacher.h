@@ -83,10 +83,11 @@ class TargetAutoAttacher {
   void DispatchTargetInfoChanged(DevToolsAgentHost* host);
 
  private:
-  base::ObserverList<
-      Client,
-      false,
-      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+  // This needs to be reentrant as `Client::MaybeCreateAndAddNavigationThrottle`
+  // can be called while processing `Client::AutoAttach`.
+  base::ObserverList<Client,
+                     false,
+                     base::ObserverListReentrancyPolicy::kAllowReentrancy>
       clients_;
   base::flat_set<raw_ptr<Client, CtnExperimental>>
       clients_requesting_wait_for_debugger_;
