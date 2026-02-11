@@ -330,9 +330,12 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // Set the rounded clip bounds of the backdrop filter effect, relative to
   // this Layer's coordinate space. Backdrop effects are only visible and can
   // only sample from the intersection of the Layer's bounds and any set
-  // backdrop filter bounds.
+  // backdrop filter bounds. Setting explicit bounds prevents automatic bounds
+  // computation from the layer's size and rounded corners.
   void SetBackdropFilterBounds(const SkPath& backdrop_filter_bounds);
   void SetBackdropFilterBounds(const gfx::RRectF& backdrop_filter_bounds);
+  // Clears any explicitly set backdrop filter bounds and re-enables automatic
+  // bounds computation from the layer's size and rounded corners.
   void ClearBackdropFilterBounds();
 
   // Set the shape of this layer.
@@ -696,6 +699,10 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // Set all filters which got applied to the layer background.
   void SetLayerBackgroundFilters();
 
+  // Recomputes backdrop filter bounds from the layer's size and rounded
+  // corners, unless explicit bounds have been set via SetBackdropFilterBounds.
+  void RecomputeBackdropFilterBounds();
+
   // Cleans up |cc_layer_| and replaces it with |new_layer|. Before calling
   // `SwitchToLayer`, `FinishAnimationsBeforeSwitchToLayer` must be called to
   // ensure all animations on the old cc layer are stopped and `this` Layer was
@@ -876,6 +883,10 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   unsigned deferred_paint_requests_;
 
   float backdrop_filter_quality_;
+
+  // True when SetBackdropFilterBounds() has been called explicitly, preventing
+  // automatic bounds recomputation. Cleared by ClearBackdropFilterBounds().
+  bool has_explicit_backdrop_filter_bounds_ = false;
 
   // The counter to maintain how many trilinear filtering requests we have. If
   // the value > 0, means we need to perform trilinear filtering on the layer.
