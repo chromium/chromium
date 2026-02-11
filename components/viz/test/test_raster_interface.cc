@@ -123,15 +123,6 @@ void TestRasterInterface::ShallowFlushCHROMIUM() {
     test_support_->CallAllSyncPointCallbacks();
 }
 
-void TestRasterInterface::set_supports_mappable_format(SharedImageFormat format,
-                                                       bool support) {
-  if (support) {
-    caps_.mappable_formats.insert(format);
-  } else {
-    caps_.mappable_formats.erase(format);
-  }
-}
-
 bool TestRasterInterface::ReadbackImagePixels(
     const gpu::Mailbox& source_mailbox,
     const SkImageInfo& dst_info,

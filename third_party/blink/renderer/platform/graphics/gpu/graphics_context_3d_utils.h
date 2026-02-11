@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_GRAPHICS_CONTEXT_3D_UTILS_H_
 
 #include "base/memory/weak_ptr.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -29,6 +31,11 @@ class PLATFORM_EXPORT GraphicsContext3DUtils {
       : context_provider_wrapper_(std::move(context_provider_wrapper)) {}
 
   bool Accelerated2DCanvasFeatureEnabled();
+
+  // Needs to be static as its caller CreateSharedImageProviderBase is static.
+  static bool IsScanoutSupportedForCanvasWithFormat(
+      viz::SharedImageFormat format,
+      const gpu::Capabilities& capabilities);
 
  private:
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;

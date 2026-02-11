@@ -48,8 +48,10 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
   void set_max_texture_size(int max_texture_size) {
     caps_.max_texture_size = max_texture_size;
   }
+  void set_texture_format_bgra8888(bool texture_format_bgra8888) {
+    caps_.texture_format_bgra8888 = texture_format_bgra8888;
+  }
   void set_texture_rg(bool texture_rg) { caps_.texture_rg = texture_rg; }
-  void set_supports_mappable_format(SharedImageFormat format, bool support);
   void set_texture_norm16(bool texture_norm16) {
     caps_.texture_norm16 = texture_norm16;
   }

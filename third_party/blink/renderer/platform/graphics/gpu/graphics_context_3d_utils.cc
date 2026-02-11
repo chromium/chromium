@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/graphics_context_3d_utils.h"
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -26,6 +27,32 @@ bool GraphicsContext3DUtils::Accelerated2DCanvasFeatureEnabled() {
   return gpu::kGpuFeatureStatusEnabled ==
          gpu_feature_info
              .status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS];
+}
+
+bool GraphicsContext3DUtils::IsScanoutSupportedForCanvasWithFormat(
+    viz::SharedImageFormat format,
+    const gpu::Capabilities& capabilities) {
+  if (format == viz::SinglePlaneFormat::kRGBA_8888) {
+    return true;
+  }
+  if (format == viz::SinglePlaneFormat::kRGBX_8888) {
+    return !capabilities.disable_mac_swangle_rgbx;
+  }
+  if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+    return capabilities.texture_format_bgra8888;
+  }
+  if (format == viz::SinglePlaneFormat::kBGRX_8888) {
+    return capabilities.texture_format_bgra8888 &&
+           !capabilities.disable_mac_swangle_rgbx;
+  }
+  if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+#if BUILDFLAG(IS_MAC)
+    return true;
+#else
+    return capabilities.texture_half_float_linear;
+#endif
+  }
+  return false;
 }
 
 }  // namespace blink

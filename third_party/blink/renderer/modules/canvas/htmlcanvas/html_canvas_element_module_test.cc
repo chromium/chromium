@@ -161,8 +161,10 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
   constexpr auto format = viz::SinglePlaneFormat::kRGBA_8888;
 #endif
 
-  context_provider->UnboundTestRasterInterface()->set_supports_mappable_format(
-      format, true);
+  if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+    context_provider->UnboundTestRasterInterface()->set_texture_format_bgra8888(
+        true);
+  }
   InitializeSharedGpuContext(context_provider.get());
 
   // To intercept SubmitCompositorFrame messages sent by a canvas's

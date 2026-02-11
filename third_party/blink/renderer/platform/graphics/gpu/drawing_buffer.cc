@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/graphics_context_3d_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
@@ -1977,16 +1978,18 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
                                ? kTopLeft_GrSurfaceOrigin
                                : kBottomLeft_GrSurfaceOrigin;
 
+  const gpu::Capabilities& caps = ContextProvider()->GetCapabilities();
 #if BUILDFLAG(IS_MAC)
   // For Mac, explicitly specify BGRA/X instead of RGBA/X so that IOSurface
   // format matches shared image format. This is necessary for Graphite where
   // IOSurfaces are always used to allow sharing between ANGLE and Dawn.
   if (color_buffer_format_ == viz::SinglePlaneFormat::kRGBA_8888 &&
-      ContextProvider()->GetCapabilities().texture_format_bgra8888) {
+      GraphicsContext3DUtils::IsScanoutSupportedForCanvasWithFormat(
+          viz::SinglePlaneFormat::kBGRA_8888, caps)) {
     color_buffer_format_ = viz::SinglePlaneFormat::kBGRA_8888;
   } else if (color_buffer_format_ == viz::SinglePlaneFormat::kRGBX_8888 &&
-             ContextProvider()->GetCapabilities().texture_format_bgra8888 &&
-             !ContextProvider()->GetCapabilities().disable_mac_swangle_rgbx) {
+             GraphicsContext3DUtils::IsScanoutSupportedForCanvasWithFormat(
+                 viz::SinglePlaneFormat::kBGRX_8888, caps)) {
     color_buffer_format_ = viz::SinglePlaneFormat::kBGRX_8888;
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -2016,13 +2019,14 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       // Intel GPUs (i8xx) don't support RGBX overlays.
       if (color_buffer_format_ == viz::SinglePlaneFormat::kRGBX_8888 &&
           allow_bgrx &&
-          ContextProvider()->GetCapabilities().texture_format_bgra8888 &&
-          !ContextProvider()->GetCapabilities().disable_mac_swangle_rgbx) {
+          GraphicsContext3DUtils::IsScanoutSupportedForCanvasWithFormat(
+              viz::SinglePlaneFormat::kBGRX_8888, caps)) {
         color_buffer_format_ = viz::SinglePlaneFormat::kBGRX_8888;
       }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-      if (IsSharedImageFormatMappable(color_buffer_format_)) {
+      if (GraphicsContext3DUtils::IsScanoutSupportedForCanvasWithFormat(
+              color_buffer_format_, caps)) {
         usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
         if (low_latency_enabled()) {
           usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
@@ -2179,30 +2183,6 @@ bool DrawingBuffer::ShouldUseChromiumImage() {
   }
   return low_latency_enabled() &&
          base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium);
-}
-
-bool DrawingBuffer::IsSharedImageFormatMappable(viz::SharedImageFormat format) {
-  const auto& caps = ContextProvider()->GetCapabilities();
-  if (format == viz::SinglePlaneFormat::kRGBA_8888) {
-    return true;
-  }
-  if (format == viz::SinglePlaneFormat::kRGBX_8888) {
-    return !caps.disable_mac_swangle_rgbx;
-  }
-  if (format == viz::SinglePlaneFormat::kBGRA_8888) {
-    return caps.texture_format_bgra8888;
-  }
-  if (format == viz::SinglePlaneFormat::kBGRX_8888) {
-    return caps.texture_format_bgra8888 && !caps.disable_mac_swangle_rgbx;
-  }
-  if (format == viz::SinglePlaneFormat::kRGBA_F16) {
-#if BUILDFLAG(IS_MAC)
-    return true;
-#else
-    return caps.texture_half_float_linear;
-#endif
-  }
-  return false;
 }
 
 }  // namespace blink

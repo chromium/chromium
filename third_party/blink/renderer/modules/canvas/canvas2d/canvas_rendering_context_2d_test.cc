@@ -1539,7 +1539,7 @@ TEST_P(CanvasRenderingContext2DTest,
   const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
                                      ->ContextProvider()
                                      .GetCapabilities())
-      .mappable_formats.insert(viz::SinglePlaneFormat::kBGRA_8888);
+      .texture_format_bgra8888 = true;
 
   CreateContext(kNonOpaque, kLowLatency);
   // No need to set-up the layer bridge when testing low latency mode.
@@ -1727,7 +1727,7 @@ TEST_P(CanvasRenderingContext2DTest,
   const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
                                      ->ContextProvider()
                                      .GetCapabilities())
-      .mappable_formats.insert(viz::SinglePlaneFormat::kBGRA_8888);
+      .texture_format_bgra8888 = true;
 
   CreateContext(kNonOpaque);
   EXPECT_TRUE(Context2D()->GetOrCreateResourceProvider());
@@ -1752,7 +1752,7 @@ TEST_P(CanvasRenderingContext2DTest,
   const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
                                      ->ContextProvider()
                                      .GetCapabilities())
-      .mappable_formats.insert(viz::SinglePlaneFormat::kBGRA_8888);
+      .texture_format_bgra8888 = true;
 
   // Draw to the canvas and verify that the canvas is not composited.
   Context2D()->fillRect(0, 0, 1, 1);
@@ -3522,8 +3522,7 @@ class CanvasRenderingContext2DTestImageChromium
       viz::TestContextProvider& context_provider) override {
     auto* test_raster = context_provider.GetTestRasterInterface();
     test_raster->set_max_texture_size(1024);
-    test_raster->set_supports_mappable_format(
-        viz::SinglePlaneFormat::kBGRA_8888, true);
+    test_raster->set_texture_format_bgra8888(true);
 
     gpu::SharedImageCapabilities shared_image_caps;
     shared_image_caps.supports_scanout_shared_images = true;
