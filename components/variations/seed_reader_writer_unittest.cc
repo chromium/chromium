@@ -161,7 +161,7 @@ class ExpectedFieldTrialGroupAllChannelsTest
     : public ExpectedFieldTrialGroupChannelsTest {};
 class ExpectedFieldTrialGroupPreStableTest
     : public ExpectedFieldTrialGroupChannelsTest {};
-class ExpectedFieldTrialGroupStableUnknownTest
+class ExpectedFieldTrialGroupUnknownTest
     : public ExpectedFieldTrialGroupChannelsTest {};
 
 INSTANTIATE_TEST_SUITE_P(
@@ -219,15 +219,14 @@ TEST_P(ExpectedFieldTrialGroupPreStableTest, AssignedGroup) {
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ExpectedFieldTrialGroupStableUnknownTest,
+    ExpectedFieldTrialGroupUnknownTest,
     ::testing::ConvertGenerator<ExpectedFieldTrialGroupTestParams::TupleT>(
         ::testing::Combine(::testing::Values(kRegularSeedFieldsPrefs,
                                              kSafeSeedFieldsPrefs),
-                           ::testing::Values(version_info::Channel::STABLE,
-                                             version_info::Channel::UNKNOWN))));
+                           ::testing::Values(version_info::Channel::UNKNOWN))));
 
 // If channel is beta, stable, or unknown, client is not assigned a group.
-TEST_P(ExpectedFieldTrialGroupStableUnknownTest, NotAssignedGroup) {
+TEST_P(ExpectedFieldTrialGroupUnknownTest, NotAssignedGroup) {
   SeedReaderWriter seed_reader_writer(
       &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
       kOldSeedFilename, GetParam().seed_fields_prefs, GetParam().channel,
