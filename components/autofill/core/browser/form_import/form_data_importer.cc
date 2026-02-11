@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_import/addresses/address_form_data_importer.h"
 #include "components/autofill/core/browser/form_import/addresses/address_profile_save_manager.h"
 #include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
@@ -234,6 +235,7 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
 #endif  // !BUILDFLAG(IS_IOS)
       multistep_importer_(client_->GetAppLocale(),
                           client_->GetVariationConfigCountryCode()),
+      address_form_data_importer_(client),
       payments_form_data_importer_(client) {
   address_data_manager_observation_.Observe(&address_data_manager());
   if (history_service) {
@@ -1239,6 +1241,10 @@ void FormDataImporter::
             payment_method_type_if_non_interactive_authentication_flow_completed) {
   payment_method_type_if_non_interactive_authentication_flow_completed_ =
       payment_method_type_if_non_interactive_authentication_flow_completed;
+}
+
+AddressFormDataImporter& FormDataImporter::GetAddressFormDataImporter() {
+  return address_form_data_importer_;
 }
 
 payments::PaymentsFormDataImporter&
