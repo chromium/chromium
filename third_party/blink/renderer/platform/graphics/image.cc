@@ -345,11 +345,7 @@ PaintImageBuilder Image::CreatePaintImageBuilder(
   auto animation_type = MaybeAnimated() ? PaintImage::AnimationType::kAnimated
                                         : PaintImage::AnimationType::kStatic;
   auto builder = PaintImageBuilder::WithDefault();
-  if (paint_id.has_value()) {
-    builder.set_id(paint_id.value());
-  } else {
-    builder.set_id(stable_image_id_);
-  }
+  builder.set_id(paint_id.value_or(stable_image_id_));
   builder.set_animation_type(animation_type).set_is_multipart(is_multipart_);
 
   return builder;
