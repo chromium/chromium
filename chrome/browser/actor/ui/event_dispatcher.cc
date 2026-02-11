@@ -89,9 +89,7 @@ constexpr absl::Overload PreToolEventsFn{
           ComputedMouseMove(tr.GetTabHandle(), tr.GetTarget())};
     },
     NoUiEvents<WaitToolRequest>,
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<AttemptLoginToolRequest>,
-#endif
     NoUiEvents<AttemptFormFillingToolRequest>,
     NoUiEvents<ScriptToolRequest>,
     NoUiEvents<ScrollToToolRequest>};
@@ -118,9 +116,7 @@ constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<SelectToolRequest>,
     NoUiEvents<TypeToolRequest>,
     NoUiEvents<WaitToolRequest>,
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<AttemptLoginToolRequest>,
-#endif
     NoUiEvents<AttemptFormFillingToolRequest>,
     NoUiEvents<ScriptToolRequest>,
     NoUiEvents<ScrollToToolRequest>};
