@@ -322,7 +322,12 @@ class CONTENT_EXPORT TextInputManager {
       proximate_character_bounds_map_;
 #endif  // BUILDFLAG(IS_WIN)
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  // TextInputManager::Observer reentrantly issues further notifications upon
+  // `OnUpdateTextInputStateCalled()` (e.g. `SelectionBoundsChange()`).
+  base::ObserverList<Observer,
+                     /*allow_empty=*/false,
+                     base::ObserverListReentrancyPolicy::kAllowReentrancy>::
+      Unchecked observer_list_;
 };
 }
 
