@@ -621,15 +621,21 @@ void CookieStore::OnSetCanonicalCookieResult(
 }
 
 void CookieStore::StartObserving() {
-  if (change_listener_receiver_.is_bound() || !backend_)
+  auto* execution_context = GetExecutionContext();
+
+  if (change_listener_receiver_.is_bound() || !backend_ ||
+      /* If we don't have permission to access cookies, don't ask
+         RestrictedCookieManager, since that would make it upset to us. */
+      !execution_context->GetSecurityOrigin()->CanAccessCookies()) {
     return;
+  }
 
   // See https://bit.ly/2S0zRAS for task types.
   auto task_runner =
-      GetExecutionContext()->GetTaskRunner(TaskType::kDOMManipulation);
+      execution_context->GetTaskRunner(TaskType::kDOMManipulation);
   backend_->AddChangeListener(
       default_cookie_url_, default_site_for_cookies_, default_top_frame_origin_,
-      GetExecutionContext()->GetStorageAccessApiStatus(),
+      execution_context->GetStorageAccessApiStatus(),
       change_listener_receiver_.BindNewPipeAndPassRemote(task_runner), {});
 }
 
