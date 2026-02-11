@@ -2751,7 +2751,6 @@ crbug.com/342630979 [ Linux ] external/wpt/css/css-page/background-image-only-fo
 crbug.com/626703 external/wpt/editing/other/insertparagraph-in-editing-host-cannot-have-div.tentative.html* [ Failure ]
 
 # Flaky output (https://crrev.com/c/5228398)
-crbug.com/626703 external/wpt/mediacapture-insertable-streams/tentative/MediaStreamTrackProcessor-backpressure.https.html [ Failure Pass ]
 crbug.com/626703 external/wpt/mediacapture-insertable-streams/legacy/MediaStreamTrackProcessor-backpressure.https.html [ Failure Pass ]
 
 # Flaky output (sometimes passing)
@@ -4433,8 +4432,6 @@ crbug.com/626703 external/wpt/selection/textcontrols/selectionchange-bubble.html
 crbug.com/626703 external/wpt/density-size-correction/density-corrected-image-svg-aspect-ratio-cross-origin.sub.html [ Failure ]
 crbug.com/626703 [ Debug ] external/wpt/webrtc-extensions/transfer-datachannel-service-worker.https.html [ Timeout ]
 crbug.com/626703 [ Release ] external/wpt/webrtc-extensions/transfer-datachannel-service-worker.https.html [ Timeout ]
-crbug.com/626703 [ Debug ] external/wpt/webrtc-extensions/transfer-datachannel.html [ Timeout ]
-crbug.com/626703 [ Release ] external/wpt/webrtc-extensions/transfer-datachannel.html [ Timeout ]
 crbug.com/1209223 external/wpt/html/syntax/xmldecl/xmldecl-2.html [ Failure ]
 crbug.com/626703 [ Mac ] editing/pasteboard/drag-selected-image-to-contenteditable.html [ Failure ]
 crbug.com/626703 [ Mac Release ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Failure Pass Timeout ]
@@ -4476,7 +4473,6 @@ crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-non-co
 crbug.com/626703 [ Mac ] external/wpt/input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?TypingA [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?TypingA [ Failure Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?Delete [ Failure Timeout ]
-crbug.com/626703 [ Mac ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]
 crbug.com/626703 external/wpt/fetch/connection-pool/network-partition-key.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-backspace.tentative.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-forwarddelete.tentative.html [ Failure Timeout ]
@@ -4556,7 +4552,6 @@ crbug.com/383653154 external/wpt/speculation-rules/prerender/restriction-speech-
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-004.svg [ Failure ]
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-001.svg [ Failure ]
 
-crbug.com/1131471 external/wpt/web-locks/clientids.tentative.https.html [ Failure ]
 
 # See also crbug.com/920100 (sheriff 2019-01-09).
 crbug.com/626703 external/wpt/referrer-policy/css-integration/svg/external-stylesheet.html [ Failure Timeout ]
@@ -6804,9 +6799,6 @@ crbug.com/1225773 external/wpt/html/webappapis/scripting/processing-model-2/unha
 # Flaky timeouts on Linux MSAN
 crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.sub.html [ Pass Timeout ]
 
-# Sheriff 2022-08-06
-crbug.com/1350337 [ Linux ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]
-
 # Sheriff 2022-08-11
 # Most likely a forced style/layout update from accessibiity while we are
 # render blocking, which should not happen.
@@ -7934,9 +7926,6 @@ crbug.com/325255315 [ Linux ] http/tests/misc/resource-timing-iframe-restored-fr
 
 # Flaky test
 crbug.com/40275364 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/text-track-duplicate-label.html [ Failure Pass ]
-
-# Temporarily disable until the test is made faster to fit in 30 sec timeout
-crbug.com/325960326 external/wpt/webrtc-extensions/RTCRtpReceiver-jitterBufferTarget-stats.html [ Failure Pass Timeout ] # Flaky
 
 # Flaky tests on Win11-arm64
 crbug.com/325634737 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/background-fetch.https.html [ Failure Pass Timeout ]
