@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_font_face_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
+#include "third_party/blink/renderer/core/css/css_grouping_rule.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -1213,21 +1214,41 @@ function main(metadata) {
         break;
       }
 
-      // Rules inheriting CSSGroupingRule
+      // WARNING: This rule isn't implemented here, so some items may not be
+      // serialized.
       case CSSRule::kNestedDeclarationsRule:
+        break;
+
+      // Rules inheriting CSSGroupingRule.
       case CSSRule::kMediaRule:
+        static_assert(IsCSSGroupingRuleType(CSSRule::kMediaRule));
+        [[fallthrough]];
       case CSSRule::kMixinRule:
+        static_assert(IsCSSGroupingRuleType(CSSRule::kMixinRule));
+        [[fallthrough]];
       case CSSRule::kResultRule:
+        static_assert(IsCSSGroupingRuleType(CSSRule::kResultRule));
+        [[fallthrough]];
       case CSSRule::kNavigationRule:
+        static_assert(IsCSSGroupingRuleType(CSSRule::kNavigationRule));
+        [[fallthrough]];
       case CSSRule::kSupportsRule:
+        static_assert(IsCSSGroupingRuleType(CSSRule::kSupportsRule));
+        [[fallthrough]];
       case CSSRule::kContainerRule:
+        static_assert(IsCSSGroupingRuleType(CSSRule::kContainerRule));
+        [[fallthrough]];
       case CSSRule::kLayerBlockRule:
+        static_assert(IsCSSGroupingRuleType(CSSRule::kLayerBlockRule));
+        [[fallthrough]];
       case CSSRule::kScopeRule:
+        static_assert(IsCSSGroupingRuleType(CSSRule::kScopeRule));
+        [[fallthrough]];
       case CSSRule::kStartingStyleRule: {
-        if (CSSRuleList* rule_list = rule->cssRules()) {
-          for (unsigned i = 0; i < rule_list->length(); ++i) {
-            SerializeCSSRuleResources(rule_list->item(i));
-          }
+        static_assert(IsCSSGroupingRuleType(CSSRule::kStartingStyleRule));
+        CSSRuleList* rule_list = rule->cssRules();
+        for (unsigned i = 0; i < rule_list->length(); ++i) {
+          SerializeCSSRuleResources(rule_list->item(i));
         }
         break;
       }

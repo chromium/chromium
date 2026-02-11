@@ -126,50 +126,54 @@ class CORE_EXPORT CSSGroupingRule : public CSSRule {
   mutable Member<CSSRuleList> rule_list_cssom_wrapper_;
 };
 
+constexpr bool IsCSSGroupingRuleType(CSSRule::Type type) {
+  switch (type) {
+    // CSSConditionRule (inherits CSSGroupingRule):
+    case CSSRule::kMediaRule:
+    case CSSRule::kSupportsRule:
+    case CSSRule::kContainerRule:
+    // CSSGroupingRule:
+    case CSSRule::kFunctionRule:
+    case CSSRule::kLayerBlockRule:
+    case CSSRule::kMixinRule:
+    case CSSRule::kPageRule:
+    case CSSRule::kNavigationRule:
+    case CSSRule::kResultRule:
+    case CSSRule::kScopeRule:
+    case CSSRule::kStartingStyleRule:
+      return true;
+    // go/keep-sorted start
+    case CSSRule::kApplyMixinRule:
+    case CSSRule::kCharsetRule:
+    case CSSRule::kContentsMixinRule:
+    case CSSRule::kCounterStyleRule:
+    case CSSRule::kCustomMediaRule:
+    case CSSRule::kFontFaceRule:
+    case CSSRule::kFontFeatureRule:
+    case CSSRule::kFontFeatureValuesRule:
+    case CSSRule::kFontPaletteValuesRule:
+    case CSSRule::kFunctionDeclarationsRule:
+    case CSSRule::kImportRule:
+    case CSSRule::kKeyframeRule:
+    case CSSRule::kKeyframesRule:
+    case CSSRule::kLayerStatementRule:
+    case CSSRule::kMarginRule:
+    case CSSRule::kNamespaceRule:
+    case CSSRule::kNestedDeclarationsRule:
+    case CSSRule::kPositionTryRule:
+    case CSSRule::kPropertyRule:
+    case CSSRule::kRouteRule:
+    case CSSRule::kStyleRule:
+    case CSSRule::kViewTransitionRule:
+      // go/keep-sorted end
+      return false;
+  }
+}
+
 template <>
 struct DowncastTraits<CSSGroupingRule> {
   static bool AllowFrom(const CSSRule& rule) {
-    switch (rule.GetType()) {
-      // CSSConditionRule (inherits CSSGroupingRule):
-      case CSSRule::kMediaRule:
-      case CSSRule::kSupportsRule:
-      case CSSRule::kContainerRule:
-      // CSSGroupingRule:
-      case CSSRule::kFunctionRule:
-      case CSSRule::kLayerBlockRule:
-      case CSSRule::kMixinRule:
-      case CSSRule::kPageRule:
-      case CSSRule::kNavigationRule:
-      case CSSRule::kResultRule:
-      case CSSRule::kScopeRule:
-      case CSSRule::kStartingStyleRule:
-        return true;
-      // go/keep-sorted start
-      case CSSRule::kApplyMixinRule:
-      case CSSRule::kCharsetRule:
-      case CSSRule::kContentsMixinRule:
-      case CSSRule::kCounterStyleRule:
-      case CSSRule::kCustomMediaRule:
-      case CSSRule::kFontFaceRule:
-      case CSSRule::kFontFeatureRule:
-      case CSSRule::kFontFeatureValuesRule:
-      case CSSRule::kFontPaletteValuesRule:
-      case CSSRule::kFunctionDeclarationsRule:
-      case CSSRule::kImportRule:
-      case CSSRule::kKeyframeRule:
-      case CSSRule::kKeyframesRule:
-      case CSSRule::kLayerStatementRule:
-      case CSSRule::kMarginRule:
-      case CSSRule::kNamespaceRule:
-      case CSSRule::kNestedDeclarationsRule:
-      case CSSRule::kPositionTryRule:
-      case CSSRule::kPropertyRule:
-      case CSSRule::kRouteRule:
-      case CSSRule::kStyleRule:
-      case CSSRule::kViewTransitionRule:
-        // go/keep-sorted end
-        return false;
-    }
+    return IsCSSGroupingRuleType(rule.GetType());
   }
 };
 
