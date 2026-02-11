@@ -25,6 +25,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/vector_icons.h"
@@ -189,9 +190,6 @@ void CookieControlsPageActionController::OnCookieControlsIconStatusChanged(
     bool should_highlight) {
   const bool controls_state_changed =
       controls_state != icon_status_.controls_state;
-  const bool should_update_icon =
-      controls_state_changed ||
-      should_highlight != icon_status_.should_highlight;
   icon_status_ = CookieControlsIconStatus{
       .icon_visible = icon_visible,
       .controls_state = controls_state,
@@ -199,9 +197,6 @@ void CookieControlsPageActionController::OnCookieControlsIconStatusChanged(
   };
 
   UpdateIconVisibility();
-  if (!should_update_icon) {
-    return;
-  }
 
   page_action_controller_->OverrideImage(
       kActionShowCookieControls, ui::ImageModel::FromVectorIcon(GetVectorIcon(
@@ -281,7 +276,15 @@ void CookieControlsPageActionController::OnShowPromoResult(
         page_action_controller_->AddActivity(kActionShowCookieControls);
     return;
   }
-  // If we attempted to show the IPH but failed, instead try animating.
+
+  // Requesting to show an IPH while one is already showing/queued will result
+  // in a failure. In this case, do nothing.
+  if (iph_activity_) {
+    return;
+  }
+
+  // If showing the IPH failed, and one isn't already showing, then animate the
+  // chip in.
   page_action_controller_->ShowSuggestionChip(
       kActionShowCookieControls, page_actions::SuggestionChipConfig{
                                      .should_animate = true,
