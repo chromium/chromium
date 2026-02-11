@@ -38,8 +38,8 @@ BASE_FEATURE(kContextualTasksContextMenu, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualTasksSuggestionsEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables auto-suggestions for contextual tasks.
-BASE_FEATURE(kContextualTasksAutoSuggestionEnabled,
+// Enables tab auto-chip for contextual tasks.
+BASE_FEATURE(kContextualTasksTabAutoSuggestionChipEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextualTasksShowOnboardingTooltip,
