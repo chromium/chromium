@@ -635,7 +635,13 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   raw_ptr<Layer> root_layer_ = nullptr;
 
   base::ObserverList<CompositorObserver, true>::Unchecked observer_list_;
-  base::ObserverList<CompositorAnimationObserver>::Unchecked
+
+  // TODO(crbug.com/40562847): Allow skipping reentrancy check for
+  // `Check()` and change to kDisallowReentrancy.
+  base::ObserverList<
+      CompositorAnimationObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
       animation_observer_list_;
 
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
