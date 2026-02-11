@@ -598,7 +598,8 @@ suite('AppContent', () => {
       test('shows figures and captions when enabled', async () => {
         readingMode.imagesFeatureEnabled = true;
 
-        const expectedHtml = '<figure dir="ltr" lang="en-us"><canvas dir=' +
+        const expectedHtml =
+            '<figure dir="ltr" lang="en-us" style=""><canvas dir=' +
             '"ltr" alt="" class="downloaded-image" lang="en-us" style="">' +
             '</canvas><figcaption dir="ltr" lang="en-us">' + caption +
             '</figcaption></figure>';
@@ -632,7 +633,7 @@ suite('AppContent', () => {
       });
 
       test('does not show figures or captions when flag disabled', async () => {
-        readingMode.imagesFeatureEnabled = true;
+        readingMode.imagesFeatureEnabled = false;
 
         const expectedHtml = '<figure dir="ltr" lang="en-us" style="display:' +
             ' none;"><canvas dir="ltr" alt="" class="downloaded-image" lang=' +
