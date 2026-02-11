@@ -227,7 +227,9 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
     if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
       ChooseFileTabHelper* tab_helper =
           ChooseFileTabHelper::FromWebState(web_state);
-      tab_helper->SetLastChooseFileEvent(std::move(event));
+      if (tab_helper) {
+        tab_helper->SetLastChooseFileEvent(std::move(event));
+      }
     } else {
       ChooseFileEventHolder::GetInstance()->SetLastChooseFileEvent(
           std::move(event));
