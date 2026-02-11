@@ -660,20 +660,11 @@ bool CanvasResourceProviderSharedImage::WritePixels(
     return false;
   }
 
-  // TODO(crbug.com/352263194): This code calls WillDrawInternal(true)
-  // followed immediately by GetBackingClientSharedImageForOverwrite(), which
-  // calls WillDrawInternal(false). The former calls EnsureWriteAccess() and
-  // then the latter immediately calls EndWriteAccess(). Figure out what is
-  // actually intended here and either don't call the former (preserving
-  // current behavior) or call resource()->GetClientSharedImage() rather than
-  // the latter (if the current behavior is a bug).
   auto access = WillDrawInternal();
-  EnsureWriteAccess();
 
-  // End the internal write access before calling WillDrawInternal(), which
-  // has a precondition that there should be no current write access on the
-  // resource.
-  EndWriteAccess();
+  // The below  write to the resource's SharedImage will need to be preserved in
+  // the case of a subsequent CopyOnWrite.
+  must_preserve_content_on_copy_on_write_ = true;
 
   auto client_si = resource()->GetClientSharedImage();
   RasterInterface()->WritePixels(client_si->mailbox(), x, y,
