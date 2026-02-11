@@ -108,10 +108,6 @@
 
 namespace {
 
-// Kill switch to disable remote tab resumption.
-BASE_FEATURE(kIOSRemoteTabResumptionKillSwitch,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // A command line flag to override the default sync threshold.
 const char kTabResumptionThresholdParameter[] = "tab-resumption-sync-threshold";
 

@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/content_suggestions/tab_resumption/public/tab_resumption_constants.h"
 
+BASE_FEATURE(kIOSRemoteTabResumptionKillSwitch,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 NSString* const kTabResumptionViewIdentifier = @"TabResumptionViewIdentifier";
 
 const char kTabResumptionShowItemImmediately[] =

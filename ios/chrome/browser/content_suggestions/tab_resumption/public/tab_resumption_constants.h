@@ -7,6 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/feature_list.h"
+
+// Kill switch to disable remote tab resumption.
+BASE_DECLARE_FEATURE(kIOSRemoteTabResumptionKillSwitch);
+
 // Accessibility identifier for the TabResumptionView.
 extern NSString* const kTabResumptionViewIdentifier;
 

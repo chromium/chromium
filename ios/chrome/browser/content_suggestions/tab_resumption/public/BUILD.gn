@@ -7,6 +7,6 @@ source_set("constants") {
     "tab_resumption_constants.h",
     "tab_resumption_constants.mm",
   ]
-  deps = []
+  deps = [ "//base" ]
   frameworks = [ "UIKit.framework" ]
 }
