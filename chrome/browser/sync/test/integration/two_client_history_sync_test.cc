@@ -322,8 +322,8 @@ IN_PROC_BROWSER_TEST_P(TwoClientHistorySyncTest, SyncsVisitsDeletion) {
   // Logic similar to `BrowsingHistoryHandler::HandleRemoveVisits()`.
   history::BrowsingHistoryService::HistoryEntry entry1;
   entry1.url = url1;
-  entry1.all_timestamps.insert(time1a);
-  entry1.all_timestamps.insert(time1b);
+  entry1.all_timestamps[url1].insert(time1a);
+  entry1.all_timestamps[url1].insert(time1b);
   std::vector<history::BrowsingHistoryService::HistoryEntry> items_to_remove;
   items_to_remove.push_back(entry1);
 

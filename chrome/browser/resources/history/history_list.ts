@@ -480,10 +480,9 @@ export class HistoryListElement extends HistoryListElementBase {
   }
 
   private deleteItems_(items: HistoryEntry[]): Promise<void> {
-    const removalList = items.map(item => ({
-                                    url: item.url,
-                                    timestamps: item.allTimestamps,
-                                  }));
+    const removalList = items.flatMap(
+        item => Object.entries(item.allTimestamps)
+                    .map(([url, timestamps]) => ({url, timestamps})));
 
     this.pendingDelete = true;
     return this.pageHandler_.removeVisits(removalList);

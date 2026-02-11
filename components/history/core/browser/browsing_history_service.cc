@@ -133,7 +133,7 @@ BrowsingHistoryService::HistoryEntry::HistoryEntry(
       typed_count(typed_count),
       is_actor_visit(is_actor_visit),
       app_id(app_id) {
-  all_timestamps.insert(time);
+  all_timestamps[url].insert(time);
 }
 
 BrowsingHistoryService::HistoryEntry::HistoryEntry()
@@ -414,17 +414,20 @@ void BrowsingHistoryService::RemoveVisits(
         delete_directive.mutable_global_id_directive();
     ExpireHistoryArgs* expire_args = nullptr;
 
-    for (base::Time timestamp : entry.all_timestamps) {
-      if (!expire_args) {
-        GURL gurl(entry.url);
-        expire_list.resize(expire_list.size() + 1);
-        expire_args = &expire_list.back();
-        expire_args->SetTimeRangeForOneDay(timestamp);
-        expire_args->urls.insert(gurl);
+    for (const auto& [url, timestamps] : entry.all_timestamps) {
+      // Add every timestamp for every similar or duplicated visit.
+      for (base::Time timestamp : timestamps) {
+        if (!expire_args) {
+          expire_list.resize(expire_list.size() + 1);
+          expire_args = &expire_list.back();
+          expire_args->SetTimeRangeForOneDay(timestamp);
+          expire_args->urls.insert(url);
+        }
+
+        // The local visit time is treated as a global ID for the visit.
+        global_id_directive->add_global_id(
+            timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
       }
-      // The local visit time is treated as a global ID for the visit.
-      global_id_directive->add_global_id(
-          timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
     }
 
     // Set the start and end time in microseconds since the Unix epoch.
@@ -596,8 +599,13 @@ void BrowsingHistoryService::MergeDuplicateResults(
     } else {
       // Keep track of the timestamps of all visits to the URL on the same day.
       HistoryEntry* matching_entry = current_day_entries[entry.url];
-      matching_entry->all_timestamps.insert(entry.all_timestamps.begin(),
-                                            entry.all_timestamps.end());
+      // Since this de-duplication logic will only be performed if the grouping
+      // is disabled, the entries will only have timestamps for the same URL.
+      CHECK_EQ(1u, entry.all_timestamps.size());
+      CHECK(entry.all_timestamps.count(entry.url) != 0);
+      matching_entry->all_timestamps[entry.url].insert(
+          entry.all_timestamps[entry.url].begin(),
+          entry.all_timestamps[entry.url].end());
 
       if (matching_entry->entry_type != entry.entry_type) {
         matching_entry->entry_type = HistoryEntry::COMBINED_ENTRY;
