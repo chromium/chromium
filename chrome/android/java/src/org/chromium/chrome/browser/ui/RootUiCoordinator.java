@@ -195,7 +195,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
-import org.chromium.chrome.browser.wallet.BoardingPassController;
 import org.chromium.components.browser_ui.accessibility.PageZoomBarCoordinator;
 import org.chromium.components.browser_ui.accessibility.PageZoomBarCoordinatorDelegate;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
@@ -403,7 +402,6 @@ public class RootUiCoordinator
     private RestoreTabsFeatureHelper mRestoreTabsFeatureHelper;
     private @Nullable EdgeToEdgeController mEdgeToEdgeController;
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
-    private @Nullable BoardingPassController mBoardingPassController;
     protected final @NonNull EdgeToEdgeManager mEdgeToEdgeManager;
     private AutomotiveBackButtonToolbarCoordinator mAutomotiveBackButtonToolbarCoordinator;
     protected AdaptiveToolbarUiCoordinator mAdaptiveToolbarUiCoordinator;
@@ -961,11 +959,6 @@ public class RootUiCoordinator
 
         mTopInsetProvider.destroy();
 
-        if (mBoardingPassController != null) {
-            mBoardingPassController.destroy();
-            mBoardingPassController = null;
-        }
-
         if (mReaderModeBottomSheetManager != null) {
             mReaderModeBottomSheetManager.destroy();
             mReaderModeBottomSheetManager = null;
@@ -1140,7 +1133,6 @@ public class RootUiCoordinator
         } else {
             initializeEdgeToEdgeController();
         }
-        initBoardingPassDetector();
 
         if (EphemeralTabCoordinator.isSupported()) {
             Supplier<TabCreator> tabCreator =
@@ -2555,13 +2547,6 @@ public class RootUiCoordinator
                 gtsTabListModelSizeSupplier,
                 scrollGTSToRestoredTabsCallback,
                 mModalDialogManagerSupplier);
-    }
-
-    private void initBoardingPassDetector() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.BOARDING_PASS_DETECTOR)) {
-            mBoardingPassController =
-                    new BoardingPassController(mActivityTabProvider.asObservable());
-        }
     }
 
     private void bringTabToFront(TabWindowInfo tabWindowInfo, GURL url) {

@@ -1127,11 +1127,7 @@
     "owners": ["jiangzp@chromium.org", "chromeos-bt-champs@google.com"],
     "expiry_milestone": 150
   },
-  {
-    "name": "boarding-pass-detector",
-    "owners": ["hanfeng@google.com"],
-    "expiry_milestone": 140
-  },
+
   {
     "name": "bookmark-pane-android",
     "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],

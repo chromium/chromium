@@ -2731,19 +2731,6 @@ const FeatureEntry::FeatureVariation kAuxiliarySearchDonationVariations[] = {
     {"500 counts", kAuxiliarySearchDonation_MaxDonation_500, nullptr},
 };
 
-const FeatureEntry::FeatureParam kBoardingPassDetectorUrl_AA[] = {
-    {features::kBoardingPassDetectorUrlParamName,
-     "https://www.aa.com/checkin/viewMobileBoardingPass"}};
-const FeatureEntry::FeatureParam kBoardingPassDetectorUrl_All[] = {
-    {features::kBoardingPassDetectorUrlParamName,
-     "https://www.aa.com/checkin/viewMobileBoardingPass,https://united.com"}};
-const FeatureEntry::FeatureParam kBoardingPassDetectorUrl_Test[] = {
-    {features::kBoardingPassDetectorUrlParamName, "http"}};
-const FeatureEntry::FeatureVariation kBoardingPassDetectorVariations[] = {
-    {"AA", kBoardingPassDetectorUrl_AA, nullptr},
-    {"All", kBoardingPassDetectorUrl_All, nullptr},
-    {"Test", kBoardingPassDetectorUrl_Test, nullptr},
-};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -9921,11 +9908,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBackgroundNotPerceptibleBindingName,
      flag_descriptions::kBackgroundNotPerceptibleBindingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(base::features::kBackgroundNotPerceptibleBinding)},
-    {"boarding-pass-detector", flag_descriptions::kBoardingPassDetectorName,
-     flag_descriptions::kBoardingPassDetectorDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kBoardingPassDetector,
-                                    kBoardingPassDetectorVariations,
-                                    "Allowed Urls")},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

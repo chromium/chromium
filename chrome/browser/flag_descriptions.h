@@ -5071,10 +5071,6 @@ inline constexpr char kBackgroundNotPerceptibleBindingDescription[] =
     "If enabled, not perceptible binding put processes to the background cpu "
     "cgroup";
 
-inline constexpr char kBoardingPassDetectorName[] = "Boarding Pass Detector";
-inline constexpr char kBoardingPassDetectorDescription[] =
-    "Enable Boarding Pass Detector";
-
 inline constexpr char kBookmarkPaneAndroidName[] = "Bookmark hub pane";
 inline constexpr char kBookmarkPaneAndroidDescription[] =
     "Enables a bookmark hub pane.";

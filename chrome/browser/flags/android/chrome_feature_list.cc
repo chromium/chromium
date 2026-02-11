@@ -171,7 +171,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAndroidAnimatedProgressBarInBrowser,
     &features::kAndroidWebAppLaunchHandler,
     &features::kBackForwardCache,
-    &features::kBoardingPassDetector,
     &features::kContextMenuEmptySpace,
     &features::kDisplayEdgeToEdgeFullscreen,
     &features::kElasticOverscroll,
