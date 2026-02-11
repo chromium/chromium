@@ -57,10 +57,6 @@ config("headless_defines_config") {
     defines += [ "HEADLESS_USE_POLICY" ]
   }
 
-  if (headless_mode_policy_supported) {
-    defines += [ "HEADLESS_MODE_POLICY_SUPPORTED" ]
-  }
-
   if (headless_support_field_trials) {
     defines += [ "HEADLESS_SUPPORT_FIELD_TRIALS" ]
   }
