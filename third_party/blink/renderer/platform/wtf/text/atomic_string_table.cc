@@ -4,25 +4,105 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
 
+#include <hwy/highway.h>
+
+#include <algorithm>
+#include <array>
+#include <atomic>
 #include <cstdint>
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
+#include "base/synchronization/lock.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_lower_hash_reader.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/convert_to_8bit_hash_reader.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 
 namespace blink {
 
 namespace {
 
+constexpr auto kGoldenRatio64 = 0x9e3779b97f4a7c15ull;
+
+// A global, direct-mapped cache for small 8-bit AtomicStrings (<= 7 bytes)
+// that avoids the overhead of rapidhash computation and pointer dereferences of
+// the main AtomicStringTable.
+struct SmallStringCache {
+  // The cache size is 2^10 = 1024 entries.
+  static constexpr size_t kLogSize = 10;
+  static constexpr size_t kSize = 1 << kLogSize;
+  static constexpr size_t kHashShift = 64 - kLogSize;
+
+  static SmallStringCache& Instance() {
+    DEFINE_STATIC_LOCAL(SmallStringCache, cache, ());
+    return cache;
+  }
+
+  struct Entry {
+    String string;
+    uint64_t signature = 0;
+  };
+
+  base::Lock lock;
+  std::array<Entry, kSize> entries;
+};
+
+template <typename Generator>
+ALWAYS_INLINE String SmallStringCacheGetOrInsert(uint64_t signature,
+                                                 Generator generator) {
+  // Fibonacci hash using the golden ratio constant to fastly distribute strings
+  // evenly across the cache.
+  const size_t index =
+      (signature * kGoldenRatio64) >> SmallStringCache::kHashShift;
+
+  auto& cache = SmallStringCache::Instance();
+  base::AutoLock lock(cache.lock);
+  auto& entry = cache.entries[index];
+  if (entry.signature == signature) {
+    return entry.string;
+  }
+
+  String result = generator();
+  entry.string = result;
+  entry.signature = signature;
+  return result;
+}
+
 ALWAYS_INLINE static bool IsOnly8Bit(base::span<const UChar> chars) {
+#if HWY_TARGET != HWY_SCALAR
+  namespace hw = hwy::HWY_NAMESPACE;
+  const hw::ScalableTag<uint16_t> d;
+  const auto v_limit = hw::Set(d, 0xFF);
+  size_t i = 0;
+  // SAFETY: HWY LoadU requires pointer access.
+  UNSAFE_BUFFERS({
+    const size_t lanes = hw::Lanes(d);
+    if (chars.size() >= lanes) {
+      for (; i + lanes <= chars.size(); i += lanes) {
+        const auto v =
+            hw::LoadU(d, reinterpret_cast<const uint16_t*>(chars.data() + i));
+        if (!hw::AllTrue(d, hw::Le(v, v_limit))) {
+          return false;
+        }
+      }
+    }
+  });
+  for (; i < chars.size(); ++i) {
+    if (chars[i] > 0xFF) {
+      return false;
+    }
+  }
+  return true;
+#else
   return std::ranges::all_of(
       chars, [](UChar ch) { return static_cast<uint16_t>(ch) <= 255; });
+#endif
 }
 
 class UCharBuffer {
@@ -31,26 +111,44 @@ class UCharBuffer {
       base::span<const UChar> chars,
       AtomicStringUCharEncoding encoding) {
     base::span<const char> bytes = base::as_chars(chars);
-    if (encoding == AtomicStringUCharEncoding::kIs8Bit ||
-        (encoding == AtomicStringUCharEncoding::kUnknown &&
-         IsOnly8Bit(chars))) {
-      using Reader = ConvertTo8BitHashReader;
-      // This is a very common case from HTML parsing, so we take
-      // the size penalty from inlining.
-      return StringHasher::ComputeHashAndMaskTop8BitsInline<Reader>(
-          UNSAFE_TODO({base::as_bytes(bytes).data(),
-                       bytes.size() / Reader::kCompressionFactor}));
-    } else {
-      return StringHasher::ComputeHashAndMaskTop8Bits(bytes.data(),
-                                                      bytes.size());
+    switch (encoding) {
+      case AtomicStringUCharEncoding::kUnknown:
+        // encoding is always resolved in the constructor.
+        NOTREACHED();
+      case AtomicStringUCharEncoding::kIs8Bit: {
+        using Reader = ConvertTo8BitHashReader;
+        // This is a very common case from HTML parsing, so we take
+        // the size penalty from inlining.
+        return StringHasher::ComputeHashAndMaskTop8BitsInline<Reader>(
+            UNSAFE_TODO({base::as_bytes(bytes).data(),
+                         bytes.size() / Reader::kCompressionFactor}));
+      }
+      case AtomicStringUCharEncoding::kIs16Bit:
+        return StringHasher::ComputeHashAndMaskTop8Bits(bytes.data(),
+                                                        bytes.size());
     }
   }
 
   ALWAYS_INLINE UCharBuffer(base::span<const UChar> chars,
                             AtomicStringUCharEncoding encoding)
       : characters_(chars),
-        hash_(ComputeHashAndMaskTop8Bits(chars, encoding)),
-        encoding_(encoding) {}
+        encoding_(encoding == AtomicStringUCharEncoding::kUnknown
+                      ? (IsOnly8Bit(chars)
+                             ? AtomicStringUCharEncoding::kIs8Bit
+                             : AtomicStringUCharEncoding::kIs16Bit)
+                      : encoding),
+        hash_(ComputeHashAndMaskTop8Bits(chars, encoding_)) {}
+
+  ALWAYS_INLINE UCharBuffer(base::span<const UChar> chars,
+                            unsigned hash,
+                            AtomicStringUCharEncoding encoding)
+      : characters_(chars),
+        encoding_(encoding == AtomicStringUCharEncoding::kUnknown
+                      ? (IsOnly8Bit(chars)
+                             ? AtomicStringUCharEncoding::kIs8Bit
+                             : AtomicStringUCharEncoding::kIs16Bit)
+                      : encoding),
+        hash_(hash) {}
 
   base::span<const UChar> characters() const { return characters_; }
   unsigned hash() const { return hash_; }
@@ -59,7 +157,8 @@ class UCharBuffer {
   scoped_refptr<StringImpl> CreateStringImpl() const {
     switch (encoding_) {
       case AtomicStringUCharEncoding::kUnknown:
-        return StringImpl::Create8BitIfPossible(characters_);
+        // encoding_ is always resolved in the constructor.
+        NOTREACHED();
       case AtomicStringUCharEncoding::kIs8Bit:
         return String::Make8BitFrom16BitSource(characters_).ReleaseImpl();
       case AtomicStringUCharEncoding::kIs16Bit:
@@ -69,8 +168,8 @@ class UCharBuffer {
 
  private:
   const base::span<const UChar> characters_;
-  const unsigned hash_;
   const AtomicStringUCharEncoding encoding_;
+  const unsigned hash_;
 };
 
 struct UCharBufferTranslator {
@@ -235,9 +334,34 @@ String AtomicStringTable::Add(base::span<const UChar> chars,
     return StringImpl::empty_;
   }
 
+  if (encoding == AtomicStringUCharEncoding::kUnknown) {
+    encoding = IsOnly8Bit(chars) ? AtomicStringUCharEncoding::kIs8Bit
+                                 : AtomicStringUCharEncoding::kIs16Bit;
+  }
+
+  const auto length = chars.size();
+  if (encoding == AtomicStringUCharEncoding::kIs8Bit && length <= 7) {
+    uint64_t signature = 0;
+    auto signature_bytes =
+        base::as_writable_bytes(base::span_from_ref(signature));
+    for (size_t i = 0; i < length; ++i) {
+      signature_bytes[i] = static_cast<LChar>(chars[i]);
+    }
+    signature_bytes[7] = static_cast<uint8_t>(length);
+
+    return SmallStringCacheGetOrInsert(signature, [&]() {
+      unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(
+          reinterpret_cast<const char*>(&signature), length);
+      UCharBuffer buffer(chars, hash, encoding);
+      return AddToStringTable<UCharBuffer, UCharBufferTranslator>(buffer);
+    });
+  }
+
   UCharBuffer buffer(chars, encoding);
   return AddToStringTable<UCharBuffer, UCharBufferTranslator>(buffer);
 }
+
+namespace {
 
 class LCharBuffer {
  public:
@@ -245,6 +369,9 @@ class LCharBuffer {
       : characters_(chars),
         // This is a common path from V8 strings, so inlining is worth it.
         hash_(StringHasher::ComputeHashAndMaskTop8BitsInline(chars)) {}
+
+  ALWAYS_INLINE LCharBuffer(base::span<const LChar> chars, unsigned hash)
+      : characters_(chars), hash_(hash) {}
 
   base::span<const LChar> characters() const { return characters_; }
   unsigned hash() const { return hash_; }
@@ -271,6 +398,8 @@ struct LCharBufferTranslator {
   }
 };
 
+}  // namespace
+
 String AtomicStringTable::Add(const StringView& string_view) {
   if (string_view.IsNull()) {
     return String();
@@ -280,12 +409,30 @@ String AtomicStringTable::Add(const StringView& string_view) {
     return StringImpl::empty_;
   }
 
-  if (string_view.Is8Bit()) {
-    LCharBuffer buffer(string_view.Span8());
-    return AddToStringTable<LCharBuffer, LCharBufferTranslator>(buffer);
+  const auto length = string_view.length();
+  if (length <= 7 && string_view.Is8Bit()) {
+    base::span<const LChar> chars = string_view.Span8();
+    // Initialize the signature to zero to ensure padding for strings shorter
+    // than 7 bytes, as copy_prefix_from() does not write past the input.
+    uint64_t signature = 0;
+    auto signature_bytes =
+        base::as_writable_bytes(base::span_from_ref(signature));
+    signature_bytes.copy_prefix_from(base::as_bytes(chars));
+    signature_bytes[7] = static_cast<uint8_t>(length);
+
+    return SmallStringCacheGetOrInsert(signature, [this, &chars]() {
+      return AddToStringTable<LCharBuffer, LCharBufferTranslator>(
+          LCharBuffer(chars));
+    });
   }
-  UCharBuffer buffer(string_view.Span16(), AtomicStringUCharEncoding::kUnknown);
-  return AddToStringTable<UCharBuffer, UCharBufferTranslator>(buffer);
+
+  if (string_view.Is8Bit()) {
+    return AddToStringTable<LCharBuffer, LCharBufferTranslator>(
+        LCharBuffer(string_view.Span8()));
+  }
+
+  return AddToStringTable<UCharBuffer, UCharBufferTranslator>(
+      UCharBuffer(string_view.Span16(), AtomicStringUCharEncoding::kUnknown));
 }
 
 String AtomicStringTable::Add(base::span<const LChar> chars) {
@@ -297,8 +444,24 @@ String AtomicStringTable::Add(base::span<const LChar> chars) {
     return StringImpl::empty_;
   }
 
-  LCharBuffer buffer(chars);
-  return AddToStringTable<LCharBuffer, LCharBufferTranslator>(buffer);
+  const auto length = chars.size();
+  if (length <= 7) {
+    // Initialize the signature to zero to ensure padding for strings shorter
+    // than 7 bytes, as copy_prefix_from() does not write past the input.
+    uint64_t signature = 0;
+    auto signature_bytes =
+        base::as_writable_bytes(base::span_from_ref(signature));
+    signature_bytes.copy_prefix_from(base::as_bytes(chars));
+    signature_bytes[7] = static_cast<uint8_t>(length);
+
+    return SmallStringCacheGetOrInsert(signature, [this, &chars]() {
+      return AddToStringTable<LCharBuffer, LCharBufferTranslator>(
+          LCharBuffer(chars));
+    });
+  }
+
+  return AddToStringTable<LCharBuffer, LCharBufferTranslator>(
+      LCharBuffer(chars));
 }
 
 StringImpl* AtomicStringTable::AddNoLock(StringImpl* string) {
@@ -315,7 +478,7 @@ String AtomicStringTable::Add(StringImpl* string) {
   if (!string->length())
     return StringImpl::empty_;
 
-  // Lock not only protects access to the table, it also guarantess
+  // Lock not only protects access to the table, it also guarantees
   // mutual exclusion with the refcount decrement on removal.
   base::AutoLock auto_lock(lock_);
   return base::WrapRefCounted(AddNoLock(string));
@@ -326,7 +489,7 @@ String AtomicStringTable::Add(String&& string) {
     return StringImpl::empty_;
   }
 
-  // Lock not only protects access to the table, it also guarantess
+  // Lock not only protects access to the table, it also guarantees
   // mutual exclusion with the refcount decrement on removal.
   base::AutoLock auto_lock(lock_);
   StringImpl* entry = AddNoLock(string.Impl());
