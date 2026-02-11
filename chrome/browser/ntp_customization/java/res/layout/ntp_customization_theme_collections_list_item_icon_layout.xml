@@ -17,30 +17,6 @@ found in the LICENSE file.
       android:layout_width="wrap_content"
       android:layout_height="wrap_content">
 
-    <FrameLayout
-        android:id="@+id/no_image_placeholder_background"
-        android:layout_width="@dimen/ntp_customization_theme_collections_icon_size"
-        android:layout_height="@dimen/ntp_customization_theme_collections_icon_size"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
-
-      <!-- Todo(crbug.com/423579377): Check if we need to consider the case when there is primary image or secondary image. -->
-      <ImageView
-          android:id="@+id/no_image_placeholder_image"
-          android:layout_width="@dimen/ntp_customization_theme_collections_icon_placeholder_size"
-          android:layout_height="@dimen/ntp_customization_theme_collections_icon_placeholder_size"
-          android:layout_marginLeft="@dimen/ntp_customization_theme_collections_icon_placeholder_margin"
-          android:layout_marginTop="@dimen/ntp_customization_theme_collections_icon_placeholder_margin"
-          android:layout_gravity="top|left"
-          android:scaleType="center"
-          android:src="@drawable/ic_folder_outline_24dp"
-          app:tint="@macro/default_icon_color_secondary"
-          android:importantForAccessibility="no"
-          tools:ignore="RtlHardcoded" />
-    </FrameLayout>
-
     <ImageView
         android:id="@+id/primary_image"
         android:layout_width="@dimen/ntp_customization_theme_collections_icon_size"

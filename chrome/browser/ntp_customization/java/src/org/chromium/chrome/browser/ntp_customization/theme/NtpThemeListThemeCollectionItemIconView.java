@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization.theme;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Pair;
@@ -30,13 +31,8 @@ public class NtpThemeListThemeCollectionItemIconView extends FrameLayout {
     private final RoundedCornerOutlineProvider mSecondaryImageOutline;
     private final RoundedCornerOutlineProvider mBottomRightOutline;
 
-    private View mNoImagePlaceholder;
     private ImageView mPrimaryImage;
-    private ViewGroup mSecondaryImageContainer;
     private ImageView mSecondaryImage;
-    private View mBottomRightContainer;
-    private View mBottomRightBackground;
-    private ImageView mBottomRightIcon;
 
     /** Constructor for inflating from XML. */
     public NtpThemeListThemeCollectionItemIconView(Context context, AttributeSet attrs) {
@@ -66,30 +62,26 @@ public class NtpThemeListThemeCollectionItemIconView extends FrameLayout {
         final @ColorInt int colorSurfaceContainer =
                 SemanticColorUtils.getColorSurfaceContainerHigh(context);
 
-        mNoImagePlaceholder = findViewById(R.id.no_image_placeholder_background);
-        mNoImagePlaceholder.setOutlineProvider(mPrimaryImageOutline);
-        mNoImagePlaceholder.setClipToOutline(true);
-
         mPrimaryImage = findViewById(R.id.primary_image);
         mPrimaryImage.setOutlineProvider(mPrimaryImageOutline);
         mPrimaryImage.setClipToOutline(true);
 
-        mSecondaryImageContainer = findViewById(R.id.secondary_image_container);
-        mSecondaryImageContainer.setBackgroundColor(surfaceColor);
+        ViewGroup secondaryImageContainer = findViewById(R.id.secondary_image_container);
+        secondaryImageContainer.setBackgroundColor(surfaceColor);
 
         mSecondaryImage = findViewById(R.id.secondary_image);
         mSecondaryImage.setOutlineProvider(mSecondaryImageOutline);
         mSecondaryImage.setClipToOutline(true);
 
-        mBottomRightContainer = findViewById(R.id.bottom_right_container);
-        mBottomRightContainer.setBackgroundColor(surfaceColor);
+        View bottomRightContainer = findViewById(R.id.bottom_right_container);
+        bottomRightContainer.setBackgroundColor(surfaceColor);
 
-        mBottomRightBackground = findViewById(R.id.bottom_right_background);
-        mBottomRightBackground.setBackgroundColor(colorSurfaceContainer);
-        mBottomRightBackground.setOutlineProvider(mBottomRightOutline);
-        mBottomRightBackground.setClipToOutline(true);
+        View bottomRightBackground = findViewById(R.id.bottom_right_background);
+        bottomRightBackground.setBackgroundColor(colorSurfaceContainer);
+        bottomRightBackground.setOutlineProvider(mBottomRightOutline);
+        bottomRightBackground.setClipToOutline(true);
 
-        mBottomRightIcon = findViewById(R.id.bottom_right_icon);
+        setImageDrawables(/* primaryDrawable= */ null, /* secondaryDrawable= */ null);
     }
 
     void setImageDrawablePair(Pair<Drawable, Drawable> drawablePair) {
@@ -98,24 +90,17 @@ public class NtpThemeListThemeCollectionItemIconView extends FrameLayout {
 
     void setImageDrawables(
             @Nullable Drawable primaryDrawable, @Nullable Drawable secondaryDrawable) {
-        mNoImagePlaceholder.setVisibility(View.GONE);
-        mPrimaryImage.setVisibility(View.GONE);
-        mSecondaryImageContainer.setVisibility(View.GONE);
-        mBottomRightContainer.setVisibility(View.GONE);
-        mBottomRightBackground.setVisibility(View.GONE);
-        mBottomRightIcon.setVisibility(View.GONE);
+        @ColorInt
+        int colorSurfaceContainer = SemanticColorUtils.getColorSurfaceContainerHigh(getContext());
 
-        if (primaryDrawable == null && secondaryDrawable == null) {
-            mNoImagePlaceholder.setVisibility(View.VISIBLE);
-        } else {
-            mPrimaryImage.setImageDrawable(primaryDrawable);
-            mSecondaryImage.setImageDrawable(secondaryDrawable);
-
-            mPrimaryImage.setVisibility(View.VISIBLE);
-            mSecondaryImageContainer.setVisibility(View.VISIBLE);
-            mBottomRightContainer.setVisibility(View.VISIBLE);
-            mBottomRightBackground.setVisibility(View.VISIBLE);
-            mBottomRightIcon.setVisibility(View.VISIBLE);
+        if (primaryDrawable == null) {
+            primaryDrawable = new ColorDrawable(colorSurfaceContainer);
         }
+        mPrimaryImage.setImageDrawable(primaryDrawable);
+
+        if (secondaryDrawable == null) {
+            secondaryDrawable = new ColorDrawable(colorSurfaceContainer);
+        }
+        mSecondaryImage.setImageDrawable(secondaryDrawable);
     }
 }
