@@ -350,6 +350,10 @@ Status CreateSchema(sql::Database* db, std::u16string_view name) {
       // (GetMaxBlobSize()), additional bytes will be stored in
       // `overflow_blob_chunks` table.
       " bytes BLOB)");
+  // Partial index to expedite scanning for legacy blobs.
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(
+      db,
+      "CREATE INDEX legacy_blobs ON blobs (object_type) WHERE bytes IS NULL");
 
   // IndexedDB aims to support multi-GB blobs. SQLite does not support blobs
   // larger than a certain size, which is at most 2^31 - 1, and is by default
@@ -395,9 +399,11 @@ Status CreateSchema(sql::Database* db, std::u16string_view name) {
   EXECUTE_AND_RETURN_STATUS_ON_ERROR(db,
                                      "CREATE INDEX blob_references_by_blob "
                                      "ON blob_references (blob_row_id)");
-  EXECUTE_AND_RETURN_STATUS_ON_ERROR(db,
-                                     "CREATE INDEX blob_references_by_record "
-                                     "ON blob_references (record_row_id)");
+  // Blobs are read in sorted order per record.
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(
+      db,
+      "CREATE INDEX blob_references_by_record "
+      "ON blob_references (record_row_id, blob_row_id)");
 
   // Create deletion triggers. Deletion triggers are not used for the
   // object_stores and indexes tables since their deletion occurs only through
@@ -1709,7 +1715,7 @@ StatusOr<IndexedDBValue> DatabaseConnection::AddExternalObjectMetadataToValue(
         "  blob_references.record_row_id = ? AND object_type != ? "
         // The order is important because the serialized data uses indexes to
         // refer to embedded external objects.
-        "ORDER BY blobs.row_id"));
+        "ORDER BY blob_references.blob_row_id"));
     statement.BindInt64(0, record_row_id);
     statement.BindInt64(
         1, static_cast<int>(
@@ -1761,7 +1767,7 @@ StatusOr<IndexedDBValue> DatabaseConnection::AddExternalObjectMetadataToValue(
         "  ON blob_references.blob_row_id = blobs.row_id "
         "WHERE"
         "  blob_references.record_row_id = ? AND object_type = ? "
-        "ORDER BY blobs.row_id"));
+        "ORDER BY blob_references.blob_row_id"));
     statement.BindInt64(0, record_row_id);
     statement.BindInt64(
         1, static_cast<int>(
