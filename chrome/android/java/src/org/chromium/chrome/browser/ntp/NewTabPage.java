@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.readaloud.ReadAloudController.Entrypoint;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleCoordinator;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleUtils;
+import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.single_tab.SingleTabSwitcherCoordinator;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
@@ -611,7 +612,12 @@ public class NewTabPage
                     @Override
                     public void onShown(Tab tab, @TabSelectionType int type) {
                         // Showing the NTP is only meaningful when the page has been loaded already.
-                        if (mIsLoaded) recordNtpShown();
+                        if (mIsLoaded) {
+                            recordNtpShown();
+                            if (mHomeModulesCoordinator != null) {
+                                mHomeModulesCoordinator.updateModules();
+                            }
+                        }
                         mNewTabPageLayout.onSwitchToForeground();
                     }
 
@@ -1427,6 +1433,11 @@ public class NewTabPage
 
         if (mostRecentTab != null && !UrlUtilities.isNtpUrl(mostRecentTab.getUrl())) {
             mMostRecentTabSupplier.set(mostRecentTab);
+        }
+
+        Profile profile = mTab.getProfile();
+        if (profile != null) {
+            SetupListManager.getInstance().maybePrimeCompletionStatus(profile.getOriginalProfile());
         }
 
         if (mHomeModulesCoordinator == null) {

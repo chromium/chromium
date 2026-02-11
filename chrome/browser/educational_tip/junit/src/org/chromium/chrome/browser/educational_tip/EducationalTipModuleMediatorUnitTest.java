@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.educational_tip;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,8 +26,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,7 +37,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -56,6 +57,7 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
         shadows = {ShadowAppCompatResources.class})
 public class EducationalTipModuleMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
 
     private PropertyModel mModel;
     @Mock private ModuleDelegate mModuleDelegate;
@@ -67,7 +69,6 @@ public class EducationalTipModuleMediatorUnitTest {
     @Mock private SyncService mSyncService;
     @Mock private IdentityManager mIdentityManager;
     @Mock private SetupListManager mSetupListManager;
-    private SharedPreferencesManager mPrefsManager;
 
     @Captor
     private ArgumentCaptor<DefaultBrowserPromoTriggerStateListener>
@@ -84,7 +85,6 @@ public class EducationalTipModuleMediatorUnitTest {
         when(mActionDelegate.getContext()).thenReturn(mContext);
         mDefaultModuleTypeForTesting = ModuleType.DEFAULT_BROWSER_PROMO;
         TrackerFactory.setTrackerForTests(mTracker);
-        mPrefsManager = ChromeSharedPreferences.getInstance();
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
         SetupListManager.setInstanceForTesting(mSetupListManager);
 
@@ -257,6 +257,35 @@ public class EducationalTipModuleMediatorUnitTest {
                 R.string.educational_tip_tab_group_title,
                 R.string.educational_tip_tab_group_description,
                 R.drawable.tab_group_promo_logo);
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateModule_TriggersAnimation() {
+        mEducationalTipModuleMediator.setModuleTypeForTesting(ModuleType.SIGN_IN_PROMO);
+        when(mSetupListManager.isModuleAwaitingCompletionAnimation(ModuleType.SIGN_IN_PROMO))
+                .thenReturn(true);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        mEducationalTipModuleMediator.updateModule();
+
+        // Verify priming was called immediately.
+        verify(mSetupListManager).maybePrimeCompletionStatus(mProfile);
+
+        // Should be marked completed immediately.
+        assertEquals(true, mModel.get(EducationalTipModuleProperties.MARK_COMPLETED));
+
+        // Verify reordering has NOT happened yet.
+        verify(mModuleDelegate, never()).updateModuleRanking(anyInt());
+
+        // 1. Advance to the combined duration.
+        mFakeTime.advanceMillis(
+                SetupListManager.STRIKETHROUGH_DURATION_MS + SetupListManager.HIDE_DURATION_MS);
+        ShadowLooper.runMainLooperOneTask();
+
+        // Final verification of completion signal and reordering trigger.
+        verify(mSetupListManager).onCompletionAnimationFinished(ModuleType.SIGN_IN_PROMO);
+        verify(mModuleDelegate).updateModuleRanking(ModuleType.SIGN_IN_PROMO);
     }
 
     @Test

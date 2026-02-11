@@ -48,6 +48,11 @@ public class EducationalTipModuleCoordinator implements ModuleProvider {
     }
 
     @Override
+    public void updateModule() {
+        mMediator.updateModule();
+    }
+
+    @Override
     public String getModuleContextMenuHideText(Context context) {
         return context.getString(R.string.educational_tip_module_context_menu_hide);
     }

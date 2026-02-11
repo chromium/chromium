@@ -315,6 +315,11 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         }
     }
 
+    /** Asks all of the modules being shown to reload their data if necessary. */
+    public void updateModules() {
+        mMediator.updateModules();
+    }
+
     /** Hides the modules and cleans up. */
     public void hide() {
         if (!mHasHomeModulesBeenScrolled) {
@@ -397,6 +402,11 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     public void prepareBuildAndShow() {
         maybeSetUpAdapter();
         mRecyclerView.addOnScrollListener(mOnScrollListener);
+    }
+
+    @Override
+    public void updateModuleRanking(@ModuleType int moduleType) {
+        mMediator.updateModuleRanking(moduleType);
     }
 
     // OnViewCreatedCallback implementation.

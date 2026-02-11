@@ -52,7 +52,13 @@ public interface SetupListCompletable {
             return null;
         }
         if (provider instanceof SetupListCompletable completable && completable.isComplete()) {
-            // Setup list module completed by the user
+            // Setup list module completed by the user.
+            // If the module is awaiting its animation, we should still show it as NOT completed
+            // initially so the user can see the transition.
+            if (SetupListModuleUtils.isModuleAwaitingCompletionAnimation(moduleType)) {
+                return new CompletionState(provider.getCardImage(), /* isCompleted= */ false);
+            }
+
             return new CompletionState(
                     completable.getCardImageCompletedResId(), /* isCompleted= */ true);
         }

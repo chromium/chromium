@@ -86,4 +86,22 @@ public class SetupListCompletableUnitTest {
         assertTrue(state.isCompleted);
         assertEquals(COMPLETED_ICON, state.iconRes);
     }
+
+    @Test
+    @SmallTest
+    public void testGetCompletionState_AwaitingAnimation() {
+        when(mSetupListManager.isSetupListModule(TEST_MODULE_TYPE)).thenReturn(true);
+        when(mSetupListManager.isModuleAwaitingCompletionAnimation(TEST_MODULE_TYPE))
+                .thenReturn(true);
+        when(mMockCompletableProvider.isComplete()).thenReturn(true);
+        when(mMockCompletableProvider.getCardImage()).thenReturn(DEFAULT_ICON);
+
+        SetupListCompletable.CompletionState state =
+                SetupListCompletable.getCompletionState(mMockCompletableProvider, TEST_MODULE_TYPE);
+
+        // Should return the DEFAULT icon and isCompleted=false initially,
+        // even if the task is technically complete, to allow for the animation.
+        assertFalse(state.isCompleted);
+        assertEquals(DEFAULT_ICON, state.iconRes);
+    }
 }

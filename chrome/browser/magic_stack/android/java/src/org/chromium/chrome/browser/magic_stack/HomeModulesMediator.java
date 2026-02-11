@@ -613,6 +613,37 @@ public class HomeModulesMediator {
     }
 
     /**
+     * Updates the ranking of the given module type in the magic stack.
+     *
+     * @param moduleType The type of the module to update ranking.
+     */
+    void updateModuleRanking(@ModuleType int moduleType) {
+        if (mModuleListToShow == null) return;
+
+        // 1. Find and remove the item to trigger a vanish animation.
+        int oldIndex = INVALID_INDEX;
+        for (int i = 0; i < mModel.size(); i++) {
+            if (mModel.get(i).type == moduleType) {
+                oldIndex = i;
+                break;
+            }
+        }
+
+        if (oldIndex == INVALID_INDEX) return;
+
+        MVCListAdapter.ListItem item = mModel.removeAt(oldIndex);
+
+        // 2. Update the ranking list by moving the module to the end.
+        if (mModuleListToShow.remove(Integer.valueOf(moduleType))) {
+            mModuleListToShow.add(moduleType);
+            cacheRanking(mModuleListToShow);
+        }
+
+        // 3. Append the item to the end of the model list to trigger an insertion animation.
+        mModel.add(item);
+    }
+
+    /**
      * Records whether the magic stack is scrollable and has been scrolled or not before it is
      * hidden or destroyed.
      */
@@ -747,6 +778,10 @@ public class HomeModulesMediator {
         }
 
         mEnabledModuleSet = mHomeModulesConfigManager.getEnabledModuleSet();
+    }
+
+    void setModuleListToShowForTesting(List<Integer> moduleList) {
+        mModuleListToShow = moduleList;
     }
 
     Map<Integer, ModuleProvider> getModuleTypeToModuleProviderMapForTesting() {

@@ -21,10 +21,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellBuilder;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 
@@ -40,9 +42,14 @@ public class HomeTipsModulesProviderUnitTest {
     @Mock private ModuleRegistry mModuleRegistry;
     @Mock private EducationTipModuleActionDelegate mActionDelegate;
     @Mock private SetupListManager mSetupListManager;
+    @Mock private Profile mProfile;
 
     @Before
     public void setUp() {
+        when(mActionDelegate.getProfileSupplier())
+                .thenReturn(ObservableSuppliers.createNonNull(mProfile));
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
         SetupListManager.setInstanceForTesting(mSetupListManager);
         when(mSetupListManager.getRankedModuleTypes())
                 .thenReturn(

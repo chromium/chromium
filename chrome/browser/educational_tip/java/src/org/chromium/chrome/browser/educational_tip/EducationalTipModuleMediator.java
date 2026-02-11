@@ -6,15 +6,19 @@ package org.chromium.chrome.browser.educational_tip;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.annotation.Nullable;
+import android.os.Handler;
+import android.os.Looper;
 
 import org.chromium.base.CallbackController;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListCompletable;
+import org.chromium.chrome.browser.setup_list.SetupListManager;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -27,11 +31,11 @@ import java.util.Objects;
 @NullMarked
 public class EducationalTipModuleMediator {
     private final EducationTipModuleActionDelegate mActionDelegate;
-    private final Profile mProfile;
     private @ModuleType int mModuleType;
     private final PropertyModel mModel;
     private final ModuleDelegate mModuleDelegate;
     private final CallbackController mCallbackController;
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     private @Nullable EducationalTipCardProvider mEducationalTipCardProvider;
     private final DefaultBrowserPromoTriggerStateListener mDefaultBrowserPromoTriggerStateListener;
@@ -47,8 +51,7 @@ public class EducationalTipModuleMediator {
         mModel = model;
         mModuleDelegate = moduleDelegate;
         mActionDelegate = actionDelegate;
-        mProfile = profile;
-        mTracker = TrackerFactory.getTrackerForProfile(mProfile);
+        mTracker = TrackerFactory.getTrackerForProfile(profile);
         mDefaultBrowserPromoTriggerStateListener = this::removeModule;
 
         mCallbackController = new CallbackController();
@@ -127,6 +130,35 @@ public class EducationalTipModuleMediator {
     @ModuleType
     int getModuleType() {
         return mModuleType;
+    }
+
+    /**
+     * Updates the module's data if necessary. For Setup List modules, this orchestrates the
+     * completion animation.
+     */
+    void updateModule() {
+        Profile profile = mActionDelegate.getProfileSupplier().get();
+        if (profile == null) return;
+
+        SetupListManager.getInstance().maybePrimeCompletionStatus(profile.getOriginalProfile());
+
+        if (!SetupListModuleUtils.isModuleAwaitingCompletionAnimation(mModuleType)) return;
+
+        mModel.set(EducationalTipModuleProperties.MARK_COMPLETED, true);
+        if (mEducationalTipCardProvider instanceof SetupListCompletable completable) {
+            mModel.set(
+                    EducationalTipModuleProperties.MODULE_CONTENT_IMAGE,
+                    completable.getCardImageCompletedResId());
+        }
+
+        // Wait for transition and delay, then move the module to the end of the Magic Stack.
+        mHandler.postDelayed(
+                mCallbackController.makeCancelable(
+                        () -> {
+                            SetupListModuleUtils.finishCompletionAnimation(mModuleType);
+                            mModuleDelegate.updateModuleRanking(mModuleType);
+                        }),
+                SetupListManager.STRIKETHROUGH_DURATION_MS + SetupListManager.HIDE_DURATION_MS);
     }
 
     void destroy() {

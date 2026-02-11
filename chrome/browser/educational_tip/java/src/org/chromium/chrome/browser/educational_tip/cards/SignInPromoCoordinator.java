@@ -13,13 +13,9 @@ import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDeleg
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListCompletable;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /** Coordinator for the sign in promo card. */
@@ -84,22 +80,7 @@ public class SignInPromoCoordinator implements EducationalTipCardProvider, Setup
 
     @Override
     public boolean isComplete() {
-        if (SetupListModuleUtils.isModuleCompleted(ModuleType.SIGN_IN_PROMO)) {
-            return true;
-        }
-
-        // Check current sign-in status
-        Profile profile = mActionDelegate.getProfileSupplier().get();
-        if (profile != null) {
-            IdentityManager identityManager =
-                    IdentityServicesProvider.get().getIdentityManager(profile);
-            if (identityManager != null && identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-                // User is signed in, mark as complete
-                SetupListModuleUtils.setModuleCompleted(ModuleType.SIGN_IN_PROMO);
-                return true;
-            }
-        }
-        return false;
+        return SetupListModuleUtils.isModuleCompleted(ModuleType.SIGN_IN_PROMO);
     }
 
     @Override

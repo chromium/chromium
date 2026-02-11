@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.setup_list;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
@@ -14,10 +16,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -25,8 +29,16 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 import java.util.List;
@@ -41,6 +53,11 @@ import java.util.concurrent.TimeUnit;
 public class SetupListManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
+
+    @Mock private Profile mProfile;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private SafeBrowsingBridge.Natives mSafeBrowsingBridgeJni;
 
     private SharedPreferencesManager mSharedPreferencesManager;
     private static final long ONE_MINUTE_IN_MILLIS = TimeUnit.MINUTES.toMillis(1);
@@ -159,7 +176,7 @@ public class SetupListManagerUnitTest {
 
     @Test
     @SmallTest
-    public void testGetRankedModuleTypes_ReordersOnCompletion() {
+    public void testGetRankedModuleTypes_ReordersAfterAnimation() {
         SetupListManager.setInstanceForTesting(new SetupListManager());
         List<Integer> rankedModules = SetupListManager.getInstance().getRankedModuleTypes();
 
@@ -171,34 +188,64 @@ public class SetupListManagerUnitTest {
         mSharedPreferencesManager.writeBoolean(prefKey, true);
 
         // Notify manager of the change.
-        SetupListManager.getInstance().onSharedPreferenceChanged(null, prefKey);
+        SetupListManager.getInstance()
+                .onSharedPreferenceChanged(ContextUtils.getAppSharedPreferences(), prefKey);
 
+        // The item should STILL be at the top and its rank should still be 0 because it's
+        // awaiting animation.
+        assertEquals(
+                firstModuleType,
+                (int) SetupListManager.getInstance().getRankedModuleTypes().get(0));
+        assertEquals(0, (int) SetupListManager.getInstance().getManualRank(firstModuleType));
+        assertTrue(
+                SetupListManager.getInstance()
+                        .isModuleAwaitingCompletionAnimation(firstModuleType));
+
+        SetupListManager.getInstance().onCompletionAnimationFinished(firstModuleType);
+
+        // Now the item should be at the end of the list and its rank updated.
         rankedModules = SetupListManager.getInstance().getRankedModuleTypes();
-
-        // The first item should now be at the end of the list.
-        assertEquals(firstModuleType, (int) rankedModules.get(rankedModules.size() - 1));
+        int expectedRank = rankedModules.size() - 1;
+        assertEquals(firstModuleType, (int) rankedModules.get(expectedRank));
+        assertEquals(
+                expectedRank, (int) SetupListManager.getInstance().getManualRank(firstModuleType));
+        assertFalse(
+                SetupListManager.getInstance()
+                        .isModuleAwaitingCompletionAnimation(firstModuleType));
     }
 
     @Test
     @SmallTest
-    public void testGetManualRank_UpdatesDynamically() {
-        SetupListManager.setInstanceForTesting(new SetupListManager());
-        List<Integer> rankedModules = SetupListManager.getInstance().getRankedModuleTypes();
+    public void testMaybePrimeCompletionStatus_SilentSync() {
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
+        SafeBrowsingBridgeJni.setInstanceForTesting(mSafeBrowsingBridgeJni);
+        // User is signed in.
+        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        // User has Enhanced Safe Browsing enabled.
+        when(mSafeBrowsingBridgeJni.getSafeBrowsingState(any()))
+                .thenReturn(SafeBrowsingState.ENHANCED_PROTECTION);
 
-        // Initially, pick the first item.
-        int firstModuleType = rankedModules.get(0);
-        String prefKey = SetupListModuleUtils.getCompletionKeyForModule(firstModuleType);
+        SetupListManager manager = new SetupListManager();
+        SetupListManager.setInstanceForTesting(manager);
 
-        // Its rank should be 0.
-        assertEquals(0, (int) SetupListManager.getInstance().getManualRank(firstModuleType));
+        // Sign-in promo should be at index 0 initially (before priming).
+        assertEquals(ModuleType.SIGN_IN_PROMO, (int) manager.getRankedModuleTypes().get(0));
 
-        // Complete the first item.
-        mSharedPreferencesManager.writeBoolean(prefKey, true);
-        SetupListManager.getInstance().onSharedPreferenceChanged(null, prefKey);
+        // Prime the status.
+        manager.maybePrimeCompletionStatus(mProfile);
 
-        // Now its rank should be at the end.
-        int expectedRank = SetupListManager.getInstance().getRankedModuleTypes().size() - 1;
+        List<Integer> rankedModules = manager.getRankedModuleTypes();
+        // Sign-in and ESB should be at the end of the base list.
+        assertEquals(ModuleType.SIGN_IN_PROMO, (int) rankedModules.get(rankedModules.size() - 2));
         assertEquals(
-                expectedRank, (int) SetupListManager.getInstance().getManualRank(firstModuleType));
+                ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                (int) rankedModules.get(rankedModules.size() - 1));
+
+        // Verify they are NOT in the animation set (silent sync).
+        assertFalse(manager.isModuleAwaitingCompletionAnimation(ModuleType.SIGN_IN_PROMO));
+        assertFalse(
+                manager.isModuleAwaitingCompletionAnimation(
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO));
     }
 }

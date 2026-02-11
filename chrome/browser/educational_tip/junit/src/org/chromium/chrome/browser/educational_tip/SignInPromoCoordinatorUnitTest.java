@@ -29,9 +29,6 @@ import org.chromium.chrome.browser.educational_tip.cards.SignInPromoCoordinator;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
@@ -47,19 +44,15 @@ public class SignInPromoCoordinatorUnitTest {
     @Mock private EducationTipModuleActionDelegate mActionDelegate;
     @Mock private SetupListManager mSetupListManager;
     @Mock private Profile mProfile;
-    @Mock private IdentityServicesProvider mIdentityServicesProvider;
-    @Mock private IdentityManager mIdentityManager;
 
     private SignInPromoCoordinator mSignInPromoCoordinator;
 
     @Before
     public void setUp() {
         SetupListManager.setInstanceForTesting(mSetupListManager);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         NonNullObservableSupplier<Profile> profileSupplier =
                 ObservableSuppliers.createNonNull(mProfile);
         when(mActionDelegate.getProfileSupplier()).thenReturn(profileSupplier);
-        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
 
         mSignInPromoCoordinator =
                 new SignInPromoCoordinator(mOnModuleClickedCallback, mActionDelegate);
@@ -78,26 +71,15 @@ public class SignInPromoCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testIsComplete_AlreadyCompleted() {
+    public void testIsComplete_Completed() {
         when(mSetupListManager.isModuleCompleted(ModuleType.SIGN_IN_PROMO)).thenReturn(true);
         assertTrue(mSignInPromoCoordinator.isComplete());
     }
 
     @Test
     @SmallTest
-    public void testIsComplete_SignedIn() {
+    public void testIsComplete_NotCompleted() {
         when(mSetupListManager.isModuleCompleted(ModuleType.SIGN_IN_PROMO)).thenReturn(false);
-        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
-
-        assertTrue(mSignInPromoCoordinator.isComplete());
-    }
-
-    @Test
-    @SmallTest
-    public void testIsComplete_NotCompletedNotSignedIn() {
-        when(mSetupListManager.isModuleCompleted(ModuleType.SIGN_IN_PROMO)).thenReturn(false);
-        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
-
         assertFalse(mSignInPromoCoordinator.isComplete());
     }
 }

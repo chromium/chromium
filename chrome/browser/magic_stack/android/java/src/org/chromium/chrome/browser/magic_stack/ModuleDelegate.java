@@ -118,6 +118,9 @@ public interface ModuleDelegate {
     /** Gets the local Tab that is showing on the magic stack. */
     @Nullable Tab getTrackingTab();
 
+    /** Updates the ranking of the given module type in the magic stack. */
+    void updateModuleRanking(@ModuleType int moduleType);
+
     /** Called before build and show modules. */
     void prepareBuildAndShow();
 }

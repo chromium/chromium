@@ -9,6 +9,12 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.List;
 
@@ -81,6 +87,36 @@ public class SetupListModuleUtils {
                     String.valueOf(type));
         }
         return null;
+    }
+
+    /** Returns whether the module is awaiting its completion animation. */
+    public static boolean isModuleAwaitingCompletionAnimation(@ModuleType int moduleType) {
+        return SetupListManager.getInstance().isModuleAwaitingCompletionAnimation(moduleType);
+    }
+
+    /** Signals that the completion animation for a module has finished. */
+    public static void finishCompletionAnimation(@ModuleType int moduleType) {
+        SetupListManager.getInstance().onCompletionAnimationFinished(moduleType);
+    }
+
+    /**
+     * Checks the actual status of tasks that have external state (e.g. Sign In, Enhanced Safe
+     * Browsing) based on the system state.
+     */
+    public static boolean checkIsTaskCompletedInSystem(
+            @ModuleType int moduleType, Profile profile) {
+        switch (moduleType) {
+            case ModuleType.SIGN_IN_PROMO:
+                IdentityManager identityManager =
+                        IdentityServicesProvider.get().getIdentityManager(profile);
+                return identityManager != null
+                        && identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
+            case ModuleType.ENHANCED_SAFE_BROWSING_PROMO:
+                return new SafeBrowsingBridge(profile).getSafeBrowsingState()
+                        == SafeBrowsingState.ENHANCED_PROTECTION;
+            default:
+                return false;
+        }
     }
 
     public static void setRankedModuleTypesForTesting(List<Integer> rankedModuleTypes) {
