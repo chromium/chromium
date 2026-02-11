@@ -253,7 +253,8 @@ EncoderStatus VideoFrameGLSurfaceRenderer::RenderVideoFrame(
     }
   } else {
     return {EncoderStatus::Codes::kUnsupportedFrameFormat,
-            "Frame is not a SharedImage and is not mappable"};
+            "Frame is not storing a SharedImage and is not directly "
+            "CPU-accessible"};
   }
 
   const GLenum error = api->glGetErrorFn();
@@ -506,7 +507,6 @@ void VideoFrameGLSurfaceRenderer::UpdateTextures(const VideoFrame& frame) {
     return;
   }
 
-  // Mappable frame
   DCHECK(frame.HasDirectCpuAccess());
   const size_t num_textures = frame.layout().num_planes();
   if (num_textures == 0) {
