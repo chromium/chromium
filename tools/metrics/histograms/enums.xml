@@ -19115,6 +19115,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentWhiteBackgroundOnBlur:disabled"/>
   <int value="1617187093" label="enable-improved-a2hs"/>
   <int value="1618337673" label="IdbSqliteBackingStore:disabled"/>
+  <int value="1618538021" label="FallbackToSWIfGLES3NotSupported:disabled"/>
   <int value="1618633341" label="MashOopViz:enabled"/>
   <int value="1619842095" label="ColorProviderRedirection:enabled"/>
   <int value="1620369597" label="enable-unsafe-webgpu"/>
@@ -19760,6 +19761,7 @@ from previous Chrome versions.
       label="PrivateNetworkAccessPreflightShortTimeout:enabled"/>
   <int value="1829259057" label="MediaAppHandlesPdf:enabled"/>
   <int value="1829787040" label="WebApkBackupAndRestoreBackend:disabled"/>
+  <int value="1830037888" label="FallbackToSWIfGLES3NotSupported:enabled"/>
   <int value="1830460973" label="disable-network-settings-config"/>
   <int value="1831103529" label="MediaNotificationsCounter:disabled"/>
   <int value="1831156636" label="NearbyKeepAliveFix:enabled"/>

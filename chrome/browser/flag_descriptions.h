@@ -2394,6 +2394,12 @@ inline constexpr char kChromeWebStoreNavigationThrottleName[] =
 inline constexpr char kChromeWebStoreNavigationThrottleDescription[] =
     "When enabled, passes DM Token to the Chrome Web Store.";
 
+inline constexpr char kFallbackToSWIfGLES3NotSupportedName[] =
+    "Fallback to software if GLES3 is not supported";
+inline constexpr char kFallbackToSWIfGLES3NotSupportedDescription[] =
+    "Controls whether the GPU process falls back to software if GLES3 is not "
+    "supported.";
+
 inline constexpr char kFlexFirmwareUpdateName[] =
     "ChromeOS Flex Firmware Updates";
 inline constexpr char kFlexFirmwareUpdateDescription[] =

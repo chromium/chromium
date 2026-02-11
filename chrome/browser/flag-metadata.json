@@ -4561,6 +4561,14 @@
     "expiry_milestone": 149
   },
   {
+    "name": "fallback-to-sw-if-gles3-not-supported",
+    "owners": [
+      "fangzhoug@chromium.org",
+      "chrome-gpu-team@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "fast-drm-master-drop",
     "owners": [
       "//ui/display/OWNERS",
