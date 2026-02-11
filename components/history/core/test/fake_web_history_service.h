@@ -81,8 +81,6 @@ class FakeWebHistoryService : public WebHistoryService {
  private:
   class FakeRequest;
 
-  base::Time GetTimeForKeyInQuery(const GURL& url, const std::string& key);
-
   // WebHistoryService implementation.
   std::unique_ptr<Request> CreateRequest(
       const GURL& url,
