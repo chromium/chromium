@@ -90,18 +90,21 @@ class ParkableStringTest
     switch (algorithm) {
       case ParkableStringImpl::CompressionAlgorithm::kZlib:
         scoped_feature_list_.InitWithFeatures(
-            {}, {features::kUseSnappyForParkableStrings,
-                 features::kUseZstdForParkableStrings});
+            {features::kCompressParkableStrings},
+            {features::kUseSnappyForParkableStrings,
+             features::kUseZstdForParkableStrings});
         break;
       case ParkableStringImpl::CompressionAlgorithm::kSnappy:
         scoped_feature_list_.InitWithFeatures(
-            {features::kUseSnappyForParkableStrings},
+            {features::kCompressParkableStrings,
+             features::kUseSnappyForParkableStrings},
             {features::kUseZstdForParkableStrings});
         break;
 #if BUILDFLAG(HAS_ZSTD_COMPRESSION)
       case ParkableStringImpl::CompressionAlgorithm::kZstd:
         scoped_feature_list_.InitWithFeatures(
-            {features::kUseZstdForParkableStrings},
+            {features::kCompressParkableStrings,
+             features::kUseZstdForParkableStrings},
             {features::kUseSnappyForParkableStrings});
         break;
 #endif  // BUILDFLAG(HAS_ZSTD_COMPRESSION)
