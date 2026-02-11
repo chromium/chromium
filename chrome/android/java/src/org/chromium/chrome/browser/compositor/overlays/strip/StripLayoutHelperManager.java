@@ -645,7 +645,7 @@ public class StripLayoutHelperManager
                         updateHost,
                         renderHost,
                         /* incognito= */ true,
-                        mGlicButton,
+                        /* glicButton= */ null,
                         mModelSelectorButton,
                         mTabStripDragHandler,
                         toolbarContainerView,

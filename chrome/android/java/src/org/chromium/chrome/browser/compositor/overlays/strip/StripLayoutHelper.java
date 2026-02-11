@@ -5457,6 +5457,10 @@ public class StripLayoutHelper
                 || viewX >= rightBound;
     }
 
+    @Nullable /* package */ TintedCompositorButton getGlicButtonForTesting() {
+        return mGlicButton;
+    }
+
     /** Returns true if the close button menu is showing */
     public boolean isCloseButtonMenuShowingForTesting() {
         return mCloseButtonMenu.isShowing();

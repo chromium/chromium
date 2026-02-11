@@ -22,6 +22,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils.enableMultiInstance;
 
 import android.app.Activity;
@@ -711,7 +712,7 @@ public class StripLayoutHelperManagerTest {
         assertEquals(
                 "Unexpected incognito tab created on startup value",
                 expectedIncognitoCreatedTabOnStartup,
-                standardHelper.getCreatedTabOnStartupForTesting());
+                incognitoHelper.getCreatedTabOnStartupForTesting());
     }
 
     @Test
@@ -1385,6 +1386,12 @@ public class StripLayoutHelperManagerTest {
     public void testGlicButtonEnabled() {
         initializeTest();
         assertNotNull("Glic button should be created.", mStripLayoutHelperManager.getGlicButton());
+
+        StripLayoutHelper standardHelper = mStripLayoutHelperManager.getStripLayoutHelper(false);
+        assertNonNull(standardHelper.getGlicButtonForTesting());
+
+        StripLayoutHelper incognitoHelper = mStripLayoutHelperManager.getStripLayoutHelper(true);
+        assertNull(incognitoHelper.getGlicButtonForTesting());
     }
 
     @Test
