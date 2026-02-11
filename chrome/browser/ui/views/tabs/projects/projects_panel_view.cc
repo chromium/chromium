@@ -40,11 +40,15 @@
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_shadow.h"
 
 namespace {
-constexpr ui::ColorId kProjectPanelBackgroundColor = ui::kColorFrameActive;
+constexpr int kClipRectRightMarginForShadow = 32;
+constexpr ui::ColorId kProjectPanelBackgroundColor = ui::kColorSysSurface2;
+constexpr int kProjectPanelRightCornerRadius = 16;
 constexpr int kProjectPanelWidth = 240;
 constexpr gfx::Insets kRegionInteriorMargins = gfx::Insets::VH(12, 12);
+constexpr int kShadowElevation = 2;
 // The padding around a list header.
 constexpr gfx::Insets kListHeaderPadding = gfx::Insets::VH(10, 20);
 
@@ -100,9 +104,15 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
   // The vertical tab strip contains ScrollViews that paint to a layer. This
   // view must also paint to a layer to ensure it overlays those components.
   SetPaintToLayer();
-  layer()->SetMasksToBounds(true);
+  layer()->SetFillsBoundsOpaquely(false);
 
   content_container_ = AddChildView(std::make_unique<views::View>());
+  content_container_->SetPaintToLayer();
+  content_container_->layer()->SetFillsBoundsOpaquely(false);
+  content_container_->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(
+      /*upper_left=*/0, kProjectPanelRightCornerRadius,
+      kProjectPanelRightCornerRadius, /*lower_left=*/0));
+
   content_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetInteriorMargin(kRegionInteriorMargins)
@@ -111,8 +121,14 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kPreferred));
-  content_container_->SetBackground(
-      views::CreateSolidBackground(kProjectPanelBackgroundColor));
+  content_container_->SetBackground(views::CreateRoundedRectBackground(
+      kProjectPanelBackgroundColor,
+      gfx::RoundedCornersF(/*upper_left=*/0, kProjectPanelRightCornerRadius,
+                           kProjectPanelRightCornerRadius, /*lower_left=*/0)));
+
+  content_shadow_ =
+      std::make_unique<views::ViewShadow>(content_container_, kShadowElevation);
+  content_shadow_->SetRoundedCornerRadius(kProjectPanelRightCornerRadius);
 
   panel_controller_ = std::make_unique<ProjectsPanelController>(
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -225,6 +241,13 @@ void ProjectsPanelView::Layout(PassKey) {
   const int visible_width = width();
   content_container_->SetBounds(-(target_width - visible_width), 0,
                                 target_width, height());
+
+  // The content_container_ slides in from the left and should be clipped to the
+  // left edge of the panel. However, we still want the shadow to be visible on
+  // the right, so we set a clip rect that starts at x=0 but extends slightly
+  // beyond the right edge.
+  layer()->SetClipRect(gfx::Rect(
+      0, 0, kProjectPanelWidth + kClipRectRightMarginForShadow, height()));
 }
 
 bool ProjectsPanelView::AcceleratorPressed(const ui::Accelerator& accelerator) {

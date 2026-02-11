@@ -30,6 +30,7 @@ namespace views {
 class ActionViewController;
 class EventMonitor;
 class MenuRunner;
+class ViewShadow;
 }  // namespace views
 
 class BrowserWindowInterface;
@@ -96,6 +97,7 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
   raw_ptr<ProjectsPanelTabGroupsView> tab_groups_view_ = nullptr;
   raw_ptr<views::ScrollView> tab_groups_scroll_view_ = nullptr;
   raw_ptr<views::ScrollView> threads_scroll_view_ = nullptr;
+  std::unique_ptr<views::ViewShadow> content_shadow_;
 
   // TODO(crbug.com/475300882): Remove once we fetch thread data from the
   // controller.

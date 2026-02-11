@@ -23,7 +23,6 @@ ProjectsPanelControlsView::ProjectsPanelControlsView(
     actions::ActionItem* root_action_item,
     views::ActionViewController* action_view_controller) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
-  SetBackground(views::CreateSolidBackground(ui::kColorFrameActive));
 
   std::unique_ptr<TopContainerButton> container_button =
       std::make_unique<TopContainerButton>();
