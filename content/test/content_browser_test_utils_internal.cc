@@ -433,7 +433,7 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
     base::StringAppendF(&result, "\n%s%s = %s", prefix,
                         legend_entry.first.c_str(), description.c_str());
     // Highlight some exceptionable conditions.
-    if (site_instance->GetSiteInfo().is_sandboxed()) {
+    if (site_instance->GetSecurityPrincipal().IsSandboxed()) {
       result.append(" (sandboxed)");
     }
     if (site_instance->group()->active_frame_count() == 0)

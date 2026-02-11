@@ -11857,7 +11857,7 @@ bool RenderFrameHostImpl::CanSubframeCommitOriginAndUrl(
   const bool is_top_pdf =
       GetMainFrame()->GetSiteInstance()->GetSiteInfo().is_pdf();
   const bool is_top_sandboxed =
-      GetMainFrame()->GetSiteInstance()->GetSiteInfo().is_sandboxed();
+      GetMainFrame()->GetSiteInstance()->GetSecurityPrincipal().IsSandboxed();
 
   return GetMainFrame()->CanCommitOriginAndUrl(
              dest_top_origin, dest_top_url,
@@ -12519,8 +12519,8 @@ void RenderFrameHostImpl::CommitNavigation(
     // both parent and child are sandboxed), or that the two are in different
     // SiteInstances when only the child is sandboxed.
     CHECK(GetSiteInstance() == parent_->GetSiteInstance() ||
-          !parent_->GetSiteInstance()->GetSiteInfo().is_sandboxed() &&
-              GetSiteInstance()->GetSiteInfo().is_sandboxed());
+          !parent_->GetSiteInstance()->GetSecurityPrincipal().IsSandboxed() &&
+              GetSiteInstance()->GetSecurityPrincipal().IsSandboxed());
   }
 
   // If this is an attempt to commit a URL in an incompatible process, capture a
@@ -15557,7 +15557,7 @@ void RenderFrameHost::LogSandboxedIframesIsolationMetrics() {
     auto* site_instance =
         static_cast<SiteInstanceImpl*>(rfhi->GetSiteInstance());
     DCHECK(site_instance->HasProcess());
-    if (site_instance->GetSiteInfo().is_sandboxed()) {
+    if (site_instance->GetSecurityPrincipal().IsSandboxed()) {
       sandboxed_rphs.insert(site_instance->GetProcess());
     }
   }
@@ -15600,7 +15600,7 @@ void RenderFrameHostImpl::UpdateIsolatableSandboxedIframeTracking(
 
       if (!frame_owner) {
         frame_is_isolatable = false;
-      } else if (GetSiteInstance()->GetSiteInfo().is_sandboxed()) {
+      } else if (GetSiteInstance()->GetSecurityPrincipal().IsSandboxed()) {
         DCHECK(frame_is_isolatable);
       } else if (frame_owner->GetSiteInstance() != GetSiteInstance()) {
         // If this host's SiteInstance isn't already marked as is_sandboxed

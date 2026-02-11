@@ -14,6 +14,7 @@
 #include "content/browser/site_info.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame.mojom.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/bindings_policy.h"
@@ -1092,7 +1093,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, SandboxedFrameInWebUI) {
   FrameTreeNode* child = root->child_at(0);
   scoped_refptr<SiteInstanceImpl> child_instance =
       child->current_frame_host()->GetSiteInstance();
-  EXPECT_TRUE(child_instance->GetSiteInfo().is_sandboxed());
+  EXPECT_TRUE(child_instance->GetSecurityPrincipal().IsSandboxed());
   EXPECT_EQ(iframe_url, child->current_frame_host()->GetLastCommittedURL());
 }
 

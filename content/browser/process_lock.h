@@ -120,7 +120,7 @@ class CONTENT_EXPORT ProcessLock {
   // future if required for sandboxed iframes that are restricted with different
   // sandbox flags.
   bool is_sandboxed() const {
-    return site_info_.has_value() && site_info_->is_sandboxed();
+    return site_info_.has_value() && site_info_->IsSandboxed();
   }
 
   // If this ProcessLock is for a sandboxed iframe without allow-same-origin,

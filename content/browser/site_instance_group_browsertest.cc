@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest,
   FrameTreeNode* child0 = main_frame()->child_at(0);
   scoped_refptr<SiteInstanceImpl> child0_instance =
       child0->current_frame_host()->GetSiteInstance();
-  EXPECT_TRUE(child0_instance->GetSiteInfo().is_sandboxed());
+  EXPECT_TRUE(child0_instance->GetSecurityPrincipal().IsSandboxed());
 
   // Create a non-sandboxed cross-origin child frame, which has the same site as
   // the sandboxed subframe, but is in a different (non-sandboxed) SiteInstance.
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest,
   FrameTreeNode* child1 = main_frame()->child_at(1);
   scoped_refptr<SiteInstanceImpl> child1_instance =
       child1->current_frame_host()->GetSiteInstance();
-  EXPECT_FALSE(child1_instance->GetSiteInfo().is_sandboxed());
+  EXPECT_FALSE(child1_instance->GetSecurityPrincipal().IsSandboxed());
   EXPECT_NE(child0_instance, child1_instance);
 
   // Add a sandboxed data: URL subframe as a subframe of `child1`. It should get
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest,
   EXPECT_TRUE(data->current_frame_host()->GetLastCommittedURL().SchemeIs(
       url::kDataScheme));
   EXPECT_FALSE(data_instance->GetSiteURL().SchemeIs(url::kDataScheme));
-  EXPECT_TRUE(data_instance->IsSandboxed());
+  EXPECT_TRUE(data_instance->GetSecurityPrincipal().IsSandboxed());
 
   RenderProcessHost* main_process = main_instance->GetProcess();
   RenderProcessHost* data_process = data_instance->GetProcess();

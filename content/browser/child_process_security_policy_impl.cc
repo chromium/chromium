@@ -2384,7 +2384,7 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
         if (requires_origin_keyed_process) {
           out_failure_reason += "oac ";
         }
-        if (site_info.is_sandboxed()) {
+        if (site_info.IsSandboxed()) {
           out_failure_reason += "sandbox ";
         }
         if (site_info.is_error_page()) {

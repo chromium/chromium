@@ -508,6 +508,11 @@ SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
   return non_oac_site_info;
 }
 
+bool SiteInfo::IsSandboxed() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return is_sandboxed_;
+}
+
 GURL SiteInfo::GetProcessLockURL() const {
   return agent_cluster_key_.GetURL();
 }

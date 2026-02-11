@@ -63,7 +63,7 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
   frame_info->site_instance->is_guest = site_instance->IsGuest();
   frame_info->site_instance->is_pdf = site_instance->IsPdf();
   frame_info->site_instance->is_sandbox_for_iframes =
-      site_instance->GetSiteInfo().is_sandboxed();
+      site_instance->GetSecurityPrincipal().IsSandboxed();
   frame_info->site_instance->are_javascript_optimizers_enabled =
       !site_instance->GetSiteInfo().are_v8_optimizations_disabled();
   frame_info->site_instance->site_instance_group_id =

@@ -4438,7 +4438,7 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   bool is_eligible_for_sandboxing =
       !GetURL().IsAboutBlank() ||
       (source_site_instance_ &&
-       source_site_instance_->GetSiteInfo().is_sandboxed());
+       source_site_instance_->GetSecurityPrincipal().IsSandboxed());
   if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled() &&
       is_eligible_for_sandboxing) {
     // Determine if the frame has the sandbox flag or not.
@@ -4465,7 +4465,7 @@ UrlInfo NavigationRequest::GetUrlInfo() {
     // flags here, but should still respect the sandbox of the initiator.
     bool should_inherit_initiators_sandbox =
         GetURL().IsAboutBlank() && source_site_instance_ &&
-        source_site_instance_->GetSiteInfo().is_sandboxed();
+        source_site_instance_->GetSecurityPrincipal().IsSandboxed();
 
     // Consider isolating sandboxed frames that won't end up as downloads or
     // 204s.

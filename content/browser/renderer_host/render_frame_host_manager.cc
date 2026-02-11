@@ -3978,7 +3978,7 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
   // that isn't sandboxed. But if the `source_instance` is also sandboxed, then
   // it's possible (e.g. a sandboxed child frame in a sandboxed parent frame).
   auto& source_site_info = source_instance->GetSiteInfo();
-  if (dest_url_info.is_sandboxed != source_site_info.is_sandboxed()) {
+  if (dest_url_info.is_sandboxed != source_site_info.IsSandboxed()) {
     AppendReason(reason,
                  "CanUseSourceSiteInstance => false "
                  "(is-sandboxed-mismatched)");
@@ -4790,8 +4790,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
   if (parent && request->common_params().url.IsAboutSrcdoc()) {
     const UrlInfo& url_info = request->GetUrlInfo();
     if (url_info.is_sandboxed &&
-        !parent->GetSiteInstance()->GetSiteInfo().is_sandboxed()) {
-      // TODO(wjmaclean); For now, SiteInfo::is_sandboxed() and
+        !parent->GetSiteInstance()->GetSecurityPrincipal().IsSandboxed()) {
+      // TODO(wjmaclean); For now, SiteInfo::IsSandboxed() and
       // UrlInfo::is_sandboxed both mean "origin-restricted sandbox", so this
       // simple comparison suffices. But when we extend sandbox isolation to
       // depend on other sandbox flags as well, we may want to do a more

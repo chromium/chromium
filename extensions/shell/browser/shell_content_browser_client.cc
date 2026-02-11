@@ -20,6 +20,7 @@
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -139,7 +140,7 @@ void ShellContentBrowserClient::SiteInstanceGotProcessAndSite(
   if (!extension)
     return;
 
-  if (site_instance->IsSandboxed()) {
+  if (site_instance->GetSecurityPrincipal().IsSandboxed()) {
     return;
   }
 

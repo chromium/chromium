@@ -208,6 +208,7 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
 
   // SecurityPrincipal overrides.
   ~SiteInfo() override;
+  bool IsSandboxed() const override;
 
   // This function returns a new SiteInfo which is equivalent to the original,
   // except that its AgentClusterKey is made site-keyed if it had been created
@@ -300,10 +301,6 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
   AgentClusterKey::OACStatus oac_status() const {
     return agent_cluster_key_.oac_status();
   }
-
-  // The following accessor is for the `is_sandboxed` flag, which is true when
-  // this SiteInfo is for an origin-restricted-sandboxed iframe.
-  bool is_sandboxed() const { return is_sandboxed_; }
 
   // Returns either kInvalidUniqueSandboxId or the unique sandbox id provided
   // when this SiteInfo was created. The latter case only occurs when

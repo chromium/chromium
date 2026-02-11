@@ -1907,7 +1907,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameIsolatedSandboxedIframesBrowserTest,
   // IsolationContext when the SiteInfo is created.
   EXPECT_EQ(testing_with_isolate_fenced_frames,
             ff_rfh->GetSiteInstance()->GetSiteInfo().is_fenced());
-  EXPECT_TRUE(ff_rfh->GetSiteInstance()->GetSiteInfo().is_sandboxed());
+  EXPECT_TRUE(ff_rfh->GetSiteInstance()->GetSecurityPrincipal().IsSandboxed());
   EXPECT_NE(
       primary_main_frame_host()->GetSiteInstance()->GetBrowsingInstanceId(),
       ff_rfh->GetSiteInstance()->GetBrowsingInstanceId());
@@ -1938,7 +1938,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameIsolatedSandboxedIframesBrowserTest,
   } else {
     EXPECT_EQ(ff_rfh->GetProcess(), primary_main_frame_host()->GetProcess());
   }
-  EXPECT_FALSE(ff_rfh->GetSiteInstance()->GetSiteInfo().is_sandboxed());
+  EXPECT_FALSE(ff_rfh->GetSiteInstance()->GetSecurityPrincipal().IsSandboxed());
   EXPECT_NE(
       primary_main_frame_host()->GetSiteInstance()->GetBrowsingInstanceId(),
       ff_rfh->GetSiteInstance()->GetBrowsingInstanceId());
@@ -1958,8 +1958,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameIsolatedSandboxedIframesBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   EXPECT_TRUE(primary_main_frame_host()
                   ->GetSiteInstance()
-                  ->GetSiteInfo()
-                  .is_sandboxed());
+                  ->GetSecurityPrincipal()
+                  .IsSandboxed());
 
   // Try to load FencedFrame inside the CSP sandboxed frame.
   const GURL fenced_frame_url =

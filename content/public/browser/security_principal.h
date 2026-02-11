@@ -31,6 +31,10 @@ namespace content {
 class CONTENT_EXPORT SecurityPrincipal {
  public:
   virtual ~SecurityPrincipal() = default;
+
+  // Returns true if this SecurityPrincipal is for process-isolated sandboxed
+  // documents only.
+  virtual bool IsSandboxed() const = 0;
 };
 
 }  // namespace content

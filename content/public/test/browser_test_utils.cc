@@ -2091,8 +2091,8 @@ bool HasOriginKeyedProcess(RenderFrameHost* frame) {
 bool HasSandboxedSiteInstance(RenderFrameHost* frame) {
   return static_cast<RenderFrameHostImpl*>(frame)
       ->GetSiteInstance()
-      ->GetSiteInfo()
-      .is_sandboxed();
+      ->GetSecurityPrincipal()
+      .IsSandboxed();
 }
 
 std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(

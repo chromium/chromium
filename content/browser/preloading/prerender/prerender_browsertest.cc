@@ -5168,8 +5168,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderOopsifBrowserTest,
     RenderFrameHostImpl* sandboxed_render_frame_host =
         main_frame->child_at(0)->current_frame_host();
     EXPECT_TRUE(sandboxed_render_frame_host->GetSiteInstance()
-                    ->GetSiteInfo()
-                    .is_sandboxed());
+                    ->GetSecurityPrincipal()
+                    .IsSandboxed());
     ASSERT_NE(main_frame->GetProcess(),
               sandboxed_render_frame_host->GetProcess());
   }

@@ -37,6 +37,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -794,7 +795,7 @@ void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcessAndSite(
   // Manifest-sandboxed documents, and data: or or about:srcdoc urls, do not get
   // access to the extension APIs. We trust that the given SiteInstance is only
   // marked as sandboxed in cases that do not have access to extension APIs.
-  if (site_instance->IsSandboxed()) {
+  if (site_instance->GetSecurityPrincipal().IsSandboxed()) {
     return;
   }
 
