@@ -151,37 +151,41 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
 
     tabs::TabInterface* source_tab = tabs::TabInterface::GetFromContents(
         content::WebContents::FromRenderFrameHost(source_render_frame_host));
-    auto* glic_embedder = instance_->GetEmbedderForTab(source_tab);
 
-    if (base::FeatureList::IsEnabled(kGlicRemoveDaisyChainingWhenFreShowing)) {
-      if (instance_->service()->IsFreShowing() ||
-          (IsTrustFirstOnboardingPending(instance_->profile()) &&
-           features::kGlicTrustFirstOnboardingArmParam.Get() != 1)) {
-        return;
-      }
-    }
-
-    // Only bind if the previous instance was active.
-    if (glic_embedder && glic_embedder->IsShowing()) {
-      SidePanelShowOptions side_panel_options{*tab_to_bind};
-      side_panel_options.suppress_opening_animation = true;
-      side_panel_options.pin_trigger = GlicPinTrigger::kDaisyChain;
-      auto show_options = ShowOptions{side_panel_options};
-      instance_->metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
-                                         /*success=*/true, tab_to_bind,
-                                         source_tab);
-      instance_->Show(show_options);
-    } else {
-      // Record the failure.
-      instance_->metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
-                                         /*success=*/false, tab_to_bind,
-                                         source_tab);
-    }
+    instance_->MaybeDaisyChainToTab(source_tab, tab_to_bind);
   }
 
  private:
   raw_ptr<GlicInstanceImpl> instance_ = nullptr;
 };
+
+void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
+                                            tabs::TabInterface* target_tab) {
+  auto* glic_embedder = GetEmbedderForTab(source_tab);
+
+  if (base::FeatureList::IsEnabled(kGlicRemoveDaisyChainingWhenFreShowing)) {
+    if (service()->IsFreShowing() ||
+        (IsTrustFirstOnboardingPending(profile()) &&
+         features::kGlicTrustFirstOnboardingArmParam.Get() != 1)) {
+      return;
+    }
+  }
+
+  // Only bind if the previous instance was active.
+  if (glic_embedder && glic_embedder->IsShowing()) {
+    SidePanelShowOptions side_panel_options{*target_tab};
+    side_panel_options.suppress_opening_animation = true;
+    side_panel_options.pin_trigger = GlicPinTrigger::kDaisyChain;
+    auto show_options = ShowOptions{side_panel_options};
+    metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
+                            /*success=*/true, target_tab, source_tab);
+    Show(show_options);
+  } else {
+    // Record the failure.
+    metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
+                            /*success=*/false, target_tab, source_tab);
+  }
+}
 
 void GlicInstanceImpl::NotifyStateChange() {
   instance_metrics_.OnVisibilityChanged(IsShowing());
@@ -1042,8 +1046,11 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
   new_entry.tab_activation_subscription = tab->RegisterDidActivate(
       base::BindRepeating(&GlicInstanceImpl::OnBoundTabActivated,
                           weak_ptr_factory_.GetWeakPtr()));
-  new_entry.tab_web_contents_observer =
-      std::make_unique<GlicTabContentsObserver>(tab->GetContents(), this);
+  if (!base::FeatureList::IsEnabled(features::kGlicDaisyChainViaCoordinator)) {
+    new_entry.tab_web_contents_observer =
+        std::make_unique<GlicTabContentsObserver>(tab->GetContents(), this);
+  }
+
   if (pin_on_bind && ShouldPinOnBind()) {
     // Auto-pin on bind.
     sharing_manager().PinTabs({tab->GetHandle()}, pin_trigger);

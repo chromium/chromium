@@ -24,6 +24,7 @@ TabCreationType ToTypeCreationType(TabModel::TabLaunchType type) {
     case TabModel::TabLaunchType::FROM_RECENT_TABS:
       return TabCreationType::kUserInitiated;
     case TabModel::TabLaunchType::FROM_LINK:
+    case TabModel::TabLaunchType::FROM_LINK_CREATING_NEW_WINDOW:
     case TabModel::TabLaunchType::FROM_LONGPRESS_FOREGROUND:
     case TabModel::TabLaunchType::FROM_LONGPRESS_BACKGROUND:
       return TabCreationType::kFromLink;

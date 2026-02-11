@@ -145,6 +145,12 @@ class GlicInstanceImpl : public GlicInstance,
   // This method will either show an embedder or create an inactive embedder and
   // bind a tab to conversation.
   void Show(const ShowOptions& options) override;
+
+  // Called when a new tab is created from a source tab that is bound to this
+  // instance. This attempts to daisy chain the new tab to the same instance.
+  void MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
+                            tabs::TabInterface* target_tab);
+
   void Close(EmbedderKey key, const CloseOptions& options = {});
   // Returns true when toggle shows the instance and false when it is closed.
   bool Toggle(ShowOptions&& options,

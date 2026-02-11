@@ -73,16 +73,23 @@ class GlicTestTabAddedWaiter {
   raw_ptr<tabs::TabInterface> new_tab_ = nullptr;
 };
 
+// Simulates a click on a link with the given modifiers.
+// On Android, this uses a tap with modifiers, and injects a viewport meta tag
+// to ensure coordinates are correct.
 void SimulateLinkClick(tabs::TabInterface* tab, bool ctrl_key, bool shift_key) {
   content::WebContents* contents = tab->GetContents();
   std::string link_id = "simulator-link";
   std::string script = base::StringPrintf(
       R"(
         (() => {
+          const meta = document.createElement('meta');
+          meta.name = 'viewport';
+          meta.content = 'width=device-width,minimum-scale=1';
+          document.head.appendChild(meta);
+
           const a = document.createElement('a');
           a.id = '%s';
           a.href = 'about:blank';
-          a.target = '_blank';
           a.innerText = 'Click me';
           a.style.position = 'fixed';
           a.style.left = '0';
@@ -94,7 +101,15 @@ void SimulateLinkClick(tabs::TabInterface* tab, bool ctrl_key, bool shift_key) {
         })();
       )",
       link_id.c_str());
+
+  content::RenderFrameSubmissionObserver frame_observer(contents);
+
   EXPECT_TRUE(content::ExecJs(contents, script));
+
+  // Wait for the next frame to ensure the element is visible to the compositor.
+  // Without this wait, the click might happen too early and not trigger the
+  // navigation.
+  frame_observer.WaitForAnyFrameSubmission();
 
   int modifiers = 0;
   if (ctrl_key) {
@@ -108,10 +123,15 @@ void SimulateLinkClick(tabs::TabInterface* tab, bool ctrl_key, bool shift_key) {
     modifiers |= blink::WebInputEvent::kShiftKey;
   }
 
-  content::SimulateMouseClickAt(
-      contents, modifiers, blink::WebMouseEvent::Button::kLeft,
-      gfx::ToFlooredPoint(
-          content::GetCenterCoordinatesOfElementWithId(contents, link_id)));
+  gfx::Point point = gfx::ToFlooredPoint(
+      content::GetCenterCoordinatesOfElementWithId(contents, link_id));
+
+#if BUILDFLAG(IS_ANDROID)
+  content::SimulateTapWithModifiersAt(contents, modifiers, point);
+#else
+  content::SimulateMouseClickAt(contents, modifiers,
+                                blink::WebMouseEvent::Button::kLeft, point);
+#endif
 }
 
 bool WaitForSidePanelState(tabs::TabInterface* tab,
@@ -271,11 +291,10 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        TabContentsDaisyChaining) {
-  SKIP_NEEDS_ANDROID_IMPL(
-      "TabContentsDaisyChaining not yet supported on Android (b/479828899)");
+  // SKIP_NEEDS_ANDROID_IMPL removed
 
-  ASSERT_TRUE(OpenGlicForActiveTab());
-  ASSERT_TRUE(WaitForGlicOpen());
+  auto* instance = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance);
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
 
   // Case 1: Ctrl+Click (New Tab)
@@ -284,11 +303,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
     SimulateLinkClick(tab1, /*ctrl_key=*/true, /*shift_key=*/false);
     tabs::TabInterface* tab2 = waiter.Wait();
 
-    auto* tab2_instance = WaitForGlicOpen(tab2);
-
-    EXPECT_EQ(coordinator().GetInstanceForTab(tab1), tab2_instance);
-    EXPECT_TRUE(tab2_instance->IsShowing());
-    EXPECT_EQ(GetTabListInterface()->GetActiveTab(), tab1);
+    EXPECT_EQ(instance, coordinator().GetInstanceImplForTab(tab2));
+    EXPECT_TRUE(tab1->IsActivated());
 
     // Verify side panel state for the background tab.
     EXPECT_TRUE(WaitForSidePanelState(
@@ -296,49 +312,46 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
     // Activate the background tab and verify state becomes kShown.
     tab2->GetContents()->GetDelegate()->ActivateContents(tab2->GetContents());
-    EXPECT_TRUE(
-        WaitForSidePanelState(tab2, GlicSidePanelCoordinator::State::kShown));
+    WaitForActiveEmbedderToMatchTab(instance, tab2);
     // Verify focus stays on the page contents, not the side panel.
-    EXPECT_FALSE(tab2_instance->HasFocus());
+    EXPECT_FALSE(instance->HasFocus());
   }
 
   // Case 2: Shift+Click (New Window)
   {
     GlicTestTabAddedWaiter waiter(GetProfile());
+    GetTabListInterface()->ActivateTab(tab1->GetHandle());
     SimulateLinkClick(tab1, /*ctrl_key=*/false, /*shift_key=*/true);
 
     tabs::TabInterface* tab3 = waiter.Wait();
     auto* new_window = tab3->GetBrowserWindowInterface();
 
-    auto* tab3_instance = WaitForGlicOpen(tab3);
-
-    EXPECT_EQ(coordinator().GetInstanceForTab(tab1), tab3_instance);
-    EXPECT_TRUE(tab3_instance->IsShowing());
+    EXPECT_EQ(instance, coordinator().GetInstanceForTab(tab3));
     EXPECT_EQ(TabListInterface::From(new_window)->GetActiveTab(), tab3);
+    EXPECT_TRUE(WaitForActiveEmbedderToMatchTab(instance, tab3));
     // Focus should be on the new window's page contents.
-    EXPECT_FALSE(tab3_instance->HasFocus());
+    EXPECT_FALSE(instance->HasFocus());
   }
 
   // Case 3: Ctrl+Shift+Click (Foreground Tab)
   {
     GlicTestTabAddedWaiter waiter(GetProfile());
+    GetTabListInterface()->ActivateTab(tab1->GetHandle());
     SimulateLinkClick(tab1, /*ctrl_key=*/true, /*shift_key=*/true);
     tabs::TabInterface* tab4 = waiter.Wait();
 
-    auto* tab4_instance = WaitForGlicOpen(tab4);
-
-    EXPECT_EQ(coordinator().GetInstanceForTab(tab1), tab4_instance);
-    EXPECT_TRUE(tab4_instance->IsShowing());
+    EXPECT_EQ(instance, coordinator().GetInstanceForTab(tab4));
     EXPECT_EQ(GetTabListInterface()->GetActiveTab(), tab4);
+    WaitForActiveEmbedderToMatchTab(instance, tab4);
     // Focus should be on the new foreground tab's page contents.
-    EXPECT_FALSE(tab4_instance->HasFocus());
+    EXPECT_FALSE(instance->HasFocus());
   }
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        TabContentsDaisyChainingSuppressedWhenUnifiedFreShown) {
-  SKIP_NEEDS_ANDROID_IMPL(
-      "TabContentsDaisyChaining not yet supported on Android (b/479828899)");
+  // SKIP_NEEDS_ANDROID_IMPL removed
+
   auto* instance = OpenGlicForActiveTab();
   ASSERT_TRUE(instance);
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
@@ -380,8 +393,8 @@ class GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest
 IN_PROC_BROWSER_TEST_F(
     GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest,
     TabContentsDaisyChainingNotSuppressedWhenTrustFirstArm1Shown) {
-  SKIP_NEEDS_ANDROID_IMPL(
-      "TabContentsDaisyChaining not yet supported on Android (b/479828899)");
+  // SKIP_NEEDS_ANDROID_IMPL removed
+
   // Open FRE.
   GetProfile()->GetPrefs()->SetInteger(
       prefs::kGlicCompletedFre,

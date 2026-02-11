@@ -216,7 +216,9 @@ class GlicInstanceCoordinatorImpl
   void ComputeContentAccessIndicator();
 
   void OnTabsInserted(const TabStripModelChange::Insert* insert);
-  void MaybeDaisyChainSidePanel(const TabCreationEvent& event);
+  void MaybeDaisyChainNewTab(const TabCreationEvent& event);
+  void MaybeDaisyChainFromLinkClick(const TabCreationEvent& event);
+
   GlicInstanceImpl* GetOrRestoreInstanceImpl(
       const GlicRestoredState::InstanceInfo& instance_info);
   void RestoreTab(content::WebContents* web_contents,

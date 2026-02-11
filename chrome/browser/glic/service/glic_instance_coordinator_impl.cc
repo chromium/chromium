@@ -113,7 +113,8 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
           this),
       metrics_(this) {
   if (base::FeatureList::IsEnabled(features::kGlicDaisyChainNewTabs) ||
-      base::FeatureList::IsEnabled(features::kGlicTabRestoration)) {
+      base::FeatureList::IsEnabled(features::kGlicTabRestoration) ||
+      base::FeatureList::IsEnabled(features::kGlicDaisyChainViaCoordinator)) {
     tab_observer_ = GlicTabObserver::Create(
         profile_, base::BindRepeating(&GlicInstanceCoordinatorImpl::OnTabEvent,
                                       weak_ptr_factory_.GetWeakPtr()));
@@ -739,10 +740,32 @@ void GlicInstanceCoordinatorImpl::OnTabEvent(const GlicTabEvent& event) {
     return;
   }
 
-  MaybeDaisyChainSidePanel(*creation_event);
+  MaybeDaisyChainNewTab(*creation_event);
+
+  MaybeDaisyChainFromLinkClick(*creation_event);
 }
 
-void GlicInstanceCoordinatorImpl::MaybeDaisyChainSidePanel(
+void GlicInstanceCoordinatorImpl::MaybeDaisyChainFromLinkClick(
+    const TabCreationEvent& event) {
+  if (!base::FeatureList::IsEnabled(features::kGlicDaisyChainViaCoordinator)) {
+    return;
+  }
+
+  if (event.creation_type != TabCreationType::kFromLink || !event.opener ||
+      !event.new_tab) {
+    return;
+  }
+
+  auto* instance = GetInstanceImplForTab(event.opener);
+  if (!instance) {
+    return;
+  }
+
+  instance->MaybeDaisyChainToTab(event.opener, event.new_tab);
+}
+
+void GlicInstanceCoordinatorImpl::MaybeDaisyChainNewTab(
+
     const TabCreationEvent& creation_event) {
   if (!base::FeatureList::IsEnabled(features::kGlicDaisyChainNewTabs)) {
     return;

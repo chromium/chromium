@@ -9,6 +9,7 @@
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -23,6 +24,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
@@ -32,6 +34,17 @@
 #else
 #include "chrome/browser/ui/browser.h"
 #endif
+
+#include "content/public/test/browser_test_utils.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+
+namespace {
+// Simulates a click on a link with the given modifiers.
+// On Android, this uses a tap with modifiers, and injects a viewport meta tag
+// to ensure coordinates are correct.
+
+}  // namespace
 
 // Test versions of event structs that use WeakPtrs.
 // The GlicTabEvent structs guarantee pointer validity only for the duration of
@@ -405,5 +418,44 @@ IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, LinkClickTracking) {
   ASSERT_TRUE(creation);
   ASSERT_TRUE(creation->new_tab);
 
+  EXPECT_EQ(creation->creation_type, TabCreationType::kFromLink);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, LinkClickNewWindowTracking) {
+  GlicTabEventCollector collector(GetProfile());
+
+  // 1. Get initial tab
+  tabs::TabInterface* first_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(first_tab);
+
+  // 2. Simulate opening a link in a NEW WINDOW (Shift+Click)
+  content::OpenURLParams params(GURL("about:blank"), content::Referrer(),
+                                WindowOpenDisposition::NEW_WINDOW,
+                                ui::PAGE_TRANSITION_LINK,
+                                /*is_renderer_initiated=*/false);
+  params.source_render_process_id = first_tab->GetContents()
+                                        ->GetPrimaryMainFrame()
+                                        ->GetProcess()
+                                        ->GetDeprecatedID();
+  params.source_render_frame_id =
+      first_tab->GetContents()->GetPrimaryMainFrame()->GetRoutingID();
+  params.has_rel_opener = true;
+  first_tab->GetContents()->OpenURL(params, base::DoNothing());
+
+  const TestTabCreationEvent* creation = collector.WaitForCreation();
+  ASSERT_TRUE(creation);
+  ASSERT_TRUE(creation->new_tab);
+
+// GetBrowserWindowInterface() always returns nullptr on non-desktop Android.
+// And android browser tests don't allow multiple windows, so this test will
+// open the tab a new tab in the same window.
+#if !BUILDFLAG(IS_ANDROID)
+  // Verify that it opened in a new window
+  EXPECT_NE(creation->new_tab->GetBrowserWindowInterface(),
+            first_tab->GetBrowserWindowInterface());
+#endif
+
+  // Verify the opener is preserved
+  EXPECT_EQ(creation->opener.get(), first_tab);
   EXPECT_EQ(creation->creation_type, TabCreationType::kFromLink);
 }
