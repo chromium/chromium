@@ -1851,6 +1851,11 @@ inline constexpr char kEnableWindowsGamingInputDataFetcherDescription[] =
     "Enable Windows.Gaming.Input by default to provide game controller "
     "support on Windows 10 desktop.";
 
+inline constexpr char kGamepadRawInputChangeEventName[] =
+    "Gamepad Raw Input Change Event";
+inline constexpr char kGamepadRawInputChangeEventDescription[] =
+    "Enables raw input change events in Gamepad API.";
+
 inline constexpr char kDeprecateAltClickName[] =
     "Enable Alt+Click deprecation notifications";
 inline constexpr char kDeprecateAltClickDescription[] =

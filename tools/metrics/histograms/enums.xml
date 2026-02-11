@@ -15079,6 +15079,7 @@ from previous Chrome versions.
   <int value="244998311" label="PdfSearchify:disabled"/>
   <int value="245100553" label="PcieBillboardNotification:enabled"/>
   <int value="245338502" label="OpenXrExtendedFeatureSupport:enabled"/>
+  <int value="245412725" label="GamepadRawInputChangeEvent:disabled"/>
   <int value="245896533" label="SearchSuggestionsOnLocalNtp:enabled"/>
   <int value="246106068" label="HandwritingLegacyRecognition:disabled"/>
   <int value="246451316" label="NotificationInteractionHistory:enabled"/>
@@ -15521,6 +15522,7 @@ from previous Chrome versions.
   <int value="383974622" label="CrosPrivacyHubAppPermissionsV2:disabled"/>
   <int value="384054552" label="EnableDrDcVulkan:disabled"/>
   <int value="384677240" label="AssistMultiWordLacrosSupport:enabled"/>
+  <int value="384851297" label="GamepadRawInputChangeEvent:enabled"/>
   <int value="384927690" label="AutofillEnableLocalIban:disabled"/>
   <int value="385046753" label="DisableSystemBlur:disabled"/>
   <int value="385206456" label="ShowReadyToPayDebugInfo:enabled"/>

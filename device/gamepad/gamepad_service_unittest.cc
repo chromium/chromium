@@ -45,7 +45,6 @@ class MockGamepadConsumer : public GamepadConsumer {
     // Expect no connections or disconnections by default.
     EXPECT_CALL(*this, OnGamepadConnected).Times(0);
     EXPECT_CALL(*this, OnGamepadDisconnected).Times(0);
-    EXPECT_CALL(*this, OnGamepadRawInputChanged).Times(0);
   }
 
   MockGamepadConsumer(MockGamepadConsumer&) = delete;

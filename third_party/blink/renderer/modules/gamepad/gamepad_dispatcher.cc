@@ -76,6 +76,11 @@ void GamepadDispatcher::DidDisconnectGamepad(uint32_t index,
 void GamepadDispatcher::DidChangeGamepadRawInput(
     uint32_t index,
     const device::Gamepad& gamepad) {
+  if (!RuntimeEnabledFeatures::GamepadRawInputChangeEventEnabled()) {
+    // Return early to avoid unnecessary work.
+    return;
+  }
+
   CHECK_LT(index, device::Gamepads::kItemsLengthCap);
   CHECK_EQ(true, gamepad.connected);
   // TODO(https://crbug.com/438906421): Queue gamepad input changes in the

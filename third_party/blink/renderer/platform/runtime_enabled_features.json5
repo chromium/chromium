@@ -2839,7 +2839,6 @@
     {
       name: "GamepadRawInputChangeEvent",
       status: "experimental",
-      public: true,
     },
     {
       name: "GamepadWindowEventHandlers",

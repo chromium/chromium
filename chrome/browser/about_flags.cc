@@ -7328,6 +7328,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableWindowsGamingInputDataFetcherDescription, kOsWin,
      FEATURE_VALUE_TYPE(features::kEnableWindowsGamingInputDataFetcher)},
 
+    {"gamepad-raw-input-change-event",
+     flag_descriptions::kGamepadRawInputChangeEventName,
+     flag_descriptions::kGamepadRawInputChangeEventDescription, kOsWin,
+     FEATURE_VALUE_TYPE(features::kGamepadRawInputChangeEvent)},
+
     {"windows11-mica-titlebar", flag_descriptions::kWindows11MicaTitlebarName,
      flag_descriptions::kWindows11MicaTitlebarDescription, kOsWin,
      FEATURE_VALUE_TYPE(kWindows11MicaTitlebar)},

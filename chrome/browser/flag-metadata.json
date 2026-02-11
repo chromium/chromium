@@ -4977,6 +4977,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "gamepad-raw-input-change-event",
+    "owners": ["gabrielbrito@microsoft.com", "deviceapi-team@google.com" ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "gemini-antiscam-protections-metrics-only",
     "owners": [
       "skrakowi@chromium.org",
