@@ -1646,6 +1646,18 @@
       <message name="IDS_WHATS_NEW_PAGE_DESCRIPTION" translateable="false" desc="Description of the what's new page.">
         What&apos;s New in Chrome
       </message>
+
+      <!-- Android Advanced Protection -->
+      <message name="IDS_ADVANCED_PROTECTION_MESSAGE_ENABLED_TITLE" desc="Title of message to notify user that the Android-OS Advanced-Protection mode has been enabled">
+        Advanced Protection is on                                                                  </message>
+      <message name="IDS_ADVANCED_PROTECTION_MESSAGE_DESCRIPTION" desc="Description of message to notify user that Android-OS Advanced-Protection mode has changed. Informs user that the Android OS setting affects some Chrome settings.">                                                   Some Chrome settings changed
+      </message>                                                                                   <message name="IDS_ADVANCED_PROTECTION_MESSAGE_PRIMARY_BUTTON" desc="Label of button. Tapping the button sends user to page with information about which settings have changed as a result of the Android-OS Advanced-Protection mode change.">
+        Details                                                                                    </message>
+      <message name="IDS_HTTPS_FIRST_MODE_ENFORCED_BY_ADVANCED_PROTECTION_WARNING" desc="Message displayed on https-first-settings page notifying the user that the setting is uneditable because the setting is controlled by the Android-OS-advanced-protection setting's 'on' state">                                                                                                    This setting remains on as long as you have Advanced Protection turned on in Android Settings.
+      </message>
+      <message name="IDS_JAVASCRIPT_OPTIMIZER_DISABLED_DUE_TO_ADVANCED_PROTECTION_SETTINGS_MESSAGE" desc="Message displayed in Javascript-Optimizer site-settings page to inform user that Javascript-Optimizer toggle is disabled because Android Advanced Protection was enabled in Android OS Settings.">
+        This setting is disabled because you turned on Advanced Protection in Android Settings.
+      </message>
     </messages>
   </release>
 </grit>

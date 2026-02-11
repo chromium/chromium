@@ -7,22 +7,20 @@ package org.chromium.chrome.browser.safe_browsing;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.ServiceLoaderUtil;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.permissions.OsAdditionalSecurityPermissionProvider;
-import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
+import org.chromium.components.safe_browsing.OsAdditionalSecurityProvider;
+import org.chromium.components.safe_browsing.OsAdditionalSecurityUtil;
 
 /** Tests for {@link AdvancedProtectionStatusManagerAndroidBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AdvancedProtectionStatusManagerAndroidBridgeTest {
-    private static class TestPermissionProvider extends OsAdditionalSecurityPermissionProvider {
+
+    private static class TestPermissionProvider extends OsAdditionalSecurityProvider {
         private final boolean mIsAdvancedProtectionRequestedByOs;
 
         public TestPermissionProvider(boolean isAdvancedProtectionRequestedByOs) {
@@ -35,17 +33,8 @@ public class AdvancedProtectionStatusManagerAndroidBridgeTest {
         }
     }
 
-    @Before
-    public void setUp() {
-        OsAdditionalSecurityPermissionUtil.resetForTesting();
-    }
-
-    private void setPermissionProvider(OsAdditionalSecurityPermissionProvider provider) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ServiceLoaderUtil.setInstanceForTesting(
-                            OsAdditionalSecurityPermissionProvider.class, provider);
-                });
+    private void setPermissionProvider(OsAdditionalSecurityProvider provider) {
+        OsAdditionalSecurityUtil.setInstanceForTesting(provider);
     }
 
     @Test

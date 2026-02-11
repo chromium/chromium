@@ -29,19 +29,15 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ServiceLoaderUtil;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessagesFactory;
-import org.chromium.components.permissions.OsAdditionalSecurityPermissionProvider;
-import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
+import org.chromium.components.safe_browsing.OsAdditionalSecurityProvider;
+import org.chromium.components.safe_browsing.OsAdditionalSecurityUtil;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
@@ -52,15 +48,15 @@ import java.util.concurrent.TimeUnit;
 public class AdvancedProtectionMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private Context mContext;
-    private final WeakReference<Context> mWeakContext = new WeakReference<>(mContext);
+    private Context mContext;
+    private WeakReference<Context> mWeakContext;
     private final UnownedUserDataHost mWindowUserDataHost = new UnownedUserDataHost();
 
     @Mock private ManagedMessageDispatcher mMessageDispatcher;
 
     private static class TestFragment extends Fragment {}
 
-    private static class TestPermissionProvider extends OsAdditionalSecurityPermissionProvider {
+    private static class TestPermissionProvider extends OsAdditionalSecurityProvider {
         private boolean mIsAdvancedProtectionRequestedByOs;
         private Observer mObserver;
 
@@ -79,12 +75,6 @@ public class AdvancedProtectionMediatorTest {
             return mIsAdvancedProtectionRequestedByOs;
         }
 
-        @Override
-        public @Nullable PropertyModel buildAdvancedProtectionMessagePropertyModel(
-                Context context, Runnable primaryButtonAction) {
-            return new PropertyModel();
-        }
-
         public void setAdvancedProtectionRequestedByOs(boolean isAdvancedProtectionRequestedByOs) {
             mIsAdvancedProtectionRequestedByOs = isAdvancedProtectionRequestedByOs;
             if (mObserver != null) {
@@ -95,22 +85,19 @@ public class AdvancedProtectionMediatorTest {
 
     @Before
     public void setUp() {
+        mContext = ContextUtils.getApplicationContext();
+        mWeakContext = new WeakReference<>(mContext);
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mWindowUserDataHost);
         when(mWindowAndroid.getContext()).thenReturn(mWeakContext);
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
 
         ContextUtils.getAppSharedPreferences().edit().clear();
-        OsAdditionalSecurityPermissionUtil.resetForTesting();
     }
 
     private TestPermissionProvider setPermissionProvider(
             boolean isAdvancedProtectionRequestedByOs) {
         var provider = new TestPermissionProvider(isAdvancedProtectionRequestedByOs);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ServiceLoaderUtil.setInstanceForTesting(
-                            OsAdditionalSecurityPermissionProvider.class, provider);
-                });
+        OsAdditionalSecurityUtil.setInstanceForTesting(provider);
         return provider;
     }
 

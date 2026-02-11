@@ -4,55 +4,46 @@
 
 package org.chromium.chrome.test.util;
 
-import android.content.Context;
-
 import org.junit.rules.ExternalResource;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
-import org.chromium.components.permissions.OsAdditionalSecurityPermissionProvider;
-import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
+import org.chromium.components.safe_browsing.OsAdditionalSecurityProvider;
+import org.chromium.components.safe_browsing.OsAdditionalSecurityUtil;
 
 /**
- * Test rule which installs a test OsAdditionalSecurityPermissionProvider. The provider needs to be
- * installed prior to the Profile being created. The logic is a test rule so that it can be used in
+ * Test rule which installs a test OsAdditionalSecurityProvider. The provider needs to be installed
+ * prior to the Profile being created. The logic is a test rule so that it can be used in
  * combination with test rules which launch an activity such as {@link BlankCTATabInitialStateRule}.
  */
 public class AdvancedProtectionTestRule extends ExternalResource {
-    public static String TEST_JAVASCRIPT_OPTIMIZER_MESSAGE = "testJavascriptOptimizerMessage";
 
-    private static class TestProvider extends OsAdditionalSecurityPermissionProvider {
+    private static class TestProvider extends OsAdditionalSecurityProvider {
         private boolean mIsAdvancedProtectionRequestedByOs;
 
-        private final ObserverList<OsAdditionalSecurityPermissionProvider.Observer> mObserverList =
+        private final ObserverList<OsAdditionalSecurityProvider.Observer> mObserverList =
                 new ObserverList<>();
 
         public void setIsAdvancedProtectionRequestedByOs(boolean isAdvancedProtectionRequested) {
             mIsAdvancedProtectionRequestedByOs = isAdvancedProtectionRequested;
-            for (OsAdditionalSecurityPermissionProvider.Observer observer : mObserverList) {
+            for (OsAdditionalSecurityProvider.Observer observer : mObserverList) {
                 observer.onAdvancedProtectionOsSettingChanged();
             }
         }
 
         @Override
-        public void addObserver(OsAdditionalSecurityPermissionProvider.Observer observer) {
+        public void addObserver(OsAdditionalSecurityProvider.Observer observer) {
             mObserverList.addObserver(observer);
         }
 
         @Override
-        public void removeObserver(OsAdditionalSecurityPermissionProvider.Observer observer) {
+        public void removeObserver(OsAdditionalSecurityProvider.Observer observer) {
             mObserverList.removeObserver(observer);
         }
 
         @Override
         public boolean isAdvancedProtectionRequestedByOs() {
             return mIsAdvancedProtectionRequestedByOs;
-        }
-
-        @Override
-        public String getJavascriptOptimizerMessage(Context context) {
-            return AdvancedProtectionTestRule.TEST_JAVASCRIPT_OPTIMIZER_MESSAGE;
         }
     }
 
@@ -63,15 +54,8 @@ public class AdvancedProtectionTestRule extends ExternalResource {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProvider = new TestProvider();
-                    ServiceLoaderUtil.setInstanceForTesting(
-                            OsAdditionalSecurityPermissionProvider.class, mProvider);
+                    OsAdditionalSecurityUtil.setInstanceForTesting(mProvider);
                 });
-    }
-
-    @Override
-    protected void after() {
-        setIsAdvancedProtectionRequestedByOs(/* isAdvancedProtectionRequestedByOs= */ false);
-        OsAdditionalSecurityPermissionUtil.resetForTesting();
     }
 
     public void setIsAdvancedProtectionRequestedByOs(boolean isAdvancedProtectionRequestedByOs) {

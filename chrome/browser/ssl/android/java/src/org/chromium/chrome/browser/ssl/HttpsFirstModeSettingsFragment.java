@@ -29,7 +29,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
+import org.chromium.components.safe_browsing.OsAdditionalSecurityUtil;
 
 /**
  * Fragment to manage HTTPS-First Mode preference. It consists of a toggle switch and, if the switch
@@ -177,16 +177,14 @@ public class HttpsFirstModeSettingsFragment extends ChromeBaseSettingsFragment {
         Context context = getPreferenceManager().getContext();
         ChromeBasePreference preference = new ChromeBasePreference(context, null);
         preference.setKey(PREF_ENFORCED_BY_ADVANCED_PROTECTION);
-        var additionalSecurityProvider = OsAdditionalSecurityPermissionUtil.getProviderInstance();
+        var additionalSecurityProvider = OsAdditionalSecurityUtil.getProviderInstance();
         assert additionalSecurityProvider != null;
 
-        int titleId =
-                additionalSecurityProvider
-                        .getHttpsFirstModeEnforcedByAndroidAdvancedProtectionWarningResourceId();
+        int titleId = R.string.https_first_mode_enforced_by_advanced_protection_warning;
         if (titleId != 0) {
             preference.setTitle(context.getString(titleId));
         }
-        int iconId = additionalSecurityProvider.getAdvancedProtectionIconResourceId();
+        int iconId = R.drawable.secured_by_brand_shield_24;
         if (iconId != 0) {
             Drawable icon = ApiCompatibilityUtils.getDrawable(context.getResources(), iconId);
             icon.mutate();
@@ -198,7 +196,7 @@ public class HttpsFirstModeSettingsFragment extends ChromeBaseSettingsFragment {
     }
 
     private static boolean shouldShowEnforedByAdvancedProtectionPref() {
-        var additionalSecurityProvider = OsAdditionalSecurityPermissionUtil.getProviderInstance();
+        var additionalSecurityProvider = OsAdditionalSecurityUtil.getProviderInstance();
         return AdvancedProtectionStatusManagerAndroidBridge.isUnderAdvancedProtection()
                 && additionalSecurityProvider != null;
     }

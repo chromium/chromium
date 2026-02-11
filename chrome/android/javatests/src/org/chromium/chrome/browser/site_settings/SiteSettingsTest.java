@@ -3709,8 +3709,11 @@ public class SiteSettingsTest {
                     Preference toggleDisableReason =
                             singleCategorySettings.findPreference(
                                     SingleCategorySettings.TOGGLE_DISABLE_REASON_KEY);
+                    Context context = ApplicationProvider.getApplicationContext();
                     Assert.assertEquals(
-                            AdvancedProtectionTestRule.TEST_JAVASCRIPT_OPTIMIZER_MESSAGE,
+                            context.getString(
+                                    R.string
+                                            .javascript_optimizer_disabled_due_to_advanced_protection_settings_message),
                             toggleDisableReason.getTitle());
 
                     settingsActivity.finish();
@@ -3765,8 +3768,11 @@ public class SiteSettingsTest {
                     Preference radioButtonDisableReason =
                             singleCategorySettings.findPreference(
                                     SingleCategorySettings.TOGGLE_DISABLE_REASON_KEY);
+                    Context context = ApplicationProvider.getApplicationContext();
                     Assert.assertEquals(
-                            AdvancedProtectionTestRule.TEST_JAVASCRIPT_OPTIMIZER_MESSAGE,
+                            context.getString(
+                                    R.string
+                                            .javascript_optimizer_disabled_due_to_advanced_protection_settings_message),
                             radioButtonDisableReason.getTitle());
 
                     settingsActivity.finish();

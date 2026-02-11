@@ -103,7 +103,7 @@ public class JavascriptOptimizerFeatureTest {
 
     /**
      * Test that specifying an exception in site settings has higher priority than the {@link
-     * OsAdditionalSecurityPermissionProvider}-provided setting.
+     * OsAdditionalSecurityProvider}-provided setting.
      */
     @Test
     @MediumTest

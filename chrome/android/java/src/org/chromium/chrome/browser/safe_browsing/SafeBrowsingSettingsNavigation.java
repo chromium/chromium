@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
+import org.chromium.components.safe_browsing.OsAdditionalSecurityUtil;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Bridge between Java and native SafeBrowsing code to launch the Safe Browsing settings page. */
@@ -41,7 +41,7 @@ public class SafeBrowsingSettingsNavigation {
         if (window == null) return;
         Context currentContext = window.getContext().get();
 
-        var additionalSecurityProvider = OsAdditionalSecurityPermissionUtil.getProviderInstance();
+        var additionalSecurityProvider = OsAdditionalSecurityUtil.getProviderInstance();
         if (additionalSecurityProvider == null) {
             return;
         }

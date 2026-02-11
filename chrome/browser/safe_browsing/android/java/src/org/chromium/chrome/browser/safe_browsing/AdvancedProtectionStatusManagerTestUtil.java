@@ -6,13 +6,12 @@ package org.chromium.chrome.browser.safe_browsing;
 
 import org.jni_zero.CalledByNativeForTesting;
 
-import org.chromium.base.ServiceLoaderUtil;
-import org.chromium.base.ThreadUtils;
-import org.chromium.components.permissions.OsAdditionalSecurityPermissionProvider;
+import org.chromium.components.safe_browsing.OsAdditionalSecurityProvider;
+import org.chromium.components.safe_browsing.OsAdditionalSecurityUtil;
 
-/** Enables setting a mock {@link OsAdditionalSecurityPermissionProvider} from native. */
+/** Enables setting a mock {@link OsAdditionalSecurityProvider} from native. */
 public class AdvancedProtectionStatusManagerTestUtil {
-    private static class TestPermissionProvider extends OsAdditionalSecurityPermissionProvider {
+    private static class TestPermissionProvider extends OsAdditionalSecurityProvider {
         private final boolean mIsAdvancedProtectionRequestedByOs;
 
         public TestPermissionProvider(boolean isAdvancedProtectionRequestedByOs) {
@@ -28,11 +27,7 @@ public class AdvancedProtectionStatusManagerTestUtil {
     @CalledByNativeForTesting
     public static void setOsAdvancedProtectionStateForTesting(
             boolean isAdvancedProtectionRequestedByOs) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ServiceLoaderUtil.setInstanceForTesting(
-                            OsAdditionalSecurityPermissionProvider.class,
-                            new TestPermissionProvider(isAdvancedProtectionRequestedByOs));
-                });
+        var provider = new TestPermissionProvider(isAdvancedProtectionRequestedByOs);
+        OsAdditionalSecurityUtil.setInstanceForTesting(provider);
     }
 }

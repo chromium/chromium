@@ -13,7 +13,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** {@link SiteSettingsCategory} for dealing with Javascript-optimizer category. */
@@ -40,8 +39,8 @@ public class JavascriptOptimizerCategory extends SiteSettingsCategory {
 
     @Override
     protected @Nullable String getMessageWhyToggleIsDisabled(Context context) {
-        var provider = OsAdditionalSecurityPermissionUtil.getProviderInstance();
-        return (provider == null) ? null : provider.getJavascriptOptimizerMessage(context);
+        return context.getString(
+                R.string.javascript_optimizer_disabled_due_to_advanced_protection_settings_message);
     }
 
     @Override

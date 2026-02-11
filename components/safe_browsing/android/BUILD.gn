@@ -12,6 +12,7 @@ android_library("safe_browsing_java") {
     "//base:base_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 
@@ -22,10 +23,13 @@ android_library("safe_browsing_java") {
   ]
 
   sources = [
+    "java/src/org/chromium/components/safe_browsing/OsAdditionalSecurityProvider.java",
+    "java/src/org/chromium/components/safe_browsing/OsAdditionalSecurityUtil.java",
     "java/src/org/chromium/components/safe_browsing/SafeBrowsingApiBridge.java",
     "java/src/org/chromium/components/safe_browsing/SafeBrowsingApiHandler.java",
     "java/src/org/chromium/components/safe_browsing/SafetyNetApiHandler.java",
   ]
+  resources_package = "org.chromium.components.safe_browsing"
 }
 
 # Expose Safe Browsing feature flags to Java code

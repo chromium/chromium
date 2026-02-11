@@ -460,6 +460,7 @@ android_library("chrome_java_integration_test_support") {
     "//components/permissions/android:java",
     "//components/policy/android:policy_java",
     "//components/policy/android:policy_java_test_support",
+    "//components/safe_browsing/android:safe_browsing_java",
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",
     "//components/sync/android:sync_java",

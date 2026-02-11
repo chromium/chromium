@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.privacy.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
+import static org.chromium.ui.R.drawable.gshield_colorful;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -70,8 +72,8 @@ import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.permissions.OsAdditionalSecurityPermissionProvider;
-import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
+import org.chromium.components.safe_browsing.OsAdditionalSecurityProvider;
+import org.chromium.components.safe_browsing.OsAdditionalSecurityUtil;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -496,12 +498,12 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
             return;
         }
 
-        @Nullable OsAdditionalSecurityPermissionProvider additionalSecurityProvider =
-                OsAdditionalSecurityPermissionUtil.getProviderInstance();
+        @Nullable OsAdditionalSecurityProvider additionalSecurityProvider =
+                OsAdditionalSecurityUtil.getProviderInstance();
         if (additionalSecurityProvider == null) return;
 
         @Nullable Drawable additionalSecurityIcon =
-                additionalSecurityProvider.getColorfulAdvancedProtectionIcon(getContext());
+                ApiCompatibilityUtils.getDrawable(context.getResources(), gshield_colorful);
 
         Consumer<Context> androidAdvancedProtectionLinkAction =
                 (linkContext) -> {
@@ -541,8 +543,8 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     }
 
     private static boolean shouldHideAdvancedProtectionInfoPref() {
-        @Nullable OsAdditionalSecurityPermissionProvider additionalSecurityProvider =
-                OsAdditionalSecurityPermissionUtil.getProviderInstance();
+        @Nullable OsAdditionalSecurityProvider additionalSecurityProvider =
+                OsAdditionalSecurityUtil.getProviderInstance();
         return !shouldShowAdvancedProtectionInfo() || additionalSecurityProvider == null;
     }
 

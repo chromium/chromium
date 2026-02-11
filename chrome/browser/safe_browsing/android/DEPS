@@ -1,3 +1,4 @@
 include_rules = [
   "+components/browser_ui/modaldialog/android",
+  "+components/safe_browsing/android",
 ]
