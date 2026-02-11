@@ -162,36 +162,47 @@ std::vector<views::View*> ContentsContainerView::GetAccessiblePanes() {
 void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
                                                    bool is_active,
                                                    bool is_highlighted) {
+  const bool split_changed = is_in_split != is_in_split_;
   is_in_split_ = is_in_split;
 
-  // The border, mini toolbar, and scrim should not be visible if not in a
-  // split.
   if (!is_in_split) {
-    SetBorder(nullptr);
-    ClearBorderRoundedCorners();
-    mini_toolbar_->SetVisible(false);
-    container_outline_->SetVisible(false);
+    if (split_changed) {
+      SetBorder(nullptr);
+      ClearBorderRoundedCorners();
+
+      mini_toolbar_->SetVisible(false);
+      container_outline_->SetVisible(false);
+      if (capture_contents_border_widget_) {
+        static_cast<ContentsCaptureBorderView*>(
+            capture_contents_border_widget_->GetContentsView())
+            ->SetIsInSplit(false);
+      }
+    }
+  } else {
+    if (split_changed) {
+      SetBorder(views::CreateEmptyBorder(gfx::Insets(
+          kSplitViewContentPadding + ContentsContainerOutline::kThickness)));
+      UpdateBorderRoundedCorners();
+    }
+
+    container_outline_->UpdateState(is_active, is_highlighted);
+    // Mini toolbar should only be visible for the inactive contents
+    // container view or both depending on configuration.
+    mini_toolbar_->UpdateState(is_active, is_highlighted);
     if (capture_contents_border_widget_) {
       static_cast<ContentsCaptureBorderView*>(
           capture_contents_border_widget_->GetContentsView())
-          ->SetIsInSplit(false);
+          ->SetIsInSplit(true);
     }
-    return;
   }
 
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(
-      kSplitViewContentPadding + ContentsContainerOutline::kThickness)));
-  UpdateBorderRoundedCorners();
-
-  container_outline_->UpdateState(is_active, is_highlighted);
-  // Mini toolbar should only be visible for the inactive contents
-  // container view or both depending on configuration.
-  mini_toolbar_->UpdateState(is_active, is_highlighted);
-  if (capture_contents_border_widget_) {
-    static_cast<ContentsCaptureBorderView*>(
-        capture_contents_border_widget_->GetContentsView())
-        ->SetIsInSplit(true);
+#if BUILDFLAG(IS_CHROMEOS)
+  if (split_changed) {
+    // Ensures correct window rounded corners after updating contents rounded
+    // corners in UpdateBorderRoundedCorners()/ClearBorderRoundedCorners().
+    GetWidget()->non_client_view()->frame_view()->UpdateWindowRoundedCorners();
   }
+#endif  //  BUILDFLAG(IS_CHROMEOS)
 }
 
 void ContentsContainerView::UpdateBorderRoundedCorners() {
