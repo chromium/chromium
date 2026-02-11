@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/scoped_observation.h"
 #include "chromeos/ash/services/secure_channel/pending_connection_request_base.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -25,9 +26,7 @@ class PendingBleConnectionRequestBase
   PendingBleConnectionRequestBase& operator=(
       const PendingBleConnectionRequestBase&) = delete;
 
-  ~PendingBleConnectionRequestBase() override {
-    bluetooth_adapter_->RemoveObserver(this);
-  }
+  ~PendingBleConnectionRequestBase() override = default;
 
  protected:
   PendingBleConnectionRequestBase(
@@ -42,7 +41,7 @@ class PendingBleConnectionRequestBase
             readable_request_type_for_logging,
             delegate),
         bluetooth_adapter_(std::move(bluetooth_adapter)) {
-    bluetooth_adapter_->AddObserver(this);
+    bluetooth_adapter_observation_.Observe(bluetooth_adapter_.get());
   }
 
  private:
@@ -70,6 +69,9 @@ class PendingBleConnectionRequestBase
   }
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
+  base::ScopedObservation<device::BluetoothAdapter,
+                          device::BluetoothAdapter::Observer>
+      bluetooth_adapter_observation_{this};
 };
 
 }  // namespace ash::secure_channel
