@@ -144,13 +144,16 @@ std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab) {
   // Alert tab states.
   const tabs::TabAlertController* tab_alert_controller =
       tabs::TabAlertController::From(tab);
-  CHECK(tab_alert_controller);
 
-  if (const std::optional<tabs::TabAlert> alert =
-          tab_alert_controller->GetAlertToShow()) {
-    title = l10n_util::GetStringFUTF16(
-        tabs::TabAlertController::GetAccessibleAlertStringId(alert.value()),
-        title);
+  // During tab destruction, the alert controller may already be destroyed
+  // by the time accessibility name updates are processed.
+  if (tab_alert_controller) {
+    if (const std::optional<tabs::TabAlert> alert =
+            tab_alert_controller->GetAlertToShow()) {
+      title = l10n_util::GetStringFUTF16(
+          tabs::TabAlertController::GetAccessibleAlertStringId(alert.value()),
+          title);
+    }
   }
 
   if (tab_data.should_show_discard_status) {
