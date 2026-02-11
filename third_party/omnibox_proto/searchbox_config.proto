@@ -10,12 +10,13 @@ option java_outer_classname = 'SearchboxConfigProto';
 
 package omnibox;
 
-import "model_mode.proto";
-import "tool_mode.proto";
+import "input_type_config.proto";
 import "model_config.proto";
+import "model_mode.proto";
 import "rule_set.proto";
 import "section_config.proto";
 import "tool_config.proto";
+import "tool_mode.proto";
 
 // Configuration for the AI searchbox (e.g. input plate and fusebox)
 // Next ID: 10
@@ -27,6 +28,8 @@ message SearchboxConfig {
   // The initial model mode to use when the searchbox is first rendered.
   optional ModelMode initial_model_mode = 3;
 
+  // Configurations for available input types.
+  repeated InputTypeConfig input_type_configs = 4;
   // Configurations for available tools.
   repeated ToolConfig tool_configs = 5;
   // Configurations for available models.

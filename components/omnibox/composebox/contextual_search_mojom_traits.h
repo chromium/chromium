@@ -21,6 +21,7 @@
 #include "third_party/omnibox_proto/section_config.pb.h"
 #include "third_party/omnibox_proto/tool_config.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
+#include "third_party/omnibox_proto/url_param.pb.h"
 
 namespace mojo {
 
@@ -46,6 +47,7 @@ struct EnumTraits<composebox_query::mojom::InputType, omnibox::InputType> {
 };
 
 template <>
+
 struct EnumTraits<composebox_query::mojom::FileUploadStatus,
                   contextual_search::FileUploadStatus> {
   static composebox_query::mojom::FileUploadStatus ToMojom(
@@ -64,6 +66,16 @@ struct EnumTraits<composebox_query::mojom::FileUploadErrorType,
 };
 
 template <>
+struct StructTraits<composebox_query::mojom::AimUrlParamDataView,
+                    omnibox::UrlParam> {
+  static const std::string& param_key(const omnibox::UrlParam& param);
+  static const std::string& param_value(const omnibox::UrlParam& param);
+
+  static bool Read(composebox_query::mojom::AimUrlParamDataView data,
+                   omnibox::UrlParam* output);
+};
+
+template <>
 struct StructTraits<composebox_query::mojom::ToolConfigDataView,
                     omnibox::ToolConfig> {
   static omnibox::ToolMode tool(const omnibox::ToolConfig& config);
@@ -71,6 +83,8 @@ struct StructTraits<composebox_query::mojom::ToolConfigDataView,
   static const std::string& menu_label(const omnibox::ToolConfig& config);
   static const std::string& chip_label(const omnibox::ToolConfig& config);
   static const std::string& hint_text(const omnibox::ToolConfig& config);
+  static std::vector<omnibox::UrlParam> aim_url_params(
+      const omnibox::ToolConfig& config);
 
   static bool Read(composebox_query::mojom::ToolConfigDataView data,
                    omnibox::ToolConfig* output);
@@ -82,6 +96,8 @@ struct StructTraits<composebox_query::mojom::ModelConfigDataView,
   static omnibox::ModelMode model(const omnibox::ModelConfig& config);
   static const std::string& menu_label(const omnibox::ModelConfig& config);
   static const std::string& hint_text(const omnibox::ModelConfig& config);
+  static std::vector<omnibox::UrlParam> aim_url_params(
+      const omnibox::ModelConfig& config);
 
   static bool Read(composebox_query::mojom::ModelConfigDataView data,
                    omnibox::ModelConfig* output);

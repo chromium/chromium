@@ -4,11 +4,11 @@
 
 syntax = 'proto2';
 
-package omnibox;
-
 option optimize_for = LITE_RUNTIME;
 option java_package = 'org.chromium.components.omnibox';
 option java_outer_classname = 'ChromeAimEntryPointProto';
+
+package omnibox;
 
 // AIM entry points.
 enum ChromeAimEntryPoint {

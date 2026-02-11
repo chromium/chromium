@@ -11,9 +11,11 @@ option java_outer_classname = 'ModelConfigProto';
 package omnibox;
 
 import "model_mode.proto";
+import "model_rule.proto";
+import "url_param.proto";
 
 // Configuration for a model mode.
-// Next ID: 4
+// Next ID: 6
 message ModelConfig {
   // The model mode.
   ModelMode model = 1;
@@ -21,4 +23,8 @@ message ModelConfig {
   string menu_label = 2;
   // The hint text in the input text field when this model is selected.
   string hint_text = 3;
+  // The constraint rule for the model.
+  optional ModelRule rule = 4;
+  // The URL params to be appended to the /search URL when this model is chosen.
+  repeated UrlParam aim_url_params = 5;
 }

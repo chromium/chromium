@@ -6,7 +6,7 @@ syntax = 'proto3';
 
 option optimize_for = LITE_RUNTIME;
 option java_package = 'org.chromium.components.omnibox';
-option java_outer_classname = 'AimModelsProto';
+option java_outer_classname = 'ModelModeProto';
 
 package omnibox;
 

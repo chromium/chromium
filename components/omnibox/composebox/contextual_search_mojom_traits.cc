@@ -38,6 +38,18 @@ UsedToolMode EnumTraits<UsedToolMode, omnibox::ToolMode>::ToMojom(
       return UsedToolMode::kImageGen;
     case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD:
       return UsedToolMode::kImageGenUpload;
+    case omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE:
+      return UsedToolMode::kDeepBrowse;
+    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_SELFIE:
+      return UsedToolMode::kImageGenSelfie;
+    case omnibox::ToolMode::TOOL_MODE_AIM:
+      return UsedToolMode::kAim;
+    case omnibox::ToolMode::TOOL_MODE_AIM_GEN_PROMPT:
+      return UsedToolMode::kAimGenPrompt;
+    case omnibox::ToolMode::TOOL_MODE_DISABLE_SUGGEST:
+      return UsedToolMode::kDisableSuggest;
+    case omnibox::ToolMode::TOOL_MODE_GEMINI_PRO:
+      return UsedToolMode::kGeminiPro;
     // The proto compiler generates these sentinel values. We must handle them
     // to satisfy the compiler's exhaustiveness check (since we don't have a
     // default case), but they should never be encountered in practice.
@@ -66,15 +78,25 @@ bool EnumTraits<UsedToolMode, omnibox::ToolMode>::FromMojom(
       *output = omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
       return true;
     case UsedToolMode::kDeepBrowse:
-      // No corresponding Proto value yet.
-      *output = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+      *output = omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE;
+      return true;
+    case UsedToolMode::kAim:
+      *output = omnibox::ToolMode::TOOL_MODE_AIM;
+      return true;
+    case UsedToolMode::kAimGenPrompt:
+      *output = omnibox::ToolMode::TOOL_MODE_AIM_GEN_PROMPT;
+      return true;
+    case UsedToolMode::kDisableSuggest:
+      *output = omnibox::ToolMode::TOOL_MODE_DISABLE_SUGGEST;
+      return true;
+    case UsedToolMode::kGeminiPro:
+      *output = omnibox::ToolMode::TOOL_MODE_GEMINI_PRO;
       return true;
     case UsedToolMode::kImageGenUpload:
       *output = omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD;
       return true;
     case UsedToolMode::kImageGenSelfie:
-      // No corresponding Proto value yet.
-      *output = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+      *output = omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_SELFIE;
       return true;
   }
   NOTREACHED();
@@ -166,6 +188,7 @@ bool EnumTraits<UsedInputType, omnibox::InputType>::FromMojom(
   NOTREACHED();
 }
 
+// static
 // static
 UsedFileUploadStatus
 EnumTraits<UsedFileUploadStatus, contextual_search::FileUploadStatus>::ToMojom(
@@ -286,6 +309,34 @@ bool EnumTraits<UsedFileUploadErrorType,
 }
 
 // static
+const std::string&
+StructTraits<composebox_query::mojom::AimUrlParamDataView,
+             omnibox::UrlParam>::param_key(const omnibox::UrlParam& param) {
+  return param.param_key();
+}
+
+// static
+const std::string&
+StructTraits<composebox_query::mojom::AimUrlParamDataView,
+             omnibox::UrlParam>::param_value(const omnibox::UrlParam& param) {
+  return param.param_value();
+}
+
+// static
+bool StructTraits<
+    composebox_query::mojom::AimUrlParamDataView,
+    omnibox::UrlParam>::Read(composebox_query::mojom::AimUrlParamDataView data,
+                             omnibox::UrlParam* output) {
+  if (!data.ReadParamKey(output->mutable_param_key())) {
+    return false;
+  }
+  if (!data.ReadParamValue(output->mutable_param_value())) {
+    return false;
+  }
+  return true;
+}
+
+// static
 omnibox::ToolMode
 StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::tool(
     const omnibox::ToolConfig& config) {
@@ -320,6 +371,14 @@ StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::hint_text(
 }
 
 // static
+std::vector<omnibox::UrlParam>
+StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::aim_url_params(
+    const omnibox::ToolConfig& config) {
+  return std::vector<omnibox::UrlParam>(config.aim_url_params().begin(),
+                                        config.aim_url_params().end());
+}
+
+// static
 bool StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::Read(
     UsedToolConfigDataView data,
     omnibox::ToolConfig* output) {
@@ -351,6 +410,15 @@ bool StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::Read(
   }
   output->set_hint_text(hint_text);
 
+  std::vector<omnibox::UrlParam> params;
+  if (!data.ReadAimUrlParams(&params)) {
+    return false;
+  }
+  output->mutable_aim_url_params()->Clear();
+  for (const auto& param : params) {
+    *output->add_aim_url_params() = param;
+  }
+
   return true;
 }
 
@@ -376,6 +444,14 @@ StructTraits<UsedModelConfigDataView, omnibox::ModelConfig>::hint_text(
 }
 
 // static
+std::vector<omnibox::UrlParam>
+StructTraits<UsedModelConfigDataView, omnibox::ModelConfig>::aim_url_params(
+    const omnibox::ModelConfig& config) {
+  return std::vector<omnibox::UrlParam>(config.aim_url_params().begin(),
+                                        config.aim_url_params().end());
+}
+
+// static
 bool StructTraits<UsedModelConfigDataView, omnibox::ModelConfig>::Read(
     UsedModelConfigDataView data,
     omnibox::ModelConfig* output) {
@@ -397,6 +473,15 @@ bool StructTraits<UsedModelConfigDataView, omnibox::ModelConfig>::Read(
     return false;
   }
   output->set_hint_text(hint_text);
+
+  std::vector<omnibox::UrlParam> params;
+  if (!data.ReadAimUrlParams(&params)) {
+    return false;
+  }
+  output->mutable_aim_url_params()->Clear();
+  for (const auto& param : params) {
+    *output->add_aim_url_params() = param;
+  }
 
   return true;
 }

@@ -10,11 +10,11 @@ option java_outer_classname = 'RuleSetProto';
 
 package omnibox;
 
-import "model_mode.proto";
-import "tool_mode.proto";
 import "input_type.proto";
 import "input_type_rule.proto";
+import "model_mode.proto";
 import "model_rule.proto";
+import "tool_mode.proto";
 import "tool_rule.proto";
 
 // A set of rules that are applied to the input plate or fusebox.

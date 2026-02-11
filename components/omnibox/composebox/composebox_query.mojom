@@ -4,6 +4,13 @@
 
 module composebox_query.mojom;
 
+// A single URL parameter key-value pair.
+// Named AimUrlParam instead of UrlParam to avoid collision with mojo::internal generated types.
+struct AimUrlParam {
+  string param_key;
+  string param_value;
+};
+
 // Upload status of a file.
 enum FileUploadStatus {
   // Not uploaded.
@@ -67,14 +74,22 @@ enum ToolMode {
   kDeepSearch = 1,
   // Enables Canvas Tool.
   kCanvas = 2,
+  // Enables Gemini Pro mode.
+  kGeminiPro = 3,
   // Enables Image generation functionality.
-  kImageGen = 3,
+  kImageGen = 4,
   // Enables Deep Browse functionality.
-  kDeepBrowse = 4,
-  // Enables Image Generation for uploaded images.
-  kImageGenUpload = 5,
+  kDeepBrowse = 5,
   // Enables Image Generation for Selfie type images.
   kImageGenSelfie = 6,
+  // Enables Image Generation for uploaded images.
+  kImageGenUpload = 7,
+  // Disables suggestions.
+  kDisableSuggest = 8,
+  // Enables AIM mode.
+  kAim = 9,
+  // Enables AIM Gen Prompt mode.
+  kAimGenPrompt = 10,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchAimTool)
 
@@ -97,6 +112,7 @@ struct ToolConfig {
   string menu_label;
   string chip_label;
   string hint_text;
+  array<AimUrlParam> aim_url_params;
 };
 
 // Configuration for a model.
@@ -104,6 +120,7 @@ struct ModelConfig {
   ModelMode model;
   string menu_label;
   string hint_text;
+  array<AimUrlParam> aim_url_params;
 };
 
 // Configuration for a section.
@@ -112,6 +129,7 @@ struct SectionConfig {
 };
 
 // Represents the current state of inputs, models, and tools within AIM.
+// This struct is only ever sent from the browser to WebUI.
 // LINT.IfChange(InputState)
 struct InputState {
   // The set of allowed models.
