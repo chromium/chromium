@@ -46,9 +46,13 @@ class TestComponentState::DelegateImpl
                        state_manager),
         base::Seconds(1));
   }
-  void RequestUpdate() override {
+  void RequestUpdate(bool is_background) override {
     if (state_) {
-      state_->request_update_called_ = true;
+      if (is_background) {
+        state_->requested_background_update_ = true;
+      } else {
+        state_->requested_foreground_update_ = true;
+      }
     }
   }
   base::FilePath GetInstallDirectory() override {

@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/component_updater/component_installer.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 
 namespace optimization_guide {
@@ -46,7 +47,7 @@ class OptimizationGuideOnDeviceModelInstallerPolicy
   bool AllowCachedCopies() const override;
   bool AllowUpdatesOnMeteredConnections() const override;
   static const std::string GetOnDeviceModelExtensionId();
-  static void UpdateOnDemand();
+  static void UpdateOnDemand(OnDemandUpdater::Priority priority);
 
  private:
   // The on-device state manager should be accessed in the UI thread.

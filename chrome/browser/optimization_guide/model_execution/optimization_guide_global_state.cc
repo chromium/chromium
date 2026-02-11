@@ -99,9 +99,12 @@ class OnDeviceModelComponentStateManagerDelegate
         std::move(state_manager));
   }
 
-  void RequestUpdate() override {
+  void RequestUpdate(bool is_background) override {
     component_updater::OptimizationGuideOnDeviceModelInstallerPolicy::
-        UpdateOnDemand();
+        UpdateOnDemand(
+            is_background
+                ? component_updater::OnDemandUpdater::Priority::BACKGROUND
+                : component_updater::OnDemandUpdater::Priority::FOREGROUND);
   }
 
   std::string GetComponentId() override {

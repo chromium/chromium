@@ -32,7 +32,12 @@ class TestComponentState final {
   }
   bool installer_registered() const { return !!registered_manager_; }
   bool uninstall_called() const { return uninstall_called_; }
-  bool request_update_called() const { return request_update_called_; }
+  bool requested_background_update() const {
+    return requested_background_update_;
+  }
+  bool requested_foreground_update() const {
+    return requested_foreground_update_;
+  }
 
   void Install(std::unique_ptr<FakeBaseModelAsset> asset);
   void SimulateShutdown() {
@@ -59,7 +64,8 @@ class TestComponentState final {
   base::ByteCount free_disk_space_ = base::GiB(100);
   base::WeakPtr<OnDeviceModelComponentStateManager> registered_manager_;
   bool uninstall_called_ = false;
-  bool request_update_called_ = false;
+  bool requested_background_update_ = false;
+  bool requested_foreground_update_ = false;
   std::unique_ptr<FakeBaseModelAsset> installed_asset_;
   FakeComponent component_{"component_id", 1000};
   testing::NiceMock<FakeComponentUpdateService> component_update_service_;
