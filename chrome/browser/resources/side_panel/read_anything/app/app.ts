@@ -83,12 +83,16 @@ export class AppElement extends AppElementBase implements SpeechListener,
       willDrawAgainSoon_: {type: Boolean},
       pageLanguage_: {type: String},
       presentationState_: {type: Number},
+      lineFocusStyle_: {type: Object},
+      lineFocusMovement_: {type: Object},
     };
   }
 
   private startTime_ = Date.now();
 
   protected accessor contentState_: ContentState;
+  protected accessor lineFocusStyle_: LineFocusStyle|null = null;
+  protected accessor lineFocusMovement_: LineFocusMovement|null = null;
 
   protected isDocsLoadMoreButtonVisible_: boolean = false;
   protected isImmersiveEnabled_: boolean = false;
@@ -473,6 +477,15 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.$.containerScroller.scrollTo({top: 0, behavior: 'smooth'});
   }
 
+  onLineFocusToggled(): void {
+    if (!chrome.readingMode.isLineFocusEnabled) {
+      return;
+    }
+    this.lineFocusStyle_ = this.lineFocusController_.getCurrentLineFocusStyle();
+    this.lineFocusMovement_ =
+        this.lineFocusController_.getCurrentLineFocusMovement();
+  }
+
   onContentStateChange(): void {
     this.contentState_ = this.contentController_.getState();
   }
@@ -642,6 +655,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.lineFocusController_.onStyleChange(
           event.detail.data, this.$.container,
           this.$.containerParent.clientHeight);
+      this.lineFocusStyle_ =
+          this.lineFocusController_.getCurrentLineFocusStyle();
       this.setLineFocus_();
     }
   }
@@ -652,6 +667,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.lineFocusController_.onMovementChange(
           event.detail.data, this.$.container,
           this.$.containerParent.clientHeight);
+      this.lineFocusMovement_ =
+          this.lineFocusController_.getCurrentLineFocusMovement();
       this.setLineFocus_();
       if (!this.lineFocusController_.isEnabled()) {
         return;

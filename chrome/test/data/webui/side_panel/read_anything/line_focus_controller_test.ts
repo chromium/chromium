@@ -27,6 +27,7 @@ suite('LineFocusController', () => {
   let metrics: TestMetricsBrowserProxy;
   let keyboardLines: number;
   let speechLines: number;
+  let lineFocusToggled: boolean;
 
   function createShortContainer(): HTMLElement {
     const container = document.createElement('p');
@@ -63,6 +64,7 @@ suite('LineFocusController', () => {
     lineFocusController = new LineFocusController();
     lineFocusMoved = false;
     scrollDiffReceived = 0;
+    lineFocusToggled = false;
     lineFocusListener = {
       onLineFocusMove() {
         lineFocusMoved = true;
@@ -73,6 +75,9 @@ suite('LineFocusController', () => {
       },
 
       onNeedScrollToTop() {},
+      onLineFocusToggled() {
+        lineFocusToggled = true;
+      },
     };
     lineFocusController.addListener(lineFocusListener);
     defaultContainer = document.createElement('div');
@@ -493,6 +498,7 @@ suite('LineFocusController', () => {
 
     lineFocusController.toggle(container, defaultHeight);
 
+    assertTrue(lineFocusToggled);
     assertEquals(
         LineFocusType.NONE, lineFocusController.getCurrentLineFocusType());
   });
@@ -505,6 +511,7 @@ suite('LineFocusController', () => {
 
     lineFocusController.toggle(container, defaultHeight);
 
+    assertTrue(lineFocusToggled);
     assertEquals(
         LineFocusStyle.defaultValue(),
         lineFocusController.getCurrentLineFocusStyle());
@@ -523,6 +530,7 @@ suite('LineFocusController', () => {
 
     lineFocusController.toggle(container, defaultHeight);
 
+    assertTrue(lineFocusToggled);
     assertEquals(
         previousMode.type, lineFocusController.getCurrentLineFocusType());
   });

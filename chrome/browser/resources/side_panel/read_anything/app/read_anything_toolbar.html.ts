@@ -249,6 +249,8 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       class="${this.isImmersiveEnabled_ ? 'settings-submenu' : ''}"
       .nonModal="${this.isImmersiveEnabled_}"
       .settingsPrefs="${this.settingsPrefs}"
+      .lineFocusStyle="${this.lineFocusStyle}"
+      .lineFocusMovement="${this.lineFocusMovement}"
       @close-all-menus="${this.onCloseAllMenus_}">
   </line-focus-menu>
   <voice-selection-menu id="voiceSelectionMenu"

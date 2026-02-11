@@ -39,11 +39,15 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
     return {
       settingsPrefs: {type: Object},
       nonModal: {type: Boolean},
+      lineFocusStyle: {type: Object},
+      lineFocusMovement: {type: Object},
     };
   }
 
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
   accessor nonModal: boolean = false;
+  accessor lineFocusStyle: LineFocusStyle|null = null;
+  accessor lineFocusMovement: LineFocusMovement|null = null;
 
   private styleOptions_: Array<MenuStateItem<LineFocusStyle>> = [
     {
@@ -105,6 +109,23 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
     if (changedProperties.has('settingsPrefs')) {
       this.restoreFromPrefs_();
     }
+
+    if (changedProperties.has('lineFocusStyle') &&
+        this.lineFocusStyle !== null) {
+      console.error('line focus style change: ', this.lineFocusStyle);
+      this.updateOptionsForStyle_(this.lineFocusStyle);
+    }
+    if (changedProperties.has('lineFocusMovement') &&
+        this.lineFocusMovement !== null) {
+      this.updateOptionsForMovement_(this.lineFocusMovement);
+    }
+    if (changedProperties.has('lineFocusStyle') ||
+        changedProperties.has('lineFocusMovement')) {
+      this.options_ = [
+        ...this.styleOptions_,
+        ...this.movementOptions_,
+      ];
+    }
   }
 
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {
@@ -119,12 +140,8 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
     const lineFocusValues = getLineFocusValues();
     const lineFocus = lineFocusValues[this.settingsPrefs['lineFocus']];
     if (lineFocus) {
-      this.styleOptions_.forEach(option => {
-        option.selected = option.data === lineFocus.style;
-      });
-      this.movementOptions_.forEach(option => {
-        option.selected = option.data === lineFocus.movement;
-      });
+      this.updateOptionsForStyle_(lineFocus.style);
+      this.updateOptionsForMovement_(lineFocus.movement);
       this.options_ = [
         ...this.styleOptions_,
         ...this.movementOptions_,
@@ -132,28 +149,29 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
     }
   }
 
-  protected onLineFocusStyleChange_(
-      event: CustomEvent<{data: LineFocusStyle}>) {
-    this.onLineFocusChange_(
-        this.styleOptions_, event.detail.data,
+  protected onLineFocusStyleChange_() {
+    this.logger_.logTextSettingsChange(
         ReadAnythingSettingsChange.LINE_FOCUS_STYLE_CHANGE);
   }
 
-  protected onLineFocusMovementChange_(
-      event: CustomEvent<{data: LineFocusMovement}>) {
-    this.onLineFocusChange_(
-        this.movementOptions_, event.detail.data,
+  protected onLineFocusMovementChange_() {
+    this.logger_.logTextSettingsChange(
         ReadAnythingSettingsChange.LINE_FOCUS_MOVEMENT_CHANGE);
   }
 
-  private onLineFocusChange_(
-      options: Array<MenuStateItem<LineFocusStyle|LineFocusMovement>>,
-      data: LineFocusStyle|LineFocusMovement,
-      logValue: ReadAnythingSettingsChange) {
-    options.forEach(option => {
-      option.selected = option.data === data;
+  private updateOptionsForStyle_(newStyle: LineFocusStyle) {
+    this.styleOptions_.forEach(option => {
+      option.selected = option.data === newStyle;
     });
-    this.logger_.logTextSettingsChange(logValue);
+    console.error(
+        'updated options for style: ',
+        this.styleOptions_.filter(option => option.selected).length);
+  }
+
+  private updateOptionsForMovement_(newMovement: LineFocusMovement) {
+    this.movementOptions_.forEach(option => {
+      option.selected = option.data === newMovement;
+    });
   }
 }
 

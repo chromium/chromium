@@ -47,71 +47,79 @@ suite('LineFocusMenuElement', () => {
         lineFocusMenu.$.menu, /*shouldHaveHeaders=*/ false);
   });
 
-  test('line focus style change', async () => {
-    const numberOfItems = 3;
+  test('line focus style prop update changes selected items', async () => {
+    const window = LineFocusStyle.MEDIUM_WINDOW;
+    lineFocusMenu.lineFocusStyle = window;
+    await microtasksFinished();
+    let selectedItems =
+        lineFocusMenu.$.menu.menuItems.filter(item => item.selected);
+    assertEquals(1, selectedItems.length, 'selected');
+    assertEquals(window, selectedItems[0]!.data, 'data');
+
+    const off = LineFocusStyle.OFF;
+    lineFocusMenu.lineFocusStyle = off;
+    await microtasksFinished();
+    selectedItems =
+        lineFocusMenu.$.menu.menuItems.filter(item => item.selected);
+    assertEquals(1, selectedItems.length, 'selected off');
+    assertEquals(off, selectedItems[0]!.data, 'data off');
+
+    const line = LineFocusStyle.UNDERLINE;
+    lineFocusMenu.lineFocusStyle = line;
+    await microtasksFinished();
+    selectedItems =
+        lineFocusMenu.$.menu.menuItems.filter(item => item.selected);
+    assertEquals(1, selectedItems.length, 'selected line');
+    assertEquals(line, selectedItems[0]!.data, 'data line');
+  });
+
+  test('on line focus style change', async () => {
     let closeAllMenusCount = 0;
     document.addEventListener(
         ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
 
-    const window = LineFocusStyle.MEDIUM_WINDOW;
     lineFocusMenu.$.menu.dispatchEvent(new CustomEvent(
-        ToolbarEvent.LINE_FOCUS_STYLE, {detail: {data: window}}));
-    let selectedItems =
-        lineFocusMenu.$.menu.menuItems.filter(item => item.selected);
-    assertEquals(1, selectedItems.length);
-    assertEquals(window, selectedItems[0]!.data);
-
-    const off = LineFocusStyle.OFF;
-    lineFocusMenu.$.menu.dispatchEvent(
-        new CustomEvent(ToolbarEvent.LINE_FOCUS_STYLE, {detail: {data: off}}));
-    selectedItems =
-        lineFocusMenu.$.menu.menuItems.filter(item => item.selected);
-    assertEquals(1, selectedItems.length);
-    assertEquals(off, selectedItems[0]!.data);
-
-    const line = LineFocusStyle.UNDERLINE;
-    lineFocusMenu.$.menu.dispatchEvent(
-        new CustomEvent(ToolbarEvent.LINE_FOCUS_STYLE, {detail: {data: line}}));
-    selectedItems =
-        lineFocusMenu.$.menu.menuItems.filter(item => item.selected);
-    assertEquals(1, selectedItems.length);
-    assertEquals(line, selectedItems[0]!.data);
+        ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.LARGE_WINDOW}}));
+    await microtasksFinished();
 
     assertEquals(
         ReadAnythingSettingsChange.LINE_FOCUS_STYLE_CHANGE,
         await metrics.whenCalled('recordTextSettingsChange'));
-    assertEquals(
-        numberOfItems, metrics.getCallCount('recordTextSettingsChange'));
     assertEquals(0, closeAllMenusCount);
   });
 
-  test('line focus movement change', async () => {
-    const numberOfItems = 2;
-    let closeAllMenusCount = 0;
-    document.addEventListener(
-        ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
-
+  test('line focus movement prop update changes selected items', async () => {
     const cursor = LineFocusMovement.CURSOR;
-    lineFocusMenu.$.menu.dispatchEvent(new CustomEvent(
-        ToolbarEvent.LINE_FOCUS_MOVEMENT, {detail: {data: cursor}}));
+    lineFocusMenu.lineFocusMovement = cursor;
+    await microtasksFinished();
     let selectedItems =
         lineFocusMenu.$.menu.menuItems.filter(item => item.selected);
     assertEquals(1, selectedItems.length);
     assertEquals(cursor, selectedItems[0]!.data);
 
     const staticMovement = LineFocusMovement.STATIC;
-    lineFocusMenu.$.menu.dispatchEvent(new CustomEvent(
-        ToolbarEvent.LINE_FOCUS_MOVEMENT, {detail: {data: staticMovement}}));
+    lineFocusMenu.lineFocusMovement = staticMovement;
+    await microtasksFinished();
     selectedItems =
         lineFocusMenu.$.menu.menuItems.filter(item => item.selected);
     assertEquals(1, selectedItems.length);
     assertEquals(staticMovement, selectedItems[0]!.data);
+  });
+
+  test('on line focus movement change', async () => {
+    let closeAllMenusCount = 0;
+    document.addEventListener(
+        ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
+
+    lineFocusMenu.$.menu.dispatchEvent(new CustomEvent(
+        ToolbarEvent.LINE_FOCUS_MOVEMENT,
+        {detail: {data: LineFocusMovement.CURSOR}}));
+    await microtasksFinished();
 
     assertEquals(
         ReadAnythingSettingsChange.LINE_FOCUS_MOVEMENT_CHANGE,
         await metrics.whenCalled('recordTextSettingsChange'));
-    assertEquals(
-        numberOfItems, metrics.getCallCount('recordTextSettingsChange'));
     assertEquals(0, closeAllMenusCount);
   });
 

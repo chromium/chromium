@@ -27,6 +27,8 @@ export function getHtml(this: AppElement) {
         .localeToDisplayName="${this.localeToDisplayName_}"
         .pageLanguage="${this.pageLanguage_}"
         .isImmersiveMode="${this.isImmersiveMode()}"
+        .lineFocusStyle="${this.lineFocusStyle_}"
+        .lineFocusMovement="${this.lineFocusMovement_}"
         @select-voice="${this.onSelectVoice_}"
         @voice-language-toggle="${this.onVoiceLanguageToggle_}"
         @preview-voice="${this.onPreviewVoice_}"

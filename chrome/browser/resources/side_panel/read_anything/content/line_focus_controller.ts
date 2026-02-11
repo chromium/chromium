@@ -15,6 +15,7 @@ export interface LineFocusListener {
   onLineFocusMove(): void;
   onNeedScrollForLineFocus(scrollDiff: number): void;
   onNeedScrollToTop(): void;
+  onLineFocusToggled(): void;
 }
 
 // Used to prevent microadjustments of the line focus window when adjusting to
@@ -48,6 +49,10 @@ export class LineFocusController {
     return this.model_.getCurrentLineFocusStyle();
   }
 
+  getCurrentLineFocusMovement(): LineFocusMovement {
+    return this.model_.getCurrentLineFocusMovement();
+  }
+
   // Whether the current line focus mode is static.
   isStatic(): boolean {
     return this.model_.getCurrentLineFocusMovement() ===
@@ -74,6 +79,7 @@ export class LineFocusController {
     this.setStyleAndMovement_(
         newStyle, this.model_.getCurrentLineFocusMovement(), container, height);
     this.logger_.logLineFocusToggled(this.isEnabled());
+    this.listeners_.forEach(l => l.onLineFocusToggled());
   }
 
   onScrollEnd(newScrollTop: number) {
