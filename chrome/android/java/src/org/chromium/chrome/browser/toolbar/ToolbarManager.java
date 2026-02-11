@@ -2480,6 +2480,7 @@ public class ToolbarManager
                         mLayoutManager,
                         mTabModelSelector,
                         IncognitoNtpUtils::getIncognitoNtpView,
+                        IncognitoNtpUtils::getIncognitoNtpScrollView,
                         IncognitoNtpUtils::getIncognitoNtpContentMetrics);
 
         mInitializedWithNative = true;

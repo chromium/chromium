@@ -63,6 +63,8 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
     @Mock private Tab mTab;
     @Mock private View mTabView;
     @Mock private Function<Tab, View> mNtpViewProvider;
+    @Mock private NewTabPageScrollView mNewTabPageScrollView;
+    @Mock private Function<Tab, NewTabPageScrollView> mNtpScrollViewProvider;
 
     @Mock
     private Function<View, IncognitoNtpUtils.IncognitoNtpContentMetrics> mNtpContentMetricsProvider;
@@ -85,6 +87,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         when(mIncognitoTabModel.isIncognitoBranded()).thenReturn(true);
         when(mTab.isIncognitoBranded()).thenReturn(true);
         when(mTab.getView()).thenReturn(mTabView);
+        when(mNtpScrollViewProvider.apply(any())).thenReturn(mNewTabPageScrollView);
     }
 
     @After
@@ -105,6 +108,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
                         mLayoutManager,
                         mTabModelSelector,
                         mNtpViewProvider,
+                        mNtpScrollViewProvider,
                         mNtpContentMetricsProvider);
         assertNotNull(mManager);
 
@@ -200,6 +204,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
                         mLayoutManager,
                         mTabModelSelector,
                         mNtpViewProvider,
+                        mNtpScrollViewProvider,
                         mNtpContentMetricsProvider);
         assertNull(mManager);
     }
@@ -214,6 +219,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
                         mLayoutManager,
                         mTabModelSelector,
                         mNtpViewProvider,
+                        mNtpScrollViewProvider,
                         mNtpContentMetricsProvider);
         assertNotNull(mManager);
     }
@@ -228,6 +234,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
                         mLayoutManager,
                         mTabModelSelector,
                         mNtpViewProvider,
+                        mNtpScrollViewProvider,
                         mNtpContentMetricsProvider);
         assertNull(mManager);
     }
@@ -244,6 +251,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
                         mLayoutManager,
                         mTabModelSelector,
                         mNtpViewProvider,
+                        mNtpScrollViewProvider,
                         mNtpContentMetricsProvider);
         assertNotNull(mManager);
 
@@ -453,7 +461,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
-    public void testUrlFocusChangeListener_addsAndRemovesNtpViewTouchListener() {
+    public void testUrlFocusChangeListener_addsAndRemovesNtpScrollViewTouchListener() {
         mManager =
                 IncognitoNtpOmniboxAutofocusManager.maybeCreate(
                         mContext,
@@ -461,6 +469,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
                         mLayoutManager,
                         mTabModelSelector,
                         mNtpViewProvider,
+                        mNtpScrollViewProvider,
                         mNtpContentMetricsProvider);
         assertNotNull(mManager);
         ArgumentCaptor<UrlFocusChangeListener> listenerCaptor =
@@ -469,16 +478,18 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         UrlFocusChangeListener urlFocusChangeListener = listenerCaptor.getValue();
 
         View ntpView = Mockito.mock(View.class);
+        NewTabPageScrollView ntpScrollView = Mockito.mock(NewTabPageScrollView.class);
         when(mNtpViewProvider.apply(mTab)).thenReturn(ntpView);
+        when(mNtpScrollViewProvider.apply(mTab)).thenReturn(ntpScrollView);
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(mNtpGurl);
 
         // 1. Gain focus
         urlFocusChangeListener.onUrlFocusChange(true);
-        verify(ntpView).setOnTouchListener(any(View.OnTouchListener.class));
+        verify(ntpScrollView).setOnTouchListener(any(View.OnTouchListener.class));
 
         // 2. Lose focus
         urlFocusChangeListener.onUrlFocusChange(false);
-        verify(ntpView).setOnTouchListener(null);
+        verify(ntpScrollView).setOnTouchListener(null);
     }
 }

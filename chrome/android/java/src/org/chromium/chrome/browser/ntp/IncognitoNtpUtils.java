@@ -45,11 +45,26 @@ public class IncognitoNtpUtils {
      * @return The content {@link View} of the Incognito NTP, or {@code null} if it cannot be found.
      */
     public static @Nullable View getIncognitoNtpView(Tab tab) {
-        if (tab == null || tab.getView() == null) {
+        if (tab.getView() == null) {
             return null;
         }
 
         return tab.getView().findViewById(R.id.new_tab_incognito_container);
+    }
+
+    /**
+     * Provides the NewTabPageScrollView of the Incognito New Tab Page for a given tab.
+     *
+     * @param tab The tab to get the NTP scroll view from.
+     * @return The {@link NewTabPageScrollView} of the Incognito NTP, or {@code null} if it cannot
+     *     be found.
+     */
+    public static @Nullable NewTabPageScrollView getIncognitoNtpScrollView(Tab tab) {
+        if (tab.getView() == null) {
+            return null;
+        }
+
+        return tab.getView().findViewById(R.id.ntp_scrollview);
     }
 
     /**

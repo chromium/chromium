@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -64,6 +65,7 @@ public class IncognitoNtpOmniboxAutofocusManager {
     private final LayoutManagerImpl mLayoutManager;
     private @Nullable LayoutStateObserver mLayoutStateObserver;
     private final Function<Tab, @Nullable View> mNtpViewProvider;
+    private final Function<Tab, @Nullable NewTabPageScrollView> mNtpScrollViewProvider;
     private final Function<View, IncognitoNtpUtils.IncognitoNtpContentMetrics>
             mNtpContentMetricsProvider;
     private @Nullable UrlFocusChangeListener mUrlFocusChangeListener;
@@ -124,6 +126,7 @@ public class IncognitoNtpOmniboxAutofocusManager {
             @NonNull LayoutManagerImpl layoutManager,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull Function<Tab, @Nullable View> ntpViewProvider,
+            @NonNull Function<Tab, @Nullable NewTabPageScrollView> ntpScrollViewProvider,
             @NonNull
                     Function<View, IncognitoNtpUtils.IncognitoNtpContentMetrics>
                             ntpContentMetricsProvider) {
@@ -134,6 +137,7 @@ public class IncognitoNtpOmniboxAutofocusManager {
                     layoutManager,
                     tabModelSelector,
                     ntpViewProvider,
+                    ntpScrollViewProvider,
                     ntpContentMetricsProvider);
         }
         return null;
@@ -145,6 +149,7 @@ public class IncognitoNtpOmniboxAutofocusManager {
             @NonNull LayoutManagerImpl layoutManager,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull Function<Tab, @Nullable View> ntpViewProvider,
+            @NonNull Function<Tab, @Nullable NewTabPageScrollView> ntpScrollViewProvider,
             @NonNull
                     Function<View, IncognitoNtpUtils.IncognitoNtpContentMetrics>
                             ntpContentMetricsProvider) {
@@ -153,6 +158,7 @@ public class IncognitoNtpOmniboxAutofocusManager {
         mTabModelSelector = tabModelSelector;
         mLayoutManager = layoutManager;
         mNtpViewProvider = ntpViewProvider;
+        mNtpScrollViewProvider = ntpScrollViewProvider;
         mNtpContentMetricsProvider = ntpContentMetricsProvider;
         mNtpOpenedCount = 0;
         mNtpSingleTapDetector =
@@ -199,6 +205,7 @@ public class IncognitoNtpOmniboxAutofocusManager {
         mUrlFocusChangeListener =
                 new UrlFocusChangeListener() {
                     @Override
+                    @SuppressLint("ClickableViewAccessibility")
                     public void onUrlFocusChange(boolean hasFocus) {
                         final Tab tab = mTabModelSelector.getCurrentTab();
 
@@ -210,7 +217,8 @@ public class IncognitoNtpOmniboxAutofocusManager {
                         }
 
                         View ntpView = mNtpViewProvider.apply(tab);
-                        if (ntpView == null) {
+                        NewTabPageScrollView ntpScrollView = mNtpScrollViewProvider.apply(tab);
+                        if (ntpView == null || ntpScrollView == null) {
                             return;
                         }
 
@@ -228,18 +236,16 @@ public class IncognitoNtpOmniboxAutofocusManager {
                                             wasTriggeredByAutofocus);
                             mTabHeightBeforeFocus = 0;
 
-                            ntpView.setOnTouchListener(
+                            ntpScrollView.setOnTouchListener(
                                     (v, event) -> {
-                                        boolean consumed =
-                                                mNtpSingleTapDetector.onTouchEvent(event);
-                                        if (event.getAction() == MotionEvent.ACTION_UP
-                                                && !consumed) {
+                                        mNtpSingleTapDetector.onTouchEvent(event);
+                                        if (event.getActionMasked() == MotionEvent.ACTION_UP) {
                                             v.performClick();
                                         }
-                                        return true;
+                                        return false;
                                     });
                         } else {
-                            ntpView.setOnTouchListener(null);
+                            ntpScrollView.setOnTouchListener(null);
                         }
                     }
 
