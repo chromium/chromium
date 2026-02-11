@@ -380,6 +380,12 @@ Status CreateSchema(sql::Database* db, std::u16string_view name) {
       // NB: a large BLOB should be the last column when possible. See
       // https://sqlite.org/forum/forumpost/756c1a1e4807217e?t=h
       " bytes BLOB NOT NULL)");
+  // Chunks are looked up by the blob row ID. overflow_blob_chunks cannot be a
+  // WITHOUT ROWID table since blob streaming requires a row ID.
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(
+      db,
+      "CREATE INDEX overflow_chunks_by_blob "
+      "ON overflow_blob_chunks (blob_row_id, chunk_index)");
 
   // Blobs may be referenced by rows in `records` or by active connections to
   // clients.
