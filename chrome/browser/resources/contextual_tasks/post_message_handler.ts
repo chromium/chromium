@@ -23,7 +23,7 @@ export class PostMessageHandler {
   private handshakeComplete_: boolean = false;
   private handshakeAttempts_: number = 0;
   private handshakeIntervalId_: number|null = null;
-  private pendingMessages_: Uint8Array[] = [];
+  private pendingMessages_: Array<Uint8Array|object> = [];
   private handshakeMessage_: Uint8Array|null = null;
 
   constructor(
@@ -52,6 +52,27 @@ export class PostMessageHandler {
    * @param message The serialized message to send.
    */
   sendMessage(message: Uint8Array) {
+    if (!this.handshakeComplete_) {
+      this.pendingMessages_.push(message);
+      return;
+    }
+
+    this.postMessage_(message);
+  }
+
+  /**
+   * DO NOT USE! This is temporary to prove a proof of concept. Eventually,
+   * this should be changed to send a serialized proto like the other method.
+   *
+   * Sends an object message to the webview. If the handshake has not yet been
+   * acknowledged, the message will be queued and sent after the handshake is
+   * complete.
+   * @param message The object message to send.
+   *
+   * TODO(crbug.com/483737358): Remove this method once the proto is implemented
+   * on the webview side.
+   */
+  sendObjectMessage(message: object) {
     if (!this.handshakeComplete_) {
       this.pendingMessages_.push(message);
       return;
@@ -144,7 +165,7 @@ export class PostMessageHandler {
     this.handshakeComplete_ = true;
     this.stopHandshake_();
 
-    this.pendingMessages_.forEach(msg => this.sendMessage(msg), this);
+    this.pendingMessages_.forEach(msg => this.postMessage_(msg), this);
     this.pendingMessages_ = [];
   }
 
@@ -156,7 +177,7 @@ export class PostMessageHandler {
     return this.handshakeComplete_;
   }
 
-  private postMessage_(message: Uint8Array) {
+  private postMessage_(message: Uint8Array|object) {
     if (!this.webview_.contentWindow) {
       return;
     }
@@ -164,8 +185,12 @@ export class PostMessageHandler {
       return;
     }
     try {
-      this.webview_.contentWindow.postMessage(
-          message.buffer, this.targetOrigin_);
+      if (message instanceof Uint8Array) {
+        this.webview_.contentWindow.postMessage(
+            message.buffer, this.targetOrigin_);
+      } else {
+        this.webview_.contentWindow.postMessage(message, this.targetOrigin_);
+      }
     } catch (e) {
       console.error('Failed to postMessage to webview:', e);
     }

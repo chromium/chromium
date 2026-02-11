@@ -505,4 +505,42 @@ suite('ContextualTasksAppTest', function() {
             '0', flexCenterStyle.zIndex,
             'Flex center container z-index should be 0');
       });
+
+  test('sends composebox height update', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    // Mock the post message handler to verify that the composebox height update
+    // is sent.
+    let sentMessage: any = null;
+    const mockPostMessageHandler = {
+      sendObjectMessage: (message: any) => {
+        sentMessage = message;
+      },
+      completeHandshake: () => {},
+      sendMessage: () => {},
+    };
+    appElement.setMockPostMessageHandlerForTesting(
+        mockPostMessageHandler as any);
+
+    // Set the height of the composebox to 123px.
+    const composebox =
+        appElement.shadowRoot.querySelector('contextual-tasks-composebox');
+    assertTrue(!!composebox);
+    const innerComposebox =
+        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
+    assertTrue(!!innerComposebox);
+    innerComposebox.style.height = '123px';
+
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await microtasksFinished();
+
+    // Verify that the new composebox height is sent to the webview.
+    assertDeepEquals(
+        {type: 'composebox-height-update', height: 123}, sentMessage);
+  });
 });
