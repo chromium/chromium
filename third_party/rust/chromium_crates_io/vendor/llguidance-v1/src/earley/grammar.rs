@@ -111,12 +111,8 @@ impl Display for SymbolProps {
         if self.capture_name.is_some() {
             write!(f, " CAPTURE")?;
         }
-        if self.stop_capture_name.is_some() {
-            write!(
-                f,
-                " STOP-CAPTURE={}",
-                self.stop_capture_name.as_ref().unwrap()
-            )?;
+        if let Some(stop_capture_name) = &self.stop_capture_name {
+            write!(f, " STOP-CAPTURE={}", stop_capture_name)?;
         }
         if self.max_tokens < 10000 {
             write!(f, " max_tokens={}", self.max_tokens)?;

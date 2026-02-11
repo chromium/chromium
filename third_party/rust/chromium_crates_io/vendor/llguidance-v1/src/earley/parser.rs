@@ -2058,11 +2058,12 @@ impl ParserState {
                 if sym_data.is_nullable || cond_nullable {
                     self.scratch
                         .add_unique(item.advance_dot(), item_idx, "null");
-                    if self.scratch.definitive && sym_data.props.capture_name.is_some() {
-                        // nullable capture
-                        let var_name = sym_data.props.capture_name.as_ref().unwrap();
-                        debug!("      capture: {} NULL", var_name);
-                        self.captures.push((var_name.clone(), vec![]));
+                    if self.scratch.definitive {
+                        if let Some(var_name) = &sym_data.props.capture_name {
+                            // nullable capture
+                            debug!("      capture: {} NULL", var_name);
+                            self.captures.push((var_name.clone(), vec![]));
+                        }
                     }
                 }
             }
