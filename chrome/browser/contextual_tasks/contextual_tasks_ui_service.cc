@@ -974,6 +974,9 @@ void ContextualTasksUiService::MoveTaskUiToNewTab(
       return;
     }
 
+    // Make sure to acquire a raw pointer handle to the WebContents prior to
+    // std::moving it below since it's used later in this function.
+    auto* web_contents_ptr = web_contents.get();
     NavigateParams params(browser, std::move(web_contents));
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     params.transition = ui::PAGE_TRANSITION_LINK;
@@ -981,7 +984,7 @@ void ContextualTasksUiService::MoveTaskUiToNewTab(
 
     // Notify the WebUI that the tab status has changed only after the contents
     // has been moved to a tab.
-    if (auto* web_ui_interface = GetWebUiInterface(web_contents.get())) {
+    if (auto* web_ui_interface = GetWebUiInterface(web_contents_ptr)) {
       web_ui_interface->OnSidePanelStateChanged();
     }
   }
