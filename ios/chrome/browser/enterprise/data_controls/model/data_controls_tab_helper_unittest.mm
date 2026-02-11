@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/test/fakes/fake_data_controls_commands_handler.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/components/enterprise/data_controls/features.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -79,7 +78,6 @@ class DataControlsTabHelperTest : public PlatformTest {
             profile_.get()));
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(profile_);
-    feature_list_.InitAndEnableFeature(kEnableClipboardDataControlsIOS);
   }
 
   void TearDown() override {
@@ -565,23 +563,6 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_OtherUrl) {
   run_loop.Run();
 }
 
-// Tests that copy is allowed when a "BLOCK" rule is set but the feature is
-// disabled.
-TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kEnableClipboardDataControlsIOS);
-  SetCopyBlockRule(profile_->GetPrefs());
-  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
-  base::RunLoop run_loop;
-  tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
-    EXPECT_TRUE(allowed);
-    histogram_tester_.ExpectTotalCount(
-        kIOSWebStateDataControlsClipboardCopyVerdictHistogram, 0);
-    run_loop.Quit();
-  }));
-  run_loop.Run();
-}
-
 // Tests that paste is allowed by default.
 TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Default) {
   base::RunLoop run_loop;
@@ -958,23 +939,6 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedToOSClipboard) {
   tab_helper()->DidFinishClipboardRead();
 
   ASSERT_TRUE(WaitForStringInPasteboard(expected_placeholder));
-}
-
-// Tests that paste is allowed when a "BLOCK" rule is set but the feature is
-// disabled.
-TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kEnableClipboardDataControlsIOS);
-  SetPasteBlockRule();
-  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
-  base::RunLoop run_loop;
-  tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
-    EXPECT_TRUE(allowed);
-    histogram_tester_.ExpectTotalCount(
-        kIOSWebStateDataControlsClipboardPasteVerdictHistogram, 0);
-    run_loop.Quit();
-  }));
-  run_loop.Run();
 }
 
 // Tests that cut is blocked when a "BLOCK" rule matches the page URL.

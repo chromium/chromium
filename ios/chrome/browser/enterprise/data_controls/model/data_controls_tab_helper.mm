@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 
-#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
@@ -21,7 +20,6 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/components/enterprise/data_controls/features.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/clipboard/clipboard_metadata.h"
 #import "ui/base/l10n/l10n_util.cc"
@@ -36,11 +34,6 @@ DataControlsTabHelper::~DataControlsTabHelper() = default;
 
 void DataControlsTabHelper::ShouldAllowCopy(
     base::OnceCallback<void(bool)> callback) {
-  if (!IsClipboardDataControlsEnabled()) {
-    std::move(callback).Run(true);
-    return;
-  }
-
   // TODO(crbug.com/444224082): Include size and format type for copy
   // operations.
   ui::ClipboardMetadata metadata;
@@ -75,11 +68,6 @@ void DataControlsTabHelper::ShouldAllowCopy(
 
 void DataControlsTabHelper::ShouldAllowPaste(
     base::OnceCallback<void(bool)> callback) {
-  if (!IsClipboardDataControlsEnabled()) {
-    std::move(callback).Run(true);
-    return;
-  }
-
   // TODO(crbug.com/444224082): Include size and format type for paste
   // operations.
   ui::ClipboardMetadata metadata;
@@ -133,10 +121,6 @@ void DataControlsTabHelper::ShouldAllowCut(
 }
 
 bool DataControlsTabHelper::ShouldAllowShare() {
-  if (!IsClipboardDataControlsEnabled()) {
-    return true;
-  }
-
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   const GURL& source_url = web_state_->GetLastCommittedURL();
@@ -158,10 +142,6 @@ void DataControlsTabHelper::SetSnackbarHandler(
 void DataControlsTabHelper::DidFinishClipboardRead() {
   DataControlsPasteboardManager::GetInstance()
       ->RestorePlaceholderToGeneralPasteboardIfNeeded();
-}
-
-bool DataControlsTabHelper::IsClipboardDataControlsEnabled() const {
-  return base::FeatureList::IsEnabled(kEnableClipboardDataControlsIOS);
 }
 
 void DataControlsTabHelper::FinishCopy(const GURL& source_url,

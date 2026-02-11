@@ -125,7 +125,6 @@
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/enterprise/analysis/features.h"
-#import "ios/components/enterprise/data_controls/features.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
 #import "ios/web/common/features.h"
@@ -2335,13 +2334,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kCredentialProviderPasskeyLargeBlobName,
      flag_descriptions::kCredentialProviderPasskeyLargeBlobDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kCredentialProviderPasskeyLargeBlob)},
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-    {"enable-clipboard-data-controls-ios",
-     flag_descriptions::kEnableClipboardDataControlsIOSName,
-     flag_descriptions::kEnableClipboardDataControlsIOSDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(data_controls::kEnableClipboardDataControlsIOS)},
-#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
     {"autofill-credit-card-scanner-ios",
      flag_descriptions::kAutofillCreditCardScannerIosName,
      flag_descriptions::kAutofillCreditCardScannerIosDescription,

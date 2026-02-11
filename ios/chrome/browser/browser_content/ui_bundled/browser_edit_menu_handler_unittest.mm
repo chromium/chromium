@@ -22,7 +22,6 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/partial_translate/test_partial_translate.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#import "ios/components/enterprise/data_controls/features.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -489,9 +488,6 @@ TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
 // Tests that the share option is removed when sharing is blocked by Data
 // Controls.
 TEST_F(BrowserEditMenuHandlerTest, CheckShareRemoved) {
-  base::test::ScopedFeatureList feature_list(
-      data_controls::kEnableClipboardDataControlsIOS);
-
   // Set a policy to block sharing/copying from `kDataControlsBlockedUrl`.
   SetCopyBlockRule(profile_->GetPrefs());
 
@@ -514,9 +510,6 @@ TEST_F(BrowserEditMenuHandlerTest, CheckShareRemoved) {
 // Tests that the share option is not removed when sharing is allowed by Data
 // Controls.
 TEST_F(BrowserEditMenuHandlerTest, CheckShareNotRemovedByPolicy) {
-  base::test::ScopedFeatureList feature_list(
-      data_controls::kEnableClipboardDataControlsIOS);
-
   NSMutableArray* expectedMenuDescription = GetExpectedMenu();
   AddOpenInNewCanvas(expectedMenuDescription);
 
@@ -533,24 +526,3 @@ TEST_F(BrowserEditMenuHandlerTest, CheckShareNotRemovedByPolicy) {
   EXPECT_NSEQ(expectedMenuDescription, GetMenuDescription());
 }
 
-// Tests that the share option is not removed when Data Controls feature is
-// disabled.
-TEST_F(BrowserEditMenuHandlerTest, CheckShareNotRemovedFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      data_controls::kEnableClipboardDataControlsIOS);
-
-  NSMutableArray* expectedMenuDescription = GetExpectedMenu();
-  AddOpenInNewCanvas(expectedMenuDescription);
-
-  BrowserEditMenuHandler* handler = [[BrowserEditMenuHandler alloc] init];
-  DataControlsEditMenuBuilder* menu_builder =
-      [[DataControlsEditMenuBuilder alloc] init];
-  handler.dataControlsDelegate = menu_builder;
-  [base_view_controller_ setHandler:handler];
-  [base_view_controller_.view addSubview:web_state_->GetView()];
-  web::test::LoadHtml(kPageHTML, web_state_.get());
-
-  // Sharing should be allowed because the feature is disabled.
-  EXPECT_NSEQ(expectedMenuDescription, GetMenuDescription());
-}

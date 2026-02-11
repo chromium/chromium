@@ -534,13 +534,6 @@ const char kEnableAutofillAddressSavePromptName[] =
 const char kEnableAutofillAddressSavePromptDescription[] =
     "Enable the Autofill address save prompts.";
 
-const char kEnableClipboardDataControlsIOSName[] =
-    "Enable Clipboard Data Controls";
-const char kEnableClipboardDataControlsIOSDescription[] =
-    "When this flag is enabled and the DataControlsRules Enterprise policy is "
-    "enabled, Enterprise admins can apply clipboard restrictions to Chrome "
-    "users on iOS.";
-
 const char kEnableCompromisedPasswordsMutingName[] =
     "Enable the muting of compromised passwords in the Password Manager";
 const char kEnableCompromisedPasswordsMutingDescription[] =

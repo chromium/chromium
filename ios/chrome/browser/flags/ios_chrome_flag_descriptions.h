@@ -324,9 +324,6 @@ extern const char kEnableACPrefetchDescription[];
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];
 
-extern const char kEnableClipboardDataControlsIOSName[];
-extern const char kEnableClipboardDataControlsIOSDescription[];
-
 extern const char kEnableCompromisedPasswordsMutingName[];
 extern const char kEnableCompromisedPasswordsMutingDescription[];
 

@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_test_utils.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/components/enterprise/data_controls/features.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -23,8 +22,6 @@ class DataControlsEditMenuBuilderTest : public PlatformTest {
     profile_ = TestProfileIOS::Builder().Build();
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(profile_.get());
-    feature_list_.InitAndEnableFeature(
-        data_controls::kEnableClipboardDataControlsIOS);
   }
 
   web::WebTaskEnvironment task_environment_;
