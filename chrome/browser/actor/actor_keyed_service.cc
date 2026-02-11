@@ -129,7 +129,10 @@ ActorKeyedService::~ActorKeyedService() = default;
 void ActorKeyedService::Shutdown() {
   // Ensure all tasks are stopped here so we don't cause them to stop in the
   // dtor.
-  StopAllTasks(ActorTask::StoppedReason::kShutdown);
+  GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::Shutdown", {});
+  for (auto [task_id, _] : GetActiveTasks()) {
+    StopTask(task_id, ActorTask::StoppedReason::kShutdown);
+  }
 
   // Ensure tasks get deleted synchronously to avoid dangling refs.
   CHECK(active_tasks_.empty());
@@ -553,15 +556,6 @@ void ActorKeyedService::OnActionsFinished(
     // https://chromium-review.googlesource.com/c/chromium/src/+/7552225/comment/b0b7f011_71da3233/
     RunLater(base::BindOnce(std::move(callback), result->code,
                             index_of_failed_action, std::move(action_results)));
-  }
-}
-
-void ActorKeyedService::StopAllTasks(ActorTask::StoppedReason stop_reason) {
-  std::vector<TaskId> tasks_to_stop =
-      FindTaskIdsInActive([](const ActorTask& task) { return true; });
-  GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::StopAllTasks", {});
-  for (const auto& task_id : tasks_to_stop) {
-    StopTask(task_id, stop_reason);
   }
 }
 

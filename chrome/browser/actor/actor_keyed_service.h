@@ -180,9 +180,6 @@ class ActorKeyedService : public KeyedService,
       std::optional<size_t> index_of_failed_action,
       std::vector<ActionResultWithLatencyInfo> action_results);
 
-  // Stops all the active tasks.
-  void StopAllTasks(ActorTask::StoppedReason stop_reason);
-
   // The jounrnal should be last in destruction order since other things like
   // ActorTask might be using a SafeRef to this object.
   AggregatedJournal journal_;
