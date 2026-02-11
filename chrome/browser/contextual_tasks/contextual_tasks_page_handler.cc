@@ -98,6 +98,44 @@ PopulateContextualResources(contextual_tasks::ContextualTaskContext* context) {
 
 }  // namespace
 
+namespace contextual_tasks {
+contextual_tasks::mojom::ComposeboxPositionPtr InputPlateConfigToMojo(
+    const lens::InputPlateParametersRequest& update_msg) {
+  auto mojo_position = contextual_tasks::mojom::ComposeboxPosition::New();
+
+  if (update_msg.has_max_width()) {
+    // AIM Proto is int32 since some languages in Google3 do not handle
+    // uint32. If we have a negative value, we set it as 0 since width
+    // cannot be negative. Mojom is uint32 for proper representation
+    // and security concerns.
+    if (update_msg.max_width() < 0) {
+      mojo_position->max_width = 0;
+    } else {
+      mojo_position->max_width = static_cast<uint32_t>(update_msg.max_width());
+    }
+  }
+  if (update_msg.has_max_height()) {
+    // AIM Proto is int32 since some languages in Google3 do not handle
+    // uint32. If we have a negative value, we set it as 0 since height
+    // cannot be negative. Mojom is uint32 for proper representation
+    // and security concerns.
+    if (update_msg.max_height() < 0) {
+      mojo_position->max_height = 0;
+    } else {
+      mojo_position->max_height =
+          static_cast<uint32_t>(update_msg.max_height());
+    }
+  }
+  if (update_msg.has_margin_bottom()) {
+    mojo_position->margin_bottom = update_msg.margin_bottom();
+  }
+  if (update_msg.has_margin_left()) {
+    mojo_position->margin_left = update_msg.margin_left();
+  }
+  return mojo_position;
+}
+}  // namespace contextual_tasks
+
 ContextualTasksPageHandler::ContextualTasksPageHandler(
     mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> receiver,
     contextual_tasks::ContextualTasksUIInterface* web_ui_controller,
@@ -278,6 +316,15 @@ void ContextualTasksPageHandler::OnWebviewMessage(
     web_ui_controller_->GetPageRemote()->RestoreInput();
   } else if (aim_to_client_message.has_enter_basic_mode()) {
     web_ui_controller_->GetPageRemote()->HideInput();
+  } else if (aim_to_client_message
+                 .has_set_chrome_desktop_input_plate_configuration()) {
+    const auto& update_msg =
+        aim_to_client_message.set_chrome_desktop_input_plate_configuration();
+
+    auto mojo_position = contextual_tasks::InputPlateConfigToMojo(update_msg);
+
+    web_ui_controller_->GetPageRemote()->UpdateComposeboxPosition(
+        std::move(mojo_position));
   } else if (aim_to_client_message.has_exit_basic_mode()) {
     web_ui_controller_->GetPageRemote()->RestoreInput();
   } else if (aim_to_client_message.has_update_thread_context_library()) {

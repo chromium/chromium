@@ -21,9 +21,15 @@ namespace base {
 class Uuid;
 }
 
+namespace lens {
+class InputPlateParametersRequest;
+}
+
 namespace contextual_tasks {
 class ContextualTasksService;
 class ContextualTasksUiService;
+mojom::ComposeboxPositionPtr InputPlateConfigToMojo(
+    const lens::InputPlateParametersRequest& update_msg);
 }  // namespace contextual_tasks
 
 class ContextualTasksPageHandler

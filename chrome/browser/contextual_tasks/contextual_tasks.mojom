@@ -38,6 +38,16 @@ union ContextInfo {
   FileContext file;
 };
 
+// Struct representing max width, margin bottom/left,
+// max height for composebox based on AIM server side positioning.
+// Margins can be negative to adjust margin top/right respectively.
+struct ComposeboxPosition {
+  uint32? max_width;
+  uint32? max_height;
+  int32? margin_bottom;
+  int32? margin_left;
+};
+
 // Browser-side handler for requests from the WebUI page.
 // The WebUI page calls these methods to interact with the browser process.
 // (TypeScript -> C++)
@@ -194,6 +204,10 @@ interface Page {
 
   // Called by the browser process (C++) to show an OAuth error dialog.
   ShowOauthErrorDialog();
+
+  // Called when composebox position should be shifted due
+  // to server side events.
+  UpdateComposeboxPosition(ComposeboxPosition position);
 };
 
 // Used to bootstrip bi-directional communication between the browser and webui.
