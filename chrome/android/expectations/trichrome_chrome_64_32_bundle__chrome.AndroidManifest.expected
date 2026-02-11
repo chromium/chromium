@@ -308,7 +308,7 @@
     </activity>  # DIFF-ANCHOR: 060360d2
     <activity  # DIFF-ANCHOR: 43bdc48f
         android:name="org.chromium.chrome.browser.media.DocumentPictureInPictureActivity"
-        android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+        android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|density|uiMode"
         android:excludeFromRecents="true"
         android:exported="false"
         android:noHistory="true"

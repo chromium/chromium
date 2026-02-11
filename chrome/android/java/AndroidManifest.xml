@@ -413,7 +413,7 @@ by a child template that "extends" this file.
             android:theme="@style/Theme.Chromium.Activity"
             android:excludeFromRecents="true"
             android:configChanges=
-                       "screenSize|smallestScreenSize|screenLayout|orientation"
+                       "screenSize|smallestScreenSize|screenLayout|orientation|density|uiMode"
             {{ self.supports_video_persistence() }}
         >
         </activity>

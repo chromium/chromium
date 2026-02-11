@@ -11,12 +11,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
 import org.junit.Before;
@@ -30,6 +32,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -157,6 +160,53 @@ public class DocumentPictureInPictureActivityTest {
                 });
 
         CriteriaHelper.pollUiThread(() -> activity.isFinishing() || activity.isDestroyed());
+    }
+
+    @Test
+    @MediumTest
+    public void testActivityRecreationOnDensityChange() throws Exception {
+        DocumentPictureInPictureActivity activity = launchActivity();
+        CriteriaHelper.pollUiThread(() -> !activity.isFinishing());
+
+        // Remove window options and web contents to ensure they are restored from the bundle.
+        activity.getIntent().removeExtra(DocumentPictureInPictureActivity.WINDOW_OPTIONS_KEY);
+        DocumentPictureInPictureActivity.setWebContentsForTesting(null);
+
+        // Trigger a density change.
+        Configuration currentConfig = activity.getResources().getConfiguration();
+        Configuration newConfig = new Configuration(currentConfig);
+        newConfig.densityDpi += 20;
+        DocumentPictureInPictureActivity newActivity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        DocumentPictureInPictureActivity.class,
+                        Stage.RESUMED,
+                        () -> activity.performOnConfigurationChanged(newConfig));
+
+        CriteriaHelper.pollUiThread(() -> activity.isFinishing() || activity.isDestroyed());
+        CriteriaHelper.pollUiThread(() -> !newActivity.isFinishing());
+        CriteriaHelper.pollUiThread(() -> newActivity.getWebContentsForTesting() == mWebContents);
+    }
+
+    @Test
+    @MediumTest
+    public void testActivityRecreationOnUiModeChange() throws Exception {
+        DocumentPictureInPictureActivity activity = launchActivity();
+        CriteriaHelper.pollUiThread(() -> !activity.isFinishing());
+
+        // Remove window options and web contents to ensure they are restored from the bundle.
+        activity.getIntent().removeExtra(DocumentPictureInPictureActivity.WINDOW_OPTIONS_KEY);
+        DocumentPictureInPictureActivity.setWebContentsForTesting(null);
+
+        // Trigger a UI mode change
+        DocumentPictureInPictureActivity newActivity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        DocumentPictureInPictureActivity.class,
+                        Stage.RESUMED,
+                        () -> activity.onNightModeStateChanged());
+
+        CriteriaHelper.pollUiThread(() -> activity.isFinishing() || activity.isDestroyed());
+        CriteriaHelper.pollUiThread(() -> !newActivity.isFinishing());
+        CriteriaHelper.pollUiThread(() -> newActivity.getWebContentsForTesting() == mWebContents);
     }
 
     private DocumentPictureInPictureActivity launchActivity() throws Exception {
