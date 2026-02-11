@@ -237,7 +237,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
       chrome.bookmarkManagerPrivate.startDrag = () => {};
 
       const folderToExpand = getBookmarkRow('5')!;
-      folderToExpand.currentUrlListItem_.click();
+      folderToExpand.currentListItem_.$.crUrlListItem.click();
       await flushTasks();
 
       const draggedBookmark = getBookmarkRow('6')!;

@@ -17,41 +17,6 @@
   background: var(--cr-hover-background-color);
 }
 
-cr-url-list-item[size=compact] {
-  margin-inline-start: 10px;
-  --cr-url-list-item-padding: 6px;
-  width: inherit;
-}
-
-:host(:not([has-folders])) cr-url-list-item {
-  margin-inline-start: 0;
-  padding-inline-start: 8px;
-}
-
-/* Visually hide the label but allow the screen reader to pick it up. */
-cr-checkbox::part(label-container) {
-  clip: rect(0,0,0,0);
-  display: block;
-  position: fixed;
-}
-
-cr-input {
-  --cr-input-background-color: transparent;
-  --cr-input-error-display: none;
-  width: 100%;
-}
-
-iron-icon,
-cr-icon {
-  --iron-icon-fill-color: currentColor;
-  height: 16px;
-  width: 16px;
-}
-
-cr-input.stroked:hover {
-  --cr-input-hover-background-color: transparent;
-}
-
 cr-expand-button {
   display: flex;
   flex-direction: row-reverse;
@@ -80,9 +45,4 @@ cr-expand-button[selected] {
 #bookmark {
   margin-inline-start: calc(var(--depth) * var(--margin-per-depth) +
       var(--base-margin));
-}
-
-.bookmark-icon {
-  height: 20px;
-  width: 20px;
 }

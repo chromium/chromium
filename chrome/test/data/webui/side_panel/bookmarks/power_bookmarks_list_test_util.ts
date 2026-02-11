@@ -6,6 +6,7 @@ import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 
 import type {BookmarksTreeNode} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import type {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
+import type {PowerBookmarkRowItemElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row_item.js';
 import type {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -113,6 +114,16 @@ export function getPowerBookmarksRowElement(
   return element.shadowRoot!.querySelector<PowerBookmarkRowElement>(
              `#bookmark-${id}`) ||
       undefined;
+}
+
+export function getPowerBookmarksRowItemElement(
+    element: PowerBookmarksListElement|PowerBookmarkRowElement,
+    id: string): PowerBookmarkRowItemElement|null {
+  const row = getPowerBookmarksRowElement(element, id);
+  if (!row) {
+    return null;
+  }
+  return row.shadowRoot.querySelector('power-bookmark-row-item');
 }
 
 export async function initializeUi(bookmarksApi: TestBookmarksApiProxy):
