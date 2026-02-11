@@ -57,14 +57,15 @@ GURL GetFreURL(Profile* profile) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Add the current Chrome theme to the URL as a query parameter.
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+#if !BUILDFLAG(IS_ANDROID)
   const bool use_dark_mode =
       ThemeServiceFactory::GetForProfile(profile)->BrowserUsesDarkColors();
-#else
-  const bool use_dark_mode = false;
-#endif
   std::string theme_value = use_dark_mode ? "dark" : "light";
   url = net::AppendOrReplaceQueryParameter(url, "theme", theme_value);
+#else
+  // No need to add a query parameter.
+  // The FRE page defaults to conform to the platform with prefers-color-scheme.
+#endif
 
   url = MaybeAddMultiInstanceParameter(url);
 
