@@ -788,6 +788,11 @@ void SaveCardBubbleControllerImpl::OnVisibilityChanged(
   }
 }
 
+bool SaveCardBubbleControllerImpl::ShouldReshowOnTabVisible() const {
+  return was_url_opened_ ||
+         current_bubble_type_ == PaymentsBubbleType::kUploadComplete;
+}
+
 std::optional<PageActionIconType>
 SaveCardBubbleControllerImpl::GetPageActionIconType() {
   return PageActionIconType::kSaveCard;
@@ -867,6 +872,10 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
 }
 
 bool SaveCardBubbleControllerImpl::CanBeReshown() const {
+  if (was_url_opened_ &&
+      current_bubble_type_ == PaymentsBubbleType::kUploadComplete) {
+    return true;
+  }
   return current_bubble_type_ != PaymentsBubbleType::kUploadComplete &&
          current_bubble_type_ != PaymentsBubbleType::kInactive;
 }

@@ -389,6 +389,14 @@ void FilledCardInformationBubbleControllerImpl::OnVisibilityChanged(
   }
 }
 
+bool FilledCardInformationBubbleControllerImpl::ShouldReshowOnTabVisible()
+    const {
+  // If the bubble hasn't been shown yet due to changing the tab during
+  // kFilledCardInformationBubbleDelay, show the bubble after switching back
+  // to the tab.
+  return !bubble_has_been_shown_ && should_icon_be_visible_;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 bool FilledCardInformationBubbleControllerImpl::ShouldShowPageAction() {
   return ShouldIconBeVisible();

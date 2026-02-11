@@ -163,6 +163,7 @@ class SaveCardBubbleControllerImpl
   void OnBubbleDiscarded() override;
   bool CanBeReshown() const override;
   BubbleType GetBubbleType() const override;
+  bool ShouldReshowOnTabVisible() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
   static base::AutoReset<bool> IgnoreWindowActivationForTesting();

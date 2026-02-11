@@ -234,6 +234,7 @@ class ManagePasswordsUIController
   void HideBubble(bool initiated_by_bubble_manager) override;
   void OnBubbleDiscarded() override {}
   bool CanBeReshown() const override;
+  bool ShouldReshowOnTabVisible() const override;
   autofill::BubbleType GetBubbleType() const override;
   bool IsShowingBubble() const override;
   bool IsMouseHovered() const override;

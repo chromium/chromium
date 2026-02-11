@@ -42,6 +42,10 @@ void AutofillBubbleControllerBase::OnVisibilityChanged(
   }
 }
 
+bool AutofillBubbleControllerBase::ShouldReshowOnTabVisible() const {
+  return false;
+}
+
 std::optional<PageActionIconType>
 AutofillBubbleControllerBase::GetPageActionIconType() {
 #if !BUILDFLAG(IS_ANDROID)

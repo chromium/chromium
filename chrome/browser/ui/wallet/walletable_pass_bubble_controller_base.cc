@@ -48,6 +48,10 @@ bool WalletablePassBubbleControllerBase::CanBeReshown() const {
   return true;
 }
 
+bool WalletablePassBubbleControllerBase::ShouldReshowOnTabVisible() const {
+  return reshow_bubble_on_activation_;
+}
+
 bool WalletablePassBubbleControllerBase::IsShowingBubble() const {
   return bubble_view_ != nullptr;
 }

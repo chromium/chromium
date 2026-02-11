@@ -1351,6 +1351,10 @@ void ManagePasswordsUIController::OnVisibilityChanged(
   }
 }
 
+bool ManagePasswordsUIController::ShouldReshowOnTabVisible() const {
+  return false;
+}
+
 PasswordChangeDelegate* ManagePasswordsUIController::GetPasswordChangeDelegate()
     const {
   ChromePasswordChangeService* password_change_service =

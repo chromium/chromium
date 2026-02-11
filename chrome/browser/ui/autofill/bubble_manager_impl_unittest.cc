@@ -94,6 +94,7 @@ class MockBubbleController : public BubbleControllerBase {
   MOCK_METHOD(void, HideBubble, (bool), (override));
   MOCK_METHOD(void, OnBubbleDiscarded, (), (override));
   MOCK_METHOD(bool, CanBeReshown, (), (const, override));
+  MOCK_METHOD(bool, ShouldReshowOnTabVisible, (), (const, override));
   MOCK_METHOD(BubbleType, GetBubbleType, (), (const, override));
   MOCK_METHOD(bool, IsShowingBubble, (), (const, override));
   MOCK_METHOD(bool, IsMouseHovered, (), (const, override));
@@ -124,6 +125,7 @@ class BubbleManagerImplTest : public ::testing::Test {
         std::make_unique<MockBubbleController>();
     controller->SetBubbleType(bubble_type);
     ON_CALL(*controller, CanBeReshown).WillByDefault(Return(can_be_reshown));
+    ON_CALL(*controller, ShouldReshowOnTabVisible).WillByDefault(Return(true));
     return controller;
   }
 
@@ -1047,6 +1049,21 @@ TEST_F(BubbleManagerImplTest,
       password_controller->GetBubbleType()));
   EXPECT_FALSE(bubble_manager().HasConflictingPendingBubble(
       password_controller->GetBubbleType()));
+}
+
+// Tests that bubble is not shown again when tab becomes visible if the
+// controller returns false for `ShouldReshowOnTabVisible`.
+TEST_F(BubbleManagerImplTest, TabHide_BubbleNotQueuedIfReshowFalse) {
+  auto controller = CreateController(BubbleType::kSaveUpdateAddress);
+  bubble_manager().RequestShowController(*controller, false);
+
+  EXPECT_CALL(*controller, ShouldReshowOnTabVisible()).WillOnce(Return(false));
+
+  tab_interface()->Deactivate();
+  tab_interface()->Activate();
+
+  // Expect bubble NOT to be reshown.
+  EXPECT_FALSE(controller->IsShowingBubble());
 }
 
 }  // namespace autofill
