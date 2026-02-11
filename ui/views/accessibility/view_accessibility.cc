@@ -1031,6 +1031,11 @@ void ViewAccessibility::OnViewAddedToWidget() {
     AXUpdateNotifier::Get()->NotifyChildAdded(this, parent);
   }
 
+  // Register any pre-existing virtual children with the WidgetAXManager.
+  // They were not registered when originally added because the widget was not
+  // yet available.
+  OnVirtualViewAddedToWidget();
+
   // The accessibility class name is set after the view has been attached
   // to a widget, ensuring the object is fully constructed and its class
   // name is stable.
@@ -1055,8 +1060,25 @@ void ViewAccessibility::OnViewAddedToWidget() {
 }
 
 void ViewAccessibility::OnViewRemovedFromWidget() {
+  // Unregister virtual children before this view itself.
+  OnVirtualViewRemovedFromWidget();
+
   if (ViewAccessibility* parent = GetUnignoredParent()) {
     AXUpdateNotifier::Get()->NotifyChildRemoved(this, parent);
+  }
+}
+
+void ViewAccessibility::OnVirtualViewAddedToWidget() {
+  for (const auto& virtual_child : virtual_children()) {
+    AXUpdateNotifier::Get()->NotifyChildAdded(virtual_child.get(), this);
+    virtual_child->OnVirtualViewAddedToWidget();
+  }
+}
+
+void ViewAccessibility::OnVirtualViewRemovedFromWidget() {
+  for (const auto& virtual_child : virtual_children()) {
+    virtual_child->OnVirtualViewRemovedFromWidget();
+    AXUpdateNotifier::Get()->NotifyChildRemoved(virtual_child.get(), this);
   }
 }
 

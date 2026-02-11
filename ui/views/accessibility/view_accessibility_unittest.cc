@@ -738,6 +738,27 @@ TEST_F(ViewAccessibilityTest,
             contents->GetViewAccessibility().GetFocusedDescendant());
 }
 
+TEST_F(ViewAccessibilityTest, GetChildrenReturnsNestedVirtualChildren) {
+  auto view = std::make_unique<TestView>();
+  auto parent_virtual = std::make_unique<AXVirtualView>();
+  auto child_virtual_1 = std::make_unique<AXVirtualView>();
+  auto child_virtual_2 = std::make_unique<AXVirtualView>();
+
+  auto child_virtual_1_id = child_virtual_1->ViewAccessibility::GetUniqueId();
+  auto child_virtual_2_id = child_virtual_2->ViewAccessibility::GetUniqueId();
+
+  AXVirtualView* parent_virtual_ptr = parent_virtual.get();
+  parent_virtual->AddChildView(std::move(child_virtual_1));
+  parent_virtual->AddChildView(std::move(child_virtual_2));
+  view->GetViewAccessibility().AddVirtualChildView(std::move(parent_virtual));
+
+  // GetChildren() on the AXVirtualView should return its nested children.
+  auto children = parent_virtual_ptr->GetChildren();
+  ASSERT_EQ(children.size(), 2u);
+  EXPECT_EQ(children[0]->GetUniqueId(), child_virtual_1_id);
+  EXPECT_EQ(children[1]->GetUniqueId(), child_virtual_2_id);
+}
+
 TEST_F(ViewAccessibilityTest, GetActiveDescendantView_ValidatesIdSync) {
   auto parent = std::make_unique<TestView>();
   auto child1 = std::make_unique<TestView>();

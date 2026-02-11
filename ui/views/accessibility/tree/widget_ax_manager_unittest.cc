@@ -15,6 +15,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/tree/widget_ax_manager_test_api.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/widget_test.h"
@@ -777,6 +778,68 @@ TEST_F(WidgetAXManagerTest, RemovedObserverDoesNotReceiveNotifications) {
   api.Enable();
 
   EXPECT_EQ(observer.enabled_count(), 0);
+}
+
+TEST_F(WidgetAXManagerTest,
+       VirtualChildrenAddedBeforeWidgetAreRegisteredInCache) {
+  // Create a view with nested virtual children *before* attaching to widget.
+  auto container = std::make_unique<View>();
+  auto virtual_child = std::make_unique<AXVirtualView>();
+  auto nested_virtual = std::make_unique<AXVirtualView>();
+
+  auto virtual_child_id = virtual_child->ViewAccessibility::GetUniqueId();
+  auto nested_virtual_id = nested_virtual->ViewAccessibility::GetUniqueId();
+
+  virtual_child->AddChildView(std::move(nested_virtual));
+  container->GetViewAccessibility().AddVirtualChildView(
+      std::move(virtual_child));
+
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  // Now attach the view to the widget's tree. OnViewAddedToWidget should
+  // recursively register the pre-existing virtual children.
+  View* root = widget()->GetRootView();
+  auto* container_ptr = root->AddChildView(std::move(container));
+
+  EXPECT_EQ(
+      api.cache()->Get(container_ptr->GetViewAccessibility().GetUniqueId()),
+      &container_ptr->GetViewAccessibility());
+  EXPECT_NE(api.cache()->Get(virtual_child_id), nullptr);
+  EXPECT_NE(api.cache()->Get(nested_virtual_id), nullptr);
+}
+
+TEST_F(WidgetAXManagerTest, VirtualChildrenRemovedFromCacheWhenViewDetached) {
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  View* root = widget()->GetRootView();
+  auto container = std::make_unique<View>();
+  auto virtual_child = std::make_unique<AXVirtualView>();
+  auto nested_virtual = std::make_unique<AXVirtualView>();
+
+  auto virtual_child_id = virtual_child->ViewAccessibility::GetUniqueId();
+  auto nested_virtual_id = nested_virtual->ViewAccessibility::GetUniqueId();
+
+  virtual_child->AddChildView(std::move(nested_virtual));
+  container->GetViewAccessibility().AddVirtualChildView(
+      std::move(virtual_child));
+
+  auto* container_ptr = root->AddChildView(std::move(container));
+  auto container_id = container_ptr->GetViewAccessibility().GetUniqueId();
+
+  // Verify they are all cached.
+  ASSERT_NE(api.cache()->Get(container_id), nullptr);
+  ASSERT_NE(api.cache()->Get(virtual_child_id), nullptr);
+  ASSERT_NE(api.cache()->Get(nested_virtual_id), nullptr);
+
+  // Detach the view from the widget.
+  root->RemoveChildViewT(container_ptr);
+
+  // All should be removed from the cache.
+  EXPECT_EQ(api.cache()->Get(container_id), nullptr);
+  EXPECT_EQ(api.cache()->Get(virtual_child_id), nullptr);
+  EXPECT_EQ(api.cache()->Get(nested_virtual_id), nullptr);
 }
 
 }  // namespace views::test

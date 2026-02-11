@@ -9,6 +9,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 
@@ -205,6 +206,25 @@ TEST_F(WidgetViewAXCacheTest, RemoveFromChildCache_ClearsSnapshot) {
             &a->GetViewAccessibility());
   EXPECT_EQ(cache().Get(b->GetViewAccessibility().GetUniqueId()),
             &b->GetViewAccessibility());
+}
+
+TEST_F(WidgetViewAXCacheTest, Init_IncludesNestedVirtualChildren) {
+  auto parent = std::make_unique<View>();
+  auto virtual_child = std::make_unique<AXVirtualView>();
+  auto nested_virtual = std::make_unique<AXVirtualView>();
+
+  auto virtual_child_id = virtual_child->ViewAccessibility::GetUniqueId();
+  auto nested_virtual_id = nested_virtual->ViewAccessibility::GetUniqueId();
+
+  virtual_child->AddChildView(std::move(nested_virtual));
+  parent->GetViewAccessibility().AddVirtualChildView(std::move(virtual_child));
+
+  cache().Init(parent->GetViewAccessibility());
+
+  EXPECT_EQ(cache().Get(parent->GetViewAccessibility().GetUniqueId()),
+            &parent->GetViewAccessibility());
+  EXPECT_NE(cache().Get(virtual_child_id), nullptr);
+  EXPECT_NE(cache().Get(nested_virtual_id), nullptr);
 }
 
 }  // namespace views::test
