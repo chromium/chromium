@@ -918,10 +918,10 @@ public class SettingsSearchCoordinator
             // Query edit UI should be hidden while we're browsing results.
             if (mFragmentState == FS_RESULTS) query.setVisibility(View.GONE);
 
-            // In single mode we end up at non-main settings where search cannot be initiated.
-            // Keeping the empty fragment in that state is confusing and misleading. To sort
-            // out the inconsistency, we revert to default state (FS_SETTINGS);
-            if (mFragmentState == FS_SEARCH && mShowingEmptyFragment) {
+            // When switching from 2-column to single-column mode, we'll always be at non-main
+            // settings where search cannot be initiated and search UI should be hidden.
+            // For UI consistency, we revert to default state (FS_SETTINGS).
+            if (mFragmentState == FS_SEARCH) {
                 exitSearchState(/* clearFragment= */ false);
                 mUpdateFirstVisibleTitle.onResult(0);
                 return;
