@@ -41,7 +41,7 @@
 //! ![performance](https://raw.githubusercontent.com/dtolnay/zmij/master/dtoa-benchmark.png)
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/zmij/1.0.17")]
+#![doc(html_root_url = "https://docs.rs/zmij/1.0.19")]
 #![deny(unsafe_op_in_unsafe_fn)]
 #![allow(non_camel_case_types, non_snake_case)]
 #![allow(
@@ -305,6 +305,7 @@ const fn compute_dec_exp(bin_exp: i32, regular: bool) -> i32 {
     (bin_exp * LOG10_2_SIG - !regular as i32 * LOG10_3_OVER_4_SIG) >> LOG10_2_EXP
 }
 
+#[inline]
 const fn do_compute_exp_shift(bin_exp: i32, dec_exp: i32) -> u8 {
     debug_assert!(dec_exp >= -350 && dec_exp <= 350);
     // log2_pow10_sig = round(log2(10) * 2**log2_pow10_exp) + 1
@@ -359,6 +360,7 @@ static EXP_SHIFTS: ExpShiftTable = {
 // 10^dec_exp puts the decimal point in different bit positions:
 //   3 * 2**59 / 100 = 1.72...e+16  (needs shift = 1 + 1)
 //   3 * 2**60 / 100 = 3.45...e+16  (needs shift = 2 + 1)
+#[inline]
 unsafe fn compute_exp_shift<UInt, const ONLY_REGULAR: bool>(bin_exp: i32, dec_exp: i32) -> u8
 where
     UInt: traits::UInt,
@@ -464,29 +466,25 @@ unsafe fn write8(buffer: *mut u8, value: u64) {
     }
 }
 
-// Writes a significand consisting of up to 9 decimal digits (8-9 for normals)
-// and removes trailing zeros.
+// Writes a significand and removes trailing zeros. value has up to 17 decimal
+// digits (16-17 for normals) for double (num_bits == 64) and up to 9 digits
+// (8-9 for normals) for float. The significant digits start from buffer[1].
+// buffer[0] may contain '0' after this function if the leading digit is zero.
 #[cfg_attr(feature = "no-panic", no_panic)]
-unsafe fn write_significand9(mut buffer: *mut u8, value: u32, has9digits: bool) -> *mut u8 {
-    buffer = unsafe { write_if(buffer, value / 100_000_000, has9digits) };
-    let bcd = to_bcd8(u64::from(value % 100_000_000));
-    unsafe {
-        write8(buffer, bcd | ZEROS);
-        buffer.add(count_trailing_nonzeros(bcd))
+#[inline]
+unsafe fn write_significand<Float>(mut buffer: *mut u8, value: u64, extra_digit: bool) -> *mut u8
+where
+    Float: FloatTraits,
+{
+    if Float::NUM_BITS == 32 {
+        buffer = unsafe { write_if(buffer, (value / 100_000_000) as u32, extra_digit) };
+        let bcd = to_bcd8(value % 100_000_000);
+        unsafe {
+            write8(buffer, bcd + ZEROS);
+            return buffer.add(count_trailing_nonzeros(bcd));
+        }
     }
-}
 
-// Writes a significand consisting of up to 17 decimal digits (16-17 for
-// normals) and removes trailing zeros. The significant digits start from
-// buffer[1]. buffer[0] may contain '0' after this function if the significand
-// has length 16.
-#[cfg_attr(feature = "no-panic", no_panic)]
-unsafe fn write_significand17(
-    mut buffer: *mut u8,
-    value: u64,
-    has17digits: bool,
-    #[cfg(all(target_arch = "x86_64", target_feature = "sse2", not(miri)))] value_div10: i64,
-) -> *mut u8 {
     #[cfg(not(any(
         all(target_arch = "aarch64", target_feature = "neon", not(miri)),
         all(target_arch = "x86_64", target_feature = "sse2", not(miri)),
@@ -495,17 +493,17 @@ unsafe fn write_significand17(
         // Digits/pairs of digits are denoted by letters: value = abbccddeeffgghhii.
         let abbccddee = (value / 100_000_000) as u32;
         let ffgghhii = (value % 100_000_000) as u32;
-        buffer = unsafe { write_if(buffer, abbccddee / 100_000_000, has17digits) };
+        buffer = unsafe { write_if(buffer, abbccddee / 100_000_000, extra_digit) };
         let bcd = to_bcd8(u64::from(abbccddee % 100_000_000));
         unsafe {
-            write8(buffer, bcd | ZEROS);
+            write8(buffer, bcd + ZEROS);
         }
         if ffgghhii == 0 {
             return unsafe { buffer.add(count_trailing_nonzeros(bcd)) };
         }
         let bcd = to_bcd8(u64::from(ffgghhii));
         unsafe {
-            write8(buffer.add(8), bcd | ZEROS);
+            write8(buffer.add(8), bcd + ZEROS);
             buffer.add(8).add(count_trailing_nonzeros(bcd))
         }
     }
@@ -518,14 +516,15 @@ unsafe fn write_significand17(
 
         const NEG10K: i32 = -10000 + 0x10000;
 
-        struct MulConstants {
+        #[repr(C, align(64))]
+        struct Consts {
             mul_const: u64,
             hundred_million: u64,
             multipliers32: int32x4_t,
             multipliers16: int16x8_t,
         }
 
-        static CONSTANTS: MulConstants = MulConstants {
+        static CONSTS: Consts = Consts {
             mul_const: 0xabcc77118461cefd,
             hundred_million: 100000000,
             multipliers32: unsafe {
@@ -541,7 +540,7 @@ unsafe fn write_significand17(
             },
         };
 
-        let mut c = ptr::addr_of!(CONSTANTS);
+        let mut c = ptr::addr_of!(CONSTS);
 
         // Compiler barrier, or clang doesn't load from memory and generates 15
         // more instructions.
@@ -566,7 +565,7 @@ unsafe fn write_significand17(
         let a = (umul128(abbccddee, c.mul_const) >> 90) as u64;
         let bbccddee = abbccddee - a * hundred_million;
 
-        buffer = unsafe { write_if(buffer, a as u32, has17digits) };
+        buffer = unsafe { write_if(buffer, a as u32, extra_digit) };
 
         unsafe {
             let ffgghhii_bbccddee_64: uint64x1_t =
@@ -630,22 +629,15 @@ unsafe fn write_significand17(
     {
         use crate::stdarch_x86::*;
 
-        let last_digit = (value - value_div10 as u64 * 10) as u32;
+        let abbccddee = (value / 100_000_000) as u32;
+        let ffgghhii = (value % 100_000_000) as u32;
+        let a = abbccddee / 100_000_000;
+        let bbccddee = abbccddee % 100_000_000;
 
-        // We always write 17 digits into the buffer, but the first one can be
-        // zero. buffer points to the second place in the output buffer to allow
-        // for the insertion of the decimal point, so we can use the first place
-        // as scratch.
-        buffer = unsafe { buffer.offset(isize::from(has17digits) - 1) };
-        unsafe {
-            *buffer.add(16) = last_digit as u8 + b'0';
-        }
-
-        let abcdefgh = (value_div10 / 100_000_000) as u32;
-        let ijklmnop = (value_div10 % 100_000_000) as u32;
+        buffer = unsafe { write_if(buffer, a, extra_digit) };
 
         #[repr(C, align(64))]
-        struct Constants {
+        struct Consts {
             div10k: u128,
             neg10k: u128,
             div100: u128,
@@ -663,7 +655,7 @@ unsafe fn write_significand17(
             zeros: u128,
         }
 
-        impl Constants {
+        impl Consts {
             const fn splat64(x: u64) -> u128 {
                 ((x as u128) << 64) | x as u128
             }
@@ -689,28 +681,27 @@ unsafe fn write_significand17(
             }
         }
 
-        static CONSTS: Constants = Constants {
-            div10k: Constants::splat64(DIV10K_SIG as u64),
-            neg10k: Constants::splat64(NEG10K as u64),
-            div100: Constants::splat32(DIV100_SIG),
-            div10: Constants::splat16(((1u32 << 16) / 10 + 1) as u16),
+        static CONSTS: Consts = Consts {
+            div10k: Consts::splat64(DIV10K_SIG as u64),
+            neg10k: Consts::splat64(NEG10K as u64),
+            div100: Consts::splat32(DIV100_SIG),
+            div10: Consts::splat16(((1u32 << 16) / 10 + 1) as u16),
             #[cfg(target_feature = "sse4.1")]
-            neg100: Constants::splat32(NEG100),
+            neg100: Consts::splat32(NEG100),
             #[cfg(target_feature = "sse4.1")]
-            neg10: Constants::splat16((1 << 8) - 10),
+            neg10: Consts::splat16((1 << 8) - 10),
             #[cfg(target_feature = "sse4.1")]
-            bswap: Constants::pack8(15, 14, 13, 12, 11, 10, 9, 8) as u128
-                | (Constants::pack8(7, 6, 5, 4, 3, 2, 1, 0) as u128) << 64,
+            bswap: Consts::pack8(15, 14, 13, 12, 11, 10, 9, 8) as u128
+                | (Consts::pack8(7, 6, 5, 4, 3, 2, 1, 0) as u128) << 64,
             #[cfg(not(target_feature = "sse4.1"))]
-            hundred: Constants::splat32(100),
+            hundred: Consts::splat32(100),
             #[cfg(not(target_feature = "sse4.1"))]
-            moddiv10: Constants::splat16(10 * (1 << 8) - 1),
-            zeros: Constants::splat64(ZEROS),
+            moddiv10: Consts::splat16(10 * (1 << 8) - 1),
+            zeros: Consts::splat64(ZEROS),
         };
 
         let mut c = ptr::addr_of!(CONSTS);
-        // Make the compiler forget where the constants came from to ensure they
-        // are loaded from memory.
+        // Load constants from memory.
         unsafe {
             asm!("/*{0}*/", inout(reg) c);
         }
@@ -731,9 +722,9 @@ unsafe fn write_significand17(
         let moddiv10 = unsafe { _mm_load_si128(ptr::addr_of!((*c).moddiv10).cast::<__m128i>()) };
         let zeros = unsafe { _mm_load_si128(ptr::addr_of!((*c).zeros).cast::<__m128i>()) };
 
-        // The BCD sequences are based on the ones provided by Xiang JunBo.
+        // The BCD sequences are based on ones provided by Xiang JunBo.
         unsafe {
-            let x: __m128i = _mm_set_epi64x(i64::from(abcdefgh), i64::from(ijklmnop));
+            let x: __m128i = _mm_set_epi64x(i64::from(bbccddee), i64::from(ffgghhii));
             let y: __m128i = _mm_add_epi64(
                 x,
                 _mm_mul_epu32(neg10k, _mm_srli_epi64(_mm_mul_epu32(x, div10k), DIV10K_EXP)),
@@ -769,15 +760,10 @@ unsafe fn write_significand17(
             // Count leading zeros.
             let mask128: __m128i = _mm_cmpgt_epi8(bcd, _mm_setzero_si128());
             let mask = _mm_movemask_epi8(mask128) as u32;
-            // We don't need a zero-check here: if the mask were zero, either
-            // the significand is zero which is handled elsewhere or the only
-            // non-zero digit is the last digit which we factored off. But in
-            // that case the number would be printed with a different exponent
-            // that shifts the last digit into the first position.
             let len = 32 - mask.leading_zeros() as usize;
 
             _mm_storeu_si128(buffer.cast::<__m128i>(), digits);
-            buffer.add(if last_digit != 0 { 17 } else { len })
+            buffer.add(len)
         }
     }
 }
@@ -785,11 +771,10 @@ unsafe fn write_significand17(
 struct ToDecimalResult {
     sig: i64,
     exp: i32,
-    #[cfg(all(target_arch = "x86_64", target_feature = "sse2", not(miri)))]
-    sig_div10: i64,
 }
 
 #[cfg_attr(feature = "no-panic", no_panic)]
+#[inline]
 fn to_decimal_schubfach<UInt>(bin_sig: UInt, bin_exp: i64, regular: bool) -> ToDecimalResult
 where
     UInt: traits::UInt,
@@ -821,16 +806,12 @@ where
 
     // The idea of using a single shorter candidate is by Cassio Neri.
     // It is less or equal to the upper bound by construction.
-    let div10 = (upper >> BOUND_SHIFT) / UInt::from(10);
-    let shorter = div10 * UInt::from(10);
+    let shorter = (upper >> BOUND_SHIFT) / UInt::from(10) * UInt::from(10);
     if (shorter << BOUND_SHIFT) >= lower {
-        let result = ToDecimalResult {
+        return ToDecimalResult {
             sig: shorter.into() as i64,
             exp: dec_exp,
-            #[cfg(all(target_arch = "x86_64", target_feature = "sse2", not(miri)))]
-            sig_div10: div10.into() as i64,
         };
-        return result;
     }
 
     let scaled_sig = umulhi_inexact_to_odd(pow10.hi, pow10.lo, bin_sig_shifted << exp_shift);
@@ -853,8 +834,6 @@ where
     ToDecimalResult {
         sig: dec_sig.into() as i64,
         exp: dec_exp,
-        #[cfg(all(target_arch = "x86_64", target_feature = "sse2", not(miri)))]
-        sig_div10: (dec_sig / UInt::from(10)).into() as i64,
     }
 }
 
@@ -862,6 +841,7 @@ where
 // Converts a binary FP number bin_sig * 2**bin_exp to the shortest decimal
 // representation, where bin_exp = raw_exp - exp_offset.
 #[cfg_attr(feature = "no-panic", no_panic)]
+#[inline]
 fn to_decimal_fast<Float, UInt>(bin_sig: UInt, raw_exp: i64, regular: bool) -> ToDecimalResult
 where
     Float: FloatTraits,
@@ -948,35 +928,21 @@ where
 
         // Check for boundary case when rounding down to nearest 10 and
         // near-boundary case when rounding up to nearest 10.
-        if scaled_sig_mod10 == scaled_half_ulp
-            // Case where upper == ten is insufficient: 1.342178e+08f.
-            // upper == ten || upper == ten - 1
-            || ten.wrapping_sub(upper) <= 1
+        // Case where upper == ten is insufficient: 1.342178e+08f.
+        if ten.wrapping_sub(upper) <= 1 // upper == ten || upper == ten - 1
+            || scaled_sig_mod10 == scaled_half_ulp
         {
             break;
         }
 
         let round_up = upper >= ten;
-        let mut shorter = (integral.into() - digit) as i64;
+        let shorter = (integral.into() - digit) as i64;
         let longer = (integral.into() + u64::from(cmp >= 0)) as i64;
-        if cfg!(target_arch = "aarch64") {
-            // Faster version without ccmp.
-            let dec_sig =
-                hint::select_unpredictable(scaled_sig_mod10 < scaled_half_ulp, shorter, longer);
-            return ToDecimalResult {
-                sig: hint::select_unpredictable(round_up, shorter + 10, dec_sig),
-                exp: dec_exp,
-                #[cfg(all(target_arch = "x86_64", target_feature = "sse2", not(miri)))]
-                sig_div10: 0,
-            };
-        }
-        shorter += i64::from(round_up) * 10;
-        let use_shorter = scaled_sig_mod10 <= scaled_half_ulp || round_up;
+        let dec_sig =
+            hint::select_unpredictable(scaled_sig_mod10 < scaled_half_ulp, shorter, longer);
         return ToDecimalResult {
-            sig: hint::select_unpredictable(use_shorter, shorter, longer),
+            sig: hint::select_unpredictable(round_up, shorter + 10, dec_sig),
             exp: dec_exp,
-            #[cfg(all(target_arch = "x86_64", target_feature = "sse2", not(miri)))]
-            sig_div10: div10 as i64 + i64::from(use_shorter) * i64::from(round_up),
         };
     }
     to_decimal_schubfach(bin_sig, bin_exp, regular)
@@ -1019,10 +985,6 @@ where
             dec.sig *= 10;
             dec.exp -= 1;
         }
-        #[cfg(all(target_arch = "x86_64", target_feature = "sse2", not(miri)))]
-        {
-            dec.sig_div10 = dec.sig / 10;
-        }
     } else {
         dec = to_decimal_fast::<Float, Float::SigType>(
             bin_sig | Float::IMPLICIT_BIT,
@@ -1039,19 +1001,7 @@ where
     }
 
     // Write significand.
-    let end = if Float::NUM_BITS == 64 {
-        unsafe {
-            write_significand17(
-                buffer.add(1),
-                dec.sig as u64,
-                extra_digit,
-                #[cfg(all(target_arch = "x86_64", target_feature = "sse2", not(miri)))]
-                dec.sig_div10,
-            )
-        }
-    } else {
-        unsafe { write_significand9(buffer.add(1), dec.sig as u32, extra_digit) }
-    };
+    let end = unsafe { write_significand::<Float>(buffer.add(1), dec.sig as u64, extra_digit) };
 
     let length = unsafe { end.offset_from(buffer.add(1)) } as usize;
 
