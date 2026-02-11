@@ -23,35 +23,25 @@ namespace sandbox {
 
 FilesystemDispatcher::FilesystemDispatcher(PolicyBase* policy_base)
     : policy_base_(policy_base) {
-  static const IPCCall create_file = {
-      {{WCHAR_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE,
-        UINT32_TYPE, UINT32_TYPE}},
+  ipc_calls_[IpcTag::NTCREATEFILE] = {
+      {WCHAR_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE,
+       UINT32_TYPE, UINT32_TYPE},
       reinterpret_cast<CallbackGeneric>(&FilesystemDispatcher::NtCreateFile)};
-
-  static const IPCCall open_file = {
-      {{WCHAR_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE}},
+  ipc_calls_[IpcTag::NTOPENFILE] = {
+      {WCHAR_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE},
       reinterpret_cast<CallbackGeneric>(&FilesystemDispatcher::NtOpenFile)};
-
-  static const IPCCall query_attribs = {
-      {{WCHAR_TYPE, UINT32_TYPE, INOUTPTR_TYPE}},
+  ipc_calls_[IpcTag::NTQUERYATTRIBUTESFILE] = {
+      {WCHAR_TYPE, UINT32_TYPE, INOUTPTR_TYPE},
       reinterpret_cast<CallbackGeneric>(
           &FilesystemDispatcher::NtQueryAttributesFile)};
-
-  static const IPCCall query_full_attribs = {
-      {{WCHAR_TYPE, UINT32_TYPE, INOUTPTR_TYPE}},
+  ipc_calls_[IpcTag::NTQUERYFULLATTRIBUTESFILE] = {
+      {WCHAR_TYPE, UINT32_TYPE, INOUTPTR_TYPE},
       reinterpret_cast<CallbackGeneric>(
           &FilesystemDispatcher::NtQueryFullAttributesFile)};
-
-  static const IPCCall set_info = {
-      {{VOIDPTR_TYPE, INOUTPTR_TYPE, UINT32_TYPE, UINT32_TYPE}},
+  ipc_calls_[IpcTag::NTSETINFO_RENAME] = {
+      {VOIDPTR_TYPE, INOUTPTR_TYPE, UINT32_TYPE, UINT32_TYPE},
       reinterpret_cast<CallbackGeneric>(
           &FilesystemDispatcher::NtSetInformationFile)};
-
-  ipc_calls_[IpcTag::NTCREATEFILE] = create_file;
-  ipc_calls_[IpcTag::NTOPENFILE] = open_file;
-  ipc_calls_[IpcTag::NTQUERYATTRIBUTESFILE] = query_attribs;
-  ipc_calls_[IpcTag::NTQUERYFULLATTRIBUTESFILE] = query_full_attribs;
-  ipc_calls_[IpcTag::NTSETINFO_RENAME] = set_info;
 }
 
 bool FilesystemDispatcher::SetupService(InterceptionManager* manager,

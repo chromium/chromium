@@ -65,14 +65,12 @@ TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) {
     ipc_targets_[IpcTag::NTCREATESECTION] = signed_dispatcher_.get();
   }
 
-  static const IPCCall ping1 = {
+  ipc_calls_[IpcTag::PING1] = {
       {UINT32_TYPE},
       reinterpret_cast<CallbackGeneric>(&TopLevelDispatcher::Ping1)};
-  ipc_calls_[IpcTag::PING1] = ping1;
-  static const IPCCall ping2 = {
+  ipc_calls_[IpcTag::PING2] = {
       {INOUTPTR_TYPE},
       reinterpret_cast<CallbackGeneric>(&TopLevelDispatcher::Ping2)};
-  ipc_calls_[IpcTag::PING2] = ping2;
 }
 
 TopLevelDispatcher::~TopLevelDispatcher() {}
