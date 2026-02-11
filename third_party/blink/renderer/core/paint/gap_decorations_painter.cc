@@ -40,6 +40,9 @@ bool IsRuleSegmentVisible(const GridTrackSizingDirection track_direction,
       // segment state is none as it represents a segment occupied on both
       // sides).
       return gap_state.status_ == GapSegmentState::kNone;
+    case RuleVisibilityItems::kAuto:
+      // `auto` should have been resolved before reaching this point.
+      NOTREACHED();
   }
 
   NOTREACHED();
@@ -212,9 +215,9 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
   RuleBreak rule_break = CSSGapDecorationUtils::ResolveRuleBreakValue(
       style, track_direction, gap_geometry.GetContainerType());
 
-  RuleVisibilityItems rule_visibility = is_column_gap
-                                            ? style.ColumnRuleVisibilityItems()
-                                            : style.RowRuleVisibilityItems();
+  RuleVisibilityItems rule_visibility =
+      CSSGapDecorationUtils::ResolveRuleVisibilityItemsValue(
+          style, gap_geometry.GetContainerType(), track_direction);
 
   WritingModeConverter converter(style.GetWritingDirection(),
                                  box_fragment_.Size());

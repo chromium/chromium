@@ -5356,7 +5356,8 @@ bool RuleVisibilityItems::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(ruleVisibilityItemsShorthand().length(), 2u);
   CSSValue* rule_visibility_items =
-      css_parsing_utils::ConsumeIdent<CSSValueID::kAll, CSSValueID::kAround,
+      css_parsing_utils::ConsumeIdent<CSSValueID::kAuto, CSSValueID::kAll,
+                                      CSSValueID::kAround,
                                       CSSValueID::kBetween>(stream);
 
   if (!rule_visibility_items) {

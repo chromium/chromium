@@ -195,6 +195,29 @@ RuleBreak CSSGapDecorationUtils::ResolveRuleBreakValue(
   return rule_break;
 }
 
+RuleVisibilityItems CSSGapDecorationUtils::ResolveRuleVisibilityItemsValue(
+    const ComputedStyle& style,
+    GapGeometry::ContainerType container_type,
+    GridTrackSizingDirection direction) {
+  RuleVisibilityItems rule_visibility = direction == kForColumns
+                                            ? style.ColumnRuleVisibilityItems()
+                                            : style.RowRuleVisibilityItems();
+  if (rule_visibility != RuleVisibilityItems::kAuto) {
+    return rule_visibility;
+  }
+
+  // Resolve `auto` value based on the container type.
+  //
+  // https://drafts.csswg.org/css-gaps-1/#visibility-rules.
+  switch (container_type) {
+    case GapGeometry::ContainerType::kGrid:
+    case GapGeometry::ContainerType::kFlex:
+      return RuleVisibilityItems::kAll;
+    case GapGeometry::ContainerType::kMultiColumn:
+      return RuleVisibilityItems::kBetween;
+  }
+}
+
 // Explicit template instantiations
 template GapDataList<StyleColor>::GapDataVector
 CSSGapDecorationUtils::GetExpandedGapDataList(

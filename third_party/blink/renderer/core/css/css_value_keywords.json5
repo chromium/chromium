@@ -1313,11 +1313,13 @@
     // normal
 
     // column-rule-visibility-items
+    // auto
     // all
     "around",
     "between",
 
     // row-rule-visibility-items
+    // auto
     // all
     // around
     // between
