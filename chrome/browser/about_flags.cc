@@ -11898,6 +11898,18 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBrowsingHistoryActorIntegrationM2Description,
      kOsDesktop,
      FEATURE_VALUE_TYPE(history::kBrowsingHistoryActorIntegrationM2)},
+
+    {"browsing-history-actor-integration-M3",
+     flag_descriptions::kBrowsingHistoryActorIntegrationM3Name,
+     flag_descriptions::kBrowsingHistoryActorIntegrationM3Description,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(history::kBrowsingHistoryActorIntegrationM3)},
+
+    {"browsing-history-similar-visits-grouping",
+     flag_descriptions::kBrowsingHistorySimilarVisitsGroupingName,
+     flag_descriptions::kBrowsingHistorySimilarVisitsGroupingDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(history::kBrowsingHistorySimilarVisitsGrouping)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     {"autofill-manual-testing-data",

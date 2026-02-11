@@ -9272,6 +9272,7 @@ from previous Chrome versions.
   <int value="-1761652779"
       label="NtpFeatureOptimizationDismissModulesRemoval:disabled"/>
   <int value="-1761623485" label="RequestDesktopSiteDefaultsDowngrade:enabled"/>
+  <int value="-1760864148" label="BrowsingHistoryActorIntegrationM3:disabled"/>
   <int value="-1760624380"
       label="ImprovedCookieControlsForThirdPartyCookieBlocking:enabled"/>
   <int value="-1760146324" label="CellularAllowPerNetworkRoaming:disabled"/>
@@ -12451,6 +12452,7 @@ from previous Chrome versions.
   <int value="-677938988" label="AssistantConsentSimplifiedText:disabled"/>
   <int value="-676736440" label="ResetShortcutCustomizations:disabled"/>
   <int value="-676252846" label="ShimlessRMASkuDescription:disabled"/>
+  <int value="-674988697" label="BrowsingHistoryActorIntegrationM3:enabled"/>
   <int value="-674804217" label="SoleIntegration:enabled"/>
   <int value="-674265959" label="AppPreloadService:enabled"/>
   <int value="-674185337" label="GlicZOrderChanges:enabled"/>
@@ -13811,6 +13813,8 @@ from previous Chrome versions.
   <int value="-198011028" label="AndroidAppIntegrationModule:enabled"/>
   <int value="-198002129" label="MetricsSettingsAndroid:disabled"/>
   <int value="-197862414" label="PrivacyIndicators:enabled"/>
+  <int value="-197650916"
+      label="BrowsingHistorySimilarVisitsGrouping:disabled"/>
   <int value="-197413324" label="GlicBindPinnedUnboundTab:disabled"/>
   <int value="-196110497" label="force-text-direction"/>
   <int value="-195307538"
@@ -17286,6 +17290,7 @@ from previous Chrome versions.
   <int value="1000045846" label="OverlayNewLayout:disabled"/>
   <int value="1000706989" label="AutomaticTabDiscarding:disabled"/>
   <int value="1001596100" label="VerifyMTCs:disabled"/>
+  <int value="1001851711" label="BrowsingHistorySimilarVisitsGrouping:enabled"/>
   <int value="1002247842" label="WebGPUService:enabled"/>
   <int value="1002585107" label="emphasize-titles-in-omnibox-dropdown"/>
   <int value="1003002105" label="MaterialDesignBookmarks:disabled"/>
