@@ -148,8 +148,8 @@ void SystemPdhMetricsProvider::PdhQueryHandler::Sample() {
   if (!VerifyPdhResult(status, &counter_value)) {
     return;
   }
-  base::UmaHistogramCounts100000(kDemandZeroFaultCountHistogram,
-                                 counter_value.longValue);
+  base::UmaHistogramCounts10M(kDemandZeroFaultCountHistogram,
+                              counter_value.longValue);
 
   // Since pagefile utilization is a percentage in the range [0,100], read it as
   // double, and ClampRound it to an integer.

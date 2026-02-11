@@ -37,7 +37,7 @@ class SystemPdhMetricsProvider : public metrics::MetricsProvider {
   static constexpr std::string_view kHardFaultCountHistogram =
       "Memory.Experimental.Windows.HardFaultsFulfilledPerSecond";
   static constexpr std::string_view kDemandZeroFaultCountHistogram =
-      "Memory.Experimental.Windows.DemandZeroFaultsFulfilledPerSecond";
+      "Memory.Experimental.Windows.DemandZeroFaultsFulfilledPerSecond2";
   static constexpr std::string_view kPagefileUtilizationHistogram =
       "Memory.Experimental.Windows.PagefileUtilization";
   static constexpr std::string_view kUserTimeHistogram =
