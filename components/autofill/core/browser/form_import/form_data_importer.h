@@ -293,10 +293,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   bool SetPhoneNumber(AutofillProfile& profile,
                       const PhoneNumber::PhoneCombineHelper& combined_phone);
 
-  // Clears all setting-inaccessible values from `profile` if
-  // `kAutofillRemoveInaccessibleProfileValues` is enabled.
-  void RemoveInaccessibleProfileValues(AutofillProfile& profile);
-
   PaymentsDataManager& payments_data_manager();
 
   // The associated autofill client.

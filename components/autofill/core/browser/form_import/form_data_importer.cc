@@ -366,18 +366,6 @@ bool FormDataImporter::SetPhoneNumber(
   return parsed_successfully;
 }
 
-void FormDataImporter::RemoveInaccessibleProfileValues(
-    AutofillProfile& profile) {
-  const FieldTypeSet inaccessible_fields =
-      profile.FindInaccessibleProfileValues();
-  profile.ClearFields(inaccessible_fields);
-  autofill_metrics::LogRemovedSettingInaccessibleFields(
-      !inaccessible_fields.empty());
-  for (const FieldType inaccessible_field : inaccessible_fields) {
-    autofill_metrics::LogRemovedSettingInaccessibleField(inaccessible_field);
-  }
-}
-
 void FormDataImporter::CacheFetchedVirtualCard(
     const std::u16string& last_four) {
   fetched_virtual_cards_.insert(last_four);
@@ -751,7 +739,8 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
 
   // This relies on the profile's country code and must be done strictly after
   // `ComplementCountry()`.
-  RemoveInaccessibleProfileValues(candidate_profile);
+  GetAddressFormDataImporter().RemoveInaccessibleProfileValues(
+      candidate_profile);
 
   // Do not import a profile if any of the requirements is violated.
   // `IsMinimumAddress()` goes first, since it logs to autofill-internals.

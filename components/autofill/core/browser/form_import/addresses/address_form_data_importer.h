@@ -11,6 +11,7 @@ namespace autofill {
 
 class AddressDataManager;
 class AutofillClient;
+class AutofillProfile;
 
 // Owned by `FormDataImporter`. Responsible for address-related form data
 // importing functionality, including form extraction and processing.
@@ -21,8 +22,13 @@ class AddressFormDataImporter {
   AddressFormDataImporter& operator=(const AddressFormDataImporter&) = delete;
   virtual ~AddressFormDataImporter();
 
-  // TODO(crbug.com/481379161): It may be possible to make this private once all
-  //                            other refactoring finishes. Reevaluate then.
+  // TODO(crbug.com/481379161): It may be possible to make some of these
+  //    functions private once all other refactoring finishes. Reevaluate at
+  //    that time.
+
+  // Clears all setting-inaccessible values from `profile`.
+  void RemoveInaccessibleProfileValues(AutofillProfile& profile);
+
   AddressDataManager& address_data_manager();
 
  private:
