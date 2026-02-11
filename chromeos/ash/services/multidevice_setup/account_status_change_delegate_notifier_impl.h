@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/services/multidevice_setup/account_status_change_delegate_notifier.h"
 #include "chromeos/ash/services/multidevice_setup/host_status_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
@@ -132,6 +133,12 @@ class AccountStatusChangeDelegateNotifierImpl
   raw_ptr<HostDeviceTimestampManager> host_device_timestamp_manager_;
   raw_ptr<OobeCompletionTracker> oobe_completion_tracker_;
   raw_ptr<base::Clock> clock_;
+
+  base::ScopedObservation<HostStatusProvider, HostStatusProvider::Observer>
+      host_status_provider_observation_{this};
+  base::ScopedObservation<OobeCompletionTracker,
+                          OobeCompletionTracker::Observer>
+      oobe_completion_tracker_observation_{this};
 };
 
 }  // namespace multidevice_setup

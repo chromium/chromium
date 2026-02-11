@@ -78,9 +78,8 @@ void GrandfatheredEasyUnlockHostDisabler::RegisterPrefs(
                                kNoDevice);
 }
 
-GrandfatheredEasyUnlockHostDisabler::~GrandfatheredEasyUnlockHostDisabler() {
-  host_backend_delegate_->RemoveObserver(this);
-}
+GrandfatheredEasyUnlockHostDisabler::~GrandfatheredEasyUnlockHostDisabler() =
+    default;
 
 GrandfatheredEasyUnlockHostDisabler::GrandfatheredEasyUnlockHostDisabler(
     HostBackendDelegate* host_backend_delegate,
@@ -93,7 +92,7 @@ GrandfatheredEasyUnlockHostDisabler::GrandfatheredEasyUnlockHostDisabler(
       timer_(std::move(timer)),
       current_better_together_host_(
           host_backend_delegate_->GetMultiDeviceHostFromBackend()) {
-  host_backend_delegate_->AddObserver(this);
+  host_backend_delegate_observation_.Observe(host_backend_delegate);
 
   // There might be a device stored in the pref waiting for kSmartLockHost to
   // be disabled.

@@ -46,13 +46,11 @@ EligibleHostDevicesProviderImpl::Factory::~Factory() = default;
 EligibleHostDevicesProviderImpl::EligibleHostDevicesProviderImpl(
     device_sync::DeviceSyncClient* device_sync_client)
     : device_sync_client_(device_sync_client) {
-  device_sync_client_->AddObserver(this);
+  device_sync_client_observation_.Observe(device_sync_client);
   UpdateEligibleDevicesSet();
 }
 
-EligibleHostDevicesProviderImpl::~EligibleHostDevicesProviderImpl() {
-  device_sync_client_->RemoveObserver(this);
-}
+EligibleHostDevicesProviderImpl::~EligibleHostDevicesProviderImpl() = default;
 
 multidevice::RemoteDeviceRefList
 EligibleHostDevicesProviderImpl::GetEligibleHostDevices() const {

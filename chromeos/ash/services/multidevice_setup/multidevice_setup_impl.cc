@@ -163,14 +163,11 @@ MultiDeviceSetupImpl::MultiDeviceSetupImpl(
                     pref_service)
               : nullptr),
       auth_token_validator_(auth_token_validator) {
-  host_status_provider_->AddObserver(this);
-  feature_state_manager_->AddObserver(this);
+  host_status_provider_observation_.Observe(host_status_provider_.get());
+  feature_state_manager_observation_.Observe(feature_state_manager_.get());
 }
 
-MultiDeviceSetupImpl::~MultiDeviceSetupImpl() {
-  host_status_provider_->RemoveObserver(this);
-  feature_state_manager_->RemoveObserver(this);
-}
+MultiDeviceSetupImpl::~MultiDeviceSetupImpl() = default;
 
 void MultiDeviceSetupImpl::SetAccountStatusChangeDelegate(
     mojo::PendingRemote<mojom::AccountStatusChangeDelegate> delegate) {

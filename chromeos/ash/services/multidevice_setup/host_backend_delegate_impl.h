@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
@@ -104,6 +105,10 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
 
   // The most-recent snapshot of the host on the back-end.
   std::optional<multidevice::RemoteDeviceRef> host_from_last_sync_;
+
+  base::ScopedObservation<device_sync::DeviceSyncClient,
+                          device_sync::DeviceSyncClient::Observer>
+      device_sync_client_observation_{this};
 
   base::WeakPtrFactory<HostBackendDelegateImpl> weak_ptr_factory_{this};
 };

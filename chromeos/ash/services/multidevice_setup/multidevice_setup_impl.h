@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/services/multidevice_setup/feature_state_manager.h"
 #include "chromeos/ash/services/multidevice_setup/global_state_feature_manager.h"
 #include "chromeos/ash/services/multidevice_setup/host_status_provider.h"
@@ -161,6 +162,11 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
 
   mojo::RemoteSet<mojom::HostStatusObserver> host_status_observers_;
   mojo::RemoteSet<mojom::FeatureStateObserver> feature_state_observers_;
+
+  base::ScopedObservation<HostStatusProvider, HostStatusProvider::Observer>
+      host_status_provider_observation_{this};
+  base::ScopedObservation<FeatureStateManager, FeatureStateManager::Observer>
+      feature_state_manager_observation_{this};
 };
 
 }  // namespace multidevice_setup

@@ -80,10 +80,7 @@ void AccountStatusChangeDelegateNotifierImpl::RegisterPrefs(
 }
 
 AccountStatusChangeDelegateNotifierImpl::
-    ~AccountStatusChangeDelegateNotifierImpl() {
-  host_status_provider_->RemoveObserver(this);
-  oobe_completion_tracker_->RemoveObserver(this);
-}
+    ~AccountStatusChangeDelegateNotifierImpl() = default;
 
 void AccountStatusChangeDelegateNotifierImpl::OnDelegateSet() {
   CheckForMultiDeviceEvents(host_status_provider_->GetHostWithStatus());
@@ -139,8 +136,8 @@ AccountStatusChangeDelegateNotifierImpl::
       clock_(clock) {
   verified_host_device_id_from_most_recent_update_ =
       LoadHostDeviceIdFromEndOfPreviousSession();
-  host_status_provider_->AddObserver(this);
-  oobe_completion_tracker_->AddObserver(this);
+  host_status_provider_observation_.Observe(host_status_provider);
+  oobe_completion_tracker_observation_.Observe(oobe_completion_tracker);
 }
 
 void AccountStatusChangeDelegateNotifierImpl::OnHostStatusChange(

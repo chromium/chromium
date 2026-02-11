@@ -86,7 +86,7 @@ HostBackendDelegateImpl::HostBackendDelegateImpl(
       pref_service_(pref_service),
       device_sync_client_(device_sync_client),
       timer_(std::move(timer)) {
-  device_sync_client_->AddObserver(this);
+  device_sync_client_observation_.Observe(device_sync_client);
 
   host_from_last_sync_ = GetHostFromDeviceSync();
 
@@ -94,9 +94,7 @@ HostBackendDelegateImpl::HostBackendDelegateImpl(
     AttemptNetworkRequest(false /* is_retry */);
 }
 
-HostBackendDelegateImpl::~HostBackendDelegateImpl() {
-  device_sync_client_->RemoveObserver(this);
-}
+HostBackendDelegateImpl::~HostBackendDelegateImpl() = default;
 
 void HostBackendDelegateImpl::AttemptToSetMultiDeviceHostOnBackend(
     const std::optional<multidevice::RemoteDeviceRef>& host_device) {

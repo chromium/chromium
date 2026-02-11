@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "chromeos/ash/services/multidevice_setup/host_backend_delegate.h"
@@ -96,6 +97,9 @@ class GrandfatheredEasyUnlockHostDisabler
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<base::OneShotTimer> timer_;
   std::optional<multidevice::RemoteDeviceRef> current_better_together_host_;
+
+  base::ScopedObservation<HostBackendDelegate, HostBackendDelegate::Observer>
+      host_backend_delegate_observation_{this};
 
   base::WeakPtrFactory<GrandfatheredEasyUnlockHostDisabler> weak_ptr_factory_{
       this};

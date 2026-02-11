@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_ELIGIBLE_HOST_DEVICES_PROVIDER_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/eligible_host_devices_provider.h"
@@ -68,6 +69,10 @@ class EligibleHostDevicesProviderImpl
   multidevice::RemoteDeviceRefList eligible_devices_from_last_sync_;
   multidevice::DeviceWithConnectivityStatusList
       eligible_active_devices_from_last_sync_;
+
+  base::ScopedObservation<device_sync::DeviceSyncClient,
+                          device_sync::DeviceSyncClient::Observer>
+      device_sync_client_observation_{this};
 };
 
 }  // namespace multidevice_setup
