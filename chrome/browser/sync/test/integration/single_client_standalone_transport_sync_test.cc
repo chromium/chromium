@@ -637,6 +637,11 @@ class SyncSetupIncompleteMigrationSyncTest : public SyncTest {
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
+  // PRE_ tests use SetupSyncWithCustomSettings().
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SyncTest::SetupSyncMode::kSyncTheFeature;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };

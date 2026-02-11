@@ -175,6 +175,10 @@ class SingleClientSkillsSyncTest
     feature_overrides_.InitWithFeatures(enabled_features, {});
   }
 
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
   skills::SkillsService& GetSkillsService() const {
     skills::SkillsService* service =
         skills::SkillsServiceFactory::GetForProfile(GetProfile(0));

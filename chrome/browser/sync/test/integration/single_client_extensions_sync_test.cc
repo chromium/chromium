@@ -201,6 +201,12 @@ class SingleClientExtensionsMigrateSyncingUserToSignedInSyncTest
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
+  // The value doesn't matter, since the tests use SetupSyncWithMode(..) to
+  // explicitly pick Sync-the-feature or Sync-the-transport.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -214,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_THAT(extensions_helper::GetInstalledExtensions(GetProfile(0)),
               testing::ElementsAre(0));
 
-  ASSERT_TRUE(SetupSyncWithMode(SyncTest::SetupSyncMode::kSyncTheFeature));
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTheFeature));
   ASSERT_THAT(GetRemoteExtensionIds(GetFakeServer()),
               testing::ElementsAre(extension_id));
 
@@ -271,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_THAT(extensions_helper::GetInstalledExtensions(GetProfile(0)),
               testing::ElementsAre(0));
 
-  ASSERT_TRUE(SetupSyncWithMode(SyncTest::SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
   ASSERT_THAT(GetRemoteExtensionIds(GetFakeServer()), testing::IsEmpty());
 
   ASSERT_EQ(extensions::AccountExtensionTracker::AccountExtensionType::kLocal,
@@ -342,6 +348,12 @@ class SingleClientExtensionsExplicitSigninForExtensionsSyncTest
           {{syncer::kExplicitSigninForExtensions.name,
             GetParam() ? "true" : "false"}});
     }
+  }
+
+  // The value doesn't matter, since the tests use SetupSyncWithMode(..) to
+  // explicitly pick Sync-the-feature or Sync-the-transport.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
   }
 
  private:

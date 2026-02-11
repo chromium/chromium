@@ -750,6 +750,12 @@ class SingleClientOldProgressMarkerSyncTest : public SyncTest {
   SingleClientOldProgressMarkerSyncTest& operator=(
       const SingleClientOldProgressMarkerSyncTest&) = delete;
 
+  // The value doesn't matter, since the tests use SetupSyncWithMode(..) to
+  // explicitly pick Sync-the-feature or Sync-the-transport.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SyncTest::SetupSyncMode::kSyncTransportOnly;
+  }
+
  private:
   base::test::ScopedFeatureList features_;
 

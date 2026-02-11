@@ -93,6 +93,10 @@ class TwoClientContactInfoSyncTest
     }
   }
 
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
   bool SetupSyncAndHideAccountNameEmailProfile() {
     if (!SetupSync()) {
       return false;
