@@ -250,8 +250,6 @@ public class ChromeBackupAgentTest {
      * Test method for {@link ChromeBackupAgent#onBackup} testing first backup with a signed-in only
      * user.
      */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testOnBackup_firstBackup_signedInNotSyncing()
             throws IOException, ClassNotFoundException {
@@ -348,8 +346,6 @@ public class ChromeBackupAgentTest {
     }
 
     /** Test method for {@link ChromeBackupAgent#onBackup} a second backup with the same data */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     @SuppressWarnings("unchecked")
     public void testOnBackup_duplicateBackup()
@@ -400,8 +396,6 @@ public class ChromeBackupAgentTest {
     }
 
     /** Test method for {@link ChromeBackupAgent#onBackup} a second backup with different data */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     @SuppressWarnings("unchecked")
     public void testOnBackup_dataChanged()
@@ -461,8 +455,6 @@ public class ChromeBackupAgentTest {
     }
 
     /** Test method for {@link ChromeBackupAgent#onBackup} when browser startup fails */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testOnBackup_browserStartupFails() throws IOException {
         BackupDataOutput backupData = mock(BackupDataOutput.class);
@@ -593,8 +585,6 @@ public class ChromeBackupAgentTest {
      * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains the previously
      * signed-in user only.
      */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testOnRestore_withSignInUser() throws IOException {
         executeNormalRestoreAndCheckPrefs(
@@ -614,8 +604,6 @@ public class ChromeBackupAgentTest {
      * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains the previously
      * signed-in user only, and does not contain account settings backup.
      */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testOnRestore_withSignInUser_noAccountSettings() throws IOException {
         executeNormalRestoreAndCheckPrefs(
@@ -635,8 +623,6 @@ public class ChromeBackupAgentTest {
      * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains the previously
      * signed-in user only.
      */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testOnRestore_withSignInUser_isManaged() throws IOException {
         mIsAccountManaged = true;
@@ -657,8 +643,6 @@ public class ChromeBackupAgentTest {
      * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains the previously
      * signed-in user only.
      */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testOnRestore_withSignInUser_notManaged() throws IOException {
         mIsAccountManaged = false;
@@ -679,8 +663,6 @@ public class ChromeBackupAgentTest {
      * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains a record for the
      * previously signed-in user and another for the syncing user.
      */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testOnRestore_withSignInAndSyncUser() throws IOException {
         executeNormalRestoreAndCheckPrefs(
@@ -701,8 +683,6 @@ public class ChromeBackupAgentTest {
      * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains a record for the
      * previously signed-in user and another for the syncing user, and no account settings.
      */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testOnRestore_withSignInAndSyncUser_noAccountSettings() throws IOException {
         executeNormalRestoreAndCheckPrefs(
@@ -723,8 +703,6 @@ public class ChromeBackupAgentTest {
      * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains a record for the
      * previously syncing user, and a record for account settings.
      */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testOnRestore_withSyncUserAndAccountSettings() throws IOException {
         executeNormalRestoreAndCheckPrefs(
@@ -755,8 +733,6 @@ public class ChromeBackupAgentTest {
      * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains a record for the
      * previously syncing user only, and the backup value for SYNC_KEEP_EVERYTHING_SYNCED is true.
      */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testOnRestore_withSyncUser_syncEverything() throws IOException {
         mNativeBoolPrefBackupValues.put(SyncPrefNames.SYNC_KEEP_EVERYTHING_SYNCED, true);
@@ -777,8 +753,6 @@ public class ChromeBackupAgentTest {
      * Test method for {@link ChromeBackupAgent#onRestore} when there's no signed-in account record
      * in the backup data. The restore should be skipped.
      */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testOnRestore_noUserInBackup() throws IOException {
         BackupDataInput backupData =
@@ -816,8 +790,6 @@ public class ChromeBackupAgentTest {
      * device. Since the recorded signed-in account is not present on the device and can't be
      * signed-in, the restore should be skipped.
      */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testOnRestore_badUser() throws IOException {
         BackupDataInput backupData =
@@ -851,8 +823,6 @@ public class ChromeBackupAgentTest {
     }
 
     /** Test method for {@link ChromeBackupAgent#onRestore} for browser startup failure */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testOnRestore_browserStartupFails() throws IOException {
         BackupDataInput backupData =
@@ -878,8 +848,6 @@ public class ChromeBackupAgentTest {
     }
 
     /** Test method for {@link ChromeBackupAgent#onRestore} for browser startup failure */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testOnRestore_afterFirstRun() throws IOException {
         BackupDataInput backupData =
@@ -908,8 +876,6 @@ public class ChromeBackupAgentTest {
      * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains the previously
      * signed-in user only. An account is already signed-in.
      */
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testOnRestore_alreadySignedIn() throws IOException {
         BackupDataInput backupData =
