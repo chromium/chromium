@@ -45,6 +45,7 @@ void RecordingDataManagerImpl::OnDatabaseInitialized(
   if (status != leveldb_proto::Enums::InitStatus::kOK) {
     return;
   }
+  db_is_initialized_ = true;
   db_->LoadKeysAndEntries(
       base::BindOnce(&RecordingDataManagerImpl::OnDatabaseLoadKeysAndEntries,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -64,6 +65,13 @@ void RecordingDataManagerImpl::OnDatabaseLoadKeysAndEntries(
 }
 
 void RecordingDataManagerImpl::AddRecording(Recording recording) {
+  if (!db_is_initialized_) {
+    // This handles a race condition in ProtoDatabaseImpl where a sufficient
+    // number of AddRecording() calls before OnDatabaseInitialized() hits a
+    // DCHECK.
+    // TODO(crbug.com/483687781): Remove this test once the the issue fixed.
+    return;
+  }
   auto entries_to_save = std::make_unique<
       leveldb_proto::ProtoDatabase<Recording>::KeyEntryVector>();
   auto keys_to_remove = std::make_unique<std::vector<std::string>>();

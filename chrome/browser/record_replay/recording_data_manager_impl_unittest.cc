@@ -100,6 +100,23 @@ TEST_F(RecordingDataManagerImplTest, AddAndGetRecording) {
               Optional(EqualsProto(r2)));
 }
 
+// Tests that RecordingDataManagerImpl handles a race condition in LevelDB:
+// TODO(crbug.com/483687781): Remove this test once the the issue fixed.
+TEST(RecordingDataManagerImplTest_LevelDbRaceCondition, AvoidDcheck) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  auto db_provider = std::make_unique<leveldb_proto::ProtoDatabaseProvider>(
+      temp_dir.GetPath());
+  auto data_manager = std::make_unique<RecordingDataManagerImpl>(
+      db_provider.get(), temp_dir.GetPath());
+  for (int i = 0; i < 12; ++i) {
+    data_manager->AddRecording(Recording());
+  }
+  task_environment.RunUntilIdle();
+}
+
 }  // namespace
 
 }  // namespace record_replay

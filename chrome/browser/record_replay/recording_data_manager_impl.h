@@ -42,6 +42,7 @@ class RecordingDataManagerImpl : public RecordingDataManager {
       std::unique_ptr<std::map<std::string, Recording>> entries);
 
   std::unique_ptr<leveldb_proto::ProtoDatabase<Recording>> db_;
+  bool db_is_initialized_ = false;
   std::map<std::string, Recording> url_to_record_;
   base::WeakPtrFactory<RecordingDataManagerImpl> weak_ptr_factory_{this};
 };
