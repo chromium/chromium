@@ -8,7 +8,6 @@
 
 #include <algorithm>
 #include <iterator>
-#include <unordered_set>
 #include <utility>
 
 #include "base/i18n/case_conversion.h"
@@ -23,6 +22,7 @@
 #include "components/bookmarks/browser/titled_url_node.h"
 #include "components/omnibox/common/string_cleaning.h"
 #include "components/query_parser/snippet.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/icu/source/common/unicode/normalizer2.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 
@@ -326,9 +326,9 @@ TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingAnyTerms(
       [](size_t first, size_t second) { return first < second; },
       [](const auto& matches) { return matches.size(); });
 
-  // Use an `unordered_set` to avoid potentially 1000's of linear time
+  // Use an `absl::flat_hash_set` to avoid potentially 1000's of linear time
   // insertions into the ordered `TitledUrlNodeSet` (i.e. `flat_set`).
-  std::unordered_set<const TitledUrlNode*> matches;
+  absl::flat_hash_set<const TitledUrlNode*> matches;
   for (const auto& term_matches : matches_per_term) {
     for (const TitledUrlNode* node : term_matches) {
       matches.insert(node);
