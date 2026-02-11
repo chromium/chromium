@@ -80,8 +80,6 @@ void HTMLMetaElement::ParseViewportContentAttribute(
 
   // Tread lightly in this code -- it was specifically designed to mimic Win
   // IE's parsing behavior.
-  unsigned key_begin, key_end;
-  unsigned value_begin, value_end;
 
   String buffer = content.LowerASCII();
   unsigned length = buffer.length();
@@ -92,7 +90,7 @@ void HTMLMetaElement::ParseViewportContentAttribute(
         break;
       i++;
     }
-    key_begin = i;
+    unsigned key_begin = i;
 
     // skip to first separator
     while (!IsSeparator(buffer[i])) {
@@ -101,7 +99,7 @@ void HTMLMetaElement::ParseViewportContentAttribute(
         break;
       i++;
     }
-    key_end = i;
+    unsigned key_end = i;
 
     // skip to first '=', but don't skip past a ',' or the end of the string
     while (buffer[i] != '=') {
@@ -118,7 +116,7 @@ void HTMLMetaElement::ParseViewportContentAttribute(
         break;
       i++;
     }
-    value_begin = i;
+    unsigned value_begin = i;
 
     // skip to first separator
     while (!IsSeparator(buffer[i])) {
@@ -127,13 +125,12 @@ void HTMLMetaElement::ParseViewportContentAttribute(
         break;
       i++;
     }
-    value_end = i;
+    unsigned value_end = i;
 
     SECURITY_DCHECK(i <= length);
 
-    String key_string = buffer.Substring(key_begin, key_end - key_begin);
-    String value_string =
-        buffer.Substring(value_begin, value_end - value_begin);
+    StringView key_string(buffer, key_begin, key_end - key_begin);
+    StringView value_string(buffer, value_begin, value_end - value_begin);
     ProcessViewportKeyValuePair(document, !has_invalid_separator, key_string,
                                 value_string, viewport_meta_zero_values_quirk,
                                 viewport_description);
@@ -164,8 +161,8 @@ static inline float ClampScaleValue(float value) {
 
 float HTMLMetaElement::ParsePositiveNumber(Document* document,
                                            bool report_warnings,
-                                           const String& key_string,
-                                           const String& value_string,
+                                           const StringView& key_string,
+                                           const StringView& value_string,
                                            bool* ok) {
   size_t parsed_length;
   float value = VisitCharacters(value_string, [&](auto chars) {
@@ -187,10 +184,11 @@ float HTMLMetaElement::ParsePositiveNumber(Document* document,
   return value;
 }
 
-Length HTMLMetaElement::ParseViewportValueAsLength(Document* document,
-                                                   bool report_warnings,
-                                                   const String& key_string,
-                                                   const String& value_string) {
+Length HTMLMetaElement::ParseViewportValueAsLength(
+    Document* document,
+    bool report_warnings,
+    const StringView& key_string,
+    const StringView& value_string) {
   // 1) Non-negative number values are translated to px lengths.
   // 2) Negative number values are translated to auto.
   // 3) device-width and device-height are used as keywords.
@@ -223,8 +221,8 @@ Length HTMLMetaElement::ParseViewportValueAsLength(Document* document,
 float HTMLMetaElement::ParseViewportValueAsZoom(
     Document* document,
     bool report_warnings,
-    const String& key_string,
-    const String& value_string,
+    const StringView& key_string,
+    const StringView& value_string,
     bool& computed_value_matches_parsed_value,
     bool viewport_meta_zero_values_quirk) {
   // 1) Non-negative number values are translated to <number> values.
@@ -266,8 +264,8 @@ float HTMLMetaElement::ParseViewportValueAsZoom(
 bool HTMLMetaElement::ParseViewportValueAsUserZoom(
     Document* document,
     bool report_warnings,
-    const String& key_string,
-    const String& value_string,
+    const StringView& key_string,
+    const StringView& value_string,
     bool& computed_value_matches_parsed_value) {
   // yes and no are used as keywords.
   // Numbers >= 1, numbers <= -1, device-width and device-height are mapped to
@@ -298,8 +296,8 @@ bool HTMLMetaElement::ParseViewportValueAsUserZoom(
 
 float HTMLMetaElement::ParseViewportValueAsDPI(Document* document,
                                                bool report_warnings,
-                                               const String& key_string,
-                                               const String& value_string) {
+                                               const StringView& key_string,
+                                               const StringView& value_string) {
   if (EqualIgnoringASCIICase(value_string, "device-dpi"))
     return ViewportDescription::kValueDeviceDPI;
   if (EqualIgnoringASCIICase(value_string, "low-dpi"))
@@ -320,7 +318,7 @@ float HTMLMetaElement::ParseViewportValueAsDPI(Document* document,
 
 blink::mojom::ViewportFit HTMLMetaElement::ParseViewportFitValueAsEnum(
     bool& unknown_value,
-    const String& value_string) {
+    const StringView& value_string) {
   if (EqualIgnoringASCIICase(value_string, "auto"))
     return mojom::ViewportFit::kAuto;
   if (EqualIgnoringASCIICase(value_string, "contain"))
@@ -334,7 +332,7 @@ blink::mojom::ViewportFit HTMLMetaElement::ParseViewportFitValueAsEnum(
 
 // static
 std::optional<ui::mojom::blink::VirtualKeyboardMode>
-HTMLMetaElement::ParseVirtualKeyboardValueAsEnum(const String& value) {
+HTMLMetaElement::ParseVirtualKeyboardValueAsEnum(const StringView& value) {
   if (EqualIgnoringASCIICase(value, "resizes-content"))
     return ui::mojom::blink::VirtualKeyboardMode::kResizesContent;
   else if (EqualIgnoringASCIICase(value, "resizes-visual"))
@@ -348,8 +346,8 @@ HTMLMetaElement::ParseVirtualKeyboardValueAsEnum(const String& value) {
 void HTMLMetaElement::ProcessViewportKeyValuePair(
     Document* document,
     bool report_warnings,
-    const String& key_string,
-    const String& value_string,
+    const StringView& key_string,
+    const StringView& value_string,
     bool viewport_meta_zero_values_quirk,
     ViewportDescription& description) {
   if (key_string == "width") {
@@ -471,8 +469,8 @@ static mojom::ConsoleMessageLevel ViewportErrorMessageLevel(
 
 void HTMLMetaElement::ReportViewportWarning(Document* document,
                                             ViewportErrorCode error_code,
-                                            const String& replacement1,
-                                            const String& replacement2) {
+                                            const StringView& replacement1,
+                                            const StringView& replacement2) {
   if (!document || !document->GetFrame())
     return;
 
