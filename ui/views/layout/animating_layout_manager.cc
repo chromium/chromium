@@ -38,7 +38,7 @@ namespace {
 // (go/chrome-performance-work-should-be-finched).
 // TODO(crbug.com/40897031): Clean up when experiment is complete.
 BASE_FEATURE(kAvoidUnnecessaryShouldRenderRichAnimation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Returns the ChildLayout data for the child view in the proposed layout, or
 // nullptr if not found.
