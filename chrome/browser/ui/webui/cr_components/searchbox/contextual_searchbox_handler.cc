@@ -273,14 +273,21 @@ void ContextualSearchboxHandler::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
+  if (!IsRemoteBound()) {
+    return;
+  }
+  if (change.type() != TabStripModelChange::Type::kInserted &&
+      change.type() != TabStripModelChange::Type::kRemoved &&
+      !selection.active_tab_changed()) {
+    return;
+  }
+
   // TODO(crbug.com/449196853): We should be using the `tab_strip_api` on the
   // typescript side, but it's not visible to `cr_components`, so we're using
   // `TabStripModelObserver` for now until `tab_strip_api` gets moved out of
   // //chrome. The current implementation is likely brittle, as it's not a
   // supported API for external users.
-  if (IsRemoteBound()) {
-    page_->OnTabStripChanged();
-  }
+  page_->OnTabStripChanged();
 }
 
 std::optional<lens::ImageEncodingOptions>

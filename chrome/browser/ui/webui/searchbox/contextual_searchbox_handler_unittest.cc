@@ -886,8 +886,30 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextAddedMetric) {
 TEST_F(ContextualSearchboxHandlerTestTabsTest,
        TabStripModelObserverIsAddedWithValidSession) {
   EXPECT_CALL(mock_searchbox_page_, OnTabStripChanged).Times(1);
-  handler().OnTabStripModelChanged(tab_strip_model(), {}, {});
+  handler().OnTabStripModelChanged(
+      tab_strip_model(), TabStripModelChange(TabStripModelChange::Remove()),
+      {});
   mock_searchbox_page_.FlushForTesting();
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       TabStripModelObserverSelectivelyNotifies) {
+  {
+    // Tab insert updates notify.
+    EXPECT_CALL(mock_searchbox_page_, OnTabStripChanged).Times(1);
+    handler().OnTabStripModelChanged(
+        tab_strip_model(), TabStripModelChange(TabStripModelChange::Insert()),
+        {});
+    mock_searchbox_page_.FlushForTesting();
+  }
+  {
+    // Tab move updates don't notify.
+    EXPECT_CALL(mock_searchbox_page_, OnTabStripChanged).Times(0);
+    handler().OnTabStripModelChanged(
+        tab_strip_model(), TabStripModelChange(TabStripModelChange::Move()),
+        {});
+    mock_searchbox_page_.FlushForTesting();
+  }
 }
 
 // TODO(b:466469292): Figure out how to null-ify the session handle so we can
