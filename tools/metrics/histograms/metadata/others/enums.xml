@@ -52,27 +52,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//services/device/usb/usb_device_handle_usbfs.cc:DetachKernelDriverOutcome) -->
 
-<enum name="EncryptionPrefixVersion">
-  <int value="0" label="No prefix found"/>
-  <int value="1" label="Version v10"/>
-  <int value="2" label="Version v11"/>
-</enum>
-
-<enum name="FreedesktopSecretKeyProviderErrorDetail">
-  <summary>
-    Fine-grained error details for FreedesktopSecretKeyProvider.
-  </summary>
-  <int value="0" label="None"/>
-  <int value="1" label="DestructedBeforeComplete"/>
-  <int value="2" label="EmptyObjectPaths"/>
-  <int value="3" label="InvalidReplyFormat"/>
-  <int value="4" label="InvalidSignalFormat"/>
-  <int value="5" label="InvalidVariantFormat"/>
-  <int value="6" label="NoResponse"/>
-  <int value="7" label="PromptDismissed"/>
-  <int value="8" label="PromptFailedSignalConnection"/>
-</enum>
-
 <enum name="FreedesktopSecretKeyProviderInitStatus">
   <summary>
     High-level error categories for FreedesktopSecretKeyProvider.
@@ -240,22 +219,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="A previous network request failed."/>
   <int value="2" label="Successfully fetched salient image url from network."/>
   <int value="3" label="Succeessfully got salient image url from local cache."/>
-</enum>
-
-<enum name="SecretPortalKeyProviderInitStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="NoService"/>
-  <int value="2" label="PipeFailed"/>
-  <int value="3" label="InvalidResponseFormat"/>
-  <int value="4" label="ResponsePathMismatch"/>
-  <int value="5" label="PipeReadFailed"/>
-  <int value="6" label="EmptySecret"/>
-  <int value="7" label="NoResponse"/>
-  <int value="8" label="SignalReadFailed"/>
-  <int value="9" label="UserCancelledUnlock"/>
-  <int value="10" label="(Obsolete) DestructedBeforeComplete"/>
-  <int value="11" label="SignalConnectFailed"/>
-  <int value="12" label="SignalParseFailed"/>
 </enum>
 
 <enum name="SilentPushEvent">
