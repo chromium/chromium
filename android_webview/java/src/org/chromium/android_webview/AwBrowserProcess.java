@@ -238,6 +238,17 @@ public final class AwBrowserProcess {
         }
     }
 
+    public static boolean shouldDeferGmsCalls() {
+        return WebViewCachedFlags.get()
+                        .isCachedFeatureEnabled(
+                                AwFeatures.WEBVIEW_OPT_IN_TO_GMS_BIND_SERVICE_OPTIMIZATION)
+                || WebViewCachedFlags.get()
+                        .isCachedFeatureEnabled(AwFeatures.WEBVIEW_DEFER_STARTUP_GMS_CALLS)
+                || CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_DEFER_STARTUP_GMS_CALLS)
+                || CommandLine.getInstance()
+                        .hasSwitch(AwSwitches.WEBVIEW_OPT_IN_TO_GMS_BIND_SERVICE_OPTIMIZATION);
+    }
+
     /**
      * Finishes the chromium browser process initialization. Starts the browser process
      * synchronously if not already started.
@@ -269,9 +280,7 @@ public final class AwBrowserProcess {
                 AwContentsLifecycleNotifier.initialize();
             }
 
-            if (!WebViewCachedFlags.get()
-                    .isCachedFeatureEnabled(
-                            AwFeatures.WEBVIEW_OPT_IN_TO_GMS_BIND_SERVICE_OPTIMIZATION)) {
+            if (!shouldDeferGmsCalls()) {
                 setupSupervisedUser();
             }
 
@@ -345,9 +354,7 @@ public final class AwBrowserProcess {
                     DualTraceEvent.scoped("AwBrowserProcess.maybeEnableSafeBrowsingFromManifest")) {
                 AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest();
             }
-            if (!WebViewCachedFlags.get()
-                    .isCachedFeatureEnabled(
-                            AwFeatures.WEBVIEW_OPT_IN_TO_GMS_BIND_SERVICE_OPTIMIZATION)) {
+            if (!shouldDeferGmsCalls()) {
                 maybeEnableSafeBrowsingFromGms();
             }
         }

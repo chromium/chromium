@@ -727,9 +727,7 @@ public class WebViewChromiumAwInit {
                         AwDarkMode.enableSimplifiedDarkMode();
                     }
 
-                    if (WebViewCachedFlags.get()
-                            .isCachedFeatureEnabled(
-                                    AwFeatures.WEBVIEW_OPT_IN_TO_GMS_BIND_SERVICE_OPTIMIZATION)) {
+                    if (AwBrowserProcess.shouldDeferGmsCalls()) {
                         AwBrowserProcess.maybeEnableSafeBrowsingFromGms();
                         AwBrowserProcess.setupSupervisedUser();
                         AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(
@@ -819,9 +817,7 @@ public class WebViewChromiumAwInit {
     private void runImmediateTaskAfterBrowserProcessInit() {
         // TODO(crbug.com/332706093): See if this can be moved before loading native.
         AwClassPreloader.preloadClasses();
-        if (!WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(
-                        AwFeatures.WEBVIEW_OPT_IN_TO_GMS_BIND_SERVICE_OPTIMIZATION)) {
+        if (!AwBrowserProcess.shouldDeferGmsCalls()) {
             AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ true);
         }
         AwBrowserProcess.doNetworkInitializations(ContextUtils.getApplicationContext());

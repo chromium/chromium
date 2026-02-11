@@ -1131,8 +1131,11 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_CACHE_BOUNDARY_INTERFACE_METHODS,
                 "Use a cache for reflective method instances in the AndroidX boundary interface"),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_OPT_IN_TO_GMS_BIND_SERVICE_OPTIMIZATION,
+                AwSwitches.WEBVIEW_OPT_IN_TO_GMS_BIND_SERVICE_OPTIMIZATION,
                 "Opt-in WebView to GMSCore's bindService optimizations"),
+        Flag.baseFeature(
+                AwSwitches.WEBVIEW_DEFER_STARTUP_GMS_CALLS,
+                "Defers GMS calls to after Chromium startup."),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT,
                 " Moves some of the work that is being run during `startChromium` to be done"
@@ -1280,7 +1283,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.XML_RUST_FOR_NON_XSLT,
                 "Enables the Rust based XML parser in situations where the XML document is"
-                        + " guaranteed to not trigger XSLT processing."),
+                            + " guaranteed to not trigger XSLT processing."),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_USE_NONEMBEDDED_LOW_ENTROPY_SOURCE,
                 "When enabled, WebView uses the low entropy source provided by the "
