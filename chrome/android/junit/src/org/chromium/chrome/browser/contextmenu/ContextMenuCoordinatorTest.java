@@ -359,7 +359,9 @@ public class ContextMenuCoordinatorTest {
                 rect.bottom);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    // Pinned to SDK 29 because getSelectedItemPosition() returns -1 on SDK 30+ in Robolectric,
+    // which breaks the verification of the first item being selected after navigation.
+    // See: crbug.com/450954710
     @Test
     @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     @Config(
