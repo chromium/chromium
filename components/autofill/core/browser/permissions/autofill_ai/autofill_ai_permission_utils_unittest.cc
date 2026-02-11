@@ -74,6 +74,8 @@ std::string GetTestSuffix(
       return "kUseCachedServerClassificationModelResults";
     case AutofillAiAction::kImportToWallet:
       return "kImportToWallet";
+    case AutofillAiAction::kWalletDataSharingPromotion:
+      return "kWalletDataSharingPromotion";
   }
   NOTREACHED();
 }
@@ -150,11 +152,14 @@ class AutofillAiMayPerformActionTest
 };
 
 // Verifies that the test fixture sets up the client so that everything but
-// opt-in IPH is permitted.
+// opt-in IPH and the Wallet data sharing promotion is permitted.
 TEST_P(AutofillAiMayPerformActionTest, ActionsWhenEnabled) {
+  constexpr auto kForbiddenActions =
+      DenseSet({AutofillAiAction::kIphForOptIn,
+                AutofillAiAction::kWalletDataSharingPromotion});
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      GetParam() != AutofillAiAction::kIphForOptIn);
+      !kForbiddenActions.contains(GetParam()));
 }
 
 // Tests that `kAutofillAiWithDataSchema` is a requirement for all actions.
@@ -166,7 +171,8 @@ TEST_P(AutofillAiMayPerformActionTest, ReturnsFalseWhenMainFeatureIsOff) {
 }
 
 // Tests that when `kAutofillAiAvailableByDefault` and the user is opted out,
-// everything but IPH and model related actions is permitted.
+// everything but IPH, wallet data sharing promotion, and model related actions
+// is permitted.
 TEST_P(AutofillAiMayPerformActionTest,
        ReturnsTrueWhenAvailableByDefault_ExceptForModelRelatedActionsAndIph) {
   base::test::ScopedFeatureList feature_list{
@@ -175,7 +181,8 @@ TEST_P(AutofillAiMayPerformActionTest,
 
   constexpr auto kForbiddenActions =
       DenseSet({AutofillAiAction::kIphForOptIn, AutofillAiAction::kLogToMqls,
-                AutofillAiAction::kServerClassificationModel});
+                AutofillAiAction::kServerClassificationModel,
+                AutofillAiAction::kWalletDataSharingPromotion});
 
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
@@ -199,7 +206,8 @@ TEST_P(
   constexpr auto kForbiddenActions =
       DenseSet({AutofillAiAction::kOptIn, AutofillAiAction::kIphForOptIn,
                 AutofillAiAction::kLogToMqls,
-                AutofillAiAction::kServerClassificationModel});
+                AutofillAiAction::kServerClassificationModel,
+                AutofillAiAction::kWalletDataSharingPromotion});
 
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
@@ -207,14 +215,18 @@ TEST_P(
 }
 
 // Tests that when `kAutofillAiAvailableByDefault` and the user is opted in,
-// everything but IPH is permitted.
+// everything but IPH and the Wallet data sharing promotion is permitted.
 TEST_P(AutofillAiMayPerformActionTest,
        ReturnsTrueWhenAvailableByDefault_ExceptForIph) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillAiAvailableByDefault};
+
+  constexpr auto kForbiddenActions =
+      DenseSet({AutofillAiAction::kIphForOptIn,
+                AutofillAiAction::kWalletDataSharingPromotion});
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      GetParam() != AutofillAiAction::kIphForOptIn);
+      !kForbiddenActions.contains(GetParam()));
 }
 
 // Tests that the server model cannot be run and its cache cannot be used if
@@ -225,14 +237,14 @@ TEST_P(AutofillAiMayPerformActionTest, ModelFeatureOff) {
 
   // The opt-in IPH cannot be run either since we simulate a state in which the
   // user has opted into the feature.
-  const bool is_allowed =
-      GetParam() != AutofillAiAction::kServerClassificationModel &&
-      GetParam() !=
-          AutofillAiAction::kUseCachedServerClassificationModelResults &&
-      GetParam() != AutofillAiAction::kIphForOptIn;
+  constexpr auto kForbiddenActions =
+      DenseSet({AutofillAiAction::kServerClassificationModel,
+                AutofillAiAction::kUseCachedServerClassificationModelResults,
+                AutofillAiAction::kIphForOptIn,
+                AutofillAiAction::kWalletDataSharingPromotion});
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
+      !kForbiddenActions.contains(GetParam()));
 }
 
 // Tests that the server model cache cannot be used if the feature parameter
@@ -246,13 +258,13 @@ TEST_P(AutofillAiMayPerformActionTest, FeatureParamForModelCacheUseOff) {
 
   // The opt-in IPH cannot be run either since we simulate a state in which the
   // user has opted into the feature.
-  const bool is_allowed =
-      GetParam() !=
-          AutofillAiAction::kUseCachedServerClassificationModelResults &&
-      GetParam() != AutofillAiAction::kIphForOptIn;
+  constexpr auto kForbiddenActions =
+      DenseSet({AutofillAiAction::kUseCachedServerClassificationModelResults,
+                AutofillAiAction::kIphForOptIn,
+                AutofillAiAction::kWalletDataSharingPromotion});
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
+      !kForbiddenActions.contains(GetParam()));
 }
 
 // Tests that the opt-in IPH cannot be shown if its feature is off.
@@ -390,10 +402,12 @@ TEST_P(AutofillAiMayPerformActionTest, SignInPending) {
 TEST_P(AutofillAiMayPerformActionTest, CapabilityCheckIgnored) {
   AddEntity();
   client().SetCanUseModelExecutionFeatures(false);
-  const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn;
+  constexpr auto kForbiddenActions =
+      DenseSet({AutofillAiAction::kIphForOptIn,
+                AutofillAiAction::kWalletDataSharingPromotion});
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
+      !kForbiddenActions.contains(GetParam()));
 }
 
 // Tests that the check whether a client can use model execution features is
@@ -443,16 +457,18 @@ TEST_P(AutofillAiMayPerformActionTest, CountryCodeWithAllowlist) {
   EXPECT_FALSE(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)));
 
-  const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn;
+  constexpr auto kForbiddenActions =
+      DenseSet({AutofillAiAction::kIphForOptIn,
+                AutofillAiAction::kWalletDataSharingPromotion});
   client().SetVariationConfigCountryCode(GeoIpCountryCode("BR"));
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
+      !kForbiddenActions.contains(GetParam()));
 
   client().SetVariationConfigCountryCode(GeoIpCountryCode("MX"));
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
+      !kForbiddenActions.contains(GetParam()));
 }
 
 // Tests that if `kAutofillAiIgnoreGeoIp` and a blocklist is set, the feature
@@ -475,16 +491,18 @@ TEST_P(AutofillAiMayPerformActionTest, CountryCodeWithBlocklist) {
   EXPECT_FALSE(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)));
 
-  const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn;
+  constexpr auto kForbiddenActions =
+      DenseSet({AutofillAiAction::kIphForOptIn,
+                AutofillAiAction::kWalletDataSharingPromotion});
   client().SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
+      !kForbiddenActions.contains(GetParam()));
 
   client().SetVariationConfigCountryCode(GeoIpCountryCode("US"));
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
+      !kForbiddenActions.contains(GetParam()));
 }
 
 // Tests that users can edit stored data even if their GeoIP is on the
@@ -510,22 +528,24 @@ TEST_P(AutofillAiMayPerformActionTest, CountryCodeWithBlocklistAndSavedData) {
 TEST_P(AutofillAiMayPerformActionTest, IgnoreGeoIp) {
   base::test::ScopedFeatureList feature_list{features::kAutofillAiIgnoreGeoIp};
 
-  const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn;
+  constexpr auto kForbiddenActions =
+      DenseSet({AutofillAiAction::kIphForOptIn,
+                AutofillAiAction::kWalletDataSharingPromotion});
 
   client().SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
+      !kForbiddenActions.contains(GetParam()));
 
   client().SetVariationConfigCountryCode(GeoIpCountryCode("IT"));
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
+      !kForbiddenActions.contains(GetParam()));
 
   client().SetVariationConfigCountryCode(GeoIpCountryCode("US"));
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
+      !kForbiddenActions.contains(GetParam()));
 }
 
 // Tests that the blocklist has priority over the allowlist.
@@ -544,10 +564,12 @@ TEST_P(AutofillAiMayPerformActionTest, IgnoreGeoIpBlocklistAndAllowlist) {
 TEST_P(AutofillAiMayPerformActionTest, AppLocale) {
   client().set_app_locale("de-DE");
 
-  const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn;
+  constexpr auto kForbiddenActions =
+      DenseSet({AutofillAiAction::kIphForOptIn,
+                AutofillAiAction::kWalletDataSharingPromotion});
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
+      !kForbiddenActions.contains(GetParam()));
 }
 
 // Tests that Wallet-related actions are not available on non-supported
@@ -556,11 +578,37 @@ TEST_P(AutofillAiMayPerformActionTest, kWalletSupportedCountries) {
   base::test::ScopedFeatureList feature_list{features::kAutofillAiIgnoreGeoIp};
   // Wallet is not supported in India.
   client().SetVariationConfigCountryCode(GeoIpCountryCode("IN"));
-  const bool is_allowed = GetParam() != AutofillAiAction::kImportToWallet &&
-                          GetParam() != AutofillAiAction::kIphForOptIn;
+  constexpr auto kForbiddenActions = DenseSet(
+      {AutofillAiAction::kImportToWallet, AutofillAiAction::kIphForOptIn,
+       AutofillAiAction::kWalletDataSharingPromotion});
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
+      !kForbiddenActions.contains(GetParam()));
+}
+
+// Tests that if the Wallet data sharing setting is turned off, the Wallet
+// data sharing promotion can be shown.
+TEST_P(AutofillAiMayPerformActionTest, WalletDataSharingOff) {
+  client().SetWalletStorageEnabled(false);
+
+  constexpr auto kForbiddenActions = DenseSet({AutofillAiAction::kIphForOptIn});
+  EXPECT_EQ(
+      MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
+      !kForbiddenActions.contains(GetParam()));
+}
+
+// Tests that if the Wallet data sharing setting is turned off and the country
+// is not supported by Wallet, the data sharing promotion is not allowed.
+TEST_P(AutofillAiMayPerformActionTest, WalletDataSharingOffUnsupportedCountry) {
+  client().SetWalletStorageEnabled(false);
+  client().SetVariationConfigCountryCode(GeoIpCountryCode("IN"));
+
+  constexpr auto kForbiddenActions =
+      DenseSet({AutofillAiAction::kIphForOptIn,
+                AutofillAiAction::kWalletDataSharingPromotion});
+  EXPECT_EQ(
+      MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
+      !kForbiddenActions.contains(GetParam()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -576,7 +624,8 @@ INSTANTIATE_TEST_SUITE_P(
            AutofillAiAction::kLogToMqls,
            AutofillAiAction::kOptIn,
            AutofillAiAction::kServerClassificationModel,
-           AutofillAiAction::kUseCachedServerClassificationModelResults),
+           AutofillAiAction::kUseCachedServerClassificationModelResults,
+           AutofillAiAction::kWalletDataSharingPromotion),
     GetTestSuffix);
 
 #if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.

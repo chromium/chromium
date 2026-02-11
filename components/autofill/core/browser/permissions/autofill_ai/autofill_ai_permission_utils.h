@@ -67,7 +67,10 @@ enum class AutofillAiAction {
   kUseCachedServerClassificationModelResults,
   // Whether the user can store entities in the Google Wallet server.
   kImportToWallet,
-  kMaxValue = kImportToWallet,
+  // Whether the user should see a promotion to allow Wallet to share data with
+  // Chrome.
+  kWalletDataSharingPromotion,
+  kMaxValue = kWalletDataSharingPromotion,
 };
 
 // Opt-in status for the AutofillAI feature.
