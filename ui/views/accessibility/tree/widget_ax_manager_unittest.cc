@@ -147,6 +147,21 @@ TEST_F(WidgetAXManagerTest, InitInitializesFullyAXTreeManagerWhenAXOn) {
   EXPECT_GT(api.ax_tree_manager()->ax_tree()->size(), 1);
 }
 
+// Init() should enable the manager when kNativeAPIs is set
+// alongside other AXMode flags.
+TEST_F(WidgetAXManagerTest, InitEnablesWhenMultipleAXModeFlagsSet) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::kAXModeComplete);
+  WidgetAXManager manager(widget());
+  WidgetAXManagerTestApi api(&manager);
+
+  EXPECT_EQ(api.ax_tree_manager(), nullptr);
+  manager.Init();
+  EXPECT_TRUE(manager.is_enabled());
+  EXPECT_NE(api.ax_tree_manager(), nullptr);
+
+  EXPECT_GT(api.ax_tree_manager()->ax_tree()->size(), 1);
+}
+
 TEST_F(WidgetAXManagerTest, Init_DoesNotInitAXTreeManagerForNonTopLevel) {
   std::unique_ptr<Widget> child_widget =
       base::WrapUnique(CreateChildNativeWidgetWithParent(

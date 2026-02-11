@@ -124,7 +124,8 @@ WidgetAXManager::~WidgetAXManager() {
 
 void WidgetAXManager::Init() {
   CHECK(widget_->GetRootView());
-  if (ui::AXPlatform::GetInstance().GetMode() == ui::AXMode::kNativeAPIs) {
+  if (ui::AXPlatform::GetInstance().GetMode().has_mode(
+          ui::AXMode::kNativeAPIs)) {
     Enable();
   } else {
     if (widget_->is_top_level()) {
