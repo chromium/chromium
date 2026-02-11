@@ -29,9 +29,8 @@ class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
 
   // JNI implementations:
   void Destroy(JNIEnv* env);
-  // Returns a flattened list of action IDs and names from the menu model.
-  std::vector<std::string> GetActions(JNIEnv* env);
-  // Returns whether the menu model has been populated.
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> GetMenuEntries(
+      JNIEnv* env);
   bool IsReady(JNIEnv* env);
 
   // ExtensionsMenuViewModel::Delegate:

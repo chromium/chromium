@@ -110,6 +110,22 @@ public class ExtensionTestUtils {
                 });
     }
 
+    /**
+     * Helper to create a {@link ExtensionsMenuTypes.MenuEntryState} for a simple extension without
+     * host permissions. The entry will only have a disabled action button.
+     */
+    public static ExtensionsMenuTypes.MenuEntryState createSimpleMenuEntry(
+            String extensionId, String extensionName) {
+        ExtensionsMenuTypes.ControlState actionButton =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.DISABLED,
+                        /* text= */ extensionName,
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ false);
+        return new ExtensionsMenuTypes.MenuEntryState(extensionId, actionButton);
+    }
+
     @NativeMethods
     public interface Natives {
         void loadUnpackedExtensionAsync(

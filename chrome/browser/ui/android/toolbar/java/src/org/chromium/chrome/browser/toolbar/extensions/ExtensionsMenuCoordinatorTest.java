@@ -39,12 +39,17 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.extensions.ExtensionTestUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridgeJni;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuHost;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Unit tests for ExtensionsMenuCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -243,10 +248,11 @@ public class ExtensionsMenuCoordinatorTest {
      * ready. This is required because the menu only shows itself after this data is received.
      */
     private void triggerOnMediatorReady() {
-        // We must mock a non-null return value for getActions() because the Mediator will
+        // We must mock a non-null return value for getMenuEntries() because the Mediator will
         // immediately call this method upon receiving the onReady signal.
-        String[] mockActions = new String[] {"extA", "Extension A"};
-        when(mExtensionsMenuBridgeJniMock.getActions(anyLong())).thenReturn(mockActions);
+        List<ExtensionsMenuTypes.MenuEntryState> mockEntries = new ArrayList<>();
+        mockEntries.add(ExtensionTestUtils.createSimpleMenuEntry("id_a", "Extension A"));
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(mockEntries);
 
         // This simulates the actual C++ -> Java call (Observer.onReady) that happens when
         // the native model is initialized.

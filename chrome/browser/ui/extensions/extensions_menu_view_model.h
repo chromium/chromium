@@ -125,6 +125,7 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   };
 
   // A generic structure for UI controls (buttons, toggles, radio buttons).
+  // This struct is mirrored in Java (ExtensionsMenuTypes.java).
   struct ControlState {
     // Represents the availability and interactivity the control.
     enum class Status {
@@ -202,12 +203,15 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
 
   // Holds the information about how the extension's menu entry should look
   // like. This will be used by the platform delegate as needed.
+  // This struct is mirrored in Java (ExtensionsMenuTypes.java).
   struct MenuEntryState {
     MenuEntryState();
     MenuEntryState(const MenuEntryState&);
     MenuEntryState& operator=(const MenuEntryState&);
     ~MenuEntryState();
 
+    // The id of the extension in the menu entry.
+    extensions::ExtensionId extension_id;
     // The state for the action button.
     ControlState action_button;
     // The state for the context menu button.

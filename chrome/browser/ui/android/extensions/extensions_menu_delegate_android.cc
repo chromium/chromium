@@ -13,6 +13,20 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionsMenuBridge_jni.h"
+#include "chrome/browser/ui/android/extensions/jni_headers/ExtensionsMenuTypes_jni.h"
+
+namespace {
+
+// Returns a Java ExtensionsMenuTypes.ControlState object.
+base::android::ScopedJavaLocalRef<jobject> CreateJavaControlState(
+    JNIEnv* env,
+    const ExtensionsMenuViewModel::ControlState& state) {
+  return extensions::Java_ControlState_Constructor(
+      env, static_cast<int>(state.status), state.text, state.accessible_name,
+      state.tooltip_text, state.is_on);
+}
+
+}  // namespace
 
 namespace extensions {
 
@@ -32,17 +46,25 @@ void ExtensionsMenuDelegateAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-std::vector<std::string> ExtensionsMenuDelegateAndroid::GetActions(
-    JNIEnv* env) {
-  // TODO(crbug.com/473213114): Returning a flattened list of strings is a
-  // workaround until we introduce a proper type to hold action information.
-  std::vector<std::string> actions_list;
+std::vector<base::android::ScopedJavaLocalRef<jobject>>
+ExtensionsMenuDelegateAndroid::GetMenuEntries(JNIEnv* env) {
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_entries;
+
   for (const auto& action_model : menu_model_->action_models()) {
-    actions_list.push_back(action_model->GetId());
-    actions_list.push_back(base::UTF16ToUTF8(action_model->GetActionName()));
+    // TODO(crbug.com/471016915): Use the correct size for the icon once
+    // implemented. For now, using a placeholder.
+    auto icon_size = gfx::Size();
+    extensions::ExtensionId id = action_model->GetId();
+    ExtensionsMenuViewModel::MenuEntryState state =
+        menu_model_->GetMenuEntryState(id, icon_size);
+
+    base::android::ScopedJavaLocalRef<jobject> j_item =
+        Java_MenuEntryState_Constructor(
+            env, id, CreateJavaControlState(env, state.action_button));
+    java_entries.push_back(std::move(j_item));
   }
 
-  return actions_list;
+  return java_entries;
 }
 
 bool ExtensionsMenuDelegateAndroid::IsReady(JNIEnv* env) {

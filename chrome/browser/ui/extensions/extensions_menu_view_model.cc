@@ -908,6 +908,7 @@ ExtensionsMenuViewModel::GetMenuEntryState(
   content::WebContents* web_contents = GetActiveWebContents();
 
   MenuEntryState entry_state;
+  entry_state.extension_id = extension_id;
   entry_state.action_button =
       GetActionButtonState(extension_id, action_icon_size);
   entry_state.context_menu_button = GetContextMenuButtonState(action_model);

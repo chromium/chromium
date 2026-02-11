@@ -41,8 +41,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridgeJni;
+import org.chromium.chrome.browser.ui.extensions.ExtensionTestUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridgeJni;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionUiBackendRule;
 import org.chromium.content_public.browser.WebContents;
@@ -53,6 +55,9 @@ import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Tests for {@link ExtensionsMenuMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -138,8 +143,8 @@ public class ExtensionsMenuMediatorTest {
 
     @Test
     public void testOnReady_ZeroState() {
-        // Mock the bridge to return an empty array (no extensions).
-        when(mExtensionsMenuBridgeJniMock.getActions(anyLong())).thenReturn(new String[] {});
+        // Mock the bridge to return an empty list (no extensions).
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(new ArrayList<>());
 
         // Simulate the native callback triggering onReady.
         mBridgeCaptor.getValue().onReady();
@@ -153,9 +158,11 @@ public class ExtensionsMenuMediatorTest {
 
     @Test
     public void testOnReady_Actions() {
-        // Mock the bridge to return flattened actions [id, name, id, name].
-        String[] actions = new String[] {"id_a", "Extension A", "id_b", "Extension B"};
-        when(mExtensionsMenuBridgeJniMock.getActions(anyLong())).thenReturn(actions);
+        // Mock the bridge to return menu entries.
+        List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
+        entries.add(ExtensionTestUtils.createSimpleMenuEntry("id_a", "Extension A"));
+        entries.add(ExtensionTestUtils.createSimpleMenuEntry("id_b", "Extension B"));
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
 
         // Simulate the native callback triggering onReady.
         mBridgeCaptor.getValue().onReady();
@@ -173,8 +180,10 @@ public class ExtensionsMenuMediatorTest {
     public void testOnReady_AlreadyPopulated() {
         // Setup a new mediator context where the bridge is already ready during construction.
         when(mExtensionsMenuBridgeJniMock.isReady(anyLong())).thenReturn(true);
-        when(mExtensionsMenuBridgeJniMock.getActions(anyLong()))
-                .thenReturn(new String[] {"id_a", "Extension A"});
+
+        List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
+        entries.add(ExtensionTestUtils.createSimpleMenuEntry("id_a", "Extension A"));
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
 
         mActionModels.clear();
 
@@ -204,8 +213,9 @@ public class ExtensionsMenuMediatorTest {
     @Test
     public void testContextClick_showMenu() {
         // Initialize the action models.
-        String[] actions = new String[] {"a", "Extension A"};
-        when(mExtensionsMenuBridgeJniMock.getActions(anyLong())).thenReturn(actions);
+        List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
+        entries.add(ExtensionTestUtils.createSimpleMenuEntry("id_a", "Extension A"));
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
 
         mBridgeCaptor.getValue().onReady();
 
@@ -220,7 +230,7 @@ public class ExtensionsMenuMediatorTest {
         verify(mActionContextMenuBridgeJniMock)
                 .init(
                         eq(BROWSER_WINDOW_POINTER),
-                        eq("a"),
+                        eq("id_a"),
                         eq(mWebContents),
                         eq(ContextMenuSource.MENU_ITEM));
         verify(mockContextMenuButton).showMenu();

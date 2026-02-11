@@ -16,6 +16,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 
+import java.util.List;
+
 /** A JNI bridge that provides native extensions menu data to the Java UI. */
 @NullMarked
 @JNINamespace("extensions")
@@ -39,9 +41,9 @@ public class ExtensionsMenuBridge implements Destroyable {
         LifetimeAssert.destroy(mLifetimeAssert);
     }
 
-    /** Returns a flattened list of action IDs and names from native. */
-    public String[] getActions() {
-        return ExtensionsMenuBridgeJni.get().getActions(mNativeExtensionsMenuDelegateAndroid);
+    /** Returns the list of menu entries with their states from native. */
+    public List<ExtensionsMenuTypes.MenuEntryState> getMenuEntries() {
+        return ExtensionsMenuBridgeJni.get().getMenuEntries(mNativeExtensionsMenuDelegateAndroid);
     }
 
     /** Returns whether the native menu model is ready. */
@@ -65,13 +67,23 @@ public class ExtensionsMenuBridge implements Destroyable {
 
     @NativeMethods
     public interface Natives {
+        /**
+         * Initializes the native ExtensionsMenuDelegateAndroid and returns its pointer.
+         *
+         * @param bridge The Java bridge object.
+         * @param browserWindowInterfacePtr The pointer to the native BrowserWindowInterface.
+         */
         long init(ExtensionsMenuBridge bridge, long browserWindowInterfacePtr);
 
+        /** Destroys the native ExtensionsMenuDelegateAndroid. */
         void destroy(long nativeExtensionsMenuDelegateAndroid);
 
-        @JniType("std::vector<std::string>")
-        String[] getActions(long nativeExtensionsMenuDelegateAndroid);
+        /** Returns the list of menu entries with their states from native. */
+        @JniType("std::vector<base::android::ScopedJavaLocalRef<jobject>>")
+        List<ExtensionsMenuTypes.MenuEntryState> getMenuEntries(
+                long nativeExtensionsMenuDelegateAndroid);
 
+        /** Returns whether the native menu model is ready. */
         boolean isReady(long nativeExtensionsMenuDelegateAndroid);
     }
 }
