@@ -9,7 +9,6 @@
 
 #include <optional>
 
-#include "base/numerics/checked_math.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 
@@ -37,43 +36,15 @@ class MEDIA_EXPORT AudioTimestampHelper {
   static constexpr base::TimeDelta FramesToTime(int64_t frames,
                                                 int samples_per_second) {
     CHECK_GT(samples_per_second, 0);
-
-    // The unit of `micro_samples` isn't intuitive (samples*microseconds/s), but
-    // it cancels out into microseconds when dividing by `samples_per_second`.
-    const auto micro_samples =
-        base::CheckMul<int64_t>(frames, base::Time::kMicrosecondsPerSecond);
-
-    const int64_t microseconds =
-        CheckDiv(micro_samples, samples_per_second).ValueOrDie();
-
-    return base::Microseconds(microseconds);
+    return base::Microseconds(frames * base::Time::kMicrosecondsPerSecond /
+                              samples_per_second);
   }
 
   // Returns the number of frames in the given duration of audio with the given
   // sample rate (in samples per second).
-  //
-  // Note: for some combinations of `time` and `samples_per_second`, we can lose
-  // some precision (e.g., 2ms at 44.1kHz returns 88 frames instead of 88.2).
-  // Using double precision in cases where this could cause drift and the
-  // perfect tracking of samples is critical.
   static constexpr int64_t TimeToFrames(base::TimeDelta time,
                                         int samples_per_second) {
-    CHECK_GT(samples_per_second, 0);
-
-    // The unit of `micro_samples` isn't intuitive (microseconds*samples/s), but
-    // it cancels out into samples when dividing by `kDivisor`.
-    const auto micro_samples =
-        base::CheckMul<int64_t>(time.InMicroseconds(), samples_per_second);
-
-    constexpr int64_t kDivisor = base::Time::kMicrosecondsPerSecond;
-
-    // Round away from 0 by adding/subtracting the equivalent of 0.5 samples.
-    constexpr int64_t kRoundingBias = kDivisor / 2;
-    const int64_t signed_bias =
-        time.is_positive() ? kRoundingBias : -kRoundingBias;
-
-    return CheckDiv(CheckAdd(micro_samples, signed_bias), kDivisor)
-        .ValueOrDie();
+    return std::round(time.InSecondsF() * samples_per_second);
   }
 
   AudioTimestampHelper() = delete;
