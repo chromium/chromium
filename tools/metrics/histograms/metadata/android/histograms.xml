@@ -5992,6 +5992,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.TabStrip.BookmarkAllTabs.Result"
+    enum="AndroidTabStripBookmarkAllTabsResult" expires_after="2027-01-26">
+  <owner>mklw@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the result of the 'Bookmark all tabs' action from the empty space
+    tab strip context menu. Recorded when the user selects the menu item. We
+    track this to monitor the failure rate of this action and the reason of
+    failure (null tab model, empty tab list).
+  </summary>
+</histogram>
+
 <histogram name="Android.TabStrip.NullTabHoverCardView.ShowDelayed"
     enum="Boolean" expires_after="2026-06-01">
   <owner>renkens@google.com</owner>

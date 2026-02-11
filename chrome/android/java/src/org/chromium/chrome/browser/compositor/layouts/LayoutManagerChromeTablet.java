@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.WindowAndroid;
@@ -83,6 +84,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      *     tab drag and drop.
      * @param toolbarContainerView View passed to StripLayoutHelper to support tab drag and drop.
      * @param tabHoverCardViewStub The ViewStub representing the strip tab hover card.
+     * @param windowAndroid The @{@link WindowAndroid} instance to access Activity.
      * @param toolbarManager The ToolbarManager instance.
      * @param desktopWindowStateManager The DesktopWindowStateManager for the app header.
      * @param actionConfirmationManager The {@link ActionConfirmationManager} for group actions.
@@ -91,6 +93,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param shareDelegateSupplier Supplies {@link ShareDelegate} to share tab URLs.
      * @param xrSceneCoreSessionManager The {@link XrSceneCoreSessionManager} to switch between
      *     space modes on XR.
+     * @param backPressManager The {@link BackPressManager} for handling back press.
+     * @param snackbarManager The {@link SnackbarManager} used to show snackbar UI.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
@@ -115,7 +119,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Nullable XrSceneCoreSessionManager xrSceneCoreSessionManager,
-            BackPressManager backPressManager) {
+            BackPressManager backPressManager,
+            SnackbarManager snackbarManager) {
         super(
                 host,
                 contentContainer,
@@ -154,7 +159,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         bottomSheetController,
                         shareDelegateSupplier,
                         xrSpaceModeObservableSupplier,
-                        backPressManager);
+                        backPressManager,
+                        snackbarManager);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
         mDesktopWindowStateManager = desktopWindowStateManager;

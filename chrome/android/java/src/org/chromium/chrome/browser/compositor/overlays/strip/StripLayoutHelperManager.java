@@ -101,6 +101,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
@@ -475,6 +476,7 @@ public class StripLayoutHelperManager
      * @param tabHoverCardViewStub The ViewStub representing the strip tab hover card.
      * @param tabContentManagerSupplier Supplier of the TabContentManager instance.
      * @param browserControlsStateProvider BrowserControlsStateProvider for drag drop.
+     * @param windowAndroid The {@link WindowAndroid} instance to access Activity.
      * @param toolbarManager The ToolbarManager instance.
      * @param desktopWindowStateManager The DesktopWindowStateManager for the app header.
      * @param actionConfirmationManager The {@link ActionConfirmationManager} for group actions.
@@ -483,6 +485,8 @@ public class StripLayoutHelperManager
      * @param shareDelegateSupplier Supplies {@link ShareDelegate} to share tab URLs.
      * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
      *     space mode, false otherwise.
+     * @param backPressManager The {@link BackPressManager} for handling back press.
+     * @param snackbarManager The {@link SnackbarManager} used to show snackbar UI.
      */
     public StripLayoutHelperManager(
             Context context,
@@ -508,7 +512,8 @@ public class StripLayoutHelperManager
             BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Nullable NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
-            BackPressManager backPressManager) {
+            BackPressManager backPressManager,
+            SnackbarManager snackbarManager) {
         mContext = context;
         Resources res = context.getResources();
         mManagerHost = managerHost;
@@ -636,7 +641,8 @@ public class StripLayoutHelperManager
                         bottomSheetController,
                         multiInstanceManager,
                         shareDelegateSupplier,
-                        TabGroupListBottomSheetCoordinator::new);
+                        TabGroupListBottomSheetCoordinator::new,
+                        snackbarManager);
         mIncognitoHelper =
                 new StripLayoutHelper(
                         context,
@@ -658,7 +664,8 @@ public class StripLayoutHelperManager
                         bottomSheetController,
                         multiInstanceManager,
                         shareDelegateSupplier,
-                        TabGroupListBottomSheetCoordinator::new);
+                        TabGroupListBottomSheetCoordinator::new,
+                        snackbarManager);
 
         tabHoverCardViewStub.setOnInflateListener(
                 (viewStub, view) -> {

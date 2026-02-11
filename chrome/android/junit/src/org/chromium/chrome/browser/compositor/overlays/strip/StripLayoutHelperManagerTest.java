@@ -98,6 +98,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
@@ -160,6 +161,7 @@ public class StripLayoutHelperManagerTest {
     @Mock private Tracker mTracker;
     @Mock private ResourceManager mResourceManager;
     @Mock private BackPressManager mBackPressManager;
+    @Mock private SnackbarManager mSnackbarManager;
     @Captor private ArgumentCaptor<List<Rect>> mSystemExclusionRectCaptor;
 
     private final SettableMonotonicObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier =
@@ -254,7 +256,8 @@ public class StripLayoutHelperManagerTest {
                         mBottomSheetController,
                         () -> mShareDelegate,
                         /* xrSpaceModeObservableSupplier= */ null,
-                        mBackPressManager);
+                        mBackPressManager,
+                        mSnackbarManager);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
         mStripLayoutHelperManager.setIsTabStripHiddenByHeightTransition(false);
     }

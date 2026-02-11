@@ -138,6 +138,7 @@ import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinatorFactory;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -216,6 +217,7 @@ public class StripLayoutHelperTest {
     @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private TabGroupListBottomSheetCoordinatorFactory mBottomSheetCoordinatorFactory;
+    @Mock private SnackbarManager mSnackbarManager;
     @Mock private Tab mTab;
     @Mock private TabCreator mTabCreator;
     @Mock private TabGroupSyncService mTabGroupSyncService;
@@ -4676,7 +4678,8 @@ public class StripLayoutHelperTest {
                 mBottomSheetController,
                 mMultiInstanceManager,
                 () -> mShareDelegate,
-                mBottomSheetCoordinatorFactory);
+                mBottomSheetCoordinatorFactory,
+                mSnackbarManager);
     }
 
     private String[] getExpectedAccessibilityDescriptions(int tabIndex) {

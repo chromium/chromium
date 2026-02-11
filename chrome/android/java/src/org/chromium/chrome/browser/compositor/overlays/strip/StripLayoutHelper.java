@@ -22,6 +22,7 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -68,6 +69,9 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
@@ -131,6 +135,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinat
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -150,6 +155,8 @@ import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.widget.RectProvider;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -653,6 +660,7 @@ public class StripLayoutHelper
     // Set when the context menu triggered by a gesture on empty strip space is shown for the first
     // time.
     private @MonotonicNonNull TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
+    private final SnackbarManager mSnackbarManager;
 
     // Tab group share.
     // These are set if shouldEnableGroupSharing() is true.
@@ -685,6 +693,25 @@ public class StripLayoutHelper
         int EMPTY_SPACE_CONTEXT_MENU = 1;
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // LINT.IfChange(BookmarkAllTabsResult)
+    @IntDef({
+        BookmarkAllTabsResult.SUCCESS,
+        BookmarkAllTabsResult.MODEL_NULL,
+        BookmarkAllTabsResult.TAB_LIST_EMPTY,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface BookmarkAllTabsResult {
+        int SUCCESS = 0;
+        int MODEL_NULL = 1;
+        int TAB_LIST_EMPTY = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidTabStripBookmarkAllTabsResult)
+
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
      *
@@ -710,6 +737,9 @@ public class StripLayoutHelper
      * @param multiInstanceManager The {@link MultiInstanceManager} used to move tabs to other
      *     windows.
      * @param shareDelegateSupplier Supplies {@link ShareDelegate} to share tab URLs.
+     * @param tabGroupListBottomSheetCoordinatorFactory The factory used to create the {@link
+     *     TabGroupListBottomSheetCoordinator}.
+     * @param snackbarManager The {@link SnackbarManager} used to show snackbar UI.
      */
     public StripLayoutHelper(
             Context context,
@@ -729,7 +759,8 @@ public class StripLayoutHelper
             BottomSheetController bottomSheetController,
             MultiInstanceManager multiInstanceManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
-            TabGroupListBottomSheetCoordinatorFactory tabGroupListBottomSheetCoordinatorFactory) {
+            TabGroupListBottomSheetCoordinatorFactory tabGroupListBottomSheetCoordinatorFactory,
+            SnackbarManager snackbarManager) {
         mGroupTitleDrawXOffset = TAB_OVERLAP_WIDTH_DP - FOLIO_FOOT_LENGTH_DP;
         mGroupTitleOverlapWidth = FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
         mNewTabButtonWidth = BUTTON_BACKGROUND_SIZE_DP;
@@ -745,6 +776,7 @@ public class StripLayoutHelper
         mMultiInstanceManager = multiInstanceManager;
         mShareDelegateSupplier = shareDelegateSupplier;
         mTabGroupListBottomSheetCoordinatorFactory = tabGroupListBottomSheetCoordinatorFactory;
+        mSnackbarManager = snackbarManager;
         mScrollDelegate = new ScrollDelegate(context);
 
         // Use toolbar menu button padding to align NTB with menu button.
@@ -939,6 +971,10 @@ public class StripLayoutHelper
         if (mTabGroupListBottomSheetCoordinator != null) {
             mTabGroupListBottomSheetCoordinator.destroy();
             mTabGroupListBottomSheetCoordinator = null;
+        }
+        if (mTabStripContextMenuCoordinator != null) {
+            mTabStripContextMenuCoordinator.destroy();
+            mTabStripContextMenuCoordinator = null;
         }
         if (mModel != null) {
             mModel.removeObserver(mTabModelObserver);
@@ -2360,6 +2396,8 @@ public class StripLayoutHelper
                         && mTabGroupContextMenuCoordinator.isMenuShowing())
                 || (mTabContextMenuCoordinator != null
                         && mTabContextMenuCoordinator.isMenuShowing())
+                || (mTabStripContextMenuCoordinator != null
+                        && mTabStripContextMenuCoordinator.isMenuShowing())
                 || (mCloseButtonMenu != null && mCloseButtonMenu.isShowing());
     }
 
@@ -2367,6 +2405,7 @@ public class StripLayoutHelper
     void dismissContextMenu() {
         if (mTabGroupContextMenuCoordinator != null) mTabGroupContextMenuCoordinator.dismiss();
         if (mTabContextMenuCoordinator != null) mTabContextMenuCoordinator.dismiss();
+        if (mTabStripContextMenuCoordinator != null) mTabStripContextMenuCoordinator.dismiss();
         if (mCloseButtonMenu != null) mCloseButtonMenu.dismiss();
     }
 
@@ -3211,6 +3250,51 @@ public class StripLayoutHelper
                                     RecordUserAction.record(
                                             "Android.TabStripMenu.ReopenClosedEntry");
                                     if (mModel != null) mModel.openMostRecentlyClosedEntry();
+                                }
+
+                                @Override
+                                public int getTabCount() {
+                                    return mModel != null ? mModel.getCount() : 0;
+                                }
+
+                                @Override
+                                public void onBookmarkAllTabs() {
+                                    if (mModel == null) {
+                                        RecordHistogram.recordEnumeratedHistogram(
+                                                "Android.TabStripMenu.BookmarkAllTabs.Result",
+                                                BookmarkAllTabsResult.MODEL_NULL,
+                                                BookmarkAllTabsResult.NUM_ENTRIES);
+                                        return;
+                                    }
+                                    List<Tab> tabs =
+                                            TabModelUtils.convertTabListToListOfTabs(mModel);
+                                    if (tabs.isEmpty()) {
+                                        RecordHistogram.recordEnumeratedHistogram(
+                                                "Android.TabStripMenu.BookmarkAllTabs.Result",
+                                                BookmarkAllTabsResult.TAB_LIST_EMPTY,
+                                                BookmarkAllTabsResult.NUM_ENTRIES);
+                                        return;
+                                    }
+
+                                    RecordHistogram.recordEnumeratedHistogram(
+                                            "Android.TabStripMenu.BookmarkAllTabs.Result",
+                                            BookmarkAllTabsResult.SUCCESS,
+                                            BookmarkAllTabsResult.NUM_ENTRIES);
+                                    Profile profile = tabs.get(0).getProfile();
+                                    BookmarkModel bookmarkModel =
+                                            BookmarkModel.getForProfile(profile);
+                                    bookmarkModel.finishLoadingBookmarkModel(
+                                            () -> {
+                                                Activity activity =
+                                                        mWindowAndroid.getActivity().get();
+                                                if (activity == null) return;
+                                                BookmarkUtils.addBookmarksOnMultiSelect(
+                                                        activity,
+                                                        bookmarkModel,
+                                                        tabs,
+                                                        mSnackbarManager,
+                                                        new BookmarkManagerOpenerImpl());
+                                            });
                                 }
 
                                 @Override

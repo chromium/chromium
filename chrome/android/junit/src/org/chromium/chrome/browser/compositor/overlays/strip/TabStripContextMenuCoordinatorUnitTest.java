@@ -68,6 +68,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
         when(mRectProvider.getRect())
                 .thenReturn(new Rect(10, 10, mActivity.getWindow().getDecorView().getWidth(), 50));
         when(mDelegate.getRecentlyClosedEntryType()).thenReturn(RecentlyClosedEntryType.TAB);
+        when(mDelegate.getTabCount()).thenReturn(2);
     }
 
     @Test
@@ -95,7 +96,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
         mCoordinator.showMenu(mRectProvider, false, mActivity);
 
         // Verify.
-        verifyMenuState(/* expectedNumItems= */ 3);
+        verifyMenuState(/* expectedNumItems= */ 4);
     }
 
     @Test
@@ -107,7 +108,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
         mCoordinator.showMenu(mRectProvider, false, mActivity);
 
         // Verify.
-        verifyMenuState(/* expectedNumItems= */ 2);
+        verifyMenuState(/* expectedNumItems= */ 3);
     }
 
     @Test
@@ -115,7 +116,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
         // Arrange.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         mCoordinator.showMenu(mRectProvider, false, mActivity);
-        verifyMenuState(/* expectedNumItems= */ 3);
+        verifyMenuState(/* expectedNumItems= */ 4);
         assertEquals(
                 R.string.menu_new_tab,
                 getItemModelAtPosition(0).get(ListMenuItemProperties.TITLE_ID));
@@ -135,7 +136,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
         // Arrange.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         mCoordinator.showMenu(mRectProvider, false, mActivity);
-        verifyMenuState(/* expectedNumItems= */ 3);
+        verifyMenuState(/* expectedNumItems= */ 4);
         assertEquals(
                 R.string.menu_reopen_closed_tab,
                 getItemModelAtPosition(1).get(ListMenuItemProperties.TITLE_ID));
@@ -151,19 +152,39 @@ public class TabStripContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    public void showMenu_verifyBookmarkAllTabs() {
+        // Arrange.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        mCoordinator.showMenu(mRectProvider, false, mActivity);
+        verifyMenuState(/* expectedNumItems= */ 4);
+        assertEquals(
+                R.string.menu_bookmark_all_tabs,
+                getItemModelAtPosition(2).get(ListMenuItemProperties.TITLE_ID));
+
+        // Act: Select "Bookmark all tabs" option.
+        mCoordinator
+                .getListMenuDelegate(mContentView)
+                .onItemSelected(getItemModelAtPosition(2), mListView);
+
+        // Verify.
+        verify(mDelegate).onBookmarkAllTabs();
+        assertFalse(mMenuWindow.isShowing());
+    }
+
+    @Test
     public void showMenu_verifyNameWindowOption() {
         // Arrange.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         mCoordinator.showMenu(mRectProvider, false, mActivity);
-        verifyMenuState(/* expectedNumItems= */ 3);
+        verifyMenuState(/* expectedNumItems= */ 4);
         assertEquals(
                 R.string.menu_name_window,
-                getItemModelAtPosition(2).get(ListMenuItemProperties.TITLE_ID));
+                getItemModelAtPosition(3).get(ListMenuItemProperties.TITLE_ID));
 
         // Act: Select "Name window" option.
         mCoordinator
                 .getListMenuDelegate(mContentView)
-                .onItemSelected(getItemModelAtPosition(2), mListView);
+                .onItemSelected(getItemModelAtPosition(3), mListView);
 
         // Verify.
         verify(mDelegate).onNameWindow();
