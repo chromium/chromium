@@ -64,10 +64,6 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
   cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
       cc::PaintImage::kInvalidContentId;
   uint32_t snapshot_sk_image_id_ = 0u;
-
-  // Recording accumulating draw ops. This pointer is always valid and safe to
-  // dereference.
-  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
 };
 
 }  // namespace blink

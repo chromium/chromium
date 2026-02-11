@@ -67,11 +67,7 @@ CanvasNon2DSnapshotProviderBitmap::Create(
 
 CanvasNon2DSnapshotProviderBitmap::CanvasNon2DSnapshotProviderBitmap(
     const CanvasSnapshotProvider::Info& info)
-    : info_(info),
-      snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
-      recorder_(
-          std::make_unique<MemoryManagedPaintRecorder>(Size(),
-                                                       /*client=*/nullptr)) {}
+    : info_(info), snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {}
 
 CanvasNon2DSnapshotProviderBitmap::~CanvasNon2DSnapshotProviderBitmap() =
     default;
@@ -104,14 +100,17 @@ CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
     return nullptr;
   }
 
-  draw_callback(recorder_->getRecordingCanvas());
+  MemoryManagedPaintRecorder recorder(Size(),
+                                      /*client=*/nullptr);
 
-  if (recorder_->HasReleasableDrawOps()) {
+  draw_callback(recorder.getRecordingCanvas());
+
+  if (recorder.HasReleasableDrawOps()) {
     ImageProviderImpl image_provider(info_);
 
     cc::PlaybackParams params(&image_provider,
                               surface->getCanvas()->getLocalToDevice());
-    recorder_->ReleaseMainRecording().Playback(surface->getCanvas(), params);
+    recorder.ReleaseMainRecording().Playback(surface->getCanvas(), params);
   }
 
   cc::PaintImage paint_image;
