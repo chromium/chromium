@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SERIALIZED_SCRIPT_VALUE_H_
 
 #include "base/containers/span.h"
+#include "third_party/blink/public/common/messaging/cloneable_message.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "v8/include/v8-local-handle.h"
@@ -64,6 +65,14 @@ class BLINK_EXPORT WebSerializedScriptValue {
   // Create a WebSerializedScriptValue that represents a serialization error.
   // Use `!IsValid()` to check for this state.
   static WebSerializedScriptValue CreateInvalid();
+
+  // Reconstructs a `WebSerializedScriptValue` from a `CloneableMessage`.
+  static WebSerializedScriptValue CreateFromCloneableMessage(CloneableMessage);
+
+  // Returns a `CloneableMessage` containing the serialized data.
+  // `sender_agent_cluster_id` is set on the CloneableMessage.
+  CloneableMessage GetCloneableMessage(
+      base::UnguessableToken sender_agent_cluster_id) const;
 
   void Reset();
   void Assign(const WebSerializedScriptValue&);

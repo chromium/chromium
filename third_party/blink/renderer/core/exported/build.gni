@@ -99,6 +99,7 @@ blink_core_tests_exported = [
   "web_scoped_window_focus_allowed_indicator_test.cc",
   "web_searchable_form_data_test.cc",
   "web_selector_test.cc",
+  "web_serialized_script_value_test.cc",
   "web_view_impl_test.cc",
   "web_view_test.cc",
 ]
