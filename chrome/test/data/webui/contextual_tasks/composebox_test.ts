@@ -1917,17 +1917,21 @@ suite('ContextualTasksComposeboxTest', () => {
       async () => {
         contextualTasksApp.isShownInTab_ = false;
         contextualTasksApp.isZeroState_ = true;
-        contextualTasksApp.enableNativeZeroStateSuggestions = false;
+
+        assertFalse(
+            contextualTasksApp.getEnableNativeZeroStateSuggestionsForTesting());
 
         await contextualTasksApp.updateComplete;
         await contextualTasksApp.$.composebox.updateComplete;
         await microtasksFinished();
 
         assertStyle(contextualTasksApp.$.composebox, 'bottom', '0px');
+
         checkIfCanFindSuggestionsContainer(
             contextualTasksApp, /*canFind=*/ false);
 
-        contextualTasksApp.enableNativeZeroStateSuggestions = true;
+        contextualTasksApp.setEnableNativeZeroStateSuggestionsForTesting(true);
+
         await contextualTasksApp.updateComplete;
         await contextualTasksApp.$.composebox.updateComplete;
         await microtasksFinished();
@@ -1980,14 +1984,19 @@ suite('ContextualTasksComposeboxTest', () => {
       async () => {
         contextualTasksApp.isShownInTab_ = true;
         contextualTasksApp.isZeroState_ = true;
-        contextualTasksApp.enableNativeZeroStateSuggestions = false;
+
+        assertFalse(
+            contextualTasksApp.getEnableNativeZeroStateSuggestionsForTesting());
 
         await contextualTasksApp.updateComplete;
         await contextualTasksApp.$.composebox.updateComplete;
         await microtasksFinished();
+
         checkIfCanFindSuggestionsContainer(
             contextualTasksApp, /*canFind=*/ false);
-        contextualTasksApp.enableNativeZeroStateSuggestions = true;
+
+        contextualTasksApp.setEnableNativeZeroStateSuggestionsForTesting(true);
+
 
         await contextualTasksApp.updateComplete;
         await contextualTasksApp.$.composebox.updateComplete;

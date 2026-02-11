@@ -25,7 +25,7 @@ export function getHtml(this: ContextualTasksAppElement) {
   <ghost-loader id="ghostLoader"></ghost-loader>
   ${this.isErrorDialogVisible_ ?
     html`<contextual-tasks-error-dialog></contextual-tasks-error-dialog>` : ''}
-  <div class="flex-center" id="flexCenterContainer">
+  <div id="flexCenterContainer">
     <div id="composeboxHeaderWrapper"
         ?hidden="${this.isInBasicMode_ && !this.enableBasicModeZOrder_}">
       <h1 class="thread-header" id="composeboxHeader">
@@ -40,7 +40,7 @@ export function getHtml(this: ContextualTasksAppElement) {
           .isZeroState="${this.isZeroState_}"
           .isSidePanel="${!this.isShownInTab_}"
           .enableNativeZeroStateSuggestions=
-              "${this.enableNativeZeroStateSuggestions}">
+              "${this.enableNativeZeroStateSuggestions_}">
     </contextual-tasks-composebox>
   </div>
   <error-page id="errorPage"></error-page>
