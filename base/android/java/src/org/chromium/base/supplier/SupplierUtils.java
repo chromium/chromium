@@ -5,6 +5,7 @@
 package org.chromium.base.supplier;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -25,19 +26,18 @@ public class SupplierUtils {
     private SupplierUtils() {}
 
     private static class Barrier {
-        private final ThreadUtils.ThreadChecker mThreadChecker = new ThreadUtils.ThreadChecker();
         private int mWaitingCount;
         private @Nullable Runnable mCallback;
 
         void waitForAll(Runnable callback, Supplier<?>... suppliers) {
-            mThreadChecker.assertOnValidThread();
+            ThreadUtils.assertOnUiThread();
             assert mCallback == null;
-            mCallback = callback;
             int waitingSupplierCount = 0;
             Callback<?> supplierCallback = (unused) -> onSupplierAvailable();
             for (Supplier<?> supplier : suppliers) {
-                var value = supplier.get();
-                if (value != null) continue;
+                if (supplier.get() != null) {
+                    continue;
+                }
 
                 waitingSupplierCount++;
                 if (supplier instanceof NullableObservableSupplier<?>) {
@@ -54,22 +54,27 @@ public class SupplierUtils {
                                     + supplier;
                 }
             }
-            mWaitingCount = waitingSupplierCount;
-            notifyCallbackIfAppropriate();
+            // Never run callback synchronously so that behavior is consistent when suppliers are
+            // ready vs not.
+            if (waitingSupplierCount == 0) {
+                // Hardcoded to UI thread... This should probably be "whatever thread is active",
+                // but that API does not yet exist in PostTask, and ObservableSuppliers are
+                // UI-thread only anyways.
+                ThreadUtils.postOnUiThread(callback);
+            } else {
+                mWaitingCount = waitingSupplierCount;
+                mCallback = callback;
+            }
         }
 
         private void onSupplierAvailable() {
-            mThreadChecker.assertOnValidThread();
+            ThreadUtils.assertOnUiThread();
             mWaitingCount--;
             assert mWaitingCount >= 0;
-            notifyCallbackIfAppropriate();
-        }
-
-        private void notifyCallbackIfAppropriate() {
-            if (mWaitingCount != 0) return;
-            if (mCallback == null) return;
-            mCallback.run();
-            mCallback = null;
+            if (mWaitingCount == 0) {
+                assumeNonNull(mCallback);
+                mCallback.run();
+            }
         }
     }
 
@@ -82,8 +87,7 @@ public class SupplierUtils {
      * <p>To prevent leaking objects, it is recommended to use {@link
      * org.chromium.base.CallbackController} for the {@link Runnable} callback.
      *
-     * <p>Not thread safe. All passed in suppliers must be notified on the same thread this method
-     * is called.
+     * <p>May be used only on UI thread.
      *
      * @param callback The callback to be notified when all suppliers have values set.
      * @param suppliers The list of suppliers to check for values.

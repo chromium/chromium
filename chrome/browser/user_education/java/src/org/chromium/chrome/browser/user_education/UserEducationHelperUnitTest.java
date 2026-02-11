@@ -30,6 +30,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -88,6 +89,7 @@ public class UserEducationHelperUnitTest {
         UserEducationHelper educationHelper =
                 new UserEducationHelper(new Activity(), profileSupplier, new Handler());
         educationHelper.requestShowIph(mTestIphCommand1);
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         Mockito.verify(mTracker).addOnInitializedCallback(Mockito.any());
     }
 

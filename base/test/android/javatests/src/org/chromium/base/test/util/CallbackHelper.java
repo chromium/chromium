@@ -289,6 +289,22 @@ public class CallbackHelper {
         waitForOnly(null);
     }
 
+    /**
+     * Asserts that the callback was called exactly once since the last wasCalledOnce() /
+     * waitForNext() call.
+     */
+    public void assertCalledOnce() {
+        Assert.assertEquals(mLastWaitedForCount + 1, mCallCount);
+        mLastWaitedForCount = mCallCount;
+    }
+
+    /**
+     * Asserts that the callback was not called since the last wasCalledOnce() / waitForNext() call.
+     */
+    public void assertNotCalled() {
+        Assert.assertEquals(mLastWaitedForCount, mCallCount);
+    }
+
     /** Should be called when the callback associated with this helper object is called. */
     public void notifyCalled() {
         notifyInternal(null);

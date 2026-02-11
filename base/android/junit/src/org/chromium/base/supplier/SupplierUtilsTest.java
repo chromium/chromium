@@ -4,17 +4,15 @@
 
 package org.chromium.base.supplier;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link SupplierUtils}. */
@@ -22,14 +20,16 @@ import java.util.function.Supplier;
 public class SupplierUtilsTest {
 
     @Test
-    public void testWaitForAll_NoSuppliers() throws TimeoutException {
+    public void testWaitForAll_NoSuppliers() {
         CallbackHelper callbackHelper = new CallbackHelper();
         SupplierUtils.waitForAll(callbackHelper::notifyCalled);
-        callbackHelper.waitForOnly();
+        callbackHelper.assertNotCalled();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        callbackHelper.assertCalledOnce();
     }
 
     @Test
-    public void testWaitForAll_AllSuppliersAlreadyHaveValues() throws TimeoutException {
+    public void testWaitForAll_AllSuppliersAlreadyHaveValues() {
         Supplier<Integer> baseSupplier = () -> 4;
         OneshotSupplierImpl<String> oneshotSupplier = new OneshotSupplierImpl<>();
         oneshotSupplier.set("foo");
@@ -45,11 +45,13 @@ public class SupplierUtilsTest {
                 oneshotSupplier,
                 observableSupplier,
                 syncOneshotSupplier);
-        callbackHelper.waitForOnly();
+        callbackHelper.assertNotCalled();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        callbackHelper.assertCalledOnce();
     }
 
     @Test
-    public void testWaitForAll_SomeSuppliersAlreadyHaveValues() throws TimeoutException {
+    public void testWaitForAll_SomeSuppliersAlreadyHaveValues() {
         Supplier<Integer> baseSupplier = () -> 4;
         OneshotSupplierImpl<String> oneshotSupplier = new OneshotSupplierImpl<>();
 
@@ -66,16 +68,17 @@ public class SupplierUtilsTest {
                 observableSupplier,
                 syncOneshotSupplier);
 
-        Assert.assertEquals(0, callbackHelper.getCallCount());
+        callbackHelper.assertNotCalled();
         oneshotSupplier.set("foo");
-        Assert.assertEquals(0, callbackHelper.getCallCount());
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        callbackHelper.assertNotCalled();
         syncOneshotSupplier.set(new ArrayList<>());
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        callbackHelper.waitForOnly();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        callbackHelper.assertCalledOnce();
     }
 
     @Test
-    public void testWaitForAll_NoSuppliersAlreadyHaveValues() throws TimeoutException {
+    public void testWaitForAll_NoSuppliersAlreadyHaveValues() {
         OneshotSupplierImpl<String> oneshotSupplier = new OneshotSupplierImpl<>();
         SettableMonotonicObservableSupplier<Object> observableSupplier =
                 ObservableSuppliers.createMonotonic();
@@ -88,51 +91,59 @@ public class SupplierUtilsTest {
                 observableSupplier,
                 syncOneshotSupplier);
 
-        Assert.assertEquals(0, callbackHelper.getCallCount());
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        callbackHelper.assertNotCalled();
         observableSupplier.set(new Object());
-        Assert.assertEquals(0, callbackHelper.getCallCount());
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        callbackHelper.assertNotCalled();
         oneshotSupplier.set("foo");
-        Assert.assertEquals(0, callbackHelper.getCallCount());
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        callbackHelper.assertNotCalled();
         syncOneshotSupplier.set(new ArrayList<>());
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        callbackHelper.waitForOnly();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        callbackHelper.assertCalledOnce();
     }
 
     @Test
-    public void testWaitForAll_WaitForOneshotSupplier() throws TimeoutException {
+    public void testWaitForAll_WaitForOneshotSupplier() {
         OneshotSupplierImpl<Object> supplier = new OneshotSupplierImpl<>();
 
         CallbackHelper callbackHelper = new CallbackHelper();
         SupplierUtils.waitForAll(callbackHelper::notifyCalled, supplier);
 
-        Assert.assertEquals(0, callbackHelper.getCallCount());
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        callbackHelper.assertNotCalled();
         supplier.set(new Object());
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        callbackHelper.waitForOnly();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        callbackHelper.assertCalledOnce();
     }
 
     @Test
-    public void testWaitForAll_WaitForObservableSupplier() throws TimeoutException {
+    public void testWaitForAll_WaitForObservableSupplier() {
         SettableMonotonicObservableSupplier<Object> supplier =
                 ObservableSuppliers.createMonotonic();
 
         CallbackHelper callbackHelper = new CallbackHelper();
         SupplierUtils.waitForAll(callbackHelper::notifyCalled, supplier);
 
-        Assert.assertEquals(0, callbackHelper.getCallCount());
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        callbackHelper.assertNotCalled();
         supplier.set(new Object());
-        callbackHelper.waitForOnly();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        callbackHelper.assertCalledOnce();
     }
 
     @Test
-    public void testWaitForAll_WaitForSyncOneshotSupplier() throws TimeoutException {
+    public void testWaitForAll_WaitForSyncOneshotSupplier() {
         SyncOneshotSupplierImpl<Object> supplier = new SyncOneshotSupplierImpl<>();
 
         CallbackHelper callbackHelper = new CallbackHelper();
         SupplierUtils.waitForAll(callbackHelper::notifyCalled, supplier);
 
-        Assert.assertEquals(0, callbackHelper.getCallCount());
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        callbackHelper.assertNotCalled();
         supplier.set(new Object());
-        callbackHelper.waitForOnly();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        callbackHelper.assertCalledOnce();
     }
 }
