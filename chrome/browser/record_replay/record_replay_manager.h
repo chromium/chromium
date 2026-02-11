@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_RECORD_REPLAY_RECORD_REPLAY_MANAGER_H_
 #define CHROME_BROWSER_RECORD_REPLAY_RECORD_REPLAY_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/record_replay/recorder.h"
 
 namespace record_replay {
 
@@ -64,6 +66,7 @@ class RecordReplayManager {
   void ReportToUser(std::string_view message);
 
   raw_ref<RecordReplayClient> client_;
+  std::optional<Recorder> recorder_;
   base::WeakPtrFactory<RecordReplayManager> weak_ptr_factory_{this};
 };
 

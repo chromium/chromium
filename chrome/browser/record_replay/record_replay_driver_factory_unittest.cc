@@ -15,6 +15,7 @@
 #include "chrome/browser/record_replay/record_replay_driver.h"
 #include "chrome/browser/record_replay/record_replay_manager.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/prerender_test_util.h"
