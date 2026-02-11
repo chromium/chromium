@@ -9,6 +9,8 @@ include_rules = [
   "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h",
   "+ios/chrome/browser/infobars/model/infobar_manager_impl.h",
   "+ios/chrome/browser/infobars/model/infobar_utils.h",
+  "+ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h",
+  "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/overlays/model/public/common/confirmation/confirmation_overlay_response.h",
   "+ios/chrome/browser/overlays/model/public/overlay_callback_manager.h",
   "+ios/chrome/browser/overlays/model/public/overlay_request_queue.h",

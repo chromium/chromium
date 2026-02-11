@@ -13,10 +13,14 @@ source_set("alerts") {
   deps = [
     "//base",
     "//ios/chrome/browser/alert_view/ui_bundled",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
     "//ios/chrome/browser/presenters/ui_bundled",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/elements",
   ]
 }

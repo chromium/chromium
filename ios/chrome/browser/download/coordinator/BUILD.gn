@@ -38,6 +38,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/drive/model:upload_task",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/confirmation",
     "//ios/chrome/browser/presenters/ui_bundled",

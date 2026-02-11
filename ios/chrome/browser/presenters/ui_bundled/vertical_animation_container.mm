@@ -78,6 +78,11 @@ NSTimeInterval kAnimationDuration = 0.2;
     return;
   }
 
+  if ([self.delegate
+          respondsToSelector:@selector(containedPresenterWillPresent:)]) {
+    [self.delegate containedPresenterWillPresent:self];
+  }
+
   auto animations = ^{
     [NSLayoutConstraint deactivateConstraints:self.dismissedConstraints];
     [NSLayoutConstraint activateConstraints:self.presentedConstraints];
