@@ -25,6 +25,8 @@ static_library("record_replay") {
     "recording_data_manager_factory.h",
     "recording_data_manager_impl.cc",
     "recording_data_manager_impl.h",
+    "replayer.cc",
+    "replayer.h",
   ]
 
   deps = [
@@ -70,6 +72,7 @@ source_set("unit_tests") {
     "record_replay_driver_factory_unittest.cc",
     "record_replay_manager_unittest.cc",
     "recording_data_manager_impl_unittest.cc",
+    "replayer_unittest.cc",
   ]
   deps = [
     ":impl",

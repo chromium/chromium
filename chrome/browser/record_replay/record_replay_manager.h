@@ -7,11 +7,14 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/record_replay/recorder.h"
+#include "chrome/browser/record_replay/replayer.h"
 
 namespace record_replay {
 
@@ -30,6 +33,8 @@ class RecordReplayManager {
   RecordReplayManager(const RecordReplayManager&) = delete;
   RecordReplayManager& operator=(const RecordReplayManager&) = delete;
   ~RecordReplayManager();
+
+  RecordReplayClient& client() { return *client_; }
 
   State state() const;
 
@@ -58,15 +63,25 @@ class RecordReplayManager {
   void StartReplay();
   void StopReplay();
 
+  // Retrieves all elements in all active frames that match `element_selector`.
+  void GetMatchingElements(const std::string& element_selector,
+                           base::OnceCallback<void(std::vector<ElementId>)> cb);
+
+  void ReportToUser(std::string_view message);
+
   base::WeakPtr<RecordReplayManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
-  void ReportToUser(std::string_view message);
+  // Retrieves the recording for the last committed URL, if there is one, and
+  // passes it to `cb`.
+  void GetMatchingRecording(
+      base::OnceCallback<void(std::optional<Recording>)> cb);
 
   raw_ref<RecordReplayClient> client_;
   std::optional<Recorder> recorder_;
+  std::optional<Replayer> replayer_;
   base::WeakPtrFactory<RecordReplayManager> weak_ptr_factory_{this};
 };
 
