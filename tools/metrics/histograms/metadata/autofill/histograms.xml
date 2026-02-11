@@ -9020,23 +9020,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.WebOTP.PhoneNumberCollection.ParseResult"
-    enum="Boolean" expires_after="2026-02-22">
-  <owner>yigu@chromium.org</owner>
-  <owner>battre@chromium.org</owner>
-  <owner>web-identity-eng@google.com</owner>
-  <summary>
-    Records whether a frame collects phone number based on the field
-    classification. It records once per frame only if it has parsed forms.
-
-    Note that the field types may not be calculated if there are less than 3
-    fields in the form unless an autocomplete attribute is provided. e.g. if the
-    form has only a single field regarding phone number without specifiying
-    autocomplete=&quot;phone&quot;, a sample with &quot;false&quot; will be
-    reported.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.WebOTP.PhonePlusWebOTPPlusOTC"
     enum="PhoneCollectionState" expires_after="2026-06-28">
   <owner>yigu@chromium.org</owner>

@@ -127,15 +127,6 @@ using UkmTextFieldValueChangedType = ukm::builders::Autofill_TextFieldDidChange;
 using UkmFormEventType = ukm::builders::Autofill_FormEvent;
 using UkmFieldInfoType = ukm::builders::Autofill2_FieldInfo;
 
-void CreateSimpleForm(const GURL& origin, FormData& form) {
-  form.set_host_frame(test::MakeLocalFrameToken());
-  form.set_renderer_id(test::MakeFormRendererId());
-  form.set_name(u"TestForm");
-  form.set_url(GURL("http://example.com/form.html"));
-  form.set_action(GURL("http://example.com/submit.html"));
-  form.set_main_frame_origin(url::Origin::Create(origin));
-}
-
 std::string SerializeAndEncode(const AutofillQueryResponse& response) {
   std::string unencoded_response_string;
   if (!response.SerializeToString(&unencoded_response_string)) {
@@ -2502,85 +2493,6 @@ TEST_F(AutofillMetricsTest, FrameDoesNotHaveAutocompleteOneTimeCode) {
       "Autofill.WebOTP.OneTimeCode.FromAutocomplete", 1);
 }
 
-// Verify that we correctly log metrics when a phone number field does not have
-// autocomplete attribute but there are at least 3 fields in the form.
-TEST_F(AutofillMetricsTest, FrameHasPhoneNumberFieldWithoutAutocomplete) {
-  // At least 3 fields are necessary for FormStructure to compute proper field
-  // types if autocomplete attribute value is not available.
-  FormData form =
-      CreateForm({CreateTestFormField("Phone", "phone", "",
-                                      FormControlType::kInputTelephone),
-                  CreateTestFormField("Last Name", "lastname", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("First Name", "firstname", "",
-                                      FormControlType::kInputText)});
-
-  base::HistogramTester histogram_tester;
-  SeeForm(form);
-  autofill_client().GetAutofillDriverFactory().Delete(autofill_driver());
-  histogram_tester.ExpectBucketCount(
-      "Autofill.WebOTP.PhoneNumberCollection.ParseResult",
-      /* has_phone_number_field */ 1,
-      /* sample count */ 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.WebOTP.PhoneNumberCollection.ParseResult", 1);
-}
-
-// Verify that we correctly log metrics when a phone number field does not have
-// autocomplete attribute and there are less than 3 fields in the form.
-TEST_F(AutofillMetricsTest, FrameHasSinglePhoneNumberFieldWithoutAutocomplete) {
-  // At least 3 fields are necessary for FormStructure to compute proper field
-  // types if autocomplete attribute value is not available.
-  FormData form = CreateForm({CreateTestFormField(
-      "Phone", "phone", "", FormControlType::kInputTelephone)});
-
-  base::HistogramTester histogram_tester;
-  SeeForm(form);
-  autofill_client().GetAutofillDriverFactory().Delete(autofill_driver());
-  histogram_tester.ExpectBucketCount(
-      "Autofill.WebOTP.PhoneNumberCollection.ParseResult",
-      /* has_phone_number_field */ 0,
-      /* sample count */ 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.WebOTP.PhoneNumberCollection.ParseResult", 1);
-}
-
-// Verify that we correctly log metrics when a phone number field has
-// autocomplete attribute.
-TEST_F(AutofillMetricsTest, FrameHasPhoneNumberFieldWithAutocomplete) {
-  FormData form;  // Form with phone number.
-  CreateSimpleForm(autofill_driver().url(), form);
-  form.set_fields(
-      {CreateTestFormField("", "", "", FormControlType::kInputText, "phone")});
-
-  base::HistogramTester histogram_tester;
-  SeeForm(form);
-  autofill_client().GetAutofillDriverFactory().Delete(autofill_driver());
-  histogram_tester.ExpectBucketCount(
-      "Autofill.WebOTP.PhoneNumberCollection.ParseResult",
-      /* has_phone_number_field */ 1,
-      /* sample count */ 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.WebOTP.PhoneNumberCollection.ParseResult", 1);
-}
-
-// Verify that we correctly log metrics when a form does not have phone number
-// field.
-TEST_F(AutofillMetricsTest, FrameDoesNotHavePhoneNumberField) {
-  FormData form = CreateForm(
-      {CreateTestFormField("", "", "", FormControlType::kInputPassword)});
-
-  base::HistogramTester histogram_tester;
-  SeeForm(form);
-  autofill_client().GetAutofillDriverFactory().Delete(autofill_driver());
-  histogram_tester.ExpectBucketCount(
-      "Autofill.WebOTP.PhoneNumberCollection.ParseResult",
-      /* has_phone_number_field */ 0,
-      /* sample count */ 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.WebOTP.PhoneNumberCollection.ParseResult", 1);
-}
-
 // ContentAutofillDriver is not visible to TestAutofillDriver on iOS.
 // In addition, WebOTP will not ship on iOS.
 #if !BUILDFLAG(IS_IOS)
@@ -2608,6 +2520,15 @@ class WebOTPPhoneCollectionMetricsTest
     : public AutofillMetricsTest,
       public ::testing::WithParamInterface<
           WebOTPPhoneCollectionMetricsTestCase> {};
+
+void CreateSimpleForm(const GURL& origin, FormData& form) {
+  form.set_host_frame(test::MakeLocalFrameToken());
+  form.set_renderer_id(test::MakeFormRendererId());
+  form.set_name(u"TestForm");
+  form.set_url(GURL("http://example.com/form.html"));
+  form.set_action(GURL("http://example.com/submit.html"));
+  form.set_main_frame_origin(url::Origin::Create(origin));
+}
 
 INSTANTIATE_TEST_SUITE_P(
     WebOTPPhoneCollectionMetricsTest,
