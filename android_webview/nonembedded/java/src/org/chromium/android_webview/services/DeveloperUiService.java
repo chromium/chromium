@@ -271,7 +271,7 @@ public final class DeveloperUiService extends Service {
                         .build();
         try {
             startForeground(FLAG_OVERRIDE_NOTIFICATION_ID, notification);
-        } catch (IllegalStateException e) {
+        } catch (IllegalStateException | SecurityException e) {
             logSuspectedForegroundServiceStartNotAllowedException();
         }
     }
@@ -311,7 +311,7 @@ public final class DeveloperUiService extends Service {
             Intent intent = new Intent(this, DeveloperUiService.class);
             try {
                 startForegroundService(intent);
-            } catch (IllegalStateException e) {
+            } catch (IllegalStateException | SecurityException e) {
                 // Android O doesn't allow bound Services to request foreground status unless the
                 // app is running in the foreground already or we already started the service with
                 // Context#startForegroundService.
