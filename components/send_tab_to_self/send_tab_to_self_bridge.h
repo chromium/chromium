@@ -145,6 +145,9 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   // exist.
   SendTabToSelfEntry* GetMutableEntryByGUID(const std::string& guid) const;
 
+  // Returns true if the device should be included in the target list.
+  bool ShouldIncludeDevice(const syncer::DeviceInfo& device) const;
+
   // Delete expired entries.
   void DoGarbageCollection();
 
