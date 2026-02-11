@@ -12,9 +12,11 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.transition.ChangeBounds;
+import android.transition.Fade;
 import android.transition.Transition;
 import android.transition.TransitionListenerAdapter;
 import android.transition.TransitionManager;
+import android.transition.TransitionSet;
 import android.view.ActionMode;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -82,6 +84,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -105,7 +108,8 @@ import java.util.function.Supplier;
 public class LocationBarCoordinator
         implements LocationBar, NativeInitObserver, AutocompleteDelegate {
 
-    private static final long COMPACT_MODE_ANIMATION_DURATION_MS = 200;
+    private static final int COMPACT_MODE_FADE_START_DELAY_MS = 100;
+    private static final int COMPACT_MODE_ANIMATION_DURATION_MS = 150;
     private final DeferredIMEWindowInsetApplicationCallback
             mDeferredIMEWindowInsetApplicationCallback;
 
@@ -873,9 +877,13 @@ public class LocationBarCoordinator
         ChangeBounds changeBounds = new ChangeBounds();
         changeBounds
                 .setDuration(COMPACT_MODE_ANIMATION_DURATION_MS)
+                .setInterpolator(Interpolators.STANDARD_INTERPOLATOR)
                 .addTarget(mLocationBarLayout)
                 .addTarget(addButton);
+        Transition transition;
         if (state == FuseboxState.COMPACT) {
+            // Only fade when entering expanded mode.
+            transition = changeBounds;
             mLocationBarEmbedder.setRequestFixedHeight(true);
             changeBounds.addListener(
                     new TransitionListenerAdapter() {
@@ -889,14 +897,23 @@ public class LocationBarCoordinator
                             mLocationBarEmbedder.setRequestFixedHeight(false);
                         }
                     });
+        } else {
+            Fade fade = new Fade();
+            fade.addTarget(mLocationBarLayout.findViewById(R.id.fusebox_request_type));
+            fade.setStartDelay(COMPACT_MODE_FADE_START_DELAY_MS);
+            // Delaying the fade prevents the chip from becoming visible before the fusebox expands
+            // to include it.
+            fade.setDuration(COMPACT_MODE_ANIMATION_DURATION_MS);
+            fade.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+            transition = new TransitionSet().addTransition(changeBounds).addTransition(fade);
         }
         // If the refactored animations are enabled, the ChangeBounds transition will instead be
         // kicked off with the other transitions in ToolbarPhone.
         if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
             changeBounds.setResizeClip(/* resizeClip= */ true);
-            mLocationBarEmbedder.beginEmbeddedDelayedTransition(mLocationBarLayout, changeBounds);
+            mLocationBarEmbedder.beginEmbeddedDelayedTransition(mLocationBarLayout, transition);
         } else {
-            TransitionManager.beginDelayedTransition(mLocationBarLayout, changeBounds);
+            TransitionManager.beginDelayedTransition(mLocationBarLayout, transition);
         }
     }
 
