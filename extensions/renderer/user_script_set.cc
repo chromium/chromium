@@ -197,16 +197,14 @@ bool UserScriptSet::UpdateUserScripts(
     // gets cleared up when the last renderer or browser process drops their
     // reference to the shared memory.
     for (const auto& js_script : script->js_scripts()) {
-      const char* body = nullptr;
-      size_t body_length = 0;
-      CHECK(iter.ReadData(&body, &body_length));
-      js_script->set_external_content(std::string_view(body, body_length));
+      std::string_view body;
+      CHECK(iter.ReadStringPiece(&body));
+      js_script->set_external_content(body);
     }
     for (const auto& css_script : script->css_scripts()) {
-      const char* body = nullptr;
-      size_t body_length = 0;
-      CHECK(iter.ReadData(&body, &body_length));
-      css_script->set_external_content(std::string_view(body, body_length));
+      std::string_view body;
+      CHECK(iter.ReadStringPiece(&body));
+      css_script->set_external_content(body);
     }
 
     if (only_inject_incognito && !script->is_incognito_enabled())
