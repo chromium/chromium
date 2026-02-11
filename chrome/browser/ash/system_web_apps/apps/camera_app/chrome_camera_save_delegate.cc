@@ -15,12 +15,25 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chromeos/ash/experiences/camera/camera_save_handler.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_context.h"
+
+namespace {
+
+const std::string& GetPathFromPref(content::BrowserContext* context) {
+  auto* prefs = Profile::FromBrowserContext(context)->GetPrefs();
+  CHECK(prefs);
+  const auto* pref = prefs->FindPreference(ash::prefs::kCameraSaveLocation);
+  return pref->GetValue()->GetString();
+}
+
+}  // namespace
 
 ChromeCameraSaveDelegate::ChromeCameraSaveDelegate(
     content::BrowserContext* context)
     : context_(context),
       destination_(policy::local_user_files::GetCameraDestination(
-          Profile::FromBrowserContext(context_))) {}
+          Profile::FromBrowserContext(context_))),
+      path_from_pref_(GetPathFromPref(context_)) {}
 
 ChromeCameraSaveDelegate::~ChromeCameraSaveDelegate() = default;
 
@@ -46,17 +59,10 @@ base::FilePath ChromeCameraSaveDelegate::GetGoogleDriveRoot() const {
   return policy::local_user_files::GetGoogleDriveRoot();
 }
 
-std::string ChromeCameraSaveDelegate::GetPathFromPref() const {
-  auto* prefs = Profile::FromBrowserContext(context_)->GetPrefs();
-  CHECK(prefs);
-  const auto* pref = prefs->FindPreference(ash::prefs::kCameraSaveLocation);
-  return pref->GetValue()->GetString();
-}
-
 base::FilePath ChromeCameraSaveDelegate::GetFinalPathRelativeToRoot() const {
   // The first component is expected to be the root folder variable, e.g.
   // "${microsoft_onedrive}".
-  auto components = base::FilePath(GetPathFromPref()).GetComponents();
+  auto components = base::FilePath(path_from_pref_).GetComponents();
 
   if (components.size() <= 1) {
     // No subfolder specified.

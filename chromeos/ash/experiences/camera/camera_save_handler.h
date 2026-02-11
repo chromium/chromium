@@ -108,8 +108,11 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
   static void Create(base::SupportsUserData& context,
                      std::unique_ptr<Delegate> delegate);
 
-  // Returns the root folder where the camera app will create a subfolder and
-  // files will be written there before upload.
+  // Returns the local or cloud destination type for saving files.
+  FileSaveDestination GetDestination() const;
+
+  // Returns the root folder where the camera app will create a subfolder
+  // and files will be written there before upload.
   base::FilePath GetWritableRoot() const;
 
   // Returns the subfolder path relative to the writable root where files will

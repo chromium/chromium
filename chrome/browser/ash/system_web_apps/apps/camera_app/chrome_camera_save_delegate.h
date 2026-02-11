@@ -61,7 +61,6 @@ class ChromeCameraSaveDelegate : public CameraSaveHandler::Delegate {
            policy::local_user_files::FileSaveDestination::kGoogleDrive;
   }
 
-  std::string GetPathFromPref() const;
   void CancelUploads(base::OnceClosure cancel_closure);
   void OnOnedriveUploadDone(
       const std::string& file_name,
@@ -76,6 +75,7 @@ class ChromeCameraSaveDelegate : public CameraSaveHandler::Delegate {
 
   const raw_ptr<content::BrowserContext> context_;
   const policy::local_user_files::FileSaveDestination destination_;
+  const std::string path_from_pref_;
   std::map<std::string, base::WeakPtr<ash::cloud_upload::OdfsSkyvaultUploader>>
       onedrive_uploaders_;
   std::map<std::string, base::WeakPtr<ash::cloud_upload::DriveUploadObserver>>
