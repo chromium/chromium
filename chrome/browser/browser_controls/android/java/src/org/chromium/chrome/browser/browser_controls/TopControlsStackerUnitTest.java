@@ -221,15 +221,15 @@ public class TopControlsStackerUnitTest {
     }
 
     @Mock private BrowserControlsSizer mBrowserControlsSizer;
-    @Mock private BrowserControlsVisibilityDelegate mVisibilityDelegate;
     @Captor private ArgumentCaptor<Callback<Integer>> mVisibilityCallbackCaptor;
 
+    private BrowserControlsVisibilityDelegate mVisibilityDelegate;
     private TopControlsStacker mTopControlsStacker;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        doReturn(BrowserControlsState.BOTH).when(mVisibilityDelegate).get();
+        mVisibilityDelegate = new BrowserControlsVisibilityDelegate(BrowserControlsState.BOTH);
         doReturn(true).when(mBrowserControlsSizer).offsetOverridden();
         mTopControlsStacker = new TopControlsStacker(mBrowserControlsSizer, mVisibilityDelegate);
     }
@@ -352,9 +352,7 @@ public class TopControlsStackerUnitTest {
         // Simulate a browser controls state change without offset tag update.
         reset(mBrowserControlsSizer);
 
-        verify(mVisibilityDelegate)
-                .addSyncObserverAndPostIfNonNull(mVisibilityCallbackCaptor.capture());
-        mVisibilityCallbackCaptor.getValue().onResult(BrowserControlsState.SHOWN);
+        mVisibilityDelegate.set(BrowserControlsState.SHOWN);
         assertControlsHeight(100, 100);
         toolbar.assertHasNoOffsetTags();
     }

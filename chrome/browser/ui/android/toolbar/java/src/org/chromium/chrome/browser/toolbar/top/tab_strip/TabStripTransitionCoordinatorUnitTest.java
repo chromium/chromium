@@ -40,6 +40,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -89,13 +90,13 @@ public class TabStripTransitionCoordinatorUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
-    @Mock private BrowserStateBrowserControlsVisibilityDelegate mVisibilityDelegate;
     @Mock private ControlContainer mControlContainer;
     @Mock private ViewResourceAdapter mViewResourceAdapter;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Captor private ArgumentCaptor<BrowserControlsStateProvider.Observer> mBrowserControlsObserver;
     @Captor private ArgumentCaptor<Callback<Resource>> mOnCaptureReadyCallback;
 
+    private BrowserStateBrowserControlsVisibilityDelegate mVisibilityDelegate;
     private TestControlContainerView mSpyControlContainer;
     private TabStripTransitionCoordinator mCoordinator;
     private TestActivity mActivity;
@@ -111,6 +112,11 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     @Before
     public void setup() {
+        mVisibilityDelegate =
+                new BrowserStateBrowserControlsVisibilityDelegate(
+                        ObservableSuppliers.alwaysFalse());
+        when(mBrowserControlsVisibilityManager.getBrowserVisibilityDelegate())
+                .thenReturn(mVisibilityDelegate);
         mActivityScenario.getScenario().onActivity(activity -> mActivity = activity);
         mSpyControlContainer = TestControlContainerView.createSpy(mActivity);
         mActivity.setContentView(mSpyControlContainer);
@@ -141,7 +147,6 @@ public class TabStripTransitionCoordinatorUnitTest {
         doReturn(mVisibilityDelegate)
                 .when(mBrowserControlsVisibilityManager)
                 .getBrowserVisibilityDelegate();
-        doReturn(BrowserControlsState.BOTH).when(mVisibilityDelegate).get();
 
         setUpTabStripTransitionCoordinator(
                 /* isInDesktopWindow= */ false, LARGE_NORMAL_WINDOW_WIDTH);
@@ -218,7 +223,7 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     @Test
     public void hideTabStripWithForceBrowserControlShown() {
-        doReturn(BrowserControlsState.SHOWN).when(mVisibilityDelegate).get();
+        mVisibilityDelegate.set(BrowserControlsState.SHOWN);
         setDeviceWidthDp(NARROW_NORMAL_WINDOW_WIDTH);
         assertTabStripHeightForMargins(0);
         assertObservedHeight(0);
@@ -226,7 +231,7 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     @Test
     public void hideTabStripWithForceBrowserControlHidden() {
-        doReturn(BrowserControlsState.HIDDEN).when(mVisibilityDelegate).get();
+        mVisibilityDelegate.set(BrowserControlsState.HIDDEN);
         setDeviceWidthDp(NARROW_NORMAL_WINDOW_WIDTH);
         assertTabStripHeightForMargins(0);
         assertObservedHeight(0);
@@ -374,7 +379,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     @Config(qualifiers = "w320dp")
     public void showTabStripWithBrowserControlForceShown() {
         settleTransitionDuringInitForNarrowWindow();
-        doReturn(BrowserControlsState.SHOWN).when(mVisibilityDelegate).get();
+        mVisibilityDelegate.set(BrowserControlsState.SHOWN);
         setDeviceWidthDp(600);
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
         assertObservedHeight(TEST_TAB_STRIP_HEIGHT);
@@ -384,7 +389,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     @Config(qualifiers = "w320dp")
     public void showTabStripWithBrowserControlForceHidden() {
         settleTransitionDuringInitForNarrowWindow();
-        doReturn(BrowserControlsState.HIDDEN).when(mVisibilityDelegate).get();
+        mVisibilityDelegate.set(BrowserControlsState.HIDDEN);
         setDeviceWidthDp(600);
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
         assertObservedHeight(TEST_TAB_STRIP_HEIGHT);

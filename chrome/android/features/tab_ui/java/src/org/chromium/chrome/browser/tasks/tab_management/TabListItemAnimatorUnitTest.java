@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,7 +32,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
@@ -45,19 +45,23 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Unit tests for {@link TabListItemAnimator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabListItemAnimatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Spy
-    private SettableNonNullObservableSupplier<Boolean> mIsAnimatorRunningSupplier =
+    private final SettableNonNullObservableSupplier<Boolean> mIsAnimatorRunningSupplier =
             ObservableSuppliers.createNonNull(false);
+    private final List<Boolean> mIsAnimatorRunningValues = new ArrayList<>();
 
     private TabListItemAnimator mItemAnimator;
 
     @Before
     public void setUp() {
+        mIsAnimatorRunningSupplier.addSyncObserver(mIsAnimatorRunningValues::add);
         mItemAnimator = spy(new TabListItemAnimator(mIsAnimatorRunningSupplier));
     }
 
@@ -455,10 +459,7 @@ public class TabListItemAnimatorUnitTest {
         mItemAnimator.runPendingAnimations();
         ShadowLooper.shadowMainLooper().idle();
 
-        InOrder inOrder = Mockito.inOrder(mIsAnimatorRunningSupplier);
-        inOrder.verify(mIsAnimatorRunningSupplier).set(true);
-        inOrder.verify(mIsAnimatorRunningSupplier).set(false);
-        assertFalse(mIsAnimatorRunningSupplier.get());
+        assertEquals(List.of(true, false), mIsAnimatorRunningValues);
     }
 
     @Test
@@ -469,9 +470,6 @@ public class TabListItemAnimatorUnitTest {
         mItemAnimator.endAnimations();
         ShadowLooper.shadowMainLooper().idle();
 
-        InOrder inOrder = Mockito.inOrder(mIsAnimatorRunningSupplier);
-        inOrder.verify(mIsAnimatorRunningSupplier).set(true);
-        inOrder.verify(mIsAnimatorRunningSupplier).set(false);
-        assertFalse(mIsAnimatorRunningSupplier.get());
+        assertEquals(List.of(true, false), mIsAnimatorRunningValues);
     }
 }

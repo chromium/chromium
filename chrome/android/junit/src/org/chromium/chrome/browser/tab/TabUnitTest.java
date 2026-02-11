@@ -12,7 +12,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentCaptor.captor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -52,6 +51,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.SettableLookAheadObservableSupplier;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.prefs.PrefService;
@@ -87,9 +87,10 @@ public class TabUnitTest {
     @Mock private UserPrefs.Natives mUserPrefsNatives;
     @Mock private PrefService mPrefs;
     @Mock TabImpl.Natives mNativeMock;
-    @Mock private LookAheadObservableSupplier<Tab> mTabSupplier;
     @Captor private ArgumentCaptor<Callback<Tab>> mCallbackCaptor;
 
+    private final SettableLookAheadObservableSupplier<Tab> mTabSupplier =
+            new SettableLookAheadObservableSupplier<>();
     private TabImpl mTab;
 
     @Before
@@ -133,9 +134,7 @@ public class TabUnitTest {
         mTab.setNativePtrForTesting(1);
 
         mTab.onAddedToTabModel(mTabSupplier, ignored -> false);
-        verify(mTabSupplier).addObserver(mCallbackCaptor.capture());
-
-        mCallbackCaptor.getValue().onResult(mTab);
+        mTabSupplier.set(mTab);
         verify(mNativeMock).sendDidActivateUpdate(anyLong());
     }
 
@@ -145,16 +144,12 @@ public class TabUnitTest {
         TabImplJni.setInstanceForTesting(mNativeMock);
         mTab.setNativePtrForTesting(1);
 
-        ArgumentCaptor<Callback<Tab>> lookAheadCaptor = captor();
         mTab.onAddedToTabModel(mTabSupplier, ignored -> false);
 
-        verify(mTabSupplier).addObserver(mCallbackCaptor.capture());
-        verify(mTabSupplier).addLookAheadObserver(lookAheadCaptor.capture());
-
         // Set as active first to set mWasLastActive to true.
-        mCallbackCaptor.getValue().onResult(mTab);
+        mTabSupplier.set(mTab);
 
-        lookAheadCaptor.getValue().onResult(null);
+        mTabSupplier.set(null);
         verify(mNativeMock).sendWillDeactivateUpdate(anyLong());
     }
 

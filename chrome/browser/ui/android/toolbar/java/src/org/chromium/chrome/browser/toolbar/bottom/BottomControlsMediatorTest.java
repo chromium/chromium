@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.bottom;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -12,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.chrome.browser.toolbar.bottom.BottomControlsProperties.ANDROID_VIEW_HEIGHT;
 import static org.chromium.chrome.browser.toolbar.bottom.BottomControlsProperties.ANDROID_VIEW_VISIBLE;
@@ -38,6 +39,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -80,7 +82,6 @@ public class BottomControlsMediatorTest {
 
     @Mock BottomControlsStacker mBottomControlsStacker;
     @Mock BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     @Mock LayoutManager mLayoutManager;
     @Mock WindowAndroid mWindowAndroid;
     @Mock TabObscuringHandler mTabObscuringHandler;
@@ -92,6 +93,7 @@ public class BottomControlsMediatorTest {
     @Mock EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     @Mock EdgeToEdgeManager mEdgeToEdgeManager;
 
+    private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final SettableNullableObservableSupplier<Tab> mTabObservableSupplier =
             ObservableSuppliers.createNullable();
@@ -108,6 +110,9 @@ public class BottomControlsMediatorTest {
         doReturn(mInsetObserver).when(mWindowAndroid).getInsetObserver();
         doReturn(mBrowserControlsStateProvider).when(mBottomControlsStacker).getBrowserControls();
         doReturn(mEdgeToEdgeStateProvider).when(mEdgeToEdgeManager).getEdgeToEdgeStateProvider();
+        mBrowserControlsVisibilityDelegate =
+                new BrowserStateBrowserControlsVisibilityDelegate(
+                        ObservableSuppliers.alwaysFalse());
         mModel =
                 new PropertyModel.Builder(BottomControlsProperties.ALL_KEYS)
                         .with(BottomControlsProperties.ANDROID_VIEW_VISIBLE, false)
@@ -230,18 +235,18 @@ public class BottomControlsMediatorTest {
     @Test
     public void testSetVisibility() {
         // The initial visibility is false, defined in #setup.
-        verifyNoInteractions(mBrowserControlsVisibilityDelegate);
+        assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
 
         mMediator.setBottomControlsVisible(true);
         assertTrue("Compositor view is not visible.", mModel.get(COMPOSITED_VIEW_VISIBLE));
         assertTrue("Android view is not visible.", mModel.get(ANDROID_VIEW_VISIBLE));
-        verify(mBrowserControlsVisibilityDelegate).showControlsTransient();
+        assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.SHOWN);
     }
 
     @Test
     public void testSetVisibility_SwipeLayout() {
         // The initial visibility is false, defined in #setup.
-        verifyNoInteractions(mBrowserControlsVisibilityDelegate);
+        assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
 
         mMediator.onStartedShowing(LayoutType.TOOLBAR_SWIPE);
         mMediator.setBottomControlsVisible(true);
@@ -249,13 +254,13 @@ public class BottomControlsMediatorTest {
         assertFalse(
                 "Android view is not visible during toolbar swipe.",
                 mModel.get(ANDROID_VIEW_VISIBLE));
-        verify(mBrowserControlsVisibilityDelegate).showControlsTransient();
+        assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.SHOWN);
     }
 
     @Test
     public void testSetVisibility_OverviewPannel() {
         // The initial visibility is false, defined in #setup.
-        verifyNoInteractions(mBrowserControlsVisibilityDelegate);
+        assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
 
         mOverlayPanelVisibilitySupplier.set(true);
         mMediator.setBottomControlsVisible(true);
@@ -263,6 +268,6 @@ public class BottomControlsMediatorTest {
         assertFalse(
                 "Android view is not visible during overlay panel.",
                 mModel.get(ANDROID_VIEW_VISIBLE));
-        verify(mBrowserControlsVisibilityDelegate).showControlsTransient();
+        assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.SHOWN);
     }
 }

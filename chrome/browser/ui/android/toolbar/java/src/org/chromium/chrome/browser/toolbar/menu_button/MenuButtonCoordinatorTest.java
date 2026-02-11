@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -45,7 +46,6 @@ import java.lang.ref.WeakReference;
 public class MenuButtonCoordinatorTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     @Mock private Activity mActivity;
     @Mock private MenuButtonCoordinator.SetFocusFunction mFocusFunction;
     @Mock private AppMenuCoordinator mAppMenuCoordinator;
@@ -62,12 +62,16 @@ public class MenuButtonCoordinatorTest {
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
     @Mock private MenuButtonCoordinator.VisibilityDelegate mVisibilityDelegate;
 
+    private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private MenuUiState mMenuUiState;
     private OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
     private MenuButtonCoordinator mMenuButtonCoordinator;
 
     @Before
     public void setUp() {
+        mControlsVisibilityDelegate =
+                new BrowserStateBrowserControlsVisibilityDelegate(
+                        ObservableSuppliers.alwaysFalse());
         doReturn(mAppMenuHandler).when(mAppMenuCoordinator).getAppMenuHandler();
         doReturn(mAppMenuButtonHelper).when(mAppMenuHandler).createAppMenuButtonHelper();
         doReturn(mAppMenuPropertiesDelegate)

@@ -21,13 +21,11 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -53,15 +51,11 @@ public class SuggestionMetricsServiceUnitTest {
     @Mock private Activity mActivity;
     @Mock private Tab mTab1;
 
-    @Captor private ArgumentCaptor<Callback<Tab>> mTabObserverCaptor;
     @Captor private ArgumentCaptor<StartStopWithNativeObserver> mStartStopObserverCaptor;
 
-    @Spy
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
             ObservableSuppliers.createNullable();
-
     private final Token mGtsGroupId = new Token(1, 1);
-
     private SuggestionMetricsService mSuggestionMetricsService;
 
     @Before
@@ -74,7 +68,6 @@ public class SuggestionMetricsServiceUnitTest {
         mSuggestionMetricsService.initializeTracker(
                 WINDOW_ID, mActivity, mTabModelSelector, mLifecycleDispatcher);
         verify(mLifecycleDispatcher).register(mStartStopObserverCaptor.capture());
-        verify(mCurrentTabSupplier).addObserver(mTabObserverCaptor.capture());
 
         when(mTab1.getTabGroupId()).thenReturn(mGtsGroupId);
     }
@@ -97,7 +90,7 @@ public class SuggestionMetricsServiceUnitTest {
     }
 
     private void selectTab(Tab tab) {
-        mTabObserverCaptor.getValue().onResult(tab);
+        mCurrentTabSupplier.set(tab);
     }
 
     @Test
@@ -165,7 +158,6 @@ public class SuggestionMetricsServiceUnitTest {
         onStateChangeForTesting(mActivity, ActivityState.PAUSED);
 
         StartStopWithNativeObserver observer = mStartStopObserverCaptor.getValue();
-        Callback<Tab> tabCallback = mTabObserverCaptor.getValue();
 
         assertTrue(mCurrentTabSupplier.hasObservers());
 

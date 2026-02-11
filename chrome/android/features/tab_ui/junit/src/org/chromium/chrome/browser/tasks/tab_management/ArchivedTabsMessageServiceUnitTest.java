@@ -40,7 +40,6 @@ import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -113,10 +112,6 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private Supplier<PaneManager> mPaneManagerSupplier;
     @Mock private Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
-
-    @Mock
-    private MonotonicObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
-
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Captor private ArgumentCaptor<TabArchiveSettings.Observer> mTabArchiveSettingsObserverCaptor;
     @Captor private ArgumentCaptor<OnDropOnArchivalMessageCardEventListener> mOnDropObserverCaptor;
@@ -124,9 +119,8 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Captor
     private ArgumentCaptor<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverCaptor;
 
-    private Activity mActivity;
-    private ViewGroup mRootView;
-    private ArchivedTabsMessageService mArchivedTabsMessageService;
+    private final SettableMonotonicObservableSupplier<TabGroupModelFilter>
+            mCurrentTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
     private final SettableNonNullObservableSupplier<Integer> mTabCountSupplier =
             ObservableSuppliers.createNonNull(INITIAL_TAB_COUNT);
     private final SettableNullableObservableSupplier<TabListCoordinator>
@@ -135,6 +129,9 @@ public class ArchivedTabsMessageServiceUnitTest {
             ObservableSuppliers.createMonotonic();
     private final SettableMonotonicObservableSupplier<LayoutStateProvider>
             mLayoutStateProviderSupplier = ObservableSuppliers.createMonotonic();
+    private Activity mActivity;
+    private ViewGroup mRootView;
+    private ArchivedTabsMessageService mArchivedTabsMessageService;
 
     @Before
     public void setUp() throws Exception {
@@ -147,7 +144,7 @@ public class ArchivedTabsMessageServiceUnitTest {
 
         when(mTabModel.getTabById(anyInt())).thenReturn(mTab);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mCurrentTabGroupModelFilterSupplier.get()).thenReturn(mTabGroupModelFilter);
+        mCurrentTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
         when(mArchivedTabModelOrchestrator.getTabArchiver()).thenReturn(mTabArchiver);
     }
 

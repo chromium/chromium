@@ -29,8 +29,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ShowBadgeProperty;
@@ -53,7 +55,7 @@ import java.lang.ref.WeakReference;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class MenuButtonMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
+
     @Mock private Activity mActivity;
     @Mock private MenuButtonCoordinator.SetFocusFunction mFocusFunction;
     @Mock private AppMenuCoordinator mAppMenuCoordinator;
@@ -69,6 +71,7 @@ public class MenuButtonMediatorTest {
     @Mock private MenuButtonCoordinator.VisibilityDelegate mVisibilityDelegate;
     @Mock private ThemeColorProvider mThemeColorProvider;
 
+    private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private MenuUiState mMenuUiState;
     private OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
     private PropertyModel mPropertyModel;
@@ -77,6 +80,9 @@ public class MenuButtonMediatorTest {
     @Before
     @SuppressWarnings("DirectInvocationOnMock")
     public void setUp() {
+        mControlsVisibilityDelegate =
+                new BrowserStateBrowserControlsVisibilityDelegate(
+                        ObservableSuppliers.alwaysFalse());
         mPropertyModel =
                 new PropertyModel.Builder(MenuButtonProperties.ALL_KEYS)
                         .with(
@@ -111,9 +117,6 @@ public class MenuButtonMediatorTest {
     @Test
     public void testAppMenuVisiblityChange_badgeShowing() {
         mAppMenuSupplier.set(mAppMenuCoordinator);
-        doReturn(42)
-                .when(mControlsVisibilityDelegate)
-                .showControlsPersistentAndClearOldToken(TokenHolder.INVALID_TOKEN);
         mPropertyModel.set(
                 MenuButtonProperties.SHOW_UPDATE_BADGE, new ShowBadgeProperty(true, false));
         mMenuButtonMediator.onMenuVisibilityChanged(true);
@@ -123,23 +126,19 @@ public class MenuButtonMediatorTest {
         verify(mOnMenuButtonClicked).run();
 
         mMenuButtonMediator.onMenuVisibilityChanged(false);
-        verify(mControlsVisibilityDelegate).releasePersistentShowingToken(42);
+        assertEquals(BrowserControlsState.BOTH, mControlsVisibilityDelegate.get().intValue());
     }
 
     @Test
     public void testAppMenuHighlightChange() {
         mAppMenuSupplier.set(mAppMenuCoordinator);
 
-        doReturn(42)
-                .when(mControlsVisibilityDelegate)
-                .showControlsPersistentAndClearOldToken(TokenHolder.INVALID_TOKEN);
-
         mMenuButtonMediator.onMenuHighlightChanged(true);
         assertTrue(mPropertyModel.get(MenuButtonProperties.IS_HIGHLIGHTING));
 
         mMenuButtonMediator.onMenuHighlightChanged(false);
         assertFalse(mPropertyModel.get(MenuButtonProperties.IS_HIGHLIGHTING));
-        verify(mControlsVisibilityDelegate).releasePersistentShowingToken(42);
+        assertEquals(BrowserControlsState.BOTH, mControlsVisibilityDelegate.get().intValue());
     }
 
     @Test

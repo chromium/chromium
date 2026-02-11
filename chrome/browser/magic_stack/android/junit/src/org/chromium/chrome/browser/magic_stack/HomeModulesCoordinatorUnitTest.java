@@ -45,7 +45,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -95,11 +94,6 @@ public class HomeModulesCoordinatorUnitTest {
     @Mock private ApplicationInfo mApplicationInfo;
     @Mock private DisplayMetrics mDisplayMetrics;
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
-
-    @Spy
-    private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
-            ObservableSuppliers.createMonotonic();
-
     @Mock private Profile mProfile;
     @Mock SegmentationPlatformService mSegmentationPlatformService;
     @Mock private ModuleRegistry mModuleRegistry;
@@ -120,6 +114,8 @@ public class HomeModulesCoordinatorUnitTest {
 
     @Captor private ArgumentCaptor<OnCreateContextMenuListener> mOnCreateContextMenuListenerCaptor;
 
+    private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
+            ObservableSuppliers.createMonotonic();
     private HomeModulesCoordinator mCoordinator;
 
     @Before

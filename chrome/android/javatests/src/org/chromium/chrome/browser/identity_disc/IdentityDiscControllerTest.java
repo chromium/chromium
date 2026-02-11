@@ -24,6 +24,7 @@ import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import android.app.Activity;
 
 import androidx.annotation.StringRes;
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -45,7 +46,6 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
@@ -135,11 +135,11 @@ public class IdentityDiscControllerTest {
 
     private RegularNewTabPageStation mPage;
     private Tab mTab;
+    private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
 
     @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
     @Mock private SigninManager mSigninManagerMock;
     @Mock private IdentityManager mIdentityManagerMock;
-    @Mock private MonotonicObservableSupplier<Profile> mProfileSupplier;
     @Mock private ButtonDataProvider.ButtonDataObserver mButtonDataObserver;
     @Mock private Tracker mTracker;
     @Mock private WindowAndroid mWindowAndroid;
@@ -167,6 +167,8 @@ public class IdentityDiscControllerTest {
 
     @Before
     public void setUp() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mProfileSupplier = ObservableSuppliers.createMonotonic());
         mPage = mActivityTestRule.startOnNtp();
         mTab = mPage.getTab();
         NewTabPageTestUtils.waitForNtpLoaded(mTab);
@@ -412,6 +414,7 @@ public class IdentityDiscControllerTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void onPrimaryAccountChanged_accountSet() {
         IdentityDiscController identityDiscController =
                 buildControllerWithObserver(mButtonDataObserver);
@@ -426,34 +429,28 @@ public class IdentityDiscControllerTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
+    @UiThreadTest
     public void preExistingErrorAtCreation() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // Fake an identity error.
-                    FakeSyncServiceImpl fakeSyncService = new FakeSyncServiceImpl();
-                    SyncServiceFactory.setInstanceForTesting(fakeSyncService);
-                    fakeSyncService.setRequiresClientUpgrade(true);
+        // Fake an identity error.
+        FakeSyncServiceImpl fakeSyncService = new FakeSyncServiceImpl();
+        SyncServiceFactory.setInstanceForTesting(fakeSyncService);
+        fakeSyncService.setRequiresClientUpgrade(true);
 
-                    mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        IdentityDiscController identityDiscController = buildController();
 
-                    SettableMonotonicObservableSupplier<Profile> profileSupplier =
-                            ObservableSuppliers.createMonotonic();
-                    IdentityDiscController identityDiscController =
-                            buildController(profileSupplier);
+        Assert.assertEquals(UserActionableError.NONE, identityDiscController.getIdentityError());
 
-                    Assert.assertEquals(
-                            UserActionableError.NONE, identityDiscController.getIdentityError());
+        mProfileSupplier.set(ProfileManager.getLastUsedRegularProfile());
 
-                    profileSupplier.set(ProfileManager.getLastUsedRegularProfile());
-
-                    Assert.assertEquals(
-                            UserActionableError.NEEDS_CLIENT_UPGRADE,
-                            identityDiscController.getIdentityError());
-                });
+        Assert.assertEquals(
+                UserActionableError.NEEDS_CLIENT_UPGRADE,
+                identityDiscController.getIdentityError());
     }
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void onPrimaryAccountChanged_accountCleared() {
         IdentityDiscController identityDiscController =
                 buildControllerWithObserver(mButtonDataObserver);
@@ -467,9 +464,10 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
+    @UiThreadTest
     public void onClick_profileNotYetInitialized_doesNothing() {
         TrackerFactory.setTrackerForTests(mTracker);
-        IdentityDiscController identityDiscController = buildController(mProfileSupplier);
+        IdentityDiscController identityDiscController = buildController();
 
         // If the button is tapped before the profile is set, the click shouldn't be recorded.
         identityDiscController.onClick();
@@ -603,20 +601,18 @@ public class IdentityDiscControllerTest {
 
     private IdentityDiscController buildControllerWithObserver(
             ButtonDataProvider.ButtonDataObserver observer) {
-        IdentityDiscController controller = buildController(mProfileSupplier);
+        IdentityDiscController controller = buildController();
         controller.addObserver(observer);
-
         return controller;
     }
 
-    private IdentityDiscController buildController(
-            MonotonicObservableSupplier<Profile> profileSupplier) {
+    private IdentityDiscController buildController() {
         return new IdentityDiscController(
                 mActivityTestRule.getActivity(),
                 mWindowAndroid,
                 mActivityResultTracker,
                 mDeviceLockActivityLauncher,
-                profileSupplier,
+                mProfileSupplier,
                 mBottomSheetController,
                 mModalDialogManagerSupplier,
                 mSnackbarManager);

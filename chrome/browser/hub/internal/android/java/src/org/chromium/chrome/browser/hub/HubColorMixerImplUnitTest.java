@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -54,17 +53,16 @@ public class HubColorMixerImplUnitTest {
     @Mock private Pane mPane2;
     @Mock private HubViewColorBlend mColorBlend;
 
-    private SettableNonNullObservableSupplier<Boolean> mHubVisibilitySupplier =
-            ObservableSuppliers.createNonNull(false);
-    private SettableMonotonicObservableSupplier<Pane> mFocusedPaneSupplier =
-            ObservableSuppliers.createMonotonic();
-
     @Spy
     private HubColorBlendAnimatorSetHelper mAnimatorSetBuilder =
             new HubColorBlendAnimatorSetHelper();
 
     @Spy private AnimationHandler mAnimationHandler = new AnimationHandler();
 
+    private final SettableNonNullObservableSupplier<Boolean> mHubVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
+    private final SettableMonotonicObservableSupplier<Pane> mFocusedPaneSupplier =
+            ObservableSuppliers.createMonotonic();
     private HubColorMixerImpl mHubColorMixer;
 
     private void initialize(boolean isTablet) {
@@ -89,17 +87,9 @@ public class HubColorMixerImplUnitTest {
 
     @Test
     public void testDestroy() {
-        mHubVisibilitySupplier = spy(ObservableSuppliers.createNonNull(false));
-        mFocusedPaneSupplier = spy(ObservableSuppliers.createMonotonic());
+        assertTrue(mHubVisibilitySupplier.hasObservers());
+        assertTrue(mFocusedPaneSupplier.hasObservers());
 
-        mHubColorMixer =
-                new HubColorMixerImpl(
-                        mHubVisibilitySupplier,
-                        mFocusedPaneSupplier,
-                        mAnimatorSetBuilder,
-                        mAnimationHandler,
-                        HubColorMixerImplUnitTest::getBackgroundColorForTests,
-                        false);
         mHubColorMixer.destroy();
 
         assertFalse(mHubVisibilitySupplier.hasObservers());

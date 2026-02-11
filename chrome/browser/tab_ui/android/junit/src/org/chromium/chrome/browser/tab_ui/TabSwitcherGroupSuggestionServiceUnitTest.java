@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
@@ -69,12 +68,9 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<UserResponseMetadata> mUserResponseMetadataCaptor;
 
-    @Spy
     private final SettableMonotonicObservableSupplier<TabGroupModelFilter>
             mTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
-
     private final ArrayList<Tab> mTabs = new ArrayList<>();
-
     private TabSwitcherGroupSuggestionService mService;
 
     @Before

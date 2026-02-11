@@ -33,8 +33,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsCoordinator.HomePageButtonsState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
@@ -52,16 +54,18 @@ public class HomePageButtonsMediatorUnitTest {
 
     private boolean mIsHomeButtonMenuDisabled;
     private Context mContext;
+    private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
     private HomePageButtonsMediator mHomePageButtonsMediator;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         mIsHomeButtonMenuDisabled = false;
+        mProfileSupplier = ObservableSuppliers.createMonotonic();
         mHomePageButtonsMediator =
                 new HomePageButtonsMediator(
                         mContext,
-                        mock(MonotonicObservableSupplier.class),
+                        mProfileSupplier,
                         mModel,
                         (context) -> {},
                         () -> mIsHomeButtonMenuDisabled,

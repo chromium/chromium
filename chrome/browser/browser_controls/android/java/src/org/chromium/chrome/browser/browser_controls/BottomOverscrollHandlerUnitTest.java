@@ -4,11 +4,10 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,6 +19,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
@@ -39,12 +39,27 @@ public class BottomOverscrollHandlerUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock private BrowserControlsVisibilityManager mBrowserControls;
-    @Mock private BrowserStateBrowserControlsVisibilityDelegate mDelegate;
 
+    private FakeBrowserStateBrowserControlsVisibilityDelegate mDelegate;
     private BottomOverscrollHandler mHandler;
+
+    private static class FakeBrowserStateBrowserControlsVisibilityDelegate
+            extends BrowserStateBrowserControlsVisibilityDelegate {
+        public int showControlsTransientCallCount;
+
+        public FakeBrowserStateBrowserControlsVisibilityDelegate() {
+            super(ObservableSuppliers.createNonNull(false));
+        }
+
+        @Override
+        public void showControlsTransient() {
+            showControlsTransientCallCount++;
+        }
+    }
 
     @Before
     public void setUp() {
+        mDelegate = new FakeBrowserStateBrowserControlsVisibilityDelegate();
         doReturn(mDelegate).when(mBrowserControls).getBrowserVisibilityDelegate();
         mHandler = new BottomOverscrollHandler(mBrowserControls);
     }
@@ -109,7 +124,7 @@ public class BottomOverscrollHandlerUnitTest {
 
     @Test
     public void testStart_notBothState() {
-        doReturn(BrowserControlsState.HIDDEN).when(mDelegate).get();
+        mDelegate.set(BrowserControlsState.HIDDEN);
         try (var watcher =
                 HistogramWatcher.newSingleRecordWatcher(CAN_START_OVERSCROLL_UMA_NAME, false)) {
             assertFalse(mHandler.start());
@@ -118,7 +133,7 @@ public class BottomOverscrollHandlerUnitTest {
 
     @Test
     public void testStart_controlsFullyVisible() {
-        doReturn(BrowserControlsState.BOTH).when(mDelegate).get();
+        mDelegate.set(BrowserControlsState.BOTH);
         doReturn(0).when(mBrowserControls).getTopControlOffset();
         doReturn(0).when(mBrowserControls).getBottomControlOffset();
         try (var watcher =
@@ -129,7 +144,7 @@ public class BottomOverscrollHandlerUnitTest {
 
     @Test
     public void testStart_success() {
-        doReturn(BrowserControlsState.BOTH).when(mDelegate).get();
+        mDelegate.set(BrowserControlsState.BOTH);
         doReturn(1).when(mBrowserControls).getTopControlOffset();
         doReturn(1).when(mBrowserControls).getBottomControlOffset();
         try (var watcher =
@@ -140,7 +155,7 @@ public class BottomOverscrollHandlerUnitTest {
 
     @Test
     public void testRelease_showControls() {
-        doReturn(BrowserControlsState.BOTH).when(mDelegate).get();
+        mDelegate.set(BrowserControlsState.BOTH);
         doReturn(1).when(mBrowserControls).getTopControlOffset();
         doReturn(1).when(mBrowserControls).getBottomControlOffset();
         try (var watcher =
@@ -148,29 +163,29 @@ public class BottomOverscrollHandlerUnitTest {
             mHandler.start();
             mHandler.release(true);
             ShadowLooper.runUiThreadTasks();
-            verify(mDelegate).showControlsTransient();
+            assertEquals(1, mDelegate.showControlsTransientCallCount);
         }
     }
 
     @Test
     public void testRelease_notAllowed() {
-        doReturn(BrowserControlsState.BOTH).when(mDelegate).get();
+        mDelegate.set(BrowserControlsState.BOTH);
         doReturn(1).when(mBrowserControls).getTopControlOffset();
         doReturn(1).when(mBrowserControls).getBottomControlOffset();
         mHandler.start();
-        verify(mDelegate, never()).showControlsTransient();
+        assertEquals(0, mDelegate.showControlsTransientCallCount);
     }
 
     @Test
     public void testRelease_notStarted() {
         mHandler.release(true);
         ShadowLooper.runUiThreadTasks();
-        verify(mDelegate, never()).showControlsTransient();
+        assertEquals(0, mDelegate.showControlsTransientCallCount);
     }
 
     @Test
     public void testReset() {
-        doReturn(BrowserControlsState.BOTH).when(mDelegate).get();
+        mDelegate.set(BrowserControlsState.BOTH);
         doReturn(1).when(mBrowserControls).getTopControlOffset();
         doReturn(1).when(mBrowserControls).getBottomControlOffset();
         try (var watcher =
@@ -179,13 +194,13 @@ public class BottomOverscrollHandlerUnitTest {
             mHandler.reset();
             mHandler.release(true);
             ShadowLooper.runUiThreadTasks();
-            verify(mDelegate, never()).showControlsTransient();
+            assertEquals(0, mDelegate.showControlsTransientCallCount);
         }
     }
 
     @Test
     public void testReset_notStarted() {
-        doReturn(BrowserControlsState.BOTH).when(mDelegate).get();
+        mDelegate.set(BrowserControlsState.BOTH);
         doReturn(0).when(mBrowserControls).getTopControlOffset();
         doReturn(0).when(mBrowserControls).getBottomControlOffset();
         try (var watcher =

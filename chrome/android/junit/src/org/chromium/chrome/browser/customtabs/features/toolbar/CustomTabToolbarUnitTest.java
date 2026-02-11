@@ -80,6 +80,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -145,7 +146,6 @@ public class CustomTabToolbarUnitTest {
     @Mock LocationBarModel mLocationBarModel;
     @Mock ActionMode.Callback mActionModeCallback;
     @Mock CustomTabToolbarAnimationDelegate mAnimationDelegate;
-    @Mock BrowserStateBrowserControlsVisibilityDelegate mControlsVisibleDelegate;
     @Mock ToolbarDataProvider mToolbarDataProvider;
     @Mock ToolbarTabController mTabController;
     @Mock MenuButtonCoordinator mMenuButtonCoordinator;
@@ -165,6 +165,7 @@ public class CustomTabToolbarUnitTest {
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Captor ArgumentCaptor<AppMenuObserver> mAppMenuObserverCaptor;
 
+    private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibleDelegate;
     private Activity mActivity;
     private CustomTabToolbar mToolbar;
     private CustomTabLocationBar mLocationBar;
@@ -191,6 +192,11 @@ public class CustomTabToolbarUnitTest {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
         setUpForUrl(TEST_URL);
+
+        mControlsVisibleDelegate =
+                new BrowserStateBrowserControlsVisibilityDelegate(
+                        ObservableSuppliers.alwaysFalse());
+
         MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
         when(mIntentDataProvider.getCustomTabMode())
                 .thenReturn(BrowserServicesIntentDataProvider.CustomTabProfileType.REGULAR);
@@ -758,11 +764,20 @@ public class CustomTabToolbarUnitTest {
     private void verifyBrowserControlVisibleForRequiredDuration() {
         // Verify browser control is visible for required duration (3000ms).
         ShadowLooper looper = Shadows.shadowOf(Looper.getMainLooper());
-        verify(mControlsVisibleDelegate).showControlsPersistent();
+        assertEquals(
+                "Browser controls should be shown.",
+                BrowserControlsState.SHOWN,
+                mControlsVisibleDelegate.get().intValue());
         looper.idleFor(2999, TimeUnit.MILLISECONDS);
-        verify(mControlsVisibleDelegate, never()).releasePersistentShowingToken(anyInt());
+        assertEquals(
+                "Browser controls should still be shown.",
+                BrowserControlsState.SHOWN,
+                mControlsVisibleDelegate.get().intValue());
         looper.idleFor(1, TimeUnit.MILLISECONDS);
-        verify(mControlsVisibleDelegate).releasePersistentShowingToken(anyInt());
+        assertEquals(
+                "Browser controls should be released.",
+                BrowserControlsState.BOTH,
+                mControlsVisibleDelegate.get().intValue());
     }
 
     private void fakeTextureCapture() {

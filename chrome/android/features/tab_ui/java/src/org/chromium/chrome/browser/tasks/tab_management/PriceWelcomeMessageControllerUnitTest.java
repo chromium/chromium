@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -221,37 +222,35 @@ public class PriceWelcomeMessageControllerUnitTest {
     @Test
     public void testBuild_priceAnnotationsEnabled() {
         reset(mMessageCardProvider);
-        SettableMonotonicObservableSupplier<TabGroupModelFilter> spySupplier =
-                spy(mTabGroupModelFilterSupplier);
+        var filterSupplier = ObservableSuppliers.<TabGroupModelFilter>createMonotonic();
         mController =
                 PriceWelcomeMessageController.build(
                         mContext,
                         mTabSwitcherMessageManager,
-                        spySupplier,
+                        filterSupplier,
                         mMessageCardProvider,
                         mActionProviderSupplier,
                         mProfile,
                         mTabListCoordinatorSupplier);
         verify(mMessageCardProvider).subscribeMessageService(any(PriceMessageService.class));
-        verify(spySupplier).addSyncObserverAndCallIfNonNull(any());
+        assertTrue(filterSupplier.hasObservers());
     }
 
     @Test
     public void testBuild_priceAnnotationsDisabled() {
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         reset(mMessageCardProvider);
-        SettableMonotonicObservableSupplier<TabGroupModelFilter> spySupplier =
-                spy(mTabGroupModelFilterSupplier);
+        var filterSupplier = ObservableSuppliers.<TabGroupModelFilter>createMonotonic();
         mController =
                 PriceWelcomeMessageController.build(
                         mContext,
                         mTabSwitcherMessageManager,
-                        spySupplier,
+                        filterSupplier,
                         mMessageCardProvider,
                         mActionProviderSupplier,
                         mProfile,
                         mTabListCoordinatorSupplier);
         verify(mMessageCardProvider, never()).subscribeMessageService(any());
-        verify(spySupplier, never()).addSyncObserverAndCallIfNonNull(any());
+        assertFalse(filterSupplier.hasObservers());
     }
 }
