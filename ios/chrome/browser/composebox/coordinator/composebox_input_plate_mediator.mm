@@ -600,10 +600,6 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)composeboxModeDidChange:(ComposeboxMode)mode {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (base::FeatureList::IsEnabled(
-          omnibox::kComposeboxUsesChromeComposeClient)) {
-    [self reloadSuggestions];
-  }
 
   [self updateMode];
 
@@ -627,7 +623,7 @@ CreateInputDataFromAnnotatedPageContent(
         _modeHolder.mode = ComposeboxMode::kRegularSearch;
       }
       [self cleanAttachmentsForImageGeneration];
-      _inputStateModel->setActiveTool(omnibox::TOOL_MODE_IMAGE_GEN);
+      [self updateImageGenerationToolMode];
       break;
     case ComposeboxMode::kCanvas:
       if (![self canvasToolAllowed]) {
@@ -645,6 +641,7 @@ CreateInputDataFromAnnotatedPageContent(
 
   [self updateModelOnModeChange];
   [self commitUIUpdates];
+  [self reloadSuggestions];
 }
 
 #pragma mark - ComposeboxTabPickerSelectionDelegate
@@ -949,6 +946,23 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 #pragma mark - Private
+
+// Updates the tool mode when in image generation mode.
+- (void)updateImageGenerationToolMode {
+  if (_modeHolder.mode != ComposeboxMode::kImageGeneration) {
+    return;
+  }
+
+  BOOL imageGenUploadMode =
+      (_items.count) > 0 && [self uploadAllowedInImageGeneration];
+
+  omnibox::ToolMode toolMode =
+      imageGenUploadMode ? omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD
+                         : omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
+  if (_inputState.active_tool != toolMode) {
+    _inputStateModel->setActiveTool(toolMode);
+  }
+}
 
 // Adds an item to the collection.
 - (void)addItem:(ComposeboxInputItem*)item {
@@ -1665,13 +1679,8 @@ CreateInputDataFromAnnotatedPageContent(
 
 #pragma mark - ComposeboxOmniboxClientDelegate
 
-- (omnibox::ToolMode)composeboxToolMode {
-  if (_modeHolder.mode == ComposeboxMode::kImageGeneration) {
-    return _items.count > 0 ? omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD
-                            : omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
-  }
-
-  return omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+- (contextual_search::InputState)inputState {
+  return _inputState;
 }
 
 - (std::optional<lens::proto::LensOverlaySuggestInputs>)suggestInputs {
@@ -2103,6 +2112,7 @@ CreateInputDataFromAnnotatedPageContent(
     (ComposeboxInputItemCollection*)composeboxInputItemCollection {
   [self updateConsumerItems];
   [self commitUIUpdates];
+  [self updateImageGenerationToolMode];
 }
 
 #pragma mark - VoiceSearchDelegate
