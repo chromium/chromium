@@ -989,8 +989,21 @@ BubbleDialogModelHost::BubbleDialogModelHost(
         *model_->footnote_label()));
   }
 
+  if (!model_->close_on_escape(DialogModelHost::GetPassKey())) {
+    set_esc_should_cancel_dialog_override(false);
+  }
+
   // Make sure we're up to date with initial contents state.
   UpdateSpacingAndMargins();
+}
+
+bool BubbleDialogModelHost::OnCloseRequested(
+    views::Widget::ClosedReason close_reason) {
+  if (close_reason == views::Widget::ClosedReason::kEscKeyPressed &&
+      !model_->close_on_escape(DialogModelHost::GetPassKey())) {
+    return false;
+  }
+  return BubbleDialogDelegate::OnCloseRequested(close_reason);
 }
 
 BubbleDialogModelHost::~BubbleDialogModelHost() {

@@ -21,6 +21,13 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
 
+class BubbleDialogModelHostTestPassKey {
+ public:
+  static base::PassKey<BubbleDialogModelHostTestPassKey> GetPassKey() {
+    return {};
+  }
+};
+
 namespace views {
 
 using BubbleDialogModelHostTest = ViewsTestBase;
@@ -439,6 +446,32 @@ TEST_F(BubbleDialogModelHostTest, TestAddButtonsWithCloseCallback) {
   EXPECT_FALSE(bubble_widget->IsClosed());
 
   bubble_widget->CloseNow();
+}
+
+TEST_F(BubbleDialogModelHostTest, DisableCloseOnEscape) {
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  anchor_widget->Show();
+
+  std::unique_ptr<ui::DialogModel> dialog_model =
+      ui::DialogModel::Builder()
+          .AddOkButton(base::DoNothing())
+          .DisableCloseOnEscape(BubbleDialogModelHostTestPassKey::GetPassKey())
+          .Build();
+
+  auto host_unique = std::make_unique<BubbleDialogModelHost>(
+      std::move(dialog_model), anchor_widget->GetContentsView(),
+      BubbleBorder::Arrow::TOP_RIGHT);
+
+  Widget* const bubble_widget =
+      BubbleDialogDelegate::CreateBubble(std::move(host_unique));
+  bubble_widget->Show();
+
+  bubble_widget->CloseWithReason(Widget::ClosedReason::kEscKeyPressed);
+  EXPECT_FALSE(bubble_widget->IsClosed());
+
+  bubble_widget->CloseWithReason(Widget::ClosedReason::kUnspecified);
+  EXPECT_TRUE(bubble_widget->IsClosed());
 }
 
 }  // namespace views
