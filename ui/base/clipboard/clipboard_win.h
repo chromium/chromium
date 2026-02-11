@@ -57,6 +57,9 @@ class ClipboardWin : public Clipboard, public ClipboardChangeNotifier {
                          ClipboardBuffer buffer,
                          const DataTransferEndpoint* data_dst) const override;
   void Clear(ClipboardBuffer buffer) override;
+  void ReadHTML(ClipboardBuffer buffer,
+                const std::optional<DataTransferEndpoint>& data_dst,
+                ReadHtmlCallback callback) const override;
   void ReadAvailableTypes(ClipboardBuffer buffer,
                           const DataTransferEndpoint* data_dst,
                           std::vector<std::u16string>* types) const override;
@@ -117,6 +120,20 @@ class ClipboardWin : public Clipboard, public ClipboardChangeNotifier {
   void WriteUploadCloudClipboard();
   void WriteConfidentialDataForPassword();
 
+  // Dispatches to |worker_task_runner_| when kNonBlockingOsClipboardReads is
+  // enabled; otherwise runs on the caller thread. |read_tuple_func| takes an
+  // HWND followed by |args| and returns a tuple; |callback| receives the tuple
+  // elements.
+  template <typename ReadTupleFunc, typename Callback, typename... Args>
+  void ReadAsync(ReadTupleFunc read_tuple_func,
+                 Callback callback,
+                 Args&&... args) const;
+  static void ReadHTMLInternal(HWND owner_window,
+                               ClipboardBuffer buffer,
+                               std::u16string* markup,
+                               std::string* src_url,
+                               uint32_t* fragment_start,
+                               uint32_t* fragment_end);
   std::vector<uint8_t> ReadPngInternal(ClipboardBuffer buffer) const;
   SkBitmap ReadBitmapInternal(ClipboardBuffer buffer) const;
 
@@ -139,6 +156,8 @@ class ClipboardWin : public Clipboard, public ClipboardChangeNotifier {
 
   // Whether the clipboard is being monitored for changes.
   bool monitoring_clipboard_changes_ = false;
+
+  scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
 };
 
 }  // namespace ui

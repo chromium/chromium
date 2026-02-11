@@ -18,6 +18,9 @@
 
 #include <cstdint>
 #include <string_view>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "base/byte_size.h"
@@ -93,6 +96,10 @@ class ScopedClipboard {
   }
 
   bool Acquire(HWND owner) {
+    // On UI thread, an owner HWND is expected for proper clipboard ownership.
+    // On worker threads, nullptr is acceptable for read-only clipboard access.
+    CHECK(!base::CurrentUIThread::IsSet() || owner != nullptr);
+
     const int kMaxAttemptsToOpenClipboard = 5;
 
     CHECK(!opened_);
@@ -244,6 +251,15 @@ HANDLE GetClipboardDataWithLimit(UINT format) {
   return data;
 }
 
+template <typename Callback, typename Tuple>
+void RunCallbackWithTuple(Callback callback, Tuple result) {
+  std::apply(
+      [callback = std::move(callback)](auto&&... args) mutable {
+        std::move(callback).Run(std::forward<decltype(args)>(args)...);
+      },
+      std::move(result));
+}
+
 }  // namespace
 
 // Clipboard factory method.
@@ -259,6 +275,11 @@ ClipboardWin::ClipboardWin() {
 
   if (base::FeatureList::IsEnabled(features::kPlatformClipboardMonitor)) {
     ui::ClipboardMonitor::GetInstance()->SetNotifier(this);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kNonBlockingOsClipboardReads)) {
+    worker_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
   }
 }
 
@@ -389,6 +410,25 @@ std::vector<std::u16string> ClipboardWin::GetStandardFormats(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
+void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
+                            const std::optional<DataTransferEndpoint>& data_dst,
+                            ReadHtmlCallback callback) const {
+  ReadAsync(
+      [](HWND owner_window, ClipboardBuffer buffer) {
+        std::u16string markup;
+        std::string src_url;
+        uint32_t fragment_start = 0;
+        uint32_t fragment_end = 0;
+        ReadHTMLInternal(owner_window, buffer, &markup, &src_url,
+                         &fragment_start, &fragment_end);
+        return std::make_tuple(std::move(markup), GURL(src_url), fragment_start,
+                               fragment_end);
+      },
+      std::move(callback), buffer);
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
 void ClipboardWin::ReadAvailableTypes(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst,
@@ -478,6 +518,17 @@ void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
                             std::string* src_url,
                             uint32_t* fragment_start,
                             uint32_t* fragment_end) const {
+  ReadHTMLInternal(GetClipboardWindow(), buffer, markup, src_url,
+                   fragment_start, fragment_end);
+}
+
+// static
+void ClipboardWin::ReadHTMLInternal(HWND owner_window,
+                                    ClipboardBuffer buffer,
+                                    std::u16string* markup,
+                                    std::string* src_url,
+                                    uint32_t* fragment_start,
+                                    uint32_t* fragment_end) {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kHtml);
 
@@ -491,8 +542,9 @@ void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
 
   // Acquire the clipboard.
   ScopedClipboard clipboard;
-  if (!clipboard.Acquire(GetClipboardWindow()))
+  if (!clipboard.Acquire(owner_window)) {
     return;
+  }
 
   HANDLE data = GetClipboardDataWithLimit(
       ClipboardFormatType::HtmlType().ToFormatEtc().cfFormat);
@@ -902,6 +954,30 @@ void ClipboardWin::WriteConfidentialDataForPassword() {
   WriteData(
       ClipboardFormatType::UploadCloudClipboardType(),
       base::span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+}
+
+template <typename ReadTupleFunc, typename Callback, typename... Args>
+void ClipboardWin::ReadAsync(ReadTupleFunc read_tuple_func,
+                             Callback callback,
+                             Args&&... args) const {
+  using TupleReplyType = std::invoke_result_t<ReadTupleFunc, HWND, Args...>;
+  if (!base::FeatureList::IsEnabled(features::kNonBlockingOsClipboardReads)) {
+    TupleReplyType result = std::move(read_tuple_func)(
+        /*owner_window=*/GetClipboardWindow(), std::forward<Args>(args)...);
+    RunCallbackWithTuple(std::move(callback), std::move(result));
+    return;
+  }
+  worker_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](ReadTupleFunc read_tuple_func, auto&&... bound_args) {
+            return std::move(read_tuple_func)(
+                /*owner_window=*/nullptr,
+                std::forward<decltype(bound_args)>(bound_args)...);
+          },
+          std::move(read_tuple_func), std::forward<Args>(args)...),
+      base::BindOnce(&RunCallbackWithTuple<Callback, TupleReplyType>,
+                     std::move(callback)));
 }
 
 std::vector<uint8_t> ClipboardWin::ReadPngInternal(
