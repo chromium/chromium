@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -25,7 +28,6 @@ import android.window.OnBackInvokedDispatcher;
 
 import com.google.common.collect.ImmutableList;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -114,8 +116,9 @@ public class CustomTabActivityNavigationControllerTest {
                 .queryIntentActivities(any(), anyInt());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
+    // Predictive back is enabled by default on SDK 36+. Pin to older SDKs to
+    // test the legacy back navigation path.
+    @Config(sdk = {29, 35})
     @Test
     public void finishes_IfBackNavigationClosesTheOnlyTabWithNoUnloadEvents() {
         HistogramWatcher histogramWatcher =
@@ -156,11 +159,12 @@ public class CustomTabActivityNavigationControllerTest {
         histogramWatcher.assertExpected();
         verify(mFinishHandler).onFinish(FinishReason.USER_NAVIGATION, true);
         env.tabProvider.removeTab();
-        Assert.assertNull(env.tabProvider.getTab());
+        assertNull(env.tabProvider.getTab());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
+    // Predictive back is enabled by default on SDK 36+. Pin to older SDKs to
+    // test the legacy back navigation path.
+    @Config(sdk = {29, 35})
     @Test
     public void finishes_IfBackNavigationClosesTheOnlyTabWithUnloadHandler_CctBeforeUnload() {
         HistogramWatcher histogramWatcher =
@@ -201,11 +205,12 @@ public class CustomTabActivityNavigationControllerTest {
         histogramWatcher.assertExpected();
         verify(mFinishHandler).onFinish(FinishReason.USER_NAVIGATION, true);
         env.tabProvider.removeTab();
-        Assert.assertNull(env.tabProvider.getTab());
+        assertNull(env.tabProvider.getTab());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
+    // Predictive back is enabled by default on SDK 36+. Pin to older SDKs to
+    // test the legacy back navigation path.
+    @Config(sdk = {29, 35})
     @Test
     public void doesntFinish_IfBackNavigationReplacesTabWithPreviousOne() {
         HistogramWatcher histogramWatcher =
@@ -311,7 +316,7 @@ public class CustomTabActivityNavigationControllerTest {
         // With multiple tabs, predictive back enabled, and initial tab mode set (default),
         // Chrome should handle the back press.
         mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
-        Assert.assertTrue(
+        assertTrue(
                 "Chrome should handle back press when multiple tabs are present.",
                 mNavigationController.getHandleBackPressChangedSupplier().get());
 
@@ -321,7 +326,7 @@ public class CustomTabActivityNavigationControllerTest {
         // When only one tab remains, and predictive back conditions are met,
         // the OS should handle the back press (supplier should be false).
         mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
-        Assert.assertFalse(
+        assertFalse(
                 "OS should handle back press when only one tab remains.",
                 mNavigationController.getHandleBackPressChangedSupplier().get());
     }
@@ -333,14 +338,14 @@ public class CustomTabActivityNavigationControllerTest {
         when(mTabController.getTabCount()).thenReturn(0);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
         mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
-        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
+        assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
 
         mNavigationController.navigateOnBack(FinishReason.HANDLED_BY_OS);
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         mNavigationController
                 .getTabObserverForTesting()
                 .onInitialTabCreated(env.prepareTab(), TabCreationMode.EARLY);
-        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
+        assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
     }
 
     @Test
@@ -349,10 +354,10 @@ public class CustomTabActivityNavigationControllerTest {
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
         mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
-        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
+        assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
 
         mNavigationController.getTabObserverForTesting().onAllTabsClosed();
-        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
+        assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
         verify(mFinishHandler).onFinish(anyInt(), anyBoolean());
     }
 
@@ -372,7 +377,7 @@ public class CustomTabActivityNavigationControllerTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public void predictiveBackGesture_RequiresAndroidBaklava() {
-        Assert.assertFalse(CustomTabActivityNavigationController.supportsPredictiveBackGesture());
+        assertFalse(CustomTabActivityNavigationController.supportsPredictiveBackGesture());
 
         // Sets the Android version to Baklava.
         CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
@@ -380,16 +385,17 @@ public class CustomTabActivityNavigationControllerTest {
         assertTrue(CustomTabActivityNavigationController.supportsPredictiveBackGesture());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
+    // Predictive back is enabled by default on SDK 36+. Pin to older SDKs to
+    // test the legacy back navigation path.
+    @Config(sdk = {29, 35})
     @Test
     public void getVersionForTesting_ReturnsSetVersion() {
-        Assert.assertFalse(CustomTabActivityNavigationController.supportsPredictiveBackGesture());
+        assertFalse(CustomTabActivityNavigationController.supportsPredictiveBackGesture());
 
         // Sets the Android version to Baklava.
         CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
 
-        Assert.assertEquals(
+        assertEquals(
                 "The version should be 36, which is the Android API level for Baklava.",
                 /*Android 16 API level*/ 36,
                 (int) mNavigationController.getVersionForTesting());
