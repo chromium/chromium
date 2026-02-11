@@ -1311,6 +1311,29 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
             ax::mojom::DefaultActionVerb::kActivate);
 }
 
+IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
+                       LatencyChangesAfterProlongedCount) {
+  ContentAnalysisDialogController::SetDialogShownCountForTesting(0);
+  EXPECT_EQ(ContentAnalysisDialogController::GetMinimumPendingDialogTime(),
+            base::Seconds(2));
+  EXPECT_EQ(ContentAnalysisDialogController::GetSuccessDialogTimeout(),
+            base::Seconds(1));
+
+  ContentAnalysisDialogController::SetDialogShownCountForTesting(5);
+  EXPECT_EQ(ContentAnalysisDialogController::GetMinimumPendingDialogTime(),
+            base::Seconds(2));
+  EXPECT_EQ(ContentAnalysisDialogController::GetSuccessDialogTimeout(),
+            base::Seconds(1));
+
+  ContentAnalysisDialogController::SetDialogShownCountForTesting(6);
+  EXPECT_EQ(ContentAnalysisDialogController::GetMinimumPendingDialogTime(),
+            base::Seconds(0.4));
+  EXPECT_EQ(ContentAnalysisDialogController::GetSuccessDialogTimeout(),
+            base::Seconds(0.2));
+
+  ContentAnalysisDialogController::SetDialogShownCountForTesting(0);
+}
+
 class ContentAnalysisDialogUiTest
     : public DialogBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
