@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -36,6 +37,7 @@ WalletPassAccessManagerFactory::WalletPassAccessManagerFactory()
     : ProfileKeyedServiceFactory(
           "WalletPassAccessManager",
           ProfileSelections::BuildRedirectedInIncognito()) {
+  DependsOn(AutofillEntityDataManagerFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -48,11 +50,14 @@ WalletPassAccessManagerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
+  EntityDataManager* data_manager =
+      AutofillEntityDataManagerFactory::GetForProfile(profile);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   return std::make_unique<WalletPassAccessManagerImpl>(
       std::make_unique<wallet::WalletHttpClientImpl>(
-          identity_manager, profile->GetURLLoaderFactory()));
+          identity_manager, profile->GetURLLoaderFactory()),
+      data_manager);
 }
 
 }  // namespace autofill

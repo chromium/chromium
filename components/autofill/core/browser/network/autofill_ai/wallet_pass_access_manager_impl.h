@@ -15,10 +15,13 @@ class WalletHttpClient;
 
 namespace autofill {
 
+class EntityDataManager;
+
 class WalletPassAccessManagerImpl : public WalletPassAccessManager {
  public:
   explicit WalletPassAccessManagerImpl(
-      std::unique_ptr<wallet::WalletHttpClient> http_client);
+      std::unique_ptr<wallet::WalletHttpClient> http_client,
+      const EntityDataManager* data_manager);
   ~WalletPassAccessManagerImpl() override;
 
   // WalletPassAccessManager:
@@ -33,6 +36,7 @@ class WalletPassAccessManagerImpl : public WalletPassAccessManager {
 
  private:
   const std::unique_ptr<wallet::WalletHttpClient> http_client_;
+  const raw_ref<const EntityDataManager> data_manager_;
 };
 
 }  // namespace autofill

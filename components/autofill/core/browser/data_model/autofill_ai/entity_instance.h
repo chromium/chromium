@@ -417,6 +417,10 @@ class EntityInstance final {
   // Returns a copy of `this` with the given `record_type`.
   EntityInstance CopyWithNewRecordType(RecordType record_type) const;
 
+  // Returns a copy of `this` where the attribute for `attribute.type()` is
+  // replaced by `attribute`.
+  EntityInstance CopyWithUpdatedAttribute(AttributeInstance attribute) const;
+
   friend bool operator==(const EntityInstance&,
                          const EntityInstance&) = default;
 
