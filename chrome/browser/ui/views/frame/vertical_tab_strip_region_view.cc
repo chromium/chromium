@@ -426,6 +426,15 @@ void VerticalTabStripRegionView::OnResize(int resize_amount,
     new_state.uncollapsed_width = target_collapse_state_.uncollapsed_width;
   }
 
+  if (done_resizing) {
+    base::RecordAction(base::UserMetricsAction(
+        new_state.collapsed ? "VerticalTabs_TabStrip_ResizeToCollapsed"
+                            : "VerticalTabs_TabStrip_ResizeToUncollapsed"));
+    base::UmaHistogramCounts1000(
+        "Tabs.VerticalTabs.TabStripSize",
+        new_state.collapsed ? kCollapsedWidth : new_state.uncollapsed_width);
+  }
+
   UpdateCollapseState(new_state);
 }
 

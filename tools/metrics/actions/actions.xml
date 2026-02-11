@@ -52314,6 +52314,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="VerticalTabs_TabStrip_ResizeToCollapsed">
+  <owner>charlesmeng@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user ends dragging the vertical tab strip with it in the
+    collapsed state.
+  </description>
+</action>
+
+<action name="VerticalTabs_TabStrip_ResizeToUncollapsed">
+  <owner>charlesmeng@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user ends dragging the vertical tab strip with it in the
+    uncollapsed state.
+  </description>
+</action>
+
 <action name="VideoPlayer.CastVideoError">
   <owner>yoshiki@chromium.org</owner>
   <description>

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -410,6 +412,76 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
     return region_view()->GetPreferredSize().width() == last_uncollapsed_width;
   }));
   WaitForBoundsToMatchPreferredWidth();
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, LogsResizeMetrics) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+  const int initial_width = tabs::kVerticalTabStripDefaultUncollapsedWidth;
+
+  ASSERT_EQ(initial_width, region_view()->GetPreferredSize().width());
+  ASSERT_EQ(initial_width, state_controller()->GetUncollapsedWidth());
+  WaitForBoundsToMatchPreferredWidth();
+  ASSERT_EQ(0, user_action_tester.GetActionCount(
+                   "VerticalTabs_TabStrip_ResizeToCollapsed"));
+  ASSERT_EQ(0, user_action_tester.GetActionCount(
+                   "VerticalTabs_TabStrip_ResizeToUncollapsed"));
+  ASSERT_EQ(0, histogram_tester.GetTotalSum("Tabs.VerticalTabs.TabStripSize"));
+
+  // Adjust the area without finishing resizing. Nothing should be logged.
+  {
+    const int resize_amount = 10;
+    const int resize_width = initial_width + resize_amount;
+    ASSERT_LE(VerticalTabStripRegionView::kUncollapsedMinWidth, resize_width);
+    ASSERT_LE(resize_width, VerticalTabStripRegionView::kUncollapsedMaxWidth);
+
+    region_view()->OnResize(resize_amount, false);
+    WaitForBoundsToMatchPreferredWidth();
+    EXPECT_EQ(0, user_action_tester.GetActionCount(
+                     "VerticalTabs_TabStrip_ResizeToCollapsed"));
+    EXPECT_EQ(0, user_action_tester.GetActionCount(
+                     "VerticalTabs_TabStrip_ResizeToUncollapsed"));
+    histogram_tester.ExpectTotalCount("Tabs.VerticalTabs.TabStripSize", 0);
+  }
+
+  // Adjust the area and finish resizing. The resize UMA and width histogram
+  // will be logged.
+  {
+    const int resize_amount = -10;
+    const int resize_width = initial_width + resize_amount;
+    ASSERT_LE(VerticalTabStripRegionView::kUncollapsedMinWidth, resize_width);
+    ASSERT_LE(resize_width, VerticalTabStripRegionView::kUncollapsedMaxWidth);
+
+    region_view()->OnResize(resize_amount, true);
+    WaitForBoundsToMatchPreferredWidth();
+    EXPECT_EQ(0, user_action_tester.GetActionCount(
+                     "VerticalTabs_TabStrip_ResizeToCollapsed"));
+    EXPECT_EQ(1, user_action_tester.GetActionCount(
+                     "VerticalTabs_TabStrip_ResizeToUncollapsed"));
+    histogram_tester.ExpectTotalCount("Tabs.VerticalTabs.TabStripSize", 1);
+    histogram_tester.ExpectBucketCount("Tabs.VerticalTabs.TabStripSize",
+                                       resize_width, 1);
+  }
+
+  // Resize the tabstrip so that it is collapsed. The resize UMA and width
+  // histogram will be logged.
+  {
+    const int resize_amount = -180;
+    const int resize_width =
+        region_view()->GetPreferredSize().width() + resize_amount;
+    ASSERT_LE(resize_width, VerticalTabStripRegionView::kCollapseSnapWidth);
+
+    region_view()->OnResize(resize_amount, true);
+    WaitForBoundsToMatchPreferredWidth();
+    EXPECT_EQ(1, user_action_tester.GetActionCount(
+                     "VerticalTabs_TabStrip_ResizeToCollapsed"));
+    EXPECT_EQ(1, user_action_tester.GetActionCount(
+                     "VerticalTabs_TabStrip_ResizeToUncollapsed"));
+    histogram_tester.ExpectTotalCount("Tabs.VerticalTabs.TabStripSize", 2);
+    histogram_tester.ExpectBucketCount(
+        "Tabs.VerticalTabs.TabStripSize",
+        VerticalTabStripRegionView::kCollapsedWidth, 1);
+  }
 }
 
 // Verify that the pinned tabs container will never be larger than the unpinned
