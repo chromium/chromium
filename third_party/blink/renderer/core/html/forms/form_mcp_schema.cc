@@ -771,12 +771,13 @@ void FormMCPSchema::AddTitleAndDescriptionFromToolAttributesOnly(
   }
 }
 
-String FormMCPSchema::ToolParamTitleAttribute(HTMLFormControlElement& control) {
+String FormMCPSchema::ToolParamTitleAttribute(
+    HTMLFormControlElement& control) const {
   return control.FastGetAttribute(html_names::kToolparamtitleAttr);
 }
 
 String FormMCPSchema::ToolParamDescriptionAttribute(
-    HTMLFormControlElement& control) {
+    HTMLFormControlElement& control) const {
   return control.FastGetAttribute(html_names::kToolparamdescriptionAttr);
 }
 
@@ -853,6 +854,9 @@ bool FormMCPSchema::IsText(HTMLFormControlElement& control) const {
       case FormControlType::kInputUrl:
       case FormControlType::kInputPassword:
         return true;
+      case FormControlType::kInputHidden:
+        return !ToolParamTitleAttribute(control).empty() ||
+               !ToolParamDescriptionAttribute(control).empty();
       default:
         break;
     }

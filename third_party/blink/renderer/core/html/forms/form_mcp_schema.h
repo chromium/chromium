@@ -135,8 +135,8 @@ class CORE_EXPORT FormMCPSchema {
   void AddTitleAndDescriptionFromToolAttributesOnly(HTMLFormControlElement&,
                                                     JSONObject&);
 
-  String ToolParamTitleAttribute(HTMLFormControlElement&);
-  String ToolParamDescriptionAttribute(HTMLFormControlElement&);
+  String ToolParamTitleAttribute(HTMLFormControlElement&) const;
+  String ToolParamDescriptionAttribute(HTMLFormControlElement&) const;
   String ComputeDescription(HTMLFormControlElement&);
   String LabelText(HTMLFormControlElement&);
 

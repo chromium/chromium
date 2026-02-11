@@ -1810,6 +1810,9 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_BaseTextInput) {
       <input name="search1" type="search">
       <input name="tel1" type="tel">
       <input name="url1" type="url">
+      <input name="hidden1" type="hidden">
+      <input name="hidden2" type="hidden" toolparamtitle="TITLE">
+      <input name="hidden3" type="hidden" toolparamdescription="DESC">
     </form>
   )HTML");
 
@@ -1832,6 +1835,14 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_BaseTextInput) {
          },
          "url1": {
            "type": "string"
+         },
+         "hidden2": {
+           "type": "string",
+           "title": "TITLE"
+         },
+         "hidden3": {
+           "type": "string",
+           "description": "DESC"
          }
       },
       "required": []
@@ -1943,6 +1954,86 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_UrlInput) {
   HTMLInputElement* url1 = GetInputElement("url1");
   ASSERT_TRUE(url1);
   EXPECT_EQ("https://www.google.com", url1->Value());
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_HiddenInput) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=hidden1 name=hidden1 type=hidden value="initial1">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String json_string =
+      R"JSON(
+        {
+          "hidden1": "1234"
+        }
+      )JSON";
+
+  EXPECT_FALSE(FillFormControls(*form_element, json_string));
+
+  HTMLInputElement* hidden1 = GetInputElement("hidden1");
+  ASSERT_TRUE(hidden1);
+
+  // A failure means no form control values were changed.
+  EXPECT_EQ("initial1", hidden1->Value());
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_HiddenInput_Title) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=hidden1 name=hidden1 type=hidden value="initial1" toolparamtitle="TITLE">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String json_string =
+      R"JSON(
+        {
+          "hidden1": "1234"
+        }
+      )JSON";
+
+  EXPECT_TRUE(FillFormControls(*form_element, json_string));
+
+  HTMLInputElement* hidden1 = GetInputElement("hidden1");
+  ASSERT_TRUE(hidden1);
+  EXPECT_EQ("1234", hidden1->Value());
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_HiddenInput_Description) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=hidden1 name=hidden1 type=hidden value="initial1" toolparamdescription="DESC">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String json_string =
+      R"JSON(
+        {
+          "hidden1": "1234"
+        }
+      )JSON";
+
+  EXPECT_TRUE(FillFormControls(*form_element, json_string));
+
+  HTMLInputElement* hidden1 = GetInputElement("hidden1");
+  ASSERT_TRUE(hidden1);
+  EXPECT_EQ("1234", hidden1->Value());
 }
 
 TEST_F(HTMLFormMcpToolTest, FillFormControls_InvalidValue) {
