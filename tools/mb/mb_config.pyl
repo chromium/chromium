@@ -107,7 +107,7 @@
       'android_arm64-cfi-builder-perf-fyi': 'official_remoteexec_minimal_symbols_android_thin_lto_opt_arm64',
       'chromeos-kevin-builder-perf-fyi': 'chromeos_kevin_include_unwind_tables_official_remoteexec',
       'fuchsia-builder-perf-arm64': 'official_remoteexec_fuchsia_arm64_perf',
-      'fuchsia-builder-perf-arm64-pgo': 'official_remoteexec_fuchsia_arm64_perf_pgo',
+      'fuchsia-builder-perf-arm64-pgo': 'official_remoteexec_fuchsia_arm64_perf',
       'linux-chromium-builder-perf': 'chromium_remoteexec_linux',
     },
 
@@ -511,10 +511,6 @@
     ],
 
     'official_remoteexec_fuchsia_arm64_perf': [
-      'cast_receiver_size_optimized_internal', 'official', 'remoteexec', 'minimal_symbols', 'fuchsia', 'fuchsia_include_sd_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'release', 'test_isolate_no_emulator',
-    ],
-
-    'official_remoteexec_fuchsia_arm64_perf_pgo': [
       'cast_receiver_perf_optimized_internal', 'official', 'remoteexec', 'minimal_symbols', 'fuchsia', 'fuchsia_include_sd_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'release', 'test_isolate_no_emulator',
     ],
 
@@ -771,10 +767,6 @@
 
     'cast_receiver_perf_optimized_internal': {
       'args_file': '//build/config/fuchsia/perf_optimized_cast_receiver_args_internal.gn',
-    },
-
-    'cast_receiver_size_optimized_internal': {
-      'args_file': '//build/config/fuchsia/size_optimized_cast_receiver_args_internal.gn',
     },
 
     'chrome_branded': {

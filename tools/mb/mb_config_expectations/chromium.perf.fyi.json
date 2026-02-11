@@ -46,7 +46,7 @@
     }
   },
   "fuchsia-builder-perf-arm64": {
-    "args_file": "//build/config/fuchsia/size_optimized_cast_receiver_args_internal.gn",
+    "args_file": "//build/config/fuchsia/perf_optimized_cast_receiver_args_internal.gn",
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
