@@ -1018,7 +1018,9 @@ public class StripLayoutHelperManager
                 != 0) {
             // When the tab strip is hidden by a height transition, the stable offset of this scene
             // layer should be a negative value.
-            return topControlsOffset - getHeight();
+            // Use mScrollableStripHeight as the baseline height because mHeight may have already
+            // changed during a height transition to hide the strip.
+            return topControlsOffset - (mHeight > 0 ? mHeight : mScrollableStripHeight);
         }
 
         if (!mBrowserControlsStateProvider.isVisibilityForced()) {
@@ -1294,7 +1296,10 @@ public class StripLayoutHelperManager
         }
 
         // Otherwise, the alpha fraction is based on the percent of the tab strip visibility.
-        float ratio = 1 - visibleHeight / mHeight;
+        // Use mScrollableStripHeight as the baseline height because mHeight may have already
+        // changed during a height transition to hide the strip.
+        float divisor = mHeight > 0 ? mHeight : mScrollableStripHeight;
+        float ratio = 1 - visibleHeight / divisor;
         float newOpacity = TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(ratio);
         boolean isHidden =
                 (getStripVisibilityStateSupplier().get()
