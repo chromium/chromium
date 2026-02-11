@@ -17,8 +17,7 @@ found in the LICENSE file.
         android:title="@string/prefs_section_account_and_google_services"/>
     <org.chromium.chrome.browser.sync.settings.SignInPreference
         android:key="sign_in"
-        android:order="2"
-        android:title="@string/sign_in_to_chrome"/>
+        android:order="2"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="manage_sync"
         android:order="3"
