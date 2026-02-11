@@ -1434,12 +1434,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
       // rendering (just potentially wasteful). If Viz has LESS damage, we might
       // miss redrawing some areas.
       if (!root_layer_damage_rect_.IsEmpty()) {
-        if (root_layer_damage_rect_ != viz_damage_rect) {
-          LOG(ERROR) << "crbug.com/454680865: Root layer damage rect mismatch. "
-                     << "Client expected: "
-                     << root_layer_damage_rect_.ToString()
-                     << " Viz calculated: " << viz_damage_rect.ToString();
-        }
         DUMP_WILL_BE_CHECK(viz_damage_rect.Contains(root_layer_damage_rect_))
             << "crbug.com/454680865: Viz damage does not contain client "
                "damage! "
