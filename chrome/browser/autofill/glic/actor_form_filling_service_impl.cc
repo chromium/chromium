@@ -106,7 +106,8 @@ struct ActorSuggestionWithFillData {
 std::optional<ActorSuggestionWithFillData> GetActorAddressSuggestion(
     const AddressDataManager& adm,
     base::span<const FieldGlobalId> fields,
-    const Suggestion& suggestion) {
+    const Suggestion& suggestion,
+    actor::SectionSplitPart split_part) {
   const Suggestion::AutofillProfilePayload* const profile_payload =
       std::get_if<Suggestion::AutofillProfilePayload>(&suggestion.payload);
   if (!profile_payload) {
@@ -128,6 +129,7 @@ std::optional<ActorSuggestionWithFillData> GetActorAddressSuggestion(
   }
   ActorFormFillingServiceImpl::FillData fill_data = {base::ToVector(fields),
                                                      std::move(*profile)};
+  fill_data.split_part = split_part;
   return ActorSuggestionWithFillData{std::move(actor_suggestion),
                                      std::move(fill_data)};
 }
@@ -204,7 +206,8 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
 [[nodiscard]] std::vector<ActorSuggestionWithFillData> GetAddressSuggestions(
     base::span<const FieldGlobalId> fields,
     const AutofillManager& autofill_manager,
-    LogManager* log_manager) {
+    LogManager* log_manager,
+    actor::SectionSplitPart split_part) {
   if (fields.empty()) {
     LOG_AF(log_manager) << LoggingScope::kAutofillActor
                         << "No fields were provided to GetAddressSuggestions.";
@@ -234,7 +237,7 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
         result.reserve(response.second.size());
         for (const Suggestion& s : response.second) {
           if (std::optional<ActorSuggestionWithFillData> actor_suggestion =
-                  GetActorAddressSuggestion(adm, fields, s)) {
+                  GetActorAddressSuggestion(adm, fields, s, split_part)) {
             result.emplace_back(*std::move(actor_suggestion));
           }
         }
@@ -512,8 +515,16 @@ void ActorFormFillingServiceImpl::GetSuggestions(
   std::vector<ActorFormFillingRequest> requests;
   requests.reserve(fill_requests.size());
   for (const auto& [requested_data, representative_fields] : fill_requests) {
-    std::vector<ActorSuggestionWithFillData> data;
     using enum ActorFormFillingRequest::RequestedData;
+
+    // A single FillRequest can result in multiple ActorFormFillingRequests
+    // if we decide to split contact information from address information.
+    struct SubRequest {
+      ActorFormFillingRequest::RequestedData requested_data;
+      actor::SectionSplitPart split_part;
+    };
+    std::vector<SubRequest> sub_requests;
+
     switch (requested_data) {
       case FormFillingRequest_RequestedData_ADDRESS:
       case FormFillingRequest_RequestedData_SHIPPING_ADDRESS:
@@ -529,8 +540,26 @@ void ActorFormFillingServiceImpl::GetSuggestions(
               .Run(base::unexpected(kAutofillNotAvailable));
           return;
         }
-        data = GetAddressSuggestions(representative_fields, autofill_manager,
-                                     log_manager);
+
+        if (actor::ShouldSplitOutContactInfo(representative_fields,
+                                             autofill_manager, log_manager)) {
+          sub_requests.push_back(
+              {FormFillingRequest_RequestedData_CONTACT_INFORMATION,
+               actor::SectionSplitPart::kContactInfo});
+          // For the address split part, use the original requested_data type
+          // unless it was CONTACT_INFORMATION as that would create a misleading
+          // UX (two contact info cards back to back).
+          ActorFormFillingRequest::RequestedData address_requested_data =
+              (requested_data ==
+               FormFillingRequest_RequestedData_CONTACT_INFORMATION)
+                  ? FormFillingRequest_RequestedData_ADDRESS
+                  : requested_data;
+          sub_requests.push_back(
+              {address_requested_data, actor::SectionSplitPart::kAddress});
+        } else {
+          sub_requests.push_back(
+              {requested_data, actor::SectionSplitPart::kNoSplit});
+        }
         break;
       }
       case FormFillingRequest_RequestedData_CREDIT_CARD: {
@@ -542,12 +571,11 @@ void ActorFormFillingServiceImpl::GetSuggestions(
               .Run(base::unexpected(kAutofillNotAvailable));
           return;
         }
-        data = GetCreditCardSuggestions(representative_fields, autofill_manager,
-                                        log_manager);
+        sub_requests.push_back({FormFillingRequest_RequestedData_CREDIT_CARD,
+                                actor::SectionSplitPart::kNoSplit});
         break;
       }
       default: {
-        // Invalid request type.
         LOG_AF(log_manager)
             << LoggingScope::kAutofillActor << "The request type is invalid.";
         std::move(callback_with_metrics).Run(base::unexpected(kOther));
@@ -555,23 +583,48 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       }
     }
 
-    // For now, we require that every form is fillable.
-    // TODO(crbug.com/455788947): Consider weakening this condition.
-    if (data.empty()) {
-      LOG_AF(log_manager) << LoggingScope::kAutofillActor
-                          << "No suggestions were generated.";
-      std::move(callback_with_metrics).Run(base::unexpected(kNoSuggestions));
-      return;
-    }
+    for (const SubRequest& sub_request : sub_requests) {
+      std::vector<ActorSuggestionWithFillData> suggestion_data;
+      switch (sub_request.requested_data) {
+        case FormFillingRequest_RequestedData_ADDRESS:
+        case FormFillingRequest_RequestedData_SHIPPING_ADDRESS:
+        case FormFillingRequest_RequestedData_BILLING_ADDRESS:
+        case FormFillingRequest_RequestedData_HOME_ADDRESS:
+        case FormFillingRequest_RequestedData_WORK_ADDRESS:
+        case FormFillingRequest_RequestedData_CONTACT_INFORMATION:
+          suggestion_data =
+              GetAddressSuggestions(representative_fields, autofill_manager,
+                                    log_manager, sub_request.split_part);
+          break;
+        case FormFillingRequest_RequestedData_CREDIT_CARD:
+          suggestion_data = GetCreditCardSuggestions(
+              representative_fields, autofill_manager, log_manager);
+          break;
+        default:
+          LOG_AF(log_manager)
+              << LoggingScope::kAutofillActor << "The request type is invalid.";
+          std::move(callback_with_metrics).Run(base::unexpected(kOther));
+          return;
+      }
 
-    requests.emplace_back();
-    requests.back().requested_data = requested_data;
-    requests.back().suggestions.reserve(data.size());
-    for (ActorSuggestionWithFillData& entry : data) {
-      entry.suggestion.id =
-          ActorSuggestionId(suggestion_id_generator_.GenerateNextId());
-      fill_data_[entry.suggestion.id] = std::move(entry.filling_payload);
-      requests.back().suggestions.emplace_back(std::move(entry.suggestion));
+      // For now, we require that every form is fillable.
+      // TODO(crbug.com/455788947): Consider weakening this condition.
+      if (suggestion_data.empty()) {
+        LOG_AF(log_manager)
+            << LoggingScope::kAutofillActor << "No suggestions were generated.";
+        std::move(callback_with_metrics).Run(base::unexpected(kNoSuggestions));
+        return;
+      }
+
+      requests.emplace_back();
+      requests.back().requested_data = sub_request.requested_data;
+      requests.back().suggestions.reserve(suggestion_data.size());
+      for (ActorSuggestionWithFillData& entry : suggestion_data) {
+        entry.suggestion.id =
+            ActorSuggestionId(suggestion_id_generator_.GenerateNextId());
+        fill_data_[entry.suggestion.id] = std::move(entry.filling_payload);
+        requests.back().suggestions.emplace_back(std::move(entry.suggestion));
+      }
     }
   }
   std::move(callback_with_metrics).Run(std::move(requests));

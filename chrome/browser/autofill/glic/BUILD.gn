@@ -11,6 +11,8 @@ static_library("glic") {
     "actor_form_filling_service.h",
     "actor_form_filling_service_impl.cc",
     "actor_form_filling_service_impl.h",
+    "actor_form_section_splitter.cc",
+    "actor_form_section_splitter.h",
     "glic_form_parsing_tracker.cc",
     "glic_form_parsing_tracker.h",
   ]
@@ -35,6 +37,7 @@ source_set("unit_tests") {
   sources = [
     "actor_filling_observer_unittest.cc",
     "actor_form_filling_service_unittest.cc",
+    "actor_form_section_splitter_unittest.cc",
     "glic_form_parsing_tracker_unittest.cc",
   ]
 

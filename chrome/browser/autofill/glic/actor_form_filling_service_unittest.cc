@@ -135,6 +135,12 @@ FillRequest ContactInformationFillRequest(
           std::move(field_ids)};
 }
 
+FillRequest BillingAddressFillRequest(std::vector<FieldGlobalId> field_ids) {
+  return {ActorFormFillingRequest::RequestedData::
+              FormFillingRequest_RequestedData_BILLING_ADDRESS,
+          std::move(field_ids)};
+}
+
 // Returns the value that `group` would fill into a field with a certain `type`.
 std::u16string GetFillValue(const FormGroup& group, FieldType type) {
   return group.GetInfo(AutofillType(FieldTypeSet({type})), "en-us");
@@ -210,6 +216,8 @@ class RecordingTestContentAutofillDriver : public TestContentAutofillDriver {
       const {
     return last_filled_values_;
   }
+
+  void ClearLastFilledValues() { last_filled_values_.clear(); }
 
  private:
   absl::flat_hash_map<FieldGlobalId, std::u16string> last_filled_values_;
@@ -311,6 +319,9 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
 
   // Returns an address that is available in `AddressDataManager`.
   AutofillProfile GetProfile1() { return test::GetFullProfile(); }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -471,6 +482,80 @@ TEST_F(ActorFormFillingServiceTest, ContactInformationRequestOnMixedForm) {
                      GetFillValue(GetProfile1(), EMAIL_ADDRESS)),
            std::pair(form.fields()[2].global_id(),
                      GetFillValue(GetProfile1(), ADDRESS_HOME_LINE1))}));
+}
+
+// Tests that a mixed form section (Contact Info + Address) returns only one
+// request if kAutofillActorFormFillingSplitOutContactInfo is disabled.
+TEST_F(ActorFormFillingServiceTest, MixedForm_SectionSplitting_Disabled) {
+  feature_list_.InitAndDisableFeature(
+      features::kAutofillActorFormFillingSplitOutContactInfo);
+
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = EMAIL_ADDRESS},
+                                      {.server_type = ADDRESS_HOME_LINE1},
+                                      {.server_type = ADDRESS_HOME_CITY}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           future.GetCallback());
+  // Should return exactly one request (ADDRESS).
+  EXPECT_THAT(future.Get(),
+              ValueIs(ElementsAre(IsActorFormFillingRequest(
+                  ActorFormFillingRequest::RequestedData::
+                      FormFillingRequest_RequestedData_ADDRESS))));
+}
+
+// Tests that a mixed form section (Contact Info + Address) returns two
+// requests.
+TEST_F(ActorFormFillingServiceTest, MixedForm_SectionSplitting_Enabled) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillActorFormFillingSplitOutContactInfo);
+
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = EMAIL_ADDRESS},
+                                      {.server_type = ADDRESS_HOME_LINE1},
+                                      {.server_type = ADDRESS_HOME_CITY}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(), {BillingAddressFillRequest({form.fields()[0].global_id()})},
+      future.GetCallback());
+  // Should return two requests: CONTACT_INFORMATION and BILLING_ADDRESS.
+  EXPECT_THAT(future.Get(),
+              ValueIs(ElementsAre(
+                  IsActorFormFillingRequest(
+                      ActorFormFillingRequest::RequestedData::
+                          FormFillingRequest_RequestedData_CONTACT_INFORMATION),
+                  IsActorFormFillingRequest(
+                      ActorFormFillingRequest::RequestedData::
+                          FormFillingRequest_RequestedData_BILLING_ADDRESS))));
+}
+
+// Tests that if section splitting occurs for a CONTACT_INFORMATION type,
+// we change the type of the second part to ADDRESS rather than have repeat
+// CONTACT_INFORMATION requests.
+TEST_F(ActorFormFillingServiceTest,
+       MixedForm_SectionSplitting_ContactInfoRequested) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillActorFormFillingSplitOutContactInfo);
+
+  FormData form = SeeForm({.fields = {{.server_type = EMAIL_ADDRESS},
+                                      {.server_type = ADDRESS_HOME_LINE1}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(), {ContactInformationFillRequest({form.fields()[0].global_id()})},
+      future.GetCallback());
+  // Should return two requests: CONTACT_INFORMATION and ADDRESS.
+  EXPECT_THAT(future.Get(),
+              ValueIs(ElementsAre(
+                  IsActorFormFillingRequest(
+                      ActorFormFillingRequest::RequestedData::
+                          FormFillingRequest_RequestedData_CONTACT_INFORMATION),
+                  IsActorFormFillingRequest(
+                      ActorFormFillingRequest::RequestedData::
+                          FormFillingRequest_RequestedData_ADDRESS))));
 }
 
 // Tests that filling an "actor form" that is split across two Autofill forms

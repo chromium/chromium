@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "chrome/browser/autofill/glic/actor_form_filling_service.h"
+#include "chrome/browser/autofill/glic/actor_form_section_splitter.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 
@@ -65,6 +66,10 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
     // Fields that represents the form sections that are supposed to be filled.
     std::vector<FieldGlobalId> field_ids;
     Payload filling_payload;
+
+    // Indicates if the form sections should be split, and if so what split this
+    // FillData represents (either the contact info part or the address part).
+    actor::SectionSplitPart split_part = actor::SectionSplitPart::kNoSplit;
   };
 
  private:

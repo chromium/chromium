@@ -38,6 +38,12 @@ BASE_FEATURE(kAutofillAcrossIframesIosThrottling,
 BASE_FEATURE(kAutofillAcrossIframesIosTriggerFormExtraction,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, ActorFormFillingServiceImpl will attempt to split requests for a
+// form section fill (when relevant) into two sub-fills - one for a "contact
+// info" sub-section and one for an "address" sub-section.
+BASE_FEATURE(kAutofillActorFormFillingSplitOutContactInfo,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch: If enabled, `ChromeAutofillClient` may enter the actor mode,
 // changing how the UI, parsing and the server predictions work. For more
 // context see: go/autofill-actor-mode-implementation
