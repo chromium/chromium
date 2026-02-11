@@ -4,6 +4,8 @@
 
 #include "chrome/installer/util/create_dir_work_item.h"
 
+#include <windows.h>
+
 #include "base/files/file_util.h"
 #include "base/logging.h"
 
@@ -27,17 +29,35 @@ void CreateDirWorkItem::GetTopDirToCreate() {
 }
 
 bool CreateDirWorkItem::DoImpl() {
-  VLOG(1) << "creating directory " << path_.value();
   GetTopDirToCreate();
-  if (top_path_.empty())
+  if (top_path_.empty()) {
+    VLOG(1) << "Directory " << path_ << " already exists.";
     return true;
+  }
 
-  VLOG(1) << "Top directory that needs to be created: " << top_path_.value();
+  base::FilePath parent_dir = top_path_.DirName();
+  base::FilePath to_create;
+  parent_dir.AppendRelativePath(path_, &to_create);
+
   bool result = base::CreateDirectory(path_);
-  if (result)
-    VLOG(1) << "Created directory";
-  else
-    PLOG(ERROR) << "Failed to create directory " << top_path_.value();
+  if (result) {
+    VLOG(1) << "Created directory " << to_create << " in " << parent_dir;
+  } else {
+    PLOG(ERROR) << "Failed to create directory " << to_create << " in "
+                << parent_dir;
+    // TODO(crbug.com/483344784): Log extra diagnostics to understand why the
+    // above sometimes fails with ERROR_PATH_NOT_FOUND.
+    const DWORD parent_attributes =
+        ::GetFileAttributes(parent_dir.value().c_str());
+    if (parent_attributes == INVALID_FILE_ATTRIBUTES) {
+      PLOG(ERROR) << "Failed to get attributes for " << parent_dir;
+    } else if ((parent_attributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
+      LOG(ERROR) << parent_dir
+                 << " is not a directory; attributes = " << parent_attributes;
+    } else {
+      LOG(ERROR) << parent_dir << " is a directory.";
+    }
+  }
 
   rollback_needed_ = true;
 
