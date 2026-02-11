@@ -22,6 +22,7 @@
 #include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_pref_names.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -1037,11 +1038,14 @@ void ExtensionRegistrar::ActivateExtension(const Extension* extension,
 
   // When an extension is activated, and it is either event page-based or
   // service worker-based, it may be necessary to spin up its context.
-  if (BackgroundInfo::HasLazyContext(extension))
+  bool extension_enabled =
+      registry_->enabled_extensions().Contains(extension->id());
+  if (extension_enabled && BackgroundInfo::HasLazyContext(extension)) {
     MaybeSpinUpLazyContext(extension, is_newly_added);
+  }
 
   registry_->AddReady(extension);
-  if (registry_->enabled_extensions().Contains(extension->id())) {
+  if (extension_enabled) {
     registry_->TriggerOnReady(extension);
   }
 }
@@ -1269,18 +1273,32 @@ void ExtensionRegistrar::MaybeSpinUpLazyContext(const Extension* extension,
           mojom::APIPermissionID::kWebRequest) &&
       BackgroundInfo::IsServiceWorkerBased(extension);
 
+  // It's possible that the worker has been registered but hasn't fully run yet,
+  // as in the case where a service worker may have been interrupted during it's
+  // startup flow. In that case, start it to ensure that it runs at least once.
+  bool needs_spinup_because_hasnt_started = false;
+  if (BackgroundInfo::IsServiceWorkerBased(extension)) {
+    bool has_started = false;
+    extension_prefs_->ReadPrefAsBoolean(
+        extension->id(), kPrefHasStartedServiceWorker, &has_started);
+    needs_spinup_because_hasnt_started = !has_started;
+  }
+
   // If there aren't any special cases, we're done.
   if (!has_orphaned_dev_tools && !is_component_extension &&
-      !needs_spinup_for_web_request) {
+      !needs_spinup_for_web_request && !needs_spinup_because_hasnt_started) {
     return;
   }
 
-  // If the extension's not being reloaded (|is_newly_added| = true),
-  // only wake it up if it has the webRequest permission.
-  if (is_newly_added && !needs_spinup_for_web_request)
+  // If the extension's not being reloaded (`is_newly_added` == true),
+  // only wake it up if it has the webRequest permission or hasn't fully
+  // started.
+  if (is_newly_added && !needs_spinup_for_web_request &&
+      !needs_spinup_because_hasnt_started) {
     return;
+  }
 
-  // Wake up the extension by posting a dummy task. In the case of a service
+  // Wake up the extension by posting a no-op task. In the case of a service
   // worker-based extension with the webRequest permission that's being newly
   // installed, this will result in a no-op task that's not necessary, since
   // this is really only needed for a previously-installed extension. However,

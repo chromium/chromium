@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
@@ -31,6 +30,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_error.h"
+#include "extensions/browser/extension_pref_names.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
@@ -80,6 +80,11 @@ constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
 constexpr int kMaxRetries = 3;
 
 ServiceWorkerTaskQueue::TestObserver* g_test_observer = nullptr;
+
+// TODO(crbug.com/483423894): remove this and instead rely on providing an
+// alternative ServiceWorkerHost implementation to intercept renderer start
+// notifications.
+bool g_disable_renderer_start_notifications = false;
 
 }  // namespace
 
@@ -168,6 +173,10 @@ void ServiceWorkerTaskQueue::RendererDidStartServiceWorkerContext(
     int64_t service_worker_version_id,
     int thread_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (g_disable_renderer_start_notifications) {
+    return;
+  }
+
   auto [worker_state, context_id] =
       GetWorkerStateForActivation(extension_id, activation_token);
   if (worker_state) {
@@ -214,6 +223,12 @@ void ServiceWorkerTaskQueue::RendererDidStopServiceWorkerContext(
 // static
 void ServiceWorkerTaskQueue::SetObserverForTest(TestObserver* observer) {
   g_test_observer = observer;
+}
+
+// static
+base::AutoReset<bool>
+ServiceWorkerTaskQueue::DisableRendererStartNotificationsForTesting() {
+  return base::AutoReset<bool>(&g_disable_renderer_start_notifications, true);
 }
 
 bool ServiceWorkerTaskQueue::ShouldEnqueueTask(
@@ -422,6 +437,13 @@ void ServiceWorkerTaskQueue::OnWorkerStart(const SequencedContextId& context_id,
       context_id.token, worker_start_retries_,
       "Extensions.ServiceWorkerBackground.StartWorkerRetryAttemptsResult",
       /*success=*/true);
+
+  // Track the fact that the service worker for this extension has run once.
+  if (!browser_context_->IsOffTheRecord()) {
+    ExtensionPrefs::Get(browser_context_)
+        ->UpdateExtensionPref(context_id.extension_id,
+                              kPrefHasStartedServiceWorker, base::Value(true));
+  }
 
   if (g_test_observer) {
     g_test_observer->DidStartWorker(context_id.extension_id);

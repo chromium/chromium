@@ -2507,6 +2507,7 @@ void ExtensionPrefs::FinishExtensionInfoPrefs(
   extension_dict->Remove(EventRouter::kFilteredEvents);
   extension_dict->Remove(EventRouter::kFilteredServiceWorkerEvents);
   extension_dict->Remove(WebRequestEventRouter::kFilteredLazyListeners);
+  extension_dict->Remove(kPrefHasStartedServiceWorker);
 
   // FYI, all code below here races on sudden shutdown because |extension_dict|,
   // |app_sorting|, |extension_pref_value_map_|, and (potentially) observers

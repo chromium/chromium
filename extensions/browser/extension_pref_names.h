@@ -30,6 +30,11 @@ inline constexpr char kPrefFirstInstallTime[] = "first_install_time";
 // A preference that indicates when an extension was last installed/updated.
 inline constexpr char kPrefLastUpdateTime[] = "last_update_time";
 
+// A preference that indicates that the service worker for an extension has
+// fully started at least once.
+inline constexpr char kPrefHasStartedServiceWorker[] =
+    "has_started_service_worker";
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_EXTENSION_PREF_NAMES_H_
