@@ -482,4 +482,15 @@ const formHandlersApi = new CrWebApi('formHandlers');
 
 formHandlersApi.addFunction('trackFormMutations', trackFormMutations);
 
-gCrWeb.registerApi(formHandlersApi);
+try {
+  gCrWeb.registerApi(formHandlersApi);
+} catch (error) {
+  if (error instanceof Error && error.name === 'CrWebError' &&
+      error.message === 'API formHandlers already registered.') {
+    // TODO(crbug.com/483452015): Refactor this script to stop registering an
+    // API in a script which is reinjected with `FeatureScript::
+    // ReinjectionBehavior::kReinjectOnDocumentRecreation`.
+  } else {
+    throw error;
+  }
+}

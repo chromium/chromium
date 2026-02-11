@@ -19,6 +19,7 @@
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/net/url_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/test/http_server/data_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
@@ -76,7 +77,11 @@ class ReloadResponseProvider : public web::DataResponseProvider {
 @implementation BrowsingTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  if ([self isRunningTest:@selector(testLoad)] ||
+      [self isRunningTest:@selector(testDocumentWrite)]) {
+    config.features_enabled.push_back(web::features::kAssertOnJavaScriptErrors);
+  }
   return config;
 }
 
@@ -88,6 +93,31 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
       grey_ancestor(grey_kindOfClassName(@"TabStripTabCell")),
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitStaticText)),
       grey_sufficientlyVisible(), nil);
+}
+
+// Tests that page successfully loads.
+- (void)testLoad {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  const GURL URL = self.testServer->GetURL("/echo");
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+}
+
+// Tests that page successfully loads when using `document.write`.
+- (void)testDocumentWrite {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  const GURL URL = self.testServer->GetURL("/echo");
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  base::Value result = [ChromeEarlGrey
+      evaluateJavaScript:
+          @"document.open(); document.write('<p>Rewritten</p>'); "
+          @"document.close(); true;"];
+  GREYAssertTrue(result.is_bool() && result.GetBool(), @"JS execution failed.");
+  [ChromeEarlGrey waitForWebStateContainingText:"Rewritten"];
 }
 
 // Tests that page successfully reloads.

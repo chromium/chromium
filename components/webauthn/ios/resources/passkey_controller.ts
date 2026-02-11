@@ -100,21 +100,25 @@ class PublicKeyCredentialOverrider {
 
   constructor() {
     // Backup methods which may get overridden.
-    if (PublicKeyCredential.isConditionalMediationAvailable) {
-      this.originalIsConditionalMediationAvailable =
-          PublicKeyCredential.isConditionalMediationAvailable.bind(
-              PublicKeyCredential);
-    }
+    // TODO(crbug.com/483522384): PublicKeyCredential is sometimes undefined,
+    // ensure this workaround is sufficient.
+    if (typeof PublicKeyCredential !== 'undefined') {
+      if (PublicKeyCredential.isConditionalMediationAvailable) {
+        this.originalIsConditionalMediationAvailable =
+            PublicKeyCredential.isConditionalMediationAvailable.bind(
+                PublicKeyCredential);
+      }
 
-    if (PublicKeyCredential.getClientCapabilities) {
-      this.originalGetClientCapabilities =
-          PublicKeyCredential.getClientCapabilities.bind(PublicKeyCredential);
-    }
+      if (PublicKeyCredential.getClientCapabilities) {
+        this.originalGetClientCapabilities =
+            PublicKeyCredential.getClientCapabilities.bind(PublicKeyCredential);
+      }
 
-    if (PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
-      this.originalIsUVPAA =
-          PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable
-              .bind(PublicKeyCredential);
+      if (PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
+        this.originalIsUVPAA =
+            PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable
+                .bind(PublicKeyCredential);
+      }
     }
   }
 
@@ -916,4 +920,8 @@ passkey.addFunction('resolveAttestationRequest', resolveAttestationRequest);
 gCrWeb.registerApi(passkey);
 
 // Override PublicKeyCredential's behaviour to expose browser capabilities.
-publicKeyCredentialOverrider.override();
+// TODO(crbug.com/483522384): PublicKeyCredential is sometimes undefined, ensure
+// this workaround is sufficient.
+if (typeof PublicKeyCredential !== 'undefined') {
+  publicKeyCredentialOverrider.override();
+}
