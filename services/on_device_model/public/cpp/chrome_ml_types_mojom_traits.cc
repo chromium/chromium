@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/numerics/checked_math.h"
+
 namespace mojo {
 
 // static
@@ -189,8 +191,19 @@ bool StructTraits<on_device_model::mojom::AudioDataDataView, ml::AudioBuffer>::
   out->sample_rate_hz = in.sample_rate();
   out->num_channels = in.channel_count();
   out->num_frames = in.frame_count();
+
+  base::CheckedNumeric<size_t> expected_num_samples = out->num_channels;
+  expected_num_samples *= out->num_frames;
+  if (!expected_num_samples.IsValid()) {
+    return false;
+  }
+
   mojo::ArrayDataView<float> data_view;
   in.GetDataDataView(&data_view);
+  if (data_view.size() != expected_num_samples.ValueOrDie()) {
+    return false;
+  }
+
   out->data.reserve(data_view.size());
   std::copy_n(data_view.data(), data_view.size(),
               std::back_inserter(out->data));
