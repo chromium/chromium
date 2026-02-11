@@ -120,9 +120,9 @@ export function getHtml(this: ReadAnythingToolbarElement) {
     </cr-icon-button>
   `)}
   ${this.isImmersiveEnabled_ ? html`
-    <cr-icon-button id="more" tabindex="-1" aria-label="$i18n{moreOptionsLabel}"
+    <cr-icon-button id="more" tabindex="-1" aria-label="$i18n{settingsLabel}"
         class="toolbar-button"
-        title="$i18n{moreOptionsLabel}"
+        title="$i18n{settingsLabel}"
         aria-haspopup="menu"
         iron-icon="read-anything:settings"
         @click="${this.onMoreOptionsClick_}">
