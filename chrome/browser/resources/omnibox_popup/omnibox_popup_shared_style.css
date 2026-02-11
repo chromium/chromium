@@ -23,6 +23,7 @@
   --color-searchbox-results-foreground-selected: var(--color-omnibox-results-text-selected);
   --color-searchbox-results-icon-focused-outline: var(--color-omnibox-results-focus-indicator);
   --color-searchbox-results-icon-selected: var(--color-omnibox-results-icon-selected);
+  --cr-searchbox-match-text-padding-inline-start: 12px;
 
   /* Closely resembles the views Omnibox input font size.
    * TODO(crbug.com/450640041): Investigate webUI blink & views rendering
