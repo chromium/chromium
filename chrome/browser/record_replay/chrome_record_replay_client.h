@@ -47,7 +47,7 @@ class ChromeRecordReplayClient : public record_replay::RecordReplayClient,
   record_replay::RecordReplayManager& GetManager() override;
   record_replay::RecordReplayDriverFactory& GetDriverFactory() override;
   record_replay::RecordingDataManager* GetRecordingDataManager() override;
-  const GURL& GetPrimaryMainUrl() override;
+  GURL GetPrimaryMainFrameUrl() override;
   autofill::AutofillClient* GetAutofillClient() override;
   void ReportToUser(std::string_view message) override;
 

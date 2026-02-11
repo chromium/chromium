@@ -54,7 +54,7 @@ class MockRecordReplayClient : public RecordReplayClient {
   MOCK_METHOD(RecordReplayManager&, GetManager, (), (override));
   MOCK_METHOD(RecordReplayDriverFactory&, GetDriverFactory, (), (override));
   MOCK_METHOD(RecordingDataManager*, GetRecordingDataManager, (), (override));
-  MOCK_METHOD(const GURL&, GetPrimaryMainUrl, (), (override));
+  MOCK_METHOD(GURL, GetPrimaryMainFrameUrl, (), (override));
   MOCK_METHOD(autofill::AutofillClient*, GetAutofillClient, (), (override));
   MOCK_METHOD(void, ReportToUser, (std::string_view message), (override));
 

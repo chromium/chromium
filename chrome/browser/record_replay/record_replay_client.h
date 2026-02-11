@@ -42,8 +42,8 @@ class RecordReplayClient {
   // clients.
   virtual RecordingDataManager* GetRecordingDataManager() = 0;
 
-  // Returns the primary main frame's last committed URL.
-  virtual const GURL& GetPrimaryMainUrl() = 0;
+  // Returns the primary main frame's last committed URL without credentials.
+  virtual GURL GetPrimaryMainFrameUrl() = 0;
 
   // Returns the AutofillClient associated with the WebContents.
   virtual autofill::AutofillClient* GetAutofillClient() = 0;

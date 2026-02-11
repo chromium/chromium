@@ -14,6 +14,19 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
+namespace {
+
+GURL StripAuthAndParams(const GURL& gurl) {
+  GURL::Replacements rep;
+  rep.ClearUsername();
+  rep.ClearPassword();
+  rep.ClearQuery();
+  rep.ClearRef();
+  return gurl.ReplaceComponents(rep);
+}
+
+}  // namespace
+
 DEFINE_USER_DATA(ChromeRecordReplayClient);
 
 ChromeRecordReplayClient::ChromeRecordReplayClient(tabs::TabInterface& tab)
@@ -67,8 +80,8 @@ ChromeRecordReplayClient::GetRecordingDataManager() {
   return nullptr;
 }
 
-const GURL& ChromeRecordReplayClient::GetPrimaryMainUrl() {
-  return tab().GetContents()->GetLastCommittedURL();
+GURL ChromeRecordReplayClient::GetPrimaryMainFrameUrl() {
+  return StripAuthAndParams(tab().GetContents()->GetLastCommittedURL());
 }
 
 autofill::AutofillClient* ChromeRecordReplayClient::GetAutofillClient() {

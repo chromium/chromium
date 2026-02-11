@@ -17,7 +17,7 @@
 
 namespace {
 
-using testing::Return;
+using ::testing::Return;
 
 class ChromeRecordReplayClientTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -43,15 +43,15 @@ class ChromeRecordReplayClientTest : public ChromeRenderViewHostTestHarness {
   std::optional<ChromeRecordReplayClient> client_;
 };
 
-// Tests that GetPrimaryMainUrl() changes on navigations.
-TEST_F(ChromeRecordReplayClientTest, GetPrimaryMainUrl) {
+// Tests that GetPrimaryMainFrameUrl() changes on navigations.
+TEST_F(ChromeRecordReplayClientTest, GetPrimaryMainFrameUrl) {
   const GURL url("https://example.com/");
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
-  EXPECT_EQ(client().GetPrimaryMainUrl(), url);
+  EXPECT_EQ(client().GetPrimaryMainFrameUrl(), url);
 
   const GURL url2("https://google.com/");
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url2);
-  EXPECT_EQ(client().GetPrimaryMainUrl(), url2);
+  EXPECT_EQ(client().GetPrimaryMainFrameUrl(), url2);
 }
 
 }  // namespace
