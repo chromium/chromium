@@ -58,10 +58,8 @@ enum class AutofillAiAction {
   kOptIn,
   // Used only if AutofillAiAvailableByDefault is enabled, it controls whether
   // users can opt into Autofill AI features, such as identity docs and travel
-  // information.
-  // Its implementation is currently the exact same as kOptIn. However this
-  // will change once a new developer extension
-  // pref is introduced, which will allow for disabling Autofill AI.
+  // information. It returns false on high-level checks, such as address-pref
+  // being off.
   kEnableOrDisable,
   // Trigger a run of the server classification model.
   kServerClassificationModel,

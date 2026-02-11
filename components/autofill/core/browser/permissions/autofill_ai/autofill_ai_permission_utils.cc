@@ -334,25 +334,41 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kCrowdsourcingVote:
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillAiAvailableByDefault)) {
+        return true;
+      }
       return policy_pref_enabled && autofill_ai_available;
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kImport:
-      return policy_pref_enabled && autofill_ai_available &&
-             EntityTypeIsEnabledInSettings(*prefs, *entity_type);
+      if (!EntityTypeIsEnabledInSettings(*prefs, *entity_type)) {
+        return false;
+      }
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillAiAvailableByDefault)) {
+        return true;
+      }
+      return policy_pref_enabled && autofill_ai_available;
     case AutofillAiAction::kImportToWallet:
-      return policy_pref_enabled && autofill_ai_available &&
-             is_wallet_storage_enabled &&
-             EntityTypeIsEnabledInSettings(*prefs, *entity_type);
+      if (!EntityTypeIsEnabledInSettings(*prefs, *entity_type) ||
+          !is_wallet_storage_enabled) {
+        return false;
+      }
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillAiAvailableByDefault)) {
+        return true;
+      }
+      return policy_pref_enabled && autofill_ai_available;
     case AutofillAiAction::kIphForOptIn:
       // The IPH should only show if the user has not opted in yet.
       return policy_pref_enabled && !autofill_ai_available &&
              EntityTypeIsEnabledInSettings(*prefs, *entity_type);
     case AutofillAiAction::kOptIn:
-    case AutofillAiAction::kEnableOrDisable:
       if (!policy_pref_enabled) {
         MaybeOutputReason(debug_message, "Enterprise policy is not enabled.");
       }
       return policy_pref_enabled;
+    case AutofillAiAction::kEnableOrDisable:
     case AutofillAiAction::kListEntityInstancesInSettings:
       return true;
   }
