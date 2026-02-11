@@ -872,8 +872,8 @@ void GlicInstanceImpl::MaybeShowShortcutToastPromo() {
     // Hotkey might not be registered, skip the promo.
     return;
   }
-
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+// TODO(b/483455896): implement hotkey promo for android
+#if !BUILDFLAG(IS_ANDROID)
   Browser* browser = chrome::FindTabbedBrowser(profile_, false);
   if (!browser) {
     // If there is no browser window open for the profile, skip the promo.
@@ -899,7 +899,8 @@ void GlicInstanceImpl::MaybeShowShortcutSnoozePromo() {
     return;
   }
 
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+  // TODO(b/483455896): implement hotkey promo for android.
+#if !BUILDFLAG(IS_ANDROID)
   Browser* browser = chrome::FindTabbedBrowser(profile_, false);
   if (!browser) {
     // If there is no browser window open for the profile, skip the promo.
