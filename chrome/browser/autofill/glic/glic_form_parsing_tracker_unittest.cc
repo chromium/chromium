@@ -33,9 +33,11 @@ class GlicFormParsingTrackerTest
   ~GlicFormParsingTrackerTest() override { DestroyAutofillClient(); }
 
   GlicFormParsingTracker& tracker() { return *tracker_; }
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_unit_test_environment_;
   std::unique_ptr<GlicFormParsingTracker> tracker_;
 };
@@ -355,6 +357,112 @@ TEST_F(GlicFormParsingTrackerTest, Wait_ReschedulesAfterExecution) {
       &AutofillManager::Observer::OnFieldTypesDetermined, form2,
       AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
   EXPECT_TRUE(future2.IsReady());
+}
+
+// Verifies that timeouts set when waiting are respected and the callback gets
+// automatically executed even if requirements are not met.
+TEST_F(GlicFormParsingTrackerTest, Wait_TimeoutOnSingleCallback) {
+  FormGlobalId form = test::MakeFormGlobalId();
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormsSeen,
+      std::vector<FormGlobalId>{form}, base::span<FormGlobalId>());
+
+  base::test::TestFuture<void> future;
+  tracker().Wait(future.GetCallback(), base::Milliseconds(500));
+  EXPECT_FALSE(future.IsReady());
+
+  task_environment().FastForwardBy(base::Milliseconds(100));
+  EXPECT_FALSE(future.IsReady());
+
+  task_environment().FastForwardBy(base::Milliseconds(400));
+  EXPECT_TRUE(future.IsReady());
+}
+
+// Verifies that if the callback got executed because of a timeout, it is not
+// executed again after the requirements are met.
+TEST_F(GlicFormParsingTrackerTest,
+       Wait_RequirementsMetAfterTimeoutSingleCallback) {
+  FormGlobalId form = test::MakeFormGlobalId();
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormsSeen,
+      std::vector<FormGlobalId>{form}, base::span<FormGlobalId>());
+
+  base::test::TestFuture<void> future;
+  tracker().Wait(future.GetCallback(), base::Milliseconds(500));
+  EXPECT_FALSE(future.IsReady());
+
+  task_environment().FastForwardBy(base::Milliseconds(500));
+  EXPECT_TRUE(future.IsReady());
+
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form,
+      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
+      true);
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form,
+      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+}
+
+// Verifies that timeouts are handled correctly even if multiple callbacks are
+// pending.
+TEST_F(GlicFormParsingTrackerTest, Wait_TimeoutsOnMultipleCallbacksPending) {
+  FormGlobalId form = test::MakeFormGlobalId();
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormsSeen,
+      std::vector<FormGlobalId>{form}, base::span<FormGlobalId>());
+
+  base::test::TestFuture<void> future1;
+  base::test::TestFuture<void> future2;
+  base::test::TestFuture<void> future3;
+
+  tracker().Wait(future1.GetCallback(), base::Milliseconds(750));
+  tracker().Wait(future2.GetCallback(), base::Milliseconds(500));
+  tracker().Wait(future3.GetCallback(), base::Milliseconds(1000));
+
+  task_environment().FastForwardBy(base::Milliseconds(500));
+  EXPECT_FALSE(future1.IsReady());
+  EXPECT_TRUE(future2.IsReady());
+  EXPECT_FALSE(future3.IsReady());
+
+  task_environment().FastForwardBy(base::Milliseconds(250));
+  EXPECT_TRUE(future1.IsReady());
+  EXPECT_FALSE(future3.IsReady());
+
+  task_environment().FastForwardBy(base::Milliseconds(250));
+  EXPECT_TRUE(future3.IsReady());
+}
+
+// Verifies that one callback timing out doesn't block other callbacks from
+// being executed as a result of requirements being met.
+TEST_F(GlicFormParsingTrackerTest,
+       Wait_RequirementsMetMultipleCallbacksPendingOneTimedout) {
+  FormGlobalId form = test::MakeFormGlobalId();
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormsSeen,
+      std::vector<FormGlobalId>{form}, base::span<FormGlobalId>());
+
+  base::test::TestFuture<void> future1;
+  base::test::TestFuture<void> future2;
+  base::test::TestFuture<void> future3;
+
+  tracker().Wait(future1.GetCallback(), base::Milliseconds(1000));
+  tracker().Wait(future2.GetCallback(), base::Milliseconds(500));
+  tracker().Wait(future3.GetCallback(), base::Milliseconds(1000));
+
+  task_environment().FastForwardBy(base::Milliseconds(500));
+  EXPECT_FALSE(future1.IsReady());
+  EXPECT_TRUE(future2.IsReady());
+  EXPECT_FALSE(future3.IsReady());
+
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form,
+      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
+      true);
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form,
+      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+  EXPECT_TRUE(future1.IsReady());
+  EXPECT_TRUE(future3.IsReady());
 }
 
 }  // namespace

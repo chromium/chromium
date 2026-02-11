@@ -4,7 +4,37 @@
 
 #include "chrome/browser/autofill/glic/glic_form_parsing_tracker.h"
 
+#include "base/timer/timer.h"
+
 namespace autofill {
+namespace {
+// Runs `cb` after `timeout` or if `Run()` is called.
+class TimeoutHelper {
+ public:
+  TimeoutHelper(base::OnceClosure cb, base::TimeDelta timeout)
+      : cb_(std::move(cb)) {
+    timer_.Start(FROM_HERE, timeout, this, &TimeoutHelper::Run);
+  }
+  ~TimeoutHelper() = default;
+
+  void Run() {
+    if (base::OnceClosure cb = std::exchange(cb_, {})) {
+      std::move(cb).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure cb_;
+  base::OneShotTimer timer_;
+};
+
+base::OnceClosure WrapAsTimeoutCallback(base::OnceClosure cb,
+                                        base::TimeDelta timeout) {
+  auto helper = std::make_unique<TimeoutHelper>(std::move(cb), timeout);
+  return base::BindOnce(&TimeoutHelper::Run, std::move(helper));
+}
+
+}  // namespace
 
 GlicFormParsingTracker::GlicFormParsingTracker(AutofillClient* client) {
   if (client) {
@@ -14,8 +44,9 @@ GlicFormParsingTracker::GlicFormParsingTracker(AutofillClient* client) {
 
 GlicFormParsingTracker::~GlicFormParsingTracker() = default;
 
-void GlicFormParsingTracker::Wait(base::OnceClosure callback) {
-  callbacks_.push_back(std::move(callback));
+void GlicFormParsingTracker::Wait(base::OnceClosure callback,
+                                  base::TimeDelta timeout) {
+  callbacks_.push_back(WrapAsTimeoutCallback(std::move(callback), timeout));
 
   // It may happen that forms were parsed before the waiting was requested.
   MaybeNotifyGlic();
