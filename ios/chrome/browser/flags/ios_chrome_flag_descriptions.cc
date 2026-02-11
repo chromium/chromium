@@ -603,6 +603,11 @@ const char kEnhancedCalendarDescription[] =
     "When enabled, the enhanced calendar flow will be available to eligible "
     "users when adding a calendar event.";
 
+const char kExplainGeminiEditMenuName[] = "Enable Explain Gemini Edit Menu";
+const char kExplainGeminiEditMenuDescription[] =
+    "When enabled, the explain Gemini edit menu will be available to eligible "
+    "users when highlighting any text on a web page.";
+
 const char kFRESignInHeaderTextUpdateName[] =
     "Enable header text variations on the FRE sign-in page.";
 const char kFRESignInHeaderTextUpdateDescription[] =

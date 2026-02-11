@@ -102,6 +102,9 @@ bool ShouldSkipBWGPromoNewUserDelay();
 // Feature flag to enable BWG Promo Consent.
 BASE_DECLARE_FEATURE(kBWGPromoConsent);
 
+// Feature flag to enable Explain Gemini in Edit Menu.
+BASE_DECLARE_FEATURE(kExplainGeminiEditMenu);
+
 extern const char kExplainGeminiEditMenuParams[];
 
 // Holds the position of Explain Gemini button in the EditMenu.
@@ -113,9 +116,6 @@ enum class PositionForExplainGeminiEditMenu {
 
 // Returns the position of Explain Gemini in the EditMenu.
 PositionForExplainGeminiEditMenu ExplainGeminiEditMenuPosition();
-
-// Feature flag to enable Explain Gemini in Edit Menu.
-BASE_DECLARE_FEATURE(kExplainGeminiEditMenu);
 
 // Feature flag to enable Precise Location in BWG Settings Menu.
 BASE_DECLARE_FEATURE(kBWGPreciseLocation);

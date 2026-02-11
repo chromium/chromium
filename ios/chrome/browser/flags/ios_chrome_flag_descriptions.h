@@ -366,6 +366,9 @@ extern const char kEnableVariationsGoogleGroupFilteringDescription[];
 extern const char kEnhancedCalendarName[];
 extern const char kEnhancedCalendarDescription[];
 
+extern const char kExplainGeminiEditMenuName[];
+extern const char kExplainGeminiEditMenuDescription[];
+
 extern const char kFRESignInHeaderTextUpdateName[];
 extern const char kFRESignInHeaderTextUpdateDescription[];
 
