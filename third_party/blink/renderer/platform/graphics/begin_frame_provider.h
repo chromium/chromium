@@ -9,6 +9,7 @@
 
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
@@ -93,6 +94,7 @@ class PLATFORM_EXPORT BeginFrameProvider
       efs_receiver_;
   viz::FrameSinkId frame_sink_id_;
   viz::FrameSinkId parent_frame_sink_id_;
+  std::optional<base::PlatformThread::RaiseThreadTypeLease> lease_;
   HeapMojoRemote<viz::mojom::blink::CompositorFrameSink> compositor_frame_sink_;
   Member<BeginFrameProviderClient> begin_frame_client_;
 };

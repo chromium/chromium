@@ -66,6 +66,8 @@ class BASE_EXPORT ScopedBoostPriorityBase {
   ScopedBoostPriorityBase(const ScopedBoostPriorityBase&) = delete;
   ScopedBoostPriorityBase& operator=(const ScopedBoostPriorityBase&) = delete;
 
+  static bool CurrentThreadHasScope();
+
  protected:
   bool ShouldBoostTo(ThreadType target_thread_type) const;
 
@@ -84,6 +86,8 @@ class BASE_EXPORT ScopedBoostPriorityBase {
 // `target_thread_type` in this scope. `target_thread_type` must be lower
 // priority than kRealtimeAudio, since realtime priority should only be used by
 // dedicated media threads.
+//
+// TODO(crbug.com/483622914): consider migrating to platform thread leases.
 class BASE_EXPORT ScopedBoostPriority
     : public internal::ScopedBoostPriorityBase {
  public:
@@ -96,6 +100,8 @@ class BASE_EXPORT ScopedBoostPriority
 // when the object is destroyed, which must happens on the current thread.
 // `target_thread_type` must be lower priority than kRealtimeAudio, since
 // realtime priority should only be used by dedicated media threads.
+//
+// TODO(crbug.com/483622914): consider migrating to platform thread leases.
 class BASE_EXPORT ScopedBoostablePriority
     : public internal::ScopedBoostPriorityBase {
  public:

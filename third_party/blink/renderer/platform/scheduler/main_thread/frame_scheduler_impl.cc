@@ -50,19 +50,6 @@ using perfetto::protos::pbzero::RendererMainThreadTaskExecution;
 
 namespace {
 
-// When enabled, the main thread's type is reduced from `kDisplayCritical` to
-// `kDefault` when WebRTC is in use within the renderer. This is a simple
-// workaround meant to be merged to higher channels while we're working on a
-// more refined solution. See crbug.com/1513904.
-BASE_FEATURE(kRendererMainIsDefaultThreadTypeForWebRTC,
-             "RendererMainIsNormalThreadTypeForWebRTC",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else   // BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_ANDROID)
-);
-
 perfetto::StaticString VisibilityStateToString(bool is_visible) {
   if (is_visible) {
     return "visible";
@@ -799,12 +786,10 @@ void FrameSchedulerImpl::OnStartedUsingNonStickyFeature(
     if (!base::FeatureList::IsEnabled(
             blink::features::kWebRtcUseMediaThreadTypes) &&
         base::FeatureList::IsEnabled(
-            kRendererMainIsDefaultThreadTypeForWebRTC) &&
-        (base::PlatformThread::GetCurrentThreadType() ==
-             base::ThreadType::kPresentation ||
-         base::PlatformThread::GetCurrentThreadType() ==
-             base::ThreadType::kAudioProcessing)) {
-      base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
+            blink::features::kRendererMainIsDefaultThreadTypeForWebRTC)) {
+      if (thread_type_throttled_to_default_count_++ == 0) {
+        main_thread_scheduler_->IncreaseDefaultThreadTypeUsageCount();
+      }
     }
 
     if (auto* rc = delegate_->GetDocumentResourceCoordinator()) {
@@ -838,6 +823,14 @@ void FrameSchedulerImpl::OnStoppedUsingNonStickyFeature(
   }
 
   if (handle->GetFeature() == SchedulingPolicy::Feature::kWebRTC) {
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kWebRtcUseMediaThreadTypes) &&
+        base::FeatureList::IsEnabled(
+            blink::features::kRendererMainIsDefaultThreadTypeForWebRTC)) {
+      if (--thread_type_throttled_to_default_count_ == 0) {
+        main_thread_scheduler_->DecreaseDefaultThreadTypeUsageCount();
+      }
+    }
     if (auto* rc = delegate_->GetDocumentResourceCoordinator()) {
       rc->OnStoppedUsingWebRTC();
     }

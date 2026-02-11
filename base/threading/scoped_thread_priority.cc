@@ -65,6 +65,10 @@ bool ScopedBoostPriorityBase::ShouldBoostTo(
                                              initial_thread_type_);
 }
 
+bool ScopedBoostPriorityBase::CurrentThreadHasScope() {
+  return current_boost_scope != nullptr;
+}
+
 }  // namespace internal
 
 ScopedBoostPriority::ScopedBoostPriority(ThreadType target_thread_type) {

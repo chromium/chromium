@@ -427,6 +427,11 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     return main_thread_only().current_task_start_time;
   }
 
+  // TODO(crbug.com/470337728): Remove these functions when
+  // kWebRtcUseMediaThreadTypes is enabled by default.
+  void IncreaseDefaultThreadTypeUsageCount();
+  void DecreaseDefaultThreadTypeUsageCount();
+
  protected:
   // ThreadSchedulerBase implementation:
   Vector<base::OnceClosure>& GetOnTaskCompletionCallbacks() override;
@@ -692,6 +697,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   bool has_ipc_callback_set_ = false;
   bool IsIpcTrackingEnabledForAllPages();
 
+  // Updates the thread type lease based on the current use case.
+  void MaybeUpdateThreadTypeLease();
+
   // This controller should be initialized before any TraceableVariables
   // because they require one to initialize themselves.
   TraceableVariableController tracing_controller_;
@@ -928,6 +936,10 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   WeakPersistent<AgentGroupScheduler> current_agent_group_scheduler_;
 
   PerformanceHelper performance_helper_;
+
+  std::optional<base::PlatformThread::RaiseThreadTypeLease>
+      raise_thread_type_lease_;
+  size_t default_thread_type_usage_count_ = 0;
 
   // This is accessed from both the main and IO (IPC) threads. It's incremented
   // when an urgent IPC task is posted and decremented when that IPC task runs

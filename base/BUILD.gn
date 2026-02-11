@@ -838,6 +838,7 @@ component("base") {
     "task/thread_pool/worker_thread_observer.h",
     "task/thread_pool/worker_thread_set.cc",
     "task/thread_pool/worker_thread_set.h",
+    "task/thread_type.cc",
     "task/thread_type.h",
     "task/updateable_sequenced_task_runner.h",
     "test/scoped_logging_settings.h",

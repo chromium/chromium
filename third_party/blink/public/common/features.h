@@ -1886,6 +1886,13 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcAudioSinkUseTimestampAligner);
 // kInteractive for audio processing) for media tasks.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcUseMediaThreadTypes);
 
+// When enabled, the main thread's type is reduced from `kDisplayCritical` to
+// `kDefault` when WebRTC is in use within the renderer. This is a simple
+// workaround meant to be merged to higher channels while we're working on a
+// more refined solution. See crbug.com/1513904.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kRendererMainIsDefaultThreadTypeForWebRTC);
+
 // This feature enables using Post-Quantum Crypto(PQC) for DTLS to improve
 // WebRTC's security.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcPqcForDtls);

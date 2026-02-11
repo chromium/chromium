@@ -71,7 +71,7 @@ void BeginFrameProvider::CreateCompositorFrameSinkIfNeeded() {
 
   // Once we are using RAF, this thread is driving user interactive display
   // updates. Update priority accordingly.
-  base::PlatformThread::SetCurrentThreadType(base::ThreadType::kPresentation);
+  lease_.emplace(base::ThreadType::kPresentation);
 
   mojo::Remote<mojom::blink::EmbeddedFrameSinkProvider> provider;
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(

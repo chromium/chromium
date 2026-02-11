@@ -410,6 +410,8 @@ class MainThreadSchedulerImplTest : public testing::Test {
   ~MainThreadSchedulerImplTest() override = default;
 
   void SetUp() override {
+    // Used to reset the thread type, since tests can change it.
+    thread_type_ = base::PlatformThread::GetCurrentThreadType();
     CreateTestTaskRunner();
     Initialize(std::make_unique<MainThreadSchedulerImplForTest>(
         base::sequence_manager::SequenceManagerForTest::Create(
@@ -431,8 +433,6 @@ class MainThreadSchedulerImplTest : public testing::Test {
     scheduler_->update_policy_count_ = 0;
     scheduler_->use_cases_.clear();
     scheduler_->use_case_override_ = std::nullopt;
-    // Used to reset the thread type, since tests can change it.
-    thread_type_ = base::PlatformThread::GetCurrentThreadType();
   }
 
   void CreateTestTaskRunner() {
@@ -4458,9 +4458,6 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_F(MainThreadSchedulerImplTest, ThreadPriorityUseCaseChangesScrolling) {
-  // The initial thread type outside of tests is kDisplayCritical.
-  base::PlatformThread::SetCurrentThreadType(base::ThreadType::kPresentation);
-
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kLowerPriorityForCompositorGestures);
 
@@ -4482,7 +4479,7 @@ TEST_F(MainThreadSchedulerImplTest, ThreadPriorityUseCaseChangesScrolling) {
   EXPECT_EQ(base::PlatformThread::GetCurrentThreadType(),
             base::ThreadType::kDefault);
 
-  // As soon as there is another use case, go back to kDisplayCritical.
+  // As soon as there is another use case, go back to kPresentation.
   SimulateMainThreadGestureStart(
       TouchEventPolicy::kSendTouchStart,
       blink::WebInputEvent::Type::kGestureScrollBegin);
@@ -4497,9 +4494,6 @@ TEST_F(MainThreadSchedulerImplTest, ThreadPriorityUseCaseChangesScrolling) {
 
 TEST_F(MainThreadSchedulerImplTest,
        ThreadPriorityUseCaseChangesMainThreadScrolling) {
-  // The initial thread type outside of tests is kDisplayCritical.
-  base::PlatformThread::SetCurrentThreadType(base::ThreadType::kPresentation);
-
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kLowerPriorityForCompositorGestures);
 

@@ -5,6 +5,10 @@
 #ifndef BASE_TASK_THREAD_TYPE_H_
 #define BASE_TASK_THREAD_TYPE_H_
 
+#include <string_view>
+
+#include "base/base_export.h"
+
 namespace base {
 
 // Valid values for `thread_type` of Thread::Options, SimpleThread::Options,
@@ -43,6 +47,8 @@ enum class ThreadType : int {
   kRealtimeAudio,
   kMaxValue = kRealtimeAudio,
 };
+
+BASE_EXPORT std::string_view ThreadTypeToString(ThreadType type);
 
 }  // namespace base
 

@@ -9,14 +9,45 @@
 #include <array>
 
 #include "base/compiler_specific.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/process/process.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/thread_type.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "base/threading/threading_features.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace base {
+std::ostream& operator<<(std::ostream& os, ThreadType type) {
+  return os << ThreadTypeToString(type);
+}
+
+std::ostream& operator<<(std::ostream& os, MessagePumpType type) {
+  switch (type) {
+    case MessagePumpType::DEFAULT:
+      return os << "DEFAULT";
+    case MessagePumpType::UI:
+      return os << "UI";
+    case MessagePumpType::CUSTOM:
+      return os << "CUSTOM";
+    case MessagePumpType::IO:
+      return os << "IO";
+#if BUILDFLAG(IS_ANDROID)
+    case MessagePumpType::JAVA:
+      return os << "JAVA";
+#endif
+#if BUILDFLAG(IS_APPLE)
+    case MessagePumpType::NS_RUNLOOP:
+      return os << "NS_RUNLOOP";
+#endif
+  }
+  return os << "Unknown(" << static_cast<int>(type) << ")";
+}
+}  // namespace base
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/threading/platform_thread_internal_posix.h"
@@ -47,6 +78,9 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/system/sys_info.h"
 #endif
+
+using ::testing::_;
+using ::testing::InSequence;
 
 namespace base {
 
@@ -806,5 +840,184 @@ TEST(PlatformThreadCpuAffinity, IsEligibleForBigCoreAffinityChange) {
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+class PlatformThreadThreadTypeManagerTest : public ::testing::Test,
+                                            public internal::ThreadTypeManager {
+ public:
+  std::unique_ptr<PlatformThread::RaiseThreadTypeLease> CreateLease(
+      ThreadType type) {
+    return std::unique_ptr<PlatformThread::RaiseThreadTypeLease>(
+        new PlatformThread::RaiseThreadTypeLease(type, this));
+  }
+
+  void SetCurrentThreadTypeImpl(ThreadType type,
+                                MessagePumpType pump_type) override {
+    mock_set_thread_type_.Call(type, pump_type);
+  }
+
+  testing::MockFunction<void(ThreadType, MessagePumpType)>
+      mock_set_thread_type_;
+};
+
+TEST_F(PlatformThreadThreadTypeManagerTest, HasDefaultThreadTypeInitialState) {
+  EXPECT_CALL(mock_set_thread_type_, Call).Times(0);
+  EXPECT_EQ(GetCurrent(), ThreadType::kDefault);
+}
+
+TEST_F(PlatformThreadThreadTypeManagerTest, CanDepressPriority) {
+  EXPECT_CALL(mock_set_thread_type_, Call).Times(1);
+  SetDefault(ThreadType::kBackground);
+  EXPECT_EQ(GetCurrent(), ThreadType::kBackground);
+}
+
+TEST_F(PlatformThreadThreadTypeManagerTest, CanElevatePriority) {
+  EXPECT_CALL(mock_set_thread_type_, Call).Times(1);
+  SetDefault(ThreadType::kPresentation);
+  EXPECT_EQ(GetCurrent(), ThreadType::kPresentation);
+}
+
+TEST_F(PlatformThreadThreadTypeManagerTest,
+       CanLeaseLowerThanDefaultPriorityWithUnsetBase) {
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kBackground, _));
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kDefault, _));
+  auto lease = CreateLease(ThreadType::kBackground);
+  EXPECT_EQ(GetCurrent(), ThreadType::kBackground);
+}
+
+TEST_F(PlatformThreadThreadTypeManagerTest, RaisesPriorityWithLeaseScoped) {
+  InSequence s;
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kPresentation, _));
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kDefault, _));
+  {
+    auto lease = CreateLease(ThreadType::kPresentation);
+    EXPECT_EQ(GetCurrent(), ThreadType::kPresentation);
+  }
+  EXPECT_EQ(GetCurrent(), ThreadType::kDefault);
+}
+
+TEST_F(PlatformThreadThreadTypeManagerTest, IgnoresLowerPriorityLease) {
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kPresentation, _));
+  SetDefault(ThreadType::kPresentation);
+  {
+    auto lease = CreateLease(ThreadType::kDefault);
+    EXPECT_EQ(GetCurrent(), ThreadType::kPresentation);
+  }
+  EXPECT_EQ(GetCurrent(), ThreadType::kPresentation);
+}
+
+TEST_F(PlatformThreadThreadTypeManagerTest, HandlesMultipleIdenticalLeases) {
+  InSequence s;
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kPresentation, _));
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kDefault, _));
+  {
+    auto lease1 = CreateLease(ThreadType::kPresentation);
+    EXPECT_EQ(GetCurrent(), ThreadType::kPresentation);
+    {
+      auto lease2 = CreateLease(ThreadType::kPresentation);
+      EXPECT_EQ(GetCurrent(), ThreadType::kPresentation);
+    }
+    EXPECT_EQ(GetCurrent(), ThreadType::kPresentation);
+  }
+  EXPECT_EQ(GetCurrent(), ThreadType::kDefault);
+}
+
+TEST_F(PlatformThreadThreadTypeManagerTest, HandlesMultipleDistinctLeases) {
+  InSequence s;
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kPresentation, _));
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kRealtimeAudio, _));
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kPresentation, _));
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kDefault, _));
+  {
+    auto lease1 = CreateLease(ThreadType::kPresentation);
+    EXPECT_EQ(GetCurrent(), ThreadType::kPresentation);
+    {
+      auto lease2 = CreateLease(ThreadType::kRealtimeAudio);
+      EXPECT_EQ(GetCurrent(), ThreadType::kRealtimeAudio);
+    }
+    EXPECT_EQ(GetCurrent(), ThreadType::kPresentation);
+  }
+  EXPECT_EQ(GetCurrent(), ThreadType::kDefault);
+}
+
+TEST_F(PlatformThreadThreadTypeManagerTest, LeaseTransferByMoveAssignment) {
+  InSequence s;
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kPresentation, _));
+  auto lease1 = CreateLease(ThreadType::kPresentation);
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kRealtimeAudio, _));
+  auto lease2 = CreateLease(ThreadType::kRealtimeAudio);
+  lease1 = std::move(lease2);
+  EXPECT_EQ(GetCurrent(), ThreadType::kRealtimeAudio);
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kDefault, _));
+}
+
+TEST_F(PlatformThreadThreadTypeManagerTest, LeaseCrossDrop) {
+  InSequence s;
+
+  std::unique_ptr<PlatformThread::RaiseThreadTypeLease> bg_lease;
+  std::unique_ptr<PlatformThread::RaiseThreadTypeLease> audio_lease;
+  std::unique_ptr<PlatformThread::RaiseThreadTypeLease> presentation_lease;
+
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kBackground, _));
+  bg_lease = CreateLease(ThreadType::kBackground);
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kRealtimeAudio, _));
+  audio_lease = CreateLease(ThreadType::kRealtimeAudio);
+
+  // No call expected since audio_lease is active & kAudioProcessing > kDefault
+  presentation_lease = CreateLease(ThreadType::kPresentation);
+
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kPresentation, _));
+  audio_lease = nullptr;
+
+  // No call expected since presentation_lease is still active.
+  bg_lease = nullptr;
+
+  EXPECT_CALL(mock_set_thread_type_, Call(ThreadType::kDefault, _));
+  presentation_lease = nullptr;
+}
+
+TEST(PlatformThreadRaiseLeaseIntegrationTest, KeepsMaxThreadType) {
+  {
+    auto audio_lease =
+        PlatformThread::RaiseThreadTypeLease(ThreadType::kAudioProcessing);
+    EXPECT_EQ(PlatformThread::GetCurrentThreadType(),
+              ThreadType::kAudioProcessing);
+    {
+      auto presentation_lease =
+          PlatformThread::RaiseThreadTypeLease(ThreadType::kPresentation);
+      EXPECT_EQ(PlatformThread::GetCurrentThreadType(),
+                ThreadType::kAudioProcessing);
+    }
+    EXPECT_EQ(PlatformThread::GetCurrentThreadType(),
+              ThreadType::kAudioProcessing);
+  }
+  EXPECT_EQ(PlatformThread::GetCurrentThreadType(), ThreadType::kDefault);
+}
+
+TEST(PlatformThreadRaiseLeaseIntegrationTest, TemporaryDepression) {
+  std::optional<PlatformThread::RaiseThreadTypeLease> audio_lease;
+  audio_lease.emplace(ThreadType::kAudioProcessing);
+  EXPECT_EQ(PlatformThread::GetCurrentThreadType(),
+            ThreadType::kAudioProcessing);
+  audio_lease = std::nullopt;
+  EXPECT_EQ(PlatformThread::GetCurrentThreadType(), ThreadType::kDefault);
+  audio_lease.emplace(ThreadType::kAudioProcessing);
+  EXPECT_EQ(PlatformThread::GetCurrentThreadType(),
+            ThreadType::kAudioProcessing);
+}
+
+TEST(PlatformThreadRaiseLeaseIntegrationTest, LeaseCrossDrop) {
+  std::optional<PlatformThread::RaiseThreadTypeLease> audio_lease;
+  std::optional<PlatformThread::RaiseThreadTypeLease> presentation_lease;
+  audio_lease.emplace(ThreadType::kAudioProcessing);
+  EXPECT_EQ(PlatformThread::GetCurrentThreadType(),
+            ThreadType::kAudioProcessing);
+  presentation_lease.emplace(ThreadType::kPresentation);
+  EXPECT_EQ(PlatformThread::GetCurrentThreadType(),
+            ThreadType::kAudioProcessing);
+  audio_lease = std::nullopt;
+  EXPECT_EQ(PlatformThread::GetCurrentThreadType(), ThreadType::kPresentation);
+  presentation_lease = std::nullopt;
+  EXPECT_EQ(PlatformThread::GetCurrentThreadType(), ThreadType::kDefault);
+}
 
 }  // namespace base

@@ -404,6 +404,10 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   // Map of all TaskRunners, indexed by TaskType.
   TaskRunnerMap task_runners_;
 
+  // The number of times WebRTC instances throttle back to the default thread
+  // type.
+  size_t thread_type_throttled_to_default_count_ = 0;
+
   // TODO(altimin): Remove after we have have 1:1 relationship between frames
   // and documents.
   base::WeakPtrFactory<FrameSchedulerImpl> document_bound_weak_factory_{this};
