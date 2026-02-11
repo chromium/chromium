@@ -127,7 +127,6 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_TRUE(child.GetDict().FindString("remoteToken"));
 }
 
-// TODO(crbug.com/455761581): Test is flaky.
 TEST_F(PageContextExtractorJavaScriptFeatureTest, ExtractPageContext) {
   const std::string main_html =
       base::StrCat({"<html><head><title>Main</title></head><body><p>Main frame "
@@ -176,7 +175,6 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest, ExtractPageContext) {
   EXPECT_THAT(result_value, base::test::IsSupersetOfValue(expected_value));
 }
 
-// TODO(crbug.com/455761581): Test is flaky.
 TEST_F(PageContextExtractorJavaScriptFeatureTest,
        ExtractPageContextWithAnchors) {
   const std::string main_html =
@@ -214,7 +212,6 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_THAT(result_value, base::test::IsSupersetOfValue(expected_value));
 }
 
-// TODO(crbug.com/455761581): Test is flaky.
 TEST_F(PageContextExtractorJavaScriptFeatureTest,
        ExtractPageContextWithForceDetach) {
   const std::string main_html = "<html><body><p>Hello</p></body></html>";
