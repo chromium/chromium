@@ -7,6 +7,7 @@
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
+#include "components/translate/core/common/language_detection_details.h"
 
 namespace accessibility_annotator {
 
@@ -34,6 +35,11 @@ void ContentAnnotatorService::OnPageContentAnnotated(
   it->second.sensitivity_score = 1.0 - result.GetContentVisibilityScore();
   it->second.navigation_timestamp = visit.nav_entry_timestamp;
   MaybeAnnotate(it);
+}
+
+void ContentAnnotatorService::OnLanguageDetermined(
+    const translate::LanguageDetectionDetails& details) {
+  // TODO(crbug.com/482057478): Implement logic to store the language.
 }
 
 ContentAnnotatorService::CacheIterator

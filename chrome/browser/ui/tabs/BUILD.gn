@@ -505,6 +505,7 @@ if (!is_android) {
       ":utils",
       "//chrome/app:command_ids",
       "//chrome/app/vector_icons",
+      "//chrome/browser/accessibility_annotator/content_annotator",
       "//chrome/browser/actor",
       "//chrome/browser/actor/ui",
       "//chrome/browser/commerce",

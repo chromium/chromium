@@ -12,6 +12,10 @@
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "url/gurl.h"
 
+namespace translate {
+struct LanguageDetectionDetails;
+}  // namespace translate
+
 namespace accessibility_annotator {
 
 class ContentAnnotatorService
@@ -33,6 +37,13 @@ class ContentAnnotatorService
       const page_content_annotations::HistoryVisit& visit,
       const page_content_annotations::PageContentAnnotationsResult& result)
       override;
+
+  // Called when the language of the contents of the current page has been
+  // determined. This will be called by the ContentAnnotatorTabHelper, which
+  // observes the translate::TranslateDriver.
+  // Virtual for testing.
+  virtual void OnLanguageDetermined(
+      const translate::LanguageDetectionDetails& details);
 
  private:
   using CacheIterator =

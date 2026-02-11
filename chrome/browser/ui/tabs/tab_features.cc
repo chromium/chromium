@@ -9,6 +9,8 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/accessibility_annotator/content_annotator/content_annotator_service_factory.h"
+#include "chrome/browser/accessibility_annotator/content_annotator/content_annotator_tab_helper.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
@@ -394,6 +396,16 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       skills_ui_tab_controller_ =
           GetUserDataFactory().CreateInstance<skills::SkillsUiTabController>(
               tab, tab);
+    }
+
+    if (accessibility_annotator::
+            ContentAnnotatorService* content_annotator_service =
+                accessibility_annotator::ContentAnnotatorServiceFactory::
+                    GetForProfile(profile)) {
+      content_annotator_tab_helper_ =
+          std::make_unique<accessibility_annotator::ContentAnnotatorTabHelper>(
+              tab, *content_annotator_service,
+              ChromeTranslateClient::FromWebContents(tab.GetContents()));
     }
   }  // IsInNormalWindow() end.
 

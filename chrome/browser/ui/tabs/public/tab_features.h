@@ -50,6 +50,10 @@ namespace back_to_opener {
 class BackToOpenerController;
 }  // namespace back_to_opener
 
+namespace accessibility_annotator {
+class ContentAnnotatorTabHelper;
+}  // namespace accessibility_annotator
+
 namespace autofill {
 class BubbleManager;
 }  // namespace autofill
@@ -580,6 +584,9 @@ class TabFeatures {
   std::unique_ptr<enterprise_reporting::SaasUsageNavigationObserver>
       saas_usage_navigation_observer_;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+  std::unique_ptr<accessibility_annotator::ContentAnnotatorTabHelper>
+      content_annotator_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

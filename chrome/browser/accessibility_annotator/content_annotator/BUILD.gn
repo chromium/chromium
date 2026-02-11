@@ -6,28 +6,40 @@ source_set("content_annotator") {
   sources = [
     "content_annotator_service_factory.cc",
     "content_annotator_service_factory.h",
+    "content_annotator_tab_helper.cc",
+    "content_annotator_tab_helper.h",
   ]
 
   deps = [
     "//base",
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/translate",
+    "//chrome/browser/ui/tabs",
     "//components/accessibility_annotator/content/content_annotator",
     "//components/accessibility_annotator/core:features",
     "//components/keyed_service/core",
+    "//components/translate/core/browser",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "content_annotator_service_factory_unittest.cc" ]
+  sources = [
+    "content_annotator_service_factory_unittest.cc",
+    "content_annotator_tab_helper_unittest.cc",
+  ]
   deps = [
     ":content_annotator",
     "//base/test:test_support",
     "//chrome/browser/page_content_annotations",
     "//chrome/test:test_support",
+    "//components/accessibility_annotator/content/content_annotator",
     "//components/accessibility_annotator/core:features",
+    "//components/history/core/browser",
+    "//components/optimization_guide/core:test_support",
     "//components/page_content_annotations/core:test_support",
+    "//components/tabs:test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]

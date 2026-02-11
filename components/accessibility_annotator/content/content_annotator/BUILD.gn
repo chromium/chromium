@@ -21,6 +21,7 @@ source_set("content_annotator") {
     "//components/accessibility_annotator/core:features",
     "//components/keyed_service/core",
     "//components/page_content_annotations/core",
+    "//components/translate/core/common",
     "//components/url_matcher",
     "//third_party/re2",
   ]
