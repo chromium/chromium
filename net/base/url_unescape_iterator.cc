@@ -8,6 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/third_party/icu/icu_utf.h"
 
@@ -96,9 +97,10 @@ void UrlUnescapeIterator::CheckNonAscii() {
   }
   size_t char_index = 0;
   base_icu::UChar32 code_point_out = 0;
-  const bool ok = base::ReadUnicodeCharacter(current_codepoint.data(),
-                                             current_codepoint_size,
-                                             &char_index, &code_point_out);
+  const bool ok =
+      base::ReadUnicodeCharacter(base::as_string_view(current_codepoint)
+                                     .substr(0u, current_codepoint_size),
+                                 &char_index, &code_point_out);
   if (!ok) {
     next_ = iterators[char_index];
     EmitReplacementCharacter();
