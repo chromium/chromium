@@ -41,7 +41,8 @@ public class KeyboardAccessoryStateSupplier {
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
         mView = view;
         ManualFillingComponent manualFillingComponent =
-                mManualFillingComponentSupplier.addObserver(mManualFillingAvailableCallback);
+                mManualFillingComponentSupplier.addSyncObserverAndPostIfNonNull(
+                        mManualFillingAvailableCallback);
         if (manualFillingComponent != null) {
             onManualFillingComponentAvailable(manualFillingComponent);
         }

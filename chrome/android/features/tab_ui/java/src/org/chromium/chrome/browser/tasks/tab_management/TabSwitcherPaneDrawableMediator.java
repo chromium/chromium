@@ -37,7 +37,7 @@ public class TabSwitcherPaneDrawableMediator {
         mNotificationDotSupplier = notificationDotSupplier;
         mModel = model;
 
-        notificationDotSupplier.addObserver(mNotificationDotObserver);
+        notificationDotSupplier.addSyncObserverAndPostIfNonNull(mNotificationDotObserver);
         TabModelUtils.runOnTabStateInitialized(
                 tabModelSelector,
                 mCallbackController.makeCancelable(this::onTabStateInitializedInternal));

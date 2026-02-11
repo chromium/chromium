@@ -148,7 +148,8 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
         mCipherFactory = cipherFactory;
 
         mActivityLifecycleDispatcher.register(mNativeInitObserver);
-        mTabModelSelectorSupplier.addObserver(mTabModelSelectorSupplierCallback);
+        mTabModelSelectorSupplier.addSyncObserverAndPostIfNonNull(
+                mTabModelSelectorSupplierCallback);
     }
 
     /** The destroy method which would remove any added observers by this class. */

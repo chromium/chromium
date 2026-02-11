@@ -73,7 +73,9 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
 
         mCurrentTabModelObserver = (tabModel) -> dismissSnackbars();
 
-        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
+        mTabModelSelector
+                .getCurrentTabModelSupplier()
+                .addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
 
         mTabModelSelectorTabModelObserver =
                 new TabModelSelectorTabModelObserver(mTabModelSelector) {

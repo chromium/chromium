@@ -89,7 +89,7 @@ public abstract class TabModelSelectorBase
                         mIncognitoReauthDialogDelegate.onBeforeIncognitoTabModelSelected();
                     }
                 };
-        mTabModelSupplier.addObserver(mIncognitoReauthDialogDelegateCallback);
+        mTabModelSupplier.addSyncObserverAndPostIfNonNull(mIncognitoReauthDialogDelegateCallback);
         mCurrentTabSupplier =
                 mTabModelSupplier.createTransitiveNullable(TabModel::getCurrentTabSupplier);
         mCurrentModelTabCountSupplier =
@@ -579,7 +579,7 @@ public abstract class TabModelSelectorBase
                                 filter.markTabStateInitialized();
                             }
                         }));
-        mTabModelSupplier.addObserver(mCurrentTabModelObserver);
+        mTabModelSupplier.addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
     }
 
     private void onCurrentTabModelChanged(TabModel model) {

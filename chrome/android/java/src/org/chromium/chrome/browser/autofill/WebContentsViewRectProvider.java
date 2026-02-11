@@ -85,7 +85,7 @@ class WebContentsViewRectProvider extends RectProvider {
         }
         mBrowserControlsSupplier = supplier;
         if (mBrowserControlsSupplier != null) {
-            mBrowserControlsSupplier.addObserver(mOnBrowserControlsChanged);
+            mBrowserControlsSupplier.addSyncObserverAndPostIfNonNull(mOnBrowserControlsChanged);
         }
         updateVisibleRectForPopup(
                 SupplierUtils.getOrNull(mBottomInsetSupplier),

@@ -52,7 +52,8 @@ public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelega
         assert mLazyKeyboardInsetSupplier == null;
         mLazyKeyboardInsetSupplier = lazyKeyboardInsetSupplier;
         if (hasKeyboardVisibilityListeners()) {
-            assumeNonNull(lazyKeyboardInsetSupplier.get()).addObserver(mOnKeyboardInsetChanged);
+            assumeNonNull(lazyKeyboardInsetSupplier.get())
+                    .addSyncObserverAndPostIfNonNull(mOnKeyboardInsetChanged);
         }
     }
 
@@ -70,7 +71,8 @@ public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelega
 
         if (mLazyKeyboardInsetSupplier == null) return;
 
-        assumeNonNull(mLazyKeyboardInsetSupplier.get()).addObserver(mOnKeyboardInsetChanged);
+        assumeNonNull(mLazyKeyboardInsetSupplier.get())
+                .addSyncObserverAndPostIfNonNull(mOnKeyboardInsetChanged);
     }
 
     @Override

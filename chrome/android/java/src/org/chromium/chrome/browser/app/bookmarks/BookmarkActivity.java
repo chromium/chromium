@@ -90,7 +90,9 @@ public class BookmarkActivity extends SnackbarActivity {
 
         ScrimManager scrimManager =
                 new ScrimManager(this, getContentView(), ScrimClient.BOOKMARK_ACTIVITY);
-        scrimManager.getStatusBarColorSupplier().addObserver(this::applyScrimToStatusBar);
+        scrimManager
+                .getStatusBarColorSupplier()
+                .addSyncObserverAndPostIfNonNull(this::applyScrimToStatusBar);
 
         ViewGroup sheetContainer = findViewById(R.id.sheet_container);
         BottomSheetController bottomSheetController =

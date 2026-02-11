@@ -214,7 +214,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         mHubController = mHubManager.getHubController();
         mHubController.setHubLayoutController(this);
         mPaneManager = mHubManager.getPaneManager();
-        mPaneManager.getFocusedPaneSupplier().addObserver(mOnPaneFocused);
+        mPaneManager.getFocusedPaneSupplier().addSyncObserverAndPostIfNonNull(mOnPaneFocused);
         mHubShowPaneHelper = mHubManager.getHubShowPaneHelper();
         mScrimController = dependencyHolder.getScrimController();
         mOnToolbarAlphaChange = dependencyHolder.getOnOverviewAlphaChange();

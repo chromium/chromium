@@ -471,7 +471,8 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
             mViewToPad = view;
             mDefaultBottomPadding = mViewToPad.getPaddingBottom();
             mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
-            mEdgeToEdgeControllerSupplier.addObserver(mControllerChangedCallback);
+            mEdgeToEdgeControllerSupplier.addSyncObserverAndPostIfNonNull(
+                    mControllerChangedCallback);
             mKeyboardInsetSupplier = keyboardInsetSupplier;
             mKeyboardInsetSupplier.addSyncObserverAndPostIfNonNull(mKeyboardInsetChangedCallback);
         }

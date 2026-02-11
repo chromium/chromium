@@ -331,7 +331,8 @@ public class SelectableListLayout<E> extends FrameLayout
         mToolbarShadow.init(
                 getContext().getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);
 
-        mToolbar.hasSearchTextSupplier().addObserver((hasText) -> onBackPressStateChanged());
+        mToolbar.hasSearchTextSupplier()
+                .addSyncObserverAndPostIfNonNull((hasText) -> onBackPressStateChanged());
         delegate.addObserver(this);
         setToolbarShadowVisibility();
 

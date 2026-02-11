@@ -1529,7 +1529,7 @@ public class TabStripTest {
                                 .getActivity()
                                 .getTabModelSelector()
                                 .getCurrentTabModelSupplier()
-                                .addObserver(observer));
+                                .addSyncObserverAndPostIfNonNull(observer));
         StripLayoutHelperManager manager =
                 TabStripUtils.getStripLayoutHelperManager(mActivityTestRule.getActivity());
         TabStripUtils.clickCompositorButton(

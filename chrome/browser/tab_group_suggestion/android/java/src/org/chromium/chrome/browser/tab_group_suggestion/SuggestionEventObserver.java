@@ -146,7 +146,7 @@ public class SuggestionEventObserver {
         hubManagerSupplier.runSyncOrOnAvailable(
                 hubManager -> {
                     mHubVisibilitySupplier = hubManager.getHubVisibilitySupplier();
-                    mHubVisibilitySupplier.addObserver(mHubVisibilityObserver);
+                    mHubVisibilitySupplier.addSyncObserverAndPostIfNonNull(mHubVisibilityObserver);
                     mFocusedPaneSupplier = hubManager.getPaneManager().getFocusedPaneSupplier();
                 });
     }

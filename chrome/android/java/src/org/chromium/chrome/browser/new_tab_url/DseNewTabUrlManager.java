@@ -39,7 +39,7 @@ public class DseNewTabUrlManager {
     public DseNewTabUrlManager(MonotonicObservableSupplier<Profile> profileSupplier) {
         mProfileSupplier = profileSupplier;
         mProfileCallback = this::onProfileAvailable;
-        mProfileSupplier.addObserver(mProfileCallback);
+        mProfileSupplier.addSyncObserverAndPostIfNonNull(mProfileCallback);
     }
 
     @SuppressWarnings("NullAway")

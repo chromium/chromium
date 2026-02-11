@@ -134,7 +134,9 @@ public class HubTabSwitcherMetricsRecorder {
         mTabModelWhenShown = tabModel;
         mTabIdWhenShown = TabModelUtils.getCurrentTabId(tabModel);
 
-        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mOnTabModelChanged);
+        mTabModelSelector
+                .getCurrentTabModelSupplier()
+                .addSyncObserverAndPostIfNonNull(mOnTabModelChanged);
         mTabModelSelector.getModel(true).addObserver(mTabModelObserver);
         mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
     }

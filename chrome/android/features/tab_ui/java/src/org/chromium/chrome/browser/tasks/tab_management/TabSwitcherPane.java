@@ -285,7 +285,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
                     newValue.getIsScrollingSupplier();
             wrappedSupplier.onAvailable(
                     supplier -> {
-                        supplier.addObserver(mScrollingObserver);
+                        supplier.addSyncObserverAndPostIfNonNull(mScrollingObserver);
                     });
         }
     }

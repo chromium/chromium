@@ -1117,7 +1117,9 @@ final class ChromeAndroidTaskImpl
             associateTabModelWithBrowserWindow(tabModelSelector.getCurrentModel());
         }
 
-        tabModelSelector.getCurrentTabModelSupplier().addObserver(mOnTabModelSelectedCallback);
+        tabModelSelector
+                .getCurrentTabModelSupplier()
+                .addSyncObserverAndPostIfNonNull(mOnTabModelSelectedCallback);
         onTabModelSelected(tabModelSelector.getCurrentModel());
 
         getActivity(topActivityWindowAndroid)

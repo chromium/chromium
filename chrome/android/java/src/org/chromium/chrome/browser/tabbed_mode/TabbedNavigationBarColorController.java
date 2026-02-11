@@ -198,7 +198,9 @@ class TabbedNavigationBarColorController
                 };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
         mCurrentTabModelObserver = (tabModel) -> updateNavigationBarColor();
-        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
+        mTabModelSelector
+                .getCurrentTabModelSupplier()
+                .addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
         mTabObserver =
                 new EmptyTabObserver() {
                     @Override
@@ -222,7 +224,7 @@ class TabbedNavigationBarColorController
                     }
                 };
         mFullScreenManager.addObserver(mFullscreenObserver);
-        layoutManagerSupplier.addObserver(
+        layoutManagerSupplier.addSyncObserverAndPostIfNonNull(
                 mCallbackController.makeCancelable(this::setLayoutManager));
 
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
@@ -241,10 +243,11 @@ class TabbedNavigationBarColorController
                             };
                     mEdgeToEdgeController.registerObserver(mEdgeToEdgeChangeObserver);
                 };
-        mEdgeToEdgeControllerSupplier.addObserver(mEdgeToEdgeRegisterChangeObserverCallback);
+        mEdgeToEdgeControllerSupplier.addSyncObserverAndPostIfNonNull(
+                mEdgeToEdgeRegisterChangeObserverCallback);
 
         mOverviewColorSupplier = overviewColorSupplier;
-        mOverviewColorSupplier.addObserver(mOnOverviewColorChanged);
+        mOverviewColorSupplier.addSyncObserverAndPostIfNonNull(mOnOverviewColorChanged);
         mOverviewMode = false;
 
         // TODO(crbug.com/40560014): Observe tab loads to restrict black bottom nav to

@@ -180,7 +180,7 @@ public class HubToolbarMediator {
         mHairlineVisibilitySupplier.addSyncObserverAndPostIfNonNull(mOnHairlineVisibilityChange);
         MonotonicObservableSupplier<Pane> focusedPaneSupplier =
                 paneManager.getFocusedPaneSupplier();
-        focusedPaneSupplier.addObserver(mOnFocusedPaneChange);
+        focusedPaneSupplier.addSyncObserverAndPostIfNonNull(mOnFocusedPaneChange);
 
         mManualSearchBoxAnimationSupplier =
                 paneManager

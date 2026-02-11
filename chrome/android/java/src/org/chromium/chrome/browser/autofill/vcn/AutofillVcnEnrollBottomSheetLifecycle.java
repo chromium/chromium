@@ -66,7 +66,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
         mHasBegun = true;
 
         mLayoutStateProvider.addObserver(this);
-        mTabModelSelectorSupplier.addObserver(this);
+        mTabModelSelectorSupplier.addSyncObserverAndPostIfNonNull(this);
     }
 
     /**
@@ -124,7 +124,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
         mTabModelSelectorSupplier.removeObserver(this);
 
         mTabModelSelector = tabModelSelector;
-        tabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
+        tabModelSelector
+                .getCurrentTabModelSupplier()
+                .addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
 
         TabModel currentTabModel = mTabModelSelector.getCurrentModel();
         if (currentTabModel.index() != TabList.INVALID_TAB_INDEX) {

@@ -153,7 +153,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
             Runnable archivedTabsIphDismissedCallback) {
         mTabCountSupplier = tabCountSupplier;
         if (mTabCountSupplier != null) {
-            mTabCountSupplier.addObserver(mTabCountSupplierObserver);
+            mTabCountSupplier.addSyncObserverAndPostIfNonNull(mTabCountSupplierObserver);
         }
 
         mNotificationDotSupplier = tabModelNotificationDotSupplier;

@@ -81,7 +81,8 @@ public class TransitiveTopInsetProvider implements TopInsetProvider {
 
             // Register supplier callback only once when the first pending observer is added.
             if (!mIsListeningToSupplier) {
-                mTopInsetProviderSupplier.addObserver(mTopInsetProviderAvailableCallback);
+                mTopInsetProviderSupplier.addSyncObserverAndPostIfNonNull(
+                        mTopInsetProviderAvailableCallback);
                 mIsListeningToSupplier = true;
             }
         }

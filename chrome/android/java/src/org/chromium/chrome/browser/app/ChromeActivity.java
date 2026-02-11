@@ -563,7 +563,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         // There's no corresponding call to removeObserver() for this addObserver() because
         // mTabModelProfileSupplier has the same lifecycle as this activity.
-        mTabModelProfileSupplier.addObserver(
+        mTabModelProfileSupplier.addSyncObserverAndPostIfNonNull(
                 (profile) -> {
                     BookmarkModel bookmarkModel =
                             profile == null ? null : BookmarkModel.getForProfile(profile);
@@ -2565,7 +2565,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             mBackPressManager.addHandler(XrDelegateProvider.getDelegate(), Type.XR_DELEGATE);
         }
 
-        mLayoutManagerSupplier.addObserver(
+        mLayoutManagerSupplier.addSyncObserverAndPostIfNonNull(
                 (layoutManager) -> {
                     assert !mBackPressManager.has(Type.SCENE_OVERLAY)
                             : "LayoutManager should be only set at most once";
@@ -2583,7 +2583,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                     getTabModelSelectorSupplier()
                             .removeObserver(mSelectionPopupBackPressInitCallback);
                 };
-        getTabModelSelectorSupplier().addObserver(mSelectionPopupBackPressInitCallback);
+        getTabModelSelectorSupplier()
+                .addSyncObserverAndPostIfNonNull(mSelectionPopupBackPressInitCallback);
 
         mCloseListenerManager = new CloseListenerManager(mActivityTabProvider.asObservable());
         mBackPressManager.addHandler(mCloseListenerManager, BackPressHandler.Type.CLOSE_WATCHER);

@@ -401,7 +401,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         MonotonicObservableSupplier<ContextualSearchManager> supplier =
                 getContextualSearchManagerSupplier(mTab);
         if (supplier != null) {
-            supplier.addObserver(mManagerCallback);
+            supplier.addSyncObserverAndPostIfNonNull(mManagerCallback);
         }
         return true;
     }

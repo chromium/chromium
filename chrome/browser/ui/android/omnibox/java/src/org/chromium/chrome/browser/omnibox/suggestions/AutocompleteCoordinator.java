@@ -176,7 +176,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
 
         mProfileSupplier = profileObservableSupplier;
         mProfileChangeCallback = this::setAutocompleteProfile;
-        mProfileSupplier.addObserver(mProfileChangeCallback);
+        mProfileSupplier.addSyncObserverAndPostIfNonNull(mProfileChangeCallback);
         mAdapter = new OmniboxSuggestionsDropdownAdapter(listItems);
 
         if (!OmniboxFeatures.sAsyncViewInflation.isEnabled()) {

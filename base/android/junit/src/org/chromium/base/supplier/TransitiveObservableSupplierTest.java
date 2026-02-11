@@ -260,11 +260,12 @@ public class TransitiveObservableSupplierTest {
         monotonicSupplier.set("foo");
         assertThrows(
                 AssertionError.class,
-                () ->
-                        monotonicSupplier
-                                .createTransitiveMonotonic(
-                                        parent -> (MonotonicObservableSupplier<?>) nullableSupplier)
-                                .addObserver(CallbackUtils.emptyCallback()));
+                () -> {
+                    monotonicSupplier
+                            .createTransitiveMonotonic(
+                                    parent -> (MonotonicObservableSupplier<?>) nullableSupplier)
+                            .addSyncObserverAndPostIfNonNull(CallbackUtils.emptyCallback());
+                });
 
         SettableMonotonicObservableSupplier<String> monotonicSupplier2 =
                 ObservableSuppliers.createMonotonic();
@@ -272,7 +273,7 @@ public class TransitiveObservableSupplierTest {
                 new AtomicReference<>(monotonicSupplier2);
         MonotonicObservableSupplier<String> transMonotonic =
                 monotonicSupplier.createTransitiveMonotonic(unused -> retValue.get());
-        assertNull(transMonotonic.addObserver(mOnChangeCallback));
+        assertNull(transMonotonic.addSyncObserverAndPostIfNonNull(mOnChangeCallback));
         monotonicSupplier2.set("foo");
         verify(mOnChangeCallback).onResult("foo");
         clearInvocations(mOnChangeCallback);

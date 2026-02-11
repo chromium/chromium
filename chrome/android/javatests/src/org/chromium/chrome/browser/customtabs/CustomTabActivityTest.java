@@ -2327,7 +2327,7 @@ public class CustomTabActivityTest {
                 () -> {
                     getActivity()
                             .getCompositorViewHolderSupplier()
-                            .addObserver(
+                            .addSyncObserverAndPostIfNonNull(
                                     cvh -> {
                                         if (cvh == null) return;
                                         assertTrue(

@@ -104,7 +104,9 @@ public class HubManagerImpl implements HubManager, HubController {
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         mHubContainerView.setLayoutParams(params);
 
-        mPaneManager.getFocusedPaneSupplier().addObserver(mOnFocusedPaneChanged);
+        mPaneManager
+                .getFocusedPaneSupplier()
+                .addSyncObserverAndPostIfNonNull(mOnFocusedPaneChanged);
         mHubColorMixer =
                 new HubColorMixerImpl(
                         mActivity, mHubVisibilitySupplier, mPaneManager.getFocusedPaneSupplier());

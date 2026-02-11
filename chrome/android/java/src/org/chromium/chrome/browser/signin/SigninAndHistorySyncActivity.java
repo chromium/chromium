@@ -407,7 +407,9 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         ScrimManager scrimManager =
                 new ScrimManager(
                         this, containerView, ScrimClient.SIGNIN_ACCOUNT_PICKER_COORDINATOR);
-        scrimManager.getStatusBarColorSupplier().addObserver(this::setStatusBarColor);
+        scrimManager
+                .getStatusBarColorSupplier()
+                .addSyncObserverAndPostIfNonNull(this::setStatusBarColor);
 
         BottomSheetController bottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(

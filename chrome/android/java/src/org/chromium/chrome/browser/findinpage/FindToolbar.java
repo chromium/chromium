@@ -582,7 +582,9 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
 
     /** Logic for handling the activation of the find toolbar. */
     protected void handleActivate() {
-        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
+        mTabModelSelector
+                .getCurrentTabModelSupplier()
+                .addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
         mCurrentTabModel = mTabModelSelector.getCurrentModel();
         for (TabModel model : mTabModelSelector.getModels()) {
             model.addObserver(mTabModelObserver);

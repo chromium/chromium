@@ -81,7 +81,7 @@ public class TabSwitcherButtonCoordinator {
     public void setTabCountSupplier(MonotonicObservableSupplier<Integer> tabCountSupplier) {
         mTabCountSupplier = tabCountSupplier;
         mTabSwitcherButtonModel.set(TabSwitcherButtonProperties.IS_ENABLED, true);
-        mTabCountSupplier.addObserver(mTabCountObserver);
+        mTabCountSupplier.addSyncObserverAndPostIfNonNull(mTabCountObserver);
     }
 
     @SuppressWarnings("NullAway")

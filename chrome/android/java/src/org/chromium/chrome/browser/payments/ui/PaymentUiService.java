@@ -1151,7 +1151,7 @@ public class PaymentUiService
         mObservedTabModelSelector = tabModelSelector;
         mObservedTabModelSelector
                 .getCurrentTabModelSupplier()
-                .addObserver(mCurrentTabModelObserver);
+                .addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
         if (mObservedTabModel != null) {
             mObservedTabModel.removeObserver(mTabModelObserver);
         }

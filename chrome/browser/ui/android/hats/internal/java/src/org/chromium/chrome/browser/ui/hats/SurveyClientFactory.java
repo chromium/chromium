@@ -32,7 +32,7 @@ public class SurveyClientFactory {
                     privacyPreferencesManager.isUsageAndCrashReportingPermitted());
             privacyPreferencesManager
                     .getUsageAndCrashReportingPermittedObservableSupplier()
-                    .addObserver(mCrashUploadPermissionSupplier::set);
+                    .addSyncObserverAndPostIfNonNull(mCrashUploadPermissionSupplier::set);
         }
     }
 

@@ -1754,9 +1754,9 @@ public class ToolbarManager
                         mProfileSupplier.removeObserver(this);
                     }
                 };
-        profileSupplier.addObserver(profileObserver);
+        profileSupplier.addSyncObserverAndPostIfNonNull(profileObserver);
         mReadAloudControllerSupplier = readAloudControllerSupplier;
-        mReadAloudControllerSupplier.addObserver(
+        mReadAloudControllerSupplier.addSyncObserverAndPostIfNonNull(
                 readAloudController -> {
                     if (readAloudController != null) {
                         readAloudController.addReadabilityUpdateListener(
@@ -2485,7 +2485,9 @@ public class ToolbarManager
                         IncognitoNtpUtils::getIncognitoNtpContentMetrics);
 
         mInitializedWithNative = true;
-        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
+        mTabModelSelector
+                .getCurrentTabModelSupplier()
+                .addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
         refreshSelectedTab(mActivityTabProvider.get());
         maybeShowUrlBarCursorIfHardwareKeyboardAvailable();
         mIncognitoStateProvider.setTabModelSelector(mTabModelSelector);

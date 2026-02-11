@@ -259,7 +259,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                         onProfileAvailable(callback, waitForProfileStartTimeMs);
                     };
 
-            mProfileSupplier.addObserver(mOnProfileAvailableObserver);
+            mProfileSupplier.addSyncObserverAndPostIfNonNull(mOnProfileAvailableObserver);
         }
     }
 

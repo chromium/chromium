@@ -230,7 +230,8 @@ public class UndoRefocusHelper {
 
     private void observeLayoutState() {
         mLayoutManagerSupplierCallback = this::onLayoutManagerAvailable;
-        mLayoutManagerObservableSupplier.addObserver(mLayoutManagerSupplierCallback);
+        mLayoutManagerObservableSupplier.addSyncObserverAndPostIfNonNull(
+                mLayoutManagerSupplierCallback);
         @Nullable LayoutManagerImpl layoutManager = mLayoutManagerObservableSupplier.get();
         if (layoutManager != null && layoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
             mTabSwitcherActive = true;

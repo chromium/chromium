@@ -171,7 +171,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         mBrowserControlsManager.addObserver(mBrowserControlsObserver);
         layoutStateProviderOneShotSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setLayoutStateProvider));
-        modalDialogManagerSupplier.addObserver(this::setModalDialogManager);
+        modalDialogManagerSupplier.addSyncObserverAndPostIfNonNull(this::setModalDialogManager);
         mBottomSheetController = bottomSheetController;
         mBottomSheetController.addObserver(mBottomSheetObserver);
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;

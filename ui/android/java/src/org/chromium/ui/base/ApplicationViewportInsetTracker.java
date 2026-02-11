@@ -182,7 +182,7 @@ public class ApplicationViewportInsetTracker implements Destroyable {
         mBottomSheetInsetSupplier = insetSupplier;
 
         if (mBottomSheetInsetSupplier != null) {
-            mBottomSheetInsetSupplier.addObserver(mInsetSupplierObserver);
+            mBottomSheetInsetSupplier.addSyncObserverAndPostIfNonNull(mInsetSupplierObserver);
         } else if (didRemove) {
             // If a supplier was removed, removeObserver will not have notified observers (unlike
             // addObserver) so make sure insets get recomputed in this case.

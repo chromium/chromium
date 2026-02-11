@@ -211,8 +211,10 @@ class PlayerMediator implements InteractionHandler {
         mBottomControlsStacker = bottomControlsStacker;
         mModel.set(PlayerProperties.INTERACTION_HANDLER, this);
 
-        mDelegate.getCurrentLanguageVoicesSupplier().addObserver(mVoiceListObserver);
-        mDelegate.getVoiceIdSupplier().addObserver(mVoiceIdObserver);
+        mDelegate
+                .getCurrentLanguageVoicesSupplier()
+                .addSyncObserverAndPostIfNonNull(mVoiceListObserver);
+        mDelegate.getVoiceIdSupplier().addSyncObserverAndPostIfNonNull(mVoiceIdObserver);
         mDelegate
                 .getPlaybackModeSelectionEnabled()
                 .addSyncObserverAndPostIfNonNull(mPlaybackModeSelectionEnabledObserver);

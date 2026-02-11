@@ -261,7 +261,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
                     (browserDisplayCutoutMode) -> {
                         maybeUpdateLayout();
                     };
-            mBrowserCutoutModeSupplier.addObserver(mBrowserCutoutModeObserver);
+            mBrowserCutoutModeSupplier.addSyncObserverAndPostIfNonNull(mBrowserCutoutModeObserver);
         }
     }
 

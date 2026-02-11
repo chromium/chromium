@@ -211,7 +211,7 @@ public class StartupMetricsTracker {
             Supplier<Boolean> isRestoringPersistentStateSupplier) {
         mActivityStartTimeMs = SystemClock.uptimeMillis();
         mIsRestoringPersistentStateSupplier = isRestoringPersistentStateSupplier;
-        tabModelSelectorSupplier.addObserver(this::registerObservers);
+        tabModelSelectorSupplier.addSyncObserverAndPostIfNonNull(this::registerObservers);
         SafeBrowsingApiBridge.setOneTimeSafeBrowsingApiUrlCheckObserver(
                 this::updateSafeBrowsingCheckTime);
     }

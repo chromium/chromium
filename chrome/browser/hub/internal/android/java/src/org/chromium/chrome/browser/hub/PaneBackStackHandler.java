@@ -44,7 +44,9 @@ public class PaneBackStackHandler implements BackPressHandler {
         mBackStack = new ArrayDeque<>();
 
         mOnPaneFocusedCallback = this::onPaneFocused;
-        paneManager.getFocusedPaneSupplier().addObserver(mOnPaneFocusedCallback);
+        paneManager
+                .getFocusedPaneSupplier()
+                .addSyncObserverAndPostIfNonNull(mOnPaneFocusedCallback);
     }
 
     /** Destroys the object cleaning up observers and the stack. */

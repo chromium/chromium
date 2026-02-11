@@ -27,7 +27,7 @@ final class SigninButtonMediator
 
     public SigninButtonMediator(MonotonicObservableSupplier<Profile> profileSupplier) {
         mProfileSupplier = profileSupplier;
-        mProfileSupplier.addObserver(mProfileSupplierObserver);
+        mProfileSupplier.addSyncObserverAndPostIfNonNull(mProfileSupplierObserver);
     }
 
     /**

@@ -534,7 +534,7 @@ public abstract class PersistedTabData implements UserData {
                         delete();
                     }
                 };
-        mIsTabSaveEnabledSupplier.addObserver(mTabSaveEnabledToggleCallback);
+        mIsTabSaveEnabledSupplier.addSyncObserverAndPostIfNonNull(mTabSaveEnabledToggleCallback);
     }
 
     /** Delete all {@link PersistedTabData} when a {@link Tab} is closed. */

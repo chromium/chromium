@@ -65,7 +65,7 @@ public class TabModelSelectorProfileSupplier
 
         mSelectorSupplier = selectorSupplier;
         mSelectorSupplierCallback = this::setSelector;
-        mSelectorSupplier.addObserver(mSelectorSupplierCallback);
+        mSelectorSupplier.addSyncObserverAndPostIfNonNull(mSelectorSupplierCallback);
 
         var selector = mSelectorSupplier.get();
         if (selector != null) {
@@ -82,7 +82,9 @@ public class TabModelSelectorProfileSupplier
 
         mSelector = selector;
         mSelector.addObserver(mSelectorObserver);
-        mSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
+        mSelector
+                .getCurrentTabModelSupplier()
+                .addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
 
         if (selector.getCurrentModel() != null) {
             mCurrentTabModelObserver.onResult(selector.getCurrentModel());

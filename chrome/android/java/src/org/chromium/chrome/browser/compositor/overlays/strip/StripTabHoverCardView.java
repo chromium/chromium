@@ -131,7 +131,9 @@ public class StripTabHoverCardView extends FrameLayout {
                 (tabModel) -> {
                     updateHoverCardColors(tabModel.isIncognitoBranded());
                 };
-        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
+        mTabModelSelector
+                .getCurrentTabModelSupplier()
+                .addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
         updateHoverCardColors(mTabModelSelector.isIncognitoSelected());
     }
 

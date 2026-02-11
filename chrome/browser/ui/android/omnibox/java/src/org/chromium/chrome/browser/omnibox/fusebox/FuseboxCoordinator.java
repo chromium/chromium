@@ -166,7 +166,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                                 OmniboxFeatures.sShowDedicatedModeButton.getValue())
                         .build();
         PropertyModelChangeProcessor.create(mModel, mViewHolder, FuseboxViewBinder::bind);
-        mProfileSupplier.addObserver(mProfileObserver);
+        mProfileSupplier.addSyncObserverAndPostIfNonNull(mProfileObserver);
     }
 
     @VisibleForTesting

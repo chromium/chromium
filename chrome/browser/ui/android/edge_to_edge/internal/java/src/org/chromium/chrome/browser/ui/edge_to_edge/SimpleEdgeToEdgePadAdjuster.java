@@ -71,7 +71,8 @@ public class SimpleEdgeToEdgePadAdjuster implements EdgeToEdgePadAdjuster {
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
 
         if (mEdgeToEdgeControllerSupplier != null) {
-            mEdgeToEdgeControllerSupplier.addObserver(mControllerChangedCallback);
+            mEdgeToEdgeControllerSupplier.addSyncObserverAndPostIfNonNull(
+                    mControllerChangedCallback);
         }
     }
 

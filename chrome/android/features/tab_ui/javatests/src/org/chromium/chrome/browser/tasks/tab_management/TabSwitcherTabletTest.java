@@ -381,13 +381,14 @@ public class TabSwitcherTabletTest {
                     tabModelSelectedCallback.notifyCalled();
                 };
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        mActivityTestRule
-                                .getActivity()
-                                .getTabModelSelectorSupplier()
-                                .get()
-                                .getCurrentTabModelSupplier()
-                                .addObserver(observer));
+                () -> {
+                    return mActivityTestRule
+                            .getActivity()
+                            .getTabModelSelectorSupplier()
+                            .get()
+                            .getCurrentTabModelSupplier()
+                            .addSyncObserverAndPostIfNonNull(observer);
+                });
         StripLayoutHelperManager manager =
                 TabStripUtils.getStripLayoutHelperManager(mActivityTestRule.getActivity());
         TabStripUtils.clickCompositorButton(

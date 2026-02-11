@@ -584,7 +584,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                         @Override
                         public void destroy() {}
                     };
-            mEdgeToEdgeSupplier.addObserver(mOnEdgeToEdgeControllerChangedCallback);
+            mEdgeToEdgeSupplier.addSyncObserverAndPostIfNonNull(
+                    mOnEdgeToEdgeControllerChangedCallback);
 
             RecordHistogram.recordTimesHistogram(
                     "Android.TabSwitcher.SetupRecyclerView.Time",
@@ -628,7 +629,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
             mOnVisibilityChanged.onResult(
                     isVisibleSupplier.addSyncObserverAndPostIfNonNull(mOnVisibilityChanged));
-            mTabGroupModelFilterSupplier.addObserver(mOnFilterChange);
+            mTabGroupModelFilterSupplier.addSyncObserverAndPostIfNonNull(mOnFilterChange);
 
             mDragObserver =
                     new TabListCoordinator.DragObserver() {

@@ -95,7 +95,7 @@ public class BookmarkBarVisibilityProvider {
         mActivityLifecycleDispatcher.register(mConfigurationChangedListener);
 
         mProfileSupplierObserver = this::processProfileChange;
-        mProfileSupplier.addObserver(mProfileSupplierObserver);
+        mProfileSupplier.addSyncObserverAndPostIfNonNull(mProfileSupplierObserver);
 
         mXrSpaceModeObservableSupplier.addSyncObserverAndPostIfNonNull(mXrSpaceModeObserver);
 

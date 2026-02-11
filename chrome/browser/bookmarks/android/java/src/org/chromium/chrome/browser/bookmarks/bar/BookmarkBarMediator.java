@@ -179,7 +179,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
 
         mProfileSupplier = profileSupplier;
         mProfileSupplierObserver = this::onProfileChange;
-        mProfileSupplier.addObserver(mProfileSupplierObserver);
+        mProfileSupplier.addSyncObserverAndPostIfNonNull(mProfileSupplierObserver);
 
         mCurrentTab = currentTab;
         mBookmarkOpener = bookmarkOpener;

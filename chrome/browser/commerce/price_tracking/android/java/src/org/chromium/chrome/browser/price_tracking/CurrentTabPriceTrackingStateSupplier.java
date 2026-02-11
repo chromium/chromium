@@ -94,7 +94,7 @@ public class CurrentTabPriceTrackingStateSupplier implements NonNullObservableSu
 
         // Check for profile availability so we can create a ShoppingService which we'll use to keep
         // track of subscription changes in the current page.
-        mProfileSupplier.addObserver(mOnProfileUpdatedCallback);
+        mProfileSupplier.addSyncObserverAndPostIfNonNull(mOnProfileUpdatedCallback);
     }
 
     @SuppressWarnings("NullAway")

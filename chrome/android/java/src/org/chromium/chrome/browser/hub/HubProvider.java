@@ -166,7 +166,7 @@ public class HubProvider {
 
     private void onHubManagerAvailable(HubManager hubManager) {
         var focusedPaneSupplier = hubManager.getPaneManager().getFocusedPaneSupplier();
-        focusedPaneSupplier.addObserver(mOnPaneFocused);
+        focusedPaneSupplier.addSyncObserverAndPostIfNonNull(mOnPaneFocused);
         mHubTabSwitcherMetricsRecorder =
                 new HubTabSwitcherMetricsRecorder(
                         mTabModelSelectorSupplier.get(),

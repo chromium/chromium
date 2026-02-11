@@ -294,7 +294,8 @@ class LocationBarMediator
         mVoiceRecognitionHandler = new VoiceRecognitionHandler(this, profileSupplier);
         mVoiceRecognitionHandler.addObserver(this);
         mProfileSupplier = profileSupplier;
-        mProfileSupplier.addObserver(mCallbackController.makeCancelable(this::setProfile));
+        mProfileSupplier.addSyncObserverAndPostIfNonNull(
+                mCallbackController.makeCancelable(this::setProfile));
         mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
         mBackKeyBehavior = backKeyBehavior;
         mWindowAndroid = windowAndroid;

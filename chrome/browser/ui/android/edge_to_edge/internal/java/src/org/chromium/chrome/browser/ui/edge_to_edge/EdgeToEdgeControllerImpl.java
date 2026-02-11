@@ -251,7 +251,7 @@ public class EdgeToEdgeControllerImpl
         mBrowserControlsStateProvider.addObserver(this);
 
         mLayoutManagerSupplier = layoutManagerSupplier;
-        mLayoutManagerSupplier.addObserver(mOnLayoutManagerCallback);
+        mLayoutManagerSupplier.addSyncObserverAndPostIfNonNull(mOnLayoutManagerCallback);
         mLayoutManager = layoutManagerSupplier.get();
         if (mLayoutManager != null) {
             mLayoutManager.addObserver(this);

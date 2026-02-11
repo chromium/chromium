@@ -176,7 +176,7 @@ public class StatusMediator
                         this,
                         mIconTaskHandler);
 
-        mProfileSupplier.addObserver(
+        mProfileSupplier.addSyncObserverAndPostIfNonNull(
                 p -> {
                     if (mSearchEngineUtils != null) {
                         mSearchEngineUtils.removeIconObserver(this);

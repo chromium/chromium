@@ -104,7 +104,7 @@ public class ContextualPageActionController {
         var defaultButtonVis = new OneshotSupplierImpl<Boolean>();
         defaultButtonVis.set(true);
         mButtonVisibilitySupplier = defaultButtonVis; // true by default for tabbed browser.
-        profileSupplier.addObserver(
+        profileSupplier.addSyncObserverAndPostIfNonNull(
                 profile -> {
                     if (profile.isOffTheRecord()) return;
 

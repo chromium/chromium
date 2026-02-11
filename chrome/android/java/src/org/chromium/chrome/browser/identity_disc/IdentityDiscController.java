@@ -149,7 +149,7 @@ public class IdentityDiscController
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mSnackbarManager = snackbarManager;
 
-        mProfileSupplier.addObserver(mProfileSupplierObserver);
+        mProfileSupplier.addSyncObserverAndPostIfNonNull(mProfileSupplierObserver);
 
         mButtonData =
                 new ButtonDataImpl(

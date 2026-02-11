@@ -205,7 +205,9 @@ public class TabSwitcherPaneMediator
         mTabIndexLookup = tabIndexLookup;
         mOnTabClickCallback = onTabClickCallback;
         mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
-        var filter = mTabGroupModelFilterSupplier.addObserver(mOnTabGroupModelFilterChanged);
+        var filter =
+                mTabGroupModelFilterSupplier.addSyncObserverAndPostIfNonNull(
+                        mOnTabGroupModelFilterChanged);
         mTryToShowOnFilterChanged = filter == null || !filter.isTabModelRestored();
 
         mTabGridDialogControllerSupplier = tabGridDialogControllerSupplier;

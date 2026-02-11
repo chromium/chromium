@@ -151,7 +151,9 @@ public class ActivityTabProvider implements Destroyable, Supplier<@Nullable Tab>
                     }
                 };
 
-        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
+        mTabModelSelector
+                .getCurrentTabModelSupplier()
+                .addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
     }
 
     /**

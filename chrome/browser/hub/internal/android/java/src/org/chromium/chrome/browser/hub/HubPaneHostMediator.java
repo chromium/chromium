@@ -50,7 +50,7 @@ public class HubPaneHostMediator {
         mPaneOrderController = paneOrderController;
         mCurrentPaneId = defaultPaneId;
         mPaneSupplier = paneSupplier;
-        mPaneSupplier.addObserver(mOnPaneChangeCallback);
+        mPaneSupplier.addSyncObserverAndPostIfNonNull(mOnPaneChangeCallback);
 
         // This sets mSnackbarContainer to non-null.
         propertyModel.set(SNACKBAR_CONTAINER_CALLBACK, this::consumeSnackbarContainer);

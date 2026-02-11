@@ -88,7 +88,7 @@ public class LegacyTabStartupMetricsTracker {
         mActivityId = activityId;
         mActivityStartTimeMs = SystemClock.uptimeMillis();
         TraceEvent.startupActivityStart(mActivityId, mActivityStartTimeMs);
-        tabModelSelectorSupplier.addObserver(this::registerObservers);
+        tabModelSelectorSupplier.addSyncObserverAndPostIfNonNull(this::registerObservers);
     }
 
     /**

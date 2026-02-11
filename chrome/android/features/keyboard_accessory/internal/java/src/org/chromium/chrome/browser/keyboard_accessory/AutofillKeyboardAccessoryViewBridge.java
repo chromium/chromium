@@ -110,7 +110,8 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
         mManualFillingComponentSupplier = ManualFillingComponentSupplier.from(windowAndroid);
         if (mManualFillingComponentSupplier != null) {
             ManualFillingComponent currentFillingComponent =
-                    mManualFillingComponentSupplier.addObserver(mFillingComponentObserver);
+                    mManualFillingComponentSupplier.addSyncObserverAndPostIfNonNull(
+                            mFillingComponentObserver);
             connectToFillingComponent(currentFillingComponent);
         }
 

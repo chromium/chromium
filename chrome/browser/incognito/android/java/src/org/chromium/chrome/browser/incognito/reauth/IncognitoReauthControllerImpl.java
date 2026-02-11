@@ -221,7 +221,7 @@ public class IncognitoReauthControllerImpl
         mTabModelSelector = tabModelSelector;
         mActivityLifecycleDispatcher = dispatcher;
         mProfileObservableSupplier = profileSupplier;
-        mProfileObservableSupplier.addObserver(mProfileSupplierCallback);
+        mProfileObservableSupplier.addSyncObserverAndPostIfNonNull(mProfileSupplierCallback);
         mIncognitoReauthCoordinatorFactory = incognitoReauthCoordinatorFactory;
         mIsTabbedActivity = mIncognitoReauthCoordinatorFactory.getIsTabbedActivity();
         mBackPressInReauthFullScreenRunnable =

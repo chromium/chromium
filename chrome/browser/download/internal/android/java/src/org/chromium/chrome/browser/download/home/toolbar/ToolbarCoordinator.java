@@ -131,7 +131,8 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
 
         if (!config.isSeparateActivity) mToolbar.removeMenuItem(R.id.close_menu_id);
         mBackPressStateSupplier.set(mToolbar.isSearching());
-        mToolbar.isSearchingSupplier().addObserver(mBackPressStateSupplier::set);
+        mToolbar.isSearchingSupplier()
+                .addSyncObserverAndPostIfNonNull(mBackPressStateSupplier::set);
     }
 
     /** Called when the activity/native page is destroyed. */

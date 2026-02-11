@@ -114,10 +114,10 @@ public class ScrimTest {
                     mScrimManager = new ScrimManager(sActivity, sParent, ScrimClient.NONE);
                     mScrimManager
                             .getStatusBarColorSupplier()
-                            .addObserver(mStatusBarColorHelper::notifyCalled);
+                            .addSyncObserverAndPostIfNonNull(mStatusBarColorHelper::notifyCalled);
                     mScrimManager
                             .getNavigationBarColorSupplier()
-                            .addObserver(mNavBarColorHelper::notifyCalled);
+                            .addSyncObserverAndPostIfNonNull(mNavBarColorHelper::notifyCalled);
 
                     mDelegatedEventHelper = new CallbackHelper();
                     mCustomGestureDetector =

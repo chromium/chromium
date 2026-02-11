@@ -269,7 +269,9 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
                     });
         }
 
-        mMediator.getUnoccludedWidthSupplier().addObserver(mOnUnoccludedWidthCallback);
+        mMediator
+                .getUnoccludedWidthSupplier()
+                .addSyncObserverAndPostIfNonNull(mOnUnoccludedWidthCallback);
         if (mDisplayMode == DisplayMode.MINIMAL_UI) {
             initMinUiControls();
         }

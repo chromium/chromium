@@ -449,7 +449,7 @@ public class LocationBarCoordinator
                         profileObservableSupplier.removeObserver(this);
                     }
                 };
-        profileObservableSupplier.addObserver(profileObserver);
+        profileObservableSupplier.addSyncObserverAndPostIfNonNull(profileObserver);
 
         if (isPhoneLayout()) {
             mSubCoordinator =

@@ -80,7 +80,8 @@ public class ReadAloudIphController {
         mUserEducationHelper = userEducationHelper;
         mCurrentTabSupplier = tabSupplier;
         mReadAloudControllerSupplier = readAloudControllerSupplier;
-        mReadAloudControllerSupplier.addObserver(this::readAloudControllerReady);
+        mReadAloudControllerSupplier.addSyncObserverAndPostIfNonNull(
+                this::readAloudControllerReady);
         mShowAppMenuTextBubble = showAppMenuTextBubble;
     }
 

@@ -134,7 +134,8 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         mTabStripVisibilitySupplier = tabStripVisibilitySupplier;
         if (ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled()) {
-            mTabStripVisibilitySupplier.addObserver(mOnTabStripVisibilityStateChanged);
+            mTabStripVisibilitySupplier.addSyncObserverAndPostIfNonNull(
+                    mOnTabStripVisibilityStateChanged);
         }
     }
 

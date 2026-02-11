@@ -79,8 +79,8 @@ public class TabModelSelectorProfileSupplierTest {
 
     @Test
     public void testObserversFired() {
-        mSupplier.addObserver(mProfileCallback1);
-        mSupplier.addObserver(mProfileCallback2);
+        mSupplier.addSyncObserverAndPostIfNonNull(mProfileCallback1);
+        mSupplier.addSyncObserverAndPostIfNonNull(mProfileCallback2);
 
         mTabModelSelectorSupplier.set(mSelector);
         Assert.assertNull(mSupplier.get());

@@ -681,11 +681,12 @@ public class StripLayoutHelperManager
             if (tabModelStartupInfo != null) {
                 setTabModelStartupInfo(tabModelStartupInfo);
             } else {
-                tabModelStartupInfoSupplier.addObserver(this::setTabModelStartupInfo);
+                tabModelStartupInfoSupplier.addSyncObserverAndPostIfNonNull(
+                        this::setTabModelStartupInfo);
             }
         }
 
-        mLayerTitleCacheSupplier.addObserver(
+        mLayerTitleCacheSupplier.addSyncObserverAndPostIfNonNull(
                 (LayerTitleCache layerTitleCache) -> {
                     mNormalHelper.setLayerTitleCache(layerTitleCache);
                     mIncognitoHelper.setLayerTitleCache(layerTitleCache);
@@ -1807,7 +1808,9 @@ public class StripLayoutHelperManager
                     }
                 };
 
-        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
+        mTabModelSelector
+                .getCurrentTabModelSupplier()
+                .addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
         if (mTabStripDragHandler != null) {
             mTabStripDragHandler.setTabModelSelector(mTabModelSelector);
         }

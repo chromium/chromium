@@ -199,7 +199,7 @@ public class VoiceRecognitionHandler {
             Delegate delegate, MonotonicObservableSupplier<Profile> profileSupplier) {
         mDelegate = delegate;
         mProfileSupplier = profileSupplier;
-        mProfileSupplier.addObserver(
+        mProfileSupplier.addSyncObserverAndPostIfNonNull(
                 mCallbackController.makeCancelable(profile -> notifyVoiceAvailabilityImpacted()));
     }
 

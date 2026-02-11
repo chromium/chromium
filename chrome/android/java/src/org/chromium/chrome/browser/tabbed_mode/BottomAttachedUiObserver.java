@@ -172,7 +172,7 @@ public class BottomAttachedUiObserver
                             mKeyboardAccessoryVisualStateProvider.addObserver(this);
                         }
                     };
-            mKeyboardAccessoryVisualStateProviderSupplier.addObserver(
+            mKeyboardAccessoryVisualStateProviderSupplier.addSyncObserverAndPostIfNonNull(
                     mKeyboardAccessoryProviderSupplierObserver);
 
             mAccessorySheetVisualStateProviderSupplier =
@@ -189,7 +189,7 @@ public class BottomAttachedUiObserver
                             mAccessorySheetVisualStateProvider.addObserver(this);
                         }
                     };
-            mAccessorySheetVisualStateProviderSupplier.addObserver(
+            mAccessorySheetVisualStateProviderSupplier.addSyncObserverAndPostIfNonNull(
                     mAccessorySheetProviderSupplierObserver);
         }
 
@@ -197,7 +197,7 @@ public class BottomAttachedUiObserver
                 (manager) -> {
                     if (manager == null) return;
                     manager.getOverlayPanelStateProviderSupplier()
-                            .addObserver(
+                            .addSyncObserverAndPostIfNonNull(
                                     (provider) -> {
                                         if (mOverlayPanelStateProvider != null) {
                                             mOverlayPanelStateProvider.removeObserver(this);

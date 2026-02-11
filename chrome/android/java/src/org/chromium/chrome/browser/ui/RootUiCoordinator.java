@@ -600,7 +600,7 @@ public class RootUiCoordinator
                     onLayoutManagerAvailable(layoutManager);
                     mLayoutManagerSupplier.set(layoutManager);
                 };
-        mLayoutManagerImplSupplier.addObserver(layoutManagerSupplierCallback);
+        mLayoutManagerImplSupplier.addSyncObserverAndPostIfNonNull(layoutManagerSupplierCallback);
 
         mTabObscuringHandlerSupplier.set(new TabObscuringHandler());
         mDeviceLockActivityLauncherSupplier.set(DeviceLockActivityLauncherImpl.get());
@@ -1925,7 +1925,7 @@ public class RootUiCoordinator
                 new ScrimManager(mActivity, coordinator, ScrimClient.ROOT_UI_COORDINATOR);
         scrimManager
                 .getStatusBarColorSupplier()
-                .addObserver(RootUiCoordinator.this::onScrimColorChanged);
+                .addSyncObserverAndPostIfNonNull(this::onScrimColorChanged);
         return scrimManager;
     }
 

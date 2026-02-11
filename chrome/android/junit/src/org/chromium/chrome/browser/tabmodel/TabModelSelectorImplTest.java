@@ -343,7 +343,9 @@ public class TabModelSelectorImplTest {
         doNothing().when(mTabModelSupplierObserverMock).onResult(any());
         mTabModelSelector.setIncognitoReauthDialogDelegate(mIncognitoReauthDialogDelegateMock);
         mTabModelSelector.addObserver(mTabModelSelectorObserverMock);
-        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mTabModelSupplierObserverMock);
+        mTabModelSelector
+                .getCurrentTabModelSupplier()
+                .addSyncObserverAndPostIfNonNull(mTabModelSupplierObserverMock);
         ShadowLooper.runUiThreadTasks();
         verify(mTabModelSupplierObserverMock).onResult(any());
 
@@ -380,7 +382,9 @@ public class TabModelSelectorImplTest {
         mTabModelSelector.setIncognitoReauthDialogDelegate(mIncognitoReauthDialogDelegateMock);
         mTabModelSelector.addObserver(mTabModelSelectorObserverMock);
         doNothing().when(mTabModelSupplierObserverMock).onResult(any());
-        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mTabModelSupplierObserverMock);
+        mTabModelSelector
+                .getCurrentTabModelSupplier()
+                .addSyncObserverAndPostIfNonNull(mTabModelSupplierObserverMock);
         ShadowLooper.runUiThreadTasks();
         verify(mTabModelSupplierObserverMock).onResult(any());
 
