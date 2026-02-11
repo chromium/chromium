@@ -5,6 +5,7 @@
 #ifndef UI_ANDROID_EVENT_FORWARDER_H_
 #define UI_ANDROID_EVENT_FORWARDER_H_
 
+#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -135,7 +136,12 @@ class UI_ANDROID_EXPORT EventForwarder {
   float last_x_pos_{-1.0};
   float last_y_pos_{-1.0};
   const raw_ptr<ViewAndroid> view_;
-  base::android::ScopedJavaGlobalRef<jobject> java_obj_;
+
+  // A weak reference to the Java object. The Java object will be kept alive by
+  // a static map in the Java code. ScopedJavaGlobalRef would scale poorly with
+  // a large number of WebContents as each entry would consume a slot in the
+  // finite global ref table.
+  JavaObjectWeakGlobalRef java_obj_;
 
   base::ObserverList<Observer> observers_;
   bool send_touch_moves_to_observers;

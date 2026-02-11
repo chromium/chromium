@@ -37,20 +37,25 @@ EventForwarder::EventForwarder(ViewAndroid* view)
           kSendTouchMovesToEventForwarderObservers)) {}
 
 EventForwarder::~EventForwarder() {
-  if (!java_obj_.is_null()) {
-    Java_EventForwarder_destroy(jni_zero::AttachCurrentThread(), java_obj_);
-    java_obj_.Reset();
+  if (!java_obj_.is_uninitialized()) {
+    JNIEnv* env = jni_zero::AttachCurrentThread();
+    ScopedJavaLocalRef<jobject> java_obj = java_obj_.get(env);
+    DCHECK(!java_obj.is_null());
+    Java_EventForwarder_destroy(env, java_obj);
+    java_obj_.reset();
   }
 }
 
 ScopedJavaLocalRef<jobject> EventForwarder::GetJavaObject() {
-  if (java_obj_.is_null()) {
-    JNIEnv* env = jni_zero::AttachCurrentThread();
-    java_obj_.Reset(
-        Java_EventForwarder_create(env, reinterpret_cast<intptr_t>(this),
-                                   features::IsTouchDragAndDropEnabled()));
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  if (java_obj_.is_uninitialized()) {
+    java_obj_ = JavaObjectWeakGlobalRef(
+        env, Java_EventForwarder_create(env, reinterpret_cast<intptr_t>(this),
+                                        features::IsTouchDragAndDropEnabled()));
   }
-  return ScopedJavaLocalRef<jobject>(java_obj_);
+  ScopedJavaLocalRef<jobject> java_obj = java_obj_.get(env);
+  DCHECK(!java_obj.is_null());
+  return java_obj;
 }
 
 bool EventForwarder::OnTouchEvent(JNIEnv* env,
@@ -417,9 +422,11 @@ void EventForwarder::RemoveObserver(Observer* observer) {
 }
 
 float EventForwarder::GetCurrentTouchSequenceYOffset() {
-  CHECK(!java_obj_.is_null());
+  CHECK(!java_obj_.is_uninitialized());
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  return Java_EventForwarder_getWebContentsOffsetYInWindow(env, java_obj_);
+  auto java_obj = java_obj_.get(env);
+  DCHECK(!java_obj.is_null());
+  return Java_EventForwarder_getWebContentsOffsetYInWindow(env, java_obj);
 }
 
 }  // namespace ui

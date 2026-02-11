@@ -34,13 +34,22 @@ import org.chromium.ui.util.MotionEventUtils;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Class used to forward view, input events down to native. */
 @JNINamespace("ui")
 @NullMarked
 public class EventForwarder {
     private static final String TAG = "EventForwarder";
+
+    // Using ScopedJavaGlobalRef in the owning C++ object to keep the Java object alive consumes an
+    // entry per instance in the finite global ref table. This scales poorly with a large number of
+    // WebContents. As a workaround, the C++ owner uses a JavaObjectWeakGlobalRef and an entry is
+    // kept in the a static map of the native pointer to Java objects to prevent garbage collection.
+    private static final Map<Long, EventForwarder> sEventForwarders = new HashMap<>();
+
     private final boolean mIsDragDropEnabled;
     private final boolean mConvertTrackpadEventsToMouse;
     private final boolean mUseBufferedInput;
@@ -137,10 +146,12 @@ public class EventForwarder {
         mConvertTrackpadEventsToMouse = convertTrackpadEventsToMouse;
         mUseBufferedInput = useBufferedInput;
         mVelocityTracker = VelocityTracker.obtain();
+        sEventForwarders.put(nativeEventForwarder, this);
     }
 
     @CalledByNative
     private void destroy() {
+        sEventForwarders.remove(mNativeEventForwarder);
         mNativeEventForwarder = 0;
     }
 
@@ -167,7 +178,7 @@ public class EventForwarder {
         int COUNT = 5;
     }
 
-    private static final void logActionDown(MotionEvent event) {
+    private static void logActionDown(MotionEvent event) {
         @InputDeviceSource int source = InputDeviceSource.OTHER;
         if (event.isFromSource(InputDevice.SOURCE_MOUSE)
                 && event.getToolType(0) == MotionEvent.TOOL_TYPE_FINGER) {
