@@ -429,10 +429,14 @@ set_defaults("rust_library") {
 
 # Compute the set of configs common to all linked targets (shared libraries,
 # loadable modules, executables) to avoid duplication below.
+_linker_configs = [
+  "//build/config:default_libs",
+  "//build/config/compiler:linker",
+]
 if (is_win) {
   # Many targets remove these configs, so they are not contained within
   # //build/config:executable_config for easy removal.
-  _linker_configs = [
+  _linker_configs += [
     "//build/config/win:default_incremental_linking",
 
     # Default to console-mode apps. Most of our targets are tests and such
@@ -440,21 +444,18 @@ if (is_win) {
     "//build/config/win:console",
   ]
 } else if (is_apple) {
-  _linker_configs = [ "//build/config/apple:strip_all" ]
+  _linker_configs += [ "//build/config/apple:strip_all" ]
 } else if (is_android) {
   # Warn whenever linking code that could unintentionally switch off
   # branch target identification (BTI) on Arm systems.
-  _linker_configs = [ "//build/config/android:lld_branch_target_hardening" ]
-} else {
-  _linker_configs = []
+  _linker_configs += [ "//build/config/android:lld_branch_target_hardening" ]
 }
 
 # Executable defaults.
-default_executable_configs = default_compiler_configs + [
+default_executable_configs = default_compiler_configs + _linker_configs + [
                                "//build/config/compiler:export_dynamic",
-                               "//build/config:default_libs",
                                "//build/config:executable_config",
-                             ] + _linker_configs
+                             ]
 
 if (is_win) {
   # Turn on linker CFI for executables, and position it so it can be removed
@@ -476,10 +477,8 @@ set_defaults("executable") {
 
 # Shared library and loadable module defaults (also for components in component
 # mode).
-default_shared_library_configs = default_compiler_configs + [
-                                   "//build/config:default_libs",
-                                   "//build/config:shared_library_config",
-                                 ] + _linker_configs
+default_shared_library_configs = default_compiler_configs + _linker_configs +
+                                 [ "//build/config:shared_library_config" ]
 if (is_win) {
   # Turn on linker CFI for DLLs, and position it so it can be removed if needed.
   default_shared_library_configs += [ "//build/config/win:cfi_linker" ]

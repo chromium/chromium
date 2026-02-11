@@ -469,22 +469,6 @@ config("compiler") {
         }
       }
     }
-
-    if (use_lld) {
-      ldflags += [ "-fuse-ld=lld" ]
-      if (lld_path != "") {
-        ldflags += [ "-B" + rebase_path(lld_path, root_build_dir) ]
-      }
-    }
-
-    # Linker warnings.
-    if (fatal_linker_warnings && !is_apple && current_os != "aix" &&
-        current_os != "zos") {
-      ldflags += [ "-Wl,--fatal-warnings" ]
-    }
-    if (fatal_linker_warnings && is_apple) {
-      ldflags += [ "-Wl,-fatal_warnings" ]
-    }
   }
 
   # Non-Apple Posix and Fuchsia compiler flags setup.
@@ -500,22 +484,6 @@ config("compiler") {
             "-fno-optimize-sibling-calls",
           ]
         }
-      }
-    }
-
-    # Explicitly pass --build-id to ld. Compilers used to always pass this
-    # implicitly but don't any more (in particular clang when built without
-    # ENABLE_LINKER_BUILD_ID=ON).
-    if (is_official_build || is_chrome_branded) {
-      # The sha1 build id has lower risk of collision but is more expensive to
-      # compute, so only use it in the official build to avoid slowing down
-      # links.
-      ldflags += [ "-Wl,--build-id=sha1" ]
-    } else if (current_os != "aix" && current_os != "zos") {
-      if (use_lld) {
-        ldflags += [ "-Wl,--build-id=fast" ]
-      } else {
-        ldflags += [ "-Wl,--build-id" ]
       }
     }
 
@@ -578,23 +546,10 @@ config("compiler") {
       # (This flag doesn't do anything with Clang.)
       cflags += [ "-pipe" ]
     }
-
-    ldflags += [
-      "-Wl,-z,noexecstack",
-      "-Wl,-z,relro",
-    ]
-
-    if (!is_component_build) {
-      ldflags += [ "-Wl,-z,now" ]
-    }
   }
 
   # Linux-specific compiler flags setup.
   # ------------------------------------
-  if (use_icf && (!is_apple || use_lld)) {
-    ldflags += [ "-Wl,--icf=all" ]
-  }
-
   if (is_linux || is_chromeos) {
     cflags += [ "-pthread" ]
     # Do not use the -pthread ldflag here since it becomes a no-op
@@ -623,17 +578,6 @@ config("compiler") {
     }
   }
 
-  if (is_chromeos_device && current_toolchain == default_toolchain) {
-    # Flags added automatically by ChromeOS's custom toolchain that are
-    # not already added elsewhere in the configuration. Add these here,
-    # so that we also get them when not building with ChromeOS's toolchain.
-    ldflags += [
-      "-Wl,--pack-dyn-relocs=relr",
-      "-Wl,--no-rosegment",
-      "-Wl,-z,nostart-stop-gc",
-    ]
-  }
-
   # Clang-specific compiler flags setup.
   # ------------------------------------
   if (is_clang) {
@@ -658,25 +602,6 @@ config("compiler") {
     if (diagnostics_print_source_range_info && !is_win) {
       cflags += [ "-fdiagnostics-print-source-range-info" ]
     }
-  }
-
-  if (use_lld) {
-    # TODO(thakis): Make the driver pass --color-diagnostics to the linker
-    # if -fcolor-diagnostics is passed to it, and pass -fcolor-diagnostics
-    # in ldflags instead.
-    if (is_win) {
-      # On Windows, we call the linker directly, instead of calling it through
-      # the driver.
-      ldflags += [ "--color-diagnostics" ]
-    } else {
-      ldflags += [ "-Wl,--color-diagnostics" ]
-    }
-  }
-
-  # Enable text section splitting only on linux when using lld for now. Other
-  # platforms can be added later if needed.
-  if ((is_linux || is_chromeos) && use_lld && use_text_section_splitting) {
-    ldflags += [ "-Wl,-z,keep-text-section-prefix" ]
   }
 
   if (is_clang) {
@@ -977,35 +902,6 @@ config("compiler") {
     }
   }
 
-  # Pass flag to LLD so Android builds can allow debuggerd to properly symbolize
-  # stack crashes (http://crbug.com/919499).
-  if (use_lld && is_android) {
-    ldflags += [ "-Wl,--no-rosegment" ]
-  }
-
-  # TODO(crbug.com/40242425): Cleanup undefined symbol errors caught by
-  # --no-undefined-version.
-  if (use_lld && !is_win && !is_mac && !is_ios && !is_wasm) {
-    ldflags += [ "-Wl,--undefined-version" ]
-  }
-
-  if (use_lld && is_apple) {
-    ldflags += [ "-Wl,--strict-auto-link" ]
-  }
-
-  # LLD does call-graph-sorted binary layout by default when profile data is
-  # present. On Android this increases binary size due to more thinks for long
-  # jumps. Turn it off by default and enable selectively for targets where it's
-  # beneficial.
-  if (use_lld && !enable_call_graph_profile_sort) {
-    if (is_win) {
-      ldflags += [ "/call-graph-profile-sort:no" ]
-    } else if (!is_wasm) {
-      # Emscripten compiler does not support this linker flag.
-      ldflags += [ "-Wl,--no-call-graph-profile-sort" ]
-    }
-  }
-
   if (is_clang && show_includes) {
     if (is_win) {
       cflags += [
@@ -1032,52 +928,12 @@ config("compiler") {
     cflags_cc += [ "-gsimple-template-names" ]
   }
 
-  # MLGO specific flags. These flags enable an ML-based inliner trained on
-  # Chrome on Android (arm32) with ThinLTO enabled, optimizing for size.
-  # The "release" ML model is embedded into clang as part of its build.
-  # Currently, the ML inliner is only enabled when targeting Android due to:
-  # a) Android is where size matters the most.
-  # b) MLGO presently has the limitation of only being able to embed one model
-  #    at a time; It is unclear if the embedded model is beneficial for
-  #    non-Android targets.
-  # MLGO is only officially supported on linux.
-  if (use_ml_inliner && is_a_target_toolchain) {
-    assert(
-        is_android && host_os == "linux",
-        "MLGO is currently only supported for targeting Android on a linux host")
-    if (use_thin_lto) {
-      ldflags += [ "-Wl,-mllvm,-enable-ml-inliner=release" ]
-      if (is_high_end_android) {
-        # Besides using the arm64 - trained model, instruct the inline advisor
-        # to not use the ML policy (which will aim to reduce size) for any
-        # callsites where the caller is not cold. This avoids performance
-        # regressions while still bringing size benefits.
-        # Profile quality is essential here.
-        ldflags += [
-          "-Wl,-mllvm,-ml-inliner-model-selector=arm64-mixed",
-          "-Wl,-mllvm,-ml-inliner-skip-policy=if-caller-not-cold",
-        ]
-      } else {
-        ldflags += [ "-Wl,-mllvm,-ml-inliner-model-selector=arm32-size" ]
-      }
-    }
-  }
-
   if (clang_embed_bitcode) {
     assert(!use_thin_lto,
            "clang_embed_bitcode is only supported in non-ThinLTO builds")
     cflags += [
       "-Xclang",
       "-fembed-bitcode=all",
-    ]
-  }
-
-  if (lld_emit_indexes_and_imports) {
-    assert(use_thin_lto,
-           "lld_emit_indexes_and_imports is only supported with ThinLTO builds")
-    ldflags += [
-      "-Wl,--save-temps=import",
-      "-Wl,--thinlto-emit-index-files",
     ]
   }
 
@@ -1091,35 +947,6 @@ config("compiler") {
   if (is_posix || is_fuchsia) {
     asmflags += cflags
     asmflags += cflags_c
-  }
-
-  if (is_chromeos_device) {
-    # On ChromeOS devices, we want to ensure we're using Chrome's allocator
-    # symbols for all C++ new/delete operator overloads. PartitionAlloc
-    # and other local allocators should always take precedence over system or
-    # preloaded allocators. These are the mangled symbol names.
-    # See b/280115910 for details.
-    ldflags += [
-      "-Wl,--export-dynamic-symbol=_ZdaPv,-u,_ZdaPv",
-      "-Wl,--export-dynamic-symbol=_ZdaPvRKSt9nothrow_t,-u,_ZdaPvRKSt9nothrow_t",
-      "-Wl,--export-dynamic-symbol=_ZdlPv,-u,_ZdlPv",
-      "-Wl,--export-dynamic-symbol=_ZdlPvm,-u,_ZdlPvm",
-      "-Wl,--export-dynamic-symbol=_ZdlPvRKSt9nothrow_t,-u,_ZdlPvRKSt9nothrow_t",
-      "-Wl,--export-dynamic-symbol=_Znam,-u,_Znam",
-      "-Wl,--export-dynamic-symbol=_ZnamRKSt9nothrow_t,-u,_ZnamRKSt9nothrow_t",
-      "-Wl,--export-dynamic-symbol=_Znwm,-u,_Znwm",
-      "-Wl,--export-dynamic-symbol=_ZnwmRKSt9nothrow_t,-u,_ZnwmRKSt9nothrow_t",
-      "-Wl,--export-dynamic-symbol=_ZdaPvmSt11align_val_t,-u,_ZdaPvmSt11align_val_t",
-      "-Wl,--export-dynamic-symbol=_ZdaPvSt11align_val_t,-u,_ZdaPvSt11align_val_t",
-      "-Wl,--export-dynamic-symbol=_ZdaPvSt11align_val_tRKSt9nothrow_t,-u,_ZdaPvSt11align_val_tRKSt9nothrow_t",
-      "-Wl,--export-dynamic-symbol=_ZdlPvmSt11align_val_t,-u,_ZdlPvmSt11align_val_t",
-      "-Wl,--export-dynamic-symbol=_ZdlPvSt11align_val_t,-u,_ZdlPvSt11align_val_t",
-      "-Wl,--export-dynamic-symbol=_ZdlPvSt11align_val_tRKSt9nothrow_t,-u,_ZdlPvSt11align_val_tRKSt9nothrow_t",
-      "-Wl,--export-dynamic-symbol=_ZnamSt11align_val_t,-u,_ZnamSt11align_val_t",
-      "-Wl,--export-dynamic-symbol=_ZnamSt11align_val_tRKSt9nothrow_t,-u,_ZnamSt11align_val_tRKSt9nothrow_t",
-      "-Wl,--export-dynamic-symbol=_ZnwmSt11align_val_t,-u,_ZnwmSt11align_val_t",
-      "-Wl,--export-dynamic-symbol=_ZnwmSt11align_val_tRKSt9nothrow_t,-u,_ZnwmSt11align_val_tRKSt9nothrow_t",
-    ]
   }
 
   # Rust compiler flags setup.
@@ -1202,6 +1029,189 @@ config("compiler") {
   # as NEON is a mandatory part of ARMv8 anyway.
   if (current_cpu == "arm64") {
     defines += [ "__ARM_NEON__=1" ]
+  }
+}
+
+config("linker") {
+  ldflags = []
+
+  if (!is_win) {
+    if (use_lld) {
+      ldflags += [ "-fuse-ld=lld" ]
+      if (lld_path != "") {
+        ldflags += [ "-B" + rebase_path(lld_path, root_build_dir) ]
+      }
+    }
+
+    # Linker warnings.
+    if (fatal_linker_warnings && !is_apple && current_os != "aix" &&
+        current_os != "zos") {
+      ldflags += [ "-Wl,--fatal-warnings" ]
+    }
+    if (fatal_linker_warnings && is_apple) {
+      ldflags += [ "-Wl,-fatal_warnings" ]
+    }
+  }
+
+  if ((is_posix && !is_apple) || is_fuchsia) {
+    # Explicitly pass --build-id to ld. Compilers used to always pass this
+    # implicitly but don't any more (in particular clang when built without
+    # ENABLE_LINKER_BUILD_ID=ON).
+    if (is_official_build || is_chrome_branded) {
+      # The sha1 build id has lower risk of collision but is more expensive to
+      # compute, so only use it in the official build to avoid slowing down
+      # links.
+      ldflags += [ "-Wl,--build-id=sha1" ]
+    } else if (current_os != "aix" && current_os != "zos") {
+      if (use_lld) {
+        ldflags += [ "-Wl,--build-id=fast" ]
+      } else {
+        ldflags += [ "-Wl,--build-id" ]
+      }
+    }
+  }
+
+  if (is_linux || is_chromeos || is_android || is_fuchsia) {
+    ldflags += [
+      "-Wl,-z,noexecstack",
+      "-Wl,-z,relro",
+    ]
+
+    if (!is_component_build) {
+      ldflags += [ "-Wl,-z,now" ]
+    }
+  }
+
+  if (use_icf && (!is_apple || use_lld)) {
+    ldflags += [ "-Wl,--icf=all" ]
+  }
+
+  if (is_chromeos_device && current_toolchain == default_toolchain) {
+    # Flags added automatically by ChromeOS's custom toolchain that are
+    # not already added elsewhere in the configuration. Add these here,
+    # so that we also get them when not building with ChromeOS's toolchain.
+    ldflags += [
+      "-Wl,--pack-dyn-relocs=relr",
+      "-Wl,--no-rosegment",
+      "-Wl,-z,nostart-stop-gc",
+    ]
+  }
+
+  if (use_lld) {
+    # TODO(thakis): Make the driver pass --color-diagnostics to the linker
+    # if -fcolor-diagnostics is passed to it, and pass -fcolor-diagnostics
+    # in ldflags instead.
+    if (is_win) {
+      # On Windows, we call the linker directly, instead of calling it through
+      # the driver.
+      ldflags += [ "--color-diagnostics" ]
+    } else {
+      ldflags += [ "-Wl,--color-diagnostics" ]
+    }
+  }
+
+  # Enable text section splitting only on linux when using lld for now. Other
+  # platforms can be added later if needed.
+  if ((is_linux || is_chromeos) && use_lld && use_text_section_splitting) {
+    ldflags += [ "-Wl,-z,keep-text-section-prefix" ]
+  }
+
+  # Pass flag to LLD so Android builds can allow pre-Android Q's debuggerd to
+  # properly symbolize stack crashes (http://crbug.com/919499).
+  if (use_lld && is_android) {
+    ldflags += [ "-Wl,--no-rosegment" ]
+  }
+
+  # TODO(crbug.com/40242425): Cleanup undefined symbol errors caught by
+  # --no-undefined-version.
+  if (use_lld && !is_win && !is_mac && !is_ios && !is_wasm) {
+    ldflags += [ "-Wl,--undefined-version" ]
+  }
+
+  if (use_lld && is_apple) {
+    ldflags += [ "-Wl,--strict-auto-link" ]
+  }
+
+  # LLD does call-graph-sorted binary layout by default when profile data is
+  # present. On Android this increases binary size due to more thinks for long
+  # jumps. Turn it off by default and enable selectively for targets where it's
+  # beneficial.
+  if (use_lld && !enable_call_graph_profile_sort) {
+    if (is_win) {
+      ldflags += [ "/call-graph-profile-sort:no" ]
+    } else if (!is_wasm) {
+      # Emscripten compiler does not support this linker flag.
+      ldflags += [ "-Wl,--no-call-graph-profile-sort" ]
+    }
+  }
+
+  # MLGO specific flags. These flags enable an ML-based inliner trained on
+  # Chrome on Android (arm32) with ThinLTO enabled, optimizing for size.
+  # The "release" ML model is embedded into clang as part of its build.
+  # Currently, the ML inliner is only enabled when targeting Android due to:
+  # a) Android is where size matters the most.
+  # b) MLGO presently has the limitation of only being able to embed one model
+  #    at a time; It is unclear if the embedded model is beneficial for
+  #    non-Android targets.
+  # MLGO is only officially supported on linux.
+  if (use_ml_inliner && is_a_target_toolchain) {
+    assert(
+        is_android && host_os == "linux",
+        "MLGO is currently only supported for targeting Android on a linux host")
+    if (use_thin_lto) {
+      ldflags += [ "-Wl,-mllvm,-enable-ml-inliner=release" ]
+      if (is_high_end_android) {
+        # Besides using the arm64 - trained model, instruct the inline advisor
+        # to not use the ML policy (which will aim to reduce size) for any
+        # callsites where the caller is not cold. This avoids performance
+        # regressions while still bringing size benefits.
+        # Profile quality is essential here.
+        ldflags += [
+          "-Wl,-mllvm,-ml-inliner-model-selector=arm64-mixed",
+          "-Wl,-mllvm,-ml-inliner-skip-policy=if-caller-not-cold",
+        ]
+      } else {
+        ldflags += [ "-Wl,-mllvm,-ml-inliner-model-selector=arm32-size" ]
+      }
+    }
+  }
+
+  if (lld_emit_indexes_and_imports) {
+    assert(use_thin_lto,
+           "lld_emit_indexes_and_imports is only supported with ThinLTO builds")
+    ldflags += [
+      "-Wl,--save-temps=import",
+      "-Wl,--thinlto-emit-index-files",
+    ]
+  }
+
+  if (is_chromeos_device) {
+    # On ChromeOS devices, we want to ensure we're using Chrome's allocator
+    # symbols for all C++ new/delete operator overloads. PartitionAlloc
+    # and other local allocators should always take precedence over system or
+    # preloaded allocators. These are the mangled symbol names.
+    # See b/280115910 for details.
+    ldflags += [
+      "-Wl,--export-dynamic-symbol=_ZdaPv,-u,_ZdaPv",
+      "-Wl,--export-dynamic-symbol=_ZdaPvRKSt9nothrow_t,-u,_ZdaPvRKSt9nothrow_t",
+      "-Wl,--export-dynamic-symbol=_ZdlPv,-u,_ZdlPv",
+      "-Wl,--export-dynamic-symbol=_ZdlPvm,-u,_ZdlPvm",
+      "-Wl,--export-dynamic-symbol=_ZdlPvRKSt9nothrow_t,-u,_ZdlPvRKSt9nothrow_t",
+      "-Wl,--export-dynamic-symbol=_Znam,-u,_Znam",
+      "-Wl,--export-dynamic-symbol=_ZnamRKSt9nothrow_t,-u,_ZnamRKSt9nothrow_t",
+      "-Wl,--export-dynamic-symbol=_Znwm,-u,_Znwm",
+      "-Wl,--export-dynamic-symbol=_ZnwmRKSt9nothrow_t,-u,_ZnwmRKSt9nothrow_t",
+      "-Wl,--export-dynamic-symbol=_ZdaPvmSt11align_val_t,-u,_ZdaPvmSt11align_val_t",
+      "-Wl,--export-dynamic-symbol=_ZdaPvSt11align_val_t,-u,_ZdaPvSt11align_val_t",
+      "-Wl,--export-dynamic-symbol=_ZdaPvSt11align_val_tRKSt9nothrow_t,-u,_ZdaPvSt11align_val_tRKSt9nothrow_t",
+      "-Wl,--export-dynamic-symbol=_ZdlPvmSt11align_val_t,-u,_ZdlPvmSt11align_val_t",
+      "-Wl,--export-dynamic-symbol=_ZdlPvSt11align_val_t,-u,_ZdlPvSt11align_val_t",
+      "-Wl,--export-dynamic-symbol=_ZdlPvSt11align_val_tRKSt9nothrow_t,-u,_ZdlPvSt11align_val_tRKSt9nothrow_t",
+      "-Wl,--export-dynamic-symbol=_ZnamSt11align_val_t,-u,_ZnamSt11align_val_t",
+      "-Wl,--export-dynamic-symbol=_ZnamSt11align_val_tRKSt9nothrow_t,-u,_ZnamSt11align_val_tRKSt9nothrow_t",
+      "-Wl,--export-dynamic-symbol=_ZnwmSt11align_val_t,-u,_ZnwmSt11align_val_t",
+      "-Wl,--export-dynamic-symbol=_ZnwmSt11align_val_tRKSt9nothrow_t,-u,_ZnwmSt11align_val_tRKSt9nothrow_t",
+    ]
   }
 }
 
