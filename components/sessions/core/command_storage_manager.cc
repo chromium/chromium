@@ -141,8 +141,9 @@ void CommandStorageManager::Save() {
   // opportunity to append more commands.
   delegate_->OnWillSaveCommands();
 
-  if (pending_commands_.empty())
+  if (pending_commands_.empty()) {
     return;
+  }
 
 #if DCHECK_IS_ON()
   for (const std::unique_ptr<SessionCommand>& command : pending_commands_) {

@@ -110,8 +110,9 @@ class CommandStorageBackendTest : public testing::Test {
     auto infos = CommandStorageBackend::GetSessionFilesSortedByReverseTimestamp(
         file_path_, CommandStorageManager::SessionType::kOther);
     std::vector<base::FilePath> result;
-    for (const auto& info : infos)
+    for (const auto& info : infos) {
       result.push_back(info.path);
+    }
     return result;
   }
 
@@ -223,8 +224,9 @@ TEST_F(CommandStorageBackendTest, RandomDataEncrypted) {
       // Read previous data.
       commands = backend->ReadLastSessionCommands().commands;
       ASSERT_EQ(i, commands.size());
-      for (auto j = commands.begin(); j != commands.end(); ++j)
+      for (auto j = commands.begin(); j != commands.end(); ++j) {
         AssertCommandEqualsData(data[j - commands.begin()], j->get());
+      }
 
       backend->AppendCommands(std::move(commands), true, base::DoNothing(),
                               key);
@@ -443,8 +445,9 @@ TEST_F(CommandStorageBackendTest, RandomDataWithRestoreType) {
       // Read previous data.
       commands = backend->ReadLastSessionCommands().commands;
       ASSERT_EQ(i, commands.size());
-      for (auto j = commands.begin(); j != commands.end(); ++j)
+      for (auto j = commands.begin(); j != commands.end(); ++j) {
         AssertCommandEqualsData(data[j - commands.begin()], j->get());
+      }
 
       // Write the previous data back.
       backend->AppendCommands(std::move(commands), true, base::DoNothing());
