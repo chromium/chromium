@@ -4229,7 +4229,7 @@ void StyleEngine::UpdateStyleRecalcRoot(ContainerNode* ancestor,
     return;
   }
   DCHECK(!InRebuildLayoutTree());
-  if (InDOMRemoval()) {
+  if (InDOMRemoval() || GetDocument().StatePreservingAtomicMoveInProgress()) {
     ancestor = nullptr;
     dirty_node = document_;
   }
