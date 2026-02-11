@@ -155,6 +155,9 @@ bool FormMCPSchema::ValidateParameterData(const String& name,
   if (IsDate(*controls_for_name)) {
     return ValidateTextData(*controls_for_name, value);
   }
+  if (IsDatetimeLocal(*controls_for_name)) {
+    return ValidateTextData(*controls_for_name, value);
+  }
   if (IsTime(*controls_for_name)) {
     return ValidateTextData(*controls_for_name, value);
   }
@@ -317,6 +320,8 @@ void FormMCPSchema::FillParameterData(const String& name,
     FillTextData(*controls_for_name, value);
   } else if (IsDate(*controls_for_name)) {
     FillTextData(*controls_for_name, value);
+  } else if (IsDatetimeLocal(*controls_for_name)) {
+    FillTextData(*controls_for_name, value);
   } else if (IsTime(*controls_for_name)) {
     FillTextData(*controls_for_name, value);
   } else if (IsNumber(*controls_for_name)) {
@@ -352,6 +357,9 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeParameterSchema(
   }
   if (IsDate(*controls_for_name)) {
     return ComputeDateParameterSchema(*controls_for_name, required);
+  }
+  if (IsDatetimeLocal(*controls_for_name)) {
+    return ComputeDatetimeLocalParameterSchema(*controls_for_name, required);
   }
   if (IsTime(*controls_for_name)) {
     return ComputeTimeParameterSchema(*controls_for_name, required);
@@ -402,6 +410,26 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeDateParameterSchema(
   schema->SetString("format", "date");
   // Note that the "minimum" and "maximum" fields must contains numbers;
   // they cannot be used for dates.
+  AddTitle(*element, *schema);
+  AddDescription(*element, *schema);
+  required = element->IsRequired();
+  return schema;
+}
+
+std::unique_ptr<JSONObject> FormMCPSchema::ComputeDatetimeLocalParameterSchema(
+    const ControlVector& controls_for_name,
+    bool& required) {
+  HTMLFormControlElement* element = controls_for_name.front().Get();
+  CHECK(element);
+  auto schema = std::make_unique<JSONObject>();
+  schema->SetString("type", "string");
+  // The regex format is based on the valid time microsyntax in HTML:
+  // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#local-dates-and-times
+  // We cannot use the "date-time" type from json schema because that accepts
+  // seconds and timezone which are not valid for <input type=datetime-local>.
+  schema->SetString(
+      "format",
+      "^[0-9]{4}-(0[1-9]|1[0-2])-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]$");
   AddTitle(*element, *schema);
   AddDescription(*element, *schema);
   required = element->IsRequired();
@@ -869,6 +897,12 @@ bool FormMCPSchema::IsDate(HTMLFormControlElement& control) const {
   return input && input->FormControlType() == FormControlType::kInputDate;
 }
 
+bool FormMCPSchema::IsDatetimeLocal(HTMLFormControlElement& control) const {
+  auto* input = DynamicTo<HTMLInputElement>(control);
+  return input &&
+         input->FormControlType() == FormControlType::kInputDatetimeLocal;
+}
+
 bool FormMCPSchema::IsTime(HTMLFormControlElement& control) const {
   auto* input = DynamicTo<HTMLInputElement>(control);
   return input && input->FormControlType() == FormControlType::kInputTime;
@@ -909,6 +943,12 @@ bool FormMCPSchema::IsText(const ControlVector& controls_for_name) const {
 
 bool FormMCPSchema::IsDate(const ControlVector& controls_for_name) const {
   return controls_for_name.size() == 1u && IsDate(*controls_for_name.front());
+}
+
+bool FormMCPSchema::IsDatetimeLocal(
+    const ControlVector& controls_for_name) const {
+  return controls_for_name.size() == 1u &&
+         IsDatetimeLocal(*controls_for_name.front());
 }
 
 bool FormMCPSchema::IsTime(const ControlVector& controls_for_name) const {
