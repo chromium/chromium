@@ -42,14 +42,11 @@ PeripheralNotificationManager::PeripheralNotificationManager(
       is_pcie_tunneling_allowed_(is_pcie_tunneling_allowed) {
   DCHECK(TypecdClient::Get());
   DCHECK(PciguardClient::Get());
-  TypecdClient::Get()->AddObserver(this);
-  PciguardClient::Get()->AddObserver(this);
+  typecd_client_observation_.Observe(TypecdClient::Get());
+  pciguard_client_observation_.Observe(PciguardClient::Get());
 }
 
 PeripheralNotificationManager::~PeripheralNotificationManager() {
-  TypecdClient::Get()->RemoveObserver(this);
-  PciguardClient::Get()->RemoveObserver(this);
-
   CHECK_EQ(this, g_instance);
   g_instance = nullptr;
 }

@@ -43,14 +43,12 @@ SystemSettingsProvider::SystemSettingsProvider(
   Init();
 }
 
-SystemSettingsProvider::~SystemSettingsProvider() {
-  system::TimezoneSettings::GetInstance()->RemoveObserver(this);
-}
+SystemSettingsProvider::~SystemSettingsProvider() = default;
 
 void SystemSettingsProvider::Init() {
   system::TimezoneSettings* timezone_settings =
       system::TimezoneSettings::GetInstance();
-  timezone_settings->AddObserver(this);
+  timezone_settings_observation_.Observe(timezone_settings);
   timezone_value_ =
       std::make_unique<base::Value>(timezone_settings->GetCurrentTimezoneID());
   per_user_timezone_enabled_value_ =

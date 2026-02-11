@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
@@ -134,6 +135,14 @@ class ESimManager : public mojom::ESimManager,
   std::vector<std::unique_ptr<Euicc>> available_euiccs_;
   mojo::RemoteSet<mojom::ESimManagerObserver> observers_;
   mojo::ReceiverSet<mojom::ESimManager> receivers_;
+
+  base::ScopedObservation<HermesManagerClient, HermesManagerClient::Observer>
+      hermes_manager_client_observation_{this};
+  base::ScopedObservation<HermesEuiccClient, HermesEuiccClient::Observer>
+      hermes_euicc_client_observation_{this};
+  base::ScopedObservation<CellularESimProfileHandler,
+                          CellularESimProfileHandler::Observer>
+      cellular_esim_profile_handler_observation_{this};
 
   base::WeakPtrFactory<ESimManager> weak_ptr_factory_{this};
 };

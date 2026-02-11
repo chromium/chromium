@@ -19,9 +19,8 @@ SodaInstaller::SodaInstaller(PrefService* global_prefs,
     : language_(std::move(language)),
       global_prefs_(global_prefs),
       profile_prefs_(profile_prefs) {}
-SodaInstaller::~SodaInstaller() {
-  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
-}
+
+SodaInstaller::~SodaInstaller() = default;
 
 SodaInstaller::InstallationStatus SodaInstaller::GetStatus() {
   if (!ValidLanguage()) {
@@ -58,8 +57,7 @@ void SodaInstaller::InstallSoda(AvailabilityCallback callback) {
   status_ = InstallationStatus::kInstalling;
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-
-  soda_installer->AddObserver(this);
+  soda_installer_observation_.Observe(soda_installer);
 
   // if no other SODA features are currently active
   // then we need to Init SODA.  This will install the

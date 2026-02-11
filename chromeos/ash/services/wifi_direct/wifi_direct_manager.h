@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/wifi_p2p/wifi_p2p_controller.h"
 #include "chromeos/ash/services/wifi_direct/public/mojom/wifi_direct_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -71,6 +72,9 @@ class WifiDirectManager : public mojom::WifiDirectManager,
   mojo::ReceiverSet<mojom::WifiDirectManager> receivers_;
   base::flat_map<int, std::unique_ptr<WifiDirectConnection>>
       shill_id_to_wifi_direct_connection_;
+
+  base::ScopedObservation<WifiP2PController, WifiP2PController::Observer>
+      wifi_p2p_controller_observation_{this};
 
   base::WeakPtrFactory<WifiDirectManager> weak_ptr_factory_{this};
 };

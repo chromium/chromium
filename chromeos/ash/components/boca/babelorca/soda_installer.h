@@ -8,6 +8,8 @@
 #include <queue>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
@@ -55,6 +57,10 @@ class SodaInstaller : public speech::SodaInstaller::Observer {
   const std::string language_;
   raw_ptr<PrefService> global_prefs_;
   raw_ptr<PrefService> profile_prefs_;
+
+  base::ScopedObservation<speech::SodaInstaller,
+                          speech::SodaInstaller::Observer>
+      soda_installer_observation_{this};
 };
 
 }  // namespace ash::babelorca

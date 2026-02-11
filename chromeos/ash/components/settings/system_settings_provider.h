@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -47,6 +48,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) SystemSettingsProvider
   std::unique_ptr<base::Value> timezone_value_;
   std::unique_ptr<base::Value> per_user_timezone_enabled_value_;
   std::unique_ptr<base::Value> fine_grained_time_zone_enabled_value_;
+
+  base::ScopedObservation<system::TimezoneSettings,
+                          system::TimezoneSettings::Observer>
+      timezone_settings_observation_{this};
 };
 
 }  // namespace ash

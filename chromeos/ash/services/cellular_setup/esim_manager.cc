@@ -75,17 +75,14 @@ ESimManager::ESimManager(
       cellular_inhibitor_(cellular_inhibitor),
       network_connection_handler_(network_connection_handler),
       network_state_handler_(network_state_handler) {
-  HermesManagerClient::Get()->AddObserver(this);
-  HermesEuiccClient::Get()->AddObserver(this);
-  cellular_esim_profile_handler_->AddObserver(this);
+  hermes_manager_client_observation_.Observe(HermesManagerClient::Get());
+  hermes_euicc_client_observation_.Observe(HermesEuiccClient::Get());
+  cellular_esim_profile_handler_observation_.Observe(
+      cellular_esim_profile_handler_);
   OnESimProfileListUpdated();
 }
 
-ESimManager::~ESimManager() {
-  HermesManagerClient::Get()->RemoveObserver(this);
-  HermesEuiccClient::Get()->RemoveObserver(this);
-  cellular_esim_profile_handler_->RemoveObserver(this);
-}
+ESimManager::~ESimManager() = default;
 
 void ESimManager::AddObserver(
     mojo::PendingRemote<mojom::ESimManagerObserver> observer) {

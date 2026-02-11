@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "third_party/cros_system_api/dbus/typecd/dbus-constants.h"
@@ -169,6 +170,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PERIPHERAL_NOTIFICATION)
   base::ObserverList<Observer> observer_list_;
 
   std::string root_prefix_ = "";
+
+  base::ScopedObservation<TypecdClient, TypecdClient::Observer>
+      typecd_client_observation_{this};
+  base::ScopedObservation<PciguardClient, PciguardClient::Observer>
+      pciguard_client_observation_{this};
 
   // Used for callbacks.
   base::WeakPtrFactory<PeripheralNotificationManager> weak_ptr_factory_{this};

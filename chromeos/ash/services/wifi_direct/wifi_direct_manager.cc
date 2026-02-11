@@ -57,12 +57,10 @@ WifiDirectOperationResult GetMojoOperationResult(
 
 WifiDirectManager::WifiDirectManager() {
   DCHECK(WifiP2PController::IsInitialized());
-  WifiP2PController::Get()->AddObserver(this);
+  wifi_p2p_controller_observation_.Observe(WifiP2PController::Get());
 }
 
-WifiDirectManager::~WifiDirectManager() {
-  WifiP2PController::Get()->RemoveObserver(this);
-}
+WifiDirectManager::~WifiDirectManager() = default;
 
 void WifiDirectManager::BindPendingReceiver(
     mojo::PendingReceiver<mojom::WifiDirectManager> pending_receiver) {
