@@ -628,8 +628,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 // This test verifies that if we have a focused <input> in the main frame and
 // the tab is closed, TextInputManager handles unregistering itself and
 // notifying the observers properly (see https://crbug.com/41288534).
+#if BUILDFLAG(IS_MAC)
+// https://crbug.com/483430690 created by gardener.
+#define MAYBE_ClosingTabWillNotCrash DISABLED_ClosingTabWillNotCrash
+#else
+#define MAYBE_ClosingTabWillNotCrash ClosingTabWillNotCrash
+#endif
 IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
-                       ClosingTabWillNotCrash) {
+                       MAYBE_ClosingTabWillNotCrash) {
   CreateIframePage("a()");
   content::RenderFrameHost* main_frame = GetFrame(IndexVector{});
   AddInputFieldToFrame(main_frame, "text", "", false);
