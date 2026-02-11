@@ -498,6 +498,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Android.AudioFocusRequestResult"
+    enum="AudioFocusRequestResult" expires_after="2027-02-08">
+  <owner>philyan@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>Records the result of the audio focus request on Android.</summary>
+</histogram>
+
 <histogram name="Media.Android.BecomingNoisy" enum="Boolean"
     expires_after="2023-01-15">
   <owner>liberato@chromium.org</owner>

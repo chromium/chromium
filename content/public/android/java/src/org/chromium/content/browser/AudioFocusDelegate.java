@@ -10,6 +10,8 @@ import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.os.Handler;
 
+import androidx.annotation.IntDef;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -17,24 +19,43 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
- * AudioFocusDelegate is the Java counterpart of content::AudioFocusDelegateAndroid.
- * It is being used to communicate from content::AudioFocusDelegateAndroid
- * (C++) to the Android system. A AudioFocusDelegate is implementingf
- * OnAudioFocusChangeListener, making it an audio focus holder for Android. Thus
- * two instances of AudioFocusDelegate can't have audio focus at the same
- * time. A AudioFocusDelegate will use the type requested from its C++
- * counterpart and will resume its play using the same type if it were to
- * happen, for example, when it got temporarily suspended by a transient sound
- * like a notification.
+ * AudioFocusDelegate is the Java counterpart of content::AudioFocusDelegateAndroid. It is being
+ * used to communicate from content::AudioFocusDelegateAndroid (C++) to the Android system. A
+ * AudioFocusDelegate is implementing OnAudioFocusChangeListener, making it an audio focus holder
+ * for Android. Thus two instances of AudioFocusDelegate can't have audio focus at the same time. A
+ * AudioFocusDelegate will use the type requested from its C++ counterpart and will resume its play
+ * using the same type if it were to happen, for example, when it got temporarily suspended by a
+ * transient sound like a notification.
  */
 @JNINamespace("content")
 @NullMarked
 public class AudioFocusDelegate implements AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "MediaSession";
+
+    // AudioFocusRequestResult defined in tools/metrics/histograms/metadata/media/enums.xml
+    @IntDef({
+        AudioFocusRequestResult.FAILED,
+        AudioFocusRequestResult.GRANTED,
+        AudioFocusRequestResult.DELAYED,
+        AudioFocusRequestResult.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AudioFocusRequestResult {
+        int FAILED = 0;
+        int GRANTED = 1;
+        int DELAYED = 2;
+        int COUNT = 3;
+    }
 
     private int mFocusType;
     private boolean mIsDucking;
@@ -104,10 +125,15 @@ public class AudioFocusDelegate implements AudioManager.OnAudioFocusChangeListen
                         .setUsage(AudioAttributes.USAGE_MEDIA)
                         .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
                         .build();
+
+        boolean allowDelayedFocus =
+                ContentFeatureMap.isEnabled(
+                        ContentFeatureList.ALLOW_DELAYED_AUDIO_FOCUS_GAIN_ANDROID);
+
         mFocusRequest =
                 new AudioFocusRequest.Builder(mFocusType)
                         .setAudioAttributes(playbackAttributes)
-                        .setAcceptsDelayedFocusGain(false)
+                        .setAcceptsDelayedFocusGain(allowDelayedFocus)
                         .setWillPauseWhenDucked(false)
                         .setOnAudioFocusChangeListener(this, mHandler)
                         .build();
@@ -121,7 +147,34 @@ public class AudioFocusDelegate implements AudioManager.OnAudioFocusChangeListen
             return true;
         }
 
+        RecordHistogram.recordEnumeratedHistogram(
+                "Media.Android.AudioFocusRequestResult",
+                getAudioFocusRequestResult(result),
+                AudioFocusRequestResult.COUNT);
+
+        if (allowDelayedFocus) {
+            // If the request returns AUDIOFOCUS_REQUEST_DELAYED, the system has registered our
+            // request but hasn't granted focus yet (e.g. during a phone call). We return true
+            // to treat this as a successful acquisition, allowing playback to proceed immediately
+            // despite the delay. This differs from AudioFocusDelegate::AudioFocusResult::kDelayed
+            // which indicates the browser itself is deferring the request.
+            return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+                    || result == AudioManager.AUDIOFOCUS_REQUEST_DELAYED;
+        }
+
         return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
+    }
+
+    private @AudioFocusRequestResult int getAudioFocusRequestResult(int result) {
+        switch (result) {
+            case AudioManager.AUDIOFOCUS_REQUEST_GRANTED:
+                return AudioFocusRequestResult.GRANTED;
+            case AudioManager.AUDIOFOCUS_REQUEST_DELAYED:
+                return AudioFocusRequestResult.DELAYED;
+            case AudioManager.AUDIOFOCUS_REQUEST_FAILED:
+            default:
+                return AudioFocusRequestResult.FAILED;
+        }
     }
 
     @Override

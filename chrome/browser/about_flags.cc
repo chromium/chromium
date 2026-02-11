@@ -9120,6 +9120,11 @@ const FeatureEntry kFeatureEntries[] = {
         // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"allow-delayed-audio-focus-gain-android",
+     flag_descriptions::kAllowDelayedAudioFocusGainAndroidName,
+     flag_descriptions::kAllowDelayedAudioFocusGainAndroidDescription,
+     kOsAndroid, FEATURE_VALUE_TYPE(media::kAllowDelayedAudioFocusGainAndroid)},
+
     {"auto-doc-pip-permission-prompt-android",
      flag_descriptions::kAutoDocPiPPermissionPromptAndroidName,
      flag_descriptions::kAutoDocPiPPermissionPromptAndroidDescription,

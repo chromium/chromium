@@ -729,6 +729,7 @@ robolectric_binary("content_junit_tests") {
     "java/src/org/chromium/content/browser/input/AutocorrectManagerUnitTest.java",
     "java/src/org/chromium/content/browser/input/ImeAdapterImplUnitTest.java",
     "java/src/org/chromium/content/browser/input/ImeUtilsTest.java",
+    "junit/src/org/chromium/content/browser/AudioFocusDelegateTest.java",
     "junit/src/org/chromium/content/browser/BindingManagerTest.java",
     "junit/src/org/chromium/content/browser/ChildProcessConnectionMetricsUnitTest.java",
     "junit/src/org/chromium/content/browser/ChildProcessRankingTest.java",

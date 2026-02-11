@@ -14035,6 +14035,7 @@ from previous Chrome versions.
   <int value="-118993417" label="TLS13HardeningForLocalAnchors:disabled"/>
   <int value="-118897826" label="IntensiveWakeUpThrottling:enabled"/>
   <int value="-118545287" label="TabStripGlicButtonAndroid:disabled"/>
+  <int value="-118252963" label="AllowDelayedAudioFocusGainAndroid:disabled"/>
   <int value="-116829440" label="WebNNCoreMLExplicitGPUOrNPU:disabled"/>
   <int value="-116692797" label="HTTPAuthCommittedInterstitials:enabled"/>
   <int value="-115834377" label="EnableUnifiedMultiDeviceSetup:disabled"/>
@@ -14118,6 +14119,7 @@ from previous Chrome versions.
   <int value="-89567017" label="ChromeColorsCustomColorPicker:enabled"/>
   <int value="-89434839" label="SystemTrayMicGainSetting:enabled"/>
   <int value="-89286848" label="EnableWireGuard:enabled"/>
+  <int value="-89055156" label="AllowDelayedAudioFocusGainAndroid:enabled"/>
   <int value="-88822940" label="ssl-version-min"/>
   <int value="-88640719" label="glic-reset-mi-enabled-by-tier"/>
   <int value="-88638121" label="AutofillFixFillableFieldTypes:enabled"/>
