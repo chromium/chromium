@@ -56,12 +56,6 @@ WebSerializedScriptValue WebSerializedScriptValue::Serialize(
 }
 
 // static
-WebSerializedScriptValue WebSerializedScriptValue::Create(
-    base::span<const uint8_t> data) {
-  return SerializedScriptValue::Create(data);
-}
-
-// static
 WebSerializedScriptValue WebSerializedScriptValue::CreateFromCloneableMessage(
     CloneableMessage message) {
   mojo::Message mojo_message =
@@ -121,10 +115,6 @@ bool WebSerializedScriptValue::IsValid() const {
   // buffer, whereas any valid serialization (even of JS `null`, `undefined`, or
   // an empty string) always has a header.
   return !private_->GetWireData().empty();
-}
-
-base::span<const uint8_t> WebSerializedScriptValue::WireData() const {
-  return private_->GetWireData();
 }
 
 v8::Local<v8::Value> WebSerializedScriptValue::Deserialize(
