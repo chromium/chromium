@@ -261,6 +261,9 @@ template("swift_source_set") {
     }
 
     if (defined(_cxx_imports_target)) {
+      if (!defined(deps)) {
+        deps = []
+      }
       deps += [ ":${_cxx_imports_target}" ]
     }
 

@@ -47,6 +47,7 @@ if (enable_swift_cxx_interop) {
       ":_cxx_std_test_helpers",
       "//base",
       "//build/config/ios:xctest",
+      "//ios/third_party/swift_cxxstdlib",
     ]
   }
 }

@@ -1,0 +1,12 @@
+import("//build/config/apple/swift_source_set.gni")
+
+swift_cxx_import("_shim") {
+  sources = [ "src/cxxshim/libcxxstdlibshim.h" ]
+  visibility = [ ":*" ]
+}
+
+swift_source_set("swift_cxxstdlib") {
+  module_name = "ChromiumCxxStdlib"
+  cxx_import_deps = [ ":_shim" ]
+  sources = [ "src/std/String.swift" ]
+}

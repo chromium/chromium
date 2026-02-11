@@ -1,0 +1,26 @@
+diff --git a/ios/third_party/swift_cxxstdlib/src/std/String.swift b/ios/third_party/swift_cxxstdlib/src/std/String.swift
+index efef887eeee8e..7d7930bd73bd1 100644
+--- a/ios/third_party/swift_cxxstdlib/src/std/String.swift
++++ b/ios/third_party/swift_cxxstdlib/src/std/String.swift
+@@ -10,7 +10,7 @@
+ //
+ //===----------------------------------------------------------------------===//
+ 
+-import CxxStdlibShim
++import CxxImports
+ 
+ // MARK: Initializing C++ string from a Swift String
+ 
+@@ -538,6 +538,7 @@ extension String {
+   }
+ }
+ 
++/*
+ @available(SwiftCompatibilitySpan 5.0, *)
+ extension std.string {
+   public var span: Span<CChar> {
+@@ -611,3 +612,4 @@ extension std.wstring {
+     }
+   }
+ }
++*/
