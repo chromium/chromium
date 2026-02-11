@@ -170,9 +170,6 @@ class ContextualSearchboxHandler
   void SetActiveToolMode(omnibox::ToolMode tool) override;
   void SetActiveModelMode(omnibox::ModelMode model) override;
   void ActivateMetricsFunnel(const std::string& funnel_name) override;
-  // NOTE: This method is only intended for debugging purposes
-  // (chrome://omnibox/aim-eligibility).
-  void InitializeInputStateModelForDebugging();
 
  protected:
   void ComputeAndOpenQueryUrl(
@@ -220,6 +217,8 @@ class ContextualSearchboxHandler
   void RecordTabAddedMetric(tabs::TabInterface* const tab,
                             bool is_tab_suggestion_chip);
 
+  void InitializeInputStateModel();
+
   std::unique_ptr<contextual_search::InputStateModel> input_state_model_;
 
  private:
@@ -261,8 +260,6 @@ class ContextualSearchboxHandler
   std::optional<lens::ContextualInputData> context_input_data_;
   // Callback for `InputStateModel` changes.
   void OnInputStateChanged(const contextual_search::InputState& state);
-
-  void InitializeInputStateModel();
 
   std::unique_ptr<contextual_search::InputState> input_state_;
 
