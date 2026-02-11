@@ -22,14 +22,12 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
 #import "ios/web/common/features.h"
-#import "ios/web/js_features/window_error/web_js_error_report_processor.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
-#import "ios/web/public/web_client.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
@@ -246,7 +244,7 @@ bool WebFrameImpl::ExecuteJavaScriptInContentWorld(
   __block auto internal_callback = std::move(callback);
   void (^completion_handler)(id, NSError*) = ^void(id value, NSError* error) {
     if (error) {
-      LogScriptWarning(/*api=*/"", ns_script, error);
+      LogScriptWarning(ns_script, error);
       std::move(internal_callback).Run(nullptr, error);
     } else {
       std::move(internal_callback)
@@ -275,14 +273,12 @@ WebFrameImpl::ExecuteJavaScriptCallbackAdapter(
   });
 }
 
-void WebFrameImpl::LogScriptWarning(const std::string& api,
-                                    NSString* script,
-                                    NSError* error) {
-  std::string executed_script = base::SysNSStringToUTF8(script);
-  std::string error_string =
-      base::SysNSStringToUTF8(error.userInfo[NSLocalizedDescriptionKey]);
+void WebFrameImpl::LogScriptWarning(NSString* script, NSError* error) {
+  std::u16string executed_script = base::SysNSStringToUTF16(script);
+  std::u16string error_string =
+      base::SysNSStringToUTF16(error.userInfo[NSLocalizedDescriptionKey]);
   NSString* ns_exception = error.userInfo[@"WKJavaScriptExceptionMessage"];
-  std::string exception = base::SysNSStringToUTF8(ns_exception);
+  std::u16string exception = base::SysNSStringToUTF16(ns_exception);
 
   DLOG(WARNING) << "Script execution of:" << executed_script
                 << "\nfailed with error: " << error_string
@@ -317,28 +313,13 @@ void WebFrameImpl::LogScriptWarning(const std::string& api,
     return;
   }
 
-  if (!web_state_ || !web_state_->GetBrowserState()) {
-    WebJsErrorReportProcessor::LogProcessorUnavailable();
-    return;
-  }
-
-  WebJsErrorReportProcessor* report_processor =
-      WebJsErrorReportProcessor::FromBrowserState(
-          web_state_->GetBrowserState());
-
-  if (!report_processor) {
-    WebJsErrorReportProcessor::LogProcessorUnavailable();
-    return;
-  }
-
-  std::string err;
-  if (!exception.empty()) {
-    err = exception;
-  } else {
-    err = error_string;
-  }
-  report_processor->ReportJavaScriptExecutionFailed(api, security_origin_, err,
-                                                    is_main_frame_);
+  SCOPED_CRASH_KEY_STRING256("JavaScript", "script",
+                             base::UTF16ToUTF8(executed_script));
+  SCOPED_CRASH_KEY_STRING256("JavaScript", "error",
+                             base::UTF16ToUTF8(error_string));
+  SCOPED_CRASH_KEY_STRING256("JavaScript", "exception",
+                             base::UTF16ToUTF8(exception));
+  base::debug::DumpWithoutCrashing();
 }
 
 bool WebFrameImpl::ExecuteJavaScriptFunction(
@@ -357,7 +338,7 @@ bool WebFrameImpl::ExecuteJavaScriptFunction(
     base::WeakPtr<WebFrameImpl> weak_frame = weak_ptr_factory_.GetWeakPtr();
     completion_handler = ^void(id value, NSError* error) {
       if (error) {
-        LogScriptWarning(name, script, error);
+        LogScriptWarning(script, error);
       }
       if (weak_frame) {
         weak_frame->CompleteRequest(message_id,

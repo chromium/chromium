@@ -132,9 +132,7 @@ class WebFrameImpl final : public WebFrame,
       base::OnceCallback<void(const base::Value*)> callback);
   // Prints the information about the error that was generated from the
   // execution of the given arbitrary JavaScript string.
-  void LogScriptWarning(const std::string& api,
-                        NSString* script,
-                        NSError* error);
+  void LogScriptWarning(NSString* script, NSError* error);
 
   // Runs the request associated with the message with id `message_id`. The
   // completion callback, if any, associated with `message_id` will be called
