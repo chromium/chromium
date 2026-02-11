@@ -237,7 +237,8 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
                           client_->GetVariationConfigCountryCode()),
       address_form_data_importer_(client),
       payments_form_data_importer_(client) {
-  address_data_manager_observation_.Observe(&address_data_manager());
+  address_data_manager_observation_.Observe(
+      &GetAddressFormDataImporter().address_data_manager());
   if (history_service) {
     history_service_observation_.Observe(history_service);
   }
@@ -338,8 +339,10 @@ bool FormDataImporter::ComplementCountry(AutofillProfile& profile,
   if (profile.HasRawInfo(ADDRESS_HOME_COUNTRY)) {
     return false;
   }
-  const std::string fallback =
-      address_data_manager().GetDefaultCountryCodeForNewAddress().value();
+  const std::string fallback = GetAddressFormDataImporter()
+                                   .address_data_manager()
+                                   .GetDefaultCountryCodeForNewAddress()
+                                   .value();
   if (import_log_buffer) {
     *import_log_buffer
         << LogMessage::kImportAddressProfileComplementedCountryCode << fallback
@@ -1225,7 +1228,8 @@ FormDataImporter::ExtractGUIDsOfProfilesWithoutManualEdits(
 }
 
 void FormDataImporter::OnAddressDataChanged() {
-  multistep_importer_.OnAddressDataChanged(address_data_manager());
+  multistep_importer_.OnAddressDataChanged(
+      GetAddressFormDataImporter().address_data_manager());
 }
 
 void FormDataImporter::OnHistoryDeletions(
@@ -1250,10 +1254,6 @@ AddressFormDataImporter& FormDataImporter::GetAddressFormDataImporter() {
 payments::PaymentsFormDataImporter&
 FormDataImporter::GetPaymentsFormDataImporter() {
   return payments_form_data_importer_;
-}
-
-AddressDataManager& FormDataImporter::address_data_manager() {
-  return client_->GetPersonalDataManager().address_data_manager();
 }
 
 PaymentsDataManager& FormDataImporter::payments_data_manager() {

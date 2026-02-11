@@ -9,6 +9,7 @@
 
 namespace autofill {
 
+class AddressDataManager;
 class AutofillClient;
 
 // Owned by `FormDataImporter`. Responsible for address-related form data
@@ -19,6 +20,10 @@ class AddressFormDataImporter {
   AddressFormDataImporter(const AddressFormDataImporter&) = delete;
   AddressFormDataImporter& operator=(const AddressFormDataImporter&) = delete;
   virtual ~AddressFormDataImporter();
+
+  // TODO(crbug.com/481379161): It may be possible to make this private once all
+  //                            other refactoring finishes. Reevaluate then.
+  AddressDataManager& address_data_manager();
 
  private:
   friend class AddressFormDataImporterTestApi;

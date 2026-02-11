@@ -297,8 +297,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   // `kAutofillRemoveInaccessibleProfileValues` is enabled.
   void RemoveInaccessibleProfileValues(AutofillProfile& profile);
 
-  AddressDataManager& address_data_manager();
-
   PaymentsDataManager& payments_data_manager();
 
   // The associated autofill client.
