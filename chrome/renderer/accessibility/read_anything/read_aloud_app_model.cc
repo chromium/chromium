@@ -771,10 +771,6 @@ void ReadAloudAppModel::IncrementMetric(const std::string& metric_name) {
 }
 
 void ReadAloudAppModel::LogSpeechStop(ReadAloudStopSource source) {
-  if (!features::IsReadAnythingReadAloudEnabled()) {
-    return;
-  }
-
   base::UmaHistogramEnumeration(kSpeechStopSourceHistogramName, source);
   // If speech started but audio is not playing yet when speech is stopped, log
   // the audio delay indicating that the user may have stopped speech because
@@ -785,10 +781,6 @@ void ReadAloudAppModel::LogSpeechStop(ReadAloudStopSource source) {
 }
 
 void ReadAloudAppModel::LogAudioDelay(bool success) {
-  if (!features::IsReadAnythingReadAloudEnabled()) {
-    return;
-  }
-
   const base::TimeDelta delay = base::TimeTicks::Now() - speech_active_time_ms_;
   if (success) {
     base::UmaHistogramLongTimes(kAudioStartTimeSuccessHistogramName, delay);

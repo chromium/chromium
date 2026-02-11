@@ -76,15 +76,6 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
     model_->LogSpeechStop(source);
   }
 
-  void EnableReadAloud() {
-    scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
-  }
-
-  void DisableReadAloud() {
-    scoped_feature_list_.InitWithFeatures({},
-                                          {features::kReadAnythingReadAloud});
-  }
-
   std::vector<ui::AXNodeID> MoveToNextGranularityAndGetText(
       const std::set<ui::AXNodeID>* current_nodes) {
     model().MovePositionToNextGranularity();
@@ -210,27 +201,8 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
   std::unique_ptr<ui::AXTreeManager> tree_manager_;
 };
 
-// Read Aloud is currently only enabled by default on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(ReadAnythingReadAloudAppModelTest, LogSpeechStop_WithoutReadAloud) {
-  DisableReadAloud();
-  auto source = ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode;
-  base::HistogramTester histogram_tester;
-
-  LogSpeechStop(source);
-
-  histogram_tester.ExpectTotalCount(
-      ReadAloudAppModel::kSpeechStopSourceHistogramName, 0);
-  histogram_tester.ExpectTotalCount(
-      ReadAloudAppModel::kAudioStartTimeSuccessHistogramName, 0);
-  histogram_tester.ExpectTotalCount(
-      ReadAloudAppModel::kAudioStartTimeFailureHistogramName, 0);
-}
-#endif
-
 TEST_F(ReadAnythingReadAloudAppModelTest,
-       LogSpeechStop_WithReadAloud_AudioDidNotStart_LogsDelay) {
-  EnableReadAloud();
+       LogSpeechStop_AudioDidNotStart_LogsDelay) {
   SetSpeechPlaying(true);
   const auto delay = base::Milliseconds(25);
   task_environment_.FastForwardBy(delay);
@@ -248,8 +220,7 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
 }
 
 TEST_F(ReadAnythingReadAloudAppModelTest,
-       LogSpeechStop_WithReadAloud_AudioDidStart_DoesNotLogDelay) {
-  EnableReadAloud();
+       LogSpeechStop_AudioDidStart_DoesNotLogDelay) {
   SetSpeechPlaying(true);
   const auto delay = base::Milliseconds(12);
   task_environment_.FastForwardBy(delay);
@@ -268,8 +239,7 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
 }
 
 TEST_F(ReadAnythingReadAloudAppModelTest,
-       LogSpeechStop_WithReadAloud_LogsStopSourceWithSpeechNotPlaying) {
-  EnableReadAloud();
+       LogSpeechStop_LogsStopSourceWithSpeechNotPlaying) {
   auto source = ReadAloudAppModel::ReadAloudStopSource::kFinishContent;
   base::HistogramTester histogram_tester;
 
@@ -280,8 +250,7 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
 }
 
 TEST_F(ReadAnythingReadAloudAppModelTest,
-       LogSpeechStop_WithReadAloud_LogsStopSourceWithSpeechPlaying) {
-  EnableReadAloud();
+       LogSpeechStop_LogsStopSourceWithSpeechPlaying) {
   SetSpeechPlaying(true);
   auto source = ReadAloudAppModel::ReadAloudStopSource::kFinishContent;
   base::HistogramTester histogram_tester;
@@ -293,7 +262,6 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
 }
 
 TEST_F(ReadAnythingReadAloudAppModelTest, SetAudioCurrentlyPlaying_LogsDelay) {
-  EnableReadAloud();
   SetSpeechPlaying(true);
   const auto delay = base::Milliseconds(27);
   task_environment_.FastForwardBy(delay);
@@ -398,8 +366,7 @@ class ReadAnythingReadAloudAppModelV8SegmentationTest
     // Phrase highlighting currently doesn't work with the TS text segmentation
     // implementation, so we need to disable it to test phrase highlighting.
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud,
-         features::kReadAnythingReadAloudPhraseHighlighting},
+        {features::kReadAnythingReadAloudPhraseHighlighting},
         {features::kReadAnythingReadAloudTSTextSegmentation});
     ReadAnythingReadAloudAppModelTest::SetUp();
   }

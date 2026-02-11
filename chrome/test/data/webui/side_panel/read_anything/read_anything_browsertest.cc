@@ -23,8 +23,7 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
     set_test_loader_host(chrome::kChromeUIUntrustedReadAnythingSidePanelHost);
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud,
-         features::kReadAnythingImagesViaAlgorithm},
+        {features::kReadAnythingImagesViaAlgorithm},
         {features::kReadAnythingReadAloudPhraseHighlighting,
          features::kReadAnythingDocsIntegration});
   }
@@ -54,7 +53,6 @@ class ReadAnythingMochaParameterizedTest
  protected:
   ReadAnythingMochaParameterizedTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        features::kReadAnythingReadAloud,
         features::kReadAnythingImagesViaAlgorithm};
     if (IsTsSegmentationEnabled()) {
       enabled_features.push_back(
@@ -303,9 +301,7 @@ class ReadAnythingReadAloudTsSegmentationMochaTest
  protected:
   ReadAnythingReadAloudTsSegmentationMochaTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud,
-         features::kReadAnythingReadAloudTSTextSegmentation},
-        {});
+        {features::kReadAnythingReadAloudTSTextSegmentation}, {});
   }
 
  private:
@@ -333,9 +329,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
 class ImmersiveReadAnythingMochaTest : public ReadAnythingMochaBrowserTest {
  protected:
   ImmersiveReadAnythingMochaTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud, features::kImmersiveReadAnything},
-        {});
+    scoped_feature_list_.InitWithFeatures({features::kImmersiveReadAnything},
+                                          {});
   }
 
  private:

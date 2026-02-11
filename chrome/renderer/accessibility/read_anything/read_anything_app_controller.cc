@@ -466,26 +466,12 @@ void ReadAnythingAppController::OnDestruct() {
   self_.Clear();
 }
 
-void ReadAnythingAppController::OnNodeDataChanged(
-    ui::AXTree* tree,
-    const ui::AXNodeData& old_node_data,
-    const ui::AXNodeData& new_node_data) {
-  if (!IsReadAloudEnabled() && tree->GetAXTreeID() == model_.active_tree_id()) {
-    if (old_node_data.HasState(ax::mojom::State::kExpanded) !=
-            new_node_data.HasState(ax::mojom::State::kExpanded) ||
-        old_node_data.HasState(ax::mojom::State::kCollapsed) !=
-            new_node_data.HasState(ax::mojom::State::kCollapsed)) {
-      model_.set_last_expanded_node_id(new_node_data.id);
-    }
-  }
-}
-
 void ReadAnythingAppController::OnNodeWillBeDeleted(ui::AXTree* tree,
                                                     ui::AXNode* node) {
   ui::AXNodeID node_id = CHECK_DEREF(node).id();
   if (model_.GetCurrentlyVisibleNodes()->contains(node_id)) {
     displayed_nodes_pending_deletion_.insert(node_id);
-    if (IsReadAloudEnabled() && !read_aloud_model_.speech_playing()) {
+    if (!read_aloud_model_.speech_playing()) {
       ExecuteJavaScript("chrome.readingMode.onNodeWillBeDeleted(" +
                         base::ToString(node_id) + ")");
     }
@@ -512,12 +498,8 @@ void ReadAnythingAppController::OnNodeDeleted(ui::AXTree* tree,
     return;
   }
 
-  // Instead of redrawing everything when Read aloud is enabled, we inform
-  // the webui that the node is being deleted and it will adjust on that
-  // side. See OnNodeWillBeDeleted.
-  if (!IsReadAloudEnabled()) {
-    Draw(false);
-  }
+  // Instead of redrawing everything, inform the webui that the node is being
+  // deleted and it will adjust on that side. See OnNodeWillBeDeleted.
   if (model_.has_selection()) {
     DrawSelection();
   }
@@ -737,7 +719,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   model_.SetUkmSourceIdForTree(tree_id, ukm_source_id);
   model_.set_is_pdf(is_pdf);
 
-  if (IsReadAloudEnabled() && read_aloud_model_.speech_playing()) {
+  if (read_aloud_model_.speech_playing()) {
     model_.SetUrlInformationCallback(
         base::BindOnce(&ReadAnythingAppController::OnUrlInformationSet,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -837,12 +819,9 @@ void ReadAnythingAppController::RecordEstimatedWordsSeen() {
 }
 
 void ReadAnythingAppController::RecordEstimatedWordsHeard() {
-  if (IsReadAloudEnabled()) {
-    VLOG(1) << "Words heard: " << model_.words_heard();
-    base::UmaHistogramCustomCounts(kWordsHeardHistogramName,
-                                   model_.words_heard(), 1, kMaxWordsConsumed,
-                                   kWordsConsumedBuckets);
-  }
+  VLOG(1) << "Words heard: " << model_.words_heard();
+  base::UmaHistogramCustomCounts(kWordsHeardHistogramName, model_.words_heard(),
+                                 1, kMaxWordsConsumed, kWordsConsumedBuckets);
   model_.set_words_heard(0);
 }
 
@@ -928,8 +907,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   // happen after a long time of inactivity. In this case, we shouldn't reset
   // the model since the last state is still the correct state and clearing the
   // model causes issues for read aloud.
-  if (IsReadAloudEnabled() && !model_.distillation_in_progress() &&
-      tree_id == ui::AXTreeIDUnknown() && content_node_ids.empty()) {
+  if (!model_.distillation_in_progress() && tree_id == ui::AXTreeIDUnknown() &&
+      content_node_ids.empty()) {
     VLOG(1) << "Distillation terminated after the main content extractor "
                "disconnected";
     return;
@@ -1108,9 +1087,7 @@ void ReadAnythingAppController::Draw(bool recompute_display_nodes) {
     // If we need to recompute which nodes are displayed, reset read aloud as
     // we previously preprocessed the previous nodes and should re-process the
     // new ones.
-    if (IsReadAloudEnabled()) {
-      read_aloud_model_.ResetReadAloudState();
-    }
+    read_aloud_model_.ResetReadAloudState();
   } else {
     VLOG(1) << "Not recomputing display nodes, content node size: "
             << model_.content_node_ids().size();
@@ -1124,7 +1101,7 @@ void ReadAnythingAppController::DrawSelection() {
   // Reset read aloud state if a selection has been made in case the selected
   // nodes weren't previously distilled. Resetting isn't necessary if the
   // selection nodes were included in the distilled content.
-  if (IsReadAloudEnabled() && !model_.selection_node_ids().empty() &&
+  if (!model_.selection_node_ids().empty() &&
       !model_.SelectionNodesContainedInDistilledContent()) {
     read_aloud_model_.ResetReadAloudState();
   }
@@ -1279,8 +1256,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
           &ReadAnythingAppController::InImmersiveOverlayPresentationState)
       .SetProperty("speechRate", &ReadAnythingAppController::SpeechRate)
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
-      .SetProperty("isReadAloudEnabled",
-                   &ReadAnythingAppController::IsReadAloudEnabled)
       .SetProperty("isImmersiveEnabled",
                    &ReadAnythingAppController::IsImmersiveEnabled)
       .SetProperty("isTsTextSegmentationEnabled",
@@ -1888,10 +1863,6 @@ bool ReadAnythingAppController::IsLeafNode(ui::AXNodeID ax_node_id) const {
     return false;
   }
   return ax_node->IsLeaf();
-}
-
-bool ReadAnythingAppController::IsReadAloudEnabled() const {
-  return features::IsReadAnythingReadAloudEnabled();
 }
 
 bool ReadAnythingAppController::IsImmersiveEnabled() const {
@@ -2615,10 +2586,6 @@ void ReadAnythingAppController::IncrementMetricCount(
 }
 
 void ReadAnythingAppController::LogSpeechStop(int source) {
-  if (!IsReadAloudEnabled()) {
-    return;
-  }
-
   // Don't log speech stopping if the reading mode panel is going to hide. That
   // case is logged separately.
   if (model_.will_hide()) {

@@ -109,15 +109,6 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
         tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates), events);
   }
 
-  void EnableReadAloud() {
-    scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
-  }
-
-  void DisableReadAloud() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kReadAnythingReadAloud);
-  }
-
   std::set<ui::AXNodeID> GetNotIgnoredIds(base::span<const ui::AXNodeID> ids) {
     std::set<ui::AXNodeID> set;
     for (auto id : ids) {
@@ -1742,37 +1733,7 @@ TEST_F(ReadAnythingAppModelTest, PdfEvents_DontSetRequiresDistillation) {
   ASSERT_FALSE(model().requires_distillation());
 }
 
-TEST_F(ReadAnythingAppModelTest, LastExpandedNodeNamedChanged_TriggersRedraw) {
-  DisableReadAloud();
-  ui::AXTreeUpdate initial_update;
-  test::SetUpdateTreeID(&initial_update, tree_id_);
-  static constexpr int kInitialId = 2;
-  ui::AXNodeData initial_node = test::TextNode(kInitialId, u"Old Name");
-  initial_update.nodes = {std::move(initial_node)};
-  ApplyAccessibilityUpdates(tree_id_, {std::move(initial_update)});
-
-  ui::AXTreeUpdate update;
-  test::SetUpdateTreeID(&update, tree_id_);
-  ui::AXNodeData updated_node = test::TextNode(kInitialId, u"New Name");
-  update.nodes = {std::move(updated_node)};
-  model().set_last_expanded_node_id(kInitialId);
-  EXPECT_EQ(model().last_expanded_node_id(), kInitialId);
-  ApplyAccessibilityUpdates(tree_id_, {std::move(update)});
-
-  EXPECT_FALSE(model().requires_post_process_selection());
-  EXPECT_TRUE(model().redraw_required());
-  EXPECT_EQ(model().last_expanded_node_id(), ui::kInvalidAXNodeID);
-  // Check selection reset.
-  EXPECT_FALSE(model().has_selection());
-  EXPECT_EQ(model().start_offset(), -1);
-  EXPECT_EQ(model().end_offset(), -1);
-  EXPECT_EQ(model().start_node_id(), ui::kInvalidAXNodeID);
-  EXPECT_EQ(model().end_node_id(), ui::kInvalidAXNodeID);
-  EXPECT_TRUE(model().selection_node_ids().empty());
-}
-
 TEST_F(ReadAnythingAppModelTest, Expand_NodeDoesNotExist_Redistills) {
-  EnableReadAloud();
   ui::AXTreeUpdate initial_update;
   test::SetUpdateTreeID(&initial_update, tree_id_);
   static constexpr int kInitialId = 2;
@@ -1797,7 +1758,6 @@ TEST_F(ReadAnythingAppModelTest, Expand_NodeDoesNotExist_Redistills) {
 }
 
 TEST_F(ReadAnythingAppModelTest, Expand_NodeDoesExist_Redraws) {
-  EnableReadAloud();
   ui::AXTreeUpdate initial_update;
   test::SetUpdateTreeID(&initial_update, tree_id_);
   static constexpr int kInitialId = 2;
@@ -1820,7 +1780,6 @@ TEST_F(ReadAnythingAppModelTest, Expand_NodeDoesExist_Redraws) {
 }
 
 TEST_F(ReadAnythingAppModelTest, Collapse_Redraws) {
-  EnableReadAloud();
   ui::AXTreeUpdate initial_update;
   test::SetUpdateTreeID(&initial_update, tree_id_);
   static constexpr int kInitialId = 2;

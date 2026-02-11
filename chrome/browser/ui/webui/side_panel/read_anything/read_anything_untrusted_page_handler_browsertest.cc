@@ -253,7 +253,7 @@ class ReadAnythingUntrustedPageHandlerTest
  public:
   ReadAnythingUntrustedPageHandlerTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        features::kReadAnythingReadAloud, features::kReadAnythingLineFocus};
+        features::kReadAnythingLineFocus};
     std::vector<base::test::FeatureRef> disabled_features;
     if (IsImmersiveEnabled()) {
       enabled_features.push_back(features::kImmersiveReadAnything);

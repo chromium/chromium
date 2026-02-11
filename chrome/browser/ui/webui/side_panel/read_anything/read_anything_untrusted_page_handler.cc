@@ -334,9 +334,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 
   extensions::ExtensionRegistry::Get(profile_)->AddObserver(this);
 #else
-  if (features::IsReadAnythingReadAloudEnabled()) {
-    extension_wrapper_->ActivateSpeechEngine(profile_);
-  }
+  extension_wrapper_->ActivateSpeechEngine(profile_);
 #endif
   if (features::IsImmersiveReadAnythingEnabled()) {
     read_anything_controller_ =
@@ -360,20 +358,8 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   }
 
   PrefService* prefs = profile_->GetPrefs();
-  double speech_rate =
-      features::IsReadAnythingReadAloudEnabled()
-          ? prefs->GetDouble(prefs::kAccessibilityReadAnythingSpeechRate)
-          : 1.0;
-  read_anything::mojom::HighlightGranularity highlight_granularity =
-      features::IsReadAnythingReadAloudEnabled()
-          ? static_cast<read_anything::mojom::HighlightGranularity>(
-                prefs->GetDouble(
-                    prefs::kAccessibilityReadAnythingHighlightGranularity))
-          : read_anything::mojom::HighlightGranularity::kDefaultValue;
   base::DictValue voices = base::DictValue();
-  if (features::IsReadAnythingReadAloudEnabled()) {
-    voices = prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone();
-  }
+  voices = prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone();
   read_anything::mojom::LineFocus line_focus =
       features::IsReadAnythingLineFocusEnabled()
           ? static_cast<read_anything::mojom::LineFocus>(
@@ -391,12 +377,12 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
       prefs->GetBoolean(prefs::kAccessibilityReadAnythingImagesEnabled),
       static_cast<read_anything::mojom::Colors>(
           prefs->GetInteger(prefs::kAccessibilityReadAnythingColorInfo)),
-      speech_rate, std::move(voices),
-      features::IsReadAnythingReadAloudEnabled()
-          ? prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled)
-                .Clone()
-          : base::ListValue(),
-      highlight_granularity, line_focus);
+      prefs->GetDouble(prefs::kAccessibilityReadAnythingSpeechRate),
+      std::move(voices),
+      prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled).Clone(),
+      static_cast<read_anything::mojom::HighlightGranularity>(prefs->GetDouble(
+          prefs::kAccessibilityReadAnythingHighlightGranularity)),
+      line_focus);
 
   // Get user's default language to check for compatible fonts.
   language::LanguageModel* language_model =
@@ -470,9 +456,7 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
   if (session_controller) {
     session_controller->RemoveObserver(this);
   }
-  if (features::IsReadAnythingReadAloudEnabled()) {
-    extension_wrapper_->ReleaseSpeechEngine(profile_);
-  }
+  extension_wrapper_->ReleaseSpeechEngine(profile_);
   extension_wrapper_.reset();
 #endif
 }
@@ -1100,8 +1084,7 @@ void ReadAnythingUntrustedPageHandler::Activate(
     last_open_trigger_ = open_trigger;
     tab_will_detach_ = false;
   }
-  if (features::IsReadAnythingReadAloudEnabled() && !active &&
-      !tab_will_detach_) {
+  if (!active && !tab_will_detach_) {
     page_->OnReadingModeHidden(tab_->IsActivated());
 
     // When Reading mode is hidden (with immersive flag enabled), we need to
@@ -1143,10 +1126,6 @@ void ReadAnythingUntrustedPageHandler::OnDestroyed() {
 }
 
 void ReadAnythingUntrustedPageHandler::OnTabWillDetach() {
-  if (!features::IsReadAnythingReadAloudEnabled()) {
-    return;
-  }
-
   OnReadAloudAudioStateChange(false);
 
   // When multiple tabs are open, we receive this call multiple times, so only

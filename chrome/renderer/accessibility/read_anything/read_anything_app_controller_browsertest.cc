@@ -179,7 +179,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
       "edit?ouid=103677288878638916900&usp=docs_home&ths=true";
 
   void SetUp() override {
-    EnableReadAloud();
     ChromeRenderViewTest::SetUp();
     content::RenderFrame* render_frame =
         content::RenderFrame::FromWebFrame(GetMainFrame());
@@ -311,10 +310,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     controller().InitAXPositionWithNode(nodes[0].id);
   }
 
-  void EnableReadAloud() {
-    scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
-  }
-
   void EnableDocs() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(
@@ -324,12 +319,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   void EnableLineFocus() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingLineFocus);
-  }
-
-  void DisableReadAloud() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures({},
-                                          {features::kReadAnythingReadAloud});
   }
 
   void StartLineFocusSession() { controller_->StartLineFocusSession(); }
@@ -401,19 +390,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   // it's not accessible by std::make_unique.
   raw_ptr<ReadAnythingAppController, DanglingUntriaged> controller_ = nullptr;
 };
-
-TEST_F(ReadAnythingAppControllerTest, IsReadAloudEnabled) {
-// Read Aloud is currently only enabled by default on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(controller().IsReadAloudEnabled());
-
-#else
-  EXPECT_TRUE(controller().IsReadAloudEnabled());
-
-  DisableReadAloud();
-  EXPECT_FALSE(controller().IsReadAloudEnabled());
-#endif  // IS_CHROMEOS
-}
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ReadAnythingAppControllerTest, OnDeviceLocked_OnlyLogsIfSpeechPlaying) {
@@ -581,19 +557,6 @@ TEST_F(ReadAnythingAppControllerTest,
 
   histogram_tester.ExpectUniqueSample(
       ReadAnythingAppController::kWordsHeardHistogramName, 123, 1);
-  EXPECT_CALL(page_handler_, AckReadingModeHidden());
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       OnReadingModeHidden_ReadAloudDisabled_DoesNotLogWordsHeard) {
-  DisableReadAloud();
-  base::HistogramTester histogram_tester;
-  controller().UpdateWordsHeard(123);
-
-  controller().OnReadingModeHidden(true);
-
-  histogram_tester.ExpectTotalCount(
-      ReadAnythingAppController::kWordsHeardHistogramName, 0);
   EXPECT_CALL(page_handler_, AckReadingModeHidden());
 }
 
@@ -2456,9 +2419,7 @@ TEST_F(ReadAnythingAppControllerTest, OnLinkClicked) {
 TEST_F(ReadAnythingAppControllerTest, RequestImageData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {features::kReadAnythingImagesViaAlgorithm,
-       features::kReadAnythingReadAloud},
-      {});
+      {features::kReadAnythingImagesViaAlgorithm}, {});
   ui::AXNodeID ax_node_id = 2;
   EXPECT_CALL(page_handler_, OnImageDataRequested(tree_id_, ax_node_id))
       .Times(1);
@@ -3437,8 +3398,7 @@ class ReadAnythingAppControllerV8SegmentationTest
     ReadAnythingAppControllerTest::SetUp();
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud},
-        {features::kReadAnythingReadAloudTSTextSegmentation});
+        {}, {features::kReadAnythingReadAloudTSTextSegmentation});
   }
 };
 
@@ -4914,8 +4874,7 @@ class ReadAnythingAppControllerReadabilityTest
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud,
-         features::kReadAnythingWithReadability,
+        {features::kReadAnythingWithReadability,
          features::kReadAnythingReadAloudTSTextSegmentation},
         {});
 

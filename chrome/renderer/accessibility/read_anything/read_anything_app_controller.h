@@ -177,10 +177,6 @@ class ReadAnythingAppController
 #endif
 
   // ui::AXTreeObserver:
-  void OnNodeDataChanged(ui::AXTree* tree,
-                         const ui::AXNodeData& old_node_data,
-                         const ui::AXNodeData& new_node_data) override;
-
   void OnNodeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
 
   void OnNodeDeleted(ui::AXTree* tree, ui::AXNodeID node) override;
@@ -296,7 +292,6 @@ class ReadAnythingAppController
   void OnCollapseSelection() const;
   void OnDistilled(int word_count);
   bool IsGoogleDocs() const;
-  bool IsReadAloudEnabled() const;
   bool IsImmersiveEnabled() const;
   bool IsTsTextSegmentationEnabled() const;
   bool IsReadabilityEnabled() const;

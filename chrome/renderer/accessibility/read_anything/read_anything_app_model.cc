@@ -900,8 +900,7 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
         // Closing ads sometimes sends this event but we also get this when
         // keyboard focus changes. Only try to redistill if we have no content
         // right now.
-        if (features::IsReadAnythingReadAloudEnabled() &&
-            content_node_ids_.size() == 0) {
+        if (content_node_ids_.size() == 0) {
           requires_distillation_ = true;
         }
         break;
@@ -1021,8 +1020,7 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
         requires_post_process_selection_ = true;
         break;
       case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
-        if (!features::IsReadAnythingReadAloudEnabled() ||
-            event.event_params->event_from == ax::mojom::EventFrom::kUser) {
+        if (event.event_params->event_from == ax::mojom::EventFrom::kUser) {
           requires_distillation_ = true;
         }
         break;
@@ -1051,20 +1049,16 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
         }
         break;
       case ui::AXEventGenerator::Event::COLLAPSED:
-        if (features::IsReadAnythingReadAloudEnabled()) {
           ResetSelection();
           requires_post_process_selection_ = false;
           redraw_required_ = true;
-        }
         break;
       case ui::AXEventGenerator::Event::EXPANDED:
-        if (features::IsReadAnythingReadAloudEnabled()) {
           if (std::ranges::contains(content_node_ids_, event.node_id)) {
             redraw_required_ = true;
           } else {
             requires_distillation_ = true;
           }
-        }
         break;
       // Audit these events e.g. to trigger distillation.
       case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
@@ -1110,16 +1104,7 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::MENU_POPUP_START:
       case ui::AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
       case ui::AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
-        break;
       case ui::AXEventGenerator::Event::NAME_CHANGED:
-        if (!features::IsReadAnythingReadAloudEnabled() &&
-            last_expanded_node_id_ == event.node_id) {
-          ResetSelection();
-          requires_post_process_selection_ = false;
-          reset_last_expanded_node_id();
-          redraw_required_ = true;
-        }
-        break;
       case ui::AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
       case ui::AXEventGenerator::Event::ORIENTATION_CHANGED:
       case ui::AXEventGenerator::Event::PARENT_CHANGED:
