@@ -49925,6 +49925,19 @@ should be able to be added at any place in this file.
   <description>User pressed the Everything button.</description>
 </action>
 
+<action name="TabGroups_SavedTabGroups_EverythingButtonPressed_{TabStripMode}">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User opens the Everything menu in either the Vertical Tab Strip or
+    Horizontal Tab Strip
+  </description>
+  <token key="TabStripMode">
+    <variant name="Horizontal" summary="Horizontal Tab Strip"/>
+    <variant name="Vertical" summary="Vertical Tab Strip"/>
+  </token>
+</action>
+
 <action name="TabGroups_SavedTabGroups_Focused">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>

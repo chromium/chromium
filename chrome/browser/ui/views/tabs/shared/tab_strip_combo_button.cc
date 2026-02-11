@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 
 #include "base/i18n/rtl.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/actions/action_view_controller.h"
@@ -78,6 +81,11 @@ void TabStripComboButton::ChildVisibilityChanged(views::View* child) {
 }
 
 void TabStripComboButton::ShowEverythingMenu() {
+  base::RecordAction(base::UserMetricsAction(
+      BrowserView::GetBrowserViewForBrowser(browser_)
+              ->ShouldDrawVerticalTabStrip()
+          ? "TabGroups_SavedTabGroups_EverythingButtonPressed_Vertical"
+          : "TabGroups_SavedTabGroups_EverythingButtonPressed_Horizontal"));
   if (everything_menu_ && everything_menu_->IsShowing()) {
     return;
   }
