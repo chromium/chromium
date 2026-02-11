@@ -31,6 +31,8 @@ class SharedImageCopyManager;
 class SharedImageFactory;
 
 // TODO(kylechar): Merge with OzoneImageBacking::AccessStream enum.
+//
+// LINT.IfChange(SharedImageAccessStream)
 enum class SharedImageAccessStream {
   kSkia,
   kOverlay,
@@ -40,8 +42,10 @@ enum class SharedImageAccessStream {
   kMemory,
   kVaapi,
   kWebNNTensor,
-  kVulkan
+  kVulkan,
+  kMaxValue = kVulkan
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:SharedImageAccessStream)
 
 GPU_GLES2_EXPORT std::ostream& operator<<(
     std::ostream& os,

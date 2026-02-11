@@ -1523,6 +1523,16 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
       CreateBackingFromBackingFactory(gpu_backing_factory->GetWeakPtr(),
                                       debug_label(), element.backing);
       if (element.backing) {
+        UMA_HISTOGRAM_ENUMERATION(
+            "GPU.CompoundImageBacking.DynamicAllocation.BackingType",
+            element.backing->GetType());
+        UMA_HISTOGRAM_ENUMERATION(
+            "GPU.CompoundImageBacking.DynamicAllocation.AccessStream", stream);
+        UMA_HISTOGRAM_SPARSE(
+            "GPU.CompoundImageBacking.DynamicAllocation."
+            "InitialSharedImageUsage",
+            static_cast<int32_t>(static_cast<uint32_t>(this->usage())));
+
         elements_.push_back(std::move(element));
         if (elements_.size() > max_elements_allocated_) {
           max_elements_allocated_ = elements_.size();

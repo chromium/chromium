@@ -506,6 +506,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.CompoundImageBacking.DynamicAllocation.AccessStream"
+    enum="SharedImageAccessStream" expires_after="2027-02-09">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the SharedImageAccessStream that triggered a dynamic allocation of a
+    new backing within a CompoundImageBacking. This provides insight into which
+    types of access patterns are causing dynamic allocations.
+  </summary>
+</histogram>
+
+<histogram name="GPU.CompoundImageBacking.DynamicAllocation.BackingType"
+    enum="SharedImageBackingType" expires_after="2027-02-09">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the type of the new SharedImageBacking that was dynamically
+    allocated. This helps understand the type of backings being allocated at
+    runtime.
+  </summary>
+</histogram>
+
+<histogram
+    name="GPU.CompoundImageBacking.DynamicAllocation.InitialSharedImageUsage"
+    units="SharedImageUsage" expires_after="2027-02-09">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the initial SharedImageUsage of the CompoundImageBacking when a
+    dynamic allocation occurs. This helps identify which initial usage
+    configurations are most likely to require additional backings later.
+    Recorded as a sparse histogram of the usage bitmask.
+  </summary>
+</histogram>
+
 <histogram name="GPU.CompoundImageBacking.TotalElementsAllocated"
     units="elements" expires_after="2027-02-09">
   <owner>vikassoni@chromium.org</owner>
