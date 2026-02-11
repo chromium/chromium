@@ -12,6 +12,28 @@
  * element in WebUI.
  * TODO(crbug.com/40243115): Use TrackedElementManager in Help Bubbles.
  *
+ * ## Change Detection
+ *
+ * This manager detects element position/visibility changes through:
+ * - ResizeObserver: Detects size changes of tracked elements and viewport
+ *   resizes (document.body). Note: Does NOT detect pure position changes.
+ * - IntersectionObserver: Detects viewport intersection for fixed elements
+ * - MutationObserver: Used to detect when tracked elements are moved in the
+ *   DOM, or when their 'style' or 'class' attributes change (position changes)
+ * - Scroll events: Detects document scrolling (position changes)
+ *
+ * ### Known Limitations
+ *
+ * The following changes will NOT be detected:
+ * - Style/class attribute changes on parent or ancestor elements
+ * - Parent/ancestor elements being moved in the DOM
+ * - Direct CSS rule modifications via CSSOM (e.g., modifying
+ *   document.styleSheets or adding/removing <style> elements)
+ * - Position changes caused by other elements being added/removed nearby
+ *
+ * Note: Viewport resizes and media query changes triggered by resizing
+ * are detected via the document.body ResizeObserver.
+ *
  * ## Usage
  *
  * In C++, declare your ui::ElementIdentifier. Make sure it is registered as a
@@ -157,6 +179,10 @@ export class TrackedElementManager {
   private trackedElements_: Map<HTMLElement, TrackedElement> = new Map();
   private fixedElementObserver_: IntersectionObserver;
   private resizeObserver_: ResizeObserver;
+  // Observes attribute changes (style/class) on tracked elements.
+  private attributeMutationObserver_: MutationObserver;
+  // Observes document subtree for detached elements being added to DOM.
+  private documentMutationObserver_: MutationObserver;
   private debouncedUpdateAllBoundsCallback_: () => void;
 
   private constructor() {
@@ -181,17 +207,67 @@ export class TrackedElementManager {
                 target as HTMLElement, isIntersecting)),
         {root: null});
 
+    // Observer for attribute changes on tracked elements.
+    this.attributeMutationObserver_ = new MutationObserver(mutations => {
+      for (const mutation of mutations) {
+        // Style or class attribute changed on a tracked element.
+        const target = mutation.target as HTMLElement;
+        if (this.trackedElements_.has(target)) {
+          this.onElementVisibilityChanged_(target, computeIsVisible(target));
+        }
+      }
+    });
+
+    // Helper to check if a node or its descendants are tracked elements.
+    const checkTrackedNodes = (nodes: NodeList) => {
+      nodes.forEach(node => {
+        if (node instanceof HTMLElement) {
+          // Check if the node is a tracked element.
+          if (this.trackedElements_.has(node)) {
+            this.onElementVisibilityChanged_(node, computeIsVisible(node));
+          }
+          // Check if any descendants are tracked elements.
+          node.querySelectorAll('*').forEach(descendant => {
+            if (descendant instanceof HTMLElement &&
+                this.trackedElements_.has(descendant)) {
+              this.onElementVisibilityChanged_(
+                  descendant, computeIsVisible(descendant));
+            }
+          });
+        }
+      });
+    };
+
+    // Observer for document-level changes to catch tracked elements being
+    // added to or removed from the DOM tree.
+    this.documentMutationObserver_ = new MutationObserver(mutations => {
+      for (const mutation of mutations) {
+        checkTrackedNodes(mutation.removedNodes);
+        checkTrackedNodes(mutation.addedNodes);
+      }
+    });
+
     document.addEventListener(
         'scroll', this.debouncedUpdateAllBoundsCallback_, {passive: true});
     this.resizeObserver_.observe(document.body);
+    // Observe the entire document to catch detached elements being added.
+    this.documentMutationObserver_.observe(
+        document, {childList: true, subtree: true});
   }
 
   reset() {
     this.resizeObserver_.disconnect();
     this.fixedElementObserver_.disconnect();
+    this.attributeMutationObserver_.disconnect();
+    this.documentMutationObserver_.disconnect();
     document.removeEventListener(
         'scroll', this.debouncedUpdateAllBoundsCallback_);
     this.trackedElements_.clear();
+
+    // Reconnect global observers after clearing.
+    this.resizeObserver_.observe(document.body);
+    this.documentMutationObserver_.observe(
+        document, {childList: true, subtree: true});
   }
 
   /**
@@ -235,6 +311,12 @@ export class TrackedElementManager {
     } else {
       this.resizeObserver_.observe(element);
     }
+
+    // Observe the element itself for style/class changes that affect position.
+    this.attributeMutationObserver_.observe(element, {
+      attributes: true,
+      attributeFilter: ['style', 'class'],
+    });
   }
 
   /**
@@ -255,6 +337,11 @@ export class TrackedElementManager {
     } else {
       this.resizeObserver_.unobserve(element);
     }
+
+    // Note: MutationObservers don't have unobserve(). The
+    // attributeMutationObserver_ and documentMutationObserver_ will still be
+    // observing, but since the element is no longer in trackedElements_,
+    // callbacks won't trigger.
     this.trackedElements_.delete(element);
 
     element.dataset['nativeId'] = '';
@@ -315,4 +402,5 @@ export class TrackedElementManager {
     }
     return rect;
   }
+
 }
