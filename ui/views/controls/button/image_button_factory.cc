@@ -97,6 +97,17 @@ std::unique_ptr<ToggleImageButton> CreateVectorToggleImageButton(
   return button;
 }
 
+IconColors::IconColors(ui::ColorVariant color,
+                       ui::ColorVariant disabled_color,
+                       ui::ColorId hovered_color)
+    : color(color),
+      disabled_color(disabled_color),
+      hovered_color(hovered_color) {}
+
+IconColors::IconColors(const IconColors&) = default;
+IconColors& IconColors::operator=(const IconColors&) = default;
+IconColors::~IconColors() = default;
+
 void ConfigureVectorImageButton(ImageButton* button) {
   InkDrop::Get(button)->SetMode(views::InkDropHost::InkDropMode::ON);
   button->SetHasInkDropActionOnClick(true);
@@ -117,6 +128,13 @@ void SetImageFromVectorIconWithColor(ImageButton* button,
 
   button->SetImageModel(Button::STATE_NORMAL, normal_image);
   button->SetImageModel(Button::STATE_DISABLED, disabled_image);
+
+  // Set hovered/pressed images for high contrast mode support.
+  const ui::ImageModel& hovered_image =
+      ui::ImageModel::FromVectorIcon(icon, colors.hovered_color, dip_size);
+  button->SetImageModel(Button::STATE_HOVERED, hovered_image);
+  button->SetImageModel(Button::STATE_PRESSED, hovered_image);
+
   InkDrop::Get(button)->SetBaseColor(colors.color);
 }
 
@@ -142,6 +160,12 @@ void SetToggledImageFromVectorIconWithColor(ToggleImageButton* button,
 
   button->SetToggledImageModel(Button::STATE_NORMAL, normal_image);
   button->SetToggledImageModel(Button::STATE_DISABLED, disabled_image);
+
+  // Set hovered/pressed toggled images for high contrast mode support.
+  const ui::ImageModel& hovered_image =
+      ui::ImageModel::FromVectorIcon(icon, colors.hovered_color, dip_size);
+  button->SetToggledImageModel(Button::STATE_HOVERED, hovered_image);
+  button->SetToggledImageModel(Button::STATE_PRESSED, hovered_image);
 }
 
 void SetToggledImageFromVectorIconWithColor(ToggleImageButton* button,

@@ -126,11 +126,10 @@ SidePanelHeaderController::CreatePinButton() {
   CHECK(!pin_button_);
   CHECK(side_panel_entry_);
 
-  auto button = std::make_unique<views::ToggleImageButton>(base::BindRepeating(
+  auto button = views::CreateVectorToggleImageButton(base::BindRepeating(
       &SidePanelHeaderController::UpdatePinState, base::Unretained(this)));
   pin_button_ = button.get();
 
-  views::ConfigureVectorImageButton(button.get());
   ConfigureControlButton(button.get());
 
   button->SetTooltipText(
@@ -148,12 +147,11 @@ SidePanelHeaderController::CreatePinButton() {
       dip_size);
 
   const gfx::VectorIcon& unpin_icon = kKeepOffIcon;
-  const ui::ImageModel& normal_image = ui::ImageModel::FromVectorIcon(
-      unpin_icon, kColorSidePanelHeaderButtonIcon, dip_size);
-  const ui::ImageModel& disabled_image = ui::ImageModel::FromVectorIcon(
-      unpin_icon, kColorSidePanelHeaderButtonIconDisabled, dip_size);
-  button->SetToggledImageModel(views::Button::STATE_NORMAL, normal_image);
-  button->SetToggledImageModel(views::Button::STATE_DISABLED, disabled_image);
+  views::SetToggledImageFromVectorIconWithColor(
+      button.get(), unpin_icon, dip_size,
+      {kColorSidePanelHeaderButtonIcon,
+       kColorSidePanelHeaderButtonIconDisabled});
+
   button->SetProperty(views::kElementIdentifierKey,
                       kSidePanelPinButtonElementId);
   button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);

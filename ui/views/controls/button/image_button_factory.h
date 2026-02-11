@@ -48,8 +48,18 @@ VIEWS_EXPORT std::unique_ptr<ToggleImageButton> CreateVectorToggleImageButton(
 VIEWS_EXPORT void ConfigureVectorImageButton(ImageButton* button);
 
 struct VIEWS_EXPORT IconColors {
+  IconColors(ui::ColorVariant color,
+             ui::ColorVariant disabled_color,
+             ui::ColorId hovered_color = ui::kColorIconHovered);
+  IconColors(const IconColors&);
+  IconColors& operator=(const IconColors&);
+  ~IconColors();
+
   ui::ColorVariant color;
   ui::ColorVariant disabled_color;
+  // Hovered color used for STATE_HOVERED and STATE_PRESSED.
+  // Defaults to ui::kColorIconHovered for proper high contrast mode support.
+  ui::ColorId hovered_color;
 };
 
 // As above, but creates the images at the given size.
