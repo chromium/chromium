@@ -128,10 +128,6 @@ bool OmniboxContextMenu::IsCommandVisible(int command_id) const {
   return controller_->IsCommandIdVisible(command_id);
 }
 
-bool OmniboxContextMenu::IsItemChecked(int command_id) const {
-  return controller_ ? controller_->IsCommandIdChecked(command_id) : false;
-}
-
 void OmniboxContextMenu::OnMenuClosed(views::MenuItemView* menu) {
   if (on_menu_closed_) {
     on_menu_closed_.Run();
