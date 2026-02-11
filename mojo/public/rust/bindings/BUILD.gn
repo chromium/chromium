@@ -8,6 +8,8 @@ rust_static_library("bindings") {
     "message.rs",
     "message_header.rs",
     "message_pipe_watcher.rs",
+    "receiver.rs",
+    "remote.rs",
   ]
 
   deps = [
