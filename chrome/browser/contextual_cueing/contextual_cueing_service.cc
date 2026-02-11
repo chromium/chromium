@@ -21,6 +21,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
@@ -370,6 +371,7 @@ ContextualCueingService::MakeZeroStateSuggestionsRequest(
   if (g_browser_process) {
     request_proto.set_locale(g_browser_process->GetApplicationLocale());
   }
+  request_proto.set_chrome_platform(optimization_guide::GetChromePlatform());
   PopulateSupportedToolsForRequest(supported_tools, pref_service_,
                                    &request_proto);
   // Instantiate the one-of to indicate the request type.

@@ -16,6 +16,7 @@
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
@@ -89,6 +90,9 @@ std::optional<T> ParsedAnyMetadata(const proto::Any& any_metadata) {
 
 // Returns client's origin info, including platform and milestone.
 proto::OriginInfo GetClientOriginInfo();
+
+// Returns the Chrome platform the client is running on.
+proto::ChromePlatform GetChromePlatform();
 
 // Logs info about the common optimization guide feature flags.
 void LogFeatureFlagsInfo(OptimizationGuideLogger* optimization_guide_logger,
