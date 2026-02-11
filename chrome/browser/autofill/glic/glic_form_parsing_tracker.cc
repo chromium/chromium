@@ -14,6 +14,32 @@ GlicFormParsingTracker::GlicFormParsingTracker(AutofillClient* client) {
 
 GlicFormParsingTracker::~GlicFormParsingTracker() = default;
 
+void GlicFormParsingTracker::Wait(base::OnceClosure callback) {
+  callbacks_.push_back(std::move(callback));
+
+  // It may happen that forms were parsed before the waiting was requested.
+  MaybeNotifyGlic();
+}
+
+void GlicFormParsingTracker::MaybeNotifyGlic() {
+  if (callbacks_.empty()) {
+    return;
+  }
+
+  // TODO(crbug.com/479794574): Do not wait for empty forms when notifing
+  // `ObservationDelayController`
+  bool all_forms_parsed =
+      std::ranges::all_of(form_parsing_status_, [](const auto& pair) {
+        return pair.second.server_parsed_in_actor_mode &&
+               pair.second.heuristic_parsed_in_actor_mode;
+      });
+  if (all_forms_parsed) {
+    for (base::OnceClosure& callback : std::exchange(callbacks_, {})) {
+      std::move(callback).Run();
+    }
+  }
+}
+
 void GlicFormParsingTracker::OnAutofillManagerStateChanged(
     AutofillManager& manager,
     AutofillDriver::LifecycleState previous,
@@ -22,8 +48,6 @@ void GlicFormParsingTracker::OnAutofillManagerStateChanged(
       current != AutofillDriver::LifecycleState::kActive) {
     autofill::LocalFrameToken local_frame_token =
         manager.driver().GetFrameToken();
-    // TODO(crbug.com/479794574): Do not wait for empty forms when notifying
-    // `ObservationDelayController`
     absl::erase_if(form_parsing_status_, [local_frame_token](const auto& pair) {
       return pair.first.frame_token == local_frame_token;
     });
@@ -41,6 +65,8 @@ void GlicFormParsingTracker::OnBeforeFormsSeen(
   for (const FormGlobalId& form_global_id : removed_forms) {
     form_parsing_status_.erase(form_global_id);
   }
+
+  MaybeNotifyGlic();
 }
 
 void GlicFormParsingTracker::OnFieldTypesDetermined(
@@ -67,6 +93,8 @@ void GlicFormParsingTracker::OnFieldTypesDetermined(
       // Not supported by GLIC.
       break;
   }
+
+  MaybeNotifyGlic();
 }
 
 }  // namespace autofill

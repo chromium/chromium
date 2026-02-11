@@ -21,6 +21,8 @@ class GlicFormParsingTrackerTestApi {
     return tracker_->form_parsing_status_;
   }
 
+  size_t num_callbacks() const { return tracker_->callbacks_.size(); }
+
  private:
   const raw_ref<GlicFormParsingTracker> tracker_;
 };

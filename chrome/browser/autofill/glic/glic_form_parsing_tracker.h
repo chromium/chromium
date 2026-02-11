@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_AUTOFILL_GLIC_GLIC_FORM_PARSING_TRACKER_H_
 #define CHROME_BROWSER_AUTOFILL_GLIC_GLIC_FORM_PARSING_TRACKER_H_
 
+#include "base/functional/callback.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -25,8 +26,16 @@ class GlicFormParsingTracker final : public AutofillManager::Observer {
     bool heuristic_parsed_in_actor_mode = false;
   };
 
+  // Inserts `callback` to `callbacks_`. It will be executed once all forms on
+  // the current tab are parsed in the actor mode.
+  void Wait(base::OnceClosure callback);
+
  private:
   friend class GlicFormParsingTrackerTestApi;
+
+  // Verifies that all forms were parsed in the actor mode and executes all
+  // callbacks in `callbacks_`, then clears `callbacks_`.
+  void MaybeNotifyGlic();
 
   // AutofillManager::Observer:
   void OnAutofillManagerStateChanged(
@@ -44,6 +53,11 @@ class GlicFormParsingTracker final : public AutofillManager::Observer {
   // Keeps track of all of the forms in the current tab and their parsing
   // status.
   absl::flat_hash_map<FormGlobalId, FormParsingStatus> form_parsing_status_;
+
+  // All callbacks will be executed once all forms in `form_parsing_status_`
+  // have both `heuristic_parsed_in_actor_mode` and
+  // `server_parsed_in_actor_mode` set to true.
+  std::vector<base::OnceClosure> callbacks_;
 
   // The observation for the Autofill manager of the relevant tab.
   ScopedAutofillManagersObservation autofill_manager_observation_{this};

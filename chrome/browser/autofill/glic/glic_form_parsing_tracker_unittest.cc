@@ -5,6 +5,8 @@
 #include "chrome/browser/autofill/glic/glic_form_parsing_tracker.h"
 
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/autofill/glic/glic_form_parsing_tracker_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -206,6 +208,153 @@ TEST_F(GlicFormParsingTrackerTest, IgnoreSmallForms) {
                    .form_parsing_status()
                    .at(form_id)
                    .heuristic_parsed_in_actor_mode);
+}
+
+// Tests that if no forms are currently tracked, calling Wait() executes the
+// callback immediately.
+TEST_F(GlicFormParsingTrackerTest, Wait_ExecutesImmediatelyIfNoForms) {
+  base::test::TestFuture<void> future;
+  tracker().Wait(future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+}
+
+// Tests that if a form is tracked but not fully parsed, Wait() defers the
+// callback until parsing is complete.
+TEST_F(GlicFormParsingTrackerTest, Wait_DefersUntilFormFullyParsed) {
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormsSeen,
+      std::vector<FormGlobalId>{form_id}, base::span<FormGlobalId>());
+
+  base::test::TestFuture<void> future;
+  tracker().Wait(future.GetCallback());
+
+  // Finish heuristic parsing.
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
+      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
+      /*small_forms_were_parsed=*/true);
+  EXPECT_FALSE(future.IsReady());
+
+  // Finish server parsing, callback should be executed.
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
+      AutofillManager::Observer::FieldTypeSource::kAutofillServer,
+      /*small_forms_were_parsed=*/true);
+  EXPECT_TRUE(future.IsReady());
+}
+
+// Tests that if multiple forms are tracked, Wait() waits for the last remaining
+// parsing bit across all forms.
+TEST_F(GlicFormParsingTrackerTest, Wait_UntilMultipleFormsParsed) {
+  FormGlobalId form1 = test::MakeFormGlobalId();
+  FormGlobalId form2 = test::MakeFormGlobalId();
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormsSeen,
+      std::vector<FormGlobalId>{form1, form2}, base::span<FormGlobalId>());
+
+  base::test::TestFuture<void> future;
+  tracker().Wait(future.GetCallback());
+
+  // Fully parse form 1.
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form1,
+      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
+      true);
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form1,
+      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+  EXPECT_FALSE(future.IsReady());
+
+  // Form 2 heuristics done.
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form2,
+      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
+      true);
+  EXPECT_FALSE(future.IsReady());
+
+  // Form 2 fully done, callback should be executed.
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form2,
+      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+  EXPECT_TRUE(future.IsReady());
+}
+
+// Tests that calling Wait() while a callback is already registered, schedules
+// another callback, all of which will be executed once requirements are met.
+TEST_F(GlicFormParsingTrackerTest, Wait_MultipleCallbacksPending) {
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormsSeen,
+      std::vector<FormGlobalId>{form_id}, base::span<FormGlobalId>());
+
+  base::test::TestFuture<void> future1;
+  base::test::TestFuture<void> future2;
+
+  tracker().Wait(future1.GetCallback());
+  tracker().Wait(future2.GetCallback());
+  EXPECT_EQ(2UL, test_api(tracker()).num_callbacks());
+
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
+      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
+      true);
+  EXPECT_FALSE(future1.IsReady());
+  EXPECT_FALSE(future2.IsReady());
+
+  // Both callbacks should be executed when requirements are met.
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form_id,
+      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+
+  EXPECT_TRUE(future1.IsReady());
+  EXPECT_TRUE(future2.IsReady());
+  EXPECT_EQ(0UL, test_api(tracker()).num_callbacks());
+}
+
+// Tests that the tracker can be reused. Once a callback has been executed,
+// a subsequent call to Wait() should successfully register a new callback
+// and wait for new forms to complete.
+TEST_F(GlicFormParsingTrackerTest, Wait_ReschedulesAfterExecution) {
+  FormGlobalId form1 = test::MakeFormGlobalId();
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormsSeen,
+      std::vector<FormGlobalId>{form1}, base::span<FormGlobalId>());
+
+  base::test::TestFuture<void> future1;
+  tracker().Wait(future1.GetCallback());
+
+  // Fully parse form 1 to fire the first callback.
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form1,
+      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
+      true);
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form1,
+      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+  EXPECT_TRUE(future1.IsReady());
+
+  // The second form is added, the tracker should now be in an "unparsed" state
+  // again.
+  FormGlobalId form2 = test::MakeFormGlobalId();
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormsSeen,
+      std::vector<FormGlobalId>{form2}, base::span<FormGlobalId>());
+
+  // Register a second wait.
+  base::test::TestFuture<void> future2;
+  tracker().Wait(future2.GetCallback());
+  EXPECT_FALSE(future2.IsReady());
+
+  // Form 2 gets fully parsed, the future2 should be ready.
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form2,
+      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
+      true);
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFieldTypesDetermined, form2,
+      AutofillManager::Observer::FieldTypeSource::kAutofillServer, true);
+  EXPECT_TRUE(future2.IsReady());
 }
 
 }  // namespace
