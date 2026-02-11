@@ -3533,6 +3533,13 @@ inline constexpr char kSearchEngineUnconditionalDialogDescription[] =
     "encounter the confirmation dialog (exceptions for some extensions are "
     "removed).";
 
+inline constexpr char kBrowserControlsScrollSnapAnimationDialogName[] =
+    "Browser controls snap animation";
+inline constexpr char kBrowserControlsScrollSnapAnimationDialogDescription[] =
+    "When enabled, the browser controls will no longer translate precisely "
+    "with the user's finger during scroll. They will instead snap to fully "
+    "show or hide";
+
 inline constexpr char kGlobalCacheListForGatingNotificationProtectionsName[] =
     "Global cache list for gating notification protections";
 inline constexpr char

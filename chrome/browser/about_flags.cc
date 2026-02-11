@@ -12831,6 +12831,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebMCPTestingDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kWebMCPTesting)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"browser-controls-scroll-snap-animation",
+     flag_descriptions::kBrowserControlsScrollSnapAnimationDialogName,
+     flag_descriptions::kBrowserControlsScrollSnapAnimationDialogDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kBrowserControlsScrollSnapAnimation)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

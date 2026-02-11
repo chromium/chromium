@@ -8217,6 +8217,7 @@ from previous Chrome versions.
   <int value="-2105791506" label="AndroidWindowPopupCustomTabUi:disabled"/>
   <int value="-2105498697" label="EnableImeSandbox:disabled"/>
   <int value="-2105133782" label="GesturePropertiesDBusService:enabled"/>
+  <int value="-2105124775" label="BrowserControlsScrollSnapAnimation:disabled"/>
   <int value="-2104950596" label="HandwritingGesture:enabled"/>
   <int value="-2104757592"
       label="OmniboxUseExistingAutocompleteClient:enabled"/>
@@ -19423,6 +19424,7 @@ from previous Chrome versions.
   <int value="1718774381" label="DragDropTabTearingEnableOEM:enabled"/>
   <int value="1719019077" label="FileSystemProviderCloudFileSystem:disabled"/>
   <int value="1719189460" label="EnablePasswordSelection:disabled"/>
+  <int value="1719498202" label="BrowserControlsScrollSnapAnimation:enabled"/>
   <int value="1719958026" label="QueryTiles:enabled"/>
   <int value="1719998906" label="KeyboardLockPrompt:enabled"/>
   <int value="1720399117" label="SkiaGraphite:enabled"/>

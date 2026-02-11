@@ -1223,6 +1223,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "browser-controls-scroll-snap-animation",
+    "owners": [
+      "anandrv@google.com",
+      "clank-performance-team@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "browser-initiated-automatic-picture-in-picture",
     "owners": [ "bkeen@google.com", "media-dev@chromium.org" ],
     "expiry_milestone": 150
