@@ -4,6 +4,7 @@ include_rules = [
     "+base/memory/values_equivalent.h",
     "+base/containers/heap_array.h",
     "+base/containers/span.h",
+    "+base/threading/platform_thread.h",
     "+mojo/public/cpp/base",
     "+mojo/public/cpp/bindings",
     "+mojo/public/cpp/system",

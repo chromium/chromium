@@ -7,8 +7,10 @@
 #include "base/feature_list.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -41,7 +43,6 @@ media::VideoFrame::ID GetFrameId(
 media::VideoFrame::ID GetFrameId(const scoped_refptr<media::AudioBuffer>&) {
   NOTREACHED();
 }
-
 }  // namespace
 
 template <typename NativeFrameType>
@@ -49,25 +50,31 @@ FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
     ScriptState* script_state,
     wtf_size_t max_queue_size,
     std::string device_id,
-    wtf_size_t frame_pool_size)
+    wtf_size_t frame_pool_size,
+    std::optional<base::ThreadType> thread_type)
     : UnderlyingSourceBase(script_state),
       realm_task_runner_(ExecutionContext::From(script_state)
                              ->GetTaskRunner(TaskType::kInternalMediaRealTime)),
       frame_queue_handle_(
           base::MakeRefCounted<FrameQueue<NativeFrameType>>(max_queue_size)),
       device_id_(std::move(device_id)),
-      frame_pool_size_(frame_pool_size) {
+      frame_pool_size_(frame_pool_size),
+      thread_type_(thread_type),
+      realm_is_boostable_context_(ExecutionContext::From(script_state)
+                                      ->IsDedicatedWorkerGlobalScope()) {
   DCHECK(device_id_.empty() || frame_pool_size_ > 0);
 }
 
 template <typename NativeFrameType>
 FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
     ScriptState* script_state,
-    wtf_size_t max_queue_size)
+    wtf_size_t max_queue_size,
+    std::optional<base::ThreadType> thread_type)
     : FrameQueueUnderlyingSource(script_state,
                                  max_queue_size,
                                  std::string(),
-                                 /*frame_pool_size=*/0) {}
+                                 /*frame_pool_size=*/0,
+                                 thread_type) {}
 
 template <typename NativeFrameType>
 FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
@@ -78,7 +85,10 @@ FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
                              ->GetTaskRunner(TaskType::kInternalMediaRealTime)),
       frame_queue_handle_(other_source->frame_queue_handle_.Queue()),
       device_id_(other_source->device_id_),
-      frame_pool_size_(other_source->frame_pool_size_) {
+      frame_pool_size_(other_source->frame_pool_size_),
+      thread_type_(other_source->thread_type_),
+      realm_is_boostable_context_(ExecutionContext::From(script_state)
+                                      ->IsDedicatedWorkerGlobalScope()) {
   DCHECK(device_id_.empty() || frame_pool_size_ > 0);
 }
 
@@ -160,6 +170,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
     return;
 
   is_closed_ = true;
+  realm_thread_type_lease_ = std::nullopt;
   if (GetExecutionContext()) {
     StopFrameDelivery();
     CloseController();
@@ -314,6 +325,12 @@ void FrameQueueUnderlyingSource<
     std::optional<NativeFrameType> media_frame = frame_queue->Pop();
     if (!media_frame.has_value())
       return;
+
+    if (base::FeatureList::IsEnabled(features::kWebRtcUseMediaThreadTypes) &&
+        realm_is_boostable_context_ && !realm_thread_type_lease_.has_value() &&
+        thread_type_.has_value()) {
+      realm_thread_type_lease_.emplace(thread_type_.value());
+    }
 
     media::VideoFrame::ID frame_id = MustUseMonitor()
                                          ? GetFrameId(media_frame.value())

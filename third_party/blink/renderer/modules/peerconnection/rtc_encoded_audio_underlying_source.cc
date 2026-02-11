@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/unguessable_token.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
@@ -46,7 +47,9 @@ RTCEncodedAudioUnderlyingSource::RTCEncodedAudioUnderlyingSource(
       disconnect_callback_(std::move(disconnect_callback)),
       override_controller_(override_controller),
       enable_frame_restrictions_(enable_frame_restrictions),
-      owner_id_(owner_id) {
+      owner_id_(owner_id),
+      realm_is_boostable_context_(ExecutionContext::From(script_state)
+                                      ->IsDedicatedWorkerGlobalScope()) {
   DCHECK(disconnect_callback_);
 
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -123,11 +126,16 @@ void RTCEncodedAudioUnderlyingSource::OnFrameFromSource(
     encoded_frame =
         MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(webrtc_frame));
   }
+  if (base::FeatureList::IsEnabled(features::kWebRtcUseMediaThreadTypes) &&
+      realm_is_boostable_context_ && !realm_thread_type_lease_.has_value()) {
+    realm_thread_type_lease_.emplace(base::ThreadType::kAudioProcessing);
+  }
   GetController()->Enqueue(encoded_frame);
 }
 
 void RTCEncodedAudioUnderlyingSource::Close() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  realm_thread_type_lease_ = std::nullopt;
   if (disconnect_callback_)
     std::move(disconnect_callback_).Run();
 

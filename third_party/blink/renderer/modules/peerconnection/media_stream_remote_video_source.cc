@@ -426,6 +426,10 @@ MediaStreamRemoteVideoSource::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+bool MediaStreamRemoteVideoSource::AllowsVideoThreadTypeOverride() const {
+  return true;
+}
+
 void MediaStreamRemoteVideoSource::OnEncodedSinkEnabled() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!observer_ || !observer_->track()) {

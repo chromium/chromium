@@ -14,6 +14,7 @@
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -245,6 +246,25 @@ MediaStreamVideoCapturerSource::GetNextCaptureVersion() {
 base::WeakPtr<MediaStreamVideoSource>
 MediaStreamVideoCapturerSource::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+bool MediaStreamVideoCapturerSource::AllowsVideoThreadTypeOverride() const {
+  switch (device().type) {
+    case mojom::blink::MediaStreamType::NO_SERVICE:
+    case mojom::blink::MediaStreamType::GUM_TAB_AUDIO_CAPTURE:
+    case mojom::blink::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
+    case mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE:
+    case mojom::blink::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE:
+    case mojom::blink::MediaStreamType::NUM_MEDIA_TYPES:
+      return false;
+    case mojom::blink::MediaStreamType::DEVICE_VIDEO_CAPTURE:
+    case mojom::blink::MediaStreamType::GUM_TAB_VIDEO_CAPTURE:
+    case mojom::blink::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
+    case mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
+    case mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
+    case mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
+      return true;
+  }
 }
 
 void MediaStreamVideoCapturerSource::OnRunStateChanged(

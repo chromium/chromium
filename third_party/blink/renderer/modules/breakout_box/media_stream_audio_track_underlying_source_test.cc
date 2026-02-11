@@ -7,10 +7,12 @@
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -29,9 +31,11 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 using testing::_;
 using testing::AnyNumber;
@@ -100,18 +104,6 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
  protected:
   // Pushes data into |track|. |timestamp| is the reference time at the
   // beginning of the audio data to be pushed into |track|.
-  void PushData(
-      MediaStreamTrack* track,
-      const std::optional<base::TimeDelta>& timestamp = std::nullopt) {
-    auto data = media::AudioBuffer::CreateEmptyBuffer(
-        media::ChannelLayout::CHANNEL_LAYOUT_STEREO, /*channel_count=*/2,
-        kSampleRate, kNumFrames, timestamp.value_or(base::Seconds(1)));
-    PushableMediaStreamAudioSource* pushable_audio_source =
-        static_cast<PushableMediaStreamAudioSource*>(
-            MediaStreamAudioSource::From(track->Component()->Source()));
-    pushable_audio_source->PushAudioData(std::move(data));
-    platform_->RunUntilIdle();
-  }
 
   void SetChannelData(media::AudioBus* bus, int channel, float value) {
     ASSERT_LE(channel, bus->channels());
@@ -149,6 +141,18 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
 
   test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
+
+  void PushData(
+      MediaStreamTrack* track,
+      const std::optional<base::TimeDelta>& timestamp = std::nullopt) {
+    auto data = media::AudioBuffer::CreateEmptyBuffer(
+        media::ChannelLayout::CHANNEL_LAYOUT_STEREO, /*channel_count=*/2,
+        kSampleRate, kNumFrames, timestamp.value_or(base::Seconds(1)));
+    PushableMediaStreamAudioSource* pushable_audio_source =
+        static_cast<PushableMediaStreamAudioSource*>(
+            MediaStreamAudioSource::From(track->Component()->Source()));
+    pushable_audio_source->PushAudioData(std::move(data));
+  }
 };
 
 TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
@@ -399,6 +403,93 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest, BufferPooling_FormatChange) {
 
   source->Close();
   track->stopTrack(v8_scope.GetExecutionContext());
+}
+
+TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
+       LeaseOnMainThreadFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kWebRtcUseMediaThreadTypes);
+  V8TestingScope scope;
+  auto* track = CreateTrack(scope.GetExecutionContext());
+  auto* source = CreateSource(scope.GetScriptState(), track);
+
+  auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      scope.GetScriptState(), source, 0);
+  NonThrowableExceptionState exception_state;
+  auto* reader = stream->GetDefaultReaderForTesting(scope.GetScriptState(),
+                                                    exception_state);
+  ScriptPromiseTester tester(
+      scope.GetScriptState(),
+      reader->read(scope.GetScriptState(), exception_state));
+  PushData(track);
+  tester.WaitUntilSettled();
+  EXPECT_FALSE(source->GetRealmThreadTypeLeasedForTesting().has_value());
+}
+
+TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
+       LeaseOnMainThreadFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebRtcUseMediaThreadTypes);
+  V8TestingScope scope;
+  auto* track = CreateTrack(scope.GetExecutionContext());
+  auto* source = CreateSource(scope.GetScriptState(), track);
+
+  auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      scope.GetScriptState(), source, 0);
+  NonThrowableExceptionState exception_state;
+  auto* reader = stream->GetDefaultReaderForTesting(scope.GetScriptState(),
+                                                    exception_state);
+  ScriptPromiseTester tester(
+      scope.GetScriptState(),
+      reader->read(scope.GetScriptState(), exception_state));
+  PushData(track);
+  tester.WaitUntilSettled();
+  EXPECT_FALSE(source->GetRealmThreadTypeLeasedForTesting().has_value());
+}
+
+TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
+       LeaseOnWorkerFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kWebRtcUseMediaThreadTypes);
+  V8TestingScope scope;
+  auto* track = CreateTrack(scope.GetExecutionContext());
+  auto* source = CreateSource(scope.GetScriptState(), track);
+  source->SetRealmIsBoostableContextForTesting(true);
+
+  auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      scope.GetScriptState(), source, 0);
+  NonThrowableExceptionState exception_state;
+  auto* reader = stream->GetDefaultReaderForTesting(scope.GetScriptState(),
+                                                    exception_state);
+  ScriptPromiseTester tester(
+      scope.GetScriptState(),
+      reader->read(scope.GetScriptState(), exception_state));
+  PushData(track);
+  tester.WaitUntilSettled();
+  EXPECT_FALSE(source->GetRealmThreadTypeLeasedForTesting().has_value());
+}
+
+TEST_F(MediaStreamAudioTrackUnderlyingSourceTest, LeaseOnWorkerFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebRtcUseMediaThreadTypes);
+  V8TestingScope scope;
+  auto* track = CreateTrack(scope.GetExecutionContext());
+  auto* source = CreateSource(scope.GetScriptState(), track);
+  source->SetRealmIsBoostableContextForTesting(true);
+
+  auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      scope.GetScriptState(), source, 0);
+  NonThrowableExceptionState exception_state;
+  auto* reader = stream->GetDefaultReaderForTesting(scope.GetScriptState(),
+                                                    exception_state);
+
+  ScriptPromiseTester tester(
+      scope.GetScriptState(),
+      reader->read(scope.GetScriptState(), exception_state));
+  PushData(track);
+  tester.WaitUntilSettled();
+  EXPECT_EQ(source->GetRealmThreadTypeLeasedForTesting(),
+            base::ThreadType::kAudioProcessing);
 }
 
 }  // namespace blink

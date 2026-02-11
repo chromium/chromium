@@ -226,6 +226,11 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // that is not exposed to the entity calling ApplySubCaptureTarget().
   virtual std::optional<media::CaptureVersion> GetNextCaptureVersion();
 
+  // Returns true if thread type for threads processing frames from this source
+  // should be raised. This is intended to be used for frames coming from
+  // content or camera capture.
+  virtual bool AllowsVideoThreadTypeOverride() const { return false; }
+
   // Notifies the source about that the number of encoded sinks have been
   // updated. Note: Can only be called if the number of encoded sinks have
   // actually changed!

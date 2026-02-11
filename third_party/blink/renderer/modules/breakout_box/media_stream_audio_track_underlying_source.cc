@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "media/base/audio_buffer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_transferring_optimizer.h"
@@ -129,7 +130,9 @@ MediaStreamAudioTrackUnderlyingSource::MediaStreamAudioTrackUnderlyingSource(
     MediaStreamComponent* track,
     ScriptWrappable* media_stream_track_processor,
     wtf_size_t max_queue_size)
-    : AudioDataQueueUnderlyingSource(script_state, max_queue_size),
+    : AudioDataQueueUnderlyingSource(script_state,
+                                     max_queue_size,
+                                     base::ThreadType::kAudioProcessing),
       media_stream_track_processor_(media_stream_track_processor),
       track_(track),
       buffer_pool_(std::make_unique<AudioBufferPoolImpl>()) {

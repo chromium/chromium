@@ -98,6 +98,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   media::CaptureVersion GetCaptureVersion() const override;
   std::optional<media::CaptureVersion> GetNextCaptureVersion() override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() override;
+  bool AllowsVideoThreadTypeOverride() const override;
 
   // Method to bind as VideoCaptureRunningCallbackCB in
   // VideoCapturerSource::StartCapture().

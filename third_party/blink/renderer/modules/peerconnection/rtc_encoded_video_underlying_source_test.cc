@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
@@ -92,6 +94,59 @@ TEST_F(RTCEncodedVideoUnderlyingSourceTest, QueuedFramesAreDroppedWhenOverflow) 
 
   EXPECT_CALL(disconnect_callback_, Run());
   source->Close();
+}
+
+TEST_F(RTCEncodedVideoUnderlyingSourceTest, AvoidsLeaseOnMainThread) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebRtcUseMediaThreadTypes);
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* source = CreateSource(script_state);
+  ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+
+  source->OnFrameFromSource(std::make_unique<MockTransformableVideoFrame>());
+  EXPECT_FALSE(source->GetRealmThreadTypeLeasedForTesting().has_value());
+}
+
+TEST_F(RTCEncodedVideoUnderlyingSourceTest,
+       AvoidsLeasesOnMainThreadWithFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kWebRtcUseMediaThreadTypes);
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* source = CreateSource(script_state);
+  ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+
+  source->OnFrameFromSource(std::make_unique<MockTransformableVideoFrame>());
+  EXPECT_FALSE(source->GetRealmThreadTypeLeasedForTesting().has_value());
+}
+
+TEST_F(RTCEncodedVideoUnderlyingSourceTest, LeasesOnWorker) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebRtcUseMediaThreadTypes);
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* source = CreateSource(script_state);
+  source->SetRealmIsBoostableContextForTesting(true);
+  ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+
+  source->OnFrameFromSource(std::make_unique<MockTransformableVideoFrame>());
+  ASSERT_EQ(source->GetRealmThreadTypeLeasedForTesting(),
+            base::ThreadType::kPresentation);
+}
+
+TEST_F(RTCEncodedVideoUnderlyingSourceTest,
+       AvoidsLeasesOnWorkerWithFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kWebRtcUseMediaThreadTypes);
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* source = CreateSource(script_state);
+  source->SetRealmIsBoostableContextForTesting(true);
+  ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+
+  source->OnFrameFromSource(std::make_unique<MockTransformableVideoFrame>());
+  EXPECT_FALSE(source->GetRealmThreadTypeLeasedForTesting().has_value());
 }
 
 }  // namespace blink

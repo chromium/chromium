@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
@@ -52,6 +53,16 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSource
 
   void Trace(Visitor*) const override;
 
+  std::optional<base::ThreadType> GetRealmThreadTypeLeasedForTesting() const {
+    if (realm_thread_type_lease_) {
+      return realm_thread_type_lease_->thread_type();
+    }
+    return std::nullopt;
+  }
+  void SetRealmIsBoostableContextForTesting(bool is_boostable) {
+    realm_is_boostable_context_ = is_boostable;
+  }
+
  private:
   // Implements the handling of this stream being transferred to another
   // context, called on the thread upon which the instance was created.
@@ -74,6 +85,9 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSource
   const bool enable_frame_restrictions_;
   const base::UnguessableToken owner_id_;
   int64_t last_enqueued_frame_counter_ = 0;
+  bool realm_is_boostable_context_;
+  std::optional<base::PlatformThread::RaiseThreadTypeLease>
+      realm_thread_type_lease_;
 };
 
 }  // namespace blink

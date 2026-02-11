@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/video_frame.h"
@@ -33,8 +34,11 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   FrameQueueUnderlyingSource(ScriptState*,
                              wtf_size_t queue_size,
                              std::string device_id,
-                             wtf_size_t frame_pool_size);
-  FrameQueueUnderlyingSource(ScriptState*, wtf_size_t queue_size);
+                             wtf_size_t frame_pool_size,
+                             std::optional<base::ThreadType> thread_type);
+  FrameQueueUnderlyingSource(ScriptState*,
+                             wtf_size_t queue_size,
+                             std::optional<base::ThreadType> thread_type);
   ~FrameQueueUnderlyingSource() override = default;
 
   FrameQueueUnderlyingSource(const FrameQueueUnderlyingSource&) = delete;
@@ -71,6 +75,17 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   double DesiredSizeForTesting() const;
 
   void Trace(Visitor*) const override;
+
+  std::optional<base::ThreadType> GetRealmThreadTypeLeasedForTesting() const {
+    if (realm_thread_type_lease_) {
+      return realm_thread_type_lease_->thread_type();
+    }
+    return std::nullopt;
+  }
+
+  void SetRealmIsBoostableContextForTesting(bool is_boostable) {
+    realm_is_boostable_context_ = is_boostable;
+  }
 
  protected:
   // Initializes a new FrameQueueUnderlyingSource containing a
@@ -151,6 +166,13 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   // Maximum number of distinct frames allowed to be used by this source.
   // This limit applies only when |device_id_| is nonempty.
   const wtf_size_t frame_pool_size_ = 0;
+
+  // If not null, `thread_type_` is used to initialize a
+  // RaiseThreadTypeLease on forwarding frames.
+  const std::optional<base::ThreadType> thread_type_;
+  std::optional<base::PlatformThread::RaiseThreadTypeLease>
+      realm_thread_type_lease_;
+  bool realm_is_boostable_context_;
 
   std::optional<base::TimeTicks> first_frame_ticks_;
 };

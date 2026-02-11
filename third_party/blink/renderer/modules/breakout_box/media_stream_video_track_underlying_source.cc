@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "media/capture/video/video_capture_buffer_pool_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -27,6 +28,16 @@ bool IsScreenOrWindowCapture(const std::string& device_id) {
   return device_id.starts_with(kScreenPrefix) ||
          device_id.starts_with(kWindowPrefix);
 }
+
+std::optional<base::ThreadType> GetVideoSourceUsage(
+    MediaStreamComponent* track) {
+  MediaStreamVideoSource* source =
+      MediaStreamVideoSource::GetVideoSource(track->Source());
+  if (source && source->AllowsVideoThreadTypeOverride()) {
+    return base::ThreadType::kPresentation;
+  }
+  return std::nullopt;
+}
 }  // namespace
 
 const int MediaStreamVideoTrackUnderlyingSource::kMaxMonitoredFrameCount = 20;
@@ -42,7 +53,8 @@ MediaStreamVideoTrackUnderlyingSource::MediaStreamVideoTrackUnderlyingSource(
           max_queue_size,
           GetDeviceIdForMonitoring(
               track->Source()->GetPlatformSource()->device()),
-          GetFramePoolSize(track->Source()->GetPlatformSource()->device())),
+          GetFramePoolSize(track->Source()->GetPlatformSource()->device()),
+          GetVideoSourceUsage(track)),
       media_stream_track_processor_(media_stream_track_processor),
       track_(track) {
   DCHECK(track_);
