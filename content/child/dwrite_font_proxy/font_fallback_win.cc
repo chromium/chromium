@@ -185,9 +185,9 @@ bool FontFallback::GetCachedFont(const std::u16string& text,
     while (character_index < text.length()) {
       BOOL exists = false;
       base_icu::UChar32 character = 0;
-      if (!base::ReadUnicodeCharacter(text.c_str(), text.length(),
-                                      &character_index, &character))
+      if (!base::ReadUnicodeCharacter(text, &character_index, &character)) {
         break;
+      }
       if (FAILED(matched_font->HasCharacter(character, &exists)) || !exists)
         break;
       character_index++;
