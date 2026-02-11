@@ -7,6 +7,8 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
@@ -21,7 +23,8 @@ namespace ash::nearby {
 // AcceptCallback.
 class FakeTcpServerSocket : public network::mojom::TCPServerSocket {
  public:
-  FakeTcpServerSocket();
+  explicit FakeTcpServerSocket(
+      scoped_refptr<base::SequencedTaskRunner> main_task_runner);
   ~FakeTcpServerSocket() override;
 
   size_t num_pending_accept_callbacks() const {
@@ -48,6 +51,7 @@ class FakeTcpServerSocket : public network::mojom::TCPServerSocket {
   void Accept(mojo::PendingRemote<network::mojom::SocketObserver> observer,
               AcceptCallback callback) override;
 
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   size_t expected_num_accept_calls_ = 0;
   base::OnceClosure on_all_accept_calls_queued_;
   base::circular_deque<AcceptCallback> pending_accept_callbacks_;

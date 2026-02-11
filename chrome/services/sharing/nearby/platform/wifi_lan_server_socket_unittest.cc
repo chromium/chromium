@@ -4,10 +4,12 @@
 
 #include "chrome/services/sharing/nearby/platform/wifi_lan_server_socket.h"
 
+#include <atomic>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -46,7 +48,8 @@ class WifiLanServerSocketTest : public testing::Test {
 
   void SetUp() override {
     auto fake_tcp_server_socket =
-        std::make_unique<ash::nearby::FakeTcpServerSocket>();
+        std::make_unique<ash::nearby::FakeTcpServerSocket>(
+            base::SequencedTaskRunner::GetCurrentDefault());
     fake_tcp_server_socket_ = fake_tcp_server_socket.get();
     mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket;
     tcp_server_socket_self_owned_receiver_ref_ = mojo::MakeSelfOwnedReceiver(
@@ -108,7 +111,7 @@ class WifiLanServerSocketTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  size_t num_running_accept_calls_ = 0;
+  std::atomic<size_t> num_running_accept_calls_{0};
   base::OnceClosure on_accept_calls_finished_;
   raw_ptr<ash::nearby::FakeTcpServerSocket, DanglingUntriaged>
       fake_tcp_server_socket_;
