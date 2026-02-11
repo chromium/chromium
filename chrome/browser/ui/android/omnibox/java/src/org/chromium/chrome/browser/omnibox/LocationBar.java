@@ -56,6 +56,9 @@ public interface LocationBar {
      */
     void clearUrlBarCursorWithoutFocusAnimations();
 
+    /** Selects all of the editable text in the {@link UrlBar}. */
+    void selectAll();
+
     /**
      * Reverts any pending edits of the location bar and reset to the page state. This does not
      * change the focus state of the location bar.

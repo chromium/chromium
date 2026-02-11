@@ -8,9 +8,7 @@ import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteInput;
-import org.chromium.components.omnibox.OmniboxFeatures;
 
 /**
  * Fusebox / Omnibox session state object. Captures controllers and state details needed to fulfill
@@ -75,14 +73,6 @@ public class FuseboxSessionState implements UserData {
         mIsActive = isActive;
         if (isActive) {
             mAutocompleteInput.setUrlFocusTime(System.currentTimeMillis());
-            // Use current URL if the Retention is active, the input is not already set, and the URL
-            // should be user-visible.
-            if (OmniboxFeatures.shouldRetainOmniboxOnFocus()
-                    && mAutocompleteInput.getUserText().isEmpty()
-                    && UrlBarData.shouldShowUrl(mAutocompleteInput.getPageUrl(), false)) {
-                var editUrl = UrlUtilities.stripScheme(mAutocompleteInput.getPageUrl().getSpec());
-                mAutocompleteInput.setUserText(editUrl).setSelection(0, Integer.MAX_VALUE);
-            }
         } else {
             mAutocompleteInput.reset();
         }
