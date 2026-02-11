@@ -6,12 +6,12 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <cstring>
 #include <string>
 #include <tuple>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -199,20 +199,20 @@ TEST_F(SQLiteFeaturesTest, Mmap) {
 
   const uint32_t kFlags =
       base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE;
-  char buf[4096];
+  std::array<uint8_t, 4096> buf;
 
   // Create a file with a block of '0', a block of '1', and a block of '2'.
   {
     base::File f(db_path_, kFlags);
     ASSERT_TRUE(f.IsValid());
     std::ranges::fill(buf, '0');
-    ASSERT_TRUE(f.WriteAndCheck(0 * sizeof(buf), base::as_byte_span(buf)));
+    ASSERT_TRUE(f.WriteAndCheck(0 * sizeof(buf), buf));
 
     std::ranges::fill(buf, '1');
-    ASSERT_TRUE(f.WriteAndCheck(1 * sizeof(buf), base::as_byte_span(buf)));
+    ASSERT_TRUE(f.WriteAndCheck(1 * sizeof(buf), buf));
 
     std::ranges::fill(buf, '2');
-    ASSERT_TRUE(f.WriteAndCheck(2 * sizeof(buf), base::as_byte_span(buf)));
+    ASSERT_TRUE(f.WriteAndCheck(2 * sizeof(buf), buf));
   }
 
   // mmap the file and verify that everything looks right.
@@ -220,17 +220,14 @@ TEST_F(SQLiteFeaturesTest, Mmap) {
     base::MemoryMappedFile m;
     ASSERT_TRUE(m.Initialize(db_path_));
 
-    UNSAFE_TODO(memset(buf, '0', sizeof(buf)));
-    UNSAFE_TODO(
-        ASSERT_EQ(0, memcmp(buf, m.data() + 0 * sizeof(buf), sizeof(buf))));
+    std::ranges::fill(buf, '0');
+    ASSERT_EQ(buf, m.bytes().first(buf.size()));
 
-    UNSAFE_TODO(memset(buf, '1', sizeof(buf)));
-    UNSAFE_TODO(
-        ASSERT_EQ(0, memcmp(buf, m.data() + 1 * sizeof(buf), sizeof(buf))));
+    std::ranges::fill(buf, '1');
+    ASSERT_EQ(buf, m.bytes().subspan(buf.size(), buf.size()));
 
-    UNSAFE_TODO(memset(buf, '2', sizeof(buf)));
-    UNSAFE_TODO(
-        ASSERT_EQ(0, memcmp(buf, m.data() + 2 * sizeof(buf), sizeof(buf))));
+    std::ranges::fill(buf, '2');
+    ASSERT_EQ(buf, m.bytes().subspan(buf.size() * 2, buf.size()));
 
     // Scribble some '3' into the first page of the file, and verify that it
     // looks the same in the memory mapping.
@@ -238,20 +235,19 @@ TEST_F(SQLiteFeaturesTest, Mmap) {
       base::File f(db_path_, kFlags);
       ASSERT_TRUE(f.IsValid());
       std::ranges::fill(buf, '3');
-      ASSERT_TRUE(f.WriteAndCheck(0 * sizeof(buf), base::as_byte_span(buf)));
+      ASSERT_TRUE(f.WriteAndCheck(0 * sizeof(buf), buf));
     }
-    UNSAFE_TODO(
-        ASSERT_EQ(0, memcmp(buf, m.data() + 0 * sizeof(buf), sizeof(buf))));
+    ASSERT_EQ(buf, m.bytes().first(buf.size()));
 
     // Repeat with a single '4' in case page-sized blocks are different.
     const size_t kOffset = 1 * sizeof(buf) + 123;
-    UNSAFE_TODO(ASSERT_NE('4', m.data()[kOffset]));
+    ASSERT_NE('4', m.bytes()[kOffset]);
     {
       base::File f(db_path_, kFlags);
       ASSERT_TRUE(f.IsValid());
       ASSERT_TRUE(f.WriteAndCheck(kOffset, base::byte_span_from_ref('4')));
     }
-    UNSAFE_TODO(ASSERT_EQ('4', m.data()[kOffset]));
+    ASSERT_EQ('4', m.bytes()[kOffset]);
   }
 }
 
