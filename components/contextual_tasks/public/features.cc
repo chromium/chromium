@@ -41,6 +41,10 @@ BASE_FEATURE(kContextualTasksSuggestionsEnabled,
              "ContextualTasksSuggestionsEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables auto-suggestions for contextual tasks.
+BASE_FEATURE(kContextualTasksAutoSuggestionEnabled,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kContextualTasksShowOnboardingTooltip,
              "ContextualTasksShowOnboardingTooltip",
              base::FEATURE_ENABLED_BY_DEFAULT);
