@@ -361,12 +361,13 @@ export class ComposeboxElement extends I18nMixinLit
     }
 
     this.searchboxHandler_.notifySessionStarted();
-    this.inputState_ = (await this.searchboxHandler_.getInputState()).state;
 
     if (this.ntpRealboxNextEnabled) {
       this.fire('composebox-initialized', {
         initializeComposeboxState: this.initializeState_.bind(this),
       });
+    } else {
+      this.inputState_ = (await this.searchboxHandler_.getInputState()).state;
     }
 
     this.setupResizeObservers_();
@@ -542,7 +543,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected initializeState_(
       text: string = '', files: ContextualUpload[] = [],
       mode: ToolMode = ToolMode.kUnspecified,
-      model: ModelMode = ModelMode.kUnspecified) {
+      model: ModelMode = ModelMode.kUnspecified,
+      inputState: InputState|null = null) {
     if (text) {
       this.input_ = text;
       this.lastQueriedInput_ = text;
@@ -550,6 +552,7 @@ export class ComposeboxElement extends I18nMixinLit
     if (this.showZps && files.length === 0) {
       this.queryAutocomplete_(/* clearMatches= */ false);
     }
+    this.inputState_ = inputState;
     if (files.length > 0) {
       this.$.context.setContextFiles(files);
     }
