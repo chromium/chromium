@@ -136,9 +136,6 @@ export class OmniboxAimAppElement extends CrLitElement {
   }
 
   private onPopupHidden_(): Promise<{input: string}> {
-    if (this.$.composebox.isVoiceInput) {
-      this.$.composebox.clearInput();
-    }
     const input = this.$.composebox.getInputText();
     if (!this.preserveContextOnClose_) {
       this.$.composebox.clearAllInputs(/* querySubmitted= */ false);
