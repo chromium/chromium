@@ -1671,8 +1671,6 @@ const FeatureEntry::FeatureParam kComposeboxNext[] = {
     {"ShowContextMenuTabPreviews", "true"},
     {"ShowComposeboxTypedSuggest", "true"},
     {"ShowRecentTabChip", "true"},
-    {"CloseComposeboxByEscape", "false"},
-    {"CloseComposeboxByClickOutside", "false"},
     {"ContextMenuEnableMultiTabSelection", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextSingleContext[] = {
@@ -1681,8 +1679,6 @@ const FeatureEntry::FeatureParam kComposeboxNextSingleContext[] = {
     {"ShowContextMenuTabPreviews", "true"},
     {"ShowComposeboxTypedSuggest", "true"},
     {"ShowRecentTabChip", "true"},
-    {"CloseComposeboxByEscape", "false"},
-    {"CloseComposeboxByClickOutside", "false"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextSingleContextForRealboxNext[] =
     {
