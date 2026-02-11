@@ -14925,21 +14925,6 @@
             ]
         }
     ],
-    "IOSUndoAutofill": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260211",
-                    "enable_features": [
-                        "AutofillUndoIos"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSUpdateFirstRunSequence": [
         {
             "platforms": [
