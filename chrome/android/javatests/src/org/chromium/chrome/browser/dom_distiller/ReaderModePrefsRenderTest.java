@@ -11,7 +11,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -46,13 +47,14 @@ public class ReaderModePrefsRenderTest {
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_READER_MODE)
                     .build();
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private DistilledPagePrefs mDistilledPagePrefs;
 
     private ReaderModePrefsView mReaderModePrefsView;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.launchActivity(null);
     }
 
