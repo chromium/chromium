@@ -5071,6 +5071,7 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/base/Promise.java" ]
     deps = [
       ":callback_java",
+      ":tasks_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }

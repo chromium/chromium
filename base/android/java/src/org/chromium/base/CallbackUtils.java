@@ -28,4 +28,9 @@ public class CallbackUtils {
     public static Runnable emptyRunnable() {
         return DO_NOTHING_RUNNABLE;
     }
+
+    /** Returns a Callback that calls the given Runnable. */
+    public static <T> Callback<T> fromRunnable(Runnable r) {
+        return unused -> r.run();
+    }
 }

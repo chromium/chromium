@@ -336,6 +336,14 @@ public class PromiseTest {
         assertThat(chainedPromise, is(rejectedPromise()));
     }
 
+    @Test
+    public void testMultipleHandlersAllowed() {
+        Promise<Integer> promise = new Promise<>();
+        promise.except(unused -> {});
+        // This should not throw an AssertionError anymore.
+        promise.then(unused -> {}, unused -> {});
+    }
+
     /** Convenience method that returns a Callback that does nothing with its result. */
     private static <T> Callback<T> pass() {
         return unusedArg -> {};
