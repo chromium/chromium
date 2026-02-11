@@ -43,15 +43,13 @@
         osc.connect(analyser).connect(context.destination);
         osc.start();
 
+        // Kick‑off offline rendering before the first suspend
+        const renderingCompletePromise = context.startRendering();
+
         // Suspend after getting a full analyser frame. (Not really necessary,
         // but it's nice that the frame doesn't include any initial zeroes.)
         let suspendFrame = analyser.fftSize;
-        const p1 = context.suspend(suspendFrame / sampleRate);
-
-        // Kick‑off offline rendering after scheduling the first suspend
-        const renderingCompletePromise = context.startRendering();
-
-        await p1;
+        await context.suspend(suspendFrame / sampleRate);
         {
           // Test successive calls to getFloatFrequencyData in the same
           // rendering quantum.

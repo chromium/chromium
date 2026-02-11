@@ -141,10 +141,15 @@ BaseAudioContext::BaseAudioContext(LocalDOMWindow* window,
     : ActiveScriptWrappable<BaseAudioContext>({}),
       ExecutionContextLifecycleStateObserver(window),
       InspectorHelperMixin(*AudioGraphTracer::FromWindow(*window), String()),
+      destination_node_(nullptr),
       task_runner_(window->GetTaskRunner(TaskType::kInternalMedia)),
       deferred_task_handler_(DeferredTaskHandler::Create(
           window->GetTaskRunner(TaskType::kInternalMedia),
-          render_quantum_frames)) {}
+          render_quantum_frames)),
+      periodic_wave_sine_(nullptr),
+      periodic_wave_square_(nullptr),
+      periodic_wave_sawtooth_(nullptr),
+      periodic_wave_triangle_(nullptr) {}
 
 BaseAudioContext::~BaseAudioContext() {
   {
@@ -228,10 +233,6 @@ void BaseAudioContext::Dispose() {
   // BaseAudioContext is going away, so remove the context from the orphan
   // handlers.
   GetDeferredTaskHandler().ClearContextFromOrphanHandlers();
-
-  // Reject any pending resolvers to avoid memory leaks or crashes (e.g.
-  // ScriptPromiseResolver requiring detachment).
-  RejectPendingResolvers();
 }
 
 void BaseAudioContext::ContextLifecycleStateChanged(
