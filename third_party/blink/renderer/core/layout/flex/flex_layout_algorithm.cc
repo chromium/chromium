@@ -2579,7 +2579,11 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     return LayoutResult::kNeedsEarlierBreak;
   }
 
-  if (!row_cross_size_updates_.empty()) {
+  // The cross size of a definite single flex line is based on the size of the
+  // container rather than the items. Don't expand the cross size and relayout
+  // in this case.
+  if (!row_cross_size_updates_.empty() &&
+      (is_multi_line_ || !IsContainerCrossSizeDefinite())) {
     DCHECK(!is_column_);
     return LayoutResult::kNeedsRelayoutWithRowCrossSizeChanges;
   }
