@@ -322,35 +322,7 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
   testing::NiceMock<MockActorTaskDelegate> mock_actor_task_delegate_;
 
  private:
-  struct TabState {
-    explicit TabState(content::WebContents* web_contents) {
-      ON_CALL(tab, GetContents).WillByDefault(::testing::Return(web_contents));
-      ON_CALL(tab, RegisterWillDetach)
-          .WillByDefault([this](tabs::TabInterface::WillDetach callback) {
-            return will_detach_callback_list_.Add(std::move(callback));
-          });
-      ON_CALL(tab, GetUnownedUserDataHost())
-          .WillByDefault(::testing::ReturnRef(user_data_host_));
-      tab_data_ = std::make_unique<ActorTabData>(&tab);
-    }
-
-    ~TabState() {
-      will_detach_callback_list_.Notify(
-          &tab, tabs::TabInterface::DetachReason::kDelete);
-    }
-
-    using WillDetachCallbackList =
-        base::RepeatingCallbackList<void(tabs::TabInterface*,
-                                         tabs::TabInterface::DetachReason)>;
-    WillDetachCallbackList will_detach_callback_list_;
-
-    tabs::MockTabInterface tab;
-
-   private:
-    ::ui::UnownedUserDataHost user_data_host_;
-    std::unique_ptr<ActorTabData> tab_data_;
-  };
-  std::optional<TabState> tab_state_;
+  std::optional<TestTabState> tab_state_;
 
   MockPolicyChecker no_enterprise_checker_{
       EnterprisePolicyBlockReason::kNotBlocked};

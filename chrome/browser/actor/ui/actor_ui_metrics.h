@@ -68,5 +68,10 @@ void RecordComputedTargetResult(ComputedTargetResult target_result);
 // Recorded when the model page target type is determined.
 void RecordModelPageTargetType(ModelPageTargetType target_type);
 
+// Recorded when the renderer resolved target result is retrieved by the event
+// dispatcher.
+void RecordRendererResolvedTargetResult(
+    RendererResolvedTargetResult target_result);
+
 }  // namespace actor::ui
 #endif  // CHROME_BROWSER_ACTOR_UI_ACTOR_UI_METRICS_H_

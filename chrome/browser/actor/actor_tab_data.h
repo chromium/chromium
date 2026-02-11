@@ -12,6 +12,7 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace actor {
 namespace ui {
@@ -37,11 +38,19 @@ class ActorTabData {
 
   const ui::DomNodeGeometry* GetLastObservedDomNodeGeometry();
 
+  // Sets the coordinate that was resolved by the renderer during the tool
+  // validation phase.
+  void SetLastRendererResolvedTarget(const gfx::Point& point);
+
+  // Retrieves the renderer resolved coordinate.
+  std::optional<gfx::Point> GetLastRendererResolvedTarget();
+
  private:
   // Stores the last observed page content for TOCTOU check.
   std::optional<optimization_guide::proto::AnnotatedPageContent>
       last_observed_page_content_;
   std::unique_ptr<ui::DomNodeGeometry> last_observed_dom_node_geometry_;
+  std::optional<gfx::Point> last_renderer_resolved_target_;
 
   ::ui::ScopedUnownedUserData<ActorTabData> scoped_unowned_user_data_;
 };

@@ -49,4 +49,12 @@ const ui::DomNodeGeometry* ActorTabData::GetLastObservedDomNodeGeometry() {
   return last_observed_dom_node_geometry_.get();
 }
 
+void ActorTabData::SetLastRendererResolvedTarget(const gfx::Point& point) {
+  last_renderer_resolved_target_ = point;
+}
+
+std::optional<gfx::Point> ActorTabData::GetLastRendererResolvedTarget() {
+  return last_renderer_resolved_target_;
+}
+
 }  // namespace actor

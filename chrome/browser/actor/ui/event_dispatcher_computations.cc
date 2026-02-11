@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/browser/actor/ui/ui_event_debugstring.h"
+#include "chrome/common/chrome_features.h"
 
 namespace actor::ui {
 namespace {
@@ -19,6 +20,36 @@ using base::UmaHistogramEnumeration;
 
 AsyncUiEvent ComputedMouseMove(tabs::TabInterface::Handle tab,
                                const PageTarget& target) {
+  ActorTabData* actor_tab_data = ActorTabData::From(tab.Get());
+  if (base::FeatureList::IsEnabled(
+          features::kGlicActorSplitValidateAndExecute)) {
+    if (actor_tab_data == nullptr) {
+      VLOG(4) << "ComputedMouseMove (GlicActorSplitValidateAndExecute): No "
+                 "ActorTabData available for tab "
+              << tab.raw_value();
+      RecordRendererResolvedTargetResult(
+          RendererResolvedTargetResult::kMissingActorTabData);
+      return MouseMove(tab, std::nullopt,
+                       TargetSource::kUnresolvableFromRenderer);
+    }
+    std::optional<gfx::Point> renderer_resolved_point =
+        actor_tab_data->GetLastRendererResolvedTarget();
+    if (!renderer_resolved_point.has_value()) {
+      VLOG(4) << "ComputedMouseMove: No cached renderer resolved target "
+                 "available for tab "
+              << tab.raw_value();
+      RecordRendererResolvedTargetResult(
+          RendererResolvedTargetResult::kRendererResolvedTargetHasNoValue);
+      return MouseMove(tab, std::nullopt,
+                       TargetSource::kUnresolvableFromRenderer);
+    }
+    VLOG(4) << "Retrieved renderer resolved target: "
+            << renderer_resolved_point.value().ToString();
+    RecordRendererResolvedTargetResult(RendererResolvedTargetResult::kSuccess);
+    return MouseMove(tab, renderer_resolved_point.value(),
+                     TargetSource::kRendererResolved);
+  }
+
   if (std::holds_alternative<gfx::Point>(target)) {
     RecordModelPageTargetType(ModelPageTargetType::kPoint);
     return MouseMove(tab, std::get<gfx::Point>(target),
@@ -28,8 +59,7 @@ AsyncUiEvent ComputedMouseMove(tabs::TabInterface::Handle tab,
   RecordModelPageTargetType(ModelPageTargetType::kDomNode);
 
   // Try to compute a point target by converting the DomNode to a gfx::Point.
-  auto* actor_tab_data = ActorTabData::From(tab.Get());
-  if (!actor_tab_data) {
+  if (actor_tab_data == nullptr) {
     VLOG(4) << "ComputedMouseMove: No ActorTabData available for tab "
             << tab.raw_value();
     RecordComputedTargetResult(ComputedTargetResult::kMissingActorTabData);

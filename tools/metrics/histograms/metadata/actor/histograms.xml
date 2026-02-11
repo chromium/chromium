@@ -147,6 +147,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.EventDispatcher.RendererResolvedTargetResult"
+    enum="RendererResolvedTargetResult" expires_after="2026-08-11">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    The result of retrieving the renderer resolved target. Recorded everytime we
+    compute a MouseMove UI event. This metric is gated behind a feature.
+  </summary>
+</histogram>
+
 <histogram name="Actor.EventDispatcher.{UiEvent}.Duration" units="microseconds"
     expires_after="2026-08-11">
   <owner>kenok@google.com</owner>

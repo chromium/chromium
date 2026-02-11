@@ -79,5 +79,18 @@ TEST_F(UiEventDebugStringTest, MouseClick) {
       "MouseClick[type=kRight, count=kDouble]");
 }
 
+TEST_F(UiEventDebugStringTest, MouseMove_UnresolvableFromRenderer) {
+  EXPECT_EQ(
+      DebugString(UiEvent(MouseMove(Handle(), std::nullopt,
+                                    TargetSource::kUnresolvableFromRenderer))),
+      "MouseMove[target=null target_source=UnresolvableFromRenderer]");
+}
+
+TEST_F(UiEventDebugStringTest, MouseMove_RendererResolved) {
+  EXPECT_EQ(DebugString(UiEvent(MouseMove(Handle(), gfx::Point(50, 50),
+                                          TargetSource::kRendererResolved))),
+            "MouseMove[target=50,50 target_source=RendererResolved]");
+}
+
 }  // namespace
 }  // namespace actor::ui

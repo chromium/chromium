@@ -228,6 +228,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/common/actor/page_stability_metrics_common.h:PageStabilityOutcome) -->
 
+<!-- LINT.IfChange(RendererResolvedTargetResult) -->
+
+<enum name="RendererResolvedTargetResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kMissingActorTabData"/>
+  <int value="2" label="kRendererResolvedTargetHasNoValue"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/actor_ui_metrics_types.h:RendererResolvedTargetResult) -->
+
 <!-- LINT.IfChange(StoppedReasonEnum) -->
 
 <enum name="StoppedReasonEnum">
