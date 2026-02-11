@@ -70,7 +70,7 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
     private final OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
     private final OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final @Nullable SettingsSearchCoordinator mSearchCoordinator;
+    private final Supplier<@Nullable SettingsSearchCoordinator> mSearchCoordinatorSupplier;
 
     public FragmentDependencyProvider(
             Context context,
@@ -78,13 +78,13 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
             OneshotSupplier<SnackbarManager> snackbarManagerSupplier,
             OneshotSupplier<BottomSheetController> bottomSheetControllerSupplier,
             MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            @Nullable SettingsSearchCoordinator searchCoordinator) {
+            Supplier<@Nullable SettingsSearchCoordinator> searchCoordinatorSupplier) {
         mContext = context;
         mProfile = profile;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mSearchCoordinator = searchCoordinator;
+        mSearchCoordinatorSupplier = searchCoordinatorSupplier;
     }
 
     @Override
@@ -108,8 +108,8 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         if (fragment instanceof SearchViewProvider f) {
             f.setSearchViewObserver(
                     (open) -> {
-                        if (mSearchCoordinator != null) {
-                            mSearchCoordinator.showSearchBar(!open);
+                        if (mSearchCoordinatorSupplier.get() != null) {
+                            mSearchCoordinatorSupplier.get().showSearchBar(!open);
                         }
                     });
         }
