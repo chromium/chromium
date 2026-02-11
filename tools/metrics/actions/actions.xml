@@ -10869,6 +10869,8 @@ should be able to be added at any place in this file.
     <variant name=".OpenMyActivity"
         summary="The user opened the My Activity page."/>
     <variant name=".OpenNewThread" summary="The user opened a new thread."/>
+    <variant name=".OpenSourcesMenu"
+        summary="The user opened the sources menu."/>
     <variant name=".OpenThreadHistory"
         summary="The user opened the thread history."/>
     <variant name=".TabFromSourcesMenuClicked"
