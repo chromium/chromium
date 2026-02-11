@@ -341,7 +341,7 @@
   }
 
   // Display an alert if there is a real error (not just user cancellation).
-  if (trustedVaultKeys.count != 0 && error &&
+  if (trustedVaultKeys.count == 0 && error &&
       error.code != webauthn::kErrorUserDismissedGPMPinFlow) {
     NSString* title =
         l10n_util::GetNSString(IDS_IOS_CREDENTIAL_EXCHANGE_GENERIC_ERROR_TITLE);
