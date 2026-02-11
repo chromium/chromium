@@ -409,6 +409,10 @@ apps::InstanceState AppServiceInstanceRegistryHelper::CalculateActivatedState(
 bool AppServiceInstanceRegistryHelper::IsOpenedInBrowser(
     const std::string& app_id,
     aura::Window* window) const {
+  if (app_id == app_constants::kChromeAppId) {
+    return true;
+  }
+
   // Windows created by exo with app/startup ids are not browser windows.
   if (exo::GetShellApplicationId(window) || exo::GetShellStartupId(window)) {
     return false;
