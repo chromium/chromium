@@ -335,7 +335,7 @@ lens::LensOverlayRequestId
 ComposeboxQueryController::GetRequestIdForViewportImage(
     const base::UnguessableToken& file_token) {
   auto* file_info = GetMutableFileInfo(file_token);
-  if (!file_info) {
+  if (!file_info || !file_info->request_id.has_value()) {
     return lens::LensOverlayRequestId();
   }
   if (use_separate_request_ids_for_viewport_images_) {
@@ -345,7 +345,7 @@ ComposeboxQueryController::GetRequestIdForViewportImage(
         lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
     return *file_info->viewport_request_id_;
   }
-  return file_info->request_id;
+  return file_info->request_id.value();
 }
 
 lens::AddedInputs ComposeboxQueryController::CreateAddedInputs(
@@ -356,14 +356,18 @@ lens::AddedInputs ComposeboxQueryController::CreateAddedInputs(
   }
   for (const auto& file_token : file_tokens) {
     auto* file_info = GetFileInfo(file_token);
-    if (!file_info || !IsValidFileUploadStatusForMultimodalRequest(
-                          file_info->upload_status)) {
+    // TODO(crbug.com/483174088): Add non-Lens context to the AddedInputs proto.
+    if (!file_info ||
+        !IsValidFileUploadStatusForMultimodalRequest(
+            file_info->upload_status) ||
+        !file_info->request_id.has_value()) {
       continue;
     }
 
     lens::LensOverlayLensFile* lens_file =
         added_inputs.add_added_inputs()->mutable_lens_file();
-    lens_file->set_vsrid(lens::Base64EncodeRequestId(file_info->request_id));
+    lens_file->set_vsrid(
+        lens::Base64EncodeRequestId(file_info->request_id.value()));
     lens_file->set_sticky_cluster_token(cluster_info_->search_session_id());
     auto mime_type = MimeTypeToString(file_info->mime_type);
     if (mime_type.has_value()) {
@@ -400,24 +404,47 @@ void ComposeboxQueryController::CreateSearchUrl(
     return;
   }
 
+  bool is_aim_search =
+      search_url_request_info->search_url_type == SearchUrlType::kAim;
+  if (is_aim_search) {
+    // For AIM queries, add the added inputs param to the request url params,
+    // regardless of if any of the context was a Lens upload.
+    // TODO(crbug.com/483174088): Add non-Lens context to the AddedInputs proto.
+    lens::AddedInputs added_inputs =
+        CreateAddedInputs(search_url_request_info->file_tokens);
+    if (added_inputs.added_inputs_size() > 0) {
+      std::string serialized_proto;
+      CHECK(added_inputs.SerializeToString(&serialized_proto));
+      std::string encoded_proto;
+      base::Base64UrlEncode(serialized_proto,
+                            base::Base64UrlEncodePolicy::OMIT_PADDING,
+                            &encoded_proto);
+      search_url_request_info->additional_params.insert(
+          {kAddedInputsQueryParameterKey, encoded_proto});
+    }
+  }
+
   if (should_create_multimodal_url && cluster_info_.has_value()) {
     std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs =
         std::make_unique<lens::LensOverlayContextualInputs>();
-    const FileInfo* last_active_file = nullptr;
+    const FileInfo* last_active_lens_file = nullptr;
     bool has_image_upload = false;
-    size_t num_valid_files = 0;
+    size_t num_valid_lens_files = 0;
     for (const auto& file_token : search_url_request_info->file_tokens) {
       auto* file_info = GetMutableFileInfo(file_token);
       if (!file_info) {
         continue;
       }
       if (IsValidFileUploadStatusForMultimodalRequest(
-              file_info->upload_status)) {
-        num_valid_files++;
+              file_info->upload_status) &&
+          file_info->request_id.has_value()) {
+        num_valid_lens_files++;
         auto* contextual_input = contextual_inputs->add_inputs();
-        contextual_input->mutable_request_id()->CopyFrom(file_info->request_id);
+        contextual_input->mutable_request_id()->CopyFrom(
+            file_info->request_id.value());
+
         has_image_upload |=
-            MediaTypeHasImage(file_info->request_id.media_type());
+            MediaTypeHasImage(file_info->request_id->media_type());
 
         // Add the viewport request id to the contextual inputs if it exists.
         if (file_info->viewport_request_id_) {
@@ -426,11 +453,13 @@ void ComposeboxQueryController::CreateSearchUrl(
               *file_info->viewport_request_id_);
           has_image_upload = true;
         }
-        last_active_file = file_info;
+        last_active_lens_file = file_info;
       }
     }
 
-    if (num_valid_files > 0) {
+    if (num_valid_lens_files > 0) {
+      DCHECK(last_active_lens_file != nullptr);
+      DCHECK(last_active_lens_file->request_id.has_value());
       // Trigger the interaction request on the last file if needed.
       // TODO(crbug.com/462509148): Determine how to support interaction
       // requests for multi-context input flow.
@@ -439,8 +468,8 @@ void ComposeboxQueryController::CreateSearchUrl(
             lens::RequestIdUpdateMode::kInteractionRequest,
             search_url_request_info->image_crop.has_value()
                 ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
-                : last_active_file->request_id.media_type(),
-            std::make_optional<int64_t>(last_active_file->GetContextId()));
+                : last_active_lens_file->request_id->media_type(),
+            last_active_lens_file->GetContextId());
         SendInteractionRequest(
             std::move(interaction_request_id),
             search_url_request_info->query_text,
@@ -451,25 +480,9 @@ void ComposeboxQueryController::CreateSearchUrl(
       }
 
       AddEncodedVisualSearchInteractionLogDataParam(
-          last_active_file, search_url_request_info->query_text,
+          last_active_lens_file, search_url_request_info->query_text,
           search_url_request_info->lens_overlay_selection_type,
           search_url_request_info->additional_params);
-
-      if (search_url_request_info->search_url_type == SearchUrlType::kAim) {
-        // Add the added inputs param.
-        lens::AddedInputs added_inputs =
-            CreateAddedInputs(search_url_request_info->file_tokens);
-        if (added_inputs.added_inputs_size() > 0) {
-          std::string serialized_proto;
-          CHECK(added_inputs.SerializeToString(&serialized_proto));
-          std::string encoded_proto;
-          base::Base64UrlEncode(serialized_proto,
-                                base::Base64UrlEncodePolicy::OMIT_PADDING,
-                                &encoded_proto);
-          search_url_request_info->additional_params.insert(
-              {kAddedInputsQueryParameterKey, encoded_proto});
-        }
-      }
 
       // Get the encoded visual search interaction log data.
       bool should_send_lns_surface =
@@ -477,13 +490,11 @@ void ComposeboxQueryController::CreateSearchUrl(
           (!suppress_lns_surface_param_if_no_image_ || has_image_upload);
       std::string lns_surface =
           should_send_lns_surface ? kLnsSurfaceParameterValue : std::string();
-      bool is_aim_search =
-          search_url_request_info->search_url_type == SearchUrlType::kAim;
       if (contextual_inputs->inputs_size() == 1) {
         auto context_media_type =
             search_url_request_info->image_crop.has_value()
                 ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
-                : last_active_file->request_id.media_type();
+                : last_active_lens_file->request_id->media_type();
         // If there is only contextual input, create a search url using the
         // vsrid (single-context) parameter.
         bool is_translate =
@@ -535,8 +546,8 @@ void ComposeboxQueryController::CreateSearchUrl(
     }
   }
 
-  // Treat queries in which the cluster info has expired, or without valid
-  // contextual inputs, as unimodal text queries.
+  // For queries in which the cluster info has expired, or without valid
+  // Lens contextual inputs, use the non-Lens AIM url creation flow.
   // TODO(crbug.com/432125987): Handle file reupload after cluster info
   // expiration.
   std::move(callback).Run(GetUrlForAim(
@@ -589,8 +600,13 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
     for (const auto& file_token :
          create_client_to_aim_request_info->file_tokens) {
       auto* file_info = GetFileInfo(file_token);
-      if (!file_info || !IsValidFileUploadStatusForMultimodalRequest(
-                            file_info->upload_status)) {
+      if (!file_info ||
+          !IsValidFileUploadStatusForMultimodalRequest(
+              file_info->upload_status) ||
+          !file_info->request_id.has_value()) {
+        // Only valid Lens file uploads should have LensImageQueryData created
+        // for them. Other contexts should rely on being added to the
+        // AddedInputs field in the payload.
         continue;
       }
       lens::LensImageQueryData* lens_image_query_data =
@@ -598,13 +614,14 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
       lens_image_query_data->set_search_session_id(
           cluster_info_->search_session_id());
       lens_image_query_data->mutable_request_id()->CopyFrom(
-          file_info->request_id);
-      auto media_type = file_info->request_id.media_type();
+          file_info->request_id.value());
+      auto media_type = file_info->request_id->media_type();
       lens_image_query_data->set_visual_input_type(
           MediaTypeToVisualInputType(media_type));
     }
 
     // Add added inputs.
+    // TODO(crbug.com/483174088): Add non-Lens context to the AddedInputs proto.
     lens::AddedInputs added_inputs =
         CreateAddedInputs(create_client_to_aim_request_info->file_tokens);
     if (added_inputs.added_inputs_size() > 0) {
@@ -708,8 +725,9 @@ void ComposeboxQueryController::StartFileUploadFlow(
       if (!info) {
         continue;
       }
-      if (info->request_id.context_id() ==
-          contextual_input_data->context_id.value()) {
+      if (info->request_id.has_value() &&
+          info->request_id->context_id() ==
+              contextual_input_data->context_id.value()) {
         previous_request_id = info->request_id;
         break;
       }
@@ -908,16 +926,17 @@ ComposeboxQueryController::CreateSuggestInputs(
     file_info = GetMutableFileInfo(attached_context_tokens.at(0));
   }
 
-  if (!file_info) {
+  if (!file_info || !file_info->request_id.has_value()) {
     return suggest_inputs;
   }
 
   suggest_inputs->set_encoded_request_id(
-      lens::Base64EncodeRequestId(file_info->request_id));
+      lens::Base64EncodeRequestId(file_info->request_id.value()));
   // TODO(crbug.com/445777189): Support multi-context input id flow for
   // suggest.
   suggest_inputs->set_contextual_visual_input_type(
-      lens::VitQueryParamValueForMediaType(file_info->request_id.media_type()));
+      lens::VitQueryParamValueForMediaType(
+          file_info->request_id->media_type()));
 
   if (attach_page_title_and_url_to_suggest_requests_) {
     suggest_inputs->set_send_page_title_and_url(true);
@@ -1168,8 +1187,10 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
     // Update the request id in all of the active_files_ to use the new routing
     // info.
     for (auto& [file_token, file_info] : active_files_) {
-      file_info->request_id.mutable_routing_info()->CopyFrom(
-          server_response.routing_info());
+      if (file_info->request_id.has_value()) {
+        file_info->request_id->mutable_routing_info()->CopyFrom(
+            server_response.routing_info());
+      }
       if (file_info->viewport_request_id_) {
         file_info->viewport_request_id_->mutable_routing_info()->CopyFrom(
             server_response.routing_info());
@@ -1375,7 +1396,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
               contextual_input_data->page_title),
           base::BindOnce(
               &CreateFileUploadRequestProtoWithPayloadAndContinue,
-              file_info->request_id, CreateClientContext(),
+              file_info->request_id.value(), CreateClientContext(),
 
               base::BindOnce(
                   &ComposeboxQueryController::
@@ -1391,7 +1412,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
             contextual_input_data->context_input->size() == 1);
       // TODO(crbug.com/441142455): Support image context via SkBitmap.
       CreateImageUploadRequest(
-          file_info->request_id,
+          file_info->request_id.value(),
           // Pass ownership of the contextual input data to the callback.
           std::move(contextual_input_data->context_input->front().bytes_),
           std::move(image_options),
@@ -1784,7 +1805,8 @@ ComposeboxQueryController::ConstructVisualSearchInteractionData(
     std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type,
     bool force_include_latest_interaction_request_data) {
   if (!file_info ||
-      !IsValidFileUploadStatusForMultimodalRequest(file_info->upload_status)) {
+      !IsValidFileUploadStatusForMultimodalRequest(file_info->upload_status) ||
+      !file_info->request_id.has_value()) {
     return std::nullopt;
   }
 
@@ -1832,7 +1854,7 @@ ComposeboxQueryController::ConstructVisualSearchInteractionData(
       NOTREACHED();
   }
 
-  auto media_type = file_info->request_id.media_type();
+  auto media_type = file_info->request_id->media_type();
   bool use_full_region =
       media_type == lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE ||
       media_type == lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE ||

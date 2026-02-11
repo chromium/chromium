@@ -33,4 +33,11 @@ FileInfo& FileInfo::operator=(const FileInfo& other) {
 }
 FileInfo::~FileInfo() = default;
 
+std::optional<int64_t> FileInfo::GetContextId() const {
+  if (request_id) {
+    return request_id->context_id();
+  }
+  return std::nullopt;
+}
+
 }  // namespace contextual_search

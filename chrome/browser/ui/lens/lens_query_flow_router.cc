@@ -150,14 +150,14 @@ void LensQueryFlowRouter::SendTaskCompletionGen204IfEnabled(
     }
     auto* file_info = session_handle->GetController()->GetFileInfo(
         overlay_tab_context_file_token_.value());
-    if (!file_info) {
+    if (!file_info || !file_info->request_id.has_value()) {
       return;
     }
 
     gen204_controller()->SendTaskCompletionGen204IfEnabled(
-        /*encoded_analytics_id=*/file_info->request_id.analytics_id(),
+        /*encoded_analytics_id=*/file_info->request_id->analytics_id(),
         user_action,
-        /*request_id=*/file_info->request_id);
+        /*request_id=*/file_info->request_id.value());
     return;
   }
   lens_overlay_query_controller()->SendTaskCompletionGen204IfEnabled(
@@ -174,7 +174,7 @@ void LensQueryFlowRouter::SendSemanticEventGen204IfEnabled(
     }
     auto* file_info = session_handle->GetController()->GetFileInfo(
         overlay_tab_context_file_token_.value());
-    if (!file_info) {
+    if (!file_info || !file_info->request_id.has_value()) {
       return;
     }
 

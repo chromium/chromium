@@ -436,7 +436,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   contextual_search::FileInfo file_info;
   file_info.tab_session_id = session_id;
   file_info.upload_status = contextual_search::FileUploadStatus::kUploadExpired;
-  file_info.request_id.set_context_id(12345);
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(12345);
   file_info_list.push_back(&file_info);
 
   EXPECT_CALL(*mock_controller_, GetFileInfoList())
@@ -524,7 +525,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   file_info.tab_session_id = session_id;
   file_info.upload_status =
       contextual_search::FileUploadStatus::kUploadSuccessful;
-  file_info.request_id.set_context_id(12345);
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(12345);
 
   file_info_list.push_back(&file_info);
 
@@ -616,7 +618,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   file_info.tab_session_id = session_id;
   file_info.upload_status =
       contextual_search::FileUploadStatus::kUploadSuccessful;
-  file_info.request_id.set_context_id(12345);
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(12345);
 
   // Populate input_data for comparison
   auto input_data = std::make_unique<lens::ContextualInputData>();
@@ -825,7 +828,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   file_info.tab_session_id = session_id;
   file_info.upload_status =
       contextual_search::FileUploadStatus::kUploadSuccessful;
-  file_info.request_id.set_context_id(12345);
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(12345);
 
   auto input_data = std::make_unique<lens::ContextualInputData>();
   SkBitmap old_bitmap;
@@ -879,6 +883,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 TEST_F(
     ContextualTasksComposeboxHandlerTest,
     CreateAndSendQueryMessage_NoRecontextualizationIfScreenshotUnchanged_SkBitmap) {
+  // Test case for no recontextualization.
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is NULL!";
   std::string kQuery = "valid tab query";
@@ -922,7 +927,8 @@ TEST_F(
   file_info.tab_session_id = session_id;
   file_info.upload_status =
       contextual_search::FileUploadStatus::kUploadSuccessful;
-  file_info.request_id.set_context_id(12345);
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(12345);
 
   auto input_data = std::make_unique<lens::ContextualInputData>();
   SkBitmap old_bitmap;
