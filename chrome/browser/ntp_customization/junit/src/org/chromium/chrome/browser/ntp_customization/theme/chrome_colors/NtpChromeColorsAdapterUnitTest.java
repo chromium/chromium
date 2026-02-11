@@ -160,7 +160,7 @@ public class NtpChromeColorsAdapterUnitTest {
         assertEquals(0, mAdapter.getSelectedPositionForTesting());
 
         int selectedPosition = 2;
-        mAdapter.setSelectedPosition(selectedPosition, /* isFromClick= */ true);
+        mAdapter.setSelectedPosition(selectedPosition);
 
         // Verify the new selected position and that the callback was invoked.
         assertEquals(selectedPosition, mAdapter.getSelectedPositionForTesting());
@@ -170,13 +170,13 @@ public class NtpChromeColorsAdapterUnitTest {
     @Test
     public void testSetSelectedPosition_invalidPosition() {
         // Set invalid selected position.
-        mAdapter.setSelectedPosition(mColorInfoList.size() + 1, /* isFromClick= */ true);
+        mAdapter.setSelectedPosition(mColorInfoList.size() + 1);
         // Verify the selected position is RecyclerView.NO_POSITION and no callback.
         assertEquals(RecyclerView.NO_POSITION, mAdapter.getSelectedPositionForTesting());
         verify(mOnItemClickCallback, never()).onResult(any());
 
         // Set another invalid position (negative).
-        mAdapter.setSelectedPosition(-5, /* isFromClick= */ true);
+        mAdapter.setSelectedPosition(-5);
         assertEquals(RecyclerView.NO_POSITION, mAdapter.getSelectedPositionForTesting());
         verify(mOnItemClickCallback, never()).onResult(any());
     }
@@ -187,22 +187,10 @@ public class NtpChromeColorsAdapterUnitTest {
         assertEquals(0, mAdapter.getSelectedPositionForTesting());
 
         // Set selected position to NO_POSITION.
-        mAdapter.setSelectedPosition(RecyclerView.NO_POSITION, /* isFromClick= */ true);
+        mAdapter.setSelectedPosition(RecyclerView.NO_POSITION);
 
         // Verify the selected position is NO_POSITION and callback is not invoked.
         assertEquals(RecyclerView.NO_POSITION, mAdapter.getSelectedPositionForTesting());
-        verify(mOnItemClickCallback, never()).onResult(any());
-    }
-
-    @Test
-    public void testSelectionSource_FromPropertyModel() {
-        int modelUpdatedPosition = 2;
-        mAdapter.setSelectedPosition(modelUpdatedPosition, /* isFromClick= */ false);
-
-        // Verifies that the position is updated visually
-        assertEquals(modelUpdatedPosition, mAdapter.getSelectedPositionForTesting());
-
-        // Verifies that the callback is not called
         verify(mOnItemClickCallback, never()).onResult(any());
     }
 }
