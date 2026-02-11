@@ -258,7 +258,7 @@ def entry_point_method(sb,
 
 def natives_macro_definition(sb, jni_mode, jni_obj, gen_jni_class, output_file, *,
                              enable_definition_macros):
-  macro_name = f'DEFINE_JNI_FOR_{jni_obj.java_class.name}_SEE_JNI_ZERO_README'
+  macro_name = f'DEFINE_JNI_FOR_{jni_obj.java_class.name}'
   if enable_definition_macros and jni_obj.natives:
     with sb.section(
         'Example signatures (to be implemented by #including file).'):
@@ -271,11 +271,6 @@ def natives_macro_definition(sb, jni_mode, jni_obj, gen_jni_class, output_file, 
           sb('\n')
 
     with sb.section('Java to native functions'):
-      # Ensure compiler warns if DEFINE_JNI(ClassName) is not used.
-      sb(f'// Emit a warning if DEFINE_JNI({jni_obj.java_class.name}) is ')
-      sb('missing in the including .cc file.\n')
-      sb('#pragma clang diagnostic push\n')
-      sb('#pragma clang diagnostic warning "-Wunused-macros"\n')
       with sb.cpp_macro(macro_name):
         # Anonymous namespace to scope the "using namespace" declaration.
         # All symbols use extern "C", so it doesn't actually hide symbols.
@@ -284,7 +279,6 @@ def natives_macro_definition(sb, jni_mode, jni_obj, gen_jni_class, output_file, 
             sb(f'using namespace {jni_obj.jni_namespace};\n')
           for native in jni_obj.natives:
             entry_point_method(sb, jni_mode, jni_obj, native, gen_jni_class, output_file)
-      sb('#pragma clang diagnostic pop')
   elif enable_definition_macros:
     sb(f'// There are no Java->Native methods.\n')
     sb(f'#define {macro_name}()\n')

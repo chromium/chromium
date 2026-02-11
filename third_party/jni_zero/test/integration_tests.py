@@ -150,13 +150,10 @@ class BaseTest(unittest.TestCase):
                               generate_placeholders=False,
                               enable_jni_multiplexing=False,
                               per_file_natives=False,
-                              enable_definition_macros=None,
                               **kwargs):
     is_javap = input_files[0].endswith('.class')
-    if enable_definition_macros is None:
-      enable_definition_macros = not is_javap
     golden_name = self._testMethodName
-    options = CliOptions(is_javap=is_javap, enable_definition_macros=enable_definition_macros,**kwargs)
+    options = CliOptions(is_javap=is_javap, **kwargs)
     name_to_goldens = {}
     if srcjar:
       dir_prefix, file_prefix = _MakePrefixes(options)
@@ -372,7 +369,7 @@ class Tests(BaseTest):
 
   def testBirectionalNonProxy(self):
     self._TestEndToEndGeneration(['SampleBidirectionalNonProxy.java'],
-                                 enable_definition_macros=False)
+                                 enable_definition_macros=True)
 
   def testBidirectionalClass(self):
     self._TestEndToEndGeneration(['SampleForTests.java'], srcjar=True)
