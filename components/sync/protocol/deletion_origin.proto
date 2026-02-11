@@ -30,7 +30,11 @@ message DeletionOrigin {
   // greater (i.e. the browser was updated in between).
   optional string chromium_version = 1;
 
-  optional string google_play_services_apk_version_name = 2 [deprecated = true];
+  // Populated by Android Google Play Services with the version of the APK
+  // identifying the version that originally created the deletion. This should
+  // not be populated for DeletionOrigin instances that go through Google Play
+  // Services but were actually first triggered in chromium.
+  optional string google_play_services_apk_version_name = 2;
 
   // Hash of the filename in the source code where the deletion originated. The
   // precise hashing function is unspecified and may change over time. It may
