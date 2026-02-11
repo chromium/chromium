@@ -23,6 +23,7 @@ class BrowserWindowInterface;
 namespace contextual_tasks {
 class ContextualTask;
 struct ContextualTaskContext;
+class ContextualTasksPanelController;
 
 class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
                                       public TabListInterfaceObserver,
@@ -40,8 +41,9 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
 
   // ActiveTaskContextProvider implementation.
   void RefreshContext() override;
-  void SetSessionHandleGetter(
-      SessionHandleGetter session_handle_getter) override;
+  void SetContextualTasksPanelController(
+      ContextualTasksPanelController* contextual_tasks_panel_controller)
+      override;
   void AddObserver(ActiveTaskContextProvider::Observer* observer) override;
   void RemoveObserver(ActiveTaskContextProvider::Observer* observer) override;
 
@@ -70,9 +72,7 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
 
   raw_ptr<BrowserWindowInterface> browser_window_;
   raw_ptr<ContextualTasksService> contextual_tasks_service_;
-
-  // Obtains session handle and task ID info about current tab.
-  std::optional<SessionHandleGetter> session_handle_getter_;
+  raw_ptr<ContextualTasksPanelController> contextual_tasks_panel_controller_;
 
   // The task associated with the currently active tab.
   std::optional<base::Uuid> active_task_id_;

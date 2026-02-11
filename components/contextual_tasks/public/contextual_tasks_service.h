@@ -49,7 +49,7 @@ class ContextualTasksService : public KeyedService {
  public:
   // Whether a task was updated by  a change in the local or remote client.
   enum class TriggerSource {
-    kUnown,
+    kUnknown,
     kLocal,
     kRemote,
   };

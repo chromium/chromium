@@ -80,7 +80,8 @@ class ContextualTasksSidePanelCoordinator
   DECLARE_USER_DATA(ContextualTasksSidePanelCoordinator);
 
   explicit ContextualTasksSidePanelCoordinator(
-      BrowserWindowInterface* browser_window);
+      BrowserWindowInterface* browser_window,
+      ActiveTaskContextProvider* active_task_context_provider);
 
   // For testing only.
   ContextualTasksSidePanelCoordinator(
@@ -113,6 +114,9 @@ class ContextualTasksSidePanelCoordinator
       const base::Uuid& task_id,
       std::unique_ptr<content::WebContents> web_contents) override;
   std::optional<ContextualTask> GetCurrentTask() override;
+  std::pair<std::optional<base::Uuid>,
+            contextual_search::ContextualSearchSessionHandle*>
+  GetSessionHandleForActiveTabOrSidePanel() override;
   size_t GetNumberOfActiveTasks() const override;
 
   // Check if the side panel is currently showing
@@ -212,10 +216,6 @@ class ContextualTasksSidePanelCoordinator
   // This checks both the side panel and the active tab for a valid session
   // handle.
   void NotifyActiveTaskContextProvider();
-
-  std::pair<std::optional<base::Uuid>,
-            contextual_search::ContextualSearchSessionHandle*>
-  GetSessionHandleForActiveTabOrSidePanel();
 
   // Browser window of the current side panel.
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
