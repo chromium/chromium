@@ -148,14 +148,14 @@ class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
-                       SearchOverriddenDialog_PreviouslyGoogle) {
+                       SearchOverriddenDialogWhenPreviouslyGoogle) {
   RunTestSequence(SetNewSearchProvider(DefaultSearch::kUseDefault),
                   LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
                   WaitForDialogToShow(), ScreenshotDialog());
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
-                       SearchOverriddenDialog_PreviouslyNonGoogle) {
+                       SearchOverriddenDialogWhenPreviouslyNonGoogle) {
   RunTestSequence(
       SetNewSearchProvider(DefaultSearch::kUseNonGoogleFromDefaultList),
       LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
-                       SearchOverriddenDialog_PreviouslyOldExtension) {
+                       SearchOverriddenDialogWhenPreviouslyOldExtension) {
   RunTestSequence(SetNewSearchProvider(DefaultSearch::kUseNewSearch),
                   LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
                   WaitForDialogToShow(), ScreenshotDialog());
