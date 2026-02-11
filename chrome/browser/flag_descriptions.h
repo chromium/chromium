@@ -2739,7 +2739,7 @@ inline constexpr char kLoadAllTabsAtStartupDescription[] =
 inline constexpr char kLockTopControlsOnLargeTabletsName[] =
     "Lock top controls on tablets";
 inline constexpr char kLockTopControlsOnLargeTabletsDescription[] =
-    "Disalllow scrolling off the top browser controls on large tablets";
+    "Disallow scrolling off the top browser controls on large tablets";
 
 inline constexpr char kLockTopControlsOnLargeTabletsV2Name[] =
     "Lock top controls on tablets - v2";
