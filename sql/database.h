@@ -1076,7 +1076,6 @@ class COMPONENT_EXPORT(SQL) Database {
     raw_ptr<sqlite3_stmt> stmt_;
     bool was_valid_;
   };
-  friend class StatementRef;
 
   // Executes a rollback statement, ignoring all transaction state. Used
   // internally in the transaction management code.
