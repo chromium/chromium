@@ -634,28 +634,6 @@ CookieSourceScheme DBToCookieSourceScheme(int value) {
   return static_cast<CookieSourceScheme>(value);
 }
 
-// Increments a specified TimeDelta by the duration between this object's
-// constructor and destructor. Not thread safe. Multiple instances may be
-// created with the same delta instance as long as their lifetimes are nested.
-// The shortest lived instances have no impact.
-class IncrementTimeDelta {
- public:
-  explicit IncrementTimeDelta(base::TimeDelta* delta)
-      : delta_(delta), original_value_(*delta), start_(base::Time::Now()) {}
-
-  IncrementTimeDelta(const IncrementTimeDelta&) = delete;
-  IncrementTimeDelta& operator=(const IncrementTimeDelta&) = delete;
-
-  ~IncrementTimeDelta() {
-    *delta_ = original_value_ + base::Time::Now() - start_;
-  }
-
- private:
-  raw_ptr<base::TimeDelta> delta_;
-  base::TimeDelta original_value_;
-  base::Time start_;
-};
-
 bool CreateV23Schema(sql::Database* db) {
   CHECK(!db->DoesTableExist("cookies"));
 
