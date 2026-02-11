@@ -317,7 +317,7 @@ void TapSuppressDialogsButton() {
 }
 
 // Tests that a confirmation dialog is shown, and that the completion block is
-// called with the correct value when the OK buton is tapped.
+// called with the correct value when the OK button is tapped.
 - (void)testShowJavaScriptConfirmationOK {
   // Load the confirmation test page and tap on the link.
   const GURL kURL = self.testServer->GetURL(kConfirmationURLPath);
@@ -338,7 +338,7 @@ void TapSuppressDialogsButton() {
 }
 
 // Tests that a confirmation dialog is shown, and that the completion block is
-// called with the correct value when the Cancel buton is tapped.
+// called with the correct value when the Cancel button is tapped.
 - (void)testShowJavaScriptConfirmationCancelled {
   // Load the confirmation test page and tap on the link.
   const GURL kURL = self.testServer->GetURL(kConfirmationURLPath);
@@ -360,7 +360,7 @@ void TapSuppressDialogsButton() {
 }
 
 // Tests that a prompt dialog is shown, and that the completion block is called
-// with the correct value when the OK buton is tapped.
+// with the correct value when the OK button is tapped.
 - (void)testShowJavaScriptPromptOK {
   // Load the prompt test page and tap on the link.
   const GURL kURL = self.testServer->GetURL(kPromptURLPath);
@@ -384,7 +384,7 @@ void TapSuppressDialogsButton() {
 }
 
 // Tests that a prompt dialog is shown, and that the completion block is called
-// with the correct value when the Cancel buton is tapped.
+// with the correct value when the Cancel button is tapped.
 - (void)testShowJavaScriptPromptCancelled {
   // Load the prompt test page and tap on the link.
   const GURL kURL = self.testServer->GetURL(kPromptURLPath);

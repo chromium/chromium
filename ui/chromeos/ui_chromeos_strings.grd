@@ -1807,7 +1807,7 @@
       </message>
 
       <!-- Settings > Internet > SIM lock/unlock dialog -->
-      <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_CHANGE_PIN" desc="Settings > Internet > Network details > Lock/unlock SIM card: Label for buton to change the PIN.">
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_CHANGE_PIN" desc="Settings > Internet > Network details > Lock/unlock SIM card: Label for button to change the PIN.">
         Change PIN
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_CARD_MISSING" desc="Settings > Internet > Network details > Lock/unlock SIM card: Message when SIM card is missing.">

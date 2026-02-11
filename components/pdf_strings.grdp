@@ -16,7 +16,7 @@
     <message name="IDS_PDF_PASSWORD_DIALOG_TITLE" desc="Title of the dialog which asks the user for a password to open a PDF file.">
       Password required
     </message>
-    <message name="IDS_PDF_PASSWORD_SUBMIT" desc="Button label for the buton to submit the PDF password form">
+    <message name="IDS_PDF_PASSWORD_SUBMIT" desc="Button label for the button to submit the PDF password form">
       Submit
     </message>
     <message name="IDS_PDF_PASSWORD_INVALID" desc="Error message when an invalid password is entered">

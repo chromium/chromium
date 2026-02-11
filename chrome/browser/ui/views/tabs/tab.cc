@@ -1143,7 +1143,7 @@ void Tab::UpdateIconVisibility() {
 
   if (data().pinned || is_animating_from_pinned_) {
     // When the tab is pinned, we can show one of the two icons; the alert icon
-    // is given priority over the favicon. The close buton is never shown.
+    // is given priority over the favicon. The close button is never shown.
     showing_alert_indicator_ = has_alert_icon;
     showing_icon_ = has_favicon && !has_alert_icon;
     showing_close_button_ = false;

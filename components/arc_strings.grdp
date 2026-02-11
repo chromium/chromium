@@ -104,10 +104,10 @@
   <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_LEARN_MORE_LABEL" desc="The label for the link that leads to a help support article to learn more about Passpoint.">
     Learn more
   </message>
-  <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_ALLOW_BUTTON" desc="The label for the buton for user to allow an app to set up WiFi networks through Passpoint.">
+  <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_ALLOW_BUTTON" desc="The label for the button for user to allow an app to set up WiFi networks through Passpoint.">
     Allow
   </message>
-  <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_DONT_ALLOW_BUTTON" desc="The label for the buton for user to disallow an app to set up WiFi networks through Passpoint.">
+  <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_DONT_ALLOW_BUTTON" desc="The label for the button for user to disallow an app to set up WiFi networks through Passpoint.">
     Don't allow
   </message>
   <message name="IDS_ARC_VM_DATA_MIGRATION_NOTIFICATION_TITLE" desc="Title of the notification to inform that there is an important update to improve the performance of Android apps on ChromeOS.">

@@ -358,7 +358,7 @@ TEST_F(FrameSizeButtonTest, RightMouseButton) {
 TEST_F(FrameSizeButtonTest, CancelSnapTest) {
   EXPECT_EQ(views::Button::STATE_NORMAL, size_button()->GetState());
 
-  // Press on the size button and drag toward to close buton to enter waiting-
+  // Press on the size button and drag toward to close button to enter waiting-
   // for-snap mode.
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(CenterPointInScreen(size_button()));

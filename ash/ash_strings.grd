@@ -7243,10 +7243,10 @@ No devices connected.
       <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_SUBTITLE" desc="Subtext for the Apps Collections Tutorial View dismiss dialog that shows over the Apps Collections in the Launcher when the user attempts to sort their apps. The dialog serves as confirmation to exit the Apps Collections Tutorial View">
         You can start customizing your app layout once you exit this view.
       </message>
-      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_CANCEL" desc="The label for the cancel button on the Apps Collections Tutorial View dismiss dialog that shows over the Apps Collections in the Launcher when the user attempts to sort their apps. The dialog asks for confirmation to exit the Apps Collections Tutorial View and pressing the cancel buton will close the dialog and keep the Tutorial View">
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_CANCEL" desc="The label for the cancel button on the Apps Collections Tutorial View dismiss dialog that shows over the Apps Collections in the Launcher when the user attempts to sort their apps. The dialog asks for confirmation to exit the Apps Collections Tutorial View and pressing the cancel button will close the dialog and keep the Tutorial View">
         Cancel
       </message>
-      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_EXIT" desc="The label for the exit button on the Apps Collections Tutorial View dismiss dialog that shows over the Apps Collections in the Launcher when the user attempts to sort their apps. The dialog serves as confirmation to exit the Apps Collections Tutorial View and pressing the exit buton will close the dialog and exit the Tutorial View">
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_EXIT" desc="The label for the exit button on the Apps Collections Tutorial View dismiss dialog that shows over the Apps Collections in the Launcher when the user attempts to sort their apps. The dialog serves as confirmation to exit the Apps Collections Tutorial View and pressing the exit button will close the dialog and exit the Tutorial View">
         Exit
       </message>
       <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISCOVERY_CHIP_LABEL" desc="The label for the button displayed at the bottom of Apps Collections Tutorial View. When the user clicks the Discovery chip, it will launch a secondary app to showcase more apps.">
