@@ -897,7 +897,6 @@ class COMPONENT_EXPORT(SQL) Database {
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, RegisterIntentToUpload);
   FRIEND_TEST_ALL_PREFIXES(SQLiteFeaturesTest, WALNoClose);
   FRIEND_TEST_ALL_PREFIXES(SQLEmptyPathDatabaseTest, EmptyPathTest);
-  FRIEND_TEST_ALL_PREFIXES(StreamingBlobHandleTest, Basic);
 
   // A scoped utility to setup error reporting during the `Open()` operation
   class ScopedOpenErrorReporter {
