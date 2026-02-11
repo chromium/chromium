@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [14.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v13.1.1...chromium-bidi-v14.0.0) (2026-02-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* `emulation.setClientHintsOverride` -> `userAgentClientHints.setClientHintsOverride` ([#4053](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4053))
+
+### Features
+
+* `emulation.setClientHintsOverride` -&gt; `userAgentClientHints.setClientHintsOverride` ([#4053](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4053)) ([2cc75f7](https://github.com/GoogleChromeLabs/chromium-bidi/commit/2cc75f7b81a617d0ed0103c9c0cfae7f6446deb6))
+
 ## [13.1.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v13.1.0...chromium-bidi-v13.1.1) (2026-02-02)
 
 
