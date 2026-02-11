@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -80,6 +81,50 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
   // 8. Verify tab is no longer focused.
   auto focused_data_unpinned = manager.GetFocusedTabData();
   EXPECT_FALSE(focused_data_unpinned.focus());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
+                       TakesActiveTabStatusIntoAccount) {
+  browser_activator().SetMode(BrowserActivator::Mode::kManual);
+
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+  ASSERT_TRUE(service);
+  auto& manager = service->sharing_manager();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  tabs::TabInterface* tab1 = browser()->GetActiveTabInterface();
+  ASSERT_TRUE(tab1);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  tabs::TabInterface* tab2 = browser()->GetActiveTabInterface();
+  ASSERT_TRUE(tab2);
+  ASSERT_NE(tab1, tab2);
+
+  service->ToggleUI(browser(), /*prevent_close=*/false,
+                    mojom::InvocationSource::kTopChromeButton);
+
+  // Make sure both tabs are pinned.
+  manager.PinTabs({tab1->GetHandle(), tab2->GetHandle()},
+                  GlicPinTrigger::kUnknown);
+  EXPECT_TRUE(manager.IsTabPinned(tab1->GetHandle()));
+  EXPECT_TRUE(manager.IsTabPinned(tab2->GetHandle()));
+
+  // Verify tab2 (active) is focused.
+  auto focused_data = manager.GetFocusedTabData();
+  ASSERT_TRUE(focused_data.focus());
+  EXPECT_EQ(focused_data.focus()->GetHandle(), tab2->GetHandle());
+
+  // Activate tab 1.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_EQ(browser()->GetActiveTabInterface(), tab1);
+
+  // Verify tab 1 is focused.
+  auto focused_data_final = manager.GetFocusedTabData();
+  ASSERT_TRUE(focused_data_final.focus());
+  EXPECT_EQ(focused_data_final.focus()->GetHandle(), tab1->GetHandle());
 }
 
 }  // namespace glic
