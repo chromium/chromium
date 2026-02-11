@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
@@ -37,6 +38,7 @@ public class TabModelOrchestrator {
     protected @MonotonicNonNull TabModelSelectorBase mTabModelSelector;
     protected @MonotonicNonNull TabPersistencePolicy mTabPersistencePolicy;
     protected @Nullable TabPersistentStore mShadowTabPersistentStore;
+    protected @Nullable PersistentStoreMigrationManager mMigrationManager;
     private boolean mTabModelsInitialized;
     private @Nullable Callback<String> mOnStandardActiveIndexRead;
     private boolean mTabPersistentStoreDestroyedEarly;

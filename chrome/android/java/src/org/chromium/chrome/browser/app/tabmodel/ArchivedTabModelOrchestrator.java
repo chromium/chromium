@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorHolder;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
-import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -413,14 +412,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                     }
                 };
 
-        PersistentStoreMigrationManager migrationManager =
-                mTabWindowManager.getArchivedPersistentStoreMigrationManager();
-        assert migrationManager != null;
-
+        mMigrationManager = new PersistentStoreMigrationManagerImpl(ARCHIVED_WINDOW_TAG);
         mTabPersistentStore =
                 buildAuthoritativeStore(
                         TabPersistentStoreImpl.CLIENT_TAG_ARCHIVED,
-                        migrationManager,
+                        mMigrationManager,
                         mTabPersistencePolicy,
                         mTabModelSelector,
                         mArchivedTabCreatorManager,
@@ -473,7 +469,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     /**
      * Begins the process of decluttering tabs if it hasn't been started already.
      *
-     * @param regularSelector The regular {@link TabModelSelecltor} to do a declutter pass for.
+     * @param orchestrator Contains the regular {@link TabModelSelector} to do a declutter pass for.
      */
     public void doDeclutterPass(TabbedModeTabModelOrchestrator orchestrator) {
         ThreadUtils.assertOnUiThread();
@@ -586,13 +582,9 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         mTabGroupSyncService);
         mTabArchiver.addObserver(mTabArchiverObserver);
 
-        PersistentStoreMigrationManager migrationManager =
-                mTabWindowManager.getArchivedPersistentStoreMigrationManager();
-        assert migrationManager != null;
-
         mShadowTabPersistentStore =
                 buildNonOtrShadowStore(
-                        migrationManager,
+                        mMigrationManager,
                         mShadowTabCreator,
                         mTabModelSelector,
                         mTabPersistencePolicy,

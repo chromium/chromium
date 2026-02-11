@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
-import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -184,9 +183,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         mWindowId = assignedIndex;
         String windowTag = Integer.toString(assignedIndex);
 
-        PersistentStoreMigrationManager migrationManager =
-                tabWindowManager.getPersistentStoreMigrationManagerById(assignedIndex);
-        assert migrationManager != null;
+        mMigrationManager = new PersistentStoreMigrationManagerImpl(windowTag);
 
         // Instantiate TabPersistentStore
         mTabPersistencePolicy =
@@ -195,7 +192,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         mTabPersistentStore =
                 buildAuthoritativeStore(
                         TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
-                        migrationManager,
+                        mMigrationManager,
                         mTabPersistencePolicy,
                         mTabModelSelector,
                         tabCreatorManager,
@@ -267,14 +264,10 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             Log.i(TAG, "mTabStateStoreIsAuthoritative: " + mTabStateStoreIsAuthoritative);
 
             String windowTag = Integer.toString(mWindowId);
-            PersistentStoreMigrationManager migrationManager =
-                    TabWindowManagerSingleton.getInstance()
-                            .getPersistentStoreMigrationManagerById(mWindowId);
-            assert migrationManager != null;
 
             mShadowTabPersistentStore =
                     buildShadowStore(
-                            migrationManager,
+                            mMigrationManager,
                             mRegularShadowTabCreator,
                             mIncognitoShadowTabCreator,
                             mTabModelSelector,

@@ -54,12 +54,8 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
     /**
      * @param windowId The id of the window to load tabs for.
      * @param profile The profile to scope access to.
-     * @param migrationManager The migration manager associated with the window.
      */
-    public HeadlessTabModelOrchestrator(
-            @WindowId int windowId,
-            Profile profile,
-            PersistentStoreMigrationManager migrationManager) {
+    public HeadlessTabModelOrchestrator(@WindowId int windowId, Profile profile) {
         TabPersistencePolicy policy =
                 new TabbedModeTabPersistencePolicy(
                         windowId, /* mergeTabsOnStartup= */ false, /* tabMergingEnabled= */ false);
@@ -71,6 +67,8 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
         TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
 
         String windowTag = String.valueOf(windowId);
+        PersistentStoreMigrationManager migrationManager =
+                new PersistentStoreMigrationManagerImpl(windowTag);
         mTabPersistentStore =
                 buildAuthoritativeStore(
                         TabPersistentStoreImpl.CLIENT_TAG_HEADLESS,

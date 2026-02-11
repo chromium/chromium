@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
-import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
@@ -78,9 +77,7 @@ public class MultiWindowTestUtils {
 
                     @Override
                     public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
-                            @WindowId int windowId,
-                            Profile profile,
-                            PersistentStoreMigrationManager migrationManager) {
+                            @WindowId int windowId, Profile profile) {
                         return Pair.create(
                                 new MockTabModelSelector(
                                         regularProfile,

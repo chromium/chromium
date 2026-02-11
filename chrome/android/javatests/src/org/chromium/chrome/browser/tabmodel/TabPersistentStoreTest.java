@@ -280,9 +280,7 @@ public class TabPersistentStoreTest {
 
                 @Override
                 public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
-                        @WindowId int windowId,
-                        Profile profile,
-                        PersistentStoreMigrationManager migrationManager) {
+                        @WindowId int windowId, Profile profile) {
                     return Pair.create(null, null);
                 }
             };
