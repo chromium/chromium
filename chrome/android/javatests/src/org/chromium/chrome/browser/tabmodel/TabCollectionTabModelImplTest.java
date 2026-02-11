@@ -1798,6 +1798,141 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
+    @UiThreadTest
+    public void testSetTabGroupVisualData_InvalidColorId() {
+        Tab tab0 = getTabAt(0);
+        mCollectionModel.createSingleTabGroup(tab0);
+        Token tabGroupId = tab0.getTabGroupId();
+        assertNotNull(tabGroupId);
+
+        final String newTitle = "Visual Data Title";
+        final int newColor = TabGroupColorUtils.INVALID_COLOR_ID;
+        final boolean newCollapsed = true;
+        final boolean newAnimate = false;
+
+        CallbackHelper colorCallback = new CallbackHelper();
+
+        TabGroupModelFilterObserver observer =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void didChangeTabGroupColor(Token groupColorId, int groupColor) {
+                        if (!tabGroupId.equals(groupColorId)) return;
+
+                        assertEquals(TabGroupColorId.GREY, groupColor);
+                        colorCallback.notifyCalled();
+                    }
+                };
+
+        mCollectionModel.addTabGroupObserver(observer);
+
+        try {
+            mCollectionModel.setTabGroupVisualData(
+                    tabGroupId, newTitle, newColor, newCollapsed, newAnimate);
+
+            assertEquals(
+                    TabGroupColorUtils.INVALID_COLOR_ID,
+                    TabGroupVisualDataStore.getTabGroupColor(tabGroupId));
+
+            assertEquals(TabGroupColorId.GREY, mCollectionModel.getTabGroupColor(tabGroupId));
+
+            assertEquals(1, colorCallback.getCallCount());
+        } finally {
+            mCollectionModel.removeTabGroupObserver(observer);
+        }
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testSetTabGroupVisualData_EmptyTitle() {
+        Tab tab0 = getTabAt(0);
+        mCollectionModel.createSingleTabGroup(tab0);
+        Token tabGroupId = tab0.getTabGroupId();
+        assertNotNull(tabGroupId);
+
+        mCollectionModel.setTabGroupTitle(tabGroupId, "Some Title");
+
+        final String newTitle = "";
+        final int newColor = TabGroupColorId.RED;
+        final boolean newCollapsed = true;
+        final boolean newAnimate = false;
+
+        CallbackHelper titleCallback = new CallbackHelper();
+
+        TabGroupModelFilterObserver observer =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void didChangeTabGroupTitle(Token groupTitleId, String groupTitle) {
+                        if (!tabGroupId.equals(groupTitleId)) return;
+
+                        assertEquals(UNSET_TAB_GROUP_TITLE, groupTitle);
+                        titleCallback.notifyCalled();
+                    }
+                };
+
+        mCollectionModel.addTabGroupObserver(observer);
+
+        try {
+            mCollectionModel.setTabGroupVisualData(
+                    tabGroupId, newTitle, newColor, newCollapsed, newAnimate);
+
+            assertEquals(
+                    UNSET_TAB_GROUP_TITLE, TabGroupVisualDataStore.getTabGroupTitle(tabGroupId));
+
+            assertEquals(UNSET_TAB_GROUP_TITLE, mCollectionModel.getTabGroupTitle(tabGroupId));
+
+            assertEquals(1, titleCallback.getCallCount());
+        } finally {
+            mCollectionModel.removeTabGroupObserver(observer);
+        }
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testSetTabGroupVisualData_FlushesCacheEvenIfUnchanged_AllProperties() {
+        Tab tab0 = getTabAt(0);
+        mCollectionModel.createSingleTabGroup(tab0);
+        Token tabGroupId = tab0.getTabGroupId();
+        assertNotNull(tabGroupId);
+
+        final String title = "Cached Title";
+        final int color = TabGroupColorId.RED;
+        final boolean collapsed = true;
+
+        TabGroupCollectionData mockData = mock(TabGroupCollectionData.class);
+        doReturn(tabGroupId).when(mockData).getTabGroupId();
+        doReturn(title).when(mockData).getTitle();
+        doReturn(color).when(mockData).getColor();
+        doReturn(collapsed).when(mockData).isCollapsed();
+
+        TabGroupVisualDataStore.cacheGroups(new TabGroupCollectionData[] {mockData});
+
+        try {
+            mCollectionModel.setTabGroupVisualData(
+                    tabGroupId, title, color, collapsed, /* animate= */ false);
+
+            assertFalse(TabGroupVisualDataStore.isTabGroupCachedForRestore(tabGroupId));
+
+            assertEquals(
+                    "SharedPreferences should be updated to match the cache/input",
+                    title,
+                    TabGroupVisualDataStore.getTabGroupTitle(tabGroupId));
+            assertEquals(
+                    "SharedPreferences should be updated to match the cache/input",
+                    color,
+                    TabGroupVisualDataStore.getTabGroupColor(tabGroupId));
+            assertEquals(
+                    "SharedPreferences should be updated to match the cache/input",
+                    collapsed,
+                    TabGroupVisualDataStore.getTabGroupCollapsed(tabGroupId));
+        } finally {
+            TabGroupVisualDataStore.removeCachedGroups(new TabGroupCollectionData[] {mockData});
+        }
+    }
+
+    @Test
+    @MediumTest
     public void testCloseTabGroup_VisualDataRemoved() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
