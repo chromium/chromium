@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -13,7 +14,10 @@
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/browser/preloading_trigger_type.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/shell/browser/shell.h"
+#include "ui/base/page_transition_types.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -263,6 +267,56 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
 
   EXPECT_EQ(external_url, nav_observer.last_navigation_url());
   EXPECT_EQ(app_url, web_contents()->GetLastCommittedURL());
+}
+
+class IsolatedWebAppThrottleWithPrerenderBrowserTest
+    : public IsolatedWebAppThrottleBrowserTest {
+ public:
+  IsolatedWebAppThrottleWithPrerenderBrowserTest() {
+    prerender_helper_ = std::make_unique<test::PrerenderTestHelper>(
+        base::BindRepeating(
+            &IsolatedWebAppThrottleWithPrerenderBrowserTest::web_contents,
+            base::Unretained(this)));
+  }
+
+ protected:
+  test::PrerenderTestHelper& prerender_helper() { return *prerender_helper_; }
+
+  int GetPageCount() {
+    int count = 0;
+    web_contents()->ForEachRenderFrameHost([&](RenderFrameHost* rfh) {
+      if (!rfh->GetParent()) {
+        count++;
+      }
+    });
+    return count;
+  }
+
+ private:
+  std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleWithPrerenderBrowserTest,
+                       CrossOriginPrerenderInAppIsCancelled) {
+  GURL app_url = GetAppURL("/cross-origin-isolated.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), app_url));
+  ASSERT_EQ(kIsolatedApplication, main_rfh()->GetWebExposedIsolationLevel());
+
+  EXPECT_EQ(1, GetPageCount());
+
+  // A cross-origin prerender trigger via AddEmbedderTriggeredPrerenderAsync
+  // will be succeeded, but its navigation will be blocked. So, the page count
+  // should still be 1.
+  GURL prerender_url = GetNonAppURL("/simple_page.html");
+  std::unique_ptr<content::PrerenderHandle> handle =
+      prerender_helper().AddEmbedderTriggeredPrerenderAsync(
+          prerender_url, content::PreloadingTriggerType::kEmbedder,
+          "PrewarmDefaultSearchEngine",
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  prerender_helper().WaitForPrerenderLoadCompletion(prerender_url);
+
+  EXPECT_EQ(1, GetPageCount());
 }
 
 }  // namespace content

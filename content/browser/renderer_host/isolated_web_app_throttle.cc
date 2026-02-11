@@ -218,7 +218,13 @@ IsolatedWebAppThrottle::MaybeThrottleNavigationTransition(
     // check `dest_needs_apps_isolation` too.
     if (dest_tuple != web_contents_isolation_tuple ||
         !dest_needs_apps_isolation) {
-      RunNavigationInDefaultBrowser(navigation_handle());
+      // Route the navigation to the default browser if the navigation happens
+      // in the primary main frame. Otherwise, we can simply cancel it as we
+      // don't want to continue background page navigations, e.g. prerendering,
+      // in the default browser.
+      if (navigation_handle()->IsInPrimaryMainFrame()) {
+        RunNavigationInDefaultBrowser(navigation_handle());
+      }
       return ThrottleAction::CANCEL;
     }
 
