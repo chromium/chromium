@@ -174,7 +174,7 @@ static_library("test_support") {
     deps += [ "//chrome/browser/background/extensions" ]
   }
 
-  public_deps = []
+  public_deps = [ "//chrome/browser/origin_trials" ]
 
   testonly = true
 
@@ -2557,6 +2557,7 @@ if (!is_android) {
       "//chrome/browser/notifications/scheduler/test:test_support",
       "//chrome/browser/optimization_guide:browser_tests",
       "//chrome/browser/optimization_guide:test_support",
+      "//chrome/browser/origin_trials:browser_tests",
       "//chrome/browser/page_content_annotations",
       "//chrome/browser/password_manager/password_change",
       "//chrome/browser/payments:browser_tests",
@@ -3556,7 +3557,6 @@ if (!is_android) {
       "../browser/notifications/notification_permission_browsertest.cc",
       "../browser/notifications/scheduler/notification_schedule_service_browsertest.cc",
       "../browser/ntp_tiles/ntp_tiles_browsertest.cc",
-      "../browser/origin_trials/origin_trials_browsertest.cc",
       "../browser/os_crypt/os_crypt_async_browsertest.cc",
       "../browser/page_content_annotations/multi_source_page_context_fetcher_browsertest.cc",
       "../browser/page_content_annotations/page_content_annotations_service_browsertest.cc",
