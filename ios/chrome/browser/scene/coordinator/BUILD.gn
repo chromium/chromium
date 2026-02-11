@@ -9,6 +9,11 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/autofill/core/browser",
+    "//components/signin/public/identity_manager",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser:fetcher",
+    "//components/supervised_user/core/browser/proto",
     "//ios/chrome/app",
     "//ios/chrome/app:task_names",
     "//ios/chrome/app/application_delegate:app_state",
@@ -46,6 +51,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/profile:utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:system_identity_manager",
@@ -54,5 +61,37 @@ source_set("coordinator") {
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/youtube_incognito/coordinator",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
+    "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "scene_coordinator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/supervised_user/test_support",
+    "//ios/chrome/app/application_delegate:tab_opening",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_util_test_support",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
+    "//ios/web/public/test",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

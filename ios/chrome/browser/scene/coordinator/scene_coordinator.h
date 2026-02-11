@@ -26,6 +26,7 @@ enum class SafariDataImportEntryPoint;
 @class ShowSigninCommand;
 @class SigninCoordinator;
 @protocol TabOpening;
+enum class UserFeedbackSender;
 struct UrlLoadParams;
 
 namespace password_manager {
@@ -56,7 +57,7 @@ enum class WarningType;
 @property(nonatomic, assign) Browser* incognitoBrowser;
 
 // Navigation View controller for the settings.
-// TODO(crbug.com/463347803): This property is temporarily exposed to facilitate
+// TODO(crbug.com/483418864): This property is temporarily exposed to facilitate
 // migration. It should be private once the migration is complete.
 @property(nonatomic, strong)
     SettingsNavigationController* settingsNavigationController;
@@ -170,6 +171,19 @@ enum class WarningType;
 // Shows the settings Privacy UI.
 - (void)showPrivacySettingsFromViewController:
     (UIViewController*)baseViewController;
+
+// Shows the Report an Issue UI, presenting from `baseViewController`.
+- (void)showReportAnIssueFromViewController:
+            (UIViewController*)baseViewController
+                                     sender:(UserFeedbackSender)sender;
+
+// Shows the Report an Issue UI, presenting from `baseViewController`, using
+// `specificProductData` for additional product data to be sent in the report.
+- (void)
+    showReportAnIssueFromViewController:(UIViewController*)baseViewController
+                                 sender:(UserFeedbackSender)sender
+                    specificProductData:(NSDictionary<NSString*, NSString*>*)
+                                            specificProductData;
 
 // Shows the Settings UI if nothing else is displayed.
 - (void)maybeShowSettingsFromViewController;

@@ -11,9 +11,6 @@ struct UrlLoadParams;
 @class UserFeedbackData;
 @class WrangledBrowser;
 
-using UserFeedbackDataCallback =
-    base::RepeatingCallback<void(UserFeedbackData*)>;
-
 // Methods exposed for testing. This is terrible and should be rewritten.
 @interface SceneController ()
 
@@ -28,13 +25,6 @@ using UserFeedbackDataCallback =
 // NO, then call `completion`.
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox;
-
-// Presents the "Report an issue" screen within the given `timeout`.
-- (void)presentReportAnIssueViewController:(UIViewController*)baseViewController
-                                    sender:(UserFeedbackSender)sender
-                          userFeedbackData:(UserFeedbackData*)userFeedbackData
-                                   timeout:(base::TimeDelta)timeout
-                                completion:(UserFeedbackDataCallback)completion;
 
 - (WrangledBrowser*)currentInterface;
 

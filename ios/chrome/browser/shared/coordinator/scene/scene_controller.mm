@@ -33,10 +33,6 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "components/supervised_user/core/browser/kids_management_api_fetcher.h"
-#import "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
-#import "components/supervised_user/core/browser/proto_fetcher_status.h"
-#import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/url_formatter/url_formatter.h"
 #import "components/version_info/version_info.h"
 #import "components/web_resource/web_resource_pref_names.h"
@@ -192,8 +188,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
-#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
-#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_data.h"
 #import "ios/web/public/js_image_transcoder/java_script_image_transcoder.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -293,27 +287,6 @@ void InjectUnrealizedWebStates(Browser* browser, int count) {
 }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-// Updates `data` with the Family Link member role associated to the primary
-// signed-in account, no-op if the account is not enrolled in Family Link.
-// TODO(crbug.com/429350831): Factor Family Link code out of SceneController if
-// possible.
-void OnListFamilyMembersResponse(
-    const GaiaId& primary_account_gaia,
-    UserFeedbackData* data,
-    const supervised_user::ProtoFetcherStatus& status,
-    std::unique_ptr<kidsmanagement::ListMembersResponse> response) {
-  if (!status.IsOk()) {
-    return;
-  }
-  for (const kidsmanagement::FamilyMember& member : response->members()) {
-    if (member.user_id() == primary_account_gaia.ToString()) {
-      data.familyMemberRole = base::SysUTF8ToNSString(
-          supervised_user::FamilyRoleToString(member.role()));
-      break;
-    }
-  }
-}
-
 }  // namespace
 
 // TODO(crbug.com/429355979): Order and group methods by interface.
@@ -339,10 +312,6 @@ void OnListFamilyMembersResponse(
   // Map recording the number of tabs in WebStateList before the batch
   // operation started.
   std::map<WebStateList*, int> _tabCountBeforeBatchOperation;
-
-  // Fetches the Family Link member role asynchronously from KidsManagement API.
-  std::unique_ptr<supervised_user::ListFamilyMembersFetcher>
-      _familyMembersFetcher;
 
   // JavaScript image transcoder to locally re-encode images to search.
   std::unique_ptr<web::JavaScriptImageTranscoder> _imageTranscoder;
@@ -1735,9 +1704,8 @@ void OnListFamilyMembersResponse(
 - (void)showReportAnIssueFromViewController:
             (UIViewController*)baseViewController
                                      sender:(UserFeedbackSender)sender {
-  [self showReportAnIssueFromViewController:baseViewController
-                                     sender:sender
-                        specificProductData:nil];
+  [self.mainCoordinator showReportAnIssueFromViewController:baseViewController
+                                                     sender:sender];
 }
 
 - (void)
@@ -1745,180 +1713,10 @@ void OnListFamilyMembersResponse(
                                  sender:(UserFeedbackSender)sender
                     specificProductData:(NSDictionary<NSString*, NSString*>*)
                                             specificProductData {
-  DCHECK(baseViewController);
-  // This dispatch is necessary to give enough time for the tools menu to
-  // disappear before taking a screenshot.
-  __weak SceneController* weakSelf = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    // Set the delay timeout to capture about 85% of users (approx. 2 seconds),
-    // see Signin.ListFamilyMembersRequest.OverallLatency.
-    [weakSelf presentReportAnIssueViewController:baseViewController
-                                          sender:sender
-                             specificProductData:specificProductData
-                                         timeout:base::Seconds(2)
-                                      completion:base::DoNothing()];
-  });
-}
-
-using UserFeedbackDataCallback =
-    base::RepeatingCallback<void(UserFeedbackData*)>;
-
-- (void)presentReportAnIssueViewController:(UIViewController*)baseViewController
-                                    sender:(UserFeedbackSender)sender
-                       specificProductData:(NSDictionary<NSString*, NSString*>*)
-                                               specificProductData
-                                   timeout:(base::TimeDelta)timeout
-                                completion:
-                                    (UserFeedbackDataCallback)completion {
-  UserFeedbackData* userFeedbackData =
-      [self createUserFeedbackDataForSender:sender
-                        specificProductData:specificProductData];
-  [self presentReportAnIssueViewController:baseViewController
-                                    sender:sender
-                          userFeedbackData:userFeedbackData
-                                   timeout:timeout
-                                completion:std::move(completion)];
-}
-
-- (void)presentReportAnIssueViewController:(UIViewController*)baseViewController
-                                    sender:(UserFeedbackSender)sender
-                          userFeedbackData:(UserFeedbackData*)data
-                                   timeout:(base::TimeDelta)timeout
-                                completion:
-                                    (UserFeedbackDataCallback)completion {
-  DCHECK(!self.mainCoordinator.isSigninInProgress);
-  if (self.mainCoordinator.settingsNavigationController) {
-    return;
-  }
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(self.mainInterface.profile);
-  CoreAccountInfo primary_account =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-
-  // Retrieves the Family Link member role for the signed-in account and
-  // populates the corresponding `UserFeedbackData` property.
-  if (!primary_account.IsEmpty()) {
-    __weak SceneController* weakSelf = self;
-    _familyMembersFetcher = supervised_user::FetchListFamilyMembers(
-        *identity_manager,
-        self.mainInterface.profile->GetSharedURLLoaderFactory(),
-        base::BindOnce(&OnListFamilyMembersResponse, primary_account.gaia, data)
-            .Then(base::BindOnce(^{
-              [weakSelf
-                  reportAnIssueFamilyMembersListFetchedForBaseViewController:
-                      baseViewController
-                                                            userFeedbackData:
-                                                                data
-                                                                  completion:
-                                                                      completion];
-            })));
-
-    // Timeout the request to list family members.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(^{
-          [weakSelf presentUserFeedbackViewController:baseViewController
-                                 withUserFeedbackData:data
-                             cancelFamilyMembersFetch:YES
-                                           completion:completion];
-        }),
-        timeout);
-    return;
-  }
-
-  [self presentUserFeedbackViewController:baseViewController
-                     withUserFeedbackData:data
-                 cancelFamilyMembersFetch:NO
-                               completion:completion];
-}
-
-// Callback for when the Family Members list is fetched.
-- (void)
-    reportAnIssueFamilyMembersListFetchedForBaseViewController:
-        (UIViewController*)baseViewController
-                                              userFeedbackData:
-                                                  (UserFeedbackData*)data
-                                                    completion:
-                                                        (UserFeedbackDataCallback)
-                                                            completion {
-  [self presentUserFeedbackViewController:baseViewController
-                     withUserFeedbackData:data
-                 cancelFamilyMembersFetch:NO
-                               completion:completion];
-  // Reset the fetcher now that it has done its job.
-  _familyMembersFetcher.reset();
-}
-
-- (void)presentUserFeedbackViewController:(UIViewController*)baseViewController
-                     withUserFeedbackData:(UserFeedbackData*)data
-                 cancelFamilyMembersFetch:(BOOL)cancelFamilyMembersFetch
-                               completion:(UserFeedbackDataCallback)completion {
-  // Cancel any list family member requests in progress.
-  if (cancelFamilyMembersFetch) {
-    _familyMembersFetcher.reset();
-  }
-
-  Browser* browser = self.mainInterface.browser;
-
-  id<SceneCommands> handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
-
-  if (ios::provider::CanUseStartUserFeedbackFlow()) {
-    UserFeedbackConfiguration* configuration =
-        [[UserFeedbackConfiguration alloc] init];
-    configuration.data = data;
-    configuration.sceneHandler = handler;
-    configuration.singleSignOnService =
-        GetApplicationContext()->GetSingleSignOnService();
-
-    NSError* error;
-    ios::provider::StartUserFeedbackFlow(configuration, baseViewController,
-                                         &error);
-    UMA_HISTOGRAM_BOOLEAN("IOS.FeedbackKit.UserFlowStartedSuccess",
-                          error == nil);
-  } else {
-    self.mainCoordinator.settingsNavigationController =
-        [SettingsNavigationController
-            userFeedbackControllerForBrowser:browser
-                                    delegate:self.mainCoordinator
-                            userFeedbackData:data];
-    [baseViewController
-        presentViewController:self.mainCoordinator.settingsNavigationController
-                     animated:YES
-                   completion:nil];
-  }
-  std::move(completion).Run(data);
-}
-
-- (UserFeedbackData*)createUserFeedbackDataForSender:(UserFeedbackSender)sender
-                                 specificProductData:
-                                     (NSDictionary<NSString*, NSString*>*)
-                                         specificProductData {
-  UserFeedbackData* data = [[UserFeedbackData alloc] init];
-  data.origin = sender;
-  data.currentPageIsIncognito = self.currentInterface.incognito;
-
-  CGFloat scale = 0.0;
-  if (self.mainCoordinator.isTabGridActive) {
-    // For screenshots of the tab switcher we need to use a scale of 1.0 to
-    // avoid spending too much time since the tab switcher can have lots of
-    // subviews.
-    scale = 1.0;
-  }
-
-  UIView* lastView = self.mainCoordinator.activeViewController.view;
-  DCHECK(lastView);
-  data.currentPageScreenshot = CaptureView(lastView, scale);
-
-  ProfileIOS* profile = self.currentInterface.profile;
-  if (profile->IsOffTheRecord()) {
-    data.currentPageIsIncognito = YES;
-  } else {
-    data.currentPageIsIncognito = NO;
-  }
-
-  data.productSpecificData = specificProductData;
-  return data;
+  [self.mainCoordinator
+      showReportAnIssueFromViewController:baseViewController
+                                   sender:sender
+                      specificProductData:specificProductData];
 }
 
 - (void)openURLInNewTab:(OpenNewTabCommand*)command {
