@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/files/file_path.h"
+#include "base/strings/cstring_view.h"
 #include "build/buildflag.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
@@ -45,6 +46,9 @@ extern const char kLoginSessionReporterMessagePipeId[];
 // Returns the server name for the login session reporter.
 const mojo::NamedPlatformChannel::ServerName&
 GetLoginSessionReporterServerName();
+
+// Returns the username that the network process is run as.
+base::cstring_view GetNetworkProcessUsername();
 #endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace remoting

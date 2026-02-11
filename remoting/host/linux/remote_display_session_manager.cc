@@ -22,6 +22,7 @@
 #include "remoting/host/base/loggable.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/login_session_manager.h"
+#include "remoting/host/linux/passwd_utils.h"
 
 namespace remoting {
 
@@ -35,34 +36,6 @@ std::string GetRemoteDisplayName(const gvariant::ObjectPath& remote_id) {
     return {};
   }
   return remote_id.value().substr(kRemoteDisplayIdPrefix.size());
-}
-
-RemoteDisplaySessionManager::UserInfo GetUserInfoForUsername(
-    const std::string& username) {
-  struct passwd pw;
-  struct passwd* result;
-  constexpr int kDefaultPwnameLength = 1024;
-  long user_name_length = sysconf(_SC_GETPW_R_SIZE_MAX);
-  if (user_name_length == -1) {
-    user_name_length = kDefaultPwnameLength;
-  }
-  std::vector<char> buffer(user_name_length);
-  int err =
-      getpwnam_r(username.c_str(), &pw, buffer.data(), buffer.size(), &result);
-  if (err != 0) {
-    PLOG(ERROR) << "getpwnam_r failed";
-    return {};
-  }
-  if (result == nullptr) {
-    LOG(ERROR) << "User not found: " << username;
-    return {};
-  }
-  RemoteDisplaySessionManager::UserInfo user_info;
-  user_info.username = result->pw_name;
-  user_info.uid = result->pw_uid;
-  user_info.gid = result->pw_gid;
-  user_info.home_dir = base::FilePath(result->pw_dir);
-  return user_info;
 }
 
 }  // namespace
@@ -168,7 +141,6 @@ void RemoteDisplaySessionManager::PopulateSessionEnvironment(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(display_info.session_info.has_value());
-  DCHECK(display_info.user_info.has_value());
   const LoginSessionManager::SessionInfo& session_info =
       *display_info.session_info;
   base::EnvironmentMap& env_vars = display_info.environment_variables;
@@ -187,7 +159,9 @@ void RemoteDisplaySessionManager::PopulateSessionEnvironment(
   // systemd.
   env_vars["XDG_RUNTIME_DIR"] =
       base::StringPrintf("/run/user/%d", session_info.uid);
-  env_vars["HOME"] = display_info.user_info->home_dir.value();
+  if (display_info.user_info.has_value()) {
+    env_vars["HOME"] = display_info.user_info->home_dir.value();
+  }
   delegate_->OnRemoteDisplaySessionChanged(display_name, display_info);
 }
 
@@ -334,8 +308,13 @@ void RemoteDisplaySessionManager::OnSessionInfoReady(
   DCHECK(remote_display_it != remote_displays_.end());
   auto& remote_display_info = remote_display_it->second;
   remote_display_info.session_info = std::move(*result);
-  remote_display_info.user_info =
-      GetUserInfoForUsername(remote_display_info.session_info->username);
+  auto user_info_expected =
+      GetPasswdUserInfo(remote_display_info.session_info->username);
+  if (user_info_expected.has_value()) {
+    remote_display_info.user_info = std::move(user_info_expected.value());
+  } else {
+    LOG(ERROR) << user_info_expected.error();
+  }
   auto pending_session_reporter_info_it = pending_session_reporter_info_.find(
       remote_display_info.session_info->session_id);
   if (pending_session_reporter_info_it !=

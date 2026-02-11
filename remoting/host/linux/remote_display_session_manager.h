@@ -19,6 +19,7 @@
 #include "remoting/host/linux/gdm_remote_display_manager.h"
 #include "remoting/host/linux/login_session_manager.h"
 #include "remoting/host/linux/login_session_reporter_server.h"
+#include "remoting/host/linux/passwd_utils.h"
 #include "remoting/host/mojom/login_session.mojom-forward.h"
 
 namespace remoting {
@@ -31,13 +32,6 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
                                     public mojom::LoginSessionObserver {
  public:
   using Callback = base::OnceCallback<void(base::expected<void, Loggable>)>;
-
-  struct UserInfo {
-    std::string username;
-    int uid;
-    int gid;
-    base::FilePath home_dir;
-  };
 
   struct RemoteDisplayInfo {
     RemoteDisplayInfo();
@@ -54,7 +48,7 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
 
     // Information about the remote display's user. This is null if no session
     // has been created for the remote display yet.
-    std::optional<UserInfo> user_info;
+    std::optional<PasswdUserInfo> user_info;
 
     // Environment variables for launching processes under the remote display's
     // current systemd login session. Empty if the session is not ready yet.

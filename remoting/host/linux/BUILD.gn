@@ -215,6 +215,8 @@ source_set("platform_impls") {
     "login_session_reporter_main.cc",
     "login_session_reporter_server.cc",
     "login_session_reporter_server.h",
+    "passwd_utils.cc",
+    "passwd_utils.h",
     "pipewire_capture_stream.cc",
     "pipewire_capture_stream.h",
     "pipewire_desktop_capturer.cc",

@@ -22,6 +22,8 @@ INSTALL_DIR="/opt/google/chrome-remote-desktop"
 USER_SESSION_PATH="$INSTALL_DIR/user-session"
 HOST_PATH="$INSTALL_DIR/chrome-remote-desktop-host"
 CRD_GROUP="chrome-remote-desktop"
+# Per Debian policy 9.2.1, system usernames should all start with an underscore.
+CRD_NETWORK_USER="_crd_network"
 
 kill_processes() {
   # Kill CRD processes except for the service script process. The script process
@@ -100,6 +102,10 @@ case "$1" in
         chmod u=srwx,g=rx,o=r "$USER_SESSION_PATH"
       fi
     fi
+
+    echo "Adding user $CRD_NETWORK_USER to allow the Chrome Remote Desktop network "
+    echo 'process to be run in a sandboxed environment.'
+    adduser --system "$CRD_NETWORK_USER"
 
     kill_processes
 

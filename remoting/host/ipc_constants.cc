@@ -139,6 +139,12 @@ GetLoginSessionReporterServerName() {
   return *server_name;
 }
 
+base::cstring_view GetNetworkProcessUsername() {
+  // Should be in sync with CRD_NETWORK_USER in
+  // //remoting/host/installer/linux/debian/postinst
+  return "_crd_network";
+}
+
 #endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace remoting

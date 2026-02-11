@@ -2024,9 +2024,12 @@ void HostProcess::StartHost() {
   host_->Start(*host_owner_emails_.begin());
 
 #if BUILDFLAG(IS_LINUX)
-  // For Windows and Mac, ChromotingHostServices connections are handled by
-  // another process, then the message pipe is forwarded to the network process.
-  host_->StartChromotingHostServices();
+  // For Multi-process hosts and Mac, ChromotingHostServices connections are
+  // handled by another process, then the message pipe is forwarded to the
+  // network process.
+  if (!multi_process_) {
+    host_->StartChromotingHostServices();
+  }
 #endif
 
   CreateAuthenticatorFactory();
@@ -2173,24 +2176,28 @@ int HostProcessMain(bool multi_process) {
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // For the multi-process host, screen capturing and UI rendering should be
+  // done by the desktop process.
+  if (!multi_process) {
 #if defined(REMOTING_USE_X11)
-  // Initialize Xlib for multi-threaded use, allowing non-Chromium code to
-  // use X11 safely (such as the WebRTC capturer, GTK ...)
-  x11::InitXlib();
+    // Initialize Xlib for multi-threaded use, allowing non-Chromium code to
+    // use X11 safely (such as the WebRTC capturer, GTK ...)
+    x11::InitXlib();
 #endif  // defined(REMOTING_USE_X11)
 
 #if defined(REMOTING_USE_X11)
-  if (!cmd_line->HasSwitch(kReportOfflineReasonSwitchName)) {
-    // Required for any calls into GTK functions, such as the Disconnect and
-    // Continue windows, though these should not be used for the Me2Me case
-    // (crbug.com/104377).
+    if (!cmd_line->HasSwitch(kReportOfflineReasonSwitchName)) {
+      // Required for any calls into GTK functions, such as the Disconnect and
+      // Continue windows, though these should not be used for the Me2Me case
+      // (crbug.com/104377).
 #if GTK_CHECK_VERSION(3, 90, 0)
-    gtk_init();
+      gtk_init();
 #else
-    gtk_init(nullptr, nullptr);
+      gtk_init(nullptr, nullptr);
 #endif
-  }
+    }
 #endif  // defined(REMOTING_USE_X11)
+  }  // !multi_process
 
   // Need to prime the host OS version value for linux to prevent IO on the
   // network thread. base::GetLinuxDistro() caches the result.
