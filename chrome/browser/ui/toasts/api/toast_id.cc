@@ -63,6 +63,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "SavedAutofillAiEntityToWallet";
     case ToastId::kTranslate:
       return "Translate";
+    case ToastId::kAutofillAiWalletErrorMessage:
+      return "AutofillAiWalletErrorMessage";
   }
 
   NOTREACHED();

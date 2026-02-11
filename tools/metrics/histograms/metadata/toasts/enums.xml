@@ -76,6 +76,9 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="Deleted Skill"/>
   <int value="26" label="Saved Autofill AI entity to Wallet"/>
   <int value="27" label="Translate"/>
+  <int value="28"
+      label="Showed Autofill AI Wallet error message (fetch, update or
+             migrate failed)"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->
