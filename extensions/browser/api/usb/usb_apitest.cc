@@ -75,12 +75,12 @@ struct UsbOpenDeviceSuccess {
   }
 };
 
-class TestDevicePermissionsPrompt
-    : public DevicePermissionsPrompt,
-      public DevicePermissionsPrompt::Prompt::Observer {
+class TestUsbDevicePermissionsPrompt
+    : public UsbDevicePermissionsPrompt,
+      public UsbDevicePermissionsPrompt::Prompt::Observer {
  public:
-  explicit TestDevicePermissionsPrompt(content::WebContents* web_contents)
-      : DevicePermissionsPrompt(web_contents) {}
+  explicit TestUsbDevicePermissionsPrompt(content::WebContents* web_contents)
+      : UsbDevicePermissionsPrompt(web_contents) {}
 
   void ShowDialog() override { prompt()->SetObserver(this); }
 
@@ -106,9 +106,9 @@ class TestExtensionsAPIClient : public ShellExtensionsAPIClient {
  public:
   TestExtensionsAPIClient() = default;
 
-  std::unique_ptr<DevicePermissionsPrompt> CreateDevicePermissionsPrompt(
+  std::unique_ptr<UsbDevicePermissionsPrompt> CreateUsbDevicePermissionsPrompt(
       content::WebContents* web_contents) const override {
-    return std::make_unique<TestDevicePermissionsPrompt>(web_contents);
+    return std::make_unique<TestUsbDevicePermissionsPrompt>(web_contents);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

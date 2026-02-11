@@ -117,7 +117,7 @@ void ShowConstrainedDeviceChooserDialog(
 
 }  //  namespace extensions
 
-void ChromeDevicePermissionsPrompt::ShowDialogViews() {
+void ChromeUsbDevicePermissionsPrompt::ShowDialogViews() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<permissions::ChooserController> chooser_controller(

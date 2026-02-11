@@ -92,7 +92,7 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
   scoped_refptr<ContentRulesRegistry> CreateContentRulesRegistry(
       content::BrowserContext* browser_context,
       RulesCacheDelegate* cache_delegate) const override;
-  std::unique_ptr<DevicePermissionsPrompt> CreateDevicePermissionsPrompt(
+  std::unique_ptr<UsbDevicePermissionsPrompt> CreateUsbDevicePermissionsPrompt(
       content::WebContents* web_contents) const override;
 #if BUILDFLAG(IS_CHROMEOS)
   bool ShouldAllowDetachingUsb(int vid, int pid) const override;

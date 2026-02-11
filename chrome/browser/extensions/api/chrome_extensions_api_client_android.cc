@@ -19,8 +19,8 @@ static_assert(BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
 
 namespace extensions {
 
-std::unique_ptr<DevicePermissionsPrompt>
-ChromeExtensionsAPIClient::CreateDevicePermissionsPrompt(
+std::unique_ptr<UsbDevicePermissionsPrompt>
+ChromeExtensionsAPIClient::CreateUsbDevicePermissionsPrompt(
     content::WebContents* web_contents) const {
   // TODO(crbug.com/417785993): Support device permissions prompts on desktop
   // Android.

@@ -23,10 +23,10 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
 
 namespace extensions {
 
-std::unique_ptr<DevicePermissionsPrompt>
-ChromeExtensionsAPIClient::CreateDevicePermissionsPrompt(
+std::unique_ptr<UsbDevicePermissionsPrompt>
+ChromeExtensionsAPIClient::CreateUsbDevicePermissionsPrompt(
     content::WebContents* web_contents) const {
-  return std::make_unique<ChromeDevicePermissionsPrompt>(web_contents);
+  return std::make_unique<ChromeUsbDevicePermissionsPrompt>(web_contents);
 }
 
 std::unique_ptr<DisplayInfoProvider>

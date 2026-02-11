@@ -25,7 +25,7 @@
 namespace extensions {
 
 class DevicePermissionEntry;
-class DevicePermissionsPrompt;
+class UsbDevicePermissionsPrompt;
 class DevicePermissionsManager;
 class UsbDeviceResource;
 
@@ -162,7 +162,7 @@ class UsbGetUserSelectedDevicesFunction : public UsbExtensionFunction {
 
   void OnDevicesChosen(std::vector<device::mojom::UsbDeviceInfoPtr> devices);
 
-  std::unique_ptr<DevicePermissionsPrompt> prompt_;
+  std::unique_ptr<UsbDevicePermissionsPrompt> prompt_;
 };
 
 class UsbGetConfigurationsFunction : public UsbPermissionCheckingFunction {

@@ -12,7 +12,7 @@
 
 DevicePermissionsDialogController::DevicePermissionsDialogController(
     content::RenderFrameHost* owner,
-    scoped_refptr<extensions::DevicePermissionsPrompt::Prompt> prompt)
+    scoped_refptr<extensions::UsbDevicePermissionsPrompt::Prompt> prompt)
     : ChooserController(CreateChooserTitle(
           owner,
           prompt->multiple() ? IDS_DEVICE_PERMISSIONS_PROMPT_MULTIPLE_SELECTION

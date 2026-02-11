@@ -733,13 +733,13 @@ ExtensionFunction::ResponseAction UsbGetUserSelectedDevicesFunction::Run() {
         Error(function_constants::kCouldNotFindSenderWebContents));
   }
 
-  prompt_ =
-      ExtensionsAPIClient::Get()->CreateDevicePermissionsPrompt(web_contents);
+  prompt_ = ExtensionsAPIClient::Get()->CreateUsbDevicePermissionsPrompt(
+      web_contents);
   if (!prompt_) {
     return RespondNow(Error(kErrorNotSupported));
   }
 
-  prompt_->AskForUsbDevices(
+  prompt_->AskForDevices(
       extension(), browser_context(), multiple, std::move(filters),
       base::BindOnce(&UsbGetUserSelectedDevicesFunction::OnDevicesChosen,
                      this));

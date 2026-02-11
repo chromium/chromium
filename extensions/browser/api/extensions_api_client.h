@@ -52,7 +52,7 @@ namespace extensions {
 class AutomationInternalApiDelegate;
 class AppViewGuestDelegate;
 class ContentRulesRegistry;
-class DevicePermissionsPrompt;
+class UsbDevicePermissionsPrompt;
 class DisplayInfoProvider;
 class ExtensionOptionsGuest;
 class ExtensionOptionsGuestDelegate;
@@ -187,9 +187,9 @@ class ExtensionsAPIClient {
       content::BrowserContext* browser_context,
       RulesCacheDelegate* cache_delegate) const;
 
-  // Creates a DevicePermissionsPrompt appropriate for the embedder.
-  virtual std::unique_ptr<DevicePermissionsPrompt>
-  CreateDevicePermissionsPrompt(content::WebContents* web_contents) const;
+  // Creates a UsbDevicePermissionsPrompt appropriate for the embedder.
+  virtual std::unique_ptr<UsbDevicePermissionsPrompt>
+  CreateUsbDevicePermissionsPrompt(content::WebContents* web_contents) const;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns true if device policy allows detaching a given USB device.

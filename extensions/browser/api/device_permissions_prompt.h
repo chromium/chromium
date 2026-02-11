@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "extensions/browser/api/usb/usb_device_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
@@ -29,31 +30,32 @@ class Extension;
 
 // Platform-independent interface for displaing a UI for choosing devices
 // (similar to choosing files).
-class DevicePermissionsPrompt {
+class UsbDevicePermissionsPrompt {
  public:
   using UsbDevicesCallback =
       base::OnceCallback<void(std::vector<device::mojom::UsbDeviceInfoPtr>)>;
 
   // Context information available to the UI implementation.
-  class Prompt : public base::RefCounted<Prompt> {
+  class Prompt : public base::RefCounted<Prompt>,
+                 public UsbDeviceManager::Observer {
    public:
     // This class stores the device information displayed in the UI. It should
     // be extended to support particular device types.
     class DeviceInfo {
      public:
-      DeviceInfo();
-      virtual ~DeviceInfo();
+      explicit DeviceInfo(device::mojom::UsbDeviceInfoPtr device);
+      ~DeviceInfo();
 
       const std::u16string& name() const { return name_; }
       const std::u16string& serial_number() const { return serial_number_; }
       bool granted() const { return granted_; }
       void set_granted() { granted_ = true; }
+      device::mojom::UsbDeviceInfoPtr& device() { return device_; }
 
      protected:
+      device::mojom::UsbDeviceInfoPtr device_;
       std::u16string name_;
       std::u16string serial_number_;
-
-     private:
       bool granted_ = false;
     };
 
@@ -75,13 +77,19 @@ class DevicePermissionsPrompt {
 
     Prompt(const Extension* extension,
            content::BrowserContext* context,
-           bool multiple);
+           bool multiple,
+           std::vector<device::mojom::UsbDeviceFilterPtr> filters,
+           UsbDevicesCallback callback);
 
     Prompt(const Prompt&) = delete;
     Prompt& operator=(const Prompt&) = delete;
 
     // Only one observer may be registered at a time.
-    virtual void SetObserver(Observer* observer);
+    void SetObserver(Observer* observer);
+
+    // UsbDeviceManager::Observer:
+    void OnDeviceAdded(const device::mojom::UsbDeviceInfo& device) override;
+    void OnDeviceRemoved(const device::mojom::UsbDeviceInfo& device) override;
 
     size_t GetDeviceCount() const { return devices_.size(); }
     std::u16string GetDeviceName(size_t index) const;
@@ -91,28 +99,27 @@ class DevicePermissionsPrompt {
     // access to the device at the given index is now granted.
     void GrantDevicePermission(size_t index);
 
-    virtual void Dismissed() = 0;
+    void Dismissed();
 
     // Allow the user to select multiple devices.
     bool multiple() const { return multiple_; }
 
-   protected:
-    virtual ~Prompt();
+   private:
+    friend class base::RefCounted<Prompt>;
+
+    ~Prompt() override;
 
     void AddDevice(std::unique_ptr<DeviceInfo> device);
 
-    const Extension* extension() const { return extension_; }
-    Observer* observer() const { return observer_; }
-    content::BrowserContext* browser_context() const {
-      return browser_context_;
-    }
+    void OnDevicesEnumerated(
+        std::vector<device::mojom::UsbDeviceInfoPtr> devices);
+    void MaybeAddDevice(const device::mojom::UsbDeviceInfo& device,
+                        bool initial_enumeration);
+    void AddCheckedDevice(std::unique_ptr<DeviceInfo> device_info,
+                          bool initial_enumeration,
+                          bool allowed);
 
-    // Subclasses may fill this with a particular subclass of DeviceInfo and may
-    // assume that only that instances of that type are stored here.
     std::vector<std::unique_ptr<DeviceInfo>> devices_;
-
-   private:
-    friend class base::RefCounted<Prompt>;
 
     raw_ptr<const extensions::Extension, DanglingUntriaged> extension_ =
         nullptr;
@@ -120,24 +127,30 @@ class DevicePermissionsPrompt {
     raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_ =
         nullptr;
     bool multiple_ = false;
+
+    std::vector<device::mojom::UsbDeviceFilterPtr> filters_;
+    size_t remaining_initial_devices_ = 0;
+    UsbDevicesCallback callback_;
+    base::ScopedObservation<UsbDeviceManager, UsbDeviceManager::Observer>
+        manager_observation_{this};
   };
 
-  explicit DevicePermissionsPrompt(content::WebContents* web_contents);
+  explicit UsbDevicePermissionsPrompt(content::WebContents* web_contents);
 
-  DevicePermissionsPrompt(const DevicePermissionsPrompt&) = delete;
-  DevicePermissionsPrompt& operator=(const DevicePermissionsPrompt&) = delete;
+  UsbDevicePermissionsPrompt(const UsbDevicePermissionsPrompt&) = delete;
+  UsbDevicePermissionsPrompt& operator=(const UsbDevicePermissionsPrompt&) =
+      delete;
 
-  virtual ~DevicePermissionsPrompt();
+  virtual ~UsbDevicePermissionsPrompt();
 
-  void AskForUsbDevices(const Extension* extension,
-                        content::BrowserContext* context,
-                        bool multiple,
-                        std::vector<device::mojom::UsbDeviceFilterPtr> filters,
-                        UsbDevicesCallback callback);
+  void AskForDevices(const Extension* extension,
+                     content::BrowserContext* context,
+                     bool multiple,
+                     std::vector<device::mojom::UsbDeviceFilterPtr> filters,
+                     UsbDevicesCallback callback);
 
-  static scoped_refptr<Prompt> CreateUsbPromptForTest(
-      const Extension* extension,
-      bool multiple);
+  static scoped_refptr<Prompt> CreateForTest(const Extension* extension,
+                                             bool multiple);
 
  protected:
   virtual void ShowDialog() = 0;

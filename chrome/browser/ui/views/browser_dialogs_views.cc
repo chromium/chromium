@@ -36,7 +36,7 @@ void BookmarkEditor::Show(gfx::NativeWindow parent_window,
   editor.release();  // BookmarkEditorView is self-deleting
 }
 
-void ChromeDevicePermissionsPrompt::ShowDialog() {
+void ChromeUsbDevicePermissionsPrompt::ShowDialog() {
   ShowDialogViews();
 }
 
