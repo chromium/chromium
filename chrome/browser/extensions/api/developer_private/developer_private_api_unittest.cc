@@ -400,6 +400,23 @@ void ItemStatePrefsChangedObserver::OnWillDispatchEvent(const Event& event) {
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Copies a source directory into an existing ScopedTempDir and generates a
+// content URI for it.
+//
+// This is a workaround for Android security policies that prevent loading
+// extensions directly from the file system. This function enables tests by
+// copying the extension directory to a temporary location and resolving it to
+// a content URI, which can then be used for extension packing.
+base::FilePath CreateCacheCopyAndGetContentUri(
+    const base::FilePath& source_path,
+    const base::ScopedTempDir& temp_dir) {
+  EXPECT_TRUE(base::CopyDirectory(source_path, temp_dir.GetPath(), true));
+  return *base::test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(
+      temp_dir.GetPath().Append(source_path.BaseName()));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 base::FilePath GetUnpackedPath(TestExtensionDir& dir) {
   base::FilePath absolute_file_path = dir.UnpackedPath();
 #if BUILDFLAG(IS_ANDROID)
@@ -842,7 +859,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
 #if BUILDFLAG(IS_ANDROID)
   // Android will pack extension under downloads.
   base::FilePath temp_root_path =
-      *base::test::android::GetVirtualDocumentPathFromCacheDirDirectory(
+      *base::test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(
           temp_dir.GetPath().Append(root_path.BaseName()));
 
   std::optional<base::FilePath> optional_crx_path =
@@ -1011,6 +1028,11 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpacked) {
   function = base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
   base::FilePath path = data_dir().AppendASCII("simple_with_popup");
   function->set_accept_dialog_for_testing(true);
+#if BUILDFLAG(IS_ANDROID)
+  base::ScopedTempDir temp_dir_copy;
+  ASSERT_TRUE(temp_dir_copy.CreateUniqueTempDir());
+  path = CreateCacheCopyAndGetContentUri(path, temp_dir_copy);
+#endif  // BUILDFLAG(IS_ANDROID)
   function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
 
@@ -1020,14 +1042,25 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpacked) {
       registry()->enabled_extensions().GetIDs(), current_ids);
   ASSERT_EQ(1u, id_difference.size());
   // The new extension should have the same path.
+#if BUILDFLAG(IS_ANDROID)
+  // In Android, the unpacked extension source will be resolved as virtual
+  // document path.
+  EXPECT_EQ(
+      *base::ResolveToVirtualDocumentPath(path),
+      registry()->enabled_extensions().GetByID(*id_difference.begin())->path());
+#else
   EXPECT_EQ(
       path,
       registry()->enabled_extensions().GetByID(*id_difference.begin())->path());
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Try loading a bad extension and accepting the dialog.
   function = base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
   path = data_dir().AppendASCII("empty_manifest");
   function->set_accept_dialog_for_testing(true);
+#if BUILDFLAG(IS_ANDROID)
+  path = CreateCacheCopyAndGetContentUri(path, temp_dir_copy);
+#endif  // BUILDFLAG(IS_ANDROID)
   function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   base::ListValue unpacked_args;

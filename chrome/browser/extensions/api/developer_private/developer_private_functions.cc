@@ -938,6 +938,17 @@ void DeveloperPrivateLoadUnpackedFunction::FileSelectionCanceled() {
 
 void DeveloperPrivateLoadUnpackedFunction::StartFileLoad(
     base::FilePath file_path) {
+#if BUILDFLAG(IS_ANDROID)
+  // SelectFileDialog returns a content URI so on Android we need to further
+  // resolve it to a virtual document path
+  std::optional<base::FilePath> vp =
+      base::ResolveToVirtualDocumentPath(file_path);
+  if (!vp) {
+    OnLoadComplete(nullptr, file_path, u"Failed to resolve (removed?)");
+    return;
+  }
+  file_path = *vp;
+#endif  // BUILDFLAG(IS_ANDROID)
   scoped_refptr<UnpackedInstaller> installer(
       UnpackedInstaller::Create(browser_context()));
   installer->set_be_noisy_on_failure(!fail_quietly_);
@@ -1793,6 +1804,19 @@ ExtensionFunction::ResponseAction DeveloperPrivatePackDirectoryFunction::Run() {
   base::FilePath key_file = base::FilePath::FromUTF8Unsafe(key_path_str_);
 
   developer::PackDirectoryResponse response;
+
+#if BUILDFLAG(IS_ANDROID)
+  // SelectFileDialog returns a content URI so on Android we need to further
+  // resolve it to a virtual document path
+  std::optional<base::FilePath> virtual_path =
+      base::ResolveToVirtualDocumentPath(root_directory);
+  if (!virtual_path) {
+    response.message = "Failed to resolve (removed?)";
+    response.status = developer::PackStatus::kError;
+    return RespondNow(WithArguments(response.ToValue()));
+  }
+  root_directory = *virtual_path;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   if (root_directory.empty()) {
     if (item_path_str_.empty()) {
