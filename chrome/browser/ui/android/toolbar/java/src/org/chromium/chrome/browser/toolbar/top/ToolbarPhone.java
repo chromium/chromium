@@ -3084,9 +3084,17 @@ public class ToolbarPhone extends ToolbarLayout
                 || AddressBarPreference.isToolbarConfiguredToShowOnTop()) {
             return mTopPaddingForEdgeToEdgeNtp;
         }
-        // When URL has focus and toolbar is at bottom, the omnibox is at the bottom,
-        // so no top padding needed.
-        return urlHasFocus() ? 0 : mTopPaddingForEdgeToEdgeNtp;
+
+        // When toolbar is at bottom, clear padding if:
+        // 1. URL has focus (omnibox moves to bottom), or
+        // 2. Not on NTP (only NTP needs the padding for edge-to-edge display)
+        return (urlHasFocus() || !isNtpVisualState(mVisualState)) ? 0 : mTopPaddingForEdgeToEdgeNtp;
+    }
+
+    /** Checks if the given visual state represents a New Tab Page. */
+    private static boolean isNtpVisualState(@VisualState int visualState) {
+        return visualState == VisualState.NEW_TAB_NORMAL
+                || visualState == VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO;
     }
 
     private boolean hideShadowForIncognitoNtp() {
