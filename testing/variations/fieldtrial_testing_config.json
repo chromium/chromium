@@ -24205,6 +24205,25 @@
             ]
         }
     ],
+    "SelectivePermissionsIntervention": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SelectivePermissionsIntervention"
+                    ]
+                }
+            ]
+        }
+    ],
     "SendEmptyGestureScrollUpdate": [
         {
             "platforms": [
