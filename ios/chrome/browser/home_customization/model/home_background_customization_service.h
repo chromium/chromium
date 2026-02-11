@@ -25,7 +25,12 @@ class GURL;
 class HomeBackgroundCustomizationServiceObserver;
 class PrefRegistrySimple;
 class PrefService;
+class ThemeSyncableServiceIOS;
 class UserUploadedImageManager;
+
+namespace syncer {
+class SyncableService;
+}  // namespace syncer
 
 // Type representing any custom background on the NTP.
 typedef std::variant<sync_pb::NtpCustomBackground, HomeUserUploadedBackground>
@@ -205,6 +210,10 @@ class HomeBackgroundCustomizationService : public KeyedService {
   // Return whether the NTP custom background is disabled by enterprise policy.
   bool IsCustomizationDisabledOrColorManagedByPolicy();
 
+  // Returns the `SyncableService` associated with `THEMES_IOS`. Returns
+  // `nullptr` if the feature is disabled.
+  syncer::SyncableService* GetThemeSyncableService();
+
  private:
   // Alerts observers when the background changes.
   void NotifyObserversOfBackgroundChange();
@@ -268,6 +277,10 @@ class HomeBackgroundCustomizationService : public KeyedService {
 
   // Service used to load lists of recently used images.
   raw_ptr<HomeBackgroundImageService> home_background_image_service_;
+
+  // The service responsible for syncing theme data. This is null if the
+  // `kSyncThemesIos` feature is disabled.
+  std::unique_ptr<ThemeSyncableServiceIOS> theme_syncable_service_;
 
   // Registrar for prefs change.
   PrefChangeRegistrar pref_change_registrar_;

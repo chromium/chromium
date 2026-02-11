@@ -18,6 +18,7 @@ include_rules = [
   "+ios/chrome/browser/favicon/model",
   "+ios/chrome/browser/gcm/model",
   "+ios/chrome/browser/history/model",
+  "+ios/chrome/browser/home_customization/model",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/invalidation/model",
   "+ios/chrome/browser/metrics/model",

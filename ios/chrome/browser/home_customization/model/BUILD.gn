@@ -25,9 +25,11 @@ source_set("model") {
     "user_uploaded_image_manager_factory.mm",
   ]
   deps = [
+    ":theme_syncable_service_ios",
     "//base",
     "//components/keyed_service/core",
     "//components/pref_registry",
+    "//components/sync/model",
     "//components/sync/protocol",
     "//components/themes",
     "//components/themes:prefs",
@@ -42,6 +44,15 @@ source_set("model") {
     "//ui/base",
     "//url",
   ]
+}
+
+source_set("theme_syncable_service_ios") {
+  sources = [
+    "theme_syncable_service_ios.h",
+    "theme_syncable_service_ios.mm",
+  ]
+  public_deps = [ "//components/sync/model" ]
+  deps = [ "//base" ]
 }
 
 source_set("seed_colors") {
@@ -64,17 +75,22 @@ source_set("unit_tests") {
   sources = [
     "home_background_customization_service_unittest.mm",
     "home_background_image_service_unittest.mm",
+    "theme_syncable_service_ios_unittest.mm",
     "user_uploaded_image_manager_unittest.mm",
   ]
 
   deps = [
     ":model",
     ":test_support",
+    ":theme_syncable_service_ios",
     "//base",
     "//base/test:test_support",
     "//components/application_locale_storage",
     "//components/prefs:test_support",
     "//components/search",
+    "//components/sync:test_support",
+    "//components/sync/base",
+    "//components/sync/model",
     "//components/sync/protocol:protocol_gen",
     "//components/themes",
     "//components/themes:prefs",

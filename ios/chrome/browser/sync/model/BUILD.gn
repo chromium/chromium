@@ -68,6 +68,7 @@ source_set("model") {
     "//ios/chrome/browser/gcm/model",
     "//ios/chrome/browser/gcm/model/instance_id",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/home_customization/model",
     "//ios/chrome/browser/invalidation/model",
     "//ios/chrome/browser/metrics/model:accessor",
     "//ios/chrome/browser/metrics/model:google_groups_updater",

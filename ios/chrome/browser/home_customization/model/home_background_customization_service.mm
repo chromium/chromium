@@ -10,15 +10,19 @@
 
 #import "base/base64.h"
 #import "base/containers/adapters.h"
+#import "base/feature_list.h"
 #import "base/logging.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
+#import "components/sync/base/features.h"
+#import "components/sync/model/syncable_service.h"
 #import "components/sync/protocol/theme_specifics.pb.h"
 #import "components/sync/protocol/theme_types.pb.h"
 #import "components/themes/pref_names.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer.h"
 #import "ios/chrome/browser/home_customization/model/home_background_data.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service.h"
+#import "ios/chrome/browser/home_customization/model/theme_syncable_service_ios.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -129,11 +133,18 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
 
   // Clean up any images that failed to be deleted for any reason.
   user_image_manager_->DeleteUnusedImages(image_paths_in_use);
+
+  if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
+    theme_syncable_service_ = std::make_unique<ThemeSyncableServiceIOS>();
+  }
 }
 
 HomeBackgroundCustomizationService::~HomeBackgroundCustomizationService() {}
 
-void HomeBackgroundCustomizationService::Shutdown() {}
+void HomeBackgroundCustomizationService::Shutdown() {
+  // It's safe to call `reset()` unconditionally.
+  theme_syncable_service_.reset();
+}
 
 void HomeBackgroundCustomizationService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
@@ -440,6 +451,15 @@ bool HomeBackgroundCustomizationService::
   return !pref_service_->GetBoolean(
              prefs::kNTPCustomBackgroundEnabledByPolicy) ||
          pref_service_->IsManagedPreference(themes::prefs::kPolicyThemeColor);
+}
+
+syncer::SyncableService*
+HomeBackgroundCustomizationService::GetThemeSyncableService() {
+  if (!theme_syncable_service_) {
+    return nullptr;
+  }
+
+  return theme_syncable_service_.get();
 }
 
 RecentlyUsedBackground
