@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -41,6 +42,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private View mBookmarkButton;
     private View[] mTargets;
     private final Rect mCachedTargetBounds = new Rect();
+    private final GlifStrokeDrawable mGlifBorderDrawable;
 
     // Variables needed for animating the location bar and toolbar buttons hiding/showing.
     private final int mToolbarButtonsWidth;
@@ -69,6 +71,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                 getResources().getDimensionPixelOffset(R.dimen.location_bar_icon_width);
         mMicButtonWidth = locationBarIconWidth;
         mLensButtonWidth = locationBarIconWidth;
+        mGlifBorderDrawable = new GlifStrokeDrawable(context);
     }
 
     @Override
@@ -354,6 +357,17 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     @Override
+    public void onSpecializedFuseboxModeActivatedC(boolean isSpecializedRequestType) {
+        var layerDrawable = (LayerDrawable) getBackground();
+        if (isSpecializedRequestType) {
+            layerDrawable.setDrawableByLayerId(R.id.glif_border_layer, mGlifBorderDrawable);
+            mGlifBorderDrawable.start();
+        } else {
+            layerDrawable.setDrawableByLayerId(R.id.glif_border_layer, null);
+        }
+    }
+
+    @Override
     public void onFuseboxStateChanged(@FuseboxState int state) {
         super.onFuseboxStateChanged(state);
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) getLayoutParams();
@@ -384,6 +398,11 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             setTranslationZ(NEUTRAL_Z_TRANSLATION);
             ViewUtils.setAncestorsShouldClipToPadding(this, true, View.NO_ID);
             ViewUtils.setAncestorsShouldClipChildren(this, true, View.NO_ID);
+            // Put the focused background back into its starting state before swapping it out;
+            // without this, it may still display the GLIF animation when we refocus.
+            mGlifBorderDrawable.reset();
+            var layerDrawable = (LayerDrawable) getBackground();
+            layerDrawable.setDrawableByLayerId(R.id.glif_border_layer, null);
             setBackgroundResource(R.drawable.modern_toolbar_tablet_text_box_background);
         }
         setLayoutParams(layoutParams);

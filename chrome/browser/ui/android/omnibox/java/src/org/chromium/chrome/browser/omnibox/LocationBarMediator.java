@@ -1738,12 +1738,15 @@ class LocationBarMediator
     }
 
     private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType int type) {
+        boolean isSpecializedRequestType =
+                mCurrentInput != null && !mCurrentInput.isConventionalRequestType();
         if (mOnSpecializedFuseboxModeActivatedCallback != null) {
             mOnSpecializedFuseboxModeActivatedCallback.onResult(
                     type != AutocompleteRequestType.SEARCH);
         }
         updateButtonVisibility();
         onSearchBoxHintTextChanged();
+        mLocationBarLayout.onSpecializedFuseboxModeActivatedC(isSpecializedRequestType);
     }
 
     private boolean isLensOnOmniboxEnabled() {

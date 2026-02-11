@@ -31,4 +31,14 @@ found in the LICENSE file.
           android:bottomRightRadius="@dimen/modern_toolbar_background_inner_corner_radius" />
     </shape>
   </item>
+  <item
+      android:id="@+id/glif_border_layer"
+      android:start="@dimen/location_bar_tablet_fusebox_popup_inset"
+      android:end="@dimen/location_bar_tablet_fusebox_popup_inset"
+      android:top="@dimen/location_bar_tablet_fusebox_popup_inset"
+      android:bottom="0dp">
+    <shape android:shape="rectangle">
+      <solid android:color="@android:color/transparent" />
+    </shape>
+  </item>
 </layer-list>

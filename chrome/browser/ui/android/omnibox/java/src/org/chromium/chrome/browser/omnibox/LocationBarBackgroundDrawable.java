@@ -7,15 +7,12 @@ package org.chromium.chrome.browser.omnibox;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.animation.AnimatorSet;
-import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.graphics.BlurMaskFilter;
 import android.graphics.BlurMaskFilter.Blur;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
@@ -27,16 +24,15 @@ import android.graphics.SweepGradient;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.FloatProperty;
-import android.view.animation.PathInterpolator;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 
 import org.chromium.base.MathUtils;
-import org.chromium.build.annotations.NonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.GlifGradientUtil.RotationProperty;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -48,6 +44,8 @@ import java.util.List;
  */
 @NullMarked
 public class LocationBarBackgroundDrawable extends Drawable {
+    static final float GLIF_STARTING_ROTATION_DEGREES = 300f;
+    static final float GLIF_ENDING_ROTATION_DEGREES = 450f;
 
     @IntDef({
         LocationBarBackgroundDrawable.HairlineBehavior.NONE,
@@ -59,63 +57,12 @@ public class LocationBarBackgroundDrawable extends Drawable {
         int RAINBOW = 1;
     }
 
-    private static final float GLIF_STARTING_ROTATION_DEGREES = 300f;
-    private static final float GLIF_ENDING_ROTATION_DEGREES = 450f;
-    private static final long GLIF_ROTATION_DURATION_MS = 900;
-    private static final float GLIF_VERTICAL_SCALE = 0.7f;
-    private static final PathInterpolator GLIF_ROTATION_INTERPOLATOR =
-            new PathInterpolator(0.4f, 0f, 0.2f, 1f);
-    private static final float MAX_BLUR_WIDTH_PERCENTAGE = 0.11f;
-
-    private final FloatProperty<LocationBarBackgroundDrawable> mRotationProperty =
-            new FloatProperty<>("rotation") {
-
-                @Override
-                public void setValue(
-                        @NonNull LocationBarBackgroundDrawable locationBarBackgroundDrawable,
-                        float rotation) {
-                    mRotation = rotation;
-                    float alphaPercent =
-                            (GLIF_ENDING_ROTATION_DEGREES - rotation)
-                                    / (GLIF_ENDING_ROTATION_DEGREES
-                                            - GLIF_STARTING_ROTATION_DEGREES);
-
-                    mRainbowShader =
-                            new SweepGradient(
-                                    mEffectiveBounds.centerX(),
-                                    mEffectiveBounds.centerY(),
-                                    mColors,
-                                    mPositions);
-                    mMatrix.reset();
-                    mMatrix.setRotate(
-                            rotation, mEffectiveBounds.centerX(), mEffectiveBounds.centerY());
-                    // Scaling stretches the gradient on the x axis to give a more even distribution
-                    // of the gradient as it circles around the box.
-                    mMatrix.postScale(
-                            1.0f,
-                            GLIF_VERTICAL_SCALE,
-                            mEffectiveBounds.centerX(),
-                            mEffectiveBounds.centerY());
-                    mRainbowShader.setLocalMatrix(mMatrix);
-                    mRainbowBorderPaint.setShader(mRainbowShader);
-                    mRainbowBorderPaint.setAlpha((int) (255 * alphaPercent));
-                    mRainbowBorderBlurPaint.setShader(mRainbowShader);
-                    mRainbowBorderBlurPaint.setAlpha((int) (255 * alphaPercent));
-                    invalidateSelf();
-                }
-
-                @Override
-                public Float get(LocationBarBackgroundDrawable locationBarBackgroundDrawable) {
-                    return mRotation;
-                }
-            };
-
     private final FloatProperty<LocationBarBackgroundDrawable> mBlurProperty =
             new FloatProperty<>("blur") {
 
                 @Override
                 public void setValue(
-                        @NonNull LocationBarBackgroundDrawable locationBarBackgroundDrawable,
+                        LocationBarBackgroundDrawable locationBarBackgroundDrawable,
                         float blurStrokePx) {
                     mBlurStrokePx = blurStrokePx;
                     mRainbowBorderBlurPaint.setStrokeWidth(mBlurStrokePx);
@@ -142,12 +89,8 @@ public class LocationBarBackgroundDrawable extends Drawable {
 
     private final float mStrokePx;
     private float mCornerRadiusPx;
-    private @Nullable Shader mRainbowShader;
     private @HairlineBehavior int mHairlineBehavior = HairlineBehavior.NONE;
     private final AnimatorSet mAnimator;
-    private final Matrix mMatrix = new Matrix();
-
-    private float mRotation;
     private float mBlurStrokePx;
 
     /**
@@ -166,26 +109,8 @@ public class LocationBarBackgroundDrawable extends Drawable {
                 cornerRadiusPx,
                 strokePx,
                 blurStrokePx,
-                new int[] {
-                    0x0034A852, // rgba(52, 168, 82, 0) - Transparent Green
-                    0xFF34A852, // rgba(52, 168, 82, 1) - Green
-                    0xFFFFD314, // rgba(255, 211, 20, 1) - Yellow
-                    0xFFFF4641, // rgba(255, 70, 65, 1) - Red
-                    0xFF3186FF, // rgba(49, 134, 255, 1) - Blue
-                    0x803186FF, // rgba(49, 134, 255, 0.5) - Blue (50% opacity)
-                    0x003186FF, // rgba(49, 134, 255, 0) - Transparent Blue
-                    0x0034A852, // rgba(52, 168, 82, 0) - Transparent Green
-                },
-                new float[] {
-                    0.0f, // 0 deg
-                    0.108261f, // 38.9738deg
-                    0.173244f, // 62.3678deg
-                    0.241684f, // 87.0062deg
-                    0.298411f, // 107.428deg
-                    0.568f, // 204.48deg
-                    0.858f, // 308.88deg
-                    1.0f, // 360deg
-                });
+                GlifGradientUtil.GRADIENT_COLOR_STOPS,
+                GlifGradientUtil.GRADIENT_STOP_ANGLES);
     }
 
     /**
@@ -218,24 +143,27 @@ public class LocationBarBackgroundDrawable extends Drawable {
         mRainbowBorderPaint.setStrokeWidth(mStrokePx);
         mRainbowBorderBlurPaint.setStyle(Style.STROKE);
         mRainbowBorderBlurPaint.setStrokeWidth(mBlurStrokePx);
+        RotationProperty<LocationBarBackgroundDrawable> rotationProperty =
+                new RotationProperty<>(
+                        mRainbowBorderPaint,
+                        mRainbowBorderBlurPaint,
+                        mEffectiveBounds,
+                        this::invalidateSelf,
+                        GLIF_STARTING_ROTATION_DEGREES,
+                        GLIF_ENDING_ROTATION_DEGREES);
         ObjectAnimator rotation =
                 ObjectAnimator.ofFloat(
                         this,
-                        mRotationProperty,
+                        rotationProperty,
                         GLIF_STARTING_ROTATION_DEGREES,
                         GLIF_ENDING_ROTATION_DEGREES);
         ObjectAnimator blur =
                 ObjectAnimator.ofPropertyValuesHolder(
-                        this,
-                        PropertyValuesHolder.ofKeyframe(
-                                mBlurProperty,
-                                Keyframe.ofFloat(0f, MathUtils.EPSILON),
-                                Keyframe.ofFloat(MAX_BLUR_WIDTH_PERCENTAGE, blurStrokePx),
-                                Keyframe.ofFloat(1.0f, MathUtils.EPSILON)));
+                        this, GlifGradientUtil.blurKeyframe(mBlurProperty, blurStrokePx));
         mAnimator = new AnimatorSet();
         mAnimator.playTogether(List.of(rotation, blur));
-        mAnimator.setInterpolator(GLIF_ROTATION_INTERPOLATOR);
-        mAnimator.setDuration(GLIF_ROTATION_DURATION_MS);
+        mAnimator.setInterpolator(GlifGradientUtil.GLIF_ROTATION_INTERPOLATOR);
+        mAnimator.setDuration(GlifGradientUtil.GLIF_ROTATION_DURATION_MS);
 
         mBackgroundGradient.mutate();
     }
@@ -277,14 +205,14 @@ public class LocationBarBackgroundDrawable extends Drawable {
                 Path.Direction.CW);
 
         // Rebuild shader centered on this view.
-        mRainbowShader =
+        Shader rainbowShader =
                 new SweepGradient(
                         mEffectiveBounds.centerX(),
                         mEffectiveBounds.centerY(),
                         mColors,
                         mPositions);
-        mRainbowBorderPaint.setShader(mRainbowShader);
-        mRainbowBorderBlurPaint.setShader(mRainbowShader);
+        mRainbowBorderPaint.setShader(rainbowShader);
+        mRainbowBorderBlurPaint.setShader(rainbowShader);
     }
 
     @Override
