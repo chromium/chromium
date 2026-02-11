@@ -97,6 +97,9 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
                     .setInsets(WindowInsetsCompat.Type.navigationBars(), NAVIGATION_BAR_INSETS)
                     .setInsets(WindowInsetsCompat.Type.statusBars(), STATUS_BAR_INSETS)
                     .setInsets(WindowInsetsCompat.Type.systemBars(), SYSTEM_BAR_INSETS)
+                    .setVisible(WindowInsetsCompat.Type.navigationBars(), true)
+                    .setVisible(WindowInsetsCompat.Type.statusBars(), true)
+                    .setVisible(WindowInsetsCompat.Type.systemBars(), true)
                     .build();
 
     @Implements(Activity.class)
@@ -395,8 +398,6 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         assertEqualNumberOfEnterAndExitActivityFullscreenMode(1);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testToastIsShownInFullscreenButNotPictureInPicture() {
         doReturn(mWebContents).when(mTab).getWebContents();
@@ -458,8 +459,6 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
                 !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     @Features.EnableFeatures({ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER})
     public void
@@ -526,8 +525,6 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
                 !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testToastIsShownAtLayoutChangeWithRotation() {
         doReturn(mWebContents).when(mTab).getWebContents();
