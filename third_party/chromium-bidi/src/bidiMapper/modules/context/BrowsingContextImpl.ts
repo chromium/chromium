@@ -26,6 +26,7 @@ import {
   NoSuchElementException,
   NoSuchFrameException,
   NoSuchHistoryEntryException,
+  NoSuchNodeException,
   Script,
   Session,
   type UAClientHints,
@@ -43,7 +44,7 @@ import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
-import {getSharedId} from '../script/SharedId.js';
+import {getSharedId, parseSharedId} from '../script/SharedId.js';
 import {WindowRealm} from '../script/WindowRealm.js';
 import type {EventManager} from '../session/EventManager.js';
 
@@ -1441,17 +1442,17 @@ export class BrowsingContextImpl {
     );
   }
 
-  async #getLocatorDelegate(
-    realm: Realm,
+  #getLocatorDelegate(
     locator: BrowsingContext.Locator,
     maxNodeCount: number | undefined,
     startNodes: Script.SharedReference[],
-  ): Promise<{
+  ): {
     functionDeclaration: string;
     argumentsLocalValues: Script.LocalValue[];
-  }> {
+  } {
     switch (locator.type) {
       case 'context':
+      case 'accessibility':
         throw new Error('Unreachable');
       case 'css':
         return {
@@ -1660,125 +1661,6 @@ export class BrowsingContextImpl {
             ...startNodes,
           ],
         };
-      case 'accessibility': {
-        // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-accessibility-attributes
-        if (!locator.value.name && !locator.value.role) {
-          throw new InvalidSelectorException(
-            'Either name or role has to be specified',
-          );
-        }
-
-        // The next two commands cause a11y caches for the target to be
-        // preserved. We probably do not need to disable them if the
-        // client is using a11y features, but we could by calling
-        // Accessibility.disable.
-        await Promise.all([
-          this.#cdpTarget.cdpClient.sendCommand('Accessibility.enable'),
-          this.#cdpTarget.cdpClient.sendCommand('Accessibility.getRootAXNode'),
-        ]);
-        const bindings = await realm.evaluate(
-          /* expression=*/ '({getAccessibleName, getAccessibleRole})',
-          /* awaitPromise=*/ false,
-          /* resultOwnership=*/ Script.ResultOwnership.Root,
-          /* serializationOptions= */ undefined,
-          /* userActivation=*/ false,
-          /* includeCommandLineApi=*/ true,
-        );
-
-        if (bindings.type !== 'success') {
-          throw new Error('Could not get bindings');
-        }
-
-        if (bindings.result.type !== 'object') {
-          throw new Error('Could not get bindings');
-        }
-        return {
-          functionDeclaration: String(
-            (
-              name: string,
-              role: string,
-              bindings: any,
-              maxNodeCount: number,
-              ...startNodes: Element[]
-            ) => {
-              const returnedNodes: Element[] = [];
-
-              let aborted = false;
-
-              function collect(
-                contextNodes: Element[],
-                selector: {role: string; name: string},
-              ) {
-                if (aborted) {
-                  return;
-                }
-                for (const contextNode of contextNodes) {
-                  let match = true;
-
-                  if (selector.role) {
-                    const role = bindings.getAccessibleRole(contextNode);
-                    if (selector.role !== role) {
-                      match = false;
-                    }
-                  }
-
-                  if (selector.name) {
-                    const name = bindings.getAccessibleName(contextNode);
-                    if (selector.name !== name) {
-                      match = false;
-                    }
-                  }
-
-                  if (match) {
-                    if (
-                      maxNodeCount !== 0 &&
-                      returnedNodes.length === maxNodeCount
-                    ) {
-                      aborted = true;
-                      break;
-                    }
-
-                    returnedNodes.push(contextNode);
-                  }
-
-                  const childNodes: Element[] = [];
-                  for (const child of contextNode.children) {
-                    if (child instanceof HTMLElement) {
-                      childNodes.push(child);
-                    }
-                  }
-
-                  collect(childNodes, selector);
-                }
-              }
-
-              startNodes =
-                startNodes.length > 0
-                  ? startNodes
-                  : Array.from(document.documentElement.children).filter(
-                      (c) => c instanceof HTMLElement,
-                    );
-              collect(startNodes, {
-                role,
-                name,
-              });
-              return returnedNodes;
-            },
-          ),
-          argumentsLocalValues: [
-            // `name`
-            {type: 'string', value: locator.value.name || ''},
-            // `role`
-            {type: 'string', value: locator.value.role || ''},
-            // `bindings`.
-            {handle: bindings.result.handle!},
-            // `maxNodeCount` with `0` means no limit.
-            {type: 'number', value: maxNodeCount ?? 0},
-            // `startNodes`
-            ...startNodes,
-          ],
-        };
-      }
     }
   }
 
@@ -1790,49 +1672,25 @@ export class BrowsingContextImpl {
     serializationOptions: Script.SerializationOptions | undefined,
   ): Promise<BrowsingContext.LocateNodesResult> {
     if (locator.type === 'context') {
-      if (startNodes.length !== 0) {
-        throw new InvalidArgumentException('Start nodes are not supported');
-      }
-      const contextId = locator.value.context;
-      if (!contextId) {
-        throw new InvalidSelectorException('Invalid context');
-      }
-      const context = this.#browsingContextStorage.getContext(contextId);
-      const parent = context.parent;
-      if (!parent) {
-        throw new InvalidArgumentException('This context has no container');
-      }
-      try {
-        const {backendNodeId} = await parent.#cdpTarget.cdpClient.sendCommand(
-          'DOM.getFrameOwner',
-          {
-            frameId: contextId,
-          },
-        );
-        const {object} = await parent.#cdpTarget.cdpClient.sendCommand(
-          'DOM.resolveNode',
-          {
-            backendNodeId,
-          },
-        );
-        const locatorResult = await realm.callFunction(
-          `function () { return this; }`,
-          false,
-          {handle: object.objectId!},
-          [],
-          Script.ResultOwnership.None,
-          serializationOptions,
-        );
-        if (locatorResult.type === 'exception') {
-          throw new Error('Unknown exception');
-        }
-        return {nodes: [locatorResult.result as Script.NodeRemoteValue]};
-      } catch {
-        throw new InvalidArgumentException('Context does not exist');
-      }
+      return await this.#locateNodesByContextLocator(
+        locator,
+        startNodes,
+        realm,
+        serializationOptions,
+      );
     }
-    const locatorDelegate = await this.#getLocatorDelegate(
-      realm,
+
+    if (locator.type === 'accessibility') {
+      return await this.#locateNodesByAccessibility(
+        locator,
+        startNodes,
+        maxNodeCount,
+        realm,
+      );
+    }
+
+    // Select by injecting a script into the realm.
+    const locatorDelegate = this.#getLocatorDelegate(
       locator,
       maxNodeCount,
       startNodes,
@@ -1908,6 +1766,149 @@ export class BrowsingContextImpl {
     );
 
     return {nodes};
+  }
+
+  async #locateNodesByContextLocator(
+    locator: BrowsingContext.ContextLocator,
+    startNodes: Script.SharedReference[],
+    realm: Realm,
+    serializationOptions: Script.SerializationOptions | undefined,
+  ): Promise<BrowsingContext.LocateNodesResult> {
+    if (startNodes.length !== 0) {
+      throw new InvalidArgumentException('Start nodes are not supported');
+    }
+    const contextId = locator.value.context;
+    if (!contextId) {
+      throw new InvalidSelectorException('Invalid context');
+    }
+    const context = this.#browsingContextStorage.getContext(contextId);
+    const parent = context.parent;
+    if (!parent) {
+      throw new InvalidArgumentException('This context has no container');
+    }
+    try {
+      const {backendNodeId} = await parent.#cdpTarget.cdpClient.sendCommand(
+        'DOM.getFrameOwner',
+        {
+          frameId: contextId,
+        },
+      );
+      const {object} = await parent.#cdpTarget.cdpClient.sendCommand(
+        'DOM.resolveNode',
+        {
+          backendNodeId,
+        },
+      );
+      const locatorResult = await realm.callFunction(
+        `function () { return this; }`,
+        false,
+        {handle: object.objectId!},
+        [],
+        Script.ResultOwnership.None,
+        serializationOptions,
+      );
+      if (locatorResult.type === 'exception') {
+        throw new Error('Unknown exception');
+      }
+      return {nodes: [locatorResult.result as Script.NodeRemoteValue]};
+    } catch {
+      throw new InvalidArgumentException('Context does not exist');
+    }
+  }
+
+  async #locateNodesByAccessibility(
+    locator: BrowsingContext.AccessibilityLocator,
+    startNodes: Script.SharedReference[],
+    maxNodeCount: number | undefined,
+    realm: Realm,
+  ) {
+    if (!locator.value.name && !locator.value.role) {
+      throw new InvalidSelectorException(
+        'Either name or role has to be specified',
+      );
+    }
+    await this.#cdpTarget.cdpClient.sendCommand('Accessibility.enable');
+
+    const startBackendNodeIds: number[] = [];
+    if (startNodes.length === 0) {
+      const {root: documentRoot} =
+        await this.#cdpTarget.cdpClient.sendCommand('DOM.getDocument');
+      startBackendNodeIds.push(documentRoot.backendNodeId);
+    } else {
+      for (const node of startNodes) {
+        if (node.sharedId) {
+          const parsed = parseSharedId(node.sharedId);
+          if (!parsed) {
+            throw new NoSuchNodeException(`Invalid sharedId: ${node.sharedId}`);
+          }
+          startBackendNodeIds.push(parsed.backendNodeId);
+        } else {
+          if (node.handle) {
+            const {nodeId} = await this.#cdpTarget.cdpClient.sendCommand(
+              'DOM.requestNode',
+              {
+                objectId: node.handle,
+              },
+            );
+            const {node: describedNode} =
+              await this.#cdpTarget.cdpClient.sendCommand('DOM.describeNode', {
+                nodeId,
+              });
+            startBackendNodeIds.push(describedNode.backendNodeId);
+          } else {
+            throw new NoSuchNodeException(
+              'Start node must have sharedId or handle',
+            );
+          }
+        }
+      }
+    }
+
+    const matchedBackendNodeIds = new Set<number>();
+    for (const backendNodeId of startBackendNodeIds) {
+      const {nodes} = await this.#cdpTarget.cdpClient.sendCommand(
+        'Accessibility.queryAXTree',
+        {
+          backendNodeId,
+          accessibleName: locator.value.name,
+          role: locator.value.role,
+        },
+      );
+
+      for (const node of nodes) {
+        if (node.backendDOMNodeId && node.role?.type === 'role') {
+          matchedBackendNodeIds.add(node.backendDOMNodeId);
+          if (
+            maxNodeCount !== undefined &&
+            maxNodeCount > 0 &&
+            matchedBackendNodeIds.size >= maxNodeCount
+          ) {
+            break;
+          }
+        }
+      }
+    }
+
+    const resultNodes = await Promise.all(
+      Array.from(matchedBackendNodeIds).map(async (backendNodeId) => {
+        const {object} = await this.#cdpTarget.cdpClient.sendCommand(
+          'DOM.resolveNode',
+          {
+            backendNodeId,
+          },
+        );
+        // We need to use `serializeCdpObject` to convert it to BiDi format.
+        // We use `Script.ResultOwnership.None` as `locateNodes` returns weak references (nodes).
+        return await realm.serializeCdpObject(
+          object,
+          Script.ResultOwnership.None,
+        );
+      }),
+    );
+
+    return {
+      nodes: resultNodes.filter((result) => result.type === 'node'),
+    };
   }
 
   #getAllRelatedCdpTargets() {
