@@ -861,7 +861,12 @@ void RenderWidgetHostViewChildFrame::ShowSharePicker(
     const std::string& text,
     const GURL& url,
     const std::vector<std::string>& file_paths,
-    blink::mojom::ShareService::ShareCallback callback) {}
+    blink::mojom::ShareService::ShareCallback callback) {
+  if (GetRootRenderWidgetHostView()) {
+    GetRootRenderWidgetHostView()->ShowSharePicker(title, text, url, file_paths,
+                                                   std::move(callback));
+  }
+}
 
 uint64_t RenderWidgetHostViewChildFrame::GetNSViewId() const {
   return 0;

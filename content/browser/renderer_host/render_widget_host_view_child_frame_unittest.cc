@@ -105,11 +105,38 @@ class MockFrameConnector : public CrossProcessFrameConnector {
     intersection_state_.occlusion_state = occlusion_state;
   }
 
+  void SetRootRenderWidgetHostView(RenderWidgetHostViewBase* root) {
+    root_host_view_ = root;
+  }
+
   RenderWidgetHostViewBase* GetParentRenderWidgetHostView() override {
     return nullptr;
   }
 
+  RenderWidgetHostViewBase* GetRootRenderWidgetHostView() override {
+    return root_host_view_;
+  }
+
   viz::SurfaceInfo last_surface_info_;
+  raw_ptr<RenderWidgetHostViewBase> root_host_view_ = nullptr;
+};
+
+class MockRenderWidgetHostView : public TestRenderWidgetHostView {
+ public:
+  explicit MockRenderWidgetHostView(RenderWidgetHost* rwh)
+      : TestRenderWidgetHostView(rwh) {}
+  ~MockRenderWidgetHostView() override = default;
+
+#if BUILDFLAG(IS_MAC)
+  MOCK_METHOD(void,
+              ShowSharePicker,
+              (const std::string& title,
+               const std::string& text,
+               const GURL& url,
+               const std::vector<std::string>& file_paths,
+               blink::mojom::ShareService::ShareCallback callback),
+              (override));
+#endif
 };
 
 class RenderWidgetHostViewChildFrameTest
@@ -203,6 +230,40 @@ class RenderWidgetHostViewChildFrameTest
   raw_ptr<RenderWidgetHostViewChildFrame> view_ = nullptr;
   std::unique_ptr<MockFrameConnector> test_frame_connector_;
 };
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(RenderWidgetHostViewChildFrameTest, ShowSharePickerFromChildFrame) {
+  // Set up a mock root view for the sake of accepting the share picker call.
+  auto root_view =
+      std::make_unique<testing::NiceMock<MockRenderWidgetHostView>>(
+          widget_host_.get());
+  RenderWidgetHostViewChildFrame* child_view =
+      RenderWidgetHostViewChildFrame::Create(widget_host_.get(),
+                                             display::ScreenInfos());
+  std::unique_ptr<MockFrameConnector> connector =
+      std::make_unique<MockFrameConnector>();
+  connector->SetView(child_view, false);
+  connector->SetRootRenderWidgetHostView(root_view.get());
+  child_view->SetFrameConnector(connector.get());
+
+  EXPECT_CALL(*root_view, ShowSharePicker(testing::_, testing::_, testing::_,
+                                          testing::_, testing::_))
+      .WillOnce([&](const std::string&, const std::string&, const GURL&,
+                    const std::vector<std::string>&,
+                    blink::mojom::ShareService::ShareCallback cb) {
+        std::move(cb).Run(blink::mojom::ShareError::OK);
+      });
+
+  base::RunLoop run_loop;
+  child_view->ShowSharePicker(
+      "title", "text", GURL("http://example.com"), {},
+      base::BindOnce([](blink::mojom::ShareError error) {
+      }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+  child_view->Destroy();
+  connector->SetRootRenderWidgetHostView(nullptr);
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(RenderWidgetHostViewChildFrameTest, VisibilityTest) {
   // Calling show and hide also needs to be propagated to child frame by the
