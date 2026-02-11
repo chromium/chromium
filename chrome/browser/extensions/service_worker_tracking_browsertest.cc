@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -104,6 +105,21 @@ class ServiceWorkerHostInterceptorForWorkerStop
 
  private:
   const WorkerId worker_id_;
+};
+
+// Alternative implementation of ServiceWorkerHost that simulates that a start
+// notification was never sent from the renderer worker thread.
+class ServiceWorkerHostNoStartNotification : public ServiceWorkerHost {
+ public:
+  using ServiceWorkerHost::ServiceWorkerHost;
+
+  // mojom::ServiceWorkerHost:
+  void DidStartServiceWorkerContext(
+      const ExtensionId& extension_id,
+      const base::UnguessableToken& activation_token,
+      const GURL& service_worker_scope,
+      int64_t service_worker_version_id,
+      int worker_thread_id) override {}
 };
 
 class ServiceWorkerTrackingBrowserTest : public ExtensionBrowserTest {
@@ -944,12 +960,19 @@ class ServiceWorkerNotFullyRunBrowserTest : public ExtensionBrowserTest {
 // Tests that the service worker is started if it has not fully run once.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerNotFullyRunBrowserTest,
                        PRE_WorkerStartsIfItHasntFullyRunYet) {
-  // We will receive `DidRegisterServiceWorker` but not
+  // We want to receive `DidRegisterServiceWorker` but not
   // `RendererDidStartServiceWorkerContext`. This simulates a scenario in which
   // the JavaScript context has been fully executed, but extension listeners may
   // not have been fully registered.
-  base::AutoReset<bool> disable_renderer_start_notifications(
-      ServiceWorkerTaskQueue::DisableRendererStartNotificationsForTesting());
+  auto sw_host_factory_callback = base::BindRepeating(
+      [](content::RenderProcessHost* render_process_host,
+         mojo::PendingAssociatedReceiver<mojom::ServiceWorkerHost> receiver)
+          -> std::unique_ptr<ServiceWorkerHost> {
+        return std::make_unique<ServiceWorkerHostNoStartNotification>(
+            render_process_host, std::move(receiver));
+      });
+  base::AutoReset<ServiceWorkerHost::FactoryCallback*> sw_host_factory =
+      ServiceWorkerHost::SetFactoryForTesting(&sw_host_factory_callback);
 
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII(

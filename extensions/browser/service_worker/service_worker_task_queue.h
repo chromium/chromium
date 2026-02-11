@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
@@ -328,8 +327,6 @@ class ServiceWorkerTaskQueue
   };
 
   static void SetObserverForTest(TestObserver* observer);
-
-  static base::AutoReset<bool> DisableRendererStartNotificationsForTesting();
 
   size_t GetNumPendingTasksForTest(const LazyContextId& lazy_context_id);
 

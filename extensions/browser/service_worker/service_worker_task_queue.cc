@@ -81,11 +81,6 @@ constexpr int kMaxRetries = 3;
 
 ServiceWorkerTaskQueue::TestObserver* g_test_observer = nullptr;
 
-// TODO(crbug.com/483423894): remove this and instead rely on providing an
-// alternative ServiceWorkerHost implementation to intercept renderer start
-// notifications.
-bool g_disable_renderer_start_notifications = false;
-
 }  // namespace
 
 ServiceWorkerTaskQueue::ServiceWorkerTaskQueue(BrowserContext* browser_context)
@@ -170,9 +165,6 @@ void ServiceWorkerTaskQueue::RendererDidStartServiceWorkerContext(
     int64_t service_worker_version_id,
     int thread_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (g_disable_renderer_start_notifications) {
-    return;
-  }
 
   auto [worker_state, context_id] =
       GetWorkerStateForActivation(extension_id, activation_token);
@@ -220,12 +212,6 @@ void ServiceWorkerTaskQueue::RendererDidStopServiceWorkerContext(
 // static
 void ServiceWorkerTaskQueue::SetObserverForTest(TestObserver* observer) {
   g_test_observer = observer;
-}
-
-// static
-base::AutoReset<bool>
-ServiceWorkerTaskQueue::DisableRendererStartNotificationsForTesting() {
-  return base::AutoReset<bool>(&g_disable_renderer_start_notifications, true);
 }
 
 bool ServiceWorkerTaskQueue::ShouldEnqueueTask(
