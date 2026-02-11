@@ -716,6 +716,31 @@ declaring a template type for each such parameter.
 [Migration bug](https://crbug.com/1414526)
 ***
 
+### Aggregate initialization using parentheses <sup>[allowed]</sup>
+
+```c++
+struct B {
+  int a;
+  int&& r;
+} b2(1, 1);  // Warning: dangling reference
+```
+
+**Description:** Allows initialization of aggregates using parentheses, not just
+braces.
+
+**Documentation:**
+[Aggregate initialization](https://en.cppreference.com/w/cpp/language/aggregate_initialization),
+[Direct initialization](https://en.cppreference.com/w/cpp/language/direct_initialization)
+
+**Notes:**
+*** promo
+There are subtle but important differences between brace-init and paren-init of
+aggregates. The parenthesis style has some pitfalls, e.g. allowing narrowing
+conversions and not extending lifetimes of temporaries bound to references, but
+this matches the behavior of paren-init of non-aggregate types which is already
+allowed.
+***
+
 ### consteval <sup>[allowed]</sup>
 
 ```c++
@@ -1392,6 +1417,28 @@ of data is string-like and not an arbitrary binary blob, prefer
 `std::string[_view]` over `char*`.
 ***
 
+### Coroutines <sup>[banned]</sup>
+
+```c++
+co_return 1;
+```
+
+**Description:** Allows writing functions that logically block while physically
+returning control to a caller. This enables writing some kinds of async code in
+simple, straight-line ways without storing state in members or binding
+callbacks.
+
+**Documentation:**
+[Coroutines](https://en.cppreference.com/w/cpp/language/coroutines)
+
+**Notes:**
+*** promo
+Requires significant support code and planning around API and migration, see
+[discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ehMerLApxr8/m/5vzoHqCgCwAJ).
+Re-evaluate once supported on win32 and there is a plan for how to integrate
+with Chrome task scheduling.
+***
+
 ### Modules <sup>[banned]</sup>
 
 ```c++
@@ -1512,6 +1559,41 @@ encoded using the current C locale.
 Chromium functionality should not vary with the C locale.
 ***
 
+### &lt;coroutine&gt; <sup>[banned]</sup>
+
+```c++
+#include <coroutine>
+```
+
+**Description:** Header which defines various core coroutine types.
+
+**Documentation:**
+[Coroutine support](https://en.cppreference.com/w/cpp/coroutine)
+
+**Notes:**
+*** promo
+See notes on "Coroutines" above.
+***
+
+### &lt;format&gt; <sup>[banned]</sup>
+
+```c++
+std::cout << std::format("Hello {}!\n", "world");
+```
+
+**Description:** Utilities for producing formatted strings.
+
+**Documentation:**
+[Formatting library](https://en.cppreference.com/w/cpp/utility/format)
+
+**Notes:**
+*** promo
+Has both pros and cons compared to `absl::StrFormat` (which we use internally in
+base::StringPrintf). Migration would be nontrivial due to string format
+specifiers being different. The external {fmt} library might be a better
+candidate to switch to.
+***
+
 ### Range factories and range adaptors <sup>[banned]</sup>
 
 ```c++
@@ -1559,6 +1641,24 @@ primarily allow authors to create similar functionality.
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw)
 ***
 
+### &lt;source_location&gt; <sup>[banned]</sup>
+
+```c++
+#include <source_location>
+```
+
+**Description:** Provides a class that can hold source code details such as
+filenames, function names, and line numbers.
+
+**Documentation:**
+[Standard library header `<source_location>`](https://en.cppreference.com/w/cpp/header/source_location)
+
+**Notes:**
+*** promo
+Regresses binary size vs. `base::Location`, see
+[discussion here](https://groups.google.com/a/chromium.org/g/cxx/c/2BsvGgWfNWo/m/2SO4F2b4AAAJ).
+***
+
 ### &lt;span&gt; <sup>[banned]</sup>
 
 ```c++
@@ -1595,6 +1695,23 @@ Banned because it is not guaranteed to be SFINAE-compatible. Use
 base::to_address, which does guarantee this.
 ***
 
+### std::u8string <sup>[banned]</sup>
+
+```c++
+std::u8string str = u8"Foo";
+```
+
+**Description:** A string whose character type is `char8_t`, intended to hold
+UTF-8-encoded text.
+
+**Documentation:**
+[`std::basic_string`](https://en.cppreference.com/w/cpp/string/basic_string)
+
+**Notes:**
+*** promo
+See notes on `char8_t` above.
+***
+
 ### &lt;syncstream&gt; <sup>[banned]</sup>
 
 ```c++
@@ -1611,128 +1728,6 @@ base::to_address, which does guarantee this.
 Banned due to being unimplemented per
 [the libc++ C++20 status page](https://libcxx.llvm.org/Status/Cxx20.html).
 Reevaluate usefulness once implemented.
-***
-
-## C++20 TBD Language Features {#core-review-20}
-
-The following C++20 language features are not allowed in the Chromium codebase.
-See the top of this page on how to propose moving a feature from this list into
-the allowed or banned sections.
-
-### Aggregate initialization using parentheses <sup>[tbd]</sup>
-
-```c++
-struct B {
-  int a;
-  int&& r;
-} b2(1, 1);  // Warning: dangling reference
-```
-
-**Description:** Allows initialization of aggregates using parentheses, not just
-braces.
-
-**Documentation:**
-[Aggregate initialization](https://en.cppreference.com/w/cpp/language/aggregate_initialization),
-[Direct initialization](https://en.cppreference.com/w/cpp/language/direct_initialization)
-
-**Notes:**
-*** promo
-There are subtle but important differences between brace- and paren-init of
-aggregates. The parenthesis style appears to have more pitfalls (allowing
-narrowing conversions, not extending lifetimes of temporaries bound to
-references).
-***
-
-### Coroutines <sup>[tbd]</sup>
-
-```c++
-co_return 1;
-```
-
-**Description:** Allows writing functions that logically block while physically
-returning control to a caller. This enables writing some kinds of async code in
-simple, straight-line ways without storing state in members or binding
-callbacks.
-
-**Documentation:**
-[Coroutines](https://en.cppreference.com/w/cpp/language/coroutines)
-
-**Notes:**
-*** promo
-Requires significant support code and planning around API and migration.
-***
-
-## C++20 TBD Library Features {#library-review-20}
-
-The following C++20 library features are not allowed in the Chromium codebase.
-See the top of this page on how to propose moving a feature from this list into
-the allowed or banned sections.
-
-### &lt;coroutine&gt; <sup>[tbd]</sup>
-
-```c++
-#include <coroutine>
-```
-
-**Description:** Header which defines various core coroutine types.
-
-**Documentation:**
-[Coroutine support](https://en.cppreference.com/w/cpp/coroutine)
-
-**Notes:**
-*** promo
-See notes on "Coroutines" above.
-***
-
-### &lt;format&gt; <sup>[tbd]</sup>
-
-```c++
-std::cout << std::format("Hello {}!\n", "world");
-```
-
-**Description:** Utilities for producing formatted strings.
-
-**Documentation:**
-[Formatting library](https://en.cppreference.com/w/cpp/utility/format)
-
-**Notes:**
-*** promo
-Has both pros and cons compared to `absl::StrFormat` (which we don't yet use).
-Migration would be nontrivial.
-***
-
-### &lt;source_location&gt; <sup>[tbd]</sup>
-
-```c++
-#include <source_location>
-```
-
-**Description:** Provides a class that can hold source code details such as
-filenames, function names, and line numbers.
-
-**Documentation:**
-[Standard library header `<source_location>`](https://en.cppreference.com/w/cpp/header/source_location)
-
-**Notes:**
-*** promo
-Seems to regress code size vs. `base::Location`.
-***
-
-### std::u8string <sup>[tbd]</sup>
-
-```c++
-std::u8string str = u8"Foo";
-```
-
-**Description:** A string whose character type is `char8_t`, intended to hold
-UTF-8-encoded text.
-
-**Documentation:**
-[`std::basic_string`](https://en.cppreference.com/w/cpp/string/basic_string)
-
-**Notes:**
-*** promo
-See notes on `char8_t` above.
 ***
 
 ## C++23 Allowed Language Features {#core-allowlist-23}
