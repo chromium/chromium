@@ -500,6 +500,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
        IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_SAVE_BUTTON},
       {"movePasswordToAccountIconTooltip",
        IDS_PASSWORD_MANAGER_UI_MOVE_TO_ACCOUNT_ICON_TOOLTIP},
+      {"movePasswordsToAccountDetailsCardSubtitle",
+       IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_DESCRIPTION},
 #if BUILDFLAG(IS_MAC)
       {"biometricAuthenticationForFillingLabel",
        IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_MAC},
