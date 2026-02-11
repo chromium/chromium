@@ -60,12 +60,12 @@ class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
 
 #pragma pack(push, 4)
   struct Header : base::Pickle::Header {
-    int32_t pad_routing = 0;
-    uint32_t pad_type = 0;
-    uint32_t pad_flags = 0;
+    int32_t pad_routing;
+    uint32_t pad_type;
+    uint32_t pad_flags;
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-    uint16_t num_fds = 0;
-    uint16_t pad = 0;
+    uint16_t num_fds;
+    uint16_t pad;
 #endif
   };
 #pragma pack(pop)

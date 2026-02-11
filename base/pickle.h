@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <type_traits>
 
 #include "base/base_export.h"
 #include "base/check_op.h"
@@ -325,13 +326,23 @@ class BASE_EXPORT Pickle {
   // to the Pickle constructor.
   template <class T>
   T* headerT() {
+    // This should ideally use std::is_pointer_interconvertible_base_of_v but it
+    // isn't currently supported in chromium.
+    static_assert(std::is_base_of_v<Header, T>,
+                  "T must be a subclass of Header");
+    // T must be a trivial type because Pickle manages memory as raw bytes and
+    // does not invoke constructors or destructors when moving or reallocating
+    // data. Standard layout is not required because this class supports custom
+    // headers that add members via inheritance, which technically violates the
+    // strict standard layout rules (members in multiple levels of the
+    // hierarchy).
+    static_assert(std::is_trivial_v<T>, "T must be a trivial class");
     DCHECK_EQ(header_size_, sizeof(T));
     return static_cast<T*>(header_);
   }
   template <class T>
   const T* headerT() const {
-    DCHECK_EQ(header_size_, sizeof(T));
-    return static_cast<const T*>(header_);
+    return const_cast<Pickle*>(this)->headerT<T>();
   }
 
   // The payload is the pickle data immediately following the header.

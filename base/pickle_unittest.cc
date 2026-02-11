@@ -48,6 +48,12 @@ const char16_t testrawstring16[] = {'A', 'l', 'o', 'h', 'a', 0};
 const char testdata[] = "AAA\0BBB\0";
 const size_t testdatalen = std::size(testdata) - 1;
 
+// Pickle::Header must be a trivial type because Pickle manages memory as raw
+// bytes and does not invoke constructors or destructors when moving or
+// reallocating data.
+static_assert(std::is_trivial_v<Pickle::Header>,
+              "Header must be a trivial class");
+
 // checks that the results can be read correctly from the Pickle
 void VerifyResult(const Pickle& pickle) {
   PickleIterator iter(pickle);
