@@ -125,6 +125,7 @@ class ContextualSearchboxHandler
   // Called from browser code (e.g., Views-based file selector) to add file
   // context.
   void AddFileContextFromBrowser(
+      std::string file_name,
       std::string mime_type,
       mojo_base::BigBuffer file_bytes,
       std::optional<lens::ImageEncodingOptions> image_encoding_options,

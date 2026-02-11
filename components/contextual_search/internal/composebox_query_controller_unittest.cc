@@ -962,6 +962,41 @@ TEST_F(ComposeboxQueryControllerTest, UploadEmptyImageFileRequestFailure) {
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
+TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccessWithFileName) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kPdf;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kPdf));
+  input_data->file_name = "test_file.pdf";
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   /*image_options=*/std::nullopt);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Assert: Check that the file name is correctly set in the file info.
+  auto* file_info = controller().GetFileInfoForTesting(file_token);
+  ASSERT_TRUE(file_info);
+  EXPECT_EQ(file_info->file_name, "test_file.pdf");
+
+  // Assert: Check that the file name is correctly set in the added inputs.
+  auto added_inputs = controller().CreateAddedInputs({file_token});
+  ASSERT_EQ(added_inputs.added_inputs_size(), 1);
+  EXPECT_EQ(added_inputs.added_inputs(0).lens_file().file_name(),
+            "test_file.pdf");
+}
+
 TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
   // Act: Start the session.
   controller().InitializeIfNeeded();

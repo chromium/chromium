@@ -1138,8 +1138,11 @@ CreateInputDataFromAnnotatedPageContent(
   // Register the file context with the UI as soon as the token is created so
   // that it can listen to all file upload events.
   [self onFileContextAdded:serverToken forIdentifier:identifier];
+  ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
+  std::string fileName = item ? base::SysNSStringToUTF8(item.title) : "";
   _contextualSearchSession->StartFileContextUploadFlow(
-      serverToken, kPortableNetworkGraphicMimeType, std::move(buffer), options);
+      serverToken, fileName, kPortableNetworkGraphicMimeType, std::move(buffer),
+      options);
 }
 
 // Uploads the `image` for the item with the given `identifier`.
@@ -1216,8 +1219,10 @@ CreateInputDataFromAnnotatedPageContent(
     // Register the file context with the UI as soon as the token is created so
     // that it can listen to all file upload events.
     [self onFileContextAdded:serverToken forIdentifier:identifier];
+    std::string fileName = base::SysNSStringToUTF8(item.title);
     _contextualSearchSession->StartFileContextUploadFlow(
-        serverToken, kAdobePortableDocumentFormatMimeType, std::move(buffer),
+        serverToken, fileName, kAdobePortableDocumentFormatMimeType,
+        std::move(buffer),
         /*image_options=*/std::nullopt);
   }
 

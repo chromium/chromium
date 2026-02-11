@@ -45,6 +45,8 @@ struct ContextualInputData {
   std::optional<GURL> page_url;
   // If the context is a webpage or pdf, this is the title of it.
   std::optional<std::string> page_title;
+  // If the context is a file, this is the file name.
+  std::optional<std::string> file_name;
   // If the context is a pdf, this is the current viewed page.
   std::optional<uint32_t> pdf_current_page;
   // TODO(crbug.com/462520491): Set the tab handle from the contextual

@@ -652,6 +652,9 @@ void ComposeboxQueryController::StartFileUploadFlow(
   file_info->tab_url = contextual_input_data->page_url;
   file_info->tab_title = contextual_input_data->page_title;
   file_info->tab_session_id = contextual_input_data->tab_session_id;
+  if (contextual_input_data->file_name.has_value()) {
+    file_info->file_name = contextual_input_data->file_name.value();
+  }
   file_info->input_data =
       std::make_unique<lens::ContextualInputData>(*contextual_input_data);
 
