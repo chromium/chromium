@@ -193,6 +193,12 @@ BASE_FEATURE_PARAM(bool,
 // failures. Otherwise, it returns TERMINATION_STATUS_OOM.
 BASE_FEATURE(kUseTerminationStatusMemoryExhaustion, FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN)
+// When enabled, use ABOVE_NORMAL_PRIORITY_CLASS for Priority::kUserBlocking on
+// Windows.
+BASE_FEATURE(kUserBlockingAboveNormalPriority, FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
 bool IsReducePPMsEnabled() {
   return g_is_reduce_ppms_enabled.load(std::memory_order_relaxed);
 }

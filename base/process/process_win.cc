@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include "base/clang_profiling_buildflags.h"
+#include "base/features.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
@@ -262,6 +263,11 @@ Process::Priority Process::GetPriority() const {
     return Priority::kBestEffort;
   }
 
+  // Return Priority::kUserBlocking if ABOVE_NORMAL_PRIORITY_CLASS is used.
+  if (priority == ABOVE_NORMAL_PRIORITY_CLASS) {
+    return Priority::kUserBlocking;
+  }
+
   // Return Priority::kUserVisible if EcoQos is enabled.
   if (win::GetProcessEcoQoSState(Handle()) ==
       win::ProcessPowerState::kEnabled) {
@@ -291,9 +297,22 @@ bool Process::SetPriority(Priority priority) {
                                    : win::ProcessPowerState::kEnabled);
   }
 
-  return ::SetPriorityClass(Handle(), priority == Priority::kBestEffort
-                                          ? IDLE_PRIORITY_CLASS
-                                          : NORMAL_PRIORITY_CLASS) != 0;
+  DWORD os_priority = NORMAL_PRIORITY_CLASS;
+  switch (priority) {
+    case Priority::kBestEffort:
+      os_priority = IDLE_PRIORITY_CLASS;
+      break;
+    case Priority::kUserVisible:
+      os_priority = NORMAL_PRIORITY_CLASS;
+      break;
+    case Priority::kUserBlocking:
+      os_priority =
+          FeatureList::IsEnabled(features::kUserBlockingAboveNormalPriority)
+              ? ABOVE_NORMAL_PRIORITY_CLASS
+              : NORMAL_PRIORITY_CLASS;
+      break;
+  }
+  return ::SetPriorityClass(Handle(), os_priority) != 0;
 }
 
 int Process::GetOSPriority() const {

@@ -289,4 +289,12 @@ BASE_FEATURE_PARAM(size_t,
 
 BASE_FEATURE(kExtensionServiceWorkerVoter, base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN)
+// A feature to use ABOVE_NORMAL_PRIORITY_CLASS for Browser on Windows by
+// setting base::Priority::kUserBlocking. This should be used together with
+// kUserBlockingAboveNormalPriority.
+BASE_FEATURE(kBrowserProcessAboveNormalPriority,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace performance_manager::features

@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/graph/policies/process_priority_policy.h"
 
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -27,6 +28,16 @@ ProcessPriorityPolicy::SetPriorityOnUiThreadCallback* g_callback = nullptr;
 void SetProcessPriority(const ProcessNode* process_node,
                         base::Process::Priority priority) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(
+          features::kBrowserProcessAboveNormalPriority) &&
+      process_node->GetProcessType() == content::PROCESS_TYPE_BROWSER) {
+    // Browser process should be kUserBlocking by default.
+    CHECK_EQ(priority, base::Process::Priority::kUserBlocking);
+    base::Process::Current().SetPriority(priority);
+  }
+#endif
 
   if (process_node->GetProcessType() != content::PROCESS_TYPE_RENDERER) {
     // This is triggered from ProcessNode observers that fire for all process
