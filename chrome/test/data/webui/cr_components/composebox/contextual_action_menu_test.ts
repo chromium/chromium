@@ -119,6 +119,15 @@ suite('ContextualActionMenu', () => {
     assertTrue(!!$$(actionMenu, '#createImages'));
     assertTrue(!!$$(actionMenu, '#geminiModelRegular'));
     assertTrue(!!$$(actionMenu, '#geminiModelThinking'));
+
+    assertEquals(
+        'menuitem', $$(actionMenu, '#deepSearch')!.getAttribute('role'));
+    assertEquals(
+        'menuitemradio',
+        $$(actionMenu, '#geminiModelRegular')!.getAttribute('role'));
+    assertEquals(
+        'menuitemradio',
+        $$(actionMenu, '#geminiModelThinking')!.getAttribute('role'));
   });
 
   test('Hides tools and models not allowed', async () => {
@@ -249,6 +258,9 @@ suite('ContextualActionMenu', () => {
 
     assertFalse(!!regularModel.querySelector('#model-check'));
     assertTrue(!!thinkingModel.querySelector('#model-check'));
+
+    assertEquals('false', regularModel.getAttribute('aria-checked'));
+    assertEquals('true', thinkingModel.getAttribute('aria-checked'));
   });
 
   test('Shows image and file upload when allowed', async () => {
@@ -260,6 +272,11 @@ suite('ContextualActionMenu', () => {
 
     assertTrue(!!$$(actionMenu, '#imageUpload'));
     assertTrue(!!$$(actionMenu, '#fileUpload'));
+
+    assertEquals(
+        'menuitem', $$(actionMenu, '#imageUpload')!.getAttribute('role'));
+    assertEquals(
+        'menuitem', $$(actionMenu, '#fileUpload')!.getAttribute('role'));
   });
 
   test('Hides image and file upload when not allowed', async () => {
@@ -441,6 +458,15 @@ suite('ContextualActionMenu', () => {
     const items = actionMenu.$.menu.querySelectorAll('.dropdown-item');
     // 1 tab item.
     assertEquals(1, items.length);
+
+    const tabButton = items[0] as HTMLButtonElement;
+    assertEquals('menuitemcheckbox', tabButton.getAttribute('role'));
+    assertEquals('false', tabButton.getAttribute('aria-checked'));
+
+    // Check with selection.
+    actionMenu.disabledTabIds = new Map([[tabInfo.tabId, '1']]);
+    await microtasksFinished();
+    assertEquals('true', tabButton.getAttribute('aria-checked'));
   });
 
   test('Uses configured menu labels', async () => {

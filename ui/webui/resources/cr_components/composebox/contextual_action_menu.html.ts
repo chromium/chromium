@@ -22,6 +22,8 @@ export function getHtml(this: ContextualActionMenuElement) {
       ${this.tabSuggestions.map((tab, index) => html`
         <div class="suggestion-container">
           <button class="dropdown-item"
+              role="${this.enableMultiTabSelection_ ? 'menuitemcheckbox' : 'menuitem'}"
+              aria-checked="${this.enableMultiTabSelection_ && this.disabledTabIds.has(tab.tabId)}"
               title="${tab.title}" data-index="${index}"
               aria-label="${this.getInputTypeLabel_(InputType.kBrowserTab)}, ${
                   tab.title}"
@@ -49,13 +51,14 @@ export function getHtml(this: ContextualActionMenuElement) {
       <hr/>
     `: ''}
     ${this.imageUploadAllowed_ ? html`
-      <button id="imageUpload" class="dropdown-item"
+      <button id="imageUpload" class="dropdown-item" role="menuitem"
           @click="${this.openImageUpload_}"
           ?disabled="${this.imageUploadDisabled_}">
         <cr-icon icon="composebox:imageUpload"></cr-icon>
         ${this.getInputTypeLabel_(InputType.kLensImage)}
       </button>` : ''}
     ${this.fileUploadAllowed_ ? html`<button id="fileUpload" class="dropdown-item"
+        role="menuitem"
         @click="${this.openFileUpload_}"
         ?disabled="${this.fileUploadDisabled_}">
       <cr-icon icon="composebox:fileUpload"></cr-icon>
@@ -69,6 +72,7 @@ export function getHtml(this: ContextualActionMenuElement) {
         <h4 id="toolHeader">${this.toolHeader_}</h4>` : ''}` : ''}
     ${Array.from(this.supportedTools_.entries()).map(([mode, tool]) => this.isToolAllowed_(mode) ? html`
       <button id="${tool.id}" class="dropdown-item" data-mode="${mode}"
+          role="menuitem"
           @click="${this.onToolClick_}"
           ?disabled="${this.isToolDisabled_(mode)}">
         <cr-icon icon="${tool.icon}"></cr-icon>
@@ -82,6 +86,8 @@ export function getHtml(this: ContextualActionMenuElement) {
         <h4 id="modelHeader">${this.modelHeader_}</h4>` : ''}` : ''}
     ${Array.from(this.supportedModels_.entries()).map(([mode, model]) => this.isModelAllowed_(mode) ? html`
       <button id="${model.id}" class="dropdown-item"
+          role="menuitemradio"
+          aria-checked="${this.isModelActive_(mode)}"
           data-model="${mode}"
           @click="${this.onModelClick_}"
           ?disabled="${this.isModelDisabled_(mode)}">
