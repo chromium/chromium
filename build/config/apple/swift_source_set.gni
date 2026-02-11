@@ -7,77 +7,10 @@ if (build_with_chromium) {
   import("//tools/json_data_generator/json_data_generator.gni")
 }
 
-# Defines a template for Swift source files. The default module_name
-# of the target is the entire target label (without the leading //)
-# with all "/" and ":" replaced with "_".
-#
-# Arguments
-#
-#   generate_intents
-#       (optional) boolean, if true, intents definition in the source code
-#       will be parsed when generating the final application (if it enable
-#       the extraction of intents metadata), defaults to false.
-#   module_name
-#       (optional) string, name of this build target's top level swift module.
-#       If not specified, a module name will be generated based on the target's
-#       names
-#
-template("swift_source_set") {
-  _generate_intents = false
-  if (defined(invoker.generate_intents)) {
-    _generate_intents = invoker.generate_intents
-  }
-
-  _target_name = target_name
-  not_needed([ "_target_name" ])
-  source_set(target_name) {
-    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    if (!defined(module_name)) {
-      _target_label = get_label_info(":$_target_name", "label_no_toolchain")
-
-      # Strip the // from the beginning of the label.
-      _target_label = string_replace(_target_label, "//", "", 1)
-      module_name =
-          string_replace(string_replace(_target_label, "/", "_"), ":", "_")
-    }
-
-    # If generate_intents is true, write file $target_name.module_info.json
-    # with information about the module used by extract_metadata.py script.
-    if (_generate_intents) {
-      _output_path = "$target_out_dir/$target_name"
-      _swift_files = sources
-      _const_files = []
-      if (swift_whole_module_optimization) {
-        _const_files += [ "$_output_path/$module_name.swiftconstvalues" ]
-      } else {
-        foreach(_source, sources) {
-          _const_files += [ "$_output_path/" + get_path_info(_source, "name") +
-                            ".swiftconstvalues" ]
-        }
-      }
-
-      _module_info = {
-        module_name = module_name
-        swift_files = rebase_path(_swift_files, root_build_dir)
-        const_files = rebase_path(_const_files, root_build_dir)
-      }
-
-      # Write the information for the module using `write_file(...)`.
-      write_file("$_output_path.module_info.json", _module_info, "json")
-    }
-
-    # C++ and obj-C++ targets with a direct dependency on a swift_source_set
-    # need to be able to indirectly include headers from the SDK.
-    public_configs = [ "//build/config/ios:swift_cxx_interop_includes" ]
-  }
-}
-
-set_defaults("swift_source_set") {
-  configs = default_compiler_configs
-}
-
 if (enable_swift_cxx_interop) {
+  assert(build_with_chromium,
+         "build_with_chromium must be true to use enable_swift_cxx_interop")
+
   # Template that defines a modulemap for exposing symbols from C++ sources to
   # swift.
   #
@@ -235,114 +168,181 @@ if (enable_swift_cxx_interop) {
     }
   }
 
-  if (build_with_chromium) {
-    # Template that groups several swift_modulemap target under a parent module.
-    # This is a workaround that allows the swift compiler to import multiple
-    # modules that define the same symbols due to the inclusion of common
-    # headers.
-    #
-    # Arguments
-    #
-    #     module_name:
-    #         string, name of the parent module create by this target
-    #     deps:
-    #         array of strings, list of child swift_modulemap targets to be
-    #         added to the group.
-    template("swift_modulemap_group") {
-      assert(
-          defined(invoker.module_name),
-          "swift_modulemap_group targets must set the 'module_name' argument'")
+  # Template that groups several swift_modulemap target under a parent module.
+  # This is a workaround that allows the swift compiler to import multiple
+  # modules that define the same symbols due to the inclusion of common
+  # headers.
+  #
+  # Arguments
+  #
+  #     module_name:
+  #         string, name of the parent module create by this target
+  #     deps:
+  #         array of strings, list of child swift_modulemap targets to be
+  #         added to the group.
+  template("swift_modulemap_group") {
+    assert(defined(invoker.module_name),
+           "swift_modulemap_group targets must set the 'module_name' argument'")
 
-      # It's important not to use public_deps in order to block the propagation
-      # of public_configs from child modulemaps.
-      assert(!defined(invoker.public_deps),
-             "Do not use public_deps on swift_modulemap_group targets.")
-      _metadata_path = "${target_gen_dir}/${target_name}/metadata.json"
-      _modulemap_data_path =
-          "${target_gen_dir}/${target_name}/modulemap_data.json"
+    # It's important not to use public_deps in order to block the propagation
+    # of public_configs from child modulemaps.
+    assert(!defined(invoker.public_deps),
+           "Do not use public_deps on swift_modulemap_group targets.")
+    _metadata_path = "${target_gen_dir}/${target_name}/metadata.json"
+    _modulemap_data_path =
+        "${target_gen_dir}/${target_name}/modulemap_data.json"
 
-      _parent_target = target_name
-      _modulemap_data_target = "${target_name}__modulemap_data"
-      _modulemap_target = "${target_name}__modulemap"
-      _metadata_target = "${target_name}__metadata"
-      _modulemap_config = "${target_name}__config"
+    _parent_target = target_name
+    _modulemap_data_target = "${target_name}__modulemap_data"
+    _modulemap_target = "${target_name}__modulemap"
+    _metadata_target = "${target_name}__metadata"
+    _modulemap_config = "${target_name}__config"
 
-      generated_file(_metadata_target) {
-        forward_variables_from(invoker, [ "testonly" ])
-        outputs = [ _metadata_path ]
-        contents = [
-          "{",
-          "  \"module_name\": \"${invoker.module_name}\",",
-          "  \"target_name\": \"${target_name}\",",
-          "  \"group_dir\": \"${target_gen_dir}/${target_name}\"",
-          "}",
-          "",
-        ]
-        visibility = [ ":${_modulemap_target}" ]
-      }
-
-      # Generate a file that contains metadata that describes the child
-      # swift_modulemap targets by collecting metadata from downstream nodes in
-      # the build graph.
-      generated_file(_modulemap_data_target) {
-        # Note: `invoker.deps` is forwarded to this target. Even though we
-        # don't use the outputs from those targets, we do require the metadata
-        # emitted by child swift_modulemap targets.
-        forward_variables_from(invoker,
-                               "*",
-                               [
-                                 "visibility",
-                                 "module_name",
-                               ])
-        outputs = [ _modulemap_data_path ]
-        data_keys = [ "swift_modulemap" ]
-        output_conversion = "json"
-        visibility = [ ":${_modulemap_target}" ]
-      }
-
-      _group_modulemap_dir = "${target_gen_dir}/${target_name}"
-
-      config(_modulemap_config) {
-        swiftflags = [ "-Xcc=-fmodule-map-file=" +
-                       rebase_path("${_group_modulemap_dir}/group.modulemap",
-                                   root_build_dir) ]
-      }
-
-      # Generate a the group modulemap file
-      json_data_generator(_modulemap_target) {
-        forward_variables_from(invoker, [ "testonly" ])
-        deps = [
-          ":${_metadata_target}",
-          ":${_modulemap_data_target}",
-        ]
-        sources = [
-          _metadata_path,
-          _modulemap_data_path,
-        ]
-
-        # We need to use a per-taget subdirectory because json_data_generator
-        # uses an output file name that is named after the template file, which
-        # can cause file name conflicts if there are several
-        # swift_modulemap_group targets in the same directory.
-        output_dir = _group_modulemap_dir
-        templates = [ "//build/config/apple/group.modulemap.jinja" ]
-        template_helper = "//build/config/apple/group_modulemap_helper.py"
-
-        visibility = [ ":${_parent_target}" ]
-      }
-
-      group(_parent_target) {
-        forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-        public_deps = [ ":${_modulemap_target}" ]
-
-        # Any swift_source_set target with a direct deps on this modulemap will
-        # inherit the config that sets the swift compiler flags to import the
-        # group modulemap.
-        public_configs = [
-          ":${_modulemap_config}",
-          "//build/config/ios:swift_cxx_interop",
-        ]
-      }
+    generated_file(_metadata_target) {
+      forward_variables_from(invoker, [ "testonly" ])
+      outputs = [ _metadata_path ]
+      contents = [
+        "{",
+        "  \"module_name\": \"${invoker.module_name}\",",
+        "  \"target_name\": \"${target_name}\",",
+        "  \"group_dir\": \"${target_gen_dir}/${target_name}\"",
+        "}",
+        "",
+      ]
+      visibility = [ ":${_modulemap_target}" ]
     }
-  }  # if (build_with_chromium)
+
+    # Generate a file that contains metadata that describes the child
+    # swift_modulemap targets by collecting metadata from downstream nodes in
+    # the build graph.
+    generated_file(_modulemap_data_target) {
+      # Note: `invoker.deps` is forwarded to this target. Even though we
+      # don't use the outputs from those targets, we do require the metadata
+      # emitted by child swift_modulemap targets.
+      forward_variables_from(invoker,
+                             "*",
+                             [
+                               "visibility",
+                               "module_name",
+                             ])
+      outputs = [ _modulemap_data_path ]
+      data_keys = [ "swift_modulemap" ]
+      output_conversion = "json"
+      visibility = [ ":${_modulemap_target}" ]
+    }
+
+    _group_modulemap_dir = "${target_gen_dir}/${target_name}"
+
+    config(_modulemap_config) {
+      swiftflags = [ "-Xcc=-fmodule-map-file=" +
+                     rebase_path("${_group_modulemap_dir}/group.modulemap",
+                                 root_build_dir) ]
+    }
+
+    # Generate a the group modulemap file
+    json_data_generator(_modulemap_target) {
+      forward_variables_from(invoker, [ "testonly" ])
+      deps = [
+        ":${_metadata_target}",
+        ":${_modulemap_data_target}",
+      ]
+      sources = [
+        _metadata_path,
+        _modulemap_data_path,
+      ]
+
+      # We need to use a per-taget subdirectory because json_data_generator
+      # uses an output file name that is named after the template file, which
+      # can cause file name conflicts if there are several
+      # swift_modulemap_group targets in the same directory.
+      output_dir = _group_modulemap_dir
+      templates = [ "//build/config/apple/group.modulemap.jinja" ]
+      template_helper = "//build/config/apple/group_modulemap_helper.py"
+
+      visibility = [ ":${_parent_target}" ]
+    }
+
+    group(_parent_target) {
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      public_deps = [ ":${_modulemap_target}" ]
+
+      # Any swift_source_set target with a direct deps on this modulemap will
+      # inherit the config that sets the swift compiler flags to import the
+      # group modulemap.
+      public_configs = [
+        ":${_modulemap_config}",
+        "//build/config/ios:swift_cxx_interop",
+      ]
+    }
+  }
 }  # if (enable_swift_cxx_interop)
+
+# Defines a template for Swift source files. The default module_name
+# of the target is the entire target label (without the leading //)
+# with all "/" and ":" replaced with "_".
+#
+# Arguments
+#
+#   generate_intents
+#       (optional) boolean, if true, intents definition in the source code
+#       will be parsed when generating the final application (if it enable
+#       the extraction of intents metadata), defaults to false.
+#   module_name
+#       (optional) string, name of this build target's top level swift module.
+#       If not specified, a module name will be generated based on the target's
+#       names
+#
+template("swift_source_set") {
+  _generate_intents = false
+  if (defined(invoker.generate_intents)) {
+    _generate_intents = invoker.generate_intents
+  }
+
+  _target_name = target_name
+  not_needed([ "_target_name" ])
+  source_set(target_name) {
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    if (!defined(module_name)) {
+      _target_label = get_label_info(":$_target_name", "label_no_toolchain")
+
+      # Strip the // from the beginning of the label.
+      _target_label = string_replace(_target_label, "//", "", 1)
+      module_name =
+          string_replace(string_replace(_target_label, "/", "_"), ":", "_")
+    }
+
+    # If generate_intents is true, write file $target_name.module_info.json
+    # with information about the module used by extract_metadata.py script.
+    if (_generate_intents) {
+      _output_path = "$target_out_dir/$target_name"
+      _swift_files = sources
+      _const_files = []
+      if (swift_whole_module_optimization) {
+        _const_files += [ "$_output_path/$module_name.swiftconstvalues" ]
+      } else {
+        foreach(_source, sources) {
+          _const_files += [ "$_output_path/" + get_path_info(_source, "name") +
+                            ".swiftconstvalues" ]
+        }
+      }
+
+      _module_info = {
+        module_name = module_name
+        swift_files = rebase_path(_swift_files, root_build_dir)
+        const_files = rebase_path(_const_files, root_build_dir)
+      }
+
+      # Write the information for the module using `write_file(...)`.
+      write_file("$_output_path.module_info.json", _module_info, "json")
+    }
+
+    # C++ and obj-C++ targets with a direct dependency on a swift_source_set
+    # need to be able to indirectly include headers from the SDK.
+    public_configs = [ "//build/config/ios:swift_cxx_interop_includes" ]
+  }
+}
+
+set_defaults("swift_source_set") {
+  configs = default_compiler_configs
+}
