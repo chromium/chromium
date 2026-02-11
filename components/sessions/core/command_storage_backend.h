@@ -121,7 +121,7 @@ class SESSIONS_EXPORT CommandStorageBackend
       base::OnceClosure error_callback,
       const std::vector<uint8_t>& crypto_key = std::vector<uint8_t>());
 
-  bool inited() const { return inited_; }
+  bool inited_for_testing() const { return inited_; }
 
   // Parses out the timestamp from a path pointing to a session file.
   static bool TimestampFromPath(const base::FilePath& path, base::Time& result);

@@ -40,7 +40,7 @@ void CommandStorageManagerTestHelper::RunMessageLoopUntilBackendDone() {
 }
 
 bool CommandStorageManagerTestHelper::ProcessedAnyCommands() {
-  return command_storage_manager_->backend_->inited() ||
+  return command_storage_manager_->backend_->inited_for_testing() ||
          !command_storage_manager_->pending_commands().empty();
 }
 
