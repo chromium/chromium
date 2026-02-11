@@ -759,11 +759,6 @@ class CORE_EXPORT StyleCascade {
   // Detects if the given property/data depends on the line-height property of
   // the Element we're calculating style for.
   bool HasLineHeightDependency(const CustomProperty&, CSSVariableData*) const;
-  // The fallback must match the syntax of the custom property, otherwise the
-  // the declaration is "invalid at computed-value time".'
-  //
-  // https://drafts.css-houdini.org/css-properties-values-api-1/#fallbacks-in-var-references
-  bool ValidateFallback(const CustomProperty&, StringView) const;
   // Marks the CustomProperty as referenced by something. Needed to avoid
   // animating these custom properties on the compositor.
   void MarkIsReferenced(const CustomProperty& referenced);

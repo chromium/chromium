@@ -2879,19 +2879,6 @@ bool StyleCascade::HasLineHeightDependency(const CustomProperty& property,
   return false;
 }
 
-bool StyleCascade::ValidateFallback(const CustomProperty& property,
-                                    StringView value) const {
-  if (!property.IsRegistered()) {
-    return true;
-  }
-  auto context_mode =
-      state_.GetDocument().GetExecutionContext()->GetSecureContextMode();
-  auto* context = StrictCSSParserContext(context_mode);
-  auto local_context =
-      CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
-  return property.Parse(value, *context, local_context);
-}
-
 void StyleCascade::MarkIsReferenced(const CustomProperty& referenced) {
   if (!referenced.IsRegistered()) {
     return;
