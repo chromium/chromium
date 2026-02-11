@@ -7,11 +7,17 @@
 <translation id="132960226125594336">"<ph name="RELATIVE_PATH" />" dosyası, maksimum komut dosyası boyutunu veya uzantının maksimum toplam içerik komut dosyası boyutunu aşacağından içerik komut dosyası olarak yüklenemedi.</translation>
 <translation id="1445572445564823378">Bu uzantı <ph name="PRODUCT_NAME" /> uygulamasını yavaşlatıyor. <ph name="PRODUCT_NAME" /> uygulamasının performansını eski haline getirmek için bu uzantıyı devre dışı bırakmalısınız.</translation>
 <translation id="1468038450257740950">WebGL desteklenmez.</translation>
+<translation id="1478607704480248626">Yükleme etkin değil</translation>
+<translation id="1556537182262721003">Uzantı dizini profile taşınamadı.</translation>
 <translation id="1610570795592207282">Komut dosyası için "<ph name="RELATIVE_PATH" />" CSS'si yüklenemedi.</translation>
+<translation id="1616298854599875024">Paylaşılan bir modül olmadığından "<ph name="IMPORT_NAME" />" uzantısı içe aktarılamıyor</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' arka plan sayfası yüklenemedi.</translation>
+<translation id="1875387611427697908">Bu yalnızca <ph name="CHROME_WEB_STORE" /> kullanılarak eklenebilir</translation>
+<translation id="2131077480075264">"<ph name="IMPORT_NAME" />" tarafından izin verilmediğinden "<ph name="APP_NAME" />" yüklenemiyor</translation>
 <translation id="2159915644201199628">Resmin kodu çözülemedi: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Yerelleştirme kullanıldı, ancak bildiride default_locale belirtilmedi.</translation>
 <translation id="2576842806987913196">Bu adla bir CRX dosyası zaten var.</translation>
+<translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2743583586211388067">Bu uzantıya erişim, kuruluşunuzun uzantı risk politikası kapsamında engellendi.</translation>
 <translation id="2785530881066938471">İçerik komut dosyası için '<ph name="RELATIVE_PATH" />' dosyası yüklenemedi. Dosya UTF-8 olarak kodlanmamış.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (uzantı kimliği "<ph name="EXTENSION_ID" />") yönetici tarafından engelleniyor. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> adlı satıcı firma tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx dosyası değiştirilemedi. Dosyanın kullanımda olup olmadığını kontrol edin.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> adlı satıcı firma tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün</translation>
+<translation id="3242289508736283383">"kiosk_only" manifest özelliğine sahip uygulamalar ChromeOS kiosk modunda yüklenmelidir</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> kimliğine sahip üretici firma tarafından sağlanan <ph name="PRODUCT_NAME" /> (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Özel anahtara ilişkin giriş değeri geçerli bir yol olmalıdır.</translation>
+<translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" uygulaması, zaten yüklenmiş olan "<ph name="INSTALLED_APP_NAME" />" uygulamasıyla çakıştığından eklenemedi.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' seçenekler sayfası yüklenemedi.</translation>
 <translation id="3984413272403535372">Uzantı imzalanırken hata oluştu.</translation>
 <translation id="4233778200880751280">Hakkında sayfası ("<ph name="ABOUT_PAGE" />") yüklenemedi.</translation>
+<translation id="424963718355121712">Uygulamalar etkiledikleri ana makineden yayınlanmalıdır</translation>
+<translation id="4306119971288449206">Uygulamalar "<ph name="CONTENT_TYPE" />" içerik türüyle yayınlanmalıdır</translation>
+<translation id="4633003931260532286">Uzantı en az "<ph name="IMPORT_NAME" />" "<ph name="IMPORT_VERSION" />" sürümünü gerektiriyor ancak sadece "<ph name="INSTALLED_VERSION" />" sürümü yüklü</translation>
+<translation id="4660476621274971848">Beklenen sürüm "<ph name="EXPECTED_VERSION" />" idi, ancak "<ph name="NEW_ID" />" sürümü belirlendi</translation>
 <translation id="471800408830181311">Özel anahtar oluşturulamadı.</translation>
 <translation id="4811956658694082538">Bir yardımcı program kilitlendiği için paket yüklenemedi. Chrome'u yeniden başlatın ve tekrar deneyin.</translation>
 <translation id="4988792151665380515">Ortak anahtar dışa aktarılamadı.</translation>
+<translation id="501057610015570208">"kiosk_only" manifest özelliğine sahip uygulama ChromeOS Flex kiosk modunda yüklenmelidir.</translation>
 <translation id="5026754133087629784">Web görünümü: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Paket dizininin tam yolu bulunamadı.</translation>
 <translation id="5160071981665899014">Komut dosyası için "<ph name="RELATIVE_PATH" />" JavaScript'i yüklenemedi.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Bu uzantıda '<ph name="KEY_PATH" />' anahtar dosyası var. Muhtemelen istediğiniz bu değil.</translation>
 <translation id="5486326529110362464">Özel anahtara ilişkin giriş anahtarı olmalıdır.</translation>
+<translation id="5527463195266282916">Uzantının eski sürümüne geçilmeye çalışıldı.</translation>
 <translation id="5707185214361380026">Uzantı şuradan yüklenemedi:</translation>
 <translation id="5972529113578162692">Bu makinenin yöneticisi <ph name="EXTENSION_NAME" /> adlı uzantının yüklenmesini şart koşuyor. Uzantı kaldırılamaz.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Manifest dosyası geçersiz</translation>
 <translation id="7217838517480956708">Bu makinenin yöneticisi <ph name="EXTENSION_NAME" /> yüklenmesini gerektiriyor. Kaldırılamaz veya değiştirilemez.</translation>
 <translation id="7612608473764576263">Özel anahtarın giriş değeri geçerli bir biçimde (PKCS#8 biçimli PEM kodlamalı RSA anahtarı) olmalıdır.</translation>
+<translation id="765293928828334535">Bu web sitesinden uygulama, uzantı ve kullanıcı komut dosyaları eklenemez</translation>
 <translation id="7876803335449432072">İçerik komut dosyasının "<ph name="RELATIVE_PATH" />" dosyası yüklenemedi. İçerik komut dosyası stil sayfaları yalnızca .css dosyaları gibi desteklenen stil sayfası dosyalarından yüklenebilir.</translation>
 <translation id="7939686037314084444">Uzantı doğru şekilde yüklenemedi. Ağ isteklerine müdahale edemeyebilir.</translation>
+<translation id="7952904276017482715">Beklenen Kimlik "<ph name="EXPECTED_ID" />" idi, ancak "<ph name="NEW_ID" />" kimliği belirlendi</translation>
 <translation id="7972881773422714442">Seçenekler: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Ön kamera</translation>
 <translation id="8047248493720652249">Başka bir uzantı (<ph name="EXTENSION_NAME" />) farklı bir dosya adı ("<ph name="ACTUAL_FILENAME" />") belirlediğinden, uzantı indirilen dosyayı "<ph name="ATTEMPTED_FILENAME" />" olarak adlandıramadı.</translation>
+<translation id="8049705080247101012">Google <ph name="EXTENSION_NAME" /> uzantısını kötü amaçlı olarak işaretledi ve yükleme işlemi engellendi</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> adlı firmadan <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">Manifest dosyası eksik veya okunamıyor</translation>
+<translation id="8565650234829130278">Uygulamanın eski sürümüne geçilmeye çalışıldı.</translation>
 <translation id="8621383749470166852">İçerik komut dosyasının "<ph name="RELATIVE_PATH" />" dosyası yüklenemedi. İçerik komut dosyaları yalnızca .js dosyaları gibi desteklenen JavaScript dosyalarından yüklenebilir.</translation>
 <translation id="8636666366616799973">Paket geçersiz. Ayrıntılar: '<ph name="ERROR_MESSAGE" />'</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" uygulaması cihazlarınızdan birine erişim izni istiyor:</translation>

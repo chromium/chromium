@@ -584,6 +584,7 @@
 <translation id="3140825265190223781">Spremljene zaporke i pristupni ključevi</translation>
 <translation id="3143515551205905069">Otkaži sinkronizaciju</translation>
 <translation id="3144126448740580210">GOTOVO</translation>
+<translation id="3147521114983561406">Pristupni ključevi spremaju se u vaš upravitelj zaporki. Dostupni su na anonimnim i uobičajenim karticama.</translation>
 <translation id="3148052723910099040">Rešetka obične kartice</translation>
 <translation id="3148237711805373460">Odvedi me tamo</translation>
 <translation id="3157387275655328056">Dodaj na popis za čitanje</translation>
@@ -2097,6 +2098,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="8587001564479545614">Izradite PIN za oporavak</translation>
 <translation id="8588404856427128947">Isključeno</translation>
 <translation id="8590286732816598906">Grupa kartica, <ph name="GROUP_TITLE" />, izbornik.</translation>
+<translation id="8593317261815647019">Želite li izraditi pristupni ključ izvan anonimnog načina?</translation>
 <translation id="8600272508328041907">Prijeđite na prijevod cijele stranice</translation>
 <translation id="860043288473659153">Ime vlasnika kartice</translation>
 <translation id="8601611099293226919">Pretraži zaslon pomoću Google objektiva</translation>

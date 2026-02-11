@@ -2789,6 +2789,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5466018172325111652">Vai nesaņēmāt kodu? <ph name="BEGIN_LINK" />Iegūt jaunu kodu<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Maksājumu lietotnes</translation>
 <translation id="5470861586879999274">&amp;Atcelt labojuma atsaukšanu</translation>
+<translation id="5471158297908124590">Verificējiet savu identitāti, lai varētu rediģēt maksājumu veidus.</translation>
 <translation id="5472588168895083535">Roku kustību izsekošana ir bloķēta</translation>
 <translation id="5477756102936130143">Iespējot novirzīšanu uz atbalstītām maksājumu lietotnēm</translation>
 <translation id="5479505548832623900">Iespējams, paplašinājums ignorē šīs politikas.</translation>
@@ -3172,6 +3173,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6093795393556121384">Jūsu karte ir verificēta.</translation>
 <translation id="6094253940069566294">Transportlīdzekļa informācijas rediģēšana</translation>
 <translation id="6094290315941448991">Ja ekrānā ir redzams konfidenciāls saturs, administratora politika atspējo ekrāna ierakstīšanu</translation>
+<translation id="6097297436119286254">Verificējiet savu identitāti, lai varētu aizpildīt maksājumu informāciju.</translation>
 <translation id="6099269767116481177">22 x 29,5 collas</translation>
 <translation id="6101583188322746099">Pārtikas piegādes pakalpojumi</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4921,6 +4923,7 @@ Papildu informācija:
 <translation id="8897428486789851669">Peldēšana</translation>
 <translation id="8899807382908246773">Traucējošas reklāmas</translation>
 <translation id="8903921497873541725">Tuvināt</translation>
+<translation id="8903998444169664879">Verificējiet savu identitāti, lai varētu mainīt maksājumu iestatījumus.</translation>
 <translation id="890493561996401738">Ieteikuma noņemšanas poga, nospiediet ievadīšanas taustiņu, lai noņemtu, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 collas</translation>
 <translation id="8914504000324227558">Atkārtoti palaist pārlūkprogrammu Chrome</translation>

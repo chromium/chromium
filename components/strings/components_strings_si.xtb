@@ -2791,6 +2791,7 @@
 <translation id="5466018172325111652">ඔබේ කේතය නොලැබුණේ ද? <ph name="BEGIN_LINK" />නව කේතය ලබා ගන්න<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">ගෙවීම් යෙදුම්</translation>
 <translation id="5470861586879999274">සංස්කරණය &amp;යළි කරන්න</translation>
+<translation id="5471158297908124590">ගෙවීම් ක්‍රම සංස්කරණය කිරීමට ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="5472588168895083535">අත් ලුහුබැඳීම අවහිර කර ඇත</translation>
 <translation id="5477756102936130143">සහාය දක්වන ගෙවීම් යෙදුම් වෙත හරවා යැවීම සබල කරන්න</translation>
 <translation id="5479505548832623900">දිගුව මගින් නොසලකා හැර ඇති බව පෙනේ.</translation>
@@ -3174,6 +3175,7 @@
 <translation id="6093795393556121384">ඔබේ කාඩ්පත සත්‍යාපනය කර ඇත</translation>
 <translation id="6094253940069566294">වාහනය සංස්කරණය කරන්න</translation>
 <translation id="6094290315941448991">රහසිගත අන්තර්ගතය දෘශ්‍යමාන විට පරිපාලක ප්‍රතිපත්තිය තිර පටිගත කිරීම අබල කරයි</translation>
+<translation id="6097297436119286254">ඔබේ ගෙවීම් තතු පිරවීමට ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="6099269767116481177">අඟ 22 x 29.5</translation>
 <translation id="6101583188322746099">සිල්ලර බඩු බෙදා හැරීමේ සේවා</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4921,6 +4923,7 @@
 <translation id="8897428486789851669">පිහිනීම</translation>
 <translation id="8899807382908246773">ආක්‍රමණශීලී දැන්වීම්</translation>
 <translation id="8903921497873541725">විශාලනය කරන්න</translation>
+<translation id="8903998444169664879">ඔබේ ගෙවීම් සැකසීම් වෙනස් කිරීමට ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="890493561996401738">යෝජනා බොත්තම ඉවත් කරන්න, ඉවත් කිරීමට Enter ඔබන්න, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">අඟ 8 x 10</translation>
 <translation id="8914504000324227558">Chrome නැවත දියත් කරන්න</translation>

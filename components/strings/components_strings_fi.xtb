@@ -2792,6 +2792,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5466018172325111652">Etkö saanut koodia? <ph name="BEGIN_LINK" />Pyydä uusi koodi<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Maksusovellukset</translation>
 <translation id="5470861586879999274">&amp;Toista muokkaus</translation>
+<translation id="5471158297908124590">Vahvista henkilöllisyytesi, jotta voit muokata maksutapoja</translation>
 <translation id="5472588168895083535">Käsien liikkeen seuranta estetty</translation>
 <translation id="5477756102936130143">Ota käyttöön uudelleenohjaus tuettuihin maksusovelluksiin</translation>
 <translation id="5479505548832623900">Laajennus todennäköisesti ohittaa nämä.</translation>
@@ -3176,6 +3177,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6093795393556121384">Kortti vahvistettiin.</translation>
 <translation id="6094253940069566294">Muokkaa ajoneuvoa</translation>
 <translation id="6094290315941448991">Järjestelmänvalvojakäytäntö poistaa Näytön tallentajan käytöstä, kun näkyvissä on luottamuksellista sisältöä</translation>
+<translation id="6097297436119286254">Vahvista henkilöllisyytesi, jotta voit täyttää maksutiedot</translation>
 <translation id="6099269767116481177">22 x 29,5 tuumaa</translation>
 <translation id="6101583188322746099">Päivittäistavaratoimitukset</translation>
 <translation id="6104072995492677441">JIS B6 (128 mm x 182 mm)</translation>
@@ -4926,6 +4928,7 @@ Lisätietoja:
 <translation id="8897428486789851669">Uinti</translation>
 <translation id="8899807382908246773">Häiritsevät mainokset</translation>
 <translation id="8903921497873541725">Lähennä</translation>
+<translation id="8903998444169664879">Vahvista henkilöllisyytesi, jotta voit muuttaa maksuasetuksia</translation>
 <translation id="890493561996401738">Ehdotuksen poistopainike, poista painamalla Enter, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 tuumaa</translation>
 <translation id="8914504000324227558">Käynnistä Chrome uudelleen</translation>

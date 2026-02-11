@@ -584,6 +584,7 @@
 <translation id="3140825265190223781">Palavras-passe e chaves de acesso guardadas</translation>
 <translation id="3143515551205905069">Cancelar sincronização</translation>
 <translation id="3144126448740580210">CONCLUÍDO</translation>
+<translation id="3147521114983561406">As chaves de acesso são guardadas no seu gestor de palavras-passe. Estão acessíveis nos separadores de navegação anónima e normais.</translation>
 <translation id="3148052723910099040">Grelha de separadores normais</translation>
 <translation id="3148237711805373460">Aceder</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
@@ -2097,6 +2098,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="8587001564479545614">Crie um PIN de recuperação</translation>
 <translation id="8588404856427128947">Desativada</translation>
 <translation id="8590286732816598906">Grupo de separadores, <ph name="GROUP_TITLE" />, menu.</translation>
+<translation id="8593317261815647019">Criar uma chave de acesso fora da Navegação anónima?</translation>
 <translation id="8600272508328041907">Mude para a tradução da página inteira</translation>
 <translation id="860043288473659153">Nome do titular do cartão</translation>
 <translation id="8601611099293226919">Pesquisar no ecrã com o Google Lens</translation>

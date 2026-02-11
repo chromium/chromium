@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Ni ellid llwytho'r ffeil '<ph name="RELATIVE_PATH" />' ar gyfer sgript cynnwys gan y byddai'n fwy na maint mwyaf y sgript neu uchafswm maint sgript cynnwys cyfanswm yr estyniad.</translation>
 <translation id="1445572445564823378">Mae'r estyniad hwn yn arafu <ph name="PRODUCT_NAME" />. Dylech ei analluogi i adfer perfformiad <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">Nid yw WebGL yn cael ei gefnogi.</translation>
+<translation id="1478607704480248626">Nid yw gosod wedi'i alluogi</translation>
+<translation id="1556537182262721003">Methu â symud cyfeiriadur estyniadau i'r proffil.</translation>
 <translation id="1610570795592207282">Nid oedd modd llwytho'r css '<ph name="RELATIVE_PATH" />' ar gyfer sgript.</translation>
+<translation id="1616298854599875024">Methu â mewnforio'r estyniad "<ph name="IMPORT_NAME" />" gan nad yw'n fodiwl a rennir</translation>
 <translation id="1803557475693955505">Ni ellid llwytho'r dudalen gefndir '<ph name="BACKGROUND_PAGE" />'.</translation>
+<translation id="1875387611427697908">Dim ond o'r <ph name="CHROME_WEB_STORE" /> y gellir ychwanegu hyn</translation>
+<translation id="2131077480075264">Methu â gosod "<ph name="APP_NAME" />" oherwydd na chaniateir gan " <ph name="IMPORT_NAME" />"</translation>
 <translation id="2159915644201199628">Methu â dadgodio'r llun: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Defnyddiwyd lleoleiddio, ond ni nodwyd default_locale yn y maniffest.</translation>
 <translation id="2576842806987913196">Mae ffeil CRX gyda'r enw hwn eisoes yn bodoli.</translation>
+<translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2743583586211388067">Mae mynediad at yr estyniad hwn wedi'i rwystro o dan bolisi risg estyniad eich sefydliad.</translation>
 <translation id="2785530881066938471">Ni ellid llwytho'r ffeil '<ph name="RELATIVE_PATH" />' ar gyfer sgript cynnwys. Nid yw wedi'i hencodio gan UTF-8.</translation>
 <translation id="2903070246402204397">Rhwystrir <ph name="EXTENSION_NAME" /> (rhif adnabod yr estyniad "<ph name="EXTENSION_ID" />") gan y gweinyddwr. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">Cynnyrch anhysbys <ph name="PRODUCT_ID" /> gan y gwerthwr <ph name="VENDOR_ID" /> (rhif cyfresol <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Methwyd â disodli ffeil crx. Gwiriwch a yw'r ffeil yn cael ei defnyddio.</translation>
 <translation id="3163201441334626963">Cynnyrch anhysbys <ph name="PRODUCT_ID" /> gan y gwerthwr <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">Rhaid gosod ap gyda'r briodwedd maniffest 'kiosk_only' ym modd Kiosk ChromeOS</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (rhif cyfresol <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> o'r gwerthwr <ph name="VENDOR_ID" /> (rhif cyfresol <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Rhaid i werth mewnbwn allwedd breifat fod yn llwybr dilys.</translation>
+<translation id="3834775135533257713">Ni ellid ychwanegu'r ap "<ph name="TO_INSTALL_APP_NAME" />" oherwydd ei fod yn gwrthdaro â "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Methu â llwytho'r dudalen dewisiadau '<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">Bu gwall wrth lofnodi estyniad.</translation>
 <translation id="4233778200880751280">Methu â llwytho'r dudalen ynghylch '<ph name="ABOUT_PAGE" />'.</translation>
+<translation id="424963718355121712">Rhaid cyflwyno apiau gan y gwesteiwr y maent effeithio arno</translation>
+<translation id="4306119971288449206">Rhaid cyflwyno apiau gyda'r math o gynnwys "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4633003931260532286">Mae'r estyniad yn gofyn "<ph name="IMPORT_NAME" />" gydag o leiaf y fersiwn"<ph name="IMPORT_VERSION" />", ond yr unig fersiwn sydd wedi'i gosod yw "<ph name="INSTALLED_VERSION" />"</translation>
+<translation id="4660476621274971848">Disgwylir y fersiwn "<ph name="EXPECTED_VERSION" />", ond y fersiwn oedd "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Wedi methu ag allbynnu'r allwedd breifat.</translation>
 <translation id="4811956658694082538">Methu â gosod y pecyn oherwydd bod proses cyfleustodau wedi torri. Ailgychwynnwch Chrome a rhowch gynnig arall arni.</translation>
 <translation id="4988792151665380515">Wedi methu allforio ag allwedd gyhoeddus.</translation>
+<translation id="501057610015570208">Rhaid gosod ap gyda'r briodwedd maniffest 'kiosk_only' yn y modd Kiosk ChromeOS Flex</translation>
 <translation id="5026754133087629784">Gwedd we: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Methu â dod o hyd i'r llwybr absoliwt i'r cyfeiriadur i'w bacio.</translation>
 <translation id="5160071981665899014">Methu â llwytho javascript '<ph name="RELATIVE_PATH" />' ar gyfer sgript.</translation>
 <translation id="5356315618422219272">Gwedd ap: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Mae'r estyniad hwn yn cynnwys y ffeil allwedd '<ph name="KEY_PATH" />'. Mae'n debyg nad ydych eisiau gwneud hynny.</translation>
 <translation id="5486326529110362464">Rhaid i werth mewnbwn ar gyfer allwedd breifat fodoli.</translation>
+<translation id="5527463195266282916">Ceisiwyd israddio estyniad.</translation>
 <translation id="5707185214361380026">Wedi methu â llwytho estyniad o:</translation>
 <translation id="5972529113578162692">Mae gweinyddwr y peiriant hwn yn ei gwneud yn ofynnol i osod <ph name="EXTENSION_NAME" />. Ni ellir ei ddadosod.</translation>
 <translation id="6027032947578871493">Cynnyrch anhysbys <ph name="PRODUCT_ID" /> gan <ph name="VENDOR_NAME" /> (rhif cyfresol <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Mae'r ffeil maniffest yn annilys</translation>
 <translation id="7217838517480956708">Mae gweinyddwr y peiriant hwn yn ei gwneud yn ofynnol i osod <ph name="EXTENSION_NAME" />. Ni ellir ei dynnu na'i addasu.</translation>
 <translation id="7612608473764576263">Rhaid i werth mewnbwn ar gyfer allwedd breifat fod yn fformat dilys (allwedd RSA PKCS # 8-fformat PEM-encoded).</translation>
+<translation id="765293928828334535">Ni ellir ychwanegu apiau, estyniadau na sgriptiau defnyddwyr o'r wefan hon</translation>
 <translation id="7876803335449432072">Methu â llwytho'r ffeil '<ph name="RELATIVE_PATH" />' ar gyfer sgript cynnwys, dim ond o ffeiliau dalennau arddull a gefnogir megis ffeiliau .css y gellir llwytho dalennau arddull sgript cynnwys.</translation>
 <translation id="7939686037314084444">Mae'r estyniad wedi methu â llwytho'n iawn. Mae'n bosib na fydd yn gallu rhyng-gipio ceisiadau rhwydwaith.</translation>
+<translation id="7952904276017482715">Disgwylir y rhif adnabod "<ph name="EXPECTED_ID" />", ond y rhif adnabod oedd "<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">Dewisiadau: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Yn wynebu'r defnyddiwr</translation>
 <translation id="8047248493720652249">Gwnaeth yr estyniad hwn fethu ag enwi'r lawrlwythiad "<ph name="ATTEMPTED_FILENAME" />" oherwydd bod estyniad arall (<ph name="EXTENSION_NAME" />) wedi pennu enw ffeil gwahanol "<ph name="ACTUAL_FILENAME" />".</translation>
+<translation id="8049705080247101012">Mae Google wedi fflagio "<ph name="EXTENSION_NAME" />" fel maleisus ac mae'r gosodiad wedi'i atal</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> gan <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Mae'r ffeil maniffest ar goll neu'n annarllenadwy</translation>
+<translation id="8565650234829130278">Ceisiwyd israddio'r ap.</translation>
 <translation id="8621383749470166852">Methu â llwytho'r ffeil '<ph name="RELATIVE_PATH" />' ar gyfer sgript cynnwys, dim ond o ffeiliau JavaScript a gefnogir megis ffeiliau .js y gellir llwytho sgriptiau cynnwys.</translation>
 <translation id="8636666366616799973">Mae'r pecyn yn annilys. Manylion: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">Mae "<ph name="APP_NAME" />" yn gofyn am fynediad at un o'ch dyfeisiau:</translation>

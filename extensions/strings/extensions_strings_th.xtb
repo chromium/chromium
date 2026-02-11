@@ -7,11 +7,17 @@
 <translation id="132960226125594336">โหลดไฟล์ "<ph name="RELATIVE_PATH" />" สําหรับสคริปต์เนื้อหาไม่ได้เนื่องจากมีขนาดเกินขนาดสคริปต์หรือขนาดสคริปต์เนื้อหารวมของส่วนขยายสูงสุด</translation>
 <translation id="1445572445564823378">ส่วนขยายนี้จะทำให้ <ph name="PRODUCT_NAME" /> ทำงานช้าลง คุณควรปิดใช้งานส่วนขยายเพื่อให้ประสิทธิภาพการทำงานของ <ph name="PRODUCT_NAME" /> กลับมาเป็นปกติ</translation>
 <translation id="1468038450257740950">WebGL ไม่ไ้ด้รับการสนับสนุน</translation>
+<translation id="1478607704480248626">ไม่ได้เปิดใช้การติดตั้ง</translation>
+<translation id="1556537182262721003">ไม่สามารถย้ายไดเรกทอรีส่วนขยายเข้าไปในโปรไฟล์</translation>
 <translation id="1610570795592207282">ไม่สามารถโหลด CSS "<ph name="RELATIVE_PATH" />" สำหรับสคริปต์</translation>
+<translation id="1616298854599875024">นำเข้าส่วนขยาย "<ph name="IMPORT_NAME" />" ไม่ได้เนื่องจากไม่ใช่โมดูลที่แชร์</translation>
 <translation id="1803557475693955505">ไม่สามารถโหลดหน้าพื้นหลัง "<ph name="BACKGROUND_PAGE" />"</translation>
+<translation id="1875387611427697908">ต้องเพิ่มจาก <ph name="CHROME_WEB_STORE" /> เท่านั้น</translation>
+<translation id="2131077480075264">ไม่สามารถติดตั้ง "<ph name="APP_NAME" />" เนื่องจากไม่ได้รับอนุญาตจาก "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2159915644201199628">ไม่สามารถถอดรหัสภาพ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ใช้การแปลภาษาท้องถิ่นแล้ว แต่ไม่ได้ระบุ default_locale ในมานิเฟสต์</translation>
 <translation id="2576842806987913196">มีไฟล์ CRX ที่มีชื่อนี้อยู่แล้ว</translation>
+<translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2743583586211388067">การเข้าถึงส่วนขยายนี้ถูกบล็อกภายใต้นโยบายความเสี่ยงของส่วนขยายขององค์กร</translation>
 <translation id="2785530881066938471">ไม่สามารถโหลดไฟล์ "<ph name="RELATIVE_PATH" />" สำหรับสคริปต์เนื้อหา ไม่ใช่การเข้ารหัส UTF-8</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (รหัสส่วนขยาย "<ph name="EXTENSION_ID" />") ถูกบล็อกโดยผู้ดูแลระบบ <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">ผลิตภัณฑ์ที่ไม่รู้จัก <ph name="PRODUCT_ID" /> จากผู้ขาย <ph name="VENDOR_ID" /> (หมายเลขซีเรียล <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">ไม่สามารถแทนที่ไฟล์ CRX ได้ โปรดตรวจสอบดูว่าไฟล์มีการใช้งานอยู่หรือไม่</translation>
 <translation id="3163201441334626963">ผลิตภัณฑ์ที่ไม่รู้จัก <ph name="PRODUCT_ID" /> จากผู้ขาย <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">ต้องติดตั้งแอปที่มีแอตทริบิวต์ไฟล์ Manifest ที่ชื่อ "kiosk_only" ในโหมดคีออสก์ของ Chrome OS</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (หมายเลขซีเรียล <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> จากผู้ขาย <ph name="VENDOR_ID" /> (หมายเลขซีเรียล <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ค่าที่ป้อนสำหรับคีย์ส่วนตัวจะต้องเป็นเส้นทางที่ถูกต้อง</translation>
+<translation id="3834775135533257713">ไม่สามารถเพิ่มแอปพลิเคชัน "<ph name="TO_INSTALL_APP_NAME" />" เนื่องจากขัดแย้งกับ "<ph name="INSTALLED_APP_NAME" />"</translation>
 <translation id="388442998277590542">ไม่สามารถโหลดหน้าตัวเลือก "<ph name="OPTIONS_PAGE" />"</translation>
 <translation id="3984413272403535372">พบข้อผิดพลาดขณะเซ็นชื่อบนส่วนขยาย</translation>
 <translation id="4233778200880751280">ไม่สามารถโหลดหน้าเกี่ยวกับ "<ph name="ABOUT_PAGE" />"</translation>
+<translation id="424963718355121712">แอปต้องได้รับบริการจากโฮสต์ที่แอปนั้นมีผลกระทบ</translation>
+<translation id="4306119971288449206">แอปต้องได้รับบริการจากประเภทเนื้อหา "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4633003931260532286">ส่วนขยายต้องใช้ "<ph name="IMPORT_NAME" />" เวอร์ชัน "<ph name="IMPORT_VERSION" />" เป็นอย่างน้อย แต่ที่ติดตั้งอยู่เป็นเวอร์ชัน "<ph name="INSTALLED_VERSION" />"</translation>
+<translation id="4660476621274971848">เวอร์ชันที่คาดการณ์ "<ph name="EXPECTED_VERSION" />" แต่เวอร์ชันที่แจ้งคือ "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">ไม่สามารถส่งค่าคีย์ส่วนตัว</translation>
 <translation id="4811956658694082538">ไม่สามารถติดตั้งแพ็กเกจเนื่องจากกระบวนการอรรถประโยชน์ขัดข้อง ลองรีสตาร์ท Chrome และลองใหม่อีกครั้ง</translation>
 <translation id="4988792151665380515">ไม่สามารถส่งออกคีย์สาธารณะ</translation>
+<translation id="501057610015570208">ต้องติดตั้งแอปที่มีแอตทริบิวต์ไฟล์ Manifest "kiosk_only" ในโหมดคีออสก์ของ Chrome OS Flex</translation>
 <translation id="5026754133087629784">มุมมองเว็บ: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">ไม่พบเส้นทางสัมบูรณ์ไปยังไดเรกทอรีนี้เพื่อทำการแพค</translation>
 <translation id="5160071981665899014">ไม่สามารถโหลด JavaScript "<ph name="RELATIVE_PATH" />" สำหรับสคริปต์</translation>
 <translation id="5356315618422219272">การดูแอป: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">ส่วนขยายนี้มีไฟล์คีย์ "<ph name="KEY_PATH" />" คุณอาจจะไม่ต้องการดำเนินการนั้น</translation>
 <translation id="5486326529110362464">ค่าที่ป้อนสำหรับคีย์ส่วนตัวต้องมีอยู่จริง</translation>
+<translation id="5527463195266282916">มีความพยายามที่จะปรับลดรุ่นของส่วนขยาย</translation>
 <translation id="5707185214361380026">ไม่สามารถโหลดส่วนขยายจาก:</translation>
 <translation id="5972529113578162692">ผู้ดูแลระบบของอุปกรณ์เครื่องนี้กำหนดให้ติดตั้ง <ph name="EXTENSION_NAME" /> ไม่สามารถถอนการติดตั้งส่วนขยายนี้ได้</translation>
 <translation id="6027032947578871493">ผลิตภัณฑ์ที่ไม่รู้จัก <ph name="PRODUCT_ID" /> จาก <ph name="VENDOR_NAME" /> (หมายเลขซีเรียล <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">ไฟล์ Manifest ไม่ถูกต้อง</translation>
 <translation id="7217838517480956708">ผู้ดูแลระบบของเครื่องนี้ต้องการให้มีการติดตั้ง <ph name="EXTENSION_NAME" /> โดยไม่สามารถลบหรือแก้ไขได้</translation>
 <translation id="7612608473764576263">ค่าที่ป้อนสำหรับคีย์ส่วนตัวจะต้องเป็นรูปแบบที่ถูกต้อง (คีย์ RSA ที่เข้ารหัส PEM ในรูปแบบ PKCS#8)</translation>
+<translation id="765293928828334535">เพิ่มแอป ส่วนขยาย และสคริปต์ของผู้ใช้จากเว็บไซต์นี้ไม่ได้</translation>
 <translation id="7876803335449432072">โหลดไฟล์ "<ph name="RELATIVE_PATH" />" สําหรับสคริปต์เนื้อหาไม่ได้ สไตล์ชีตของสคริปต์เนื้อหาจะโหลดได้เฉพาะจากไฟล์สไตล์ชีตที่รองรับเท่านั้น เช่น ไฟล์ .css</translation>
 <translation id="7939686037314084444">ส่วนขยายโหลดไม่ถูกต้อง และอาจดักจับคำขอของเครือข่ายไม่ได้</translation>
+<translation id="7952904276017482715">คาดการณ์ ID "<ph name="EXPECTED_ID" />" แต่ ID ที่แจ้งคือ "<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">ตัวเลือก: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">กล้องหน้า</translation>
 <translation id="8047248493720652249">ส่วนขยายนี้ล้มเหลวในการตั้งชื่อการดาวน์โหลดว่า "<ph name="ATTEMPTED_FILENAME" />" เนื่องจากอีกส่วนขยายหนึ่ง (<ph name="EXTENSION_NAME" />) ได้กำหนดชื่อไฟล์ที่แตกต่างไว้ว่า "<ph name="ACTUAL_FILENAME" />"</translation>
+<translation id="8049705080247101012">Google ได้ตั้งค่าสถานะ "<ph name="EXTENSION_NAME" />" ว่าเป็นอันตราย และป้องกันไม่ให้มีการติดตั้งแล้ว</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> จาก <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">ไฟล์ Manifest หายไปหรืออ่านไม่ได้</translation>
+<translation id="8565650234829130278">พยายามปรับลดรุ่นแอปพลิเคชัน</translation>
 <translation id="8621383749470166852">โหลดไฟล์ "<ph name="RELATIVE_PATH" />" สําหรับสคริปต์เนื้อหาไม่ได้ สคริปต์เนื้อหาจะโหลดได้เฉพาะจากไฟล์ JavaScript ที่รองรับเท่านั้น เช่น ไฟล์ .js</translation>
 <translation id="8636666366616799973">แพ็กเกจไม่ถูกต้อง รายละเอียด: "<ph name="ERROR_MESSAGE" />"</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" ขอสิทธิ์ในการเข้าถึงอุปกรณ์เครื่องใดเครื่องหนึ่งของคุณ:</translation>

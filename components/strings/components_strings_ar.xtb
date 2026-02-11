@@ -2791,6 +2791,7 @@
 <translation id="5466018172325111652">ألم تتلقَّ الرمز؟ <ph name="BEGIN_LINK" />الحصول على رمز جديد<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">تطبيقات الدفع</translation>
 <translation id="5470861586879999274">إعادة الت&amp;حرير</translation>
+<translation id="5471158297908124590">يجب إثبات هويتك لتعديل طرق الدفع</translation>
 <translation id="5472588168895083535">تمّ حظر ميزة "تتبُّع اليد"</translation>
 <translation id="5477756102936130143">تفعيل إعادة التوجيه إلى تطبيقات الدفع المتوافقة</translation>
 <translation id="5479505548832623900">من المحتمل أنّ الإضافة تتجاهل هذه السياسة.</translation>
@@ -3174,6 +3175,7 @@
 <translation id="6093795393556121384">تم التحقق من صلاحية بطاقتك</translation>
 <translation id="6094253940069566294">تعديل بيانات المركبة</translation>
 <translation id="6094290315941448991">تحظر سياسة المشرف ميزة تسجيل الشاشة عند عرض محتوى سري.</translation>
+<translation id="6097297436119286254">يجب إثبات هويتك لملء معلومات الدفع</translation>
 <translation id="6099269767116481177">22 × 29.5 بوصة</translation>
 <translation id="6101583188322746099">خدمات توصيل بقالة</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4925,6 +4927,7 @@
 <translation id="8897428486789851669">سباحة</translation>
 <translation id="8899807382908246773">الإعلانات المتداخلة</translation>
 <translation id="8903921497873541725">تكبير</translation>
+<translation id="8903998444169664879">يجب إثبات هويتك لتغيير إعدادات الدفع</translation>
 <translation id="890493561996401738">‏إزالة زر "الاقتراحات"، اضغط على مفتاح Enter لإزالة، <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">‫8 × 10 بوصة</translation>
 <translation id="8914504000324227558">‏إعادة تشغيل Chrome</translation>

@@ -295,6 +295,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3903738175795615004">Trage din partea de sus sau apasă pe tasta Esc pentru a ieși din ecranul complet.</translation>
 <translation id="3905475044299942653">Oprește numărul mare de notificări</translation>
 <translation id="3922092564198021702">Pe telefon, deschide Setări</translation>
+<translation id="3924858949939391676">Afișează linkurile după activarea modului de lectură</translation>
 <translation id="3933121352599513978">Restrânge solicitările nedorite (recomandat)</translation>
 <translation id="3934905113567851655">Ciupește pentru redimensionare</translation>
 <translation id="3955193568934677022">Permite site-urilor să redea conținutul protejat (recomandat)</translation>
@@ -358,6 +359,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="4644713492825682049">Șterge și resetează</translation>
 <translation id="4645575059429386691">Gestionat de părintele tău</translation>
 <translation id="4652266463001779298">Nepermisă</translation>
+<translation id="4655846733459137112">Atinge Da pentru a folosi cu ușurință această parolă data viitoare când te conectezi</translation>
 <translation id="4663373278480897665">Camera foto este permisă</translation>
 <translation id="4670064810192446073">Realitate virtuală</translation>
 <translation id="4672315773691449562">Atinge aplicația Browser, apoi atinge Chrome</translation>
@@ -464,6 +466,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="5804241973901381774">Permisiuni</translation>
 <translation id="5817042798620209981">Informații despre site, casetă de dialog</translation>
 <translation id="5822675474983796325">Foaia de jos a paginii Personalizează Fila nouă este deschisă la înălțime completă</translation>
+<translation id="5826403277762134844">Foaia din partea de jos cu instrucțiuni privind salvarea parolelor în Chrome</translation>
 <translation id="5833899990800318936">Nu permite site-urilor să folosească JavaScript</translation>
 <translation id="583673505367439042">Site-urile pot solicita permisiunea de a modifica fișiere și dosare de pe dispozitiv</translation>
 <translation id="5844448279347999754">Când opțiunea este activată, site-urile pot solicita să vadă textul și imaginile salvate în clipboard. Când opțiunea este dezactivată, site-urile nu pot vedea textul sau imaginile salvate în clipboard.</translation>
@@ -643,6 +646,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="775043444390799886">Revocă permisiunea</translation>
 <translation id="7758789811447313947">Temă violet</translation>
 <translation id="7759147511335618829">Control și reprogramare dispozitive MIDI</translation>
+<translation id="7771089277295008211">Foaia din partea de jos cu instrucțiuni privind salvarea parolelor s-a închis</translation>
 <translation id="7781829728241885113">Ieri</translation>
 <translation id="7791543448312431591">Adaugă</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>
@@ -660,6 +664,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="7940722705963108451">Reamintește-mi</translation>
 <translation id="7948081750384205628">Află mai multe despre <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Site-urile pot solicita permisiunea să vadă text și imagini din clipboard</translation>
+<translation id="7958779728312669715">Foaia din partea de jos cu instrucțiuni privind salvarea parolelor s-a deschis complet</translation>
 <translation id="798299424881500862">Temă portocalie</translation>
 <translation id="7986741934819883144">Selectează o persoană de contact</translation>
 <translation id="7990211076305263060">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi microfonul. Când opțiunea este dezactivată, site-urile nu pot folosi microfonul.</translation>
@@ -756,6 +761,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="8889294078294184559">În timp ce navighezi, site-urile pot să solicite informații de la Chrome și să confirme cu ajutorul unui site pe care l-ai accesat anterior că ești o persoană reală</translation>
 <translation id="8899807382908246773">Anunțuri deranjante</translation>
 <translation id="8903921497873541725">Mărește</translation>
+<translation id="8919911527569629802">Conectează-te la orice site</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Nu mai întreba</translation>
 <translation id="8926666909099850184">NFC este dezactivat pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
@@ -783,6 +789,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="9182556968660520230">Nu permite site-urilor să redea conținut protejat</translation>
 <translation id="947156494302904893">Site-urile pe care le accesezi pot confirma că ești o persoană reală, nu o aplicație bot</translation>
 <translation id="959682366969460160">Organizează-te</translation>
+<translation id="960590623979248167">Afișează hyperlinkurile</translation>
 <translation id="961930410699694996">Locația este permisă de data aceasta</translation>
 <translation id="967624055006145463">Date stocate</translation>
 <translation id="969975166333045662">Împiedică site-ul să folosească instrumentul de optimizare V8.</translation>

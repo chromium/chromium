@@ -2789,6 +2789,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5466018172325111652">Du hast keinen Code erhalten? <ph name="BEGIN_LINK" />Neuen Code anfordern<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Zahlungs-Apps</translation>
 <translation id="5470861586879999274">&amp;Bearbeiten wiederholen</translation>
+<translation id="5471158297908124590">Bestätige deine Identität, um Zahlungsmethoden zu bearbeiten</translation>
 <translation id="5472588168895083535">Handtracking gesperrt</translation>
 <translation id="5477756102936130143">Weiterleitung zu unterstützten Zahlungs-Apps aktivieren</translation>
 <translation id="5479505548832623900">Wahrscheinlich von der Erweiterung ignoriert.</translation>
@@ -3172,6 +3173,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6093795393556121384">Ihre Karte wurde bestätigt.</translation>
 <translation id="6094253940069566294">Fahrzeug bearbeiten</translation>
 <translation id="6094290315941448991">Die Administratorrichtlinie blockiert die Bildschirmaufzeichnung, wenn vertrauliche Inhalte sichtbar sind</translation>
+<translation id="6097297436119286254">Bestätige deine Identität, um deine Zahlungsinformationen einzugeben</translation>
 <translation id="6099269767116481177">22 × 29,5 Zoll</translation>
 <translation id="6101583188322746099">Lebensmittellieferdienste</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4921,6 +4923,7 @@ Weitere Details:
 <translation id="8897428486789851669">Schwimmen</translation>
 <translation id="8899807382908246773">Aufdringliche Anzeigen</translation>
 <translation id="8903921497873541725">Vergrößern</translation>
+<translation id="8903998444169664879">Bestätige deine Identität, um die Zahlungseinstellungen zu ändern</translation>
 <translation id="890493561996401738">Schaltfläche "Vorschlag entfernen", zum Entfernen Eingabetaste drücken, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 in</translation>
 <translation id="8914504000324227558">Chrome neu starten</translation>

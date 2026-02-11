@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Kunne ikke laste inn filen «<ph name="RELATIVE_PATH" />» for innholdsskript, fordi den ville ha overskredet den maksimale skriptstørrelsen eller utvidelsens maksimale totalstørrelse for innholdsskript.</translation>
 <translation id="1445572445564823378">Denne utvidelsen gjør <ph name="PRODUCT_NAME" /> tregere. Du bør deaktivere den for å gjenopprette ytelsen til <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL støttes ikke.</translation>
+<translation id="1478607704480248626">Installasjon er ikke aktivert</translation>
+<translation id="1556537182262721003">Katalogen over utvidelser kan ikke flyttes til profilen.</translation>
 <translation id="1610570795592207282">Kunne ikke laste inn CSS-filen «<ph name="RELATIVE_PATH" />» for skriptet.</translation>
+<translation id="1616298854599875024">Kan ikke importere utvidelsen «<ph name="IMPORT_NAME" />», fordi den ikke er en delt modul</translation>
 <translation id="1803557475693955505">Kan ikke laste inn bakgrunnssiden <ph name="BACKGROUND_PAGE" />.</translation>
+<translation id="1875387611427697908">Dette kan bare legges til fra <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="2131077480075264">Kunne ikke installere «<ph name="APP_NAME" />» fordi det ikke er tillatt av «<ph name="IMPORT_NAME" />»</translation>
 <translation id="2159915644201199628">Kunne ikke dekode bilde: «<ph name="IMAGE_NAME" />»</translation>
 <translation id="2350172092385603347">Lokaliseringen er brukt, men default_locale var ikke spesifisert i manifestet.</translation>
 <translation id="2576842806987913196">Det fins allerede en .crx-fil med dette navnet.</translation>
+<translation id="2662876636500006917">Chrome Nettmarked</translation>
 <translation id="2743583586211388067">Tilgangen til denne utvidelsen er blokkert i henhold til organisasjonens retningslinjer for utvidelsesrisiko.</translation>
 <translation id="2785530881066938471">Kan ikke laste inn filen «<ph name="RELATIVE_PATH" />» for innholdsskript. Den er ikke UTF-8-kodet.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (utvidelses-ID «<ph name="EXTENSION_ID" />») er blokkert av administratoren. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">Ukjent produkt, <ph name="PRODUCT_ID" />, fra leverandøren <ph name="VENDOR_ID" /> (serienummer: <ph name="SERIAL_NUMBER" /> )</translation>
 <translation id="3144135466825225871">Kunne ikke erstatte .crx-fil. Kontroller om filen er i bruk.</translation>
 <translation id="3163201441334626963">Ukjent produkt, <ph name="PRODUCT_ID" />, fra leverandøren <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">Apper med manifest-attributtet «kiosk_only» må være installert i ChromeOS-kioskmodus</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serienummer: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> fra leverandøren <ph name="VENDOR_ID" /> (serienummer: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Inndataverdien for privatnøkkelen må være en gyldig bane.</translation>
+<translation id="3834775135533257713">Kunne ikke legge til appen «<ph name="TO_INSTALL_APP_NAME" />» fordi den er i konflikt med «<ph name="INSTALLED_APP_NAME" />».</translation>
 <translation id="388442998277590542">Kan ikke laste inn alternativsiden <ph name="OPTIONS_PAGE" />.</translation>
 <translation id="3984413272403535372">Det oppsto en feil under signeringen av utvidelsen.</translation>
 <translation id="4233778200880751280">Kunne ikke laste inn info-siden «<ph name="ABOUT_PAGE" />».</translation>
+<translation id="424963718355121712">Apper må leveres fra verten de påvirker</translation>
+<translation id="4306119971288449206">Apper må leveres med innholdstypen «<ph name="CONTENT_TYPE" />»</translation>
+<translation id="4633003931260532286">Utvidelsen krever «<ph name="IMPORT_NAME" />» med «<ph name="IMPORT_VERSION" />» som minimumsversjon, men bare versjon «<ph name="INSTALLED_VERSION" />» er installert</translation>
+<translation id="4660476621274971848">Den forventede versjonen var «<ph name="EXPECTED_VERSION" />», men den faktiske versjonen var «<ph name="NEW_ID" />»</translation>
 <translation id="471800408830181311">Kan ikke mate ut privatnøkkelen.</translation>
 <translation id="4811956658694082538">Kunne ikke installere pakken fordi en verktøyprosess krasjet. Prøv å starte Chrome på nytt og prøv igjen.</translation>
 <translation id="4988792151665380515">Kan ikke eksportere den offentlige nøkkelen.</translation>
+<translation id="501057610015570208">Apper med manifest-attributtet «kiosk_only» må være installert i kioskmodus for ChromeOS Flex</translation>
 <translation id="5026754133087629784">Nettvisning: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Finner ikke den absolutte banen til katalogen som skal pakkes.</translation>
 <translation id="5160071981665899014">Kunne ikke laste inn JavaScript-filen «<ph name="RELATIVE_PATH" />» for skriptet.</translation>
 <translation id="5356315618422219272">Appvisning: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Denne utvidelsen inneholder nøkkelfilen «<ph name="KEY_PATH" />». Du ønsker sannsynligvis ikke å gjøre dette.</translation>
 <translation id="5486326529110362464">Inndataverdien for privatnøkkelen må eksistere.</translation>
+<translation id="5527463195266282916">Forsøkte å nedgradere utvidelse.</translation>
 <translation id="5707185214361380026">Kunne ikke laste inn utvidelse fra:</translation>
 <translation id="5972529113578162692">Administratoren for denne maskinen krever at <ph name="EXTENSION_NAME" /> installeres. Denne utvidelsen kan ikke avinstalleres.</translation>
 <translation id="6027032947578871493">Ukjent produkt, <ph name="PRODUCT_ID" />, fra <ph name="VENDOR_NAME" /> (serienummer: <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Manifestfilen er ugyldig</translation>
 <translation id="7217838517480956708">Administratoren til denne maskinen krever at <ph name="EXTENSION_NAME" /> blir installert. Utvidelsen kan ikke fjernes eller endres.</translation>
 <translation id="7612608473764576263">Inndataverdien for den private nøkkelen må ha et gyldig format (PEM-kodet RSA-nøkkel på PKCS#8-format).</translation>
+<translation id="765293928828334535">Apper, utvidelser og brukerskript kan ikke legges til fra dette nettstedet</translation>
 <translation id="7876803335449432072">Kunne ikke laste inn filen «<ph name="RELATIVE_PATH" />» for innholdsskript. Stilark for innholdsskript kan bare lastes inn fra støttede stilarkfiler, for eksempel .css-filer.</translation>
 <translation id="7939686037314084444">Utvidelsen ble ikke lastet inn riktig. Den klarer kanskje ikke å fange opp nettverksforespørseler.</translation>
+<translation id="7952904276017482715">Den forventede ID-en var «<ph name="EXPECTED_ID" />», men den faktiske ID-en var «<ph name="NEW_ID" />»</translation>
 <translation id="7972881773422714442">Alternativer: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Frontkamera</translation>
 <translation id="8047248493720652249">Denne utvidelsen kunne ikke kalle nedlastingen «<ph name="ATTEMPTED_FILENAME" />» fordi en annen utvidelse (<ph name="EXTENSION_NAME" />) har angitt et annet filnavn («<ph name="ACTUAL_FILENAME" />»).</translation>
+<translation id="8049705080247101012">Google har merket <ph name="EXTENSION_NAME" /> som skadelig, og installasjonen har blitt avbrutt</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> fra <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Manifestfilen mangler eller kan ikke leses</translation>
+<translation id="8565650234829130278">Forsøkte å nedgradere programmet.</translation>
 <translation id="8621383749470166852">Kunne ikke laste inn filen «<ph name="RELATIVE_PATH" />» for innholdsskript. Innholdsskript kan bare lastes inn fra støttede JavaScript-filer, for eksempel .js-filer.</translation>
 <translation id="8636666366616799973">Pakken er ugyldig. Detaljer: <ph name="ERROR_MESSAGE" />.</translation>
 <translation id="8761756413268424715">«<ph name="APP_NAME" />» ber om tilgang til én av enhetene dine:</translation>

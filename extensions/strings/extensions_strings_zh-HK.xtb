@@ -7,11 +7,17 @@
 <translation id="132960226125594336">無法載入內容指令碼的「<ph name="RELATIVE_PATH" />」檔案，因為檔案會超過最大指令碼大小，或者擴充程式的最大總內容指令碼大小。</translation>
 <translation id="1445572445564823378">這個擴充功能使 <ph name="PRODUCT_NAME" /> 運作變慢。建議您停用這個擴充功能，以恢復 <ph name="PRODUCT_NAME" /> 的效能。</translation>
 <translation id="1468038450257740950">系統不支援 WebGL。</translation>
+<translation id="1478607704480248626">未啟用安裝功能</translation>
+<translation id="1556537182262721003">無法將擴充功能目錄移至設定檔。</translation>
 <translation id="1610570795592207282">無法載入指令碼的 css「<ph name="RELATIVE_PATH" />」。</translation>
+<translation id="1616298854599875024">「<ph name="IMPORT_NAME" />」擴充程式並非共用模組，因此無法匯入。</translation>
 <translation id="1803557475693955505">無法載入背景頁面「<ph name="BACKGROUND_PAGE" />」。</translation>
+<translation id="1875387611427697908">只能從 <ph name="CHROME_WEB_STORE" /> 新增</translation>
+<translation id="2131077480075264">由於「<ph name="IMPORT_NAME" />」不允許，因此無法安裝「<ph name="APP_NAME" />」</translation>
 <translation id="2159915644201199628">無法將圖片解碼：「<ph name="IMAGE_NAME" />」</translation>
 <translation id="2350172092385603347">已使用語言代碼，但是仍未在資訊清單中指定 default_locale。</translation>
 <translation id="2576842806987913196">已有 CRX 檔案使用這個名稱。</translation>
+<translation id="2662876636500006917">Chrome 網上應用程式商店</translation>
 <translation id="2743583586211388067">基於你機構的擴充程式風險政策，你無法存取此擴充程式。</translation>
 <translation id="2785530881066938471">無法載入內容指令碼的「<ph name="RELATIVE_PATH" />」檔案，因為該檔案未使用 UTF-8 編碼。</translation>
 <translation id="2903070246402204397">管理員已封鎖 <ph name="EXTENSION_NAME" /> (擴充程式 ID「<ph name="EXTENSION_ID" />」)。<ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">來自供應商 <ph name="VENDOR_ID" /> 的不明產品 <ph name="PRODUCT_ID" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">無法取代 crx 檔案，請檢查檔案是否正在使用中。</translation>
 <translation id="3163201441334626963">來自供應商 <ph name="VENDOR_ID" /> 的不明產品 <ph name="PRODUCT_ID" /></translation>
+<translation id="3242289508736283383">含有「kiosk_only」資訊清單屬性的應用程式必須在 Chrome OS Kiosk 模式中安裝</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">來自供應商 <ph name="VENDOR_ID" /> 的 <ph name="PRODUCT_NAME" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">私密金鑰的輸入值必須是有效的路徑。</translation>
+<translation id="3834775135533257713">「<ph name="TO_INSTALL_APP_NAME" />」應用程式和「<ph name="INSTALLED_APP_NAME" />」發生衝突，因此無法新增。</translation>
 <translation id="388442998277590542">無法載入「<ph name="OPTIONS_PAGE" />」選項頁面。</translation>
 <translation id="3984413272403535372">簽署擴充功能時發生錯誤。</translation>
 <translation id="4233778200880751280">無法載入網頁「<ph name="ABOUT_PAGE" />」。</translation>
+<translation id="424963718355121712">應用程式的安裝來源必須與受影響的主機相同</translation>
+<translation id="4306119971288449206">應用程式的內容類型應設為「<ph name="CONTENT_TYPE" />」</translation>
+<translation id="4633003931260532286">此擴充程式要求 <ph name="IMPORT_NAME" /> <ph name="IMPORT_VERSION" /> 或以上，但現有版本僅為 <ph name="INSTALLED_VERSION" /></translation>
+<translation id="4660476621274971848">預期版本為 <ph name="EXPECTED_VERSION" />，但實際為 <ph name="NEW_ID" /></translation>
 <translation id="471800408830181311">匯出私密金鑰失敗。</translation>
 <translation id="4811956658694082538">公用程式處理程序當機，因此無法安裝套件。請重新啟動 Chrome，然後再試一次。</translation>
 <translation id="4988792151665380515">匯出公開金鑰失敗。</translation>
+<translation id="501057610015570208">含有「kiosk_only」資訊清單屬性的應用程式只能在 ChromeOS Flex Kiosk 模式中安裝</translation>
 <translation id="5026754133087629784">Webview：<ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">無法找到封裝目錄的絕對路徑。</translation>
 <translation id="5160071981665899014">無法載入指令碼的 javascript「<ph name="RELATIVE_PATH" />」。</translation>
 <translation id="5356315618422219272">Appview：<ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">這個擴充功能含有金鑰檔「<ph name="KEY_PATH" />」。請考慮是否仍要執行。</translation>
 <translation id="5486326529110362464">必須輸入私密金鑰值。</translation>
+<translation id="5527463195266282916">試圖降級擴充功能。</translation>
 <translation id="5707185214361380026">無法載入下列來源的擴充功能：</translation>
 <translation id="5972529113578162692">這部裝置的管理員要求安裝 <ph name="EXTENSION_NAME" />，因此您無法解除安裝該擴充功能。</translation>
 <translation id="6027032947578871493">來自 <ph name="VENDOR_NAME" /> 的不明產品 <ph name="PRODUCT_ID" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">資訊清單檔案無效</translation>
 <translation id="7217838517480956708">這部電腦的管理員要求安裝 <ph name="EXTENSION_NAME" />，因此您無法移除或修改。</translation>
 <translation id="7612608473764576263">私人密鑰的輸入值必須是有效格式 (須採用 PKCS#8 格式和 PEM 編碼的 RSA 密鑰)。</translation>
+<translation id="765293928828334535">無法從這個網站新增應用程式、擴充程式及使用者指令碼</translation>
 <translation id="7876803335449432072">無法載入「<ph name="RELATIVE_PATH" />」檔案的內容指令碼，內容指令碼樣式表只能從支援的樣式表檔案 (例如 .css 檔案) 載入。</translation>
 <translation id="7939686037314084444">擴充程式無法正常載入，因此可能無法截取網絡要求。</translation>
+<translation id="7952904276017482715">預期 ID 為「<ph name="EXPECTED_ID" />」，但實際為「<ph name="NEW_ID" />」</translation>
 <translation id="7972881773422714442">選項：<ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">前置相機</translation>
 <translation id="8047248493720652249">擴充功能無法將下載的檔案命名為「<ph name="ATTEMPTED_FILENAME" />」，因為其他擴充功能 (<ph name="EXTENSION_NAME" />) 已將此檔案命名為「<ph name="ACTUAL_FILENAME" />」。</translation>
+<translation id="8049705080247101012">Google 已將「<ph name="EXTENSION_NAME" />」標示為惡意程式並已阻止其安裝</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> 的 <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">資訊清單檔案遺失或無法讀取</translation>
+<translation id="8565650234829130278">嘗試降級應用程式。</translation>
 <translation id="8621383749470166852">無法載入「<ph name="RELATIVE_PATH" />」檔案的內容指令碼，內容指令碼只能從支援的 JavaScript 檔案 (例如 .js 檔案) 載入。</translation>
 <translation id="8636666366616799973">套件無效，詳情：<ph name="ERROR_MESSAGE" />。</translation>
 <translation id="8761756413268424715">「<ph name="APP_NAME" />」要求存取您其中一部裝置：</translation>

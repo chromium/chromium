@@ -2787,6 +2787,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5466018172325111652">Ez duzu jaso kodea? <ph name="BEGIN_LINK" />Lortu beste kode bat<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Ordainketa-aplikazioak</translation>
 <translation id="5470861586879999274">&amp;Berregin editatzea</translation>
+<translation id="5471158297908124590">Ordainketa-metodoak editatzeko, egiaztatu zeu zarela</translation>
 <translation id="5472588168895083535">Blokeatuta dago eskuen jarraipena</translation>
 <translation id="5477756102936130143">Gaitu onartutako ordainketa-aplikazioetara birbideratzea</translation>
 <translation id="5479505548832623900">Seguruenik luzapenak ez ikusi egin dio.</translation>
@@ -3170,6 +3171,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6093795393556121384">Txartela egiaztatu da</translation>
 <translation id="6094253940069566294">Editatu ibilgailua</translation>
 <translation id="6094290315941448991">Administratzailearen gidalerroek pantaila-grabaketa bat egitea eragozten dute isilpeko edukia ikusgai dagoenean</translation>
+<translation id="6097297436119286254">Egiaztatu zeu zarela ordainketa-informazioa betetzeko</translation>
 <translation id="6099269767116481177">55,88 × 74,93 cm (22 × 29,5 in)</translation>
 <translation id="6101583188322746099">Erosketak etxera eramateko zerbitzuak</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4916,6 +4918,7 @@ Xehetasun gehiago:
 <translation id="8897428486789851669">Igeriketa</translation>
 <translation id="8899807382908246773">Iragarki oztopatzaileak</translation>
 <translation id="8903921497873541725">Handitu</translation>
+<translation id="8903998444169664879">Ordainketa-ezarpenak aldatzeko, egiaztatu zeu zarela</translation>
 <translation id="890493561996401738">"Kendu iradokizuna" botoia, sakatu Sartu kentzeko, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 in</translation>
 <translation id="8914504000324227558">Berrabiarazi Chrome</translation>

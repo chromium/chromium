@@ -2791,6 +2791,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5466018172325111652">Nie kode gekry nie? <ph name="BEGIN_LINK" />Kry nuwe kode<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Betalingapps</translation>
 <translation id="5470861586879999274">Herdoen wysiging</translation>
+<translation id="5471158297908124590">Verifieer dat dit jy is om betaalmetodes te wysig</translation>
 <translation id="5472588168895083535">Handnasporing is geblokkeer</translation>
 <translation id="5477756102936130143">Aktiveer herleiding om betaalapps te steun</translation>
 <translation id="5479505548832623900">Waarskynlik geïgnoreer deur die uitbreiding.</translation>
@@ -3174,6 +3175,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6093795393556121384">Jou kaart is geverifieer</translation>
 <translation id="6094253940069566294">Wysig voertuig</translation>
 <translation id="6094290315941448991">Administrateursbeleid deaktiveer skermopname wanneer vertroulike inhoud sigbaar is</translation>
+<translation id="6097297436119286254">Verifieer dat dit jy is om jou betaalinligting in te vul</translation>
 <translation id="6099269767116481177">22x29,5 dm.</translation>
 <translation id="6101583188322746099">Kruideniersafleweringdienste</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4921,6 +4923,7 @@ Bykomende besonderhede:
 <translation id="8897428486789851669">Swem</translation>
 <translation id="8899807382908246773">Indringerige advertensies</translation>
 <translation id="8903921497873541725">Zoem in</translation>
+<translation id="8903998444169664879">Verifieer dat dit jy is om jou betalinginstellings te verander</translation>
 <translation id="890493561996401738">Verwyder Voorstel-knoppie; druk Enter om te verwyder; <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8x10 dm.</translation>
 <translation id="8914504000324227558">Herbegin Chrome</translation>

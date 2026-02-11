@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Контент скрипти үчүн "<ph name="RELATIVE_PATH" />" файлы жүктөлгөн жок, анткени ал скрипттин максималдуу өлчөмүнөн же кеңейтүүнүн контент скриптинин максималдуу өлчөмүнөн ашып кетти.</translation>
 <translation id="1445572445564823378">Бул кеңейтүү күйгүзүлсө, <ph name="PRODUCT_NAME" /> жай иштеп калат. Андыктан <ph name="PRODUCT_NAME" /> ишинин майнаптуулугун калыбына келтирүү үчүн, аны өчүрүп коюшуңуз керек.</translation>
 <translation id="1468038450257740950">WebGL колдоого алынбайт.</translation>
+<translation id="1478607704480248626">Орнотуу иштетилген эмес</translation>
+<translation id="1556537182262721003">Кеңейтүү каталогу профилге жылган жок.</translation>
 <translation id="1610570795592207282">Скрипт үчүн css '<ph name="RELATIVE_PATH" />' жүктөлбөй койду.</translation>
+<translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" кеңейтүүсү импорттолбой жатат, анткени ал бөлүшүлгөн модуль эмес</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' фондук баракча жүктөлгөн жок.</translation>
+<translation id="1875387611427697908">Муну <ph name="CHROME_WEB_STORE" /> дарегинен гана кошсо болот</translation>
+<translation id="2131077480075264">"<ph name="APP_NAME" />" орното албайт, анткени ага "<ph name="IMPORT_NAME" />" тарабынан уруксат берилген эмес</translation>
 <translation id="2159915644201199628">Сүрөттүн коддору чечилген жок: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Жергиликтештирилген, бирок демейки_тил стандарты манифестте көрсөтүлбөй калган.</translation>
 <translation id="2576842806987913196">Мындай аталыштагы CRX файлы мурунтан эле бар.</translation>
+<translation id="2662876636500006917">Chrome Желе дүкөнү</translation>
 <translation id="2743583586211388067">Уюмуңуздун кеңейтүү тобокелдиктери боюнча эрежелерине ылайык бул кеңейтүүнү колдонууга болбойт.</translation>
 <translation id="2785530881066938471">Мазмун скрипти үчүн '<ph name="RELATIVE_PATH" />' файлы жүктөлгөн жок. Ал UTF-8 менен коддолгон эмес.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (кеңейтүү идентификатору "<ph name="EXTENSION_ID" />") администраторуңуз тарабынан бөгөттөлгөн. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> дегенден белгисиз өндүрүм <ph name="PRODUCT_ID" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx файлы алмаштырылган жок. Файлдын колдонулуп жаткандыгын текшериңиз.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> дегенден белгисиз өндүрүм <ph name="PRODUCT_ID" /></translation>
+<translation id="3242289508736283383">"Киоск_гана" деген манифести бар колдонмо ChromeOS киоск режиминде орнотулушу керек</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> дегенден <ph name="PRODUCT_NAME" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Купуя ачкычтын киргизүү мааниси жарактуу жол болушу керек.</translation>
+<translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" колдонмосу "<ph name="INSTALLED_APP_NAME" />" колдонмосуна карама-каршы келгендиктен, кошулбай койду.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' параметрлер бети ачылган жок.</translation>
 <translation id="3984413272403535372">Кеңейтүү киргизилип жатканда ката кетти.</translation>
 <translation id="4233778200880751280">Кандайдыр бир нерсе жөнүндө бет жүктөлгөн жок '<ph name="ABOUT_PAGE" />'.</translation>
+<translation id="424963718355121712">Колдонмолор өзүлөрүнө тиешеси бар башкы түйүндөн тейленишет</translation>
+<translation id="4306119971288449206">Колдонмолор "<ph name="CONTENT_TYPE" />" мазмун түрү менен тейлениши керек</translation>
+<translation id="4633003931260532286">Кеңейтүүгө кеминде "<ph name="IMPORT_VERSION" />" версиясындагы "<ph name="IMPORT_NAME" />" талап кылынат, бирок учурда "<ph name="INSTALLED_VERSION" />" версиясы гана орнотулган.</translation>
+<translation id="4660476621274971848">Күтүлүп жаткан версия – "<ph name="EXPECTED_VERSION" />" болчу, бирок "<ph name="NEW_ID" />" версиясы алынып калды</translation>
 <translation id="471800408830181311">Жеке ачкычты чыгара албай койду.</translation>
 <translation id="4811956658694082538">Тейлөө процесси кыйрап калгандыктан, топтом орнотулбай калды. Сhrome'ду өчүрүп күйгүзүп туруп, кайра аракет кылып көрүңүз.</translation>
 <translation id="4988792151665380515">Коомдук ачкыч экспорттолбой калды.</translation>
+<translation id="501057610015570208">"Киоск_гана" деген манифести бар колдонмо ChromeOS Flex киоск режиминде орнотулушу керек</translation>
 <translation id="5026754133087629784">Желе көрүнүшү: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Топтомдоштуруу үчүн каталогго түз жол табылбай жатат.</translation>
 <translation id="5160071981665899014">Скрипти үчүн javascript '<ph name="RELATIVE_PATH" />' жүктөлбөй койду.</translation>
 <translation id="5356315618422219272">Колдонмо көрүнүшү: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Бул кеңейтүүдө '<ph name="KEY_PATH" />' ачкыч файлы камтылган. Аны аткаргыңыз келбейт окшойт.</translation>
 <translation id="5486326529110362464">Жеке ачкычтын киргизүү мааниси болушу керек.</translation>
+<translation id="5527463195266282916">Кеңейтүүнүн эски версиясын орнотууга аракет жасалды.</translation>
 <translation id="5707185214361380026">Төмөнкүдөн кеңейтүү жүктөлбөй калды:</translation>
 <translation id="5972529113578162692">Бул машинанын администратору <ph name="EXTENSION_NAME" /> орнотулушун талап кылууда. Аны орнотуудан чыгаруу мүмкүн эмес.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> дегенден белгисиз өндүрүм <ph name="PRODUCT_ID" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Манифест файлы жараксыз</translation>
 <translation id="7217838517480956708">Бул шаймандын администратору <ph name="EXTENSION_NAME" /> орнотууну талап кылууда. Аны чыгарып салууга же өзгөртүүгө болбойт.</translation>
 <translation id="7612608473764576263">Купуя ачкычтын киргизүү мааниси жарактуу форматта болушу керек (PKCS#8 форматындагы PEM менен шифрленген RSA ачкычы).</translation>
+<translation id="765293928828334535">Бул вебсайттан колдонмолорду, кеңейтүүлөрдү жана колдонуучунун скрипттерин кошууга болбойт</translation>
 <translation id="7876803335449432072">Контенттин скриптинин "<ph name="RELATIVE_PATH" />" файлы жүктөлгөн жок. Контенттин скриптинин стилдерин .css файлдары сыяктуу колдоого алынган стиль файлдарынан гана жүктөөгө болот.</translation>
 <translation id="7939686037314084444">Бул кеңейтүү туура жүктөлгөн жок. Эми ал тармактык сурамдарды ортодон кармап кала албай калат.</translation>
+<translation id="7952904276017482715"><ph name="EXPECTED_ID" /> идентификатору күтүлгөн, бирок ал "<ph name="NEW_ID" />" болуп калды</translation>
 <translation id="7972881773422714442">Параметрлер: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Маңдайкы камера</translation>
 <translation id="8047248493720652249">Башка кеңейтүү (<ph name="EXTENSION_NAME" />) башка файл аталышын "<ph name="ACTUAL_FILENAME" />" аныктагандыктан, бул кеңейтүү жүктөлүп алына турган нерсени "<ph name="ATTEMPTED_FILENAME" />" атай албай койду.</translation>
+<translation id="8049705080247101012">Google "<ph name="EXTENSION_NAME" />" кеңейтүүсүн зыяндуу деп белгилегендиктен, ал орнотулган жок</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> дегенден <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">Манифест файлы жок же окулбайт</translation>
+<translation id="8565650234829130278">Колдонмону эски версиясына кайтарууга аракет жасалды.</translation>
 <translation id="8621383749470166852">Контенттин скриптинин "<ph name="RELATIVE_PATH" />" файлы жүктөлгөн жок. Контенттин скриптин .js файлдары сыяктуу колдоого алынган JavaScript файлдарынан гана жүктөөгө болот.</translation>
 <translation id="8636666366616799973">Топтом жараксыз. Чоо-жайы: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" колдонмосу түзмөктөрүңүздүн бирин пайдаланууга уруксат сурап жатат:</translation>

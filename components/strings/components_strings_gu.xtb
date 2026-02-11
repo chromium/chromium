@@ -704,6 +704,7 @@
 <translation id="2137891579555018930">પરવાનગીની રાહ જોઈ રહ્યાં છીએ...</translation>
 <translation id="213826338245044447">મોબાઇલ બુકમાર્ક</translation>
 <translation id="2141000681034340397">તમારા ઇનપુટમાં ફેરફાર કરો</translation>
+<translation id="2141475438898772664">4 હપ્તામાં કે માસિક ચુકવણી કરો</translation>
 <translation id="2144171668675205303">કોઈ સક્રિય વિષય નથી</translation>
 <translation id="2145193671493396738">ઇકોનોમી સંબંધિત ન્યૂઝ</translation>
 <translation id="214556005048008348">ચુકવણી રદ કરો</translation>
@@ -2791,6 +2792,7 @@
 <translation id="5466018172325111652">તમારો કોડ પ્રાપ્ત નથી થયો? <ph name="BEGIN_LINK" />નવો કોડ મેળવો<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">ચુકવણી ઍપ</translation>
 <translation id="5470861586879999274">&amp;ફરી ફેરફાર કરો</translation>
+<translation id="5471158297908124590">ચુકવણીઓની પદ્ધતિઓમાં ફેરફાર કરવા માટે, આ તમે જ છો તેની ખાતરી કરો</translation>
 <translation id="5472588168895083535">હાથ ટ્રૅક કરવાની સુવિધા બ્લૉક કરવામાં આવી</translation>
 <translation id="5477756102936130143">સપોર્ટેડ ચુકવણી ઍપ પર રીડાયરેક્શન ચાલુ કરો</translation>
 <translation id="5479505548832623900">એક્સ્ટેન્શન દ્વારા અવગણના કરવામાં આવી હોવાની શક્યતા છે.</translation>
@@ -2847,6 +2849,7 @@
 <translation id="5543564889050342791">પ્રાણી સંગ્રહાલયો, માછલીઘર અને અભયારણ્યો</translation>
 <translation id="5543722831081909240">180 ડિગ્રી</translation>
 <translation id="5544836308113951378">ક્રૂઝ અને ચાર્ટર</translation>
+<translation id="5545314360139398232">હપ્તેથી ચુકવણી કરવા માટે, <ph name="ISSUER_NAME" />ને લિંક કરો</translation>
 <translation id="5547939254150808298">પ્રિન્ટિંગ અને પબ્લિશિંગ</translation>
 <translation id="554815783948612276">ચર્ચામંચ અને ચૅટની સુવિધા આપતા પ્રદાતાઓ</translation>
 <translation id="5548606607480005320">સલામતી માટે તપાસ</translation>
@@ -3175,6 +3178,7 @@
 <translation id="6093795393556121384">તમારું કાર્ડ ચકાસવામાં આવ્યું છે</translation>
 <translation id="6094253940069566294">વાહનની માહિતીમાં ફેરફાર કરો</translation>
 <translation id="6094290315941448991">ગોપનીય કન્ટેન્ટ દેખાય ત્યારે વ્યવસ્થાપક પૉલિસીને કારણે સ્ક્રીન રેકોર્ડિંગ બંધ કરવામાં આવે છે</translation>
+<translation id="6097297436119286254">તમારી ચુકવણીની માહિતી ભરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="6099269767116481177">22 x 29.5 ઇંચ</translation>
 <translation id="6101583188322746099">કરિયાણું ડિલિવર કરવાની સેવાઓ</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -3693,6 +3697,7 @@
 <translation id="6926216138694948720">બૉડી આર્ટ</translation>
 <translation id="692638818576287323">વ્યાવસાયિક વાહનો</translation>
 <translation id="6927878187051807444">કૅમેરાની ફાઇલો અને સ્ક્રીનશૉટ</translation>
+<translation id="6929949393612835405">બંધ કરો અને "<ph name="OPENER_TITLE" />" પર પાછા ફરો</translation>
 <translation id="6930607614725241390">બાજુની પૅનલમાં શોધો</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />તમારા ડિફૉલ્ટ શોધ એન્જિન વડે તમે વેબ પર શોધ કરી શકો છો તેમજ તે Chromeની સુવિધાઓને સશક્ત કરે છે<ph name="END_BOLD" /> જેમ કે, ઍડ્રેસ બારમાંથી તેમજ વેેબપેજ પરની છબીઓમાંથી શોધ કરવા જેવી સુવિધાઓ. તમારું શોધ એન્જિન સપોર્ટ ન કરતું હોય તેવી સુવિધા ઉપલબ્ધ ન હોય એમ બની શકે છે.</translation>
 <translation id="6934672428414710184">આ નામ તમારા Google એકાઉન્ટમાંથી લીધું છે</translation>
@@ -4924,6 +4929,7 @@
 <translation id="8897428486789851669">સ્વિમિંગ</translation>
 <translation id="8899807382908246773">ખલેલ પાડતી જાહેરાતો</translation>
 <translation id="8903921497873541725">ઝૂમ વધારો</translation>
+<translation id="8903998444169664879">તમારા ચુકવણીઓ માટેના સેટિંગ બદલવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="890493561996401738">સૂચન કાઢી નાખો બટન, આ કાઢી નાખવા માટે Enter દબાવો, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 ઇંચ</translation>
 <translation id="8914504000324227558">Chrome ફરીથી લોંચ કરો</translation>

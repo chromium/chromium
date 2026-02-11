@@ -2791,6 +2791,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5466018172325111652">Kodunuz gelmedi mi? <ph name="BEGIN_LINK" />Yeni kod al<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Ödeme uygulamaları</translation>
 <translation id="5470861586879999274">Düzenlemeyi &amp;yeniden yap</translation>
+<translation id="5471158297908124590">Ödeme yöntemlerini düzenlemek için kimliğinizi doğrulayın</translation>
 <translation id="5472588168895083535">El takibi engellendi</translation>
 <translation id="5477756102936130143">Desteklenen ödeme uygulamalarına yönlendirmeyi etkinleştir</translation>
 <translation id="5479505548832623900">Uzantı tarafından yoksayılmış olabilir.</translation>
@@ -3174,6 +3175,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6093795393556121384">Kartınız doğrulandı</translation>
 <translation id="6094253940069566294">Aracı düzenle</translation>
 <translation id="6094290315941448991">Yönetici politikası ekranda gizli içerik varken ekran kaydı almaya izin vermiyor</translation>
+<translation id="6097297436119286254">Ödeme bilgilerinizin doldurulması için kimliğinizi doğrulayın</translation>
 <translation id="6099269767116481177">22 x 29,5 inç</translation>
 <translation id="6101583188322746099">Bakkaliye Sipariş Hizmetleri</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4923,6 +4925,7 @@ Ek ayrıntılar:
 <translation id="8897428486789851669">Yüzme</translation>
 <translation id="8899807382908246773">Araya giren reklamlar</translation>
 <translation id="8903921497873541725">Yakınlaştır</translation>
+<translation id="8903998444169664879">Ödeme ayarlarınızı değiştirmek için kimliğinizi doğrulayın</translation>
 <translation id="890493561996401738">Öneriyi Kaldır düğmesi, kaldırmak için Enter tuşuna basın, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 inç</translation>
 <translation id="8914504000324227558">Chrome'u Yeniden Başlat</translation>

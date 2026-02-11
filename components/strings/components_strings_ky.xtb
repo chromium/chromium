@@ -2790,6 +2790,7 @@
 <translation id="5466018172325111652">Код жөнөтүлгөн жокпу? <ph name="BEGIN_LINK" />Жаңы код алуу<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Төлөм колдонмолору</translation>
 <translation id="5470861586879999274">Түзөтүүнү &amp;кайталоо</translation>
+<translation id="5471158297908124590">Төлөм ыкмаларын түзөтүү үчүн өзүңүздү ырастаңыз</translation>
 <translation id="5472588168895083535">Колдорго көз салуу бөгөттөлдү</translation>
 <translation id="5477756102936130143">Колдоого алынган төлөм колдонмолоруна багыттоо функциясын иштетүү</translation>
 <translation id="5479505548832623900">Кеңейтүү этибарга албаса керек.</translation>
@@ -3173,6 +3174,7 @@
 <translation id="6093795393556121384">Картаңыз текшерилди</translation>
 <translation id="6094253940069566294">Унааны өзгөртүү</translation>
 <translation id="6094290315941448991">Купуя нерселер көрүнүп турганда, Администратордун эрежеси боюнча экрандагыны видеого жаздырып алууга болбойт</translation>
+<translation id="6097297436119286254">Төлөм маалыматын толтуруу үчүн өзүңүздү ырастаңыз</translation>
 <translation id="6099269767116481177">22 x 29,5 дюйм</translation>
 <translation id="6101583188322746099">Азык-түлүк жеткирүү кызматтары</translation>
 <translation id="6104072995492677441">JIS B6 (128mm x 182mm)</translation>
@@ -4920,6 +4922,7 @@
 <translation id="8897428486789851669">Сүзүү</translation>
 <translation id="8899807382908246773">Тажатма жарнамалар</translation>
 <translation id="8903921497873541725">Чоңойтуу</translation>
+<translation id="8903998444169664879">Төлөм параметрлерин өзгөртүү үчүн өзүңүздү ырастаңыз</translation>
 <translation id="890493561996401738">"Сунушту өчүрүү" баскычы. Өчүрүү үчүн "Enter" баскычын басыңыз, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 дюйм</translation>
 <translation id="8914504000324227558">Chrome'ду кайрадан ишке киргизүү</translation>

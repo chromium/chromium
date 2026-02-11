@@ -2791,6 +2791,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5466018172325111652">Niste dobili kod? <ph name="BEGIN_LINK" />Preuzmite novi kȏd<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Aplikacije za plaćanje</translation>
 <translation id="5470861586879999274">Poništi u&amp;ređivanje</translation>
+<translation id="5471158297908124590">Potvrdite identitet da uredite načine plaćanja</translation>
 <translation id="5472588168895083535">Praćenje ruku je blokirano</translation>
 <translation id="5477756102936130143">Omogućavanje preusmjeravanja u podržane aplikacije za plaćanje</translation>
 <translation id="5479505548832623900">Ekstenzija će vjerovatno zanemariti pravila.</translation>
@@ -3174,6 +3175,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6093795393556121384">Kartica je potvrđena</translation>
 <translation id="6094253940069566294">Uredite vozilo</translation>
 <translation id="6094290315941448991">Administratorska pravila onemogućavaju snimanje ekrana kada je prisutan povjerljivi sadržaj</translation>
+<translation id="6097297436119286254">Potvrdite identitet da popunite podatke o plaćanju</translation>
 <translation id="6099269767116481177">22 x 29,5 in</translation>
 <translation id="6101583188322746099">Usluge dostave namirnica</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4922,6 +4924,7 @@ Dodatni detalji:
 <translation id="8897428486789851669">Plivanje</translation>
 <translation id="8899807382908246773">Ometajući oglasi</translation>
 <translation id="8903921497873541725">Uvećaj</translation>
+<translation id="8903998444169664879">Potvrdite identitet da promijenite postavke plaćanja</translation>
 <translation id="890493561996401738">Dugme za uklanjanje prijedloga. Pritisnite Enter da uklonite, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 in</translation>
 <translation id="8914504000324227558">Ponovo pokreni Chrome</translation>

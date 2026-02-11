@@ -584,6 +584,7 @@
 <translation id="3140825265190223781">Contraseñas y llaves de acceso guardadas</translation>
 <translation id="3143515551205905069">Cancelar sincronización</translation>
 <translation id="3144126448740580210">LISTO</translation>
+<translation id="3147521114983561406">Las llaves de acceso se guardan en tu administrador de contraseñas. Se puede acceder a ellas en pestañas de incógnito y normales.</translation>
 <translation id="3148052723910099040">Cuadrícula de pestañas regulares</translation>
 <translation id="3148237711805373460">Ir ahora</translation>
 <translation id="3157387275655328056">Agregar a la Lista de lectura</translation>
@@ -1184,7 +1185,7 @@
 <translation id="536067926684072644">Ver Favoritos</translation>
 <translation id="5364647308446127983">{count,plural, =1{No se pudo importar {count} llave de acceso}other{No se pudieron importar {count} llaves de acceso}}</translation>
 <translation id="5371112366564891538">Aumentar el tamaño del texto</translation>
-<translation id="5376135254804080693">Anular selección de todas las opciones</translation>
+<translation id="5376135254804080693">Anular selección</translation>
 <translation id="537853552771686272">Administra los temas y los sitios que te interesan</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} cerrada}other{{count} cerradas}}</translation>
 <translation id="5394975111793637642">Ocultar la tarjeta Opiniones sobre productos para ti</translation>
@@ -2097,6 +2098,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8587001564479545614">Crea un PIN de recuperación</translation>
 <translation id="8588404856427128947">Apagada</translation>
 <translation id="8590286732816598906">Grupo de pestañas, <ph name="GROUP_TITLE" />, Menú.</translation>
+<translation id="8593317261815647019">¿Quieres crear una llave de acceso fuera del modo Incógnito?</translation>
 <translation id="8600272508328041907">Cambiar a la traducción de la página completa</translation>
 <translation id="860043288473659153">Nombre del titular de la tarjeta</translation>
 <translation id="8601611099293226919">Hacer búsquedas en la pantalla con Google Lens</translation>

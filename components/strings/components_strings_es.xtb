@@ -2791,6 +2791,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5466018172325111652">¿No has recibido el código? <ph name="BEGIN_LINK" />Obtener nuevo código<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">apps para pagos</translation>
 <translation id="5470861586879999274">&amp;Rehacer edición</translation>
+<translation id="5471158297908124590">Verifica que eres tú para editar métodos de pago</translation>
 <translation id="5472588168895083535">Seguimiento de manos bloqueado</translation>
 <translation id="5477756102936130143">Habilitar la redirección a apps para pagos compatibles</translation>
 <translation id="5479505548832623900">Es probable que la extensión la ignore.</translation>
@@ -3174,6 +3175,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6093795393556121384">Tu tarjeta se ha verificado</translation>
 <translation id="6094253940069566294">Editar vehículo</translation>
 <translation id="6094290315941448991">La política del administrador inhabilita la grabación de pantalla cuando se muestra contenido confidencial</translation>
+<translation id="6097297436119286254">Verifica que eres tú para rellenar tus datos para pagos</translation>
 <translation id="6099269767116481177">22 x 29,5 pulgadas</translation>
 <translation id="6101583188322746099">Servicios de envío de productos de alimentación</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4922,6 +4924,7 @@ Más información:
 <translation id="8897428486789851669">Natación</translation>
 <translation id="8899807382908246773">Anuncios invasivos</translation>
 <translation id="8903921497873541725">Acercar</translation>
+<translation id="8903998444169664879">Verifica que eres tú para cambiar la configuración de pago</translation>
 <translation id="890493561996401738">Botón Eliminar sugerencia, pulsa Intro para eliminar, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8x10 pulgadas</translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>

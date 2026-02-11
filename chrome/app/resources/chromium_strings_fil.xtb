@@ -101,8 +101,10 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2099452623287920103">Aalisin sa device na ito ang iyong mga password at iba pang data sa Chromium na na-save mo sa iyong Google Account. Para magamit ulit ang mga ito sa Chromium, mag-sign in ulit.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Awtomatikong ide-delete ng iyong organisasyon ang data mula sa pag-browse kapag hindi nagamit ang Chromium nang 1 minuto. Posibleng kasama rito ang history, autofill, at mga download. Mananatiling nakabukas ang iyong mga tab.}one{Awtomatikong ide-delete ng iyong organisasyon ang data mula sa pag-browse kapag hindi nagamit ang Chromium nang # minuto. Posibleng kasama rito ang history, autofill, at mga download. Mananatiling nakabukas ang iyong mga tab.}other{Awtomatikong ide-delete ng iyong organisasyon ang data mula sa pag-browse kapag hindi nagamit ang Chromium nang # na minuto. Posibleng kasama rito ang history, autofill, at mga download. Mananatiling nakabukas ang iyong mga tab.}}</translation>
 <translation id="2126108037660393668">Hindi na-verify ang na-download na file.</translation>
+<translation id="2135919691573380097">Iulat ang site na ito</translation>
 <translation id="2137162749895930932">Isara ang isalin ang screen</translation>
 <translation id="215352261310130060">Na-block ng Chromium ang pag-download na ito dahil hindi gumagamit ng secure na koneksyon ang site at posibleng na-tamper ang file</translation>
+<translation id="2170098639895543546">Pumili ng kahit ano sa page</translation>
 <translation id="2174178932569897599">I-customize ang Chromium</translation>
 <translation id="2174917724755363426">Hindi nakumpleto ang pag-install. Sigurado ka bang gusto mong kanselahin?</translation>
 <translation id="2185166961232948079">Chromium - Pag-sign in sa Network - <ph name="PAGE_TITLE" /></translation>
@@ -136,6 +138,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID device ang ina-access ng isa o higit pang extension ng Chromium}=1{1 HID device ang ina-access ng isa o higit pang extension ng Chromium}one{# HID device ang ina-access ng isa o higit pang extension ng Chromium}other{# HID device ang ina-access ng isa o higit pang extension ng Chromium}}</translation>
 <translation id="2401032172288869980">Kailangan ng Chromium ng pahintulot sa camera at mikropono para sa site na ito</translation>
 <translation id="2403703063067034158">Nagkaroon ng error sa startup: May tumatakbo nang isa pang instance ng pag-set up, pakisubukan ulit sa ibang pagkakataon.</translation>
+<translation id="2418322681019544463">Magbukas ng mga link sa Chromium mula sa anumang app at panatilihing naa-access ang browser sa iyong taskbar</translation>
 <translation id="2440750600860946460">Gamit ang <ph name="BEGIN_LINK" />mga tool mula sa Chromium<ph name="END_LINK" />, makakapag-browse ka nang ligtas at mananatili kang may kontrol</translation>
 <translation id="2451727308784734061">Gamitin ang iyong shortcut para mabilis na makarating sa Password Manager. Puwede mong ilipat ang iyong shortcut sa home screen o app launcher ng computer mo.</translation>
 <translation id="2478295928299953161">Magsasara na ang Chromium sa ilang saglit</translation>
@@ -312,6 +315,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4334241893986177674">Maghanap sa screenshot na ito</translation>
 <translation id="4334294535648607276">Tapos na ang pag-download.</translation>
+<translation id="4384331407722351213">Ilunsad ang Chromium kapag nagsimula na ang Windows</translation>
 <translation id="4384993550046411228">Magkaroon ng madaling access sa mga feature na alam, gusto, at pinagkakatiwalaan mo sa pamamagitan ng pagtatakda sa Chromium bilang default browser mo. Ipi-pin ang Chromium sa iyong taskbar para sa mabilis na pag-access.</translation>
 <translation id="439358628917130594">Kinakailangan ng <ph name="MANAGER" /> na basahin at tanggapin mo ang sumusunod na Mga Tuntunin ng Serbisyo bago gamitin ang device na ito. Hindi pinapalawak, binabago, o nililimitahan ng mga tuntuning ito ang Mga Tuntunin ng ChromiumOS.</translation>
 <translation id="4407044323746248786">Lumabas pa rin sa Chromium?</translation>
@@ -332,6 +336,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4531137820806573936">Kailangan ng Chromium ng pahintulot na imapa ang paligid mo at i-track ang iyong mga kamay</translation>
 <translation id="4536805923587466102">Naka-sign in ka na bilang <ph name="USER_EMAIL_ADDRESS" /> sa ibang profile sa Chromium</translation>
 <translation id="4548534452171747496">Nagpe-preload ang Chromium ng mga page na mas nagpapabilis sa pag-browse at paghahanap. <ph name="BEGIN_LINK" />Matuto pa tungkol sa pag-preload ng mga page<ph name="END_LINK" /></translation>
+<translation id="4549180975214802957">Pahusayin ang kaligtasan online para sa lahat kapag nag-ulat ka ng site na sa tingin mo ay mapaminsala.</translation>
 <translation id="4570813286784708942">Na-block ng Chromium ang pag-download na ito dahil in-off mo ang Ligtas na Pag-browse at hindi ma-verify ang file</translation>
 <translation id="4583692638088316420">Subukan ang Google Lens sa Chromium sa iyong telepono</translation>
 <translation id="4594305310729380060">Sa Password Manager sa device na ito</translation>
@@ -504,6 +509,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="6598877126913850652">Pumunta sa mga setting ng notification ng Chromium</translation>
 <translation id="6600016381025017075">Maghanap ng kahit ano sa page na ito</translation>
 <translation id="6613594504749178791">Magkakabisa ang iyong mga pagbabago sa susunod na ilunsad mong muli ang Chromium.</translation>
+<translation id="6637908313088374648">Ilulunsad na ngayon ang Chromium kapag nagsimula na ang Windows para magsimula kang mag-browse kaagad. Puwede mo itong i-off sa mga setting.</translation>
 <translation id="6648212540664651655">Magpatuloy kung saan ka huminto: Ni-restore ng Chromium ang iyong mga tab mula sa huling session mo. Puwede mo itong i-off sa</translation>
 <translation id="665732753414869868">Kailangan ng Chromium ng pahintulot sa camera para makagawa ng 3D na mapa ng iyong kapaligiran</translation>
 <translation id="6669284030132180248">Kung sine-save mo rin ang iyong mga bookmark sa Google Account mo, puwede mong subaybayan sa Chromium ang mga presyo ng produkto at puwede kang maabisuhan kapag bumaba ang presyo</translation>
@@ -562,6 +568,7 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="7213407614656404070">Gamitin ang Chromium sa tuwing magki-click ka ng mga link sa mga mensahe, dokumento, at iba pang app</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
 <translation id="7246575524853130370">Iyong mga interes tulad ng tinatantya ng Chromium</translation>
+<translation id="7252276985725323153">Magsimulang mag-browse kaagad: Puwede na ngayong ilunsad ang Chromium kapag nagsimula na ang Windows.</translation>
 <translation id="7274695763216404502">Na-pin na! Gamitin ulit ang Paghahanap ng Larawan mula sa toolbar</translation>
 <translation id="7288567540154601580">Mga tab at extension</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Inirerekomenda ng Chromium na alisin mo ito}one{Inirerekomenda ng Chromium na alisin mo ang mga ito}other{Inirerekomenda ng Chromium na alisin mo ang mga ito}}</translation>
@@ -592,6 +599,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="751935028865900641">Malamang na gagana ang mga site na gaya ng inaasahan. Masa-sign out ka sa karamihan ng mga site kapag isinara mo ang lahat ng window ng Chromium, maliban sa iyong Google Account kung naka-sign in ka sa Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Muling ilulunsad ang Chromium sa loob ng 1 minuto}one{Muling ilulunsad ang Chromium sa loob ng # minuto}other{Muling ilulunsad ang Chromium sa loob ng # na minuto}}</translation>
 <translation id="7565444033145385702">Para protektahan ang iyong data, hayaan ang Chromium na mag-alis ng mga pahintulot sa mga site na hindi mo binisita kamakailan.</translation>
+<translation id="7583104404158659071">Awtomatikong ilunsad ang Chromium para magsimulang mag-browse kaagad.</translation>
 <translation id="7583399374488819119">Installer ng <ph name="COMPANY_NAME" /></translation>
 <translation id="761356813943268536">Ginagamit ng Chromium ang iyong camera at mikropono.</translation>
 <translation id="7617377681829253106">Mas mahusay na ang Chromium</translation>
@@ -607,6 +615,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="7745317241717453663">Ide-delete nito ang iyong data sa pag-browse sa device na ito. Upang makuha ang iyong data sa ibang pagkakataon, mag-sign in sa Chromium bilang <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Hindi makalikha ng pansamantalang direktoryo ang installer. Paki-suri para sa puwang sa disk na walang laman at pahintulot upang i-install ang software.</translation>
 <translation id="7750130090210923118">I-reset sa Default na Chromium</translation>
+<translation id="7781047659465034537">Itakda ang Chromium bilang default at i-pin ito sa taskbar</translation>
 <translation id="7786760609782648049">Gawing mas mabilis ang Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Gawing mas mahirap para sa mga taong may access sa iyong internet traffic na makita kung aling mga site ang binibisita mo. Gumagamit ang Chromium ng secure na koneksyon para hanapin ang IP address ng isang site sa DNS (Domain Name System).</translation>

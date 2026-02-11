@@ -7,11 +7,17 @@
 <translation id="132960226125594336">সর্বাধিক স্ক্রিপ্ট সাইজ বা এক্সটেনশনের সর্বাধিক মোট কন্টেন্ট স্ক্রিপ্ট সাইজ অতিক্রম করে যাওয়ায় কন্টেন্ট স্ক্রিপ্টের জন্য ফাইল '<ph name="RELATIVE_PATH" />' লোড করা যায়নি।</translation>
 <translation id="1445572445564823378">এই এক্সটেনশনটির গতি কমে যাচ্ছে <ph name="PRODUCT_NAME" />৷ আপনাকে <ph name="PRODUCT_NAME" />-এর সম্পাদনা পুনঃস্থাপন করার জন্য এটিকে বন্ধ করতে হবে৷</translation>
 <translation id="1468038450257740950">WebGL সমর্থিত নয়৷</translation>
+<translation id="1478607704480248626">ইনস্টলেশন চালু করা হয়নি</translation>
+<translation id="1556537182262721003">প্রোফাইলে এক্সটেনশন ডিরেক্টরি সরানো যায়নি৷</translation>
 <translation id="1610570795592207282">স্ক্রিপ্টের জন্য css '<ph name="RELATIVE_PATH" />' লোড করা যায়নি।</translation>
+<translation id="1616298854599875024">এটি একটি শেয়ার করা মডিউল না হওয়ার কারণে <ph name="IMPORT_NAME" /> এক্সটেনশন ইমপোর্ট করা যাচ্ছে না</translation>
 <translation id="1803557475693955505">পৃষ্ঠভূমি পৃষ্ঠা '<ph name="BACKGROUND_PAGE" />' লোড করা যায়নি৷</translation>
+<translation id="1875387611427697908">এটি কেবলমাত্র <ph name="CHROME_WEB_STORE" /> থেকেই যোগ করা যেতে পারে</translation>
+<translation id="2131077480075264">"<ph name="APP_NAME" />" ইনস্টল করা যায়নি কারণ এটি "<ph name="IMPORT_NAME" />" এর দ্বারা অনুমোদিত নয়</translation>
 <translation id="2159915644201199628">ছবি ডিকোড করা যায়নি: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">স্থানীয়করণ ব্যবহৃত হয়েছে, কিন্তু default_locale তালিকাতে উল্লেখ ছিল না৷</translation>
 <translation id="2576842806987913196">এই নামের একটি CRX ফাইল ইতিমধ্যে বিদ্যমান আছে৷</translation>
+<translation id="2662876636500006917">Chrome ওয়েব স্টোর</translation>
 <translation id="2743583586211388067">আপনার সংস্থার এক্সটেনশন সংক্রান্ত ঝুঁকি নীতি অনুযায়ী এই এক্সটেনশনে অ্যাক্সেস ব্লক করা হয়েছে।</translation>
 <translation id="2785530881066938471">বর্তমান স্ক্রিপ্টটির জন্য <ph name="RELATIVE_PATH" /> ফাইলটি লোড করতে পারা যায়নি৷ এটি UTF-8 এনকোড হওয়া নেই৷</translation>
 <translation id="2903070246402204397">প্রশাসক <ph name="EXTENSION_NAME" /> (এক্সটেনশন আইডি "<ph name="EXTENSION_ID" />") ব্লক করেছে। <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> বিক্রেতার থেকেঅজানা পণ্য <ph name="PRODUCT_ID" /> (সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ফাইলটি প্রতিস্থাপন করতে ব্যর্থ৷ ফাইলটি ব্যবহার হচ্ছে কিনা দেখে নিন৷</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> বিক্রেতার থেকে অজানা পণ্য <ph name="PRODUCT_ID" /></translation>
+<translation id="3242289508736283383">'Kiosk_only' ম্যানিফেস্ট অ্যাট্রিবিউটের সাথে অ্যাপকে অবশ্যই ChromeOS কিয়স্ক মোডে ইনস্টল করতে হবে</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> বিক্রেতার থেকে <ph name="PRODUCT_NAME" /> (সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ব্যক্তিগত কীয়ের জন্য ইনপুট মান অবশ্যই একটি সঠিক পাথ হবে৷</translation>
+<translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" অ্যাপ্লিকেশান যোগ করা যায়নি কারণ "<ph name="INSTALLED_APP_NAME" />" এর সাথে এর বিরোধ আছে।</translation>
 <translation id="388442998277590542">বিকল্প পৃষ্ঠা '<ph name="OPTIONS_PAGE" />' লোড করা যায়নি৷</translation>
 <translation id="3984413272403535372">এক্সটেনশন স্বাক্ষরের সময় সমস্যা৷</translation>
 <translation id="4233778200880751280"><ph name="ABOUT_PAGE" /> সম্পর্কিত পৃষ্ঠা লোড করা গেল না।</translation>
+<translation id="424963718355121712">তাদের প্রভাবিত করে এরকম হোস্ট থেকে অ্যাপ অবশ্যই হওয়া উচিত</translation>
+<translation id="4306119971288449206">অ্যাপ "<ph name="CONTENT_TYPE" />" কন্টেন্ট-প্রকার সহ হওয়া উচিত</translation>
+<translation id="4633003931260532286">এক্সটেনশানের ন্যূনতম <ph name="IMPORT_VERSION" /> ভার্সনের <ph name="IMPORT_NAME" /> প্রয়োজন, কিন্তু শুধুমাত্র <ph name="INSTALLED_VERSION" /> ভার্সন ইনস্টল করা আছে</translation>
+<translation id="4660476621274971848">"<ph name="EXPECTED_VERSION" />" ভার্সনটি হওয়া উচিত ছিল, কিন্তু ভার্সনটি হল "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">ব্যক্তিগত কী আউটপুট করতে ব্যর্থ৷</translation>
 <translation id="4811956658694082538">একটি ইউটিলিটি প্রক্রিয়া ক্র্যাশ করার কারণে প্যাকেজটি ইনস্টল করা যায়নি। Chrome-কে পুনরায় চালু করে আবার চেষ্টা করুন।</translation>
 <translation id="4988792151665380515">ব্যক্তিগত কী-টি রপ্তানি করতে ব্যর্থ৷</translation>
+<translation id="501057610015570208">'Kiosk_only' ম্যানিফেস্ট অ্যাট্রিবিউটের সাথে অ্যাপকে অবশ্যই ChromeOS Flex কিয়স্ক মোডে ইনস্টল করতে হবে</translation>
 <translation id="5026754133087629784">ওয়েবদর্শন: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">প্যাক করার জন্য ডিরেক্টরির সঠিক পাথটি খুঁজে পাওয়া যাবে না৷</translation>
 <translation id="5160071981665899014">স্ক্রিপ্টের জন্য জাভাস্ক্রিপ্ট '<ph name="RELATIVE_PATH" />' লোড করা যায়নি।</translation>
 <translation id="5356315618422219272">অ্যাপ্লিকেশান দর্শন: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">এই এক্সটেনশনটি '<ph name="KEY_PATH" />' মুখ্য ফাইলকে অন্তর্ভুক্ত করে৷ আপনি সম্ভবত এটি করতে চাইবেন না৷</translation>
 <translation id="5486326529110362464">ব্যক্তিগত কী-র জন্য ইনপুট মান থাকা আবশ্যক৷</translation>
+<translation id="5527463195266282916">এক্সটেনশনটির আগের ভার্সন ফিরিয়ে আনার চেষ্টা চলছে৷</translation>
 <translation id="5707185214361380026">এর থেকে এক্সটেনশন লোড করা যায়নি:</translation>
 <translation id="5972529113578162692">এই মেশিনের প্রশাসকের <ph name="EXTENSION_NAME" /> ইন্সটল করা প্রয়োজন। এটি আনইন্সটল করা যাবে না।</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> এর থেকে অজানা পণ্য <ph name="PRODUCT_ID" /> (সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">ম্যানিফেস্ট ফাইলটি ভুল</translation>
 <translation id="7217838517480956708">এই মেশিনের প্রশাসকের <ph name="EXTENSION_NAME" /> ইনস্টল করার প্রয়োজন৷ এটি সরানো অথবা সংশোধন করা যাবে না৷</translation>
 <translation id="7612608473764576263">'ব্যক্তিগত কী'-এর জন্য ইনপুট করা মান সঠিক ফর্ম্যাটে হওয়া আবশ্যক (PKCS#8-format PEM-encoded RSA key)।</translation>
+<translation id="765293928828334535">এই ওয়েবসাইট থেকে অ্যাপ, এক্সটেনশান ও ব্যবহারকারী স্ক্রিপ্ট যোগ করা যাবে না</translation>
 <translation id="7876803335449432072">কন্টেন্ট স্ক্রিপ্টের জন্য '<ph name="RELATIVE_PATH" />' ফাইল লোড করা যায়নি, .css ফাইলের মতো কাজ করে এমন স্টাইল শিট ফাইল থেকেই শুধু কন্টেন্ট স্ক্রিপ্ট স্টাইল শিট লোড করা যেতে পারে।</translation>
 <translation id="7939686037314084444">এই এক্সটেনশনটি সঠিকভাবে লোড করা যায়নি। এটি নেটওয়ার্ক অনুরোধগুলি হয়ত আটকাতে পারেনি।</translation>
+<translation id="7952904276017482715">আইডি হওয়া উচিত ছিল "<ph name="EXPECTED_ID" />", কিন্তু আইডি "<ph name="NEW_ID" />" ছিল</translation>
 <translation id="7972881773422714442">বিকল্পগুলি: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">ব্যবহারকারীর দিকে মুখ করা</translation>
 <translation id="8047248493720652249">This extension failed to name the download "<ph name="ATTEMPTED_FILENAME" />" because another extension (<ph name="EXTENSION_NAME" />) determined a different filename "<ph name="ACTUAL_FILENAME" />".</translation>
+<translation id="8049705080247101012">Google <ph name="EXTENSION_NAME" /> কে ক্ষতিকারক হিসাবে ফ্ল্যাগ করেছে এবং ইনস্টলেশন বন্ধ করা হয়েছে</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> এর <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">ম্যানিফেস্ট ফাইলটি নেই অথবা পড়া যাবে না</translation>
+<translation id="8565650234829130278">অ্যাপ্লিকেশন ডাউনগ্রেড করার প্রয়াস করেছেন৷</translation>
 <translation id="8621383749470166852">কন্টেন্ট স্ক্রিপ্টের জন্য '<ph name="RELATIVE_PATH" />' ফাইল লোড করা যায়নি, .js ফাইলের মতো কাজ করে এমন জাভাস্ক্রিপ্ট ফাইল থেকেই শুধু কন্টেন্ট স্ক্রিপ্ট লোড করা যেতে পারে।</translation>
 <translation id="8636666366616799973">প্যাকেজটি ভুল৷ বিশদ বিবরণ: '<ph name="ERROR_MESSAGE" />'৷</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" আপনার একটি ডিভাইসে অ্যাক্সেসের জন্য অনুরোধ করছে:</translation>

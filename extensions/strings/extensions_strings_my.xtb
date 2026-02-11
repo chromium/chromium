@@ -7,11 +7,17 @@
 <translation id="132960226125594336">‘<ph name="RELATIVE_PATH" />’ သည် အများဆုံး Script အရွယ်အစား (သို့) နောက်ဆက်တွဲ၏ အများဆုံး စုစုပေါင်းအကြောင်းအရာ Script အရွယ်အစားထက် ကြီးမည်ဖြစ်သောကြောင့် ၎င်းကို အကြောင်းအရာ Script အတွက် ဖွင့်၍မရပါ။</translation>
 <translation id="1445572445564823378">ဒီတိုးချဲ့မှုက <ph name="PRODUCT_NAME" />ကို နှေးလာစေနေသည်။ သင်သည် <ph name="PRODUCT_NAME" />၏ လုပ်ကိုင်နိုင်စွမ်းကို ပြန်ဖေါ်ထုတ်ပေးရန် ၎င်းကို ပိတ်သင့်ပါသည်။</translation>
 <translation id="1468038450257740950">WebGL ကို မပံ့ပိုးပါ။</translation>
+<translation id="1478607704480248626">ထည့်သွင်းမှု ဖွင့်မထားပါ</translation>
+<translation id="1556537182262721003">တိုးချဲ့မှုကို ပရိုဖိုင် ထဲကို တိုက်ရိုက် ရွှေ့မပေးနိုင်ပါ။</translation>
 <translation id="1610570795592207282">CSS '<ph name="RELATIVE_PATH" />' ကို Script အတွက် ဖွင့်၍မရပါ။</translation>
+<translation id="1616298854599875024">မျှဝေထားသည့် မော်ဂျူးမဟုတ်သောကြောင့် နောက်ဆက်တွဲ "<ph name="IMPORT_NAME" />" ကို မတင်သွင်းနိုင်ပါ</translation>
 <translation id="1803557475693955505">နောက်ခံစာမျက်နှာ '<ph name="BACKGROUND_PAGE" />' အားဖွင့်၍မရပါ။</translation>
+<translation id="1875387611427697908">၎င်းကို <ph name="CHROME_WEB_STORE" /> မှသာ ထည့်သွင်းနိုင်သည်</translation>
+<translation id="2131077480075264">"<ph name="APP_NAME" />" အား တပ်ဆင်မရခြင်းမှာ "<ph name="IMPORT_NAME" />" က ခွင့်မပြုသောကြောင့် ဖြစ်၏</translation>
 <translation id="2159915644201199628">'<ph name="IMAGE_NAME" />' ပုံအား ကုဒ်မဖြုတ်နိုင်ပါ။</translation>
 <translation id="2350172092385603347">ဒေသတွင်း အသုံးပြုနိုင်ရန် ဖန်တီးရာတွင် အသုံးပြုခဲ့၊ သို့သော် default_locale အားသိသာစွာ သတ်မှတ်မထားပါ။</translation>
 <translation id="2576842806987913196">ဤအမည်ဖြင့် ပြသသည့် CRX ဖိုင်ရှိပြီးဖြစ်သည်။</translation>
+<translation id="2662876636500006917">Chrome ဝဘ် စတိုး</translation>
 <translation id="2743583586211388067">သင့်အဖွဲ့အစည်း၏ နောက်ဆက်တွဲအန္တရာယ် မူဝါဒအရ ဤနောက်ဆက်တွဲကို သုံးခွင့်ပိတ်ထားသည်။</translation>
 <translation id="2785530881066938471">အကြောင်းအရာ စာကြောင်းတန်း အတွက် ဖိုင်'<ph name="RELATIVE_PATH" />'ကို တင် မပေးနိုင်ခဲ့ပါ။ ၎င်းသည် UTF-8 ကုဒ်သွင်းထား မဟုတ်ပါ။</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (နောက်ဆက်တွဲ ID "<ph name="EXTENSION_ID" />") ကို စီမံခန့်ခွဲသူက ပိတ်ဆို့ထားပါသည်။ <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">အမည်မသိ ပစ္စည်း <ph name="PRODUCT_ID" /> သည် ရောင်းသူ <ph name="VENDOR_ID" /> ထံမှဖြစ်၏ (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Failed to replace crx ဖိုင်ကို အစားထိုးပေး မရခဲ့ပါ။ ဖိုင်ကို သုံးနေသလား စစ်ကြည့်ပါ။</translation>
 <translation id="3163201441334626963">အမည်မသိပစ္စည်း <ph name="PRODUCT_ID" /> သည် ရောင်းသူ <ph name="VENDOR_ID" /> မှဖြစ်၏</translation>
+<translation id="3242289508736283383">'kiosk_only' မန်နီးဖက်စ်ရည်ညွှန်းချက်ပါသည့် အက်ပ်ကို ChromeOS kiosk မုဒ်တွင် ထည့်သွင်းရမည်</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> သည် ရောင်းသူ <ph name="VENDOR_ID" /> ထံမှဖြစ်၏ (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ကိုယ်ပိုင် သော့ အတွက် ထည့်သွင်းမှု တန်ဖိုးမှာ မှန်ကန်သည့် လမ်းကြောင်း ရှိရမည်။</translation>
+<translation id="3834775135533257713">"<ph name="INSTALLED_APP_NAME" />" နှင့် တူနေသောကြောင့် "<ph name="TO_INSTALL_APP_NAME" />" အပလီကေးရှင်းကိုထည့်သွင်း၍မရပါ။</translation>
 <translation id="388442998277590542">ရွေးစရာ စာမျက်နှာ'<ph name="OPTIONS_PAGE" />'ကို တင် မပေးနိုင်ခဲ့ပါ။</translation>
 <translation id="3984413272403535372">အိတ်စတန်းရှင်းအား လတ်မှတ်ထိုးစဉ် မှားယွင်းနေ</translation>
 <translation id="4233778200880751280">စာမျက်နှာ '<ph name="ABOUT_PAGE" />' အကြောင်းကို တင် မပေးနိုင်ခဲ့ပါ။</translation>
+<translation id="424963718355121712">အက်ပ်များကို ၎င်းတို့အကျိုးသက်ရောက်မှုရှိသည့် ဆာဗာပင်ရင်းက ဝန်ဆောင်ပေးရမည်</translation>
+<translation id="4306119971288449206">အက်ပ်များကို "<ph name="CONTENT_TYPE" />" အကြောင်းအရာ အမျိုးအစားဖြင့် ဝန်ဆောင်ပေးရမည်</translation>
+<translation id="4633003931260532286">နောက်ဆက်တွဲသည် အနိမ့်ဆုံးဗားရှင်း "<ph name="IMPORT_VERSION" />" ရှိသည့် "<ph name="IMPORT_NAME" />" ကို လိုအပ်သော်လည်း ဗားရှင်း "<ph name="INSTALLED_VERSION" />" ကိုသာ ထည့်သွင်းထားသည်</translation>
+<translation id="4660476621274971848">ဗားရှင်း "<ph name="EXPECTED_VERSION" />" ကို မျှော်မှန်းထားသော်လည်း ဗားရှင်းမှာ "<ph name="NEW_ID" />" ဖြစ်နေသည်</translation>
 <translation id="471800408830181311">ကိုယ်ပိုင် သော့ကို ထုတ်ပေးမှု မအောင်မြင်ခဲ့ပါ။</translation>
 <translation id="4811956658694082538">ဝန်ဆောင်မှုဖြစ်စဉ် ပျက်သွားသောကြောင့် ပက်ကေ့ထုပ်အား မတပ်ဆင်နိုင်ပါ။ Chrome ကို  အစမှပြန်ဖွင့်ပြီး ထပ်မံကြိုးစားကြည့်ပါ။</translation>
 <translation id="4988792151665380515">အများပြည်သူ သော့ကို တင်ပို့ မရခဲ့ပါ။</translation>
+<translation id="501057610015570208">‘kiosk_only’ မန်နီးဖက်စ် (manifest) ရည်ညွှန်းချက်ပါသည့် အက်ပ်ကို ChromeOS Flex kiosk မုဒ်တွင် ထည့်သွင်းရမည်</translation>
 <translation id="5026754133087629784">ဝက်ဘ်မြင်ကွင်း: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">အထုပ်ဆီ သွားရာ ဒါရိုက်ထရီ ထံသို့ ပကတိ လမ်းကြောင်းကို မရှာနိုင်ပါ။</translation>
 <translation id="5160071981665899014">JavaScript '<ph name="RELATIVE_PATH" />' ကို Script အတွက် ဖွင့်၍မရပါ။</translation>
 <translation id="5356315618422219272">Appview- <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">အိတ်စတန်းရှင်းတွင် '<ph name="KEY_PATH" />' ကီးဖိုင်ပါဝင်သည်။ သင်လုပ်ချင်မည်မဟုတ်ပါ။</translation>
 <translation id="5486326529110362464">ကိုယ်ပိုင် သော့ အတွက် ထည့်သွင်းမှု တန်ဖိုး ရှိရမည်။</translation>
+<translation id="5527463195266282916">တိုးချဲ့မှုကို အဆင့်နှိမ့်ရန် ကြိုးပမ်းခဲ့သည်။</translation>
 <translation id="5707185214361380026">မှ အိတ်စတန်းရှင်း ဖွင့်ခြင်း မအောင်မြင်ပါ:</translation>
 <translation id="5972529113578162692">ဤကိရိယာကို စီမံသူသည် <ph name="EXTENSION_NAME" /> အား ရယူတပ်ဆင်ရန်လိုအပ်သည်။ တပ်ပြီးပါက ပြန်ဖြုတ်မရပါ။</translation>
 <translation id="6027032947578871493">အမည်မသိပစ္စည်း <ph name="PRODUCT_ID" /> သည် <ph name="VENDOR_NAME" /> မှဖြစ်၏ (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">မန်နီးဖက်စ်ဖိုင် မမှန်ကန်ပါ</translation>
 <translation id="7217838517480956708">ဒီစက်၏ စီမံအုပ်ချုပ်သူက <ph name="EXTENSION_NAME" />ကို တပ်ဆင်စေလိုသည်။ ၎င်းကို ဖယ်ရှားခြင်း သို့မဟုတ် မွမ်းမံခြင်း လုပ်မရနိုင်ပါ။</translation>
 <translation id="7612608473764576263">သီးသန့်ကီးအတွက် ထည့်သွင်းရန်တန်ဖိုးသည် မှန်ကန်သည့် ဖော်မက်ဖြစ်ရပါမည် (PKCS#8-format PEM-encoded RSA ကီး)။</translation>
+<translation id="765293928828334535">ဤဝဘ်ဆိုက်မှ အက်ပ်များ၊ နောက်ဆက်တွဲများနှင့် အသုံးပြုသူ script များကို ပေါင်းထည့်၍ မရပါ</translation>
 <translation id="7876803335449432072">အကြောင်းအရာ Script အတွက် ‘<ph name="RELATIVE_PATH" />’ ဖိုင်ကို ဖွင့်၍မရလိုက်ပါ။ အကြောင်းအရာ Script ပုံစံစာမျက်နှာများကို .css ဖိုင်များကဲ့သို့သော ပံ့ပိုးပေးသည့် ပုံစံစာမျက်နှာဖိုင်များဖြင့်သာ ဖွင့်နိုင်သည်။</translation>
 <translation id="7939686037314084444">နောက်ဆက်တွဲကို ဖွင့်၍မရပါ။ ၎င်းသည် ကွန်ရက်တောင်းဆိုချက်များကို ကြားဖြတ်ယူနိုင်မည်မဟုတ်ပါ။</translation>
+<translation id="7952904276017482715">ID "<ph name="EXPECTED_ID" />" ဖြစ်ရမည့်အစား ID မှာ "<ph name="NEW_ID" />" ဖြစ်နေသည်</translation>
 <translation id="7972881773422714442">ရွေးစရာများ- <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">အရှေ့ဘက်ရှိ ကင်မရာ</translation>
 <translation id="8047248493720652249">"<ph name="ATTEMPTED_FILENAME" />" ဒေါင်းလုပ်ကို အမည်ပေးရန် အိတ်စတန်းရှင်း မအောင်မြင်ပါ အကြောင်းမှာ အခြားအိတ်စတန်းရှင်း(<ph name="EXTENSION_NAME" />) မှအခြားဖိုင်အမည် "<ph name="ACTUAL_FILENAME" />" ဆုံးဖြတ်ပြီးဖြစ်သည်။</translation>
+<translation id="8049705080247101012">Google က "<ph name="EXTENSION_NAME" />" သည် အန္တရာယ်ရှိကြောင်း အလံပြကာ စနစ်ထည့်သွင်းမှုကို ရပ်တန့်ထားသည်</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> သည် <ph name="VENDOR_NAME" /> ဆီမှ</translation>
 <translation id="8517576857589387417">မန်နီးဖက်စ်ဖိုင် ပျောက်နေသည် သို့မဟုတ် ဖတ်မရပါ</translation>
+<translation id="8565650234829130278">အက်ပ် ကို အဆင့်နှိမ့်ရန် ကြိုးပမ်းခဲ့သည်။</translation>
 <translation id="8621383749470166852">အကြောင်းအရာ Script အတွက် ‘<ph name="RELATIVE_PATH" />’ ဖိုင်ကို ဖွင့်၍မရလိုက်ပါ။ အကြောင်းအရာ Script များကို .js ဖိုင်များကဲ့သို့သော ပံ့ပိုးပေးသည့် JavaScript ဖိုင်များဖြင့်သာ ဖွင့်နိုင်သည်။</translation>
 <translation id="8636666366616799973">အထုပ် မမှန်ကန်ပါ။ အသေးစိတ်: '<ph name="ERROR_MESSAGE" />'။</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" သည် သင့်စက်ပစ္စည်းများထဲမှ တစ်ခုကို အသုံးပြုခွင့်တောင်းဆိုနေပါသည်−</translation>

@@ -584,6 +584,7 @@
 <translation id="3140825265190223781">ບັນທຶກລະຫັດຜ່ານ ແລະ ກະແຈຜ່ານແລ້ວ</translation>
 <translation id="3143515551205905069">ຍົກເລີກການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="3144126448740580210">ສໍາເລັດ</translation>
+<translation id="3147521114983561406">ກະແຈຜ່ານຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານຂອງທ່ານແລ້ວ. ທ່ານສາມາດເຂົ້າເຖິງພວກມັນໄດ້ໃນແຖບບໍ່ເປີດເຜີຍຕົວຕົນ ແລະ ແຖບປົກກະຕິ.</translation>
 <translation id="3148052723910099040">ຕາຕະລາງແຖບປົກກະຕິ</translation>
 <translation id="3148237711805373460">ພາຂ້ອຍໄປເບິ່ງ</translation>
 <translation id="3157387275655328056">ເພີ່ມໃສ່ລາຍການທີ່ຈະອ່ານ</translation>
@@ -2097,6 +2098,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8587001564479545614">ສ້າງ PIN ການກູ້ຄືນ</translation>
 <translation id="8588404856427128947">ປິດ</translation>
 <translation id="8590286732816598906">ກຸ່ມແຖບ, <ph name="GROUP_TITLE" />, ເມນູ.</translation>
+<translation id="8593317261815647019">ສ້າງກະແຈຜ່ານນອກໂໝດບໍ່ເປີດເຜີຍຕົວຕົນບໍ?</translation>
 <translation id="8600272508328041907">ປ່ຽນເປັນການແປພາສາແບບເຕັມໜ້າ</translation>
 <translation id="860043288473659153">ຊື່ຜູ້ຖືບັດ</translation>
 <translation id="8601611099293226919">ຊອກຫາໜ້າຈໍຂອງທ່ານດ້ວຍ Google Lens</translation>

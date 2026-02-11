@@ -2791,6 +2791,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5466018172325111652">Niste prejeli kode? <ph name="BEGIN_LINK" />Pošiljanje nove kode<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Aplikacije za plačevanje</translation>
 <translation id="5470861586879999274">&amp;Uveljavi urejanje</translation>
+<translation id="5471158297908124590">Če želite urediti plačilna sredstva, potrdite, da ste to vi</translation>
 <translation id="5472588168895083535">Sledenje potezam dlani je blokirano</translation>
 <translation id="5477756102936130143">Omogoči preusmeritev v podprte aplikacije za plačevanje</translation>
 <translation id="5479505548832623900">Razširitev jih bo verjetno prezrla.</translation>
@@ -3174,6 +3175,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6093795393556121384">Vaša kartica je preverjena</translation>
 <translation id="6094253940069566294">Urejanje vozila</translation>
 <translation id="6094290315941448991">Pravilnik skrbnika onemogoča snemanje zaslona, če je vidna zaupna vsebina.</translation>
+<translation id="6097297436119286254">Če želite izpolniti podatke za plačilo, potrdite, da ste to vi</translation>
 <translation id="6099269767116481177">22 x 29,5 palcev</translation>
 <translation id="6101583188322746099">Dostava živil iz trgovine</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4922,6 +4924,7 @@ Dodatne podrobnosti:
 <translation id="8897428486789851669">Plavanje</translation>
 <translation id="8899807382908246773">Vsiljivi oglasi</translation>
 <translation id="8903921497873541725">Povečaj</translation>
+<translation id="8903998444169664879">Če želite spremeniti nastavitve plačil, potrdite, da ste to vi</translation>
 <translation id="890493561996401738">Gumb za odstranitev predloga, pritisnite Enter za odstranitev <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 palcev</translation>
 <translation id="8914504000324227558">Znova zaženi Chrome</translation>

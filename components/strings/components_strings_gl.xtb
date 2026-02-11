@@ -2791,6 +2791,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5466018172325111652">Non recibiches o código? <ph name="BEGIN_LINK" />Xerar un novo código<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Aplicacións para pagos</translation>
 <translation id="5470861586879999274">&amp;Refacer modificación</translation>
+<translation id="5471158297908124590">Verifica a túa identidade para editar os métodos de pago</translation>
 <translation id="5472588168895083535">O seguimento das mans está bloqueado</translation>
 <translation id="5477756102936130143">Activa a redirección a aplicacións para pagos admitidas</translation>
 <translation id="5479505548832623900">É probable que a extensión as ignore.</translation>
@@ -3174,6 +3175,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6093795393556121384">Verificouse a túa tarxeta</translation>
 <translation id="6094253940069566294">Editar o vehículo</translation>
 <translation id="6094290315941448991">A política do administrador desactiva a gravación da pantalla cando nela se mostra contido confidencial</translation>
+<translation id="6097297436119286254">Verifica a túa identidade para completar a túa información de pago</translation>
 <translation id="6099269767116481177">22 x 29,5 polgadas</translation>
 <translation id="6101583188322746099">Servizos de entrega de alimentos</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4921,6 +4923,7 @@ Detalles adicionais:
 <translation id="8897428486789851669">Natación</translation>
 <translation id="8899807382908246773">Anuncios intrusivos</translation>
 <translation id="8903921497873541725">Achegar</translation>
+<translation id="8903998444169664879">Verifica a túa identidade para cambiar a configuración de pago</translation>
 <translation id="890493561996401738">Botón Quitar suxestión, preme Intro para quitala, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8x10 in</translation>
 <translation id="8914504000324227558">Reiniciar Chrome</translation>

@@ -7,11 +7,17 @@
 <translation id="132960226125594336">تعذّر تحميل الملف "<ph name="RELATIVE_PATH" />" للنص البرمجي الخاص بالمحتوى لأنّه سيتجاوز الحد الأقصى لحجم النص البرمجي أو الحد الأقصى لحجم النص البرمجي لإجمالي المحتوى الخاص بالإضافة.</translation>
 <translation id="1445572445564823378">تتسبب هذه الإضافة في بطء <ph name="PRODUCT_NAME" />. يجب إيقافها لاستعادة أداء <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">‏WebGL غير متوافق.</translation>
+<translation id="1478607704480248626">التثبيت غير مُفعَّل</translation>
+<translation id="1556537182262721003">تعذر نقل دليل الإضافة إلى الملف الشخصي.</translation>
 <translation id="1610570795592207282">‏تعذَّر تحميل ملف css (صفحات الأنماط المتتالية) '<ph name="RELATIVE_PATH" />' للنص البرمجي.</translation>
+<translation id="1616298854599875024">تعذَّر استيراد الإضافة "<ph name="IMPORT_NAME" />" لأنها ليست وحدة مشتركة.</translation>
 <translation id="1803557475693955505">تعذر تحميل صفحة الخلفية '<ph name="BACKGROUND_PAGE" />'.</translation>
+<translation id="1875387611427697908">لا يمكن إضافة ذلك إلا من <ph name="CHROME_WEB_STORE" />.</translation>
+<translation id="2131077480075264">تعذّر تثبيت "<ph name="APP_NAME" />" لأنه لم يُسمح به من قبل "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2159915644201199628">تعذر فك ترميز الصورة: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">‏تم استخدام التعريب، ولكن لم يتم تحديد default_locale في البيان.</translation>
 <translation id="2576842806987913196">‏هناك ملف CRX بهذا الاسم فعلاً.</translation>
+<translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2743583586211388067">تم حظر الوصول إلى هذه الإضافة بموجب سياسة المخاطر المتعلقة بالإضافات في مؤسستك.</translation>
 <translation id="2785530881066938471">‏تعذر تحميل الملف '<ph name="RELATIVE_PATH" />' للنص البرمجي للمحتوى. لأنه ليس بتشفير UTF-8.</translation>
 <translation id="2903070246402204397">تم حظر <ph name="EXTENSION_NAME" /> (معرف الإضافة "<ph name="EXTENSION_ID" />") من قِبل المشرف. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">المنتج غير معروف <ph name="PRODUCT_ID" /> من المورّد <ph name="VENDOR_ID" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">‏تعذّر استبدال ملف crx. تحقق ما إذا كان قيد الاستخدام.</translation>
 <translation id="3163201441334626963">المنتج غير معروف <ph name="PRODUCT_ID" /> من المورّد‬ <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">‏يجب تثبيت التطبيق الذي يحمل سمة البيان "kiosk_only" في وضع الكشك على نظام التشغيل Chrome.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> من المورّد <ph name="VENDOR_ID" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">يجب أن تكون قيمة الإدخال للمفتاح الخاص مسارًا صالحًا.</translation>
+<translation id="3834775135533257713">تتعذر إضافة التطبيق "<ph name="TO_INSTALL_APP_NAME" />" نظرًا لأنه يتعارض مع "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">تعذر تحميل صفحة الخيارات "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">حدث خطأ أثناء التوقيع على الإضافة.</translation>
 <translation id="4233778200880751280">تعذر تحميل حول الصفحة "<ph name="ABOUT_PAGE" />".</translation>
+<translation id="424963718355121712">يجب عرض التطبيقات من المضيف الذي تؤثر فيه.</translation>
+<translation id="4306119971288449206">يجب عرض التطبيقات باستخدام نوع المحتوى "<ph name="CONTENT_TYPE" />".</translation>
+<translation id="4633003931260532286">تتطلب الإضافة "<ph name="IMPORT_NAME" />" بإصدار لا يقل عن "<ph name="IMPORT_VERSION" />" لكن يتم تثبيت "<ph name="INSTALLED_VERSION" />" فقط.</translation>
+<translation id="4660476621274971848">الإصدار المتوقع "<ph name="EXPECTED_VERSION" />"، ولكن الإصدار كان "<ph name="NEW_ID" />".</translation>
 <translation id="471800408830181311">تعذّر إخراج المفتاح الخاص.</translation>
 <translation id="4811956658694082538">‏تعذر تثبيت الحزمة بسبب تعطل معالجة الأداة المساعدة. جرّب إعادة تشغيل Chrome وحاول مرة أخرى.</translation>
 <translation id="4988792151665380515">تعذّر تصدير المفتاح العام.</translation>
+<translation id="501057610015570208">‏يجب أن يتم تثبيت التطبيق الذي يحمل سمة البيان "kiosk_only" في وضع الكشك على نظام التشغيل ChromeOS Flex.</translation>
 <translation id="5026754133087629784">عرض الويب: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">لا يمكن العثور على المسار المطلق للدليل للحزمة.</translation>
 <translation id="5160071981665899014">‏تعذَّر تحميل ملف JavaScript '<ph name="RELATIVE_PATH" />' للنص البرمجي.</translation>
 <translation id="5356315618422219272">عرض التطبيق: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">تتضمن هذه الإضافة ملف المفتاح '<ph name="KEY_PATH" />'. ربما لا تريد إجراء ذلك.</translation>
 <translation id="5486326529110362464">يجب أن تكون قيمة الإدخال للمفتاح الخاص موجودة.</translation>
+<translation id="5527463195266282916">محاولة تثبيت إضافة ذات إصدار سابق.</translation>
 <translation id="5707185214361380026">فشل تحميل الإضافة من:</translation>
 <translation id="5972529113578162692">يتطلب مشرف هذا الجهاز تثبيت <ph name="EXTENSION_NAME" />. لا يمكن إلغاء تثبيته.</translation>
 <translation id="6027032947578871493">المنتج غير معروف <ph name="PRODUCT_ID" /> من <ph name="VENDOR_NAME" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">ملف البيان غير صالح</translation>
 <translation id="7217838517480956708">يطلب مشرف هذا الجهاز تثبيت <ph name="EXTENSION_NAME" />. لا يمكن إزالتها أو تعديلها.</translation>
 <translation id="7612608473764576263">‏يجب أن تكون قيمة الإدخال للمفتاح الخاص تنسيقًا صالحًا (PKCS#8-format مفتاح RSA بتنسيق PEM).</translation>
+<translation id="765293928828334535">لا يمكن إضافة التطبيقات والإضافات والنصوص البرمجية للمستخدم من الموقع الإلكتروني هذا.</translation>
 <translation id="7876803335449432072">‏تعذّر تحميل الملف "<ph name="RELATIVE_PATH" />" للنص البرمجي الخاص بالمحتوى، ولا يمكن تحميل أوراق أنماط النص البرمجي الخاص بالمحتوى إلا من ملفات أوراق الأنماط المتوافقة، مثل "ملفات css.".</translation>
 <translation id="7939686037314084444">تعذّر تحميل الإضافة بشكلٍ صحيح. وقد لا تتمكن الإضافة من اعتراض طلبات الشبكة.</translation>
+<translation id="7952904276017482715">رقم التعريف المتوقَّع "<ph name="EXPECTED_ID" />"، ولكن رقم التعريف كان "<ph name="NEW_ID" />".</translation>
 <translation id="7972881773422714442">الخيارات: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">الكاميرا الأمامية للمستخدم</translation>
 <translation id="8047248493720652249">تعذّرت هذه الإضافة في تسمية التنزيل "<ph name="ATTEMPTED_FILENAME" />" نظرًا لأن هناك إضافة أخرى (<ph name="EXTENSION_NAME" />) قد حددت اسم ملف آخر "<ph name="ACTUAL_FILENAME" />".</translation>
+<translation id="8049705080247101012">‏وضعت Google علامة على الإضافة <ph name="EXTENSION_NAME" /> باعتبارها ضارة وتم منع تثبيتها.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> من <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">ملف البيان مفقود أو غير قابل للقراءة</translation>
+<translation id="8565650234829130278">محاولة الرجوع إلى الإصدار السابق من التطبيق.</translation>
 <translation id="8621383749470166852">‏تعذّر تحميل الملف "<ph name="RELATIVE_PATH" />" للنص البرمجي الخاص بالمحتوى، ولا يمكن تحميل النصوص البرمجية للمحتوى إلا من ملفات JavaScript المتوافقة، مثل "ملفات js.".</translation>
 <translation id="8636666366616799973">الحزمة غير صالحة. التفاصيل: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">يطلب تطبيق "<ph name="APP_NAME" />" الدخول إلى جهاز من أجهزتك:</translation>

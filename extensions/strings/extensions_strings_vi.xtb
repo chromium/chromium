@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Không thể tải tệp "<ph name="RELATIVE_PATH" />" cho tập lệnh nội dung vì tệp này vượt quá kích thước tập lệnh tối đa hoặc tổng kích thước tập lệnh nội dung tối đa của tiện ích.</translation>
 <translation id="1445572445564823378">Tiện ích này đang làm chậm <ph name="PRODUCT_NAME" />. Bạn phải tắt tiện ích để khôi phục hiệu suất của <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL không được hỗ trợ.</translation>
+<translation id="1478607704480248626">Cài đặt chưa được bật</translation>
+<translation id="1556537182262721003">Không thể di chuyển thư mục tiện ích vào hồ sơ.</translation>
 <translation id="1610570795592207282">Không thể tải css "<ph name="RELATIVE_PATH" />" cho tập lệnh.</translation>
+<translation id="1616298854599875024">Không thể nhập tiện ích "<ph name="IMPORT_NAME" />" do tiện ích này không phải là mô-đun được chia sẻ</translation>
 <translation id="1803557475693955505">Không thể tải trang nền '<ph name="BACKGROUND_PAGE" />'.</translation>
+<translation id="1875387611427697908">Chỉ có thể thêm ứng dụng/tiện ích này từ <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="2131077480075264">Không thể cài đặt "<ph name="APP_NAME" />" vì "<ph name="IMPORT_NAME" />" không cho phép ứng dụng này</translation>
 <translation id="2159915644201199628">Không thể giải mã hình ảnh: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Sử dụng bản địa hóa nhưng không chỉ định default_locale trong tệp kê khai.</translation>
 <translation id="2576842806987913196">Hiện có tệp CRX hiển thị với tên này.</translation>
+<translation id="2662876636500006917">Cửa hàng Chrome trực tuyến</translation>
 <translation id="2743583586211388067">Quyền truy cập vào tiện ích này bị chặn theo chính sách về rủi ro tiện ích của tổ chức bạn.</translation>
 <translation id="2785530881066938471">Không thể tải tệp '<ph name="RELATIVE_PATH" />' cho tập lệnh nội dung. Tệp không được mã hóa UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ID tiện ích "<ph name="EXTENSION_ID" />") bị quản trị viên chặn. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">Sản phẩm không xác định <ph name="PRODUCT_ID" /> từ nhà cung cấp <ph name="VENDOR_ID" /> (số sê-ri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Không thể thay thế tệp crx. Kiểm tra để xem tệp có đang được sử dụng hay không.</translation>
 <translation id="3163201441334626963">Sản phẩm không xác định <ph name="PRODUCT_ID" /> từ nhà cung cấp <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">Phải cài đặt ứng dụng có thuộc tính tệp kê khai "kiosk_only" ở chế độ kiosk ChromeOS</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (số sê-ri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> từ nhà cung cấp <ph name="VENDOR_ID" /> (số sê-ri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Giá trị dữ liệu nhập cho khóa cá nhân phải là một đường dẫn hợp lệ.</translation>
+<translation id="3834775135533257713">Không thể thêm ứng dụng "<ph name="TO_INSTALL_APP_NAME" />" vì ứng dụng này xung đột với "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Không thể tải trang tùy chọn '<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">Lỗi khi ký tiện ích.</translation>
 <translation id="4233778200880751280">Không thể tải trang giới thiệu '<ph name="ABOUT_PAGE" />'.</translation>
+<translation id="424963718355121712">Ứng dụng phải được cung cấp từ máy chủ lưu trữ mà chúng ảnh hưởng</translation>
+<translation id="4306119971288449206">Ứng dụng phải được cung cấp loại nội dung "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4633003931260532286">Tiện ích yêu cầu "<ph name="IMPORT_NAME" />" có phiên bản tối thiểu "<ph name="IMPORT_VERSION" />" nhưng mới chỉ cài đặt được phiên bản "<ph name="INSTALLED_VERSION" />"</translation>
+<translation id="4660476621274971848">Phiên bản mong muốn là "<ph name="EXPECTED_VERSION" />", nhưng phiên bản phát hiện là "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Không thể đăng nhập khóa cá nhân đầu ra.</translation>
 <translation id="4811956658694082538">Không thể cài đặt gói vì một quá trình tiện ích bị lỗi. Thử khởi động lại Chrome rồi thử lại.</translation>
 <translation id="4988792151665380515">Không thể xuất khóa công cộng.</translation>
+<translation id="501057610015570208">Ứng dụng có thuộc tính tệp kê khai "'kiosk_only" phải được cài đặt ở chế độ kiosk ChromeOS Flex</translation>
 <translation id="5026754133087629784">Chế độ xem web: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Không thể tìm thấy đường dẫn tuyệt đối tới thư mục để chèn.</translation>
 <translation id="5160071981665899014">Không thể tải javascript "<ph name="RELATIVE_PATH" />" cho tập lệnh.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Tiện ích này bao gồm tệp khóa '<ph name="KEY_PATH" />'. Bạn có thể không muốn thực hiện việc đó.</translation>
 <translation id="5486326529110362464">Giá trị dữ liệu nhập cho khóa cá nhân phải tồn tại.</translation>
+<translation id="5527463195266282916">Cố gắng hạ cấp tiện ích.</translation>
 <translation id="5707185214361380026">Không tải được tiện ích từ:</translation>
 <translation id="5972529113578162692">Quản trị viên của máy này yêu cầu cài đặt <ph name="EXTENSION_NAME" />. Không thể gỡ cài đặt tiện ích này.</translation>
 <translation id="6027032947578871493">Sản phẩm không xác định <ph name="PRODUCT_ID" /> từ <ph name="VENDOR_NAME" /> (số sê-ri <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Tệp kê khai không hợp lệ</translation>
 <translation id="7217838517480956708">Quản trị viên của máy này yêu cầu cài đặt <ph name="EXTENSION_NAME" />. Bạn không thể xóa hoặc sửa đổi tiện ích này.</translation>
 <translation id="7612608473764576263">Giá trị đầu vào của khóa riêng tư phải có định dạng hợp lệ (khóa RSA mã hóa kiểu PEM có định dạng PKCS#8).</translation>
+<translation id="765293928828334535">Không thể thêm các ứng dụng, tiện ích và tập lệnh của người dùng từ trang web này</translation>
 <translation id="7876803335449432072">Không thể tải tệp "<ph name="RELATIVE_PATH" />" cho tập lệnh nội dung. Các biểu định kiểu tập lệnh nội dung chỉ có thể được tải từ các tệp biểu định kiểu được hỗ trợ, chẳng hạn như tệp .css.</translation>
 <translation id="7939686037314084444">Không tải được tiện ích đúng cách. Tiện ích này có thể không chặn được các yêu cầu mạng.</translation>
+<translation id="7952904276017482715">ID mong muốn "<ph name="EXPECTED_ID" />", nhưng ID phát hiện là "<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">Tùy chọn: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Máy ảnh mặt trước</translation>
 <translation id="8047248493720652249">Tiện ích này không thể đặt tên cho bản tải xuống "<ph name="ATTEMPTED_FILENAME" />" vì một tiện ích khác (<ph name="EXTENSION_NAME" />) đã xác định tên tệp khác "<ph name="ACTUAL_FILENAME" />".</translation>
+<translation id="8049705080247101012">Google đã gắn cờ "<ph name="EXTENSION_NAME" />" là độc hại và cài đặt đã bị chặn</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> từ <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Tệp kê khai bị thiếu hoặc không thể đọc được</translation>
+<translation id="8565650234829130278">Đã cố gắng hạ cấp ứng dụng.</translation>
 <translation id="8621383749470166852">Không thể tải tệp "<ph name="RELATIVE_PATH" />" cho tập lệnh nội dung. Tập lệnh nội dung chỉ có thể được tải từ các tệp JavaScript được hỗ trợ, chẳng hạn như tệp .js.</translation>
 <translation id="8636666366616799973">Gói không hợp lệ. Chi tiết: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" đang yêu cầu quyền truy cập vào một trong các thiết bị của bạn:</translation>

@@ -7,11 +7,17 @@
 <translation id="132960226125594336">ფაილი „<ph name="RELATIVE_PATH" />“ ვერ ჩაიტვირთა კონტენტის სცენარისთვის, რადგან ის გადააჭარბებდა სცენარის მაქსიმალურ ზომას ან კონტენტის სცენარის მაქსიმალურ ჯამურ ზომას გაფართოებისთვის.</translation>
 <translation id="1445572445564823378">ეს გაფართოება ანელებს <ph name="PRODUCT_NAME" />-ის მუშაობას. უნდა გამორთოთ, რათა აღადგინოთ <ph name="PRODUCT_NAME" />-ის ეფექტურობა.</translation>
 <translation id="1468038450257740950">WebGL არ არის მხარდაჭერილი.</translation>
+<translation id="1478607704480248626">ინსტალაცია არ არის ჩართული</translation>
+<translation id="1556537182262721003">გაფართოების დირექტორიის გადატანა პროფილში ვერ მოხერხდა.</translation>
 <translation id="1610570795592207282">css „<ph name="RELATIVE_PATH" />“ ვერ ჩაიტვირთა სცენარისთვის.</translation>
+<translation id="1616298854599875024">გაფართოების „<ph name="IMPORT_NAME" />“ იმპორტირება ვერ მოხერხდა, რადგან ის არ არის გაზიარებული მოდული</translation>
 <translation id="1803557475693955505">ფონური გვერდი ვერ ჩაიტვირთა „<ph name="BACKGROUND_PAGE" />“.</translation>
+<translation id="1875387611427697908">ამის დამატება შესაძლებელია მხოლოდ <ph name="CHROME_WEB_STORE" />-დან</translation>
+<translation id="2131077480075264">„<ph name="APP_NAME" />“-ის ინსტალაცია შეუძლებელია, რადგან იგი არ არის ნებადართული „<ph name="IMPORT_NAME" />“-ის მიერ</translation>
 <translation id="2159915644201199628">გამოსახულების გაშიფვრა ვერ მოხერხდა: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">გამოყენებულია ლოკალიზაცია, მაგრამ ნაგულისხმევი ლოკალი არ არის მითითებული მანიფესტში.</translation>
 <translation id="2576842806987913196">უკვე არსებობს CRX ფაილი ამ სახელით.</translation>
+<translation id="2662876636500006917">Chrome-ის ვებ მაღაზია</translation>
 <translation id="2743583586211388067">ამ გაფართოებაზე წვდომა დაბლოკილია თქვენი ორგანიზაციის გაფართოების რისკის წესების მიხედვით.</translation>
 <translation id="2785530881066938471">ფაილი „<ph name="RELATIVE_PATH" />“ ვერ ჩაიტვირთა შიგთავსის სკრიპტისთვის. იგი არ არის UTF-8 დაშიფრული.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (გაფართოების ID „<ph name="EXTENSION_ID" />“) დაბლოკილია ადმინისტრატორის მიერ. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">უცნობი პროდუქტი – <ph name="PRODUCT_ID" /> მომწოდებლისგან: <ph name="VENDOR_ID" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ფაილის შეცვლა ვერ მოხერხდა. შეამოწმეთ, რომ ფაილი არ გამოიყენება.</translation>
 <translation id="3163201441334626963">უცნობი პროდუქტი – <ph name="PRODUCT_ID" /> მომწოდებლისგან: <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">აპი, რომლის მანიფესტის ატრიბუტიცაა „kiosk_only“, უნდა დაინსტალირდეს ChromeOS-ის კიოსკის რეჟიმში</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> მომწოდებლისგან: <ph name="VENDOR_ID" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">შეყვანილი მნიშვნელობა პირადი გასაღებისთვის უნდა იყოს სწორი მისამართი.</translation>
+<translation id="3834775135533257713">აპლიკაცია „<ph name="TO_INSTALL_APP_NAME" />“ ვერ დაემატა, რადგან „<ph name="INSTALLED_APP_NAME" />“ მასთან კონფლიქტშია.</translation>
 <translation id="388442998277590542">პარამეტრების გვერდი „<ph name="OPTIONS_PAGE" />“ ვერ ჩაიტვირთა.</translation>
 <translation id="3984413272403535372">შეცდომა გაფართოების ხელმოწერისას.</translation>
 <translation id="4233778200880751280">ინფორმაციის გვერდი ვერ ჩაიტვირთა: '<ph name="ABOUT_PAGE" />'.</translation>
+<translation id="424963718355121712">აპები მოწოდებული უნდა იყოს იმ საიტის მიერ, რომელზეც ისინი გავლენას ახდენს</translation>
+<translation id="4306119971288449206">მოწოდებული აპების კონტენტის ტიპი უნდა იყოს „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4633003931260532286">გაფართოებას სჭირდება „<ph name="IMPORT_NAME" />“ მინიმალური ვერსიით „<ph name="IMPORT_VERSION" />“, თუმცა დაინსტალირებულია მხოლოდ ვერსია „<ph name="INSTALLED_VERSION" />“</translation>
+<translation id="4660476621274971848">მოსალოდნელი ვერსია: „<ph name="EXPECTED_VERSION" />“, მიღებული ვერსია: „<ph name="NEW_ID" />“</translation>
 <translation id="471800408830181311">პირადი კოდის მიღება ვერ მოხერხდა.</translation>
 <translation id="4811956658694082538">არ ხერხდება პაკეტის დაყენება, რადგან უტილიტი პროცესი შეწყდა. Chrome-ი გადატვირთეთ და კიდევ ერთხელ სცადეთ.</translation>
 <translation id="4988792151665380515">საჯარო გასაღების ექსპორტი ვერ განხორციელდა.</translation>
+<translation id="501057610015570208">პროგრამა „მხოლოდ_კიოსკი“ მანიფესტის ატრიბუტით უნდა დაინსტალირდეს ChromeOS Flex კიოსკის რეჟიმში</translation>
 <translation id="5026754133087629784">ვებგვერდის ხედი: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">შეუძლებელია აბსოლუტური მდებარეობის პოვნა პაკეტის დირექტორიისკენ.</translation>
 <translation id="5160071981665899014">javascript „<ph name="RELATIVE_PATH" />“ ვერ ჩაიტვირთა სცენარისთვის.</translation>
 <translation id="5356315618422219272">პროგრამის ხედი: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">ეს გაფართოება შეიცავს მთვარ ფაილს „<ph name="KEY_PATH" />“. თქვენ ალბათ არ გსურთ ამის გაკეთება.</translation>
 <translation id="5486326529110362464">უნდა არსებობდეს შეყვანის მნიშვნელობა პირადი გასაღებისთვის.</translation>
+<translation id="5527463195266282916">განხორციელდა გაფართოების უფრო ძველი ვერსიით შეცვლის მცდელობა.</translation>
 <translation id="5707185214361380026">გაფართოება ვერ ჩაიტვირთა:</translation>
 <translation id="5972529113578162692">ამ მოწყობილობის ადმინისტრირებისთვის საჭიროა <ph name="EXTENSION_NAME" />-ის ინსტალაცია. მისი წაშლა დაუშვებელია.</translation>
 <translation id="6027032947578871493">უცნობი პროდუქტი – <ph name="PRODUCT_ID" /> მომწოდებლისგან: <ph name="VENDOR_NAME" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">მანიფესტის ფაილი არასწორია</translation>
 <translation id="7217838517480956708">ამ კომპიუტერის ადმინისტრატორი მოითხოვს <ph name="EXTENSION_NAME" />-ის ინსტალაციას. მისი წაშლა ან შეცვლა შეუძლებელია.</translation>
 <translation id="7612608473764576263">პირადი გასაღების ფორმატი შეყვანილი უნდა იყოს სწორად (PEM-ით დაშიფრული RSA გასაღები PKCS#8 ფორმატში).</translation>
+<translation id="765293928828334535">ამ ვებსაიტიდან აპების, გაფართოებებისა და მომხმარებლების სკრიპტების დამატება ვერ მოხერხდება</translation>
 <translation id="7876803335449432072">ვერ ჩაიტვირთა ფაილი „<ph name="RELATIVE_PATH" />“ კონტენტის სცენარისთვის; კონტენტის სცენარის სტილების ცხრილების ჩატვირთვა შესაძლებელია სტილების ცხრილის ფაილებიდან, როგორიცაა .css ფაილები.</translation>
 <translation id="7939686037314084444">გაფართოების მართებულად ჩატვირთვა ვერ მოხერხდა. მან შეიძლება ვერ შეძლოს ქსელის მოთხოვნებში ჩაჭრა.</translation>
+<translation id="7952904276017482715">მოსალოდნელი ID: „<ph name="EXPECTED_ID" />“, მიღებული ID: „<ph name="NEW_ID" />“</translation>
 <translation id="7972881773422714442">პარამეტრები: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">წინა</translation>
 <translation id="8047248493720652249">ეს გაფართოება ვერ ახერხებს ჩამოტვირთვის დასახელებას „<ph name="ATTEMPTED_FILENAME" />“ იმიტომ, რომ კიდევ ერთმა გაფართოებამ (<ph name="EXTENSION_NAME" />) განსაზღვრა განსხვავებული ფაილის სახელი „<ph name="ACTUAL_FILENAME" />“.</translation>
+<translation id="8049705080247101012">Google-მა მონიშნა „<ph name="EXTENSION_NAME" />“, როგორც საზიანო და აკრძალა მისი ინსტალაცია</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" />-დან <ph name="VENDOR_NAME" />-ი</translation>
 <translation id="8517576857589387417">მანიფესტის ფაილი მიუწვდომელია ან მისი წაკითხვა შეუძლებელია</translation>
+<translation id="8565650234829130278">განხორციელდა პროგრამის ძველ ვერსიაზე გადასვლის მცდელობა.</translation>
 <translation id="8621383749470166852">ვერ ჩაიტვირთა ფაილი „<ph name="RELATIVE_PATH" />“ კონტენტის სცენარისთვის; კონტენტის სცენარის ჩატვირთვა შესაძლებელია JavaScript-ის მხარდაჭერილი ფაილებიდან, როგორიცაა .js ფაილები.</translation>
 <translation id="8636666366616799973">პაკეტი არასწორია. დეტალები: „<ph name="ERROR_MESSAGE" />“-ზე.</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />“ თქვენს ერთ-ერთ მოწყობილობაზე წვდომას ითხოვს:</translation>

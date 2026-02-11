@@ -2792,6 +2792,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5466018172325111652">¿No recibiste el código? <ph name="BEGIN_LINK" />Obtener un código nuevo<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Apps de pagos</translation>
 <translation id="5470861586879999274">&amp;Rehacer Editar</translation>
+<translation id="5471158297908124590">Verifica tu identidad para editar las formas de pago</translation>
 <translation id="5472588168895083535">Se bloqueó el seguimiento de manos</translation>
 <translation id="5477756102936130143">Habilitar el redireccionamiento a apps de pagos compatibles</translation>
 <translation id="5479505548832623900">Es probable que la extensión las ignore.</translation>
@@ -3175,6 +3176,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6093795393556121384">Se verificó tu tarjeta.</translation>
 <translation id="6094253940069566294">Editar el vehículo</translation>
 <translation id="6094290315941448991">La política del administrador inhabilita la grabación de pantalla cuando hay contenido confidencial a la vista.</translation>
+<translation id="6097297436119286254">Verifica tu identidad para completar tu información de pago</translation>
 <translation id="6099269767116481177">55.9 × 74.9 cm (22 × 29.5 in)</translation>
 <translation id="6101583188322746099">Servicios de entrega de comestibles</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4924,6 +4926,7 @@ Detalles adicionales:
 <translation id="8897428486789851669">Natación</translation>
 <translation id="8899807382908246773">Anuncios intrusivos</translation>
 <translation id="8903921497873541725">Acercar</translation>
+<translation id="8903998444169664879">Verifica tu identidad para cambiar la configuración de pagos</translation>
 <translation id="890493561996401738">Botón Quitar sugerencia; presiona Intro para quitarla, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">20.3 × 25.4 cm (8 × 10 in)</translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>

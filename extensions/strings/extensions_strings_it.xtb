@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Impossibile caricare il file "<ph name="RELATIVE_PATH" />" per lo script di contenuti perché supererebbe le dimensioni massime consentite per gli script o le dimensioni massime totali consentite per gli script di contenuti dell'estensione.</translation>
 <translation id="1445572445564823378">Questa estensione sta rallentando <ph name="PRODUCT_NAME" />. È necessario disabilitarla per ripristinare le prestazioni di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL non è supportato.</translation>
+<translation id="1478607704480248626">L'installazione non è attiva</translation>
+<translation id="1556537182262721003">Impossibile spostare la directory dell'estensione nel profilo.</translation>
 <translation id="1610570795592207282">Impossibile caricare il CSS "<ph name="RELATIVE_PATH" />" per lo script.</translation>
+<translation id="1616298854599875024">Impossibile importare l'estensione "<ph name="IMPORT_NAME" />" perché non è un modulo condiviso</translation>
 <translation id="1803557475693955505">Impossibile caricare la pagina di sfondo "<ph name="BACKGROUND_PAGE" />".</translation>
+<translation id="1875387611427697908">È possibile aggiungerla soltanto dal <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="2131077480075264">Impossibile installare "<ph name="APP_NAME" />" perché non è consentita da "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2159915644201199628">Impossibile decodificare l'immagine: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Localizzazione utilizzata, ma default_locale non era specificato nel file manifest.</translation>
 <translation id="2576842806987913196">Esiste già un file CRX con questo nome.</translation>
+<translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2743583586211388067">L'accesso a questa estensione è bloccato in base alla policy sui rischi delle estensioni della tua organizzazione.</translation>
 <translation id="2785530881066938471">Impossibile caricare il file "<ph name="RELATIVE_PATH" />" per la trascrizione dei contenuti. Non è codificato in UTF-8.</translation>
 <translation id="2903070246402204397">L'estensione <ph name="EXTENSION_NAME" /> (ID "<ph name="EXTENSION_ID" />") è stata bloccata dall'amministratore. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">Prodotto sconosciuto <ph name="PRODUCT_ID" /> del fornitore <ph name="VENDOR_ID" /> (numero di serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Impossibile sostituire il file crx. Controlla se il file è in uso.</translation>
 <translation id="3163201441334626963">Prodotto sconosciuto <ph name="PRODUCT_ID" /> del fornitore <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">L'app con l'attributo del file manifest "kiosk_only" deve essere installata in modalità kiosk di ChromeOS</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numero di serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> del fornitore <ph name="VENDOR_ID" /> (numero di serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Il valore di input per la chiave privata deve essere un percorso valido.</translation>
+<translation id="3834775135533257713">Impossibile aggiungere l'applicazione "<ph name="TO_INSTALL_APP_NAME" />" perché è in conflitto con "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Impossibile caricare la pagina delle opzioni "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Errore durante la firma dell'estensione.</translation>
 <translation id="4233778200880751280">Impossibile caricare la pagina di informazioni "<ph name="ABOUT_PAGE" />".</translation>
+<translation id="424963718355121712">Le app devono essere installate dall'host che controllano</translation>
+<translation id="4306119971288449206">Le app devono essere installate con il tipo di contenuto "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4633003931260532286">L'estensione richiede "<ph name="IMPORT_NAME" />" con la versione minima "<ph name="IMPORT_VERSION" />", ma è installata soltanto la versione "<ph name="INSTALLED_VERSION" />"</translation>
+<translation id="4660476621274971848">Versione prevista: "<ph name="EXPECTED_VERSION" />", versione rilevata: "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Operazione di output della chiave privata non riuscita.</translation>
 <translation id="4811956658694082538">Impossibile installare il pacchetto perché un processo dell'utility si è arrestato in modo anomalo. Riavvia Chrome e riprova.</translation>
 <translation id="4988792151665380515">Operazione di esportazione della chiave pubblica non riuscita.</translation>
+<translation id="501057610015570208">L'app con l'attributo del file manifest "kiosk_only" deve essere installata in modalità kiosk di ChromeOS Flex</translation>
 <translation id="5026754133087629784">Visualizzazione web: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Impossibile trovare il percorso assoluto della directory per creare il pacchetto.</translation>
 <translation id="5160071981665899014">Impossibile caricare il codice JavaScript "<ph name="RELATIVE_PATH" />" per lo script.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Questa estensione include il file di chiave "<ph name="KEY_PATH" />". Probabilmente preferiresti che non l'includesse.</translation>
 <translation id="5486326529110362464">Il valore di input per la chiave privata deve essere esistente.</translation>
+<translation id="5527463195266282916">Hai tentato di eseguire il downgrade dell'estensione.</translation>
 <translation id="5707185214361380026">Impossibile caricare l'estensione da:</translation>
 <translation id="5972529113578162692">L'amministratore di questo computer richiede che l'estensione <ph name="EXTENSION_NAME" /> sia installata. Non è possibile disinstallarla.</translation>
 <translation id="6027032947578871493">Prodotto sconosciuto <ph name="PRODUCT_ID" /> di <ph name="VENDOR_NAME" /> (numero di serie <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">File manifest non valido</translation>
 <translation id="7217838517480956708">L'amministratore di questo computer richiede che l'estensione <ph name="EXTENSION_NAME" /> sia installata. Non è possibile rimuovere o modificare l'estensione.</translation>
 <translation id="7612608473764576263">Il valore da inserire per la chiave privata deve essere in un formato valido (chiave RSA con codifica PEM in formato PKCS#8).</translation>
+<translation id="765293928828334535">Non è possibile aggiungere app, estensioni e script utente da questo sito web</translation>
 <translation id="7876803335449432072">Impossibile caricare il file "<ph name="RELATIVE_PATH" />" per lo script di contenuti. I fogli di stile degli script di contenuti possono essere caricati solo dai file di fogli di stile supportati, ad esempio i file .css.</translation>
 <translation id="7939686037314084444">Impossibile caricare correttamente l'estensione. L'estensione potrebbe non riuscire a intercettare le richieste di rete.</translation>
+<translation id="7952904276017482715">ID previsto: "<ph name="EXPECTED_ID" />", ID rilevato: "<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">Opzioni: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Fotocamera anteriore</translation>
 <translation id="8047248493720652249">Questa estensione non è riuscita a denominare il download "<ph name="ATTEMPTED_FILENAME" />" perché un'altra estensione (<ph name="EXTENSION_NAME" />) ha determinato un nome di file diverso "<ph name="ACTUAL_FILENAME" />".</translation>
+<translation id="8049705080247101012">Google ha contrassegnato l'estensione "<ph name="EXTENSION_NAME" />" come dannosa ed è stata impedita l'installazione</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> di <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">File manifest mancante o illeggibile</translation>
+<translation id="8565650234829130278">Hai tentato di eseguire il downgrade dell'applicazione.</translation>
 <translation id="8621383749470166852">Impossibile caricare il file "<ph name="RELATIVE_PATH" />" per lo script di contenuti. Gli script di contenuti possono essere caricati solo da file JavaScript supportati, come i file .js.</translation>
 <translation id="8636666366616799973">Il pacchetto non è valido. Dettagli: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" richiede l'accesso a un dispositivo:</translation>

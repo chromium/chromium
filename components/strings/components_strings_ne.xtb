@@ -2789,6 +2789,7 @@
 <translation id="5466018172325111652">आफ्नो कोड प्राप्त गर्नुभएन? <ph name="BEGIN_LINK" />नयाँ कोड प्राप्त गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">भुक्तानी गर्न प्रयोग गरिने एपहरू</translation>
 <translation id="5470861586879999274">सम्पादन &amp;पुन: गर्नुहोस्</translation>
+<translation id="5471158297908124590">भुक्तानी विधिहरू सम्पादन गर्न आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="5472588168895083535">हात ट्र्याक गर्ने सुविधा ब्लक गरिएको छ</translation>
 <translation id="5477756102936130143">भुक्तानी गर्न प्रयोग गर्न मिल्ने एपहरूमा रिडिरेक्ट गर्न दिनुहोस्</translation>
 <translation id="5479505548832623900">एक्स्टेन्सनले बेवास्ता गर्ने सम्भावना छ।</translation>
@@ -2866,6 +2867,7 @@
 <translation id="5570825185877910964">खाता सेभ गर्नुहोस्</translation>
 <translation id="5571083550517324815">यो ठेगानाबाट पिकअप गर्न सकिँदैन। कुनै अर्को ठेगाना चयन गर्नुहोस्।</translation>
 <translation id="5572434905385510939">२२ x २८ इन्च</translation>
+<translation id="5573090972398558474">तपाईंको सङ्गठनले यो पेज इन्कोग्निटो मोडमा नखुल्ने बनाएको छ।</translation>
 <translation id="5573641252776268565">राहदानीसम्बन्धी जानकारी सम्पादन गर्नुहोस्</translation>
 <translation id="5578606540385219379">सेवा प्रदायक</translation>
 <translation id="5580958916614886209">आफ्नो म्याद सकिने महिनाको जाँच गरी फेरि प्रयास गर्नुहोस्</translation>
@@ -3172,6 +3174,7 @@
 <translation id="6093795393556121384">तपाईँको कार्ड प्रमाणीकरण गरियो</translation>
 <translation id="6094253940069566294">सवारी साधनसम्बन्धी जानकारी सम्पादन गर्नुहोस्</translation>
 <translation id="6094290315941448991">स्क्रिनमा गोप्य सामग्री देखिएका बेला एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन रेकर्ड गर्ने सुविधा अफ गरिन्छ</translation>
+<translation id="6097297436119286254">आफ्नो भुक्तानीसम्बन्धी जानकारी भर्न आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="6099269767116481177">२२ x २९.५ इन्च</translation>
 <translation id="6101583188322746099">किराना सामान डेलिभरी गर्ने सेवा</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4292,6 +4295,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{कुनै पनि होइन}=1{१ एप (<ph name="EXAMPLE_APP_1" />)}=2{२ एपहरू (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# एपहरू (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">कुनै त्रुटि भयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="784623644169604270">हालसालै कुनै पनि क्रियाकलाप गरिएको छैन</translation>
+<translation id="7848926355794727168">स्वतः गरिएको ब्राउज</translation>
 <translation id="7853222852810008596">यो मुद्रामा पछि भुक्तानी गर्ने सुविधा उपलब्ध छैन</translation>
 <translation id="785476343534277563">कलेज खेलकुद</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4919,6 +4923,7 @@
 <translation id="8897428486789851669">पौडी</translation>
 <translation id="8899807382908246773">हस्तक्षेपकारी विज्ञापनहरू</translation>
 <translation id="8903921497873541725">जुम इन</translation>
+<translation id="8903998444169664879">भुक्तानीसम्बन्धी सेटिङ परिवर्तन गर्न आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="890493561996401738">सुझावको बटन हटाउनुहोस्, हटाउन Enter थिच्नुहोस्, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">८ x १० इन्च</translation>
 <translation id="8914504000324227558">Chrome पुनः सुरु गर्नुहोस्</translation>

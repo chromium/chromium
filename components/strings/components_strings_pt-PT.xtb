@@ -2791,6 +2791,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5466018172325111652">Não recebeu o seu código? <ph name="BEGIN_LINK" />Obtenha um novo código<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Apps de pagamentos</translation>
 <translation id="5470861586879999274">&amp;Refazer edição</translation>
+<translation id="5471158297908124590">Valide a sua identidade para editar métodos de pagamento</translation>
 <translation id="5472588168895083535">Monitorização das mãos bloqueada</translation>
 <translation id="5477756102936130143">Ative o redirecionamento para apps de pagamentos compatíveis</translation>
 <translation id="5479505548832623900">Provavelmente ignoradas pela extensão.</translation>
@@ -3174,6 +3175,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6093795393556121384">Cartão validado</translation>
 <translation id="6094253940069566294">Edite o veículo</translation>
 <translation id="6094290315941448991">A política do administrador desativa a gravação de ecrã quando existe conteúdo confidencial visível.</translation>
+<translation id="6097297436119286254">Valide a sua identidade para preencher as informações de pagamento</translation>
 <translation id="6099269767116481177">22 x 29,5 pol.</translation>
 <translation id="6101583188322746099">Serviços de entrega de mercearias</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4922,6 +4924,7 @@ Detalhes adicionais:
 <translation id="8897428486789851669">Natação</translation>
 <translation id="8899807382908246773">Anúncios intrusivos</translation>
 <translation id="8903921497873541725">Ampliar</translation>
+<translation id="8903998444169664879">Valide a sua identidade para alterar as definições de pagamento</translation>
 <translation id="890493561996401738">Botão Remover sugestão, prima Enter para remover, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="8910898109640902752">8 x 10 pol.</translation>
 <translation id="8914504000324227558">Reiniciar o Chrome</translation>

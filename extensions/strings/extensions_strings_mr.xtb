@@ -7,11 +7,17 @@
 <translation id="132960226125594336">आशय स्क्रिप्टसाठी '<ph name="RELATIVE_PATH" />' फाइल लोड करता आली नाही, कारण त्यामुळे स्क्रिप्टचा कमाल आकार किंवा एक्स्टेंशनचा एकूण आशय स्क्रिप्टचा कमाल आकार याची मर्यादा ओलांडली जाईल.</translation>
 <translation id="1445572445564823378">हे एक्स्टेंशन <ph name="PRODUCT_NAME" /> हळू चालत आहे. <ph name="PRODUCT_NAME" /> चे काम रिस्टोअर करण्‍यासाठी तुम्ही ते ‍अक्षम करणे आवश्‍यक आहे.</translation>
 <translation id="1468038450257740950">WebGL ला सपोर्ट नाही.</translation>
+<translation id="1478607704480248626">इंस्टॉल करणे सुरू केलेले नाही</translation>
+<translation id="1556537182262721003">प्रोफाइलमध्ये एक्स्टेंशन डिरेक्टरी हलविणे शक्य नाही.</translation>
 <translation id="1610570795592207282">स्क्रिप्टसाठी CSS '<ph name="RELATIVE_PATH" />' लोड करता आले नाही.</translation>
+<translation id="1616298854599875024">एक्स्टेंशन "<ph name="IMPORT_NAME" />" इंपोर्ट करू शकत नाही कारण ते शेअर केलेले मॉड्युल नाही</translation>
 <translation id="1803557475693955505">'बॅकग्राउंड पेज '<ph name="BACKGROUND_PAGE" />'  लोड करता आले नाही.</translation>
+<translation id="1875387611427697908">हे केवळ <ph name="CHROME_WEB_STORE" /> वरून जोडले जाऊ शकते</translation>
+<translation id="2131077480075264">"<ph name="IMPORT_NAME" />" द्वारे "<ph name="APP_NAME" />" ला अनुमती नसल्‍याने तो स्‍थापित करण्‍यात अक्षम</translation>
 <translation id="2159915644201199628">इमेज डीकोड करणे शक्य झाले नाही: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">भाषांतर वापरले, परंतु मॅनिफेस्टमध्ये डीफॉल्ट_लोकॅल नमूद नाही.</translation>
 <translation id="2576842806987913196">या नावाने आधीपासूनच CRX फाइल उपस्थित आहे.</translation>
+<translation id="2662876636500006917">Chrome वेब बाजार</translation>
 <translation id="2743583586211388067">तुमच्या संस्थेच्या एक्स्टेंशनसंबंधित धोक्याच्या धोरणांतर्गत या एक्स्टेंशनचा अ‍ॅक्सेस ब्लॉक केला आहे.</translation>
 <translation id="2785530881066938471">आशय स्क्रिप्टसाठी '<ph name="RELATIVE_PATH" />' फाइल लोड करणे शक्य नाही. ही UTF-8 द्वारे एन्कोड केलेली नाही.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> एक्स्टेंशन आयडी "<ph name="EXTENSION_ID" />") ॲडमिनिस्ट्रेटरने ब्लॉक केलेला आहे. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx फाइल पुनर्स्थित करण्यात अयशस्वी. फाइल वापरात आहे किंवा नाही हे पाहण्यासाठी तपासा.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन</translation>
+<translation id="3242289508736283383">'kiosk_only' मॅनिफेस्ट ॲट्रिब्यूट असलेले अ‍ॅप हे ChromeOS कियोस्क मोडमध्ये इंस्टॉल केले जाणे आवश्यक आहे</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_NAME" /> (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">खासगी की साठी इनपुट मूल्य वैध पथ असावा.</translation>
+<translation id="3834775135533257713">"<ph name="INSTALLED_APP_NAME" />" सह संघर्ष असल्याने "<ph name="TO_INSTALL_APP_NAME" />" मध्ये ॲप्स जोडणे शक्य झाले नाही.</translation>
 <translation id="388442998277590542">पर्याय पेज '<ph name="OPTIONS_PAGE" />' लोड करणे शक्य नाही.</translation>
 <translation id="3984413272403535372">एक्स्टेंशनमध्ये साइन करताना एरर.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' पृष्ठाविषयी लोड करू शकलो नाही.</translation>
+<translation id="424963718355121712">परिणाम होतो अशा होस्टवरून ॲप्स दिली जाणे आवश्यक आहे</translation>
+<translation id="4306119971288449206">अ‍ॅप्स "<ph name="CONTENT_TYPE" />" आशय प्रकारासह दिली जाणे आवश्यक आहे</translation>
+<translation id="4633003931260532286">एक्स्टेंशनला किमान आवृत्ती "<ph name="IMPORT_VERSION" />" सह "<ph name="IMPORT_NAME" />" ची गरज आहे, परंतु केवळ आवृत्ती "<ph name="INSTALLED_VERSION" />" इंस्टॉल केली गेली आहे</translation>
+<translation id="4660476621274971848">अपेक्षित आवृत्ती "<ph name="EXPECTED_VERSION" />", परंतु आवृत्ती "<ph name="NEW_ID" />" होती</translation>
 <translation id="471800408830181311">खासगी की आउटपुट करण्यात अयशस्वी.</translation>
 <translation id="4811956658694082538">उपयुक्तता प्रक्रिया क्रॅश झाल्यामुळे पॅकेज इंस्टॉल करू शकलो नाही. Chrome रीस्टार्ट करून पहा आणि पुन्हा प्रयत्न करून पहा.</translation>
 <translation id="4988792151665380515">सार्वजनिक की एक्सपोर्ट करण्यात अयशस्वी.</translation>
+<translation id="501057610015570208">'kiosk_only' मॅनिफेस्ट ॲट्रिब्यूट असलेले अ‍ॅप हे ChromeOS Flex कियोस्क मोडमध्ये इंस्टॉल केले जाणे आवश्यक आहे</translation>
 <translation id="5026754133087629784">वेबदृश्य: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">पॅक करण्यासाठी डिरेक्टरीमध्ये अचूक पाथ शोधू शकत नाही</translation>
 <translation id="5160071981665899014">स्क्रिप्टसाठी JavaScript '<ph name="RELATIVE_PATH" />' लोड करता आले नाही.</translation>
 <translation id="5356315618422219272">ॲपदृश्य: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">हे एक्स्टेंशन की फाइल '<ph name="KEY_PATH" />' चा समावेश करतात. तुम्हाला कदाचित ते करणे आवश्यक नाही.</translation>
 <translation id="5486326529110362464">खासगी की साठी इनपुट मूल्य विद्यमान असणे आवश्यक आहे.</translation>
+<translation id="5527463195266282916">एक्स्टेंशन डाउनग्रेड करण्याचा प्रयत्न केला.</translation>
 <translation id="5707185214361380026">यावरून एक्स्टेंशन लोड करण्यात अयशस्वी:</translation>
 <translation id="5972529113578162692">या मशीनच्या ॲडमिनिस्ट्रेटरलााठी <ph name="EXTENSION_NAME" /> इंस्टॉल करणे आवश्यक आहे. हे अनइंस्टॉल केले जाऊ शकत नाही.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> कडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">मॅनिफेस्ट फाइल चुकीची आहे</translation>
 <translation id="7217838517480956708">या मशीनच्या ॲडमिनिस्ट्रेटरला <ph name="EXTENSION_NAME" /> इंस्टॉल करणे आवश्यक आहे. हे काढले किंवा सुधारित केले जाऊ शकत नाही.</translation>
 <translation id="7612608473764576263">प्रायव्हेट की साठीचे इनपुट मूल्य योग्य फॉरमॅटमध्ये असावे (PKCS#8-फॉरमॅट PEM-एंकोड केलेली RSA की).</translation>
+<translation id="765293928828334535">या वेबसाइटवरून अ‍ॅप्स, एक्स्टेंशन आणि वापरकर्ता स्क्रिप्ट जोडली जाऊ शकत नाहीत</translation>
 <translation id="7876803335449432072">आशय स्क्रिप्टसाठी फाइल '<ph name="RELATIVE_PATH" />' लोड करता आली नाही, आशय स्क्रिप्ट स्टाइल शीट या फक्त .css फाइलसारख्या सपोर्ट असलेल्या स्टाइल शीटमधून लोड करता येऊ शकतात.</translation>
 <translation id="7939686037314084444">एक्सटेंशन योग्यरित्या लोड होऊ शकले नाही. हे कदाचित नेटवर्क विनंत्या व्यत्यय आणू शकत नाही.</translation>
+<translation id="7952904276017482715">अपेक्षित आयडी "<ph name="EXPECTED_ID" />", परंतु आयडी "<ph name="NEW_ID" />" होता</translation>
 <translation id="7972881773422714442">पर्याय: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">वापरकर्ता-समोरील</translation>
 <translation id="8047248493720652249">दुसर्‍या एक्स्टेंशनने (<ph name="EXTENSION_NAME" />) एक वेगळे फाइलनाव "<ph name="ACTUAL_FILENAME" />" निर्धारित केल्यामुळे डाउनलोड "<ph name="ATTEMPTED_FILENAME" />" ला नाव देण्यात हे एक्स्टेंशन अयशस्वी झाले.</translation>
+<translation id="8049705080247101012">Google ने "<ph name="EXTENSION_NAME" />" ला दुर्भावनापूर्ण म्हणून फ्लॅग केले आहे आणि इंस्टॉल करणे रोखले गेले आहे</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> कडील <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">मॅनिफेस्ट फाइल गहाळ किंवा वाचता न येण्यासारखी आहे</translation>
+<translation id="8565650234829130278">अ‍ॅप डाउनग्रेड करण्याचा प्रयत्न.</translation>
 <translation id="8621383749470166852">आशय स्क्रिप्टसाठी फाइल '<ph name="RELATIVE_PATH" />' लोड करता आली नाही, आशय स्क्रिप्ट या फक्त .js फाइलसारख्या सपोर्ट असलेल्या JavaScript मधून लोड करता येऊ शकतात.</translation>
 <translation id="8636666366616799973">पॅकेज चुकीचे आहे. तपशील: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> तुमच्या एका डिव्हाइस ॲक्सेसची विनंती करत आहे:</translation>

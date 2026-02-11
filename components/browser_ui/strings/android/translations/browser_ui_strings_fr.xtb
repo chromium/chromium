@@ -295,6 +295,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="3903738175795615004">Faites glisser un doigt du haut vers le bas ou appuyez sur Échap pour quitter le plein écran.</translation>
 <translation id="3905475044299942653">Arrêter les nombreuses notifications</translation>
 <translation id="3922092564198021702">Sur votre téléphone, ouvrez Paramètres.</translation>
+<translation id="3924858949939391676">Afficher les liens une fois le mode Lecture activé</translation>
 <translation id="3933121352599513978">Réduire les demandes indésirables (recommandé)</translation>
 <translation id="3934905113567851655">Pincez pour redimensionner</translation>
 <translation id="3955193568934677022">Autoriser les sites à lire les contenus protégés (recommandé)</translation>
@@ -358,6 +359,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="4644713492825682049">Supprimer et réinitialiser</translation>
 <translation id="4645575059429386691">Géré par ton parent</translation>
 <translation id="4652266463001779298">Non autorisé</translation>
+<translation id="4655846733459137112">Appuyez sur "Oui" pour utiliser facilement ce mot de passe à votre prochaine connexion</translation>
 <translation id="4663373278480897665">Caméra autorisée</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
 <translation id="4672315773691449562">Appuyer sur Appli de navigateur, puis sur Chrome</translation>
@@ -464,6 +466,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="5804241973901381774">Autorisations</translation>
 <translation id="5817042798620209981">Informations sur le site, boîte de dialogue</translation>
 <translation id="5822675474983796325">Bottom sheet de personnalisation de la page Nouvel onglet ouverte à pleine hauteur</translation>
+<translation id="5826403277762134844">Bottom sheet d'instructions pour enregistrer les mots de passe dans Chrome</translation>
 <translation id="5833899990800318936">Ne pas autoriser les sites à utiliser JavaScript</translation>
 <translation id="583673505367439042">Les sites peuvent demander à modifier les fichiers et les dossiers sur votre appareil</translation>
 <translation id="5844448279347999754">Lorsque cette option est activée, les sites peuvent demander à voir le texte et les images enregistrés dans le presse-papiers. Lorsqu'elle est désactivée, les sites ne peuvent pas voir le texte ni les images enregistrés dans le presse-papiers.</translation>
@@ -643,6 +646,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="775043444390799886">Révoquer l'autorisation</translation>
 <translation id="7758789811447313947">Thème mauve</translation>
 <translation id="7759147511335618829">Contrôle/Reprog. appareils MIDI</translation>
+<translation id="7771089277295008211">La bottom sheet d'instructions pour enregistrer les mots de passe a été fermée</translation>
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="780301667611848630">Non, merci</translation>
@@ -660,6 +664,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="7940722705963108451">M'envoyer un rappel</translation>
 <translation id="7948081750384205628">En savoir plus sur le <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Les sites peuvent demander à voir le texte et les images du presse-papiers</translation>
+<translation id="7958779728312669715">La bottom sheet d'instructions pour enregistrer les mots de passe est complètement ouverte</translation>
 <translation id="798299424881500862">Thème orange</translation>
 <translation id="7986741934819883144">Sélectionner un contact</translation>
 <translation id="7990211076305263060">Lorsque cette option est activée, les sites peuvent demander à utiliser votre micro. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser votre micro.</translation>
@@ -756,6 +761,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="8889294078294184559">Lorsque vous continuez à naviguer, les sites peuvent vérifier avec Chrome et avec un site que vous avez déjà visité si vous êtes une personne réelle</translation>
 <translation id="8899807382908246773">Annonces intrusives</translation>
 <translation id="8903921497873541725">Zoom avant</translation>
+<translation id="8919911527569629802">Connectez-vous à n'importe quel site Web</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Ne plus afficher ce message</translation>
 <translation id="8926666909099850184">La fonctionnalité NFC est désactivée pour cet appareil. Activez-la dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
@@ -783,6 +789,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="9182556968660520230">Ne pas autoriser les sites à lire du contenu protégé</translation>
 <translation id="947156494302904893">Les sites auxquels vous accédez peuvent vérifier que vous êtes une personne et non un robot</translation>
 <translation id="959682366969460160">Restez organisé</translation>
+<translation id="960590623979248167">Afficher les liens hypertextes</translation>
 <translation id="961930410699694996">Accès à la position autorisé cette fois-ci</translation>
 <translation id="967624055006145463">Données stockées</translation>
 <translation id="969975166333045662">Empêchez le site d'utiliser l'optimiseur V8.</translation>

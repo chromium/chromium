@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Učitavanja fajla <ph name="RELATIVE_PATH" /> za skriptu sadržaja nije uspelo jer bi se time premašila maksimalna veličina skripte ili maksimalna ukupna veličina skripte za sadržaj.</translation>
 <translation id="1445572445564823378">Ovaj dodatak usporava <ph name="PRODUCT_NAME" />. Trebalo bi da ga onemogućite da bi se učinak proizvoda <ph name="PRODUCT_NAME" /> vratio.</translation>
 <translation id="1468038450257740950">WebGL nije podržan.</translation>
+<translation id="1478607704480248626">Instalacija nije omogućena</translation>
+<translation id="1556537182262721003">Katalog dodataka nije bilo moguće premestiti u profil.</translation>
 <translation id="1610570795592207282">Učitavanje css-a <ph name="RELATIVE_PATH" /> za skriptu nije uspelo.</translation>
+<translation id="1616298854599875024">Uvoz dodatka „<ph name="IMPORT_NAME" />“ nije uspeo zato što nije deljeni modul</translation>
 <translation id="1803557475693955505">Nije moguće učitati stranicu u pozadini „<ph name="BACKGROUND_PAGE" />“.</translation>
+<translation id="1875387611427697908">Ovo može da se doda samo iz usluge <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="2131077480075264">Nije uspelo instaliranje „<ph name="APP_NAME" />“ jer to ne dozvoljava „<ph name="IMPORT_NAME" />“</translation>
 <translation id="2159915644201199628">Nije moguće dekodirati sliku: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">Korišćena je lokalizacija, ali parametar default_locale nije naveden u manifestu.</translation>
 <translation id="2576842806987913196">Već postoji CRX datoteka sa ovim nazivom.</translation>
+<translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2743583586211388067">Pristup ovom dodatku je blokiran u skladu sa smernicama organizacije u vezi sa rizikom od dodataka.</translation>
 <translation id="2785530881066938471">Učitavanje datoteke „<ph name="RELATIVE_PATH" />“ za skriptu sadržaja nije uspelo. Nema UTF-8 šifrovanje.</translation>
 <translation id="2903070246402204397">Administrator je blokirao <ph name="EXTENSION_NAME" /> (ID dodatka je „<ph name="EXTENSION_ID" />“). <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">Nepoznati proizvod <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Zamena crx datoteke nije uspela. Proverite da li se datoteka koristi.</translation>
 <translation id="3163201441334626963">Nepoznati proizvod <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">Aplikacija sa atributom manifesta „kiosk_only“ mora da se instalira u režimu kioska u Chrome OS-u</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> prodavca <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Ulazna vrednost privatnog ključa mora biti važeća putanja.</translation>
+<translation id="3834775135533257713">Dodavanje aplikacije „<ph name="TO_INSTALL_APP_NAME" />“ nije uspelo zbog konflikta sa aplikacijom „<ph name="INSTALLED_APP_NAME" />“.</translation>
 <translation id="388442998277590542">Nije moguće učitati stranicu opcija „<ph name="OPTIONS_PAGE" />“.</translation>
 <translation id="3984413272403535372">Došlo je do greške prilikom potpisivanja dodatka.</translation>
 <translation id="4233778200880751280">Nije moguće učitati stranicu sa osnovnim podacima „<ph name="ABOUT_PAGE" />“.</translation>
+<translation id="424963718355121712">Aplikacije moraju da se prikazuju sa hosta na koji utiču</translation>
+<translation id="4306119971288449206">Aplikacije moraju da se prikazuju sa tipom sadržaja „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4633003931260532286">Dodatak zahteva „<ph name="IMPORT_NAME" />“ čija je najstarija verzija „<ph name="IMPORT_VERSION" />“, ali instalirana je samo verzija „<ph name="INSTALLED_VERSION" />“</translation>
+<translation id="4660476621274971848">Očekivala se verzija „<ph name="EXPECTED_VERSION" />“, ali je verzija bila „<ph name="NEW_ID" />“</translation>
 <translation id="471800408830181311">Formiranje izlaznih rezultata privatnog ključa nije uspelo.</translation>
 <translation id="4811956658694082538">Instaliranje paketa nije uspelo zato što je uslužni proces otkazao. Probajte da ponovo pokrenete Chrome i pokušajte ponovo.</translation>
 <translation id="4988792151665380515">Izvoz javnog ključa nije uspeo.</translation>
+<translation id="501057610015570208">Aplikacija sa atributom manifesta „kiosk_only“ mora da se instalira u režimu kioska u Chrome OS Flex-u</translation>
 <translation id="5026754133087629784">Veb-prikaz: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Nije moguće pronaći apsolutnu putanju do direktorijuma za pakovanje.</translation>
 <translation id="5160071981665899014">Učitavanje JavaScript-a <ph name="RELATIVE_PATH" /> za skriptu nije uspelo.</translation>
 <translation id="5356315618422219272">Prikaz aplikacije: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Ovaj dodatak sadrži datoteku ključa „<ph name="KEY_PATH" />“. Verovatno to ne želite.</translation>
 <translation id="5486326529110362464">Ulazna vrednost privatnog ključa mora da postoji.</translation>
+<translation id="5527463195266282916">Pokušali ste da vratite dodatak na stariju verziju</translation>
 <translation id="5707185214361380026">Nije uspelo učitavanje dodatka iz:</translation>
 <translation id="5972529113578162692">Administrator ovog računara zahteva da dodatak <ph name="EXTENSION_NAME" /> bude instaliran. Ne možete da ga deinstalirate.</translation>
 <translation id="6027032947578871493">Nepoznati proizvod <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Datoteka manifesta je nevažeća</translation>
 <translation id="7217838517480956708">Administrator ovog uređaja zahteva da dodatak <ph name="EXTENSION_NAME" /> bude instaliran. Ne možete da ga uklonite ili izmenite.</translation>
 <translation id="7612608473764576263">Ulazna vrednost za privatni ključ mora da bude važeći format (PEM kodirani RSA ključ u PKCS#8 formatu).</translation>
+<translation id="765293928828334535">Aplikacije, dodaci i skripte korisnika ne mogu da se dodaju sa ovog veb-sajta</translation>
 <translation id="7876803335449432072">Učitavanje fajla <ph name="RELATIVE_PATH" /> za skriptu sadržaja nije uspelo. Opisi stilova za skriptu sadržaja mogu da se učitaju samo iz podržanih fajlova opisa stilova, kao što su .css fajlovi.</translation>
 <translation id="7939686037314084444">Dodatak se nije pravilno učitao. Možda neće moći da preusmerava mrežne zahteve.</translation>
+<translation id="7952904276017482715">Očekivao se ID „<ph name="EXPECTED_ID" />“, ali ID je bio „<ph name="NEW_ID" />“</translation>
 <translation id="7972881773422714442">Opcije: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Prednja</translation>
 <translation id="8047248493720652249">Ovaj dodatak nije uspeo da preuzetoj datoteci dâ naziv „<ph name="ATTEMPTED_FILENAME" />“ zato što je jedan drugi dodatak (<ph name="EXTENSION_NAME" />) odredio drugačiji naziv datoteke „<ph name="ACTUAL_FILENAME" />“.</translation>
+<translation id="8049705080247101012">Google je označio dodatak „<ph name="EXTENSION_NAME" />“ kao zlonameran i instalacija je sprečena</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> prodavca <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Datoteka manifesta nedostaje ili nije mogla da se čita</translation>
+<translation id="8565650234829130278">Pokušali ste da vratite aplikaciju na stariju verziju.</translation>
 <translation id="8621383749470166852">Učitavanje fajla <ph name="RELATIVE_PATH" /> za skriptu sadržaja nije uspelo. Skripte sadržaja mogu da se učitavaju samo iz podržanih JavaScript fajlova, kao što su .js fajlovi.</translation>
 <translation id="8636666366616799973">Paket je nevažeći. Detalji: „<ph name="ERROR_MESSAGE" />“.</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />“ zahteva pristup nekom od uređaja:</translation>

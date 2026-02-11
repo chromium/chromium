@@ -584,6 +584,7 @@
 <translation id="3140825265190223781">Tallennetut salasanat ja avainkoodit</translation>
 <translation id="3143515551205905069">Peru synkronointi</translation>
 <translation id="3144126448740580210">VALMIS</translation>
+<translation id="3147521114983561406">Avainkoodit tallennetaan Salasanoihin. Ne ovat käytettävissä incognito-välilehdillä ja tavallisilla välilehdillä.</translation>
 <translation id="3148052723910099040">Tavallinen välilehtiruudukko</translation>
 <translation id="3148237711805373460">Vie minut sinne</translation>
 <translation id="3157387275655328056">Lisää lukulistalle</translation>
@@ -2097,6 +2098,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8587001564479545614">Luo palautuksen PIN-koodi</translation>
 <translation id="8588404856427128947">Pois päältä</translation>
 <translation id="8590286732816598906">Välilehtiryhmä, <ph name="GROUP_TITLE" />, valikko.</translation>
+<translation id="8593317261815647019">Luodaanko avainkoodi incognito-tilan ulkopuolella?</translation>
 <translation id="8600272508328041907">Vaihda koko sivun kääntämiseen</translation>
 <translation id="860043288473659153">Kortinhaltijan nimi</translation>
 <translation id="8601611099293226919">Hae näytöltä Google Lensilla</translation>

@@ -2791,6 +2791,7 @@
 <translation id="5466018172325111652">コードが届かない場合は、<ph name="BEGIN_LINK" />新しいコードを取得<ph name="END_LINK" />してください</translation>
 <translation id="5466818462212249084">決済アプリ</translation>
 <translation id="5470861586879999274">編集のやり直し（&amp;R）</translation>
+<translation id="5471158297908124590">お支払い方法を編集するには本人確認を行ってください</translation>
 <translation id="5472588168895083535">ハンド トラッキングがブロックされています</translation>
 <translation id="5477756102936130143">サポートされている決済アプリへのリダイレクトを有効にする</translation>
 <translation id="5479505548832623900">拡張機能によって無視される可能性があります。</translation>
@@ -2868,6 +2869,7 @@
 <translation id="5570825185877910964">アカウントを保護</translation>
 <translation id="5571083550517324815">この住所での受け取りはできません。別の住所を選択してください。</translation>
 <translation id="5572434905385510939">22x28 インチ</translation>
+<translation id="5573090972398558474">シークレット モードでは、このページは組織によってブロックされています。</translation>
 <translation id="5573641252776268565">パスポートの編集</translation>
 <translation id="5578606540385219379">サービス プロバイダ</translation>
 <translation id="5580958916614886209">有効期限の「月」を確認してもう一度お試しください</translation>
@@ -3174,6 +3176,7 @@
 <translation id="6093795393556121384">カードが確認されました</translation>
 <translation id="6094253940069566294">車両情報の編集</translation>
 <translation id="6094290315941448991">管理者のポリシーによって、機密コンテンツが表示されているときは、画面の録画が無効になります</translation>
+<translation id="6097297436119286254">お支払い情報を入力するには本人確認を行ってください</translation>
 <translation id="6099269767116481177">22x29.5 インチ</translation>
 <translation id="6101583188322746099">食料品宅配サービス</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4296,6 +4299,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{なし}=1{1 個のアプリ（<ph name="EXAMPLE_APP_1" />）}=2{2 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>
 <translation id="7846161022626028328">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="784623644169604270">最近のアクティビティはありません</translation>
+<translation id="7848926355794727168">自動ブラウジング</translation>
 <translation id="7853222852810008596">この通貨では後払いをご利用いただけません</translation>
 <translation id="785476343534277563">大学スポーツ</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
@@ -4924,6 +4928,7 @@
 <translation id="8897428486789851669">水泳</translation>
 <translation id="8899807382908246773">煩わしい広告</translation>
 <translation id="8903921497873541725">拡大する</translation>
+<translation id="8903998444169664879">お支払い設定を変更するには本人確認を行ってください</translation>
 <translation id="890493561996401738">候補を削除するボタンです。Enter キーを押すと <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> を削除します</translation>
 <translation id="8910898109640902752">8x10 インチ</translation>
 <translation id="8914504000324227558">Chrome の再起動</translation>

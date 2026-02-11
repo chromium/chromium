@@ -295,6 +295,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="3903738175795615004">Povlecite z vrha ali pritisnite tipko Esc, če želite zapreti celozaslonski način.</translation>
 <translation id="3905475044299942653">Ustavitev veliko obvestil</translation>
 <translation id="3922092564198021702">V telefonu odprite nastavitve</translation>
+<translation id="3924858949939391676">Prikaz povezav, ko je način za branje vklopljen</translation>
 <translation id="3933121352599513978">Strni neželene zahteve (priporočeno)</translation>
 <translation id="3934905113567851655">Primaknite ali razmaknite prsta za spreminjanje velikosti</translation>
 <translation id="3955193568934677022">Dovoli spletnim mestom predvajanje zaščitene vsebine (priporočeno)</translation>
@@ -358,6 +359,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="4644713492825682049">Izbriši in ponastavi</translation>
 <translation id="4645575059429386691">Upravlja starš</translation>
 <translation id="4652266463001779298">Ni dovoljeno</translation>
+<translation id="4655846733459137112">Dotaknite se Da, če želite brez težav uporabiti to geslo, ko se naslednjič prijavite</translation>
 <translation id="4663373278480897665">Kamera je dovoljena</translation>
 <translation id="4670064810192446073">Navidezna resničnost</translation>
 <translation id="4672315773691449562">Dotaknite se aplikacije brskalnika in nato Chrome</translation>
@@ -464,6 +466,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="5804241973901381774">Dovoljenja</translation>
 <translation id="5817042798620209981">Podatki o spletnem mestu, pogovorno okno</translation>
 <translation id="5822675474983796325">Razdelek na dnu zaslona za prilagajanje strani »Nov zavihek« je odprt pri polni višini</translation>
+<translation id="5826403277762134844">Razdelek na dnu zaslona z navodili za shranjevanje gesel v Chromu</translation>
 <translation id="5833899990800318936">Spletnim mestom ni dovoljena uporaba JavaScripta</translation>
 <translation id="583673505367439042">Spletna mesta lahko zahtevajo urejanje datotek in map v napravi.</translation>
 <translation id="5844448279347999754">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo ogled besedila in slik, shranjenih v odložišču. Če je ta možnost izklopljena, si spletna mesta ne smejo ogledati besedila ali slik, shranjenih v odložišču.</translation>
@@ -643,6 +646,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="775043444390799886">Umik dovoljenja</translation>
 <translation id="7758789811447313947">Vijolična tema</translation>
 <translation id="7759147511335618829">Upravljanje in reprogramiranje naprav MIDI</translation>
+<translation id="7771089277295008211">Razdelek na dnu zaslona z navodili za shranjevanje gesel je zaprt</translation>
 <translation id="7781829728241885113">Včeraj</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
@@ -660,6 +664,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="7940722705963108451">Opomni me</translation>
 <translation id="7948081750384205628">Preberite več o nastavitvi <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Spletna mesta lahko zahtevajo ogled besedila in slik v odložišču</translation>
+<translation id="7958779728312669715">Razdelek na dnu zaslona z navodili za shranjevanje gesel je v celoti odprt</translation>
 <translation id="798299424881500862">Oranžna tema</translation>
 <translation id="7986741934819883144">Izberite stik</translation>
 <translation id="7990211076305263060">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo mikrofona. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati mikrofona.</translation>
@@ -756,6 +761,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="8889294078294184559">Med brskanjem se lahko spletna mesta obrnejo na Chrome in pri prejšnjem spletnem mestu, ki ste ga obiskali, potrdijo, da ste verjetno resnična oseba.</translation>
 <translation id="8899807382908246773">Vsiljivi oglasi</translation>
 <translation id="8903921497873541725">Povečaj</translation>
+<translation id="8919911527569629802">Prijavite se v poljubno spletno mesto</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Ne sprašuj več</translation>
 <translation id="8926666909099850184">Tehnologija NFC je izklopljena za to napravo. Vklopite jo v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
@@ -783,6 +789,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="9182556968660520230">Spletnim mestom ni dovoljeno predvajanje zaščitene vsebine.</translation>
 <translation id="947156494302904893">Spletna mesta, ki jih obiščete, lahko preverijo, ali ste resnična oseba in ne bot</translation>
 <translation id="959682366969460160">Postanite bolj organizirani</translation>
+<translation id="960590623979248167">Pokaži hiperpovezave</translation>
 <translation id="961930410699694996">Lokacija je tokrat dovoljena</translation>
 <translation id="967624055006145463">Shranjeni podatki</translation>
 <translation id="969975166333045662">Spletnemu mestu prepreči uporabo orodja za optimiziranje mehanizma V8.</translation>

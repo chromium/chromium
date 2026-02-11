@@ -584,6 +584,7 @@
 <translation id="3140825265190223781">સાચવેલા પાસવર્ડ અને પાસકી</translation>
 <translation id="3143515551205905069">સિંક કરવાનું રદ કરો</translation>
 <translation id="3144126448740580210">થઈ ગયું</translation>
+<translation id="3147521114983561406">પાસકી તમારા Password Managerમાં સાચવવામાં આવે છે. તેમને છૂપા અને નિયમિત ટૅબમાં ઍક્સેસ કરી શકાય છે.</translation>
 <translation id="3148052723910099040">નિયમિત ટૅબ ગ્રિડ</translation>
 <translation id="3148237711805373460">મને ત્યાં લઈ જાઓ</translation>
 <translation id="3157387275655328056">વાંચન સૂચિમાં ઉમેરો</translation>
@@ -2097,6 +2098,7 @@
 <translation id="8587001564479545614">કોઈ રિકવરી પિન બનાવો</translation>
 <translation id="8588404856427128947">બંધ</translation>
 <translation id="8590286732816598906">ટૅબનું ગ્રૂપ, <ph name="GROUP_TITLE" />, મેનૂ.</translation>
+<translation id="8593317261815647019">છૂપા મોડની બહાર પાસકી બનાવીએ?</translation>
 <translation id="8600272508328041907">આખા પેજના અનુવાદ પર સ્વિચ કરો</translation>
 <translation id="860043288473659153">કાર્ડધારકનું નામ</translation>
 <translation id="8601611099293226919">Google Lens વડે તમારી સ્ક્રીન શોધો</translation>
@@ -2234,6 +2236,7 @@
 <translation id="9055291197094969722">તમારા ખુલ્લા ટૅબ ગોઠવવા અને કાર્યક્ષમ રહેવા માટે ટૅબના ગ્રૂપ બનાવો</translation>
 <translation id="9055580485132823283">તમે {password_count} પાસવર્ડ, {passkey_count} પાસકી અને જેના માટે તમે સાઇન-ઇન માહિતી ક્યારેય ન સાચવવાનો વિકલ્પ પસંદ કર્યો છે તેવી સાઇટ અને ઍપની સૂચિ ડિલીટ કરવા જઈ રહ્યાં છો. સાઇટ અને ઍપ માટે તમે બનાવેલું કોઈપણ એકાઉન્ટ ડિલીટ કરવામાં આવશે નહીં.</translation>
 <translation id="9057030985451135243">શેર કરેલા ટૅબના ગ્રૂપ વિશે જાણો</translation>
+<translation id="9064106978262828592">તમારા ડેટાની નિકાસ કરવામાં સમસ્યા આવી</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>
 <translation id="9066097352053395362">'બુકમાર્કમાં ફેરફાર કરો' છુપાવો</translation>
 <translation id="9070824521421603770">તમને સાઇન આઉટ કરવામાં આવશે અને ટૅબ બંધ કરવામાં આવશે</translation>

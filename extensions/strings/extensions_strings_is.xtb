@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Ekki tókst að hlaða skránni „<ph name="RELATIVE_PATH" />“ fyrir efnisskriftu vegna þess að hún myndi fara yfir hámarksstærð skrifta eða hámarksheildarstærð efnisskriftu viðbótarinnar.</translation>
 <translation id="1445572445564823378">Þessi viðbót hægir á <ph name="PRODUCT_NAME" />. Þú ættir að slökkva á henni til að <ph name="PRODUCT_NAME" /> starfi betur.</translation>
 <translation id="1468038450257740950">WebGL er ekki stutt.</translation>
+<translation id="1478607704480248626">Uppsetning er ekki leyfð</translation>
+<translation id="1556537182262721003">Ekki var hægt að færa viðbótamöppuna inn í prófílinn.</translation>
 <translation id="1610570795592207282">Ekki tókst að hlaða CSS-stílsniðið" „<ph name="RELATIVE_PATH" />“ fyrir skriftu.</translation>
+<translation id="1616298854599875024">Ekki er hægt að flytja inn viðbótina „<ph name="IMPORT_NAME" />“ vegna þess að hún er ekki samnýtt eining</translation>
 <translation id="1803557475693955505">Ekki var hægt að hlaða bakgrunnssíðuna „<ph name="BACKGROUND_PAGE" />“.</translation>
+<translation id="1875387611427697908">Þessu er aðeins hægt að bæta við úr <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="2131077480075264">Ekki er hægt að setja „<ph name="APP_NAME" />“ upp vegna þess að „<ph name="IMPORT_NAME" />“ leyfir það ekki</translation>
 <translation id="2159915644201199628">Ekki var hægt að afkóða mynd: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">Staðfærsla notuð en default_locale var ekki tilgreint í upplýsingaskránni.</translation>
 <translation id="2576842806987913196">CRX-skrá með þessu heiti er þegar til staðar.</translation>
+<translation id="2662876636500006917">Vefverslun Chrome</translation>
 <translation id="2743583586211388067">Aðgangur að þessari viðbót er lokaður samkvæmt viðbótaráhættustefnu fyrirtækisins þíns.</translation>
 <translation id="2785530881066938471">Ekki var hægt að hlaða skrána „<ph name="RELATIVE_PATH" />“ fyrir efnisskriftu. Hún er ekki kóðuð með UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (auðkenni viðbótar „<ph name="EXTENSION_ID" />“) er læst af kerfisstjóra. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">Óþekkt vara <ph name="PRODUCT_ID" /> frá framleiðandanum <ph name="VENDOR_ID" /> (raðnúmer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Mistókst að skipta út crx-skrá. Athugaðu hvort skráin er í notkun.</translation>
 <translation id="3163201441334626963">Óþekkt vara <ph name="PRODUCT_ID" /> frá framleiðandanum <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">Forrit með upplýsingaskráreigindina „kiosk_only“ verður að vera uppsett í sjálfsalastillingu ChromeOS</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (raðnúmer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> frá framleiðandanum <ph name="VENDOR_ID" /> (raðnúmer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Inntaksgildi einkalykils verður að vera gild slóð.</translation>
+<translation id="3834775135533257713">Gat ekki bætt forritinu „<ph name="TO_INSTALL_APP_NAME" />“ við vegna þess að það rekst á við „<ph name="INSTALLED_APP_NAME" />“.</translation>
 <translation id="388442998277590542">Ekki var hægt að hlaða valkostasíðuna „<ph name="OPTIONS_PAGE" />“.</translation>
 <translation id="3984413272403535372">Villa við að undirrita viðbót.</translation>
 <translation id="4233778200880751280">Ekki var hægt að hlaða upplýsingasíðuna „<ph name="ABOUT_PAGE" />“.</translation>
+<translation id="424963718355121712">Hýsa verður forrit á hýslinum sem þau hafa áhrif á</translation>
+<translation id="4306119971288449206">Forrit verða að vera birt með efnistegundinni „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4633003931260532286">Viðbótin krefst „<ph name="IMPORT_NAME" />“ með „<ph name="IMPORT_VERSION" />“ eða nýrri útgáfu en aðeins útgáfa „<ph name="INSTALLED_VERSION" />“ er uppsett</translation>
+<translation id="4660476621274971848">Búist var við útgáfunni „<ph name="EXPECTED_VERSION" />“ en útgáfan er „<ph name="NEW_ID" />“</translation>
 <translation id="471800408830181311">Mistókst að skila einkalykli.</translation>
 <translation id="4811956658694082538">Ekki tókst að setja pakkann upp vegna þess að hjálparforritsferli hrundi. Prófaðu að endurræsa Chrome og reyna aftur.</translation>
 <translation id="4988792151665380515">Mistókst að flytja út opinberan lykil.</translation>
+<translation id="501057610015570208">Forrit með upplýsingaskráreigindina „kiosk_only“ verður að vera uppsett í sjálfsalastillingu ChromeOS Flex</translation>
 <translation id="5026754133087629784">Vefgluggi: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Nákvæm slóð að möppunni sem á að pakka fannst ekki.</translation>
 <translation id="5160071981665899014">Ekki tókst að hlaða JavaScript-skriftuna „<ph name="RELATIVE_PATH" />“ fyrir skriftu.</translation>
 <translation id="5356315618422219272">Forritsgluggi: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Þessi viðbót inniheldur lykilskrána „<ph name="KEY_PATH" />“. Þetta er líklega eitthvað sem þú vilt ekki.</translation>
 <translation id="5486326529110362464">Inntaksgildi einkalykils verður að vera til staðar.</translation>
+<translation id="5527463195266282916">Tilraun til að niðurfæra viðbót.</translation>
 <translation id="5707185214361380026">Mistókst að hlaða viðbót frá:</translation>
 <translation id="5972529113578162692">Stjórnandi þessarar vélar krefst þess að <ph name="EXTENSION_NAME" /> sé uppsett. Ekki er hægt að fjarlægja hana.</translation>
 <translation id="6027032947578871493">Óþekkt vara <ph name="PRODUCT_ID" /> frá <ph name="VENDOR_NAME" /> (raðnúmer <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Upplýsingaskráin er ógild</translation>
 <translation id="7217838517480956708">Stjórnandi þessarar vélar krefst þess að <ph name="EXTENSION_NAME" /> sé sett upp. Ekki er hægt að fjarlægja hana eða breyta.</translation>
 <translation id="7612608473764576263">Inntaksgildi einkalykils verður að vera gilt snið (RSA-lykill á PKCS#8-sniði með PEM-kóðun).</translation>
+<translation id="765293928828334535">Ekki er hægt að bæta við forritum, viðbótum eða notendaskriftum af þessu vefsvæði</translation>
 <translation id="7876803335449432072">Ekki tókst að hlaða skránni „<ph name="RELATIVE_PATH" />“ til að sækja efnisskriftu. Aðeins er hægt að hlaða stílsniði efnisskrifta úr studdum stílsniðsskrám á borð við .css-skrár.</translation>
 <translation id="7939686037314084444">Ekki tókst að hlaða viðbót rétt. Hún getur því hugsanlega ekki unnið úr netbeiðnum.</translation>
+<translation id="7952904276017482715">Búist var við auðkenninu „<ph name="EXPECTED_ID" />“ en auðkennið er „<ph name="NEW_ID" />“</translation>
 <translation id="7972881773422714442">Valkostir: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Snýr að notanda</translation>
 <translation id="8047248493720652249">Þessari viðbót mistókst að nefna niðurhalið „<ph name="ATTEMPTED_FILENAME" />“ vegna þess að önnur viðbót (<ph name="EXTENSION_NAME" />) ákvarðaði annað skráarheiti, „<ph name="ACTUAL_FILENAME" />“.</translation>
+<translation id="8049705080247101012">Google hefur merkt „<ph name="EXTENSION_NAME" />“ sem skaðlega viðbót og komið var í veg fyrir uppsetninguna</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> frá <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Upplýsingaskrá vantar eða hún er ólæsileg</translation>
+<translation id="8565650234829130278">Tilraun til að niðurfæra forrit.</translation>
 <translation id="8621383749470166852">Ekki tókst að hlaða skránni „<ph name="RELATIVE_PATH" />“ til að sækja efnisskriftu. Aðeins er hægt að hlaða efnisskriftum úr studdum JavaScript-skrám á borð við .js-skrár.</translation>
 <translation id="8636666366616799973">Pakkinn er ógildur. Upplýsingar: „<ph name="ERROR_MESSAGE" />“.</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />“ biður um aðgang að einu af tækjunum þínum:</translation>

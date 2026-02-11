@@ -2791,6 +2791,7 @@
 <translation id="5466018172325111652">ບໍ່ໄດ້ຮັບລະຫັດຂອງທ່ານບໍ? <ph name="BEGIN_LINK" />ຂໍລະຫັດໃໝ່<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">ແອັບຈ່າຍເງິນ</translation>
 <translation id="5470861586879999274">ເຮັດຄືນຄໍາສັ່ງແກ້ໄຂ</translation>
+<translation id="5471158297908124590">ຢັ້ງຢືນວ່າແມ່ນທ່ານເພື່ອແກ້ໄຂວິທີການຈ່າຍເງິນ</translation>
 <translation id="5472588168895083535">ການຕິດຕາມການເຄື່ອນໄຫວຂອງມືຖືກບລັອກ</translation>
 <translation id="5477756102936130143">ເປີດໃຊ້ການປ່ຽນເສັ້ນທາງໄປຫາແອັບຈ່າຍເງິນທີ່ຮອງຮັບ</translation>
 <translation id="5479505548832623900">ມີແນວໂນ້ມທີ່ຈະຖືກລະເລີຍໂດຍສ່ວນຂະຫຍາຍ.</translation>
@@ -2868,6 +2869,7 @@
 <translation id="5570825185877910964">ປົກປ້ອງບັນຊີ</translation>
 <translation id="5571083550517324815">ບໍ່ສາມາດຮັບເອົາເຄື່ອງຈາກທີ່ຢູ່ນີ້ໄດ້. ເລືອກທີ່ຢູ່ອື່ນ.</translation>
 <translation id="5572434905385510939">22 x 28 ນິ້ວ</translation>
+<translation id="5573090972398558474">ອົງກອນຂອງທ່ານໄດ້ບລັອກໜ້ານີ້ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
 <translation id="5573641252776268565">ແກ້ໄຂໜັງສືຜ່ານແດນ</translation>
 <translation id="5578606540385219379">ຜູ້ໃຫ້ບໍລິການ</translation>
 <translation id="5580958916614886209">ກວດເບິ່ງເດືອນໝົດອາຍຸຂອງທ່ານ ແລະ ລອງອີກຄັ້ງ</translation>
@@ -3174,6 +3176,7 @@
 <translation id="6093795393556121384">ບັດ​ຂອງ​ທ່ານ​ໄດ້​ຮັບ​ການ​ຢືນ​ຢັນ​ແລ້ວ</translation>
 <translation id="6094253940069566294">ແກ້ໄຂພາຫະນະ</translation>
 <translation id="6094290315941448991">ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບປິດການນຳໃຊ້ການບັນທຶກໜ້າຈໍເມື່ອສະແດງເນື້ອຫາທີ່ເປັນຄວາມລັບຢູ່</translation>
+<translation id="6097297436119286254">ຢັ້ງຢືນວ່າແມ່ນທ່ານເພື່ອຕື່ມຂໍ້ມູນການຈ່າຍເງິນຂອງທ່ານ</translation>
 <translation id="6099269767116481177">22 x 29.5 ນິ້ວ</translation>
 <translation id="6101583188322746099">ບໍລິການຈັດສົ່ງສິນຄ້າ</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4294,6 +4297,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{ບໍ່ມີ}=1{1 ແອັບ (<ph name="EXAMPLE_APP_1" />)}=2{2 ແອັບ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ແອັບ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">ມີຂໍ້ຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="784623644169604270">ບໍ່ມີການເຄື່ອນໄຫວຫຼ້າສຸດ</translation>
+<translation id="7848926355794727168">ທ່ອງເວັບອັດຕະໂນມັດ</translation>
 <translation id="7853222852810008596">ຄຸນສົມບັດຈ່າຍພາຍຫຼັງບໍ່ພ້ອມນຳໃຊ້ໃນສະກຸນເງິນນີ້</translation>
 <translation id="785476343534277563">ກິລາວິທະຍາໄລ</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4921,6 +4925,7 @@
 <translation id="8897428486789851669">ລອຍນໍ້າ</translation>
 <translation id="8899807382908246773">ໂຄສະນາແບບບຸກລຸກ</translation>
 <translation id="8903921497873541725">ຊຸມເຂົ້າ</translation>
+<translation id="8903998444169664879">ຢັ້ງຢືນວ່າແມ່ນທ່ານເພື່ອປ່ຽນການຕັ້ງຄ່າການຈ່າຍເງິນຂອງທ່ານ</translation>
 <translation id="890493561996401738">ລຶບປຸ່ມການແນະນຳອອກ, ກົດ Enter ເພື່ອລຶບອອກ, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 ນິ້ວ</translation>
 <translation id="8914504000324227558">ເປີດໃຊ້ Chrome ຄືນໃໝ່</translation>

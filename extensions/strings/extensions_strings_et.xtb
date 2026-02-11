@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Ei saanud faili „<ph name="RELATIVE_PATH" />“ sisu skripti jaoks laadida, kuna see ületaks skripti maksimaalset suurust või laienduse sisu skripti maksimaalset kogusuurust.</translation>
 <translation id="1445572445564823378">Laiendus aeglustab rakendust <ph name="PRODUCT_NAME" />. Peaksite selle keelama, et taastada rakenduse <ph name="PRODUCT_NAME" /> toimivus.</translation>
 <translation id="1468038450257740950">WebGL-i ei toetata.</translation>
+<translation id="1478607704480248626">Installimine ei ole lubatud</translation>
+<translation id="1556537182262721003">Laienduste kataloogi ei õnnestunud profiili teisaldada.</translation>
 <translation id="1610570795592207282">CSS-i „<ph name="RELATIVE_PATH" />“ ei saanud skripti jaoks laadida.</translation>
+<translation id="1616298854599875024">Laiendust „<ph name="IMPORT_NAME" />” ei saa importida, kuna see pole jagatud moodul</translation>
 <translation id="1803557475693955505">Tagaplaanilehte <ph name="BACKGROUND_PAGE" /> ei õnnestunud laadida.</translation>
+<translation id="1875387611427697908">Seda on võimalik lisada vaid teenusest <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="2131077480075264">Rakendust <ph name="APP_NAME" /> ei saa installida, sest <ph name="IMPORT_NAME" /> ei luba seda</translation>
 <translation id="2159915644201199628">Ei saanud pilti dekodeerida: „<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">Lokaliseerimist kasutatakse, kuid parameetrit default_locale ei olnud manifestis määratud.</translation>
 <translation id="2576842806987913196">Selle nimega CRX-fail on juba olemas.</translation>
+<translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2743583586211388067">Juurdepääs sellele laiendusele on teie organisatsiooni laienduste riskieeskirjade alusel blokeeritud.</translation>
 <translation id="2785530881066938471">Sisuskripti jaoks ei õnnestunud laadida faili <ph name="RELATIVE_PATH" />, kuna sellel ei ole UTF-8 kodeeringut.</translation>
 <translation id="2903070246402204397">Laienduse <ph name="EXTENSION_NAME" /> (laienduse ID „<ph name="EXTENSION_ID" />”) blokeeris administraator. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">Tundmatu toode <ph name="PRODUCT_ID" /> teenusepakkujalt <ph name="VENDOR_ID" /> (seerianumber <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx-faili asendamine ebaõnnestus. Kontrollige, kas fail on kasutusel.</translation>
 <translation id="3163201441334626963">Tundmatu toode <ph name="PRODUCT_ID" /> teenusepakkujalt <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">Rakendus manifesti atribuudiga „kiosk_only“ tuleb installida Chrome OS-i kioskirežiimis</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (seerianumber <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">Toode <ph name="PRODUCT_NAME" /> teenusepakkujalt <ph name="VENDOR_ID" /> (seerianumber <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Privaatvõtme sisendi väärtus peab olema kehtiv tee.</translation>
+<translation id="3834775135533257713">Rakendust „<ph name="TO_INSTALL_APP_NAME" />” ei saa lisada, kuna see on vastuolus rakendusega „<ph name="INSTALLED_APP_NAME" />”.</translation>
 <translation id="388442998277590542">Valikute lehte <ph name="OPTIONS_PAGE" /> ei õnnestunud laadida.</translation>
 <translation id="3984413272403535372">Laienduse allkirjastamisel ilmnes viga.</translation>
 <translation id="4233778200880751280">Teabelehte „<ph name="ABOUT_PAGE" />” ei õnnestunud laadida.</translation>
+<translation id="424963718355121712">Rakendusi tuleb esitada hostist, mida need mõjutavad</translation>
+<translation id="4306119971288449206">Rakendusi tuleb esitada sisu tüübiga „<ph name="CONTENT_TYPE" />”</translation>
+<translation id="4633003931260532286">Laiendus nõuab üksust „<ph name="IMPORT_NAME" />” minimaalse versiooniga „<ph name="IMPORT_VERSION" />”, kuid installitud on ainult versioon „<ph name="INSTALLED_VERSION" />”</translation>
+<translation id="4660476621274971848">Eeldatav versioon oli „<ph name="EXPECTED_VERSION" />”, kuid versioon oli „<ph name="NEW_ID" />”</translation>
 <translation id="471800408830181311">Privaatvõtit ei õnnestunud väljastada.</translation>
 <translation id="4811956658694082538">Paketti ei õnnestunud installida, sest utiliidiprotsess jooksis kokku. Taaskäivitage Chrome ja proovige uuesti.</translation>
 <translation id="4988792151665380515">Avalikku võtit ei õnnestunud eksportida.</translation>
+<translation id="501057610015570208">Rakendus manifesti atribuudiga „kiosk_only” tuleb installida Chrome OS Flexi kioskirežiimis</translation>
 <translation id="5026754133087629784">Veebivaade: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Ei leia pakitava kataloogi absoluutteed.</translation>
 <translation id="5160071981665899014">JavaScripti „<ph name="RELATIVE_PATH" />“ ei saanud skripti jaoks laadida.</translation>
 <translation id="5356315618422219272">Rakendusvaade: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Laiendus hõlmab võtmefaili „<ph name="KEY_PATH" />”. See toiming ei ole soovitatav.</translation>
 <translation id="5486326529110362464">Privaatvõtme sisendi väärtus peab olema olemas.</translation>
+<translation id="5527463195266282916">Laiendust prooviti üle viia vanemale versioonile.</translation>
 <translation id="5707185214361380026">Laienduse laadimine järgmisest asukohast ebaõnnestus:</translation>
 <translation id="5972529113578162692">Selle seadme administraator nõuab laienduse <ph name="EXTENSION_NAME" /> installimist. Seda ei saa desinstallida.</translation>
 <translation id="6027032947578871493">Tundmatu toode <ph name="PRODUCT_ID" /> teenusepakkujalt <ph name="VENDOR_NAME" /> (seerianumber <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Manifestifail on kehtetu</translation>
 <translation id="7217838517480956708">Seadme administraator nõuab, et <ph name="EXTENSION_NAME" /> oleks installitud. Seda ei saa eemaldada ega muuta.</translation>
 <translation id="7612608473764576263">Privaatvõtme jaoks sisestatud väärtus peab olema sobivas vormingus (PKCS#8 vormingus PEM-kodeeringuga RSA-võti).</translation>
+<translation id="765293928828334535">Rakendusi, laiendusi ja kasutaja skripte ei saa sellelt veebisaidilt lisada</translation>
 <translation id="7876803335449432072">Faili „<ph name="RELATIVE_PATH" />“ ei saanud sisu skripti jaoks laadida. Sisu skripti stiililehti saab laadida ainult toetatud stiililehefailidest (nt CSS-failid).</translation>
 <translation id="7939686037314084444">Laienduse laadimine nurjus. See ei saa võib-olla võrgutaotlusi suunata.</translation>
+<translation id="7952904276017482715">Eeldatav ID oli „<ph name="EXPECTED_ID" />”, kuid ID oli „<ph name="NEW_ID" />”</translation>
 <translation id="7972881773422714442">Valikud: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Kasutaja poole suunatud</translation>
 <translation id="8047248493720652249">Laiendus ei saanud määrata allalaaditavale failile nimeks „<ph name="ATTEMPTED_FILENAME" />”, sest teine laiendus (<ph name="EXTENSION_NAME" />) määras teise failinime „<ph name="ACTUAL_FILENAME" />”.</translation>
+<translation id="8049705080247101012">Google märgistas laienduse „<ph name="EXTENSION_NAME" />” pahatahtlikuks ja installimine blokeeriti</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> teenusepakkujalt <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Manifestifail puudub või ei ole seda võimalik lugeda</translation>
+<translation id="8565650234829130278">Üritas rakenduse üle viia vanemale versioonile.</translation>
 <translation id="8621383749470166852">Faili „<ph name="RELATIVE_PATH" />“ ei saanud sisu skripti jaoks laadida. Sisu skripte saab laadida ainult toetatud JavaScripti failidest (nt JS-failid).</translation>
 <translation id="8636666366616799973">Vale pakett. Üksikasjad: „<ph name="ERROR_MESSAGE" />”.</translation>
 <translation id="8761756413268424715">Rakendus „<ph name="APP_NAME" />” taotleb juurdepääsu ühele teie seadmele:</translation>

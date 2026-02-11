@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Impossible de charger le fichier "<ph name="RELATIVE_PATH" />" pour le script de contenu, car il dépasserait la taille maximale de script ou la taille totale maximale de script de contenu de l'extension.</translation>
 <translation id="1445572445564823378">Cette extension ralentit <ph name="PRODUCT_NAME" />. Vous devez la désactiver pour rétablir les performances de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL n'est pas compatible.</translation>
+<translation id="1478607704480248626">L'installation n'a pas été activée</translation>
+<translation id="1556537182262721003">Impossible de déplacer le répertoire d'extensions dans le profil.</translation>
 <translation id="1610570795592207282">Impossible de charger le fichier CSS "<ph name="RELATIVE_PATH" />" du script.</translation>
+<translation id="1616298854599875024">Impossible d'importer l'extension <ph name="IMPORT_NAME" />, car il ne s'agit pas d'un module partagé</translation>
 <translation id="1803557475693955505">Impossible de charger la page d'arrière-plan "<ph name="BACKGROUND_PAGE" />".</translation>
+<translation id="1875387611427697908">Cet élément doit être installé depuis le <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="2131077480075264">Impossible d'installer l'application "<ph name="APP_NAME" />", car elle n'est pas autorisée par "<ph name="IMPORT_NAME" />".</translation>
 <translation id="2159915644201199628">Impossible de décoder l'image : "<ph name="IMAGE_NAME" />".</translation>
 <translation id="2350172092385603347">Localisation utilisée, mais les paramètres régionaux par défaut (default_locale) n'ont pas été indiqués dans le manifeste. </translation>
 <translation id="2576842806987913196">Un autre fichier CRX portant le même nom existe déjà.</translation>
+<translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2743583586211388067">L'accès à cette extension est bloqué en vertu de la règle de votre organisation sur les risques liés aux extensions.</translation>
 <translation id="2785530881066938471">Impossible de charger le fichier "<ph name="RELATIVE_PATH" />" pour le script de contenu, car ce fichier n'est pas codé en UTF-8.</translation>
 <translation id="2903070246402204397">L'administrateur a bloqué l'extension <ph name="EXTENSION_NAME" /> (ID : <ph name="EXTENSION_ID" />). <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">Produit inconnu <ph name="PRODUCT_ID" /> du fournisseur <ph name="VENDOR_ID" /> (numéro de série : <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Échec lors du remplacement du fichier CRX. Vérifiez qu'il n'est pas en cours d'utilisation.</translation>
 <translation id="3163201441334626963">Produit inconnu <ph name="PRODUCT_ID" /> du fournisseur <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">L'appli dont le fichier manifeste comporte un attribut "kiosk_only" doit être installée en mode Kiosque pour Chrome OS</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numéro de série : <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> du fournisseur <ph name="VENDOR_ID" /> (numéro de série : <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Vous devez indiquer un chemin valide comme valeur de clé privée.</translation>
+<translation id="3834775135533257713">Impossible d'ajouter l'application <ph name="TO_INSTALL_APP_NAME" />, car elle crée un conflit avec <ph name="INSTALLED_APP_NAME" />.</translation>
 <translation id="388442998277590542">Impossible de charger la page d'options "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Erreur lors de la signature de l'extension</translation>
 <translation id="4233778200880751280">Impossible de charger la page "À propos" <ph name="ABOUT_PAGE" />.</translation>
+<translation id="424963718355121712">Les applications doivent être diffusées depuis l'hôte qu'elles affectent</translation>
+<translation id="4306119971288449206">Les applications doivent être diffusées avec le type de contenu <ph name="CONTENT_TYPE" /></translation>
+<translation id="4633003931260532286">L'extension nécessite au minimum la version <ph name="IMPORT_VERSION" /> de <ph name="IMPORT_NAME" />, mais la version installée est la <ph name="INSTALLED_VERSION" /></translation>
+<translation id="4660476621274971848">Version <ph name="NEW_ID" /> reçue au lieu de la version <ph name="EXPECTED_VERSION" /> attendue</translation>
 <translation id="471800408830181311">Échec de création de clé privée</translation>
 <translation id="4811956658694082538">Impossible d'installer le package en raison du plantage d'un processus associé à un utilitaire. Veuillez redémarrer Chrome, puis réessayer.</translation>
 <translation id="4988792151665380515">Échec d'exportation de la clé publique</translation>
+<translation id="501057610015570208">L'appli dont le fichier manifeste comporte un attribut "kiosk_only" doit être installée en mode Kiosque pour ChromeOS Flex</translation>
 <translation id="5026754133087629784">Affichage du site Web : <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Impossible de trouver le chemin d'accès absolu du répertoire à empaqueter.</translation>
 <translation id="5160071981665899014">Impossible de charger le fichier JavaScript "<ph name="RELATIVE_PATH" />" du script.</translation>
 <translation id="5356315618422219272">Appview : <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Cette extension comprend le fichier clé <ph name="KEY_PATH" />. Vous ne voulez probablement pas poursuivre.</translation>
 <translation id="5486326529110362464">La valeur d'entrée de la clé privée est obligatoire.</translation>
+<translation id="5527463195266282916">Tentative d'installation d'une version antérieure de l'extension.</translation>
 <translation id="5707185214361380026">Échec du chargement de l'extension depuis :</translation>
 <translation id="5972529113578162692">L'administrateur de cet ordinateur exige que l'extension <ph name="EXTENSION_NAME" /> soit installée. Cette extension ne pourra pas être désinstallée.</translation>
 <translation id="6027032947578871493">Produit inconnu <ph name="PRODUCT_ID" /> fourni par <ph name="VENDOR_NAME" /> (numéro de série : <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Le fichier manifeste est incorrect</translation>
 <translation id="7217838517480956708">L'administrateur de cet ordinateur exige que l'extension <ph name="EXTENSION_NAME" /> soit installée. Celle-ci ne peut pas être supprimée ni modifiée.</translation>
 <translation id="7612608473764576263">Vous devez indiquer un format valide comme valeur de clé privée (clé RSA encodée PEM format PKCS#8).</translation>
+<translation id="765293928828334535">Les applications, les extensions et les scripts d'utilisateur ne peuvent pas être ajoutés à partir de ce site Web</translation>
 <translation id="7876803335449432072">Impossible de charger le fichier "<ph name="RELATIVE_PATH" />" pour le script de contenu. Les feuilles de style de scripts de contenu ne peuvent être chargées qu'à partir des fichiers de feuilles de style compatibles, tels que les fichiers .css.</translation>
 <translation id="7939686037314084444">Échec du chargement de l'extension, laquelle risque de ne pas pouvoir intercepter les demandes réseau.</translation>
+<translation id="7952904276017482715">ID "<ph name="NEW_ID" />" reçu au lieu de l'ID "<ph name="EXPECTED_ID" />" attendu</translation>
 <translation id="7972881773422714442">Options : <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Caméra frontale</translation>
 <translation id="8047248493720652249">Échec de l'attribution du nom "<ph name="ATTEMPTED_FILENAME" />" au fichier téléchargé via l'extension, car un nom de fichier différent, "<ph name="ACTUAL_FILENAME" />", a été attribué via une autre extension (<ph name="EXTENSION_NAME" />).</translation>
+<translation id="8049705080247101012">Google a signalé l'extension <ph name="EXTENSION_NAME" /> comme malveillante et a bloqué son installation</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Fichier manifeste absent ou illisible</translation>
+<translation id="8565650234829130278">Tentative de passage à une version antérieure de l'application.</translation>
 <translation id="8621383749470166852">Impossible de charger le fichier "<ph name="RELATIVE_PATH" />" pour le script de contenu. Les scripts de contenu ne peuvent être chargés qu'à partir de fichiers JavaScript compatibles, tels que les fichiers .js.</translation>
 <translation id="8636666366616799973">Package incorrect. Détails : "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> demande l'accès à l'un de vos appareils :</translation>

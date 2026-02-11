@@ -584,6 +584,7 @@
 <translation id="3140825265190223781">Parole și chei de acces salvate</translation>
 <translation id="3143515551205905069">Anulează sincronizarea</translation>
 <translation id="3144126448740580210">TERMINAT</translation>
+<translation id="3147521114983561406">Cheile de acces se salvează în managerul de parole. Acestea sunt accesibile în filele incognito și cele normale.</translation>
 <translation id="3148052723910099040">Grila de file obișnuite</translation>
 <translation id="3148237711805373460">Accesează</translation>
 <translation id="3157387275655328056">Adaugă în lista de lectură</translation>
@@ -2097,6 +2098,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8587001564479545614">Creează un PIN de recuperare</translation>
 <translation id="8588404856427128947">Stinsă</translation>
 <translation id="8590286732816598906">Grup de file, <ph name="GROUP_TITLE" />, Meniu.</translation>
+<translation id="8593317261815647019">Creezi o cheie de acces în afara modului incognito?</translation>
 <translation id="8600272508328041907">Comută la traducerea întregii pagini</translation>
 <translation id="860043288473659153">Nume titular de card</translation>
 <translation id="8601611099293226919">Caută pe ecran folosind Google Lens</translation>

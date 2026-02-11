@@ -295,6 +295,7 @@
 <translation id="3903738175795615004">‏כדי לצאת מהמסך המלא, צריך לגרור מלמעלה או להקיש על Esc.</translation>
 <translation id="3905475044299942653">עצירה של התראות מרובות</translation>
 <translation id="3922092564198021702">בטלפון, פותחים את ההגדרות</translation>
+<translation id="3924858949939391676">הצגת קישורים כשמצב הקריאה מופעל</translation>
 <translation id="3933121352599513978">כיווץ בקשות לא רצויות (מומלץ)</translation>
 <translation id="3934905113567851655">כדי לשנות את הגודל, פותחים או סוגרים את האצבעות</translation>
 <translation id="3955193568934677022">אתרים יוכלו להפעיל תוכן מוגן (מומלץ)</translation>
@@ -359,6 +360,7 @@
 <translation id="4644713492825682049">מחיקה ואיפוס</translation>
 <translation id="4645575059429386691">מנוהל על-ידי ההורה שלך</translation>
 <translation id="4652266463001779298">אין הרשאה</translation>
+<translation id="4655846733459137112">כדי להשתמש בסיסמה הזו בקלות בכניסה הבאה לחשבון, צריך ללחוץ על "כן"</translation>
 <translation id="4663373278480897665">ניתן להשתמש במצלמה בדף זה</translation>
 <translation id="4670064810192446073">מציאות מדומה</translation>
 <translation id="4672315773691449562">‏לוחצים על אפליקציית הדפדפן ואז על Chrome</translation>
@@ -465,6 +467,7 @@
 <translation id="5804241973901381774">הרשאות</translation>
 <translation id="5817042798620209981">פרטי האתר, תיבת דו-שיח</translation>
 <translation id="5822675474983796325">הגיליון התחתון להתאמה אישית של דף הכרטיסייה החדשה נפתח בגובה מלא</translation>
+<translation id="5826403277762134844">‏גיליון תחתון עם הוראות לשמירת סיסמאות ב-Chrome</translation>
 <translation id="5833899990800318936">‏לא לאפשר לאתרים להשתמש ב-JavaScript</translation>
 <translation id="583673505367439042">אתרים יכולים לבקש הרשאה לערוך קבצים ותיקיות במכשיר שלך</translation>
 <translation id="5844448279347999754">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה לראות טקסט ותמונות שנשמרו בלוח העריכה. כשהאפשרות מושבתת, אתרים לא יכולים לראות טקסט או תמונות שנשמרו בלוח העריכה.</translation>
@@ -644,6 +647,7 @@
 <translation id="775043444390799886">ביטול ההרשאה</translation>
 <translation id="7758789811447313947">עיצוב סגול</translation>
 <translation id="7759147511335618829">‏שליטה במכשירי MIDI ותכנות מחדש</translation>
+<translation id="7771089277295008211">הגיליון התחתון עם ההוראות לשמירת סיסמאות נסגר</translation>
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7791543448312431591">הוספה</translation>
 <translation id="780301667611848630">לא תודה</translation>
@@ -661,6 +665,7 @@
 <translation id="7940722705963108451">קבלת תזכורת</translation>
 <translation id="7948081750384205628">מידע נוסף על <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">אתרים יכולים לבקש הרשאה לראות טקסט ותמונות בלוח העריכה</translation>
+<translation id="7958779728312669715">הגיליון התחתון של ההוראות לשמירת סיסמאות נפתח במלואו</translation>
 <translation id="798299424881500862">עיצוב כתום</translation>
 <translation id="7986741934819883144">בחירת איש קשר</translation>
 <translation id="7990211076305263060">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במיקרופון. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש במיקרופון.</translation>
@@ -757,6 +762,7 @@
 <translation id="8889294078294184559">‏במהלך הגלישה, אתרים אחרים יכולים לבדוק ב-Chrome ולאמת שסביר להניח שמדובר באדם אמיתי, לפי פרטים שנשמרו בביקור באתר קודם.</translation>
 <translation id="8899807382908246773">מודעות שמפריעות</translation>
 <translation id="8903921497873541725">התקרבות לתצוגה</translation>
+<translation id="8919911527569629802">כניסה לחשבון בכל אתר</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">אין לשאול שוב</translation>
 <translation id="8926666909099850184">‏קישוריות ה-NFC מושבתת במכשיר הזה. ניתן להפעיל אותה דרך <ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
@@ -784,6 +790,7 @@
 <translation id="9182556968660520230">לא לאפשר לאתרים להפעיל תוכן מוגן</translation>
 <translation id="947156494302904893">אתרים שמבקרים בהם יכולים לאמת שמדובר באדם אמיתי ולא בבוט</translation>
 <translation id="959682366969460160">ארגון הפריטים</translation>
+<translation id="960590623979248167">הצגת היפר-קישורים</translation>
 <translation id="961930410699694996">יש אישור לשימוש חד-פעמי במיקום</translation>
 <translation id="967624055006145463">נפח הנתונים</translation>
 <translation id="969975166333045662">‏חסימת האפשרות של האתר להשתמש בכלי האופטימיזציה של V8.</translation>

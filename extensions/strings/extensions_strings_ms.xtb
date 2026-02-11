@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Tidak dapat memuatkan fail '<ph name="RELATIVE_PATH" />' untuk skrip kandungan jika fail itu akan melebihi saiz maksimum skrip atau jumlah saiz skrip kandungan maksimum bagi sambungan.</translation>
 <translation id="1445572445564823378">Sambungan ini melambatkan <ph name="PRODUCT_NAME" />. Anda perlu melumpuhkannya untuk memulihkan prestasi <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL tidak disokong.</translation>
+<translation id="1478607704480248626">Pemasangan tidak didayakan</translation>
+<translation id="1556537182262721003">Tidak dapat menggerakkan direktori sambungan ke profil.</translation>
 <translation id="1610570795592207282">Tidak dapat memuatkan css '<ph name="RELATIVE_PATH" />' untuk skrip.</translation>
+<translation id="1616298854599875024">Tidak dapat mengimport sambungan "<ph name="IMPORT_NAME" />" kerana bukan modul kongsi</translation>
 <translation id="1803557475693955505">Tidak dapat memuatkan halaman latar belakang '<ph name="BACKGROUND_PAGE" />'.</translation>
+<translation id="1875387611427697908">Item ini hanya boleh ditambahkan daripada <ph name="CHROME_WEB_STORE" />.</translation>
+<translation id="2131077480075264">Tidak dapat memasang "<ph name="APP_NAME" />" kerana tidak dibenarkan oleh "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2159915644201199628">Tidak dapat menyahkod imej: ' <ph name="IMAGE_NAME" /> '</translation>
 <translation id="2350172092385603347">Penempatan digunakan, tetapi default_locale tidak dinyatakan dalam ketara.</translation>
 <translation id="2576842806987913196">Fail CRX dengan nama ini telah wujud.</translation>
+<translation id="2662876636500006917">Kedai Web Chrome</translation>
 <translation id="2743583586211388067">Akses kepada sambungan ini disekat menurut dasar risiko sambungan organisasi anda.</translation>
 <translation id="2785530881066938471">Tidak dapat memuatkan fail '<ph name="RELATIVE_PATH" />' untuk skrip kandungan. Ia tidak terkod UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ID sambungan "<ph name="EXTENSION_ID" />") disekat oleh pentadbir. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">Produk <ph name="PRODUCT_ID" /> daripada vendor <ph name="VENDOR_ID" /> tidak diketahui (nombor siri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Gagal untuk menggantikan fail crx. Periksa untuk melihat jika fail sedang digunakan.</translation>
 <translation id="3163201441334626963">Produk <ph name="PRODUCT_ID" /> daripada vendor <ph name="VENDOR_ID" /> tidak diketahui</translation>
+<translation id="3242289508736283383">Apl dengan atribut manifes 'kiosk_only' mesti dipasang dalam mod kios Chrome OS</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (nombor siri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> daripada vendor <ph name="VENDOR_ID" /> (nombor siri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Nilai input untuk kunci persendirian mestilah laluan yang sah.</translation>
+<translation id="3834775135533257713">Tidak dapat menambahkan aplikasi "<ph name="TO_INSTALL_APP_NAME" />" kerana bercanggah dengan "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Tidak dapat memuatkan halaman pilihan '<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">Ralat semasa menandatangani sambungan.</translation>
 <translation id="4233778200880751280">Tidak dapat memuatkan halaman perihal '<ph name="ABOUT_PAGE" />'.</translation>
+<translation id="424963718355121712">Apl mesti disampaikan daripada hos yang dipengaruhinya</translation>
+<translation id="4306119971288449206">Apl mesti disampaikan dengan jenis kandungan "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4633003931260532286">Sambungan memerlukan "<ph name="IMPORT_NAME" />" dengan versi minimum "<ph name="IMPORT_VERSION" />", tetapi hanya versi "<ph name="INSTALLED_VERSION" />" yang ada dipasang</translation>
+<translation id="4660476621274971848">Versi yang dijangkakan "<ph name="EXPECTED_VERSION" />", tetapi versi sebenar ialah "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Gagal untuk output kunci persendirian.</translation>
 <translation id="4811956658694082538">Tidak dapat memasang pakej kerana proses utiliti telah ranap. Cuba mulakan semula Chrome dan cuba lagi.</translation>
 <translation id="4988792151665380515">Gagal intuk mengeksport kunci awam.</translation>
+<translation id="501057610015570208">Apl dengan atribut manifes 'kiosk_only' mesti dipasang dalam mod kios Chrome OS Flex.</translation>
 <translation id="5026754133087629784">Paparan Web: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Tidak dapat mencari laluan mutlak ke direktori ke pek.</translation>
 <translation id="5160071981665899014">Tidak dapat memuatkan javascript '<ph name="RELATIVE_PATH" />' untuk skrip.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Sambungan ini merangkumi fail utama ' <ph name="KEY_PATH" /> '. Anda mungkin tidak mahu melakukannya.</translation>
 <translation id="5486326529110362464">Nilai input untuk kekunci peribadi  mesti wujud.</translation>
+<translation id="5527463195266282916">Mencuba untuk merendahkan sambungan.</translation>
 <translation id="5707185214361380026">Gagal memuatkan sambungan daripada:</translation>
 <translation id="5972529113578162692">Pentadbir mesin ini memerlukan <ph name="EXTENSION_NAME" /> dipasang. Sambungan ini tidak boleh dinyahpasang.</translation>
 <translation id="6027032947578871493">Produk <ph name="PRODUCT_ID" /> daripada <ph name="VENDOR_NAME" /> tidak diketahui (nombor siri <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Fail manifes tidak sah</translation>
 <translation id="7217838517480956708">Pentadbir mesin ini memerlukan <ph name="EXTENSION_NAME" /> dipasang. Sambungan ini tidak boleh dialih keluar atau diubah suai.</translation>
 <translation id="7612608473764576263">Nilai input untuk kunci persendirian mestilah dalam format yang sah (Kunci RSA terkod PEM format PKCS#8).</translation>
+<translation id="765293928828334535">Apl, sambungan dan skrip pengguna tidak boleh ditambahkan daripada laman web ini</translation>
 <translation id="7876803335449432072">Tidak dapat memuatkan fail '<ph name="RELATIVE_PATH" />' untuk skrip kandungan. Helaian gaya skrip kandungan hanya boleh dimuatkan daripada fail helaian gaya yang disokong seperti fail .css.</translation>
 <translation id="7939686037314084444">Sambungan gagal dimuatkan dengan betul. Sambungan itu mungkin tidak dapat memintas permintaan rangkaian.</translation>
+<translation id="7952904276017482715">ID dijangkakan "<ph name="EXPECTED_ID" />", tetapi ID sebenar ialah "<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">Pilihan: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Menghadap pengguna</translation>
 <translation id="8047248493720652249">Sambungan ini gagal menamakan muat turun "<ph name="ATTEMPTED_FILENAME" />" kerana sambungan lain (<ph name="EXTENSION_NAME" />) menetapkan nama fail lain "<ph name="ACTUAL_FILENAME" />".</translation>
+<translation id="8049705080247101012">Google telah menandai <ph name="EXTENSION_NAME" /> sebagai berhasad dan pemasangan telah dihalang</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> daripada <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Fail manifes hilang atau tidak dapat dibaca</translation>
+<translation id="8565650234829130278">Cuba untuk menurunkan taraf apl.</translation>
 <translation id="8621383749470166852">Tidak dapat memuatkan fail '<ph name="RELATIVE_PATH" />' untuk skrip kandungan. Sskrip kandungan hanya boleh dimuatkan daripada fail JavaScript yang disokong seperti fail .js.</translation>
 <translation id="8636666366616799973">Pakej adalah tidak sah. Butiran: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" meminta akses kepada salah satu peranti anda:</translation>

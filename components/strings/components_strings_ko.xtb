@@ -2791,6 +2791,7 @@
 <translation id="5466018172325111652">코드를 받지 못하셨나요? <ph name="BEGIN_LINK" />새 코드 받기<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">결제 앱</translation>
 <translation id="5470861586879999274">수정 다시 실행(&amp;R)</translation>
+<translation id="5471158297908124590">결제 수단을 수정하려면 본인 인증을 진행하세요.</translation>
 <translation id="5472588168895083535">손 추적이 차단됨</translation>
 <translation id="5477756102936130143">지원되는 결제 앱으로 리디렉션 사용 설정</translation>
 <translation id="5479505548832623900">확장 프로그램에 의해 무시되었을 가능성이 높습니다.</translation>
@@ -3174,6 +3175,7 @@
 <translation id="6093795393556121384">카드가 인증되었습니다.</translation>
 <translation id="6094253940069566294">차량 수정</translation>
 <translation id="6094290315941448991">기밀 콘텐츠가 화면에 표시되면 관리자 정책에서 화면 녹화를 사용 중지합니다.</translation>
+<translation id="6097297436119286254">결제 정보를 입력하려면 본인 인증을 진행하세요.</translation>
 <translation id="6099269767116481177">22x29.5인치</translation>
 <translation id="6101583188322746099">식료품 배달 서비스</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4921,6 +4923,7 @@
 <translation id="8897428486789851669">수영</translation>
 <translation id="8899807382908246773">방해가 되는 광고</translation>
 <translation id="8903921497873541725">확대</translation>
+<translation id="8903998444169664879">결제 설정을 변경하려면 본인 인증을 진행하세요.</translation>
 <translation id="890493561996401738">추천 삭제 버튼, Enter 키를 눌러 삭제, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8x10인치</translation>
 <translation id="8914504000324227558">Chrome 다시 시작</translation>

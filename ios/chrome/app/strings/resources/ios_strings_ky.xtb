@@ -584,6 +584,7 @@
 <translation id="3140825265190223781">Сакталган сырсөздөр жана киргизүүчү ачкычтар</translation>
 <translation id="3143515551205905069">Шайкештештирүүнү жокко чыгаруу</translation>
 <translation id="3144126448740580210">БҮТТҮ</translation>
+<translation id="3147521114983561406">Киргизүүчү ачкычтар сырсөздөрдү башкаргычка сакталат. Алар Жашыруун жана кадимки өтмөктөрдө жеткиликтүү.</translation>
 <translation id="3148052723910099040">Кадимки өтмөк торчосу</translation>
 <translation id="3148237711805373460">Өтүү</translation>
 <translation id="3157387275655328056">Окуу тизмесине кошуу</translation>
@@ -2097,6 +2098,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8587001564479545614">Калыбына келтирүүчү PIN түзүңүз</translation>
 <translation id="8588404856427128947">Өчүк</translation>
 <translation id="8590286732816598906">Өтмөктөр тобу, <ph name="GROUP_TITLE" />, Меню.</translation>
+<translation id="8593317261815647019">Киргизүүчү ачкыч Жашыруун режимден сырткары түзүлсүнбү?</translation>
 <translation id="8600272508328041907">Толук баракты которууга өтүү</translation>
 <translation id="860043288473659153">Карта ээсинин аты</translation>
 <translation id="8601611099293226919">Экраныңыздагы нерселерди Google Lens аркылуу издөө</translation>

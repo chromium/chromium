@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Kan bestand <ph name="RELATIVE_PATH" /> niet laden voor contentscript omdat hierdoor de maximale scriptgrootte of de maximale totale contentscriptgrootte van de extensie wordt overschreden.</translation>
 <translation id="1445572445564823378"><ph name="PRODUCT_NAME" /> wordt door deze extensie vertraagd. Zet de extensie uit om de prestaties van <ph name="PRODUCT_NAME" /> te verbeteren.</translation>
 <translation id="1468038450257740950">WebGL wordt niet ondersteund.</translation>
+<translation id="1478607704480248626">Installatie is niet mogelijk</translation>
+<translation id="1556537182262721003">Kan extensiedirectory niet verplaatsen naar profiel.</translation>
 <translation id="1610570795592207282">Kan css '<ph name="RELATIVE_PATH" />' niet laden voor het script.</translation>
+<translation id="1616298854599875024">Kan '<ph name="IMPORT_NAME" />' niet importeren, omdat dit geen gedeelde module is</translation>
 <translation id="1803557475693955505">Kan achtergrondpagina '<ph name="BACKGROUND_PAGE" />' niet laden.</translation>
+<translation id="1875387611427697908">Dit pakket kan alleen worden toegevoegd via de <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="2131077480075264">Kan <ph name="APP_NAME" /> niet installeren, omdat dit niet wordt toegestaan door <ph name="IMPORT_NAME" /></translation>
 <translation id="2159915644201199628">Kan afbeelding niet decoderen: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Lokalisatie gebruikt, maar er is geen 'default_locale' opgegeven in het manifest.</translation>
 <translation id="2576842806987913196">Er is al een CRX-bestand aanwezig met deze naam.</translation>
+<translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2743583586211388067">De toegang tot deze extensie is geblokkeerd op grond van het risicobeleid voor extensies van je organisatie.</translation>
 <translation id="2785530881066938471">Kan bestand '<ph name="RELATIVE_PATH" />' niet laden voor inhoudsscript. Het bestand bevat geen UTF-8-codering.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (extensie-ID '<ph name="EXTENSION_ID" />') is geblokkeerd door de beheerder. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">Onbekend product <ph name="PRODUCT_ID" /> van leverancier <ph name="VENDOR_ID" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Vervangen van crx-bestand is mislukt. Controleer of het bestand wordt gebruikt.</translation>
 <translation id="3163201441334626963">Onbekend product <ph name="PRODUCT_ID" /> van leverancier <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">Een app met het manifestkenmerk 'kiosk_only' moet worden geïnstalleerd in de Chrome OS-kioskmodus</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> van leverancier <ph name="VENDOR_ID" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Invoerwaarde voor persoonlijke sleutel moet een geldig pad zijn.</translation>
+<translation id="3834775135533257713">De app <ph name="TO_INSTALL_APP_NAME" /> kan niet worden toegevoegd, omdat deze conflicten veroorzaakt met <ph name="INSTALLED_APP_NAME" />.</translation>
 <translation id="388442998277590542">Kan optiepagina '<ph name="OPTIONS_PAGE" />' niet laden.</translation>
 <translation id="3984413272403535372">Fout bij ondertekenen van extensie.</translation>
 <translation id="4233778200880751280">De informatiepagina '<ph name="ABOUT_PAGE" />' kan niet worden geladen.</translation>
+<translation id="424963718355121712">Apps moeten worden weergegeven vanaf de host waarop ze betrekking hebben</translation>
+<translation id="4306119971288449206">Apps moeten worden weergegeven met inhoudstype '<ph name="CONTENT_TYPE" />'</translation>
+<translation id="4633003931260532286">Voor deze extensie is minimaal versie '<ph name="IMPORT_VERSION" />' van '<ph name="IMPORT_NAME" />' vereist, maar alleen versie '<ph name="INSTALLED_VERSION" />' is geïnstalleerd</translation>
+<translation id="4660476621274971848">Verwachte versie '<ph name="EXPECTED_VERSION" />', maar versie is '<ph name="NEW_ID" />'</translation>
 <translation id="471800408830181311">Uitvoer van persoonlijke sleutel is mislukt.</translation>
 <translation id="4811956658694082538">Kan pakket niet installeren, omdat het proces van een hulpprogramma is gecrasht. Start Chrome opnieuw en probeer het nogmaals.</translation>
 <translation id="4988792151665380515">Exporteren van openbare sleutel is mislukt.</translation>
+<translation id="501057610015570208">Een app met het manifestkenmerk 'kiosk_only' moet worden geïnstalleerd in de Chrome OS Flex-kioskmodus.</translation>
 <translation id="5026754133087629784">Webweergave: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Kan het absolute pad naar de in te pakken directory niet vinden.</translation>
 <translation id="5160071981665899014">Kan JavaScript '<ph name="RELATIVE_PATH" />' niet laden voor het script.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Deze extensie bevat het sleutelbestand '<ph name="KEY_PATH" />'. Dit is waarschijnlijk niet je bedoeling.</translation>
 <translation id="5486326529110362464">Invoerwaarde voor persoonlijke sleutel moet aanwezig zijn.</translation>
+<translation id="5527463195266282916">Je probeert een oudere versie van de extensie te installeren.</translation>
 <translation id="5707185214361380026">Laden van extensie mislukt vanuit:</translation>
 <translation id="5972529113578162692">De beheerder van deze machine vereist dat <ph name="EXTENSION_NAME" /> wordt geïnstalleerd. Deze kan niet worden verwijderd.</translation>
 <translation id="6027032947578871493">Onbekend product <ph name="PRODUCT_ID" /> van <ph name="VENDOR_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Manifestbestand is ongeldig</translation>
 <translation id="7217838517480956708">De beheerder van dit apparaat vereist dat <ph name="EXTENSION_NAME" /> is geïnstalleerd. Het kan niet worden verwijderd of gewijzigd.</translation>
 <translation id="7612608473764576263">De invoerwaarde voor de privésleutel moet een geldige indeling hebben (PKCS#8-indeling met PEM-gecodeerde RSA-sleutel).</translation>
+<translation id="765293928828334535">Apps, extensies en gebruikersscripts kunnen niet worden toegevoegd vanaf deze website</translation>
 <translation id="7876803335449432072">Kan bestand <ph name="RELATIVE_PATH" /> niet laden voor het contentscript. Stylesheets van contentscripts kunnen alleen worden geladen vanuit ondersteunde stylesheetbestanden, zoals css-bestanden.</translation>
 <translation id="7939686037314084444">De extensie wordt niet goed geladen. Mogelijk kan deze geen netwerkverzoeken onderscheppen.</translation>
+<translation id="7952904276017482715">Verwachte ID '<ph name="EXPECTED_ID" />', maar ID is '<ph name="NEW_ID" />'</translation>
 <translation id="7972881773422714442">Opties: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Camera aan voorzijde</translation>
 <translation id="8047248493720652249">Deze extensie kan de download niet de naam '<ph name="ATTEMPTED_FILENAME" />' geven, omdat een andere extensie (<ph name="EXTENSION_NAME" />) een andere bestandsnaam '<ph name="ACTUAL_FILENAME" />' heeft bepaald.</translation>
+<translation id="8049705080247101012">Google heeft <ph name="EXTENSION_NAME" /> als schadelijk gemarkeerd en de installatie is geblokkeerd</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> van <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Manifestbestand ontbreekt of is onleesbaar</translation>
+<translation id="8565650234829130278">Je probeert een oudere versie van de app te installeren.</translation>
 <translation id="8621383749470166852">Kan bestand <ph name="RELATIVE_PATH" /> niet laden voor het contentscript. Contentscripts kunnen alleen worden geladen vanuit ondersteunde JavaScript-bestanden, zoals js-bestanden.</translation>
 <translation id="8636666366616799973">Pakket is ongeldig. Details: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> vraagt om toegang tot een van je apparaten:</translation>

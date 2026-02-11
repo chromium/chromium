@@ -1922,6 +1922,7 @@ Attribution Reporting API 已淘汰，因此這項政策也已在 <ph name="PROD
       這項政策會覆寫 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />、<ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />、<ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 和使用者的偏好設定。
 
       這項政策只會影響透過 WebUSB API 存取 USB 裝置的權限。如要授予透過 Web Serial API 存取 USB 裝置的權限，請參閱 <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" /> 政策。</translation>
+<translation id="2318353380372431186">啟用 IWA 使用者安裝程式</translation>
 <translation id="2318583605563438459">允許家長新增受監護的帳戶</translation>
 <translation id="2326031114717677574">系統取樣和收集音訊資料的頻率。下限值是 1 分鐘。
 
@@ -2554,6 +2555,7 @@ Attribution Reporting API 已淘汰，因此這項政策也已在 <ph name="PROD
       如果設為停用，<ph name="PRODUCT_NAME" /> 只能使用安裝在系統層級的主機。</translation>
 <translation id="2753637905605932878">限制 WebRTC 所使用的本機 UDP 連接埠範圍</translation>
 <translation id="2755847332939882873">允許收集整個系統的效能追蹤記錄</translation>
+<translation id="2755963656455766808">控管使用者是否能手動安裝隔離網頁應用程式</translation>
 <translation id="2757054304033424106">允許安裝的擴充功能/應用程式類型</translation>
 <translation id="275769337615229465">大多數來源都會與同一網站中的其他來源隔離。</translation>
 <translation id="2759224876420453487">控制使用者在多重設定檔工作階段中的行為</translation>
@@ -5523,6 +5525,12 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
        系統可允許與主機完全相符或網域相符的主機名稱。舉例來說，如果這份清單包含「foo.example.com」或「example.com」，「https://foo.example.com/bar」這類網址可能不會顯示警告訊息。</translation>
 <translation id="4852900976354340846">Direct Sockets 設定</translation>
 <translation id="485419696366295465">控管 <ph name="BOREALIS_NAME" /> 子系統的相關政策。</translation>
+<translation id="4854384393031206645">控管使用者是否能手動安裝隔離網頁應用程式 (IWA)。
+
+如果將這項政策設為「False」，將無法使用 IWA 使用者安裝程式。
+
+如果將這項政策設為「True」或未設定，將可使用 IWA 使用者安裝程式。
+</translation>
 <translation id="4855636880814771207">如果將這項政策設為啟用或不設定，使用者將可開啟或關閉藍牙。
 
        如果將這項政策設為停用，<ph name="PRODUCT_OS_NAME" />會關閉藍牙，且使用者無法開啟。
@@ -5934,6 +5942,7 @@ Protected Audience API 已淘汰，因此這項政策也已在 <ph name="PRODUCT
       </translation>
 <translation id="5104606191349861549">Key Shortcuts (自 129 版開始支援)</translation>
 <translation id="5105313908130842249">在電池供電環境下執行時的螢幕鎖定延遲時間</translation>
+<translation id="5105593357527099243">停用 IWA 使用者安裝程式</translation>
 <translation id="510604120100968366">啟用低電量音效功能。
 
           這項功能可以播放低電量音效。

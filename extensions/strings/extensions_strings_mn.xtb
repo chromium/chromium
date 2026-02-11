@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Контентын скриптэд '<ph name="RELATIVE_PATH" />' файлыг ачаалж чадсангүй. Учир нь тухайн файл скриптийн дээд хэмжээ эсвэл өргөтгөлийн контентын скриптийн нийт дээд хэмжээнээс хэтэрнэ.</translation>
 <translation id="1445572445564823378">Энэ өргөтгөл <ph name="PRODUCT_NAME" /> удааширч байна. Та <ph name="PRODUCT_NAME" />-ийн гүйцэтгэлийг дахин сэргээхийн тулд идэвхгүй болгох хэрэгтэй.</translation>
 <translation id="1468038450257740950">WebGL-ийг дэмжихгүй байна.</translation>
+<translation id="1478607704480248626">Суулгалтыг идэвхжүүлээгүй байна</translation>
+<translation id="1556537182262721003">Өргөтгөлийн директорыг профайл руу зөөж чадсангүй.</translation>
 <translation id="1610570795592207282">Скриптэд css '<ph name="RELATIVE_PATH" />'-г ачаалж чадсангүй.</translation>
+<translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" өргөтгөл нь хуваалцсан модуль биш тул үүнийг импорт хийх боломжгүй</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' үндсэн хуудсыг ачаалж чадсангүй.</translation>
+<translation id="1875387611427697908">Үүнийг зөвхөн <ph name="CHROME_WEB_STORE" />-с нэмэх боломжтой</translation>
+<translation id="2131077480075264">"<ph name="APP_NAME" />" апликейшнийг <ph name="IMPORT_NAME" />-н зөвшөөрөлгүйгээр суулгах боломжгүй байна.</translation>
 <translation id="2159915644201199628">Дүрсний кодыг тайлах боломжгүй байна: <ph name="IMAGE_NAME" /> '</translation>
 <translation id="2350172092385603347">Байрлалыг ашигласан, анхдагч байрлалыг контентын жагсаалтанд зааж өгсөн.</translation>
 <translation id="2576842806987913196">Ийм нэртэй CRX файл аль хэдийн байна.</translation>
+<translation id="2662876636500006917">Chrome веб дэлгүүр</translation>
 <translation id="2743583586211388067">Энэ өргөтгөлд хандах эрхийг танай байгууллагын өргөтгөлийн эрсдэлийн бодлогын дагуу блоклосон.</translation>
 <translation id="2785530881066938471">Контентын бичвэрийн зорилгоор <ph name="RELATIVE_PATH" /> файлыг ачаалж чадсангүй. Энэ нь UTF-8 кодчилол биш байна.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" />-г (өргөтгөлийн ID "<ph name="EXTENSION_ID" />") таны администратор блоклосон. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> борлуулагчийн <ph name="PRODUCT_ID" /> тодорхойгүй бүтээгдэхүүн (серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx файлыг солих боломжгүй байна.Файл нээлттэй байгаа эсэхийг шалгана уу.</translation>
 <translation id="3163201441334626963"><ph name="PRODUCT_ID" /> үйлдвэрлэгчийн <ph name="VENDOR_ID" /> тодорхойгүй бүтээгдэхүүн</translation>
+<translation id="3242289508736283383">'Kiosk_only' тодорхойлогч атрибуттай аппыг ChromeOS-н kiosk горимд суулгах ёстой</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> борлуулагчийн <ph name="VENDOR_ID" /> (сериалын дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Хувийн түлхүүрт оруулах оролтын утга нь хүчин төгөлдөр байх ёстой.</translation>
+<translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" апп нь "<ph name="INSTALLED_APP_NAME" />"-тай зөрчилдөж байгаа тул үүнийг нэмэх боломжгүй байна.</translation>
 <translation id="388442998277590542">Сонголтууд хуудсыг '<ph name="OPTIONS_PAGE" />' ачаалж чадсангүй.</translation>
 <translation id="3984413272403535372">Өргөтгөл рүү нэвтрэх үед алдаа гарлаа</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' Тухай хуудсыг ачаалж чадсангүй.</translation>
+<translation id="424963718355121712">Аппыг нөлөөлдөг толгой компьютероос нь ажиллуулах шаардлагатай</translation>
+<translation id="4306119971288449206">Аппыг заавал "<ph name="CONTENT_TYPE" />" агуулгын төрөлтэй ажиллуулах шаардлагатай</translation>
+<translation id="4633003931260532286">Өргөтгөлд хамгийн бага "<ph name="IMPORT_VERSION" />" хувилбартай "<ph name="IMPORT_NAME" />" шаардлагатай хэдий ч зөвхөн "<ph name="INSTALLED_VERSION" />" хувилбарыг суулгасан байна</translation>
+<translation id="4660476621274971848">"<ph name="EXPECTED_VERSION" />" хувилбарыг шаардсан хэдий ч "<ph name="NEW_ID" />" хувилбар байсан</translation>
 <translation id="471800408830181311">Хувийн түлхүүрийг тооцоолох ажиллагаа бүтэлгүйтэв.</translation>
 <translation id="4811956658694082538">Ашиглалтын явцад гэмтэл гарсан тул багцыг суулгаж чадсангүй. Chrome-ийг дахин эхлүүлээд, оролдоод үзээрэй.</translation>
 <translation id="4988792151665380515">Нийтийн түлхүүрийг экспортлох ажиллагаа амжилтгүй боллоо</translation>
+<translation id="501057610015570208">'Kiosk_only' тодорхойлогч атрибуттай аппыг ChromeOS Flex-н kiosk горимд суулгах ёстой</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Өргөтгөлийн директорын гол замыг олж чадсангүй.</translation>
 <translation id="5160071981665899014">Скриптэд '<ph name="RELATIVE_PATH" />' javaScript-г ачаалж чадсангүй.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Энэхүү өргөтгөлд <ph name="KEY_PATH" /> түлхүүр файл багтана. Та магадгүй энэ үйлдлийг хийх хүсэлгүй байж болох юм.</translation>
 <translation id="5486326529110362464">Хувийн түлхүүрт оролтын утга байх ёстой.</translation>
+<translation id="5527463195266282916">Өргөтгөлийн зэрэглэлийг бууруулахыг оролдсон.</translation>
 <translation id="5707185214361380026">:-ээс өргөтгөлийг ачаалах ажиллагаа амжилтгүй боллоо.</translation>
 <translation id="5972529113578162692">Энэ машины администратор нь <ph name="EXTENSION_NAME" />-ийг суулгахыг шаарддаг бөгөөд суулгалтыг устгах боломжгүй байдаг.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" />-ийн тодорхойгүй бүтээгдэхүүн <ph name="PRODUCT_ID" /> (серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Тодорхойлогч файл буруу байна</translation>
 <translation id="7217838517480956708">Энэ машины админаас суулгах <ph name="EXTENSION_NAME" />-ийг шаардаж байна. Үүнийг устгах юмуу өөрчилж болохгүй.</translation>
 <translation id="7612608473764576263">Хувийн түлхүүрийн оролтын утга хүчинтэй формат байх ёстой (PKCS#8-формат PEM-кодолсон RSA түлхүүр).</translation>
+<translation id="765293928828334535">Энэ вебсайтаас апп, өргөтгөлүүд болон хэрэглэгчийн скриптийг нэмэх боломжгүй</translation>
 <translation id="7876803335449432072">Контентын скриптэд зориулж '<ph name="RELATIVE_PATH" />' файлыг ачаалж чадсангүй. Контентын скриптийн style sheet-г зөвхөн .css файл зэрэг дэмжигдсэн style sheet файлаас ачаалж болно.</translation>
 <translation id="7939686037314084444">Тус өргөтгөлийг зохих ёсоор ачаалж чадсангүй. Энэ нь сүлжээний хүсэлтийг зогсоох боломжгүй байж болзошгүй.</translation>
+<translation id="7952904276017482715">Хүлээгдэж байсан ID нь "<ph name="EXPECTED_ID" />" хэдий ч ID "<ph name="NEW_ID" />" байсан</translation>
 <translation id="7972881773422714442">Сонголтууд: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Хэрэглэгч рүү харсан</translation>
 <translation id="8047248493720652249">Өөр өргөтгөл (<ph name="EXTENSION_NAME" /> ) татсан файлын нэрийг <ph name="ACTUAL_FILENAME" /> өөрөөр тодорхойлсон тул энэхүү өргөтгөлийн зүгээс <ph name="ATTEMPTED_FILENAME" /> гэсэн нэрээр нэрлэх үйлдэл амжилтгүй болсон байна.</translation>
+<translation id="8049705080247101012">Google "<ph name="EXTENSION_NAME" />"-г хортой гэж тэмдэглэсэн бөгөөд суулгахаас сэргийлсэн болно</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" />-ний <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">Тодорхойлогч файл байхгүй эсвэл үүнийг унших боломжгүй байна</translation>
+<translation id="8565650234829130278">Програмын хувилбарыг бууруулах оролдлого хийсэн.</translation>
 <translation id="8621383749470166852">Контентын скриптэд зориулж '<ph name="RELATIVE_PATH" />' файлыг ачаалж чадсангүй. Контентын скриптийг зөвхөн .js файл зэрэг JavaScript-н файлаас ачаалж болно.</translation>
 <translation id="8636666366616799973">Багц нь хүчингүй байна. Дэлгэрэнгүй мэдээллийг: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" таны аль нэг төхөөрөмжид хандах хүсэлтэй байна:</translation>

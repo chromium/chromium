@@ -584,6 +584,7 @@
 <translation id="3140825265190223781">Shranjena gesla in ključi za dostop</translation>
 <translation id="3143515551205905069">Prekliči sinhronizacijo</translation>
 <translation id="3144126448740580210">KONČANO</translation>
+<translation id="3147521114983561406">Ključi za dostop se shranijo v upravitelju gesel. Dostopni so na anonimnih in običajnih zavihkih.</translation>
 <translation id="3148052723910099040">Mreža običajnih zavihkov</translation>
 <translation id="3148237711805373460">Preusmeri me</translation>
 <translation id="3157387275655328056">Dodaj na bralni seznam</translation>
@@ -2097,6 +2098,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8587001564479545614">Ustvarjanje kode PIN za obnovitev</translation>
 <translation id="8588404856427128947">Izklop</translation>
 <translation id="8590286732816598906">Skupina zavihkov, <ph name="GROUP_TITLE" />, meni.</translation>
+<translation id="8593317261815647019">Želite ustvariti ključ za dostop zunaj anonimnega načina?</translation>
 <translation id="8600272508328041907">Preklop na prevajanje celotnih strani</translation>
 <translation id="860043288473659153">Ime imetnika kartice</translation>
 <translation id="8601611099293226919">Išči po zaslonu z Googlom Lens</translation>

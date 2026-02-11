@@ -136,6 +136,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Una o varias extensiones de Chromium estaban accediendo a 1 dispositivo HID}=1{Una o varias extensiones de Chromium están accediendo a 1 dispositivo HID}other{Una o varias extensiones de Chromium están accediendo a # dispositivos HID}}</translation>
 <translation id="2401032172288869980">Chromium necesita los permisos del micrófono y de la cámara para este sitio</translation>
 <translation id="2403703063067034158">Error de arranque: se está ejecutando otra instancia de la configuración. Inténtalo de nuevo más tarde.</translation>
+<translation id="2418322681019544463">Abre enlaces en Chromium desde cualquier aplicación y accede fácilmente al navegador desde la barra de tareas</translation>
 <translation id="2440750600860946460">Las <ph name="BEGIN_LINK" />herramientas de Chromium<ph name="END_LINK" /> te permiten navegar de forma segura y mantener el control</translation>
 <translation id="2451727308784734061">Usa el acceso directo para acceder rápidamente al Gestor de contraseñas. Puedes mover el acceso directo a la pantalla de inicio o al menú de aplicaciones de tu ordenador.</translation>
 <translation id="2478295928299953161">Chromium se cerrará dentro de poco</translation>
@@ -607,6 +608,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7745317241717453663">Se eliminarán tus datos de navegación de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">El programa de instalación no ha podido crear un directorio temporal. Comprueba si hay espacio libre en el disco y si tienes autorización para instalar el software.</translation>
 <translation id="7750130090210923118">Restablecer tema predeterminado de Chromium</translation>
+<translation id="7781047659465034537">Establece Chromium como predeterminado y fíjalo en la barra de tareas</translation>
 <translation id="7786760609782648049">Aumenta la velocidad de Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> ‑ Chromium Canary</translation>
 <translation id="7803986347287457849">Haz que a las personas con acceso a tu tráfico de Internet les resulte más complicado ver los sitios que visitas. Chromium usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio).</translation>

@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Učitavanje fajla "<ph name="RELATIVE_PATH" />" za skriptu sadržaja nije uspjelo jer bi premašilo maksimalnu veličinu skripte ili maksimalnu ukupnu veličinu skripte sadržaja ekstenzije.</translation>
 <translation id="1445572445564823378">Ova ekstenzija usporava aplikaciju <ph name="PRODUCT_NAME" />. Trebate je onemogućiti kako biste vratili performanse aplikacije <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">Sistem ne podržava WebGL</translation>
+<translation id="1478607704480248626">Instalacija nije omogućena</translation>
+<translation id="1556537182262721003">Prebacivanje direktorija ekstenzije u profil nije uspjelo.</translation>
 <translation id="1610570795592207282">Učitavanje CSS-a "<ph name="RELATIVE_PATH" />" za skriptu nije uspjelo.</translation>
+<translation id="1616298854599875024">Nije moguće uvesti ekstenziju "<ph name="IMPORT_NAME" />" jer ovo nije dijeljeni modul.</translation>
 <translation id="1803557475693955505">Nije moguće učitati stranicu s pozadinama "<ph name="BACKGROUND_PAGE" />".</translation>
+<translation id="1875387611427697908">Ovo se može dodati samo iz usluge <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="2131077480075264">Nije moguće instalirati aplikaciju "<ph name="APP_NAME" />" jer to ne dozvoljava "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2159915644201199628">Dekodiranje slike nije uspjelo: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Korištena je lokalizacija, ali u deklaraciji nije naveden default_locale.</translation>
 <translation id="2576842806987913196">Već postoji CRX fajl s istim nazivom.</translation>
+<translation id="2662876636500006917">Chrome Web trgovina</translation>
 <translation id="2743583586211388067">Pristup ovoj ekstenziji je blokiran u skladu s pravilima vaše organizacije o rizicima ekstenzija.</translation>
 <translation id="2785530881066938471">Učitavanje fajla "<ph name="RELATIVE_PATH" />" za skriptu sadržaja nije uspjelo. Nije kodirano koristeći UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ID ekstenzije "<ph name="EXTENSION_ID" />") je blokirao administrator. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Zamjena crx fajla nije uspjela. Provjerite je li fajl upotrebi.</translation>
 <translation id="3163201441334626963">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">Aplikacija s atributom deklaracije "kiosk_only" se mora instalirati u načinu rada kioska ChromeOS-a</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serijski broj: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> dobavljača <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Ulazna vrijednost za privatni ključ mora biti važeća putanja.</translation>
+<translation id="3834775135533257713">Dodavanje aplikacije "<ph name="TO_INSTALL_APP_NAME" />" nije uspjelo jer je u konfliktu s aplikacijom "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Nije moguće učitati stranicu s opcijama "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Došlo je do greške prilikom potpisivanja ekstenzije.</translation>
 <translation id="4233778200880751280">Nije moguće učitati stranicu s informacijama "<ph name="ABOUT_PAGE" />".</translation>
+<translation id="424963718355121712">Aplikacije se moraju posluživati s host računara na kojeg utiču</translation>
+<translation id="4306119971288449206">Aplikacije moraju dobiti vrstu sadržaja "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4633003931260532286">Minimalna verzija za "<ph name="IMPORT_NAME" />" koju zahtijeva ekstenzija je "<ph name="IMPORT_VERSION" />", ali je instalirana samo verzija "<ph name="INSTALLED_VERSION" />"</translation>
+<translation id="4660476621274971848">Očekivana je verzija "<ph name="EXPECTED_VERSION" />", ali je bila verzija "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Isporuka privatnog ključa nije uspjela.</translation>
 <translation id="4811956658694082538">Instalacija paketa nije uspjela jer je uslužni proces iznenada prekinut. Pokušajte ponovo pokrenuti Chrome i ponovite radnju.</translation>
 <translation id="4988792151665380515">Izvoz javnog ključa nije uspio.</translation>
+<translation id="501057610015570208">Aplikacija s atributom deklaracije "kiosk_only" se mora instalirati u načinu rada kioska ChromeOS Flexa</translation>
 <translation id="5026754133087629784">WebView: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Nije moguće pronaći apsolutnu putanju do direktorija za pakiranje.</translation>
 <translation id="5160071981665899014">Učitavanje JavaScripta "<ph name="RELATIVE_PATH" />" za skriptu nije uspjelo.</translation>
 <translation id="5356315618422219272">Prikaz aplikacije: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Ova ekstenzija uključuje fajl s ključem "<ph name="KEY_PATH" />". Vjerovatno to ne želite učiniti.</translation>
 <translation id="5486326529110362464">Mora postojati ulazna vrijednost za privatni ključ.</translation>
+<translation id="5527463195266282916">Pokušali ste vratiti staru verziju ekstenzije.</translation>
 <translation id="5707185214361380026">Nije uspjelo učitavanje ekstenzije iz:</translation>
 <translation id="5972529113578162692">Administrator ovog uređaja traži instaliranje ekstenzije <ph name="EXTENSION_NAME" />. Nije je moguće deinstalirati.</translation>
 <translation id="6027032947578871493">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Fajl deklaracije je nevažeći</translation>
 <translation id="7217838517480956708">Administrator ovog uređaja traži instaliranje ekstenzije <ph name="EXTENSION_NAME" />. Uklanjanje ili izmjena nisu mogući.</translation>
 <translation id="7612608473764576263">Ulazna vrijednost za privatni ključ mora biti važeći format (PKCS#8-format PEM-kodiran RSA ključ).</translation>
+<translation id="765293928828334535">Aplikacije, ekstenzije i korisničke skripte se ne mogu dodati s ove web lokacije.</translation>
 <translation id="7876803335449432072">Učitavanje fajla "<ph name="RELATIVE_PATH" />" za skriptu sadržaja nije uspjelo. Stilski listovi skripti sadržaja se mogu učitati samo iz podržanih fajlova stilskih listi kao što su CSS fajlovi.</translation>
 <translation id="7939686037314084444">Pravilno učitavanje ekstenzije nije uspjelo. Možda neće moći presresti mrežne zahtjeve.</translation>
+<translation id="7952904276017482715">Očekivan je ID "<ph name="EXPECTED_ID" />", međutim ID je bio "<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">Opcije: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Prednja kamera</translation>
 <translation id="8047248493720652249">Ova ekstenzija nije uspjela dati naziv preuzimanju "<ph name="ATTEMPTED_FILENAME" />" jer je druga ekstenzija (<ph name="EXTENSION_NAME" />) odredila drugačiji naziv fajla. "<ph name="ACTUAL_FILENAME" />".</translation>
+<translation id="8049705080247101012">Google je označio ekstenziju "<ph name="EXTENSION_NAME" />" kao zlonamjernu i njena instalacija je spriječena</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> od <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Fajl s deklaracijom nedostaje ili je nečitljiv</translation>
+<translation id="8565650234829130278">Pokušali ste vratiti aplikaciju na stariju verziju.</translation>
 <translation id="8621383749470166852">Učitavanje fajla "<ph name="RELATIVE_PATH" />" za skriptu sadržaja nije uspjelo. Skripte sadržaja se mogu učitati samo iz podržanih JavaScript fajlova kao što su JS fajlovi.</translation>
 <translation id="8636666366616799973">Paket je nevažeći. Detalji: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">Aplikacija "<ph name="APP_NAME" />" zahtijeva pristup jednom vašem uređaju:</translation>

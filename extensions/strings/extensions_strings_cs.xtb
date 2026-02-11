@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Soubor <ph name="RELATIVE_PATH" /> pro skript obsahu nelze načíst, protože by překročil maximální velikost skriptu nebo maximální celkovou velikost skriptů rozšíření.</translation>
 <translation id="1445572445564823378">Toto rozšíření zpomaluje prohlížeč <ph name="PRODUCT_NAME" />. Chcete-li výkon prohlížeče <ph name="PRODUCT_NAME" /> obnovit, měli byste rozšíření zakázat.</translation>
 <translation id="1468038450257740950">Rozhraní WebGL není podporováno.</translation>
+<translation id="1478607704480248626">Instalace není povolena</translation>
+<translation id="1556537182262721003">Adresář rozšíření nelze přesunout do profilu.</translation>
 <translation id="1610570795592207282">Pro skript nelze načíst soubor CSS „<ph name="RELATIVE_PATH" />“.</translation>
+<translation id="1616298854599875024">Rozšíření <ph name="IMPORT_NAME" /> nelze importovat, protože se nejedná o sdílený modul</translation>
 <translation id="1803557475693955505">Nelze načíst stránku pozadí „<ph name="BACKGROUND_PAGE" />“.</translation>
+<translation id="1875387611427697908">Lze přidat pouze ze stránek <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="2131077480075264">Aplikaci <ph name="APP_NAME" /> nelze nainstalovat, protože není povolena rozhraním <ph name="IMPORT_NAME" /></translation>
 <translation id="2159915644201199628">Nepodařilo se dekódovat obrázek: <ph name="IMAGE_NAME" /></translation>
 <translation id="2350172092385603347">Byla použita lokalizace, ale v manifestu nebyl zadán parametr default_locale.</translation>
 <translation id="2576842806987913196">Soubor CRX s tímto názvem již existuje.</translation>
+<translation id="2662876636500006917">Internetový obchod Chrome</translation>
 <translation id="2743583586211388067">Přístup k tomuto rozšíření je blokován zásadami vaší organizace ohledně rizik rozšíření.</translation>
 <translation id="2785530881066938471">Nelze načíst soubor <ph name="RELATIVE_PATH" /> s obsahovým skriptem. Soubor není kódován ve formátu UTF-8.</translation>
 <translation id="2903070246402204397">Rozšíření <ph name="EXTENSION_NAME" /> (ID rozšíření <ph name="EXTENSION_ID" />) je blokováno administrátorem. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">Neznámý produkt <ph name="PRODUCT_ID" /> od dodavatele <ph name="VENDOR_ID" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Nepodařilo se nahradit soubor CRX. Zkontrolujte, zda je tento soubor používán.</translation>
 <translation id="3163201441334626963">Neznámý produkt <ph name="PRODUCT_ID" /> od dodavatele <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">Aplikace s atributem manifestu kiosk_only je třeba nainstalovat v režimu veřejného terminálu systému ChromeOS</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> od dodavatele <ph name="VENDOR_ID" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Vstupní hodnota pro soukromý klíč musí být platná cesta.</translation>
+<translation id="3834775135533257713">Aplikaci <ph name="TO_INSTALL_APP_NAME" /> nelze přidat, protože je v konfliktu s aplikací <ph name="INSTALLED_APP_NAME" />.</translation>
 <translation id="388442998277590542">Nelze načíst stránku možností „<ph name="OPTIONS_PAGE" />“.</translation>
 <translation id="3984413272403535372">Při podepisování rozšíření došlo k chybě.</translation>
 <translation id="4233778200880751280">Načtení stránky s informacemi <ph name="ABOUT_PAGE" /> se nezdařilo.</translation>
+<translation id="424963718355121712">Aplikace musí být poskytovány hostitelem, kterého ovlivňují</translation>
+<translation id="4306119971288449206">Aplikace musí být poskytovány s typem obsahu <ph name="CONTENT_TYPE" /></translation>
+<translation id="4633003931260532286">Rozšíření vyžaduje rozhraní <ph name="IMPORT_NAME" /> s minimální verzí <ph name="IMPORT_VERSION" />, máte však nainstalovanou pouze verzi <ph name="INSTALLED_VERSION" /></translation>
+<translation id="4660476621274971848">Byla očekávána verze <ph name="EXPECTED_VERSION" />, ale použita byla verze <ph name="NEW_ID" /></translation>
 <translation id="471800408830181311">Vytvoření soukromého klíče se nezdařilo.</translation>
 <translation id="4811956658694082538">Balíček se nepodařilo nainstalovat, protože proces nástroje selhal. Restartujte Chrome a zkuste to znovu.</translation>
 <translation id="4988792151665380515">Export veřejného klíče se nezdařil.</translation>
+<translation id="501057610015570208">Aplikace s atributem manifestu kiosk_only je třeba nainstalovat v režimu veřejného terminálu systému ChromeOS Flex.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Nelze najít absolutní cestu k adresáři, který chcete zabalit.</translation>
 <translation id="5160071981665899014">Pro skript nelze načíst soubor JavaScriptu „<ph name="RELATIVE_PATH" />“.</translation>
 <translation id="5356315618422219272">Zobrazení aplikace: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Rozšíření obsahuje soubor klíče <ph name="KEY_PATH" />. Tuto akci pravděpodobně provést nechcete.</translation>
 <translation id="5486326529110362464">Musí existovat vstupní hodnota pro soukromý klíč</translation>
+<translation id="5527463195266282916">Došlo k pokusu o převod rozšíření na nižší verzi.</translation>
 <translation id="5707185214361380026">Načtení rozšíření z následujícího umístění se nezdařilo:</translation>
 <translation id="5972529113578162692">Administrátor tohoto zařízení vyžaduje, aby bylo rozšíření <ph name="EXTENSION_NAME" /> nainstalováno. Toto rozšíření nelze odinstalovat.</translation>
 <translation id="6027032947578871493">Neznámý produkt <ph name="PRODUCT_ID" /> od dodavatele <ph name="VENDOR_NAME" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Soubor manifestu je neplatný</translation>
 <translation id="7217838517480956708">Správce tohoto počítače vyžaduje instalaci rozšíření <ph name="EXTENSION_NAME" />. Nelze je odebrat ani upravit.</translation>
 <translation id="7612608473764576263">Vstupní hodnota pro soukromý klíč musí mít platný formát (klíč RSA ve formátu PKCS#8 a kódováním PEM).</translation>
+<translation id="765293928828334535">Nelze přidávat aplikace, rozšíření a uživatelské skripty z tohoto webu</translation>
 <translation id="7876803335449432072">Soubor „<ph name="RELATIVE_PATH" />“ pro obsahový skript nelze načíst. Šablony stylů pro obsahové skripty lze načítat jen z podporovaných souborů šablon stylů, jako jsou soubory s příponou .css.</translation>
 <translation id="7939686037314084444">Rozšíření se nepodařilo správně načíst. Je možné, že nebude moci zachytávat síťové požadavky.</translation>
+<translation id="7952904276017482715">Bylo očekáváno ID <ph name="EXPECTED_ID" />, ale bylo použito ID <ph name="NEW_ID" /></translation>
 <translation id="7972881773422714442">Možnosti: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Přední</translation>
 <translation id="8047248493720652249">Tomuto rozšíření se nepodařilo pojmenovat stahovaný soubor „<ph name="ATTEMPTED_FILENAME" />“, protože jiné rozšíření (<ph name="EXTENSION_NAME" />) vybralo jiný název souboru „<ph name="ACTUAL_FILENAME" />“.</translation>
+<translation id="8049705080247101012">Rozšíření <ph name="EXTENSION_NAME" /> bylo společností Google označeno jako škodlivé a jeho instalace byla zablokována</translation>
 <translation id="8284835137979141223">Zařízení <ph name="PRODUCT_NAME" /> od dodavatele <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Soubor manifestu chybí nebo je nečitelný</translation>
+<translation id="8565650234829130278">Došlo k pokusu o převod aplikace na nižší verzi.</translation>
 <translation id="8621383749470166852">Soubor „<ph name="RELATIVE_PATH" />“ pro obsahový skript nelze načíst. Obsahové skripty lze načítat jen z podporovaných souborů JavaScript, jako jsou soubory s příponou .js.</translation>
 <translation id="8636666366616799973">Balíček je neplatný. Podrobnosti: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="8761756413268424715">Aplikace <ph name="APP_NAME" /> žádá o přístup k jednomu z vašich zařízení:</translation>

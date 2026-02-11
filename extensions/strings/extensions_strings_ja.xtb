@@ -7,11 +7,17 @@
 <translation id="132960226125594336">コンテンツ スクリプトのファイル「<ph name="RELATIVE_PATH" />」を読み込めませんでした。スクリプトの最大サイズまたは拡張機能全体のコンテンツ スクリプトの最大サイズを超えています。</translation>
 <translation id="1445572445564823378">この拡張機能によって <ph name="PRODUCT_NAME" /> の速度が低下しています。<ph name="PRODUCT_NAME" /> のパフォーマンスを回復するには、この拡張機能を無効にしてください。</translation>
 <translation id="1468038450257740950">WebGL はサポートされていません。</translation>
+<translation id="1478607704480248626">インストールが有効になっていません</translation>
+<translation id="1556537182262721003">拡張機能ディレクトリをプロフィールに移動できませんでした。</translation>
 <translation id="1610570795592207282">スクリプトの CSS「<ph name="RELATIVE_PATH" />」を読み込むことができませんでした。</translation>
+<translation id="1616298854599875024">拡張機能「<ph name="IMPORT_NAME" />」は、共有モジュールではないためインポートできません</translation>
 <translation id="1803557475693955505">背景ページ「<ph name="BACKGROUND_PAGE" />」を読み込むことができませんでした。</translation>
+<translation id="1875387611427697908">これは <ph name="CHROME_WEB_STORE" /> からのみ追加できます</translation>
+<translation id="2131077480075264">「<ph name="APP_NAME" />」は「<ph name="IMPORT_NAME" />」で許可されていないためインストールできません</translation>
 <translation id="2159915644201199628">画像をデコードできませんでした: <ph name="IMAGE_NAME" /></translation>
 <translation id="2350172092385603347">言語/地域機能は使用されていますが、マニフェストに default_locale が指定されていません。</translation>
 <translation id="2576842806987913196">既にこの名前の CRX ファイルが存在しています。</translation>
+<translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2743583586211388067">組織の拡張機能に関するリスクポリシーにより、この拡張機能へのアクセスはブロックされています。</translation>
 <translation id="2785530881066938471">コンテンツ スクリプトのファイル「<ph name="RELATIVE_PATH" />」を読み込むことができませんでした。UTF-8 でエンコードされていません。</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" />（拡張機能 ID「<ph name="EXTENSION_ID" />」）は管理者によってブロックされています。<ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_ID" />、シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3144135466825225871">crx ファイルを置き換えられませんでした。ファイルが使用されていないか確認してください。</translation>
 <translation id="3163201441334626963">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_ID" />）</translation>
+<translation id="3242289508736283383">「kiosk_only」マニフェスト属性が指定されているアプリは、ChromeOS キオスクモードでインストールする必要があります。</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" />（シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" />（ベンダー: <ph name="VENDOR_ID" />、シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3561217442734750519">秘密鍵の入力値は有効なパスでなければなりません。</translation>
+<translation id="3834775135533257713">「<ph name="INSTALLED_APP_NAME" />」と競合するため、アプリケーション「<ph name="TO_INSTALL_APP_NAME" />」を追加できませんでした。</translation>
 <translation id="388442998277590542">オプション ページ「<ph name="OPTIONS_PAGE" />」を読み込むことができませんでした。</translation>
 <translation id="3984413272403535372">拡張機能の署名中にエラーが発生しました。</translation>
 <translation id="4233778200880751280">情報ページ「<ph name="ABOUT_PAGE" />」を読み込めませんでした。</translation>
+<translation id="424963718355121712">アプリは関連付けられたホストから配信される必要があります</translation>
+<translation id="4306119971288449206">アプリはコンテンツタイプ「<ph name="CONTENT_TYPE" />」で配信される必要があります</translation>
+<translation id="4633003931260532286">拡張機能には「<ph name="IMPORT_NAME" />」のバージョン「<ph name="IMPORT_VERSION" />」以上が必要ですが、インストールされているのはバージョン「<ph name="INSTALLED_VERSION" />」のみです</translation>
+<translation id="4660476621274971848">バージョン「<ph name="EXPECTED_VERSION" />」が必要ですが、バージョン「<ph name="NEW_ID" />」が検出されました</translation>
 <translation id="471800408830181311">秘密鍵を出力できませんでした。</translation>
 <translation id="4811956658694082538">ユーティリティ プロセスで問題が発生したため、パッケージをインストールできませんでした。Chrome を再起動してもう一度お試しください。</translation>
 <translation id="4988792151665380515">公開鍵をエクスポートできませんでした。</translation>
+<translation id="501057610015570208">マニフェスト属性が kiosk_only のアプリをインストールするには ChromeOS Flex でキオスクモードを有効にする必要があります</translation>
 <translation id="5026754133087629784">WebView: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">圧縮するディレクトリの絶対パスが見つかりません。</translation>
 <translation id="5160071981665899014">スクリプトの JavaScript「<ph name="RELATIVE_PATH" />」を読み込むことができませんでした。</translation>
 <translation id="5356315618422219272">アプリビュー: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">この拡張機能には、鍵ファイル「<ph name="KEY_PATH" />」が含まれていますが、おそらくその必要性はありません。</translation>
 <translation id="5486326529110362464">秘密鍵の入力値が存在している必要があります。</translation>
+<translation id="5527463195266282916">拡張機能のダウングレードが試行されました。</translation>
 <translation id="5707185214361380026">次の場所から拡張機能を読み込むことができませんでした:</translation>
 <translation id="5972529113578162692">このパソコンの管理者により、<ph name="EXTENSION_NAME" /> をインストールすることが要件として指定されています。この拡張機能はアンインストールできません。</translation>
 <translation id="6027032947578871493">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_NAME" />、シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">マニフェスト ファイルが無効です</translation>
 <translation id="7217838517480956708">このパソコンの管理者にとって <ph name="EXTENSION_NAME" /> がインストールされている必要があります。削除や修正はできません。</translation>
 <translation id="7612608473764576263">秘密鍵の入力値は有効な形式でなければなりません（PKCS#8 形式の PEM エンコード RSA 鍵）。</translation>
+<translation id="765293928828334535">このウェブサイトからアプリ、拡張機能、ユーザー スクリプトを追加することはできません</translation>
 <translation id="7876803335449432072">コンテンツ スクリプトのファイル「<ph name="RELATIVE_PATH" />」を読み込めませんでした。コンテンツ スクリプトのスタイルシートは、.css ファイルなどのサポートされているスタイルシート ファイルからのみ読み込むことができます。</translation>
 <translation id="7939686037314084444">拡張機能を正しく読み込めませんでした。ネットワーク リクエストを取得できない可能性があります。</translation>
+<translation id="7952904276017482715">ID「<ph name="EXPECTED_ID" />」が必要ですが、ID「<ph name="NEW_ID" />」が検出されました</translation>
 <translation id="7972881773422714442">オプション: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">ユーザー向き</translation>
 <translation id="8047248493720652249">この拡張機能は、ダウンロード ファイル「<ph name="ATTEMPTED_FILENAME" />」に名前を付けることができませんでした。別の拡張機能（<ph name="EXTENSION_NAME" />）が異なるファイル名「<ph name="ACTUAL_FILENAME" />」を指定しました。</translation>
+<translation id="8049705080247101012">「<ph name="EXTENSION_NAME" />」は、不正な拡張機能として認識されているためインストールされませんでした</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" />、提供元: <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">マニフェスト ファイルが見つからないか読み取れません</translation>
+<translation id="8565650234829130278">アプリのダウングレードが試行されました。</translation>
 <translation id="8621383749470166852">コンテンツ スクリプトのファイル「<ph name="RELATIVE_PATH" />」を読み込めませんでした。コンテンツ スクリプトは、.js ファイルなどのサポートされている JavaScript ファイルからのみ読み込むことができます。</translation>
 <translation id="8636666366616799973">パッケージが無効です。詳細: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="8761756413268424715">「<ph name="APP_NAME" />」が次のデバイスへのアクセスをリクエストしています:</translation>

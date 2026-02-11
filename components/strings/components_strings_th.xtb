@@ -656,6 +656,7 @@
 <translation id="2071156619270205202">บัตรนี้ไม่มีสิทธิ์ใช้หมายเลขบัตรเสมือน</translation>
 <translation id="2071852865256799872">เบราว์เซอร์ได้รับการจัดการโดยองค์กร และโปรไฟล์ของคุณได้รับการจัดการโดย <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">บันทึกข้อมูลลงในอุปกรณ์เท่านั้น</translation>
 <translation id="2074733626795553847">เลิกบล็อก "<ph name="TOPIC" />"</translation>
 <translation id="2074771604462073334">คุณเข้าชมเมื่อ</translation>
 <translation id="2078956195623975415">เกมเพลงและเกมเต้น</translation>
@@ -2868,6 +2869,7 @@
 <translation id="5570825185877910964">ปกป้องบัญชี</translation>
 <translation id="5571083550517324815">ไม่สามารถรับสินค้าจากที่อยู่นี้ โปรดเลือกที่อยู่อื่น</translation>
 <translation id="5572434905385510939">22 x 28 นิ้ว</translation>
+<translation id="5573090972398558474">องค์กรของคุณได้บล็อกหน้านี้ในโหมดไม่ระบุตัวตน</translation>
 <translation id="5573641252776268565">แก้ไขหนังสือเดินทาง</translation>
 <translation id="5578606540385219379">ผู้ให้บริการ</translation>
 <translation id="5580958916614886209">ตรวจสอบเดือนหมดอายุแล้วลองอีกครั้ง</translation>
@@ -4296,6 +4298,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{ไม่มี}=1{1 แอป (<ph name="EXAMPLE_APP_1" />)}=2{2 แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">เกิดข้อผิดพลาด โปรดลองอีกครั้ง</translation>
 <translation id="784623644169604270">ไม่มีกิจกรรมล่าสุด</translation>
+<translation id="7848926355794727168">การท่องเว็บอัตโนมัติ</translation>
 <translation id="7853222852810008596">ฟีเจอร์จ่ายทีหลังไม่พร้อมใช้งานในสกุลเงินนี้</translation>
 <translation id="785476343534277563">กีฬาวิทยาลัย</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4899,6 +4902,7 @@
 <translation id="8858065207712248076">Chrome ขอแนะนำให้รีเซ็ตรหัสผ่าน <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> หากคุณใช้รหัสผ่านนี้ซ้ำในเว็บไซต์อื่น</translation>
 <translation id="885906927438988819">หากการสะกดถูกต้อง ให้<ph name="BEGIN_LINK" />ลองเรียกใช้การวินิจฉัยเครือข่ายของ Windows<ph name="END_LINK" /></translation>
 <translation id="8861126751581835107">ภาพถ่ายและศิลปะดิจิทัล</translation>
+<translation id="8861482055962701239">บันทึกข้อมูลนี้ลงใน Google Wallet ไม่ได้ แต่บันทึกลงใน Chrome บนอุปกรณ์นี้แทน Chrome จะเสนอให้บันทึกลงใน Wallet เมื่อคุณใช้งานในครั้งถัดไป</translation>
 <translation id="8863218129525348270">โปรดบันทึกบัตรไว้ในอุปกรณ์เพื่อให้ชำระเงินได้เร็วขึ้นในครั้งถัดไป</translation>
 <translation id="8864939224504814334">ชุทสูทและเครื่องแต่งกายสำหรับธุรกิจ</translation>
 <translation id="8866132857352163524">ซาวด์แทร็ก</translation>

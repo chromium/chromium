@@ -2787,6 +2787,7 @@
 <translation id="5466018172325111652">没收到验证码？<ph name="BEGIN_LINK" />获取新验证码<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">支付应用</translation>
 <translation id="5470861586879999274">恢复修改(&amp;R)</translation>
+<translation id="5471158297908124590">请验证您的身份，以修改支付方式</translation>
 <translation id="5472588168895083535">已屏蔽手部跟踪</translation>
 <translation id="5477756102936130143">允许重定向到支持的支付应用</translation>
 <translation id="5479505548832623900">可能已被扩展程序忽略。</translation>
@@ -3170,6 +3171,7 @@
 <translation id="6093795393556121384">您的信用卡已成功验证</translation>
 <translation id="6094253940069566294">修改车辆信息</translation>
 <translation id="6094290315941448991">管理员政策禁止在屏幕显示机密内容时录制屏幕</translation>
+<translation id="6097297436119286254">请验证您的身份，以填充您的支付信息</translation>
 <translation id="6099269767116481177">22 x 29.5 英寸</translation>
 <translation id="6101583188322746099">杂货配送服务</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4918,6 +4920,7 @@
 <translation id="8897428486789851669">游泳</translation>
 <translation id="8899807382908246773">侵扰性广告</translation>
 <translation id="8903921497873541725">放大</translation>
+<translation id="8903998444169664879">请验证您的身份，以更改支付设置</translation>
 <translation id="890493561996401738">“移除建议”按钮，按 Enter 键即可移除“<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />”</translation>
 <translation id="8910898109640902752">8 x 10 英寸</translation>
 <translation id="8914504000324227558">重启 Chrome</translation>

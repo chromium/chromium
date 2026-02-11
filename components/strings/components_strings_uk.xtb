@@ -2869,6 +2869,7 @@
 <translation id="5570825185877910964">Захистити обліковий запис</translation>
 <translation id="5571083550517324815">Адреса отримання не підтримується. Укажіть іншу адресу.</translation>
 <translation id="5572434905385510939">22 x 28 дюйм.</translation>
+<translation id="5573090972398558474">Ваша організація заблокувала доступ до цієї сторінки в анонімному режимі.</translation>
 <translation id="5573641252776268565">Змінити паспортні дані</translation>
 <translation id="5578606540385219379">Постачальники послуг</translation>
 <translation id="5580958916614886209">Перевірте місяць закінчення терміну дії та повторіть спробу</translation>
@@ -4297,6 +4298,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Немає}=1{1 додаток (<ph name="EXAMPLE_APP_1" />)}=2{2 додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# додаток (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# додатків (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# додатка (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Сталася помилка. Повторіть спробу.</translation>
 <translation id="784623644169604270">Немає останніх дій</translation>
+<translation id="7848926355794727168">Автоматичний вебперегляд</translation>
 <translation id="7853222852810008596">Оплата пізніше недоступна в цій валюті</translation>
 <translation id="785476343534277563">Спорт у коледжі</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>

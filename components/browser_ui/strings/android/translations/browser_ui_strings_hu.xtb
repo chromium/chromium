@@ -295,6 +295,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="3903738175795615004">A teljes képernyős nézetből való kilépéshez húzza lefelé az ujját a képernyő tetejétől, vagy nyomja le az Esc billentyűt.</translation>
 <translation id="3905475044299942653">Sok értesítés leállítása</translation>
 <translation id="3922092564198021702">A telefonján nyissa meg a Beállítások alkalmazást</translation>
+<translation id="3924858949939391676">Linkek megjelenítése az Olvasási mód bekapcsolása után</translation>
 <translation id="3933121352599513978">Nem kívánt kérelmek összecsukása (ajánlott)</translation>
 <translation id="3934905113567851655">Húzza össze ujjait az átméretezéshez</translation>
 <translation id="3955193568934677022">Engedélyezi a webhelyek számára a védett tartalmak lejátszását (ajánlott)</translation>
@@ -358,6 +359,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="4644713492825682049">Törlés és alaphelyzetbe állítás</translation>
 <translation id="4645575059429386691">A szülő kezeli</translation>
 <translation id="4652266463001779298">Nem engedélyezett</translation>
+<translation id="4655846733459137112">Koppintson az Igen gombra, hogy legközelebb bejelentkezéskor könnyen használhassa ezt a jelszót</translation>
 <translation id="4663373278480897665">Kamera engedélyezve</translation>
 <translation id="4670064810192446073">Virtuális valóság</translation>
 <translation id="4672315773691449562">Koppintson a Böngésző alkalmazás, majd a Chrome lehetőségre</translation>
@@ -464,6 +466,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="5804241973901381774">Engedélyek</translation>
 <translation id="5817042798620209981">Webhelyadatok, párbeszédpanel</translation>
 <translation id="5822675474983796325">Az Új lap oldal alsó lapjának személyre szabása teljes magasságban megnyitva</translation>
+<translation id="5826403277762134844">A jelszavak Chrome-ban való mentésére vonatkozó útmutató alsó lapja</translation>
 <translation id="5833899990800318936">A webhelyek nem használhatnak JavaScriptet</translation>
 <translation id="583673505367439042">A webhelyek engedélyt kérhetnek arra, hogy szerkeszthessék az Ön eszközén található fájlokat és mappákat</translation>
 <translation id="5844448279347999754">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a vágólapon szereplő szövegek és képek megtekintésére. Ha ki van kapcsolva, a webhelyek nem láthatják a vágólapra mentett szövegeket és képeket.</translation>
@@ -643,6 +646,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="775043444390799886">Engedély visszavonása</translation>
 <translation id="7758789811447313947">Ibolya téma</translation>
 <translation id="7759147511335618829">MIDI-eszköz vezérlése/átprogramozása</translation>
+<translation id="7771089277295008211">A jelszavak mentésére vonatkozó útmutató alsó lapja bezárult</translation>
 <translation id="7781829728241885113">Tegnap</translation>
 <translation id="7791543448312431591">Hozzáadás</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>
@@ -660,6 +664,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="7940722705963108451">Emlékeztessen</translation>
 <translation id="7948081750384205628">További információ a következőről: <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">A webhelyek engedélyt kérhetnek arra, hogy lássák a vágólapon szereplő szöveget és képeket</translation>
+<translation id="7958779728312669715">A jelszavak mentésére vonatkozó útmutató alsó lapja teljesen megnyílt</translation>
 <translation id="798299424881500862">Narancssárga téma</translation>
 <translation id="7986741934819883144">Válasszon ki egy névjegyet</translation>
 <translation id="7990211076305263060">Ha be van kapcsolva, a webhelyek hozzáférést kérhetnek az Ön mikrofonjához. Ha ki van kapcsolva, a webhelyek nem használhatják a mikrofont.</translation>
@@ -756,6 +761,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="8889294078294184559">Böngészési tevékenységei során a webhelyek egyeztethetnek a Chrome-mal, és az előzőleg felkeresett webhely segítségével meggyőződhetnek arról, hogy Ön valószínűleg valódi felhasználó.</translation>
 <translation id="8899807382908246773">Tolakodó hirdetések</translation>
 <translation id="8903921497873541725">Nagyítás</translation>
+<translation id="8919911527569629802">Jelentkezzen be bármely webhelyre</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Többször ne figyelmeztessen</translation>
 <translation id="8926666909099850184">Az NFC ki van kapcsolva ezen az eszközön. Kapcsolja be az <ph name="BEGIN_LINK" />Android Beállítások alkalmazásában<ph name="END_LINK" />.</translation>
@@ -783,6 +789,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="9182556968660520230">A webhelyek nem játszhatnak le védett tartalmakat</translation>
 <translation id="947156494302904893">A felkeresett webhelyek ellenőrizni tudják, hogy Ön valódi személy, nem pedig robot</translation>
 <translation id="959682366969460160">Könnyebb rendszerezés</translation>
+<translation id="960590623979248167">Linkek megjelenítése</translation>
 <translation id="961930410699694996">A helyadatok erre az alkalomra engedélyezve vannak</translation>
 <translation id="967624055006145463">Tárolt adatok</translation>
 <translation id="969975166333045662">A V8-optimalizáló használatának letiltása az alábbi webhely számára.</translation>

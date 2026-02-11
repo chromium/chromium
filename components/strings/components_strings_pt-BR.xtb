@@ -2791,6 +2791,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5466018172325111652">Não recebeu o código? <ph name="BEGIN_LINK" />Gerar outro<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Apps de pagamento</translation>
 <translation id="5470861586879999274">&amp;Refazer editar</translation>
+<translation id="5471158297908124590">Confirme que é você para editar as formas de pagamento</translation>
 <translation id="5472588168895083535">Rastreamento de mãos bloqueado</translation>
 <translation id="5477756102936130143">Ativar o redirecionamento para apps de pagamento compatíveis</translation>
 <translation id="5479505548832623900">Provavelmente ignoradas pela extensão.</translation>
@@ -3174,6 +3175,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6093795393556121384">Seu cartão foi verificado</translation>
 <translation id="6094253940069566294">Editar veículo</translation>
 <translation id="6094290315941448991">A gravação de tela é desativada pela política do administrador quando há conteúdo protegido visível</translation>
+<translation id="6097297436119286254">Confirme que é você para preencher as informações de pagamento</translation>
 <translation id="6099269767116481177">22 x 29,5 pol.</translation>
 <translation id="6101583188322746099">Serviços de entrega de produtos de mercearia</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4923,6 +4925,7 @@ Mais detalhes:
 <translation id="8897428486789851669">Natação</translation>
 <translation id="8899807382908246773">Anúncios invasivos</translation>
 <translation id="8903921497873541725">Aumentar zoom</translation>
+<translation id="8903998444169664879">Confirme que é você para mudar as configurações de pagamento</translation>
 <translation id="890493561996401738">Botão "Remover sugestão", pressione Enter para remover, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">20 x 25 cm</translation>
 <translation id="8914504000324227558">Reiniciar o Google Chrome</translation>

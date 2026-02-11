@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Nie udało się wczytać pliku „<ph name="RELATIVE_PATH" />” dla skryptu dotyczącego treści, ponieważ spowodowałoby to przekroczenie maksymalnego rozmiaru skryptu lub maksymalnego całkowitego rozmiaru skryptu treści dla rozszerzenia.</translation>
 <translation id="1445572445564823378">To rozszerzenie spowalnia pracę <ph name="PRODUCT_NAME" />. Wyłącz je, aby przywrócić wydajność przeglądarki <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">Interfejs WebGL nie jest obsługiwany.</translation>
+<translation id="1478607704480248626">Instalacja nie została włączona</translation>
+<translation id="1556537182262721003">Nie można przenieść katalogu rozszerzenia do profilu.</translation>
 <translation id="1610570795592207282">Nie udało się wczytać pliku css „<ph name="RELATIVE_PATH" />” dla skryptu.</translation>
+<translation id="1616298854599875024">Nie można zaimportować rozszerzenia „<ph name="IMPORT_NAME" />”, ponieważ nie jest to moduł udostępniany</translation>
 <translation id="1803557475693955505">Nie można wczytać strony w tle „<ph name="BACKGROUND_PAGE" />”.</translation>
+<translation id="1875387611427697908">Możesz to pobrać tylko z <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="2131077480075264">Nie można zainstalować elementu „<ph name="APP_NAME" />”, bo nie zezwala na to element „<ph name="IMPORT_NAME" />”</translation>
 <translation id="2159915644201199628">Nie można odkodować obrazu: „<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">Lokalizacja została użyta, ale nie określono języka default_locale w pliku manifestu.</translation>
 <translation id="2576842806987913196">Plik CRX o tej nazwie już istnieje.</translation>
+<translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2743583586211388067">Dostęp do tego rozszerzenia jest zablokowany zgodnie z zasadami Twojej organizacji dotyczącymi ryzyka związanego z rozszerzeniami.</translation>
 <translation id="2785530881066938471">Nie można wczytać pliku „<ph name="RELATIVE_PATH" />” dla skryptu dotyczącego treści. Plik nie ma kodowania UTF-8.</translation>
 <translation id="2903070246402204397">Rozszerzenie <ph name="EXTENSION_NAME" /> (identyfikator rozszerzenia „<ph name="EXTENSION_ID" />”) jest zablokowane przez administratora. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">Nieznany produkt <ph name="PRODUCT_ID" />, którego producent to <ph name="VENDOR_ID" /> (numer seryjny <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Nie można zastąpić pliku crx. Sprawdź, czy nie jest on używany.</translation>
 <translation id="3163201441334626963">Nieznany produkt <ph name="PRODUCT_ID" />, którego producent to <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">Aplikację z atrybutem „kiosk_only” w pliku manifestu należy zainstalować w Chrome OS w trybie kiosku</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numer seryjny <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> wyprodukowany przez <ph name="VENDOR_ID" /> (numer seryjny <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Wartość wejściowa klucza prywatnego musi być prawidłową ścieżką.</translation>
+<translation id="3834775135533257713">Nie udało się dodać aplikacji „<ph name="TO_INSTALL_APP_NAME" />”, bo występuje konflikt z aplikacją „<ph name="INSTALLED_APP_NAME" />”.</translation>
 <translation id="388442998277590542">Nie można wczytać strony opcji „<ph name="OPTIONS_PAGE" />”.</translation>
 <translation id="3984413272403535372">Błąd podczas podpisywania rozszerzenia.</translation>
 <translation id="4233778200880751280">Nie udało się załadować strony z informacjami: „<ph name="ABOUT_PAGE" />”.</translation>
+<translation id="424963718355121712">Aplikacje muszą być udostępniane z hosta, którego dotyczą</translation>
+<translation id="4306119971288449206">Aplikacje muszą być udostępniane z parametrem content-type „<ph name="CONTENT_TYPE" />”</translation>
+<translation id="4633003931260532286">Rozszerzenie wymaga: „<ph name="IMPORT_NAME" />” przynajmniej w wersji „<ph name="IMPORT_VERSION" />”, ale zainstalowana jest tylko wersja „<ph name="INSTALLED_VERSION" />”</translation>
+<translation id="4660476621274971848">To jest wersja „<ph name="NEW_ID" />”, a oczekiwano wersji „<ph name="EXPECTED_VERSION" />”</translation>
 <translation id="471800408830181311">Nie można przekazać klucza prywatnego.</translation>
 <translation id="4811956658694082538">Nie udało się zainstalować pakietu, ponieważ nastąpiła awaria procesu narzędzia. Uruchom ponownie Chrome i spróbuj jeszcze raz.</translation>
 <translation id="4988792151665380515">Nie można wyeksportować klucza publicznego.</translation>
+<translation id="501057610015570208">Aplikacja z atrybutem „kiosk_only” w pliku manifestu musi być zainstalowana w trybie kiosku ChromeOS Flex.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Nie można określić ścieżki bezwzględnej pakowanego katalogu.</translation>
 <translation id="5160071981665899014">Nie udało się wczytać pliku JavaScript „<ph name="RELATIVE_PATH" />” dla skryptu.</translation>
 <translation id="5356315618422219272">Tag appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">To rozszerzenie zawiera plik klucza „<ph name="KEY_PATH" />”. Prawdopodobnie nie powinno tak być.</translation>
 <translation id="5486326529110362464">Wartość wejściowa klucza prywatnego musi istnieć.</translation>
+<translation id="5527463195266282916">Podjęto próbę zmiany rozszerzenia na starszą wersję.</translation>
 <translation id="5707185214361380026">Nie udało się wczytać rozszerzenia z:</translation>
 <translation id="5972529113578162692">Administrator tego urządzenia wymaga, by było na nim zainstalowane rozszerzenie <ph name="EXTENSION_NAME" />. Nie można go odinstalować.</translation>
 <translation id="6027032947578871493">Nieznany produkt <ph name="PRODUCT_ID" /> firmy <ph name="VENDOR_NAME" /> (numer seryjny <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Plik manifestu jest nieprawidłowy</translation>
 <translation id="7217838517480956708">Administrator tego komputera wymaga zainstalowanego rozszerzenia <ph name="EXTENSION_NAME" />. Nie można go usunąć ani modyfikować.</translation>
 <translation id="7612608473764576263">Wartość wejściowa klucza prywatnego musi mieć prawidłowy format (klucz RSA z kodowaniem PEM w formacie PKCS#8).</translation>
+<translation id="765293928828334535">Z tej strony nie można dodawać aplikacji, rozszerzeń ani skryptów użytkownika</translation>
 <translation id="7876803335449432072">Nie udało się wczytać pliku „<ph name="RELATIVE_PATH" />” dla skryptu treści. Arkusze stylów skryptów treści mogą być wczytywane tylko z obsługiwanych plików arkuszy stylów, takich jak pliki .css.</translation>
 <translation id="7939686037314084444">Rozszerzenie nie załadowało się poprawnie. Być może nie działa przechwytywanie żądań sieciowych.</translation>
+<translation id="7952904276017482715">To jest identyfikator „<ph name="NEW_ID" />”, a oczekiwano identyfikatora „<ph name="EXPECTED_ID" />”</translation>
 <translation id="7972881773422714442">Opcje: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Przedni</translation>
 <translation id="8047248493720652249">Rozszerzenie nie może odczytać nazwy pobieranego pliku „<ph name="ATTEMPTED_FILENAME" />”, ponieważ inne rozszerzenie (<ph name="EXTENSION_NAME" />) odczytało odmienną jego nazwę „<ph name="ACTUAL_FILENAME" />”.</translation>
+<translation id="8049705080247101012">Google uznaje rozszerzenie „<ph name="EXTENSION_NAME" />” za złośliwe, dlatego nie dopuściliśmy do jego zainstalowania</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> od <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Brak pliku manifestu lub nie można go odczytać</translation>
+<translation id="8565650234829130278">Próbowano zmienić wersję aplikacji na starszą.</translation>
 <translation id="8621383749470166852">Nie udało się wczytać pliku „<ph name="RELATIVE_PATH" />” dla skryptu treści. Skrypty treści mogą być wczytywane tylko z obsługiwanych plików JavaScript, takich jak pliki .js.</translation>
 <translation id="8636666366616799973">Pakiet jest nieprawidłowy. Szczegółowe informacje: „<ph name="ERROR_MESSAGE" />”.</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> żąda dostępu do jednego z Twoich urządzeń:</translation>

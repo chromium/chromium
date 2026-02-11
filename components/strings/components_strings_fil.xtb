@@ -704,6 +704,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2137891579555018930">Naghihintay ng pahintulot...</translation>
 <translation id="213826338245044447">Mga Bookmark sa Mobile</translation>
 <translation id="2141000681034340397">I-edit ang iyong input</translation>
+<translation id="2141475438898772664">Magbayad sa 4 o buwanan</translation>
 <translation id="2144171668675205303">Walang aktibong paksa</translation>
 <translation id="2145193671493396738">Balitang Pang-ekonomiya</translation>
 <translation id="214556005048008348">Kanselahin ang pagbabayad</translation>
@@ -2791,6 +2792,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5466018172325111652">Hindi natanggap ang iyong code? <ph name="BEGIN_LINK" />Kumuha ng bagong code<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Mga app sa mga pagbabayad</translation>
 <translation id="5470861586879999274">&amp;Gawing muli ang pag-e-edit</translation>
+<translation id="5471158297908124590">I-verify na ikaw ito para ma-edit ang mga paraan ng pagbabayad</translation>
 <translation id="5472588168895083535">Naka-block ang pag-track sa kamay</translation>
 <translation id="5477756102936130143">I-enable ang pag-redirect sa mga sinusuportahang app sa pagbabayad</translation>
 <translation id="5479505548832623900">Malamang na hindi pinansin ng extension.</translation>
@@ -2847,6 +2849,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5543564889050342791">Mga Zoo, Aquarium, at Preserve</translation>
 <translation id="5543722831081909240">180 degrees</translation>
 <translation id="5544836308113951378">Mga Cruise at Charter</translation>
+<translation id="5545314360139398232">I-link ang <ph name="ISSUER_NAME" /> para magbayad sa paglipas ng panahon</translation>
 <translation id="5547939254150808298">Pag-print at Pag-publish</translation>
 <translation id="554815783948612276">Mga Provider ng Forum at Chat</translation>
 <translation id="5548606607480005320">Pag-check sa kaligtasan</translation>
@@ -2868,6 +2871,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5570825185877910964">Protektahan ang account</translation>
 <translation id="5571083550517324815">Hindi maaaring mag-pick up mula sa address na ito. Pumili ng ibang address.</translation>
 <translation id="5572434905385510939">22 x 28 in</translation>
+<translation id="5573090972398558474">Na-block ng iyong organisasyon ang page na ito sa Incognito mode.</translation>
 <translation id="5573641252776268565">I-edit ang passport</translation>
 <translation id="5578606540385219379">Mga Service Provider</translation>
 <translation id="5580958916614886209">Tingnan ang iyong buwan ng pag-expire at subukan ulit</translation>
@@ -3174,6 +3178,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6093795393556121384">Na-verify ang iyong card</translation>
 <translation id="6094253940069566294">I-edit ang sasakyan</translation>
 <translation id="6094290315941448991">Dini-disable ng patakaran ng administrator ang pag-record ng screen kapag may nakikitang kumpidensyal na content</translation>
+<translation id="6097297436119286254">I-verify na ikaw ito para mapunan ang iyong impormasyon sa pagbabayad</translation>
 <translation id="6099269767116481177">22 x 29.5 in</translation>
 <translation id="6101583188322746099">Mga Serbisyo sa Pag-deliver ng Grocery</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -3692,6 +3697,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6926216138694948720">Body Art</translation>
 <translation id="692638818576287323">Mga Sasakyang Pang-negosyo</translation>
 <translation id="6927878187051807444">mga file ng camera at screenshot</translation>
+<translation id="6929949393612835405">Isara at bumalik sa "<ph name="OPENER_TITLE" />"</translation>
 <translation id="6930607614725241390">Maghanap sa panel sa gilid</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Magbibigay-daan ang iyong default na search engine para makapaghanap ka sa web at pagaganahin nito ang mga feature ng Chrome<ph name="END_BOLD" /> gaya ng paghahanap mula sa address bar at mula sa mga larawan sa mga web page. Posibleng hindi maging available ang isang feature kung hindi ito sinusuportahan ng iyong search engine.</translation>
 <translation id="6934672428414710184">Nagmula ang pangalang ito sa iyong Google Account</translation>
@@ -4295,6 +4301,7 @@ Mga karagdagang detalye:
 <translation id="7844689747373518809">{COUNT,plural, =0{Wala}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# (na) app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# (na) app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Nagka-error. Subukan ulit.</translation>
 <translation id="784623644169604270">Walang kamakailang aktibidad</translation>
+<translation id="7848926355794727168">Awtomatikong pag-browse</translation>
 <translation id="7853222852810008596">Hindi available ang pay later sa currency na ito</translation>
 <translation id="785476343534277563">Mga College Sport</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4922,6 +4929,7 @@ Mga karagdagang detalye:
 <translation id="8897428486789851669">Paglangoy</translation>
 <translation id="8899807382908246773">Mga nakakasagabal na ad</translation>
 <translation id="8903921497873541725">Mag-zoom in</translation>
+<translation id="8903998444169664879">I-verify na ikaw ito para mabago ang iyong mga setting ng pagbabayad</translation>
 <translation id="890493561996401738">Button na Alisin ang Suhestyon, pindutin ang Enter para alisin, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 in</translation>
 <translation id="8914504000324227558">Muling ilunsad ang Chrome</translation>

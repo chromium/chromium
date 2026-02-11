@@ -295,6 +295,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="3903738175795615004">Lai izietu no pilnekrāna režīma, velciet no augšas vai nospiediet taustiņu Esc.</translation>
 <translation id="3905475044299942653">Apturiet pārmērīgus paziņojumus</translation>
 <translation id="3922092564198021702">Tālrunī atveriet sadaļu Iestatījumi.</translation>
+<translation id="3924858949939391676">Rādīt saites, kad ir ieslēgts lasīšanas režīms</translation>
 <translation id="3933121352599513978">Sakļaut nevēlamos pieprasījumus (ieteicams)</translation>
 <translation id="3934905113567851655">Savelciet, lai mainītu lielumu</translation>
 <translation id="3955193568934677022">Atļaut vietnēm atskaņot aizsargātu saturu (ieteicams)</translation>
@@ -358,6 +359,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="4644713492825682049">Dzēst un atiestatīt</translation>
 <translation id="4645575059429386691">Pārvalda viens no jūsu vecākiem</translation>
 <translation id="4652266463001779298">Atļauja nav piešķirta</translation>
+<translation id="4655846733459137112">Pieskarieties vienumam “Jā”, lai ērti izmantotu šo paroli nākamreiz, kad pierakstīsieties.</translation>
 <translation id="4663373278480897665">Kameras lietošana ir atļauta</translation>
 <translation id="4670064810192446073">Virtuālā realitāte</translation>
 <translation id="4672315773691449562">Pieskarieties vienumam “Pārlūka lietotne” un pēc tam — vienumam “Chrome”.</translation>
@@ -464,6 +466,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="5804241973901381774">Atļaujas</translation>
 <translation id="5817042798620209981">Vietnes informācija, dialoglodziņš</translation>
 <translation id="5822675474983796325">Jaunas cilnes lapas pielāgošanas ekrāna apakšdaļas lapa ir atvērta pilnā augstumā</translation>
+<translation id="5826403277762134844">Norādījumu ekrāna apakšdaļas lapa paroļu saglabāšanai pārlūkā Chrome</translation>
 <translation id="5833899990800318936">Neļaut vietnēm izmantot JavaScript</translation>
 <translation id="583673505367439042">Atļaut vietnēm pieprasīt atļauju rediģēt failus un mapes jūsu ierīcē</translation>
 <translation id="5844448279347999754">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju skatīt starpliktuvē saglabāto tekstu un attēlus. Kad šis slēdzis ir izslēgts, vietnes nevar skatīt starpliktuvē saglabāto tekstu vai attēlus.</translation>
@@ -643,6 +646,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="775043444390799886">Atsaukt atļauju</translation>
 <translation id="7758789811447313947">Violets motīvs</translation>
 <translation id="7759147511335618829">MIDI ierīču vadība un pārprogrammēšana</translation>
+<translation id="7771089277295008211">Paroļu saglabāšanas norādījumu ekrāna apakšdaļas lapa ir aizvērta</translation>
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7791543448312431591">Pievienot</translation>
 <translation id="780301667611848630">Nē, paldies</translation>
@@ -660,6 +664,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="7940722705963108451">Atgādināt</translation>
 <translation id="7948081750384205628">Uzzināt vairāk par: <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Atļaut vietnēm pieprasīt atļauju skatīt tekstu un attēlus jūsu starpliktuvē</translation>
+<translation id="7958779728312669715">Paroļu saglabāšanas norādījumu ekrāna apakšdaļas lapa ir pilnībā atvērta</translation>
 <translation id="798299424881500862">Oranžs motīvs</translation>
 <translation id="7986741934819883144">Kontaktpersonas atlase</translation>
 <translation id="7990211076305263060">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izmantot jūsu mikrofonu. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot mikrofonu.</translation>
@@ -756,6 +761,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="8889294078294184559">Kad turpināsiet pārlūkošanu, vietnes var pieprasīt šo informāciju pārlūkam Chrome un saņemt apstiprinājumu no iepriekš apmeklētās vietnes, ka, visticamāk, esat īsts cilvēks.</translation>
 <translation id="8899807382908246773">Traucējošas reklāmas</translation>
 <translation id="8903921497873541725">Tuvināt</translation>
+<translation id="8919911527569629802">Pierakstieties jebkurā vietnē</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Nejautāt atkārtoti</translation>
 <translation id="8926666909099850184">Šajā ierīcē tehnoloģija NFC ir izslēgta. Ieslēdziet to <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
@@ -783,6 +789,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="9182556968660520230">Neļaut vietnēs atskaņot aizsargātu saturu</translation>
 <translation id="947156494302904893">Jūsu apmeklētās vietnes var apstiprināt, ka esat īsts cilvēks, nevis robots</translation>
 <translation id="959682366969460160">Informācijas kārtošana</translation>
+<translation id="960590623979248167">Rādīt hipersaites</translation>
 <translation id="961930410699694996">Ir atļauts šoreiz izmantot atrašanās vietas datus</translation>
 <translation id="967624055006145463">Saglabātie dati</translation>
 <translation id="969975166333045662">Neļaujiet vietnei izmantot V8 optimizētāju.</translation>

@@ -2870,6 +2870,7 @@
 <translation id="5570825185877910964">အကောင့်ကို ကာကွယ်ရန်</translation>
 <translation id="5571083550517324815">ဤလိပ်စာမှ ပစ္စည်းထုတ်ယူ၍မရပါ။ အခြားလိပ်စာတစ်ခုကို ရွေးပါ။</translation>
 <translation id="5572434905385510939">၂၂ x ၂၈ လက်မ</translation>
+<translation id="5573090972398558474">သင့်အဖွဲ့အစည်းသည် ‘ရုပ်ဖျက်မုဒ်’ တွင် ဤစာမျက်နှာကို ပိတ်ထားသည်။</translation>
 <translation id="5573641252776268565">နိုင်ငံကူးလက်မှတ် တည်းဖြတ်ခြင်း</translation>
 <translation id="5578606540385219379">ဝန်ဆောင်မှုပေးသူ</translation>
 <translation id="5580958916614886209">သင့်ကုန်ဆုံးမည့်လကို ကြည့်ပြီး ပြန်စမ်းကြည့်ပါ</translation>
@@ -4297,6 +4298,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{မရှိ}=1{အက်ပ် ၁ ခု (<ph name="EXAMPLE_APP_1" />)}=2{အက်ပ် ၂ ခု (<ph name="EXAMPLE_APP_1" />၊ <ph name="EXAMPLE_APP_2" />)}other{အက်ပ် # ခု (<ph name="EXAMPLE_APP_1" />၊ <ph name="EXAMPLE_APP_2" />၊ <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">အမှားတစ်ခု ဖြစ်သွားသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="784623644169604270">မကြာသေးမီက လုပ်ဆောင်ချက် မရှိပါ</translation>
+<translation id="7848926355794727168">အော်တိုဘရောက်စ်</translation>
 <translation id="7853222852810008596">‘နောက်မှပေး’ ကို ဤငွေကြေးဖြင့် မရနိုင်ပါ</translation>
 <translation id="785476343534277563">ကောလိပ်အားကစား</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>

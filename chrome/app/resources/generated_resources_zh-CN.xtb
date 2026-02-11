@@ -27,7 +27,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{1 个页面无响应}other{多个页面无响应}}</translation>
 <translation id="1011003645819296594">已保存的设备</translation>
 <translation id="1011355516189274711">文字转语音的音量</translation>
-<translation id="1011431628606634753">更改 Google 密码管理工具的恢复 PIN 码</translation>
+<translation id="1011431628606634753">更改 Google 密码管理工具的辅助 PIN 码</translation>
 <translation id="1012794136286421601">正在同步您的文档、表格、幻灯片和绘图文件。打开Google云端硬盘应用可在线或离线访问这些文件。</translation>
 <translation id="1012876632442809908">USB-C 设备（前方端口）</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -714,7 +714,6 @@
 <translation id="1477446329585670721"><ph name="DOMAIN" /> 要求您让智能卡保持插入状态。</translation>
 <translation id="1477654881618305065">贵组织不允许您分享此内容。如果需要帮助，请与您的管理员联系。</translation>
 <translation id="1478340334823509079">详细信息：<ph name="FILE_NAME" /></translation>
-<translation id="1478607704480248626">未启用安装功能</translation>
 <translation id="1480663089572535854">您可返回以更改为“选择”操作分配的开关，也可随时在“设置”中关闭“自动扫描”功能。</translation>
 <translation id="1481001611315487791">详细了解如何利用 AI 创建主题。</translation>
 <translation id="1481537595330271162">调整磁盘大小时出错</translation>
@@ -825,7 +824,6 @@
 <translation id="1554640914375980459">收到通知时闪烁屏幕。如果您对光敏感，请谨慎使用闪烁通知功能。</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1556127816860282890">后台活动和某些视觉效果（例如流畅滚动）可能会受到限制</translation>
-<translation id="1556537182262721003">无法将扩展程序目录移动到个人资料中。</translation>
 <translation id="1557939148300698553">创建个人资料</translation>
 <translation id="155803912725350982">慢速键</translation>
 <translation id="155865706765934889">触控板</translation>
@@ -924,7 +922,6 @@
 <translation id="1614890968027287789">是否单独浏览？</translation>
 <translation id="1615433306336820465">管理您的安全密钥上存储的登录数据</translation>
 <translation id="1616206807336925449">此扩展程序无需任何特殊权限。</translation>
-<translation id="1616298854599875024">无法导入扩展程序“<ph name="IMPORT_NAME" />”，因为它不是共享模块</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{正在检查此数据是否符合贵组织的安全政策…}=1{正在检查这个文件是否符合贵组织的安全政策…}other{正在检查这些文件是否符合贵组织的安全政策…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618142905422922351">您目前有 <ph name="NUMBERED_ITEM" />和其他一些数据。您的组织 (<ph name="ACCOUNT_MANAGER" />) 将能够查看和管理这些数据。</translation>
@@ -1081,7 +1078,6 @@
 <translation id="1709916727352927457">删除通行密钥</translation>
 <translation id="1709972045049031556">无法分享</translation>
 <translation id="1712143791363119140">进行中</translation>
-<translation id="1713120794167761305">将标签页移至侧边</translation>
 <translation id="1714265454085143857">固定标签页</translation>
 <translation id="1714326320203665217">主要节点标注文件已下载</translation>
 <translation id="1714644264617423774">启用无障碍功能，让设备更易于使用。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -1308,7 +1304,6 @@
 <translation id="1873920700418191231">重新为 <ph name="WEBSITE" /> 授予权限</translation>
 <translation id="1874248162548993294">允许展示任何广告</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{将标签页移至另一个窗口}other{将标签页移至另一个窗口}}</translation>
-<translation id="1875387611427697908">只能通过<ph name="CHROME_WEB_STORE" />添加此项内容</translation>
 <translation id="1877377290348678128">标签（可选）</translation>
 <translation id="1877377730633446520">这将占用大约 <ph name="REQUIRED_SPACE" /> 的存储空间。您目前有 <ph name="FREE_SPACE" /> 的可用空间。</translation>
 <translation id="1877860345998737529">指定开关操作</translation>
@@ -1685,7 +1680,6 @@
 <translation id="212876957201860463">正在准备设置您的移动网络设备…</translation>
 <translation id="212962875239908767">这幅油画透露出沉思的气息，描绘了一位智者在金黄色的草地上陷入沉思。</translation>
 <translation id="2130235198799290727">来自扩展程序</translation>
-<translation id="2131077480075264">“<ph name="IMPORT_NAME" />”不允许安装“<ph name="APP_NAME" />”，因为无法进行此项安装</translation>
 <translation id="2131548114076786395">如需分享、加入标签页分组并在其中协作，请验证您的身份</translation>
 <translation id="2131863825246488194">进一步保障上网安全</translation>
 <translation id="2133775869826239001">选择更多功能进行设置</translation>
@@ -1700,7 +1694,7 @@
 <translation id="2139919072249842737">设置按钮</translation>
 <translation id="2140788884185208305">电池状况</translation>
 <translation id="2142328300403846845">以其他身份打开链接</translation>
-<translation id="2142484069755256151">为 Google 密码管理工具创建 6 位数的恢复 PIN 码，这是 PIN 码的第 <ph name="NUM_DIGIT" /> 位，共 6 位</translation>
+<translation id="2142484069755256151">请为 Google 密码管理工具创建 6 位数的辅助 PIN 码，这是 PIN 码的第 <ph name="NUM_DIGIT" /> 位</translation>
 <translation id="2142582065325732898">您需要开启 <ph name="LINK1_BEGIN" />Chrome 同步<ph name="LINK1_END" />才能查看最近打开的 Chrome 标签页。<ph name="LINK2_BEGIN" />了解详情<ph name="LINK2_END" /></translation>
 <translation id="2143089736086572103">向某些联系人显示</translation>
 <translation id="2143765403545170146">在全屏模式下始终显示工具栏</translation>
@@ -2758,6 +2752,7 @@
 <translation id="2842013086666334835">登录“<ph name="NETWORK_ID" />”</translation>
 <translation id="2843560154284403323">如需完成 Linux 设置，请更新 Chrome 操作系统并重试。</translation>
 <translation id="2843698124892775282">已释放 <ph name="MEMORY_SAVINGS" /></translation>
+<translation id="2844154481025280030">已配置政策。</translation>
 <translation id="2844169650293029770">USB-C 设备（左侧前端端口）</translation>
 <translation id="2844809857160214557">查看和管理打印任务</translation>
 <translation id="2845276301195220700">可对 Google 日历执行的更多操作</translation>
@@ -3197,6 +3192,7 @@
 <translation id="3151539355209957474">开始时间</translation>
 <translation id="3151786313568798007">方向</translation>
 <translation id="3152356229013609796">查看、关闭和回复手机中收到的通知</translation>
+<translation id="3152545926232662879">已忽略：</translation>
 <translation id="3154754096046236400">个人使用场景</translation>
 <translation id="3155163173539279776">重新启动 Chromium</translation>
 <translation id="3155394504825881014">将标签页分组转换为书签文件夹</translation>
@@ -3321,7 +3317,6 @@
 <translation id="3241638166094654466">每行中的单元格数：</translation>
 <translation id="3241680850019875542">选择要打包的扩展程序的根目录。要更新某个扩展程序，还需选择要再次使用的私有密钥文件。</translation>
 <translation id="3241810535741601486">此更改是永久性的，无法撤消。延长更新适用于此设备的所有用户。<ph name="LINK_START" />了解详情<ph name="LINK_END" /></translation>
-<translation id="3242289508736283383">具有“kiosk_only”这项清单属性的应用必须在 Chrome 操作系统自助服务终端模式下进行安装</translation>
 <translation id="3243017971870859287">读取 ChromeOS Flex 设备序列号和组件序列号</translation>
 <translation id="324366796737464147">降噪</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -3652,7 +3647,7 @@
 <translation id="3473241910002674503">在平板电脑模式下，使用相应按钮转到主屏幕、返回以及切换应用。</translation>
 <translation id="3473479545200714844">屏幕放大镜</translation>
 <translation id="3474218480460386727">新字词最多只能包含 99 个字母</translation>
-<translation id="3474624961160222204">以 <ph name="NAME" /> 的身份继续</translation>
+<translation id="3474624961160222204">以“<ph name="NAME" />”的身份继续</translation>
 <translation id="3477772589943384839">节省适量内存。标签页会在较长的一段时间后变为非活跃状态。</translation>
 <translation id="347785443197175480">继续允许 <ph name="HOST" /> 使用您的摄像头和麦克风</translation>
 <translation id="3479357084663933762">绿色弱</translation>
@@ -3702,7 +3697,7 @@
 <translation id="3507888235492474624">重新扫描蓝牙设备</translation>
 <translation id="3508492320654304609">无法删除您的登录数据</translation>
 <translation id="3508920295779105875">选择其他文件夹...</translation>
-<translation id="3509379002674019679">您可创建、保存和管理您的密码，以便轻松登录网站和应用。</translation>
+<translation id="3509379002674019679">您可以创建、保存和管理密码，以便轻松登录网站和应用。</translation>
 <translation id="3510471875518562537">在 iPhone 上使用此地址</translation>
 <translation id="3511200754045804813">重新扫描</translation>
 <translation id="3511307672085573050">复制链接地址(&amp;E)</translation>
@@ -4177,7 +4172,6 @@
         <ph name="BREAK" />
         您可在卡片菜单中管理设置，或在“自定义 Chrome”部分查看更多选项。</translation>
 <translation id="3801449494961771207">系统默认文字转语音声音</translation>
-<translation id="3801748538479607989">将标签页移至顶部</translation>
 <translation id="3802486193901166966">此扩展程序无需任何特殊权限，并且无权访问其他网站</translation>
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803345858388753269">视频画质</translation>
@@ -4237,7 +4231,6 @@
 <translation id="3830470485672984938">换个通行密钥</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{您的管理员重新开启了 1 个可能有害的扩展程序}other{您的管理员重新开启了 {NUM_EXTENSIONS} 个可能有害的扩展程序}}</translation>
 <translation id="3834728400518755610">您必须关闭 Linux 才能更改麦克风设置。请关闭 Linux 以继续操作。</translation>
-<translation id="3834775135533257713">无法添加应用“<ph name="TO_INSTALL_APP_NAME" />”，因为它与“<ph name="INSTALLED_APP_NAME" />”冲突。</translation>
 <translation id="383669374481694771">这是关于此设备及其使用情况（例如电池电量、系统与应用活动以及错误）的一般信息。我们会使用这些数据来改善 Android，部分汇总信息还会有助于改善 Google 应用，并会协助我们的合作伙伴（例如 Android 开发者）改善其应用和产品。</translation>
 <translation id="3837569373891539515">您可以选择所有适用的选项。完成 <ph name="DEVICE_TYPE" /> 设置后，您也可在“设置”中找到这些选项。</translation>
 <translation id="3838085852053358637">未能成功加载扩展程序</translation>
@@ -4826,7 +4819,6 @@
 <translation id="4249116869350613769">省电模式</translation>
 <translation id="4249248555939881673">正在等待建立网络连接…</translation>
 <translation id="4249373718504745892">已禁止此网页使用您的摄像头和麦克风。</translation>
-<translation id="424963718355121712">应用的安装来源必须是其自己发挥作用的主机</translation>
 <translation id="4249785854468467847">AI 强力赋能，重塑 Chrome 体验</translation>
 <translation id="4250229828105606438">屏幕截图</translation>
 <translation id="4250680216510889253">否</translation>
@@ -4924,7 +4916,6 @@
 <translation id="4304713468139749426">密码管理工具</translation>
 <translation id="4305402730127028764">复制到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="4305817255990598646">切换</translation>
-<translation id="4306119971288449206">应用必须以“<ph name="CONTENT_TYPE" />”这种内容类型提供</translation>
 <translation id="4306489587293957491">输入</translation>
 <translation id="4306810703452026910">Chrome 将停止将来自此网站的通知标记为垃圾通知</translation>
 <translation id="4307992518367153382">基本</translation>
@@ -5387,7 +5378,6 @@
 <translation id="4631637535315947773">与您最常访问的网站对应的快捷方式已被移除，因为您近期未使用它们</translation>
 <translation id="4631955550884380853">集中收音</translation>
 <translation id="4632655012900268062">自定义卡片</translation>
-<translation id="4633003931260532286">此扩展程序要求“<ph name="IMPORT_NAME" />”的版本不得低于“<ph name="IMPORT_VERSION" />”，但目前安装的版本只是“<ph name="INSTALLED_VERSION" />”</translation>
 <translation id="4633757335284074492">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。此类备份内容包含应用数据。备份内容将上传到 Google 并使用您孩子的 Google 账号密码进行加密。</translation>
 <translation id="4634575639321169635">设置此设备以供个人或工作使用</translation>
 <translation id="4635072447747973225">卸载 Crostini</translation>
@@ -5430,7 +5420,6 @@
 <translation id="465878909996028221">浏览器重定向仅支持 http、https 和文件协议。</translation>
 <translation id="4659126640776004816">当您登录自己的 Google 账号后，系统即会启用此功能。</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{图片}other{# 张图片}}</translation>
-<translation id="4660476621274971848">预期版本是“<ph name="EXPECTED_VERSION" />”，但实际版本是“<ph name="NEW_ID" />”</translation>
 <translation id="4660540330091848931">正在调整大小</translation>
 <translation id="4661407454952063730">应用数据可以是应用根据开发者设置而保存的任何数据，包括通讯录、邮件/消息、照片等数据。</translation>
 <translation id="4662373422909645029">昵称不能包含数字</translation>
@@ -5618,7 +5607,6 @@
 <translation id="479536056609751218">网页，仅 HTML</translation>
 <translation id="4795670271446126525">汹涌海浪</translation>
 <translation id="4797314204379834752">尝试使用标签页分组来整理任务，以达成在线购物等目的</translation>
-<translation id="479863874072008121">管理设备</translation>
 <translation id="479989351350248267">搜索</translation>
 <translation id="4800709549856064659"><ph name="START_DATE" />之后</translation>
 <translation id="4800839971935185386">查看名称和图标的新变化</translation>
@@ -5734,6 +5722,7 @@
 <translation id="4868284252360267853">此对话框目前未被聚焦。按 Command+Shift+Option+A 即可聚焦于此对话框。</translation>
 <translation id="4868351661310357223">在 <ph name="DEVICE_TYPE" /> 上安装从 Google Play 下载的应用和游戏。</translation>
 <translation id="4869170227080975044">读取 ChromeOS 网络信息</translation>
+<translation id="4869175799055761881">用户无法安装此应用。请与开发者联系。</translation>
 <translation id="4870724079713069532">您可以在“文件浏览器”或其他应用中，使用此应用打开和编辑支持的文件。若要控制哪些文件默认在此应用中打开，请转到 <ph name="BEGIN_LINK" />Windows 设置<ph name="END_LINK" />。</translation>
 <translation id="4870995365819149457">部分受支持的链接仍会在“<ph name="APP_NAME" />”、“<ph name="APP_NAME_2" />”、“<ph name="APP_NAME_3" />”和另外 1 款应用中打开。</translation>
 <translation id="4871308555310586478">并非来自 Chrome 应用商店。</translation>
@@ -5930,7 +5919,6 @@
 <translation id="50080882645628821">移除个人资料</translation>
 <translation id="5008936837313706385">活动名称</translation>
 <translation id="5009463889040999939">正在重命名配置文件。这可能需要几分钟的时间。</translation>
-<translation id="501057610015570208">具有“kiosk_only”这项清单属性的应用必须在 ChromeOS Flex 自助服务终端模式下进行安装</translation>
 <translation id="5010886807652684893">直观视图</translation>
 <translation id="5012523644916800014">管理密码和通行密钥</translation>
 <translation id="501394389332262641">电池电量低提示音</translation>
@@ -6676,7 +6664,6 @@
 <translation id="5523558474028191231">名称可以使用字母、数字和特殊字符，并且不得超过 <ph name="MAX_CHARACTER_COUNT" /> 个字符</translation>
 <translation id="5526745900034778153">需重新登录才能继续同步</translation>
 <translation id="5527211644528700597">使用设备端方法检测威胁</translation>
-<translation id="5527463195266282916">已尝试对扩展程序降级。</translation>
 <translation id="5527474464531963247">您也可以选择其他网络。</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />，正在安装</translation>
 <translation id="5527822190489075064">优化充电</translation>
@@ -8633,6 +8620,7 @@
 <translation id="6896758677409633944">复制</translation>
 <translation id="6897363604023044284">选择需要清除数据的网站</translation>
 <translation id="6897688156970667447">适应弱光条件并节省电量</translation>
+<translation id="6897756054229464646">使用 Gemini</translation>
 <translation id="6897972855231767338">详细了解如何以访客身份浏览</translation>
 <translation id="6898438890765871056">打开 OneDrive 文件夹</translation>
 <translation id="6898440773573063262">自助服务终端应用现在可配置为在此设备上自动启动。</translation>
@@ -9135,6 +9123,7 @@
 <translation id="7250616558727237648">目标设备未响应您的文件分享请求。请重试。</translation>
 <translation id="725109152065019550">抱歉，您的管理员已停用了您账号上的外部存储功能。</translation>
 <translation id="7251635775446614726">您的管理员说：“<ph name="CUSTOM_MESSAGE" />”</translation>
+<translation id="725310308981256997">询问与此页面有关的问题</translation>
 <translation id="7253521419891527137">了解详情(&amp;L)</translation>
 <translation id="7254951428499890870">确定要以诊断模式启动“<ph name="APP_NAME" />”吗？</translation>
 <translation id="725497546968438223">书签文件夹按钮</translation>
@@ -9726,7 +9715,6 @@
 <translation id="7651182181030187705">如需在您的所有设备上获取此书签，请验证您的身份</translation>
 <translation id="7651400349472467012">有可用的即时热点</translation>
 <translation id="7651784568388208829">Phone Hub 任务延续</translation>
-<translation id="765293928828334535">无法从该网站添加应用、扩展程序和用户脚本</translation>
 <translation id="7652954539215530680">创建 PIN 码</translation>
 <translation id="7654941827281939388">已有人在此计算机上使用此账号。</translation>
 <translation id="7655411746932645568">网站可以请求连接到串行端口</translation>
@@ -10182,7 +10170,6 @@
 <translation id="795240231873601803">为工作账号和学校账号使用企业注册</translation>
 <translation id="7952708427581814389">网站可以请求查看您剪贴板中的文字和图片</translation>
 <translation id="795282463722894016">恢复完成</translation>
-<translation id="7952904276017482715">预期 ID 是“<ph name="EXPECTED_ID" />”，但实际 ID 是“<ph name="NEW_ID" />”</translation>
 <translation id="7953236668995583915">重新加载此页面，即可在该网站上应用更新后的设置</translation>
 <translation id="7953669802889559161">输入法</translation>
 <translation id="7953955868932471628">管理快捷方式</translation>
@@ -10339,7 +10326,6 @@
 <translation id="8048977114738515028">在设备上创建桌面快捷方式，以便直接访问此个人资料</translation>
 <translation id="8049029041626250638">您可以连接一个键盘或鼠标。如果您使用的是蓝牙设备，请确保您的设备已准备好进行配对。</translation>
 <translation id="8049122382261047457">使用 Google 智能镜头搜索任意图片</translation>
-<translation id="8049705080247101012">Google 已将“<ph name="EXTENSION_NAME" />”标记为恶意扩展程序并已阻止系统安装它</translation>
 <translation id="8049948037269924837">触控板反向滚动</translation>
 <translation id="8050038245906040378">Microsoft 商业代码签名</translation>
 <translation id="8050191834453426339">再次验证</translation>
@@ -10419,7 +10405,7 @@
 <translation id="8100057926383586173">打开语言设置</translation>
 <translation id="8100230553590752325">在任意设备上使用保存的密码</translation>
 <translation id="810068641062493918">已选择“<ph name="LANGUAGE" />”。按搜索键 + 空格键即可取消选择。</translation>
-<translation id="8101409298456377967">您可创建、保存和管理您的密码，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="8101409298456377967">您可以创建、保存和管理密码，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">自定义颜色</translation>
 <translation id="8101987792947961127">必须在下次重启时执行 Powerwash</translation>
 <translation id="8102139037507939978">从 system_logs.txt 中删除个人身份信息。</translation>
@@ -10624,6 +10610,7 @@
 <translation id="8244201515061746038">“自动更正”功能的“了解详情”按钮。前往“自动更正”功能的设置页面。若要启用此按钮，请按 Enter 键；若要关闭，请按 Esc 键。</translation>
 <translation id="8244514732452879619">快到就寝时间了</translation>
 <translation id="8246776524656196770">通过 PIN 码（个人识别码）保护您的安全密钥</translation>
+<translation id="824713170151383793">使用开发者工具</translation>
 <translation id="8247795734638043885">下载不安全的文件</translation>
 <translation id="8248050856337841185">粘贴(&amp;P)</translation>
 <translation id="8248381369318572865">使用您的麦克风并分析您的语音</translation>
@@ -10912,7 +10899,7 @@
 <translation id="8434109185104929038">阅读角</translation>
 <translation id="8434837876193928924">标签页分组详情</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{修复此标签页}other{修复这些标签页}}</translation>
-<translation id="8436800506934625875">请为 Google 密码管理工具创建字母数字恢复 PIN 码</translation>
+<translation id="8436800506934625875">请为 Google 密码管理工具创建字母数字辅助 PIN 码</translation>
 <translation id="8437209419043462667">美国英语</translation>
 <translation id="8438518537545182071">家长选择的设置现在可以进一步保障你的上网安全</translation>
 <translation id="8438566539970814960">改善搜索和浏览体验</translation>
@@ -11094,7 +11081,6 @@
 <translation id="8563043098557365232">只能用于系统服务</translation>
 <translation id="8564220755011656606">无法使用麦克风</translation>
 <translation id="8565021320663436446">要移除<ph name="MEMBER_FULL_NAME" />吗？</translation>
-<translation id="8565650234829130278">已尝试降低应用版本。</translation>
 <translation id="8566916288687510520">收到了新密码</translation>
 <translation id="8569673829373920831">关于“<ph name="APP_NAME" />”的更多内容</translation>
 <translation id="8569682776816196752">未找到任何目标</translation>
@@ -11116,7 +11102,7 @@
 <translation id="8585480574870650651">移除 Crostini</translation>
 <translation id="8585841788766257444">下列网站采用的是自定义设置（而非默认设置）</translation>
 <translation id="8586421813321819377">允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用设备的位置信息。开启“位置信息精确度”设置可为 Android 应用和服务提供更精确的位置信息。为此，Google 会定期处理来自您设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别您个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。</translation>
-<translation id="8587001564479545614">创建恢复 PIN 码</translation>
+<translation id="8587001564479545614">创建辅助 PIN 码</translation>
 <translation id="8587386584550433409">自动调整显示屏亮度</translation>
 <translation id="8587660243683137365">将此页面作为应用安装</translation>
 <translation id="8588866096426746242">显示个人资料统计信息</translation>
@@ -11538,6 +11524,7 @@
 <translation id="885746075120788020">无论是在哪部 Chrome 操作系统设备上，您只需登录自己的 Google 账号，便能使用您保存的偏好设置和活动记录。您可在“设置”中选择要同步的内容。</translation>
 <translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{安装应用？}other{安装应用？}}</translation>
 <translation id="8858369206579825206">隐私控制</translation>
+<translation id="8858449624332155432">政策配置存在冲突，其值来自多个来源。</translation>
 <translation id="8859174528519900719">子框架：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">无法加载《服务条款》</translation>
 <translation id="8859662783913000679">家长账号</translation>
@@ -11671,7 +11658,7 @@
 <translation id="8942714513622077633">取消 Microsoft 365 设置？</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">这样会更快消耗电量（目前电量：<ph name="BATTERY_PERCENTAGE" />%）</translation>
-<translation id="8944633700466246631">为 Google 密码管理工具创建 6 位数的恢复 PIN 码</translation>
+<translation id="8944633700466246631">请为 Google 密码管理工具创建 6 位数的辅助 PIN 码</translation>
 <translation id="8945274638472141382">图标大小</translation>
 <translation id="8945508919180478719">录音室级麦克风</translation>
 <translation id="8946359700442089734">此<ph name="IDS_SHORT_PRODUCT_NAME" />设备上未完全启用调试功能。</translation>

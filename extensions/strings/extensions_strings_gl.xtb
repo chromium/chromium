@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Non se puido cargar o ficheiro "<ph name="RELATIVE_PATH" />" para o script de contido porque superaría o tamaño máximo do script ou o tamaño máximo total do script de contido da extensión.</translation>
 <translation id="1445572445564823378">Esta extensión está reducindo a velocidade de <ph name="PRODUCT_NAME" />. Debes desactivala para restablecer o rendemento de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL non é compatible.</translation>
+<translation id="1478607704480248626">A instalación non está activada</translation>
+<translation id="1556537182262721003">Non se puido mover o directorio de extensións ao perfil.</translation>
 <translation id="1610570795592207282">Non se puido cargar o CSS <ph name="RELATIVE_PATH" /> para o script.</translation>
+<translation id="1616298854599875024">Non se puido importar a extensión "<ph name="IMPORT_NAME" />" porque non é un módulo compartido</translation>
 <translation id="1803557475693955505">Erro ao cargar a páxina en segundo plano "<ph name="BACKGROUND_PAGE" />".</translation>
+<translation id="1875387611427697908">Este elemento só se pode engadir desde <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="2131077480075264">Non se pode instalar "<ph name="APP_NAME" />" debido a que "<ph name="IMPORT_NAME" />" non o permite</translation>
 <translation id="2159915644201199628">Non se puido descodificar a imaxe: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Localización utilizada, pero default_locale non se especificou no manifesto.</translation>
 <translation id="2576842806987913196">Xa hai un ficheiro CRX presente con este nome.</translation>
+<translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2743583586211388067">Bloqueouse o acceso a esta extensión de acordo coa política de risco de extensións da túa organización.</translation>
 <translation id="2785530881066938471">Non se puido cargar o ficheiro "<ph name="RELATIVE_PATH" />" para o script de contido. Non ten codificación UTF-8.</translation>
 <translation id="2903070246402204397">A extensión <ph name="EXTENSION_NAME" /> (ID "<ph name="EXTENSION_ID" />") está bloqueada polo administrador. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">Produto descoñecido <ph name="PRODUCT_ID" /> do provedor <ph name="VENDOR_ID" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Non se puido substituír o ficheiro crx. Comproba se se está utilizando o ficheiro.</translation>
 <translation id="3163201441334626963">Produto descoñecido <ph name="PRODUCT_ID" /> do provedor <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">É necesario instalar a aplicación co atributo de manifesto "kiosk_only" no modo de quiosco de Chrome OS</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> do provedor <ph name="VENDOR_ID" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">O valor de entrada da clave privada debe ser unha ruta válida.</translation>
+<translation id="3834775135533257713">Non se puido engadir a aplicación <ph name="TO_INSTALL_APP_NAME" /> porque entra en conflito con <ph name="INSTALLED_APP_NAME" />.</translation>
 <translation id="388442998277590542">Non se puido cargar a páxina de opcións "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Erro ao asinar a extensión.</translation>
 <translation id="4233778200880751280">Non se puido cargar a páxina de información <ph name="ABOUT_PAGE" />.</translation>
+<translation id="424963718355121712">As aplicacións deben proceder do host no que repercuten</translation>
+<translation id="4306119971288449206">As aplicacións deben incluír o tipo de contido "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4633003931260532286">A extensión necesita "<ph name="IMPORT_NAME" />" coa versión "<ph name="IMPORT_VERSION" />" como mínimo, pero só está instalada a versión "<ph name="INSTALLED_VERSION" />"</translation>
+<translation id="4660476621274971848">A versión esperada era "<ph name="EXPECTED_VERSION" />", pero a obtida foi "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Erro ao emitir a clave privada.</translation>
 <translation id="4811956658694082538">Non se puido instalar o paquete porque se produciu un fallo no proceso de execución dunha utilidade. Proba a reiniciar Chrome e téntao de novo.</translation>
 <translation id="4988792151665380515">Erro ao exportar a clave pública.</translation>
+<translation id="501057610015570208">É necesario instalar a aplicación co atributo de manifesto "kiosk_only" no modo de quiosco de Chrome OS Flex</translation>
 <translation id="5026754133087629784">Vista web: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Non se pode atopar a ruta absoluta ao directorio que se debe incluír en paquetes.</translation>
 <translation id="5160071981665899014">Non se puido cargar o JavaScript <ph name="RELATIVE_PATH" /> para o script.</translation>
 <translation id="5356315618422219272">Vista da aplicación: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Esta extensión inclúe o ficheiro de clave "<ph name="KEY_PATH" />". É probable que non queiras realizar esta acción.</translation>
 <translation id="5486326529110362464">Debe existir o valor de entrada da clave privada.</translation>
+<translation id="5527463195266282916">Intentouse cambiar a extensión a unha versión anterior.</translation>
 <translation id="5707185214361380026">Erro ao cargar a extensión de:</translation>
 <translation id="5972529113578162692">O administrador deste equipo necesita que se instale <ph name="EXTENSION_NAME" />. Non se pode instalar.</translation>
 <translation id="6027032947578871493">Produto descoñecido <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">O ficheiro de manifesto non é válido</translation>
 <translation id="7217838517480956708">O administrador deste equipo require a instalación de <ph name="EXTENSION_NAME" />. Non se pode eliminar nin modificar.</translation>
 <translation id="7612608473764576263">O valor de entrada da clave privada debe ter un formato válido (clave RSA en formato PKCS #8 e con codificación PEM).</translation>
+<translation id="765293928828334535">Non se poden engadir aplicacións, extensións nin scripts de usuarios desde este sitio web</translation>
 <translation id="7876803335449432072">Non se puido cargar o ficheiro "<ph name="RELATIVE_PATH" />" para o script de contido porque as follas de estilo dos script de contido só se poden cargar desde ficheiros de follas de estilo admitidos, como os .css.</translation>
 <translation id="7939686037314084444">Produciuse un erro ao cargar a extensión, polo que podería non interceptar solicitudes de rede.</translation>
+<translation id="7952904276017482715">Esperábase o ID "<ph name="EXPECTED_ID" />", pero o recibido foi "<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">Opcións: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Cámara dianteira</translation>
 <translation id="8047248493720652249">Esta extensión non logrou asignar un nome á descarga "<ph name="ATTEMPTED_FILENAME" />" porque outra extensión (<ph name="EXTENSION_NAME" />) determinou un nome de ficheiro diferente "<ph name="ACTUAL_FILENAME" />".</translation>
+<translation id="8049705080247101012">Google marcou a extensión "<ph name="EXTENSION_NAME" />" como maliciosa e impediuse a instalación</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Falta o ficheiro de manifesto ou non se pode ler</translation>
+<translation id="8565650234829130278">Tentouse instalar unha versión anterior da aplicación.</translation>
 <translation id="8621383749470166852">Non se puido cargar o ficheiro "<ph name="RELATIVE_PATH" />" para o script de contido porque os script de contido só se poden cargar desde ficheiros JavaScript admitidos, como os .js.</translation>
 <translation id="8636666366616799973">O paquete non é válido. Detalles: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" solicita acceso a un dos teus dispositivos:</translation>

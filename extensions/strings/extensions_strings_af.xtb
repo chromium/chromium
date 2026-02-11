@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Kon nie lêer “<ph name="RELATIVE_PATH" />” vir inhoudskrip laai nie omdat dit die maksimum skripgrootte of die uitbreiding se maksimum totale inhoudskripgrootte sou oorskry.</translation>
 <translation id="1445572445564823378">Hierdie uitbreiding maak <ph name="PRODUCT_NAME" /> stadig. Jy moet dit deaktiveer om <ph name="PRODUCT_NAME" /> se prestasie te herstel.</translation>
 <translation id="1468038450257740950">WebGL word nie gesteun nie.</translation>
+<translation id="1478607704480248626">Installering is nie geaktiveer nie</translation>
+<translation id="1556537182262721003">Kon nie uitbreidinggids na profiel skuif nie.</translation>
 <translation id="1610570795592207282">Kon nie css “<ph name="RELATIVE_PATH" />” vir skrip laai nie.</translation>
+<translation id="1616298854599875024">Kan nie uitbreiding "<ph name="IMPORT_NAME" />" invoer nie, want dit is nie 'n gedeelde module nie</translation>
 <translation id="1803557475693955505">Kon nie plaaslike agtergrondbladsy '<ph name="BACKGROUND_PAGE" />' laai nie.</translation>
+<translation id="1875387611427697908">Dit kan net van die <ph name="CHROME_WEB_STORE" /> af bygevoeg word</translation>
+<translation id="2131077480075264">Kan nie "<ph name="APP_NAME" />" installeer nie omdat dit nie deur "<ph name="IMPORT_NAME" />" toegelaat word nie</translation>
 <translation id="2159915644201199628">Kon nie prent ontsyfer nie: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Lokalisering is gebruik, maar verstek_ligging is nie in die manifes gespesifiseer nie.</translation>
 <translation id="2576842806987913196">Daar is reeds 'n CRX-lêer met hierdie naam.</translation>
+<translation id="2662876636500006917">Chrome Webwinkel</translation>
 <translation id="2743583586211388067">Toegang tot hierdie uitbreiding word onder jou organisasie se uitbreidingrisikobeleid geblokkeer.</translation>
 <translation id="2785530881066938471">Kon nie lêer '<ph name="RELATIVE_PATH" />' vir inhoudskrip laai nie. Dit is nie in UTF-8 geënkodeer nie.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (uitbreiding-ID "<ph name="EXTENSION_ID" />") word deur die administrateur geblokkeer. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">Onbekende produk <ph name="PRODUCT_ID" /> vanaf verkoper <ph name="VENDOR_ID" /> (reeksnommer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Kon nie crx-lêer vervang nie. Gaan na om te sien of die lêer gebruik word.</translation>
 <translation id="3163201441334626963">Onbekende produk <ph name="PRODUCT_ID" /> vanaf verkoper <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">App met "net_kiosk"-manifeseienskap moet in Chrome-bedryfstelsel se kioskmodus geïnstalleer word</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (reeksnommer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> vanaf verkoper <ph name="VENDOR_ID" /> (reeksnommer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Invoerwaarde vir private sleutel moet 'n geldige pad wees.</translation>
+<translation id="3834775135533257713">Kon nie app "<ph name="TO_INSTALL_APP_NAME" />" byvoeg nie omdat dit met "<ph name="INSTALLED_APP_NAME" />" bots.</translation>
 <translation id="388442998277590542">Kon nie opsiebladsy '<ph name="OPTIONS_PAGE" />' laai nie.</translation>
 <translation id="3984413272403535372">Kon nie 'n uitbreiding onderteken nie.</translation>
 <translation id="4233778200880751280">Kon nie meer-oor-bladsy "<ph name="ABOUT_PAGE" />" laai nie.</translation>
+<translation id="424963718355121712">Programme moet bedien word vanaf die gasheer wat hulle raak</translation>
+<translation id="4306119971288449206">Programme moet met inhoudtipe "<ph name="CONTENT_TYPE" />" bedien word</translation>
+<translation id="4633003931260532286">Uitbreiding vereis "<ph name="IMPORT_NAME" />" met minstens weergawe "<ph name="IMPORT_VERSION" />", maar net weergawe "<ph name="INSTALLED_VERSION" />" is geïnstalleer</translation>
+<translation id="4660476621274971848">Het weergawe "<ph name="EXPECTED_VERSION" />" verwag, maar weergawe was "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Kon nie private sleutel uitvoer nie.</translation>
 <translation id="4811956658694082538">Kon nie pakket installeer nie omdat 'n nutsproses omgeval het. Probeer om Chrome te herbegin en probeer weer.</translation>
 <translation id="4988792151665380515">Kon nie publieke sleutel uitvoer nie.</translation>
+<translation id="501057610015570208">App met "kiosk_only"-manifeskenmerk moet in Chrome OS Flex se kioskmodus geïnstalleer word</translation>
 <translation id="5026754133087629784">Webaansig: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Kan nie die absolute pad vind na die gids om te pak nie.</translation>
 <translation id="5160071981665899014">Kon nie javascript “<ph name="RELATIVE_PATH" />” vir skrip laai nie.</translation>
 <translation id="5356315618422219272">Programaansig: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Hierdie uitbreiding sluit die sleutellêer "<ph name="KEY_PATH" />" in. Jy wil dit waarskynlik nie doen nie.</translation>
 <translation id="5486326529110362464">Invoerwaarde vir private sleutel moet bestaan.</translation>
+<translation id="5527463195266282916">Het probeer om uitbreiding af te gradeer.</translation>
 <translation id="5707185214361380026">Kon nie uitbreiding hiervandaan laai nie:</translation>
 <translation id="5972529113578162692">Die administrateur van hierdie masjien vereis dat <ph name="EXTENSION_NAME" /> geïnstalleer moet wees. Dit kan nie gedeïnstalleer word nie.</translation>
 <translation id="6027032947578871493">Onbekende produk <ph name="PRODUCT_ID" /> vanaf <ph name="VENDOR_NAME" /> (reeksnommer <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Manifeslêer is ongeldig</translation>
 <translation id="7217838517480956708">Die administrateur van hierdie masjien vereis dat <ph name="EXTENSION_NAME" /> geïnstalleer word. Dit kan nie verwyder of aangepas word nie.</translation>
 <translation id="7612608473764576263">Invoerwaarde vir private sleutel moet 'n geldige formaat wees (PKCS#8-formaat- PEM-geënkodeerde RSA-sleutel).</translation>
+<translation id="765293928828334535">Programme, uitbreidings en gebruikerskripte kan nie van hierdie webwerf af bygevoeg word nie</translation>
 <translation id="7876803335449432072">Kon nie die lêer “<ph name="RELATIVE_PATH" />” vir inhoudskrip laai nie – inhoudskripstylblaaie kan net gelaai word vanaf gesteunde stylbladlêers soos .css-lêers.</translation>
 <translation id="7939686037314084444">Die uitbreiding kon nie behoorlik laai nie. Dit sal dalk nie netwerkversoeke kan onderskep nie.</translation>
+<translation id="7952904276017482715">Het ID "<ph name="EXPECTED_ID" />" verwag, maar ID was "<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">Opsies: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Wys na gebruiker (voorste kamera)</translation>
 <translation id="8047248493720652249">Hierdie uitbreiding kon nie die "<ph name="ATTEMPTED_FILENAME" />" aflaai nie, omdat 'n ander uitbreiding (<ph name="EXTENSION_NAME" />) 'n ander lêernaam "<ph name="ACTUAL_FILENAME" />" bepaal het.</translation>
+<translation id="8049705080247101012">Google het "<ph name="EXTENSION_NAME" />" as kwaadwillig gevlag en installering is verhoed</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> vanaf <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Manifeslêer ontbreek of is onleesbaar</translation>
+<translation id="8565650234829130278">Het probeer om app af te gradeer.</translation>
 <translation id="8621383749470166852">Kon nie die lêer “<ph name="RELATIVE_PATH" />” vir inhoudskrip laai nie – inhoudskripte kan net gelaai word vanaf gesteunde JavaScript-lêers soos .js-lêers.</translation>
 <translation id="8636666366616799973">Pakket is ongeldig. Besonderhede: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" versoek tans toegang tot een van jou toestelle:</translation>

@@ -584,6 +584,7 @@
 <translation id="3140825265190223781">Gespeicherte Passwörter und Passkeys</translation>
 <translation id="3143515551205905069">Synchronisierung abbrechen</translation>
 <translation id="3144126448740580210">Fertig</translation>
+<translation id="3147521114983561406">Passkeys werden in deinem Passwortmanager gespeichert. Sie sind in Inkognito- und normalen Tabs zugänglich.</translation>
 <translation id="3148052723910099040">Normales Tabraster</translation>
 <translation id="3148237711805373460">Weiter</translation>
 <translation id="3157387275655328056">Zur Leseliste hinzufügen</translation>
@@ -2097,6 +2098,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8587001564479545614">Wiederherstellungs‑PIN erstellen</translation>
 <translation id="8588404856427128947">Aus</translation>
 <translation id="8590286732816598906">Tabgruppe, <ph name="GROUP_TITLE" />, Menü.</translation>
+<translation id="8593317261815647019">Passkey außerhalb des Inkognitomodus erstellen?</translation>
 <translation id="8600272508328041907">Zur Übersetzung der ganzen Seite wechseln</translation>
 <translation id="860043288473659153">Name des Karteninhabers</translation>
 <translation id="8601611099293226919">Mit Google Lens anhand von Bildschirminhalt suchen</translation>

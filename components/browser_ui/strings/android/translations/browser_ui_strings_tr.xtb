@@ -295,6 +295,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="3903738175795615004">Tam ekrandan çıkmak için yukarıdan sürükleyin veya Esc tuşuna basın.</translation>
 <translation id="3905475044299942653">Çok fazla bildirim gelmesini engelleyin</translation>
 <translation id="3922092564198021702">Telefonunuzda Ayarlar'ı açın.</translation>
+<translation id="3924858949939391676">Okuma Modu açıldıktan sonra bağlantılar görüntülenir</translation>
 <translation id="3933121352599513978">İstenmeyen istekleri daralt (önerilir)</translation>
 <translation id="3934905113567851655">Yeniden boyutlandırmak için iki parmağınızı kullanın</translation>
 <translation id="3955193568934677022">Sitelerin korumalı içeriği oynatmasına izin ver (önerilir)</translation>
@@ -358,6 +359,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="4644713492825682049">Sil ve sıfırla</translation>
 <translation id="4645575059429386691">Ebeveyniniz tarafından yönetiliyor</translation>
 <translation id="4652266463001779298">İzin verilmiyor</translation>
+<translation id="4655846733459137112">Bir sonraki oturum açma işleminizde bu şifreyi kolayca kullanmak için Evet'e dokunun</translation>
 <translation id="4663373278480897665">Kameraya izin veriliyor</translation>
 <translation id="4670064810192446073">Sanal gerçeklik</translation>
 <translation id="4672315773691449562">Tarayıcı uygulamasına, ardından Chrome'a dokunun</translation>
@@ -464,6 +466,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="5804241973901381774">İzinler</translation>
 <translation id="5817042798620209981">Site bilgileri, iletişim kutusu</translation>
 <translation id="5822675474983796325">Yeni sekme sayfanızı özelleştirin alt sayfası tam ekranda açıldı</translation>
+<translation id="5826403277762134844">Chrome'da şifre kaydetme talimatları alt sayfası</translation>
 <translation id="5833899990800318936">Sitelerin JavaScript kullanmasına izin verme</translation>
 <translation id="583673505367439042">Siteler cihazınızdaki dosyaları veya klasörleri düzenlemek isteyebilir</translation>
 <translation id="5844448279347999754">Bu düğme açıkken siteler panonuza kaydedilen metin ve resimleri görmek isteyebilir. Düğme kapalıyken siteler panonuza kaydedilen metin veya resimleri göremez.</translation>
@@ -643,6 +646,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="775043444390799886">İzni iptal et</translation>
 <translation id="7758789811447313947">Mor tema</translation>
 <translation id="7759147511335618829">MIDI cihaz kontrolü ve yeniden programlama</translation>
+<translation id="7771089277295008211">Şifre kaydetme talimatları alt sayfası kapatıldı</translation>
 <translation id="7781829728241885113">Dün</translation>
 <translation id="7791543448312431591">Ekle</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
@@ -660,6 +664,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="7940722705963108451">Bana hatırlat</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" /> hakkında daha fazla bilgi</translation>
 <translation id="7952708427581814389">Siteler panonuzdaki metin ve görselleri görmek isteyebilir</translation>
+<translation id="7958779728312669715">Şifre kaydetme talimatları alt sayfası tamamen açıldı</translation>
 <translation id="798299424881500862">Turuncu tema</translation>
 <translation id="7986741934819883144">Kişi seçin</translation>
 <translation id="7990211076305263060">Bu düğme açıkken siteler mikrofonunuzu kullanmak isteyebilir. Düğme kapalıyken siteler mikrofonunuzu kullanamaz.</translation>
@@ -756,6 +761,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="8889294078294184559">Siz sitelere göz atarken siteler de Chrome'dan kontrol ederek ziyaret ettiğiniz önceki bir siteden büyük olasılıkla gerçek bir kişi olduğunuzu doğrular</translation>
 <translation id="8899807382908246773">Araya giren reklamlar</translation>
 <translation id="8903921497873541725">Yakınlaştır</translation>
+<translation id="8919911527569629802">İstediğiniz web sitesinde oturum açın</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Bir daha sorma</translation>
 <translation id="8926666909099850184">NFC bu cihazda kapalı. Bu özelliği <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda açın.</translation>
@@ -783,6 +789,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="9182556968660520230">Sitelerin korumalı içeriği oynatmasına izin verme</translation>
 <translation id="947156494302904893">Ziyaret ettiğiniz siteler, bot olmadığınızı ve gerçek bir kişi olduğunuzu doğrulayabilir</translation>
 <translation id="959682366969460160">Organize çalışın</translation>
+<translation id="960590623979248167">Köprüleri göster</translation>
 <translation id="961930410699694996">Şu anda konuma izin veriliyor</translation>
 <translation id="967624055006145463">Depolanan veriler</translation>
 <translation id="969975166333045662">Sitenin, V8 optimize ediciyi kullanmasını engelleyin.</translation>

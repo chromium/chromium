@@ -2787,6 +2787,7 @@
 <translation id="5466018172325111652">Kod qəbul etmədiniz? <ph name="BEGIN_LINK" />Yeni kod əldə edin<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Ödəniş tətbiqləri</translation>
 <translation id="5470861586879999274">&amp;Düzəlişi yenidən edin</translation>
+<translation id="5471158297908124590">Ödəniş metodlarını redaktə etmək üçün kimliyinizi doğrulayın</translation>
 <translation id="5472588168895083535">Əl izləmə bloklandı</translation>
 <translation id="5477756102936130143">Dəstəklənən ödəniş tətbiqlərinə yönləndirməni aktivləşdirin</translation>
 <translation id="5479505548832623900">Çox güman ki, artırma tərəfindən nəzərə alınmayıb.</translation>
@@ -3170,6 +3171,7 @@
 <translation id="6093795393556121384">Kartlarınız doğrulanıb</translation>
 <translation id="6094253940069566294">Nəqliyyat vasitəsini redaktə edin</translation>
 <translation id="6094290315941448991">Administrator siyasəti məxfi məzmun görünəndə ekranın yazılmasını deaktiv edir</translation>
+<translation id="6097297436119286254">Ödəniş məlumatlarını doldurmaq üçün kimliyinizi doğrulayın</translation>
 <translation id="6099269767116481177">22 x 29,5 düym</translation>
 <translation id="6101583188322746099">Ərzaq çatdırma xidmətləri</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4917,6 +4919,7 @@
 <translation id="8897428486789851669">Üzgüçülük</translation>
 <translation id="8899807382908246773">İntruziv reklamlar</translation>
 <translation id="8903921497873541725">Zoom</translation>
+<translation id="8903998444169664879">Ödəniş ayarlarını dəyişmək üçün kimliyinizi doğrulayın</translation>
 <translation id="890493561996401738">Təklifi Silmə düyməsi, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> təklifini silmək üçün Enter düyməsinə basın</translation>
 <translation id="8910898109640902752">8 x 10 düym</translation>
 <translation id="8914504000324227558">Chrome'u yenidən başladın</translation>

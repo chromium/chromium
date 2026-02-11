@@ -2800,6 +2800,7 @@
 <translation id="5466018172325111652">Չե՞ք ստացել կոդը։ <ph name="BEGIN_LINK" />Ստանալ նոր կոդ<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Վճարային հավելվածներ</translation>
 <translation id="5470861586879999274">&amp;Վերարկել փոփոխումը</translation>
+<translation id="5471158297908124590">Հաստատեք ձեր ինքնությունը՝ վճարման եղանակները փոփոխելու համար</translation>
 <translation id="5472588168895083535">Ձեռքերի շարժումների հետագծումն արգելափակված է</translation>
 <translation id="5477756102936130143">Թույլատրել վերաուղղորդումը դեպի աջակցվող վճարային հավելվածներ</translation>
 <translation id="5479505548832623900">Հավանաբար այս ընդլայնման մեջ կանոնները չեն գործում։</translation>
@@ -3183,6 +3184,7 @@
 <translation id="6093795393556121384">Ձեր քարտը հաստատված է</translation>
 <translation id="6094253940069566294">Փոփոխել փոխադրամիջոցը</translation>
 <translation id="6094290315941448991">Ըստ ադմինիստրատորի սահմանած կանոնի՝ էկրանի տեսագրման հնարավորությունն անջատվում է, երբ գաղտնի բովանդակություն է տեսանելի</translation>
+<translation id="6097297436119286254">Հաստատեք ձեր ինքնությունը՝ վճարային տվյալները լրացնելու համար</translation>
 <translation id="6099269767116481177">22 x 29,5 դյույմ</translation>
 <translation id="6101583188322746099">Մթերքի առաքման ծառայություններ</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4930,6 +4932,7 @@
 <translation id="8897428486789851669">Լող</translation>
 <translation id="8899807382908246773">Հոգնեցնող գովազդ</translation>
 <translation id="8903921497873541725">Խոշորացնել</translation>
+<translation id="8903998444169664879">Հաստատեք ձեր ինքնությունը՝ վճարման կարգավորումները փոխելու համար</translation>
 <translation id="890493561996401738">Հուշումը հեռացնելու կոճակ։ Սեղմեք Enter՝ հեռացնելու համար։ <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 դյմ</translation>
 <translation id="8914504000324227558">Chrome-ի վերագործարկում</translation>

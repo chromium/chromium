@@ -2791,6 +2791,7 @@
 <translation id="5466018172325111652">კოდი არ მიგიღიათ? <ph name="BEGIN_LINK" />მოითხოვეთ ახალი კოდი<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">გადახდის აპები</translation>
 <translation id="5470861586879999274">რედაქტირების &amp;გამეორება</translation>
+<translation id="5471158297908124590">გადახდის მეთოდების რედაქტირებისთვის დაადასტურეთ ვინაობა</translation>
 <translation id="5472588168895083535">ხელების მოძრაობაზე თვალის მიდევნება დაიბლოკა</translation>
 <translation id="5477756102936130143">გადახდის მხარდაჭერილ აპებზე გადამისამართების ჩართვა</translation>
 <translation id="5479505548832623900">როგორც ჩანს, იგნორირებულია გაფართოების მიერ.</translation>
@@ -2868,6 +2869,7 @@
 <translation id="5570825185877910964">დაიცავით ანგარიში</translation>
 <translation id="5571083550517324815">ამ მისამართიდან წამოღება ვერ მოხერხდება. აირჩიეთ სხვა მისამართი.</translation>
 <translation id="5572434905385510939">22 x 28 დუიმი</translation>
+<translation id="5573090972398558474">თქვენმა ორგანიზაციამ დაბლოკა ეს გვერდი ინკოგნიტო რეჟიმში.</translation>
 <translation id="5573641252776268565">პასპორტის რედაქტირება</translation>
 <translation id="5578606540385219379">სერვისების პროვაიდერები</translation>
 <translation id="5580958916614886209">შეამოწმეთ ვადის გასვლის თვე და ხელახლა ცადეთ</translation>
@@ -3174,6 +3176,7 @@
 <translation id="6093795393556121384">თქვენი ბარათი დადასტურდა</translation>
 <translation id="6094253940069566294">სატრანსპორტო საშუალების რედაქტირება</translation>
 <translation id="6094290315941448991">ადმინისტრატორის წესების მიხედვით, ეკრანის ჩაწერა გათიშულია, როცა ხილულია კონფიდენციალური კონტენტი</translation>
+<translation id="6097297436119286254">საგადახდო ინფორმაციის შესავსებად დაადასტურეთ ვინაობა</translation>
 <translation id="6099269767116481177">22 x 29,5 დუიმი</translation>
 <translation id="6101583188322746099">სურსათის ადგილზე მიტანის მომსახურება</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4294,6 +4297,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{არცერთი}=1{1 აპი (<ph name="EXAMPLE_APP_1" />)}=2{2 აპი (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# აპი (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">შეცდომა მოხდა. ცადეთ ხელახლა.</translation>
 <translation id="784623644169604270">უახლესი აქტივობები არ არის</translation>
+<translation id="7848926355794727168">ბრაუზერის ავტორეჟიმი</translation>
 <translation id="7853222852810008596">ამ ვალუტაში მოგვიანებით გადახდა არ არის ხელმისაწვდომი</translation>
 <translation id="785476343534277563">სპორტული ცხოვრება კოლეჯებში</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
@@ -4921,6 +4925,7 @@
 <translation id="8897428486789851669">ცურვა</translation>
 <translation id="8899807382908246773">მომაბეზრებელი რეკლამა</translation>
 <translation id="8903921497873541725">მასშტაბის გადიდება</translation>
+<translation id="8903998444169664879">გადახდების პარამეტრების შესაცვლელად დაადასტურეთ ვინაობა</translation>
 <translation id="890493561996401738">შემოთავაზების ამოშლის ღილაკი, ამოსაშლელად დააჭირეთ კლავიშს „Enter“, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 დუიმი</translation>
 <translation id="8914504000324227558">Chrome-ის ხელახლა გაშვება</translation>

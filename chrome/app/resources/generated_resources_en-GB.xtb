@@ -717,7 +717,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1477446329585670721"><ph name="DOMAIN" /> requires you to keep your smart card inserted.</translation>
 <translation id="1477654881618305065">Your organisation doesn't allow you to share this content. If you need help, contact your administrator.</translation>
 <translation id="1478340334823509079">Details: <ph name="FILE_NAME" /></translation>
-<translation id="1478607704480248626">Installation is not enabled</translation>
 <translation id="1480663089572535854">You can go back to change the assignment for 'Select'. You can always turn off auto-scan in Settings.</translation>
 <translation id="1481001611315487791">Learn more about creating themes with AI.</translation>
 <translation id="1481537595330271162">Error resizing disk</translation>
@@ -831,7 +830,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1554640914375980459">Flash the screen when you receive notifications. Use flash notifications with caution if you're light sensitive.</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="1556127816860282890">Background activity and some visual effects, like smooth scrolling, may be limited</translation>
-<translation id="1556537182262721003">Could not move extension directory into profile.</translation>
 <translation id="1557939148300698553">Create profile</translation>
 <translation id="155803912725350982">Slow keys</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -930,7 +928,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1614890968027287789">Separate browsing?</translation>
 <translation id="1615433306336820465">Manage sign-in data stored on your security key</translation>
 <translation id="1616206807336925449">This extension requires no special permissions.</translation>
-<translation id="1616298854599875024">Unable to import extension '<ph name="IMPORT_NAME" />' because it is not a shared module</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Checking this data with your organisation's security policies…}=1{Checking this file with your organisation's security policies…}other{Checking these files with your organisation's security policies…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618142905422922351">You currently have <ph name="NUMBERED_ITEM" /> and more. Your organisation, <ph name="ACCOUNT_MANAGER" />, will be able to see and manage this data.</translation>
@@ -1095,7 +1092,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1709916727352927457">Delete passkey</translation>
 <translation id="1709972045049031556">Can’t share</translation>
 <translation id="1712143791363119140">In progress</translation>
-<translation id="1713120794167761305">Move tabs to the side</translation>
 <translation id="1714265454085143857">Pinned tabs</translation>
 <translation id="1714326320203665217">Main node annotation files downloaded</translation>
 <translation id="1714644264617423774">Enable accessibility features to make your device easier to use. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -1325,7 +1321,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1873920700418191231">Allow permissions again for <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Allowed to show any ads</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Move tab to another window}other{Move tabs to another window}}</translation>
-<translation id="1875387611427697908">This can only be added from the <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Label (optional)</translation>
 <translation id="1877377730633446520">This will use about <ph name="REQUIRED_SPACE" />. You currently have <ph name="FREE_SPACE" /> available.</translation>
 <translation id="1877860345998737529">Switch action assignment</translation>
@@ -1702,7 +1697,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="212876957201860463">Preparing to set up your mobile device…</translation>
 <translation id="212962875239908767">A contemplative oil painting portraying an intellectual immersed in thought amidst a yellow meadow.</translation>
 <translation id="2130235198799290727">From extensions</translation>
-<translation id="2131077480075264">Unable to install "<ph name="APP_NAME" />" because it is not allowed by "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2131548114076786395">To share, join and collaborate in tab groups, verify that it’s you</translation>
 <translation id="2131863825246488194">Be safer online</translation>
 <translation id="2133775869826239001">Choose more features to set up</translation>
@@ -3346,7 +3340,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3241638166094654466">Cells in each line:</translation>
 <translation id="3241680850019875542">Select the root directory of the extension to pack. To update an extension, also select the private key file to reuse.</translation>
 <translation id="3241810535741601486">This change is permanent and can't be reversed. Extended updates apply to all users of this device. <ph name="LINK_START" />Learn more<ph name="LINK_END" /></translation>
-<translation id="3242289508736283383">App with 'kiosk_only' manifest attribute must be installed in Chrome OS kiosk mode</translation>
 <translation id="3243017971870859287">Read ChromeOS Flex device and component serial numbers</translation>
 <translation id="324366796737464147">Noise cancellation</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4202,7 +4195,6 @@ You can manage this account’s settings by installing the Family Link app on yo
         <ph name="BREAK" />
         You can manage settings from the card menu or see more options in Customise Chrome.</translation>
 <translation id="3801449494961771207">System text-to-speech voice</translation>
-<translation id="3801748538479607989">Move tabs to the top</translation>
 <translation id="3802486193901166966">This extension requires no special permissions and has no additional site access</translation>
 <translation id="380329542618494757">Name</translation>
 <translation id="3803345858388753269">Video quality</translation>
@@ -4262,7 +4254,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3830470485672984938">Use a different passkey</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Your administrator turned 1 potentially harmful extension back on}other{Your administrator turned {NUM_EXTENSIONS} potentially harmful extensions back on}}</translation>
 <translation id="3834728400518755610">The change in microphone setting requires Linux to shut down. Shut down Linux to proceed.</translation>
-<translation id="3834775135533257713">Could not add application "<ph name="TO_INSTALL_APP_NAME" />" because it conflicts with "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="383669374481694771">This is general information about this device and how it's used (such as battery level, system and app activity, and errors). The data will be used to improve Android, and some aggregated information will also help Google apps and partners, such as Android developers, make their apps and products better.</translation>
 <translation id="3837569373891539515">You can select all that apply. You can also find these options in Settings after you finish setting up your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3838085852053358637">Failed to load extension</translation>
@@ -4852,7 +4843,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4249116869350613769">Battery saver</translation>
 <translation id="4249248555939881673">Waiting for network connection...</translation>
 <translation id="4249373718504745892">This page has been blocked from accessing your camera and microphone.</translation>
-<translation id="424963718355121712">Apps must be served from the host they affect</translation>
 <translation id="4249785854468467847">Reimagine Chrome, supercharged with AI</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4250680216510889253">No</translation>
@@ -4950,7 +4940,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4305402730127028764">Copy to <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Switch</translation>
-<translation id="4306119971288449206">Apps must be served with content-type '<ph name="CONTENT_TYPE" />'</translation>
 <translation id="4306489587293957491">Enter</translation>
 <translation id="4306810703452026910">Chrome will stop flagging notifications from this site as spam</translation>
 <translation id="4307992518367153382">Basics</translation>
@@ -5413,7 +5402,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4631637535315947773">Shortcuts for your most visited sites were removed because you haven't used them recently</translation>
 <translation id="4631955550884380853">Focused voice</translation>
 <translation id="4632655012900268062">Customise cards</translation>
-<translation id="4633003931260532286">Extension requires '<ph name="IMPORT_NAME" />' with a minimum version '<ph name="IMPORT_VERSION" />', but only version '<ph name="INSTALLED_VERSION" />' is installed</translation>
 <translation id="4633757335284074492">Back up to Google Drive. Easily restore data or switch device at any time. This backup includes app data. Backups are uploaded to Google and encrypted using your child's Google Account password.</translation>
 <translation id="4634575639321169635">Set up this device for work or personal use</translation>
 <translation id="4635072447747973225">Uninstall Crostini</translation>
@@ -5456,7 +5444,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="465878909996028221">Only http, https and file protocols are supported for browser redirects.</translation>
 <translation id="4659126640776004816">When you sign in to your Google account, this feature is turned on.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Image}other{# images}}</translation>
-<translation id="4660476621274971848">Expected version '<ph name="EXPECTED_VERSION" />', but version was '<ph name="NEW_ID" />'</translation>
 <translation id="4660540330091848931">Resizing</translation>
 <translation id="4661407454952063730">App data can be any data that an app has saved (based on developer settings), including data such as contacts, messages and photos.</translation>
 <translation id="4662373422909645029">Nickname can’t include numbers</translation>
@@ -5644,7 +5631,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="479536056609751218">Web Page, HTML Only</translation>
 <translation id="4795670271446126525">Crashing waves</translation>
 <translation id="4797314204379834752">Try using tab groups to organise tasks, for online shopping and more</translation>
-<translation id="479863874072008121">Manage devices</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4800709549856064659">After <ph name="START_DATE" /></translation>
 <translation id="4800839971935185386">Review name and icon updates</translation>
@@ -5958,7 +5944,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="50080882645628821">Remove profile</translation>
 <translation id="5008936837313706385">Activity Name</translation>
 <translation id="5009463889040999939">Renaming profile. This may take a few minutes.</translation>
-<translation id="501057610015570208">App with 'kiosk_only' manifest attribute must be installed in Chrome OS Flex kiosk mode</translation>
 <translation id="5010886807652684893">Visual view</translation>
 <translation id="5012523644916800014">Manage passwords and passkeys</translation>
 <translation id="501394389332262641">Low battery sound</translation>
@@ -6705,7 +6690,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5523558474028191231">Name can use letters, numbers and special characters, and must be <ph name="MAX_CHARACTER_COUNT" /> characters or fewer</translation>
 <translation id="5526745900034778153">Sign in again to resume sync</translation>
 <translation id="5527211644528700597">Uses on-device methods to detect threats</translation>
-<translation id="5527463195266282916">Attempted to downgrade extension.</translation>
 <translation id="5527474464531963247">You may also select another network.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, installing</translation>
 <translation id="5527822190489075064">Optimised charging</translation>
@@ -9760,7 +9744,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7651182181030187705">To get this bookmark on all your devices, verify that it's you</translation>
 <translation id="7651400349472467012">Instant hotspot available</translation>
 <translation id="7651784568388208829">Phone Hub task continuation</translation>
-<translation id="765293928828334535">Apps, extensions and user scripts cannot be added from this website</translation>
 <translation id="7652954539215530680">Create a PIN</translation>
 <translation id="7654941827281939388">This account is already being used on this computer.</translation>
 <translation id="7655411746932645568">Sites can ask to connect to serial ports</translation>
@@ -10216,7 +10199,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="795240231873601803">Use enterprise enrolment for work and school accounts</translation>
 <translation id="7952708427581814389">Sites can ask to see text and images on your clipboard</translation>
 <translation id="795282463722894016">Restore complete</translation>
-<translation id="7952904276017482715">Expected ID '<ph name="EXPECTED_ID" />', but ID was '<ph name="NEW_ID" />'</translation>
 <translation id="7953236668995583915">Reload this page to apply your updated settings on this site</translation>
 <translation id="7953669802889559161">Inputs</translation>
 <translation id="7953955868932471628">Manage shortcuts</translation>
@@ -10373,7 +10355,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8048977114738515028">Create a desktop shortcut on your device to access directly to this profile</translation>
 <translation id="8049029041626250638">Connect a keyboard or mouse. If you are using Bluetooth devices, make sure that your devices are ready to pair.</translation>
 <translation id="8049122382261047457">Search any image with Google Lens</translation>
-<translation id="8049705080247101012">Google has flagged '<ph name="EXTENSION_NAME" />' as malicious, and installation has been prevented</translation>
 <translation id="8049948037269924837">Touchpad reverse scrolling</translation>
 <translation id="8050038245906040378">Microsoft Commercial Code Signing</translation>
 <translation id="8050191834453426339">Verify again</translation>
@@ -11129,7 +11110,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8563043098557365232">Only allowed for system services</translation>
 <translation id="8564220755011656606">Can't access microphone</translation>
 <translation id="8565021320663436446">Remove <ph name="MEMBER_FULL_NAME" />?</translation>
-<translation id="8565650234829130278">Attempted to downgrade app.</translation>
 <translation id="8566916288687510520">New password received</translation>
 <translation id="8569673829373920831">More about <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">No destinations found</translation>

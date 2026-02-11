@@ -2788,6 +2788,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5466018172325111652">Nem kapta meg a kódot? <ph name="BEGIN_LINK" />Igényeljen újat<ph name="END_LINK" />.</translation>
 <translation id="5466818462212249084">Fizetési alkalmazások</translation>
 <translation id="5470861586879999274">&amp;Szerkesztés újra</translation>
+<translation id="5471158297908124590">A fizetési módok szerkesztéséhez igazolja személyazonosságát</translation>
 <translation id="5472588168895083535">Kézmozgás követése letiltva</translation>
 <translation id="5477756102936130143">Engedélyezheti a támogatott fizetési alkalmazásokhoz való átirányítást.</translation>
 <translation id="5479505548832623900">A bővítmény valószínűleg figyelmen kívül hagyja.</translation>
@@ -3171,6 +3172,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6093795393556121384">Kártyáját ellenőriztük</translation>
 <translation id="6094253940069566294">Jármű szerkesztése</translation>
 <translation id="6094290315941448991">Rendszergazdai házirend tiltja felvétel készítését a képernyőről, ha bizalmas tartalom látható rajta.</translation>
+<translation id="6097297436119286254">A fizetési adatok kitöltéséhez igazolja személyazonosságát</translation>
 <translation id="6099269767116481177">22 × 29,5 hüvelyk</translation>
 <translation id="6101583188322746099">Élelmiszer-házhozszállítás</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4921,6 +4923,7 @@ További részletek:
 <translation id="8897428486789851669">Úszás</translation>
 <translation id="8899807382908246773">Tolakodó hirdetések</translation>
 <translation id="8903921497873541725">Nagyítás</translation>
+<translation id="8903998444169664879">A fizetési beállítások módosításához igazolja személyazonosságát</translation>
 <translation id="890493561996401738">Javaslat eltávolítása gomb. Nyomja meg az Entert a következő eltávolításához: <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 hüvelyk</translation>
 <translation id="8914504000324227558">A Chrome újraindítása</translation>

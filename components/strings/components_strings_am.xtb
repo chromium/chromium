@@ -704,6 +704,7 @@
 <translation id="2137891579555018930">ፈቃድን በመጠበቅ ላይ...</translation>
 <translation id="213826338245044447">የተንቀሳቃሽ ስልክ ዕልባቶች</translation>
 <translation id="2141000681034340397">ግብዓትዎትን ያርትዑ</translation>
+<translation id="2141475438898772664">በ4 ወይም በየወሩ ይክፈሉ</translation>
 <translation id="2144171668675205303">ምንም ንቁ ርዕሶች የሉም</translation>
 <translation id="2145193671493396738">የኢኮኖሚ ዜና</translation>
 <translation id="214556005048008348">ክፍያን ሰርዝ</translation>
@@ -2847,6 +2848,7 @@
 <translation id="5543564889050342791">መካነ አራዊት፣ የትርዒት የአሳ ገንዳዎች እና ጥበቃዎች</translation>
 <translation id="5543722831081909240">180 ዲግሪ</translation>
 <translation id="5544836308113951378">የሽርሽር ጉዞዎች እና የጀልባ ኪራዮች</translation>
+<translation id="5545314360139398232">በጊዜ ሂደት ለመክፈል <ph name="ISSUER_NAME" />ን ያገናኙ</translation>
 <translation id="5547939254150808298">ህትመት</translation>
 <translation id="554815783948612276">መድረክ እና የውይይት አቅራቢዎች</translation>
 <translation id="5548606607480005320">የደህንነት ፍተሻ</translation>
@@ -2868,6 +2870,7 @@
 <translation id="5570825185877910964">መለያን ጠብቅ</translation>
 <translation id="5571083550517324815">ከዚህ አድራሻ ላይ መውሰድ አይቻልም። የተለየ አድራሻ ይምረጡ።</translation>
 <translation id="5572434905385510939">22 x 28 ኢንች</translation>
+<translation id="5573090972398558474">ድርጅትዎ ይህን ገጽ ማንነት በማያሳውቅ ሁነታ ውስጥ አግዶታል።</translation>
 <translation id="5573641252776268565">ፓስፖርት ያርትዑ</translation>
 <translation id="5578606540385219379">የአገልግሎት አቅራቢዎች</translation>
 <translation id="5580958916614886209">የእርስዎን የአገልግሎት ማብቂያ ወር ይመልከቱ እና እንደገና ይሞክሩ</translation>
@@ -3693,6 +3696,7 @@
 <translation id="6926216138694948720">የሰውነት ሥነ ጥበብ</translation>
 <translation id="692638818576287323">የንግድ ተሽከርካሪዎች</translation>
 <translation id="6927878187051807444">የካሜራ ፋይሎች እና ቅጽበታዊ ገጽ ዕይታዎች</translation>
+<translation id="6929949393612835405">ዝጋ እና ወደ «<ph name="OPENER_TITLE" />» ተመለስ</translation>
 <translation id="6930607614725241390">በጎን ፓነል ውስጥ ይፈልጉ</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />የእርስዎ ነባሪ የፍለጋ ፕሮግራም ድርን እንዲፈልጉ ያስችልዎታል እና የChrome ባህሪያትን ያጎለብታል<ph name="END_BOLD" /> ለምሳሌ ከአድራሻ አሞሌ እና በድረ-ገጾች ላይ ከምስሎች መፈለግ። ባህሪ በእርስዎ የፍለጋ ፕሮግራም የሚደገፍ ካልሆነ ላይገኝ ይችላል።</translation>
 <translation id="6934672428414710184">ይህ ስም ከእርስዎ Google መለያ የተገኘ ነው</translation>
@@ -4296,6 +4300,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{ምንም}=1{1 መተግበሪያ (<ph name="EXAMPLE_APP_1" />)}=2{2 መተግበሪያዎች (<ph name="EXAMPLE_APP_1" />፣ <ph name="EXAMPLE_APP_2" />)}one{# መተግበሪያዎች (<ph name="EXAMPLE_APP_1" />፣ <ph name="EXAMPLE_APP_2" />፣ <ph name="AND_MORE" />)}other{# መተግበሪያዎች (<ph name="EXAMPLE_APP_1" />፣ <ph name="EXAMPLE_APP_2" />፣ <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">አንድ ስህተት ነበር። እንደገና ይሞክሩ።</translation>
 <translation id="784623644169604270">ምንም የቅርብ ጊዜ እንቅስቃሴ የለም</translation>
+<translation id="7848926355794727168">ራስ-ሰር ማሰስ</translation>
 <translation id="7853222852810008596">በዚህ ምንዛሬ በኋላ ይክፈሉ አይገኝም</translation>
 <translation id="785476343534277563">የኮሌጅ ስፖርት</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>

@@ -2791,6 +2791,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5466018172325111652">Vous n'avez pas reçu votre code ? <ph name="BEGIN_LINK" />En obtenir un nouveau<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Applis de paiement</translation>
 <translation id="5470861586879999274">&amp;Rétablir la modification</translation>
+<translation id="5471158297908124590">Validez votre identité pour modifier les modes de paiement</translation>
 <translation id="5472588168895083535">Suivi des mains bloqué</translation>
 <translation id="5477756102936130143">Activer la redirection vers les applis de paiement prises en charge</translation>
 <translation id="5479505548832623900">Probablement ignorées par l'extension.</translation>
@@ -3175,6 +3176,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6093795393556121384">Votre carte a bien été validée.</translation>
 <translation id="6094253940069566294">Modifier le véhicule</translation>
 <translation id="6094290315941448991">Une règle définie par l'administrateur a désactivé l'enregistrement d'écran lorsqu'un contenu confidentiel est affiché</translation>
+<translation id="6097297436119286254">Validez votre identité pour indiquer vos infos de paiement</translation>
 <translation id="6099269767116481177">22 x 29,5 pouces</translation>
 <translation id="6101583188322746099">Services de livraison de courses</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4925,6 +4927,7 @@ Informations supplémentaires :
 <translation id="8897428486789851669">Natation</translation>
 <translation id="8899807382908246773">Annonces intrusives</translation>
 <translation id="8903921497873541725">Zoom avant</translation>
+<translation id="8903998444169664879">Validez votre identité pour modifier vos paramètres de paiement</translation>
 <translation id="890493561996401738">Bouton "Supprimer la suggestion" (appuyez sur Entrée pour supprimer <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />)</translation>
 <translation id="8910898109640902752">8 x 10 pouces</translation>
 <translation id="8914504000324227558">Relancer Google Chrome</translation>

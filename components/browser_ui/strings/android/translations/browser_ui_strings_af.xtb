@@ -295,6 +295,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="3903738175795615004">Sleep van bo af of druk Esc-sleutel om volskerm te verlaat.</translation>
 <translation id="3905475044299942653">Stop baie kennisgewings</translation>
 <translation id="3922092564198021702">Maak Instellings op jou foon oop</translation>
+<translation id="3924858949939391676">Wys skakels sodra Leesmodus aan is</translation>
 <translation id="3933121352599513978">Vou ongewenste versoeke in (aanbeveel)</translation>
 <translation id="3934905113567851655">Knyp om grootte te verander</translation>
 <translation id="3955193568934677022">Laat werwe toe om beskermde inhoud te speel (aanbeveel)</translation>
@@ -358,6 +359,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="4644713492825682049">Vee uit en stel terug</translation>
 <translation id="4645575059429386691">Deur jou ouer bestuur</translation>
 <translation id="4652266463001779298">Nie toegelaat nie</translation>
+<translation id="4655846733459137112">Tik op Ja om hierdie wagwoord maklik te gebruik wanneer jy weer aanmeld</translation>
 <translation id="4663373278480897665">Kamera word toegelaat</translation>
 <translation id="4670064810192446073">Virtuele realiteit</translation>
 <translation id="4672315773691449562">Tik op Blaaierapp en tik dan op Chrome</translation>
@@ -464,6 +466,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="5804241973901381774">Toestemmings</translation>
 <translation id="5817042798620209981">Werfinligting, dialoog</translation>
 <translation id="5822675474983796325">Pasmaak die onderste blad van jou Nuwe Oortjie-bladsy is teen volle hoogte oopgemaak</translation>
+<translation id="5826403277762134844">Onderste blad met instruksies om wagwoorde in Chrome te stoor</translation>
 <translation id="5833899990800318936">Moenie werwe toelaat om JavaScript te gebruik nie</translation>
 <translation id="583673505367439042">Werwe kan vra om lêers of vouers op jou toestel te wysig</translation>
 <translation id="5844448279347999754">Wanneer dit aan is, kan werwe vra om teks en prente wat op jou knipbord gestoor is, te sien. As dit af is, kan werwe nie teks of prente wat op jou knipbord gestoor is, sien nie.</translation>
@@ -643,6 +646,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="775043444390799886">Herroep toestemming</translation>
 <translation id="7758789811447313947">Violet tema</translation>
 <translation id="7759147511335618829">MIDI-toestelkontrole en herprogrammering</translation>
+<translation id="7771089277295008211">Onderste blad met instruksies om wagwoorde te stoor het toegemaak</translation>
 <translation id="7781829728241885113">Gister</translation>
 <translation id="7791543448312431591">Voeg by</translation>
 <translation id="780301667611848630">Nee, dankie</translation>
@@ -660,6 +664,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="7940722705963108451">Herinner my</translation>
 <translation id="7948081750384205628">Kry meer inligting oor <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Werwe kan vra om teks en prente op jou knipbord te sien</translation>
+<translation id="7958779728312669715">Onderste blad met instruksies om wagwoorde te stoor het heeltemal oopgemaak</translation>
 <translation id="798299424881500862">Oranje tema</translation>
 <translation id="7986741934819883144">Kies 'n kontak</translation>
 <translation id="7990211076305263060">Wanneer dit aan is, kan werwe vra om jou mikrofoon te gebruik. Wanneer dit af is, kan werwe nie jou mikrofoon gebruik nie.</translation>
@@ -756,6 +761,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="8889294078294184559">Terwyl jy aanhou blaai, kan werwe met Chrome kontroleer en met ’n vorige werf wat jy besoek het verifieer dat jy waarskynlik ’n regte persoon is</translation>
 <translation id="8899807382908246773">Indringerige advertensies</translation>
 <translation id="8903921497873541725">Zoem in</translation>
+<translation id="8919911527569629802">Meld by enige webwerf aan</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Moenie weer vra nie</translation>
 <translation id="8926666909099850184">NFC is af vir hierdie toestel. Skakel dit aan in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" />.</translation>
@@ -783,6 +789,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="9182556968660520230">Moenie werwe toelaat om beskermde inhoud te speel nie</translation>
 <translation id="947156494302904893">Werwe wat jy besoek, kan verifieer dat jy ’n regte persoon is en nie ’n bot nie</translation>
 <translation id="959682366969460160">Raak georganiseerd</translation>
+<translation id="960590623979248167">Wys hiperskakels</translation>
 <translation id="961930410699694996">Ligging nie hierdie keer toegelaat nie</translation>
 <translation id="967624055006145463">Data geberg</translation>
 <translation id="969975166333045662">Blokkeer werf om V8-optimeerder te gebruik.</translation>

@@ -115,6 +115,7 @@
 <translation id="2139300032719313227">Перезапустіть ОС Chrome</translation>
 <translation id="2151406531797534936">Перезапустіть Chrome</translation>
 <translation id="2163089732491971196">Щоб зберігати й використовувати дані Chrome в обліковому записі Google, введіть парольну фразу</translation>
+<translation id="2170098639895543546">Виберіть будь-що на сторінці</translation>
 <translation id="2174917724755363426">Встановлення не завершено. Скасувати його?</translation>
 <translation id="2186206192313702726">Google Об’єктив</translation>
 <translation id="2190166659037789668">Помилка перевірки наявності оновлень: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -439,6 +440,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5756509061973259733">Профіль Chrome із цим обліковим записом уже існує на цьому пристрої</translation>
 <translation id="5759947850379142561">Виберіть будь-який текст чи зображення, за яким потрібно виконати пошук через Google Об’єктив, або натисніть клавішу Escape, щоб вийти</translation>
 <translation id="5762867845020858790">Додайте новий профіль Chrome, щоб окремо зберігати закладки, паролі й налаштування.</translation>
+<translation id="5779427581965287859">Зробіть Chrome вебпереглядачем за умовчанням і закріпіть його на панелі завдань</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Не вдалося запустити Chrome. Повторіть спробу.</translation>
 <translation id="5809516625706423866">Не вдалося підключитися до Інтернету. Помилка "HTTP 401 не авторизовано". Перевірте конфігурацію свого проксі-сервера.</translation>
@@ -689,6 +691,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8162006532256575008">Використовувати Chrome, не входячи в обліковий запис</translation>
 <translation id="8177472873527554730">Не вдалося знайти контент на сторінці</translation>
 <translation id="8221491193165283816">Зазвичай ви блокуєте сповіщення. Натисніть тут, щоб дозволити сайту показувати їх.</translation>
+<translation id="8253851811470049684">Відкривайте посилання з будь-якого додатка у вебпереглядачі Chrome і закріпіть його на панелі завдань для зручності</translation>
 <translation id="8255190535488645436">Google Chrome використовує вашу камеру та мікрофон.</translation>
 <translation id="8267953129876836456">Веб-переглядач Chrome знайшов для вас кілька рекомендацій щодо безпеки</translation>
 <translation id="8286862437124483331">Google Chrome намагається показати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>

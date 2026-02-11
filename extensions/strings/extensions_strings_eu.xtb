@@ -7,11 +7,17 @@
 <translation id="132960226125594336">Ezin izan da kargatu <ph name="RELATIVE_PATH" /> fitxategia edukiaren scripterako, scriptaren gehieneko tamaina edo luzapenaren edukiaren scripten guztizko tamaina gaindituko lukeelako.</translation>
 <translation id="1445572445564823378">Luzapen hau <ph name="PRODUCT_NAME" /> moteltzen ari da. Hori desgaitzea gomendatzen dizugu <ph name="PRODUCT_NAME" />-ren errendimendua leheneratzeko..</translation>
 <translation id="1468038450257740950">WebGL ez da bateragarria.</translation>
+<translation id="1478607704480248626">Instalazioa ez dago gaituta</translation>
+<translation id="1556537182262721003">Ezin izan da luzapenen direktorioa profilera eraman.</translation>
 <translation id="1610570795592207282">Ezin izan da kargatu scriptaren "<ph name="RELATIVE_PATH" />" css fitxategia.</translation>
+<translation id="1616298854599875024">Ezin izan da inportatu "<ph name="IMPORT_NAME" />" luzapena, ez baita partekatutako modulua</translation>
 <translation id="1803557475693955505">Ezin izan da atzeko planoko orria ("<ph name="BACKGROUND_PAGE" />") kargatu.</translation>
+<translation id="1875387611427697908"><ph name="CHROME_WEB_STORE" /> dendatik soilik gehi daiteke</translation>
+<translation id="2131077480075264">Ezin izan da "<ph name="APP_NAME" />" instalatu "<ph name="IMPORT_NAME" />" zerrendan ez dagoelako</translation>
 <translation id="2159915644201199628">Ezin izan da deskodetu irudia: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Kokapena erabili da baina ez da "default_locale" elementua zehaztua manifestuan.</translation>
 <translation id="2576842806987913196">Badago izen hori duen CRX fitxategi bat.</translation>
+<translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2743583586211388067">Luzapen honetarako sarbidea blokeatuta dago, erakundearen luzapenen arriskuari buruzko gidalerroak direla eta.</translation>
 <translation id="2785530881066938471">Ezin izan da kargatu "<ph name="RELATIVE_PATH" />" fitxategia edukiaren scripta dela-eta. Ez du erabiltzen UTF-8 kodeketa.</translation>
 <translation id="2903070246402204397">Administratzaileak <ph name="EXTENSION_NAME" /> blokeatu du (luzapenaren identifikatzailea: "<ph name="EXTENSION_ID" />"). <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3144135466825225871">Ezin izan da crx fitxategia ordeztu. Begiratu fitxategia nonbait erabiltzen ari den.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna</translation>
+<translation id="3242289508736283383">kiosk_only manifestu-atributua duen aplikazio bat instalatu behar da Chrome OS-ren kiosko moduan</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_NAME" /> (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3561217442734750519">Gako pribatuak balio duen bide-izen bat izan behar du.</translation>
+<translation id="3834775135533257713">Ezin izan da gehitu "<ph name="TO_INSTALL_APP_NAME" />" aplikazioa, "<ph name="INSTALLED_APP_NAME" />" aplikazioarekin gatazkan dagoelako.</translation>
 <translation id="388442998277590542">Ezin izan da "<ph name="OPTIONS_PAGE" />" aukera-orria kargatu.</translation>
 <translation id="3984413272403535372">Errore bat gertatu da luzapena sinatzean.</translation>
 <translation id="4233778200880751280">Ezin izan da "<ph name="ABOUT_PAGE" />" orria kargatu.</translation>
+<translation id="424963718355121712">Haien eragina jasaten duten ostalarietatik hornitu behar dira aplikazioak</translation>
+<translation id="4306119971288449206">"<ph name="CONTENT_TYPE" />" eduki motarekin hornitu behar dira aplikazioak</translation>
+<translation id="4633003931260532286">Luzapenak "<ph name="IMPORT_NAME" />" eskatzen du, gutxienez "<ph name="IMPORT_VERSION" />" bertsiokoa, baina "<ph name="INSTALLED_VERSION" />" bertsioa baino ez dago instalatuta</translation>
+<translation id="4660476621274971848">"<ph name="EXPECTED_VERSION" />" bertsioa espero zen, baina "<ph name="NEW_ID" />" da bertsioa</translation>
 <translation id="471800408830181311">Ezin izan da gako pribatua eman.</translation>
 <translation id="4811956658694082538">Ezin izan da paketea instalatu zerbitzu-aplikazioaren prozesuak huts egin duelako. Berrabiarazi Chrome eta saiatu berriro.</translation>
 <translation id="4988792151665380515">Ezin izan da gako publikoa esportatu.</translation>
+<translation id="501057610015570208">"kiosk_only" manifestu-atributua duen aplikazio bat instalatu behar da ChromeOS Flex sistemaren kiosko moduan</translation>
 <translation id="5026754133087629784">Web-ikuspegia: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Ezin da aurkitu bide absolutu bat paketatu nahi den direktoriorako.</translation>
 <translation id="5160071981665899014">Ezin izan da kargatu scriptaren "<ph name="RELATIVE_PATH" />" javascript fitxategia.</translation>
 <translation id="5356315618422219272">Aplikazio-ikuspegia: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Luzapen honek "<ph name="KEY_PATH" />" karaktere-fitxategia du. Ziur aski ez duzu hori egin nahi.</translation>
 <translation id="5486326529110362464">Gako pribatua idatzi behar da.</translation>
+<translation id="5527463195266282916">Luzapenaren aurreko bertsio bat instalatzen saiatu zara.</translation>
 <translation id="5707185214361380026">Ezin izan da kargatu hemengo luzapena:</translation>
 <translation id="5972529113578162692">Gailuaren administratzaileak <ph name="EXTENSION_NAME" /> instalatzea eskatzen du. Ezin da desinstalatu.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">Manifestu-fitxategiak ez du balio</translation>
 <translation id="7217838517480956708">Gailu honen administratzaileak <ph name="EXTENSION_NAME" /> instalatzea eskatzen du. Ezin izango da kendu edo aldatu.</translation>
 <translation id="7612608473764576263">Gako pribatuak balio duen formatu bat eduki behar du (PKCS#8 formatua eta PEM kodetzea dituen RSA gakoa).</translation>
+<translation id="765293928828334535">Webgune honetatik ezin da gehitu aplikaziorik, luzapenik edo erabiltzaileen scriptik</translation>
 <translation id="7876803335449432072">Ezin izan da kargatu "<ph name="RELATIVE_PATH" />" fitxategia eduki-scripta lortzeko. Eduki-scripten estilo-orriak estilo-orrien fitxategi bateragarrietatik (adibidez, .css fitxategiak) karga daitezke soilik.</translation>
 <translation id="7939686037314084444">Ez da kargatu luzapena. Baliteke sare-eskaerak atzemateko gai ez izatea.</translation>
+<translation id="7952904276017482715">"<ph name="EXPECTED_ID" />"identifikatzaileaespero zen, baina "<ph name="NEW_ID" />" da identifikatzailea</translation>
 <translation id="7972881773422714442">Aukerak: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Aurreko kamera</translation>
 <translation id="8047248493720652249">Luzapenak ezin izan dio izena jarri "<ph name="ATTEMPTED_FILENAME" />" deskargari, beste luzapen batek (<ph name="EXTENSION_NAME" />) "<ph name="ACTUAL_FILENAME" />" fitxategi-izena jarri diolako.</translation>
+<translation id="8049705080247101012">Google-k "<ph name="EXTENSION_NAME" />" asmo txarreko programa dela salatu du, eta hura instalatzea ekidin da</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> (<ph name="VENDOR_NAME" />)</translation>
 <translation id="8517576857589387417">Manifestu-fitxategia falta da edo ezin da irakurri</translation>
+<translation id="8565650234829130278">Aplikazioaren aurreko bertsio bat instalatzen saiatu zara.</translation>
 <translation id="8621383749470166852">Ezin izan da kargatu "<ph name="RELATIVE_PATH" />" fitxategia eduki-scripta lortzeko. Eduki-scriptak JavaScript-eko fitxategi bateragarrietatik (adibidez, .js fitxategiak) karga daitezke soilik.</translation>
 <translation id="8636666366616799973">Paketeak ez du balio. Xehetasunak: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">Gailuetako baterako sarbidea eskatzen ari da "<ph name="APP_NAME" />" aplikazioa:</translation>

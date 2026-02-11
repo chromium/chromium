@@ -7,11 +7,17 @@
 <translation id="132960226125594336">לא ניתן לטעון את הקובץ '<ph name="RELATIVE_PATH" />' עבור סקריפט התוכן כי הוא יחרוג מגודל הסקריפט המקסימלי או מהגודל הכולל המקסימלי של סקריפט התוכן לתוסף.</translation>
 <translation id="1445572445564823378">תוסף זה מאט את <ph name="PRODUCT_NAME" />. עליך להשבית אותו כדי לשחזר את הביצועים של <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">‏WebGL אינו נתמך.</translation>
+<translation id="1478607704480248626">ההתקנה אינה מופעלת</translation>
+<translation id="1556537182262721003">לא היתה אפשרות להעביר ספריית תוספים לפרופיל.</translation>
 <translation id="1610570795592207282">‏לא ניתן לטעון את ה-CSS‏ '<ph name="RELATIVE_PATH" />' לסקריפט.</translation>
+<translation id="1616298854599875024">לא ניתן לייבא את התוסף "<ph name="IMPORT_NAME" />" כי הוא לא מודול משותף</translation>
 <translation id="1803557475693955505">לא היתה אפשרות לטעון את דף הרקע '<ph name="BACKGROUND_PAGE" />'.</translation>
+<translation id="1875387611427697908">ניתן להוסיף את הפריט הזה רק מ-<ph name="CHROME_WEB_STORE" /></translation>
+<translation id="2131077480075264">לא ניתן להתקין את האפליקציה '<ph name="APP_NAME" />' מכיוון שהיא לא מאושרת על ידי '<ph name="IMPORT_NAME" />'</translation>
 <translation id="2159915644201199628">לא ניתן לפענח תמונה: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">‏נעשה שימוש בהתאמה למקום, אך default_locale לא צוין במניפסט.</translation>
 <translation id="2576842806987913196">‏כבר קיים קובץ CRX בשם זה.</translation>
+<translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2743583586211388067">הגישה לתוסף הזה נחסמה בהתאם למדיניות הסיכונים של הארגון שלך בנוגע לתוספים.</translation>
 <translation id="2785530881066938471">‏אין אפשרות לטעון את הקובץ '<ph name="RELATIVE_PATH" />' עבור סקריפט תוכן. הוא לא בקידוד UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (מזהה תוסף "<ph name="EXTENSION_ID" />") חסום על-ידי מנהל המערכת. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">מוצר לא ידוע <ph name="PRODUCT_ID" /> מהספק <ph name="VENDOR_ID" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">‏הניסיון להחליף קובץ crx נכשל. יש לבדוק אם הקובץ נמצא בשימוש.</translation>
 <translation id="3163201441334626963">מוצר לא ידוע <ph name="PRODUCT_ID" /> מהספק <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">‏במצב קיוסק של ChromeOS, יש להתקין אפליקציות עם מאפיין המניפסט 'kiosk_only'</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> מהספק <ph name="VENDOR_ID" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ערך קלט עבור מפתח פרטי חייב להיות נתיב חוקי.</translation>
+<translation id="3834775135533257713">לא ניתן היה להוסיף את היישום "<ph name="TO_INSTALL_APP_NAME" />" מפני שהוא מתנגש עם "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">לא היתה אפשרות לטעון את דף האפשרויות '<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">שגיאה בחתימה על התוסף.</translation>
 <translation id="4233778200880751280">לא ניתן לטעון את דף המידע '<ph name="ABOUT_PAGE" />'.</translation>
+<translation id="424963718355121712">הפעלת אפליקציות חייבת להתבצע מהמארח שעליו הן משפיעות</translation>
+<translation id="4306119971288449206">הפעלת אפליקציות חייבת להתבצע עם סוג תוכן "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4633003931260532286">כדי להשתמש בתוסף יש צורך ב-"<ph name="IMPORT_NAME" />" בגרסה "<ph name="IMPORT_VERSION" />" לפחות, אך הגרסה המותקנת היא רק "<ph name="INSTALLED_VERSION" />"</translation>
+<translation id="4660476621274971848">הגרסה הצפויה היא "<ph name="EXPECTED_VERSION" />", אבל הגרסה הייתה "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">נכשל בפלט מפתח פרטי.</translation>
 <translation id="4811956658694082538">‏לא ניתן היה להתקין את החבילה מפני שתהליך כלי השירות קרס. יש לאתחל את Chrome ולנסות שוב.</translation>
 <translation id="4988792151665380515">נכשל ייצוא מפתח ציבורי.</translation>
+<translation id="501057610015570208">‏במצב קיוסק של ChromeOS Flex, יש להתקין אפליקציות עם מאפיין המניפסט 'kiosk_only'</translation>
 <translation id="5026754133087629784">צפיות באתר: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">לא ניתן למצוא את הנתיב המוחלט לספריה לאריזה.</translation>
 <translation id="5160071981665899014">‏לא ניתן לטעון את קובץ ה-JavaScript '<ph name="RELATIVE_PATH" />' לסקריפט.</translation>
 <translation id="5356315618422219272">‏Appview‏: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">תוסף זה כולל את קובץ המפתח "<ph name="KEY_PATH" />". מומלץ לא לעשות זאת.</translation>
 <translation id="5486326529110362464">חייב להתקיים ערך קלט של מפתח פרטי.</translation>
+<translation id="5527463195266282916">בוצע ניסיון לשדרג תוסף לאחור.</translation>
 <translation id="5707185214361380026">נכשלה טעינת תוסף מ:</translation>
 <translation id="5972529113578162692">מנהל המערכת של מכשיר זה דורש התקנה של <ph name="EXTENSION_NAME" />. לא ניתן להסיר את ההתקנה.</translation>
 <translation id="6027032947578871493">מוצר לא ידוע <ph name="PRODUCT_ID" /> מהספק <ph name="VENDOR_NAME" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">קובץ המניספט לא חוקי</translation>
 <translation id="7217838517480956708">מנהל המערכת של מחשב זה דורש התקנת <ph name="EXTENSION_NAME" />. לא ניתן להסיר או לשנות אותו.</translation>
 <translation id="7612608473764576263">‏ערך הקלט של המפתח הפרטי חייב להיות בפורמט חוקי (מפתח RSA בפורמט PKCS#8 עם קידוד PEM).</translation>
+<translation id="765293928828334535">לא ניתן להוסיף אפליקציות, תוספים וסקריפטים של משתמש מהאתר הזה</translation>
 <translation id="7876803335449432072">‏אי אפשר לטעון את הקובץ "<ph name="RELATIVE_PATH" />" לסקריפט התוכן. אפשר לטעון גיליונות סגנונות של סקריפטים של תוכן רק מקובצי גיליון סגנונות נתמכים, כמו קובצי css.</translation>
 <translation id="7939686037314084444">הייתה בעיה בטעינת התוסף. ייתכן שהוא לא יוכל ליירט בקשות רשת.</translation>
+<translation id="7952904276017482715">המזהה הצפוי הוא "<ph name="EXPECTED_ID" />", אך המזהה היה "<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">אפשרויות: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">מצלמה קדמית</translation>
 <translation id="8047248493720652249">תוסף זה לא הצליח לתת שם לקובץ "<ph name="ATTEMPTED_FILENAME" />" שהורד, משום שתוסף אחר (<ph name="EXTENSION_NAME" />) קבע שם קובץ אחר - "<ph name="ACTUAL_FILENAME" />".</translation>
+<translation id="8049705080247101012">‏Google סימנה את "<ph name="EXTENSION_NAME" />" כזדוני, וההתקנה נמנעה</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> מאת <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">אין קובץ מניפסט, או שהוא אינו קריא</translation>
+<translation id="8565650234829130278">בוצע ניסיון לשדרג יישום לאחור.</translation>
 <translation id="8621383749470166852">‏אי אפשר לטעון את הקובץ "<ph name="RELATIVE_PATH" />" לסקריפט התוכן. אפשר לטעון סקריפטים של תוכן רק מקובצי JavaScript נתמכים, כמו קובצי ‎.js</translation>
 <translation id="8636666366616799973">החבילה לא חוקית. פרטים: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">האפליקציה "<ph name="APP_NAME" />" מבקשת גישה לאחד מהמכשירים שלך:</translation>

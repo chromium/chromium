@@ -295,6 +295,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="3903738175795615004">Zum Beenden des Vollbildmodus von oben nach unten ziehen oder Esc-Taste drücken.</translation>
 <translation id="3905475044299942653">Erhalt von zu vielen Benachrichtigungen verhindern</translation>
 <translation id="3922092564198021702">Öffne die Einstellungen auf deinem Smartphone</translation>
+<translation id="3924858949939391676">Links anzeigen, sobald der Lesemodus aktiviert ist</translation>
 <translation id="3933121352599513978">Unerwünschte Anfragen minimieren (empfohlen)</translation>
 <translation id="3934905113567851655">Auseinander- und zusammenziehen, um die Größe anzupassen</translation>
 <translation id="3955193568934677022">Wiedergabe geschützter Inhalte auf Websites zulassen (empfohlen)</translation>
@@ -358,6 +359,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="4644713492825682049">Löschen und zurücksetzen</translation>
 <translation id="4645575059429386691">Von deinen Eltern verwaltet</translation>
 <translation id="4652266463001779298">Nicht zugelassen</translation>
+<translation id="4655846733459137112">Tippe auf „Ja“, um dieses Passwort bei der nächsten Anmeldung zu verwenden</translation>
 <translation id="4663373278480897665">Kameranutzung zulässig</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>
 <translation id="4672315773691449562">Tippe auf „Browser-App“ und dann auf „Chrome“</translation>
@@ -464,6 +466,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="5804241973901381774">Berechtigungen</translation>
 <translation id="5817042798620209981">Kleines Fenster mit Websiteinformationen</translation>
 <translation id="5822675474983796325">Ansicht am unteren Rand für „Seite ‚Neuer Tab‘ anpassen“ ist vollständig geöffnet</translation>
+<translation id="5826403277762134844">Anleitung zum Speichern von Passwörtern in Chrome</translation>
 <translation id="5833899990800318936">Websites dürfen JavaScript nicht verwenden</translation>
 <translation id="583673505367439042">Websites dürfen nachfragen, wenn sie Dateien oder Ordner auf meinem Gerät bearbeiten möchten</translation>
 <translation id="5844448279347999754">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie Text und Bilder abrufen dürfen, die in der Zwischenablage gespeichert sind. Wenn er deaktiviert ist, können Websites keine Texte oder Bilder abrufen, die in der Zwischenablage gespeichert sind.</translation>
@@ -643,6 +646,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="775043444390799886">Berechtigung widerrufen</translation>
 <translation id="7758789811447313947">Violettes Design</translation>
 <translation id="7759147511335618829">MIDI-Gerätesteuerung &amp; -Neuprogrammierung</translation>
+<translation id="7771089277295008211">Die Ansicht am unteren Rand mit der Anleitung zum Speichern von Passwörtern wurde geschlossen</translation>
 <translation id="7781829728241885113">Gestern</translation>
 <translation id="7791543448312431591">Hinzufügen</translation>
 <translation id="780301667611848630">Nein, danke</translation>
@@ -660,6 +664,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="7940722705963108451">Erinnern</translation>
 <translation id="7948081750384205628">Weitere Informationen zu <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Websites dürfen nachfragen, wenn sie auf Text und Bilder in meiner Zwischenablage zugreifen möchten</translation>
+<translation id="7958779728312669715">Die Ansicht am unteren Rand mit der Anleitung zum Speichern von Passwörtern ist vollständig geöffnet</translation>
 <translation id="798299424881500862">Orangefarbenes Design</translation>
 <translation id="7986741934819883144">Kontakt auswählen</translation>
 <translation id="7990211076305263060">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie dein Mikrofon verwenden dürfen. Wenn er deaktiviert ist, können Websites dein Mikrofon nicht verwenden.</translation>
@@ -756,6 +761,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="8889294078294184559">Wenn du weitersurfst, können Websites diese Daten von Chrome abrufen und über eine zuvor von dir besuchte Website bestätigen, dass du wahrscheinlich eine echte Person bist.</translation>
 <translation id="8899807382908246773">Aufdringliche Anzeigen</translation>
 <translation id="8903921497873541725">Vergrößern</translation>
+<translation id="8919911527569629802">Melde dich auf einer beliebigen Website an</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Nicht mehr fragen</translation>
 <translation id="8926666909099850184">NFC ist für dieses Gerät deaktiviert. Du kannst die Funktion in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
@@ -783,6 +789,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="9182556968660520230">Websites dürfen keine geschützten Inhalte wiedergeben</translation>
 <translation id="947156494302904893">Websites, die du besuchst, können bestätigen, dass du eine echte Person und kein Bot bist.</translation>
 <translation id="959682366969460160">Besser organisiert</translation>
+<translation id="960590623979248167">Hyperlinks anzeigen</translation>
 <translation id="961930410699694996">Berechtigung zur Standortermittlung einmal gewährt</translation>
 <translation id="967624055006145463">Gespeicherte Daten</translation>
 <translation id="969975166333045662">Du kannst einer Website verbieten, das V8‑Optimierungstools zu verwenden.</translation>

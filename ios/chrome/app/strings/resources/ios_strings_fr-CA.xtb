@@ -584,6 +584,7 @@
 <translation id="3140825265190223781">Mots de passe et clés d'accès enregistrés</translation>
 <translation id="3143515551205905069">Annuler la synchronisation</translation>
 <translation id="3144126448740580210">TERMINÉ</translation>
+<translation id="3147521114983561406">Les clés d'accès sont enregistrées dans votre gestionnaire de mots de passe. Elles sont accessibles dans les onglets ordinaires et de navigation privée.</translation>
 <translation id="3148052723910099040">Grille d'onglets normaux</translation>
 <translation id="3148237711805373460">Accéder</translation>
 <translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
@@ -2097,6 +2098,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8587001564479545614">Créer un NIP de récupération</translation>
 <translation id="8588404856427128947">Désactivée</translation>
 <translation id="8590286732816598906">Groupe d'onglets, <ph name="GROUP_TITLE" />, menu.</translation>
+<translation id="8593317261815647019">Créer une clé d'accès en dehors de la Navigation privée?</translation>
 <translation id="8600272508328041907">Passer à la traduction de la page complète</translation>
 <translation id="860043288473659153">Nom du titulaire de la carte</translation>
 <translation id="8601611099293226919">Effectuez une recherche dans votre écran avec Lentille Google</translation>

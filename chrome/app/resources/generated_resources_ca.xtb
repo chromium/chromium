@@ -716,7 +716,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1477446329585670721"><ph name="DOMAIN" /> requereix que mantinguis la targeta intel·ligent inserida.</translation>
 <translation id="1477654881618305065">La teva organització no et permet compartir aquest contingut. Si necessites ajuda, contacta amb l'administrador.</translation>
 <translation id="1478340334823509079">Detalls: <ph name="FILE_NAME" /></translation>
-<translation id="1478607704480248626">La instal·lació no està activada</translation>
 <translation id="1480663089572535854">Pots tornar enrere per canviar l'assignació a Selecciona. Pots desactivar la cerca automàtica sempre que vulguis des de Configuració.</translation>
 <translation id="1481001611315487791">Obtén més informació sobre com pots crear temes amb IA.</translation>
 <translation id="1481537595330271162">Hi ha hagut un error en canviar la mida del disc</translation>
@@ -830,7 +829,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1554640914375980459">Il·lumina la pantalla quan reps notificacions. Utilitza les notificacions amb flaix amb precaució si ets sensible a la llum.</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1556127816860282890">Pot ser que l'activitat en segon pla i alguns efectes visuals, com ara el desplaçament suau, quedin limitats</translation>
-<translation id="1556537182262721003">No s'ha pogut desplaçar el directori d'extensions al perfil.</translation>
 <translation id="1557939148300698553">Crea un perfil</translation>
 <translation id="155803912725350982">Tecles lentes</translation>
 <translation id="155865706765934889">Ratolí tàctil</translation>
@@ -929,7 +927,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1614890968027287789">Vols separar la navegació?</translation>
 <translation id="1615433306336820465">Gestiona les dades d'inici de sessió emmagatzemades a la clau de seguretat</translation>
 <translation id="1616206807336925449">Aquesta extensió no requereix cap permís especial.</translation>
-<translation id="1616298854599875024">L'extensió <ph name="IMPORT_NAME" /> no es pot importar perquè no és un mòdul compartit</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{S'està comprovant si aquestes dades compleixen les polítiques de seguretat de la teva organització...}=1{S'està comprovant si aquest fitxer compleix les polítiques de seguretat de la teva organització...}other{S'està comprovant si aquests fitxers compleixen les polítiques de seguretat de la teva organització...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618142905422922351">Actualment tens <ph name="NUMBERED_ITEM" /> i més. La teva organització, <ph name="ACCOUNT_MANAGER" />, podrà veure i gestionar aquestes dades.</translation>
@@ -1086,7 +1083,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1709916727352927457">Suprimeix la clau d'accés</translation>
 <translation id="1709972045049031556">No es pot compartir</translation>
 <translation id="1712143791363119140">En curs</translation>
-<translation id="1713120794167761305">Mou les pestanyes al costat</translation>
 <translation id="1714265454085143857">Pestanyes fixades</translation>
 <translation id="1714326320203665217">S'han baixat els fitxers d'anotacions del node principal</translation>
 <translation id="1714644264617423774">Activa les funcions d'accessibilitat per facilitar l'ús del dispositiu. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -1273,7 +1269,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1842766183094193446">Confirmes que vols activar el mode de demostració?</translation>
 <translation id="1843048149176045210">Copia l'enllaç de baixada</translation>
 <translation id="1843347690926158494">Cerca en aquesta pestanya amb Google Lens</translation>
-<translation id="1845060436536902492">El lector de pantalla de ChromeOS Flex, ChromeVox, l'utilitzen principalment persones invidents o amb poca visió per llegir el text que es mostra en pantalla amb un sintetitzador de veu o una pantalla braille. Prem la barra espaiadora per activar ChromeVox. Quan ChromeVox estigui activat, podràs fer una visita ràpida.</translation>
+<translation id="1845060436536902492">El lector de pantalla de ChromeOS Flex, ChromeVox, l'utilitzen principalment persones amb ceguesa o poca visió per llegir el text que es mostra en pantalla amb un sintetitzador de veu o una pantalla braille. Prem la barra espaiadora per activar ChromeVox. Quan ChromeVox estigui activat, podràs fer una visita ràpida.</translation>
 <translation id="1845727111305721124">Amb permís per reproduir so</translation>
 <translation id="1846308012215045257">Prem Ctrl+clic per executar <ph name="PLUGIN_NAME" /></translation>
 <translation id="1848219224579402567">Tanca la sessió quan es tanqui la tapa</translation>
@@ -1315,7 +1311,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1873920700418191231">Torna a concedir els permisos per a <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Amb permís per mostrar qualsevol anunci</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Mou la pestanya a una altra finestra}other{Mou les pestanyes a una altra finestra}}</translation>
-<translation id="1875387611427697908">Només pot afegir-se des de <ph name="CHROME_WEB_STORE" /></translation>
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
 <translation id="1877377730633446520">Aquesta acció utilitzarà aproximadament <ph name="REQUIRED_SPACE" />. Actualment tens <ph name="FREE_SPACE" /> disponibles.</translation>
 <translation id="1877860345998737529">Assignació d'accions a interruptors</translation>
@@ -1692,7 +1687,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="212876957201860463">S'està preparant la configuració del dispositiu mòbil...</translation>
 <translation id="212962875239908767">Pintura a l'oli contemplativa que representa un intel·lectual immers en els seus pensaments enmig d'un prat groc.</translation>
 <translation id="2130235198799290727">De les extensions</translation>
-<translation id="2131077480075264">No s'ha pogut instal·lar <ph name="APP_NAME" /> perquè <ph name="IMPORT_NAME" /> no ho permet.</translation>
 <translation id="2131548114076786395">Per compartir grups de pestanyes, unir-t'hi i col·laborar-hi, verifica la teva identitat</translation>
 <translation id="2131863825246488194">Protegeix-te més en línia</translation>
 <translation id="2133775869826239001">Tria més funcions per configurar-les</translation>
@@ -2766,6 +2760,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2842013086666334835">Inicia la sessió a "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843560154284403323">Per acabar de configurar Linux, actualitza Chrome OS i torna-ho a provar.</translation>
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> alliberats</translation>
+<translation id="2844154481025280030">S'ha configurat la política.</translation>
 <translation id="2844169650293029770">Dispositiu USB-C (port frontal esquerre)</translation>
 <translation id="2844809857160214557">Consulta i gestiona les tasques d'impressió</translation>
 <translation id="2845276301195220700">Més accions per a Google Calendar</translation>
@@ -3205,6 +3200,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3151539355209957474">Hora d'inici</translation>
 <translation id="3151786313568798007">Orientació</translation>
 <translation id="3152356229013609796">Consulta les notificacions del telèfon, ignora-les o respon-hi</translation>
+<translation id="3152545926232662879">Ignorat:</translation>
 <translation id="3154754096046236400">Context personal</translation>
 <translation id="3155163173539279776">Torna a iniciar Chromium</translation>
 <translation id="3155394504825881014">Converteix el grup de pestanyes en una carpeta d'adreces d'interès</translation>
@@ -3329,7 +3325,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3241638166094654466">Cel·les en cada línia:</translation>
 <translation id="3241680850019875542">Seleccioneu el directori arrel de l'extensió que voleu empaquetar. Per actualitzar una extensió, cal que seleccioneu també el fitxer de clau privada que s'utilitzarà.</translation>
 <translation id="3241810535741601486">Aquest canvi és permanent i no es pot desfer. Les actualitzacions ampliades s'apliquen a tots els usuaris d'aquest dispositiu. <ph name="LINK_START" />Més informació<ph name="LINK_END" /></translation>
-<translation id="3242289508736283383">L'aplicació amb l'atribut del fitxer de manifest "kiosk_only" s'ha d'instal·lar en mode quiosc a Chrome OS</translation>
 <translation id="3243017971870859287">Llegir els números de sèrie del component i del dispositiu ChromeOS Flex</translation>
 <translation id="324366796737464147">Cancel·lació de soroll</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -3539,7 +3534,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3390442085511866400">Desa el &amp;fotograma com a...</translation>
 <translation id="3390530051434634135">Nota: <ph name="NOTE" /></translation>
 <translation id="3390740059150071453">Mirar a l'esquerra</translation>
-<translation id="3391721320619127327">El lector de pantalla de ChromeOS Flex, ChromeVox, l'utilitzen principalment persones invidents o amb poca visió per llegir el text que es mostra en pantalla amb un sintetitzador de veu o una pantalla braille. Mantén premudes les dues tecles de volum durant cinc segons per activar ChromeVox. Quan ChromeVox estigui activat, podràs fer una visita ràpida.</translation>
+<translation id="3391721320619127327">El lector de pantalla de ChromeOS Flex, ChromeVox, l'utilitzen principalment persones amb ceguesa o poca visió per llegir el text que es mostra en pantalla amb un sintetitzador de veu o una pantalla braille. Mantén premudes les dues tecles de volum durant cinc segons per activar ChromeVox. Quan ChromeVox estigui activat, podràs fer una visita ràpida.</translation>
 <translation id="3393554941209044235">Anàlisi de documents a Chrome</translation>
 <translation id="3394072120086516913">PC amb connexió per cable i dispositiu d'emissió amb connexió Wi-Fi</translation>
 <translation id="3394850431319394743">Es permet que utilitzin identificadors per reproduir contingut protegit</translation>
@@ -4185,7 +4180,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
         <ph name="BREAK" />
         Pots gestionar la configuració des del menú de la targeta o veure més opcions a Personalitza Chrome.</translation>
 <translation id="3801449494961771207">Veu del text a parla del sistema</translation>
-<translation id="3801748538479607989">Mou les pestanyes a la part superior</translation>
 <translation id="3802486193901166966">Aquesta extensió no requereix cap permís especial i no té accés a cap lloc web addicional</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803345858388753269">Qualitat de vídeo</translation>
@@ -4245,7 +4239,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3830470485672984938">Utilitza una altra clau d'accés</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{L'administrador ha tornat a activar 1 extensió potencialment perjudicial}other{L'administrador ha tornat a activar {NUM_EXTENSIONS} extensions potencialment perjudicials}}</translation>
 <translation id="3834728400518755610">El canvi en la configuració del micròfon requereix apagar Linux. Apaga'l per continuar.</translation>
-<translation id="3834775135533257713">No s'ha pogut afegir l'aplicació <ph name="TO_INSTALL_APP_NAME" /> perquè entra en conflicte amb <ph name="INSTALLED_APP_NAME" />.</translation>
 <translation id="383669374481694771">Es tracta d'informació general sobre aquest dispositiu i sobre com es fa servir, com ara els errors, el nivell de bateria i l'activitat al sistema i en aplicacions. Les dades s'utilitzaran per millorar Android i part de la informació agregada també ajudarà les aplicacions i els partners de Google, com ara els desenvolupadors d'Android, a millorar les seves aplicacions i els seus productes.</translation>
 <translation id="3837569373891539515">Pots seleccionar totes les opcions que corresponguin. També podràs trobar aquestes opcions a Configuració quan hagis acabat de configurar el <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3838085852053358637">No s'ha pogut carregar l'extensió</translation>
@@ -4834,7 +4827,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4249116869350613769">Estalvi de bateria</translation>
 <translation id="4249248555939881673">S'està esperant la connexió de xarxa...</translation>
 <translation id="4249373718504745892">S'ha bloquejat l'accés d'aquesta pàgina a la càmera i al micròfon</translation>
-<translation id="424963718355121712">Les aplicacions s'han de distribuir des de l'amfitrió que afecten</translation>
 <translation id="4249785854468467847">Reimagina Chrome, potenciat amb IA</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4250680216510889253">No</translation>
@@ -4932,7 +4924,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4304713468139749426">Gestor de contrasenyes</translation>
 <translation id="4305402730127028764">Copia al dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Canvia</translation>
-<translation id="4306119971288449206">Les aplicacions s'han de distribuir amb el tipus de contingut "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4306489587293957491">Introdueix</translation>
 <translation id="4306810703452026910">Chrome deixarà de marcar les notificacions d'aquest lloc web com a contingut brossa</translation>
 <translation id="4307992518367153382">Configuració bàsica</translation>
@@ -5395,7 +5386,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4631637535315947773">S'han suprimit les dreceres dels llocs web que més visites perquè no els has utilitzat recentment</translation>
 <translation id="4631955550884380853">Veu enfocada</translation>
 <translation id="4632655012900268062">Personalitza les targetes</translation>
-<translation id="4633003931260532286">L'extensió requereix <ph name="IMPORT_NAME" /> amb <ph name="IMPORT_VERSION" /> com a versió mínima, però només hi ha instal·lada la versió <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4633757335284074492">Crea còpies de seguretat a Google Drive. Canvia de dispositiu o restaura'n les dades fàcilment en qualsevol moment. Aquesta còpia de seguretat inclou dades d'aplicacions. Les còpies de seguretat es pengen a Google i s'encripten amb la contrasenya del Compte de Google del teu fill.</translation>
 <translation id="4634575639321169635">Configura aquest dispositiu per a la feina o per a ús personal</translation>
 <translation id="4635072447747973225">Desinstal·la Crostini</translation>
@@ -5438,7 +5428,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="465878909996028221">Les redireccions del navegador només admeten els protocols http, https i de fitxers.</translation>
 <translation id="4659126640776004816">En iniciar la sessió al Compte de Google, aquesta funció està sempre activada.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Imatge}other{# imatges}}</translation>
-<translation id="4660476621274971848">La versió esperada era <ph name="EXPECTED_VERSION" />, però la que hi havia era <ph name="NEW_ID" /></translation>
 <translation id="4660540330091848931">S'està canviant la mida</translation>
 <translation id="4661407454952063730">Les dades de les aplicacions poden ser qualsevol mena de dada que hagi desat una aplicació (en funció de la configuració del desenvolupador), com ara els contactes, els missatges i les fotos.</translation>
 <translation id="4662373422909645029">L'àlies no pot incloure nombres</translation>
@@ -5626,7 +5615,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="479536056609751218">Pàgina web, només HTML</translation>
 <translation id="4795670271446126525">Onades que es rompen</translation>
 <translation id="4797314204379834752">Prova de fer servir grups de pestanyes per organitzar tasques, fer compres en línia, etc.</translation>
-<translation id="479863874072008121">Gestiona els dispositius</translation>
 <translation id="479989351350248267">cerca</translation>
 <translation id="4800709549856064659">Després del dia <ph name="START_DATE" /></translation>
 <translation id="4800839971935185386">Revisa les actualitzacions de la icona i del nom</translation>
@@ -5742,6 +5730,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4868284252360267853">Actualment el focus no està posat en aquest quadre de diàleg. Prem Command+Maj+Option+A per posar-hi el focus.</translation>
 <translation id="4868351661310357223">Instal·la aplicacions i jocs de Google Play al dispositiu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Llegir informació de la xarxa de ChromeOS</translation>
+<translation id="4869175799055761881">L'usuari no pot instal·lar aquesta aplicació. Contacta amb el desenvolupador.</translation>
 <translation id="4870724079713069532">Amb aquesta aplicació pots obrir i editar fitxers admesos des de l'Explorador de fitxers o des d'altres aplicacions. Si vols controlar quins fitxers s'obren amb aquesta aplicació de manera predeterminada, ves a la <ph name="BEGIN_LINK" />configuració de Windows<ph name="END_LINK" />.</translation>
 <translation id="4870995365819149457">Alguns enllaços admesos es continuaran obrint a <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> i en 1 aplicació més.</translation>
 <translation id="4871308555310586478">No des de Chrome Web Store.</translation>
@@ -5938,7 +5927,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="50080882645628821">Suprimeix el perfil</translation>
 <translation id="5008936837313706385">Nom de l'activitat</translation>
 <translation id="5009463889040999939">S'està canviant el nom del perfil. Aquest procés pot tardar uns minuts.</translation>
-<translation id="501057610015570208">L'aplicació amb l'atribut del fitxer de manifest "kiosk_only" s'ha d'instal·lar al mode quiosc de ChromeOS Flex</translation>
 <translation id="5010886807652684893">Visualització visual</translation>
 <translation id="5012523644916800014">Gestiona les contrasenyes i les claus d'accés</translation>
 <translation id="501394389332262641">So de bateria baixa</translation>
@@ -6265,7 +6253,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5233231016133573565">ID de procés</translation>
 <translation id="5233638681132016545">Pestanya nova</translation>
 <translation id="5233736638227740678">&amp;Enganxa</translation>
-<translation id="5234523649284990414">El lector de pantalla de ChromeOS, ChromeVox, l'utilitzen principalment persones invidents o amb poca visió per llegir el text que es mostra en pantalla amb un sintetitzador de veu o una pantalla braille. Prem la barra espaiadora per activar ChromeVox. Quan ChromeVox estigui activat, podràs fer una visita ràpida.</translation>
+<translation id="5234523649284990414">El lector de pantalla de ChromeOS, ChromeVox, l'utilitzen principalment persones amb ceguesa o poca visió per llegir el text que es mostra en pantalla amb un sintetitzador de veu o una pantalla braille. Prem la barra espaiadora per activar ChromeVox. Quan ChromeVox estigui activat, podràs fer una visita ràpida.</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5235050375939235066">Vols desinstal·lar l'aplicació?</translation>
 <translation id="523505283826916779">Configuració d'accessibilitat</translation>
@@ -6685,7 +6673,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5523558474028191231">El nom pot incloure lletres, números i caràcters especials, i pot tenir com a màxim <ph name="MAX_CHARACTER_COUNT" /> caràcters</translation>
 <translation id="5526745900034778153">Torna a iniciar la sessió per reprendre la sincronització</translation>
 <translation id="5527211644528700597">Utilitza mètodes integrats al dispositiu per detectar amenaces</translation>
-<translation id="5527463195266282916">S'ha intentat canviar a una versió anterior de l'extensió.</translation>
 <translation id="5527474464531963247">També podeu seleccionar una altra xarxa.</translation>
 <translation id="5527597176701279474"><ph name="APP_NAME" />, s'està instal·lant</translation>
 <translation id="5527822190489075064">Càrrega optimitzada</translation>
@@ -8643,6 +8630,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6897363604023044284">Tria llocs web per esborrar-ne les dades</translation>
 <translation id="6897688156970667447">És útil amb poca llum i permet estalviar bateria</translation>
+<translation id="6897756054229464646">Amb Gemini</translation>
 <translation id="6897972855231767338">Més informació sobre la navegació com a convidat</translation>
 <translation id="6898438890765871056">Obre la carpeta de OneDrive</translation>
 <translation id="6898440773573063262">Ara, les aplicacions de quiosc es poden configurar per iniciar-se automàticament en aquest dispositiu.</translation>
@@ -9145,6 +9133,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7250616558727237648">El dispositiu amb què estàs compartint el fitxer no ha respost. Torna-ho a provar.</translation>
 <translation id="725109152065019550">L'administrador ha desactivat l'emmagatzematge extern al vostre compte</translation>
 <translation id="7251635775446614726">L'administrador diu: "<ph name="CUSTOM_MESSAGE" />".</translation>
+<translation id="725310308981256997">Vols fer preguntes sobre aquesta pàgina?</translation>
 <translation id="7253521419891527137">&amp;Més informació</translation>
 <translation id="7254951428499890870">Confirmes que vols iniciar "<ph name="APP_NAME" />" en mode de diagnòstic?</translation>
 <translation id="725497546968438223">Botó de carpetes d'adreces d'interès</translation>
@@ -9480,7 +9469,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Cal que tornis el dispositiu immediatament}other{Torna el dispositiu <ph name="DEVICE_TYPE" /> en un termini de {NUM_DAYS} dies}}</translation>
 <translation id="747557463733380256">Informació sobre com es gestiona el navegador</translation>
 <translation id="7475671414023905704">URL de contrasenya perduda de Netscape</translation>
-<translation id="7475742997309661417">El lector de pantalla de ChromeOS, ChromeVox, l'utilitzen principalment persones invidents o amb poca visió per llegir el text que es mostra en pantalla amb un sintetitzador de veu o una pantalla braille. Mantén premudes les dues tecles de volum durant cinc segons per activar ChromeVox. Quan ChromeVox estigui activat, podràs fer una visita ràpida.</translation>
+<translation id="7475742997309661417">El lector de pantalla de ChromeOS, ChromeVox, l'utilitzen principalment persones amb ceguesa o poca visió per llegir el text que es mostra en pantalla amb un sintetitzador de veu o una pantalla braille. Mantén premudes les dues tecles de volum durant cinc segons per activar ChromeVox. Quan ChromeVox estigui activat, podràs fer una visita ràpida.</translation>
 <translation id="7476454130948140105">No hi ha prou bateria per fer l'actualització (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Permisos bloquejats automàticament: <ph name="PERMISSION" /> i <ph name="COUNT" /> més</translation>
 <translation id="7477460499687558352">Tria el perfil d'eSIM que vulguis baixar</translation>
@@ -9736,7 +9725,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7651182181030187705">Per obtenir aquesta adreça d'interès en tots els dispositius, verifica la teva identitat</translation>
 <translation id="7651400349472467012">Punt d'accés Wi‐Fi instantani disponible</translation>
 <translation id="7651784568388208829">Continuació de tasques a El meu telèfon</translation>
-<translation id="765293928828334535">No es poden afegir aplicacions, extensions ni scripts d'usuari des d'aquest lloc web</translation>
 <translation id="7652954539215530680">Crea un PIN</translation>
 <translation id="7654941827281939388">Aquest compte ja s'està utilitzant en aquest ordinador.</translation>
 <translation id="7655411746932645568">Els llocs web poden demanar permís per connectar-se a ports en sèrie</translation>
@@ -10192,7 +10180,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="795240231873601803">Utilitza la inscripció d'empresa per a comptes de treball o de centre educatiu</translation>
 <translation id="7952708427581814389">Els llocs web poden demanar permís per veure el text i les imatges del teu porta-retalls</translation>
 <translation id="795282463722894016">La restauració s'ha completat</translation>
-<translation id="7952904276017482715">L'identificador esperat era "<ph name="EXPECTED_ID" />", però el que hi havia era "<ph name="NEW_ID" />"</translation>
 <translation id="7953236668995583915">Torna a carregar aquesta pàgina per aplicar la configuració actualitzada en aquest lloc web</translation>
 <translation id="7953669802889559161">Introducció de text</translation>
 <translation id="7953955868932471628">Gestiona les dreceres</translation>
@@ -10349,7 +10336,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8048977114738515028">Crea una drecera d'escriptori al dispositiu per accedir directament a aquest perfil</translation>
 <translation id="8049029041626250638">Connecta un teclat o un ratolí. Si fas servir dispositius Bluetooth, comprova que estiguin preparats per vincular-se.</translation>
 <translation id="8049122382261047457">Cerca qualsevol imatge amb Google Lens</translation>
-<translation id="8049705080247101012">Google ha marcat l'extensió <ph name="EXTENSION_NAME" /> com a maliciosa i, per tant, s'ha evitat que s'instal·lés</translation>
 <translation id="8049948037269924837">Desplaçament invers del ratolí tàctil</translation>
 <translation id="8050038245906040378">Signatura de codi comercial de Microsoft</translation>
 <translation id="8050191834453426339">Torna a verificar</translation>
@@ -10634,6 +10620,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8244201515061746038">Botó per obtenir més informació sobre la correcció automàtica. Ves a la pàgina de configuració de la correcció automàtica. Prem Retorn per activar i Escapada per ignorar.</translation>
 <translation id="8244514732452879619">S'acosta l'hora de dormir</translation>
 <translation id="8246776524656196770">Protegeix la teva clau de seguretat amb un PIN (número d'identificació personal)</translation>
+<translation id="824713170151383793">Amb DevTools</translation>
 <translation id="8247795734638043885">Baixa el fitxer no segur</translation>
 <translation id="8248050856337841185">&amp;Enganxa</translation>
 <translation id="8248381369318572865">Accedeix al micròfon i analitza la teva parla</translation>
@@ -11104,7 +11091,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8563043098557365232">Només es permet per als serveis del sistema</translation>
 <translation id="8564220755011656606">No es pot accedir al micròfon</translation>
 <translation id="8565021320663436446">Vols suprimir <ph name="MEMBER_FULL_NAME" />?</translation>
-<translation id="8565650234829130278">S'ha intentat canviar a una versió anterior de l'aplicació.</translation>
 <translation id="8566916288687510520">S'ha rebut una contrasenya nova</translation>
 <translation id="8569673829373920831">Més informació sobre <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">No s'ha trobat cap destinació</translation>
@@ -11548,6 +11534,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="885746075120788020">Les teves preferències i activitat desades estaran preparades en qualsevol dispositiu amb Chrome OS quan hi iniciïs la sessió amb el teu Compte de Google. Per decidir què vols sincronitzar, ves a Configuració.</translation>
 <translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{Vols instal·lar l'aplicació?}other{Vols instal·lar les aplicacions?}}</translation>
 <translation id="8858369206579825206">Controls de privadesa</translation>
+<translation id="8858449624332155432">La política s'ha configurat amb valors conflictius de diverses fonts.</translation>
 <translation id="8859174528519900719">Submarc: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">No s'han pogut carregar les condicions del servei</translation>
 <translation id="8859662783913000679">Compte parental</translation>

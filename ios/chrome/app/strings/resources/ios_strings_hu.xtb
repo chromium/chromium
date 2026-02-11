@@ -584,6 +584,7 @@
 <translation id="3140825265190223781">Mentett jelszavak és azonosítókulcsok</translation>
 <translation id="3143515551205905069">Szinkronizálás megszakítása</translation>
 <translation id="3144126448740580210">KÉSZ</translation>
+<translation id="3147521114983561406">Az azonosítókulcsokat a jelszókezelőbe menti a rendszer. Az inkognitó és a normál lapokon is hozzáférhetők.</translation>
 <translation id="3148052723910099040">Normál lap rács</translation>
 <translation id="3148237711805373460">Ugrás az oldalra</translation>
 <translation id="3157387275655328056">Hozzáadás olvasási listához</translation>
@@ -2097,6 +2098,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8587001564479545614">Helyreállítási PIN-kód létrehozása</translation>
 <translation id="8588404856427128947">Kikapcsolva</translation>
 <translation id="8590286732816598906">Lapcsoport, <ph name="GROUP_TITLE" />, Menü.</translation>
+<translation id="8593317261815647019">Létrehoz azonosítókulcsot az inkognitó módon kívül?</translation>
 <translation id="8600272508328041907">Váltás teljes oldalfordításra</translation>
 <translation id="860043288473659153">Kártyatulajdonos neve</translation>
 <translation id="8601611099293226919">Keresés a képernyőn a Google Lens segítségével</translation>

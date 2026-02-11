@@ -584,6 +584,7 @@
 <translation id="3140825265190223781">Salvestatud paroolid ja pääsuvõtmed</translation>
 <translation id="3143515551205905069">Tühista sünkroonimine</translation>
 <translation id="3144126448740580210">VALMIS</translation>
+<translation id="3147521114983561406">Pääsuvõtmed salvestatakse teie paroolihaldurisse. Pääsete neile juurde nii inkognito kui ka tavalistel vahelehtedel.</translation>
 <translation id="3148052723910099040">Tavaline vahelehtede ruudustik</translation>
 <translation id="3148237711805373460">Vii mind sinna</translation>
 <translation id="3157387275655328056">Lisa lugemisloendisse</translation>
@@ -2097,6 +2098,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8587001564479545614">Taastekoodi loomine</translation>
 <translation id="8588404856427128947">Väljas</translation>
 <translation id="8590286732816598906">Vahelehegrupp, <ph name="GROUP_TITLE" />, menüü.</translation>
+<translation id="8593317261815647019">Kas luua pääsuvõti väljaspool inkognito režiimi?</translation>
 <translation id="8600272508328041907">Terve lehe tõlkimise sisselülitamine</translation>
 <translation id="860043288473659153">Kaardiomaniku nimi</translation>
 <translation id="8601611099293226919">Otsige Google Lensi abil ekraanikuvalt</translation>

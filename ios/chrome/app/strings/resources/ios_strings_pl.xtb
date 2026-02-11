@@ -584,6 +584,7 @@
 <translation id="3140825265190223781">Zapisane hasła i klucze dostępu</translation>
 <translation id="3143515551205905069">Anuluj synchronizację</translation>
 <translation id="3144126448740580210">GOTOWE</translation>
+<translation id="3147521114983561406">Klucze dostępu są zapisywane w menedżerze haseł. Są one dostępne na kartach incognito i zwykłych.</translation>
 <translation id="3148052723910099040">Siatka zwykłych kart</translation>
 <translation id="3148237711805373460">Otwórz</translation>
 <translation id="3157387275655328056">Dodaj do listy Do przeczytania</translation>
@@ -2097,6 +2098,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8587001564479545614">Utwórz kod PIN do przywracania</translation>
 <translation id="8588404856427128947">Wyłączono</translation>
 <translation id="8590286732816598906">Grupa kart, <ph name="GROUP_TITLE" />, menu.</translation>
+<translation id="8593317261815647019">Utworzyć klucz dostępu poza trybem incognito?</translation>
 <translation id="8600272508328041907">Przełącz na tłumaczenie całej strony</translation>
 <translation id="860043288473659153">Imię i nazwisko posiadacza karty</translation>
 <translation id="8601611099293226919">Przeszukaj ekran za pomocą Obiektywu Google</translation>

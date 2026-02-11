@@ -2790,6 +2790,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5466018172325111652">Niste primili kôd? <ph name="BEGIN_LINK" />Zatražite novi kôd<ph name="END_LINK" /></translation>
 <translation id="5466818462212249084">Aplikacije za plaćanje</translation>
 <translation id="5470861586879999274">&amp;Ponovi uređivanje</translation>
+<translation id="5471158297908124590">Potvrdite svoj identitet da biste mogli uređivati načine plaćanja</translation>
 <translation id="5472588168895083535">Praćenje pokreta ruku je blokirano</translation>
 <translation id="5477756102936130143">Omogućite preusmjeravanje na podržane aplikacije za plaćanje</translation>
 <translation id="5479505548832623900">Pravila koja proširenje vjerojatno zanemaruje.</translation>
@@ -3173,6 +3174,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6093795393556121384">Kartica je potvrđena</translation>
 <translation id="6094253940069566294">Uredite vozilo</translation>
 <translation id="6094290315941448991">Administratorska pravila onemogućuju snimanje zaslona ako je vidljiv povjerljiv sadržaj</translation>
+<translation id="6097297436119286254">Potvrdite svoj identitet da bi se mogli unijeti vaši podaci o plaćanju</translation>
 <translation id="6099269767116481177">22 x 29,5 in</translation>
 <translation id="6101583188322746099">Usluge dostave namirnica</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4922,6 +4924,7 @@ Dodatne pojedinosti:
 <translation id="8897428486789851669">Plivanje</translation>
 <translation id="8899807382908246773">Ometajući oglasi</translation>
 <translation id="8903921497873541725">Povećaj</translation>
+<translation id="8903998444169664879">Potvrdite svoj identitet da biste mogli promijeniti postavke plaćanja</translation>
 <translation id="890493561996401738">Gumb za uklanjanje prijedloga, pritisnite Enter za uklanjanje <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8x10 in</translation>
 <translation id="8914504000324227558">Ponovo pokrenite Chrome</translation>

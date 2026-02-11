@@ -7,11 +7,17 @@
 <translation id="132960226125594336">មិន​អាច​ផ្ទុកឯកសារ '<ph name="RELATIVE_PATH" />' សម្រាប់​ស្គ្រីប​ខ្លឹមសារ​បាន​ទេ ដោយ​សារ​វា​​លើស​ទំហំ​ស្គ្រីប​អតិបរមា​ ឬ​លើស​ទំហំ​ស្គ្រីប​ខ្លឹមសារ​សរុប​អតិបរមារបស់​កម្មវិធី​បន្ថែម។</translation>
 <translation id="1445572445564823378">កម្មវិធីបន្ថែមនេះកំពុងធ្វើឲ្យ <ph name="PRODUCT_NAME" /> យឺត។ អ្នកគួរតែបិទដំណើរការវាដើម្បីស្តារប្រតិបត្តិការ <ph name="PRODUCT_NAME" />។</translation>
 <translation id="1468038450257740950">WebGL មិនត្រូវបានគាំទ្រទេ។</translation>
+<translation id="1478607704480248626">មិន​បាន​បើក​ការដំឡើង​ទេ</translation>
+<translation id="1556537182262721003">មិនអាចផ្លាស់ទីថតឯកសារកម្មវិធីបន្ថែមទៅក្នុងទម្រង់ទេ។</translation>
 <translation id="1610570795592207282">មិនអាច​ផ្ទុក css '<ph name="RELATIVE_PATH" />' សម្រាប់​ស្គ្រីប​បានទេ។</translation>
+<translation id="1616298854599875024">មិនអាច​នាំចូល​កម្មវិធីបន្ថែម "<ph name="IMPORT_NAME" />" បាន​ទេ ដោយសារ​វា​មិនមែន​ជា​ម៉ូឌុល​ដែលបានចែករំលែក</translation>
 <translation id="1803557475693955505">មិនអាចដំណើរការទំព័រផ្ទៃខាងក្រោយ '<ph name="BACKGROUND_PAGE" />' ទេ។</translation>
+<translation id="1875387611427697908">វាអាចត្រូវបានបញ្ចូលពី <ph name="CHROME_WEB_STORE" /> តែប៉ុណ្ណោះ</translation>
+<translation id="2131077480075264">មិនអាចតំឡើង "<ph name="APP_NAME" />" ទេ ពីព្រោះវាមិនត្រូវបានអនុញ្ញាតដោយ "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2159915644201199628">មិនអាចបម្លែងរូបភាព '<ph name="IMAGE_NAME" />' ទេ</translation>
 <translation id="2350172092385603347">មូលដ្ឋានីយកម្មត្រូវបានប្រើប្រាស់ ប៉ុន្តែ មូលដ្ឋាន_លំនាំដើម មិនត្រូវបានបញ្ជាក់នៅក្នុងមេនីហ្វេសទេ។</translation>
 <translation id="2576842806987913196">មានឯកសារ CRX បង្ហាញជាមួយឈ្មោះនេះរួចទៅហើយ។</translation>
+<translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2743583586211388067">សិទ្ធិចូលប្រើ​កម្មវិធីបន្ថែម​នេះត្រូវបាន​ទប់ស្កាត់​ក្រោម​គោលការណ៍​ហានិភ័យ​នៃកម្មវិធីបន្ថែម​របស់​ស្ថាប័ន​អ្នក។</translation>
 <translation id="2785530881066938471">មិនអាចដំណើរការឯកសារ '<ph name="RELATIVE_PATH" />' សម្រាប់ស្គ្រីបមាតិកាទេ។ មិនអាចបម្លែង UTF-8 ទេ។</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (​លេខសំគាល់កម្មវិធីបន្ថែម "<ph name="EXTENSION_ID" />") ត្រូវ​បាន​ទប់ស្កាត់​ដោយ​អ្នកគ្រប់គ្រង។ <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089">មិនស្គាល់ផលិតផល <ph name="PRODUCT_ID" /> ពីអ្នកលក់ <ph name="VENDOR_ID" /> (លេខសេរ៊ី <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">បានបរាជ័យក្នុងការប្តូរឯកសារ crx។ ពិនិត្យដើម្បីមើលថាតើឯកសារនេះស្ថិតនៅក្នុងការប្រើប្រាស់ឬអត់។</translation>
 <translation id="3163201441334626963">មិនស្គាល់ផលិតផល <ph name="PRODUCT_ID" /> ពីអ្នកលក់ <ph name="VENDOR_ID" /></translation>
+<translation id="3242289508736283383">កម្មវិធី​ដែលមាន​លក្ខណៈ​មេនីហ្វេសថ៍ 'kiosk_only' ត្រូវតែ​ដំឡើង​នៅក្នុង​មុខងារបញ្ជរ ChromeOS</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (លេខសេរ៊ី <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> ពីអ្នកលក់ <ph name="VENDOR_ID" /> (លេខសេរ៊ី <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">តម្លៃធាតុបញ្ចូលសម្រាប់សោឯកជនត្រូវតែជាផ្លូវដែលមានសុពលភាព។</translation>
+<translation id="3834775135533257713">មិនអាចបន្ថែមកម្មវិធី "<ph name="TO_INSTALL_APP_NAME" />" បានទេ ព្រោះវាមិនត្រូវគ្នាជាមួយ "<ph name="INSTALLED_APP_NAME" />"</translation>
 <translation id="388442998277590542">មិនអាចដំណើរការទំព័រជម្រើស '<ph name="OPTIONS_PAGE" />' ទេ។</translation>
 <translation id="3984413272403535372">កំហុសឆ្គងខណៈពេលចុះហត្ថលេខាកម្មវិធីបន្ថែម។</translation>
 <translation id="4233778200880751280">មិនអាចដំណើរការទំព័រអំពីទេ '<ph name="ABOUT_PAGE" />'។</translation>
+<translation id="424963718355121712">កម្មវិធី​ត្រូវ​បាន​ផ្ដល់​ពី​ម៉ាស៊ីន​ដែល​ដែលវាមានឥទ្ធិពលលើ</translation>
+<translation id="4306119971288449206">កម្មវិធី​ត្រូវបាន​ផ្ដល់​ជា​ប្រភេទ​ខ្លឹមសារ "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4633003931260532286">កម្មវិធី​បន្ថែម​តម្រូវ​ឱ្យមាន "<ph name="IMPORT_NAME" />" ដែល​មាន​កំណែ​ទាប​បំផុត "<ph name="IMPORT_VERSION" />" ប៉ុន្តែ​មាន​តែ​កំណែ "<ph name="INSTALLED_VERSION" />" ប៉ុណ្ណោះ​ដែល​ត្រូវ​បាន​ដំឡើង</translation>
+<translation id="4660476621274971848">កំណែ​ដែល​បានរំពឹង​ទុកគឺ "<ph name="EXPECTED_VERSION" />" ប៉ុន្តែ​​កំណែជាក់ស្ដែង "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">បានបរាជ័យក្នុងការបង្កើតសោឯកជន។</translation>
 <translation id="4811956658694082538">មិនអាចតំឡើងកញ្ចប់ទេ ពីព្រោះដំណើរការឧបករណ៍ប្រើប្រាស់បានគាំង។ សាកល្បងចាប់ផ្តើមដំណើរការ Chrome ឡើងវិញ ហើយព្យាយាមម្តងទៀត។</translation>
 <translation id="4988792151665380515">បានបរាជ័យក្នុងការនាំចេញសោសាធារណៈ។</translation>
+<translation id="501057610015570208">កម្មវិធី​ដែល​មាន​លក្ខណៈ​មេនីហ្វេសថ៍ 'kiosk_only' ត្រូវតែ​ដំឡើង​នៅក្នុង​មុខងារបញ្ជរ ChromeOS Flex</translation>
 <translation id="5026754133087629784">មើលគេហទំព័រ៖ <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">មិនអាចស្វែងរកផ្លូវពិតប្រាកដទៅកាន់ថតឯកសារដើម្បីវិចខ្ចប់ទេ។</translation>
 <translation id="5160071981665899014">មិនអាច​ផ្ទុក javascript '<ph name="RELATIVE_PATH" />' សម្រាប់​ស្គ្រីប​បានទេ។</translation>
 <translation id="5356315618422219272">មើលកម្មវិធី៖ <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">កម្មវិធីបន្ថែមនេះរាប់បញ្ចូលទាំងឯកសារសោ '<ph name="KEY_PATH" />'។ អ្នកប្រហែលជាមិនចង់ធ្វើដូច្នេះទេ។</translation>
 <translation id="5486326529110362464">ត្រូវមានតម្លៃធាតុបញ្ចូលសម្រាប់សោឯកជន</translation>
+<translation id="5527463195266282916">បានព្យាយាមបន្ទាបកម្មវិធីបន្ថែម។</translation>
 <translation id="5707185214361380026">បានបរាជ័យក្នុងការដំណើរការកម្មវិធីបន្ថែមពី៖</translation>
 <translation id="5972529113578162692">អ្នកគ្រប់គ្រងម៉ាស៊ីននេះតម្រូវឲ្យតំឡើង <ph name="EXTENSION_NAME" />។ វាមិនអាចលុបការតំឡើងវិញបានទេ។</translation>
 <translation id="6027032947578871493">មិនស្គាល់ផលិតផល <ph name="PRODUCT_ID" /> ពី <ph name="VENDOR_NAME" /> (លេខសេរ៊ី <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">ឯកសារ​មេនីហ្វេសថ៍​មិនត្រឹមត្រូវ​​ទេ</translation>
 <translation id="7217838517480956708">អ្នកគ្រប់ឧបករណ៍នេះតម្រូវឲ្យតំឡើង <ph name="EXTENSION_NAME" />។ វាមិនអាចត្រូវបានដកចេញ ឬកែសម្រួលទេ។</translation>
 <translation id="7612608473764576263">តម្លៃ​បញ្ចូល​សម្រាប់​សោឯកជន​ត្រូវមានទម្រង់​ត្រឹមត្រូវ (PKCS#8-format PEM-encoded RSA key)។</translation>
+<translation id="765293928828334535">កម្មវិធី កម្មវិធីបន្ថែម និងស្គ្រីប​អ្នកប្រើប្រាស់​មិនអាច​ត្រូវ​បាន​បញ្ចូល​ពី​គេហទំព័រ​នេះទេ</translation>
 <translation id="7876803335449432072">មិនអាច​ផ្ទុក​ឯកសារ '<ph name="RELATIVE_PATH" />' សម្រាប់​ស្គ្រីប​ខ្លឹមសារ​បានទេ អាចផ្ទុក​សន្លឹករចនាបថ​ស្គ្រីប​ខ្លឹមសារ​បានតែពី​សន្លឹក​រចនាបថ​ដែលអាច​ប្រើបាន ដូចជា​ឯកសារ .css ប៉ុណ្ណោះ។</translation>
 <translation id="7939686037314084444">កម្មវិធី​បន្ថែម​ផ្ទុកមិន​បាន​ត្រឹមត្រូវ​ទេ។ វា​ប្រហែល​ជាមិន​អាចបង្អាក់​សំណើបណ្ដាញ​បានទេ។</translation>
+<translation id="7952904276017482715">លេខសម្គាល់​ដែលបាន​រំពឹងទុក "<ph name="EXPECTED_ID" />" ប៉ុន្តែ​លេខសម្គាល់​ជាក់ស្ដែងគឺ "<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">ជម្រើស៖ <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">បែរមកអ្នកប្រើ</translation>
 <translation id="8047248493720652249">កម្មវិធីបន្ថែមនេះបានបរាជ័យក្នុងការដាក់ឈ្មោះការទាញយក "<ph name="ATTEMPTED_FILENAME" />" ពីព្រោះកម្មវិធីបន្ថែមដ៏ទៃទៀត (<ph name="EXTENSION_NAME" />) បានកំណត់ឈ្មោះឯកសារផ្សេងគ្នា "<ph name="ACTUAL_FILENAME" />"។</translation>
+<translation id="8049705080247101012">Google បានសម្គាល់ "<ph name="EXTENSION_NAME" />" ថា​គ្រោះថ្នាក់ ហើយ​ការដំឡើង​ត្រូវបាន​រារាំង</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> ពី <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">ឯកសារ​មេនីហ្វេសថ៍​បានបាត់ ឬ​មិនអាច​អានបាន</translation>
+<translation id="8565650234829130278">បានព្យាយាមបន្ទាបកម្មវិធី។</translation>
 <translation id="8621383749470166852">មិនអាច​ផ្ទុក​ឯកសារ '<ph name="RELATIVE_PATH" />' សម្រាប់​ស្គ្រីប​ខ្លឹមសារ​បានទេ អាចផ្ទុក​ស្គ្រីប​ខ្លឹមសារ​បានតែពី​ឯកសារ JavaScript ដែលអាច​ប្រើបាន ដូចជា​ឯកសារ .js ប៉ុណ្ណោះ។</translation>
 <translation id="8636666366616799973">កញ្ចប់គ្មានសុពលភាព។ ព័ត៌មានលំអិត '<ph name="ERROR_MESSAGE" />'។</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" កំពុង​ស្នើ​សុំ​ចូលប្រើ​ឧបករណ៍​ណា​មួយ​របស់​អ្នក៖</translation>

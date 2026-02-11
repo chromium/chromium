@@ -584,6 +584,7 @@
 <translation id="3140825265190223781">Contrasinais e claves de acceso gardados</translation>
 <translation id="3143515551205905069">Cancelar sincronización</translation>
 <translation id="3144126448740580210">LISTO</translation>
+<translation id="3147521114983561406">As claves de acceso gárdanse no teu xestor de contrasinais. Podes acceder a elas nas pestanas normais e nas do modo de incógnito.</translation>
 <translation id="3148052723910099040">Grade de pestanas normal</translation>
 <translation id="3148237711805373460">Acceder</translation>
 <translation id="3157387275655328056">Engadir á lista de lectura</translation>
@@ -2097,6 +2098,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8587001564479545614">Crear un PIN de recuperación</translation>
 <translation id="8588404856427128947">Desactivada</translation>
 <translation id="8590286732816598906">Grupo de pestanas, <ph name="GROUP_TITLE" />, menú.</translation>
+<translation id="8593317261815647019">Queres crear unha clave de acceso fóra do modo de incógnito?</translation>
 <translation id="8600272508328041907">Cambiar á tradución da páxina completa</translation>
 <translation id="860043288473659153">Nome do titular da tarxeta</translation>
 <translation id="8601611099293226919">Buscar contido da pantalla con Google Lens</translation>

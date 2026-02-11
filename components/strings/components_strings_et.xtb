@@ -2791,6 +2791,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5466018172325111652">Kas te ei saanud koodi? <ph name="BEGIN_LINK" />Hankige uus kood<ph name="END_LINK" />.</translation>
 <translation id="5466818462212249084">Makserakendus</translation>
 <translation id="5470861586879999274">&amp;Muuda uuesti</translation>
+<translation id="5471158297908124590">Makseviiside muutmiseks kinnitage oma isik.</translation>
 <translation id="5472588168895083535">Käeliigutuste jälgimine on blokeeritud</translation>
 <translation id="5477756102936130143">Lubage ümbersuunamine toetatud makserakendustesse</translation>
 <translation id="5479505548832623900">Tõenäoliselt laiendus eirab neid.</translation>
@@ -3174,6 +3175,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6093795393556121384">Kaart on kinnitatud</translation>
 <translation id="6094253940069566294">Sõiduki muutmine</translation>
 <translation id="6094290315941448991">Administraatori eeskirjad keelavad ekraanikuva salvestamise, kui konfidentsiaalne sisu on nähtaval</translation>
+<translation id="6097297436119286254">Makseteabe täitmiseks kinnitage oma isik.</translation>
 <translation id="6099269767116481177">22 × 29,5 tolli</translation>
 <translation id="6101583188322746099">Toidukaupade kohaletoimetamine</translation>
 <translation id="6104072995492677441">JIS B6</translation>
@@ -4922,6 +4924,7 @@ Lisateave:
 <translation id="8897428486789851669">Ujumine</translation>
 <translation id="8899807382908246773">Sekkuvad reklaamid</translation>
 <translation id="8903921497873541725">Suurendab</translation>
+<translation id="8903998444169664879">Makseseadete muutmiseks kinnitage oma isik.</translation>
 <translation id="890493561996401738">Soovituse eemaldamise nupp, vajutage eemaldamiseks sisestusklahvi, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 tolli</translation>
 <translation id="8914504000324227558">Käivita Chrome uuesti</translation>

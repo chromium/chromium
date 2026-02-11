@@ -7,11 +7,17 @@
 <translation id="132960226125594336">උපරිම ස්ක්‍රිප්ට් ප්‍රමාණය හෝ දිගුවේ උපරිම මුළු අන්තර්ගත ස්ක්‍රිප්ට් ප්‍රමාණය ඉක්මවන බැවින් අන්තර්ගත ස්ක්‍රිප්ට් සඳහා '<ph name="RELATIVE_PATH" />' ගොනුව පූරණය කළ නොහැකි විය.</translation>
 <translation id="1445572445564823378">මෙම දිගුව <ph name="PRODUCT_NAME" /> හි වේගය අඩාල කරයි. <ph name="PRODUCT_NAME" /> හි කාර්යක්ෂමතාව සඳහා එය අක්‍රීය කිරීමට සිදුවේ.</translation>
 <translation id="1468038450257740950">WebGLට සහාය නොවේ.</translation>
+<translation id="1478607704480248626">ස්ථාපනය සබල කර නැත</translation>
+<translation id="1556537182262721003">දිගු නාමාවලිය පැතිකඩ තුළට ගෙනයා නොහැකි විය.</translation>
 <translation id="1610570795592207282">ස්ක්‍රිප්ටය සඳහා css '<ph name="RELATIVE_PATH" />' පූරණය කළ නොහැකි විය.</translation>
+<translation id="1616298854599875024">බෙදා ගත් මොඩියුලයක් නොවන බැවින් "<ph name="IMPORT_NAME" />" දිගුව ආයාත කළ නොහැකිය</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' පසුබිම් පිටුව ලබාගත නොහැකි විය.</translation>
+<translation id="1875387611427697908">මෙය එක් කළ හැක්කේ <ph name="CHROME_WEB_STORE" /> වෙතින් පමණි</translation>
+<translation id="2131077480075264">"<ph name="IMPORT_NAME" />" මගින් ඉඩ නොලැබෙන බැවින්  "<ph name="APP_NAME" />" ස්ථාපනය නොවේ.</translation>
 <translation id="2159915644201199628">අනුරුව විසංකේතනය කළ නොහැකි විය: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">දේශීයකරණය භාවිතා කෙරිණ, නමුත් manifest හි default_locale නීර්ණය කර නොමැත.</translation>
 <translation id="2576842806987913196">මෙය මෙනමින් දැනටමත් ඇති CRX  ගොනුවකි.</translation>
+<translation id="2662876636500006917">Chrome ජාල වෙලඳසැල</translation>
 <translation id="2743583586211388067">ඔබේ සංවිධානයේ දිගු අවදානම් ප්‍රතිපත්තිය යටතේ මෙම දිගුවට ප්‍රවේශය අවහිර කර ඇත.</translation>
 <translation id="2785530881066938471">අන්තර්ගත පිටපත් සඳහා '<ph name="RELATIVE_PATH" />' ගොනුව පැටවිය නොහැක. එය UTF-8 සංකේතනය කර නැත.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (දිගු ID "<ph name="EXTENSION_ID" />") පරිපාලක විසින් අවහිර කර ඇත. <ph name="ADMIN_INFO" /></translation>
@@ -19,21 +25,29 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> වෙතින් නොදන්නා නිෂ්පාදනය <ph name="PRODUCT_ID" /> (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ගොනුව යළි පිහිටුවිය නොහැකි විය. මෙම ගොනුව භාවිතයේදැයි පිරික්සන්න.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> වෙතින් නොදන්නා නිෂ්පාදනය <ph name="PRODUCT_ID" /></translation>
+<translation id="3242289508736283383">'kiosk_only' මැනිෆෙස්ට් උපලක්ෂණය සහිත යෙදුම ChromeOS කියෝස්ක් ප්‍රකාරයේ ස්ථාපනය කළ යුතුය</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> වෙතින් <ph name="PRODUCT_NAME" />  (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">පුද්ගලික යතුර සඳහා යෙදවුම් යතුර වලංගු මාර්ගයක් විය යුතුය.</translation>
+<translation id="3834775135533257713">"<ph name="INSTALLED_APP_NAME" />" සමඟ ගැටෙන නිසා "<ph name="TO_INSTALL_APP_NAME" />" යෙදුම එක් කිරීමට නොහැකි විය.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' අභිප්‍රේත පිටුව පූර්ණය කළ නොහැක.</translation>
 <translation id="3984413272403535372">දිගුවට ප්‍රවිෂ්ට වීමේදී දෝෂයක් මතුවිය.</translation>
 <translation id="4233778200880751280">පිටුව '<ph name="ABOUT_PAGE" />' පිළිබඳව ප්‍රවේශනය කළ නොහැක.</translation>
+<translation id="424963718355121712">යෙදුම් ඒවාට බලපාන සත්කාරක වෙතින් සැපයිය යුතුය</translation>
+<translation id="4306119971288449206">යෙදුම් පිරිනැමිය යුත්තේ "<ph name="CONTENT_TYPE" />" අන්තර්ගත වර්ගය සමඟිනි</translation>
+<translation id="4633003931260532286">දිගුවට "<ph name="IMPORT_NAME" />" හි අවම "<ph name="IMPORT_VERSION" />" අනුවාදයක් අවශ්‍යයි, නමුත් ස්ථාපිතව ඇත්තේ "<ph name="INSTALLED_VERSION" />" පමණි</translation>
+<translation id="4660476621274971848">අපේක්ෂිත අනුවාදය "<ph name="EXPECTED_VERSION" />", නමුත් අනුවාදය වූයේ "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">පුද්ගලික යතුර ප්‍රතිදානය කළ නොහැකි විය.</translation>
 <translation id="4811956658694082538">උපයෝගී සැකසුම බිඳවැටුනු බැවින් පැකේජය ස්ථාපනය කළ නොහැක. Chrome යළි අරඹා නැවත උත්සහ කරන්න.</translation>
 <translation id="4988792151665380515">පොදු යතුර නිර්යාත කිරීම අසාර්ථකයි.</translation>
+<translation id="501057610015570208">'kiosk_only' මැනිෆෙස්ට් උපලක්ෂණය සහිත යෙදුම ChromeOS Flex කියෝස්ක් ප්‍රකාරයේ ස්ථාපනය කළ යුතුය</translation>
 <translation id="5026754133087629784">වෙබ දක්වනය: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">ඇසිරීමට වන නාමාවලිය වෙත නිරපේක්ෂ පෙත සොයා ගත නොහැක.</translation>
 <translation id="5160071981665899014">ස්ක්‍රිප්ටය සඳහා ජාවාස්ක්‍රිප්ට් '<ph name="RELATIVE_PATH" />' පූරණය කළ නොහැකි විය.</translation>
 <translation id="5356315618422219272">යෙදුම්දසුන: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">මෙම දිගුවේ මූලික ගොනුව '<ph name="KEY_PATH" />' අඩංගුවේ. ඔබට සමහරවිට එය කිරීමට අවශ්‍ය නැත.</translation>
 <translation id="5486326529110362464">පුද්ගලික යතුරු සඳහා වන ඇතුළු කිරීමේ අගය පැවතිය යුතුය.</translation>
+<translation id="5527463195266282916">දිගුව අවශ්‍රේණි කිරීමට උත්සාහ දරන ලදි.</translation>
 <translation id="5707185214361380026">මෙතැනින් දිගුව ලබාගත නොහැක:</translation>
 <translation id="5972529113578162692">මෙම යන්ත්‍රයේ පාලකයාට <ph name="EXTENSION_NAME" /> ස්ථාපනය කිරීමට අවශ්‍යයි. එය අස්ථාපනය කළ නොහැක.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> වෙතින් නොදන්නා නිෂ්පාදනය <ph name="PRODUCT_ID" /> (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
@@ -51,13 +65,17 @@
 <translation id="7068383018033524534">මැනිෆෙස්ට් ගොනුව අවලංගුයි</translation>
 <translation id="7217838517480956708">මෙම යන්ත්‍රයේ පරිපාලකට <ph name="EXTENSION_NAME" /> ස්ථාපිත කිරීමට අවශ්‍යය. එය ඉවත් කිරීම හෝ වෙනස් කිරීම කළ නොහැක.</translation>
 <translation id="7612608473764576263">පුද්ගලික යතුර සඳහා ආදාන අගය වලංගු ආකෘතියක් විය යුතුය (PKCS#8-ආකෘතිය PEM-සංකේතිත RSA යතුර).</translation>
+<translation id="765293928828334535">යෙදුම්, දිගු හා පරිශීලක ස්ක්‍රිප්ට මෙම අඩවියෙන් එක් කළ නොහැක</translation>
 <translation id="7876803335449432072">අන්තර්ගත ස්ක්‍රිප්ට් සඳහා '<ph name="RELATIVE_PATH" />' ගොනුව පූරණය කළ නොහැකි විය, අන්තර්ගත ස්ක්‍රිප්ට් විලාස පත්‍ර පූරණය කළ හැක්කේ .css ගොනු වැනි සහය දක්වන විලාස පත්‍ර ගොනු වලින් පමණි.</translation>
 <translation id="7939686037314084444">දිගුව හරියාකාරව පූරණය වීම අසමත් විය. එයට ජාල ඉල්ලීම් අතරමගදී අල්ලා ගැනීමට නොහැකි වනු ඇත.</translation>
+<translation id="7952904276017482715">අපේක්ෂිත ID "<ph name="EXPECTED_ID" />", නමුත් ID වූයේ "<ph name="NEW_ID" />"</translation>
 <translation id="7972881773422714442">විකල්ප: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">පරිශීලකට-මුහුණලා</translation>
 <translation id="8047248493720652249">මෙම දිගුව වෙනත් දිගුවක් (<ph name="EXTENSION_NAME" />) වෙනස් ගොනු නාමයක්  "<ph name="ACTUAL_FILENAME" />" නිශ්චය කර ඇති නිසා "<ph name="ATTEMPTED_FILENAME" />" බාගැනීම නම් කිරීමට අසමත් විය.</translation>
+<translation id="8049705080247101012">Google විසින් "<ph name="EXTENSION_NAME" />" අනිෂ්ට ලෙස ලකුණු කර ඇති අතර ස්ථාපනය වළක්වා ඇත</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> වෙතින් <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">මැනිෆෙස්ට් ගොනුව අස්ථානගතයි නැතහොත් කියවිය නොහැකියි</translation>
+<translation id="8565650234829130278">යෙදුම් පහළ දැමීමට උත්සාහ කරන ලදි.</translation>
 <translation id="8621383749470166852">අන්තර්ගත ස්ක්‍රිප්ට් සඳහා '<ph name="RELATIVE_PATH" />' ගොනුව පූරණය කළ නොහැකි විය, අන්තර්ගත ස්ක්‍රිප්ට් පූරණය කළ හැක්කේ .js ගොනු වැනි සහාය දක්වන ජාවාස්ක්‍රිප්ට් ගොනු වලින් පමණි.</translation>
 <translation id="8636666366616799973">පැකේජය වලංගු නැත. විස්තර: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />"ඔබේ උපාංගවලින් එකකට ප්‍රවේශය ඉල්ලයි:</translation>
