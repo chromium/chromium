@@ -61,6 +61,10 @@ struct ProfileEnablement {
   // Whether live (audio) functionality is disallowed for this account type.
   bool live_disallowed;
 
+  // Whether 'Create Image with Gemini' functionality is disallowed for this
+  // account type.
+  bool share_image_disallowed;
+
   // Summary of whether actuation is enabled, and if not, why not.
   ActuationEligibility actuation_eligibility;
 };

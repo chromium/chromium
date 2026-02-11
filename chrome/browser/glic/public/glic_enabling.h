@@ -204,6 +204,9 @@ class GlicEnabling : public signin::IdentityManager::Observer {
     // Whether live (audio) functionality is disallowed for this account type.
     bool live_disallowed : 1 = false;
 
+    // Whether share image functionality is disallowed for this account type.
+    bool share_image_disallowed : 1 = false;
+
     bool IsProfileEligible() const {
       return !feature_disabled && !not_regular_profile;
     }
@@ -234,6 +237,10 @@ class GlicEnabling : public signin::IdentityManager::Observer {
 
     bool EligibleForLive() const {
       return IsProfileEligible() && !live_disallowed;
+    }
+
+    bool EligibleForShareImage() const {
+      return IsProfileEligible() && !share_image_disallowed;
     }
 
     bool DisallowedByAdmin() const {
