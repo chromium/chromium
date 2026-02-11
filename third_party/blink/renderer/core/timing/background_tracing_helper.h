@@ -74,6 +74,9 @@ class CORE_EXPORT BackgroundTracingHelper final
   // interacting with Finch code, which doesn't use WTF primitives.
   static uint32_t MD5Hash32(std::string_view string);
 
+  // Returns true if `mark_name` has "trigger:" prefix.
+  static bool MarkNameIsTrigger(StringView mark_name);
+
   // Given a mark name with an optional numeric suffix, parses out the base name
   // and suffix.
   static std::pair<StringView, std::optional<uint32_t>> SplitMarkNameAndId(
