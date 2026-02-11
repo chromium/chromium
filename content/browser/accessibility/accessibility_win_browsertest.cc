@@ -145,6 +145,20 @@ class AccessibilityWinBrowserTest : public AccessibilityBrowserTest {
       LONG expected_start_offset,
       LONG expected_end_offset,
       const std::wstring& expected_text);
+  static void CheckTextAfterOffset(
+      const Microsoft::WRL::ComPtr<IAccessibleText>& object,
+      LONG offset,
+      IA2TextBoundaryType boundary_type,
+      LONG expected_start_offset,
+      LONG expected_end_offset,
+      const std::wstring& expected_text);
+  static void CheckTextBeforeOffset(
+      const Microsoft::WRL::ComPtr<IAccessibleText>& object,
+      LONG offset,
+      IA2TextBoundaryType boundary_type,
+      LONG expected_start_offset,
+      LONG expected_end_offset,
+      const std::wstring& expected_text);
   static std::vector<base::win::ScopedVariant> GetAllAccessibleChildren(
       IAccessible* element);
 
@@ -593,6 +607,60 @@ void AccessibilityWinBrowserTest::CheckTextAtOffset(
   base::win::ScopedBstr text;
   HRESULT hr = object->get_textAtOffset(offset, boundary_type, &start_offset,
                                         &end_offset, text.Receive());
+  EXPECT_EQ(S_OK, hr);
+  EXPECT_EQ(expected_start_offset, start_offset);
+  EXPECT_EQ(expected_end_offset, end_offset);
+  EXPECT_STREQ(expected_text.c_str(), text.Get());
+}
+
+// Ensures that the text and the start and end offsets retrieved using
+// get_textAfterOffset match the expected values.
+void AccessibilityWinBrowserTest::CheckTextAfterOffset(
+    const Microsoft::WRL::ComPtr<IAccessibleText>& object,
+    LONG offset,
+    IA2TextBoundaryType boundary_type,
+    LONG expected_start_offset,
+    LONG expected_end_offset,
+    const std::wstring& expected_text) {
+  ::testing::Message message;
+  message << "While checking for text AFTER offset " << offset
+          << ", expecting \'" << expected_text << "\' at "
+          << expected_start_offset << '-' << expected_end_offset << '.';
+  SCOPED_TRACE(message);
+
+  LONG start_offset = 0;
+  LONG end_offset = 0;
+  base::win::ScopedBstr text;
+
+  HRESULT hr = object->get_textAfterOffset(offset, boundary_type, &start_offset,
+                                           &end_offset, text.Receive());
+  EXPECT_EQ(S_OK, hr);
+  EXPECT_EQ(expected_start_offset, start_offset);
+  EXPECT_EQ(expected_end_offset, end_offset);
+  EXPECT_STREQ(expected_text.c_str(), text.Get());
+}
+
+// Ensures that the text and the start and end offsets retrieved using
+// get_textBeforeOffset match the expected values.
+void AccessibilityWinBrowserTest::CheckTextBeforeOffset(
+    const Microsoft::WRL::ComPtr<IAccessibleText>& object,
+    LONG offset,
+    IA2TextBoundaryType boundary_type,
+    LONG expected_start_offset,
+    LONG expected_end_offset,
+    const std::wstring& expected_text) {
+  ::testing::Message message;
+  message << "While checking for text BEFORE offset " << offset
+          << ", expecting \'" << expected_text << "\' at "
+          << expected_start_offset << '-' << expected_end_offset << '.';
+  SCOPED_TRACE(message);
+
+  LONG start_offset = 0;
+  LONG end_offset = 0;
+  base::win::ScopedBstr text;
+
+  HRESULT hr = object->get_textBeforeOffset(
+      offset, boundary_type, &start_offset, &end_offset, text.Receive());
   EXPECT_EQ(S_OK, hr);
   EXPECT_EQ(expected_start_offset, start_offset);
   EXPECT_EQ(expected_end_offset, end_offset);
@@ -4534,13 +4602,25 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   // Words with numbers should be treated like ordinary words.
   CheckTextAtOffset(textarea_text, 17, IA2_TEXT_BOUNDARY_WORD, 17, 22,
                     L"WWW33");
-  CheckTextAtOffset(textarea_text, 23, IA2_TEXT_BOUNDARY_WORD, 22, 24, L")\n");
+
+  // 22 = )
+  CheckTextAtOffset(textarea_text, 22, IA2_TEXT_BOUNDARY_WORD, 22, 24, L")\n");
+
+  // 23 = \n
+  CheckTextAtOffset(textarea_text, 23, IA2_TEXT_BOUNDARY_WORD, 23, 24, L"\n");
+
+  CheckTextBeforeOffset(textarea_text, 23, IA2_TEXT_BOUNDARY_WORD, 22, 23,
+                        L")");
+
+  CheckTextAfterOffset(textarea_text, 23, IA2_TEXT_BOUNDARY_WORD, 24, 32,
+                       L"WebKit \n");
 
   // Multiple trailing empty spaces should be part of the word preceding it.
   CheckTextAtOffset(textarea_text, 28, IA2_TEXT_BOUNDARY_WORD, 24, 32,
                     L"WebKit \n");
-  CheckTextAtOffset(textarea_text, 31, IA2_TEXT_BOUNDARY_WORD, 24, 32,
-                    L"WebKit \n");
+
+  // 31 = \n
+  CheckTextAtOffset(textarea_text, 31, IA2_TEXT_BOUNDARY_WORD, 31, 32, L"\n");
   CheckTextAtOffset(textarea_text, 32, IA2_TEXT_BOUNDARY_WORD, 32, 33, L"\"");
 
   // Leading and trailing punctuation such as quotation marks should not be part
@@ -4562,6 +4642,93 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   // Test special offsets.
   CheckTextAtOffset(textarea_text, IA2_TEXT_OFFSET_CARET,
                     IA2_TEXT_BOUNDARY_WORD, 44, contents_string_length, L"\".");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
+                       TestTextAtOffsetWithBoundaryWordAndNewlines) {
+  const std::string text_content = "Hi, how are you?\nHow's life?";
+
+  LoadInitialAccessibilityTreeFromHtml(
+      "<!DOCTYPE html><html><body>"
+      "<textarea autofocus>" +
+      text_content +
+      "</textarea>"
+      "</body></html>");
+
+  Microsoft::WRL::ComPtr<IAccessible> document(GetRendererAccessible());
+  ASSERT_TRUE(document);
+
+  std::vector<base::win::ScopedVariant> document_children =
+      GetAllAccessibleChildren(document.Get());
+  ASSERT_EQ(1u, document_children.size());
+
+  Microsoft::WRL::ComPtr<IAccessible2> body;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(document.Get(), document_children[0].AsInput())
+          .Get(),
+      &body));
+
+  std::vector<base::win::ScopedVariant> body_children =
+      GetAllAccessibleChildren(body.Get());
+  ASSERT_GE(body_children.size(), 1u);
+
+  Microsoft::WRL::ComPtr<IAccessible2> textarea;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(body.Get(), body_children[0].AsInput()).Get(),
+      &textarea));
+
+  LONG role = 0;
+  ASSERT_HRESULT_SUCCEEDED(textarea->role(&role));
+  ASSERT_EQ(ROLE_SYSTEM_TEXT, role);
+
+  Microsoft::WRL::ComPtr<IAccessibleText> input_text;
+  ASSERT_HRESULT_SUCCEEDED(textarea.As(&input_text));
+
+  LONG n_characters = 0;
+  ASSERT_HRESULT_SUCCEEDED(input_text->get_nCharacters(&n_characters));
+  ASSERT_EQ(static_cast<LONG>(text_content.length()), n_characters);
+
+  CheckTextAtOffset(input_text, 0, IA2_TEXT_BOUNDARY_WORD, 0, 2, L"Hi");
+
+  // 2 = ,
+  CheckTextAtOffset(input_text, 2, IA2_TEXT_BOUNDARY_WORD, 2, 4, L", ");
+
+  CheckTextAtOffset(input_text, 4, IA2_TEXT_BOUNDARY_WORD, 4, 8, L"how ");
+
+  // 7 = space - should be included with the previous word, not the next word.
+  CheckTextAtOffset(input_text, 7, IA2_TEXT_BOUNDARY_WORD, 4, 8, L"how ");
+
+  CheckTextAtOffset(input_text, 8, IA2_TEXT_BOUNDARY_WORD, 8, 12, L"are ");
+
+  CheckTextAtOffset(input_text, 12, IA2_TEXT_BOUNDARY_WORD, 12, 15, L"you");
+
+  // 15 = ?
+  CheckTextAtOffset(input_text, 15, IA2_TEXT_BOUNDARY_WORD, 15, 17, L"?\n");
+
+  // 16 = \n
+  CheckTextAtOffset(input_text, 16, IA2_TEXT_BOUNDARY_WORD, 16, 17, L"\n");
+
+  CheckTextAfterOffset(input_text, 16, IA2_TEXT_BOUNDARY_WORD, 17, 23,
+                       L"How's ");
+
+  CheckTextBeforeOffset(input_text, 16, IA2_TEXT_BOUNDARY_WORD, 15, 16, L"?");
+
+  CheckTextBeforeOffset(input_text, 17, IA2_TEXT_BOUNDARY_WORD, 16, 17, L"\n");
+
+  // 20 = ' - should be included with the current word.
+  CheckTextAtOffset(input_text, 20, IA2_TEXT_BOUNDARY_WORD, 17, 23, L"How's ");
+
+  // 22 = space - should be included with the previous word, not the next word.
+  CheckTextAtOffset(input_text, 22, IA2_TEXT_BOUNDARY_WORD, 17, 23, L"How's ");
+
+  CheckTextAtOffset(input_text, 23, IA2_TEXT_BOUNDARY_WORD, 23, 27, L"life");
+
+  // 26 = e of life - should be included with the current word, not the next
+  // punctuation.
+  CheckTextAtOffset(input_text, 26, IA2_TEXT_BOUNDARY_WORD, 23, 27, L"life");
+
+  // 27 = ?
+  CheckTextAtOffset(input_text, 27, IA2_TEXT_BOUNDARY_WORD, 27, 28, L"?");
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
