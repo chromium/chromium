@@ -522,7 +522,7 @@ exist in the directory structure. To see what target a given unit test or
 browser test file corresponds to, the following command can be used:
 
 ```shell
-$ gn refs out/Default --testonly=true --type=executable --all chrome/browser/ui/browser_list_unittest.cc
+$ gn refs out/Default --testonly=true --type=executable --all chrome/browser/ui/browser_unittest.cc
 //chrome/test:unit_tests
 ```
 
