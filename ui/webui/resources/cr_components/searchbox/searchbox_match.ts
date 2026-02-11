@@ -82,7 +82,10 @@ export class SearchboxMatchElement extends CrLitElement {
       //========================================================================
 
       /** Element's 'aria-label' attribute. */
-      ariaLabel: {type: String},
+      ariaLabel: {
+        type: String,
+        reflect: true,
+      },
 
       hasAction: {
         type: Boolean,
@@ -332,7 +335,12 @@ export class SearchboxMatchElement extends CrLitElement {
     if (!this.match) {
       return '';
     }
-    return this.match.a11yLabel;
+    let label = this.match.a11yLabel;
+    const description = this.getMatchDescription_();
+    if (description) {
+      label = `${label}, ${description}`;
+    }
+    return label;
   }
 
   /**
