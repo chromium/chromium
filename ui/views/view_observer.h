@@ -43,6 +43,11 @@ class VIEWS_EXPORT ViewObserver {
   // Called when the bounds of |observed_view| change.
   virtual void OnViewBoundsChanged(View* observed_view) {}
 
+  // Called when the bounds of |observed_view| change relative to the root view.
+  // This is only called if the View has visible bounds change notifications
+  // enabled.
+  virtual void OnViewVisibleBoundsChanged(View* observed_view) {}
+
   // Called when the view layer's bounds are set, whether or not the bounds have
   // changed.
   virtual void OnViewLayerBoundsSet(View* observed_view) {}

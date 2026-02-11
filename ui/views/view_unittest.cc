@@ -4029,6 +4029,86 @@ TEST_F(ViewTest, OnVisibleBoundsChanged) {
   child->set_received_notification(false);
 }
 
+TEST_F(ViewTest, ScopedNotifyObserversOnVisibleBoundsChanged) {
+  class TestObserver : public ViewObserver {
+   public:
+    void OnViewVisibleBoundsChanged(View* view) override { notifications_++; }
+    int notifications_ = 0;
+  };
+  TestObserver observer;
+
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  widget->Init(std::move(params));
+
+  View* contents = widget->SetContentsView(std::make_unique<View>());
+  View* child = contents->AddChildView(std::make_unique<View>());
+  child->SetBoundsRect(gfx::Rect(0, 0, 10, 10));
+
+  child->AddObserver(&observer);
+
+  // By default, no notification on bounds change because nothing wants it.
+  child->SetBoundsRect(gfx::Rect(0, 0, 20, 20));
+  EXPECT_EQ(0, observer.notifications_);
+
+  {
+    View::ScopedNotifyObserversOnVisibleBoundsChanged scoped(*child);
+    child->SetBoundsRect(gfx::Rect(0, 0, 30, 30));
+    EXPECT_EQ(1, observer.notifications_);
+  }
+
+  // After scope, no notification again.
+  child->SetBoundsRect(gfx::Rect(0, 0, 40, 40));
+  EXPECT_EQ(1, observer.notifications_);
+
+  // Test nesting.
+  {
+    View::ScopedNotifyObserversOnVisibleBoundsChanged scoped1(*child);
+    {
+      View::ScopedNotifyObserversOnVisibleBoundsChanged scoped2(*child);
+      child->SetBoundsRect(gfx::Rect(0, 0, 50, 50));
+      EXPECT_EQ(2, observer.notifications_);
+    }
+    // Destruction of scoped2 should not have triggered
+    // OnViewVisibleBoundsChanged.
+    EXPECT_EQ(2, observer.notifications_);
+
+    child->SetBoundsRect(gfx::Rect(0, 0, 60, 60));
+    EXPECT_EQ(3, observer.notifications_);
+  }
+
+  // After scope, no notification again.
+  child->SetBoundsRect(gfx::Rect(0, 0, 70, 70));
+  EXPECT_EQ(3, observer.notifications_);
+}
+
+TEST_F(ViewTest, ReparentRegisteredViewFromNoWidgetToWidget) {
+  auto parent1 = std::make_unique<View>();
+  View* child = parent1->AddChildView(std::make_unique<View>());
+
+  // 1. Register child while it has no widget.
+  std::optional<View::ScopedNotifyObserversOnVisibleBoundsChanged> scoped;
+  scoped.emplace(*child);
+
+  // 2. Add parent1 to a widget.
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  widget->Init(std::move(params));
+
+  View* root = widget->GetRootView();
+  // This calls AddChildViewAtImpl(root, parent1).
+  root->AddChildView(std::move(parent1));
+
+  // 3. Now unregister 'child'.
+  scoped.reset();
+
+  // 4. Destroy the widget.
+  widget.reset();
+}
+
 TEST_F(ViewTest, SetBoundsPaint) {
   auto top_view = std::make_unique<TestView>();
   auto child = std::make_unique<TestView>();

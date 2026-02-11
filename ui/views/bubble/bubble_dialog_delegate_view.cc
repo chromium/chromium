@@ -215,6 +215,8 @@ class BubbleDialogDelegate::AnchorViewObserver : public ViewObserver {
   AnchorViewObserver(BubbleDialogDelegate* parent, View* anchor_view)
       : parent_(parent), anchor_view_(anchor_view) {
     anchor_view_->AddObserver(this);
+    scoped_notify_ = std::make_unique<
+        views::View::ScopedNotifyObserversOnVisibleBoundsChanged>(*anchor_view);
     AddToAnchorVector();
   }
 
@@ -233,13 +235,11 @@ class BubbleDialogDelegate::AnchorViewObserver : public ViewObserver {
     // The anchor is being deleted, make sure the parent bubble no longer
     // observes it.
     DCHECK_EQ(anchor_view_, observed_view);
+    scoped_notify_ = nullptr;
     parent_->SetAnchorView(nullptr);
   }
 
-  void OnViewBoundsChanged(View* observed_view) override {
-    // This code really wants to know the anchor bounds in screen coordinates
-    // have changed. There isn't a good way to detect this outside of the view.
-    // Observing View bounds changing catches some cases but not all of them.
+  void OnViewVisibleBoundsChanged(View* observed_view) override {
     DCHECK_EQ(anchor_view_, observed_view);
     parent_->OnAnchorBoundsChanged();
   }
@@ -272,6 +272,8 @@ class BubbleDialogDelegate::AnchorViewObserver : public ViewObserver {
     }
   }
 
+  std::unique_ptr<views::View::ScopedNotifyObserversOnVisibleBoundsChanged>
+      scoped_notify_;
   const raw_ptr<BubbleDialogDelegate> parent_;
   const raw_ptr<View> anchor_view_;
 };
