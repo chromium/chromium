@@ -24,13 +24,10 @@ namespace permissions {
 
 namespace internal {
 
-void ResolveClapperViaSubscribe(content::WebContents* web_contents);
+void ResolveNotificationsPermissionRequest(content::WebContents* web_contents,
+                                           ContentSetting content_setting);
 
-void ResolveLoudClapperViaAllow(content::WebContents* web_contents);
-
-void ResolveClapperViaClose(content::WebContents* web_contents);
-
-void ResolveClapperViaReset(content::WebContents* web_contents);
+void DismissNotificationsPermissionRequest(content::WebContents* web_contents);
 
 }  // namespace internal
 

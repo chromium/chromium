@@ -60,30 +60,24 @@ class AndroidPermissionUtilTest : public content::RenderViewHostTestHarness {
 
 TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_NoManager) {
   // Pass nullptr as web_contents.
-  internal::ResolveClapperViaReset(nullptr);
-  internal::ResolveClapperViaSubscribe(nullptr);
-  internal::ResolveLoudClapperViaAllow(nullptr);
-  internal::ResolveClapperViaClose(nullptr);
+  internal::ResolveNotificationsPermissionRequest(nullptr,
+                                                  CONTENT_SETTING_ALLOW);
   // Should not crash.
 }
 
 TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_NoRequests) {
+  internal::ResolveNotificationsPermissionRequest(web_contents(),
+                                                  CONTENT_SETTING_ALLOW);
   // Should not crash.
-  internal::ResolveClapperViaReset(web_contents());
-  internal::ResolveClapperViaSubscribe(web_contents());
-  internal::ResolveLoudClapperViaAllow(web_contents());
-  internal::ResolveClapperViaClose(web_contents());
 }
 
 TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_MismatchType) {
   MockPermissionRequest::MockPermissionRequestState state;
   AddRequest(RequestType::kGeolocation, &state);
 
-  // Calls require notifications permission type.
-  internal::ResolveClapperViaReset(web_contents());
-  internal::ResolveClapperViaSubscribe(web_contents());
-  internal::ResolveLoudClapperViaAllow(web_contents());
-  internal::ResolveClapperViaClose(web_contents());
+  // Call with Notifications type.
+  internal::ResolveNotificationsPermissionRequest(web_contents(),
+                                                  CONTENT_SETTING_ALLOW);
 
   // Request should still be in progress and not decided.
   EXPECT_TRUE(manager_->IsRequestInProgress());
@@ -92,12 +86,13 @@ TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_MismatchType) {
   EXPECT_FALSE(state.cancelled);
 }
 
-TEST_F(AndroidPermissionUtilTest, ResolveClapperViaSubscribe) {
+TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Allow) {
   base::HistogramTester histogram_tester;
   MockPermissionRequest::MockPermissionRequestState state;
   AddRequest(RequestType::kNotifications, &state);
 
-  internal::ResolveClapperViaSubscribe(web_contents());
+  internal::ResolveNotificationsPermissionRequest(web_contents(),
+                                                  CONTENT_SETTING_ALLOW);
 
   EXPECT_TRUE(state.granted);
   EXPECT_FALSE(state.cancelled);
@@ -107,12 +102,13 @@ TEST_F(AndroidPermissionUtilTest, ResolveClapperViaSubscribe) {
       "Permissions.ClapperLoud.PageInfo.Subscribed", true, 1);
 }
 
-TEST_F(AndroidPermissionUtilTest, ResolveClapperViaClose) {
+TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Block) {
   base::HistogramTester histogram_tester;
   MockPermissionRequest::MockPermissionRequestState state;
   AddRequest(RequestType::kNotifications, &state);
 
-  internal::ResolveClapperViaClose(web_contents());
+  internal::ResolveNotificationsPermissionRequest(web_contents(),
+                                                  CONTENT_SETTING_BLOCK);
 
   EXPECT_FALSE(state.granted);
   EXPECT_FALSE(state.cancelled);
@@ -122,12 +118,13 @@ TEST_F(AndroidPermissionUtilTest, ResolveClapperViaClose) {
                                      true, 1);
 }
 
-TEST_F(AndroidPermissionUtilTest, ResolveClapperViaReset) {
+TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Default) {
   base::HistogramTester histogram_tester;
   MockPermissionRequest::MockPermissionRequestState state;
   AddRequest(RequestType::kNotifications, &state);
 
-  internal::ResolveClapperViaReset(web_contents());
+  internal::ResolveNotificationsPermissionRequest(web_contents(),
+                                                  CONTENT_SETTING_DEFAULT);
 
   // Default triggers Dismiss(), which calls Cancelled().
   EXPECT_TRUE(state.cancelled);
@@ -138,23 +135,23 @@ TEST_F(AndroidPermissionUtilTest, ResolveClapperViaReset) {
                                      true, 1);
 }
 
-TEST_F(AndroidPermissionUtilTest, ResolveClapperViaSubscribe_NoManager) {
+TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_NoManager) {
   // Pass nullptr as web_contents.
-  internal::ResolveClapperViaSubscribe(nullptr);
+  internal::DismissNotificationsPermissionRequest(nullptr);
   // Should not crash.
 }
 
-TEST_F(AndroidPermissionUtilTest, ResolveClapperViaSubscribe_NoRequests) {
-  internal::ResolveClapperViaSubscribe(web_contents());
+TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_NoRequests) {
+  internal::DismissNotificationsPermissionRequest(web_contents());
   // Should not crash.
 }
 
-TEST_F(AndroidPermissionUtilTest, ResolveClapperViaSubscribe_MismatchType) {
+TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_MismatchType) {
   MockPermissionRequest::MockPermissionRequestState state;
   AddRequest(RequestType::kGeolocation, &state);
 
   // Call with Notifications type.
-  internal::ResolveClapperViaSubscribe(web_contents());
+  internal::DismissNotificationsPermissionRequest(web_contents());
 
   // Request should still be in progress and not decided.
   EXPECT_TRUE(manager_->IsRequestInProgress());
@@ -163,21 +160,15 @@ TEST_F(AndroidPermissionUtilTest, ResolveClapperViaSubscribe_MismatchType) {
   EXPECT_FALSE(state.cancelled);
 }
 
-TEST_F(AndroidPermissionUtilTest, ResolveLoudClapperViaAllow) {
-  base::HistogramTester histogram_tester;
+TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_Dismiss) {
   MockPermissionRequest::MockPermissionRequestState state;
   AddRequest(RequestType::kNotifications, &state);
 
-  internal::ResolveLoudClapperViaAllow(web_contents());
+  internal::DismissNotificationsPermissionRequest(web_contents());
 
-  // Should be allowed (granted).
-  EXPECT_FALSE(state.cancelled);
-  EXPECT_TRUE(state.granted);
+  EXPECT_TRUE(state.cancelled);
+  EXPECT_FALSE(state.granted);
   EXPECT_TRUE(state.finished);
-
-  // Should NOT log the Subscribed histogram.
-  histogram_tester.ExpectBucketCount(
-      "Permissions.ClapperLoud.PageInfo.Subscribed", true, 0);
 }
 
 }  // namespace permissions

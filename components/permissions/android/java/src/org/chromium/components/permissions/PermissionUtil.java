@@ -318,7 +318,9 @@ public class PermissionUtil {
                             public void onAndroidPermissionAccepted() {
                                 RecordHistogram.recordBooleanHistogram(
                                         "Permissions.ClapperLoud.PageInfo.OsPromptResolved", true);
-                                PermissionUtilJni.get().resolveLoudClapperViaAllow(webContents);
+                                PermissionUtilJni.get()
+                                        .resolveNotificationsPermissionRequest(
+                                                webContents, ContentSetting.ALLOW);
                                 onResolved.run();
                             }
 
@@ -326,54 +328,50 @@ public class PermissionUtil {
                             public void onAndroidPermissionCanceled() {
                                 RecordHistogram.recordBooleanHistogram(
                                         "Permissions.ClapperLoud.PageInfo.OsPromptResolved", false);
-                                PermissionUtilJni.get().resolveLoudClapperViaAllow(webContents);
+                                PermissionUtilJni.get()
+                                        .dismissNotificationsPermissionRequest(webContents);
                                 onResolved.run();
                             }
                         });
         // The OS level permission for notifications was already granted; therefore, the
         // permission request can be allowed.
         if (!requestSent) {
-            PermissionUtilJni.get().resolveLoudClapperViaAllow(webContents);
+            PermissionUtilJni.get()
+                    .resolveNotificationsPermissionRequest(webContents, ContentSetting.ALLOW);
             onResolved.run();
         }
     }
 
     /**
-     * Grants the notification permission. This is called when the user clicks "Subscribe" in Page
-     * Info.
+     * Grants a notifications permission if it is requested.
+     *
+     * <p>This method is called when the user clicks on the "Subscribe" button in the notifications
+     * permission row in PageInfo.
      */
-    public static void resolveClapperViaSubscribe(WebContents webContents) {
-        PermissionUtilJni.get().resolveClapperViaSubscribe(webContents);
+    public static void resolveNotificationsPermissionRequest(
+            WebContents webContents, @ContentSetting int contentSetting) {
+        PermissionUtilJni.get().resolveNotificationsPermissionRequest(webContents, contentSetting);
     }
 
     /**
-     * Grants the notification permission without logging Page Info histograms. This is called when
-     * the user grants permission via the Message UI "Allow" button.
+     * Dismisses a notifications permission request.
      *
-     * <p>Note: "Permissions.ClapperLoud.MessageUI.Allow" is logged in the native delegate
-     * (PermissionBlockedMessageDelegate::HandleLoudPrimaryActionClick).
+     * <p>This method is called when the user clicks on the "Subscribe" button in the notifications
+     * permission row in PageInfo but did not grant the Android OS level permission prompt. Despite
+     * the user granted the site-level permission, we still need to dismiss the permission request
+     * as Chrome doesn't have the Android OS level permission and hence the permission request is no
+     * longer valid.
      */
-    public static void resolveLoudClapperViaAllow(WebContents webContents) {
-        PermissionUtilJni.get().resolveLoudClapperViaAllow(webContents);
-    }
-
-    public static void resolveClapperViaClose(WebContents webContents) {
-        PermissionUtilJni.get().resolveClapperViaClose(webContents);
-    }
-
-    public static void resolveClapperViaReset(WebContents webContents) {
-        PermissionUtilJni.get().resolveClapperViaReset(webContents);
+    public static void dismissNotificationsPermissionRequest(WebContents webContents) {
+        PermissionUtilJni.get().dismissNotificationsPermissionRequest(webContents);
     }
 
     @NativeMethods
     public interface Natives {
-        void resolveClapperViaSubscribe(WebContents webContents);
+        void resolveNotificationsPermissionRequest(
+                WebContents webContents, @ContentSetting int contentSetting);
 
-        void resolveLoudClapperViaAllow(WebContents webContents);
-
-        void resolveClapperViaClose(WebContents webContents);
-
-        void resolveClapperViaReset(WebContents webContents);
+        void dismissNotificationsPermissionRequest(WebContents webContents);
 
         void notifyQuietIconDismissed(WebContents webContents);
     }
