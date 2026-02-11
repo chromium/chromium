@@ -265,7 +265,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     // When the popup is shown, blur the contextual entrypoint. This prevents a
     // focus ring from appearing on the entrypoint, e.g. when the user clicks
     // away and then re-focuses the Omnibox.
-    if (this.showContextEntrypoint_) {
+    if (this.showContextEntrypoint_ && !this.shouldHideEntrypointButton_) {
       this.$.context.blurEntrypoint();
     }
     this.refreshTabSuggestions_();
