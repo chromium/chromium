@@ -21,7 +21,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/fake_video_capture_provider.h"
 #include "content/browser/renderer_host/media/in_process_video_capture_provider.h"
@@ -30,10 +29,12 @@
 #include "content/browser/renderer_host/media/video_capture_provider_switcher.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor_source.h"
+#include "content/common/features.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/common/buildflags.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "media/base/media_switches.h"
@@ -235,7 +236,12 @@ class ScreenlockMonitorTestSource : public ScreenlockMonitorSource {
 // Test class
 class VideoCaptureManagerTest : public testing::Test {
  public:
-  VideoCaptureManagerTest() {}
+  VideoCaptureManagerTest() {
+#if BUILDFLAG(IS_ANDROID)
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kAndroidEnableBackgroundMediaCapturing);
+#endif
+  }
 
   VideoCaptureManagerTest(const VideoCaptureManagerTest&) = delete;
   VideoCaptureManagerTest& operator=(const VideoCaptureManagerTest&) = delete;
@@ -369,7 +375,7 @@ class VideoCaptureManagerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ApplicationStateChange(base::android::ApplicationState state) {
     vcm_->OnApplicationStateChange(state);
   }
@@ -388,6 +394,7 @@ class VideoCaptureManagerTest : public testing::Test {
   blink::MediaStreamDevices devices_;
   content::TestBrowserContext browser_context_;
   GlobalRenderFrameHostId render_frame_host_id_ = GlobalRenderFrameHostId(1, 1);
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test cases
@@ -882,7 +889,7 @@ TEST_F(VideoCaptureManagerTest, PauseAndResumeClient) {
   vcm_->UnregisterListener(listener_.get());
 }
 
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Try to open, start, pause and resume a device.
 TEST_F(VideoCaptureManagerTest, PauseAndResumeDevice) {
   InSequence s;
@@ -915,7 +922,7 @@ TEST_F(VideoCaptureManagerTest, PauseAndResumeDevice) {
   base::RunLoop().RunUntilIdle();
   vcm_->UnregisterListener(listener_.get());
 }
-#elif !BUILDFLAG(IS_DESKTOP_ANDROID)
+#else
 TEST_F(VideoCaptureManagerTest, PauseAndResumeDeviceOnScreenLock) {
   vcm_->set_idle_close_timeout_for_testing(base::TimeDelta());
 

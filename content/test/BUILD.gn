@@ -3247,7 +3247,6 @@ test("content_unittests") {
     "//base/test:fuzztest_support",
     "//base/test:proto_test_support",
     "//base/test:test_support",
-    "//build:android_buildflags",
     "//build:buildflag_header_h",
     "//build:chromecast_buildflags",
     "//cc",
