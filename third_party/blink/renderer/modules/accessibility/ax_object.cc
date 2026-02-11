@@ -7910,8 +7910,8 @@ ax::mojom::blink::Role AXObject::FirstValidRoleInRoleString(
     bool ignore_form_and_region) {
   DCHECK(!value.empty());
 
-  Vector<String> role_vector;
-  value.SimplifyWhiteSpace().Split(' ', role_vector);
+  Vector<String> role_vector =
+      value.SimplifyWhiteSpace().SplitSkippingEmpty(' ');
   for (const auto& child : role_vector) {
     ax::mojom::blink::Role role =
         AriaRoleToInternalRole(AtomicString(child.LowerASCII()));

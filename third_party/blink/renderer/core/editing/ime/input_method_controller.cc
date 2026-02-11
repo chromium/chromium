@@ -2062,8 +2062,8 @@ std::vector<ui::ImeTextSpan> InputMethodController::GetImeTextSpans() const {
           (marker->GetType() == DocumentMarker::kGrammar)
               ? ImeTextSpan::Type::kGrammarSuggestion
               : ImeTextSpan::Type::kMisspellingSuggestion;
-      Vector<String> suggestions;
-      marker->Description().Split('\n', suggestions);
+      Vector<String> suggestions =
+          marker->Description().SplitSkippingEmpty('\n');
 
       const EphemeralRange& marker_ephemeral_range =
           EphemeralRange(Position(node, marker->StartOffset()),

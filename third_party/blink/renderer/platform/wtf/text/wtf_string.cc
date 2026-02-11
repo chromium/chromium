@@ -320,6 +320,10 @@ void String::Split(UChar separator,
   result = SplitInternal(*this, separator, allow_empty_entries);
 }
 
+Vector<String> String::SplitSkippingEmpty(UChar separator) const {
+  return SplitInternal(*this, separator, false);
+}
+
 std::string String::Ascii() const {
   // Printable ASCII characters 32..127 and the null character are
   // preserved, characters outside of this range are converted to '?'.

@@ -449,9 +449,14 @@ class WTF_EXPORT String {
   void Split(UChar separator,
              bool allow_empty_entries,
              Vector<String>& result) const;
-  void Split(UChar separator, Vector<String>& result) const {
-    Split(separator, false, result);
-  }
+  // Returns a list of substrings of `this`, separated by `separator`.
+  // This doesn't produce empty substrings.
+  // This function copies the content of the string. Please consider if
+  // StringView::SplitSkippingEmpty() is applicable.
+  //
+  // `String(" a  b").SplitSkippingEmpty(' ')` produces ["a", "b"], and
+  // `String("").SplitSkippingEmpty(',')` produces an empty list.
+  Vector<String> SplitSkippingEmpty(UChar separator) const;
 
   // Copy characters out of the string. See StringImpl.h for detailed docs.
   size_t CopyTo(base::span<UChar> buffer, wtf_size_t start) const {

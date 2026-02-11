@@ -439,8 +439,7 @@ void TextSuggestionController::ShowSpellCheckMenu(
       ui::mojom::ImeTextSpanUnderlineStyle::kSolid, Color::kTransparent,
       LayoutTheme::GetTheme().PlatformActiveSpellingMarkerHighlightColor());
 
-  Vector<String> suggestions;
-  description.Split('\n', suggestions);
+  Vector<String> suggestions = description.SplitSkippingEmpty('\n');
 
   Vector<mojom::blink::SpellCheckSuggestionPtr> suggestion_ptrs;
   for (const String& suggestion : suggestions) {

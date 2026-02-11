@@ -54,9 +54,8 @@ blink::Vector<Purpose> ParsePurpose(const blink::String& purpose) {
   valid_purpose_set.ReserveCapacityForSize(2u);
   results.ReserveInitialCapacity(2u);
 
-  blink::Vector<blink::String> split_purposes;
-  purpose.LowerASCII().Split(' ', false /* allow_empty_entries */,
-                             split_purposes);
+  blink::Vector<blink::String> split_purposes =
+      purpose.LowerASCII().SplitSkippingEmpty(' ');
 
   for (const blink::String& lowercase_purpose : split_purposes) {
     Purpose purpose_enum;

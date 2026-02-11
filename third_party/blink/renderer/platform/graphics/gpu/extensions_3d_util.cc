@@ -17,8 +17,7 @@ namespace blink {
 namespace {
 
 void SplitStringHelper(const String& str, HashSet<String>& set) {
-  Vector<String> substrings;
-  str.Split(' ', substrings);
+  Vector<String> substrings = str.SplitSkippingEmpty(' ');
   for (const auto& substring : substrings)
     set.insert(substring);
 }

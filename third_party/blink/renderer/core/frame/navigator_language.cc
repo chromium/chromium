@@ -15,8 +15,7 @@
 namespace blink {
 
 Vector<String> ParseAndSanitize(const String& accept_languages) {
-  Vector<String> languages;
-  accept_languages.Split(',', languages);
+  Vector<String> languages = accept_languages.SplitSkippingEmpty(',');
 
   // Sanitizing tokens. We could do that more extensively but we should assume
   // that the accept languages are already sane and support BCP47. It is

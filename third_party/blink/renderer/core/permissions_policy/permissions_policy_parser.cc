@@ -418,7 +418,7 @@ PermissionsPolicyParser::Node ParsingContext::ParseFeaturePolicyToIR(
     // be combined with a comma. Walk the header string, and parse each comma
     // separated chunk as a separate header.
     // policy_items = [ policy *( "," [ policy ] ) ]
-    policy.Split(',', policy_items);
+    policy_items = policy.SplitSkippingEmpty(',');
   }
 
   if (policy_items.size() > 1) {
@@ -428,9 +428,8 @@ PermissionsPolicyParser::Node ParsingContext::ParseFeaturePolicyToIR(
   }
 
   for (const String& item : policy_items) {
-    Vector<String> feature_entries;
     // feature_entries = [ feature_entry *( ";" [ feature_entry ] ) ]
-    item.Split(';', feature_entries);
+    Vector<String> feature_entries = item.SplitSkippingEmpty(';');
 
     if (feature_entries.size() > 1) {
       UseCounter::Count(execution_context_,

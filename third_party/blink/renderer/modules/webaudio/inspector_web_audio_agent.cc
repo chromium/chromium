@@ -49,8 +49,7 @@ String StripNodeSuffix(const String& nodeName) {
 // Strips out the prefix and returns the actual parameter name. If the name
 // does not match `NodeName.ParamName` pattern, returns "Unknown" instead.
 String StripParamPrefix(const String& paramName) {
-  Vector<String> name_tokens;
-  paramName.Split('.', name_tokens);
+  Vector<String> name_tokens = paramName.SplitSkippingEmpty('.');
   return name_tokens.size() == 2 ? name_tokens.at(1) : "Unknown";
 }
 

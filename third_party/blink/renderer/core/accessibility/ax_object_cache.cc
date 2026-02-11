@@ -86,8 +86,7 @@ const ARIAWidgetSet& ARIARoleWidgetSet() {
 
 bool IncludesARIAWidgetRole(const String& role) {
   const ARIAWidgetSet& role_set = ARIARoleWidgetSet();
-  Vector<String> role_vector;
-  role.Split(' ', role_vector);
+  Vector<String> role_vector = role.SplitSkippingEmpty(' ');
   for (const auto& child : role_vector) {
     if (role_set.Contains(child)) {
       return true;

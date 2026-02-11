@@ -1270,8 +1270,8 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
                                        ->ContextProvider()
                                        ->GetGpuFeatureInfo()
                                        .disabled_webgl_extensions.c_str());
-  Vector<String> disabled_extension_list;
-  disabled_webgl_extensions.Split(' ', disabled_extension_list);
+  Vector<String> disabled_extension_list =
+      disabled_webgl_extensions.SplitSkippingEmpty(' ');
   for (const auto& entry : disabled_extension_list) {
     disabled_extensions_.insert(entry);
   }

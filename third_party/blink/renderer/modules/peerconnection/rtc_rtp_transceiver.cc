@@ -286,8 +286,7 @@ void RTCRtpTransceiver::setCodecPreferences(
         // Some parameters don't follow the key=value form.
         webrtc_codec.parameters.emplace("", sdpFmtpLine.Ascii());
       } else {
-        Vector<String> parameters;
-        sdpFmtpLine.Split(';', parameters);
+        Vector<String> parameters = sdpFmtpLine.SplitSkippingEmpty(';');
         for (const auto& parameter : parameters) {
           auto equal_position = parameter.find('=');
           if (equal_position == kNotFound) {

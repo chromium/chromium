@@ -54,8 +54,8 @@ TEST(TrustedTypesDirectiveTest, TestAllowLists) {
     network::mojom::blink::CSPTrustedTypesPtr directive =
         ParseTrustedTypes(test_case.directive);
 
-    Vector<String> allowed;
-    String(test_case.should_be_allowed).Split(' ', allowed);
+    Vector<String> allowed =
+        String(test_case.should_be_allowed).SplitSkippingEmpty(' ');
     for (const String& value : allowed) {
       SCOPED_TRACE(testing::Message()
                    << " trusted-types " << test_case.directive
@@ -78,8 +78,8 @@ TEST(TrustedTypesDirectiveTest, TestAllowLists) {
       }
     }
 
-    Vector<String> not_allowed;
-    String(test_case.should_not_be_allowed).Split(' ', not_allowed);
+    Vector<String> not_allowed =
+        String(test_case.should_not_be_allowed).SplitSkippingEmpty(' ');
     for (const String& value : not_allowed) {
       SCOPED_TRACE(testing::Message()
                    << " trusted-types " << test_case.directive

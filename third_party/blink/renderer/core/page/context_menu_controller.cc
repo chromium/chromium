@@ -742,8 +742,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       if (description.length()) {
         // Suggestions were cached for the misspelled word (not true for
         // Hunspell or Windows platform spellcheck).
-        Vector<String> suggestions;
-        description.Split('\n', suggestions);
+        Vector<String> suggestions = description.SplitSkippingEmpty('\n');
         data.dictionary_suggestions = base::ToVector(
             suggestions, [](const String& s) { return WebString(s).Utf16(); });
       } else if (spell_checker.GetTextCheckerClient()) {
