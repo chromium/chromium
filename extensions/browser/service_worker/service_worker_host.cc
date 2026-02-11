@@ -39,6 +39,8 @@ using perfetto::protos::pbzero::ChromeTrackEvent;
 namespace {
 const void* const kUserDataKey = &kUserDataKey;
 
+ServiceWorkerHost::FactoryCallback* g_factory_for_testing = nullptr;
+
 class ServiceWorkerHostList : public base::SupportsUserData::Data {
  public:
   std::vector<std::unique_ptr<ServiceWorkerHost>> list;
@@ -81,6 +83,13 @@ ServiceWorkerHost::~ServiceWorkerHost() {
 }
 
 // static
+base::AutoReset<ServiceWorkerHost::FactoryCallback*>
+ServiceWorkerHost::SetFactoryForTesting(FactoryCallback* factory) {
+  return base::AutoReset<ServiceWorkerHost::FactoryCallback*>(
+      &g_factory_for_testing, factory);
+}
+
+// static
 void ServiceWorkerHost::BindReceiver(
     int render_process_id,
     mojo::PendingAssociatedReceiver<mojom::ServiceWorkerHost> receiver) {
@@ -92,8 +101,11 @@ void ServiceWorkerHost::BindReceiver(
   }
   auto* service_worker_host_list = ServiceWorkerHostList::Get(
       render_process_host, /*create_if_not_exists=*/true);
-  service_worker_host_list->list.push_back(std::make_unique<ServiceWorkerHost>(
-      render_process_host, std::move(receiver)));
+  service_worker_host_list->list.push_back(
+      g_factory_for_testing
+          ? g_factory_for_testing->Run(render_process_host, std::move(receiver))
+          : std::make_unique<ServiceWorkerHost>(render_process_host,
+                                                std::move(receiver)));
 }
 
 // static

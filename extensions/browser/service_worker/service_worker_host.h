@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/browser_thread.h"
@@ -44,6 +46,14 @@ class ServiceWorkerHost :
     public mojom::ServiceWorkerHost,
     public content::RenderProcessHostObserver {
  public:
+  using FactoryCallback =
+      base::RepeatingCallback<std::unique_ptr<ServiceWorkerHost>(
+          content::RenderProcessHost* render_process_host,
+          mojo::PendingAssociatedReceiver<mojom::ServiceWorkerHost> receiver)>;
+
+  static base::AutoReset<FactoryCallback*> SetFactoryForTesting(
+      FactoryCallback* factory);
+
   explicit ServiceWorkerHost(
       content::RenderProcessHost* render_process_host,
       mojo::PendingAssociatedReceiver<mojom::ServiceWorkerHost> receiver);
