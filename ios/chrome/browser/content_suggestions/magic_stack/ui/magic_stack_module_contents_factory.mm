@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/content_suggestions/set_up_list/ui/set_up_list_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/ui/set_up_list_item_view.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_data.h"
-#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_favicon_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_item.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_price_tracking_view.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_view.h"
@@ -184,8 +183,7 @@
 - (UIView*)shopCardViewForConfig:(ShopCardItem*)shopCardItem {
   ShopCardModuleView* view =
       [[ShopCardModuleView alloc] initWithFrame:CGRectZero];
-  [shopCardItem.shopCardFaviconConsumerSource addFaviconConsumer:view];
-  view.commandHandler = shopCardItem.commandHandler;
+  view.commandHandler = shopCardItem.shopCardHandler;
   [view configureView:shopCardItem];
   return view;
 }

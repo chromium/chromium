@@ -8,6 +8,9 @@
 // Delegate to communicate events back to owner of ShopCardMediator.
 @protocol ShopCardMediatorDelegate
 
+// Signals that the ShopCardMediator did reconfigure the existing item.
+- (void)shopCardMediatorDidReconfigureItem;
+
 // Remove ShopCard from the magic stack.
 - (void)removeShopCard;
 

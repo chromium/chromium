@@ -282,6 +282,38 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                                           [self indexForMagicStackModule:type]];
 }
 
+#pragma mark - ShopCardMediatorDelegate
+
+- (void)shopCardMediatorDidReconfigureItem {
+  if (_prefService->GetBoolean(kPriceTrackingPromoDisabled)) {
+    return;
+  }
+  ShopCardItem* item = _shopCardMediator.shopCardItemToShow;
+  [self.delegate magicStackRankingModel:self didReconfigureItem:item];
+}
+
+- (void)removeShopCard {
+  [self.delegate magicStackRankingModel:self
+                          didRemoveItem:_shopCardMediator.shopCardItemToShow
+                                animate:YES
+                         withCompletion:nil];
+}
+
+- (void)insertShopCard {
+  if (!_shopCardMediator.shopCardItemToShow || ![self isMagicStackOrderReady]) {
+    return;
+  }
+
+  NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
+  NSUInteger index = [rank indexOfObject:_shopCardMediator.shopCardItemToShow];
+  if (index == NSNotFound) {
+    return;
+  }
+  [self.delegate magicStackRankingModel:self
+                          didInsertItem:_shopCardMediator.shopCardItemToShow
+                                atIndex:index];
+}
+
 #pragma mark - SetUpListMediatorAudience
 
 - (void)removeSetUpList {
@@ -693,28 +725,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
   _latestMagicStackConfigOrder = [self latestMagicStackConfigRank];
   [self.delegate magicStackRankingModel:self didInsertItem:card atIndex:0];
-}
-
-- (void)removeShopCard {
-  [self.delegate magicStackRankingModel:self
-                          didRemoveItem:_shopCardMediator.shopCardItemToShow
-                                animate:YES
-                         withCompletion:nil];
-}
-
-- (void)insertShopCard {
-  if (!_shopCardMediator.shopCardItemToShow || ![self isMagicStackOrderReady]) {
-    return;
-  }
-
-  NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
-  NSUInteger index = [rank indexOfObject:_shopCardMediator.shopCardItemToShow];
-  if (index == NSNotFound) {
-    return;
-  }
-  [self.delegate magicStackRankingModel:self
-                          didInsertItem:_shopCardMediator.shopCardItemToShow
-                                atIndex:index];
 }
 
 // Starts a fetch of the Segmentation module ranking.

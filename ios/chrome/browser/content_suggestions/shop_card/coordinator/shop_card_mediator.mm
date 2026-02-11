@@ -38,8 +38,6 @@
 #import "ios/chrome/browser/content_suggestions/shop_card/model/shop_card_prefs.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/public/shop_card_constants.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_data.h"
-#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_favicon_consumer.h"
-#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_favicon_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_item.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
@@ -53,8 +51,7 @@
 
 @interface ShopCardMediator () <ImpressionLimitServiceObserverBridgeDelegate,
                                 MagicStackModuleDelegate,
-                                PrefObserverDelegate,
-                                ShopCardFaviconConsumerSource>
+                                PrefObserverDelegate>
 @end
 
 @implementation ShopCardMediator {
@@ -70,7 +67,6 @@
 
   raw_ptr<FaviconLoader> _faviconLoader;
   bool _faviconCallbackCalledOnce;
-  id<ShopCardFaviconConsumer> _faviconConsumer;
   raw_ptr<ImpressionLimitService> _impressionLimitService;
   std::unique_ptr<ImpressionLimitServiceObserverBridge>
       _impressionLimitServiceObserverBridge;
@@ -118,11 +114,6 @@
 - (void)reset {
   _shopCardItem = nil;
   _shoppingDataForShopCardFound = false;
-}
-
-#pragma mark - ShopCardFaviconConsumerSource
-- (void)addFaviconConsumer:(id<ShopCardFaviconConsumer>)consumer {
-  _faviconConsumer = consumer;
 }
 
 - (void)setDelegate:(id<ShopCardMediatorDelegate>)delegate {
@@ -216,8 +207,7 @@
   _shopCardItem = [[ShopCardItem alloc] init];
   _shopCardItem.delegate = self;
   _shopCardItem.shopCardData = [[ShopCardData alloc] init];
-  _shopCardItem.commandHandler = self;
-  _shopCardItem.shopCardFaviconConsumerSource = self;
+  _shopCardItem.shopCardHandler = self;
   _shopCardItem.shopCardData.shopCardItemType =
       ShopCardItemType::kPriceDropForTrackedProducts;
   _shopCardItem.shouldShowSeeMore = YES;
@@ -272,7 +262,6 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
     _shopCardItem = [[ShopCardItem alloc] init];
     _shopCardItem.delegate = self;
   }
-  _shopCardItem.shopCardFaviconConsumerSource = self;
 
   if (!_shopCardItem.shopCardData) {
     _shopCardItem.shopCardData = [[ShopCardData alloc] init];
@@ -298,7 +287,7 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
   if (attributes.faviconImage) {
     self->_shopCardItem.shopCardData.faviconImage = attributes.faviconImage;
     if (_faviconCallbackCalledOnce) {
-      [_faviconConsumer faviconCompleted:attributes.faviconImage];
+      [self.delegate shopCardMediatorDidReconfigureItem];
     }
   }
   // Return early without calling the delegate, if callback already called.
@@ -353,12 +342,6 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
       url == _shopCardItem.shopCardData.productURL) {
     [self.delegate removeShopCard];
   }
-}
-
-#pragma mark - ShopCardMediatorDelegate
-
-- (void)removeShopCard {
-  [self disableModule];
 }
 
 #pragma mark - PrefObserverDelegate

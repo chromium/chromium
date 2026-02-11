@@ -7,22 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_favicon_consumer.h"
-
 @protocol ShopCardCommands;
-@protocol ShopCardFaviconConsumer;
 @class ShopCardItem;
 
 // View for the Shop Card module.
-@interface ShopCardModuleView : UIView <ShopCardFaviconConsumer>
-
-- (instancetype)initWithFrame;
-
-// Configures this view with `config`.
-- (void)configureView:(ShopCardItem*)config;
+@interface ShopCardModuleView : UIView
 
 // Command handler for user events.
 @property(nonatomic, weak) id<ShopCardCommands> commandHandler;
+
+// Configures this view with `config`.
+- (void)configureView:(ShopCardItem*)config;
 
 @end
 
