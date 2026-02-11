@@ -87,6 +87,10 @@ class NET_EXPORT ParsedCookie {
   CookiePriority Priority() const;
   bool IsPartitioned() const { return partitioned_index_ != 0; }
   bool HasInternalHtab() const { return internal_htab_; }
+  std::optional<NamelessCookieLineParseType>
+  NamelessCookieLineParseTypeForMetrics() const {
+    return nameless_parse_type_;
+  }
   // Returns the number of attributes, for example, returning 2 for:
   //   "BLAH=hah; path=/; domain=.google.com"
   size_t NumberOfAttributes() const { return pairs_.size() - 1; }
@@ -215,6 +219,10 @@ class NET_EXPORT ParsedCookie {
   size_t partitioned_index_ = 0;
   // For metrics on cookie name/value internal HTABS
   bool internal_htab_ = false;
+  // Records information for metrics on cookie lines parsed as nameless cookies.
+  // Not recorded for cookies whose name/value are set explicitly via SetName()
+  // or SetValue().
+  std::optional<NamelessCookieLineParseType> nameless_parse_type_;
 };
 
 }  // namespace net

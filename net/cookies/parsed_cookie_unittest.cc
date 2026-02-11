@@ -212,6 +212,20 @@ TEST(ParsedCookieTest, TestNameless) {
   EXPECT_EQ("", pc.Name());
   EXPECT_EQ("BLAHHH", pc.Value());
   EXPECT_EQ(COOKIE_PRIORITY_DEFAULT, pc.Priority());
+  EXPECT_EQ(pc.NamelessCookieLineParseTypeForMetrics(),
+            NamelessCookieLineParseType::kBareToken);
+}
+
+TEST(ParsedCookieTest, NamelessMatchingAttributeValue) {
+  ParsedCookie pc("secuRe; path=/;");
+  EXPECT_TRUE(pc.IsValid());
+  EXPECT_FALSE(pc.IsSecure());
+  EXPECT_EQ("/", pc.Path());
+  EXPECT_EQ("", pc.Name());
+  EXPECT_EQ("secuRe", pc.Value());
+  EXPECT_EQ(COOKIE_PRIORITY_DEFAULT, pc.Priority());
+  EXPECT_EQ(pc.NamelessCookieLineParseTypeForMetrics(),
+            NamelessCookieLineParseType::kBareTokenMatchingAttributeName);
 }
 
 TEST(ParsedCookieTest, TestAttributeCase) {
@@ -228,6 +242,8 @@ TEST(ParsedCookieTest, TestAttributeCase) {
   EXPECT_EQ("BLAH", pc.Value());
   EXPECT_EQ(COOKIE_PRIORITY_HIGH, pc.Priority());
   EXPECT_EQ(6U, pc.NumberOfAttributes());
+  EXPECT_EQ(pc.NamelessCookieLineParseTypeForMetrics(),
+            NamelessCookieLineParseType::kBareToken);
 }
 
 TEST(ParsedCookieTest, TestDoubleQuotedNameless) {
@@ -239,6 +255,8 @@ TEST(ParsedCookieTest, TestDoubleQuotedNameless) {
   EXPECT_EQ("\"BLA\\\"HHH\"", pc.Value());
   EXPECT_EQ(COOKIE_PRIORITY_DEFAULT, pc.Priority());
   EXPECT_EQ(2U, pc.NumberOfAttributes());
+  EXPECT_EQ(pc.NamelessCookieLineParseTypeForMetrics(),
+            NamelessCookieLineParseType::kBareToken);
 }
 
 TEST(ParsedCookieTest, QuoteOffTheEnd) {
@@ -257,6 +275,8 @@ TEST(ParsedCookieTest, MissingName) {
   EXPECT_EQ("ABC", pc.Value());
   EXPECT_EQ(COOKIE_PRIORITY_DEFAULT, pc.Priority());
   EXPECT_EQ(0U, pc.NumberOfAttributes());
+  EXPECT_EQ(pc.NamelessCookieLineParseTypeForMetrics(),
+            NamelessCookieLineParseType::kEqualsPrecedingToken);
 
   // Ensure that a preceding equal sign is emitted in the cookie line.
 
@@ -273,10 +293,14 @@ TEST(ParsedCookieTest, MissingName) {
   EXPECT_EQ("=ABC", pc2.ToCookieLine());
   EXPECT_TRUE(pc2.SetValue("param=value"));
   EXPECT_EQ("=param=value", pc2.ToCookieLine());
+  EXPECT_EQ(pc2.NamelessCookieLineParseTypeForMetrics(),
+            NamelessCookieLineParseType::kEqualsPrecedingToken);
   ParsedCookie pc3("=param=value");
   EXPECT_EQ("", pc3.Name());
   EXPECT_EQ("param=value", pc3.Value());
   EXPECT_EQ("=param=value", pc3.ToCookieLine());
+  EXPECT_EQ(pc3.NamelessCookieLineParseTypeForMetrics(),
+            NamelessCookieLineParseType::kNamelessWithAmbiguousValue);
 }
 
 TEST(ParsedCookieTest, MissingValue) {
@@ -287,10 +311,12 @@ TEST(ParsedCookieTest, MissingValue) {
   EXPECT_EQ("/wee", pc.Path());
   EXPECT_EQ(COOKIE_PRIORITY_DEFAULT, pc.Priority());
   EXPECT_EQ(1U, pc.NumberOfAttributes());
+  EXPECT_FALSE(pc.NamelessCookieLineParseTypeForMetrics().has_value());
 
   // Ensure that a trailing equal sign is emitted in the cookie line
   ParsedCookie pc2("ABC=");
   EXPECT_EQ("ABC=", pc2.ToCookieLine());
+  EXPECT_FALSE(pc2.NamelessCookieLineParseTypeForMetrics().has_value());
 }
 
 TEST(ParsedCookieTest, Whitespace) {
@@ -307,7 +333,24 @@ TEST(ParsedCookieTest, Whitespace) {
   // We parse anything between ; as attributes, so we end up with two
   // attributes with an empty string name and value.
   EXPECT_EQ(4U, pc.NumberOfAttributes());
+  EXPECT_FALSE(pc.NamelessCookieLineParseTypeForMetrics().has_value());
 }
+
+TEST(ParsedCookieTest, LeadingWhitespaceEquals) {
+  ParsedCookie pc("    = BC  ;secure;;;   samesite = lax     ");
+  EXPECT_TRUE(pc.IsValid());
+  EXPECT_TRUE(pc.Name().empty());
+  EXPECT_EQ("BC", pc.Value());
+  EXPECT_FALSE(pc.Path());
+  EXPECT_FALSE(pc.Domain());
+  EXPECT_TRUE(pc.IsSecure());
+  EXPECT_FALSE(pc.IsHttpOnly());
+  EXPECT_EQ(CookieSameSite::LAX_MODE, pc.SameSite().first);
+  EXPECT_EQ(COOKIE_PRIORITY_DEFAULT, pc.Priority());
+  EXPECT_EQ(pc.NamelessCookieLineParseTypeForMetrics(),
+            NamelessCookieLineParseType::kEqualsPrecedingToken);
+}
+
 TEST(ParsedCookieTest, MultipleEquals) {
   ParsedCookie pc("  A=== BC  ;secure;;;   httponly");
   EXPECT_TRUE(pc.IsValid());
@@ -320,6 +363,7 @@ TEST(ParsedCookieTest, MultipleEquals) {
   EXPECT_EQ(CookieSameSite::UNSPECIFIED, pc.SameSite().first);
   EXPECT_EQ(COOKIE_PRIORITY_DEFAULT, pc.Priority());
   EXPECT_EQ(4U, pc.NumberOfAttributes());
+  EXPECT_FALSE(pc.NamelessCookieLineParseTypeForMetrics().has_value());
 }
 
 TEST(ParsedCookieTest, QuotedTrailingWhitespace) {
@@ -335,6 +379,7 @@ TEST(ParsedCookieTest, QuotedTrailingWhitespace) {
   EXPECT_EQ("/", pc.Path());
   EXPECT_EQ(COOKIE_PRIORITY_DEFAULT, pc.Priority());
   EXPECT_EQ(2U, pc.NumberOfAttributes());
+  EXPECT_FALSE(pc.NamelessCookieLineParseTypeForMetrics().has_value());
 }
 
 TEST(ParsedCookieTest, TrailingWhitespace) {
@@ -349,6 +394,7 @@ TEST(ParsedCookieTest, TrailingWhitespace) {
   EXPECT_EQ("/", pc.Path());
   EXPECT_EQ(COOKIE_PRIORITY_DEFAULT, pc.Priority());
   EXPECT_EQ(2U, pc.NumberOfAttributes());
+  EXPECT_FALSE(pc.NamelessCookieLineParseTypeForMetrics().has_value());
 }
 
 TEST(ParsedCookieTest, LotsOfPairs) {

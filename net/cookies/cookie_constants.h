@@ -402,6 +402,30 @@ enum class CookiePrefix {
   kMaxValue = kHostHttp
 };
 
+// For metrics about how a cookie line may end up parsed as a cookie having an
+// empty name. These buckets are mutually exclusive. This only includes parsing
+// of cookie lines. Does not include cookies set explicitly via APIs that set
+// the name and value separately.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class NamelessCookieLineParseType {
+  // A cookie set as a bare token, relying on the parsing behavior that turns
+  // a cookie line of "Foo" into a nameless cookie with value "Foo".
+  kBareToken = 0,
+  // A cookie set as a bare token, as above, but more specifically having a
+  // value that matches any cookie attribute name (e.g. "secure", "httponly",
+  // etc.). These are very likely to be configuration mistakes rather than
+  // intentionally set nameless cookies.
+  kBareTokenMatchingAttributeName = 1,
+  // A cookie set with an empty name using a cookie line such as "=Foo", where
+  // the first non-whitespace character is an equals sign.
+  kEqualsPrecedingToken = 2,
+  // A cookie set with an ambiguous value, via a cookie line such as "=Foo=Bar",
+  // which is parsed as a nameless cookie with value "Foo=Bar".
+  kNamelessWithAmbiguousValue = 3,
+  kMaxValue = kNamelessWithAmbiguousValue,
+};
+
 }  // namespace net
 
 #endif  // NET_COOKIES_COOKIE_CONSTANTS_H_
