@@ -432,6 +432,36 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_Transactional) {
   EXPECT_EQ("initial2", text2->Value());
 }
 
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_Disabled) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input name="text1" type="text">
+      <input name="text2" type="text" disabled>
+      <input name="text3" type="text" disabled toolparamtitle="TITLE">
+      <textarea name="area1" disabled>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "text1": {
+           "type": "string"
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
 TEST_F(HTMLFormMcpToolTest, ParameterSchema_TextInput) {
   SetBodyInnerHTML(
       R"HTML(
