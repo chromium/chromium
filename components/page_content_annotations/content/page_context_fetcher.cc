@@ -184,7 +184,8 @@ base::expected<paint_preview::RedactionParams, std::string> GetRedactionParams(
 
 SkBitmap RedactScreenshotOnWorkerThread(
     const SkBitmap& bitmap,
-    std::vector<gfx::Rect> visible_bounding_boxes_for_password_redaction) {
+    std::vector<gfx::Rect> visible_bounding_boxes_for_password_redaction,
+    SkColor4f redaction_color) {
   if (visible_bounding_boxes_for_password_redaction.empty()) {
     return bitmap;
   }
@@ -194,10 +195,10 @@ SkBitmap RedactScreenshotOnWorkerThread(
   redacted_bitmap.allocPixels();
 
   SkCanvas canvas(redacted_bitmap);
-  SkPaint black;
-  black.setColor(SkColors::kBlack);
+  SkPaint color;
+  color.setColor(redaction_color);
   for (const auto& rect : visible_bounding_boxes_for_password_redaction) {
-    canvas.drawRect(RectToSkRect(rect), black);
+    canvas.drawRect(RectToSkRect(rect), color);
   }
 
   return redacted_bitmap;
@@ -376,6 +377,8 @@ void PageContextFetcher::GetTabScreenshot(
     return;
   }
 
+  screenshot_redaction_color_ = screenshot_options.redaction_color();
+
   gfx::Size view_size = view->GetViewBounds().size();
 
   if (screenshot_options.use_paint_preview()) {
@@ -498,9 +501,11 @@ void PageContextFetcher::RedactAndEncodeScreenshot(
       base::BindOnce(
           [](const SkBitmap& bitmap,
              std::vector<gfx::Rect>
-                 visible_bounding_boxes_for_password_redaction) {
+                 visible_bounding_boxes_for_password_redaction,
+             SkColor4f redaction_color) {
             SkBitmap redacted_bitmap = RedactScreenshotOnWorkerThread(
-                bitmap, visible_bounding_boxes_for_password_redaction);
+                bitmap, visible_bounding_boxes_for_password_redaction,
+                redaction_color);
             std::optional<std::vector<uint8_t>> encoded;
             switch (GetScreenshotImageType()) {
               case ScreenshotImageType::kJpeg:
@@ -532,7 +537,8 @@ void PageContextFetcher::RedactAndEncodeScreenshot(
             return reply;
           },
           *screenshot_bitmap_,
-          std::move(visible_bounding_boxes_for_password_redaction)),
+          std::move(visible_bounding_boxes_for_password_redaction),
+          screenshot_redaction_color_),
       base::BindOnce(
           EmitTimingHistogram<std::vector<uint8_t>, std::string>,
           "Glic.PageContextFetcher.GetEncodedScreenshot.TimeoutAgnostic",

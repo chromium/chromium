@@ -26,6 +26,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/origin.h"
 
@@ -81,6 +82,10 @@ class ScreenshotOptions {
       LIFETIME_BOUND {
     return paint_preview_options_;
   }
+  SkColor4f redaction_color() const { return redaction_color_; }
+  void set_redaction_color_for_testing(SkColor4f redaction_color) {
+    redaction_color_ = redaction_color;
+  }
 
  private:
   // Private constructor to force object creation through static methods.
@@ -94,6 +99,8 @@ class ScreenshotOptions {
   bool capture_full_page_ = false;
   // This field must be set if capture_full_page_ is true.
   std::optional<PaintPreviewOptions> paint_preview_options_ = std::nullopt;
+  // The color to paint for redaction.
+  SkColor4f redaction_color_ = SkColors::kBlack;
 };
 
 struct FetchPageContextOptions {
@@ -284,6 +291,7 @@ class PageContextFetcher : public content::WebContentsObserver {
   bool inner_text_done_ = false;
   bool pdf_done_ = false;
   bool annotated_page_content_done_ = false;
+  SkColor4f screenshot_redaction_color_ = SkColors::kBlack;
   // Whether the primary page has changed since context fetching began.
   bool primary_page_changed_ = false;
   std::unique_ptr<FetchPageContextResult> pending_result_;
