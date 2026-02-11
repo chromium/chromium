@@ -136,7 +136,7 @@ void AssertValidSelectionModel(
 class TabStripInternalsPageHandlerBrowserTest : public InProcessBrowserTest {
  protected:
   std::unique_ptr<TabStripInternalsPageHandler> CreateHandler(
-      Profile* profile) {
+      content::WebContents* web_contents) {
     mojo::PendingRemote<tab_strip_internals::mojom::Page> page_remote;
     mojo::Receiver<tab_strip_internals::mojom::Page> page_receiver_ =
         mojo::Receiver<tab_strip_internals::mojom::Page>(
@@ -147,7 +147,7 @@ class TabStripInternalsPageHandlerBrowserTest : public InProcessBrowserTest {
         handler_receiver = handler_remote.InitWithNewPipeAndPassReceiver();
 
     return std::make_unique<TabStripInternalsPageHandler>(
-        profile, std::move(handler_receiver), std::move(page_remote));
+        web_contents, std::move(handler_receiver), std::move(page_remote));
   }
 
   BrowserWindowInterface* QuitBrowserAndRestore(
@@ -177,7 +177,8 @@ class TabStripInternalsPageHandlerBrowserTest : public InProcessBrowserTest {
 // GetTabStripData: Verify snapshot for window with single tab.
 IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
                        GetTabStripData_EmptyWindow) {
-  auto handler = CreateHandler(browser()->profile());
+  auto handler =
+      CreateHandler(browser()->GetTabStripModel()->GetActiveWebContents());
 
   base::RunLoop loop;
   handler->GetTabStripData(base::BindOnce(
@@ -204,7 +205,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
   ASSERT_TRUE(
       AddTabAtIndex(2, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
-  auto handler = CreateHandler(browser()->profile());
+  auto handler =
+      CreateHandler(browser()->GetTabStripModel()->GetActiveWebContents());
 
   base::RunLoop loop;
   handler->GetTabStripData(base::BindOnce(
@@ -237,7 +239,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
   const size_t first_session_id = browser()->GetSessionID().id();
   const size_t second_session_id = second_browser->GetSessionID().id();
 
-  auto handler = CreateHandler(browser()->profile());
+  auto handler =
+      CreateHandler(browser()->GetTabStripModel()->GetActiveWebContents());
 
   base::RunLoop loop;
   handler->GetTabStripData(base::BindOnce(
@@ -273,7 +276,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
   const size_t regular_id = browser()->GetSessionID().id();
   const size_t otr_id = otr_browser->GetSessionID().id();
 
-  auto handler = CreateHandler(browser()->profile());
+  auto handler =
+      CreateHandler(browser()->GetTabStripModel()->GetActiveWebContents());
 
   base::RunLoop loop;
   handler->GetTabStripData(base::BindOnce(
@@ -307,7 +311,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
   // Close tab to add a TabRestore entry.
   chrome::CloseTab(browser());
 
-  auto handler = CreateHandler(browser()->profile());
+  auto handler =
+      CreateHandler(browser()->GetTabStripModel()->GetActiveWebContents());
 
   base::RunLoop loop;
   handler->GetTabStripData(base::BindOnce(
@@ -352,7 +357,8 @@ IN_PROC_BROWSER_TEST_F(
   // Note: `saved_session` data is persisted on disk and will be
   // available regardless of whether the PageHandler is created before or after
   // browser restart.
-  auto handler = CreateHandler(restored_browser->GetProfile());
+  auto handler = CreateHandler(
+      restored_browser->GetTabStripModel()->GetActiveWebContents());
 
   base::RunLoop loop;
   handler->GetTabStripData(base::BindOnce(
@@ -389,7 +395,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
   // Note: `saved_session` data is persisted on disk and will be available
   // regardless of whether the PageHandler is created before or after browser
   // restart.
-  auto handler = CreateHandler(browser()->profile());
+  auto handler =
+      CreateHandler(browser()->GetTabStripModel()->GetActiveWebContents());
 
   // Close browser and restore session.
   auto* restored_browser = QuitBrowserAndRestore(browser());
@@ -431,17 +438,18 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
 // GetTabStripData: Verify snapshot includes TabGroups in TabStripTree.
 IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
                        GetTabStripData_TabGroupAppearsInTree) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(browser()->GetTabStripModel()->SupportsTabGroups());
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   ASSERT_TRUE(
       AddTabAtIndex(2, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   tab_groups::TabGroupId group_id = model->AddToNewGroup({1, 2});
   ASSERT_TRUE(model->group_model()->ContainsTabGroup(group_id));
 
-  auto handler = CreateHandler(browser()->profile());
+  auto handler =
+      CreateHandler(browser()->GetTabStripModel()->GetActiveWebContents());
 
   base::RunLoop loop;
   handler->GetTabStripData(base::BindOnce(
@@ -472,21 +480,22 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
 // GetTabStripData: Verify snapshot includes multiple TabGroups in TabStripTree.
 IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
                        GetTabStripData_MultipleTabGroups) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(browser()->GetTabStripModel()->SupportsTabGroups());
 
   for (int i = 1; i <= 4; ++i) {
     ASSERT_TRUE(
         AddTabAtIndex(i, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   }
 
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   tab_groups::TabGroupId group1 = model->AddToNewGroup({0, 1});
   tab_groups::TabGroupId group2 = model->AddToNewGroup({2, 3});
 
   ASSERT_TRUE(model->group_model()->ContainsTabGroup(group1));
   ASSERT_TRUE(model->group_model()->ContainsTabGroup(group2));
 
-  auto handler = CreateHandler(browser()->profile());
+  auto handler =
+      CreateHandler(browser()->GetTabStripModel()->GetActiveWebContents());
 
   base::RunLoop loop;
   handler->GetTabStripData(base::BindOnce(
@@ -516,13 +525,13 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
 // GetTabStripData: Verify snapshot includes TabRestoreGroup entry.
 IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
                        GetTabStripData_TabRestore_GroupEntryCreated) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(browser()->GetTabStripModel()->SupportsTabGroups());
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   ASSERT_TRUE(
       AddTabAtIndex(2, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   tab_groups::TabGroupId group_id = model->AddToNewGroup({1, 2});
   ASSERT_TRUE(model->group_model()->ContainsTabGroup(group_id));
 
@@ -531,7 +540,8 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
 
   Browser* new_browser = CreateBrowser(browser()->profile());
   ASSERT_TRUE(new_browser);
-  auto handler = CreateHandler(new_browser->profile());
+  auto handler =
+      CreateHandler(new_browser->GetTabStripModel()->GetActiveWebContents());
 
   base::RunLoop loop;
   handler->GetTabStripData(base::BindOnce(
@@ -559,17 +569,18 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
 // GetTabStripData: Verify snapshot includes TabGroups in SessionRestore data.
 IN_PROC_BROWSER_TEST_F(TabStripInternalsPageHandlerBrowserTest,
                        GetTabStripData_SessionRestore_TabGroupsPreserved) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(browser()->GetTabStripModel()->SupportsTabGroups());
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   ASSERT_TRUE(
       AddTabAtIndex(2, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   tab_groups::TabGroupId group_id = model->AddToNewGroup({1, 2});
   ASSERT_TRUE(model->group_model()->ContainsTabGroup(group_id));
 
-  auto handler = CreateHandler(browser()->profile());
+  auto handler =
+      CreateHandler(browser()->GetTabStripModel()->GetActiveWebContents());
   // Trigger restore.
   auto* restored_browser = QuitBrowserAndRestore(browser());
   ASSERT_TRUE(restored_browser);

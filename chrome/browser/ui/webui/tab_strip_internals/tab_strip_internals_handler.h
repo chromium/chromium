@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals.mojom.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -17,16 +18,21 @@ class Profile;
 class SessionID;
 class TabStripInternalsObserver;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace sessions {
 struct SessionWindow;
 }  // namespace sessions
 
 // Browser side handler for requests from `chrome://tab-strip-internals` WebUI.
 class TabStripInternalsPageHandler
-    : public tab_strip_internals::mojom::PageHandler {
+    : public tab_strip_internals::mojom::PageHandler,
+      public content::WebContentsObserver {
  public:
   TabStripInternalsPageHandler(
-      Profile* profile,
+      content::WebContents* web_contents,
       mojo::PendingReceiver<tab_strip_internals::mojom::PageHandler> receiver,
       mojo::PendingRemote<tab_strip_internals::mojom::Page> page);
 
@@ -37,6 +43,9 @@ class TabStripInternalsPageHandler
 
   // Fetch the current state of all tabstrip models.
   void GetTabStripData(GetTabStripDataCallback callback) override;
+
+  // content::WebContentsObserver:
+  void OnVisibilityChanged(content::Visibility visibility) override;
 
  private:
   // Build a snapshot of the current state of all tabstrip models.

@@ -43,10 +43,6 @@ void TabStripInternalsUI::CreatePageHandler(
     mojo::PendingRemote<tab_strip_internals::mojom::Page> page,
     mojo::PendingReceiver<tab_strip_internals::mojom::PageHandler> receiver) {
   CHECK(page);
-  content::WebContents* web_contents = web_ui()->GetWebContents();
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  CHECK(profile);
   page_handler_ = std::make_unique<TabStripInternalsPageHandler>(
-      profile, std::move(receiver), std::move(page));
+      web_ui()->GetWebContents(), std::move(receiver), std::move(page));
 }

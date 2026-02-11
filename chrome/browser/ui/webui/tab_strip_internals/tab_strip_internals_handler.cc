@@ -17,14 +17,16 @@
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_util.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "content/public/browser/web_contents.h"
 
 TabStripInternalsPageHandler::TabStripInternalsPageHandler(
-    Profile* profile,
+    content::WebContents* web_contents,
     mojo::PendingReceiver<tab_strip_internals::mojom::PageHandler> receiver,
     mojo::PendingRemote<tab_strip_internals::mojom::Page> page)
-    : receiver_(this, std::move(receiver)),
+    : content::WebContentsObserver(web_contents),
+      receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      profile_(profile) {
+      profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())) {
   observer_ = std::make_unique<TabStripInternalsObserver>(
       profile_,
       base::BindRepeating(&TabStripInternalsPageHandler::NotifyTabStripUpdated,
@@ -109,8 +111,16 @@ TabStripInternalsPageHandler::BuildSnapshot() {
 }
 
 void TabStripInternalsPageHandler::NotifyTabStripUpdated() {
-  if (page_) {
+  if (page_ && web_contents() &&
+      web_contents()->GetVisibility() == content::Visibility::VISIBLE) {
     page_->OnTabStripUpdated(BuildSnapshot());
+  }
+}
+
+void TabStripInternalsPageHandler::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility == content::Visibility::VISIBLE) {
+    NotifyTabStripUpdated();
   }
 }
 
