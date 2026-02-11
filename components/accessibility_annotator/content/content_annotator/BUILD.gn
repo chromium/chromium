@@ -10,6 +10,8 @@ source_set("content_annotator") {
     "content_annotator_rule_based_classifier.h",
     "content_annotator_service.cc",
     "content_annotator_service.h",
+    "content_annotator_url_matcher_classifier.cc",
+    "content_annotator_url_matcher_classifier.h",
     "content_classifier.cc",
     "content_classifier.h",
   ]
@@ -19,6 +21,7 @@ source_set("content_annotator") {
     "//components/accessibility_annotator/core:features",
     "//components/keyed_service/core",
     "//components/page_content_annotations/core",
+    "//components/url_matcher",
     "//third_party/re2",
   ]
 }
@@ -29,6 +32,7 @@ source_set("unit_tests") {
     "content_annotator_classifier_rules_parser_unittest.cc",
     "content_annotator_rule_based_classifier_unittest.cc",
     "content_annotator_service_unittest.cc",
+    "content_annotator_url_matcher_classifier_unittest.cc",
     "content_classifier_unittest.cc",
   ]
   deps = [
