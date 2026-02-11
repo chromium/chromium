@@ -6,19 +6,23 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/connection_tracker.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -298,6 +302,201 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkHeaderModulepreload) {
   ASSERT_TRUE(request.has_value());
   EXPECT_EQ(request->resource_type,
             static_cast<int>(blink::mojom::ResourceType::kScript));
+}
+
+class AlwaysPreconnectContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  bool ShouldPreconnectNavigation(RenderFrameHost* render_frame_host) override {
+    return true;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       NavigationRequestPreconnectAllowed) {
+  net::test_server::ConnectionTracker connection_tracker(
+      embedded_test_server());
+  AlwaysPreconnectContentBrowserClient client;
+
+  std::string_view title_page{"/title.html"};
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry("<html><body>Hello</body></html>",
+                    {{"Connection-Allowlist", "(response-origin)"}}));
+  RegisterResponse(
+      std::string{title_page},
+      ResponseEntry("<html><head><title>Title</title></head></html>", {}));
+
+  // Use `StartAndReturnHandle()` to start the server; this ensures graceful
+  // shutdown when the test finishes. Otherwise, a socket read may occur after
+  // the connection tracker is destroyed, invoking a callback via a dangling
+  // pointer and crashing the test.
+  auto server_handle = embedded_test_server()->StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      embedded_test_server()->GetURL("a.test", kSameOriginAllowlistedPage)));
+
+  connection_tracker.ResetCounts();
+  // Navigation to url allowed by connection allowlist succeeds.
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      shell()->web_contents(),
+      embedded_test_server()->GetURL("a.test", title_page)));
+
+  // Preconnect to the same url also succeeds.
+  connection_tracker.WaitForAcceptedConnections(1u);
+  EXPECT_EQ(connection_tracker.GetAcceptedSocketCount(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       NavigationRequestPreconnectBlocked) {
+  net::test_server::ConnectionTracker connection_tracker(
+      embedded_test_server());
+  AlwaysPreconnectContentBrowserClient client;
+
+  std::string_view title_page{"/title.html"};
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry("<html><body>Hello</body></html>",
+                    {{"Connection-Allowlist", "(response-origin)"}}));
+  RegisterResponse(
+      std::string{title_page},
+      ResponseEntry("<html><head><title>Title</title></head></html>", {}));
+
+  // Use `StartAndReturnHandle()` to start the server; this ensures graceful
+  // shutdown when the test finishes. Otherwise, a socket read may occur after
+  // the connection tracker is destroyed, invoking a callback via a dangling
+  // pointer and crashing the test.
+  auto server_handle = embedded_test_server()->StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      embedded_test_server()->GetURL("a.test", kSameOriginAllowlistedPage)));
+
+  connection_tracker.ResetCounts();
+  // Navigation to url blocked by connection allowlist fails.
+  EXPECT_FALSE(NavigateToURLFromRenderer(
+      shell()->web_contents(),
+      embedded_test_server()->GetURL("b.test", title_page)));
+
+  // Preconnect to the same url also gets blocked.
+  EXPECT_EQ(connection_tracker.GetAcceptedSocketCount(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       IframeNavigationRequestPreconnectAllowed) {
+  net::test_server::ConnectionTracker connection_tracker(
+      embedded_test_server());
+  AlwaysPreconnectContentBrowserClient client;
+
+  std::string_view title_page{"/title.html"};
+  std::string_view nested_page{"/nested.html"};
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry(JsReplace(R"(
+        <html>
+          <body>
+            <iframe id="iframe" src=$1>
+          </body>
+        </html>
+      )",
+                              nested_page),
+                    {{"Connection-Allowlist", "(response-origin)"}}));
+  RegisterResponse(
+      std::string{nested_page},
+      ResponseEntry("<html><head><title>Nested</title></head></html>",
+                    {{"Connection-Allowlist", "()"}}));
+  RegisterResponse(
+      std::string{title_page},
+      ResponseEntry("<html><head><title>Title</title></head></html>", {}));
+
+  // Use `StartAndReturnHandle()` to start the server; this ensures graceful
+  // shutdown when the test finishes. Otherwise, a socket read may occur after
+  // the connection tracker is destroyed, invoking a callback via a dangling
+  // pointer and crashing the test.
+  auto server_handle = embedded_test_server()->StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      embedded_test_server()->GetURL("a.test", kSameOriginAllowlistedPage)));
+
+  RenderFrameHost* child_frame =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_frame);
+
+  connection_tracker.ResetCounts();
+
+  // Navigating the iframe to url allowed by the initiator connection allowlist
+  // succeeds. Note the iframe document has an empty connection allowlist, which
+  // blocks all network connections. However, it is the initiator connection
+  // allowlist that should be enforced.
+  EXPECT_TRUE(ExecJs(
+      shell()->web_contents(),
+      JsReplace("document.getElementById('iframe').src = $1", title_page)));
+
+  // Preconnect to the same url also succeeds.
+  connection_tracker.WaitForAcceptedConnections(1u);
+  EXPECT_EQ(connection_tracker.GetAcceptedSocketCount(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       IframeNavigationRequestPreconnectDenied) {
+  net::test_server::ConnectionTracker connection_tracker(
+      embedded_test_server());
+  AlwaysPreconnectContentBrowserClient client;
+
+  std::string_view title_page{"/title.html"};
+  std::string_view nested_page{"/nested.html"};
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry(JsReplace(R"(
+        <html>
+          <body>
+            <iframe id="iframe" src=$1>
+          </body>
+        </html>
+      )",
+                              nested_page),
+                    {{"Connection-Allowlist", "(response-origin)"}}));
+  RegisterResponse(
+      std::string{nested_page},
+      ResponseEntry("<html><head><title>Nested</title></head></html>",
+                    {{"Connection-Allowlist", "(*title*)"}}));
+  RegisterResponse(
+      std::string{title_page},
+      ResponseEntry("<html><head><title>Title</title></head></html>", {}));
+
+  // Use `StartAndReturnHandle()` to start the server; this ensures graceful
+  // shutdown when the test finishes. Otherwise, a socket read may occur after
+  // the connection tracker is destroyed, invoking a callback via a dangling
+  // pointer and crashing the test.
+  auto server_handle = embedded_test_server()->StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      embedded_test_server()->GetURL("a.test", kSameOriginAllowlistedPage)));
+
+  RenderFrameHost* child_frame =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_frame);
+
+  connection_tracker.ResetCounts();
+
+  // Navigating the iframe to url blocked by the initiator connection allowlist
+  // fails. Note the iframe document has a connection allowlist that matches the
+  // navigation url. However, it is the initiator connection allowlist that
+  // should be enforced.
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             JsReplace("document.getElementById('iframe').src = $1",
+                       embedded_test_server()->GetURL("b.test", title_page))));
+
+  // Preconnect to the same url also gets blocked.
+  EXPECT_EQ(connection_tracker.GetAcceptedSocketCount(), 0u);
 }
 
 }  // namespace content
