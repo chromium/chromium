@@ -34,6 +34,10 @@ class WebState;
 // Shows the payments suggestion bottom sheet view controller.
 - (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params;
 
+// Shows the scan card save and fill suggestion bottom sheet view controller.
+- (void)showScanCardSaveAndFillBottomSheet:
+    (const autofill::FormActivityParams&)params;
+
 // Shows the plus address bottom sheet view controller.
 - (void)showPlusAddressesBottomSheet;
 

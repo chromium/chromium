@@ -2145,6 +2145,10 @@ const char kChromeAppStoreUrl[] =
   [self.paymentsSuggestionBottomSheetCoordinator start];
 }
 
+- (void)showScanCardSaveAndFillBottomSheet:
+    (const autofill::FormActivityParams&)params {
+}
+
 - (void)showCardUnmaskAuthentication {
   self.cardUnmaskAuthenticationCoordinator =
       [[CardUnmaskAuthenticationCoordinator alloc]

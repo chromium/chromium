@@ -81,6 +81,9 @@
 }
 - (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params {
 }
+- (void)showScanCardSaveAndFillBottomSheet:
+    (const autofill::FormActivityParams&)params {
+}
 - (void)showPlusAddressesBottomSheet {
 }
 

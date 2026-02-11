@@ -79,6 +79,13 @@ bool HasAnyCreditCardSuggestion(NSArray<FormSuggestion*>* suggestions) {
   return false;
 }
 
+// Returns true if `suggestions` consists of only the save-and-fill suggestion.
+bool HasScanCardSaveAndFillSuggestion(NSArray<FormSuggestion*>* suggestions) {
+  return [suggestions count] == 1 &&
+         suggestions[0].type ==
+             autofill::SuggestionType::kSaveAndFillCreditCardEntry;
+}
+
 // Records the histograms related to the outcome of triggering the
 // Payments Bottom Sheet V3 (triggered or didn't trigger).
 void RecordPaymentsBottomSheetTriggerOutcome(bool did_trigger,
@@ -273,6 +280,8 @@ void AutofillBottomSheetTabHelper::OnSuggestionsRetrievedForPaymentsBottomSheet(
                                           trigger_walltime);
   if (has_cc_suggestions) {
     ShowPaymentsBottomSheet(params, /*detach=*/false);
+  } else if (HasScanCardSaveAndFillSuggestion(suggestions)) {
+    ShowScanCardSaveAndFillBottomSheet(params);
   } else {
     // Give back the preempted focus to the keyboard if the sheet cannot be
     // triggered.
@@ -294,6 +303,14 @@ void AutofillBottomSheetTabHelper::ShowPaymentsBottomSheet(
     // refocus for later once the bottom sheet is dismissed.
     DetachPaymentsListenersForAllFrames(/*refocus=*/false);
   }
+}
+
+void AutofillBottomSheetTabHelper::ShowScanCardSaveAndFillBottomSheet(
+    const autofill::FormActivityParams& params) {
+  for (auto& observer : observers_) {
+    observer.WillShowPaymentsBottomSheet(params);
+  }
+  [commands_handler_ showScanCardSaveAndFillBottomSheet:params];
 }
 
 void AutofillBottomSheetTabHelper::ShowProactivePasswordGenerationBottomSheet(
