@@ -766,10 +766,6 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
             /*was_ai_mode_open=*/is_aim_popup_open);
         break;
       case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
-        if (use_input_state_model) {
-          composebox_handler->SetActiveToolMode(
-              omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
-        }
         UpdateSearchboxContext(
             /*tab_info=*/std::nullopt,
             /*tool_mode=*/searchbox::mojom::ToolMode::kDeepSearch);
@@ -778,10 +774,6 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
         break;
       case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
-        if (use_input_state_model) {
-          composebox_handler->SetActiveToolMode(
-              omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
-        }
         UpdateSearchboxContext(
             /*tab_info=*/std::nullopt,
             /*tool_mode=*/searchbox::mojom::ToolMode::kCreateImage);
@@ -790,10 +782,6 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
         break;
       case IDC_OMNIBOX_CONTEXT_CANVAS:
-        if (use_input_state_model) {
-          composebox_handler->SetActiveToolMode(
-              omnibox::ToolMode::TOOL_MODE_CANVAS);
-        }
         UpdateSearchboxContext(
             /*tab_info=*/std::nullopt,
             /*tool_mode=*/searchbox::mojom::ToolMode::kCanvas);
