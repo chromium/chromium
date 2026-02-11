@@ -2527,10 +2527,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
     if (!precise_clip_path_rect_ || needs_mask_based_clip_path_) {
       OnClearClip(properties_->ClearClipPathClip());
     }
-
-    if (!paint_clip_path_rect_) {
-      paint_clip_path_rect_ = precise_clip_path_rect_;
-    }
   }
 
   if (properties_->ClipPathClip()) {

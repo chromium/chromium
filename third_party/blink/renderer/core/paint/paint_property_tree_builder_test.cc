@@ -7595,4 +7595,25 @@ TEST_P(PaintPropertyTreeBuilderTest,
   EXPECT_NE(0, target_transform->RenderingContextId());
 }
 
+TEST_P(PaintPropertyTreeBuilderTest, ClipPathWithMaskDoNotCreateExpandedRect) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='target' style='width:200px; height:200px;
+        clip-path: inset(10px); mask-image: linear-gradient(red, red)'>
+    </div>
+  )HTML");
+
+  const auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+
+  // Should have a MaskClip for the CSS mask.
+  const auto* mask_clip = properties->MaskClip();
+  ASSERT_TRUE(mask_clip);
+
+  // The MaskClip should not be marked as a composited clip-path animation.
+  EXPECT_FALSE(mask_clip->IsForCompositeClipPathAnimation());
+
+  // The expanded and precise layout clip rects should be equal.
+  EXPECT_EQ(mask_clip->LayoutClipRect(), mask_clip->PreciseLayoutClipRect());
+}
+
 }  // namespace blink
