@@ -1111,6 +1111,9 @@ crbug.com/336604 external/wpt/css/css-flexbox/flexbox_visibility-collapse.html [
 crbug.com/445971864 external/wpt/css/css-gaps/multicol/multicol-gap-decorations-007.html [ Failure ]
 crbug.com/357648037 external/wpt/css/css-gaps/flex/fragmentation/flex-gap-decorations-fragmentation-005.html [ Failure ]
 crbug.com/357648037 external/wpt/css/css-gaps/flex/fragmentation/flex-gap-decorations-fragmentation-006.html [ Failure ]
+# [css-gaps] Known bug here, suppressed rows gaps in grid where a spanning item exists
+# should see the particular row expanded to occupy what the gap space would have been.
+crbug.com/394042462 external/wpt/css/css-gaps/grid/fragmentation/grid-gap-decorations-fragmentation-028.html [ Failure ]
 
 # [css-lists]
 crbug.com/1123457 external/wpt/css/css-lists/counter-list-item.html [ Failure ]
