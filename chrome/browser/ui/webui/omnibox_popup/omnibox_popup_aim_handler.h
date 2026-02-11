@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_AIM_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_AIM_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -12,6 +13,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+class OmniboxAimPopupWebUIContent;
 class OmniboxPopupUI;
 class GURL;
 
@@ -47,6 +49,8 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   void AddContext(std::unique_ptr<SearchboxContextData::Context> context);
 
  private:
+  OmniboxAimPopupWebUIContent* GetAimPopupContent();
+
   void OnPopupHiddenCallback(const std::string& input);
 
   mojo::Receiver<omnibox_popup_aim::mojom::PageHandler> receiver_;

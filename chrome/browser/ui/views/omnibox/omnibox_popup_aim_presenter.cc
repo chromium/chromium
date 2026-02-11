@@ -33,20 +33,6 @@ void OmniboxPopupAimPresenter::Show() {
 }
 
 void OmniboxPopupAimPresenter::Hide() {
-  // If UI devtools settings allows closing the view
-  // (`ShouldHandleNativeWidgetActivationChanged()`), refocus the location bar
-  // for screen readers to prevent unreliable focus tracking.
-  if (GetWidget() &&
-      GetWidget()->ShouldHandleNativeWidgetActivationChanged(false) &&
-      GetWidget()->IsActive()) {
-    const bool is_screen_reader_enabled =
-        content::BrowserAccessibilityState::GetInstance()
-            ->GetAccessibilityMode()
-            .has_mode(ui::AXMode::kScreenReader);
-    if (is_screen_reader_enabled) {
-      location_bar_view()->FocusLocation(true);
-    }
-  }
   widget_observation_.Reset();
   OmniboxPopupPresenterBase::Hide();
 }

@@ -41,6 +41,12 @@ OmniboxPopupAimHandler::OmniboxPopupAimHandler(
 OmniboxPopupAimHandler::~OmniboxPopupAimHandler() = default;
 
 void OmniboxPopupAimHandler::RequestClose() {
+  if (auto* aim_popup_content = GetAimPopupContent()) {
+    // For screen readers, focus the location bar since the user requested a
+    // manual close of the popup, as opposed to the popup closing because the
+    // tab navigated somewhere else.
+    aim_popup_content->UpdateLocationBarFocusForScreenReader();
+  }
   omnibox_popup_ui_->embedder()->CloseUI();
 }
 
@@ -81,11 +87,13 @@ void OmniboxPopupAimHandler::AddContext(
 }
 
 void OmniboxPopupAimHandler::OnPopupHiddenCallback(const std::string& input) {
-  WebUIContentsWrapper* wrapper =
-      static_cast<WebUIContentsWrapper*>(omnibox_popup_ui_->embedder().get());
-  OmniboxAimPopupWebUIContent* aim_popup_content =
-      static_cast<OmniboxAimPopupWebUIContent*>(wrapper->GetHost().get());
-  if (aim_popup_content) {
+  if (auto* aim_popup_content = GetAimPopupContent()) {
     aim_popup_content->OnPageClosedWithInput(input);
   }
+}
+
+OmniboxAimPopupWebUIContent* OmniboxPopupAimHandler::GetAimPopupContent() {
+  WebUIContentsWrapper* wrapper =
+      static_cast<WebUIContentsWrapper*>(omnibox_popup_ui_->embedder().get());
+  return static_cast<OmniboxAimPopupWebUIContent*>(wrapper->GetHost().get());
 }

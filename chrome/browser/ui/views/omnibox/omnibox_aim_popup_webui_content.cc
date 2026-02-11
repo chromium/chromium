@@ -22,9 +22,12 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/context_menu_params.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/views/widget/widget.h"
 
 OmniboxAimPopupWebUIContent::OmniboxAimPopupWebUIContent(
     OmniboxPopupPresenterBase* presenter,
@@ -58,6 +61,20 @@ void OmniboxAimPopupWebUIContent::OnPageClosedWithInput(
 
 std::string_view OmniboxAimPopupWebUIContent::GetMetricPrefix() const {
   return "Omnibox.Popup.Aim";
+}
+
+void OmniboxAimPopupWebUIContent::UpdateLocationBarFocusForScreenReader() {
+  if (GetWidget() &&
+      GetWidget()->ShouldHandleNativeWidgetActivationChanged(false) &&
+      GetWidget()->IsActive()) {
+    const bool is_screen_reader_enabled =
+        content::BrowserAccessibilityState::GetInstance()
+            ->GetAccessibilityMode()
+            .has_mode(ui::AXMode::kScreenReader);
+    if (is_screen_reader_enabled) {
+      location_bar_view()->FocusLocation(true);
+    }
+  }
 }
 
 void OmniboxAimPopupWebUIContent::CloseUI() {
