@@ -303,6 +303,21 @@ url::Origin SecurityOrigin::ToUrlOrigin() const {
   return result;
 }
 
+scoped_refptr<SecurityOrigin> SecurityOrigin::CreateWithNonce(
+    base::PassKey<SandboxedOpaqueSecurityOriginCreator>,
+    const base::UnguessableToken& nonce,
+    const SecurityOrigin* origin) {
+  CHECK(origin);
+  const SecurityOrigin* tuple_origin =
+      origin->GetOriginOrPrecursorOriginIfOpaque();
+
+  // Only use a non-opaque tuple origin as precursor. An opaque precursor
+  // provides no useful derivation information.
+  return CreateOpaque(
+      url::Origin::Nonce(nonce),
+      tuple_origin->IsOpaque() ? nullptr : tuple_origin->IsolatedCopy().get());
+}
+
 scoped_refptr<SecurityOrigin> SecurityOrigin::IsolatedCopy() const {
   return base::AdoptRef(new SecurityOrigin(
       this, ConstructIsolatedCopy::kConstructIsolatedCopyBit));

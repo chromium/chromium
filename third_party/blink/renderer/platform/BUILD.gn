@@ -1590,6 +1590,8 @@ component("platform") {
     "weborigin/referrer.cc",
     "weborigin/referrer.h",
     "weborigin/reporting_disposition.h",
+    "weborigin/sandboxed_opaque_security_origin_creator.cc",
+    "weborigin/sandboxed_opaque_security_origin_creator.h",
     "weborigin/scheme_registry.cc",
     "weborigin/scheme_registry.h",
     "weborigin/security_origin.cc",

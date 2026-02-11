@@ -2060,6 +2060,8 @@ source_set("browser") {
     "renderer_host/visible_time_request_trigger.cc",
     "renderer_host/visible_time_request_trigger.h",
     "resource_coordinator_service.cc",
+    "sandboxed_opaque_origin_creator.cc",
+    "sandboxed_opaque_origin_creator.h",
     "scheduler/browser_io_thread_delegate.cc",
     "scheduler/browser_io_thread_delegate.h",
     "scheduler/browser_task_executor.cc",

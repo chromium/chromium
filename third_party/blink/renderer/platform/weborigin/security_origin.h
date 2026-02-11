@@ -34,6 +34,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -46,6 +47,7 @@
 namespace blink {
 
 class KURL;
+class SandboxedOpaqueSecurityOriginCreator;
 
 // An identifier which defines the source of content (e.g. a document) and
 // restricts what other objects it is permitted to access (based on their
@@ -102,6 +104,14 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
 
   static scoped_refptr<SecurityOrigin> CreateFromUrlOrigin(const url::Origin&);
   url::Origin ToUrlOrigin() const;
+
+  // Creates an opaque origin with the given nonce and origin. This method can
+  // only be called by SandboxedOpaqueSecurityOriginCreator to ensure proper
+  // access control for nonce-based origins.
+  static scoped_refptr<SecurityOrigin> CreateWithNonce(
+      base::PassKey<SandboxedOpaqueSecurityOriginCreator>,
+      const base::UnguessableToken& nonce,
+      const SecurityOrigin* origin);
 
   SecurityOrigin(const SecurityOrigin&) = delete;
   SecurityOrigin& operator=(const SecurityOrigin&) = delete;
