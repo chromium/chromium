@@ -1066,8 +1066,7 @@ TEST_F(SendTabToSelfBridgeTest,
   session.SetSessionTag("guid");
   session.SetModifiedTime(session_time);
 
-  open_tabs_ui_delegate()->SetForeignSessions(
-      std::vector<raw_ptr<const sync_sessions::SyncedSession>>{&session});
+  open_tabs_ui_delegate()->SetForeignSessions({&session});
 
   TargetDeviceInfo expected_device_info(device->client_name(),
                                         device->client_name(), device->guid(),
@@ -1096,8 +1095,7 @@ TEST_F(SendTabToSelfBridgeTest,
   session.SetSessionTag("guid");
   session.SetModifiedTime(session_time);
 
-  open_tabs_ui_delegate()->SetForeignSessions(
-      std::vector<raw_ptr<const sync_sessions::SyncedSession>>{&session});
+  open_tabs_ui_delegate()->SetForeignSessions({&session});
 
   TargetDeviceInfo expected_device_info(device->client_name(),
                                         device->client_name(), device->guid(),
@@ -1107,6 +1105,233 @@ TEST_F(SendTabToSelfBridgeTest,
               ElementsAre(expected_device_info));
 
   open_tabs_ui_delegate()->SetForeignSessions({});
+}
+
+TEST_F(SendTabToSelfBridgeTest,
+       GetTargetDeviceInfoSortedList_ShortNameCollisionFallsBackToFullName) {
+  InitializeBridge();
+
+  // Create two devices with the same manufacturer and form factor, but
+  // different models. This should result in the same short name but different
+  // full names.
+  std::unique_ptr<syncer::DeviceInfo> device1 = std::make_unique<
+      syncer::DeviceInfo>(
+      "guid1", "model1", "chrome_version", "user_agent",
+      sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+      syncer::DeviceInfo::OsType::kLinux,
+      syncer::DeviceInfo::FormFactor::kPhone, "scoped_id", "manufacturer",
+      "model1", "full_hardware_class", clock()->Now(),
+      syncer::DeviceInfoUtil::GetPulseInterval(),
+      /*send_tab_to_self_receiving_enabled=*/true,
+      sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+      /*sharing_info=*/std::nullopt, /*paask_info=*/std::nullopt,
+      /*fcm_registration_token=*/std::string(),
+      /*interested_data_types=*/syncer::DataTypeSet(),
+      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
+      /*desktop_to_ios_promo_receiving_enabled=*/false);
+  SharingDeviceNames names1 = GetSharingDeviceNames(device1.get());
+  ASSERT_EQ("Manufacturer Phone model1", names1.full_name);
+  ASSERT_EQ("Manufacturer Phone", names1.short_name);
+  AddTestDevice(device1.get());
+
+  std::unique_ptr<syncer::DeviceInfo> device2 = std::make_unique<
+      syncer::DeviceInfo>(
+      "guid2", "model2", "chrome_version", "user_agent",
+      sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+      syncer::DeviceInfo::OsType::kLinux,
+      syncer::DeviceInfo::FormFactor::kPhone, "scoped_id", "manufacturer",
+      "model2", "full_hardware_class", clock()->Now() - base::Seconds(1),
+      syncer::DeviceInfoUtil::GetPulseInterval(),
+      /*send_tab_to_self_receiving_enabled=*/true,
+      sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+      /*sharing_info=*/std::nullopt, /*paask_info=*/std::nullopt,
+      /*fcm_registration_token=*/std::string(),
+      /*interested_data_types=*/syncer::DataTypeSet(),
+      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
+      /*desktop_to_ios_promo_receiving_enabled=*/false);
+  SharingDeviceNames names2 = GetSharingDeviceNames(device2.get());
+  ASSERT_EQ("Manufacturer Phone model2", names2.full_name);
+  ASSERT_EQ("Manufacturer Phone", names2.short_name);
+  AddTestDevice(device2.get());
+
+  // Short name for both should be "Manufacturer Phone" (Manufacturer
+  // capitalized). Full names should be "Manufacturer Phone model1" and
+  // "Manufacturer Phone model2".
+  std::vector<TargetDeviceInfo> list =
+      bridge()->GetTargetDeviceInfoSortedList();
+  ASSERT_EQ(2ul, list.size());
+
+  EXPECT_EQ("Manufacturer Phone model1", list[0].device_name);
+  EXPECT_EQ("Manufacturer Phone model2", list[1].device_name);
+}
+
+TEST_F(SendTabToSelfBridgeTest,
+       GetTargetDeviceInfoSortedList_DeduplicationPrefersRecent) {
+  InitializeBridge();
+
+  // Create two devices with the same full name but different activity times.
+  const std::string kFullName = "Full Name";
+  std::unique_ptr<syncer::DeviceInfo> device_old =
+      CreateDevice("guid_old", kFullName, clock()->Now() - base::Days(2));
+  AddTestDevice(device_old.get());
+
+  std::unique_ptr<syncer::DeviceInfo> device_recent =
+      CreateDevice("guid_recent", kFullName, clock()->Now() - base::Days(1));
+  AddTestDevice(device_recent.get());
+
+  std::vector<TargetDeviceInfo> list =
+      bridge()->GetTargetDeviceInfoSortedList();
+  ASSERT_EQ(1ul, list.size());
+  EXPECT_EQ("guid_recent", list[0].cache_guid);
+  EXPECT_EQ(clock()->Now() - base::Days(1), list[0].last_updated_timestamp);
+}
+
+TEST_F(SendTabToSelfBridgeTest,
+       GetTargetDeviceInfoSortedList_SessionTimestampPreventsExpiration) {
+  InitializeBridge();
+
+  // Device info is expired, but session is not expired.
+  const base::Time device_time = clock()->Now() - (kExpiryTime + base::Days(1));
+  const base::Time session_time = clock()->Now() - base::Days(1);
+
+  std::unique_ptr<syncer::DeviceInfo> device =
+      CreateDevice("guid", "name", device_time);
+  AddTestDevice(device.get());
+
+  sync_sessions::SyncedSession session;
+  session.SetSessionTag("guid");
+  session.SetModifiedTime(session_time);
+  open_tabs_ui_delegate()->SetForeignSessions({&session});
+
+  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(), SizeIs(1));
+
+  open_tabs_ui_delegate()->SetForeignSessions({});
+}
+
+TEST_F(SendTabToSelfBridgeTest,
+       GetTargetDeviceInfoSortedList_DeviceTimestampPreventsExpiration) {
+  InitializeBridge();
+
+  // Device info is not expired, but session is expired.
+  const base::Time device_time = clock()->Now() - base::Days(1);
+  const base::Time session_time =
+      clock()->Now() - (kExpiryTime + base::Days(1));
+
+  std::unique_ptr<syncer::DeviceInfo> device =
+      CreateDevice("guid", "name", device_time);
+  AddTestDevice(device.get());
+
+  sync_sessions::SyncedSession session;
+  session.SetSessionTag("guid");
+  session.SetModifiedTime(session_time);
+  open_tabs_ui_delegate()->SetForeignSessions({&session});
+
+  EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(), SizeIs(1));
+
+  open_tabs_ui_delegate()->SetForeignSessions({});
+}
+
+TEST_F(SendTabToSelfBridgeTest,
+       GetTargetDeviceInfoSortedList_DeduplicationAfterFiltering) {
+  InitializeBridge();
+
+  // Create two devices with the same full name "A".
+  // The more recent one is disabled, the older one is enabled.
+  // If we deduplicate before filtering, we would pick the disabled one and then
+  // filter it out, leaving 0 devices.
+  // If we filter before deduplicating, we pick the enabled one.
+
+  std::unique_ptr<syncer::DeviceInfo> device_recent_disabled =
+      CreateDevice("guid_recent", "A", clock()->Now(),
+                   /*send_tab_to_self_receiving_enabled=*/false);
+  std::unique_ptr<syncer::DeviceInfo> device_older_enabled =
+      CreateDevice("guid_older", "A", clock()->Now() - base::Days(1));
+
+  AddTestDevice(device_recent_disabled.get());
+  AddTestDevice(device_older_enabled.get());
+
+  std::vector<TargetDeviceInfo> list =
+      bridge()->GetTargetDeviceInfoSortedList();
+  ASSERT_EQ(1ul, list.size());
+  EXPECT_EQ("guid_older", list[0].cache_guid);
+}
+
+TEST_F(SendTabToSelfBridgeTest,
+       GetTargetDeviceInfoSortedList_StableSortIdenticalTimestamps) {
+  InitializeBridge();
+
+  const base::Time now = clock()->Now();
+  // Device 1 and Device 2 have exactly the same timestamp.
+  // We add Device 1 first, then Device 2.
+  std::unique_ptr<syncer::DeviceInfo> device1 =
+      CreateDevice("guid1", "Device B", now);
+  std::unique_ptr<syncer::DeviceInfo> device2 =
+      CreateDevice("guid2", "Device A", now);
+
+  AddTestDevice(device1.get());
+  AddTestDevice(device2.get());
+
+  std::vector<TargetDeviceInfo> list =
+      bridge()->GetTargetDeviceInfoSortedList();
+  // Stable sort should preserve the order from GetAllDeviceInfo if timestamps
+  // are equal. FakeDeviceInfoTracker::GetAllDeviceInfo usually returns in order
+  // of addition. This is a safety check for deterministic behavior.
+  EXPECT_THAT(
+      list,
+      ElementsAre(testing::Field(&TargetDeviceInfo::cache_guid, "guid1"),
+                  testing::Field(&TargetDeviceInfo::cache_guid, "guid2")));
+}
+
+TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_FormFactors) {
+  InitializeBridge();
+
+  std::unique_ptr<syncer::DeviceInfo> desktop = std::make_unique<
+      syncer::DeviceInfo>(
+      "desktop_guid", "desktop", "chrome_version", "user_agent",
+      sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+      syncer::DeviceInfo::OsType::kLinux,
+      syncer::DeviceInfo::FormFactor::kDesktop, "scoped_id", "manufacturer",
+      "model", "full_hardware_class", clock()->Now(),
+      syncer::DeviceInfoUtil::GetPulseInterval(),
+      /*send_tab_to_self_receiving_enabled=*/true,
+      sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+      /*sharing_info=*/std::nullopt, /*paask_info=*/std::nullopt,
+      /*fcm_registration_token=*/std::string(),
+      /*interested_data_types=*/syncer::DataTypeSet(),
+      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
+      /*desktop_to_ios_promo_receiving_enabled=*/false);
+
+  std::unique_ptr<syncer::DeviceInfo> phone = std::make_unique<
+      syncer::DeviceInfo>(
+      "phone_guid", "phone", "chrome_version", "user_agent",
+      sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+      syncer::DeviceInfo::OsType::kLinux,
+      syncer::DeviceInfo::FormFactor::kPhone, "scoped_id", "manufacturer",
+      "model", "full_hardware_class", clock()->Now() - base::Seconds(1),
+      syncer::DeviceInfoUtil::GetPulseInterval(),
+      /*send_tab_to_self_receiving_enabled=*/true,
+      sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+      /*sharing_info=*/std::nullopt, /*paask_info=*/std::nullopt,
+      /*fcm_registration_token=*/std::string(),
+      /*interested_data_types=*/syncer::DataTypeSet(),
+      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
+      /*desktop_to_ios_promo_receiving_enabled=*/false);
+
+  AddTestDevice(desktop.get());
+  AddTestDevice(phone.get());
+
+  std::vector<TargetDeviceInfo> list =
+      bridge()->GetTargetDeviceInfoSortedList();
+  EXPECT_THAT(list,
+              UnorderedElementsAre(
+                  testing::Field(&TargetDeviceInfo::form_factor,
+                                 syncer::DeviceInfo::FormFactor::kDesktop),
+                  testing::Field(&TargetDeviceInfo::form_factor,
+                                 syncer::DeviceInfo::FormFactor::kPhone)));
 }
 
 }  // namespace
