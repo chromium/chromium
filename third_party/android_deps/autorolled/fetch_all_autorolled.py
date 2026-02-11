@@ -11,6 +11,7 @@ import argparse
 import logging
 import os
 import pathlib
+import shlex
 import shutil
 import subprocess
 import sys
@@ -110,11 +111,12 @@ def main():
                                     absolute_file_map=file_map)
 
     if args.local:
-        subprocess.run([
-            _EXTRACT_SCRIPT_PATH, '--cipd-package-path', _CIPD_PATH,
-            '--no-git-add'
-        ],
-                       check=True)
+        cmd = [
+            str(_EXTRACT_SCRIPT_PATH), '--cipd-package-path',
+            str(_CIPD_PATH), '--no-git-add'
+        ]
+        logging.info('Running: %s', shlex.join(cmd))
+        subprocess.run(cmd, cwd=_SRC_PATH, check=True)
 
     fetch_util.write_cipd_yaml(package_root=_CIPD_PATH,
                                package_name=_CIPD_PACKAGE,
