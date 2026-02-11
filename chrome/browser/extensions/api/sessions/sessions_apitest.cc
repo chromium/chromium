@@ -222,7 +222,7 @@ syncer::ClientTagHash TagHashFromSpecifics(
 
 class ExtensionSessionsTest : public ExtensionBrowserTest {
  public:
-  ExtensionSessionsTest() = default;
+  ExtensionSessionsTest();
   ~ExtensionSessionsTest() override = default;
 
   // ExtensionBrowserTest:
@@ -242,12 +242,23 @@ class ExtensionSessionsTest : public ExtensionBrowserTest {
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList feature_list_{
-      chrome::android::kRecentlyClosedTabsAndWindows};
+  base::test::ScopedFeatureList feature_list_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   scoped_refptr<const Extension> extension_;
 };
+
+ExtensionSessionsTest::ExtensionSessionsTest() {
+#if BUILDFLAG(IS_ANDROID)
+  // kRecentlyClosedTabsAndWindows is required for Java-side window restore.
+  // kLoadAllTabsAtStartup is required to force WebContents for tabs not to be
+  // null, see browser_extension_window_controller.cc.
+  feature_list_.InitWithFeatures(
+      {chrome::android::kRecentlyClosedTabsAndWindows,
+       chrome::android::kLoadAllTabsAtStartup},
+      {});
+#endif  // BUILDFLAG(IS_ANDROID)
+}
 
 void ExtensionSessionsTest::SetUpCommandLine(base::CommandLine* command_line) {
   ExtensionBrowserTest::SetUpCommandLine(command_line);
@@ -359,16 +370,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetDevicesListEmpty) {
   EXPECT_TRUE(devices.empty());
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/405219627): Fix sessions API on desktop Android and port this
-// test. On Android, closed window state is stored in the Java layer, only
-// accessible through RecentlyClosedEntriesManager.
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreMostRecentlyClosedWindow) {
   // Open a second window.
   BrowserWindowInterface* browser2 =
       CreateBrowserWindowWithType(BrowserWindowInterface::TYPE_NORMAL);
 
-  // Ensure a tabs exists.
+  // Ensure 2 tabs exist.
   auto* tab_list2 = TabListInterface::From(browser2);
   ASSERT_TRUE(tab_list2);
   // Platforms like Win/Mac/Linux create browsers with no tabs, whereas Android
@@ -376,12 +383,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreMostRecentlyClosedWindow) {
   if (tab_list2->GetTabCount() == 0) {
     tab_list2->OpenTab(GURL("about:blank"), /*index=*/-1);
   }
-  ASSERT_EQ(1, tab_list2->GetTabCount());
+  tab_list2->OpenTab(GURL("about:blank"), /*index=*/-1);
+  ASSERT_EQ(2, tab_list2->GetTabCount());
 
-  // Navigate the tab, otherwise window close does not persist it in the tab
+  // Navigate the tabs, otherwise window close does not persist it in the tab
   // restore service.
-  content::WebContents* contents = tab_list2->GetTab(0)->GetContents();
-  ASSERT_TRUE(NavigateToURL(contents, GURL("chrome://version/")));
+  content::WebContents* contents0 = tab_list2->GetTab(0)->GetContents();
+  ASSERT_TRUE(NavigateToURL(contents0, GURL("chrome://version/")));
+  content::WebContents* contents1 = tab_list2->GetTab(1)->GetContents();
+  ASSERT_TRUE(NavigateToURL(contents1, GURL("chrome://credits/")));
 
   // Close the second window and wait for it to close.
   BrowserCloseWaiter close_waiter(browser2);
@@ -405,30 +415,41 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreMostRecentlyClosedWindow) {
   const base::DictValue* window_dict = session_dict->FindDict("window");
   ASSERT_TRUE(window_dict) << "Window information is missing from the session.";
 
-  // The window contains a tab.
+  // The window contains 2 tabs.
   const base::ListValue* tabs = window_dict->FindList("tabs");
   ASSERT_TRUE(tabs);
-  EXPECT_EQ(1u, tabs->size());
+  EXPECT_EQ(2u, tabs->size());
 
-  // The tab is chrome://version/.
-  const base::DictValue* tab = (*tabs)[0].GetIfDict();
-  ASSERT_TRUE(tab);
-  const std::string* url = tab->FindString("url");
-  ASSERT_TRUE(url);
-  EXPECT_EQ("chrome://version/", *url);
+#if !BUILDFLAG(IS_ANDROID)
+  // The tab URLs are chrome://version/ and chrome://credits/.
+  // NOTE: On Android, the tabs are still navigating when the return value of
+  // the API function is computed, so the "committed" URLs used by the API are
+  // not available. However, we verify the loading URLs below in the test.
+  const base::DictValue* tab0 = (*tabs)[0].GetIfDict();
+  const base::DictValue* tab1 = (*tabs)[1].GetIfDict();
+  ASSERT_TRUE(tab0);
+  ASSERT_TRUE(tab1);
+  const std::string* url0 = tab0->FindString("url");
+  const std::string* url1 = tab1->FindString("url");
+  ASSERT_TRUE(url0);
+  ASSERT_TRUE(url1);
+  EXPECT_EQ("chrome://version/", *url0);
+  EXPECT_EQ("chrome://credits/", *url1);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Wait for the browser to be created (it may be asynchronous).
   BrowserWindowInterface* browser3 = browser_waiter.Wait();
   ASSERT_TRUE(browser3);
 
-  // The restored browser has one tab at chrome://version/.
+  // The restored browser has tabs at chrome://version/ and chrome://credits/.
   auto* tab_list3 = TabListInterface::From(browser3);
   ASSERT_TRUE(tab_list3);
-  EXPECT_EQ(1, tab_list3->GetTabCount());
+  ASSERT_EQ(2, tab_list3->GetTabCount());
   EXPECT_EQ(GURL("chrome://version/"),
             tab_list3->GetTab(0)->GetContents()->GetVisibleURL());
+  EXPECT_EQ(GURL("chrome://credits/"),
+            tab_list3->GetTab(1)->GetContents()->GetVisibleURL());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreForeignSessionWindow) {
   CreateSessionModels();

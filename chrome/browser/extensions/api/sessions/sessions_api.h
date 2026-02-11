@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_SESSIONS_SESSIONS_API_H__
 
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/common/extensions/api/sessions.h"
@@ -90,21 +91,43 @@ class SessionsGetDevicesFunction : public ExtensionFunction {
 };
 
 class SessionsRestoreFunction : public ExtensionFunction {
+ public:
+  SessionsRestoreFunction();
+  SessionsRestoreFunction(const SessionsRestoreFunction&) = delete;
+  SessionsRestoreFunction& operator=(const SessionsRestoreFunction&) = delete;
+
  protected:
-  ~SessionsRestoreFunction() override = default;
+  // Ref-counted so protected destructor.
+  ~SessionsRestoreFunction() override;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("sessions.restore", SESSIONS_RESTORE)
 
  private:
   ResponseValue GetRestoredTabResult(content::WebContents* contents);
   ResponseValue GetRestoredWindowResult(int window_id);
-  ResponseValue RestoreMostRecentlyClosed(BrowserWindowInterface* browser);
+  ResponseAction RestoreMostRecentlyClosed(BrowserWindowInterface* browser);
   ResponseValue RestoreLocalSession(const SessionId& session_id,
                                     BrowserWindowInterface* browser);
   ResponseAction RestoreForeignSession(const SessionId& session_id,
                                        BrowserWindowInterface* browser);
   void OnRestoreForeignSessionWindows(
       std::vector<BrowserWindowInterface*> browsers);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Uses JNI to query Java `RecentlyClosedEntitiesManager` for recently closed
+  // windows.
+  ResponseAction QueryRecentlyClosedEntitiesManager();
+
+  // Callback for `QueryRecentlyClosedEntitiesManager()`.
+  void OnGetRecentlyClosedWindow(
+      const base::android::JavaRef<jobject>& j_tab_model);
+
+  // Callback for browser window creation.
+  void OnBrowserWindowCreated(BrowserWindowInterface* browser);
+
+  // A global reference to `TabModel` so it stays alive across callbacks.
+  base::android::ScopedJavaGlobalRef<jobject> global_ref_tab_model_;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 class SessionsEventRouter : public sessions::TabRestoreServiceObserver {
