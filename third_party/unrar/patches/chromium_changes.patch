@@ -81,6 +81,27 @@ index 61c616289ae47..f9a9d74f021c8 100644
  }
  
  
+diff --git a/third_party/unrar/src/crypt.hpp b/third_party/unrar/src/crypt.hpp
+index 286c84807c3d5..6d100cdfe9536 100644
+--- a/third_party/unrar/src/crypt.hpp
++++ b/third_party/unrar/src/crypt.hpp
+@@ -17,9 +17,16 @@ enum CRYPT_METHOD {
+ #define CRYPT_BLOCK_MASK         (CRYPT_BLOCK_SIZE-1) // 0xf
+ 
+ #define CRYPT5_KDF_LG2_COUNT     15 // LOG2 of PDKDF2 iteration count.
++
++#if defined(CHROMIUM_UNRAR_FUZZER)
++#define CRYPT5_KDF_LG2_COUNT_MAX 18 // LOG2 of maximum accepted iteration count.
++#else
+ #define CRYPT5_KDF_LG2_COUNT_MAX 24 // LOG2 of maximum accepted iteration count.
++#endif
++
+ #define CRYPT_VERSION             0 // Supported encryption version.
+ 
++static_assert(CRYPT5_KDF_LG2_COUNT <= CRYPT5_KDF_LG2_COUNT_MAX);
+ 
+ class CryptData
+ {
 diff --git a/third_party/unrar/src/errhnd.cpp b/third_party/unrar/src/errhnd.cpp
 index b347678fe1903..0a363a79c74b8 100644
 --- a/third_party/unrar/src/errhnd.cpp

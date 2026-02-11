@@ -17,9 +17,16 @@ enum CRYPT_METHOD {
 #define CRYPT_BLOCK_MASK         (CRYPT_BLOCK_SIZE-1) // 0xf
 
 #define CRYPT5_KDF_LG2_COUNT     15 // LOG2 of PDKDF2 iteration count.
+
+#if defined(CHROMIUM_UNRAR_FUZZER)
+#define CRYPT5_KDF_LG2_COUNT_MAX 18 // LOG2 of maximum accepted iteration count.
+#else
 #define CRYPT5_KDF_LG2_COUNT_MAX 24 // LOG2 of maximum accepted iteration count.
+#endif
+
 #define CRYPT_VERSION             0 // Supported encryption version.
 
+static_assert(CRYPT5_KDF_LG2_COUNT <= CRYPT5_KDF_LG2_COUNT_MAX);
 
 class CryptData
 {
