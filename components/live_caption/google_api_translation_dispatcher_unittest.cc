@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/live_caption/translation_dispatcher.h"
+#include "components/live_caption/google_api_translation_dispatcher.h"
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -10,7 +10,6 @@
 #include "base/test/task_environment.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,14 +20,14 @@ namespace captions {
 using testing::_;
 using testing::Eq;
 
-class TranslationDispatcherTest : public testing::Test {
+class GoogleApiTranslationDispatcherTest : public testing::Test {
  protected:
   void SetUp() override {
     test_url_loader_factory_.Clone(
         remote_url_loader_factory_.BindNewPipeAndPassReceiver());
 
-    translation_dispatcher_ =
-        std::make_unique<TranslationDispatcher>("test_api_key", nullptr);
+    translation_dispatcher_ = std::make_unique<GoogleApiTranslationDispatcher>(
+        "test_api_key", nullptr);
 
     translation_dispatcher_->SetURLLoaderFactoryForTest(  // IN-TEST
         std::move(remote_url_loader_factory_));
@@ -70,10 +69,10 @@ class TranslationDispatcherTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory_;
-  std::unique_ptr<TranslationDispatcher> translation_dispatcher_;
+  std::unique_ptr<GoogleApiTranslationDispatcher> translation_dispatcher_;
 };
 
-TEST_F(TranslationDispatcherTest, GetTranslationSuccess) {
+TEST_F(GoogleApiTranslationDispatcherTest, GetTranslationSuccess) {
   base::RunLoop translate_callback_run_loop;
   base::RunLoop wait_for_translation_request;
   base::MockCallback<TranslateEventCallback> translate_callback;
@@ -114,7 +113,7 @@ TEST_F(TranslationDispatcherTest, GetTranslationSuccess) {
   translate_callback_run_loop.Run();
 }
 
-TEST_F(TranslationDispatcherTest, GetTranslationNetworkError) {
+TEST_F(GoogleApiTranslationDispatcherTest, GetTranslationNetworkError) {
   base::RunLoop translate_callback_run_loop;
   base::RunLoop wait_for_translation_request;
   base::MockCallback<TranslateEventCallback> translate_callback;

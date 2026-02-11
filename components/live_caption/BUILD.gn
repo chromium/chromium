@@ -73,11 +73,12 @@ if (!is_android && !is_ios) {
 
   static_library("live_translate") {
     sources = [
+      "google_api_translation_dispatcher.cc",
+      "google_api_translation_dispatcher.h",
       "greedy_text_stabilizer.cc",
       "greedy_text_stabilizer.h",
       "live_translate_controller.cc",
       "live_translate_controller.h",
-      "translation_dispatcher.cc",
       "translation_dispatcher.h",
     ]
 
@@ -110,9 +111,9 @@ if (!is_android && !is_ios) {
     sources = [
       "caption_controller_base_unittest.cc",
       "caption_util_unittest.cc",
+      "google_api_translation_dispatcher_unittest.cc",
       "greedy_text_stabilizer_unittest.cc",
       "live_caption_bubble_settings_unittest.cc",
-      "translation_dispatcher_unittest.cc",
       "translation_util_unittest.cc",
     ]
 
@@ -134,7 +135,6 @@ if (!is_android && !is_ios) {
       "//testing/gmock",
       "//testing/gtest",
       "//ui/base",
-      "//ui/gfx/geometry",
     ]
 
     if (is_chromeos) {

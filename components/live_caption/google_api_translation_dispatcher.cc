@@ -1,27 +1,24 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/live_caption/translation_dispatcher.h"
+#include "components/live_caption/google_api_translation_dispatcher.h"
 
 #include <memory>
 #include <string>
-#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/live_caption/translation_dispatcher.h"
 #include "components/live_caption/translation_util.h"
-#include "components/soda/constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "media/mojo/mojom/speech_recognition_result.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -87,17 +84,20 @@ enum class TranslationDispatcherParseResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:TranslationDispatcherParseResult)
 
-TranslationDispatcher::TranslationDispatcher(
+GoogleApiTranslationDispatcher::GoogleApiTranslationDispatcher() = default;
+
+GoogleApiTranslationDispatcher::GoogleApiTranslationDispatcher(
     std::string api_key,
     content::BrowserContext* browser_context)
     : api_key_(api_key), browser_context_(browser_context) {}
 
-TranslationDispatcher::~TranslationDispatcher() = default;
+GoogleApiTranslationDispatcher::~GoogleApiTranslationDispatcher() = default;
 
-void TranslationDispatcher::GetTranslation(absl::string_view result,
-                                           absl::string_view source_language,
-                                           absl::string_view target_language,
-                                           TranslateEventCallback callback) {
+void GoogleApiTranslationDispatcher::GetTranslation(
+    absl::string_view result,
+    absl::string_view source_language,
+    absl::string_view target_language,
+    TranslateEventCallback callback) {
   if (!url_loader_factory_.is_bound() || !url_loader_factory_.is_connected()) {
     ResetURLLoaderFactory();
   }
@@ -156,7 +156,7 @@ void TranslationDispatcher::GetTranslation(absl::string_view result,
   // Unretained is safe because |this| owns |url_loader_|.
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&TranslationDispatcher::OnURLLoadComplete,
+      base::BindOnce(&GoogleApiTranslationDispatcher::OnURLLoadComplete,
                      base::Unretained(this), std::move(callback)),
       kMaxMessageSize);
 
@@ -166,7 +166,7 @@ void TranslationDispatcher::GetTranslation(absl::string_view result,
                            base::HashMetricName(source_language));
 }
 
-void TranslationDispatcher::ResetURLLoaderFactory() {
+void GoogleApiTranslationDispatcher::ResetURLLoaderFactory() {
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
   params->process_id = network::OriginatingProcess::browser();
@@ -178,7 +178,7 @@ void TranslationDispatcher::ResetURLLoaderFactory() {
       url_loader_factory_.BindNewPipeAndPassReceiver(), std::move(params));
 }
 
-void TranslationDispatcher::OnURLLoadComplete(
+void GoogleApiTranslationDispatcher::OnURLLoadComplete(
     TranslateEventCallback callback,
     std::optional<std::string> response_body) {
   // Check that the request succeeded. First with Network Errors...
@@ -223,21 +223,22 @@ void TranslationDispatcher::OnURLLoadComplete(
   // Parse the response in a utility process.
   data_decoder_.ParseJson(
       *response_body,
-      base::BindOnce(&TranslationDispatcher::OnResponseJsonParsed,
+      base::BindOnce(&GoogleApiTranslationDispatcher::OnResponseJsonParsed,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void TranslationDispatcher::EmitError(TranslateEventCallback callback,
-                                      const std::string& message) const {
+void GoogleApiTranslationDispatcher::EmitError(
+    TranslateEventCallback callback,
+    const std::string& message) const {
   std::move(callback).Run(base::unexpected<std::string>(message));
 }
 
-void TranslationDispatcher::SetURLLoaderFactoryForTest(  // IN-TEST
+void GoogleApiTranslationDispatcher::SetURLLoaderFactoryForTest(  // IN-TEST
     mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory) {
   url_loader_factory_ = std::move(url_loader_factory);
 }
 
-void TranslationDispatcher::OnResponseJsonParsed(
+void GoogleApiTranslationDispatcher::OnResponseJsonParsed(
     TranslateEventCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {

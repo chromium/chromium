@@ -43,7 +43,7 @@
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#include "components/live_caption/translation_dispatcher.h"
+#include "components/live_caption/google_api_translation_dispatcher.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
 #include "components/user_manager/user.h"
@@ -68,7 +68,7 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
   auto babel_orca_translator =
       std::make_unique<babelorca::BabelOrcaCaptionTranslator>(
           std::make_unique<BabelOrcaTranslationDispatcherImpl>(
-              std::make_unique<::captions::TranslationDispatcher>(
+              std::make_unique<::captions::GoogleApiTranslationDispatcher>(
                   google_apis::GetBocaAPIKey(), profile)));
   // Unretained is safe since `babel_orca_manager_` instance is destroyed
   // explicitly before `boca_session_manager_`.

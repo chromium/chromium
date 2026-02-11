@@ -15,18 +15,16 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/live_caption/caption_bubble_controller.h"
+#include "components/live_caption/google_api_translation_dispatcher.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/live_translate_controller.h"
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/translation_util.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
 
 namespace {
 // A WebContentsObserver that allows waiting for some media to start or stop
@@ -63,8 +61,8 @@ MockLiveTranslateController::MockLiveTranslateController(
     content::BrowserContext* browser_context)
     : LiveTranslateController(
           profile_prefs,
-          std::make_unique<TranslationDispatcher>("dummy_api_key",
-                                                  browser_context)) {}
+          std::make_unique<GoogleApiTranslationDispatcher>("dummy_api_key",
+                                                           browser_context)) {}
 
 MockLiveTranslateController::~MockLiveTranslateController() = default;
 

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_LIVE_CAPTION_TRANSLATION_DISPATCHER_H_
 #define COMPONENTS_LIVE_CAPTION_TRANSLATION_DISPATCHER_H_
 
-#include <memory>
-#include <string>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
@@ -19,14 +17,6 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
-namespace content {
-class BrowserContext;
-}  // namespace content
-
-namespace network {
-class SimpleURLLoader;
-}  // namespace network
-
 namespace captions {
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -37,42 +27,15 @@ namespace captions {
 //
 class TranslationDispatcher {
  public:
-  TranslationDispatcher(std::string api_key,
-                        content::BrowserContext* browser_context);
+  TranslationDispatcher() = default;
   TranslationDispatcher(const TranslationDispatcher&) = delete;
   TranslationDispatcher& operator=(const TranslationDispatcher&) = delete;
-  virtual ~TranslationDispatcher();
+  virtual ~TranslationDispatcher() = default;
 
   virtual void GetTranslation(absl::string_view result,
                               absl::string_view source_language,
                               absl::string_view target_language,
-                              TranslateEventCallback callback);
-
-  void SetURLLoaderFactoryForTest(
-      mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory);
-
- private:
-  void ResetURLLoaderFactory();
-  void OnURLLoadComplete(TranslateEventCallback callback,
-                         std::optional<std::string> response_body);
-
-  void EmitError(TranslateEventCallback callback,
-                 const std::string& string) const;
-
-  // Called when the data decoder service provides parsed JSON data for a server
-  // response.
-  void OnResponseJsonParsed(TranslateEventCallback callback,
-                            data_decoder::DataDecoder::ValueOrError result);
-
-  const std::string api_key_;
-  raw_ptr<content::BrowserContext> browser_context_;
-
-  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<network::SimpleURLLoader> url_loader_;
-
-  data_decoder::DataDecoder data_decoder_;
-
-  base::WeakPtrFactory<TranslationDispatcher> weak_factory_{this};
+                              TranslateEventCallback callback) = 0;
 };
 
 }  // namespace captions
