@@ -495,6 +495,9 @@ extern const base::FeatureParam<bool>
     kGlicClientResponsivenessCheckIgnoreWhenDebuggerAttached;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicEnableCachedGetUserProfileInfo);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicKeyboardShortcutNewBadge);
 
 COMPONENT_EXPORT(CHROME_FEATURES)

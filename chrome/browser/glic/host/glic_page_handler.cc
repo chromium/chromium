@@ -790,6 +790,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::FeatureList::IsEnabled(features::kGlicScrollTo);
     state->enable_zero_state_suggestions =
         contextual_cueing::IsZeroStateSuggestionsEnabled();
+    state->enable_cached_get_user_profile_info = base::FeatureList::IsEnabled(
+        features::kGlicEnableCachedGetUserProfileInfo);
 
     local_state_pref_change_registrar_.Init(g_browser_process->local_state());
     local_state_pref_change_registrar_.Add(
