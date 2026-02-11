@@ -83,7 +83,23 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
   const int padding =
       GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonPadding);
 
-  if (state_controller_->IsCollapsed()) {
+  int total_width = 0;
+  int min_height = 0;
+  for (views::View* container_view : container_views) {
+    const auto preferred = container_view->GetPreferredSize();
+    total_width += preferred.width();
+    min_height = std::max(min_height, preferred.height());
+  }
+  total_width += (container_views.size() - 1) * padding;
+
+  // If we're trying to get the minimum size, it will ask for layout for size
+  // bounds {0, 0}, but overflow is based on available size.
+  const int available_width =
+      host_size.width() > 0
+          ? host_size.width()
+          : parent()->GetAvailableSize(this).width().value_or(0);
+
+  if (total_width >= available_width) {
     int current_y = 0;
 
     if (unfocus_button_ && unfocus_button_->GetVisible()) {
@@ -130,13 +146,6 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     // If the vertical tab strip is uncollapsed, then lay out the buttons
     // horizontally. The exact y-level of the buttons depends on if they can lay
     // on one line or not.
-    int total_width = caption_button_width_;
-    int min_height = 0;
-    for (views::View* container_view : container_views) {
-      const auto preferred = container_view->GetPreferredSize();
-      total_width += preferred.width();
-      min_height = std::max(min_height, preferred.height());
-    }
 
     // Guarantee that the height of the container is at least the height of the
     // buttons plus padding. Use the same padding as the toolbar for approximate
@@ -146,20 +155,11 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     }
     host_size.SetToMax(gfx::Size(0, min_height));
 
-    total_width += (container_views.size() - 1) * padding;
-
-    // If we're trying to get the minimum size, it will ask for layout for size
-    // bounds {0, 0}, but overflow is based on available size.
-    const int available_width =
-        host_size.width() > 0
-            ? host_size.width()
-            : parent()->GetAvailableSize(this).width().value_or(0);
-
     // If there is not enough space for the buttons on a single line with
     // caption buttons, shift them below.
-    const bool wrapped_due_to_overflow = size_bounds.width().is_bounded() &&
-                                         caption_button_width_ > 0 &&
-                                         total_width > available_width;
+    const bool wrapped_due_to_overflow =
+        size_bounds.width().is_bounded() && caption_button_width_ > 0 &&
+        total_width + caption_button_width_ > available_width;
 
     int y_baseline = host_size.height() / 2;
     // If there is not enough space for all of the buttons to be on the same
