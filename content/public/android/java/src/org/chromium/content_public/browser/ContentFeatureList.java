@@ -53,6 +53,9 @@ public class ContentFeatureList {
     public static final String ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND =
             "AccessibilityManageBroadcastReceiverOnBackground";
 
+    public static final String ANDROID_ENABLE_BACKGROUND_MEDIA_CAPTURING =
+            "AndroidEnableBackgroundMediaCapturing";
+
     public static final String ANDROID_CAPTURE_KEY_EVENTS = "AndroidCaptureKeyEvents";
     public static final String ANDROID_CARET_BROWSING = "AndroidCaretBrowsing";
 

@@ -32,6 +32,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAndroidCaptureKeyEvents,
     &features::kAndroidCaretBrowsing,
     &features::kAndroidDevToolsFrontend,
+    &features::kAndroidEnableBackgroundMediaCapturing,
     &features::kAccessibilityCheckJavaNodeCacheFreshness,
     &features::kAccessibilityAtomicLiveRegions,
     &features::kAccessibilityDeprecateJavaNodeCache,
