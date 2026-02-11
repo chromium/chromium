@@ -76,7 +76,7 @@ bool ToCdmVideoFrame(const VideoFrame& video_frame,
   CHECK(cdm_video_frame);
 
   if (!video_frame.HasDirectCpuAccess()) {
-    DVLOG(1) << "VideoFrame is not mappable";
+    DVLOG(1) << "No direct CPU access to VideoFrame";
     return false;
   }
 
