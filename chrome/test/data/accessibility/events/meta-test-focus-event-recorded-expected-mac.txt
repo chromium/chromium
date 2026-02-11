@@ -1,1 +1,1 @@
-AXFocusedUIElementChanged on AXButton AXDescription='Test Button'
+AXFocusedUIElementChanged on AXButton "Test Button"

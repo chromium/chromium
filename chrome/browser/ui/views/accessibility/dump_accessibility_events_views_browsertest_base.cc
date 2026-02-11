@@ -12,14 +12,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_tree_manager.h"
-#include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
@@ -34,16 +32,7 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
-
-namespace views {
-class WidgetAXManager;
-std::unique_ptr<ui::AXEventRecorder> CreateViewsAXEventRecorderAuraLinux(
-    base::ProcessId pid,
-    const ui::AXTreeSelector& selector,
-    WidgetAXManager* widget_ax_manager);
-void CleanupViewsAXEventRecorderAuraLinux();
-}  // namespace views
+#include "ui/accessibility/platform/inspect/ax_event_recorder_auralinux.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -98,24 +87,6 @@ void DumpAccessibilityEventsViewsTestBase::SetUpOnMainThread() {
   SetUpTestWidget();
   SetUpTestViews();
 
-#if BUILDFLAG(IS_LINUX)
-  // On Wayland, widget activation is asynchronous (compositor-controlled).
-  // FocusManager::SetFocusedViewWithReason() defers focus changes when
-  // Widget::IsActive() returns false, which means no focus events are fired.
-  // Widget::IsActive() requires both platform-level (is_active_ in
-  // DesktopWindowTreeHostPlatform) and aura-level (wm::IsActiveWindow)
-  // activation. SimulateNativeActivate only sets the aura level, leaving
-  // is_active_ false on Wayland. Directly invoking OnActivationChanged()
-  // on the platform host simulates the compositor's activation response,
-  // setting both levels synchronously without requiring a compositor
-  // roundtrip.
-  if (widget_ && widget_->IsVisible()) {
-    static_cast<DesktopWindowTreeHostPlatform*>(
-        widget_->GetNativeWindow()->GetHost())
-        ->OnActivationChanged(true);
-  }
-#endif
-
   BeginRecordingEvents();
 }
 
@@ -133,8 +104,6 @@ void DumpAccessibilityEventsViewsTestBase::TearDownOnMainThread() {
 
 #if BUILDFLAG(IS_MAC)
   CleanupViewsAXEventRecorderMac();
-#elif BUILDFLAG(IS_LINUX)
-  CleanupViewsAXEventRecorderAuraLinux();
 #endif
 
   widget_.reset();
@@ -203,7 +172,7 @@ void DumpAccessibilityEventsViewsTestBase::BeginRecordingEvents() {
   recording_events_ = true;
 }
 
-void DumpAccessibilityEventsViewsTestBase::EndTestAndCompareEvents(
+bool DumpAccessibilityEventsViewsTestBase::EndTestAndCompareEvents(
     const std::string& test_name) {
   CHECK(recording_events_) << "Not recording events. Did you forget to call "
                               "BeginRecordingEvents()?";
@@ -219,7 +188,7 @@ void DumpAccessibilityEventsViewsTestBase::EndTestAndCompareEvents(
   event_recorder_->WaitForDoneRecording();
   recording_events_ = false;
 
-  EXPECT_TRUE(ValidateAgainstExpectation(test_name, CollectEventLogs()));
+  return ValidateAgainstExpectation(test_name, CollectEventLogs());
 }
 
 void DumpAccessibilityEventsViewsTestBase::RunEventTest(
@@ -227,7 +196,7 @@ void DumpAccessibilityEventsViewsTestBase::RunEventTest(
     base::OnceClosure action) {
   BeginRecordingEvents();
   std::move(action).Run();
-  EndTestAndCompareEvents(test_name);
+  EXPECT_TRUE(EndTestAndCompareEvents(test_name));
 }
 
 std::unique_ptr<ui::AXEventRecorder>
@@ -270,8 +239,9 @@ DumpAccessibilityEventsViewsTestBase::CreateEventRecorder() {
   if (GetApiType() != ui::AXApiType::kLinux) {
     return nullptr;
   }
-  return CreateViewsAXEventRecorderAuraLinux(base::GetCurrentProcId(), selector,
-                                             widget_->ax_manager());
+  // For Linux, we pass nullptr for manager since we're not testing web content.
+  return std::make_unique<ui::AXEventRecorderAuraLinux>(
+      /*manager=*/nullptr, base::GetCurrentProcId(), selector);
 #else
   return nullptr;
 #endif
@@ -312,8 +282,8 @@ DumpAccessibilityEventsViewsTestBase::DefaultFilters() const {
                        ui::AXPropertyFilter::ALLOW);
   filters.emplace_back("AXValueChanged*", ui::AXPropertyFilter::ALLOW);
 #elif BUILDFLAG(IS_LINUX)
-  filters.emplace_back("STATE-CHANGE:*", ui::AXPropertyFilter::ALLOW);
-  filters.emplace_back("FOCUS-EVENT:*", ui::AXPropertyFilter::ALLOW);
+  filters.emplace_back("state-changed:*", ui::AXPropertyFilter::ALLOW);
+  filters.emplace_back("focus-event:*", ui::AXPropertyFilter::ALLOW);
 #endif
 
   return filters;
@@ -325,26 +295,12 @@ void DumpAccessibilityEventsViewsTestBase::AddPropertyFilter(
   additional_filters_.emplace_back(filter_str, type);
 }
 
-void DumpAccessibilityEventsViewsTestBase::AddAllowFilter(
-    const std::string& filter_str) {
-  AddPropertyFilter(filter_str, ui::AXPropertyFilter::ALLOW);
-}
-
-void DumpAccessibilityEventsViewsTestBase::AddDenyFilter(
-    const std::string& filter_str) {
-  AddPropertyFilter(filter_str, ui::AXPropertyFilter::DENY);
-}
-
-void DumpAccessibilityEventsViewsTestBase::SetFilters(
-    const std::string& directives) {
-  std::vector<std::string> lines = base::SplitString(
-      directives, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  ui::AXInspectScenario scenario =
-      test_helper_.ParseScenario(lines, DefaultFilters());
-  // Extract only the filters that were added beyond the defaults.
-  for (size_t i = DefaultFilters().size(); i < scenario.property_filters.size();
-       ++i) {
-    additional_filters_.push_back(std::move(scenario.property_filters[i]));
+void DumpAccessibilityEventsViewsTestBase::LoadFiltersFromFile(
+    const base::FilePath& filter_file) {
+  std::optional<ui::AXInspectScenario> scenario =
+      test_helper_.ParseScenario(filter_file, DefaultFilters());
+  if (scenario) {
+    scenario_ = std::move(*scenario);
   }
 }
 
@@ -378,15 +334,14 @@ DumpAccessibilityEventsViewsTestBase::CollectEventLogs() {
 
 std::vector<std::string> DumpAccessibilityEventsViewsTestBase::FilterEventLogs(
     const std::vector<std::string>& event_logs) const {
-  // Build the combined filter list: default filters + any filters added via
-  // AddPropertyFilter() in individual tests.
-  std::vector<ui::AXPropertyFilter> filters = DefaultFilters();
-  filters.insert(filters.end(), additional_filters_.begin(),
-                 additional_filters_.end());
+  if (scenario_.property_filters.empty()) {
+    return event_logs;
+  }
 
   std::vector<std::string> filtered;
   for (const auto& event_log : event_logs) {
-    if (ui::AXTreeFormatter::MatchesPropertyFilters(filters, event_log, true)) {
+    if (ui::AXTreeFormatter::MatchesPropertyFilters(scenario_.property_filters,
+                                                    event_log, true)) {
       filtered.push_back(base::EscapeNonASCII(event_log));
     }
   }
