@@ -444,63 +444,43 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
                                             handles[2].Get()->GetContents()));
 
   // Set up subscription for tab pinning status changes.
-  // Events all fire upon delegate swap, so we must setup assertions ahead of
-  // time.
-  std::vector<std::pair<tabs::TabInterface*, bool>> expected_pin_status_changes;
-  struct ExpectedEvent {
-    raw_ptr<tabs::TabInterface> tab;
-    bool is_pin;
-  };
-  std::vector<ExpectedEvent> expected_pin_events;
-
-  // First, verify tabs 0, 1, 2 send unpinned notifications.
-  expected_pin_status_changes.emplace_back(handles[0].Get(), false);
-  expected_pin_status_changes.emplace_back(handles[1].Get(), false);
-  expected_pin_status_changes.emplace_back(handles[2].Get(), false);
-  expected_pin_events.push_back({handles[0].Get(), false});
-  expected_pin_events.push_back({handles[1].Get(), false});
-  expected_pin_events.push_back({handles[2].Get(), false});
-
-  // Then, verify tabs 1, 3, 4 send pinned notifications.
-  expected_pin_status_changes.emplace_back(handles[1].Get(), true);
-  expected_pin_status_changes.emplace_back(handles[3].Get(), true);
-  expected_pin_status_changes.emplace_back(handles[4].Get(), true);
-  expected_pin_events.push_back({handles[1].Get(), true});
-  expected_pin_events.push_back({handles[3].Get(), true});
-  expected_pin_events.push_back({handles[4].Get(), true});
-
-  // Setup subscription to consume status changes and make assertions (in
-  // order).
+  base::test::TestFuture<tabs::TabInterface*, bool> pin_status_future(
+      base::test::TestFutureMode::kQueue);
   auto pin_status_sub = manager_.AddTabPinningStatusChangedCallback(
-      base::BindLambdaForTesting([&](tabs::TabInterface* tab, bool pinned) {
-        // Grab and verify our next expected status change.
-        auto [expected_tab, expected_pinned] =
-            expected_pin_status_changes.front();
-        EXPECT_EQ(expected_tab, tab);
-        EXPECT_EQ(expected_pinned, pinned);
-        // Remove the expectation so we don't re-check it.
-        expected_pin_status_changes.erase(expected_pin_status_changes.begin());
-      }));
+      pin_status_future.GetRepeatingCallback());
 
-  auto pin_event_sub =
-      manager_.AddTabPinningStatusEventCallback(base::BindLambdaForTesting(
-          [&](tabs::TabInterface* tab, GlicPinningStatusEvent event) {
-            auto expected = expected_pin_events.front();
-            EXPECT_EQ(expected.tab, tab);
-            if (expected.is_pin) {
-              ASSERT_TRUE(std::holds_alternative<GlicPinEvent>(event));
-            } else {
-              ASSERT_TRUE(std::holds_alternative<GlicUnpinEvent>(event));
-            }
-            expected_pin_events.erase(expected_pin_events.begin());
-          }));
+  base::test::TestFuture<tabs::TabInterface*, GlicPinningStatusEvent>
+      pin_event_future(base::test::TestFutureMode::kQueue);
+  auto pin_event_sub = manager_.AddTabPinningStatusEventCallback(
+      pin_event_future.GetRepeatingCallback());
 
   // Trigger delegate swap.
   manager_.SetDelegate(&manager2);
 
-  // Verify we triggered all expected notifications.
-  ASSERT_TRUE(expected_pin_status_changes.empty());
-  ASSERT_TRUE(expected_pin_events.empty());
+  // Verify triggered notifications in order.
+
+  // 1. Verify Unpin notifications (tabs 0, 1, 2)
+  for (int i = 0; i < 3; ++i) {
+    EXPECT_EQ(pin_status_future.Take(),
+              std::make_tuple(handles[i].Get(), false));
+    auto [tab, event] = pin_event_future.Take();
+    EXPECT_EQ(tab, handles[i].Get());
+    EXPECT_TRUE(std::holds_alternative<GlicUnpinEvent>(event));
+  }
+
+  // 2. Verify Pin notifications (tabs 1, 3, 4)
+  const int pinned_indices[] = {1, 3, 4};
+  for (int i : pinned_indices) {
+    EXPECT_EQ(pin_status_future.Take(),
+              std::make_tuple(handles[i].Get(), true));
+    auto [tab, event] = pin_event_future.Take();
+    EXPECT_EQ(tab, handles[i].Get());
+    EXPECT_TRUE(std::holds_alternative<GlicPinEvent>(event));
+  }
+
+  // Ensure queues are empty.
+  EXPECT_FALSE(pin_status_future.IsReady());
+  EXPECT_FALSE(pin_event_future.IsReady());
 
   // Verify final state matches manager 2.
   EXPECT_FALSE(manager_.IsTabPinned(handles[0]));
