@@ -403,6 +403,11 @@ void DumpWithDifferingPaintPropertiesIncluded(const PaintChunk& previous,
   SCOPED_CRASH_KEY_STRING32("ChunkId", "id", previous.id.ToString().Utf8());
 
   base::debug::DumpWithoutCrashing();
+
+  // DCHECK added to facilitate detection by ClusterFuzz.
+  DCHECK(false) << "Paint Property Tree State differs for Paint Chunk: "
+                << "Missing call to PaintArtifactCompositor::"
+                << "SetNeedsUpdate?";
 }
 
 // True if the paint chunk change affects the result of |Update|, such as the
