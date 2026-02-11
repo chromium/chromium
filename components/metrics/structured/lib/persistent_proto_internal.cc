@@ -59,11 +59,14 @@ PersistentProtoInternal::PersistentProtoInternal(
                      weak_factory_.GetWeakPtr(), std::move(on_read)));
 }
 
-PersistentProtoInternal::~PersistentProtoInternal() = default;
+PersistentProtoInternal::~PersistentProtoInternal() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void PersistentProtoInternal::OnReadComplete(
     ReadCallback callback,
     base::expected<std::string, ReadStatus> read_status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ReadStatus status;
 
   // If the path was updated then we may not need to update the pointer.
@@ -100,6 +103,7 @@ void PersistentProtoInternal::OnReadComplete(
 }
 
 void PersistentProtoInternal::QueueWrite() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Read |updating_path_| to check if we are actively updating the path of this
   // proto.
   if (updating_path_.load()) {
@@ -120,6 +124,7 @@ void PersistentProtoInternal::QueueWrite() {
 }
 
 void PersistentProtoInternal::OnWriteAttempt(bool write_successful) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   write_buffer_.clear();
 
   if (write_successful) {
@@ -130,10 +135,12 @@ void PersistentProtoInternal::OnWriteAttempt(bool write_successful) {
 }
 
 void PersistentProtoInternal::OnWriteComplete(const WriteStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   on_write_.Run(status);
 }
 
 void PersistentProtoInternal::Purge() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (proto_) {
     proto_->Clear();
     QueueFileDelete();
@@ -143,6 +150,7 @@ void PersistentProtoInternal::Purge() {
 }
 
 std::optional<std::string> PersistentProtoInternal::SerializeData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   proto_file_->RegisterOnNextWriteCallbacks(
       base::BindOnce(base::IgnoreResult(&base::CreateDirectory),
                      proto_file_->path().DirName()),
@@ -154,6 +162,7 @@ std::optional<std::string> PersistentProtoInternal::SerializeData() {
 }
 
 void PersistentProtoInternal::StartWriteForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SerializeProtoForWrite();
 
   proto_file_->ScheduleWrite(this);
@@ -163,6 +172,7 @@ void PersistentProtoInternal::StartWriteForTesting() {
 void PersistentProtoInternal::UpdatePath(const base::FilePath& path,
                                          ReadCallback on_read,
                                          bool remove_existing) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   updating_path_.store(true);
 
   // Clean up the state of the current |proto_file_|.
@@ -200,6 +210,7 @@ void PersistentProtoInternal::UpdatePath(const base::FilePath& path,
 }
 
 void PersistentProtoInternal::DeallocProto() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   FlushQueuedWrites();
   proto_ = nullptr;
 }
@@ -211,12 +222,14 @@ void PersistentProtoInternal::QueueFileDelete() {
 }
 
 void PersistentProtoInternal::FlushQueuedWrites() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (proto_file_->HasPendingWrite()) {
     proto_file_->DoScheduledWrite();
   }
 }
 
 void PersistentProtoInternal::SerializeProtoForWrite() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If the write buffer is not empty, it means that a write is already in
   // progress.
   if (!write_buffer_.empty()) {

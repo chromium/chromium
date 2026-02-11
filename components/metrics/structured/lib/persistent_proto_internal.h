@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -59,8 +60,14 @@ class PersistentProtoInternal
   // Retrieves the underlying proto. Must never be null.
   virtual google::protobuf::MessageLite* GetProto() = 0;
 
-  google::protobuf::MessageLite* get() { return proto_; }
-  const google::protobuf::MessageLite* get() const { return proto_; }
+  google::protobuf::MessageLite* get() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return proto_;
+  }
+  const google::protobuf::MessageLite* get() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return proto_;
+  }
 
   // Queues a write task on the current task runner.
   void QueueWrite();
@@ -118,6 +125,8 @@ class PersistentProtoInternal
 
   // Called after OnWriteAttempt() or if the write was unsuccessful earlier.
   void OnWriteComplete(WriteStatus status);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Whether we should immediately clear the proto after reading it.
   bool purge_after_reading_ = false;
