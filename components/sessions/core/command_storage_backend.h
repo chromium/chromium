@@ -83,8 +83,8 @@ class SESSIONS_EXPORT CommandStorageBackend
 
   // Represents data for a session. Public for tests.
   // Creates a CommandStorageBackend. This method is invoked on the MAIN thread,
-  // and does no IO. The real work is done from Init, which is invoked on
-  // a background task runer.
+  // and does no IO. The real work is done from InitIfNecessary(), which is
+  // invoked on a background task runer.
   //
   // See `CommandStorageManager` for details on `type` and `path`.
   CommandStorageBackend(
@@ -171,8 +171,7 @@ class SESSIONS_EXPORT CommandStorageBackend
 
   ~CommandStorageBackend();
 
-  // Performs initialization on the background task run, calling DoInit() if
-  // necessary.
+  // Performs initialization on the background task run, if necessary.
   void InitIfNecessary();
 
   // Generates the path to a session file with the given timestamp.
@@ -265,8 +264,8 @@ class SESSIONS_EXPORT CommandStorageBackend
   // File and path commands are being written.
   std::unique_ptr<OpenFile> open_file_;
 
-  // Whether DoInit() was called. DoInit() is called on the background task
-  // runner.
+  // Whether InitIfNecessary() was called. InitIfNecessary() is called on the
+  // background task runner.
   bool inited_ = false;
 
   std::vector<uint8_t> crypto_key_;

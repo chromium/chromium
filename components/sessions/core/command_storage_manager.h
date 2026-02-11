@@ -50,9 +50,9 @@ class SESSIONS_EXPORT CommandStorageManager {
   // when we shouldn't need to worry too much about migrating older data.
   enum SessionType { kAppRestore, kSessionRestore, kTabRestore, kOther };
 
-  // Creates a new CommandStorageManager. After creation you need to invoke
-  // Init(). `delegate` is not owned by this and must outlive this. If
-  // `enable_crypto` is true, the contents of the file are encrypted.
+  // Creates a new CommandStorageManager. `delegate` is not owned by this and
+  // must outlive this. If `enable_crypto` is true, the contents of the file
+  // are encrypted.
   //
   // The meaning of `path` depends upon the type. If `type` is `kOther`, then
   // the path is a file name to which `_TIMESTAMP` is added. If `type` is not
