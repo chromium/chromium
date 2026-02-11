@@ -358,10 +358,8 @@ public class MultiInstanceManagerApi31UnitTest {
                 intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
             }
 
-            // Remove LAUNCH_ADJACENT flag if shouldOpenInAdjacentWindow() is false and if the
-            // Activity is in a full screen window.
-            if (!mActivity.isInMultiWindowMode()
-                    && !MultiWindowUtils.shouldOpenInAdjacentWindow()) {
+            // Remove LAUNCH_ADJACENT flag if shouldOpenInAdjacentWindow() is false.
+            if (!MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity)) {
                 intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
             }
 
@@ -1600,6 +1598,33 @@ public class MultiInstanceManagerApi31UnitTest {
         setupTwoInstances();
         List<Tab> tabs = List.of(mTab1, mTab2);
 
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
+                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
+                false);
+
+        mMultiInstanceManager.moveTabsToWindow(
+                /* destWindowId= */ INVALID_WINDOW_ID,
+                tabs,
+                /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
+
+        verify(mTabReparentingDelegate)
+                .reparentTabsToNewWindow(
+                        tabs,
+                        INVALID_WINDOW_ID,
+                        /* openAdjacently= */ false,
+                        NewWindowAppSource.KEYBOARD_SHORTCUT);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
+    public void testMoveTabsToNewWindow_inMultiWindowMode_opensAdjacently() {
+        setupTwoInstances();
+        List<Tab> tabs = List.of(mTab1, mTab2);
+
+        // Fieldtrial param to not open adjacently should be ignored.
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
                 MultiWindowUtils.OPEN_ADJACENTLY_PARAM,

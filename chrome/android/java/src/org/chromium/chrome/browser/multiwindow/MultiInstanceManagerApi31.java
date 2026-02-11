@@ -274,8 +274,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     }
 
     private void moveTabsToNewWindow(List<Tab> tabs, @NewWindowAppSource int source) {
-        boolean openAdjacently =
-                !mActivity.isInMultiWindowMode() && MultiWindowUtils.shouldOpenInAdjacentWindow();
+        boolean openAdjacently = MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity);
         if (isInstanceLimitReached()) {
             showInstanceCreationLimitMessage();
         } else {
@@ -536,9 +535,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
         }
 
-        // Remove LAUNCH_ADJACENT flag if shouldOpenInAdjacentWindow() is false and if the Activity
-        // is in a full screen window.
-        if (!mActivity.isInMultiWindowMode() && !MultiWindowUtils.shouldOpenInAdjacentWindow()) {
+        // Remove LAUNCH_ADJACENT flag if shouldOpenInAdjacentWindow() is false.
+        if (!MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity)) {
             intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
         }
 
@@ -1261,9 +1259,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             }
         }
 
-        // If not in multi-window mode, this will be determined by shouldOpenInAdjacentWindow().
-        boolean openAdjacently =
-                !mActivity.isInMultiWindowMode() && MultiWindowUtils.shouldOpenInAdjacentWindow();
+        boolean openAdjacently = MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity);
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         mActivity,
@@ -1608,8 +1604,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     @Override
     public void moveTabGroupToNewWindow(
             TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source) {
-        boolean openAdjacently =
-                !mActivity.isInMultiWindowMode() && MultiWindowUtils.shouldOpenInAdjacentWindow();
+        boolean openAdjacently = MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity);
         if (isInstanceLimitReached()) {
             showInstanceCreationLimitMessage();
         } else {

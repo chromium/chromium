@@ -1014,10 +1014,13 @@ public class MultiWindowUtils implements ActivityStateListener {
      * Determines whether a new window should be opened adjacently or in full screen. This relies on
      * an experimental param set on the server-side, with behavior defaulting to adjacent launch.
      *
+     * @param activity The current activity.
      * @return {@code false} when a new window should be opened in full screen, {@code true}
      *     otherwise.
      */
-    public static boolean shouldOpenInAdjacentWindow() {
+    public static boolean shouldOpenInAdjacentWindow(Activity activity) {
+        // Always open adjacently if the current activity is in multi-windowing mode.
+        if (activity.isInMultiWindowMode()) return true;
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
                 OPEN_ADJACENTLY_PARAM,
