@@ -142,7 +142,7 @@
 <translation id="1554532453982918912">可協助 Chrome 為使用者提供更優質的使用體驗</translation>
 <translation id="1568636008098739136">請讓系統朗讀這頁內容。按住這裡即可編輯這個捷徑。</translation>
 <translation id="1571041387761170095">沒有低強度或重複使用的密碼</translation>
-<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{這部裝置上有 1 個密碼外洩}other{這部裝置上有 # 個密碼外洩}}</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{這部裝置上有 1 組密碼外洩}other{這部裝置上有 # 組密碼外洩}}</translation>
 <translation id="1594635596540195766">下列清單中有 <ph name="SUGGESTIONS_COUNT" /> 個建議項目。</translation>
 <translation id="1598163867407640634">透過 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />，固定的分頁，正在錄製媒體</translation>

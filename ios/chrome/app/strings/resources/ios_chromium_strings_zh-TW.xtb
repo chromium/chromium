@@ -212,7 +212,7 @@
 <translation id="5671188105328420281">Chromium 提示</translation>
 <translation id="5688047395118852662">這張資訊卡會建議你如何充分運用 Chromium 的各項功能。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查你的密碼</translation>
-<translation id="5731004036450828399">請先建立復原 PIN 碼，確保密碼金鑰安全。
+<translation id="5731004036450828399">請先建立備援 PIN 碼，確保密碼金鑰安全。
 
         密碼金鑰會儲存在密碼管理工具，你可以用於任何裝置的 Chromium。</translation>
 <translation id="584550191241316896">已登入 Chromium</translation>
@@ -236,7 +236,7 @@
 <translation id="6132149203299792222">登入 Google 帳戶就能同步處理密碼、&lt;br&gt;書籤和其他資訊。</translation>
 <translation id="6148377327556085395">在 Chromium 中新增書籤</translation>
 <translation id="6154098560469640583">隨時可以使用 Chromium 開啟訊息、文件和其他應用程式中的連結。</translation>
-<translation id="6157162508956739031">自動填入 Chromium 中的密碼和密碼金鑰，快速登入應用程式和網站</translation>
+<translation id="6157162508956739031">自動填入 Chromium 儲存的密碼和密碼金鑰，快速登入應用程式和網站</translation>
 <translation id="6170619162539716595">允許 Chromium 偵測到地址時，使用 Google 地圖提供路線和當地資訊。</translation>
 <translation id="6244277266078678766">你的密碼將儲存到 <ph name="USER_EMAIL" /> 的密碼管理工具</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>

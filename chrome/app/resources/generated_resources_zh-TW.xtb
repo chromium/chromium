@@ -27,7 +27,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{一個網頁無回應}other{多個網頁無回應}}</translation>
 <translation id="1011003645819296594">已儲存的裝置</translation>
 <translation id="1011355516189274711">文字轉語音的音量</translation>
-<translation id="1011431628606634753">變更 Google 密碼管理工具的復原 PIN 碼</translation>
+<translation id="1011431628606634753">變更 Google 密碼管理工具的備援 PIN 碼</translation>
 <translation id="1012794136286421601">系統正在同步處理你的文件、試算表、簡報和繪圖檔案。開啟 Google 雲端硬碟應用程式即可上網或離線存取你的檔案。</translation>
 <translation id="1012876632442809908">USB-C 裝置 (前方連接埠)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -966,7 +966,7 @@
 <translation id="1640283014264083726">PKCS #1 MD4 (使用 RSA 加密)</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="1641496881756082050">可對 <ph name="NETWORK_NAME" /> 執行的其他動作</translation>
-<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{另有 1 個密碼的格式有誤，因此無法匯入}other{另有 {NUM_PASSWORDS} 個密碼的格式有誤，因此無法匯入}}</translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{另有 1 組密碼的格式有誤，因此無法匯入}other{另有 {NUM_PASSWORDS} 組密碼的格式有誤，因此無法匯入}}</translation>
 <translation id="1642299742557467312">這個檔案可能會損害你的裝置</translation>
 <translation id="1642492862748815878">已連線至「<ph name="DEVICE" />」和另外 <ph name="NUMBER_OF_DEVICES" /> 部藍牙裝置</translation>
 <translation id="1642494467033190216">必須先移除 rootfs 保護並重新啟動，才能啟用其他偵錯功能。</translation>
@@ -1699,7 +1699,7 @@
 <translation id="2139919072249842737">「設定」按鈕</translation>
 <translation id="2140788884185208305">電池健康度</translation>
 <translation id="2142328300403846845">以其他身分開啟連結</translation>
-<translation id="2142484069755256151">設定 Google 密碼管理工具的 6 位數復原 PIN 碼，這是 6 碼中的第 <ph name="NUM_DIGIT" /> 碼</translation>
+<translation id="2142484069755256151">設定 Google 密碼管理工具的 6 位數備援 PIN 碼，這是 6 碼中的第 <ph name="NUM_DIGIT" /> 碼</translation>
 <translation id="2142582065325732898">開啟 <ph name="LINK1_BEGIN" />Chrome 同步功能<ph name="LINK1_END" />即可查看最近開啟的 Chrome 分頁。<ph name="LINK2_BEGIN" />瞭解詳情<ph name="LINK2_END" /></translation>
 <translation id="2143089736086572103">只有部分聯絡人可以看見</translation>
 <translation id="2143765403545170146">啟用全螢幕模式時一律顯示工具列</translation>
@@ -2448,7 +2448,7 @@
 <translation id="2649508632465204949">教我新技能</translation>
 <translation id="2651259505411913186">是，請將我的個人資料與學校資料分開</translation>
 <translation id="265156376773362237">標準預先載入模式</translation>
-<translation id="2652071759203138150">{COUNT,plural, =1{這 {COUNT} 個密碼只會儲存到這部裝置。如要在其他裝置上使用，請<ph name="BEGIN_LINK" />儲存到 Google 帳戶<ph name="END_LINK" />。}other{這 {COUNT} 個密碼只會儲存到這部裝置。如要在其他裝置上使用，請<ph name="BEGIN_LINK" />儲存到 Google 帳戶<ph name="END_LINK" />。}}</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{這 {COUNT} 組密碼只會儲存到這部裝置。如要在其他裝置上使用，請<ph name="BEGIN_LINK" />儲存到 Google 帳戶<ph name="END_LINK" />。}other{這 {COUNT} 組密碼只會儲存到這部裝置。如要在其他裝置上使用，請<ph name="BEGIN_LINK" />儲存到 Google 帳戶<ph name="END_LINK" />。}}</translation>
 <translation id="2652129567809778422">選取密碼</translation>
 <translation id="2653275834716714682">替換文字</translation>
 <translation id="2653659639078652383">提交</translation>
@@ -3674,7 +3674,7 @@
 <translation id="3507888235492474624">重新掃描藍牙裝置</translation>
 <translation id="3508492320654304609">無法刪除你的登入資料</translation>
 <translation id="3508920295779105875">選擇另一個資料夾...</translation>
-<translation id="3509379002674019679">設定、儲存及管理密碼，輕鬆登入網站和應用程式。</translation>
+<translation id="3509379002674019679">你可以設定、儲存及管理密碼，輕鬆登入網站和應用程式。</translation>
 <translation id="3510471875518562537">你可以在 iPhone 上使用這個地址</translation>
 <translation id="3511200754045804813">重新掃描</translation>
 <translation id="3511307672085573050">複製連結網址(&amp;E)</translation>
@@ -5188,7 +5188,7 @@
 <translation id="4529455689802245339">Chrome 即時字幕可能無法運作</translation>
 <translation id="4531451811601110068">你可以再試一次，也可以向系統管理員尋求協助</translation>
 <translation id="4531924570968473143">你想要將誰加入這部 <ph name="DEVICE_TYPE" />？</translation>
-<translation id="4532183705767666195">{COUNT,plural, =1{1 個密碼金鑰}other{{COUNT} 個密碼金鑰}}</translation>
+<translation id="4532183705767666195">{COUNT,plural, =1{1 組密碼金鑰}other{{COUNT} 組密碼金鑰}}</translation>
 <translation id="4532625150642446981">「<ph name="USB_DEVICE_NAME" />」正在使用中。重新指派使用中的裝置可能會造成錯誤。確定要繼續嗎？</translation>
 <translation id="4532646538815530781">這個網站正在使用動作感應器。</translation>
 <translation id="4533985347672295764">CPU 時間</translation>
@@ -5325,7 +5325,7 @@
 <translation id="4624054169152573743">色彩主題</translation>
 <translation id="4625078469366263107">啟用應用程式</translation>
 <translation id="4625905218692741757">使用灰色做為預設顏色</translation>
-<translation id="4627107755957573804">允許網站和應用程式將現有帳戶升級為使用密碼金鑰</translation>
+<translation id="4627107755957573804">允許網站和應用程式升級現有的帳戶，以使用密碼金鑰</translation>
 <translation id="4627442949885028695">透過其他裝置繼續瀏覽</translation>
 <translation id="4628762811416793313">無法完成 Linux 容器設定。請再試一次。</translation>
 <translation id="4629521233550547305">開啟「<ph name="PROFILE_NAME" />」的設定檔</translation>
@@ -7886,7 +7886,7 @@
 <translation id="642469772702851743">這部裝置 (序號：<ph name="SERIAL_NUMBER" />) 已被擁有者鎖定。</translation>
 <translation id="6425556984042222041">文字轉語音的速率</translation>
 <translation id="642729974267661262">不得播放音效</translation>
-<translation id="6427938854876261655">{COUNT,plural, =0{未儲存密碼。}=1{正在檢查 {COUNT} 個密碼...}other{正在檢查 {COUNT} 個密碼...}}</translation>
+<translation id="6427938854876261655">{COUNT,plural, =0{未儲存密碼。}=1{正在檢查 {COUNT} 組密碼...}other{正在檢查 {COUNT} 組密碼...}}</translation>
 <translation id="6429384232893414837">更新錯誤</translation>
 <translation id="6430814529589430811">Base64-編碼 ASCII，單一憑證</translation>
 <translation id="6431347207794742960">「<ph name="PRODUCT_NAME" />」將為這部電腦的所有使用者設定自動更新。</translation>
@@ -8673,7 +8673,7 @@
 <translation id="6969216690072714773">請輸入這部裝置的相關資訊或更新現有資訊。</translation>
 <translation id="696942486482903620">將密碼儲存到 Google 帳戶後，你可以在這部裝置和其他已登入帳戶的裝置上使用這些密碼</translation>
 <translation id="6970480684834282392">啟動類型</translation>
-<translation id="6970543303783413625">無法匯入密碼，一次最多只能匯入 <ph name="COUNT" /> 個密碼。</translation>
+<translation id="6970543303783413625">無法匯入密碼，一次最多只能匯入 <ph name="COUNT" /> 組密碼。</translation>
 <translation id="6970856801391541997">列印特定網頁</translation>
 <translation id="6970861306198150268">請確認你儲存的是這個網站目前的密碼</translation>
 <translation id="6971184043765343932">你上傳的圖片</translation>
@@ -9200,7 +9200,7 @@
 <translation id="734813941605705678">需要同步處理</translation>
 <translation id="7348920948593871738">Mac 系統設定中已關閉攝影機</translation>
 <translation id="7349010927677336670">視訊流暢度</translation>
-<translation id="7350327333026851413">{COUNT,plural, =1{這 {COUNT} 個密碼只會儲存到這部裝置}other{這 {COUNT} 個密碼只會儲存到這部裝置}}</translation>
+<translation id="7350327333026851413">{COUNT,plural, =1{這 {COUNT} 組密碼只會儲存到這部裝置}other{這 {COUNT} 組密碼只會儲存到這部裝置}}</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
 <translation id="7353261921908507769">聯絡人在附近時可與你分享內容。系統會先確認你是否同意，然後才會開始進行資料傳輸作業。</translation>
 <translation id="7353432112255316844">驗證身分</translation>
@@ -10117,7 +10117,7 @@
 <translation id="7960540720012720106">開啟視窗總覽</translation>
 <translation id="7961015016161918242">一律不要</translation>
 <translation id="7963001036288347286">觸控板加速</translation>
-<translation id="7963408577288987423">{COUNT,plural, =1{1 個密碼}other{{COUNT} 個密碼}}</translation>
+<translation id="7963408577288987423">{COUNT,plural, =1{1 組密碼}other{{COUNT} 組密碼}}</translation>
 <translation id="7963513503134856713">視窗已向右移動</translation>
 <translation id="7963608432878156675">這個名稱會向其他使用藍牙和網路連線的裝置顯示</translation>
 <translation id="7964458523224581615">鉻綠色</translation>
@@ -10340,7 +10340,7 @@
 <translation id="8100057926383586173">開啟語言設定</translation>
 <translation id="8100230553590752325">在任何裝置上都能使用已儲存的密碼</translation>
 <translation id="810068641062493918">已選取<ph name="LANGUAGE" />。按下搜尋鍵加空白鍵即可取消選取。</translation>
-<translation id="8101409298456377967">設定、儲存及管理密碼，輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="8101409298456377967">你可以設定、儲存及管理密碼，輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">自訂顏色</translation>
 <translation id="8101987792947961127">必須在下次重新啟動時執行 Powerwash</translation>
 <translation id="8102139037507939978">移除 system_logs.txt 中的個人識別資訊。</translation>
@@ -10828,7 +10828,7 @@
 <translation id="8434109185104929038">閱讀角落</translation>
 <translation id="8434837876193928924">分頁群組詳細資料</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{修正這個分頁}other{修正這些分頁}}</translation>
-<translation id="8436800506934625875">設定 Google 密碼管理工具的英數字元復原 PIN 碼</translation>
+<translation id="8436800506934625875">設定 Google 密碼管理工具的英數字元備援 PIN 碼</translation>
 <translation id="8437209419043462667">美式配置</translation>
 <translation id="8438518537545182071">家長監護設定現在會進一步守護你的上網安全</translation>
 <translation id="8438566539970814960">改善搜尋和瀏覽體驗</translation>
@@ -11033,7 +11033,7 @@
 <translation id="8585480574870650651">移除 Crostini</translation>
 <translation id="8585841788766257444">下列網站採用自訂設定，而非預設設定</translation>
 <translation id="8586421813321819377">允許 ChromeOS 和具有位置存取權的 Android 應用程式、網站及服務使用裝置的位置資訊。「定位精確度」可為 Android 應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 服務，以滿足使用者需求。</translation>
-<translation id="8587001564479545614">設定復原 PIN 碼</translation>
+<translation id="8587001564479545614">設定備援 PIN 碼</translation>
 <translation id="8587386584550433409">自動調整螢幕亮度</translation>
 <translation id="8587660243683137365">將這個網頁安裝為應用程式</translation>
 <translation id="8588866096426746242">顯示設定檔統計資料</translation>
@@ -11383,7 +11383,7 @@
 <translation id="8809147117840417135">淺藍綠色</translation>
 <translation id="8811862054141704416">Crostini 麥克風存取權</translation>
 <translation id="8811923271770626905">這項擴充功能可能會在背景執行</translation>
-<translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{這 1 個密碼只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}other{這 {PASSWORD_COUNT} 個密碼只會儲存到這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}}</translation>
+<translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{這 1 組密碼只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}other{這 {PASSWORD_COUNT} 組密碼只會儲存到這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}}</translation>
 <translation id="8813199641941291474">已禁止控制及重設 MIDI 裝置的程式</translation>
 <translation id="8813698869395535039">無法登入 <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">要求家長核准安裝「<ph name="EXTENSION_NAME" />」</translation>
@@ -11581,7 +11581,7 @@
 <translation id="8942714513622077633">要取消設定 Microsoft 365 嗎？</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">更快耗盡電量 (目前為 <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944633700466246631">設定 Google 密碼管理工具的 6 位數復原 PIN 碼</translation>
+<translation id="8944633700466246631">設定 Google 密碼管理工具的 6 位數備援 PIN 碼</translation>
 <translation id="8945274638472141382">圖示大小</translation>
 <translation id="8945508919180478719">錄音室級麥克風</translation>
 <translation id="8946359700442089734">尚未在這個 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置上完整啟用偵錯功能。</translation>

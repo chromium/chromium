@@ -90,9 +90,9 @@
 <translation id="2940565985148833945">Chrome 提示：使用智能镜头搜索</translation>
 <translation id="2957447865124070833">选择 <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">将书签添加到 Chrome</translation>
-<translation id="3027236223714901838">为确保通行密钥安全，您首先需要创建恢复 PIN 码。
+<translation id="3027236223714901838">为确保通行密钥安全，您首先需要创建辅助 PIN 码。
 
-        这些通行密钥会保存在 Google 密码管理工具中，您可以在任何安装了 Chrome 的设备上使用它们。</translation>
+        通行密钥会保存在 Google 密码管理工具中，可在任何安装了 Chrome 的设备上使用。</translation>
 <translation id="3030414234702425231">由于您正要退出的账号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chrome 数据，但这些数据仍会保留在您的 Google 账号中。</translation>
 <translation id="3042447686908081308">导入到 Chrome</translation>
 <translation id="3051521853355903257">在 Chrome 中管理密码</translation>
@@ -173,7 +173,7 @@
 <translation id="5305440589062022504">在 Chrome 中打开密码管理工具</translation>
 <translation id="5310957470610282541">部分 Chrome 数据尚未保存到您的 Google 账号。
 请尝试等待几分钟，然后再退出账号。如果现在就退出账号，这些数据将被删除。</translation>
-<translation id="5342685492141499976">系统会将您的数据保存到 <ph name="USER_EMAIL" /> 的 Google 密码管理工具中。</translation>
+<translation id="5342685492141499976">您的数据将保存到 <ph name="USER_EMAIL" /> 的 Google 密码管理工具中</translation>
 <translation id="5389212809648216794">由于另一个应用正在使用您的相机，因此 Google Chrome 无法使用</translation>
 <translation id="5395376160638294582">请确保您可以一直使用 Google 账号中的 Chrome 数据</translation>
 <translation id="5404252374083197467">将 Chrome 设为默认浏览器？</translation>
@@ -201,7 +201,7 @@
 <translation id="5808435672482059465">查看您的 Chrome 历史记录</translation>
 <translation id="5833027901704861726">部分 Chrome 数据尚未保存到 <ph name="EMAIL" />。
 建议等待几分钟，然后再尝试切换账号。如果现在就切换账号，这些数据将被删除。</translation>
-<translation id="5853754888722423892">导入 Google 密码管理工具</translation>
+<translation id="5853754888722423892">导入至 Google 密码管理工具</translation>
 <translation id="5998675059699164418">根据贵单位的要求，您必须登录才能使用 Chrome。</translation>
 <translation id="6021312115739110405">Google 专为您打造的自定义信息流，包括新闻、体育和天气。</translation>
 <translation id="6022659036123304283">定制您的专属 Chrome</translation>

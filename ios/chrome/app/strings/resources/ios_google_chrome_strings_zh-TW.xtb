@@ -3,7 +3,7 @@
 <translationbundle lang="zh-TW">
 <translation id="1076643793026027628">在無痕模式下，Chrome 會自動開啟 YouTube 無痕模式連結。</translation>
 <translation id="1086486568852410168">用 Google 智慧鏡頭搜尋</translation>
-<translation id="1088490543924960890">使用 Google 密碼管理工具儲存密碼金鑰</translation>
+<translation id="1088490543924960890">開始用 Google 密碼管理工具儲存密碼金鑰</translation>
 <translation id="1143896152279775643">系統會將你的密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理工具中。</translation>
 <translation id="1146503048444965320">使用 Chrome 開啟新分頁</translation>
 <translation id="1158134713295836892">Chrome 內建 Gemini</translation>
@@ -90,7 +90,7 @@
 <translation id="2940565985148833945">Chrome 提示：使用智慧鏡頭搜尋</translation>
 <translation id="2957447865124070833">選取「Chrome」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">將書籤新增至 Chrome</translation>
-<translation id="3027236223714901838">請先建立復原 PIN 碼，確保密碼金鑰安全。
+<translation id="3027236223714901838">請先建立備援 PIN 碼，確保密碼金鑰安全。
 
         密碼金鑰會儲存在 Google 密碼管理工具，你可以用於任何裝置的 Chrome。</translation>
 <translation id="3030414234702425231">由於你即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 所管理的帳戶，系統將刪除你在這個裝置上的 Chrome 資料，但這些資料仍會保留在你的 Google 帳戶中。</translation>
@@ -173,7 +173,7 @@
 <translation id="5305440589062022504">在 Chrome 中開啟密碼管理工具</translation>
 <translation id="5310957470610282541">部分 Chrome 資料尚未儲存到 Google 帳戶，
 請稍待幾分鐘後再嘗試登出。如果現在登出，系統將刪除這類資料。</translation>
-<translation id="5342685492141499976">你的密碼將儲存到 <ph name="USER_EMAIL" /> 的 Google 密碼管理工具</translation>
+<translation id="5342685492141499976">你的資料會儲存到 <ph name="USER_EMAIL" /> 的 Google 密碼管理工具</translation>
 <translation id="5389212809648216794">另一個應用程式正在使用你的相機，因此 Google Chrome 無法使用</translation>
 <translation id="5395376160638294582">確保你隨時可以使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="5404252374083197467">要將 Chrome 設為預設瀏覽器嗎？</translation>
@@ -277,7 +277,7 @@
 <translation id="7371674917547846460">隨時掌握 Chrome 實用提示和其他資訊。</translation>
 <translation id="7394108421562933108">在 Chrome 中顯示迷你 Google 地圖</translation>
 <translation id="7400722733683201933">關於 Google Chrome</translation>
-<translation id="7444830584401232881">這個密碼金鑰會儲存到 <ph name="USER_EMAIL" /> 的 Google 密碼管理工具</translation>
+<translation id="7444830584401232881">這組密碼金鑰會儲存到 <ph name="USER_EMAIL" /> 的 Google 密碼管理工具</translation>
 <translation id="7466693328838535498">在「搜尋小工具」方塊中輸入「Chrome」</translation>
 <translation id="7477056987201678345">正在刪除 Chrome 資料…</translation>
 <translation id="7492574581995589075">貴機構已關閉在 Google 帳戶中使用及儲存 Chrome 資料的功能。新的書籤、密碼等資訊只會儲存在這部裝置上。</translation>
@@ -366,6 +366,6 @@
 <translation id="948597495737267756">開啟 Chrome 歷史記錄頁面。</translation>
 <translation id="954347330803595209">匯入資料即可在 Chrome 中使用密碼、歷史記錄、書籤和信用卡</translation>
 <translation id="97300214378190234">隨時可以使用 Chrome 開啟其他應用程式中的連結。</translation>
-<translation id="997929539742564806">自動填入 Chrome 中的密碼和密碼金鑰，快速登入應用程式和網站</translation>
+<translation id="997929539742564806">自動填入 Chrome 儲存的密碼和密碼金鑰，快速登入應用程式和網站</translation>
 <translation id="998677222109959694">管理 Chrome 設定</translation>
 </translationbundle>

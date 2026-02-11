@@ -636,7 +636,7 @@
 <translation id="3469117812148449995">密码保存选项</translation>
 <translation id="3472469028191701821">在新标签页中打开</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{涉及 {COUNT} 个网站或应用}other{涉及 {COUNT} 个网站和应用}}</translation>
-<translation id="3474624961160222204">以 <ph name="NAME" /> 的身份继续</translation>
+<translation id="3474624961160222204">以“<ph name="NAME" />”的身份继续</translation>
 <translation id="3476450923187944815">在不同应用中使用保存的密码。</translation>
 <translation id="3485558910355485767">打开新的无痕式窗口</translation>
 <translation id="3488501490964659223">标签页已关闭，而且浏览数据已被删除。您已退出账号</translation>
@@ -1081,7 +1081,7 @@
 <translation id="514154868070499296">字体：<ph name="FONT" /></translation>
 <translation id="5145331760738811130">离开标签页切换器</translation>
 <translation id="5148717509369231739">从 Safari 导入</translation>
-<translation id="5152483358138813104">在不同设备上快速登录</translation>
+<translation id="5152483358138813104">跨设备更快登录</translation>
 <translation id="5155502059906700593">您可以将地址栏移至顶部或底部。</translation>
 <translation id="5157638238828697074">出了点问题。无法打开该应用。</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -1092,7 +1092,7 @@
 <translation id="5177141896043341906">您有 <ph name="NUMBER_OF_PASSWORDS" /> 个安全系数低的密码，这可能会给您带来安全风险。</translation>
 <translation id="5181140330217080051">正在下载</translation>
 <translation id="5186185447130319458">不公开</translation>
-<translation id="5189431381114029336">保存您的第一个通行密钥</translation>
+<translation id="5189431381114029336">保存首个通行密钥</translation>
 <translation id="518997337573684769">正在发送崩溃报告…</translation>
 <translation id="519530786644929958">下载失败，无法重试。</translation>
 <translation id="5197255632782567636">互联网</translation>
@@ -1713,7 +1713,7 @@
 <translation id="7445682342344043969">已拦截弹出式窗口</translation>
 <translation id="7451023311965289370">{count,plural, =1{书签已保存至“{title}”}other{书签已保存至“{title}”}}</translation>
 <translation id="7451404862887877229">依次点按“隐私与安全”和“安全浏览”</translation>
-<translation id="7452393099119876789">您只需输入一次 PIN 码。</translation>
+<translation id="7452393099119876789">完成一次验证即可。</translation>
 <translation id="7454057999980797137">州/省/区/县</translation>
 <translation id="7458706065921255639">个性化和关联</translation>
 <translation id="745899714366929493">全天</translation>
@@ -1869,7 +1869,7 @@
 <translation id="797874245254030665">从任意应用中获取您的密码和通行密钥</translation>
 <translation id="7982789257301363584">网络</translation>
 <translation id="798299424881500862">橙色主题</translation>
-<translation id="7987685713885608670">为提升安全性，请先在设备上将密码加密，然后再保存到 Google 密码管理工具中。</translation>
+<translation id="7987685713885608670">为提升安全性，请先在设备上将密码加密，然后再保存到 Google 密码管理工具中</translation>
 <translation id="798991908416757345">标签页分组不可用</translation>
 <translation id="7993170188789685695">点按两次即可关闭此通知。</translation>
 <translation id="7996239959906074962">设置…</translation>
@@ -1904,7 +1904,7 @@
 <translation id="809543534949702122">在历史记录中搜索</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{{COUNT} 天后，您未使用的标签页会移至此处}other{{COUNT} 天后，您未使用的标签页会移至此处}}</translation>
 <translation id="8096559642098770318">您可以设置标签页提醒，以便日后再次查看此网站</translation>
-<translation id="8101409298456377967">您可创建、保存和管理您的密码，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="8101409298456377967">您可以创建、保存和管理密码，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">新</translation>
 <translation id="8105368624971345109">关闭</translation>
 <translation id="8106442513853561174">分享精确位置</translation>
@@ -2032,7 +2032,7 @@
 <translation id="8571019948162152515">要删除“<ph name="FILENAME" />”吗？</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8577056989960190117">自动填充失效年份 <ph name="YEAR" /></translation>
-<translation id="8587001564479545614">创建恢复 PIN 码</translation>
+<translation id="8587001564479545614">创建辅助 PIN 码</translation>
 <translation id="8588404856427128947">已关闭</translation>
 <translation id="8590286732816598906">标签页分组，<ph name="GROUP_TITLE" />，菜单。</translation>
 <translation id="8600272508328041907">切换为整页翻译</translation>

@@ -3270,7 +3270,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3225084153129302039">Abatar more lehenetsia</translation>
 <translation id="3225319735946384299">Kode-sinadura</translation>
 <translation id="3226487301970807183">Erakutsi/Ezkutatu ezkerrean lerrokatutako alboko panela</translation>
-<translation id="322708765617468434">Konfigurazioa amaitu ondoren ere, beste pertsona bat gehi dezakezu gailuan. Bakoitzak bere erabilera pertsonaliza dezake, eta datuak pribatu mantendu.</translation>
+<translation id="322708765617468434">Konfigurazio-prozesua amaitu ondoren ere, beste pertsona bat gehi dezakezu gailuan. Bakoitzak bere erabilera pertsonaliza dezake, eta datuak pribatu mantendu.</translation>
 <translation id="3227137524299004712">Mikrofonoa</translation>
 <translation id="3227701057281907159">Adabakiak ezartzen</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Ken ezazu edo ordez ezazu <ph name="BEGIN_LINK" />Chrome Web Store-ko<ph name="END_LINK" /> antzeko luzapenekin}other{Ken itzazu edo ordez itzazu <ph name="BEGIN_LINK" />Chrome Web Store-ko<ph name="END_LINK" /> antzeko luzapenekin}}</translation>

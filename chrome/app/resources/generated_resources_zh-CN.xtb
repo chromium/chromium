@@ -27,7 +27,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{1 个页面无响应}other{多个页面无响应}}</translation>
 <translation id="1011003645819296594">已保存的设备</translation>
 <translation id="1011355516189274711">文字转语音的音量</translation>
-<translation id="1011431628606634753">更改 Google 密码管理工具的恢复 PIN 码</translation>
+<translation id="1011431628606634753">更改 Google 密码管理工具的辅助 PIN 码</translation>
 <translation id="1012794136286421601">正在同步您的文档、表格、幻灯片和绘图文件。打开Google云端硬盘应用可在线或离线访问这些文件。</translation>
 <translation id="1012876632442809908">USB-C 设备（前方端口）</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -1692,7 +1692,7 @@
 <translation id="2139919072249842737">设置按钮</translation>
 <translation id="2140788884185208305">电池状况</translation>
 <translation id="2142328300403846845">以其他身份打开链接</translation>
-<translation id="2142484069755256151">为 Google 密码管理工具创建 6 位数的恢复 PIN 码，这是 PIN 码的第 <ph name="NUM_DIGIT" /> 位，共 6 位</translation>
+<translation id="2142484069755256151">请为 Google 密码管理工具创建 6 位数的辅助 PIN 码，这是 PIN 码的第 <ph name="NUM_DIGIT" /> 位</translation>
 <translation id="2142582065325732898">您需要开启 <ph name="LINK1_BEGIN" />Chrome 同步<ph name="LINK1_END" />才能查看最近打开的 Chrome 标签页。<ph name="LINK2_BEGIN" />了解详情<ph name="LINK2_END" /></translation>
 <translation id="2143089736086572103">向某些联系人显示</translation>
 <translation id="2143765403545170146">在全屏模式下始终显示工具栏</translation>
@@ -3617,7 +3617,7 @@
 <translation id="3473241910002674503">在平板电脑模式下，使用相应按钮转到主屏幕、返回以及切换应用。</translation>
 <translation id="3473479545200714844">屏幕放大镜</translation>
 <translation id="3474218480460386727">新字词最多只能包含 99 个字母</translation>
-<translation id="3474624961160222204">以 <ph name="NAME" /> 的身份继续</translation>
+<translation id="3474624961160222204">以“<ph name="NAME" />”的身份继续</translation>
 <translation id="3477772589943384839">节省适量内存。标签页会在较长的一段时间后变为非活跃状态。</translation>
 <translation id="347785443197175480">继续允许 <ph name="HOST" /> 使用您的摄像头和麦克风</translation>
 <translation id="3479357084663933762">绿色弱</translation>
@@ -3667,7 +3667,7 @@
 <translation id="3507888235492474624">重新扫描蓝牙设备</translation>
 <translation id="3508492320654304609">无法删除您的登录数据</translation>
 <translation id="3508920295779105875">选择其他文件夹...</translation>
-<translation id="3509379002674019679">您可创建、保存和管理您的密码，以便轻松登录网站和应用。</translation>
+<translation id="3509379002674019679">您可以创建、保存和管理密码，以便轻松登录网站和应用。</translation>
 <translation id="3510471875518562537">在 iPhone 上使用此地址</translation>
 <translation id="3511200754045804813">重新扫描</translation>
 <translation id="3511307672085573050">复制链接地址(&amp;E)</translation>
@@ -10338,7 +10338,7 @@
 <translation id="8100057926383586173">打开语言设置</translation>
 <translation id="8100230553590752325">在任意设备上使用保存的密码</translation>
 <translation id="810068641062493918">已选择“<ph name="LANGUAGE" />”。按搜索键 + 空格键即可取消选择。</translation>
-<translation id="8101409298456377967">您可创建、保存和管理您的密码，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="8101409298456377967">您可以创建、保存和管理密码，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">自定义颜色</translation>
 <translation id="8101987792947961127">必须在下次重启时执行 Powerwash</translation>
 <translation id="8102139037507939978">从 system_logs.txt 中删除个人身份信息。</translation>
@@ -10826,7 +10826,7 @@
 <translation id="8434109185104929038">阅读角</translation>
 <translation id="8434837876193928924">标签页分组详情</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{修复此标签页}other{修复这些标签页}}</translation>
-<translation id="8436800506934625875">请为 Google 密码管理工具创建字母数字恢复 PIN 码</translation>
+<translation id="8436800506934625875">请为 Google 密码管理工具创建字母数字辅助 PIN 码</translation>
 <translation id="8437209419043462667">美国英语</translation>
 <translation id="8438518537545182071">家长选择的设置现在可以进一步保障你的上网安全</translation>
 <translation id="8438566539970814960">改善搜索和浏览体验</translation>
@@ -11031,7 +11031,7 @@
 <translation id="8585480574870650651">移除 Crostini</translation>
 <translation id="8585841788766257444">下列网站采用的是自定义设置（而非默认设置）</translation>
 <translation id="8586421813321819377">允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用设备的位置信息。开启“位置信息精确度”设置可为 Android 应用和服务提供更精确的位置信息。为此，Google 会定期处理来自您设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别您个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。</translation>
-<translation id="8587001564479545614">创建恢复 PIN 码</translation>
+<translation id="8587001564479545614">创建辅助 PIN 码</translation>
 <translation id="8587386584550433409">自动调整显示屏亮度</translation>
 <translation id="8587660243683137365">将此页面作为应用安装</translation>
 <translation id="8588866096426746242">显示个人资料统计信息</translation>
@@ -11579,7 +11579,7 @@
 <translation id="8942714513622077633">取消 Microsoft 365 设置？</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">这样会更快消耗电量（目前电量：<ph name="BATTERY_PERCENTAGE" />%）</translation>
-<translation id="8944633700466246631">为 Google 密码管理工具创建 6 位数的恢复 PIN 码</translation>
+<translation id="8944633700466246631">请为 Google 密码管理工具创建 6 位数的辅助 PIN 码</translation>
 <translation id="8945274638472141382">图标大小</translation>
 <translation id="8945508919180478719">录音室级麦克风</translation>
 <translation id="8946359700442089734">此<ph name="IDS_SHORT_PRODUCT_NAME" />设备上未完全启用调试功能。</translation>

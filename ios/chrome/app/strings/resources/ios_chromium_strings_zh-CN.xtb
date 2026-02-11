@@ -212,9 +212,9 @@
 <translation id="5671188105328420281">Chromium 提示</translation>
 <translation id="5688047395118852662">此卡片会为您提供一些建议，帮助您充分利用 Chromium。</translation>
 <translation id="5700709190537129682">Chromium 无法检查您的密码</translation>
-<translation id="5731004036450828399">为确保通行密钥安全，您首先需要创建恢复 PIN 码。
+<translation id="5731004036450828399">为确保通行密钥安全，您首先需要创建辅助 PIN 码。
 
-        通行密钥会保存在密码管理工具中，您可以在任何安装了 Chromium 的设备上使用它们。</translation>
+        通行密钥会保存在密码管理工具中，可在任何安装了 Chromium 的设备上使用。</translation>
 <translation id="584550191241316896">已登录 Chromium</translation>
 <translation id="5862307444128926510">欢迎使用 Chromium</translation>
 <translation id="5889847953983052353">处于开启状态时：
@@ -238,7 +238,7 @@
 <translation id="6154098560469640583">每次点按消息、文档和其他应用中的链接时，都使用 Chromium 打开。</translation>
 <translation id="6157162508956739031">自动填充 Chromium 中的密码和通行密钥，快速登录应用和网站</translation>
 <translation id="6170619162539716595">允许 Chromium 使用 Google 地图针对检测到的地址为您提供路线和当地信息。</translation>
-<translation id="6244277266078678766">系统会将您的数据保存到 <ph name="USER_EMAIL" /> 的密码管理工具中。</translation>
+<translation id="6244277266078678766">您的数据将保存到 <ph name="USER_EMAIL" /> 的密码管理工具中</translation>
 <translation id="6268381023930128611">退出 Chromium？</translation>
 <translation id="6301717043141881464">若要轻松获取其他应用中已保存的密码，请选择 Chromium 的自动填充功能</translation>
 <translation id="6324041800010509197">访问 Chromium 中的标签页网格</translation>
