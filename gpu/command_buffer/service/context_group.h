@@ -72,7 +72,10 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
   // call to destroy if it succeeds.
   gpu::ContextResult Initialize(DecoderContext* decoder,
                                 ContextType context_type);
-
+  gpu::ContextResult InitializeWithCompleteFramebufferForWorkarounds(
+      DecoderContext* decoder,
+      ContextType context_type,
+      uint32_t complete_fbo_for_workarounds);
   // Destroys all the resources when called for the last context in the group.
   // It should only be called by DecoderContext.
   void Destroy(DecoderContext* decoder, bool have_context);

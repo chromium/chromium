@@ -147,6 +147,8 @@ class MockGLES2Decoder : public GLES2Decoder {
                     int height,
                     int depth));
   MOCK_METHOD0(GetErrorState, ErrorState *());
+  MOCK_CONST_METHOD2(BindFramebuffer,
+                     void(unsigned target, uint32_t service_id));
 
   MOCK_METHOD0(GetLogger, Logger*());
 

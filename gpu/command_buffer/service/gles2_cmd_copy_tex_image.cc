@@ -185,7 +185,7 @@ void CopyTexImageResourceManager::DoCopyTexSubImageToLUMACompatibilityTexture(
   // framebuffer is copying from a texture and sample directly from that texture
   // instead of doing an extra copy
 
-  glBindFramebufferEXT(GL_FRAMEBUFFER, source_framebuffer);
+  decoder->BindFramebuffer(GL_FRAMEBUFFER, source_framebuffer);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, scratch_textures_[0]);
   glCopyTexImage2D(GL_TEXTURE_2D, 0, source_framebuffer_internal_format, x, y,
@@ -217,7 +217,7 @@ void CopyTexImageResourceManager::DoCopyTexSubImageToLUMACompatibilityTexture(
   glTexImage2D(GL_TEXTURE_2D, 0, compatability_format, width, height, 0,
                compatability_format, luma_type, nullptr);
 
-  glBindFramebufferEXT(GL_FRAMEBUFFER, scratch_fbo_);
+  decoder->BindFramebuffer(GL_FRAMEBUFFER, scratch_fbo_);
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                             scratch_textures_[1], 0);
 
