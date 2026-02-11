@@ -103,11 +103,10 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
   BOOL _incognitoAvailable;
   BOOL _recordedPageImpression;
   raw_ptr<history::HistoryService> _historyService;
-  raw_ptr<PrefService, DanglingUntriaged> _prefService;
+  raw_ptr<PrefService> _prefService;
   PrefChangeRegistrar _prefChangeRegistrar;
-  raw_ptr<UrlLoadingBrowserAgent, DanglingUntriaged> _URLLoadingBrowserAgent;
-  raw_ptr<ChromeAccountManagerService, DanglingUntriaged>
-      _accountManagerService;
+  raw_ptr<UrlLoadingBrowserAgent> _URLLoadingBrowserAgent;
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
   raw_ptr<feature_engagement::Tracker> _engagementTracker;
   LayoutGuideCenter* _layoutGuideCenter;
   // Tracker for cancellable tasks initiated by the mediator.
@@ -165,12 +164,15 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
 
 - (void)disconnect {
   _cancelableTaskTracker.TryCancelAll();
-  _historyService = nullptr;
-  _engagementTracker = nullptr;
-  _prefChangeRegistrar.RemoveAll();
   _mostVisitedBridge.reset();
   _mostVisitedSites.reset();
   _mostVisitedAttributesProvider = nil;
+  _historyService = nullptr;
+  _engagementTracker = nullptr;
+  _accountManagerService = nullptr;
+  _URLLoadingBrowserAgent = nullptr;
+  _prefChangeRegistrar.RemoveAll();
+  _prefService = nullptr;
 }
 
 + (NSUInteger)maxSitesShown {
