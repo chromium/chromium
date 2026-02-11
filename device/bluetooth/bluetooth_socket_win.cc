@@ -186,8 +186,7 @@ void BluetoothSocketWin::DoConnect(base::OnceClosure success_callback,
       net::TCPSocket::Create(nullptr, nullptr, net::NetLogSource());
   net::EnsureWinsockInit();
   SOCKET socket_fd = socket(AF_BTH, SOCK_STREAM, BTHPROTO_RFCOMM);
-  SOCKADDR_BTH sa;
-  UNSAFE_TODO(ZeroMemory(&sa, sizeof(sa)));
+  SOCKADDR_BTH sa{};
   sa.addressFamily = AF_BTH;
   sa.port = rfcomm_channel_;
   sa.btAddr = bth_addr_;
@@ -253,10 +252,9 @@ void BluetoothSocketWin::DoListen(const BluetoothUUID& uuid,
       net::TCPSocket::Create(nullptr, nullptr, net::NetLogSource());
   scoped_socket->AdoptUnconnectedSocket(socket_fd);
 
-  SOCKADDR_BTH sa;
+  SOCKADDR_BTH sa{};
   struct sockaddr* sock_addr = reinterpret_cast<struct sockaddr*>(&sa);
   int sock_addr_len = sizeof(sa);
-  UNSAFE_TODO(ZeroMemory(&sa, sock_addr_len));
   sa.addressFamily = AF_BTH;
   sa.port = rfcomm_channel ? rfcomm_channel : BT_PORT_ANY;
   if (bind(socket_fd, sock_addr, sock_addr_len) < 0) {
