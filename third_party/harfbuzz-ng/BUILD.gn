@@ -5,7 +5,6 @@
 import("//build/config/buildflags_paint_preview.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/ui.gni")
-import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/harfbuzz-ng/harfbuzz.gni")
 
 if (use_system_harfbuzz) {
@@ -472,6 +471,8 @@ if (use_system_harfbuzz) {
 
 # Not all checkouts have a //base directory.
 if (build_with_chromium) {
+  import("//testing/libfuzzer/fuzzer_test.gni")
+
   fuzzer_test("hb_shape_fuzzer") {
     sources = [ "fuzz/hb_shape_fuzzer.cc" ]
     deps = [
