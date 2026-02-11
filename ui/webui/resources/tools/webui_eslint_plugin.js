@@ -34,7 +34,7 @@ const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
     },
     messages: {
       incorrectMethodDefinitionOrder:
-          'Inconsistent method definition order in class {{className}}. Expected [is, styles, render, properties], found [{{order}}].',
+          'Inconsistent method definition order in class {{className}}. Expected [{{expectedOrder}}], found [{{actualOrder}}].',
       missingSuperCalls:
           'Missing superclass calls for lifecycle method(s) {{lifecycleMethods}} in class {{className}}.',
       missingStaticIsGetter:
@@ -57,12 +57,19 @@ const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
     // Regex to detect if a class is subclassing a native HTMLElement.
     const NATIVE_HTML_SUBCLASS_REGEX = /^HTML\S+Element$/g;
 
-    // The order in which boilerplate CrLitElement methods should be defined.
+    // The order in which boilerplate and lifecycle CrLitElement methods should
+    // be defined.
     const desiredMethodDefinitionOrder = new Map([
       ['is', 0],
       ['styles', 1],
       ['render', 2],
       ['properties', 3],
+      ['constructor', 4],
+      ['connectedCallback', 5],
+      ['disconnectedCallback', 6],
+      ['willUpdate', 7],
+      ['firstUpdated', 8],
+      ['updated', 9],
     ]);
 
     // Necessary info to track about each class definition encountered in the
@@ -231,15 +238,16 @@ interface HTMLElementTagNameMap {
           return;
         }
 
-        // Convert the encountered order into a numerical sequence.
-        const numericalOrder = this.methodDefinitionOrder.map(
-            entry => desiredMethodDefinitionOrder.get(entry.name));
+        const actualOrder = this.methodDefinitionOrder.map(entry => entry.name);
+        const expectedOrder =
+            this.methodDefinitionOrder
+                .sort((a, b) => {
+                  return desiredMethodDefinitionOrder.get(a.name) -
+                      desiredMethodDefinitionOrder.get(b.name);
+                })
+                .map(entry => entry.name);
 
-        // Check if the sequence is ascending.
-        const isCorrect = numericalOrder.every(
-            (item, i) => i === 0 || item > numericalOrder[i - 1]);
-
-        if (isCorrect) {
+        if (JSON.stringify(actualOrder) === JSON.stringify(expectedOrder)) {
           return;
         }
 
@@ -248,28 +256,8 @@ interface HTMLElementTagNameMap {
           messageId: 'incorrectMethodDefinitionOrder',
           data: {
             className: this.node.id.name,
-            order:
-                this.methodDefinitionOrder.map(entry => entry.name).join(', '),
-          },
-          fix: fixer => {
-            const incorrectIndex =
-                numericalOrder.findIndex(
-                    (item, i) => i !== 0 && item < numericalOrder[i - 1]) -
-                1;
-            const incorrectValue = numericalOrder[incorrectIndex];
-            const moveAfterIndex = numericalOrder.findIndex(
-                (item, i) => i > incorrectIndex && item < incorrectValue);
-
-            // Swap the first incorrect node with the first acceptable location.
-            const fromNode = this.methodDefinitionOrder[incorrectIndex].node;
-            const fromText = context.getSourceCode().getText(fromNode);
-            const toNode = this.methodDefinitionOrder.at(moveAfterIndex).node;
-            const toText = context.getSourceCode().getText(toNode);
-
-            return [
-              fixer.replaceText(fromNode, toText),
-              fixer.replaceText(toNode, fromText),
-            ];
+            expectedOrder: expectedOrder.join(', '),
+            actualOrder: actualOrder.join(', '),
           },
         });
       }
@@ -278,7 +266,8 @@ interface HTMLElementTagNameMap {
     const METHOD_DEFINITION_SELECTOR_TEMPLATE =
         'ClassDeclaration > ClassBody > MethodDefinition[key.name=/{{methodDefinition}}/]';
 
-    const METHOD_DEFINITION_ORDER_REGEX = '^(is|styles|render|properties)$';
+    const METHOD_DEFINITION_ORDER_REGEX =
+        `^(${Array.from(desiredMethodDefinitionOrder.keys()).join('|')})$`;
     const METHOD_DEFINITION_SELECTOR =
         METHOD_DEFINITION_SELECTOR_TEMPLATE.replace(
             '{{methodDefinition}}', METHOD_DEFINITION_ORDER_REGEX);

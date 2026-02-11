@@ -84,6 +84,28 @@ export class SomeElement6 extends CrLitElement {
   static override get properties() {
     return {};
   }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+  }
+
+  constructor() {
+    super();
+  }
+
+  override willUpdate() {
+    super.willUpdate();
+  }
+
+  override updated() {
+    super.updated();
+  }
+
+  override firstUpdated() {}
 }
 
 declare global {
@@ -121,6 +143,10 @@ export class SomeElement9 extends CrLitElement {
     return {};
   }
 
+  constructor() {
+    super();
+  }
+
   override connectedCallback() {
     super.connectedCallback();
   }
@@ -132,6 +158,8 @@ export class SomeElement9 extends CrLitElement {
   override willUpdate() {
     super.willUpdate();
   }
+
+  override firstUpdated() {}
 
   override updated() {
     super.updated();
