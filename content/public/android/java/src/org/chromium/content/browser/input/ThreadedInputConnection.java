@@ -907,6 +907,11 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
     @Override
     public boolean commitContent(final InputContentInfo inputContentInfo, int flags, Bundle data) {
         if (DEBUG_LOGS) Log.i(TAG, "commitContent [%s] [%d]", inputContentInfo, flags);
+
+        if (!ContentFeatureMap.isEnabled(ContentFeatures.ANDROID_MEDIA_INSERTION)) {
+            return false;
+        }
+
         final String mimeType = inputContentInfo.getDescription().getMimeType(0);
 
         if (!new MimeTypeFilter(
