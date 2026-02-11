@@ -15895,8 +15895,8 @@
                 {
                     "name": "Enabled_Foreground_OptOut",
                     "params": {
-                        "mode": "foreground",
-                        "trial_group": "opt_out"
+                        "default_preference": "enabled",
+                        "mode": "foreground"
                     },
                     "enable_features": [
                         "LaunchOnStartup"
@@ -15905,8 +15905,8 @@
                 {
                     "name": "Enabled_Foreground_OptIn",
                     "params": {
-                        "mode": "foreground",
-                        "trial_group": "opt_in"
+                        "default_preference": "disabled",
+                        "mode": "foreground"
                     },
                     "enable_features": [
                         "LaunchOnStartup"
