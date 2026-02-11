@@ -118,11 +118,8 @@ void ProfileReportGeneratorIOS::GetProfileName(
           IdentityManagerFactory::GetForProfile(profile_);
       AccountInfo extended_account_info =
           identity_manager->FindExtendedAccountInfo(*account_info);
-      if (!extended_account_info.full_name.empty()) {
-        report->set_name(extended_account_info.full_name);
-      } else {
-        report->set_name(account_info->email);
-      }
+      report->set_name(
+          extended_account_info.GetFullName().value_or(account_info->email));
     }
   } else {
     report->set_name(profile_->GetProfileName());

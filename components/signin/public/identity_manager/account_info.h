@@ -213,11 +213,6 @@ struct AccountInfo : public CoreAccountInfo {
   // soon, do not use them directly.
   // TODO(crbug.com/458409080): move all struct members to the private section.
 
-  // Mandatory fields for `IsValid()` to return true:
-  // Deprecated: Use GetFullName() instead.
-  std::string full_name;
-  // Deprecated: Use GetGivenName() instead.
-  std::string given_name;
 
   // Deprecated: Use GetAvatarImage() instead.
   gfx::Image account_image;
@@ -234,8 +229,12 @@ struct AccountInfo : public CoreAccountInfo {
  private:
   friend class Builder;
 
+  // Mandatory fields for `IsValid()` to return true:
+  std::string full_name_;
+  std::string given_name_;
   std::string hosted_domain_;
   std::string picture_url_;
+
   std::string last_downloaded_image_url_with_size_;
   signin::Tribool is_child_account_ = signin::Tribool::kUnknown;
 };

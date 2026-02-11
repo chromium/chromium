@@ -271,7 +271,7 @@ class AccountTrackerServiceTest : public testing::Test {
     AccountCapabilitiesTestMutator mutator(&expected_capabilities);
     mutator.SetAllSupportedCapabilities(
         AccountKeyToAccountCapability(account_key));
-    EXPECT_EQ(info.capabilities, expected_capabilities);
+    EXPECT_EQ(info.GetAccountCapabilities(), expected_capabilities);
   }
 
   testing::AssertionResult CheckAccountTrackerEvents(
@@ -296,13 +296,15 @@ class AccountTrackerServiceTest : public testing::Test {
   void ClearAccountTrackerEvents() { account_tracker_events_.clear(); }
 
   void OnAccountUpdated(const AccountInfo& ids) {
-    account_tracker_events_.emplace_back(UPDATED, ids.account_id, ids.gaia,
-                                         ids.email);
+    account_tracker_events_.emplace_back(UPDATED, ids.GetAccountId(),
+                                         ids.GetGaiaId(),
+                                         std::string(ids.GetEmail()));
   }
 
   void OnAccountRemoved(const AccountInfo& ids) {
-    account_tracker_events_.emplace_back(REMOVED, ids.account_id, ids.gaia,
-                                         ids.email);
+    account_tracker_events_.emplace_back(REMOVED, ids.GetAccountId(),
+                                         ids.GetGaiaId(),
+                                         std::string(ids.GetEmail()));
   }
 
   // Helpers to fake access token and user info fetching
@@ -569,7 +571,7 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfo_ImageSuccess) {
 
   AccountInfo account_info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyAlpha));
-  EXPECT_TRUE(account_info.account_image.IsEmpty());
+  EXPECT_FALSE(account_info.GetAvatarImage().has_value());
   EXPECT_FALSE(account_info.GetLastDownloadedAvatarUrlWithSize().has_value());
   ReturnAccountImageFetchSuccess(kAccountKeyAlpha);
   EXPECT_TRUE(CheckAccountTrackerEvents({
@@ -579,7 +581,7 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfo_ImageSuccess) {
   }));
   account_info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyAlpha));
-  EXPECT_FALSE(account_info.account_image.IsEmpty());
+  EXPECT_TRUE(account_info.GetAvatarImage().has_value());
   EXPECT_EQ(account_info.GetLastDownloadedAvatarUrlWithSize(),
             AccountKeyToPictureURLWithSize(kAccountKeyAlpha));
   histogram_tester.ExpectTotalCount(
@@ -601,12 +603,12 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfo_ImageFailure) {
 
   AccountInfo account_info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyAlpha));
-  EXPECT_TRUE(account_info.account_image.IsEmpty());
+  EXPECT_FALSE(account_info.GetAvatarImage().has_value());
   EXPECT_FALSE(account_info.GetLastDownloadedAvatarUrlWithSize().has_value());
   ReturnAccountImageFetchFailure(kAccountKeyAlpha);
   account_info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyAlpha));
-  EXPECT_TRUE(account_info.account_image.IsEmpty());
+  EXPECT_FALSE(account_info.GetAvatarImage().has_value());
   EXPECT_FALSE(account_info.GetLastDownloadedAvatarUrlWithSize().has_value());
   histogram_tester.ExpectTotalCount(
       "Signin.AccountFetcher.AccountUserInfoFetchTime", 1);
@@ -813,8 +815,10 @@ TEST_F(AccountTrackerServiceTest, RefreshAccount_FetchImageSuccess) {
   ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
   ReturnAccountImageFetchFailure(kAccountKeyAlpha);
   ASSERT_TRUE(account_tracker()->GetAccountInfo(account_id).IsValid());
-  ASSERT_TRUE(
-      account_tracker()->GetAccountInfo(account_id).account_image.IsEmpty());
+  ASSERT_FALSE(account_tracker()
+                   ->GetAccountInfo(account_id)
+                   .GetAvatarImage()
+                   .has_value());
 
   // Account fetcher should fetch the account image even when user info if
   // the account image was not fetched before.
@@ -822,7 +826,7 @@ TEST_F(AccountTrackerServiceTest, RefreshAccount_FetchImageSuccess) {
   ReturnAccountImageFetchSuccess(kAccountKeyAlpha);
   AccountInfo account_info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyAlpha));
-  EXPECT_FALSE(account_info.account_image.IsEmpty());
+  EXPECT_TRUE(account_info.GetAvatarImage().has_value());
   EXPECT_EQ(account_info.GetLastDownloadedAvatarUrlWithSize(),
             AccountKeyToPictureURLWithSize(kAccountKeyAlpha));
 }
@@ -995,9 +999,9 @@ TEST_F(AccountTrackerServiceTest, Persistence) {
   CheckAccountCapabilities(kAccountKeyBeta, infos[0]);
   EXPECT_EQ(infos[0].IsChildAccount(), signin::Tribool::kTrue);
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  EXPECT_TRUE(infos[0].is_under_advanced_protection);
+  EXPECT_TRUE(infos[0].IsUnderAdvancedProtection());
 #else
-  EXPECT_FALSE(infos[0].is_under_advanced_protection);
+  EXPECT_FALSE(infos[0].IsUnderAdvancedProtection());
 #endif
 
   // Delete the account tracker before cleaning up |scoped_user_data_dir| so
@@ -1030,7 +1034,7 @@ TEST_F(AccountTrackerServiceTest, Persistence_DeleteEmpty) {
   // the accounts from prefs.
   std::vector<AccountInfo> infos = account_tracker()->GetAccounts();
   ASSERT_EQ(1u, infos.size());
-  EXPECT_EQ(a.account_id, infos[0].account_id);
+  EXPECT_EQ(a.GetAccountId(), infos[0].GetAccountId());
 
   // Delete the account tracker before cleaning up |scoped_user_data_dir| so
   // that all in-use files are closed.
@@ -1091,10 +1095,12 @@ TEST_F(AccountTrackerServiceTest, SeedAccountInfo) {
   account_tracker()->SeedAccountInfo(gaia_id, email);
   auto infos = account_tracker()->GetAccounts();
   ASSERT_EQ(1u, infos.size());
-  EXPECT_EQ(account_id, infos[0].account_id);
-  EXPECT_EQ(gaia_id, infos[0].gaia);
-  EXPECT_EQ(email, infos[0].email);
-  EXPECT_FALSE(infos[0].access_point.has_value());
+  EXPECT_EQ(account_id, infos[0].GetAccountId());
+  EXPECT_EQ(gaia_id, infos[0].GetGaiaId());
+  EXPECT_EQ(email, infos[0].GetEmail());
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  EXPECT_FALSE(infos[0].GetLastAuthenticationAccessPoint().has_value());
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(UPDATED, account_id, gaia_id, email),
   }));
@@ -1103,11 +1109,11 @@ TEST_F(AccountTrackerServiceTest, SeedAccountInfo) {
   infos = account_tracker()->GetAccounts();
   ASSERT_EQ(1u, infos.size()) << "Seeding information to an existing account "
                                  "should not add a new account";
-  EXPECT_EQ(account_id, infos[0].account_id)
+  EXPECT_EQ(account_id, infos[0].GetAccountId())
       << "Account id is either the canonicalized email or gaia, it should "
          "remain the same";
-  EXPECT_EQ(gaia_id, infos[0].gaia);
-  EXPECT_EQ(email_dotted, infos[0].email) << "Email should be changed";
+  EXPECT_EQ(gaia_id, infos[0].GetGaiaId());
+  EXPECT_EQ(email_dotted, infos[0].GetEmail()) << "Email should be changed";
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(UPDATED, account_id, gaia_id, email_dotted),
   }));
@@ -1123,12 +1129,14 @@ TEST_F(AccountTrackerServiceTest, SeedAccountInfoFull) {
 
   // Validate that seeding an unexisting account works and sends a
   // notification.
-  AccountInfo stored_info = account_tracker()->GetAccountInfo(info.account_id);
-  EXPECT_EQ(info.gaia, stored_info.gaia);
-  EXPECT_EQ(info.email, stored_info.email);
-  EXPECT_EQ(info.full_name, stored_info.full_name);
+  AccountInfo stored_info =
+      account_tracker()->GetAccountInfo(info.GetAccountId());
+  EXPECT_EQ(info.GetGaiaId(), stored_info.GetGaiaId());
+  EXPECT_EQ(info.GetEmail(), stored_info.GetEmail());
+  EXPECT_EQ(info.GetFullName(), stored_info.GetFullName());
   EXPECT_TRUE(CheckAccountTrackerEvents({
-      TrackingEvent(UPDATED, info.account_id, info.gaia, info.email),
+      TrackingEvent(UPDATED, info.GetAccountId(), info.GetGaiaId(),
+                    std::string(info.GetEmail())),
   }));
 
   // Validate that seeding new full informations to an existing account works
@@ -1140,21 +1148,23 @@ TEST_F(AccountTrackerServiceTest, SeedAccountInfoFull) {
              .SetAvatarUrl(AccountKeyToPictureURL(kAccountKeyAlpha))
              .Build();
   account_tracker()->SeedAccountInfo(info);
-  stored_info = account_tracker()->GetAccountInfo(info.account_id);
-  EXPECT_EQ(info.gaia, stored_info.gaia);
-  EXPECT_EQ(info.email, stored_info.email);
-  EXPECT_EQ(info.given_name, stored_info.given_name);
+  stored_info = account_tracker()->GetAccountInfo(info.GetAccountId());
+  EXPECT_EQ(info.GetGaiaId(), stored_info.GetGaiaId());
+  EXPECT_EQ(info.GetEmail(), stored_info.GetEmail());
+  EXPECT_EQ(info.GetGivenName(), stored_info.GetGivenName());
   EXPECT_TRUE(CheckAccountTrackerEvents({
-      TrackingEvent(UPDATED, info.account_id, info.gaia, info.email),
+      TrackingEvent(UPDATED, info.GetAccountId(), info.GetGaiaId(),
+                    std::string(info.GetEmail())),
   }));
 
   // Validate that seeding invalid information to an existing account doesn't
   // work and doesn't send a notification.
-  info.given_name = std::string();
-  account_tracker()->SeedAccountInfo(info);
-  stored_info = account_tracker()->GetAccountInfo(info.account_id);
-  EXPECT_EQ(info.gaia, stored_info.gaia);
-  EXPECT_NE(info.given_name, stored_info.given_name);
+  AccountInfo invalid_info =
+      AccountInfo::Builder(info.GetGaiaId(), info.GetEmail()).Build();
+  account_tracker()->SeedAccountInfo(invalid_info);
+  stored_info = account_tracker()->GetAccountInfo(info.GetAccountId());
+  EXPECT_EQ(info.GetGaiaId(), stored_info.GetGaiaId());
+  EXPECT_NE(invalid_info.GetGivenName(), stored_info.GetGivenName());
   EXPECT_TRUE(CheckAccountTrackerEvents({}));
 }
 
@@ -1597,11 +1607,11 @@ TEST_F(AccountTrackerServiceTest, AdvancedProtectionAccountBasic) {
       AccountKeyToAccountId(kAccountKeyAdvancedProtection);
   account_tracker()->SetIsAdvancedProtectionAccount(account_id, true);
   AccountInfo info = account_tracker()->GetAccountInfo(account_id);
-  EXPECT_TRUE(info.is_under_advanced_protection);
+  EXPECT_TRUE(info.IsUnderAdvancedProtection());
 
   account_tracker()->SetIsAdvancedProtectionAccount(account_id, false);
   info = account_tracker()->GetAccountInfo(account_id);
-  EXPECT_FALSE(info.is_under_advanced_protection);
+  EXPECT_FALSE(info.IsUnderAdvancedProtection());
 
   SimulateTokenRevoked(kAccountKeyAdvancedProtection);
 }

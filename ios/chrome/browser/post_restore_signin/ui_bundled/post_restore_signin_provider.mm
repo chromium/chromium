@@ -161,7 +161,7 @@
     return nil;
   }
 
-  return base::SysUTF8ToNSString(_accountInfo->given_name);
+  return base::SysUTF8ToNSString(_accountInfo->GetGivenName().value_or(""));
 }
 
 // Returns the user's pre-restore email.
@@ -170,7 +170,7 @@
     return nil;
   }
 
-  return base::SysUTF8ToNSString(_accountInfo->email);
+  return base::SysUTF8ToNSString(_accountInfo->GetEmail());
 }
 
 // Shows the signin / sync UI flow.

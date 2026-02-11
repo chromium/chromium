@@ -109,7 +109,8 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentityInAuthError) {
       startSyncWithIdentity:[[CWVIdentity alloc]
                                 initWithEmail:@(kTestEmail)
                                      fullName:base::SysUTF8ToNSString(
-                                                  account_info.full_name)
+                                                  account_info.GetFullName()
+                                                      .value_or(""))
                                        gaiaID:account_info.gaia.ToNSString()]];
 
   CWVWebView.skipAccountStorageCheckEnabled = false;

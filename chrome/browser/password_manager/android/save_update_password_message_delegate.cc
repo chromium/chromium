@@ -253,9 +253,9 @@ SaveUpdatePasswordMessageDelegate::GetAccountForMessageDescription(
     return std::nullopt;
   }
 
-  return account_info->CanHaveEmailAddressDisplayed()
-             ? account_info.value().email
-             : account_info.value().full_name;
+  return std::string(account_info->CanHaveEmailAddressDisplayed()
+                         ? account_info->GetEmail()
+                         : account_info->GetFullName().value_or(""));
 }
 
 int SaveUpdatePasswordMessageDelegate::GetPrimaryButtonTextId(

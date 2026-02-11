@@ -109,10 +109,11 @@ void IOSChromePaymentsAutofillClient::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {
   std::u16string account_name = base::UTF8ToUTF16(
       client_->GetIdentityManager()
-          ->FindExtendedAccountInfo(
-              client_->GetIdentityManager()->GetPrimaryAccountInfo(
+          ->FindExtendedAccountInfoByAccountId(
+              client_->GetIdentityManager()->GetPrimaryAccountId(
                   signin::ConsentLevel::kSignin))
-          .full_name);
+          .GetFullName()
+          .value_or(""));
 
   card_name_fix_flow_controller_.Show(
       // CardNameFixFlowViewBridge manages its own lifetime, so

@@ -31,7 +31,10 @@ class AccountStateFetcherTest : public testing::Test {
     // Update a test account field, so that subsequent calls to
     // UpdateAccountInfoForAccount will trigger the extended info account
     // update.
-    test_account_.full_name = std::string("name") + TriboolToString(state);
+    test_account_ =
+        AccountInfo::Builder(test_account_)
+            .SetFullName(std::string("name") + TriboolToString(state))
+            .Build();
   }
 
   // The callback passed to the fetcher to get the account info state.

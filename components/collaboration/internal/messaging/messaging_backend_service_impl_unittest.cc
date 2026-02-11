@@ -1295,8 +1295,8 @@ TEST_F(MessagingBackendServiceImplTest, TestOnTabAddedFromRemoteByYourself) {
   base::Uuid tab1_sync_id = tab_group.saved_tabs().at(0).saved_tab_guid();
   tab_groups::SavedTabGroupTab* tab1 = tab_group.GetTab(tab1_sync_id);
   // Make creation and update GaiaId unique.
-  tab1->SetCreatedByAttribution(account_info_.gaia);
-  tab1->SetUpdatedByAttribution(account_info_.gaia);
+  tab1->SetCreatedByAttribution(account_info_.GetGaiaId());
+  tab1->SetUpdatedByAttribution(account_info_.GetGaiaId());
   // Make creation and update time unique.
   tab1->SetUpdateTime(now + base::Seconds(1));
 
@@ -1316,7 +1316,8 @@ TEST_F(MessagingBackendServiceImplTest, TestOnTabAddedFromRemoteByYourself) {
   VerifyGenericMessageData(message, "my group id", collaboration_pb::TAB_ADDED,
                            DirtyType::kNone, now.ToTimeT());
 
-  EXPECT_EQ(account_info_.gaia, GaiaId(message.triggering_user_gaia_id()));
+  EXPECT_EQ(account_info_.GetGaiaId(),
+            GaiaId(message.triggering_user_gaia_id()));
   EXPECT_EQ(tab1->saved_tab_guid().AsLowercaseString(),
             message.tab_data().sync_tab_id());
   EXPECT_EQ(tab1->saved_group_guid().AsLowercaseString(),
@@ -1342,8 +1343,8 @@ TEST_F(MessagingBackendServiceImplTest, TestOnTabUpdatedFromRemoteByYourself) {
   base::Uuid tab2_sync_id = tab_group.saved_tabs().at(1).saved_tab_guid();
   tab_groups::SavedTabGroupTab* tab2 = tab_group.GetTab(tab2_sync_id);
   // Make creation and update GaiaId unique.
-  tab2->SetCreatedByAttribution(account_info_.gaia);
-  tab2->SetUpdatedByAttribution(account_info_.gaia);
+  tab2->SetCreatedByAttribution(account_info_.GetGaiaId());
+  tab2->SetUpdatedByAttribution(account_info_.GetGaiaId());
   // Make creation and update time unique.
   tab2->SetUpdateTime(now + base::Seconds(1));
 
@@ -1383,7 +1384,8 @@ TEST_F(MessagingBackendServiceImplTest, TestOnTabUpdatedFromRemoteByYourself) {
                            collaboration_pb::TAB_UPDATED, DirtyType::kNone,
                            now.ToTimeT());
 
-  EXPECT_EQ(account_info_.gaia, GaiaId(message.triggering_user_gaia_id()));
+  EXPECT_EQ(account_info_.GetGaiaId(),
+            GaiaId(message.triggering_user_gaia_id()));
   EXPECT_EQ(tab2->saved_tab_guid().AsLowercaseString(),
             message.tab_data().sync_tab_id());
   EXPECT_EQ(tab2->saved_group_guid().AsLowercaseString(),
@@ -1409,8 +1411,8 @@ TEST_F(MessagingBackendServiceImplTest, TestOnTabRemovedFromRemoteByYourself) {
   tab_groups::SavedTabGroupTab tab3(GURL("https://www.example3.com/"), u"Tab 3",
                                     tab_group.saved_guid(), std::nullopt,
                                     tab3_sync_id);
-  tab3.SetCreatedByAttribution(account_info_.gaia);
-  tab3.SetUpdatedByAttribution(account_info_.gaia);
+  tab3.SetCreatedByAttribution(account_info_.GetGaiaId());
+  tab3.SetUpdatedByAttribution(account_info_.GetGaiaId());
 
   EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
       .WillRepeatedly(Return(tab_group));
@@ -1435,7 +1437,8 @@ TEST_F(MessagingBackendServiceImplTest, TestOnTabRemovedFromRemoteByYourself) {
                            collaboration_pb::TAB_REMOVED, DirtyType::kNone,
                            now.ToTimeT());
 
-  EXPECT_EQ(account_info_.gaia, GaiaId(message.triggering_user_gaia_id()));
+  EXPECT_EQ(account_info_.GetGaiaId(),
+            GaiaId(message.triggering_user_gaia_id()));
   EXPECT_EQ(tab3.saved_tab_guid().AsLowercaseString(),
             message.tab_data().sync_tab_id());
   EXPECT_EQ(tab3.saved_group_guid().AsLowercaseString(),
@@ -2329,9 +2332,9 @@ TEST_F(MessagingBackendServiceImplTest,
   data_sharing::GroupData group_data;
   group_data.group_token.group_id = collaboration_group_id;
   data_sharing::GroupMember member1;
-  member1.gaia_id = account_info_.gaia;
-  member1.display_name = account_info_.full_name;
-  member1.given_name = account_info_.given_name;
+  member1.gaia_id = account_info_.GetGaiaId();
+  member1.display_name = std::string(account_info_.GetFullName().value_or(""));
+  member1.given_name = std::string(account_info_.GetGivenName().value_or(""));
   member1.role = data_sharing::MemberRole::kOwner;
   group_data.members.emplace_back(member1);
   EXPECT_CALL(*mock_data_sharing_service_,
