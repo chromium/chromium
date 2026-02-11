@@ -26,6 +26,75 @@ bool HasContactInfoType(const AutofillField& field) {
       {FieldTypeGroup::kEmail, FieldTypeGroup::kPhone});
 }
 
+// Returns an appropriate trigger field for the contact info split part of a
+// form section.
+const AutofillField* GetTriggerFieldForContactInfoPart(
+    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    const AutofillField* original_trigger_field,
+    LogManager* log_manager) {
+  // For contact info we retarget to the first email or phone number field in
+  // the section, which should come before any address field assuming that
+  // ShouldSplitOutContactInfo was called and returned true.
+  for (const std::unique_ptr<AutofillField>& field : fields) {
+    if (field->section() != original_trigger_field->section()) {
+      continue;
+    }
+
+    if (HasContactInfoType(*field)) {
+      return field.get();
+    }
+
+    // This shouldn't happen as long as ShouldSplitOutContactInfo was called
+    // first, but handle it in case.
+    if (field->Type().GetGroups().contains(FieldTypeGroup::kAddress)) {
+      LOG_AF(log_manager)
+          << LoggingScope::kAutofillActor
+          << "GetTriggerFieldForContactInfoPart found an address field before "
+             "a contact info field for a kContactInfo split.";
+      return original_trigger_field;
+    }
+  }
+
+  // This shouldn't happen as long as ShouldSplitOutContactInfo was called
+  // first, but handle it in case.
+  LOG_AF(log_manager) << LoggingScope::kAutofillActor
+                      << "GetTriggerFieldForContactInfoPart could not find an "
+                         "appropriate kContactInfo trigger field.";
+  return original_trigger_field;
+}
+
+// Returns an appropriate trigger field for the address split part of a form
+// section.
+const AutofillField* GetTriggerFieldForAddressPart(
+    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    const AutofillField* original_trigger_field,
+    LogManager* log_manager) {
+  // If the original trigger is already an address field, we can just return
+  // that field, as it is guaranteed to be in the address part of the section.
+  if (original_trigger_field->Type().GetGroups().contains(
+          FieldTypeGroup::kAddress)) {
+    return original_trigger_field;
+  }
+
+  // Otherwise, re-target to the first address field in the form section.
+  for (const std::unique_ptr<AutofillField>& field : fields) {
+    if (field->section() != original_trigger_field->section()) {
+      continue;
+    }
+
+    if (field->Type().GetGroups().contains(FieldTypeGroup::kAddress)) {
+      return field.get();
+    }
+  }
+
+  // This shouldn't happen as long as ShouldSplitOutContactInfo was called
+  // first, but handle it in case.
+  LOG_AF(log_manager) << LoggingScope::kAutofillActor
+                      << "GetTriggerFieldForAddressPart could not find an "
+                         "appropriate kAddress trigger field.";
+  return original_trigger_field;
+}
+
 }  // namespace
 
 bool ShouldSplitOutContactInfo(
@@ -76,6 +145,25 @@ bool ShouldSplitOutContactInfo(
 
   // We never saw an address field, so we shouldn't split.
   return false;
+}
+
+const AutofillField* RetargetTriggerFieldForSplittingIfNeeded(
+    const FormStructure* form_structure,
+    const AutofillField* original_trigger_field,
+    SectionSplitPart split_part,
+    LogManager* log_manager) {
+  switch (split_part) {
+    case SectionSplitPart::kNoSplit:
+      return original_trigger_field;
+    case SectionSplitPart::kContactInfo:
+      return GetTriggerFieldForContactInfoPart(
+          form_structure->fields(), original_trigger_field, log_manager);
+    case SectionSplitPart::kAddress:
+      return GetTriggerFieldForAddressPart(form_structure->fields(),
+                                           original_trigger_field, log_manager);
+  }
+
+  NOTREACHED();
 }
 
 }  // namespace autofill::actor

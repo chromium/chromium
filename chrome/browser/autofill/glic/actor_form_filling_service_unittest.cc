@@ -558,6 +558,45 @@ TEST_F(ActorFormFillingServiceTest,
                           FormFillingRequest_RequestedData_ADDRESS))));
 }
 
+// Tests that if section splitting occurs, we properly retarget the trigger
+// field for both sub-requests.
+TEST_F(ActorFormFillingServiceTest, MixedForm_SectionSplitting_Retargeting) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillActorFormFillingSplitOutContactInfo);
+
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = EMAIL_ADDRESS},
+                                      {.server_type = PHONE_HOME_WHOLE_NUMBER},
+                                      {.server_type = ADDRESS_HOME_LINE1},
+                                      {.server_type = ADDRESS_HOME_CITY}}});
+
+  GetSuggestionsFuture future;
+  // Trigger on NAME_FULL (index 0).
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           future.GetCallback());
+
+  ASSERT_THAT(future.Get(), ValueIs(SizeIs(2)));
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  // The CONTACT_INFORMATION request should be retargeted to the EMAIL_ADDRESS
+  // field.
+  EXPECT_EQ(requests[0].requested_data,
+            ActorFormFillingRequest::RequestedData::
+                FormFillingRequest_RequestedData_CONTACT_INFORMATION);
+  EXPECT_THAT(
+      requests[0].suggestions[0].title,
+      HasSubstr(base::UTF16ToUTF8(GetFillValue(GetProfile1(), EMAIL_ADDRESS))));
+
+  // The ADDRESS request should be retargeted to the ADDRESS_HOME_LINE1 field.
+  EXPECT_EQ(requests[1].requested_data,
+            ActorFormFillingRequest::RequestedData::
+                FormFillingRequest_RequestedData_ADDRESS);
+  EXPECT_THAT(requests[1].suggestions[0].title,
+              HasSubstr(base::UTF16ToUTF8(
+                  GetFillValue(GetProfile1(), ADDRESS_HOME_LINE1))));
+}
+
 // Tests that filling an "actor form" that is split across two Autofill forms
 // works.
 TEST_F(ActorFormFillingServiceTest, SplitAddressForm) {

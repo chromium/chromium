@@ -152,6 +152,102 @@ TEST_F(ActorFormSectionSplitterTest,
                                          manager(), log_manager()));
 }
 
+// Tests that if a form section is not being split, RetargetTriggerField should
+// just return the input trigger field.
+TEST_F(ActorFormSectionSplitterTest, RetargetTriggerField_NoSplit) {
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = EMAIL_ADDRESS},
+                                      {.server_type = ADDRESS_HOME_LINE1}}});
+
+  // Trigger on the NAME_FULL field, which would always be re-targeted if the
+  // form section was being split (to either EMAIL_ADDRESS for contact info or
+  // ADDRESS_HOME_LINE1 for address).
+  const FormStructure* form_structure =
+      manager().FindCachedFormById(form.fields()[0].global_id());
+  const AutofillField* original_trigger_field =
+      form_structure->GetFieldById(form.fields()[0].global_id());
+
+  // Since the form section is not being split, the original trigger field
+  // should be returned.
+  EXPECT_EQ(RetargetTriggerFieldForSplittingIfNeeded(
+                form_structure, original_trigger_field,
+                SectionSplitPart::kNoSplit, log_manager()),
+            original_trigger_field);
+}
+
+// Tests that RetargetTriggerField returns the correct re-targeted trigger field
+// for the contact info part of a split form section.
+TEST_F(ActorFormSectionSplitterTest, RetargetTriggerField_ContactInfo) {
+  FormData form = SeeForm(
+      {.fields = {{.server_type = EMAIL_ADDRESS,
+                   .autocomplete_attribute = "section-s1 email"},
+                  {.server_type = NAME_FULL,
+                   .autocomplete_attribute = "section-s2 name"},
+                  {.server_type = EMAIL_ADDRESS,
+                   .autocomplete_attribute = "section-s2 email"},
+                  {.server_type = ADDRESS_HOME_LINE1,
+                   .autocomplete_attribute = "section-s2 address-line1"}}});
+
+  // Trigger on the name field in section s2.
+  const FormStructure* form_structure =
+      manager().FindCachedFormById(form.fields()[1].global_id());
+  const AutofillField* field =
+      form_structure->GetFieldById(form.fields()[1].global_id());
+
+  // Should retarget to the EMAIL_ADDRESS in section s2 (index 2), ignoring the
+  // one in section s1 (index 0).
+  const AutofillField* retargeted = RetargetTriggerFieldForSplittingIfNeeded(
+      form_structure, field, SectionSplitPart::kContactInfo, log_manager());
+  EXPECT_EQ(retargeted->global_id(), form.fields()[2].global_id());
+}
+
+// Tests that RetargetTriggerField returns the correct re-targeted trigger field
+// for the address part of a split form section.
+TEST_F(ActorFormSectionSplitterTest, RetargetTriggerField_Address) {
+  FormData form = SeeForm(
+      {.fields = {{.server_type = ADDRESS_HOME_LINE1,
+                   .autocomplete_attribute = "section-s1 address-line1"},
+                  {.server_type = NAME_FULL,
+                   .autocomplete_attribute = "section-s2 name"},
+                  {.server_type = EMAIL_ADDRESS,
+                   .autocomplete_attribute = "section-s2 email"},
+                  {.server_type = ADDRESS_HOME_LINE1,
+                   .autocomplete_attribute = "section-s2 address-line1"}}});
+
+  const FormStructure* form_structure =
+      manager().FindCachedFormById(form.fields()[1].global_id());
+  const AutofillField* field =
+      form_structure->GetFieldById(form.fields()[1].global_id());
+
+  // Should retarget to the ADDRESS_HOME_LINE1 in section s2 (index 3), ignoring
+  // the one in section s1 (index 0).
+  const AutofillField* retargeted = RetargetTriggerFieldForSplittingIfNeeded(
+      form_structure, field, SectionSplitPart::kAddress, log_manager());
+  EXPECT_EQ(retargeted->global_id(), form.fields()[3].global_id());
+}
+
+// Tests that RetargetTriggerField returns the original trigger field for the
+// address part of a split form section if the trigger field was already of an
+// address type.
+TEST_F(ActorFormSectionSplitterTest,
+       RetargetTriggerField_Address_AlreadyAddressField) {
+  FormData form = SeeForm({.fields = {{.server_type = EMAIL_ADDRESS},
+                                      {.server_type = ADDRESS_HOME_LINE1},
+                                      {.server_type = ADDRESS_HOME_CITY}}});
+
+  const FormStructure* form_structure =
+      manager().FindCachedFormById(form.fields()[2].global_id());
+  const AutofillField* field =
+      form_structure->GetFieldById(form.fields()[2].global_id());
+
+  // Since the trigger field is already an address field, it should be returned
+  // as-is, even if it's not the first address field in the section.
+  EXPECT_EQ(
+      RetargetTriggerFieldForSplittingIfNeeded(
+          form_structure, field, SectionSplitPart::kAddress, log_manager()),
+      field);
+}
+
 }  // namespace
 
 }  // namespace autofill::actor

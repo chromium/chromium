@@ -225,7 +225,9 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
   }
   const FormData& form = form_structure->ToFormData();
   const AutofillField* const autofill_field =
-      form_structure->GetFieldById(fields[0]);
+      actor::RetargetTriggerFieldForSplittingIfNeeded(
+          form_structure, form_structure->GetFieldById(fields[0]), split_part,
+          log_manager);
   CHECK(autofill_field);
 
   std::vector<ActorSuggestionWithFillData> result;
