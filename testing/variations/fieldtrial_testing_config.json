@@ -3063,26 +3063,6 @@
             ]
         }
     ],
-    "AutofillPrioritizeSaveCardOverMandatoryReauth": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillPrioritizeSaveCardOverMandatoryReauth"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillReintroduceHybridPasskeyDropdownItem": [
         {
             "platforms": [
