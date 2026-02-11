@@ -2164,6 +2164,14 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(prefs::kAndroidTipNotificationShownLens, false);
   registry->RegisterBooleanPref(
       prefs::kAndroidTipNotificationShownBottomOmnibox, false);
+  registry->RegisterBooleanPref(
+      prefs::kAndroidTipNotificationShownPasswordAutofill, false);
+  registry->RegisterBooleanPref(prefs::kAndroidTipNotificationShownSignin,
+                                false);
+  registry->RegisterBooleanPref(
+      prefs::kAndroidTipNotificationShownCreateTabGroup, false);
+  registry->RegisterBooleanPref(prefs::kAndroidTipNotificationShownCustomizeMVT,
+                                false);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   registry->RegisterBooleanPref(prefs::kStaticStorageQuotaEnabled, false);

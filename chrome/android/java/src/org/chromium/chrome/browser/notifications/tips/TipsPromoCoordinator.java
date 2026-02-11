@@ -267,6 +267,9 @@ public class TipsPromoCoordinator {
                                 AddressBarSettingsFragment.createArguments(
                                         HighlightedOption.BOTTOM_TOOLBAR));
                 break;
+            case TipsNotificationsFeatureType.PASSWORD_AUTOFILL:
+                // No-op since there is no page to travel to.
+                break;
             default:
                 assert false : "Invalid feature type: " + featureType;
         }
@@ -292,6 +295,9 @@ public class TipsPromoCoordinator {
             case TipsNotificationsFeatureType.BOTTOM_OMNIBOX:
                 logoView.setImageResource(logoViewRes);
                 break;
+            case TipsNotificationsFeatureType.PASSWORD_AUTOFILL:
+                logoView.setImageResource(logoViewRes);
+                break;
             default:
                 assert false : "Invalid feature type: " + featureType;
         }
@@ -307,6 +313,8 @@ public class TipsPromoCoordinator {
                 return ".GoogleLens";
             case TipsNotificationsFeatureType.BOTTOM_OMNIBOX:
                 return ".BottomOmnibox";
+            case TipsNotificationsFeatureType.PASSWORD_AUTOFILL:
+                return ".PasswordAutofill";
             default:
                 assert false : "Invalid feature type: " + featureType;
                 return "";

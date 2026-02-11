@@ -34,6 +34,9 @@ GetTipsNotificationsFeatureTypeMap() {
           {TipsNotificationsFeatureType::kBottomOmnibox,
            {IDS_TIPS_NOTIFICATIONS_BOTTOM_OMNIBOX_TITLE,
             IDS_TIPS_NOTIFICATIONS_BOTTOM_OMNIBOX_SUBTITLE}},
+          {TipsNotificationsFeatureType::kPasswordAutofill,
+           {IDS_TIPS_NOTIFICATIONS_PASSWORD_AUTOFILL_TITLE,
+            IDS_TIPS_NOTIFICATIONS_PASSWORD_AUTOFILL_SUBTITLE}},
       });
   return *kTipsNotificationsFeatureTypeMap;
 }
@@ -72,6 +75,8 @@ std::string GetFeatureTypePref(TipsNotificationsFeatureType feature_type) {
       return prefs::kAndroidTipNotificationShownLens;
     case TipsNotificationsFeatureType::kBottomOmnibox:
       return prefs::kAndroidTipNotificationShownBottomOmnibox;
+    case TipsNotificationsFeatureType::kPasswordAutofill:
+      return prefs::kAndroidTipNotificationShownPasswordAutofill;
     default:
       NOTREACHED();
   }

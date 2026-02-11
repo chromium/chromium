@@ -37,6 +37,11 @@ function setupEventListeners() {
         assert(pageHandler);
         pageHandler.scheduleNotification('bottom_omnibox');
       });
+  getRequiredElement('password-autofill-notification')
+      .addEventListener('click', function() {
+        assert(pageHandler);
+        pageHandler.scheduleNotification('password_autofill');
+      });
 }
 
 document.addEventListener('DOMContentLoaded', function() {

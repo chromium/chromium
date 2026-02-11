@@ -61,6 +61,13 @@ public class TipsUtils {
     public static final String GOOGLE_LENS_SHOWN = "android.tips.notifications.lens_shown";
     public static final String BOTTOM_OMNIBOX_SHOWN =
             "android.tips.notifications.bottom_omnibox_shown";
+    public static final String PASSWORD_AUTOFILL_SHOWN =
+            "android.tips.notifications.password_autofill_shown";
+    public static final String SIGNIN_SHOWN = "android.tips.notifications.signin_shown";
+    public static final String CREATE_TAB_GROUP_SHOWN =
+            "android.tips.notifications.create_tab_group_shown";
+    public static final String CUSTOMIZE_MVT_SHOWN =
+            "android.tips.notifications.customize_mvt_shown";
 
     // LINT.ThenChange(//chrome/common/pref_names.h:TipsShownPrefs)
 
@@ -139,6 +146,23 @@ public class TipsUtils {
                 detailPageSteps.add(
                         context.getString(
                                 R.string.tips_promo_bottom_sheet_third_step_bottom_omnibox));
+                break;
+            case TipsNotificationsFeatureType.PASSWORD_AUTOFILL:
+                positiveButtonTextRes = R.string.tips_promo_bottom_sheet_positive_button_text_noop;
+                mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_password_autofill;
+                mainPageDescriptionRes =
+                        R.string.tips_promo_bottom_sheet_description_password_autofill;
+                mainPageLogoViewRes = R.drawable.tips_promo_password_autofill_logo;
+                detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_password_autofill;
+                detailPageSteps.add(
+                        context.getString(
+                                R.string.tips_promo_bottom_sheet_first_step_password_autofill));
+                detailPageSteps.add(
+                        context.getString(
+                                R.string.tips_promo_bottom_sheet_second_step_password_autofill));
+                detailPageSteps.add(
+                        context.getString(
+                                R.string.tips_promo_bottom_sheet_third_step_password_autofill));
                 break;
             default:
                 assert false : "Invalid feature type: " + featureType;
@@ -315,6 +339,7 @@ public class TipsUtils {
         UserPrefs.get(profile).setBoolean(QUICK_DELETE_SHOWN, false);
         UserPrefs.get(profile).setBoolean(GOOGLE_LENS_SHOWN, false);
         UserPrefs.get(profile).setBoolean(BOTTOM_OMNIBOX_SHOWN, false);
+        UserPrefs.get(profile).setBoolean(PASSWORD_AUTOFILL_SHOWN, false);
     }
 
     /**

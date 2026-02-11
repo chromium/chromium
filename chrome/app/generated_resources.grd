@@ -19870,6 +19870,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_TIPS_NOTIFICATIONS_BOTTOM_OMNIBOX_SUBTITLE" desc="Subtitle for the bottom omnibox tip notification.">
       Switch the position of your address bar for a customized browsing experience
     </message>
+    <message name="IDS_TIPS_NOTIFICATIONS_PASSWORD_AUTOFILL_TITLE" desc="Title for the password autofill tip notification. [CHAR_LIMIT=32]">
+      Autofill your passwords
+    </message>
+    <message name="IDS_TIPS_NOTIFICATIONS_PASSWORD_AUTOFILL_SUBTITLE" desc="Subtitle for the password autofill tip notification.">
+      Create, save, and manage your passwords so you can easily sign in to sites and apps using Chrome
+    </message>
 
     <!-- chrome://updater -->
     <if expr="is_linux or is_macosx or is_win">

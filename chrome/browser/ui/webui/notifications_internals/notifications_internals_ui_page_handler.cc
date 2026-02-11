@@ -39,6 +39,8 @@ void NotificationsInternalsUIPageHandler::ScheduleNotification(
     type = notifications::TipsNotificationsFeatureType::kGoogleLens;
   } else if (feature_type == "bottom_omnibox") {
     type = notifications::TipsNotificationsFeatureType::kBottomOmnibox;
+  } else if (feature_type == "password_autofill") {
+    type = notifications::TipsNotificationsFeatureType::kPasswordAutofill;
   } else {
     NOTREACHED();
   }

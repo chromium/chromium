@@ -150,6 +150,35 @@ public class TipsUtilsUnitTest {
 
     @SmallTest
     @Test
+    public void testGetFeatureTipPromoDataForType_PasswordAutofill() {
+        FeatureTipPromoData promoData =
+                TipsUtils.getFeatureTipPromoDataForType(
+                        mActivity, TipsNotificationsFeatureType.PASSWORD_AUTOFILL);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_positive_button_text_noop),
+                promoData.positiveButtonText);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_title_password_autofill),
+                promoData.mainPageTitle);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_description_password_autofill),
+                promoData.mainPageDescription);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_first_step_password_autofill),
+                promoData.detailPageSteps.get(0));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_second_step_password_autofill),
+                promoData.detailPageSteps.get(1));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_third_step_password_autofill),
+                promoData.detailPageSteps.get(2));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_title_password_autofill),
+                promoData.detailPageTitle);
+    }
+
+    @SmallTest
+    @Test
     public void testGetDetailStepBackground_SingleStep() {
         assertEquals(
                 R.drawable.view_list_single_item_background,
