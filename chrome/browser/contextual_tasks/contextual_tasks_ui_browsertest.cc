@@ -78,6 +78,7 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
               SetTaskDetails,
               (const base::Uuid&, const std::string&, const std::string&),
               (override));
+  MOCK_METHOD(void, SetAimUrl, (const GURL&), (override));
   MOCK_METHOD(void, ShowErrorPage, (), (override));
   MOCK_METHOD(void, HideErrorPage, (), (override));
   MOCK_METHOD(void, ShowOauthErrorDialog, (), (override));

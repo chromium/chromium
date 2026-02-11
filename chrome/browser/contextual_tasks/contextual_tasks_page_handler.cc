@@ -132,6 +132,12 @@ void ContextualTasksPageHandler::GetUrlForTask(const base::Uuid& uuid,
     return;
   }
 
+  GURL aim_url = web_ui_controller_->GetAimUrl();
+  if (!aim_url.is_empty()) {
+    std::move(callback).Run(aim_url);
+    return;
+  }
+
   // There's a slight difference in the callback signature between the mojo
   // api (wants a reference) and the ui service (provided a moved object).
   // The latter can't provide a reference since we're not keeping it

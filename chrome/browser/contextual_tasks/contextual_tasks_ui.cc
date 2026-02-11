@@ -434,6 +434,17 @@ void ContextualTasksUI::OnTaskUpdated(
   }
 }
 
+GURL ContextualTasksUI::GetAimUrl() {
+  std::string aim_url_str;
+  if (net::GetValueForKeyInQuery(
+          web_ui()->GetWebContents()->GetLastCommittedURL(), "aim_url",
+          &aim_url_str)) {
+    return GURL(aim_url_str);
+  } else {
+    return GURL();
+  }
+}
+
 const std::optional<base::Uuid>& ContextualTasksUI::GetTaskId() {
   return task_id_;
 }
@@ -465,6 +476,12 @@ void ContextualTasksUI::SetThreadTitle(std::optional<std::string> title) {
   thread_title_ = title;
   if (page_) {
     page_->SetThreadTitle(thread_title_.value_or(std::string()));
+  }
+}
+
+void ContextualTasksUI::SetAimUrl(const GURL& url) {
+  if (page_) {
+    page_->SetAimUrl(url);
   }
 }
 
@@ -1004,6 +1021,8 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
       contextual_tasks::ThreadType::kAiMode, url_thread_id, mstk,
       task_info_delegate_->GetThreadTitle());
   task_info_delegate_->SetThreadTurnId(mstk);
+
+  task_info_delegate_->SetAimUrl(url);
 
   if (task_changed) {
     OMNIBOX_LOG("embedded_page_nav")

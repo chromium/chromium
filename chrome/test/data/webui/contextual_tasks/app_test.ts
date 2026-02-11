@@ -362,6 +362,20 @@ suite('ContextualTasksAppTest', function() {
     assertEquals('2222', currentUrl.searchParams.get('turn'));
   });
 
+  test('aim url saved in contextual task url', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    document.body.appendChild(document.createElement('contextual-tasks-app'));
+
+    const aimUrl = 'https://www.google.com/search?q=123';
+    proxy.callbackRouterRemote.setAimUrl(aimUrl);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+
+    const currentUrl = new URL(window.location.href);
+    assertEquals(aimUrl, currentUrl.searchParams.get('aim_url'));
+  });
+
   test('isAiPage reflected in dom', async () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
