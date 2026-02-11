@@ -87,6 +87,7 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     kNestedDeclarationsRule,
     kPositionTryRule,
     kPropertyRule,
+    kResultRule,
     kRouteRule,
     kScopeRule,
     kStartingStyleRule,

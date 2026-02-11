@@ -705,6 +705,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kCustomMedia:
       case StyleRuleBase::kRoute:
         break;
+      case StyleRuleBase::kResult:
       case StyleRuleBase::kApplyMixin:
       case StyleRuleBase::kContents:
         // TODO(sesse): Should we go down into the rules here?

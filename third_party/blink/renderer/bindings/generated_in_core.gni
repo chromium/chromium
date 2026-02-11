@@ -902,6 +902,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_property_rule.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_rgb.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_rgb.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_result_rule.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_result_rule.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_rotate.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_rotate.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_route_rule.cc",

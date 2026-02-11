@@ -140,6 +140,7 @@ struct DowncastTraits<CSSGroupingRule> {
       case CSSRule::kMixinRule:
       case CSSRule::kPageRule:
       case CSSRule::kNavigationRule:
+      case CSSRule::kResultRule:
       case CSSRule::kScopeRule:
       case CSSRule::kStartingStyleRule:
         return true;

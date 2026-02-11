@@ -344,6 +344,7 @@ class CORE_EXPORT CSSParserImpl {
   std::optional<HeapVector<StyleRuleFunction::Parameter>>
   ConsumeFunctionParameters(CSSParserTokenStream& stream);
   StyleRuleMixin* ConsumeMixinRule(CSSParserTokenStream& stream);
+  StyleRuleResult* ConsumeResultRule(CSSParserTokenStream& stream);
   StyleRuleApplyMixin* ConsumeApplyMixinRule(CSSParserTokenStream& stream);
   StyleRuleContentsStatement* ConsumeContentsRule(CSSParserTokenStream& stream);
   StyleRuleCustomMedia* ConsumeCustomMediaRule(CSSParserTokenStream& stream);

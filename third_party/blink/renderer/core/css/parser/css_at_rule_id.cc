@@ -162,6 +162,9 @@ CSSAtRuleID CssAtRuleID(StringView name) {
     if (EqualIgnoringASCIICase(name, "contents")) {
       return CSSAtRuleID::kCSSAtRuleContents;
     }
+    if (EqualIgnoringASCIICase(name, "result")) {
+      return CSSAtRuleID::kCSSAtRuleResult;
+    }
   }
 
   if (RuntimeEnabledFeatures::CSSCustomMediaEnabled()) {
@@ -269,6 +272,8 @@ StringView CssAtRuleIDToString(CSSAtRuleID id) {
       return "@apply";
     case CSSAtRuleID::kCSSAtRuleContents:
       return "@contents";
+    case CSSAtRuleID::kCSSAtRuleResult:
+      return "@result";
     case CSSAtRuleID::kCSSAtRuleCustomMedia:
       return "@custom-media";
     case CSSAtRuleID::kCSSAtRuleInvalid:
@@ -356,6 +361,7 @@ std::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
     case CSSAtRuleID::kCSSAtRuleMixin:
     case CSSAtRuleID::kCSSAtRuleApplyMixin:
     case CSSAtRuleID::kCSSAtRuleContents:
+    case CSSAtRuleID::kCSSAtRuleResult:
       return WebFeature::kCSSMixins;
     case CSSAtRuleID::kCSSAtRuleCustomMedia:
       return WebFeature::kCSSCustomMedia;

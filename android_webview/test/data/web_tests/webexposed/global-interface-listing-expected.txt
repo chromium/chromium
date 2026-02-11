@@ -992,6 +992,9 @@ interface CSSRGB : CSSColorValue
     setter b
     setter g
     setter r
+interface CSSResultRule : CSSGroupingRule
+    attribute @@toStringTag
+    method constructor
 interface CSSRotate : CSSTransformComponent
     attribute @@toStringTag
     getter angle

@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/css/css_page_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_rule.h"
+#include "third_party/blink/renderer/core/css/css_result_rule.h"
 #include "third_party/blink/renderer/core/css/css_route_rule.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_starting_style_rule.h"
@@ -192,6 +193,9 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
     case kMixin:
       To<StyleRuleMixin>(this)->TraceAfterDispatch(visitor);
       return;
+    case kResult:
+      To<StyleRuleResult>(this)->TraceAfterDispatch(visitor);
+      return;
     case kApplyMixin:
       To<StyleRuleApplyMixin>(this)->TraceAfterDispatch(visitor);
       return;
@@ -293,6 +297,9 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
       return;
     case kMixin:
       To<StyleRuleMixin>(this)->~StyleRuleMixin();
+      return;
+    case kResult:
+      To<StyleRuleResult>(this)->~StyleRuleResult();
       return;
     case kApplyMixin:
       To<StyleRuleApplyMixin>(this)->~StyleRuleApplyMixin();
@@ -428,6 +435,10 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kMixin:
       rule = MakeGarbageCollected<CSSMixinRule>(To<StyleRuleMixin>(self),
                                                 parent_sheet);
+      break;
+    case kResult:
+      rule = MakeGarbageCollected<CSSResultRule>(To<StyleRuleResult>(self),
+                                                 parent_sheet);
       break;
     case kApplyMixin:
       rule = MakeGarbageCollected<CSSApplyMixinRule>(
@@ -669,6 +680,9 @@ StyleRuleBase* StyleRuleBase::Clone(
     }
     case kMixin:
       return CloneGroupRule(To<StyleRuleMixin>(this), new_parent,
+                            mixin_parameter_bindings);
+    case kResult:
+      return CloneGroupRule(To<StyleRuleResult>(this), new_parent,
                             mixin_parameter_bindings);
     case kApplyMixin: {
       auto* apply_rule = To<StyleRuleApplyMixin>(this);
@@ -1105,6 +1119,17 @@ StyleRuleMixin::StyleRuleMixin(const StyleRuleMixin& other,
 void StyleRuleMixin::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleGroup::TraceAfterDispatch(visitor);
   visitor->Trace(parameters_);
+}
+
+StyleRuleResult::StyleRuleResult(HeapVector<Member<StyleRuleBase>> child_rules)
+    : StyleRuleGroup(kResult, child_rules) {}
+
+StyleRuleResult::StyleRuleResult(const StyleRuleResult& other,
+                                 HeapVector<Member<StyleRuleBase>> child_rules)
+    : StyleRuleGroup(kResult, child_rules) {}
+
+void StyleRuleResult::TraceAfterDispatch(blink::Visitor* visitor) const {
+  StyleRuleGroup::TraceAfterDispatch(visitor);
 }
 
 void StyleRuleApplyMixin::TraceAfterDispatch(blink::Visitor* visitor) const {

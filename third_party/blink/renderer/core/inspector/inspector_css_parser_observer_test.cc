@@ -204,7 +204,7 @@ TEST_F(InspectorCSSParserObserverTest, NestedDeclarationsInvalidPrecedingRule) {
 }
 
 TEST_F(InspectorCSSParserObserverTest, MixinWithNestedDeclarations) {
-  String text = "@mixin --m1() { color: green; }";
+  String text = "@mixin --m1() { @result { color: green; } }";
   CSSRuleSourceDataList data = Parse(text);
   ASSERT_EQ(1u, data.size());
   EXPECT_EQ(" color: green; ", Substring(text, data[0]->rule_body_range));

@@ -81,6 +81,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kViewTransition,
     kFunction,
     kMixin,
+    kResult,
     kApplyMixin,
     kContents,
     kPositionTry,
@@ -136,6 +137,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   }
   bool IsFunctionRule() const { return GetType() == kFunction; }
   bool IsMixinRule() const { return GetType() == kMixin; }
+  bool IsResultRule() const { return GetType() == kResult; }
   bool IsApplyMixinRule() const { return GetType() == kApplyMixin; }
   bool IsContentsRule() const { return GetType() == kContents; }
   bool IsPositionTryRule() const { return GetType() == kPositionTry; }
@@ -673,6 +675,18 @@ class CORE_EXPORT StyleRuleMixin : public StyleRuleGroup {
   HeapVector<StyleRuleFunction::Parameter> parameters_;
 };
 
+// A @result rule, representing the applied result of a mixin.
+// (May be within @media and similar.)
+class CORE_EXPORT StyleRuleResult : public StyleRuleGroup {
+ public:
+  explicit StyleRuleResult(HeapVector<Member<StyleRuleBase>> child_rules);
+  StyleRuleResult(const StyleRuleResult&) = delete;
+  StyleRuleResult(const StyleRuleResult&,
+                  HeapVector<Member<StyleRuleBase>> child_rules);
+
+  void TraceAfterDispatch(blink::Visitor*) const;
+};
+
 // An @apply rule, representing applying a mixin.
 class CORE_EXPORT StyleRuleApplyMixin : public StyleRuleBase {
  public:
@@ -876,6 +890,13 @@ template <>
 struct DowncastTraits<StyleRuleMixin> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsMixinRule();
+  }
+};
+
+template <>
+struct DowncastTraits<StyleRuleResult> {
+  static bool AllowFrom(const StyleRuleBase& rule) {
+    return rule.IsResultRule();
   }
 };
 

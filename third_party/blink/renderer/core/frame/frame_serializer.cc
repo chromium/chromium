@@ -1217,6 +1217,7 @@ function main(metadata) {
       case CSSRule::kNestedDeclarationsRule:
       case CSSRule::kMediaRule:
       case CSSRule::kMixinRule:
+      case CSSRule::kResultRule:
       case CSSRule::kNavigationRule:
       case CSSRule::kSupportsRule:
       case CSSRule::kContainerRule:
