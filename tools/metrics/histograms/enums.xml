@@ -13953,6 +13953,7 @@ from previous Chrome versions.
   <int value="-150395873" label="NTPEnterpriseShortcuts:enabled"/>
   <int value="-150077791" label="FontAccessChooser:disabled"/>
   <int value="-149667706" label="CameraAppDigitalZoom:enabled"/>
+  <int value="-149459029" label="OnDemandBackgroundTabContextCapture:disabled"/>
   <int value="-149365748" label="CbdTimeframeRequired:enabled"/>
   <int value="-149260874" label="StorageAccessHeaders:disabled"/>
   <int value="-148843521"
@@ -14388,6 +14389,7 @@ from previous Chrome versions.
   <int value="-3102230" label="SearchInCCTAlternateTapHandling:enabled"/>
   <int value="-3093629" label="DcheckIsFatal:disabled"/>
   <int value="-2953333" label="AndroidHistoryManager:disabled"/>
+  <int value="-2692780" label="OnDemandBackgroundTabContextCapture:enabled"/>
   <int value="-2512468" label="OmniboxMaterialDesignWeatherIcons:disabled"/>
   <int value="-2371418" label="disable-display-list-2d-canvas"/>
   <int value="-1978322" label="BlinkExtension:enabled"/>

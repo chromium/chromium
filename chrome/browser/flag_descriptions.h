@@ -5477,6 +5477,11 @@ inline constexpr char kOmahaMinSdkVersionAndroidMinSdk1Description[] =
 inline constexpr char kOmahaMinSdkVersionAndroidMinSdk1000Description[] =
     "Minimum SDK = 1000";
 
+inline constexpr char kOnDemandBackgroundTabContextCaptureName[] =
+    "On demand background tab context capture";
+inline constexpr char kOnDemandBackgroundTabContextCaptureDescription[] =
+    "Enables on-demand background tab context capture.";
+
 inline constexpr char kOmniboxAutofocusOnIncognitoNtpName[] =
     "Omnibox Autofocus on Incognito New Tab Page";
 inline constexpr char kOmniboxAutofocusOnIncognitoNtpDescription[] =
