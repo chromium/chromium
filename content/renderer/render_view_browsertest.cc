@@ -29,6 +29,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -2364,6 +2365,50 @@ TEST_F(RenderViewImplTest, OnDeleteSurroundingText) {
   info = controller->TextInputInfo();
   EXPECT_EQ("", info.value);
 
+  EXPECT_EQ(0, info.selection_start);
+  EXPECT_EQ(0, info.selection_end);
+}
+
+// This test verifies that when a JavaScript event listener modifies the
+// selection during DeleteSurroundingText (e.g., via setSelectionRange),
+// the new selection is preserved rather than being overridden.
+TEST_F(RenderViewImplTest,
+       DeleteSurroundingTextRespectsEventListenerSelection) {
+  LoadHTML(
+      "<html>"
+      "<head>"
+      "</head>"
+      "<body>"
+      "<input id=\"test1\" value=\"0123456789\"></input>"
+      "</body>"
+      "<script>"
+      "document.getElementById('test1').addEventListener('input', "
+      "  event => {"
+      "    if (event.inputType === 'deleteContentBackward') {"
+      "      event.target.setSelectionRange(0, 0);"
+      "    }"
+      "  });"
+      "</script>"
+      "</html>");
+  ExecuteJavaScriptForTests("document.getElementById('test1').focus();");
+
+  auto* frame_widget_input_handler = GetFrameWidgetInputHandler();
+  blink::WebInputMethodController* controller =
+      frame()->GetWebFrame()->GetInputMethodController();
+
+  frame_widget_input_handler->SetEditableSelectionOffsets(3, 4);
+  // With '3' selected, '12' and '45' should be deleted.
+  frame_widget_input_handler->DeleteSurroundingText(2, 2);
+
+  // Wait for the deletion to complete and the event listener to update the
+  // selection.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    blink::WebTextInputInfo info = controller->TextInputInfo();
+    return info.value != "0123456789";
+  }));
+
+  blink::WebTextInputInfo info = controller->TextInputInfo();
+  EXPECT_EQ("036789", info.value);
   EXPECT_EQ(0, info.selection_start);
   EXPECT_EQ(0, info.selection_end);
 }

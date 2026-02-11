@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 
+#include <optional>
 #include <tuple>
 
 #include "base/feature_list.h"
@@ -1540,6 +1541,7 @@ void InputMethodController::DeleteSurroundingText(int before, int after) {
   int selection_start = static_cast<int>(selection_offsets.Start());
   int selection_end = static_cast<int>(selection_offsets.End());
 
+  std::optional<PlainTextRange> overridden_selection = std::nullopt;
   // Select the text to be deleted before SelectionState::kStart.
   if (before > 0 && selection_start > 0) {
     // In case of exceeding the left boundary.
@@ -1555,6 +1557,18 @@ void InputMethodController::DeleteSurroundingText(int before, int after) {
 
     selection_end = selection_end - (selection_start - start);
     selection_start = start;
+
+    // The deletion above leaves the caret at [`start`, `start`], so to check if
+    // a listener changed the selection range we need to compare the start and
+    // end of the range against that value.
+    const PlainTextRange current_selection_offsets(GetSelectionOffsets());
+    if (!current_selection_offsets.IsNull() &&
+        (current_selection_offsets.Start() !=
+             static_cast<unsigned>(selection_start) ||
+         current_selection_offsets.End() !=
+             static_cast<unsigned>(selection_start))) {
+      overridden_selection.emplace(current_selection_offsets);
+    }
   }
 
   // Select the text to be deleted after SelectionState::kEnd.
@@ -1577,11 +1591,32 @@ void InputMethodController::DeleteSurroundingText(int before, int after) {
       return;
     if (!DeleteSelectionWithoutAdjustment())
       return;
+    const PlainTextRange current_selection_offsets(GetSelectionOffsets());
+    // The deletion above leaves the caret at [`end`, `end`], so to check if
+    // a listener changed the selection range we need to compare the start and
+    // end of the range against that value.
+    if (!current_selection_offsets.IsNull() &&
+        !overridden_selection.has_value() &&
+        (current_selection_offsets.Start() !=
+             static_cast<unsigned>(selection_end) ||
+         current_selection_offsets.End() !=
+             static_cast<unsigned>(selection_end))) {
+      overridden_selection.emplace(current_selection_offsets);
+    }
   }
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  see http://crbug.com/590369 for more details.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+
+  // Check if the selection was modified by event listeners (e.g., via
+  // setSelectionRange in JavaScript). If so, respect the new selection
+  // instead of restoring the original one.
+  if (overridden_selection.has_value()) {
+    selection_start = overridden_selection->Start();
+    selection_end = overridden_selection->End();
+  }
+
   SetSelectionOffsets(PlainTextRange(selection_start, selection_end));
 }
 

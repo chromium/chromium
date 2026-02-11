@@ -980,6 +980,69 @@ TEST_F(InputMethodControllerTest, DeleteSurroundingTextForMultipleNodes) {
   EXPECT_EQ(2u, Controller().GetSelectionOffsets().End());
 }
 
+// This test verifies that when a JavaScript event listener modifies the
+// selection during DeleteSurroundingText (e.g., via setSelectionRange),
+// the new selection is preserved rather than being overridden.
+TEST_F(InputMethodControllerTest,
+       DeleteSurroundingTextRespectsEventListenerSelection) {
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  auto* input = To<HTMLInputElement>(
+      InsertHTMLElement("<input id='test1' value=\"0123456789\">", "test1"));
+
+  // Set up an input event listener that moves the selection when text is
+  // deleted
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->SetInnerHTMLWithoutTrustedTypes(
+      "document.getElementById('test1').addEventListener('input', "
+      "  event => {"
+      "    if (event.inputType === 'deleteContentBackward') {"
+      "      event.target.setSelectionRange(0, 0);"
+      "    }"
+      "  });");
+  GetDocument().body()->AppendChild(script);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Place cursor selecting character '3' and verify the correct behavior when
+  // deleting characters before and after the selection.  With '3' selected, '2'
+  // and '4' should be deleted.
+  Controller().SetEditableSelectionOffsets(PlainTextRange(3, 4));
+  EXPECT_EQ(3u, Controller().GetSelectionOffsets().Start());
+  EXPECT_EQ(4u, Controller().GetSelectionOffsets().End());
+  Controller().DeleteSurroundingText(1, 1);
+  EXPECT_EQ("01356789", input->Value());
+
+  // Verify the selection is at position 0 (as set by the event listener),
+  // not at position 2 (where DeleteSurroundingText would have placed it)
+  EXPECT_EQ(0u, Controller().GetSelectionOffsets().Start());
+  EXPECT_EQ(0u, Controller().GetSelectionOffsets().End());
+
+  // Place cursor selecting character '3' again, and verify the correct behavior
+  // when deleting a character only after the selection.  With '3' selected, '5'
+  // should be deleted.
+  Controller().SetEditableSelectionOffsets(PlainTextRange(2, 3));
+  EXPECT_EQ(2u, Controller().GetSelectionOffsets().Start());
+  EXPECT_EQ(3u, Controller().GetSelectionOffsets().End());
+  Controller().DeleteSurroundingText(0, 1);
+  EXPECT_EQ("0136789", input->Value());
+
+  // Verify the cursor is in the right position.
+  EXPECT_EQ(0u, Controller().GetSelectionOffsets().Start());
+  EXPECT_EQ(0u, Controller().GetSelectionOffsets().End());
+
+  // Place cursor selecting character '3' again, and verify the correct behavior
+  // when deleting a character only before the selection.  With '3' selected,
+  // '1' should be deleted.
+  Controller().SetEditableSelectionOffsets(PlainTextRange(2, 3));
+  EXPECT_EQ(2u, Controller().GetSelectionOffsets().Start());
+  EXPECT_EQ(3u, Controller().GetSelectionOffsets().End());
+  Controller().DeleteSurroundingText(1, 0);
+  EXPECT_EQ("036789", input->Value());
+
+  // Verify the cursor is in the right position.
+  EXPECT_EQ(0u, Controller().GetSelectionOffsets().Start());
+  EXPECT_EQ(0u, Controller().GetSelectionOffsets().End());
+}
+
 TEST_F(InputMethodControllerTest,
        DeleteSurroundingTextInCodePointsWithMultiCodeTextOnTheLeft) {
   auto* input =
