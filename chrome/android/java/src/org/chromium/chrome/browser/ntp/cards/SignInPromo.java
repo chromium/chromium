@@ -13,6 +13,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
@@ -213,7 +214,7 @@ public abstract class SignInPromo {
 
         // ProfileDataCache.Observer implementation.
         @Override
-        public void onProfileDataUpdated(String accountEmail) {
+        public void onProfileDataUpdated(DisplayableProfileData profileData) {
             notifyDataChanged();
         }
     }

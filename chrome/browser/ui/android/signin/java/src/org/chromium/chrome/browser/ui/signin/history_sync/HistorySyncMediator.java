@@ -93,13 +93,11 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
 
     /** Implements {@link ProfileDataCache.Observer}. */
     @Override
-    public void onProfileDataUpdated(String accountEmail) {
-        if (!TextUtils.equals(mAccountEmail, accountEmail)) {
+    public void onProfileDataUpdated(DisplayableProfileData profileData) {
+        if (!TextUtils.equals(mAccountEmail, profileData.getAccountEmail())) {
             return;
         }
-        mModel.set(
-                HistorySyncProperties.PROFILE_DATA,
-                mProfileDataCache.getProfileDataOrDefault(accountEmail));
+        mModel.set(HistorySyncProperties.PROFILE_DATA, profileData);
     }
 
     /** Implements {@link SigninManager.SignInStateObserver} */

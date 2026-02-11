@@ -20,6 +20,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.Event;
@@ -344,8 +345,8 @@ public class AccountPickerBottomSheetMediator
 
     /** Implements {@link ProfileDataCache.Observer}. */
     @Override
-    public void onProfileDataUpdated(String accountEmail) {
-        updateSelectedAccountData(accountEmail);
+    public void onProfileDataUpdated(DisplayableProfileData profileData) {
+        updateSelectedAccountData(profileData);
     }
 
     /** Implements {@link AccountPickerDelegate.SigninStateController controller}. */
@@ -498,18 +499,17 @@ public class AccountPickerBottomSheetMediator
 
     private void setSelectedAccount(CoreAccountInfo account) {
         mSelectedAccount = account;
-        updateSelectedAccountData(account.getEmail());
+        final var profileData = mProfileDataCache.getProfileDataOrDefault(account.getEmail());
+        updateSelectedAccountData(profileData);
     }
 
-    private void updateSelectedAccountData(String accountEmail) {
+    private void updateSelectedAccountData(DisplayableProfileData profileData) {
         if (mSelectedAccount != null
-                && TextUtils.equals(mSelectedAccount.getEmail(), accountEmail)) {
-            mModel.set(
-                    AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DATA,
-                    mProfileDataCache.getProfileDataOrDefault(accountEmail));
+                && TextUtils.equals(mSelectedAccount.getEmail(), profileData.getAccountEmail())) {
+            mModel.set(AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DATA, profileData);
             mModel.set(
                     AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DOMAIN,
-                    mSigninManager.extractDomainName(accountEmail));
+                    mSigninManager.extractDomainName(profileData.getAccountEmail()));
         }
     }
 

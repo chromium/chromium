@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import androidx.annotation.MainThread;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.AddAccountRowProperties;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
@@ -65,19 +66,17 @@ class AccountPickerMediator implements AccountsChangeObserver, ProfileDataCache.
 
     /** Implements {@link ProfileDataCache.Observer}. */
     @Override
-    public void onProfileDataUpdated(String accountEmail) {
+    public void onProfileDataUpdated(DisplayableProfileData profileData) {
         for (MVCListAdapter.ListItem item : mListModel) {
             if (item.type == AccountPickerProperties.ItemType.EXISTING_ACCOUNT_ROW) {
                 PropertyModel model = item.model;
                 boolean isProfileDataUpdated =
                         TextUtils.equals(
-                                accountEmail,
+                                profileData.getAccountEmail(),
                                 model.get(ExistingAccountRowProperties.PROFILE_DATA)
                                         .getAccountEmail());
                 if (isProfileDataUpdated) {
-                    model.set(
-                            ExistingAccountRowProperties.PROFILE_DATA,
-                            mProfileDataCache.getProfileDataOrDefault(accountEmail));
+                    model.set(ExistingAccountRowProperties.PROFILE_DATA, profileData);
                     break;
                 }
             }

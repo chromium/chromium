@@ -195,9 +195,10 @@ final class SigninPromoMediator
 
     /** Implements {@link ProfileDataCache.Observer}. */
     @Override
-    public void onProfileDataUpdated(String accountEmail) {
+    public void onProfileDataUpdated(DisplayableProfileData profileData) {
         @Nullable CoreAccountInfo visibleAccount = getVisibleAccount();
-        if (visibleAccount != null && !visibleAccount.getEmail().equals(accountEmail)) {
+        if (visibleAccount != null
+                && !visibleAccount.getEmail().equals(profileData.getAccountEmail())) {
             return;
         }
         refreshPromoContent(/* wasVisibleAccountUpdated= */ true);

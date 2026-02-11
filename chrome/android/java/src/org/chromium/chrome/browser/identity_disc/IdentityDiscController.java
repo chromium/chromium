@@ -222,10 +222,12 @@ public class IdentityDiscController
 
     /** Called after profile image becomes available. Updates the image on toolbar button. */
     @Override
-    public void onProfileDataUpdated(String accountEmail) {
+    public void onProfileDataUpdated(DisplayableProfileData profileData) {
         assert mProfileDataCache != null;
 
-        if (accountEmail.equals(CoreAccountInfo.getEmailFrom(getSignedInAccountInfo()))) {
+        if (profileData
+                .getAccountEmail()
+                .equals(CoreAccountInfo.getEmailFrom(getSignedInAccountInfo()))) {
             /*
              * We need to call {@link notifyObservers(false)} before calling
              * {@link notifyObservers(true)}. This is because {@link notifyObservers(true)} has been

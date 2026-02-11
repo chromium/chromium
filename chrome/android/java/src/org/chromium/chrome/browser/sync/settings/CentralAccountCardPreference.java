@@ -94,7 +94,7 @@ public class CentralAccountCardPreference extends Preference
 
     /** ProfileDataCache.Observer implementation. */
     @Override
-    public void onProfileDataUpdated(String accountEmail) {
+    public void onProfileDataUpdated(DisplayableProfileData profileData) {
         notifyChanged();
     }
 

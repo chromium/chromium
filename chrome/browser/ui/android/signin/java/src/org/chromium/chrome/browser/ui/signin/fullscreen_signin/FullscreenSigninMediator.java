@@ -354,9 +354,9 @@ public class FullscreenSigninMediator
 
     /** Implements {@link ProfileDataCache.Observer}. */
     @Override
-    public void onProfileDataUpdated(String accountEmail) {
+    public void onProfileDataUpdated(DisplayableProfileData profileData) {
         if (mSelectedAccount != null
-                && TextUtils.equals(mSelectedAccount.getEmail(), accountEmail)) {
+                && TextUtils.equals(mSelectedAccount.getEmail(), profileData.getAccountEmail())) {
             updateSelectedAccountData();
         }
     }

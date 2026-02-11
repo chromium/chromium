@@ -68,10 +68,9 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
         /**
          * Notifies that an account's profile data has been updated.
          *
-         * @param accountEmail An account email.
-         *     <p>TODO(crbug.com/480279812): Change the parameter to CoreAccountInfo.
+         * @param profileData The profile data that has been updated.
          */
-        void onProfileDataUpdated(String accountEmail);
+        void onProfileDataUpdated(DisplayableProfileData profileData);
     }
 
     /**
@@ -376,7 +375,7 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
                         || getBadgeConfigForAccount(accountInfo.getId()) != null)) {
             var displayableProfileData = toDisplayableProfileData(accountInfo);
             mAccountsCache.putAccount(displayableProfileData);
-            notifyObservers(accountInfo.getEmail());
+            notifyObservers(displayableProfileData);
         }
     }
 
@@ -433,9 +432,9 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
         }
     }
 
-    private void notifyObservers(String accountEmail) {
+    private void notifyObservers(DisplayableProfileData profileData) {
         for (Observer observer : mObservers) {
-            observer.onProfileDataUpdated(accountEmail);
+            observer.onProfileDataUpdated(profileData);
         }
     }
 

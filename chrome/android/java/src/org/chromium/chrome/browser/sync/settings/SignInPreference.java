@@ -315,7 +315,7 @@ public class SignInPreference extends Preference
 
     // ProfileDataCache.Observer implementation.
     @Override
-    public void onProfileDataUpdated(String accountEmail) {
+    public void onProfileDataUpdated(DisplayableProfileData profileData) {
         update();
     }
 

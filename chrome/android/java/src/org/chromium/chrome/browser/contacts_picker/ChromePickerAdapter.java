@@ -77,9 +77,10 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
     // ProfileDataCache.Observer:
 
     @Override
-    public void onProfileDataUpdated(String accountEmail) {
+    // TODO(finnur): crbug.com/1021477 - Maintain an member instance of this.
+    public void onProfileDataUpdated(DisplayableProfileData profileData) {
         String ownerEmail = getOwnerEmail();
-        if (!mWaitingOnOwnerInfo || !TextUtils.equals(accountEmail, ownerEmail)) {
+        if (!mWaitingOnOwnerInfo || !TextUtils.equals(profileData.getAccountEmail(), ownerEmail)) {
             return;
         }
         assumeNonNull(ownerEmail);
@@ -88,12 +89,9 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
         // update our records.
         mWaitingOnOwnerInfo = false;
         removeProfileDataObserver();
-        // TODO(finnur): crbug.com/1021477 - Maintain an member instance of this.
-        DisplayableProfileData profileData = mProfileDataCache.getProfileDataOrDefault(ownerEmail);
         assumeNonNull(getAllContacts());
         ContactDetails contact = getAllContacts().get(0);
-        Drawable icon = profileData.getImage();
-        contact.setSelfIcon(icon);
+        contact.setSelfIcon(profileData.getImage());
         update();
     }
 
