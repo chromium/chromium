@@ -235,14 +235,12 @@ mojom("test_export") {
   export_class_attribute = "MOJO_TEST_EXPORT"
   export_define = "MOJO_TEST_IMPLEMENTATION=1"
   export_header = "mojo/public/cpp/bindings/tests/mojo_test_export.h"
+  visibility = [ ":test_export_component" ]
   if (use_blink) {
     export_class_attribute_blink = "MOJO_TEST_BLINK_EXPORT"
     export_define_blink = "MOJO_TEST_BLINK_IMPLEMENTATION=1"
     export_header_blink =
         "mojo/public/cpp/bindings/tests/mojo_test_blink_export.h"
-  }
-  visibility = [ ":test_export_component" ]
-  if (use_blink) {
     visibility_blink = [ ":test_export_blink_component" ]
   }
 }

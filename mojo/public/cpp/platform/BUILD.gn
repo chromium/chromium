@@ -20,10 +20,13 @@ component("platform") {
     "platform_handle.cc",
   ]
 
-  if (is_posix && !is_mac) {
-    public += [ "socket_utils_posix.h" ]
-    sources += [ "socket_utils_posix.cc" ]
-  }
+  public_deps = [
+    "//base",
+    "//mojo:buildflags",
+    "//mojo/public/c/system:headers",
+  ]
+
+  deps = [ "//mojo/core/embedder:features" ]
 
   if (is_win || is_mac || (is_posix && !is_ios)) {
     public += [ "platform_channel_server.h" ]
@@ -33,34 +36,27 @@ component("platform") {
   if (is_win) {
     public += [ "platform_handle_security_util_win.h" ]
     sources += [
+      "named_platform_channel_win.cc",
       "platform_channel_server_win.cc",
       "platform_handle_security_util_win.cc",
     ]
-  } else if (is_mac) {
-    sources += [ "platform_channel_server_mac.cc" ]
-  } else if (is_posix) {
-    sources += [ "platform_channel_server_posix.cc" ]
-  }
-
-  public_deps = [
-    "//base",
-    "//mojo:buildflags",
-    "//mojo/public/c/system:headers",
-  ]
-
-  deps = [ "//mojo/core/embedder:features" ]
-
-  if (is_posix && !is_mac) {
-    sources += [ "named_platform_channel_posix.cc" ]
-    deps += [ "//net" ]
   }
 
   if (is_mac) {
-    sources += [ "named_platform_channel_mac.cc" ]
+    sources += [
+      "named_platform_channel_mac.cc",
+      "platform_channel_server_mac.cc",
+    ]
   }
 
-  if (is_win) {
-    sources += [ "named_platform_channel_win.cc" ]
+  if (is_posix && !is_mac) {
+    public += [ "socket_utils_posix.h" ]
+    sources += [
+      "named_platform_channel_posix.cc",
+      "platform_channel_server_posix.cc",
+      "socket_utils_posix.cc",
+    ]
+    deps += [ "//net" ]
   }
 
   if (is_fuchsia) {
