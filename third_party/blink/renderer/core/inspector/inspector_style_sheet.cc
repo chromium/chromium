@@ -97,7 +97,7 @@ static const CSSParserContext* ParserContextForDocument(
 }
 
 String FindMagicComment(const String& content, const String& name) {
-  DCHECK(name.Find("=") == kNotFound);
+  DCHECK(!name.contains("="));
 
   wtf_size_t length = content.length();
   wtf_size_t name_length = name.length();

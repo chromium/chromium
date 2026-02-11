@@ -194,7 +194,7 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
   }
 
   bool IsTargetAudioCodecSupported(const String& codecs) {
-    if (codecs.Find("mp4a.40.2") != kNotFound) {
+    if (codecs.contains("mp4a.40.2")) {
 #if !defined(HAS_AAC_ENCODER)
       return false;
 #else
@@ -211,12 +211,12 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
 
   bool IsVideoCodecSupported(const String codecs) {
     if (!media::IsOpenH264SoftwareEncoderEnabled() &&
-        (codecs.Find("h264") != kNotFound || codecs.Find("avc1") != kNotFound ||
-         codecs.Find("avc3") != kNotFound)) {
+        (codecs.contains("h264") || codecs.contains("avc1") ||
+         codecs.contains("avc3"))) {
       return false;
     }
 #if !BUILDFLAG(ENABLE_LIBAOM)
-    if (codecs.Find("av1") != kNotFound || codecs.Find("av01") != kNotFound) {
+    if (codecs.contains("av1") || codecs.contains("av01")) {
       return false;
     }
 #endif
@@ -404,9 +404,9 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
   bool IsCodecSupported() {
     // Test requires OpenH264 encoder. It can't use the VEA encoder.
     if (!media::IsOpenH264SoftwareEncoderEnabled() &&
-        (String(GetParam().codecs).Find("h264") != kNotFound ||
-         String(GetParam().codecs).Find("avc1") != kNotFound ||
-         String(GetParam().codecs).Find("avc3") != kNotFound)) {
+        (String(GetParam().codecs).contains("h264") ||
+         String(GetParam().codecs).contains("avc1") ||
+         String(GetParam().codecs).contains("avc3"))) {
       return false;
     }
 #if !BUILDFLAG(ENABLE_LIBAOM)
@@ -430,7 +430,7 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
   }
 
   bool IsAvcCodecSupported(const String codecs) {
-    return codecs.Find("avc1") != kNotFound || codecs.Find("avc3") != kNotFound;
+    return codecs.contains("avc1") || codecs.contains("avc3");
   }
 };
 
@@ -593,9 +593,9 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
   }
 
   if (!media::IsOpenH264SoftwareEncoderEnabled() &&
-      (String(GetParam().codecs).Find("h264") != kNotFound ||
-       String(GetParam().codecs).Find("avc1") != kNotFound ||
-       String(GetParam().codecs).Find("avc3") != kNotFound)) {
+      (String(GetParam().codecs).contains("h264") ||
+       String(GetParam().codecs).contains("avc1") ||
+       String(GetParam().codecs).contains("avc3"))) {
     // Return when software encoder is not enabled for H264.
     return;
   }

@@ -278,6 +278,7 @@ class WTF_EXPORT String {
   }
 
   bool Contains(char c) const { return find(c) != kNotFound; }
+  bool contains(const StringView& value) const { return find(value) != npos; }
   bool Contains(
       const StringView& value,
       TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {

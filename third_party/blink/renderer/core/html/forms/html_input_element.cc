@@ -1958,15 +1958,16 @@ HTMLInputElement::FilteredDataListOptions() const {
         if (!value.empty()) {
           // Firefox shows OPTIONs with matched labels, Edge shows OPTIONs
           // with matches values. We show both.
-          if (!(option->value()
-                        .FoldCase()
-                        .RemoveCharacters(IsWhitespace)
-                        .Find(value) == kNotFound &&
-                option->label()
-                        .FoldCase()
-                        .RemoveCharacters(IsWhitespace)
-                        .Find(value) == kNotFound))
+          if (option->value()
+                  .FoldCase()
+                  .RemoveCharacters(IsWhitespace)
+                  .contains(value) ||
+              option->label()
+                  .FoldCase()
+                  .RemoveCharacters(IsWhitespace)
+                  .contains(value)) {
             continue;
+          }
         }
         filtering_flag[i] = false;
       }

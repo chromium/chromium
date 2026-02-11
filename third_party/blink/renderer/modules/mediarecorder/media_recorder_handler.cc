@@ -119,12 +119,14 @@ std::optional<VideoTrackRecorder::CodecProfile> VideoStringTagToCodecProfile(
 media::AudioCodec AudioStringToAudioCodec(const String& codecs) {
   String codecs_str = codecs.LowerASCII();
 
-  if (codecs_str.Find("opus") != kNotFound)
+  if (codecs_str.contains("opus")) {
     return media::AudioCodec::kOpus;
-  if (codecs_str.Find("pcm") != kNotFound)
+  }
+  if (codecs_str.contains("pcm")) {
     return media::AudioCodec::kPCM;
+  }
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (codecs_str.Find("mp4a.40.2") != kNotFound) {
+  if (codecs_str.contains("mp4a.40.2")) {
     return media::AudioCodec::kAAC;
   }
 #endif
@@ -160,8 +162,7 @@ bool ShouldAddParameterSetsToBitstream(const String& codecs) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) || \
     BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   String codecs_str = codecs.LowerASCII();
-  return codecs_str.Find("hev1") != kNotFound ||
-         codecs_str.Find("avc3") != kNotFound;
+  return codecs_str.contains("hev1") || codecs_str.contains("avc3");
 #else
   return false;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) ||
@@ -178,16 +179,15 @@ VideoTrackRecorder::CodecProfile VideoStringToCodecProfile(
   String codecs_str = codecs.LowerASCII();
   media::VideoCodec codec = media::VideoCodec::kUnknown;
 
-  if (codecs_str.Find("vp8") != kNotFound) {
+  if (codecs_str.contains("vp8")) {
     codec = media::VideoCodec::kVP8;
   }
-  if (codecs_str.Find("vp9") != kNotFound) {
+  if (codecs_str.contains("vp9")) {
     codec = media::VideoCodec::kVP9;
   }
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (codecs_str.Find("h264") != kNotFound ||
-      codecs_str.Find("avc1") != kNotFound ||
-      codecs_str.Find("avc3") != kNotFound) {
+  if (codecs_str.contains("h264") || codecs_str.contains("avc1") ||
+      codecs_str.contains("avc3")) {
     codec = media::VideoCodec::kH264;
   }
   if (auto codec_profile =
@@ -196,8 +196,7 @@ VideoTrackRecorder::CodecProfile VideoStringToCodecProfile(
   }
 #endif
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  if (codecs_str.Find("hvc1") != kNotFound ||
-      codecs_str.Find("hev1") != kNotFound) {
+  if (codecs_str.contains("hvc1") || codecs_str.contains("hev1")) {
     codec = media::VideoCodec::kHEVC;
   }
   if (auto codec_profile =
@@ -207,8 +206,7 @@ VideoTrackRecorder::CodecProfile VideoStringToCodecProfile(
 #endif
   // TODO(crbug.com/40923648): Remove the wrong AV1 codecs string, "av1", once
   // we confirm nobody uses this in product.
-  if (codecs_str.Find("av01") != kNotFound ||
-      codecs_str.Find("av1") != kNotFound) {
+  if (codecs_str.contains("av01") || codecs_str.contains("av1")) {
     codec = media::VideoCodec::kAV1;
   }
   return VideoTrackRecorder::CodecProfile(codec);

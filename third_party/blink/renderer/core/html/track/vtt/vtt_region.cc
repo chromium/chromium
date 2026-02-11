@@ -200,8 +200,9 @@ void VTTRegion::ParseSettingValue(RegionSetting setting, VTTScanner& input) {
   switch (setting) {
     case kId: {
       String string_value = value_input.RestOfInputAsString();
-      if (string_value.Find("-->") == kNotFound)
+      if (!string_value.contains("-->")) {
         id_ = string_value;
+      }
       break;
     }
     case kWidth: {

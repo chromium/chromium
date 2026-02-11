@@ -478,20 +478,20 @@ bool FingerprintMismatch(String old_sdp, String new_sdp) {
 
 bool ContainsLegacySimulcast(String sdp) {
   // Looks for the non-spec simulcast that іs enabled via SDP munging.
-  return sdp.Find("\na=ssrc-group:SIM") != kNotFound;
+  return sdp.contains("\na=ssrc-group:SIM");
 }
 
 bool ContainsLegacyRtpDataChannel(String sdp) {
   // Looks for the non-spec legacy RTP data channel.
-  return sdp.Find("google-data/90000") != kNotFound;
+  return sdp.contains("google-data/90000");
 }
 
 bool ContainsCandidate(String sdp) {
-  return sdp.Find("\na=candidate") != kNotFound;
+  return sdp.contains("\na=candidate");
 }
 
 bool ContainsOpusStereo(String sdp) {
-  return sdp.Find("stereo=1") != kNotFound;
+  return sdp.contains("stereo=1");
 }
 
 // Keep in sync with tools/metrics/histograms/metadata/web_rtc/enums.xml

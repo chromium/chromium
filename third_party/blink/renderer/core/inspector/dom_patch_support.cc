@@ -142,12 +142,12 @@ Node* DOMPatchSupport::PatchNode(Node* node,
   for (Node* child = fragment->firstChild(); child;
        child = child->nextSibling()) {
     if (IsA<HTMLHeadElement>(*child) && !child->hasChildren() &&
-        markup_copy.Find("</head>") == kNotFound) {
+        !markup_copy.contains("</head>")) {
       // HTML5 parser inserts empty <head> tag whenever it parses <body>
       continue;
     }
     if (IsA<HTMLBodyElement>(*child) && !child->hasChildren() &&
-        markup_copy.Find("</body>") == kNotFound) {
+        !markup_copy.contains("</body>")) {
       // HTML5 parser inserts empty <body> tag whenever it parses </head>
       continue;
     }
