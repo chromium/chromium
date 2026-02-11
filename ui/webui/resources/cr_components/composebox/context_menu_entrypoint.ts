@@ -20,7 +20,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {recordBoolean, recordContextAdditionMethod, TabUploadOrigin} from './common.js';
+import {GlifAnimationState, recordBoolean, recordContextAdditionMethod, TabUploadOrigin} from './common.js';
 import {getCss} from './context_menu_entrypoint.css.js';
 import {getHtml} from './context_menu_entrypoint.html.js';
 
@@ -31,13 +31,6 @@ export interface ContextMenuEntrypointElement {
   $: {
     menu: CrActionMenuElement,
   };
-}
-
-export enum GlifAnimationState {
-  INELIGIBLE = 'ineligible',
-  SPINNER_ONLY = 'spinner-only',
-  STARTED = 'started',
-  FINISHED = 'finished',
 }
 
 const ContextMenuEntrypointElementBase = I18nMixinLit(CrLitElement);

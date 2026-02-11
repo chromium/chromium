@@ -13,9 +13,9 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_components/composebox/composebox.js';
 import 'chrome://resources/cr_components/composebox/threads_rail.js';
 
-import {GlifAnimationState} from '//resources/cr_components/composebox/context_menu_entrypoint.js';
 import type {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ContextualUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {VoiceSearchAction as ComposeVoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox.js';
