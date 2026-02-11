@@ -120,7 +120,7 @@ public class TabSwitcherLayoutPTTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(11) // Update the empty thumbnail placeholder.
+                    .setRevision(12) // Update the hub search tab groups fake text.
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
                     .build();
 

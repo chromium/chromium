@@ -345,7 +345,7 @@ BASE_FEATURE(kJumpStartOmnibox, DISABLED);
 BASE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices, DISABLED);
 
 // (Android only) Show tab groups via the search feature in the hub.
-BASE_FEATURE(kAndroidHubSearchTabGroups, DISABLED);
+BASE_FEATURE(kAndroidHubSearchTabGroups, ENABLED);
 
 // When enabled, delay focusTab to prioritize navigation
 // (https://crbug.com/374852568).

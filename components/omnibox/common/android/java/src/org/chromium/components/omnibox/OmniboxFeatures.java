@@ -174,7 +174,7 @@ public class OmniboxFeatures {
             newBooleanParam(sOmniboxMultimodalInput, "wrap_autocomplete_text", false);
 
     public static final CachedFlag sAndroidHubSearchTabGroups =
-            newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS, FeatureState.ENABLED_IN_TEST);
+            newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS, FeatureState.ENABLED_IN_PROD);
 
     public static final CachedFlag sOmniboxImprovementForLFF =
             newFlag(OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF, FeatureState.DISABLED);

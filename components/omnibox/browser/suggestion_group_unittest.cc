@@ -140,7 +140,12 @@ TEST(SuggestionGroupTest, AndroidHubTyped) {
   ASSERT_NE(open_tabs_group_config, default_groups.end());
   ASSERT_EQ(omnibox::GroupConfig_RenderType_DEFAULT_VERTICAL,
             open_tabs_group_config->second.render_type());
+#if BUILDFLAG(IS_ANDROID)
+  ASSERT_EQ("Tabs and tab groups",
+            open_tabs_group_config->second.header_text());
+#else   // !BUILDFLAG(IS_ANDROID)
   ASSERT_EQ("", open_tabs_group_config->second.header_text());
+#endif  // BUILDFLAG(IS_ANDROID)
 
   auto search_group_config = default_groups.find(omnibox::GROUP_SEARCH);
   ASSERT_NE(search_group_config, default_groups.end());
