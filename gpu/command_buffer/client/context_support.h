@@ -56,7 +56,7 @@ class ContextSupport {
   virtual void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t)> callback) = 0;
 
-  // Access to transfer cache functionality for OOP raster. Only
+  // Access to transfer cache functionality for GPU raster. Only
   // ThreadsafeLockTransferCacheEntry can be accessed without holding the
   // context lock.
 
