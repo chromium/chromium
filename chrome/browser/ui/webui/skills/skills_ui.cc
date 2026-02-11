@@ -78,9 +78,11 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
 }
 
 void SkillsUI::InitializeDialog(base::WeakPtr<SkillsDialogDelegate> delegate,
-                                Skill skill) {
+                                Skill skill,
+                                mojom::SkillsDialogType dialog_type) {
   delegate_ = delegate;
   initial_skill_ = std::move(skill);
+  dialog_type_ = dialog_type;
 }
 
 void SkillsUI::BindInterface(
@@ -102,7 +104,7 @@ void SkillsUI::CreateDialogHandler(
       std::move(receiver), web_ui()->GetWebContents(),
       OptimizationGuideKeyedServiceFactory::GetForProfile(
           Profile::FromWebUI(web_ui())),
-      initial_skill_, delegate_);
+      initial_skill_, dialog_type_, delegate_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SkillsUI)

@@ -35,7 +35,8 @@ class SkillsUI : public ui::MojoWebUIController,
 
   // Initializes the SkillsDialogDelegate and initial skill for the dialog.
   void InitializeDialog(base::WeakPtr<SkillsDialogDelegate> delegate,
-                        Skill skill);
+                        Skill skill,
+                        mojom::SkillsDialogType dialog_type);
 
   base::WeakPtr<SkillsDialogDelegate> GetDelegateForTesting() {
     return delegate_;
@@ -56,6 +57,7 @@ class SkillsUI : public ui::MojoWebUIController,
   // The initial state for the skills dialog. This is passed to the
   // DialogHandler upon construction to populate the UI fields.
   skills::Skill initial_skill_;
+  mojom::SkillsDialogType dialog_type_;
   std::unique_ptr<SkillsPageHandler> page_handler_;
   std::unique_ptr<SkillsDialogHandler> dialog_handler_;
   base::WeakPtr<SkillsDialogDelegate> delegate_;

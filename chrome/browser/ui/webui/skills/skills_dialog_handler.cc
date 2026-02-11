@@ -41,11 +41,13 @@ SkillsDialogHandler::SkillsDialogHandler(
     content::WebContents* web_contents,
     OptimizationGuideKeyedService* optimization_guide_keyed_service,
     skills::Skill initial_skill,
+    mojom::SkillsDialogType dialog_type,
     base::WeakPtr<SkillsDialogDelegate> delegate)
     : receiver_(this, std::move(receiver)),
       web_contents_(CHECK_DEREF(web_contents)),
       optimization_guide_keyed_service_(optimization_guide_keyed_service),
       initial_skill_(std::move(initial_skill)),
+      dialog_type_(dialog_type),
       delegate_(delegate),
       profile_(CHECK_DEREF(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {}
@@ -59,13 +61,18 @@ const skills::Skill* SkillsDialogHandler::SaveOrUpdateSkill(
   if (!skills_service) {
     return nullptr;
   }
-  if (skill.id.empty()) {
-    return skills_service->AddSkill(skill.source_skill_id, skill.name,
-                                    skill.icon, skill.prompt);
-  } else {
-    return skills_service->UpdateSkill(skill.id, skill.name, skill.icon,
-                                       skill.prompt);
+  const Skill* response = nullptr;
+  switch (dialog_type_) {
+    case mojom::SkillsDialogType::kAdd:
+      response = skills_service->AddSkill(skill.source_skill_id, skill.name,
+                                          skill.icon, skill.prompt);
+      break;
+    case mojom::SkillsDialogType::kEdit:
+      response = skills_service->UpdateSkill(skill.id, skill.name, skill.icon,
+                                             skill.prompt);
+      break;
   }
+  return response;
 }
 
 void SkillsDialogHandler::SubmitSkill(const skills::Skill& skill) {
@@ -95,8 +102,11 @@ void SkillsDialogHandler::ShowEmojiPicker() {
   ui::ShowEmojiPanel();
 }
 
-void SkillsDialogHandler::GetInitialSkill(GetInitialSkillCallback callback) {
-  std::move(callback).Run(initial_skill_);
+void SkillsDialogHandler::GetInitialState(GetInitialStateCallback callback) {
+  auto state = skills::mojom::InitialDialogState::New();
+  state->dialog_type = dialog_type_;
+  state->skill = initial_skill_;
+  std::move(callback).Run(std::move(state));
 }
 
 void SkillsDialogHandler::OnRefineSkillResponse(

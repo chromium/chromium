@@ -65,7 +65,8 @@ class SkillsDialogHandlerTest : public testing::Test {
     web_ui_.set_web_contents(web_contents_.get());
     handler_ = std::make_unique<TestSkillsDialogHandler>(
         receiver_.BindNewPipeAndPassReceiver(), web_ui_.GetWebContents(),
-        &mock_opt_guide_service_, mock_skill_, mock_delegate_.GetWeakPtr());
+        &mock_opt_guide_service_, mock_skill_, mock_dialog_type_,
+        mock_delegate_.GetWeakPtr());
   }
 
  protected:
@@ -75,6 +76,7 @@ class SkillsDialogHandlerTest : public testing::Test {
   content::TestWebUI web_ui_;
   MockOptimizationGuideKeyedService mock_opt_guide_service_;
   Skill mock_skill_;
+  mojom::SkillsDialogType mock_dialog_type_;
   NiceMock<MockSkillsDialogDelegate> mock_delegate_;
   mojo::Remote<mojom::DialogHandler> receiver_;
   std::unique_ptr<TestSkillsDialogHandler> handler_;
@@ -158,29 +160,35 @@ TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsSaved) {
                                       skills::SkillsActions::kSavedSkill, 1);
 }
 
-// Tests that GetInitialSkill returns the skill passed in during construction.
-TEST_F(SkillsDialogHandlerTest, GetInitialSkillReturnsCorrectData) {
+// Tests that GetInitialState returns the skill and dialog type passed in during
+// construction.
+TEST_F(SkillsDialogHandlerTest, GetInitialStateReturnsCorrectData) {
   skills::Skill test_skill;
   test_skill.name = "Unit Test Skill";
   test_skill.prompt = "Unit Test Prompt";
   test_skill.icon = "🧪";
+  mojom::SkillsDialogType test_dialog_type = mojom::SkillsDialogType::kEdit;
 
   // Re-initialize the handler with this data.
   receiver_.reset();
   handler_ = std::make_unique<TestSkillsDialogHandler>(
       receiver_.BindNewPipeAndPassReceiver(), web_contents_.get(),
-      &mock_opt_guide_service_, test_skill, mock_delegate_.GetWeakPtr());
+      &mock_opt_guide_service_, test_skill, test_dialog_type,
+      mock_delegate_.GetWeakPtr());
 
   // Call the API using a lambda as the callback.
-  skills::Skill received_skill;
-  handler_->GetInitialSkill(
-      base::BindOnce([](skills::Skill* out_skill,
-                        const skills::Skill& result) { *out_skill = result; },
-                     &received_skill));
+  mojom::InitialDialogStatePtr received_state;
+  handler_->GetInitialState(base::BindOnce(
+      [](mojom::InitialDialogStatePtr* out_state,
+         mojom::InitialDialogStatePtr result) {
+        *out_state = std::move(result);
+      },
+      &received_state));
 
-  EXPECT_EQ(received_skill.name, "Unit Test Skill");
-  EXPECT_EQ(received_skill.prompt, "Unit Test Prompt");
-  EXPECT_EQ(received_skill.icon, "🧪");
+  EXPECT_EQ(received_state->dialog_type, test_dialog_type);
+  EXPECT_EQ(received_state->skill.name, test_skill.name);
+  EXPECT_EQ(received_state->skill.prompt, test_skill.prompt);
+  EXPECT_EQ(received_state->skill.icon, test_skill.icon);
 }
 
 }  // namespace

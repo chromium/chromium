@@ -128,6 +128,7 @@ source_set("glic") {
 
   deps = [
     "//chrome/common",
+    "//components/skills/public:mojo_bindings",
     "//components/tabs:public",
     "//components/user_education/common",
     "//ui/base/interaction",
@@ -354,6 +355,7 @@ source_set("impl") {
     "//components/sessions",
     "//components/skills:features",
     "//components/skills/public",
+    "//components/skills/public:mojo_bindings",
     "//components/variations/service",
     "//components/webui/chrome_urls",
     "//third_party/metrics_proto",
