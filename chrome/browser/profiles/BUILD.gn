@@ -403,6 +403,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/hid",
       "//chrome/browser/legion",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+      "//chrome/browser/record_replay",
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
       "//chrome/browser/search",
       "//chrome/browser/search_engine_choice",
