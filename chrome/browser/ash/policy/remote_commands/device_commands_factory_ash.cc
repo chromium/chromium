@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/notreached.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/device_command_fetch_crd_availability_info_job.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/device_command_start_crd_session_job.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_support_packet_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_get_available_routines_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_get_routine_update_job.h"
+#include "chrome/browser/ash/policy/remote_commands/device_command_query_geolocation_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_reboot_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_refresh_machine_certificate_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_remote_powerwash_job.h"
@@ -24,6 +26,8 @@
 #include "chrome/browser/ash/policy/remote_commands/device_command_wipe_users_job.h"
 #include "chrome/browser/ash/policy/remote_commands/fake_screenshot_delegate.h"
 #include "chrome/browser/ash/policy/remote_commands/screenshot_delegate.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -75,6 +79,11 @@ std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
       return std::make_unique<DeviceCommandFetchCrdAvailabilityInfoJob>();
     case RemoteCommand::FETCH_SUPPORT_PACKET:
       return std::make_unique<DeviceCommandFetchSupportPacketJob>();
+    case RemoteCommand::QUERY_GEOLOCATION:
+      return std::make_unique<DeviceCommandQueryGeolocationJob>(
+          g_browser_process->platform_part()
+              ->browser_policy_connector_ash()
+              ->GetDeviceCloudPolicyManager());
 
     case RemoteCommand::COMMAND_ECHO_TEST:
     case RemoteCommand::USER_ARC_COMMAND:

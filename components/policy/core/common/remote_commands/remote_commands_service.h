@@ -45,7 +45,7 @@ class POLICY_EXPORT RemoteCommandsService
   //   (a) existing enumerated constants should never be deleted or reordered
   //   (b) new constants should only be appended at the end of the enumeration
   //       (update RemoteCommandReceivedStatus in
-  //       tools/metrics/histograms/enums.xml as well).
+  //       tools/metrics/histograms/metadata/enterprise/enums.xml as well).
   enum class MetricReceivedRemoteCommand {
     // Invalid remote commands.
     kInvalidSignature = 0,
@@ -72,8 +72,9 @@ class POLICY_EXPORT RemoteCommandsService
     kBrowserRotateAttestationCredential = 20,
     kFetchCrdAvailabilityInfo = 21,
     kFetchSupportPacket = 22,
+    kQueryGeolocation = 23,
     // Used by UMA histograms. Shall refer to the last enumeration.
-    kMaxValue = kFetchSupportPacket
+    kMaxValue = kQueryGeolocation
   };
 
   // Signature type that will be used for the requests.
