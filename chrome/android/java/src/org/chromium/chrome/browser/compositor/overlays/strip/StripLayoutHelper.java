@@ -2128,6 +2128,8 @@ public class StripLayoutHelper
         boolean anyVisibilityChange = false;
 
         final int count = mStripTabs.length;
+        float visibleLeftBound = getVisibleLeftBound(/* clampToUnpinnedViews= */ true);
+        float visibleRightBound = getVisibleRightBound(/* clampToUnpinnedViews= */ true);
 
         for (int i = 0; i < count; i++) {
             final StripLayoutTab tab = mStripTabs[i];
@@ -2138,8 +2140,8 @@ public class StripLayoutHelper
                             isLastTab,
                             mLeftFadeWidth,
                             mRightFadeWidth,
-                            getVisibleLeftBound(/* clampToUnpinnedViews= */ true),
-                            getVisibleRightBound(/* clampToUnpinnedViews= */ true),
+                            visibleLeftBound,
+                            visibleRightBound,
                             mNewTabButton,
                             mIsFirstLayoutPass);
         }
@@ -6018,13 +6020,17 @@ public class StripLayoutHelper
     }
 
     public int getTabIndexForTabDrop(float x, boolean isPinned) {
+        int tabIndex = 0;
         for (int i = 0; i < mStripViews.length; i++) {
             final StripLayoutView stripView = mStripViews[i];
             final float leftEdge;
             final float rightEdge;
             boolean rtl = LocalizationUtils.isLayoutRtl();
             if (stripView instanceof StripLayoutTab tab) {
-                if (tab.isCollapsed()) continue;
+                if (tab.isCollapsed()) {
+                    tabIndex++;
+                    continue;
+                }
                 final float halfTabWidth = getCachedTabWidth(tab.getIsPinned()) / 2;
                 leftEdge = tab.getTouchTargetLeft();
                 rightEdge = tab.getTouchTargetRight();
@@ -6032,9 +6038,9 @@ public class StripLayoutHelper
                 boolean hasReachedThreshold =
                         rtl ? x > rightEdge - halfTabWidth : x < leftEdge + halfTabWidth;
                 if (hasReachedThreshold) {
-                    int tabIndex = StripLayoutUtils.findIndexForTab(mStripTabs, tab.getTabId());
                     return isPinned == tab.getIsPinned() ? tabIndex : getNumLivePinnedTabs();
                 }
+                tabIndex++;
             } else {
                 final StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) stripView;
                 final float halfGroupTitleWidth = groupTitle.getWidth() / 2;
@@ -6046,9 +6052,6 @@ public class StripLayoutHelper
                                 ? x > rightEdge - halfGroupTitleWidth
                                 : x < leftEdge + halfGroupTitleWidth;
                 if (hasReachedThreshold) {
-                    int tabIndex =
-                            StripLayoutUtils.findIndexForTab(
-                                    mStripTabs, ((StripLayoutTab) mStripViews[i + 1]).getTabId());
                     return isPinned ? getNumLivePinnedTabs() : tabIndex;
                 }
             }
