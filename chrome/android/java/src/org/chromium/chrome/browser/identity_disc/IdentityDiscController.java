@@ -309,7 +309,7 @@ public class IdentityDiscController
         if (coreAccountInfo != null) {
             ensureProfileDataCache(mProfile);
             mProfileDataCache.setBadge(
-                    coreAccountInfo.getEmail(),
+                    coreAccountInfo.getId(),
                     mIdentityError == UserActionableError.NONE
                             ? null
                             : ProfileDataCache.createToolbarIdentityDiscBadgeConfig(

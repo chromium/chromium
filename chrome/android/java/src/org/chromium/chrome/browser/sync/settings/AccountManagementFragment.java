@@ -427,7 +427,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                                 Context context = getContext();
                                 if (isChild && context != null) {
                                     mProfileDataCache.setBadge(
-                                            assumeNonNull(childAccount).getEmail(),
+                                            assumeNonNull(childAccount).getId(),
                                             ProfileDataCache
                                                     .createDefaultSizeChildAccountBadgeConfig(
                                                             context,

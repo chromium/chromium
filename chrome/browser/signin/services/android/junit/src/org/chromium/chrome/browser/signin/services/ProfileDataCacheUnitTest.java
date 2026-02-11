@@ -92,7 +92,7 @@ public class ProfileDataCacheUnitTest {
     @Test
     public void accountInfoIsUpdatedWithOnlyBadgeConfig() {
         mProfileDataCache.setBadge(
-                TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail(),
+                TestAccounts.TEST_ACCOUNT_NO_NAME.getId(),
                 ProfileDataCache.createDefaultSizeChildAccountBadgeConfig(
                         RuntimeEnvironment.application.getApplicationContext(),
                         R.drawable.ic_sync_badge_error_20dp));
@@ -188,7 +188,7 @@ public class ProfileDataCacheUnitTest {
             cacheShouldBePopulatedOnAccountWithoutDisplayableInfoWithCustomBadgeOnCoreAccountsUpdate() {
         mAccountManagerTestRule.blockExtendedAccountInfoUpdate();
         mProfileDataCache.setBadge(
-                TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail(),
+                TestAccounts.TEST_ACCOUNT_NO_NAME.getId(),
                 ProfileDataCache.createDefaultSizeChildAccountBadgeConfig(
                         RuntimeEnvironment.application.getApplicationContext(),
                         R.drawable.ic_sync_badge_error_20dp));
@@ -203,7 +203,7 @@ public class ProfileDataCacheUnitTest {
             cacheShouldBePopulatedOnAccountWithoutDisplayableInfoWithCustomBadgeOnIdentityManagerAccountsUpdate() {
         mAccountManagerTestRule.blockGetAccountsUpdate(false);
         mProfileDataCache.setBadge(
-                TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail(),
+                TestAccounts.TEST_ACCOUNT_NO_NAME.getId(),
                 ProfileDataCache.createDefaultSizeChildAccountBadgeConfig(
                         RuntimeEnvironment.application.getApplicationContext(),
                         R.drawable.ic_sync_badge_error_20dp));

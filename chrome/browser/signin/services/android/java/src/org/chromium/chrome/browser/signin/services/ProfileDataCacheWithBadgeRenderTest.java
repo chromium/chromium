@@ -170,7 +170,7 @@ public class ProfileDataCacheWithBadgeRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfileDataCache.setBadge(
-                            TestAccounts.ACCOUNT1.getEmail(),
+                            TestAccounts.ACCOUNT1.getId(),
                             badgeResId == 0
                                     ? null
                                     : ProfileDataCache.createDefaultSizeChildAccountBadgeConfig(

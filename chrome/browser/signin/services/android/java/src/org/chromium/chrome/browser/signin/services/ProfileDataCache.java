@@ -40,6 +40,7 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -141,7 +142,7 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
     // * Else if there is a default config, use that
     // * Else do not display a badge.
     private @Nullable BadgeConfig mDefaultBadgeConfig;
-    private final Map<String, BadgeConfig> mPerAccountBadgeConfig = new HashMap<>();
+    private final Map<CoreAccountId, BadgeConfig> mPerAccountBadgeConfig = new HashMap<>();
     private final Drawable mPlaceholderImage;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final AccountsCache mAccountsCache = new AccountsCache();
@@ -315,21 +316,21 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
      * Sets a {@link BadgeConfig} for a given account, and then populates the cache with the new
      * Badge.
      *
-     * @param accountEmail The account email for which to set this badge.
+     * @param coreAccountId The account id for which to set this badge.
      * @param badgeConfig The badge configuration. If null then the current badge is removed.
      *     <p>If both a per-account and default badge are set, the per-account badge takes
      *     precedence.
-     *     <p>TODO(crbug.com/40274844): Replace accountEmail with CoreAccountId or CoreAccountInfo.
      */
-    public void setBadge(String accountEmail, @Nullable BadgeConfig badgeConfig) {
-        if (mPerAccountBadgeConfig.containsKey(accountEmail)
-                && Objects.equals(mPerAccountBadgeConfig.get(accountEmail), badgeConfig)) {
+    public void setBadge(CoreAccountId accountId, @Nullable BadgeConfig badgeConfig) {
+        if (mPerAccountBadgeConfig.containsKey(accountId)
+                && Objects.equals(mPerAccountBadgeConfig.get(accountId), badgeConfig)) {
             // Update is a no-op. The per-account badge set to accountEmail is the same as the
             // badgeResId.
             return;
         }
-        mPerAccountBadgeConfig.put(accountEmail, badgeConfig);
-        populateCacheForAccount(accountEmail);
+        mPerAccountBadgeConfig.put(accountId, badgeConfig);
+        var accountInfo = mIdentityManager.findExtendedAccountInfoByAccountId(accountId);
+        onExtendedAccountInfoUpdated(accountInfo);
     }
 
     /**
@@ -372,7 +373,7 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
         // that we would just be returning the default profile data.
         if (accountInfo != null
                 && (accountInfo.hasDisplayableInfo()
-                        || getBadgeConfigForAccount(accountInfo.getEmail()) != null)) {
+                        || getBadgeConfigForAccount(accountInfo.getId()) != null)) {
             var displayableProfileData = toDisplayableProfileData(accountInfo);
             mAccountsCache.putAccount(displayableProfileData);
             notifyObservers(accountInfo.getEmail());
@@ -401,18 +402,11 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
             var accountInfo = mIdentityManager.findExtendedAccountInfoByAccountId(account.getId());
             if (accountInfo != null
                     && (accountInfo.hasDisplayableInfo()
-                            || getBadgeConfigForAccount(accountInfo.getEmail()) != null)) {
+                            || getBadgeConfigForAccount(accountInfo.getId()) != null)) {
                 displayableAccounts.add(toDisplayableProfileData(accountInfo));
             }
         }
         mAccountsCache.setAccounts(displayableAccounts);
-    }
-
-    /** TODO(crbug.com/476990153): Replace with email parameter with {@link #CoreAccountId}. */
-    @Deprecated
-    private void populateCacheForAccount(String accountEmail) {
-        var accountInfo = mIdentityManager.findExtendedAccountInfoByEmailAddress(accountEmail);
-        onExtendedAccountInfoUpdated(accountInfo);
     }
 
     private DisplayableProfileData toDisplayableProfileData(AccountInfo accountInfo) {
@@ -421,7 +415,7 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
                         ? AvatarGenerator.makeRoundAvatar(
                                 mContext.getResources(), accountInfo.getAccountImage(), mImageSize)
                         : mPlaceholderImage;
-        BadgeConfig badgeConfig = getBadgeConfigForAccount(accountInfo.getEmail());
+        BadgeConfig badgeConfig = getBadgeConfigForAccount(accountInfo.getId());
         if (badgeConfig != null) {
             croppedAvatar = overlayBadgeOnUserPicture(badgeConfig, croppedAvatar);
         }
@@ -493,9 +487,9 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
         return new BitmapDrawable(context.getResources(), output);
     }
 
-    private @Nullable BadgeConfig getBadgeConfigForAccount(String email) {
-        return mPerAccountBadgeConfig.get(email) != null
-                ? mPerAccountBadgeConfig.get(email)
+    private @Nullable BadgeConfig getBadgeConfigForAccount(CoreAccountId accountId) {
+        return mPerAccountBadgeConfig.get(accountId) != null
+                ? mPerAccountBadgeConfig.get(accountId)
                 : mDefaultBadgeConfig;
     }
 
