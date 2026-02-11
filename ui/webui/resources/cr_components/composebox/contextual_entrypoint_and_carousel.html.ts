@@ -84,13 +84,8 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       <div class="context-menu-container" part="context-menu-and-tools"
           @mousedown="${this.preventFocus_}"
           @click="${this.onContextMenuContainerClick_}">
-        ${
-      this.showModelPicker ?
-          html`
-          ${
-              this.shouldHideEntrypointButton_ ?
-                  '' :
-                  html`
+        ${this.shouldHideEntrypointButton_ ? '' : html`
+          ${this.showModelPicker ? html`
             <cr-composebox-contextual-entrypoint-button id="contextEntrypoint"
                 part="composebox-entrypoint"
                 exportparts="context-menu-entrypoint-icon"
@@ -110,32 +105,32 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
                 ?show-context-menu-description="${
                       this.shouldShowDescription_()}"
                 glif-animation-state="${this.contextMenuGlifAnimationState}">
-            </cr-composebox-contextual-entrypoint-button>`}
-        ` :
-          html`
-        <cr-composebox-context-menu-entrypoint id="contextEntrypoint"
-            part="composebox-entrypoint"
-            exportparts="context-menu-entrypoint-icon"
-            class="upload-button no-overlap"
-            .tabSuggestions="${this.tabSuggestions}"
-            .showMenuOnClick="${this.showMenuOnClick}"
-            @open-image-upload="${this.openImageUpload_}"
-            @open-file-upload="${this.openFileUpload_}"
-            @add-tab-context="${this.addTabContext_}"
-            @deep-search-click="${this.handleDeepSearchClick_}"
-            @create-image-click="${this.handleImageGenClick_}"
-            @delete-tab-context="${this.onDeleteFile_}"
-            .inCreateImageMode="${
-              this.activeTool_ === ComposeboxToolMode.kImageGen}"
-            .hasImageFiles="${this.hasImageFiles()}"
-            .hideEntrypointButton="${this.shouldHideEntrypointButton_}"
-            .disabledTabIds="${this.addedTabsIds_}"
-            .fileNum="${this.files_.size}"
-            .searchboxLayoutMode="${this.searchboxLayoutMode}"
-            ?upload-button-disabled="${this.uploadButtonDisabled_}"
-            ?show-context-menu-description="${this.shouldShowDescription_()}"
-            glif-animation-state="${this.contextMenuGlifAnimationState}">
-        </cr-composebox-context-menu-entrypoint>`}
+            </cr-composebox-contextual-entrypoint-button>
+          ` : html`
+            <cr-composebox-context-menu-entrypoint id="contextEntrypoint"
+                part="composebox-entrypoint"
+                exportparts="context-menu-entrypoint-icon"
+                class="upload-button no-overlap"
+                .tabSuggestions="${this.tabSuggestions}"
+                .showMenuOnClick="${this.showMenuOnClick}"
+                @open-image-upload="${this.openImageUpload_}"
+                @open-file-upload="${this.openFileUpload_}"
+                @add-tab-context="${this.addTabContext_}"
+                @deep-search-click="${this.handleDeepSearchClick_}"
+                @create-image-click="${this.handleImageGenClick_}"
+                @delete-tab-context="${this.onDeleteFile_}"
+                .inCreateImageMode="${
+                  this.activeTool_ === ComposeboxToolMode.kImageGen}"
+                .hasImageFiles="${this.hasImageFiles()}"
+                .disabledTabIds="${this.addedTabsIds_}"
+                .fileNum="${this.files_.size}"
+                .searchboxLayoutMode="${this.searchboxLayoutMode}"
+                ?upload-button-disabled="${this.uploadButtonDisabled_}"
+                ?show-context-menu-description="${this.shouldShowDescription_()}"
+                glif-animation-state="${this.contextMenuGlifAnimationState}">
+            </cr-composebox-context-menu-entrypoint>
+          `}
+        `}
         ${
       this.searchboxLayoutMode === 'Compact' && this.showVoiceSearch ?
           voiceSearchButton :
