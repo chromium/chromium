@@ -501,14 +501,24 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   ProceduralBlock transitionCompletionBlock = ^{
     TabGridCoordinator* strongSelf = weakSelf;
-    if (strongSelf && IsBestOfAppGuidedTourEnabled()) {
-      Browser* browser = strongSelf.regularBrowser;
+    if (!strongSelf) {
+      return;
+    }
+    Browser* browser = strongSelf.regularBrowser;
+    if (!browser) {
+      return;
+    }
+
+    if (IsNewTabGridTransitionsEnabled()) {
+      strongSelf.transitionHandler = nil;
+    }
+    if (IsBestOfAppGuidedTourEnabled()) {
       FirstRunProfileAgent* profileAgent = [FirstRunProfileAgent
           agentFromProfile:browser->GetSceneState().profileState];
       [profileAgent tabGridWasPresented];
     }
-    [weakSelf transitionToGridCompleteForAndroidTabsPrompt:
-                  shouldDisplayBringAndroidTabsPrompt];
+    [strongSelf transitionToGridCompleteForAndroidTabsPrompt:
+                    shouldDisplayBringAndroidTabsPrompt];
   };
 
   ProceduralBlock transitionBlock = ^{
@@ -663,6 +673,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       completion();
     }
     self.firstPresentation = NO;
+
+    if (IsNewTabGridTransitionsEnabled()) {
+      self.transitionHandler = nil;
+    }
   };
 
   self.baseViewController.childViewControllerForStatusBarStyle =
@@ -1129,6 +1143,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.regularBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [self.dispatcher stopDispatchingForProtocol:@protocol(SceneCommands)];
   [self.dispatcher stopDispatchingForProtocol:@protocol(SettingsCommands)];
+
+  if (IsNewTabGridTransitionsEnabled()) {
+    self.transitionHandler = nil;
+  }
 
   [_toolbarsCoordinator stop];
   _toolbarsCoordinator = nil;
