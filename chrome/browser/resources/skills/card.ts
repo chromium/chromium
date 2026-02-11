@@ -81,6 +81,10 @@ export class SkillCardElement extends CrLitElement {
     return this.cardType === CardType.DISCOVER_SKILL_CARD;
   }
 
+  protected getCardBodyText_(): string {
+    return this.isDiscoverCard_() ? this.skill.description : this.skill.prompt;
+  }
+
   protected onEditButtonClick_() {
     this.proxy_.handler.openSkillsDialog(
         SkillsDialogType.kEdit, this.skill);

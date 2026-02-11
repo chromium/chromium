@@ -93,6 +93,7 @@ TEST_F(SkillsPageHandlerTest, OnDiscoverySkillsUpdated) {
   skill_proto.set_icon("icon");
   skill_proto.set_prompt("Skill prompt");
   skill_proto.set_category("Category");
+  skill_proto.set_description("Skill description");
 
   skills_map->insert({"skill_id", skill_proto});
 
@@ -110,6 +111,7 @@ TEST_F(SkillsPageHandlerTest, OnDiscoverySkillsUpdated) {
         EXPECT_EQ("Skill Name", skill.name);
         EXPECT_EQ("icon", skill.icon);
         EXPECT_EQ("Skill prompt", skill.prompt);
+        EXPECT_EQ("Skill description", skill.description);
         EXPECT_EQ(sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY, skill.source);
         run_loop.Quit();
       });

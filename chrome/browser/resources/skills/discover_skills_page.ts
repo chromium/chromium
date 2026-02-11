@@ -155,7 +155,7 @@ export class DiscoverSkillsPageElement extends CrLitElement {
 
     return skills.filter(
         skill => skill.name.toLowerCase().includes(term) ||
-            skill.prompt.toLowerCase().includes(term));
+            skill.description.toLowerCase().includes(term));
   }
 
   protected topSkills_(): Skill[] {
