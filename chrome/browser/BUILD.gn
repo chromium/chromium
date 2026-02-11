@@ -6254,6 +6254,10 @@ static_library("browser") {
       ]
       allow_circular_includes_from += [ "//chrome/browser/glic/media" ]
     }
+
+    if (!enable_extensions_core) {
+      deps += [ "//components/guest_view/browser/slim_web_view:mojo_bindings" ]
+    }
   }
 
   if (enable_background_mode) {

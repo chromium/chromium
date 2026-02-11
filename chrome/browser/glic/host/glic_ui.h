@@ -11,10 +11,15 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "components/guest_view/browser/slim_web_view/slim_web_view.mojom.h"  // nogncheck
+#endif
 
 namespace glic {
 class GlicPreloadHandler;
@@ -31,6 +36,9 @@ class GlicUIConfig : public content::DefaultWebUIConfig<GlicUI> {
 
 // The WebUI for chrome://glic
 class GlicUI : public ui::MojoWebUIController,
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+               public guest_view::mojom::PageHandlerFactory,
+#endif
                public glic::mojom::PageHandlerFactory,
                public glic::mojom::FrePageHandlerFactory,
                public glic::mojom::GlicPreloadHandlerFactory {
@@ -41,6 +49,11 @@ class GlicUI : public ui::MojoWebUIController,
   // Returns the GlicUI controller for the given WebContents, or nullptr if it
   // doesn't exist or is not a GlicUI.
   static GlicUI* From(content::WebContents* web_contents);
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  void BindInterface(
+      mojo::PendingReceiver<guest_view::mojom::PageHandlerFactory> receiver);
+#endif
 
   void BindInterface(
       mojo::PendingReceiver<glic::mojom::PageHandlerFactory> receiver);
@@ -61,6 +74,13 @@ class GlicUI : public ui::MojoWebUIController,
   void AttachToHost(Host* host);
 
  private:
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  void CreatePageHandler(
+      mojo::PendingReceiver<guest_view::mojom::PageHandler> receiver) override;
+  mojo::Receiver<guest_view::mojom::PageHandlerFactory>
+      slim_web_view_page_factory_receiver_{this};
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
   void CreatePageHandler(
       mojo::PendingReceiver<glic::mojom::PageHandler> receiver,
       mojo::PendingRemote<glic::mojom::Page> page) override;

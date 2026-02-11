@@ -7,9 +7,13 @@
 #include "base/no_destructor.h"
 #include "components/guest_view/common/guest_view.mojom.h"
 #include "components/guest_view/common/guest_view_constants.h"
+#include "components/guest_view/renderer/guest_view_container.h"
+#include "components/guest_view/renderer/guest_view_request.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_frame_observer.h"
+#include "content/public/renderer/v8_value_converter.h"
 #include "gin/converter.h"
 #include "gin/function_template.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -36,6 +40,18 @@ static constexpr char kSlimWebViewPrivate[] = "slimWebViewPrivate";
 struct ViewHolder {
   v8::Global<v8::Object> view;
   mojo::Remote<mojom::ViewHandle> keep_alive_handle_remote;
+};
+
+class RenderFrameStatus final : public content::RenderFrameObserver {
+ public:
+  explicit RenderFrameStatus(content::RenderFrame* render_frame)
+      : content::RenderFrameObserver(render_frame) {}
+  ~RenderFrameStatus() final = default;
+
+  bool is_ok() { return render_frame() != nullptr; }
+
+  // RenderFrameObserver implementation.
+  void OnDestruct() final {}
 };
 
 mojo::AssociatedRemote<guest_view::mojom::GuestViewHost> GetGuestViewHost(
@@ -68,6 +84,21 @@ int GetNextId() {
   return ++next_id;
 }
 
+content::RenderFrame* GetRenderFrame(v8::Isolate* isolate,
+                                     v8::Local<v8::Object> object) {
+  v8::Local<v8::Context> context;
+  if (!object->GetCreationContext(isolate).ToLocal(&context)) {
+    if (context.IsEmpty()) {
+      return nullptr;
+    }
+  }
+  blink::WebLocalFrame* frame = blink::WebLocalFrame::FrameForContext(context);
+  if (!frame) {
+    return nullptr;
+  }
+  return content::RenderFrame::FromWebFrame(frame);
+}
+
 void RegisterView(v8::Isolate* isolate,
                   int view_instance_id,
                   v8::Local<v8::Object> view) {
@@ -89,6 +120,43 @@ void RegisterView(v8::Isolate* isolate,
       view_holder.keep_alive_handle_remote.BindNewPipeAndPassReceiver();
   GetGuestViewHost(render_frame)
       ->ViewCreated(view_instance_id, kSlimWebViewType, std::move(receiver));
+}
+
+void AttachIframeGuest(v8::Isolate* isolate,
+                       int element_instance_id,
+                       int guest_instance_id,
+                       v8::Local<v8::Value> params,
+                       v8::Local<v8::Object> content_window,
+                       v8::Local<v8::Function> callback) {
+  content::RenderFrame* render_frame = GetRenderFrame(isolate, content_window);
+  CHECK(render_frame);
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  blink::WebLocalFrame* frame = render_frame->GetWebFrame();
+  blink::WebFrame* parent_frame = frame->Parent();
+  CHECK(parent_frame);
+  CHECK(parent_frame->IsWebLocalFrame());
+  content::RenderFrame* embedder_parent_frame =
+      content::RenderFrame::FromWebFrame(parent_frame->ToWebLocalFrame());
+
+  auto* guest_view_container =
+      guest_view::GuestViewContainer::FromID(element_instance_id);
+  // This is the first time we hear about the |element_instance_id|.
+  DCHECK(!guest_view_container);
+  // TODO(crbug.com/460804848): Make the <webview> element's GC take ownership
+  // of |guest_view_container|.
+  guest_view_container = new guest_view::GuestViewContainer(
+      embedder_parent_frame, element_instance_id);
+  // We track the status of the RenderFrame via an observer in case it is
+  // deleted during user code execution while getting the params.
+  RenderFrameStatus render_frame_status(render_frame);
+  auto params_value =
+      content::V8ValueConverter::Create()->FromV8Value(params, context);
+  CHECK(render_frame_status.is_ok());
+  CHECK(params_value->is_dict());
+  auto request = std::make_unique<guest_view::GuestViewAttachRequest>(
+      guest_view_container, render_frame, guest_instance_id,
+      std::move(params_value->GetDict()), callback, isolate);
+  guest_view_container->IssueRequest(std::move(request));
 }
 
 }  // namespace
@@ -122,6 +190,7 @@ void SlimWebViewBindings::MaybeInstall(content::RenderFrame& render_frame) {
 
   bind("getNextId", &GetNextId);
   bind("registerView", &RegisterView);
+  bind("attachIframeGuest", &AttachIframeGuest);
 }
 
 }  // namespace guest_view

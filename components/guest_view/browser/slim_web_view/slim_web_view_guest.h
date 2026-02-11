@@ -8,6 +8,8 @@
 #include "components/guest_view/browser/guest_view.h"
 #include "components/guest_view/browser/guest_view_base.h"
 
+class GURL;
+
 namespace guest_view {
 
 // A minimal implementation of GuestView for embedding web content in Chrome.
@@ -21,6 +23,8 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
 
   static std::unique_ptr<GuestViewBase> Create(
       content::RenderFrameHost* owner_render_frame_host);
+
+  void Navigate(const GURL& url);
 
  private:
   explicit SlimWebViewGuest(content::RenderFrameHost* owner_render_frame_host);

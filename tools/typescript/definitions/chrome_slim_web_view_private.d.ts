@@ -9,5 +9,8 @@ declare namespace chrome {
   export namespace slimWebViewPrivate {
     export function getNextId(): number;
     export function registerView(viewInstanceId: number, view: object): void;
+    export function attachIframeGuest(
+        elementInstanceId: number, guestInstanceId: number, params: object,
+        contentWindow: WindowProxy, callback: () => void): void;
   }
 }

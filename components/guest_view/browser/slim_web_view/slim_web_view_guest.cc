@@ -12,6 +12,8 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace {
 
@@ -59,6 +61,13 @@ const guest_view::GuestViewHistogramValue SlimWebViewGuest::HistogramValue =
 std::unique_ptr<GuestViewBase> SlimWebViewGuest::Create(
     content::RenderFrameHost* owner_render_frame_host) {
   return base::WrapUnique(new SlimWebViewGuest(owner_render_frame_host));
+}
+
+void SlimWebViewGuest::Navigate(const GURL& url) {
+  // TODO(acondor): Implement other security and navigation params, such as
+  // header overrides.
+  content::NavigationController::LoadURLParams load_url_params(url);
+  GetController().LoadURLWithParams(load_url_params);
 }
 
 SlimWebViewGuest::SlimWebViewGuest(

@@ -1,0 +1,26 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module guest_view.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+import "url/mojom/url.mojom";
+
+// Bootstraps the PageHandler for communicating a SlimWebView to the browser.
+interface PageHandlerFactory {
+  // Creates a PageHandler and binds it to the given receiver.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};
+
+// Interface that implements page-to-browser events for a SlimWebView.
+interface PageHandler {
+  // Creates the GuestView from `create_params` and returns the created guest's
+  // ID on success.
+  CreateGuest(mojo_base.mojom.DictionaryValue create_params)
+      => (int32 guest_instance_id);
+
+  // Navigates the GuestView to the given URL. URL must be valid and either
+  // https or about:blank.
+  Navigate(int32 guest_instance_id, url.mojom.Url url);
+};

@@ -51,6 +51,7 @@
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/grit/guest_view_shared_resources_map.h"  // nogncheck
+#include "components/guest_view/browser/slim_web_view/slim_web_view_page_handler.h"  // nogncheck
 #endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 namespace glic {
@@ -299,6 +300,14 @@ GlicUI* GlicUI::From(content::WebContents* web_contents) {
   return controller->GetAs<GlicUI>();
 }
 
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+void GlicUI::BindInterface(
+    mojo::PendingReceiver<guest_view::mojom::PageHandlerFactory> receiver) {
+  slim_web_view_page_factory_receiver_.reset();
+  slim_web_view_page_factory_receiver_.Bind(std::move(receiver));
+}
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 void GlicUI::BindInterface(
     mojo::PendingReceiver<glic::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();
@@ -332,6 +341,14 @@ void GlicUI::AttachToHost(Host* host) {
         std::move(pending_page_));
   }
 }
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+void GlicUI::CreatePageHandler(
+    mojo::PendingReceiver<guest_view::mojom::PageHandler> receiver) {
+  guest_view::SlimWebViewPageHandler::CreateForCurrentDocument(
+      web_ui()->GetRenderFrameHost(), std::move(receiver));
+}
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 void GlicUI::CreatePageHandler(
     mojo::PendingReceiver<glic::mojom::PageHandler> receiver,

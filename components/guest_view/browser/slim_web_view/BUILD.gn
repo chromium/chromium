@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/guest_view/buildflags/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/grit/grit_rule.gni")
 
 assert(enable_guest_view)
@@ -11,12 +12,26 @@ static_library("slim_web_view") {
   sources = [
     "slim_web_view_guest.cc",
     "slim_web_view_guest.h",
+    "slim_web_view_page_handler.cc",
+    "slim_web_view_page_handler.h",
   ]
 
   deps = [
+    ":mojo_bindings",
     ":strings",
+    "//base",
     "//components/guest_view/browser",
     "//content/public/browser",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "slim_web_view.mojom" ]
+  webui_module_path = "/shared/guest_view"
+
+  deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
   ]
 }
 

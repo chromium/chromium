@@ -43,7 +43,10 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/fre/glic_fre_ui.h"
 #endif
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "components/guest_view/browser/slim_web_view/slim_web_view.mojom.h"  // nogncheck
 #endif
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/webui/tab_strip/tab_strip.mojom.h"
@@ -117,7 +120,11 @@ void PopulateChromeWebUIFrameBindersPartsFeatures(
     RegisterWebUIControllerInterfaceBinder<
         glic::mojom::GlicPreloadHandlerFactory, glic::GlicUI>(map);
   }
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  RegisterWebUIControllerInterfaceBinder<guest_view::mojom::PageHandlerFactory,
+                                         glic::GlicUI>(map);
 #endif
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   RegisterWebUIControllerInterfaceBinder<tab_strip::mojom::PageHandlerFactory,

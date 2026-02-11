@@ -16,6 +16,7 @@ static_library("slim_web_view") {
     "//base",
     "//components/guest_view/common",
     "//components/guest_view/common:mojom",
+    "//components/guest_view/renderer",
     "//content/public/common",
     "//content/public/renderer",
     "//gin",
