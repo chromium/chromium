@@ -407,23 +407,15 @@ TEST_F(InputStateModelTest, GetAdditionalQueryParams) {
   // Reset all tools.
   input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
 
-  // Gemini Pro added.
+  // Set a model, should have no query params.
   input_state_model_->setActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
-  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
-              testing::UnorderedElementsAre(testing::Pair("m", "1")));
+  EXPECT_TRUE(input_state_model_->GetAdditionalQueryParams().empty());
 
-  // Gemini Pro Autoroute added.
-  input_state_model_->setActiveModel(
-      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
-  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
-              testing::UnorderedElementsAre(testing::Pair("m", "2")));
-
-  // Deep Search and Gemini Pro added.
+  // Deep Search and Gemini Pro added. Only tool should be in params.
   input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
   input_state_model_->setActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
   EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
-              testing::UnorderedElementsAre(testing::Pair("dr", "1"),
-                                            testing::Pair("m", "1")));
+              testing::UnorderedElementsAre(testing::Pair("dr", "1")));
 }
 
 TEST_F(InputStateModelCompatibilityTest, PolicyDisablesInputs) {

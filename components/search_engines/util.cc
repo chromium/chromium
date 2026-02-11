@@ -84,12 +84,13 @@ WDKeywordsResult::Metadata ComputeMergeEnginesRequirements(
   return out_metadata;
 }
 
-GURL GetSearchUrlWithUdm(TemplateURLService* turl_service,
-                         omnibox::ChromeAimEntryPoint aim_entrypoint,
-                         const std::string& udm_value,
-                         const base::Time& query_start_time,
-                         const std::u16string& query_text,
-                         std::map<std::string, std::string> additional_params) {
+GURL GetBaseSearchUrl(TemplateURLService* turl_service,
+                      omnibox::ChromeAimEntryPoint aim_entrypoint,
+                      bool is_aim_search,
+                      omnibox::ModelMode model_mode,
+                      const base::Time& query_start_time,
+                      const std::u16string& query_text,
+                      std::map<std::string, std::string> additional_params) {
   const TemplateURLRef& url_ref =
       turl_service->GetDefaultSearchProvider()->url_ref();
   TemplateURLRef::SearchTermsArgs search_term_args =
@@ -101,7 +102,22 @@ GURL GetSearchUrlWithUdm(TemplateURLService* turl_service,
     result_url = net::AppendOrReplaceQueryParameter(result_url, param.first,
                                                     param.second);
   }
-  result_url = net::AppendOrReplaceQueryParameter(result_url, "udm", udm_value);
+
+  if (is_aim_search) {
+    if (model_mode == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO) {
+      result_url = net::AppendOrReplaceQueryParameter(result_url, "nem", "143");
+    } else {
+      result_url = net::AppendOrReplaceQueryParameter(
+          result_url, "udm", kAimUdmQueryParameterValue);
+    }
+  } else {
+    std::string udm_value = query_text.empty()
+                                ? kUnimodalUdmQueryParameterValue
+                                : kMultimodalUdmQueryParameterValue;
+    result_url =
+        net::AppendOrReplaceQueryParameter(result_url, "udm", udm_value);
+  }
+
   // Don't override the aep param from `additional_params`. This value could be
   // given alongside the match from the server. This should keep precedence
   // over the generic entrypoint value.
@@ -657,9 +673,10 @@ GURL GetUrlForAim(
     const base::Time& query_start_time,
     const std::u16string& query_text,
     const std::optional<lens::LensOverlayInvocationSource> invocation_source,
-    std::map<std::string, std::string> additional_params) {
-  GURL result_url = GetSearchUrlWithUdm(
-      turl_service, aim_entrypoint, kAimUdmQueryParameterValue,
+    std::map<std::string, std::string> additional_params,
+    omnibox::ModelMode model_mode) {
+  GURL result_url = GetBaseSearchUrl(
+      turl_service, aim_entrypoint, /*is_aim_search=*/true, model_mode,
       query_start_time, query_text, additional_params);
   if (invocation_source.has_value()) {
     // If the invocation source is set, send the contextual tasks invocation
@@ -685,11 +702,9 @@ GURL GetUrlForMultimodalSearch(
     const std::string& lns_surface,
     const std::u16string& query_text,
     std::map<std::string, std::string> additional_params) {
-  GURL result_url = GetSearchUrlWithUdm(
-      turl_service, aim_entrypoint,
-      is_aim_search ? kAimUdmQueryParameterValue
-                    : (query_text.empty() ? kUnimodalUdmQueryParameterValue
-                                          : kMultimodalUdmQueryParameterValue),
+  GURL result_url = GetBaseSearchUrl(
+      turl_service, aim_entrypoint, is_aim_search,
+      /*model_mode=*/omnibox::ModelMode::MODEL_MODE_UNSPECIFIED,
       query_start_time, query_text, additional_params);
   std::string serialized_request_id;
   CHECK(request_id->SerializeToString(&serialized_request_id));
@@ -724,11 +739,9 @@ GURL GetUrlForMultimodalSearch(
     const std::string& lns_surface,
     const std::u16string& query_text,
     std::map<std::string, std::string> additional_params) {
-  GURL result_url = GetSearchUrlWithUdm(
-      turl_service, aim_entrypoint,
-      is_aim_search ? kAimUdmQueryParameterValue
-                    : (query_text.empty() ? kUnimodalUdmQueryParameterValue
-                                          : kMultimodalUdmQueryParameterValue),
+  GURL result_url = GetBaseSearchUrl(
+      turl_service, aim_entrypoint, is_aim_search,
+      /*model_mode=*/omnibox::ModelMode::MODEL_MODE_UNSPECIFIED,
       query_start_time, query_text, additional_params);
   std::string serialized_contextual_inputs;
   CHECK(contextual_inputs->SerializeToString(&serialized_contextual_inputs));
