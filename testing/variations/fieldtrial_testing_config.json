@@ -11041,7 +11041,7 @@
             ]
         }
     ],
-    "ExtensionBrowserNamespaceAlternative": [
+    "ExtensionBrowserNamespaceAndPolyfillSupport": [
         {
             "platforms": [
                 "chromeos",
@@ -11053,13 +11053,13 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ExtensionBrowserNamespaceAlternative"
+                        "ExtensionBrowserNamespaceAndPolyfillSupport"
                     ]
                 },
                 {
                     "name": "Disabled",
                     "disable_features": [
-                        "ExtensionBrowserNamespaceAlternative"
+                        "ExtensionBrowserNamespaceAndPolyfillSupport"
                     ]
                 }
             ]
