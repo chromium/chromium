@@ -22,8 +22,6 @@ BASE_DECLARE_FEATURE(kNtpComposebox);
 
 // The serialized base64 encoded `omnibox::NTPComposeboxConfig`.
 extern const base::FeatureParam<std::string> kConfigParam;
-// Whether to show zps suggestions under the composebox.
-extern const base::FeatureParam<bool> kShowComposeboxZps;
 // Whether to show typed suggestions under the composebox.
 extern const base::FeatureParam<bool> kShowComposeboxTypedSuggest;
 // Whether to show image suggestions under the composebox.

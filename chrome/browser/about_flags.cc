@@ -1646,69 +1646,20 @@ const FeatureEntry::FeatureVariation kOmniboxToolbeltVariations[] = {
      std::size(kOmniboxToolbeltAllActionsZeroTypedInputs), nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kComposeboxShowContextMenuAndSuggestMultiFile[] = {
-        {"ShowComposeboxTypedSuggest", "true"},
-        {"ShowContextMenu", "true"},
-        {"ShowRecentTabChip", "true"},
-};
-const FeatureEntry::FeatureParam
-    kComposeboxShowContextMenuAndSuggestMultiFileNoViewport[] = {
-        {"ShowComposeboxTypedSuggest", "true"},
-        {"ShowContextMenu", "true"},
-        {"ShowRecentTabChip", "true"},
-        {"EnableViewportImages", "false"},
-};
-const FeatureEntry::FeatureParam
-    kComposeboxShowContextMenuAndSuggestMultiFileAndTabPreviews[] = {
-        {"ShowComposeboxTypedSuggest", "true"},
-        {"ShowContextMenu", "true"},
-        {"ShowRecentTabChip", "true"},
-        {"ShowContextMenuTabPreviews", "true"},
-};
-const FeatureEntry::FeatureParam kComposeboxNext[] = {
-    {"ShowContextMenu", "true"},
-    {"ShowContextMenuTabPreviews", "true"},
-    {"ShowComposeboxTypedSuggest", "true"},
-    {"ShowRecentTabChip", "true"},
-    {"ContextMenuEnableMultiTabSelection", "true"},
-};
 const FeatureEntry::FeatureParam kComposeboxNextSingleContext[] = {
     {"MaxNumFiles", "1"},
-    {"ShowContextMenu", "true"},
-    {"ShowContextMenuTabPreviews", "true"},
-    {"ShowComposeboxTypedSuggest", "true"},
-    {"ShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextSingleContextForRealboxNext[] =
     {
         {"NtpComposeboxMaxNumFiles", "1"},
-        {"NtpComposeboxShowContextMenu", "true"},
-        {"NtpComposeboxShowComposeboxTypedSuggest", "true"},
         {"NtpComposeboxShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
-    {"NtpComposeboxShowContextMenu", "true"},
-    {"NtpComposeboxShowComposeboxTypedSuggest", "true"},
     {"NtpComposeboxShowRecentTabChip", "true"},
     {"NtpComposeboxContextMenuEnableMultiTabSelection", "true"},
-    {"EnableEphemeralContextMenuDescription", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
-    {"- Show Contextual Input Menu and Suggest, 5 File Limit",
-     kComposeboxShowContextMenuAndSuggestMultiFile,
-     std::size(kComposeboxShowContextMenuAndSuggestMultiFile), nullptr},
-    {"- Show Contextual Input Menu and Suggest, 5 File Limit, no viewport "
-     "uploading",
-     kComposeboxShowContextMenuAndSuggestMultiFileNoViewport,
-     std::size(kComposeboxShowContextMenuAndSuggestMultiFileNoViewport),
-     nullptr},
-    {"- Show Contextual Input Menu and Suggest, Tab Previews, 5 File Limit",
-     kComposeboxShowContextMenuAndSuggestMultiFileAndTabPreviews,
-     std::size(kComposeboxShowContextMenuAndSuggestMultiFileAndTabPreviews),
-     nullptr},
-    {"- Next Experience", kComposeboxNext, std::size(kComposeboxNext), nullptr},
     {"- Next Experience Single Context", kComposeboxNextSingleContext,
      std::size(kComposeboxNextSingleContext), nullptr},
     {"- Next Experience for Realbox Next", kComposeboxNextForRealboxNext,
@@ -1749,16 +1700,9 @@ const FeatureEntry::FeatureVariation kNtpRealboxNextVariations[] = {
      std::size(kShowNextRealboxCompactCyclingPlaceholders), nullptr},
 };
 
-const FeatureEntry::FeatureParam kNtpNextShowStaticText[] = {
-    {"NtpNextShowStaticTextParam", "true"},
-};
-
 const FeatureEntry::FeatureParam kNtpNextShowDeepDiveSuggestions[] = {
     {"NtpNextShowDeepDiveSuggestionsParam", "true"},
     {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "false"},
-};
-const FeatureEntry::FeatureParam kNtpNextShowSimplificationUI[] = {
-    {"NtpNextShowSimplificationUIParam", "true"},
 };
 const FeatureEntry::FeatureParam kNtpNextShowSimplificationUIWithDeepDive[] = {
     {"NtpNextShowSimplificationUIParam", "true"},
@@ -1803,12 +1747,8 @@ const FeatureEntry::FeatureParam kNtpNextShowSimplificationUIWithDismissal[] = {
 };
 
 const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
-    {"- Show Static Text", kNtpNextShowStaticText,
-     std::size(kNtpNextShowStaticText), nullptr},
     {"- Show Deep Dive Suggestions", kNtpNextShowDeepDiveSuggestions,
      std::size(kNtpNextShowDeepDiveSuggestions), nullptr},
-    {"- Show Row UI", kNtpNextShowSimplificationUI,
-     std::size(kNtpNextShowSimplificationUI), nullptr},
     {"- Show Row UI With Deep Dive", kNtpNextShowSimplificationUIWithDeepDive,
      std::size(kNtpNextShowSimplificationUIWithDeepDive), nullptr},
     {"- Show Chips UI with a New Suggestions Client",
