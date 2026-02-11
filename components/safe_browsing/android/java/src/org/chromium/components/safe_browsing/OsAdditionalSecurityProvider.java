@@ -4,11 +4,14 @@
 
 package org.chromium.components.safe_browsing;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.security.advancedprotection.AdvancedProtectionManager;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.os.BuildCompat;
 
 import org.chromium.base.ContextUtils;
@@ -37,6 +40,11 @@ public class OsAdditionalSecurityProvider {
         }
 
         Context context = ContextUtils.getApplicationContext();
+        if (ContextCompat.checkSelfPermission(
+                        context, Manifest.permission.QUERY_ADVANCED_PROTECTION_MODE)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         var manager =
                 (AdvancedProtectionManager)
                         context.getSystemService(Context.ADVANCED_PROTECTION_SERVICE);
