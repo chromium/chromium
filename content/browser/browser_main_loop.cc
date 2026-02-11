@@ -27,7 +27,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/pending_task.h"
 #include "base/power_monitor/power_monitor.h"
@@ -214,8 +213,6 @@
 
 #if defined(USE_GLIB)
 #include <glib-object.h>
-
-#include "base/synchronization/lock.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -273,18 +270,7 @@ static void GLibLogHandler(const gchar* log_domain,
   if (!message)
     message = "<no message>";
 
-  GLogLevelFlags always_fatal_flags;
-  GLogLevelFlags fatal_flags;
-  {
-    static base::NoDestructor<base::Lock> lock;
-    base::AutoLock auto_lock(*lock);
-    always_fatal_flags = g_log_set_always_fatal(G_LOG_LEVEL_MASK);
-    g_log_set_always_fatal(always_fatal_flags);
-    fatal_flags = g_log_set_fatal_mask(log_domain, G_LOG_LEVEL_MASK);
-    g_log_set_fatal_mask(log_domain, fatal_flags);
-  }
-
-  if ((always_fatal_flags | fatal_flags) & log_level) {
+  if (log_level & (G_LOG_FLAG_FATAL)) {
     LOG(DFATAL) << log_domain << ": " << message;
   } else if (log_level & (G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL)) {
     LOG(ERROR) << log_domain << ": " << message;
