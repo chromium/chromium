@@ -3289,11 +3289,6 @@
     "expiry_milestone": 152
   },
   {
-    "name": "enable-extensions-explicit-browser-signin",
-    "owners": ["kelvinjiang@chromium.org"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "enable-external-display-hdr10",
     "owners": [ "sashamcintosh@chromium.org", "chromeos-gfx@google.com" ],
     "expiry_milestone": 140
