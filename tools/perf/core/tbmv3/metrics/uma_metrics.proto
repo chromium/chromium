@@ -121,6 +121,28 @@ message UMAMetrics {
     repeated int64 query_time2_0 = 4 [(unit) = "ms_smallerIsBetter"];
     repeated int64 query_time2_1 = 5 [(unit) = "ms_smallerIsBetter"];
     repeated int64 query_time2_2 = 6 [(unit) = "ms_smallerIsBetter"];
+    repeated int64 web_ui_char_typed_to_repaint_latency_to_paint = 7
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 popup_web_ui_construction_to_first_shown_duration = 8
+        [(unit) = "ms_smallerIsBetter"];
+    repeated bool popup_web_ui_crash_recovery = 9
+        [(unit) = "count_smallerIsBetter"];
+    repeated bool popup_web_ui_page_remote_is_bound_on_first_call = 10
+        [(unit) = "count_smallerIsBetter"];
+    repeated int64 popup_web_ui_presenter_show_latency_to_paint = 11
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 popup_web_ui_renderer_process_gone_status = 12
+        [(unit) = "count_smallerIsBetter"];
+    repeated int64 popup_web_ui_result_changed_to_repaint_latency_to_paint = 13
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 popup_aim_construction_to_first_shown_duration = 14
+        [(unit) = "ms_smallerIsBetter"];
+    repeated bool popup_aim_crash_recovery = 15
+        [(unit) = "count_smallerIsBetter"];
+    repeated int64 popup_aim_presenter_show_latency_to_paint = 16
+        [(unit) = "ms_smallerIsBetter"];
+    repeated int64 popup_aim_renderer_process_gone_status = 17
+        [(unit) = "count_smallerIsBetter"];
   };
 
   message PageLoad {
