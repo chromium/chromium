@@ -163,6 +163,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   /* Helpers for InputType input_state fields. */
   omnibox::InputType GetInputTypeForCommandId(int command_id) const;
+  const omnibox::InputTypeConfig* GetInputTypeConfig(
+      omnibox::InputType input_type) const;
   bool IsInputTypeVisible(omnibox::InputType input_type) const;
   bool IsInputTypeEnabled(omnibox::InputType input_type) const;
 
