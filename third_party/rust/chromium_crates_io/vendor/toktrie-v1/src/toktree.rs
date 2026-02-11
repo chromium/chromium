@@ -855,7 +855,10 @@ impl TokTrie {
         }
         r.trie_finished();
         r.save_stats(nodes_walked);
-        // revert the fake token
+        // Clean up the fake token set by add_bias_inner for nodes without token_id.
+        // Note: If add_bias_inner panics, this cleanup won't run, leaving the fake token set.
+        // This is acceptable since panics indicate unrecoverable errors and the program state
+        // is likely already corrupted.
         let defl_tok = self.vocab_size() as u32;
         toks.disallow_token(defl_tok);
     }
@@ -867,19 +870,39 @@ impl TokTrie {
         toks: &mut SimpleVob,
         n: &TrieNode,
     ) -> (usize, usize) {
+        // Use a fake token at vocab_size to avoid branching in the hot loop.
+        // This is safe because alloc_token_set() allocates capacity for vocab_size + 1 tokens.
+        // The fake token is cleaned up in add_bias() after the walk completes.
         let defl_tok = self.vocab_size() as u32;
         let off = self.node_offset(n);
         let total_nodes = n.subtree_size();
         let mut p = off + 1;
         let endp = off + total_nodes;
+        let nodes = &self.nodes[..endp];
         let mut next_pop = 0;
         let mut num_skip = 0;
         while p < endp {
             r.pop_bytes(next_pop);
-            let n = &self.nodes[p];
+            let n = unsafe {
+                debug_assert!(
+                    p < nodes.len(),
+                    "node index {} out of bounds (len: {})",
+                    p,
+                    nodes.len()
+                );
+                nodes.get_unchecked(p)
+            };
             let b = n.byte();
             if r.try_push_byte(b) {
-                toks.allow_token(n.token_id().unwrap_or(defl_tok));
+                // Avoid branching: always set a token (either real or fake at defl_tok)
+                let tok = n.token_id().unwrap_or(defl_tok);
+                debug_assert!(
+                    tok <= self.vocab_size() as u32,
+                    "token {} out of valid range (vocab_size: {})",
+                    tok,
+                    self.vocab_size()
+                );
+                unsafe { toks.allow_token_unchecked(tok) };
                 next_pop = if n.subtree_size() == 1 {
                     n.num_parents()
                 } else {
