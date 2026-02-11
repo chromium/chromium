@@ -24,26 +24,6 @@
 // on Android.
 namespace glic {
 
-inline base::CallbackListSubscription RegisterDidBecomeActive(
-    BrowserWindowInterface* browser_window,
-    base::RepeatingCallback<void(BrowserWindowInterface*)> callback) {
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
-  return browser_window->RegisterDidBecomeActive(std::move(callback));
-#else
-  return base::CallbackListSubscription();
-#endif
-}
-
-inline base::CallbackListSubscription RegisterDidBecomeInactive(
-    BrowserWindowInterface* browser_window,
-    base::RepeatingCallback<void(BrowserWindowInterface*)> callback) {
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
-  return browser_window->RegisterDidBecomeInactive(std::move(callback));
-#else
-  return base::CallbackListSubscription();
-#endif
-}
-
 inline base::CallbackListSubscription RegisterBrowserDidClose(
     BrowserWindowInterface* browser_window,
     base::RepeatingCallback<void(BrowserWindowInterface*)> callback) {

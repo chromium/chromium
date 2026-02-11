@@ -119,14 +119,14 @@ void GlicFocusedBrowserManagerImpl::OnBrowserCreated(
     BrowserWindowInterface* browser) {
   if (IsBrowserValidForSharingInProfile(browser, profile_)) {
     std::vector<base::CallbackListSubscription> subscriptions;
-    subscriptions.push_back(RegisterDidBecomeActive(
-        browser, base::BindRepeating(
-                     &GlicFocusedBrowserManagerImpl::OnBrowserBecameActive,
-                     base::Unretained(this))));
-    subscriptions.push_back(RegisterDidBecomeInactive(
-        browser, base::BindRepeating(
-                     &GlicFocusedBrowserManagerImpl::OnBrowserBecameInactive,
-                     base::Unretained(this))));
+    subscriptions.push_back(
+        browser->RegisterDidBecomeActive(base::BindRepeating(
+            &GlicFocusedBrowserManagerImpl::OnBrowserBecameActive,
+            base::Unretained(this))));
+    subscriptions.push_back(
+        browser->RegisterDidBecomeInactive(base::BindRepeating(
+            &GlicFocusedBrowserManagerImpl::OnBrowserBecameInactive,
+            base::Unretained(this))));
     browser_subscriptions_[browser] = std::move(subscriptions);
   }
 }

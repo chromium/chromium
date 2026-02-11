@@ -292,22 +292,24 @@ class ActiveStateCalculator : public PanelStateObserver {
     attached_browser_subscriptions_.clear();
     attached_browser_ = attached_browser;
 
+    // attached_browser is always null in Multi-instance, and ANDROID implies
+    // Multi-instance.
+#if !BUILDFLAG(IS_ANDROID)
     if (attached_browser_ && !IsDeleteScheduled(attached_browser_)) {
-      attached_browser_subscriptions_.push_back(RegisterDidBecomeActive(
-          attached_browser_,
-          base::BindRepeating(
+      attached_browser_subscriptions_.push_back(
+          attached_browser_->RegisterDidBecomeActive(base::BindRepeating(
               &ActiveStateCalculator::AttachedBrowserActiveChanged,
               base::Unretained(this))));
-      attached_browser_subscriptions_.push_back(RegisterDidBecomeInactive(
-          attached_browser_,
-          base::BindRepeating(
+      attached_browser_subscriptions_.push_back(
+          attached_browser_->RegisterDidBecomeInactive(base::BindRepeating(
               &ActiveStateCalculator::AttachedBrowserActiveChanged,
               base::Unretained(this))));
-      attached_browser_subscriptions_.push_back(RegisterBrowserDidClose(
-          attached_browser_,
-          base::BindRepeating(&ActiveStateCalculator::AttachedBrowserDidClose,
-                              base::Unretained(this))));
+      attached_browser_subscriptions_.push_back(
+          attached_browser_->RegisterBrowserDidClose(base::BindRepeating(
+              &ActiveStateCalculator::AttachedBrowserDidClose,
+              base::Unretained(this))));
     }
+#endif
     return true;
   }
 

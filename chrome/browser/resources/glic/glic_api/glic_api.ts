@@ -1621,6 +1621,7 @@ export declare interface TabData {
   /**
    * Whether the tab's browser window is active. Note that this does not
    * consider whether the tab is active in the window.
+   * WARNING: This is not implemented on Android, and is always true.
    */
   isWindowActive?: boolean;
 }

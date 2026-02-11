@@ -277,9 +277,15 @@ glic::mojom::TabDataPtr CreateTabData(tabs::TabInterface* tab) {
 
   if (base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi)) {
     is_active_in_window = tab && tab->IsActivated();
+#if !BUILDFLAG(IS_ANDROID)
     is_window_active = tab->GetBrowserWindowInterface()
                            ? IsActive(tab->GetBrowserWindowInterface())
                            : false;
+#else
+    // Not implemented on Android. It's currently not used, so this may never
+    // be implemented.
+    is_window_active = true;
+#endif
   }
   return glic::mojom::TabData::New(
       GetTabId(web_contents),

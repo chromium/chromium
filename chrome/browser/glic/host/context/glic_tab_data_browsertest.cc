@@ -16,6 +16,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -185,6 +186,75 @@ IN_PROC_BROWSER_TEST_F(GlicTabDataBrowserTest, ChangeTitleUpdatesAreThrottled) {
   mock_task_runner_->FastForwardBy(base::Milliseconds(250));
   ASSERT_TRUE(base::test::RunUntil([&]() { return !GetUpdates().empty(); }));
   ASSERT_EQ(GetUpdates()[0].tab_data->title, "F");
+}
+
+IN_PROC_BROWSER_TEST_F(GlicTabDataBrowserTest,
+                       IsActiveInWindowReflectsActiveTab) {
+  // Navigate to a known URL to ensure we have an initial update.
+  GURL url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // The first tab should be active.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    for (const auto& update : GetUpdates()) {
+      if (update.tab_data && update.tab_data->url == url) {
+        if (update.tab_data->is_active_in_window.has_value() &&
+            *update.tab_data->is_active_in_window == true) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }));
+
+  update_receiver_.TakeUpdates();
+
+  // Create a second tab and activate it.
+  chrome::AddSelectedTabWithURL(browser(), GURL("about:blank"),
+                                ui::PAGE_TRANSITION_LINK);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
+
+  // Trigger an update on the first tab by changing its title, as
+  // TabDataObserver doesn't observe activation changes itself.
+  ASSERT_TRUE(content::ExecJs(web_contents_->GetPrimaryMainFrame(),
+                              "document.title = `inactive`;"));
+
+  // The first tab (index 0) is now inactive.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    for (const auto& update : GetUpdates()) {
+      if (update.tab_data && update.tab_data->title == "inactive") {
+        if (update.tab_data->is_active_in_window.has_value() &&
+            *update.tab_data->is_active_in_window == false) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }));
+
+  update_receiver_.TakeUpdates();
+
+  // Re-activate the first tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 0);
+
+  // Trigger an update on the first tab again.
+  ASSERT_TRUE(content::ExecJs(web_contents_->GetPrimaryMainFrame(),
+                              "document.title = `active again`;"));
+
+  // The first tab is now active again.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    for (const auto& update : GetUpdates()) {
+      if (update.tab_data && update.tab_data->title == "active again") {
+        if (update.tab_data->is_active_in_window.has_value() &&
+            *update.tab_data->is_active_in_window == true) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }));
 }
 
 }  // namespace
