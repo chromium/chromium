@@ -218,6 +218,10 @@ GpuFeatureStatus GetWebGPUOnVulkanViaGLInterop(
   if (features::IsForceEnableWebGpuInterop()) {
     return kGpuFeatureStatusEnabled;
   }
+
+  if (gpu_preferences.use_webgpu_adapter == WebGPUAdapterName::kOpenGLES) {
+    return kGpuFeatureStatusDisabled;
+  }
 #endif
 
   if (blocklisted_features.count(
