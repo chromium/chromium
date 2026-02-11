@@ -1100,16 +1100,6 @@
         "version": "1.0.1"
     },
     {
-        "name": "tracing-wire",
-        "group": "androidx.tracing",
-        "version": "2.0.0-SNAPSHOT"
-    },
-    {
-        "name": "tracing-wire-android",
-        "group": "androidx.tracing",
-        "version": "2.0.0-SNAPSHOT"
-    },
-    {
         "name": "transition",
         "group": "androidx.transition",
         "version": "1.7.0"
