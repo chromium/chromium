@@ -15,6 +15,11 @@
 #include "components/prefs/pref_service.h"
 #include "device/fido/public/features.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#endif
+
 namespace {
 
 bool IsCmdlineAllowedOrigin(const url::Origin& caller_origin) {
@@ -59,10 +64,22 @@ bool IsGoogleCorpCrdOrigin(content::BrowserContext* browser_context,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-bool IsAllowedByPlatformEnterprisePolicy(
+bool RemoteDesktopClientOverrideAllowedByPolicy(
     content::BrowserContext* browser_context,
     const url::Origin& caller_origin) {
   const Profile* profile = Profile::FromBrowserContext(browser_context);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  if (!user || !user->IsAffiliated()) {
+    // On ChromeOS, if the user is not affiliated with the device's
+    // managing organization, the origin isn't allowed to use the
+    // remoteDesktopClientOverride.
+    return false;
+  }
+#endif
+
   const PrefService* prefs = profile->GetPrefs();
   const base::ListValue& allowed_origins =
       prefs->GetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins);
@@ -106,7 +123,8 @@ bool ChromeWebAuthenticationDelegateBase::
 
   // Check if the origin is explicitly allowed by (device/platform level)
   // enterprise policy, (or allowed by the command-line flag for testing).
-  if (IsAllowedByPlatformEnterprisePolicy(browser_context, caller_origin)) {
+  if (RemoteDesktopClientOverrideAllowedByPolicy(browser_context,
+                                                 caller_origin)) {
     // TODO(crbug.com/391132173): Record UMA to track how often this policy is
     // used.
     return true;

@@ -5,6 +5,8 @@
 #include "chrome/browser/webauthn/chrome_web_authentication_delegate_base.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <string_view>
 
 #include "base/test/scoped_command_line.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -14,11 +16,21 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/scoped_user_manager.h"
+#endif
+
 namespace {
 
 class OriginMayUseRemoteDesktopClientOverrideTest
     : public ChromeRenderViewHostTestHarness {
  protected:
+  const std::array<const char*, 3> kCorpCrdOrigins = {
+      kCorpCrdOrigin, kCorpCrdAutopushOrigin, kCorpCrdDailyOrigin};
+
   static constexpr char kCorpCrdOrigin[] =
       "https://remotedesktop.corp.google.com";
   static constexpr char kCorpCrdAutopushOrigin[] =
@@ -26,11 +38,56 @@ class OriginMayUseRemoteDesktopClientOverrideTest
   static constexpr char kCorpCrdDailyOrigin[] =
       "https://remotedesktop-daily-6.corp.google.com/";
 
-  const std::array<const char*, 3> kCorpCrdOrigins = {
-      kCorpCrdOrigin, kCorpCrdAutopushOrigin, kCorpCrdDailyOrigin};
-
   static constexpr char kExampleOrigin[] = "https://example.com";
   static constexpr char kAnotherExampleOrigin[] = "https://another.example.com";
+
+#if BUILDFLAG(IS_CHROMEOS)
+  static constexpr std::string_view kTestAtExampleDotCom = "test@example.com";
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    SetupUserAffiliation(true, kTestAtExampleDotCom);
+  }
+
+  void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
+
+  void SetupUserAffiliation(bool is_affiliated, std::string_view email) {
+    AccountId account_id = AccountId::FromUserEmail(email);
+    const user_manager::User* user = scoped_user_manager_->FindUser(account_id);
+    if (user) {
+      scoped_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+          account_id, is_affiliated, user_manager::UserType::kRegular,
+          profile());
+    } else {
+      user = scoped_user_manager_->AddUserWithAffiliation(account_id,
+                                                          is_affiliated);
+      ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                                   profile());
+    }
+    scoped_user_manager_->LoginUser(account_id);
+    scoped_user_manager_->SwitchActiveUser(account_id);
+  }
+
+  bool LogOutUser(std::string_view email) {
+    AccountId account_id = AccountId::FromUserEmail(email);
+    const user_manager::User* user = scoped_user_manager_->FindUser(account_id);
+    if (!user) {
+      return false;
+    }
+    if (scoped_user_manager_->IsUserLoggedIn() &&
+        scoped_user_manager_->GetActiveUser() == user) {
+      // No direct "logout" in FakeChromeUserManager, just remove.
+      // Active user will become null if this is the only user.
+      scoped_user_manager_->RemoveUserFromList(account_id);
+      return true;
+    }
+    return false;
+  }
+
+  user_manager::TypedScopedUserManager<chromeos::FakeChromeUserManager>
+      scoped_user_manager_{std::make_unique<chromeos::FakeChromeUserManager>()};
+
+#endif
 };
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -156,6 +213,46 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
       browser_context(),
       url::Origin::Create(GURL("https://very.other.example.com"))));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
+       AdditionalOriginSwitch_WithAllowedOriginsPolicy_ChromeOsNoAffiliation) {
+  // Version of a test case above but for non-affiliated user on ChromeOS
+  ChromeWebAuthenticationDelegateBase delegate;
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin,
+      kExampleOrigin);
+
+  // Log user out, no affiliated user exists for this test
+  ASSERT_TRUE(LogOutUser(kTestAtExampleDotCom));
+
+  // Set the allowed origins pref to include another origin.
+  PrefService* prefs =
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+  prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
+                 base::ListValue().Append(kAnotherExampleOrigin));
+
+  // False when user is not affiliated or no user regardless if policy set with
+  // origin
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kExampleOrigin))));
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(), url::Origin::Create(GURL(kAnotherExampleOrigin))));
+
+  // Behavior for case without affiliated user in a sense of corporate origins
+  // should not change
+  for (auto* origin : kCorpCrdOrigins) {
+    EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+        browser_context(), url::Origin::Create(GURL(origin))));
+  }
+
+  // Origins not listed in either the switch or the policy remain disallowed.
+  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
+      browser_context(),
+      url::Origin::Create(GURL("https://very.other.example.com"))));
+}
+#endif
 
 TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
        AdditionalOriginSwitch_WithExplicitlyEmptyAllowedOriginsPolicy) {
