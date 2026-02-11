@@ -630,7 +630,7 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
     }
 
     // Potentially add a tab appropriate to display the Privacy Sandbox
-    // confirmaton dialog on top of. Ideally such a tab will already exist
+    // confirmation dialog on top of. Ideally such a tab will already exist
     // in |tabs|, and no additional tab will be required.
     if (privacy_sandbox_dialog_required &&
         launch_result == LaunchResult::kNormally) {
