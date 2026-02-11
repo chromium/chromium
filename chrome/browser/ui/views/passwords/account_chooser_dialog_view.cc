@@ -15,8 +15,10 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
+#include "chrome/browser/ui/views/passwords/password_combined_selector_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -156,5 +158,10 @@ void AccountChooserDialogView::CredentialsItemPressed(
 std::unique_ptr<AccountChooserPrompt> CreateAccountChooserPromptView(
     CredentialManagerDialogController* controller,
     content::WebContents* web_contents) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kCredentialManagementUnifiedUi)) {
+    return std::make_unique<PasswordCombinedSelectorView>(controller,
+                                                          web_contents);
+  }
   return std::make_unique<AccountChooserDialogView>(controller, web_contents);
 }
