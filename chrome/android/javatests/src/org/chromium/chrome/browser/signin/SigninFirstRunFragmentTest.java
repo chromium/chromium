@@ -83,7 +83,6 @@ import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.firstrun.FirstRunUtilsJni;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -796,7 +795,6 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP)
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testUIStateChangeOnContinueButtonPress_XplatSyncedSetup() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -828,7 +826,6 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP)
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testSuccessfulSignInFlow_XplatSyncedSetup() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -849,7 +846,6 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP)
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testSignInFailureUIReversion_XplatSyncedSetup() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -888,7 +884,6 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP)
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testChildAccountSignInFlow_XplatSyncedSetup() {
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
@@ -916,7 +911,6 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP)
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testStatePreservationOnRotation_XplatSyncedSetup() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -946,7 +940,6 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP)
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testUIWithNoGivenNameAccount_XplatSyncedSetup() {
         mSigninTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
@@ -1456,8 +1449,21 @@ public class SigninFirstRunFragmentTest {
     private void checkFragmentWithSignInSpinner(
             AccountInfo accountInfo, String continueAsText, boolean isChildAccount) {
         onView(withId(R.id.fre_signin_progress_spinner)).check(matches(isDisplayed()));
-        onView(withText(R.string.fre_signing_in)).check(matches(isDisplayed()));
-        onScrollToView(withText(R.string.signin_fre_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.fre_signing_in_2)).check(matches(isDisplayed()));
+        final DisplayableProfileData profileData =
+                new DisplayableProfileData(
+                        accountInfo.getEmail(),
+                        mock(Drawable.class),
+                        accountInfo.getFullName(),
+                        accountInfo.getGivenName(),
+                        accountInfo.canHaveEmailAddressDisplayed());
+        final String expectedTitle =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string.signed_in_fre_title,
+                                profileData.getGivenNameOrFullNameOrEmail());
+        onScrollToView(withText(expectedTitle)).check(matches(isDisplayed()));
         if (isChildAccount) {
             onView(withId(R.id.fre_browser_managed_by)).check(matches(isDisplayed()));
             onView(withText(R.string.fre_browser_managed_by_parent)).check(matches(isDisplayed()));

@@ -8027,7 +8027,8 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableCrossDevicePrefTracker",
-                        "HomeModulePrefRefactor"
+                        "HomeModulePrefRefactor",
+                        "XplatSyncedSetup"
                     ]
                 }
             ]
