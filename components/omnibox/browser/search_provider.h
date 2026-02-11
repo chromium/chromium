@@ -105,8 +105,7 @@ class SearchProvider : public BaseSearchProvider,
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, DoTrimHttpsScheme);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest, SendRequestWithURL);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest, SendRequestWithoutURL);
-  FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest,
-                           SendRequestWithAimToolMode);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest, NoRequestWithAimToolMode);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest,
                            SendRequestWithLensInteractionResponse);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest,

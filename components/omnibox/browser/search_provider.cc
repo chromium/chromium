@@ -117,7 +117,11 @@ bool ShouldOnlyShowVerbatimMatches(const AutocompleteInput& input) {
     return true;
   }
 #endif
-  return false;
+  // Nano banana and deep search typed suggestions should be disabled.
+  const bool in_tool_mode = input.input_state().active_tool !=
+                            omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+  return in_tool_mode &&
+         omnibox::IsComposebox(input.current_page_classification());
 }
 
 }  // namespace
