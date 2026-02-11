@@ -639,7 +639,7 @@
             this.#userContextStorage = userContextStorage;
         }
         close() {
-            setTimeout(() => this.#browserCdpClient.sendCommand('Browser.close'), 0);
+            setTimeout(() => this.#browserCdpClient.sendCommand('Browser.close').catch(() => { }), 0);
             return {};
         }
         async createUserContext(params) {
@@ -712,6 +712,46 @@
                 width: windowInfo.bounds.width ?? 0,
                 x: windowInfo.bounds.left ?? 0,
                 y: windowInfo.bounds.top ?? 0,
+            };
+        }
+        async setClientWindowState(params) {
+            const { clientWindow } = params;
+            const bounds = {
+                windowState: params.state,
+            };
+            if (params.state === 'normal') {
+                if (params.width !== undefined) {
+                    bounds.width = params.width;
+                }
+                if (params.height !== undefined) {
+                    bounds.height = params.height;
+                }
+                if (params.x !== undefined) {
+                    bounds.left = params.x;
+                }
+                if (params.y !== undefined) {
+                    bounds.top = params.y;
+                }
+            }
+            const windowId = Number.parseInt(clientWindow);
+            if (isNaN(windowId)) {
+                throw new InvalidArgumentException('no such client window');
+            }
+            await this.#browserCdpClient.sendCommand('Browser.setWindowBounds', {
+                windowId,
+                bounds,
+            });
+            const result = await this.#browserCdpClient.sendCommand('Browser.getWindowBounds', {
+                windowId,
+            });
+            return {
+                active: false,
+                clientWindow: `${windowId}`,
+                state: result.bounds.windowState ?? 'normal',
+                height: result.bounds.height ?? 0,
+                width: result.bounds.width ?? 0,
+                x: result.bounds.left ?? 0,
+                y: result.bounds.top ?? 0,
             };
         }
         async getClientWindows() {
@@ -5074,8 +5114,7 @@
                 case 'browser.removeUserContext':
                     return await this.#browserProcessor.removeUserContext(this.#parser.parseRemoveUserContextParameters(command.params));
                 case 'browser.setClientWindowState':
-                    this.#parser.parseSetClientWindowStateParameters(command.params);
-                    throw new UnsupportedOperationException(`Method ${command.method} is not implemented.`);
+                    return await this.#browserProcessor.setClientWindowState(this.#parser.parseSetClientWindowStateParameters(command.params));
                 case 'browser.setDownloadBehavior':
                     return await this.#browserProcessor.setDownloadBehavior(this.#parser.parseSetDownloadBehaviorParameters(command.params));
                 case 'browsingContext.activate':
@@ -5108,8 +5147,6 @@
                     return this.#cdpProcessor.resolveRealm(this.#parser.parseResolveRealmParams(command.params));
                 case 'goog:cdp.sendCommand':
                     return await this.#cdpProcessor.sendCommand(this.#parser.parseSendCommandParams(command.params));
-                case 'emulation.setClientHintsOverride':
-                    return await this.#emulationProcessor.setClientHintsOverride(this.#parser.parseSetClientHintsOverrideParams(command.params));
                 case 'emulation.setForcedColorsModeThemeOverride':
                     this.#parser.parseSetForcedColorsModeThemeOverrideParams(command.params);
                     throw new UnsupportedOperationException(`Method ${command.method} is not implemented.`);
@@ -5131,6 +5168,8 @@
                     return await this.#emulationProcessor.setTouchOverride(this.#parser.parseSetTouchOverrideParams(command.params));
                 case 'emulation.setUserAgentOverride':
                     return await this.#emulationProcessor.setUserAgentOverrideParams(this.#parser.parseSetUserAgentOverrideParams(command.params));
+                case 'userAgentClientHints.setClientHintsOverride':
+                    return await this.#emulationProcessor.setClientHintsOverride(this.#parser.parseSetClientHintsOverrideParams(command.params));
                 case 'input.performActions':
                     return await this.#inputProcessor.performActions(this.#parser.parsePerformActionsParams(command.params));
                 case 'input.releaseActions':
@@ -10245,6 +10284,7 @@
             await this.cdpClient.sendCommand('Emulation.setUserAgentOverride', {
                 userAgent: userAgent || (userAgentMetadata ? this.#defaultUserAgent : ''),
                 acceptLanguage: acceptLanguage ?? undefined,
+                platform: clientHints?.platform ?? undefined,
                 userAgentMetadata,
             });
         }
@@ -16030,22 +16070,27 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    z.lazy(() => Emulation$2.SetClientHintsOverrideCommandSchema);
-    var Emulation$2;
-    (function (Emulation) {
-        Emulation.SetClientHintsOverrideCommandSchema = z.lazy(() => z.object({
-            method: z.literal('emulation.setClientHintsOverride'),
+    z.lazy(() => UserAgentClientHints.SetClientHintsOverrideCommandSchema);
+    var UserAgentClientHints;
+    (function (UserAgentClientHints) {
+        UserAgentClientHints.SetClientHintsOverrideCommandSchema = z.lazy(() => z.object({
+            method: z.literal('userAgentClientHints.setClientHintsOverride'),
             params: z.object({
-                clientHints: z.union([Emulation.ClientHintsMetadataSchema, z.null()]),
+                clientHints: z.union([
+                    UserAgentClientHints.ClientHintsMetadataSchema,
+                    z.null(),
+                ]),
                 contexts: z.array(z.string()).min(1).optional(),
                 userContexts: z.array(z.string()).min(1).optional(),
             }),
         }));
-    })(Emulation$2 || (Emulation$2 = {}));
-    (function (Emulation) {
-        Emulation.ClientHintsMetadataSchema = z.lazy(() => z.object({
-            brands: z.array(Emulation.BrandVersionSchema).optional(),
-            fullVersionList: z.array(Emulation.BrandVersionSchema).optional(),
+    })(UserAgentClientHints || (UserAgentClientHints = {}));
+    (function (UserAgentClientHints) {
+        UserAgentClientHints.ClientHintsMetadataSchema = z.lazy(() => z.object({
+            brands: z.array(UserAgentClientHints.BrandVersionSchema).optional(),
+            fullVersionList: z
+                .array(UserAgentClientHints.BrandVersionSchema)
+                .optional(),
             platform: z.string().optional(),
             platformVersion: z.string().optional(),
             architecture: z.string().optional(),
@@ -16055,16 +16100,16 @@
             wow64: z.boolean().optional(),
             formFactors: z.array(z.string()).optional(),
         }));
-    })(Emulation$2 || (Emulation$2 = {}));
-    (function (Emulation) {
-        Emulation.BrandVersionSchema = z.lazy(() => z.object({
+    })(UserAgentClientHints || (UserAgentClientHints = {}));
+    (function (UserAgentClientHints) {
+        UserAgentClientHints.BrandVersionSchema = z.lazy(() => z.object({
             brand: z.string(),
             version: z.string(),
         }));
-    })(Emulation$2 || (Emulation$2 = {}));
-    (function (Emulation) {
-        Emulation.SetClientHintsOverrideResultSchema = z.lazy(() => z.object({}));
-    })(Emulation$2 || (Emulation$2 = {}));
+    })(UserAgentClientHints || (UserAgentClientHints = {}));
+    (function (UserAgentClientHints) {
+        UserAgentClientHints.SetClientHintsOverrideResultSchema = z.lazy(() => z.object({}));
+    })(UserAgentClientHints || (UserAgentClientHints = {}));
 
     /**
      * Copyright 2024 Google LLC.
@@ -19211,7 +19256,8 @@
         function parseSetClientHintsOverrideParams(params) {
             const SetClientHintsOverrideParametersSchema = objectType({
                 clientHints: unionType([
-                    Emulation$2.ClientHintsMetadataSchema,
+                    UserAgentClientHints
+                        .ClientHintsMetadataSchema,
                     nullType(),
                 ]),
                 contexts: arrayType(stringType()).min(1).optional(),
