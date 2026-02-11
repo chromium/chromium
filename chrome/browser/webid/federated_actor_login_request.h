@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/timer/timer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "url/origin.h"
@@ -19,7 +20,7 @@ enum class FederatedLoginResult;
 }  // namespace webid
 
 class WebContents;
-}
+}  // namespace content
 
 using OnFederatedResultReceivedCallback =
     base::RepeatingCallback<void(content::webid::FederatedLoginResult)>;
@@ -41,10 +42,7 @@ class FederatedActorLoginRequest
 
   const url::Origin& idp_origin() const { return idp_origin_; }
   const std::string& account_id() const { return account_id_; }
-  OnFederatedResultReceivedCallback on_federated_result_received_callback()
-      const {
-    return on_federated_result_received_callback_;
-  }
+  void OnFederatedResultReceived(content::webid::FederatedLoginResult result);
 
   // Sets the actor login request information. This is used to know whether a
   // current pending web identity request is an actor login request, which
@@ -59,9 +57,13 @@ class FederatedActorLoginRequest
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
  private:
+  void OnTimeout();
+
   url::Origin idp_origin_;
   std::string account_id_;
   OnFederatedResultReceivedCallback on_federated_result_received_callback_;
+  base::OneShotTimer timeout_timer_;
+  bool has_run_callback_ = false;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_ACTOR_LOGIN_REQUEST_H_

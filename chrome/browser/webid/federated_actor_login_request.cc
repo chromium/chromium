@@ -7,8 +7,13 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
+
+namespace {
+constexpr base::TimeDelta kRequestTimeout = base::Seconds(20);
+}  // namespace
 
 FederatedActorLoginRequest::FederatedActorLoginRequest(
     content::WebContents* web_contents,
@@ -18,9 +23,28 @@ FederatedActorLoginRequest::FederatedActorLoginRequest(
     : content::WebContentsUserData<FederatedActorLoginRequest>(*web_contents),
       idp_origin_(idp_origin),
       account_id_(account_id),
-      on_federated_result_received_callback_(callback) {}
+      on_federated_result_received_callback_(std::move(callback)) {
+  timeout_timer_.Start(FROM_HERE, kRequestTimeout,
+                       base::BindOnce(&FederatedActorLoginRequest::OnTimeout,
+                                      base::Unretained(this)));
+}
 
 FederatedActorLoginRequest::~FederatedActorLoginRequest() = default;
+
+void FederatedActorLoginRequest::OnFederatedResultReceived(
+    content::webid::FederatedLoginResult result) {
+  has_run_callback_ = true;
+  on_federated_result_received_callback_.Run(result);
+}
+
+void FederatedActorLoginRequest::OnTimeout() {
+  if (has_run_callback_) {
+    return;
+  }
+  on_federated_result_received_callback_.Run(
+      content::webid::FederatedLoginResult::kTimeout);
+  Unset(&GetWebContents());
+}
 
 // static
 void FederatedActorLoginRequest::Set(

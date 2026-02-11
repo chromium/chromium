@@ -197,7 +197,7 @@ TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickSucceeded) {
             // Manually trigger the federated login completion callback.
             auto* request = FederatedActorLoginRequest::Get(web_contents());
             ASSERT_TRUE(request);
-            request->on_federated_result_received_callback().Run(
+            request->OnFederatedResultReceived(
                 content::webid::FederatedLoginResult::kSuccess);
           }));
 

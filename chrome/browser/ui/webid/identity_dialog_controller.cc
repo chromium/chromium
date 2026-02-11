@@ -185,14 +185,14 @@ bool IdentityDialogController::ShowAccountsDialog(
         // explicitly requested an account to be automatically selected. This
         // could happen if the account was revoked between being shown to the
         // user and the actor login request being sent.
-        actor_login_request->on_federated_result_received_callback().Run(
+        actor_login_request->OnFederatedResultReceived(
             content::webid::FederatedLoginResult::kAccountIsSignUp);
         return false;
       }
     }
     // The selected account was not found in the list of accounts fetched from
     // the IdP.
-    actor_login_request->on_federated_result_received_callback().Run(
+    actor_login_request->OnFederatedResultReceived(
         content::webid::FederatedLoginResult::kAccountNotLoggedIn);
     return false;
   }
@@ -347,7 +347,7 @@ void IdentityDialogController::OnFlowCompleted(
   FederatedActorLoginRequest* actor_login_request =
       FederatedActorLoginRequest::Get(rp_web_contents_);
   if (actor_login_request) {
-    actor_login_request->on_federated_result_received_callback().Run(result);
+    actor_login_request->OnFederatedResultReceived(result);
   }
 }
 
@@ -439,7 +439,7 @@ content::WebContents* IdentityDialogController::ShowModalDialog(
   FederatedActorLoginRequest* actor_login_request =
       FederatedActorLoginRequest::Get(rp_web_contents_);
   if (actor_login_request) {
-    actor_login_request->on_federated_result_received_callback().Run(
+    actor_login_request->OnFederatedResultReceived(
         content::webid::FederatedLoginResult::kContinuation);
   }
   // Show the modal dialog even if FedCM UI is not being shown.
