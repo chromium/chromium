@@ -181,7 +181,8 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   // the backing that is going to be accessed if most recent pixels are in
   // a different backing.
   void NotifyBeginAccess(SharedImageBacking* backing,
-                         RepresentationAccessMode mode);
+                         RepresentationAccessMode mode,
+                         SharedImageAccessStream stream);
 
   // Called by wrapped representations during EndAccess(). This will update the
   // CompoundImageBacking's clear rect with the accessed backing's clear rect it

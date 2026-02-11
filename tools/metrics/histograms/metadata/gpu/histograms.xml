@@ -506,6 +506,73 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.CompoundImageBacking.ContentSync.DestBackingType"
+    enum="SharedImageBackingType" expires_after="2027-02-09">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the SharedImageBackingType to which data is copied during content
+    synchronization within CompoundImageBacking. This helps identify the
+    destination of data in copy operations.
+  </summary>
+</histogram>
+
+<histogram name="GPU.CompoundImageBacking.ContentSync.InitialSharedImageUsage"
+    units="SharedImageUsage" expires_after="2027-02-09">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the initial SharedImageUsage of the CompoundImageBacking when a
+    content synchronization (copy) occurs. This helps identify if specific
+    initial usage configurations are prone to excessive copying. Recorded as a
+    sparse histogram of the usage bitmask.
+  </summary>
+</histogram>
+
+<histogram name="GPU.CompoundImageBacking.ContentSync.Reason"
+    enum="ContentSyncReason" expires_after="2027-02-09">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the reason a content synchronization (copy) operation occurred
+    within CompoundImageBacking. This distinguishes between copies triggered by
+    stale data reads and those for synchronization before a write operation.
+  </summary>
+</histogram>
+
+<histogram name="GPU.CompoundImageBacking.ContentSync.SourceBackingType"
+    enum="SharedImageBackingType" expires_after="2027-02-09">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the SharedImageBackingType from which data is copied during content
+    synchronization within CompoundImageBacking. This helps identify the source
+    of data in copy operations.
+  </summary>
+</histogram>
+
+<histogram name="GPU.CompoundImageBacking.ContentSync.Success"
+    enum="BooleanSuccess" expires_after="2027-02-09">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Success rate of content synchronization (copy) operations within
+    CompoundImageBacking. This metric indicates whether data transfer between
+    different backing types completed without errors.
+  </summary>
+</histogram>
+
+<histogram name="GPU.CompoundImageBacking.ContentSync.TriggeringAccessStream"
+    enum="SharedImageAccessStream" expires_after="2027-02-09">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the SharedImageAccessStream that triggered a content synchronization
+    (copy) operation within CompoundImageBacking. This provides insight into
+    which access patterns necessitate data copies.
+  </summary>
+</histogram>
+
 <histogram name="GPU.CompoundImageBacking.DynamicAllocation.AccessStream"
     enum="SharedImageAccessStream" expires_after="2027-02-09">
   <owner>vikassoni@chromium.org</owner>

@@ -134,6 +134,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Partial success (resolution downgraded)"/>
 </enum>
 
+<!-- LINT.IfChange(ContentSyncReason) -->
+
+<enum name="ContentSyncReason">
+  <summary>
+    The reason for content synchronization (copy) in CompoundImageBacking.
+  </summary>
+  <int value="0" label="Read (Stale data)"/>
+  <int value="1" label="Write (Synchronization before write)"/>
+</enum>
+
+<!-- LINT.ThenChange(//gpu/command_buffer/service/shared_image/compound_image_backing.cc:ContentSyncReason) -->
+
 <enum name="ContextLostReason">
   <summary>The reason for losing a GPU context.</summary>
   <int value="0" label="CONTEXT_INIT_FAILED"/>
