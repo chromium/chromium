@@ -141,10 +141,13 @@ component("gamepad") {
     sources += [
       "game_controller_data_fetcher_mac.h",
       "game_controller_data_fetcher_mac.mm",
+      "game_controller_gamepad.h",
+      "game_controller_gamepad.mm",
       "gamepad_standard_mappings_mac.mm",
     ]
     frameworks = [
       "CoreFoundation.framework",
+      "CoreHaptics.framework",
       "Foundation.framework",
       "GameController.framework",
     ]
