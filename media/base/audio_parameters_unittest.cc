@@ -197,34 +197,6 @@ TEST(AudioParameters, Constructor_CopyChannelLayoutConfig) {
   EXPECT_TRUE(params2.IsValid());
 }
 
-TEST(AudioParameters, ShouldCheckDiscreteWithNoChannels) {
-  ASSERT_DEATH_IF_SUPPORTED(
-      {
-        ChannelLayoutConfig channel_layout_config(CHANNEL_LAYOUT_DISCRETE, 0);
-      },
-      "");
-}
-
-TEST(AudioParameters, ChannelLayoutConfig_Guess) {
-  ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Guess(2);
-  EXPECT_EQ(CHANNEL_LAYOUT_STEREO, channel_layout_config.channel_layout());
-  EXPECT_EQ(2, channel_layout_config.channels());
-}
-
-TEST(AudioParameters, ChannelLayoutConfig_GuessUnsupported) {
-  ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Guess(100);
-  EXPECT_EQ(CHANNEL_LAYOUT_UNSUPPORTED, channel_layout_config.channel_layout());
-  EXPECT_EQ(0, channel_layout_config.channels());
-}
-
-TEST(AudioParameters, ChannelLayoutConfig_GuessDiscrete) {
-  constexpr int kNumChannels = 12;
-  ChannelLayoutConfig channel_layout_config =
-      ChannelLayoutConfig::Guess(kNumChannels);
-  EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, channel_layout_config.channel_layout());
-  EXPECT_EQ(kNumChannels, channel_layout_config.channels());
-}
-
 TEST(AudioOutputBufferParametersHelperTest, LoadAndWriteGlitchInfo) {
   AudioOutputBufferParameters params = {};
   AudioOutputBufferParametersHelper helper;

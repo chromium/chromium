@@ -4,6 +4,7 @@
 
 #include "media/base/channel_layout.h"
 
+#include "media/base/limits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -54,4 +55,118 @@ TEST(ChannelLayoutTest, ChannelMaskToLayout_UnknownChannelsReturnDiscrete) {
                                 (1 << LFE) | (1 << SIDE_LEFT) |
                                 (1 << SIDE_RIGHT) | 1 << kUnknownSpeaker));
 }
+
+// Ensure the special case monst common constexpr value are valid
+TEST(ChannelLayoutTest, ChannelLayoutConfig_constexpr_constructors) {
+  constexpr ChannelLayoutConfig empty = ChannelLayoutConfig();
+  EXPECT_EQ(CHANNEL_LAYOUT_NONE, empty.channel_layout());
+  EXPECT_EQ(0, empty.channels());
+
+  constexpr ChannelLayoutConfig mono = ChannelLayoutConfig::Mono();
+  EXPECT_EQ(CHANNEL_LAYOUT_MONO, mono.channel_layout());
+  EXPECT_EQ(1, mono.channels());
+
+  constexpr ChannelLayoutConfig stereo = ChannelLayoutConfig::Stereo();
+  EXPECT_EQ(CHANNEL_LAYOUT_STEREO, stereo.channel_layout());
+  EXPECT_EQ(2, stereo.channels());
+}
+
+TEST(ChannelLayoutTest, ChannelLayoutConfig_Guess) {
+  EXPECT_EQ(CHANNEL_LAYOUT_UNSUPPORTED,
+            ChannelLayoutConfig::Guess(0).channel_layout());
+
+  EXPECT_EQ(ChannelLayoutConfig::Mono(), ChannelLayoutConfig::Guess(1));
+
+  EXPECT_EQ(ChannelLayoutConfig::Stereo(), ChannelLayoutConfig::Guess(2));
+
+  auto six_channels = ChannelLayoutConfig::Guess(6);
+  EXPECT_EQ(CHANNEL_LAYOUT_5_1, six_channels.channel_layout());
+  EXPECT_EQ(6, six_channels.channels());
+
+  constexpr int kLargeChannelCount = kMaxConcurrentChannels + 1;
+  auto large_layout = ChannelLayoutConfig::Guess(kLargeChannelCount);
+  EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, large_layout.channel_layout());
+  EXPECT_EQ(kLargeChannelCount, large_layout.channels());
+
+  auto max_layout = ChannelLayoutConfig::Guess(limits::kMaxChannels);
+  EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, max_layout.channel_layout());
+  EXPECT_EQ(limits::kMaxChannels, max_layout.channels());
+
+  constexpr int kHugeChannelCount = limits::kMaxChannels + 1;
+  auto huge_layout = ChannelLayoutConfig::Guess(kHugeChannelCount);
+  EXPECT_EQ(CHANNEL_LAYOUT_UNSUPPORTED, huge_layout.channel_layout());
+  EXPECT_EQ(0, huge_layout.channels());
+
+  auto invalid_layout = ChannelLayoutConfig::Guess(-1);
+  EXPECT_EQ(CHANNEL_LAYOUT_UNSUPPORTED, invalid_layout.channel_layout());
+  EXPECT_EQ(0, invalid_layout.channels());
+}
+
+TEST(ChannelLayoutTest, ChannelLayoutConfig_basic_constructor) {
+  EXPECT_EQ(ChannelLayoutConfig(), ChannelLayoutConfig(CHANNEL_LAYOUT_NONE, 0));
+
+  EXPECT_EQ(ChannelLayoutConfig::Mono(),
+            ChannelLayoutConfig(CHANNEL_LAYOUT_MONO, 1));
+
+  EXPECT_EQ(ChannelLayoutConfig::Stereo(),
+            ChannelLayoutConfig(CHANNEL_LAYOUT_STEREO, 2));
+
+  auto wide_layout = ChannelLayoutConfig(CHANNEL_LAYOUT_7_1_WIDE, 8);
+  EXPECT_EQ(CHANNEL_LAYOUT_7_1_WIDE, wide_layout.channel_layout());
+  EXPECT_EQ(8, wide_layout.channels());
+
+  auto discrete_one = ChannelLayoutConfig(CHANNEL_LAYOUT_DISCRETE, 1);
+  EXPECT_EQ(1, discrete_one.channels());
+
+  auto discrete_fifteen = ChannelLayoutConfig(CHANNEL_LAYOUT_DISCRETE, 15);
+  EXPECT_EQ(15, discrete_fifteen.channels());
+
+  auto discrete_max =
+      ChannelLayoutConfig(CHANNEL_LAYOUT_DISCRETE, limits::kMaxChannels);
+  EXPECT_EQ(limits::kMaxChannels, discrete_max.channels());
+
+  auto bitstream_layout = ChannelLayoutConfig(CHANNEL_LAYOUT_BITSTREAM, 0);
+  EXPECT_EQ(bitstream_layout.channel_layout(), CHANNEL_LAYOUT_BITSTREAM);
+  EXPECT_EQ(0, bitstream_layout.channels());
+}
+
+TEST(ChannelLayoutTest, ChannelLayoutConfig_FromLayout) {
+  EXPECT_EQ(ChannelLayoutConfig::Mono(),
+            ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_MONO>());
+
+  EXPECT_EQ(ChannelLayoutConfig::Stereo(),
+            ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_STEREO>());
+
+  auto quad_layout = ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_QUAD>();
+  EXPECT_EQ(CHANNEL_LAYOUT_QUAD, quad_layout.channel_layout());
+  EXPECT_EQ(4, quad_layout.channels());
+
+  auto none_layout = ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_NONE>();
+  EXPECT_EQ(ChannelLayoutConfig(), none_layout);
+
+  auto unsupported_layout =
+      ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_UNSUPPORTED>();
+  EXPECT_EQ(CHANNEL_LAYOUT_UNSUPPORTED, unsupported_layout.channel_layout());
+  EXPECT_EQ(0, unsupported_layout.channels());
+
+  auto bitstream_layout =
+      ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_BITSTREAM>();
+  EXPECT_EQ(CHANNEL_LAYOUT_BITSTREAM, bitstream_layout.channel_layout());
+  EXPECT_EQ(0, bitstream_layout.channels());
+}
+
+#if GTEST_HAS_DEATH_TEST
+
+TEST(ChannelLayoutTest, ChannelLayoutConfig_death_tests) {
+  EXPECT_DEATH(ChannelLayoutConfig(CHANNEL_LAYOUT_DISCRETE, 0), "");
+
+  EXPECT_DEATH(ChannelLayoutConfig(CHANNEL_LAYOUT_MONO, 2), "");
+
+  EXPECT_DEATH(ChannelLayoutConfig(CHANNEL_LAYOUT_STEREO, 1), "");
+
+  EXPECT_DEATH(ChannelLayoutConfig(CHANNEL_LAYOUT_BITSTREAM, 1), "");
+}
+
+#endif  // GTEST_HAS_DEATH_TEST
+
 }  // namespace media

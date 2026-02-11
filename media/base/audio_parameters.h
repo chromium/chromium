@@ -144,42 +144,6 @@ ComputeAudioOutputBufferSize(const AudioParameters& parameters);
 
 MEDIA_EXPORT uint32_t ComputeAudioOutputBufferSize(int channels, int frames);
 
-// Channel count and ChannelLayout pair, with helper methods to enforce safe
-// construction.
-class MEDIA_EXPORT ChannelLayoutConfig {
- public:
-  ChannelLayoutConfig(const ChannelLayoutConfig& other);
-  ChannelLayoutConfig& operator=(const ChannelLayoutConfig& other);
-  ChannelLayoutConfig();
-  ChannelLayoutConfig(ChannelLayout channel_layout, int channels);
-  ~ChannelLayoutConfig();
-
-  template <ChannelLayout layout>
-  static ChannelLayoutConfig FromLayout() {
-    return ChannelLayoutConfig(layout, ChannelLayoutToChannelCount(layout));
-  }
-
-  static ChannelLayoutConfig Mono();
-
-  static ChannelLayoutConfig Stereo();
-
-  static ChannelLayoutConfig Guess(int channels);
-
-  ChannelLayout channel_layout() const { return channel_layout_; }
-
-  int channels() const { return channels_; }
-
- private:
-  ChannelLayout channel_layout_;  // Order of surround sound channels.
-  int channels_;                  // Number of channels.
-};
-
-// For |CHANNEL_LAYOUT_DISCRETE|, we have to explicitly set the number of
-// channels, so we need to use the normal constructor.
-template <>
-ChannelLayoutConfig ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_DISCRETE>() =
-    delete;
-
 class MEDIA_EXPORT AudioParameters {
  public:
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
