@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
@@ -317,6 +318,9 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerPolicyController
   bool auto_screen_lock_enabled_ = false;
 
   bool should_do_nothing_when_idle_in_demo_mode_ = false;
+
+  base::ScopedObservation<PowerManagerClient, PowerManagerClient::Observer>
+      power_manager_client_observation_{this};
 };
 
 }  // namespace chromeos

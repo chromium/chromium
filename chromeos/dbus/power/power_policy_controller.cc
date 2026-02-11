@@ -681,12 +681,10 @@ void PowerPolicyController::SetEncryptionMigrationActive(bool active) {
 PowerPolicyController::PowerPolicyController(PowerManagerClient* client)
     : client_(client) {
   DCHECK(client_);
-  client_->AddObserver(this);
+  power_manager_client_observation_.Observe(client_);
 }
 
-PowerPolicyController::~PowerPolicyController() {
-  client_->RemoveObserver(this);
-}
+PowerPolicyController::~PowerPolicyController() = default;
 
 PowerPolicyController::WakeLock::WakeLock(Type type,
                                           WakeLockReason reason,

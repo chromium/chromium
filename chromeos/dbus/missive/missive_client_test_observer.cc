@@ -36,12 +36,11 @@ MissiveClientTestObserver::MissiveClientTestObserver(
   DCHECK(MissiveClient::Get());
   DCHECK(MissiveClient::Get()->GetTestInterface());
 
-  MissiveClient::Get()->GetTestInterface()->AddObserver(this);
+  missive_client_test_interface_observation_.Observe(
+      MissiveClient::Get()->GetTestInterface());
 }
 
-MissiveClientTestObserver::~MissiveClientTestObserver() {
-  MissiveClient::Get()->GetTestInterface()->RemoveObserver(this);
-}
+MissiveClientTestObserver::~MissiveClientTestObserver() = default;
 
 void MissiveClientTestObserver::OnRecordEnqueued(
     ::reporting::Priority priority,

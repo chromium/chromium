@@ -9,6 +9,7 @@
 #include <tuple>
 
 #include "base/functional/callback_forward.h"
+#include "base/scoped_observation.h"
 #include "base/test/test_future.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -68,6 +69,10 @@ class MissiveClientTestObserver
       enqueued_record_;
 
   RecordFilterCb record_filter_cb_;
+
+  base::ScopedObservation<MissiveClient::TestInterface,
+                          MissiveClient::TestInterface::Observer>
+      missive_client_test_interface_observation_{this};
 };
 
 }  // namespace chromeos

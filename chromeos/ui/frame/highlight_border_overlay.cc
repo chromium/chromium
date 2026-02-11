@@ -128,16 +128,13 @@ HighlightBorderOverlay::HighlightBorderOverlay(
   UpdateNinePatchLayer();
   UpdateLayerVisibilityAndBounds();
 
-  window_->AddObserver(this);
+  window_observer_.Observe(window_);
   auto* widget_layer = widget_->GetLayer();
   widget_layer->Add(&layer_);
   widget_layer->StackAtTop(&layer_);
 }
 
-HighlightBorderOverlay::~HighlightBorderOverlay() {
-  if (window_)
-    window_->RemoveObserver(this);
-}
+HighlightBorderOverlay::~HighlightBorderOverlay() = default;
 
 gfx::Size HighlightBorderOverlay::CalculateImageSourceSize() const {
   // Initialize the image source bounds with 1 dp of center patch size.
@@ -187,7 +184,7 @@ void HighlightBorderOverlay::OnWindowPropertyChanged(aura::Window* window,
 
 void HighlightBorderOverlay::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(window_, window);
-  window_->RemoveObserver(this);
+  window_observer_.Reset();
   window_ = nullptr;
 }
 

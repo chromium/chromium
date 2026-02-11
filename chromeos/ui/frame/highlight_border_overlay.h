@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ui/frame/highlight_border_overlay_delegate.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
@@ -76,6 +78,9 @@ class HighlightBorderOverlay : public aura::WindowObserver,
   std::unique_ptr<HighlightBorderOverlayDelegate> delegate_;
 
   display::ScopedDisplayObserver display_observer_{this};
+
+  base::ScopedObservation<aura::Window, aura::WindowObserver> window_observer_{
+      this};
 };
 
 #endif  // CHROMEOS_UI_FRAME_HIGHLIGHT_BORDER_OVERLAY_H_

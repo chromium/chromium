@@ -203,18 +203,13 @@ class FrameSizeButton::SnappingWindowObserver : public aura::WindowObserver {
  public:
   SnappingWindowObserver(aura::Window* window, FrameSizeButton* size_button)
       : window_(window), size_button_(size_button) {
-    window_->AddObserver(this);
+    window_observer_.Observe(window_);
   }
 
   SnappingWindowObserver(const SnappingWindowObserver&) = delete;
   SnappingWindowObserver& operator=(const SnappingWindowObserver&) = delete;
 
-  ~SnappingWindowObserver() override {
-    if (window_) {
-      window_->RemoveObserver(this);
-      window_ = nullptr;
-    }
-  }
+  ~SnappingWindowObserver() override = default;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
@@ -232,7 +227,7 @@ class FrameSizeButton::SnappingWindowObserver : public aura::WindowObserver {
 
   void OnWindowDestroying(aura::Window* window) override {
     DCHECK_EQ(window_, window);
-    window_->RemoveObserver(this);
+    window_observer_.Reset();
     window_ = nullptr;
     size_button_->CancelSnap();
   }
@@ -240,6 +235,8 @@ class FrameSizeButton::SnappingWindowObserver : public aura::WindowObserver {
  private:
   raw_ptr<aura::Window> window_;
   raw_ptr<FrameSizeButton> size_button_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver> window_observer_{
+      this};
 };
 
 FrameSizeButton::FrameSizeButton(PressedCallback callback,
