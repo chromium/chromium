@@ -343,7 +343,9 @@ crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLCopyImage
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas [ Skip ]
 
 # Currently has flaky test setup hangs on Mac.
-crbug.com/286989320 [ mac clang-coverage ] Pixel_MeetEffects* [ Skip ]
+crbug.com/286989320 [ mac clang-coverage no-asan ] Pixel_MeetEffects* [ Skip ]
+crbug.com/286989320 [ mac clang-coverage asan ] Pixel_MeetEffects* [ Skip ]
+crbug.com/286989320 [ mac no-clang-coverage asan ] Pixel_MeetEffects* [ Skip ]
 
 # Skip TreesInViz tests on Android webview.
 crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_CSS3DBlueBox_TreesInViz [ Skip ]
@@ -409,7 +411,7 @@ crbug.com/349132647 [ android android-sm-s911u1 android-chromium ] Pixel_WebGLCo
 # the initial heartbeat message to be delayed significantly. Additionally, these
 # are marked as failing until they are confirmed to be stable.
 crbug.com/286989320 [ linux ] Pixel_MeetEffects* [ Slow ]
-crbug.com/286989320 [ mac no-clang-coverage ] Pixel_MeetEffects* [ Failure Slow ]
+crbug.com/286989320 [ mac no-clang-coverage no-asan ] Pixel_MeetEffects* [ Slow ]
 crbug.com/286989320 [ win amd ] Pixel_MeetEffects* [ Slow ]
 crbug.com/286989320 [ win nvidia ] Pixel_MeetEffects* [ Slow ]
 crbug.com/286989320 [ win qualcomm ] Pixel_MeetEffects* [ Slow ]
