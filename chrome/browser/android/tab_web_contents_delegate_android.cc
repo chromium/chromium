@@ -126,11 +126,8 @@ JNI_TabWebContentsDelegateAndroidImpl_CreateJavaWindowFeatures(
 static ScopedJavaLocalRef<jobject>
 JNI_TabWebContentsDelegateAndroidImpl_CreateJavaPictureInPictureWindowOptions(
     JNIEnv* env,
+    const display::Display& display,
     const blink::mojom::PictureInPictureWindowOptions& options) {
-  const display::Screen* screen = display::Screen::Get();
-  const display::Display display =
-      screen->GetDisplayNearestWindow(gfx::NativeWindow());
-
   gfx::Rect bounds =
       PictureInPictureWindowManager::GetInstance()
           ->CalculateInitialPictureInPictureWindowBounds(options, display);
@@ -415,9 +412,13 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
 
     ScopedJavaLocalRef<jobject> jpicture_in_picture_options;
     if (new_contents->GetPictureInPictureOptions().has_value()) {
+      const display::Screen* screen = display::Screen::Get();
+      const display::Display display =
+          screen->GetDisplayNearestWindow(source->GetTopLevelNativeWindow());
+
       jpicture_in_picture_options =
           JNI_TabWebContentsDelegateAndroidImpl_CreateJavaPictureInPictureWindowOptions(
-              env, new_contents->GetPictureInPictureOptions().value());
+              env, display, new_contents->GetPictureInPictureOptions().value());
     }
 
     handled = Java_TabWebContentsDelegateAndroidImpl_addNewContents(
