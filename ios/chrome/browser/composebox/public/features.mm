@@ -50,6 +50,9 @@ BASE_FEATURE(kComposeboxAdditionalAdvancedTools,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool ShowComposeboxAdditionalAdvancedTools() {
+  if (!EnableComposeboxServerSideState()) {
+    return NO;
+  }
   return base::FeatureList::IsEnabled(kComposeboxAdditionalAdvancedTools);
 }
 

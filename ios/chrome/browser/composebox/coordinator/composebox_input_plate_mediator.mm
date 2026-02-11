@@ -513,6 +513,11 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (void)setModelOption:(ComposeboxModelOption)modelOption {
+  [self setModelOption:modelOption explicitUserAction:NO];
+}
+
+- (void)setModelOption:(ComposeboxModelOption)modelOption
+    explicitUserAction:(BOOL)explicitUserAction {
   using enum ComposeboxModelOption;
 
   if (_modelOption == modelOption) {
@@ -520,7 +525,10 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   _modelOption = modelOption;
-  [_consumer setModelOption:modelOption];
+
+  [self updateModel];
+
+  BOOL advancedModel = _modelOption == kAuto || _modelOption == kThinking;
   switch (modelOption) {
     case kNone:
       _inputStateModel->setActiveModel(
@@ -540,10 +548,12 @@ CreateInputDataFromAnnotatedPageContent(
     return;
   }
 
-  // TODO(crbug.com/477888273): Handle model incompatibility with composebox
-  // modes based on server-side logic.
-  if (_modeHolder.isRegularSearch) {
-    _modeHolder.mode = ComposeboxMode::kAIM;
+  // Only when the user explicitly picked the advanced model in regular mode
+  // do the switch to AIM.
+  if (explicitUserAction && advancedModel) {
+    if (_modeHolder.isRegularSearch) {
+      _modeHolder.mode = ComposeboxMode::kAIM;
+    }
   }
 }
 
@@ -595,11 +605,7 @@ CreateInputDataFromAnnotatedPageContent(
     [self reloadSuggestions];
   }
 
-  [self.consumer setAIModeEnabled:mode == ComposeboxMode::kAIM];
-  [self.consumer
-      setImageGenerationEnabled:mode == ComposeboxMode::kImageGeneration];
-  [self.consumer setCanvasEnabled:mode == ComposeboxMode::kCanvas];
-  [self.consumer setDeepSearchEnabled:mode == ComposeboxMode::kDeepSearch];
+  [self updateMode];
 
   switch (mode) {
     case ComposeboxMode::kRegularSearch:
@@ -617,20 +623,20 @@ CreateInputDataFromAnnotatedPageContent(
       _inputStateModel->setActiveTool(omnibox::TOOL_MODE_UNSPECIFIED);
       break;
     case ComposeboxMode::kImageGeneration:
-      if (![self isEligibleToCreateImages]) {
+      if (![self imageToolAllowed]) {
         _modeHolder.mode = ComposeboxMode::kRegularSearch;
       }
       [self cleanAttachmentsForImageGeneration];
       _inputStateModel->setActiveTool(omnibox::TOOL_MODE_IMAGE_GEN);
       break;
     case ComposeboxMode::kCanvas:
-      if (![self isEligibleToCanvas]) {
+      if (![self canvasToolAllowed]) {
         _modeHolder.mode = ComposeboxMode::kRegularSearch;
       }
       _inputStateModel->setActiveTool(omnibox::TOOL_MODE_CANVAS);
       break;
     case ComposeboxMode::kDeepSearch:
-      if (![self isEligibleToDeepSearch]) {
+      if (![self deepSearchToolAllowed]) {
         _modeHolder.mode = ComposeboxMode::kRegularSearch;
       }
       _inputStateModel->setActiveTool(omnibox::TOOL_MODE_DEEP_SEARCH);
@@ -1441,20 +1447,36 @@ CreateInputDataFromAnnotatedPageContent(
   return _aimEligibilityService->IsAimEligible();
 }
 
-// Checks if the user is eligible to create images, taking into account
-// experimental settings overrides.
-- (BOOL)isEligibleToCreateImages {
+// Checks if the user is allowed to create images, taking into account
+// eligibility and experimental settings overrides.
+- (BOOL)imageToolAllowed {
   if (experimental_flags::ShouldForceDisableComposeboxCreateImages()) {
     return NO;
   }
   if (!_aimEligibilityService) {
     return NO;
   }
-  return _aimEligibilityService->IsCreateImagesEligible();
+  BOOL generateImageAllowed =
+      [self toolAllowedInInputState:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN];
+  return generateImageAllowed &&
+         _aimEligibilityService->IsCreateImagesEligible();
 }
 
-// Whether the client is eligible to access canvas mode.
-- (BOOL)isEligibleToCanvas {
+// Whether upload is permitted when in image generation.
+- (BOOL)uploadAllowedInImageGeneration {
+  if (![self imageToolAllowed]) {
+    return NO;
+  }
+  if (EnableComposeboxServerSideState()) {
+    return [self
+        toolAllowedInInputState:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD];
+  }
+
+  return YES;
+}
+
+// Whether the client is allowed to access canvas mode.
+- (BOOL)canvasToolAllowed {
   if (!ShowComposeboxAdditionalAdvancedTools()) {
     return NO;
   }
@@ -1464,11 +1486,13 @@ CreateInputDataFromAnnotatedPageContent(
   if (!_aimEligibilityService) {
     return NO;
   }
-  return _aimEligibilityService->IsCanvasEligible();
+
+  return [self toolAllowedInInputState:omnibox::TOOL_MODE_CANVAS] &&
+         _aimEligibilityService->IsCanvasEligible();
 }
 
-// Whether the client is eligible to access deep search mode.
-- (BOOL)isEligibleToDeepSearch {
+// Whether the client is allowed to access deep search mode.
+- (BOOL)deepSearchToolAllowed {
   if (!ShowDeepSearchTool()) {
     return NO;
   }
@@ -1478,7 +1502,8 @@ CreateInputDataFromAnnotatedPageContent(
   if (!_aimEligibilityService) {
     return NO;
   }
-  return _aimEligibilityService->IsDeepSearchEligible();
+  return [self toolAllowedInInputState:omnibox::TOOL_MODE_DEEP_SEARCH] &&
+         _aimEligibilityService->IsDeepSearchEligible();
 }
 
 // Checks if the user is eligible to upload PDFs, taking into account
@@ -1493,28 +1518,85 @@ CreateInputDataFromAnnotatedPageContent(
   return _aimEligibilityService->IsPdfUploadEligible();
 }
 
-// Whether Canvas is in the list of allowed tools.
+// Whether Create Image is in the list of disabled tools.
 // If restricted, the tool will persist in the UI with a 'disabled' status,
 // pending a change in state.
-- (BOOL)imageToolAllowed {
-  BOOL allowedToGenerateImage =
-      [self allowedToUseMode:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN] &&
-      [self allowedToUseMode:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD];
+- (BOOL)imageToolDisabled {
+  BOOL generateImageDisabled =
+      [self toolDisabledInInputState:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN] ||
+      [self toolDisabledInInputState:omnibox::ToolMode::
+                                         TOOL_MODE_IMAGE_GEN_UPLOAD];
   BOOL hasTabOrFile = _items.hasTabOrFile;
-  return allowedToGenerateImage && !hasTabOrFile;
+  return generateImageDisabled || hasTabOrFile;
 }
 
-// Whether Canvas is in the list of allowed tools.
+// Whether Canvas is in the list of disabled tools.
 // If restricted, the tool will persist in the UI with a 'disabled' status,
 // pending a change in state.
-- (BOOL)canvasToolAllowed {
-  return [self allowedToUseMode:omnibox::ToolMode::TOOL_MODE_CANVAS];
+- (BOOL)canvasToolDisabled {
+  return [self toolDisabledInInputState:omnibox::ToolMode::TOOL_MODE_CANVAS];
 }
 
-- (BOOL)allowedToUseMode:(omnibox::ToolMode)toolMode {
+// Whether Deep Search is in the list of disabled tools.
+// If restricted, the tool will persist in the UI with a 'disabled' status,
+// pending a change in state.
+- (BOOL)deepSearchToolDisabled {
+  return
+      [self toolDisabledInInputState:omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH];
+}
+
+#pragma mark - InputState rules helpers
+
+// Whether the given mode is allowed in the input state.
+- (BOOL)toolAllowedInInputState:(omnibox::ToolMode)toolMode {
+  if (!EnableComposeboxServerSideState()) {
+    return YES;
+  }
   return std::find(_inputState.allowed_tools.begin(),
                    _inputState.allowed_tools.end(),
                    toolMode) != _inputState.allowed_tools.end();
+}
+
+// Whether the given mode is disabled in the input state.
+- (BOOL)toolDisabledInInputState:(omnibox::ToolMode)toolMode {
+  if (!EnableComposeboxServerSideState()) {
+    return NO;
+  }
+  return std::find(_inputState.disabled_tools.begin(),
+                   _inputState.disabled_tools.end(),
+                   toolMode) != _inputState.disabled_tools.end();
+}
+
+// Whether the given model mode is selectable.
+- (BOOL)canSelectToolBasedOnInputState:(omnibox::ToolMode)toolMode {
+  return [self toolAllowedInInputState:toolMode] &&
+         ![self toolDisabledInInputState:toolMode];
+}
+
+// Whether the given mode is allowed in the input state.
+- (BOOL)modelAllowedInInputState:(omnibox::ModelMode)modelMode {
+  if (!EnableComposeboxServerSideState()) {
+    return YES;
+  }
+  return std::find(_inputState.allowed_models.begin(),
+                   _inputState.allowed_models.end(),
+                   modelMode) != _inputState.allowed_models.end();
+}
+
+// Whether the given mode is disabled in the input state.
+- (BOOL)modelDisabledInInputState:(omnibox::ModelMode)modelMode {
+  if (!EnableComposeboxServerSideState()) {
+    return NO;
+  }
+  return std::find(_inputState.disabled_models.begin(),
+                   _inputState.disabled_models.end(),
+                   modelMode) != _inputState.disabled_models.end();
+}
+
+// Whether the given model mode is selectable.
+- (BOOL)canSelectModelBasedOnInputState:(omnibox::ModelMode)modelMode {
+  return [self modelAllowedInInputState:modelMode] &&
+         ![self modelDisabledInInputState:modelMode];
 }
 
 // The list of model options available based on the input model.
@@ -1534,6 +1616,25 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   return allowed;
+}
+
+// The list of model options disabled based on the input model.
+- (std::unordered_set<ComposeboxModelOption>)disabledModels {
+  std::unordered_set<ComposeboxModelOption> disabled = {
+      ComposeboxModelOption::kNone};
+  if (!ShowComposeboxAdditionalAdvancedTools()) {
+    return disabled;
+  }
+  for (auto modelType : _inputState.disabled_models) {
+    if (modelType == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO) {
+      disabled.insert(ComposeboxModelOption::kThinking);
+    } else if (modelType ==
+               omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE) {
+      disabled.insert(ComposeboxModelOption::kAuto);
+    }
+  }
+
+  return disabled;
 }
 
 - (BOOL)isDSEGoogle {
@@ -1640,13 +1741,20 @@ CreateInputDataFromAnnotatedPageContent(
 
 // Reacts to a change in the model choice.
 - (void)updateModelOnModeChange {
+  using enum ComposeboxModelOption;
   if (_modeHolder.isRegularSearch) {
-    [self setModelOption:ComposeboxModelOption::kNone];
+    [self setModelOption:kNone];
     return;
   }
 
-  if (_modelOption == ComposeboxModelOption::kNone) {
-    [self setModelOption:ComposeboxModelOption::kAuto];
+  if (_modelOption == kNone) {
+    auto allowedModels = [self allowedModels];
+    auto disabledModel = [self disabledModels];
+    BOOL autoAllowed = allowedModels.contains(kAuto);
+    BOOL autoDisabled = disabledModel.contains(kAuto);
+    if (autoAllowed && !autoDisabled) {
+      [self setModelOption:ComposeboxModelOption::kAuto];
+    }
     return;
   }
 }
@@ -1742,10 +1850,10 @@ CreateInputDataFromAnnotatedPageContent(
 /// Updates the consumer actions enabled/disable state.
 - (void)updateConsumerActionsState {
   BOOL canUploadFiles = [self isEligibleToUploadPdf];
-  BOOL canCreateImage = [self isEligibleToCreateImages];
+  BOOL canCreateImage = [self imageToolAllowed];
   BOOL canSearchWithAI = [self isEligibleToAIM];
-  BOOL canUseCanvas = [self isEligibleToCanvas];
-  BOOL canUseDeepSearch = [self isEligibleToDeepSearch];
+  BOOL canUseCanvas = [self canvasToolAllowed];
+  BOOL canUseDeepSearch = [self deepSearchToolAllowed];
 
   BOOL isImageCreationMode =
       _modeHolder.mode == ComposeboxMode::kImageGeneration;
@@ -1755,14 +1863,15 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL canAddMoreAttachments = [self canAddMoreAttachments];
 
   // Image generation action.
-  [self.consumer disableCreateImageActions:![self imageToolAllowed]];
+  [self.consumer disableCreateImageActions:[self imageToolDisabled]];
   [self.consumer hideCreateImageActions:!canCreateImage];
 
   // Canvas action.
-  [self.consumer disableCanvasActions:![self canvasToolAllowed]];
+  [self.consumer disableCanvasActions:[self canvasToolDisabled]];
   [self.consumer hideCanvasActions:!canUseCanvas];
 
   // Deep search action.
+  [self.consumer disableDeepSearchActions:[self deepSearchToolDisabled]];
   [self.consumer hideDeepSearchActions:!canUseDeepSearch];
 
   // Model picker.
@@ -1770,6 +1879,7 @@ CreateInputDataFromAnnotatedPageContent(
   // server-side logic.
   [self.consumer allowModelPicker:ShowComposeboxAdditionalAdvancedTools()];
   [self.consumer setAllowedModels:[self allowedModels]];
+  [self.consumer setDisabledModels:[self disabledModels]];
 
   // Add tabs action.
   [self.consumer
@@ -1783,12 +1893,17 @@ CreateInputDataFromAnnotatedPageContent(
       hideAttachFileActions:!canUploadFiles || !attachmentsAvailable];
 
   // Add pictures from user gallery action.
+  BOOL canAddImage =
+      isImageCreationMode
+          ? (attachmentsAvailable && [self uploadAllowedInImageGeneration])
+          : attachmentsAvailable;
+
   [self.consumer disableGalleryActions:!canAddMoreAttachments];
-  [self.consumer hideGalleryActions:!attachmentsAvailable];
+  [self.consumer hideGalleryActions:!canAddImage];
 
   // Add picture from camera action.
   [self.consumer disableCameraActions:!canAddMoreAttachments];
-  [self.consumer hideCameraActions:!attachmentsAvailable];
+  [self.consumer hideCameraActions:!canAddImage];
 
   // Set the number of attachments that can still be added.
   [self.consumer
@@ -1808,6 +1923,27 @@ CreateInputDataFromAnnotatedPageContent(
         recordAiModeActivationSource:AiModeActivationSource::kImplicit];
     _modeHolder.mode = ComposeboxMode::kAIM;
   }
+}
+
+// Updates the UI for the visible mode.
+- (void)updateMode {
+  auto mode = _modeHolder.mode;
+  [self.consumer setAIModeEnabled:mode == ComposeboxMode::kAIM];
+  [self.consumer
+      setImageGenerationEnabled:mode == ComposeboxMode::kImageGeneration];
+  [self.consumer setCanvasEnabled:mode == ComposeboxMode::kCanvas];
+  [self.consumer setDeepSearchEnabled:mode == ComposeboxMode::kDeepSearch];
+}
+
+// Updates the UI for the current model.
+- (void)updateModel {
+  // In regular
+  if (_modeHolder.isRegularSearch) {
+    [_consumer setModelOption:ComposeboxModelOption::kNone];
+    return;
+  }
+
+  [_consumer setModelOption:_modelOption];
 }
 
 /// Updates the consumer whether to show in compact mode.
@@ -1836,6 +1972,8 @@ CreateInputDataFromAnnotatedPageContent(
   [self updateButtonsVisibility];
   [self updateConsumerActionsState];
   [self updateCompactMode];
+  [self updateModel];
+  [self updateMode];
 
   _isUpdatingCompactMode = NO;
 }
@@ -1896,20 +2034,15 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)applyPreselection:
             (const contextual_search::InputState&)preselectionState
         forReferenceState:(const contextual_search::InputState&)referenceState {
-  bool allows_model = std::find(referenceState.allowed_models.begin(),
-                                referenceState.allowed_models.end(),
-                                preselectionState.active_model) !=
-                      referenceState.allowed_models.end();
-  if (allows_model) {
+  bool canSelectModel =
+      [self canSelectModelBasedOnInputState:preselectionState.active_model];
+  if (canSelectModel) {
     _inputStateModel->setActiveModel(preselectionState.active_model);
   }
 
-  bool allows_tool = std::find(referenceState.allowed_tools.begin(),
-                               referenceState.allowed_tools.end(),
-                               preselectionState.active_tool) !=
-                     referenceState.allowed_tools.end();
-
-  if (allows_tool) {
+  bool canSelectTool =
+      [self canSelectToolBasedOnInputState:preselectionState.active_tool];
+  if (canSelectTool) {
     _inputStateModel->setActiveTool(preselectionState.active_tool);
   }
 }
