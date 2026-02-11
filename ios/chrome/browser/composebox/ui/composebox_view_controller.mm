@@ -36,6 +36,10 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 const CGFloat kIncognitoVerticalPadding = 24.0f;
 /// The bottom margin between the composebox and the container.
 const CGFloat kBlurBottomMargin = 20.0f;
+/// Margin between the composebox and the container when reduced transparency is
+/// enabled.
+const CGFloat kReducedTransparencyInputPlateBottomMargin = 4.0f;
+
 /// The image for the close button.
 UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   NSArray<UIColor*>* palette = @[
@@ -155,6 +159,12 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 
     [self.view insertSubview:_incognitoView atIndex:0];
   }
+
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(setupConstraints)
+             name:UIAccessibilityReduceTransparencyStatusDidChangeNotification
+           object:nil];
 
   [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                      withAction:@selector(userInterfaceStyleChanged)];
@@ -355,7 +365,11 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                   aboveSubview:_omniboxPopupContainer];
       AddSameConstraintsToSidesWithInsets(
           _progressiveBlurEffect, _inputViewController.view, LayoutSides::kTop,
-          NSDirectionalEdgeInsetsMake(-kBlurBottomMargin, 0, 0, 0));
+          NSDirectionalEdgeInsetsMake(
+              UIAccessibilityIsReduceTransparencyEnabled()
+                  ? -kReducedTransparencyInputPlateBottomMargin
+                  : -kBlurBottomMargin,
+              0, 0, 0));
       AddSameConstraintsToSides(_progressiveBlurEffect, safeAreaGuide,
                                 LayoutSides::kLeading | LayoutSides::kTrailing);
 
@@ -398,7 +412,12 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
       AddSameConstraintsToSidesWithInsets(
           _progressiveBlurEffect, _inputViewController.view,
           LayoutSides::kBottom,
-          NSDirectionalEdgeInsetsMake(0, 0, -kBlurBottomMargin, 0));
+          NSDirectionalEdgeInsetsMake(
+              0, 0,
+              UIAccessibilityIsReduceTransparencyEnabled()
+                  ? -kReducedTransparencyInputPlateBottomMargin
+                  : -kBlurBottomMargin,
+              0));
       AddSameConstraintsToSides(
           _progressiveBlurEffect, safeAreaGuide,
           LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
@@ -449,7 +468,12 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
       AddSameConstraintsToSidesWithInsets(
           _progressiveBlurEffect, _inputViewController.view,
           LayoutSides::kBottom,
-          NSDirectionalEdgeInsetsMake(0, 0, -kBlurBottomMargin, 0));
+          NSDirectionalEdgeInsetsMake(
+              0, 0,
+              UIAccessibilityIsReduceTransparencyEnabled()
+                  ? -kReducedTransparencyInputPlateBottomMargin
+                  : -kBlurBottomMargin,
+              0));
       AddSameConstraintsToSides(
           _progressiveBlurEffect, safeAreaGuide,
           LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
@@ -495,8 +519,17 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 
 - (UIView*)fadeViewForPosition:(ComposeboxInputPlatePosition)positon {
   UIView* fadeView = [[UIView alloc] init];
+  fadeView.userInteractionEnabled = NO;
+  fadeView.translatesAutoresizingMaskIntoConstraints = NO;
   fadeView.backgroundColor = _theme.composeboxBackgroundColor;
 
+  _fadeGradient = nil;
+  // When reduced transparency is enabled, show a solid background color.
+  if (UIAccessibilityIsReduceTransparencyEnabled()) {
+    return fadeView;
+  }
+
+  // Otherwise add a gradient to the background color.
   CAGradientLayer* gradientLayer = [[CAGradientLayer alloc] init];
   gradientLayer.locations = @[ @(0.0), @(0.5), @(1.0) ];
   gradientLayer.colors = @[
@@ -519,9 +552,6 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   }
 
   fadeView.layer.mask = gradientLayer;
-  fadeView.userInteractionEnabled = NO;
-  fadeView.translatesAutoresizingMaskIntoConstraints = NO;
-
   _fadeGradient = gradientLayer;
   return fadeView;
 }
@@ -532,6 +562,14 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   containerView.translatesAutoresizingMaskIntoConstraints = NO;
   containerView.userInteractionEnabled = NO;
 
+  _blurEffectView = nil;
+  // When reduced transparency is enabled, container view will show a solid
+  // background color.
+  if (UIAccessibilityIsReduceTransparencyEnabled()) {
+    return containerView;
+  }
+
+  // Otherwise add a blur effect.
   UIBlurEffect* blurEffect =
       [UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular];
   UIVisualEffectView* blurEffectView =
