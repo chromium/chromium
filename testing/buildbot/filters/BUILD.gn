@@ -224,6 +224,7 @@ source_set("content_browsertests_filters") {
   data = [
     "//testing/buildbot/filters/accessibility-linux.content_browsertests.filter",
     "//testing/buildbot/filters/android.asan.content_browsertests.filter",
+    "//testing/buildbot/filters/android.bf_cache_content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_10.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_12.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_12l.content_browsertests.filter",

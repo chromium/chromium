@@ -80,6 +80,7 @@ try/android-16-x64-fyi-rel
 try/android-16-x64-rel
 try/android-arm-compile-dbg
 try/android-arm64-compile-dbg
+try/android-bfcache-rel
 try/android-canary-x64-fyi-rel
 try/android-clobber-rel
 try/android-desktop-15-x64-fyi-rel

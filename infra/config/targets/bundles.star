@@ -1050,7 +1050,7 @@ targets.bundle(
         "bf_cache_android_browsertests",
         "bfcache_generic_gtests",
         "webview_instrumentation_test_apk_bfcache_mutations",
-        "webview_cts_tests_bfcache_mutations",
+        "webview_64_cts_tests_bfcache_mutations",
     ],
     per_test_modifications = {
         "bf_cache_android_browsertests": targets.mixin(
@@ -1058,7 +1058,7 @@ targets.bundle(
                 shards = 2,
             ),
         ),
-        "webview_cts_tests_bfcache_mutations": targets.mixin(
+        "webview_64_cts_tests_bfcache_mutations": targets.mixin(
             args = [
                 "--store-tombstones",
             ],

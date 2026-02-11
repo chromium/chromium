@@ -110,7 +110,6 @@ try/android-12-x64-dbg
 try/android-12l-x64-dbg
 try/android-arm64-rel
 try/android-arm64-rel-compilator
-try/android-bfcache-rel
 try/android-binary-size
 try/android-clang-tidy-rel
 try/android-code-coverage

@@ -553,6 +553,7 @@ try_.builder(
 
 try_.builder(
     name = "android-bfcache-rel",
+    description_html = "Tests the back/forward-cache feature on chromium",
     mirrors = [
         "ci/android-bfcache-rel",
     ],
@@ -562,6 +563,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 

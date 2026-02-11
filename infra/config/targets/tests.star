@@ -3432,18 +3432,6 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "webview_cts_tests_bfcache_mutations",
-    mixins = [
-        "webview_cts_archive",
-    ],
-    args = [
-        "--use-apk-under-test-flags-file",
-        "--enable-features=WebViewBackForwardCache",
-    ],
-    binary = "webview_cts_tests",
-)
-
-targets.tests.gtest_test(
     name = "webview_cts_tests_no_field_trial",
     mixins = [
         "webview_cts_archive",
@@ -3466,6 +3454,18 @@ targets.tests.gtest_test(
     mixins = [
         "webview_cts_archive",
     ],
+)
+
+targets.tests.gtest_test(
+    name = "webview_64_cts_tests_bfcache_mutations",
+    mixins = [
+        "webview_cts_archive",
+    ],
+    args = [
+        "--use-apk-under-test-flags-file",
+        "--enable-features=WebViewBackForwardCache",
+    ],
+    binary = "webview_64_cts_tests",
 )
 
 targets.tests.gtest_test(
