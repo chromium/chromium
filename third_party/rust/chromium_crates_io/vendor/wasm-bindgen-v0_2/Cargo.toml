@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `wasm-bindgen-0.2.106` crate.
+# `wasm-bindgen-0.2.108` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "wasm-bindgen"
-version = "0.2.106"
+version = "0.2.108"
 
 [package.metadata.gnrt]
 is_placeholder = true
@@ -38,11 +38,11 @@ default_features = false
 version = "^1.12"
 default_features = false
 [dependencies.rustversion]
-version = "^1.0"
+version = "^1.0.6"
 default_features = false
 [dependencies.wasm-bindgen-macro]
-version = "=0.2.106"
+version = "=0.2.108"
 default_features = false
 [dependencies.wasm-bindgen-shared]
-version = "=0.2.106"
+version = "=0.2.108"
 default_features = false
