@@ -20,6 +20,7 @@
 #include "ui/base/themed_vector_icon.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -598,6 +599,56 @@ TEST_F(MenuItemViewPaintUnitTest, DontSchedulePaintFromOnPaint) {
   gfx::Canvas canvas(submenu_item->size(), 1.f, false /* opaque */);
   submenu_item->OnPaint(&canvas);
   EXPECT_FALSE(ViewTestApi(submenu_arrow_image_view).needs_paint());
+}
+
+TEST_F(MenuItemViewPaintUnitTest, SelectionIconColors) {
+  MenuItemView* item_with_default_color =
+      menu_item_view()->AppendMenuItem(1, u"item 1");
+  item_with_default_color->SetIcon(ui::ImageModel::FromVectorIcon(
+      views::kMenuCheckIcon, ui::kColorMenuIcon));
+
+  MenuItemView* item_with_colored_icon =
+      menu_item_view()->AppendMenuItem(2, u"item 2");
+  const SkColor custom_color2 = SK_ColorRED;
+  item_with_colored_icon->SetIcon(
+      ui::ImageModel::FromVectorIcon(views::kMenuCheckIcon, custom_color2));
+
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::mojom::MenuSourceType::kKeyboard);
+  const ui::ColorProvider* color_provider =
+      item_with_default_color->GetColorProvider();
+
+  // Standard icon should change color when selected
+  item_with_default_color->SetForcedVisualSelection(false);
+  ui::ColorVariant unselected_color1 = item_with_default_color->icon_view()
+                                           ->GetImageModel()
+                                           .GetVectorIcon()
+                                           .color();
+  EXPECT_EQ(color_provider->GetColor(ui::kColorMenuIcon),
+            unselected_color1.ResolveToSkColor(color_provider));
+
+  item_with_default_color->SetForcedVisualSelection(true);
+  ui::ColorVariant selected_color1 = item_with_default_color->icon_view()
+                                         ->GetImageModel()
+                                         .GetVectorIcon()
+                                         .color();
+  const SkColor expected_selection_color = color_utils::DeriveDefaultIconColor(
+      color_provider->GetColor(ui::kColorMenuItemForegroundSelected));
+  EXPECT_EQ(expected_selection_color,
+            selected_color1.ResolveToSkColor(color_provider));
+
+  // Custom physical color persists on selection.
+  item_with_colored_icon->SetForcedVisualSelection(false);
+  EXPECT_EQ(ui::ColorVariant(custom_color2), item_with_colored_icon->icon_view()
+                                                 ->GetImageModel()
+                                                 .GetVectorIcon()
+                                                 .color());
+  item_with_colored_icon->SetForcedVisualSelection(true);
+  EXPECT_EQ(ui::ColorVariant(custom_color2), item_with_colored_icon->icon_view()
+                                                 ->GetImageModel()
+                                                 .GetVectorIcon()
+                                                 .color());
 }
 
 // Tests to ensure that selection based state is not updated if a menu item or
