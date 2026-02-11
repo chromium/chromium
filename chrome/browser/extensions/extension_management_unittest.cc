@@ -1905,8 +1905,16 @@ TEST_F(ExtensionManagementDesktopAndroidTest, FeatureFlagOn) {
   // Use that profile to initialize an ExtensionManagement instance.
   ExtensionManagement management(profile.get());
 
-  // Extensions should be allowed because of the feature flag.
+  // Extensions should be allowed because this is a corp dogfood user and the
+  // feature flag is on.
   EXPECT_TRUE(management.ExtensionsEnabledForDesktopAndroid());
+
+  // Extensions should be allowed for non-corp managed profiles.
+  TestingProfile::Builder noncorp_builder;
+  noncorp_builder.SetProfileName("testuser@beyondcorp.org");
+  std::unique_ptr<TestingProfile> noncorp_profile = noncorp_builder.Build();
+  ExtensionManagement noncorp_management(noncorp_profile.get());
+  EXPECT_TRUE(noncorp_management.ExtensionsEnabledForDesktopAndroid());
 }
 
 // Tests that with kEnableExtensionsForCorpDesktopAndroid off, extensions are
@@ -1924,8 +1932,16 @@ TEST_F(ExtensionManagementDesktopAndroidTest, FeatureFlagOff) {
   // Use that profile to initialize an ExtensionManagement instance.
   ExtensionManagement management(profile.get());
 
-  // Extensions are blocked because this is a corp dogfood user.
+  // Extensions are blocked because this is a corp dogfood user and the feature
+  // flag is off.
   EXPECT_FALSE(management.ExtensionsEnabledForDesktopAndroid());
+
+    // Extensions should be allowed for non-corp managed profiles.
+  TestingProfile::Builder noncorp_builder;
+  noncorp_builder.SetProfileName("testuser@beyondcorp.org");
+  std::unique_ptr<TestingProfile> noncorp_profile = noncorp_builder.Build();
+  ExtensionManagement noncorp_management(noncorp_profile.get());
+  EXPECT_TRUE(noncorp_management.ExtensionsEnabledForDesktopAndroid());
 }
 
 #endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)

@@ -179,19 +179,13 @@ ManagedInstallationMode ExtensionManagement::GetInstallationMode(
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 bool ExtensionManagement::ExtensionsEnabledForDesktopAndroid() const {
-  // If Finch has enabled extensions for corp, allow them.
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kEnableExtensionsForCorpDesktopAndroid)) {
-    return true;
-  }
-  // Disable extensions only for specific domains.
-  // This check keeps many tests from failing.
   std::string user_name = profile_->GetProfileUserName();
   // Crude check to avoid passing invalid strings to `ExtractDomainName`.
   if (user_name.contains("@")) {
     std::string domain = gaia::ExtractDomainName(user_name);
     if (domain == "google.com" || domain == "managedchrome.com") {
-      return false;
+      return base::FeatureList::IsEnabled(
+              extensions_features::kEnableExtensionsForCorpDesktopAndroid);
     }
   }
   return true;
