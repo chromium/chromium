@@ -52,13 +52,13 @@ class TabModel final : public TabInterface,
   void OnRemovedFromModel();
 
   TabStripModel* owning_model() const { return owning_model_; }
-  tabs::TabInterface* opener() const { return opener_; }
+  tabs::TabInterface* opener() const;
   bool reset_opener_on_active_tab_change() const {
     return reset_opener_on_active_tab_change_;
   }
   std::optional<tab_groups::TabGroupId> group() const { return group_; }
 
-  void set_opener(tabs::TabInterface* opener) { opener_ = opener; }
+  void set_opener(tabs::TabInterface* opener);
   void set_reset_opener_on_active_tab_change(
       bool reset_opener_on_active_tab_change) {
     reset_opener_on_active_tab_change_ = reset_opener_on_active_tab_change;
@@ -231,7 +231,7 @@ class TabModel final : public TabInterface,
   raw_ptr<TabStripModel> owning_model_ = nullptr;
   raw_ptr<TabStripModel> soon_to_be_owning_model_ = nullptr;
   bool will_be_detaching_ = false;
-  raw_ptr<tabs::TabInterface> opener_ = nullptr;
+  tabs::TabHandle opener_handle_;
   bool reset_opener_on_active_tab_change_ = false;
   bool pinned_ = false;
   bool blocked_ = false;

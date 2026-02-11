@@ -187,8 +187,8 @@ bool SetOpenerOfTab(content::WebContents& tab,
       tab_browser->GetBrowserForMigrationOnly()->tab_strip_model();
   int tab_index = tab_strip->GetIndexOfWebContents(&tab);
   CHECK_NE(TabStripModel::kNoTab, tab_index);
-  CHECK_NE(TabStripModel::kNoTab, tab_strip->GetIndexOfWebContents(&opener));
-  tab_strip->SetOpenerOfWebContentsAt(tab_index, &opener);
+  tab_strip->SetOpenerOfTabAt(tab_index,
+                              ::tabs::TabInterface::GetFromContents(&opener));
 #endif
 
   return true;

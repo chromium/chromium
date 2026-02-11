@@ -102,7 +102,7 @@ void TabModel::OnRemovedFromModel() {
   will_be_detaching_ = false;
 
   // Opener stuff doesn't make sense to transfer between browsers.
-  opener_ = nullptr;
+  opener_handle_ = tabs::TabHandle::Null();
   reset_opener_on_active_tab_change_ = false;
 
   // Blocked state is preserved, at
@@ -113,6 +113,14 @@ void TabModel::OnRemovedFromModel() {
 
   // Remove visibility observers.
   WebContentsObserver::Observe(nullptr);
+}
+
+tabs::TabInterface* TabModel::opener() const {
+  return opener_handle_.Get();
+}
+
+void TabModel::set_opener(tabs::TabInterface* opener) {
+  opener_handle_ = opener ? opener->GetHandle() : tabs::TabHandle::Null();
 }
 
 TabCollection* TabModel::GetParentCollection(

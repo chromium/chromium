@@ -63,13 +63,13 @@ class SplitTabData;
 class SplitTabVisualData;
 enum class SplitTabLayout;
 enum class SplitTabCreatedSource;
-}
+}  // namespace split_tabs
 
 namespace tabs {
 class SplitTabCollection;
 class TabStripCollection;
 class TabGroupTabCollection;
-}
+}  // namespace tabs
 
 namespace tabs_api {
 class TabStripModelAdapterImpl;
@@ -467,10 +467,9 @@ class TabStripModel {
   // there is no opener on record.
   tabs::TabInterface* GetOpenerOfTabAt(const int index) const;
 
-  // Changes the |opener| of the WebContents at |index|.
-  // Note: |opener| must be in this tab strip. Also a tab must not be its own
-  // opener.
-  void SetOpenerOfWebContentsAt(int index, content::WebContents* opener);
+  // Changes the |opener| of the tab at |index|.
+  // Note: A tab must not be its own opener.
+  void SetOpenerOfTabAt(int index, tabs::TabInterface* opener);
 
   // Returns the index of the last WebContents in the model opened by the
   // specified opener, starting at |start_index|.

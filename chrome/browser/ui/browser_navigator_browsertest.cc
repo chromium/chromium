@@ -774,6 +774,52 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewWindow) {
       params.browser->GetBrowserForMigrationOnly()->tab_strip_model()->count());
 }
 
+// This test verifies that navigating with WindowOpenDisposition = NEW_WINDOW
+// preserves the opener when `source_contents` is provided.
+IN_PROC_BROWSER_TEST_F(
+    BrowserNavigatorTest,
+    Disposition_NewWindow_OpenerPreserved_ViaSourceContents) {
+  NavigateParams params(MakeNavigateParams());
+  params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  params.source_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  Navigate(&params);
+
+  // Navigate() should have opened a new toplevel window.
+  EXPECT_NE(browser(), params.browser);
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+
+  // Verify the opener is set on the new tab.
+  TabStripModel* new_tab_strip =
+      params.browser->GetBrowserForMigrationOnly()->tab_strip_model();
+  EXPECT_EQ(1, new_tab_strip->count());
+  EXPECT_EQ(browser()->tab_strip_model()->GetTabAtIndex(0),
+            new_tab_strip->GetOpenerOfTabAt(0));
+}
+
+// This test verifies that navigating with WindowOpenDisposition = NEW_WINDOW
+// preserves the opener when `opener` (RenderFrameHost) is provided.
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
+                       Disposition_NewWindow_OpenerPreserved_ViaOpener) {
+  NavigateParams params(MakeNavigateParams());
+  params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  params.opener = browser()
+                      ->tab_strip_model()
+                      ->GetActiveWebContents()
+                      ->GetPrimaryMainFrame();
+  Navigate(&params);
+
+  // Navigate() should have opened a new toplevel window.
+  EXPECT_NE(browser(), params.browser);
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+
+  // Verify the opener is set on the new tab.
+  TabStripModel* new_tab_strip =
+      params.browser->GetBrowserForMigrationOnly()->tab_strip_model();
+  EXPECT_EQ(1, new_tab_strip->count());
+  EXPECT_EQ(browser()->tab_strip_model()->GetTabAtIndex(0),
+            new_tab_strip->GetOpenerOfTabAt(0));
+}
+
 // This test verifies that a source tab to the left of the target tab can
 // be switched away from and closed. It verifies that if we close the
 // earlier tab, that we don't use a stale index, and select the wrong tab.

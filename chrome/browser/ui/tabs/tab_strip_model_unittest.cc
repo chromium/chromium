@@ -846,16 +846,16 @@ TEST_P(TabStripModelTest, TestTabHandlesAcrossModels) {
   const tabs::TabHandle handle = tabstrip()->GetTabAtIndex(0)->GetHandle();
   content::WebContents* raw_contents = handle.Get()->GetContents();
   tabstrip()->AppendWebContents(CreateWebContentsWithID(2), true);
-  content::WebContents* const opener = tabstrip()->GetWebContentsAt(1);
+  tabs::TabInterface* const opener = tabstrip()->GetTabAtIndex(1);
 
   ASSERT_EQ(0, tabstrip()->GetIndexOfTab(handle.Get()));
   ASSERT_EQ(handle, tabstrip()->GetTabAtIndex(0)->GetHandle());
   ASSERT_EQ(tabstrip(),
             handle.Get()->GetBrowserWindowInterface()->GetTabStripModel());
 
-  tabstrip()->SetOpenerOfWebContentsAt(0, opener);
+  tabstrip()->SetOpenerOfTabAt(0, opener);
   ASSERT_NE(nullptr, tabstrip()->GetOpenerOfTabAt(0));
-  ASSERT_EQ(opener, tabstrip()->GetOpenerOfTabAt(0)->GetContents());
+  ASSERT_EQ(opener, tabstrip()->GetOpenerOfTabAt(0));
   tabstrip()->SetTabPinned(0, true);
   ASSERT_EQ(true, handle.Get()->IsPinned());
   tabstrip()->SetTabBlocked(0, true);
@@ -1066,7 +1066,7 @@ TEST_P(TabStripModelTest, TestDetachGroupNewSelection) {
   // Test the first preference is a tab the group opened.
   tabstrip()->ActivateTabAt(2);
   tabstrip()->ForgetAllOpeners();
-  tabstrip()->SetOpenerOfWebContentsAt(0, tabstrip()->GetWebContentsAt(1));
+  tabstrip()->SetOpenerOfTabAt(0, tabstrip()->GetTabAtIndex(1));
   std::unique_ptr<DetachedTabCollection> detached_group =
       tabstrip()->DetachTabGroupForInsertion(group_id);
 
@@ -1075,7 +1075,7 @@ TEST_P(TabStripModelTest, TestDetachGroupNewSelection) {
   tabstrip()->InsertDetachedTabGroupAt(std::move(detached_group), 1);
   tabstrip()->ActivateTabAt(1);
   tabstrip()->ForgetAllOpeners();
-  tabstrip()->SetOpenerOfWebContentsAt(4, tabstrip()->GetWebContentsAt(1));
+  tabstrip()->SetOpenerOfTabAt(4, tabstrip()->GetTabAtIndex(1));
   detached_group = tabstrip()->DetachTabGroupForInsertion(group_id);
 
   EXPECT_EQ(tabstrip()->active_index(), 2);
@@ -1084,9 +1084,9 @@ TEST_P(TabStripModelTest, TestDetachGroupNewSelection) {
   tabstrip()->InsertDetachedTabGroupAt(std::move(detached_group), 1);
   tabstrip()->ActivateTabAt(1);
   tabstrip()->ForgetAllOpeners();
-  tabstrip()->SetOpenerOfWebContentsAt(2, tabstrip()->GetWebContentsAt(3));
-  tabstrip()->SetOpenerOfWebContentsAt(1, tabstrip()->GetWebContentsAt(4));
-  tabstrip()->SetOpenerOfWebContentsAt(0, tabstrip()->GetWebContentsAt(4));
+  tabstrip()->SetOpenerOfTabAt(2, tabstrip()->GetTabAtIndex(3));
+  tabstrip()->SetOpenerOfTabAt(1, tabstrip()->GetTabAtIndex(4));
+  tabstrip()->SetOpenerOfTabAt(0, tabstrip()->GetTabAtIndex(4));
 
   detached_group = tabstrip()->DetachTabGroupForInsertion(group_id);
   EXPECT_EQ(tabstrip()->active_index(), 0);
@@ -1095,7 +1095,7 @@ TEST_P(TabStripModelTest, TestDetachGroupNewSelection) {
   tabstrip()->InsertDetachedTabGroupAt(std::move(detached_group), 1);
   tabstrip()->ActivateTabAt(1);
   tabstrip()->ForgetAllOpeners();
-  tabstrip()->SetOpenerOfWebContentsAt(2, tabstrip()->GetWebContentsAt(3));
+  tabstrip()->SetOpenerOfTabAt(2, tabstrip()->GetTabAtIndex(3));
 
   detached_group = tabstrip()->DetachTabGroupForInsertion(group_id);
   EXPECT_EQ(tabstrip()->active_index(), 1);
@@ -1253,7 +1253,8 @@ TEST_P(TabStripModelTest, TestBasicOpenerAPI) {
 
   // Specify the last tab as the opener of the others.
   for (int i = 0; i < tabstrip()->count() - 1; ++i) {
-    tabstrip()->SetOpenerOfWebContentsAt(i, raw_contents5);
+    tabstrip()->SetOpenerOfTabAt(
+        i, tabs::TabInterface::GetFromContents(raw_contents5));
   }
 
   for (int i = 0; i < tabstrip()->count() - 1; ++i) {
@@ -5849,14 +5850,15 @@ TEST_P(TabStripModelTest, MoveWebContentsAtCorrectlySendsGroupClearedEvent) {
 TEST_P(TabStripModelTest, DanglingOpener) {
   PrepareTabs(tabstrip(), 2);
 
-  WebContents* contents_1 = tabstrip()->GetWebContentsAt(0);
-  WebContents* contents_2 = tabstrip()->GetWebContentsAt(1);
-  ASSERT_TRUE(contents_1);
-  ASSERT_TRUE(contents_2);
+  tabs::TabInterface* tab_1 = tabstrip()->GetTabAtIndex(0);
+  tabs::TabInterface* tab_2 = tabstrip()->GetTabAtIndex(1);
+  WebContents* contents_2 = tab_2->GetContents();
+  ASSERT_TRUE(tab_1);
+  ASSERT_TRUE(tab_2);
 
   // Set the openers for the two tabs to each other.
-  tabstrip()->SetOpenerOfWebContentsAt(0, contents_2);
-  tabstrip()->SetOpenerOfWebContentsAt(1, contents_1);
+  tabstrip()->SetOpenerOfTabAt(0, tab_2);
+  tabstrip()->SetOpenerOfTabAt(1, tab_1);
   EXPECT_EQ("0 1", GetTabStripStateString(tabstrip()));
 
   // Move the first tab to the end of the tab tabstrip()->
@@ -6263,7 +6265,7 @@ TEST_P(TabStripModelTest, AppendTab) {
   ASSERT_EQ(4, tabstrip()->count());
 
   // Force the opener of tab in index 1 to be tab at index 0.
-  tabstrip()->SetOpenerOfWebContentsAt(1, tabstrip()->GetWebContentsAt(0));
+  tabstrip()->SetOpenerOfTabAt(1, tabstrip()->GetTabAtIndex(0));
   ASSERT_EQ(tabstrip()->GetTabAtIndex(0), tabstrip()->GetOpenerOfTabAt(1));
 
   // Detach 2 tabs for the test, one for each option.
