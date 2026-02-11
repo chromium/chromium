@@ -82,9 +82,9 @@ suite('DiscoverSkillsPage', function() {
   test('DiscoverSkillsPageIsBlankWhenMapIsEmpty', async function() {
     await setFirstPartySkills({});
 
-    // Discover skills title should still be there.
+    // Discover skills title should not show without pertinent skills.
     const titles = page.shadowRoot.querySelectorAll('.page-title');
-    assertEquals(1, titles.length);
+    assertEquals(0, titles.length);
     const chips = page.shadowRoot.querySelectorAll('cr-chip');
     assertEquals(0, chips.length);
     const cards = page.shadowRoot.querySelectorAll('li');
@@ -201,5 +201,36 @@ suite('DiscoverSkillsPage', function() {
 
     const toast = page.shadowRoot.querySelector('#invalidSkillToast');
     assertTrue((toast as CrToastElement).open, 'Toast should be visible');
+  });
+
+  test('SkillsFilteredBySearchTerm', async function() {
+    await setFirstPartySkills({
+      'Produce': [
+        {id: '1', name: 'Apple', prompt: 'A tasty fruit'},
+        {id: '2', name: 'Banana', prompt: 'Yellow fruit'},
+        {id: '3', name: 'Carrot', prompt: 'Orange vegetable'},
+      ],
+    });
+    let cards = page.shadowRoot.querySelectorAll('skill-card');
+    assertEquals(3, cards.length);
+
+    // Search apple
+    page.onSearchChanged('Apple');
+    await microtasksFinished();
+    cards = page.shadowRoot.querySelectorAll('skill-card');
+    assertEquals(1, cards.length);
+    assertTrue(cards[0]!.$.name.textContent.includes('Apple'));
+
+    // Search fruit
+    page.onSearchChanged('fruit');
+    await microtasksFinished();
+    cards = page.shadowRoot.querySelectorAll('skill-card');
+    assertEquals(2, cards.length);
+
+    // Clear search
+    page.onSearchChanged('');
+    await microtasksFinished();
+    cards = page.shadowRoot.querySelectorAll('skill-card');
+    assertEquals(3, cards.length);
   });
 });
