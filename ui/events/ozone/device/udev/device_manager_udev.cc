@@ -127,31 +127,29 @@ void DeviceManagerUdev::OnFileCanWriteWithoutBlocking(int fd) {
 std::unique_ptr<DeviceEvent> DeviceManagerUdev::ProcessMessage(
     udev_device* device) {
   const char* path_cstr = device::udev_device_get_devnode(device);
-  const char* subsystem =
-      device::udev_device_get_property_value(device, "SUBSYSTEM");
-  if (!path_cstr || !subsystem) {
+  std::string subsystem =
+      device::UdevDeviceGetPropertyValue(device, "SUBSYSTEM");
+  if (!path_cstr || subsystem.empty()) {
     return nullptr;
   }
 
   std::string_view path(path_cstr);
   DeviceEvent::DeviceType device_type;
-  if (!UNSAFE_TODO(strcmp(subsystem, "input")) &&
-      path.starts_with("/dev/input/event")) {
+  if (subsystem == "input" && path.starts_with("/dev/input/event")) {
     device_type = DeviceEvent::INPUT;
-  } else if (!UNSAFE_TODO(strcmp(subsystem, "drm")) &&
-             path.starts_with("/dev/dri/card")) {
+  } else if (subsystem == "drm" && path.starts_with("/dev/dri/card")) {
     device_type = DeviceEvent::DISPLAY;
   } else {
     return nullptr;
   }
 
-  const char* action = device::udev_device_get_action(device);
+  std::string action = device::UdevDeviceGetAction(device);
   DeviceEvent::ActionType action_type;
-  if (!action || !UNSAFE_TODO(strcmp(action, "add"))) {
+  if (action.empty() || action == "add") {
     action_type = DeviceEvent::ADD;
-  } else if (!UNSAFE_TODO(strcmp(action, "remove"))) {
+  } else if (action == "remove") {
     action_type = DeviceEvent::REMOVE;
-  } else if (!UNSAFE_TODO(strcmp(action, "change"))) {
+  } else if (action == "change") {
     action_type = DeviceEvent::CHANGE;
   } else {
     return nullptr;

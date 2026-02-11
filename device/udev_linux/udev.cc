@@ -165,6 +165,10 @@ std::string UdevDeviceGetSysattrValue(udev_device* udev_device,
   return StringOrEmptyIfNull(udev_device_get_sysattr_value(udev_device, key));
 }
 
+std::string UdevDeviceGetAction(udev_device* udev_device) {
+  return StringOrEmptyIfNull(udev_device_get_action(udev_device));
+}
+
 std::string UdevDeviceRecursiveGetSysattrValue(udev_device* udev_device,
                                                const char* key) {
   while (udev_device) {

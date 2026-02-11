@@ -112,6 +112,11 @@ COMPONENT_EXPORT(DEVICE_UDEV_LINUX)
 std::string UdevDeviceGetSysattrValue(udev_device* udev_device,
                                       const char* key);
 
+// Calls udev_device_get_action() and replaces missing values with the empty
+// string.
+COMPONENT_EXPORT(DEVICE_UDEV_LINUX)
+std::string UdevDeviceGetAction(udev_device* udev_device);
+
 // Walks up the chain of parent devices calling udev_device_get_sysattr_value()
 // until a value is found. If no value is found, an empty string is returned.
 COMPONENT_EXPORT(DEVICE_UDEV_LINUX)
