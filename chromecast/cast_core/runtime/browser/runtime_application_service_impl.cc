@@ -24,6 +24,7 @@
 #include "components/cast_receiver/browser/public/runtime_application.h"
 
 namespace chromecast {
+
 namespace {
 
 class CastContentWindowControls : public cast_receiver::ContentWindowControls,
@@ -181,40 +182,46 @@ void RuntimeApplicationServiceImpl::Load(
 
   // Start the gRPC server.
   grpc_server_.emplace();
-  grpc_server_->SetHandler<
+  grpc_server_->SetThreadSafeHandler<
       cast::v2::RuntimeApplicationServiceHandler::SetUrlRewriteRules>(
       base::BindPostTask(
           task_runner_,
           base::BindRepeating(
               &RuntimeApplicationServiceImpl::HandleSetUrlRewriteRules,
               weak_factory_.GetWeakPtr())));
-  grpc_server_
-      ->SetHandler<cast::v2::RuntimeApplicationServiceHandler::SetMediaState>(
-          base::BindPostTask(
-              task_runner_,
-              base::BindRepeating(
-                  &RuntimeApplicationServiceImpl::HandleSetMediaState,
-                  weak_factory_.GetWeakPtr())));
-  grpc_server_
-      ->SetHandler<cast::v2::RuntimeApplicationServiceHandler::SetVisibility>(
-          base::BindPostTask(
-              task_runner_,
-              base::BindRepeating(
-                  &RuntimeApplicationServiceImpl::HandleSetVisibility,
-                  weak_factory_.GetWeakPtr())));
-  grpc_server_
-      ->SetHandler<cast::v2::RuntimeApplicationServiceHandler::SetTouchInput>(
-          base::BindPostTask(
-              task_runner_,
-              base::BindRepeating(
-                  &RuntimeApplicationServiceImpl::HandleSetTouchInput,
-                  weak_factory_.GetWeakPtr())));
-  grpc_server_->SetHandler<
-      cast::v2::RuntimeMessagePortApplicationServiceHandler::PostMessage>(
+  grpc_server_->SetThreadSafeHandler<
+      cast::v2::RuntimeApplicationServiceHandler::SetMediaState>(
       base::BindPostTask(
-          task_runner_,
-          base::BindRepeating(&RuntimeApplicationServiceImpl::HandlePostMessage,
-                              weak_factory_.GetWeakPtr())));
+          task_runner_, base::BindRepeating(
+                            &RuntimeApplicationServiceImpl::HandleSetMediaState,
+                            weak_factory_.GetWeakPtr())));
+  grpc_server_->SetThreadSafeHandler<
+      cast::v2::RuntimeApplicationServiceHandler::SetVisibility>(
+      base::BindPostTask(
+          task_runner_, base::BindRepeating(
+                            &RuntimeApplicationServiceImpl::HandleSetVisibility,
+                            weak_factory_.GetWeakPtr())));
+  grpc_server_->SetThreadSafeHandler<
+      cast::v2::RuntimeApplicationServiceHandler::SetTouchInput>(
+      base::BindPostTask(
+          task_runner_, base::BindRepeating(
+                            &RuntimeApplicationServiceImpl::HandleSetTouchInput,
+                            weak_factory_.GetWeakPtr())));
+  grpc_server_->SetThreadSafeHandler<
+      cast::v2::RuntimeMessagePortApplicationServiceHandler::PostMessage>(
+      base::BindRepeating(
+          [](base::WeakPtr<RuntimeApplicationServiceImpl> self,
+             scoped_refptr<base::SequencedTaskRunner> task_runner,
+             cast::web::Message request,
+             scoped_refptr<cast::utils::ThreadSafeReactorHandle<
+                 PostMessageReactor>> reactor) {
+            // Post the actual handling to the main thread.
+            task_runner->PostTask(
+                FROM_HERE,
+                base::BindOnce(&RuntimeApplicationServiceImpl::OnPostMessageRpc,
+                               self, std::move(request), reactor));
+          },
+          weak_factory_.GetWeakPtr(), task_runner_));
 
   auto status = grpc_server_->Start(
       request.runtime_application_service_info().grpc_endpoint());
@@ -312,31 +319,44 @@ void RuntimeApplicationServiceImpl::Stop(
   runtime_application_->Stop(std::move(callback));
 }
 
-void RuntimeApplicationServiceImpl::HandlePostMessage(
+void RuntimeApplicationServiceImpl::OnPostMessageRpc(
+
     cast::web::Message request,
-    cast::v2::RuntimeMessagePortApplicationServiceHandler::PostMessage::Reactor*
-        reactor) {
+
+    scoped_refptr<cast::utils::ThreadSafeReactorHandle<PostMessageReactor>>
+
+        reactor_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!runtime_application_->IsApplicationRunning()) {
-    reactor->Write(grpc::Status(grpc::StatusCode::NOT_FOUND,
-                                "No active cast session for PostMessage"));
+    reactor_handle->Write(
+        grpc::Status(grpc::StatusCode::NOT_FOUND,
+
+                     "No active cast session for PostMessage"));
+
     return;
   }
 
   auto* message_port_service = GetMessagePortServiceGrpc();
+
   if (message_port_service) {
     auto status = message_port_service->HandleMessage(std::move(request));
+
     if (status) {
       cast::web::MessagePortStatus message_port_status;
+
       message_port_status.set_status(cast::web::MessagePortStatus::OK);
-      reactor->Write(std::move(message_port_status));
+
+      reactor_handle->Write(std::move(message_port_status));
+
       return;
     }
 
     LOG(INFO) << "Failed to post message port message: " << status;
   }
 
-  reactor->Write(
+  reactor_handle->Write(
+
       grpc::Status(grpc::StatusCode::UNKNOWN, "Failed to post message"));
 }
 
@@ -487,7 +507,8 @@ void RuntimeApplicationServiceImpl::OnStreamingApplicationError(
 
 void RuntimeApplicationServiceImpl::HandleSetUrlRewriteRules(
     cast::v2::SetUrlRewriteRulesRequest request,
-    cast::v2::RuntimeApplicationServiceHandler::SetUrlRewriteRules::Reactor*
+    scoped_refptr<
+        cast::utils::ThreadSafeReactorHandle<SetUrlRewriteRulesReactor>>
         reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -508,7 +529,7 @@ void RuntimeApplicationServiceImpl::HandleSetUrlRewriteRules(
 
 void RuntimeApplicationServiceImpl::HandleSetMediaState(
     cast::v2::SetMediaStateRequest request,
-    cast::v2::RuntimeApplicationServiceHandler::SetMediaState::Reactor*
+    scoped_refptr<cast::utils::ThreadSafeReactorHandle<SetMediaStateReactor>>
         reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -518,7 +539,7 @@ void RuntimeApplicationServiceImpl::HandleSetMediaState(
 
 void RuntimeApplicationServiceImpl::HandleSetVisibility(
     cast::v2::SetVisibilityRequest request,
-    cast::v2::RuntimeApplicationServiceHandler::SetVisibility::Reactor*
+    scoped_refptr<cast::utils::ThreadSafeReactorHandle<SetVisibilityReactor>>
         reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -528,7 +549,7 @@ void RuntimeApplicationServiceImpl::HandleSetVisibility(
 
 void RuntimeApplicationServiceImpl::HandleSetTouchInput(
     cast::v2::SetTouchInputRequest request,
-    cast::v2::RuntimeApplicationServiceHandler::SetTouchInput::Reactor*
+    scoped_refptr<cast::utils::ThreadSafeReactorHandle<SetTouchInputReactor>>
         reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

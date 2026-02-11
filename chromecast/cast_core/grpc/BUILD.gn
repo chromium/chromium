@@ -26,6 +26,7 @@ source_set("grpc") {
     "grpc_unary_handler.h",
     "server_reactor_tracker.cc",
     "server_reactor_tracker.h",
+    "thread_safe_reactor_handle.h",
     "trackable_reactor.h",
   ]
 

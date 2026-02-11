@@ -9,12 +9,16 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/browser/application_media_capabilities.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"
+#include "chromecast/cast_core/grpc/thread_safe_reactor_handle.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "components/cast_receiver/browser/public/embedder_application.h"
 #include "components/cast_receiver/browser/public/runtime_application.h"
@@ -103,27 +107,41 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   void OnStreamingApplicationError(cast_receiver::Status status);
 
   // RuntimeApplicationService handlers:
+  using SetUrlRewriteRulesReactor =
+      cast::v2::RuntimeApplicationServiceHandler::SetUrlRewriteRules::Reactor;
+  using SetMediaStateReactor =
+      cast::v2::RuntimeApplicationServiceHandler::SetMediaState::Reactor;
+  using SetVisibilityReactor =
+      cast::v2::RuntimeApplicationServiceHandler::SetVisibility::Reactor;
+  using SetTouchInputReactor =
+      cast::v2::RuntimeApplicationServiceHandler::SetTouchInput::Reactor;
+
   void HandleSetUrlRewriteRules(
       cast::v2::SetUrlRewriteRulesRequest request,
-      cast::v2::RuntimeApplicationServiceHandler::SetUrlRewriteRules::Reactor*
+      scoped_refptr<
+          cast::utils::ThreadSafeReactorHandle<SetUrlRewriteRulesReactor>>
           reactor);
   void HandleSetMediaState(
       cast::v2::SetMediaStateRequest request,
-      cast::v2::RuntimeApplicationServiceHandler::SetMediaState::Reactor*
+      scoped_refptr<cast::utils::ThreadSafeReactorHandle<SetMediaStateReactor>>
           reactor);
   void HandleSetVisibility(
       cast::v2::SetVisibilityRequest request,
-      cast::v2::RuntimeApplicationServiceHandler::SetVisibility::Reactor*
+      scoped_refptr<cast::utils::ThreadSafeReactorHandle<SetVisibilityReactor>>
           reactor);
   void HandleSetTouchInput(
       cast::v2::SetTouchInputRequest request,
-      cast::v2::RuntimeApplicationServiceHandler::SetTouchInput::Reactor*
+      scoped_refptr<cast::utils::ThreadSafeReactorHandle<SetTouchInputReactor>>
           reactor);
 
   // RuntimeMessagePortApplicationService handlers:
-  void HandlePostMessage(cast::web::Message request,
-                         cast::v2::RuntimeMessagePortApplicationServiceHandler::
-                             PostMessage::Reactor* reactor);
+  using PostMessageReactor = cast::v2::
+      RuntimeMessagePortApplicationServiceHandler::PostMessage::Reactor;
+
+  void OnPostMessageRpc(
+      cast::web::Message request,
+      scoped_refptr<cast::utils::ThreadSafeReactorHandle<PostMessageReactor>>
+          reactor_handle);
 
   void OnAllBindingsReceived(
       GetAllBindingsCallback callback,

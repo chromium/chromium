@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "chromecast/cast_core/grpc/grpc_handler.h"
 #include "chromecast/cast_core/grpc/server_reactor_tracker.h"
+#include "chromecast/cast_core/grpc/thread_safe_reactor_handle.h"
 
 namespace cast {
 namespace utils {
@@ -101,6 +102,34 @@ class GrpcServer : public grpc::CallbackGenericService {
         std::make_unique<THandler>(std::move(on_request_callback),
                                    server_reactor_tracker_.get()));
     DVLOG(1) << "Request handler is set for " << THandler::rpc_name();
+  }
+
+  // Sets the request callback for an RPC defined by |Handler| type.
+  // The callback will receive a thread-safe handle to the reactor.
+  template <typename THandler>
+  void SetThreadSafeHandler(
+      base::RepeatingCallback<void(
+          typename THandler::Request,
+          scoped_refptr<ThreadSafeReactorHandle<typename THandler::Reactor>>)>
+          on_request_callback) {
+    SetHandler<THandler>(base::BindRepeating(
+        [](base::RepeatingCallback<void(typename THandler::Request,
+                                        scoped_refptr<ThreadSafeReactorHandle<
+                                            typename THandler::Reactor>>)>
+               callback,
+           typename THandler::Request request,
+           typename THandler::Reactor* reactor) {
+          auto handle = base::MakeRefCounted<
+              ThreadSafeReactorHandle<typename THandler::Reactor>>(reactor);
+          reactor->SetOnDestroyCallback(base::BindOnce(
+              [](scoped_refptr<
+                  ThreadSafeReactorHandle<typename THandler::Reactor>> handle) {
+                handle->Reset();
+              },
+              handle));
+          callback.Run(std::move(request), std::move(handle));
+        },
+        std::move(on_request_callback)));
   }
 
   // Starts the gRPC server.
