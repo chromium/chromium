@@ -654,7 +654,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     // If the BrowserContext is shutting down, keyed services (like
-    // ExtensionRegistry)  may already be destroyed. Abort the request to avoid
+    // ExtensionRegistry) may already be destroyed. Abort the request to avoid
     // crashing.
     if (browser_context_->ShutdownStarted()) {
       CompleteRequestAndDeleteThis(net::ERR_FAILED);
@@ -676,10 +676,9 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
 
     bool should_verify_content =
         ShouldVerifyContent(resource, extension_version, resource_info);
-    bool is_shutdown_started = browser_context_->ShutdownStarted();
 
     scoped_refptr<ContentVerifyJob> verify_job;
-    if (content_verifier && should_verify_content && !is_shutdown_started) {
+    if (content_verifier && should_verify_content) {
       verify_job = ContentVerifier::CreateAndStartJobFor(
           resource.extension_id(), resource.extension_root(), extension_version,
           resource.relative_path(), content_verifier);
