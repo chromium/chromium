@@ -901,8 +901,7 @@ TEST_F(MediaSessionImplServiceRoutingTest, NotifyObserverOnTitleChange) {
   expected_metadata.source_title = GetSourceTitleForNonEmptyMetadata();
 
   contents()->UpdateTitle(contents()->GetPrimaryMainFrame(),
-                          expected_metadata.title,
-                          base::i18n::TextDirection::LEFT_TO_RIGHT);
+                          expected_metadata.title);
 
   observer.WaitForExpectedMetadata(expected_metadata);
 }

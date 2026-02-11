@@ -108,9 +108,7 @@ void FakeLocalFrameHost::GoToEntryAtOffset(
     base::TimeTicks actual_navigation_start,
     std::optional<blink::scheduler::TaskAttributionId>) {}
 
-void FakeLocalFrameHost::UpdateTitle(
-    const String& title,
-    base::i18n::TextDirection title_direction) {}
+void FakeLocalFrameHost::UpdateTitle(const String& title) {}
 
 void FakeLocalFrameHost::UpdateApplicationTitle(
     const String& application_title) {}

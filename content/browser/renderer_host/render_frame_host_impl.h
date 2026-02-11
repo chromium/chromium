@@ -28,7 +28,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
-#include "base/i18n/rtl.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -2513,10 +2512,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       base::TimeTicks actual_navigation_start,
       std::optional<blink::scheduler::TaskAttributionId> task_id) override;
   void NavigateEventHandlerPresenceChanged(bool present) override;
-  void UpdateTitle(const std::optional<::std::u16string>& title,
-                   base::i18n::TextDirection title_direction) override;
-  void UpdateApplicationTitle(
-      const ::std::u16string& application_title) override;
+  void UpdateTitle(const std::optional<std::u16string>& title) override;
+  void UpdateApplicationTitle(const std::u16string& application_title) override;
   void UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType update_type,
       blink::mojom::UserActivationNotificationType notification_type) override;

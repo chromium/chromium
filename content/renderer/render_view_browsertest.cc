@@ -737,9 +737,7 @@ class UpdateTitleLocalFrameHost : public LocalFrameHostInterceptor {
       blink::AssociatedInterfaceProvider* provider)
       : LocalFrameHostInterceptor(provider) {}
 
-  MOCK_METHOD2(UpdateTitle,
-               void(const std::optional<::std::u16string>& title,
-                    base::i18n::TextDirection title_direction));
+  MOCK_METHOD(void, UpdateTitle, (const std::optional<std::u16string>&));
 };
 }  // namespace
 
@@ -768,10 +766,8 @@ TEST_F(RenderViewImplUpdateTitleTest, OnNavigationLoadDataWithBaseURL) {
   commit_params->data_url_as_string =
       "data:text/html,<html><head><title>Data page</title></head></html>";
 
-  const std::optional<::std::u16string>& title =
-      std::make_optional(u"Data page");
-  EXPECT_CALL(*title_mock_frame_host(), UpdateTitle(title, testing::_))
-      .Times(1);
+  auto title = std::make_optional(std::u16string(u"Data page"));
+  EXPECT_CALL(*title_mock_frame_host(), UpdateTitle(title));
   FrameLoadWaiter waiter(frame());
   frame()->Navigate(std::move(common_params), std::move(commit_params));
   waiter.Wait();

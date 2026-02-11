@@ -87,8 +87,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       base::TimeTicks actual_navigation_start,
       std::optional<blink::scheduler::TaskAttributionId> task_id) override {}
   void NavigateEventHandlerPresenceChanged(bool present) override {}
-  void UpdateTitle(const String& title,
-                   base::i18n::TextDirection title_direction) override;
+  void UpdateTitle(const String& title) override;
   void UpdateApplicationTitle(const String& application_title) override;
   void UpdateUserActivationState(
       mojom::blink::UserActivationUpdateType update_type,

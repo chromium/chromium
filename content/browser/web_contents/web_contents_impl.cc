@@ -9905,8 +9905,7 @@ void WebContentsImpl::DocumentOnLoadCompleted(
 }
 
 void WebContentsImpl::UpdateTitle(RenderFrameHostImpl* render_frame_host,
-                                  const std::u16string& title,
-                                  base::i18n::TextDirection title_direction) {
+                                  const std::u16string& title) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::UpdateTitle",
                         "render_frame_host", render_frame_host, "title", title);
   // Try to find the navigation entry, which might not be the current one.
@@ -9935,8 +9934,6 @@ void WebContentsImpl::UpdateTitle(RenderFrameHostImpl* render_frame_host,
         render_frame_host->frame_tree()->controller().GetLastCommittedEntry();
   }
 
-  // TODO(evan): make use of title_direction.
-  // http://code.google.com/p/chromium/issues/detail?id=27094
   bool title_changed = UpdateTitleForEntryImpl(entry, title);
   if (title_changed) {
     if (render_frame_host == GetPrimaryMainFrame()) {

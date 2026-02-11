@@ -473,8 +473,7 @@ TEST_F(WebContentsImplTest, UpdateTitle) {
   main_test_rfh()->SendNavigateWithParams(std::move(params),
                                           false /* was_within_same_document */);
 
-  contents()->UpdateTitle(main_test_rfh(), u"    Lots O' Whitespace\n",
-                          base::i18n::LEFT_TO_RIGHT);
+  contents()->UpdateTitle(main_test_rfh(), u"    Lots O' Whitespace\n");
   // Make sure that title updates get stripped of whitespace.
   EXPECT_EQ(u"Lots O' Whitespace", contents()->GetTitle());
   EXPECT_FALSE(contents()->IsWaitingForResponse());
@@ -486,7 +485,7 @@ TEST_F(WebContentsImplTest, UpdateTitle) {
 TEST_F(WebContentsImplTest, UpdateTitleBeforeFirstNavigation) {
   ASSERT_TRUE(controller().IsInitialNavigation());
   const std::u16string title = u"Initial Entry Title";
-  contents()->UpdateTitle(main_test_rfh(), title, base::i18n::LEFT_TO_RIGHT);
+  contents()->UpdateTitle(main_test_rfh(), title);
   EXPECT_EQ(title, contents()->GetTitle());
 }
 
@@ -496,7 +495,7 @@ TEST_F(WebContentsImplTest, UpdateTitleWhileFirstNavigationIsPending) {
                        std::string());
   ASSERT_TRUE(!!controller().GetPendingEntry());
   const std::u16string title = u"Initial Entry Title";
-  contents()->UpdateTitle(main_test_rfh(), title, base::i18n::LEFT_TO_RIGHT);
+  contents()->UpdateTitle(main_test_rfh(), title);
   EXPECT_EQ(title, contents()->GetTitle());
 }
 

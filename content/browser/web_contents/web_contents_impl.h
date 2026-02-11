@@ -728,8 +728,7 @@ class CONTENT_EXPORT WebContentsImpl
   void DOMContentLoaded(RenderFrameHostImpl* render_frame_host) override;
   void DocumentOnLoadCompleted(RenderFrameHostImpl* render_frame_host) override;
   void UpdateTitle(RenderFrameHostImpl* render_frame_host,
-                   const std::u16string& title,
-                   base::i18n::TextDirection title_direction) override;
+                   const std::u16string& title) override;
   // The app title is an alternative title. If non-empty, the browser may choose
   // to use the app title instead of the regular title for a web app displayed
   // in an app window. See
