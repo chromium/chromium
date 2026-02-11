@@ -198,8 +198,18 @@ public class NtpBackgroundImageCoordinator {
 
         // Cache miss: uses the source of truth matrix to calculate the matrixToApply
         Matrix sourceMatrix = backgroundImageInfo.getMatrix(currentOrientation);
-
+        Point sourceWindowSize = backgroundImageInfo.getWindowSize(currentOrientation);
         Matrix matrixToApply = new Matrix(sourceMatrix);
+        assertNonNull(sourceWindowSize);
+        matrixToApply =
+                CropImageUtils.calculateMatrixFromSharedCenter(
+                        matrixToApply,
+                        currentWindowSize.x,
+                        currentWindowSize.y,
+                        sourceWindowSize.x,
+                        sourceWindowSize.y,
+                        bitmap);
+
         float[] matrixValues = new float[9];
         matrixToApply.getValues(matrixValues);
         CropImageUtils.validateMatrix(

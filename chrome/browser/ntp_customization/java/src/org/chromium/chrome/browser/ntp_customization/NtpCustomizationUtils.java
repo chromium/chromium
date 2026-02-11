@@ -38,6 +38,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -1232,19 +1233,30 @@ public class NtpCustomizationUtils {
      */
     public static BackgroundImageInfo calculateInitialThemeCollectionImageMatrices(
             Context context, Bitmap bitmap) {
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        int screenWidth = displayMetrics.widthPixels;
-        int screenHeight = displayMetrics.heightPixels;
+        Activity activity = ContextUtils.activityFromContext(context);
+        Resources resources = context.getResources();
 
-        // Robustly determine portrait and landscape dimensions
-        int portraitWidth = Math.min(screenWidth, screenHeight);
-        int portraitHeight = Math.max(screenWidth, screenHeight);
+        Point windowSize;
+        if (activity != null) {
+            windowSize = CropImageUtils.getCurrentWindowDimensions(activity);
+        } else {
+            // Fallback to display metrics if the activity context is unavailable.
+            DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+            windowSize = new Point(displayMetrics.widthPixels, displayMetrics.heightPixels);
+        }
+
+        // If the device is portrait, use the current width/height; otherwise, swap them.
+        boolean isPortrait =
+                resources.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+        int portraitWidth = isPortrait ? windowSize.x : windowSize.y;
+        int portraitHeight = isPortrait ? windowSize.y : windowSize.x;
 
         Matrix portraitMatrix = new Matrix();
         CropImageUtils.calculateInitialCenterCropMatrix(
                 portraitMatrix, portraitWidth, portraitHeight, bitmap);
 
-        // For landscape, the width and height are swapped
+        // The landscape dimensions are the inverse of the portrait dimensions.
+        // Calculate the landscape matrix using these swapped values.
         Matrix landscapeMatrix = new Matrix();
         CropImageUtils.calculateInitialCenterCropMatrix(
                 landscapeMatrix, portraitHeight, portraitWidth, bitmap);
