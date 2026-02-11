@@ -29285,12 +29285,18 @@
                     "name": "BackgroundInit",
                     "enable_features": [
                         "WebViewBackgroundTracingInit"
+                    ],
+                    "disable_features": [
+                        "WebViewEarlyTracingInit"
                     ]
                 },
                 {
                     "name": "EarlyInit",
                     "enable_features": [
                         "WebViewEarlyTracingInit"
+                    ],
+                    "disable_features": [
+                        "WebViewBackgroundTracingInit"
                     ]
                 }
             ]
