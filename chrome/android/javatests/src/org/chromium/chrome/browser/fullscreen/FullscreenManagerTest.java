@@ -938,7 +938,6 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
-    @DisabledTest(message = "crbug.com/481488944")
     public void testEnterPendingPersistentFullscreen() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_FULLSCREEN_API_HTML_TEST_PAGE);
@@ -1316,7 +1315,6 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
-    @DisabledTest(message = "crbug.com/481488944")
     public void testFullscreenPageHeight() throws Throwable {
         launchOnFullscreenMode(LONG_HTML_TEST_PAGE, true);
         Assert.assertTrue(getPersistentFullscreenMode());

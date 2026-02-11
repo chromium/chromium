@@ -104,7 +104,6 @@ public class TabletPhoneLayoutChangeTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/481439307")
     public void testUrlBarStateRetention() throws TimeoutException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         ToolbarManager toolbarManager = cta.getToolbarManager();
