@@ -133,12 +133,32 @@ class D3D12VideoDeviceWrapper : public D3DVideoDeviceWrapper {
   }
 
   UINT GetDecoderVendorID() const override {
-    ComDXGIDevice dxgi_device;
-    if (FAILED(video_device_.As(&dxgi_device)) || !dxgi_device) {
+    ComD3D12Device d3d12_device;
+    if (FAILED(video_device_.As(&d3d12_device)) || !d3d12_device) {
       return 0;
     }
 
-    return GetGPUVendorID(dxgi_device);
+    const LUID adapter_luid = d3d12_device->GetAdapterLuid();
+
+    ComDXGIFactory4 dxgi_factory4;
+    if (FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&dxgi_factory4))) ||
+        !dxgi_factory4) {
+      return 0;
+    }
+
+    ComDXGIAdapter adapter;
+    if (FAILED(dxgi_factory4->EnumAdapterByLuid(adapter_luid,
+                                                IID_PPV_ARGS(&adapter))) ||
+        !adapter) {
+      return 0;
+    }
+
+    DXGI_ADAPTER_DESC desc{};
+    if (FAILED(adapter->GetDesc(&desc))) {
+      return 0;
+    }
+
+    return desc.VendorId;
   }
 
  private:

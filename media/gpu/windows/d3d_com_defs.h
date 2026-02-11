@@ -62,6 +62,7 @@ using ComDXGIAdapter3 = COM<IDXGIAdapter3>;
 using ComDXGIDevice = COM<IDXGIDevice>;
 using ComDXGIDevice2 = COM<IDXGIDevice2>;
 using ComDXGIFactory = COM<IDXGIFactory>;
+using ComDXGIFactory4 = COM<IDXGIFactory4>;
 using ComDXGIKeyedMutex = COM<IDXGIKeyedMutex>;
 using ComDXGIOutput = COM<IDXGIOutput>;
 using ComDXGIOutput6 = COM<IDXGIOutput6>;
