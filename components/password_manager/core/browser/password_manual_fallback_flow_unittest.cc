@@ -1034,7 +1034,7 @@ TEST_P(PasswordManualFallbackFlowCrossDomainConfirmationTest,
   EXPECT_CALL(driver(), FillField).Times(0);
 
   Suggestion suggestion =
-      Suggestion(/*main_text=*/"Password", "label", Suggestion::Icon::kKey,
+      Suggestion(/*main_text=*/u"Password", u"label", Suggestion::Icon::kKey,
                  /*type=*/GetParam());
   suggestion.payload = Suggestion::PasswordSuggestionDetails(
       u"username", u"password", password_hostname,

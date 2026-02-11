@@ -73,10 +73,10 @@ std::vector<Suggestion> CreateTypicalPasswordChildSuggestions() {
 
 std::vector<Suggestion> CreateAutofillProfileSuggestions() {
   std::vector<Suggestion> suggestions;
-  suggestions.emplace_back("123 Apple St.", "Charles Stewart",
+  suggestions.emplace_back(u"123 Apple St.", u"Charles Stewart",
                            Suggestion::Icon::kAccount,
                            SuggestionType::kAddressEntry);
-  suggestions.emplace_back("3734 Elvis Presley Blvd.", "Elvis",
+  suggestions.emplace_back(u"3734 Elvis Presley Blvd.", u"Elvis",
                            Suggestion::Icon::kAccount,
                            SuggestionType::kAddressEntry);
 
@@ -92,10 +92,10 @@ std::vector<Suggestion> CreateAutofillProfileSuggestions() {
 
 std::vector<Suggestion> CreateCreditCardSuggestions() {
   std::vector<Suggestion> suggestions;
-  suggestions.emplace_back("Credit card main text", "Credit card minor text",
+  suggestions.emplace_back(u"Credit card main text", u"Credit card minor text",
                            Suggestion::Icon::kCardUnionPay,
                            SuggestionType::kCreditCardEntry);
-  suggestions.emplace_back("Credit card main text", "Credit card minor text",
+  suggestions.emplace_back(u"Credit card main text", u"Credit card minor text",
                            Suggestion::Icon::kCardVisa,
                            SuggestionType::kCreditCardEntry);
   suggestions.emplace_back(SuggestionType::kSeparator);
@@ -111,17 +111,17 @@ std::vector<Suggestion> CreateCreditCardSuggestions() {
 
 std::vector<Suggestion> CreateLoyaltyCardSuggestions() {
   std::vector<Suggestion> suggestions;
-  suggestions.emplace_back("37262999281", "Ticket Maester ",
+  suggestions.emplace_back(u"37262999281", u"Ticket Maester ",
                            Suggestion::Icon::kNoIcon,
                            SuggestionType::kLoyaltyCardEntry);
   suggestions.back().custom_icon = Suggestion::LetterMonochromeIcon(u"T");
-  suggestions.emplace_back("987654321987654321", "CVS Pharmacy",
+  suggestions.emplace_back(u"987654321987654321", u"CVS Pharmacy",
                            Suggestion::Icon::kNoIcon,
                            SuggestionType::kLoyaltyCardEntry);
   suggestions.back().custom_icon = Suggestion::LetterMonochromeIcon(u"C");
   suggestions.emplace_back(SuggestionType::kSeparator);
   suggestions.emplace_back(
-      l10n_util::GetStringUTF8(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS), "",
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS), u"",
       Suggestion::Icon::kSettings, SuggestionType::kManageLoyaltyCard);
   return suggestions;
 }
@@ -157,14 +157,14 @@ std::vector<Suggestion> CreateWebAuthnSuggestions(
         Suggestion::Acceptability::kAcceptable) {
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion(
-      "cool passkey",
+      u"cool passkey",
       {{Suggestion::Text(
           l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE))}},
       Suggestion::Icon::kGlobe, SuggestionType::kWebauthnCredential));
   suggestions.back().acceptability = acceptability;
 
   suggestions.push_back(Suggestion(
-      "coolest passkey",
+      u"coolest passkey",
       {{Suggestion::Text(l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER))}},
       Suggestion::Icon::kGlobe, SuggestionType::kWebauthnCredential));
@@ -199,9 +199,9 @@ std::vector<Suggestion> CreatePasswordAndWebAuthnSuggestions(
 }
 
 std::vector<Suggestion> CreateAutocompleteSuggestions() {
-  return {Suggestion("Autocomplete entry 1", "", Suggestion::Icon::kNoIcon,
+  return {Suggestion(u"Autocomplete entry 1", u"", Suggestion::Icon::kNoIcon,
                      SuggestionType::kAutocompleteEntry),
-          Suggestion("Autocomplete entry 2", "", Suggestion::Icon::kNoIcon,
+          Suggestion(u"Autocomplete entry 2", u"", Suggestion::Icon::kNoIcon,
                      SuggestionType::kAutocompleteEntry)};
 }
 
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_CreditCard) {
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_CreditCard_MultipleLabels) {
   Suggestion suggestion1(
-      "Visa",
+      u"Visa",
       {{Suggestion::Text(u"Filling credit card - your card for payments"),
         Suggestion::Text(u"Alexander Joseph Ricardo Park")},
        {Suggestion::Text(u"Full credit card"), Suggestion::Text(u"Alex Park")}},
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 
   // Also create a 1 label line suggestion to make sure they work well together.
   Suggestion suggestion2(
-      "Visa",
+      u"Visa",
       {{Suggestion::Text(u"Filling credit card - your card for payments")}},
       Suggestion::Icon::kCardVisa, SuggestionType::kCreditCardEntry);
   PrepareSuggestions({suggestion1, suggestion2});
@@ -352,7 +352,8 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
            u"Fill full address - Main Second First Third Street 123"),
        Suggestion::Text(u"Alexander Joseph Ricardo Park")},
       {Suggestion::Text(u"Fill full address"), Suggestion::Text(u"Alex Park")}};
-  Suggestion suggestion("Google", std::move(labels), Suggestion::Icon::kAccount,
+  Suggestion suggestion(u"Google", std::move(labels),
+                        Suggestion::Icon::kAccount,
                         SuggestionType::kAddressEntry);
   PrepareSuggestions({suggestion});
   ShowAndVerifyUi();

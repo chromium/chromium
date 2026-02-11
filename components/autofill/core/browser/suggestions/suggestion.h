@@ -388,25 +388,20 @@ struct Suggestion {
     kUnacceptableWithDeactivatedStyle,
   };
 
-  // TODO(crbug.com/335194240): Consolidate expected param types for these
-  // constructors. Some expect UTF16 strings and others UTF8, while internally
-  // we only use UTF16. The ones expecting UTF8 are only used by tests and could
-  // be easily refactored.
   explicit Suggestion(SuggestionType type);
   Suggestion(std::u16string main_text, SuggestionType type);
-  // Constructor for unit tests. It will convert the strings from UTF-8 to
-  // UTF-16.
-  Suggestion(std::string_view main_text,
-             std::string_view label,
+  // Constructor for unit tests.
+  Suggestion(std::u16string main_text,
+             std::u16string label,
              Icon icon,
              SuggestionType type);
-  Suggestion(std::string_view main_text,
+  Suggestion(std::u16string_view main_text,
              std::vector<std::vector<Text>> labels,
              Icon icon,
              SuggestionType type);
-  Suggestion(std::string_view main_text,
-             base::span<const std::string> minor_text_labels,
-             std::string_view label,
+  Suggestion(std::u16string_view main_text,
+             base::span<const std::u16string> minor_text_labels,
+             std::u16string_view label,
              Icon icon,
              SuggestionType type);
   Suggestion(const Suggestion& other);

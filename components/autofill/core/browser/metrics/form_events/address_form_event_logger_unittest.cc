@@ -399,7 +399,7 @@ TEST_F(AutofillOnDidShowSuggestionsMetricsTest,
 
   external_delegate().CheckSuggestions(
       form.fields()[0].global_id(),
-      {Suggestion("John", "666 Erebus St.", Suggestion::Icon::kHome,
+      {Suggestion(u"John", u"666 Erebus St.", Suggestion::Icon::kHome,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion()});
@@ -440,7 +440,7 @@ TEST_F(AutofillOnDidShowSuggestionsMetricsTest,
 
   external_delegate().CheckSuggestions(
       form.fields()[0].global_id(),
-      {Suggestion("Pablo Diego", "123 Mainstreet", Suggestion::Icon::kAccount,
+      {Suggestion(u"Pablo Diego", u"123 Mainstreet", Suggestion::Icon::kAccount,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion()});

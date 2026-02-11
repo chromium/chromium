@@ -133,7 +133,7 @@ class MockAutofillPopupController : public AutofillPopupController {
       // Accessibility requires all focusable AutofillPopupItemView to have
       // ui::AXNodeData with non-empty names. We specify dummy values and labels
       // to satisfy this.
-      suggestions_.emplace_back("dummy_value", "dummy_label",
+      suggestions_.emplace_back(u"dummy_value", u"dummy_label",
                                 Suggestion::Icon::kNoIcon, id);
     }
   }

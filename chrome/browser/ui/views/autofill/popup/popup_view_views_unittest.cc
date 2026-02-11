@@ -944,7 +944,7 @@ TEST_F(PopupViewViewsTest, SelectionOnTouchAndUnselectionOnCancel) {
 #endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(PopupViewViewsTest, ClickDisabledEntry) {
-  Suggestion opt_int_suggestion("dummy_main_text", "",
+  Suggestion opt_int_suggestion(u"dummy_main_text", u"",
                                 Suggestion::Icon::kNoIcon,
                                 SuggestionType::kWebauthnCredential);
   opt_int_suggestion.is_loading = Suggestion::IsLoading(true);

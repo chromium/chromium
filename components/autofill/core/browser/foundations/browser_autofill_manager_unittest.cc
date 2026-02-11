@@ -207,7 +207,6 @@ using UkmAutofillKeyMetricsType = ukm::builders::Autofill_KeyMetrics;
 
 constexpr Suggestion::Icon kAddressEntryIcon = Suggestion::Icon::kAccount;
 constexpr char kPlusAddress[] = "plus+remote@plus.plus";
-constexpr char kEllipsisDotSeparator[] = "\u2022";
 
 // Action `SaveArgElementsTo<k>(pointer)` saves the value pointed to by the
 // `k`th (0-based) argument of the mock function by moving it to `*pointer`.
@@ -294,23 +293,20 @@ Suggestion GenerateSuggestionFromCardDetails(
     const std::string& network,
     const Suggestion::Icon icon,
     const std::string& last_four,
-    std::string expiration_date_label,
-    const std::string& nickname = std::string(),
+    std::u16string expiration_date_label,
+    const std::u16string& nickname = std::u16string(),
     FieldType type = CREDIT_CARD_NUMBER) {
-  std::string network_or_nickname =
-      nickname.empty()
-          ? base::UTF16ToUTF8(CreditCard::NetworkForDisplay(network))
-          : nickname;
-  std::string obfuscated_card_digits = test::ObfuscatedCardDigitsAsUTF8(
-      last_four, ObfuscationLengthForCreditCardLastFourDigits());
-  std::string network_and_last_four =
-      base::StrCat({base::UTF16ToUTF8(CreditCard::NetworkForDisplay(network)),
-                    std::string("  "), obfuscated_card_digits});
+  std::u16string network_or_nickname =
+      nickname.empty() ? CreditCard::NetworkForDisplay(network) : nickname;
+  std::u16string obfuscated_card_digits =
+      base::UTF8ToUTF16(test::ObfuscatedCardDigitsAsUTF8(
+          last_four, ObfuscationLengthForCreditCardLastFourDigits()));
+  std::u16string network_and_last_four = base::StrCat(
+      {CreditCard::NetworkForDisplay(network), u"  ", obfuscated_card_digits});
   std::vector<std::vector<Suggestion::Text>> network_last_four_and_exp_labels =
       std::vector<std::vector<Suggestion::Text>>{
-          {Suggestion::Text(base::UTF8ToUTF16(network_and_last_four)),
-           Suggestion::Text(u"•"),
-           Suggestion::Text(base::UTF8ToUTF16(expiration_date_label))}};
+          {Suggestion::Text(network_and_last_four), Suggestion::Text(u"•"),
+           Suggestion::Text(expiration_date_label)}};
   if (type == CREDIT_CARD_NUMBER) {
     if (ShouldUseNewFopDisplay()) {
       if (!nickname.empty()) {
@@ -319,16 +315,15 @@ Suggestion GenerateSuggestionFromCardDetails(
             /*labels=*/network_last_four_and_exp_labels, icon,
             SuggestionType::kCreditCardEntry);
       } else {
-        std::vector<std::string> minor_texts = {kEllipsisDotSeparator,
-                                                expiration_date_label};
+        std::vector<std::u16string> minor_texts = {u"•", expiration_date_label};
         return Suggestion(
             /*main_text=*/network_and_last_four,
             /*minor_text_labels=*/minor_texts,
-            /*label=*/"", icon, SuggestionType::kCreditCardEntry);
+            /*label=*/u"", icon, SuggestionType::kCreditCardEntry);
       }
     }
     if (ShouldSplitCardNameAndLastFourDigitsForMetadata()) {
-      std::vector<std::string> minor_text = {obfuscated_card_digits};
+      std::vector<std::u16string> minor_text = {obfuscated_card_digits};
       return Suggestion(
           /*main_text=*/network_or_nickname,
           /*minor_text_labels=*/minor_text,
@@ -338,45 +333,40 @@ Suggestion GenerateSuggestionFromCardDetails(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       if (!ShouldUseNewFopDisplay()) {
         // We use a longer label on desktop platforms.
-        expiration_date_label =
-            std::string("Expires on ") + expiration_date_label;
+        expiration_date_label = u"Expires on " + expiration_date_label;
       }
 #endif
       return Suggestion(
           /*main_text=*/base::StrCat(
-              {network_or_nickname, std::string("  "), obfuscated_card_digits}),
+              {network_or_nickname, u"  ", obfuscated_card_digits}),
           /*label=*/expiration_date_label, icon,
           SuggestionType::kCreditCardEntry);
     }
   } else if (type == CREDIT_CARD_NAME_FULL) {
     std::vector<std::vector<Suggestion::Text>> labels;
-    std::u16string last_four_u16 = base::UTF8ToUTF16(last_four);
     if constexpr (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)) {
       // The label is formatted as either "••••1234" or "••1234".
-      labels.push_back(
-          {Suggestion::Text(base::UTF8ToUTF16(obfuscated_card_digits))});
+      labels.push_back({Suggestion::Text(obfuscated_card_digits)});
     } else if (ShouldUseNewFopDisplay()) {
       labels = network_last_four_and_exp_labels;
     } else if (ShouldSplitCardNameAndLastFourDigitsForMetadata()) {
       // The label is formatted as "Product Description/Nickname/Network
       // ••••1234".
       labels.push_back(
-          {Suggestion::Text(base::UTF8ToUTF16(network_or_nickname),
+          {Suggestion::Text(network_or_nickname,
                             Suggestion::Text::IsPrimary(false),
                             Suggestion::Text::ShouldTruncate(true)),
-           Suggestion::Text(base::UTF8ToUTF16(obfuscated_card_digits))});
+           Suggestion::Text(obfuscated_card_digits)});
     } else {
       // The label is formatted as "Network/Nickname  ••••1234, expires on
       // 01/25".
-      expiration_date_label =
-          std::string("expires on ") + expiration_date_label;
-      std::string descriptive_label = network_or_nickname + "  " +
-                                      obfuscated_card_digits + ", " +
-                                      expiration_date_label;
-      labels.push_back(
-          {Suggestion::Text(base::UTF8ToUTF16(descriptive_label))});
+      expiration_date_label = u"expires on " + expiration_date_label;
+      std::u16string descriptive_label = network_or_nickname + u"  " +
+                                         obfuscated_card_digits + u", " +
+                                         expiration_date_label;
+      labels.push_back({Suggestion::Text(descriptive_label)});
     }
-    return Suggestion(/*main_text=*/"Elvis Presley", /*labels=*/labels, icon,
+    return Suggestion(/*main_text=*/u"Elvis Presley", /*labels=*/labels, icon,
                       SuggestionType::kCreditCardEntry);
   }
   return Suggestion(SuggestionType::kCreditCardEntry);
@@ -424,23 +414,23 @@ Suggestion GenerateVirtualCardSuggestionFromCreditCardSuggestion(
 }
 
 Suggestion GetCardSuggestion(const std::string& network,
-                             const std::string& nickname = std::string(),
+                             const std::u16string& nickname = std::u16string(),
                              FieldType type = CREDIT_CARD_NUMBER) {
   Suggestion::Icon icon = Suggestion::Icon::kCardGeneric;
   std::string last_four;
-  std::string expiration_date;
+  std::u16string expiration_date;
   if (network == kVisaCard) {
     icon = Suggestion::Icon::kCardVisa;
     last_four = "3456";
-    expiration_date = "04/99";
+    expiration_date = u"04/99";
   } else if (network == kMasterCard) {
     icon = Suggestion::Icon::kCardMasterCard;
     last_four = "8765";
-    expiration_date = "10/98";
+    expiration_date = u"10/98";
   } else if (network == kAmericanExpressCard) {
     icon = Suggestion::Icon::kCardAmericanExpress;
     last_four = "0005";
-    expiration_date = "04/10";
+    expiration_date = u"04/10";
   } else {
     NOTREACHED();
   }
@@ -1826,9 +1816,9 @@ TEST_F(BrowserAutofillManagerTest,
   OnAskForValuesToFill(form, form.fields()[0]);
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
-      {Suggestion("Charles", std::vector<std::vector<Suggestion::Text>>{},
+      {Suggestion(u"Charles", std::vector<std::vector<Suggestion::Text>>{},
                   Suggestion::Icon::kAccount, SuggestionType::kAddressEntry),
-       Suggestion("Elvis", std::vector<std::vector<Suggestion::Text>>{},
+       Suggestion(u"Elvis", std::vector<std::vector<Suggestion::Text>>{},
                   Suggestion::Icon::kAccount, SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion()});
@@ -1860,9 +1850,9 @@ TEST_F(BrowserAutofillManagerTest,
   OnAskForValuesToFill(form, form.fields()[0]);
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
-      {Suggestion("Charles", "Charles Hardin Holley", kAddressEntryIcon,
+      {Suggestion(u"Charles", u"Charles Hardin Holley", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       Suggestion("Elvis", "Elvis Aaron Presley", kAddressEntryIcon,
+       Suggestion(u"Elvis", u"Elvis Aaron Presley", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion()});
@@ -1870,9 +1860,9 @@ TEST_F(BrowserAutofillManagerTest,
   OnAskForValuesToFill(form, form.fields()[1]);
   external_delegate()->CheckSuggestions(
       form.fields()[1].global_id(),
-      {Suggestion("Holley", "Charles Hardin Holley", kAddressEntryIcon,
+      {Suggestion(u"Holley", u"Charles Hardin Holley", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       Suggestion("Presley", "Elvis Aaron Presley", kAddressEntryIcon,
+       Suggestion(u"Presley", u"Elvis Aaron Presley", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion()});
@@ -1889,9 +1879,9 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_EmptyValue) {
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
-      {Suggestion("Charles", "123 Apple St.", kAddressEntryIcon,
+      {Suggestion(u"Charles", u"123 Apple St.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
+       Suggestion(u"Elvis", u"3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion()});
@@ -1924,9 +1914,9 @@ TEST_F(BrowserAutofillManagerTest, WebauthnSignInWithAnotherDeviceSuggestion) {
       Contains(Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)));
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
-      {Suggestion("buddy@gmail.com", "", Suggestion::Icon::kEmail,
+      {Suggestion(u"buddy@gmail.com", u"", Suggestion::Icon::kEmail,
                   SuggestionType::kAddressEntry),
-       Suggestion("theking@gmail.com", "", Suggestion::Icon::kEmail,
+       Suggestion(u"theking@gmail.com", u"", Suggestion::Icon::kEmail,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice),
@@ -2002,9 +1992,9 @@ TEST_F(BrowserAutofillManagerTest,
                   SuggestionType::kWebauthnSignInWithAnotherDevice))));
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
-      {Suggestion("buddy@gmail.com", "", Suggestion::Icon::kEmail,
+      {Suggestion(u"buddy@gmail.com", u"", Suggestion::Icon::kEmail,
                   SuggestionType::kAddressEntry),
-       Suggestion("theking@gmail.com", "", Suggestion::Icon::kEmail,
+       Suggestion(u"theking@gmail.com", u"", Suggestion::Icon::kEmail,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion()});
@@ -2124,7 +2114,7 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_MatchCharacter) {
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       firstname_field.global_id(),
-      {Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
+      {Suggestion(u"Elvis", u"3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion()});
@@ -2174,9 +2164,9 @@ TEST_F(BrowserAutofillManagerTest,
   OnAskForValuesToFill(form, lastname_field);
   external_delegate()->CheckSuggestions(
       lastname_field.global_id(),
-      {Suggestion("Googler", "1600 Amphitheater pkwy", kAddressEntryIcon,
+      {Suggestion(u"Googler", u"1600 Amphitheater pkwy", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       Suggestion("Grimes", "1234 Smith Blvd.", kAddressEntryIcon,
+       Suggestion(u"Grimes", u"1234 Smith Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion()});
@@ -2208,9 +2198,9 @@ TEST_F(BrowserAutofillManagerTest,
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       firstname_field.global_id(),
-      {Suggestion("Charles", "", Suggestion::Icon::kAccount,
+      {Suggestion(u"Charles", u"", Suggestion::Icon::kAccount,
                   SuggestionType::kAddressFieldByFieldFilling),
-       Suggestion("Elvis", "", Suggestion::Icon::kAccount,
+       Suggestion(u"Elvis", u"", Suggestion::Icon::kAccount,
                   SuggestionType::kAddressFieldByFieldFilling),
        Suggestion(SuggestionType::kSeparator),
        CreateUndoOrClearFormSuggestion(), CreateManageAddressesSuggestion()});
@@ -2254,9 +2244,9 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_WithDuplicates) {
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
-      {Suggestion("Charles", "123 Apple St.", kAddressEntryIcon,
+      {Suggestion(u"Charles", u"123 Apple St.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
+       Suggestion(u"Elvis", u"3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion()});
@@ -2371,9 +2361,9 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_EmailAndLoyaltyCards) {
   OnAskForValuesToFill(form_data, form_data.fields()[0]);
   external_delegate()->CheckSuggestions(
       form_data.fields()[0].global_id(),
-      {Suggestion("buddy@gmail.com", "", Suggestion::Icon::kEmail,
+      {Suggestion(u"buddy@gmail.com", u"", Suggestion::Icon::kEmail,
                   SuggestionType::kAddressEntry),
-       Suggestion("theking@gmail.com", "", Suggestion::Icon::kEmail,
+       Suggestion(u"theking@gmail.com", u"", Suggestion::Icon::kEmail,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion()});
@@ -2441,11 +2431,11 @@ TEST_F(BrowserAutofillManagerTestValuables, GetSuggestions_LoyaltyCards) {
 
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
-      {Suggestion("1234", "Deutsche Bahn", Suggestion::Icon::kNoIcon,
+      {Suggestion(u"1234", u"Deutsche Bahn", Suggestion::Icon::kNoIcon,
                   SuggestionType::kLoyaltyCardEntry),
        Suggestion(SuggestionType::kSeparator),
-       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
-                  "", Suggestion::Icon::kSettings,
+       Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
+                  u"", Suggestion::Icon::kSettings,
                   SuggestionType::kManageLoyaltyCard)});
 
   // Make sure key metrics are logged.
@@ -2515,17 +2505,17 @@ TEST_F(BrowserAutofillManagerTestValuables,
 #if BUILDFLAG(IS_ANDROID)
   external_delegate()->CheckSuggestions(
       form_data.fields()[0].global_id(),
-      {Suggestion("buddy@gmail.com", "", Suggestion::Icon::kEmail,
+      {Suggestion(u"buddy@gmail.com", u"", Suggestion::Icon::kEmail,
                   SuggestionType::kAddressEntry),
-       Suggestion("theking@gmail.com", "", Suggestion::Icon::kEmail,
+       Suggestion(u"theking@gmail.com", u"", Suggestion::Icon::kEmail,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion(),
-       Suggestion("1234", "Deutsche Bahn", Suggestion::Icon::kNoIcon,
+       Suggestion(u"1234", u"Deutsche Bahn", Suggestion::Icon::kNoIcon,
                   SuggestionType::kLoyaltyCardEntry)});
 #else
   Suggestion loyalty_cards_submenu = Suggestion(
-      l10n_util::GetStringUTF8(IDS_AUTOFILL_LOYALTY_CARDS_SUBMENU_TITLE), "",
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_LOYALTY_CARDS_SUBMENU_TITLE), u"",
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       Suggestion::Icon::kGoogleWalletMonochrome,
 #else
@@ -2535,19 +2525,19 @@ TEST_F(BrowserAutofillManagerTestValuables,
   loyalty_cards_submenu.acceptability =
       Suggestion::Acceptability::kUnacceptable;
   loyalty_cards_submenu.children = {
-      Suggestion("1234", "Deutsche Bahn", Suggestion::Icon::kNoIcon,
+      Suggestion(u"1234", u"Deutsche Bahn", Suggestion::Icon::kNoIcon,
                  SuggestionType::kLoyaltyCardEntry),
       Suggestion(SuggestionType::kSeparator),
-      Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
-                 "", Suggestion::Icon::kSettings,
+      Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
+                 u"", Suggestion::Icon::kSettings,
                  SuggestionType::kManageLoyaltyCard),
   };
 
   external_delegate()->CheckSuggestions(
       form_data.fields()[0].global_id(),
-      {Suggestion("buddy@gmail.com", "", Suggestion::Icon::kEmail,
+      {Suggestion(u"buddy@gmail.com", u"", Suggestion::Icon::kEmail,
                   SuggestionType::kAddressEntry),
-       Suggestion("theking@gmail.com", "", Suggestion::Icon::kEmail,
+       Suggestion(u"theking@gmail.com", u"", Suggestion::Icon::kEmail,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator), loyalty_cards_submenu,
        Suggestion(SuggestionType::kSeparator),
@@ -2591,11 +2581,11 @@ TEST_F(BrowserAutofillManagerTestValuables,
 
   external_delegate()->CheckSuggestions(
       form_data.fields()[0].global_id(),
-      {Suggestion("1234", "Deutsche Bahn", Suggestion::Icon::kNoIcon,
+      {Suggestion(u"1234", u"Deutsche Bahn", Suggestion::Icon::kNoIcon,
                   SuggestionType::kLoyaltyCardEntry),
        Suggestion(SuggestionType::kSeparator),
-       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
-                  "", Suggestion::Icon::kSettings,
+       Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
+                  u"", Suggestion::Icon::kSettings,
                   SuggestionType::kManageLoyaltyCard)});
 }
 
@@ -2656,7 +2646,7 @@ TEST_F(
   base::HistogramTester histogram_tester;
 
   external_delegate()->DidAcceptSuggestion(
-      Suggestion("1234", "Deutsche Bahn", Suggestion::Icon::kNoIcon,
+      Suggestion(u"1234", u"Deutsche Bahn", Suggestion::Icon::kNoIcon,
                  SuggestionType::kLoyaltyCardEntry),
       {});
 
@@ -2853,8 +2843,8 @@ TEST_F(BrowserAutofillManagerTest,
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
-      {Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
-                  Suggestion::Icon::kNoIcon,
+      {Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM),
+                  u"", Suggestion::Icon::kNoIcon,
                   SuggestionType::kMixedFormMessage)});
 
   // Clear the test credit cards and try again -- we should still show the
@@ -2863,8 +2853,8 @@ TEST_F(BrowserAutofillManagerTest,
   OnAskForValuesToFill(form, form.fields()[0]);
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
-      {Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
-                  Suggestion::Icon::kNoIcon,
+      {Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM),
+                  u"", Suggestion::Icon::kNoIcon,
                   SuggestionType::kMixedFormMessage)});
 }
 
@@ -2958,7 +2948,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   OnAskForValuesToFill(form, form.fields()[1]);
 
   Suggestion visa_suggestion = GenerateSuggestionFromCardDetails(
-      kVisaCard, Suggestion::Icon::kCardVisa, "3456", "04/11");
+      kVisaCard, Suggestion::Icon::kCardVisa, "3456", u"04/11");
   Suggestion amex_suggestion = GetCardSuggestion(kAmericanExpressCard);
   Suggestion mastercard_suggestion = GetCardSuggestion(kMasterCard);
 
@@ -3018,10 +3008,11 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 
     external_delegate()->CheckSuggestions(
         form.fields()[0].global_id(),
-        {Suggestion("Bonnie Parker", GenerateLabelsFromCreditCard(credit_card0),
+        {Suggestion(u"Bonnie Parker",
+                    GenerateLabelsFromCreditCard(credit_card0),
                     Suggestion::Icon::kCardMasterCard,
                     SuggestionType::kCreditCardEntry),
-         Suggestion("Clyde Barrow", GenerateLabelsFromCreditCard(credit_card1),
+         Suggestion(u"Clyde Barrow", GenerateLabelsFromCreditCard(credit_card1),
                     Suggestion::Icon::kCardVisa,
                     SuggestionType::kCreditCardEntry),
          Suggestion(SuggestionType::kSeparator),
@@ -3037,7 +3028,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 
     external_delegate()->CheckSuggestions(
         form.fields()[0].global_id(),
-        {Suggestion("Bonnie Parker", GenerateLabelsFromCreditCard(credit_card0),
+        {Suggestion(u"Bonnie Parker",
+                    GenerateLabelsFromCreditCard(credit_card0),
                     Suggestion::Icon::kCardMasterCard,
                     SuggestionType::kCreditCardEntry),
          Suggestion(SuggestionType::kSeparator),
@@ -3053,7 +3045,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 
     external_delegate()->CheckSuggestions(
         form.fields()[0].global_id(),
-        {Suggestion("Clyde Barrow", GenerateLabelsFromCreditCard(credit_card1),
+        {Suggestion(u"Clyde Barrow", GenerateLabelsFromCreditCard(credit_card1),
                     Suggestion::Icon::kCardVisa,
                     SuggestionType::kCreditCardEntry),
          Suggestion(SuggestionType::kSeparator),
@@ -3069,7 +3061,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 
     external_delegate()->CheckSuggestions(
         form.fields()[0].global_id(),
-        {Suggestion("John Dillinger",
+        {Suggestion(u"John Dillinger",
                     GenerateLabelsFromCreditCard(credit_card2),
                     Suggestion::Icon::kCardAmericanExpress,
                     SuggestionType::kCreditCardEntry),
@@ -3130,9 +3122,9 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
-      {Suggestion("John Dillinger", "", Suggestion::Icon::kCardGeneric,
+      {Suggestion(u"John Dillinger", u"", Suggestion::Icon::kCardGeneric,
                   SuggestionType::kCreditCardEntry),
-       Suggestion("Clyde Barrow", GenerateLabelsFromCreditCard(credit_card0),
+       Suggestion(u"Clyde Barrow", GenerateLabelsFromCreditCard(credit_card0),
                   Suggestion::Icon::kCardAmericanExpress,
                   SuggestionType::kCreditCardEntry),
        Suggestion(SuggestionType::kSeparator),
@@ -3152,9 +3144,9 @@ TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestions) {
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
-      {Suggestion("Charles", "123 Apple St.", kAddressEntryIcon,
+      {Suggestion(u"Charles", u"123 Apple St.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
+       Suggestion(u"Elvis", u"3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion()});
@@ -3199,8 +3191,8 @@ TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestionsNonHttps) {
   external_delegate()->CheckSuggestions(
       cc_number_field.global_id(),
       {Suggestion(
-          l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION),
-          "", Suggestion::Icon::kNoIcon,
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION),
+          u"", Suggestion::Icon::kNoIcon,
           SuggestionType::kInsecureContextPaymentDisabledMessage)});
 
   // Ensure that the single field suggestions are not considered for any
@@ -3755,9 +3747,9 @@ TEST_F(BrowserAutofillManagerTest, GetFieldSuggestionsWhenFormIsAutofilled) {
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
-      {Suggestion("Charles", "123 Apple St.", kAddressEntryIcon,
+      {Suggestion(u"Charles", u"123 Apple St.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
+       Suggestion(u"Elvis", u"3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion()});
@@ -3796,9 +3788,9 @@ TEST_F(BrowserAutofillManagerTest, GetFieldSuggestionsWithDuplicateValues) {
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       field.global_id(),
-      {Suggestion("Elvis", "", Suggestion::Icon::kAccount,
+      {Suggestion(u"Elvis", u"", Suggestion::Icon::kAccount,
                   SuggestionType::kAddressFieldByFieldFilling),
-       Suggestion("Charles", "", Suggestion::Icon::kAccount,
+       Suggestion(u"Charles", u"", Suggestion::Icon::kAccount,
                   SuggestionType::kAddressFieldByFieldFilling),
        Suggestion(SuggestionType::kSeparator),
        CreateUndoOrClearFormSuggestion(), CreateManageAddressesSuggestion()});
@@ -3847,8 +3839,8 @@ TEST_F(BrowserAutofillManagerTest,
   OnAskForValuesToFill(form, form.fields()[2]);
   external_delegate()->CheckSuggestions(
       form.fields()[2].global_id(),
-      {Suggestion("test@example.com", "Natty Bumppo", Suggestion::Icon::kEmail,
-                  SuggestionType::kAddressEntry),
+      {Suggestion(u"test@example.com", u"Natty Bumppo",
+                  Suggestion::Icon::kEmail, SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion()});
 }
@@ -3877,7 +3869,7 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_FieldSwapping) {
   OnAskForValuesToFill(form, form.fields()[0]);
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
-      {Suggestion("John H. Doe", std::vector<std::vector<Suggestion::Text>>{},
+      {Suggestion(u"John H. Doe", std::vector<std::vector<Suggestion::Text>>{},
                   Suggestion::Icon::kAccount,
                   SuggestionType::kAddressFieldByFieldFilling),
        Suggestion(SuggestionType::kSeparator),
@@ -6348,7 +6340,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
   OnAskForValuesToFill(form, form.fields()[1]);
 
   Suggestion expected_credit_card_number_suggestion =
-      GetCardSuggestion(kVisaCard, /*nickname=*/"nickname");
+      GetCardSuggestion(kVisaCard, /*nickname=*/u"nickname");
   Suggestion expected_virtual_card_number_suggestion =
       GenerateVirtualCardSuggestionFromCreditCardSuggestion(
           expected_credit_card_number_suggestion, CREDIT_CARD_NUMBER);
@@ -6363,7 +6355,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
   OnAskForValuesToFill(form, form.fields()[0]);
 
   Suggestion expected_credit_card_name_suggestion = GetCardSuggestion(
-      kVisaCard, /*nickname=*/"nickname", CREDIT_CARD_NAME_FULL);
+      kVisaCard, /*nickname=*/u"nickname", CREDIT_CARD_NAME_FULL);
   Suggestion expected_virtual_card_name_suggestion =
       GenerateVirtualCardSuggestionFromCreditCardSuggestion(
           expected_credit_card_name_suggestion, CREDIT_CARD_NAME_FULL);
@@ -6402,7 +6394,7 @@ TEST_F(BrowserAutofillManagerTest,
   OnAskForValuesToFill(form, form.fields()[1]);
 
   Suggestion credit_card_number_suggestion =
-      GetCardSuggestion(kVisaCard, /*nickname=*/"nickname");
+      GetCardSuggestion(kVisaCard, /*nickname=*/u"nickname");
   Suggestion virtual_card_number_suggestion =
       GenerateVirtualCardSuggestionFromCreditCardSuggestion(
           credit_card_number_suggestion, CREDIT_CARD_NUMBER);
@@ -6417,7 +6409,7 @@ TEST_F(BrowserAutofillManagerTest,
   OnAskForValuesToFill(form, form.fields()[0]);
 
   Suggestion credit_card_name_suggestion = GetCardSuggestion(
-      kVisaCard, /*nickname=*/"nickname", CREDIT_CARD_NAME_FULL);
+      kVisaCard, /*nickname=*/u"nickname", CREDIT_CARD_NAME_FULL);
   Suggestion virtual_card_name_suggestion =
       GenerateVirtualCardSuggestionFromCreditCardSuggestion(
           credit_card_name_suggestion, CREDIT_CARD_NAME_FULL);
@@ -7304,8 +7296,8 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedForm) {
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       form.fields().back().global_id(),
-      {Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
-                  Suggestion::Icon::kNoIcon,
+      {Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM),
+                  u"", Suggestion::Icon::kNoIcon,
                   SuggestionType::kMixedFormMessage)});
 }
 
@@ -7344,8 +7336,8 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormUserTyped) {
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       form.fields().back().global_id(),
-      {Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
-                  Suggestion::Icon::kNoIcon,
+      {Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM),
+                  u"", Suggestion::Icon::kNoIcon,
                   SuggestionType::kMixedFormMessage)});
 
   // Pretend user started typing and make sure we no longer set suggestions.
@@ -7475,10 +7467,10 @@ TEST_F(BrowserAutofillManagerTest, NoComposeSuggestionsByDefault) {
   OnAskForValuesToFill(form, form.fields()[3]);
   external_delegate()->CheckSuggestions(
       form.fields()[3].global_id(),
-      {Suggestion("123 Apple St., unit 6", "123 Apple St.", kAddressEntryIcon,
+      {Suggestion(u"123 Apple St., unit 6", u"123 Apple St.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       Suggestion("3734 Elvis Presley Blvd., Apt. 10",
-                  "3734 Elvis Presley Blvd.", kAddressEntryIcon,
+       Suggestion(u"3734 Elvis Presley Blvd., Apt. 10",
+                  u"3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        CreateManageAddressesSuggestion()});
@@ -8316,7 +8308,8 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
 
   external_delegate()->CheckSuggestions(
       form.fields()[1].global_id(),
-      {GetCardSuggestion(kAmericanExpressCard, expected_nickname_),
+      {GetCardSuggestion(kAmericanExpressCard,
+                         base::UTF8ToUTF16(expected_nickname_)),
        Suggestion(SuggestionType::kSeparator),
        CreateManageCreditCardsSuggestion(
            /*with_gpay_logo=*/true)});
@@ -8349,8 +8342,9 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
 
   external_delegate()->CheckSuggestions(
       form.fields()[1].global_id(),
-      {GetCardSuggestion(kAmericanExpressCard, local_nickname_),
-       GetCardSuggestion(kVisaCard, server_nickname_),
+      {GetCardSuggestion(kAmericanExpressCard,
+                         base::UTF8ToUTF16(local_nickname_)),
+       GetCardSuggestion(kVisaCard, base::UTF8ToUTF16(server_nickname_)),
        Suggestion(SuggestionType::kSeparator),
        CreateManageCreditCardsSuggestion(
            /*with_gpay_logo=*/false)});
@@ -8854,7 +8848,7 @@ class BrowserAutofillManagerPlusAddressTest
         .WillByDefault([](const std::vector<std::string>& plus_addresses) {
           return base::ToVector(
               plus_addresses, [](const std::string& plus_address) {
-                return Suggestion(plus_address, "",
+                return Suggestion(base::UTF8ToUTF16(plus_address), u"",
                                   Suggestion::Icon::kPlusAddress,
                                   SuggestionType::kFillExistingPlusAddress);
               });
@@ -9134,19 +9128,18 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
       .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([&](const FormData& form,
-                          const FormStructure* form_structure,
-                          const FormFieldData& field,
-                          const AutofillField* autofill_field,
-                          const AutofillClient&,
-                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
-                              on_suggestions_returned) {
-        std::move(on_suggestions_returned)
-            .Run(field.global_id(),
-                 std::vector<Suggestion>{
-                     Suggestion(SuggestionType::kAutocompleteEntry),
-                     Suggestion(SuggestionType::kAutocompleteEntry)});
-      });
+      .WillRepeatedly(
+          [&](const FormData& form, const FormStructure* form_structure,
+              const FormFieldData& field, const AutofillField* autofill_field,
+              const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                  on_suggestions_returned) {
+            std::move(on_suggestions_returned)
+                .Run(field.global_id(),
+                     std::vector<Suggestion>{
+                         Suggestion(SuggestionType::kAutocompleteEntry),
+                         Suggestion(SuggestionType::kAutocompleteEntry)});
+          });
 
   EXPECT_CALL(plus_address_delegate(),
               OnPlusAddressSuggestionShown(

@@ -482,12 +482,14 @@ TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
       {autofill::test::NextMonth(), "/", autofill::test::NextYear().substr(2)});
 
   // Initialize suggestion.
-  std::vector<std::string> minor_texts = {"Quicksilver ••1111"};
+  std::vector<std::u16string> minor_texts = {u"Quicksilver ••1111"};
   std::vector<autofill::Suggestion> autofillSuggestions = {
-      autofill::Suggestion("Virtual card", minor_texts, expiration_date_label,
+      autofill::Suggestion(u"Virtual card", minor_texts,
+                           base::UTF8ToUTF16(expiration_date_label),
                            autofill::Suggestion::Icon::kCardVisa,
                            autofill::SuggestionType::kVirtualCreditCardEntry),
-      autofill::Suggestion("Quicksilver ••1111", expiration_date_label,
+      autofill::Suggestion(u"Quicksilver ••1111",
+                           base::UTF8ToUTF16(expiration_date_label),
                            autofill::Suggestion::Icon::kCardVisa,
                            autofill::SuggestionType::kCreditCardEntry),
   };
@@ -570,7 +572,7 @@ TEST_F(AutofillAgentTests, showAutofillPopup_EmptyIconInCreditCardSuggestion) {
       .WillRepeatedly(testing::Return(FillingProduct::kCreditCard));
 
   std::vector<autofill::Suggestion> autofillSuggestions = {
-      autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
+      autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kNoIcon,
                            autofill::SuggestionType::kCreditCardEntry)};
 
   // Completion handler to retrieve suggestions.
@@ -596,9 +598,10 @@ TEST_F(AutofillAgentTests, showAutofillPopup_PlusAddresses) {
   testing::NiceMock<autofill::MockAutofillSuggestionDelegate> mock_delegate;
 
   const std::string fillExistingSuggestionText = "existing";
-  std::vector<autofill::Suggestion> autofillSuggestions = {autofill::Suggestion(
-      fillExistingSuggestionText, "", autofill::Suggestion::Icon::kNoIcon,
-      autofill::SuggestionType::kFillExistingPlusAddress)};
+  std::vector<autofill::Suggestion> autofillSuggestions = {
+      autofill::Suggestion(base::UTF8ToUTF16(fillExistingSuggestionText), u"",
+                           autofill::Suggestion::Icon::kNoIcon,
+                           autofill::SuggestionType::kFillExistingPlusAddress)};
 
   // Completion handler to retrieve suggestions.
   auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
@@ -656,7 +659,7 @@ TEST_F(AutofillAgentTests,
 
   // Initialize suggestion, initially without a custom icon.
   std::vector<autofill::Suggestion> autofillSuggestions = {
-      autofill::Suggestion("", "", suggestion_network_icon,
+      autofill::Suggestion(u"", u"", suggestion_network_icon,
                            autofill::SuggestionType::kCreditCardEntry)};
   ASSERT_TRUE(
       std::holds_alternative<gfx::Image>(autofillSuggestions[0].custom_icon));
@@ -693,13 +696,13 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
   // Make the suggestions available to AutofillAgent.
   std::vector<autofill::Suggestion> autofillSuggestions;
   autofillSuggestions.push_back(
-      autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
+      autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kNoIcon,
                            autofill::SuggestionType::kAddressEntry));
   autofillSuggestions.push_back(
-      autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
+      autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kNoIcon,
                            autofill::SuggestionType::kAddressEntry));
   autofillSuggestions.push_back(
-      autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
+      autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kNoIcon,
                            SuggestionType::kUndoOrClear));
   [autofill_agent_
        showAutofillPopup:autofillSuggestions
@@ -752,13 +755,13 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
   // Make the suggestions available to AutofillAgent.
   std::vector<autofill::Suggestion> autofillSuggestions;
   autofillSuggestions.push_back(
-      autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
+      autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kNoIcon,
                            autofill::SuggestionType::kCreditCardEntry));
   autofillSuggestions.push_back(
-      autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
+      autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kNoIcon,
                            autofill::SuggestionType::kCreditCardEntry));
   autofillSuggestions.push_back(
-      autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
+      autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kNoIcon,
                            SuggestionType::kUndoOrClear));
   [autofill_agent_
        showAutofillPopup:autofillSuggestions

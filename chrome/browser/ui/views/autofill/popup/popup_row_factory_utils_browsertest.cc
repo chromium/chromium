@@ -41,7 +41,7 @@ namespace {
 using ::testing::NiceMock;
 using ::testing::Return;
 
-std::vector<std::string> minor_texts = {"Minor text"};
+std::vector<std::u16string> minor_texts = {u"Minor text"};
 
 Suggestion CreatePasswordSuggestion(const std::u16string& main_text) {
   Suggestion suggestion(main_text, SuggestionType::kPasswordEntry);
@@ -104,28 +104,31 @@ Suggestion CreateAllLoyaltyCardsEntry() {
 // Suggestion main text (Suggestion::main_text) is used for the test and
 // screenshot names, avoid special symbols and keep them unique.
 const Suggestion kSuggestions[] = {
-    Suggestion("Address_entry",
+    Suggestion(u"Address_entry",
                minor_texts,
-               "label",
+               u"label",
                Suggestion::Icon::kLocation,
                SuggestionType::kAddressEntry),
     CreatePasswordSuggestion(u"Password_entry"),
     CreateTryThisRecoverySuggestion(u"Try_this_recovery_password"),
     CreateTroubleSigninInSuggestion(u"Trouble_signing_in_entry"),
     CreateBackupPasswordSuggestion(u"Backup_password_entry"),
-    Suggestion("Autofill_options",
+    Suggestion(u"Autofill_options",
                minor_texts,
-               "label",
+               u"label",
                Suggestion::Icon::kSettings,
                SuggestionType::kManageAddress),
-    Suggestion(u"Autocomplete", SuggestionType::kAutocompleteEntry),
-    Suggestion("Compose",
+    Suggestion(u"Autocomplete",
+               u"",
+               Suggestion::Icon::kNoIcon,
+               SuggestionType::kAutocompleteEntry),
+    Suggestion(u"Compose",
                minor_texts,
-               "label",
+               u"label",
                Suggestion::Icon::kMagic,
                SuggestionType::kComposeResumeNudge),
-    Suggestion("Promo_code",
-               "label",
+    Suggestion(u"Promo_code",
+               u"label",
                Suggestion::Icon::kGlobe,
                SuggestionType::kSeePromoCodeDetails)};
 
@@ -283,7 +286,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, FilterMatchHighlighting) {
   CreateRowView(
-      Suggestion("Address_entry", minor_texts, "label",
+      Suggestion(u"Address_entry", minor_texts, u"label",
                  Suggestion::Icon::kLocation, SuggestionType::kAddressEntry),
       /*selected_cell=*/std::nullopt,
       AutofillPopupController::SuggestionFilterMatch{.main_text_match =
@@ -318,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, PasswordCustomIconLoader) {
                 IDR_DISABLE));
       });
 
-  Suggestion suggestion("Password_entry", minor_texts, "label",
+  Suggestion suggestion(u"Password_entry", minor_texts, u"label",
                         Suggestion::Icon::kKey, SuggestionType::kPasswordEntry);
   suggestion.custom_icon =
       Suggestion::FaviconDetails(/*domain_url=*/GURL("https://google.com"));
@@ -341,7 +344,7 @@ class CreatePopupRowViewWithNoUserEducationRateLimitTest
 
 IN_PROC_BROWSER_TEST_F(CreatePopupRowViewWithNoUserEducationRateLimitTest,
                        ComposeWithNewBadge) {
-  Suggestion suggestion("Compose with a badge", minor_texts, "label",
+  Suggestion suggestion(u"Compose with a badge", minor_texts, u"label",
                         Suggestion::Icon::kMagic,
                         SuggestionType::kComposeProactiveNudge);
   suggestion.feature_for_new_badge =

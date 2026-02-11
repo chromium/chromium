@@ -479,9 +479,9 @@ TEST_F(PopupRowViewTest, SelectSuggestionOnFocusedContent) {
 }
 
 TEST_F(PopupRowViewTest, ContentViewA11yAttributes) {
-  ShowView(/*line_number=*/0,
-           {Suggestion("dummy_value", "dummy_label", Suggestion::Icon::kNoIcon,
-                       SuggestionType::kAddressEntry)});
+  ShowView(/*line_number=*/0, {Suggestion(u"dummy_value", u"dummy_label",
+                                          Suggestion::Icon::kNoIcon,
+                                          SuggestionType::kAddressEntry)});
 
   views::ViewAccessibility& accessibility =
       row_view().GetContentView().GetViewAccessibility();
@@ -498,7 +498,7 @@ TEST_F(PopupRowViewTest, ContentViewA11yAttributes) {
 
 TEST_F(PopupRowViewTest, AccessibleProperties) {
   ShowView(/*line_number=*/0,
-           {Suggestion("test_value", "test_label", Suggestion::Icon::kNoIcon,
+           {Suggestion(u"test_value", u"test_label", Suggestion::Icon::kNoIcon,
                        SuggestionType::kAddressEntry)});
 
   ui::AXNodeData node_data;

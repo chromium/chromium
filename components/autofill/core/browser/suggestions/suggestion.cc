@@ -366,43 +366,43 @@ Suggestion::Suggestion(SuggestionType type) : type(type) {}
 Suggestion::Suggestion(std::u16string main_text, SuggestionType type)
     : type(type), main_text(std::move(main_text), Text::IsPrimary(true)) {}
 
-Suggestion::Suggestion(std::string_view main_text,
-                       std::string_view label,
+Suggestion::Suggestion(std::u16string main_text,
+                       std::u16string label,
                        Icon icon,
                        SuggestionType type)
     : type(type),
-      main_text(base::UTF8ToUTF16(main_text), Text::IsPrimary(true)),
+      main_text(std::move(main_text), Text::IsPrimary(true)),
       icon(icon) {
   if (!label.empty()) {
-    labels = {{Text(base::UTF8ToUTF16(label))}};
+    labels = {{Text(std::move(label))}};
   }
 }
 
-Suggestion::Suggestion(std::string_view main_text,
+Suggestion::Suggestion(std::u16string_view main_text,
                        std::vector<std::vector<Text>> labels,
                        Icon icon,
                        SuggestionType type)
     : type(type),
-      main_text(base::UTF8ToUTF16(main_text), Text::IsPrimary(true)),
+      main_text(std::u16string(main_text), Text::IsPrimary(true)),
       labels(std::move(labels)),
       icon(icon) {}
 
-Suggestion::Suggestion(std::string_view main_text,
-                       base::span<const std::string> minor_text_labels,
-                       std::string_view label,
+Suggestion::Suggestion(std::u16string_view main_text,
+                       base::span<const std::u16string> minor_text_labels,
+                       std::u16string_view label,
                        Icon icon,
                        SuggestionType type)
     : type(type),
-      main_text(base::UTF8ToUTF16(main_text), Text::IsPrimary(true)),
+      main_text(std::u16string(main_text), Text::IsPrimary(true)),
       minor_texts(base::ToVector(minor_text_labels,
-                                 [](std::string_view minor_text) {
+                                 [](std::u16string_view minor_text) {
                                    return Text(
-                                       base::UTF8ToUTF16(minor_text),
+                                       std::u16string(minor_text),
                                        Suggestion::Text::IsPrimary(true));
                                  })),
       icon(icon) {
   if (!label.empty()) {
-    labels = {{Text(base::UTF8ToUTF16(label))}};
+    labels = {{Text(std::u16string(label))}};
   }
 }
 

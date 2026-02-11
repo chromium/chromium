@@ -68,7 +68,7 @@ class PlusAddressSuggestionGeneratorTest : public testing::Test {
           suggestions.reserve(plus_addresses.size());
 
           for (const auto& plus_address : plus_addresses) {
-            suggestions.emplace_back(plus_address, "",
+            suggestions.emplace_back(base::UTF8ToUTF16(plus_address), u"",
                                      Suggestion::Icon::kPlusAddress,
                                      SuggestionType::kFillExistingPlusAddress);
           }

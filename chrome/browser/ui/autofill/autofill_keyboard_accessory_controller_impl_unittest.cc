@@ -52,19 +52,21 @@ auto MatchesConfirmationText(const std::u16string& title,
 
 std::vector<Suggestion> CreateSuggestionsWithUndoOrClearEntry(
     size_t clear_form_offset) {
-  auto create_pw_suggestion = [](std::string_view password,
-                                 std::string_view username,
-                                 std::string_view origin) {
-    Suggestion s(/*main_text=*/username, /*label=*/password,
+  auto create_pw_suggestion = [](std::u16string_view password,
+                                 std::u16string_view username,
+                                 std::u16string_view origin) {
+    Suggestion s(/*main_text=*/std::u16string(username),
+                 /*label=*/std::u16string(password),
                  Suggestion::Icon::kNoIcon, SuggestionType::kPasswordEntry);
-    s.additional_label = base::UTF8ToUTF16(origin);
+    s.additional_label = std::u16string(origin);
     return s;
   };
   std::vector<Suggestion> suggestions = {
-      create_pw_suggestion("****************", "Alf", ""),
-      create_pw_suggestion("****************", "Berta", "psl.origin.eg"),
-      create_pw_suggestion("***", "Carl", "")};
-  suggestions.emplace(suggestions.begin() + clear_form_offset, "Clear", "",
+      create_pw_suggestion(u"****************", u"Alf", u""),
+      create_pw_suggestion(u"****************", u"Berta", u"psl.origin.eg"),
+      create_pw_suggestion(u"***", u"Carl", u"")};
+  suggestions.emplace(suggestions.begin() + clear_form_offset,
+                      std::u16string(u"Clear"), std::u16string(u""),
                       Suggestion::Icon::kNoIcon, SuggestionType::kUndoOrClear);
   return suggestions;
 }

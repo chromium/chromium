@@ -81,8 +81,8 @@ Suggestion CreatePasskeyFromAnotherDeviceEntry(bool listed_passkeys) {
     title_id = listed_passkeys ? IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY
                                : IDS_PASSWORD_MANAGER_USE_PASSKEY;
   }
-  return Suggestion(l10n_util::GetStringUTF8(title_id),
-                    /*label=*/"", Suggestion::Icon::kDevice,
+  return Suggestion(l10n_util::GetStringUTF16(title_id),
+                    /*label=*/u"", Suggestion::Icon::kDevice,
                     SuggestionType::kWebauthnSignInWithAnotherDevice);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -90,8 +90,8 @@ Suggestion CreatePasskeyFromAnotherDeviceEntry(bool listed_passkeys) {
 Suggestion CreateGenerationEntry() {
   // The UI code will pick up an icon from the resources based on the string.
   return Suggestion(
-      l10n_util::GetStringUTF8(IDS_PASSWORD_MANAGER_GENERATE_PASSWORD),
-      /*label=*/"", Suggestion::Icon::kKey,
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_GENERATE_PASSWORD),
+      /*label=*/u"", Suggestion::Icon::kKey,
       SuggestionType::kGeneratePasswordEntry);
 }
 
@@ -288,7 +288,7 @@ void AppendManualFallbackSuggestions(
   // websites.
   for (const CredentialUIEntry::DomainInfo& domain_info :
        credential.GetAffiliatedDomains()) {
-    Suggestion suggestion(domain_info.name, /*label=*/"",
+    Suggestion suggestion(base::UTF8ToUTF16(domain_info.name), /*label=*/u"",
                           Suggestion::Icon::kGlobe,
                           SuggestionType::kPasswordEntry);
     bool replaced;
@@ -435,11 +435,11 @@ void PasswordSuggestionGenerator::AppendOptionalFooterSection(
   }
 
   Suggestion suggestion(
-      l10n_util::GetStringUTF8(
+      l10n_util::GetStringUTF16(
           has_webauthn_credential
               ? IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_AND_PASSKEYS
               : IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS),
-      /*label=*/"", Suggestion::Icon::kSettings,
+      /*label=*/u"", Suggestion::Icon::kSettings,
       SuggestionType::kAllSavedPasswordsEntry);
   // The UI code will pick up an icon from the resources based on the string.
   suggestion.trailing_icon = Suggestion::Icon::kGooglePasswordManager;
@@ -475,10 +475,9 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
       std::ranges::transform(
           *delegate->GetPasskeys().value(), std::back_inserter(suggestions),
           [&page_favicon](const auto& passkey) {
-            Suggestion suggestion(
-                base::UTF16ToUTF8(ToUsernameString(passkey.username())),
-                /*label=*/"", Suggestion::Icon::kGlobe,
-                SuggestionType::kWebauthnCredential);
+            Suggestion suggestion(ToUsernameString(passkey.username()),
+                                  /*label=*/u"", Suggestion::Icon::kGlobe,
+                                  SuggestionType::kWebauthnCredential);
             suggestion.custom_icon = page_favicon;
             suggestion.payload =
                 Suggestion::Guid(base::Base64Encode(passkey.credential_id()));
