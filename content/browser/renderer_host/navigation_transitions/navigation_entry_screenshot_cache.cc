@@ -8,6 +8,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/ptr_util.h"
+#include "base/rand_util.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
@@ -143,11 +144,14 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
     return;
   }
 
-  // A navigation entry without a screenshot will be removed from the cache
-  // first (thus not tracked). Impossible to overwrite for a cached entry.
+  // A navigation entry without a screenshot is removed from the cache (thus not
+  // tracked). We shouldn't be trying to cache a screenshot for an entry that
+  // already has one.
   // TODO(crbug.com/373893401): Find out why this happens.
   if (entry->GetUserData(NavigationEntryScreenshot::kUserDataKey)) {
-    base::debug::DumpWithoutCrashing();
+    if (base::ShouldRecordSubsampledMetric(0.001)) {
+      base::debug::DumpWithoutCrashing();
+    }
     RemoveScreenshot(entry);
   }
 
