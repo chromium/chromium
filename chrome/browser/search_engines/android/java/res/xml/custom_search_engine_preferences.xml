@@ -26,4 +26,21 @@ found in the LICENSE file.
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:key="custom_site_search_section"
+        android:title="@string/site_search_site_search_header"
+        app:allowDividerAbove="true">
+
+        <org.chromium.components.browser_ui.settings.TextMessagePreference
+            android:key="custom_site_search_description"
+            android:summary="@string/site_search_site_search_description"
+            app:allowDividerBelow="false" />
+
+        <org.chromium.chrome.browser.search_engines.settings.custom_site_search.CustomSiteSearchListPreference
+            android:key="custom_site_search_item_list"
+            android:layout="@layout/custom_site_search_list_preference"
+            app:allowDividerAbove="false" />
+
+    </PreferenceCategory>
+
 </androidx.preference.PreferenceScreen>

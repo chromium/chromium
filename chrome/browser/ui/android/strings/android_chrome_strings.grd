@@ -491,6 +491,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_SITE_SEARCH_SEARCH_ENGINES_DESCRIPTION" desc="Explanation for 'Search Engines' section">
         To use a search engine other than the default, type its shortcut in the address bar followed by your preferred keyboard shortcut. You can also change your default search engine here.
       </message>
+      <message name="IDS_SITE_SEARCH_SITE_SEARCH_HEADER" desc="Label for 'Site Search' section">
+        Site search
+      </message>
+      <message name="IDS_SITE_SEARCH_SITE_SEARCH_DESCRIPTION" desc="Explanation for 'Site Search' section">
+        To search a specific site or part of Chrome, type its shortcut in the address bar, followed by your preferred keyboard shortcut.
+      </message>
 
 
 
