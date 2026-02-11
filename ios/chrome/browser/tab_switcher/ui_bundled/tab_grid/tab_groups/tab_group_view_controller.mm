@@ -124,6 +124,8 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   UIStackView* _topToolbarButtonsStackView;
   // The tab group menu button.
   UIButton* _menuButton;
+  // The tab group view's close button.
+  UIButton* _closeButton;
   // Tab Groups handler.
   __weak id<TabGroupsCommands> _handler;
   // Group's title.
@@ -443,12 +445,17 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 - (void)setGroupColor:(UIColor*)color {
   _groupColor = color;
   _gridViewController.groupColor = color;
+  _coloredDotView.backgroundColor = color;
 }
 
 - (void)setTabGroupColorPalette:(TabGroupColorPalette*)tabGroupColorPalette {
   _tabGroupColorPalette = tabGroupColorPalette;
   // Forward it to the TabGroupGridViewController.
   _gridViewController.tabGroupColorPalette = _tabGroupColorPalette;
+  if (!self.viewLoaded) {
+    return;
+  }
+  [self updateGroupColorSurfaces];
 }
 
 - (void)setShareAvailable:(BOOL)shareAvailable {
@@ -570,16 +577,15 @@ UIButton* TopToolbarButton(NSString* symbol_name,
     [weakSelf didTapCloseButton];
   }];
 
-  UIButton* closeButton =
-      TopToolbarButton(kXMarkSymbol, closeAction, kCloseImageSize);
-  closeButton.accessibilityLabel = l10n_util::GetNSString(IDS_CLOSE);
-  closeButton.accessibilityIdentifier = kTabGroupCloseButtonIdentifier;
+  _closeButton = TopToolbarButton(kXMarkSymbol, closeAction, kCloseImageSize);
+  _closeButton.accessibilityLabel = l10n_util::GetNSString(IDS_CLOSE);
+  _closeButton.accessibilityIdentifier = kTabGroupCloseButtonIdentifier;
   if (IsTabGroupColorOnSurfaceEnabled()) {
-    closeButton.backgroundColor = [_tabGroupColorPalette.commonColor
+    _closeButton.backgroundColor = [_tabGroupColorPalette.commonColor
         colorWithAlphaComponent:kButtonAlpha];
   }
 
-  [stackView addArrangedSubview:closeButton];
+  [stackView addArrangedSubview:_closeButton];
 
   return stackView;
 }
@@ -999,6 +1005,19 @@ UIButton* TopToolbarButton(NSString* symbol_name,
       _container.transform = CGAffineTransformIdentity;
       break;
   }
+}
+
+// Updates the UI elements' colors.
+- (void)updateGroupColorSurfaces {
+  _menuButton.backgroundColor =
+      [_tabGroupColorPalette.commonColor colorWithAlphaComponent:kButtonAlpha];
+  _facePileContainer.backgroundColor =
+      [_tabGroupColorPalette.commonColor colorWithAlphaComponent:kButtonAlpha];
+  _closeButton.backgroundColor =
+      [_tabGroupColorPalette.commonColor colorWithAlphaComponent:kButtonAlpha];
+  [_bottomToolbar
+      updateNewTabButtonBackgroundColor:_tabGroupColorPalette.commonColor];
+  _coloredDotView.backgroundColor = _tabGroupColorPalette.commonColor;
 }
 
 #pragma mark - UIGestureRecognizerDelegate

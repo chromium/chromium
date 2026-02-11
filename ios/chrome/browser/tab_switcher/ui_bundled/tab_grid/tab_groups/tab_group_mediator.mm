@@ -565,8 +565,17 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
         break;
       }
       [_groupConsumer setGroupTitle:tabGroup->GetTitle()];
-      [_groupConsumer setGroupColor:tab_groups::ColorForTabGroupColorId(
-                                        tabGroup->GetColor())];
+
+      if (IsTabGroupColorOnSurfaceEnabled()) {
+        [_groupConsumer
+            setTabGroupColorPalette:[[TabGroupColorPalette alloc]
+                                        initWithSeedColorId:tabGroup
+                                                                ->GetColor()]];
+
+      } else {
+        [_groupConsumer setGroupColor:tab_groups::ColorForTabGroupColorId(
+                                          tabGroup->GetColor())];
+      }
       break;
     }
     case WebStateListChange::Type::kGroupDelete: {
@@ -643,8 +652,16 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
   [self populateConsumerItems];
   if (_tabGroup) {
     [_groupConsumer setGroupTitle:_tabGroup->GetTitle()];
-    [_groupConsumer setGroupColor:tab_groups::ColorForTabGroupColorId(
-                                      _tabGroup->GetColor())];
+
+    if (IsTabGroupColorOnSurfaceEnabled()) {
+      [_groupConsumer
+          setTabGroupColorPalette:[[TabGroupColorPalette alloc]
+                                      initWithSeedColorId:_tabGroup
+                                                              ->GetColor()]];
+    } else {
+      [_groupConsumer setGroupColor:tab_groups::ColorForTabGroupColorId(
+                                        _tabGroup->GetColor())];
+    }
   } else {
     [self.tabGroupsHandler hideTabGroup];
   }

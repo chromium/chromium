@@ -42,6 +42,7 @@
   }
   _tabGroupColorPalette = tabGroupColorPalette;
   [self updateTabGroupHeader];
+  [self reconfigureItems];
 }
 
 - (void)setGroupTitle:(NSString*)groupTitle {
@@ -282,6 +283,14 @@
 
   [snapshot deleteItemsWithIdentifiers:@[ item ]];
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+// Reconfigures items to refresh the UI.
+- (void)reconfigureItems {
+  NSDiffableDataSourceSnapshot* snapshot = [self.diffableDataSource snapshot];
+  [snapshot reconfigureItemsWithIdentifiers:snapshot.itemIdentifiers];
+
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
 #pragma mark - TabGroupActivitySummaryCellDelegate

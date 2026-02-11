@@ -20,15 +20,15 @@
 namespace {
 
 // Hex values for seed colors.
-int const kGreyColor = 0x747775;
-int const kBlueColor = 0x3271EA;
-int const kRedColor = 0xDC362E;
-int const kYellowColor = 0xB16300;
-int const kGreenColor = 0x128937;
-int const kPinkColor = 0xDC258D;
-int const kPurpleColor = 0x9254EA;
-int const kCyanColor = 0x0081A8;
-int const kOrangeColor = 0xC05A01;
+int const kGreyColor = 0x747775;    // RGB: (0.45, 0.47, 0.46).
+int const kBlueColor = 0x3271EA;    // RGB: (0.20, 0.44, 0.92).
+int const kRedColor = 0xDC362E;     // RGB: (0.86, 0.21, 0.18).
+int const kYellowColor = 0xB16300;  // RGB: (0.69, 0.39, 0.00).
+int const kGreenColor = 0x128937;   // RGB: (0.07, 0.54, 0.22).
+int const kPinkColor = 0xDC258D;    // RGB: (0.86, 0.15, 0.55).
+int const kPurpleColor = 0x9254EA;  // RGB: (0.57, 0.33, 0.92).
+int const kCyanColor = 0x0081A8;    // RGB: (0.00, 0.51, 0.66).
+int const kOrangeColor = 0xC05A01;  // RGB: (0.75, 0.35, 0.00).
 
 // The tone for the cells' background.
 const int kBackgroundToneLight = 95;

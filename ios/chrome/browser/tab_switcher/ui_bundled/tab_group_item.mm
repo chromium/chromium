@@ -16,6 +16,7 @@
   base::WeakPtr<const TabGroup> _tabGroup;
   raw_ptr<const void, DanglingUntriaged> _tabGroupIdentifier;
   TabGroupColorPalette* _tabGroupColorPalette;
+  tab_groups::TabGroupColorId _colorId;
 }
 
 - (instancetype)initWithTabGroup:(const TabGroup*)tabGroup {
@@ -56,9 +57,11 @@
   if (!_tabGroup) {
     return nil;
   }
-  if (!_tabGroupColorPalette) {
-    _tabGroupColorPalette = [[TabGroupColorPalette alloc]
-        initWithSeedColorId:_tabGroup->GetColor()];
+  tab_groups::TabGroupColorId currentColorId = _tabGroup->GetColor();
+  if (!_tabGroupColorPalette || _colorId != currentColorId) {
+    _colorId = currentColorId;
+    _tabGroupColorPalette =
+        [[TabGroupColorPalette alloc] initWithSeedColorId:_colorId];
   }
   return _tabGroupColorPalette;
 }
