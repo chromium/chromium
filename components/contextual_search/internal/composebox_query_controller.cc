@@ -455,18 +455,20 @@ void ComposeboxQueryController::CreateSearchUrl(
           search_url_request_info->lens_overlay_selection_type,
           search_url_request_info->additional_params);
 
-      // Add the added inputs param.
-      lens::AddedInputs added_inputs =
-          CreateAddedInputs(search_url_request_info->file_tokens);
-      if (added_inputs.added_inputs_size() > 0) {
-        std::string serialized_proto;
-        CHECK(added_inputs.SerializeToString(&serialized_proto));
-        std::string encoded_proto;
-        base::Base64UrlEncode(serialized_proto,
-                              base::Base64UrlEncodePolicy::OMIT_PADDING,
-                              &encoded_proto);
-        search_url_request_info->additional_params.insert(
-            {kAddedInputsQueryParameterKey, encoded_proto});
+      if (search_url_request_info->search_url_type == SearchUrlType::kAim) {
+        // Add the added inputs param.
+        lens::AddedInputs added_inputs =
+            CreateAddedInputs(search_url_request_info->file_tokens);
+        if (added_inputs.added_inputs_size() > 0) {
+          std::string serialized_proto;
+          CHECK(added_inputs.SerializeToString(&serialized_proto));
+          std::string encoded_proto;
+          base::Base64UrlEncode(serialized_proto,
+                                base::Base64UrlEncodePolicy::OMIT_PADDING,
+                                &encoded_proto);
+          search_url_request_info->additional_params.insert(
+              {kAddedInputsQueryParameterKey, encoded_proto});
+        }
       }
 
       // Get the encoded visual search interaction log data.
