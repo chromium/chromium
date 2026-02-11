@@ -1,8 +1,10 @@
 # Agent Skills
 
 This directory contains specialized Agent Skills for Chromium development.
-Unlike general context files, skills are "on-demand" expertise that the Gemini
-CLI can activate when relevant to your request.
+
+Unlike general context files, skills are shared, "on-demand" expertise that
+multiple AI agents (such as Gemini CLI, Claude, GitHub Copilot, etc.) can
+activate when relevant to your request.
 
 ## How to Use
 
@@ -11,12 +13,13 @@ symlink is preferred so that the skill stays up-to-date when you sync your
 local checkout:
 
 ```bash
-mkdir -p .gemini/skills
-ln -s $(pwd)/agents/skills/<skill-name> .gemini/skills/
+mkdir -p .<agent>/skills
+ln -s "$(pwd)/agents/skills/<skill-name>" .<agent>/skills/
 ```
 
-Once installed, Gemini will automatically detect when a skill is relevant to
-your request and ask for permission to activate it.
+Once installed, your agent (e.g. the Gemini CLI when using `.gemini/skills`)
+will automatically detect when a skill is relevant to your request and ask for
+permission to activate it.
 
 ## Contributing
 
