@@ -494,12 +494,6 @@ bool IsAppBackgroundRefreshEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppBackgroundRefresh);
 }
 
-BASE_FEATURE(kHomeMemoryImprovements, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsHomeMemoryImprovementsEnabled() {
-  return base::FeatureList::IsEnabled(kHomeMemoryImprovements);
-}
-
 BASE_FEATURE(kEnableTraitCollectionRegistration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -488,13 +488,6 @@ BASE_DECLARE_FEATURE(kEnableAppBackgroundRefresh);
 // Whether app background refresh is enabled.
 bool IsAppBackgroundRefreshEnabled();
 
-// Feature flag for changes that aim to improve memory footprint on the Home
-// surface.
-BASE_DECLARE_FEATURE(kHomeMemoryImprovements);
-
-// Whether Home memory improvements are enabled.
-bool IsHomeMemoryImprovementsEnabled();
-
 // Feature flag to enable the registration of customized UITrait arrays. This
 // feature flag is related to the effort to remove invocations of
 // 'traitCollectionDidChange' which was deprecated in iOS 17.

@@ -259,35 +259,19 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     _addTabActionImageView = [[UIImageView alloc] init];
     _addTabActionImageView.image = DefaultSymbolTemplateWithPointSize(
         kPlusSymbol, kOverScrollSymbolPointSize);
-    if (!IsHomeMemoryImprovementsEnabled()) {
-      [_addTabActionImageView sizeToFit];
-    }
+    [_addTabActionImageView sizeToFit];
     [self addSubview:_addTabActionImageView];
-    if (IsHomeMemoryImprovementsEnabled()) {
-      [_addTabActionImageView sizeToFit];
-    }
-
     _reloadActionImageView = [[UIImageView alloc] init];
     _reloadActionImageView.image = CustomSymbolTemplateWithPointSize(
         kArrowClockWiseSymbol, kOverScrollSymbolPointSize);
-    if (!IsHomeMemoryImprovementsEnabled()) {
-      [_reloadActionImageView sizeToFit];
-    }
+    [_reloadActionImageView sizeToFit];
     [self addSubview:_reloadActionImageView];
-    if (IsHomeMemoryImprovementsEnabled()) {
-      [_reloadActionImageView sizeToFit];
-    }
 
     _closeTabActionImageView = [[UIImageView alloc] init];
     _closeTabActionImageView.image = DefaultSymbolTemplateWithPointSize(
         kXMarkSymbol, kOverScrollSymbolPointSize);
-    if (!IsHomeMemoryImprovementsEnabled()) {
-      [_closeTabActionImageView sizeToFit];
-    }
+    [_closeTabActionImageView sizeToFit];
     [self addSubview:_closeTabActionImageView];
-    if (IsHomeMemoryImprovementsEnabled()) {
-      [_closeTabActionImageView sizeToFit];
-    }
 
     _addTabLabel = [[UILabel alloc] init];
     _addTabLabel.numberOfLines = 0;

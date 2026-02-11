@@ -5497,11 +5497,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "home-memory-improvements",
-    "owners": [ "thegreenfrog@google.com", "ajuma@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "home-module-pref-refactor",
     "owners": [ "jhimawan@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 160

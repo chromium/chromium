@@ -432,9 +432,6 @@ extern const char kHandleMdmErrorsForDasherAccountsDescription[];
 extern const char kHideToolbarsInOverflowMenuName[];
 extern const char kHideToolbarsInOverflowMenuDescription[];
 
-extern const char kHomeMemoryImprovementsName[];
-extern const char kHomeMemoryImprovementsDescription[];
-
 extern const char kHttpsUpgradesName[];
 extern const char kHttpsUpgradesDescription[];
 

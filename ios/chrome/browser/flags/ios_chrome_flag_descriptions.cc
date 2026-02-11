@@ -701,11 +701,6 @@ const char kHideToolbarsInOverflowMenuDescription[] =
     "When enabled, adds a button in the overflow menu that force the "
     "fullscreen mode on iOS.";
 
-const char kHomeMemoryImprovementsName[] = "Home Memory Improvements";
-const char kHomeMemoryImprovementsDescription[] =
-    "When enabled, uses code that aims to improve the memory footprint in "
-    "Home.";
-
 const char kHttpsUpgradesName[] = "HTTPS Upgrades";
 const char kHttpsUpgradesDescription[] =
     "When enabled, eligible navigations will automatically be upgraded to "
