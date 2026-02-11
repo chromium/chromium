@@ -256,18 +256,6 @@ message UMAMetrics {
         [(unit) = "count_smallerIsBetter"];
   }
 
-  message WebUITabStrip {
-    repeated int64 close_action = 1 [(unit) = "count_smallerIsBetter"];
-    repeated int64 close_tab_action = 2 [(unit) = "count_smallerIsBetter"];
-    repeated int64 load_completed_time = 3 [(unit) = "ms_smallerIsBetter"];
-    repeated int64 load_document_time = 4 [(unit) = "ms_smallerIsBetter"];
-    repeated int64 open_action = 5 [(unit) = "count_smallerIsBetter"];
-    repeated int64 open_duration = 6 [(unit) = "ms_smallerIsBetter"];
-    repeated int64 tab_activation = 7 [(unit) = "count_smallerIsBetter"];
-    repeated int64 tab_creation = 8 [(unit) = "count_smallerIsBetter"];
-    repeated int64 tab_data_received = 9 [(unit) = "ms_smallerIsBetter"];
-  };
-
   optional Browser browser = 1;
   optional Compositing compositing = 2;
   optional CompositorLatency compositor_latency = 3;
@@ -283,7 +271,6 @@ message UMAMetrics {
   optional SubresourceFilter subresource_filter = 13;
   optional TabSearch tab_search = 14;
   optional TabStrip tab_strip = 15;
-  optional WebUITabStrip web_ui_tab_strip = 16;
 }
 
 extend TraceMetrics {

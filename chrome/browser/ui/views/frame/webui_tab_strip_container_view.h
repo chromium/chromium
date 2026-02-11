@@ -16,9 +16,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_embedder.h"
-#include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_metrics.h"
 #include "chrome/common/buildflags.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -115,7 +115,7 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
                                     WebUITabStripOpenCloseReason reason);
 
   // Passed to the AutoCloser to handle closing.
-  void CloseForEventOutsideTabStrip(TabStripUICloseAction reason);
+  void CloseForEventOutsideTabStrip();
 
   void InitializeWebView();
   void DeinitializeWebView();
@@ -174,10 +174,6 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
 #endif  // BUILDFLAG(IS_WIN)
 
   std::optional<float> current_drag_height_;
-
-  // When opened, if currently open. Used to calculate metric for how
-  // long the tab strip is kept open.
-  std::optional<base::TimeTicks> time_at_open_;
 
   // Used to keep the toolbar revealed while the tab strip is open.
   std::unique_ptr<ImmersiveRevealedLock> immersive_revealed_lock_;

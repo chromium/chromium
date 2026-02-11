@@ -123,15 +123,6 @@ interface PageHandler {
   // Close the tab strip.
   CloseContainer();
 
-  // Report time spent between click on a tab and the tab is activated.
-  ReportTabActivationDuration(uint32 duration_ms);
-
-  // Report time spent on calling getTabs() and data come back.
-  ReportTabDataReceivedDuration(uint32 tab_count, uint32 duration_ms);
-
-  // Report time spent between getTabs() and tabs are created.
-  ReportTabCreationDuration(uint32 tab_count, uint32 duration_ms);
-
   // Switch to a specific tab.
   ActivateTab(int32 tab_id);
 };

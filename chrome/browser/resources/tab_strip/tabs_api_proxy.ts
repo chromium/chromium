@@ -53,21 +53,6 @@ export interface TabsApiProxy {
 
   closeContainer(): void;
 
-  /** @param durationMs Activation duration time in ms. */
-  reportTabActivationDuration(durationMs: number): void;
-
-  /**
-   * @param tabCount Number of tabs.
-   * @param durationMs Activation duration time in ms.
-   */
-  reportTabDataReceivedDuration(tabCount: number, durationMs: number): void;
-
-  /**
-   * @param tabCount Number of tabs.
-   * @param durationMs Creation duration time in ms.
-   */
-  reportTabCreationDuration(tabCount: number, durationMs: number): void;
-
   getCallbackRouter(): PageCallbackRouter;
 }
 
@@ -97,9 +82,6 @@ export class TabsApiProxyImpl implements TabsApiProxy {
   closeTab(tabId: number, closeTabAction: CloseTabAction) {
     this.handler.closeTab(
         tabId, closeTabAction === CloseTabAction.SWIPED_TO_CLOSE);
-    chrome.metricsPrivate.recordEnumerationValue(
-        'WebUITabStrip.CloseTabAction', closeTabAction,
-        Object.keys(CloseTabAction).length);
   }
 
   groupTab(tabId: number, groupId: string) {
@@ -149,18 +131,6 @@ export class TabsApiProxyImpl implements TabsApiProxy {
 
   closeContainer() {
     this.handler.closeContainer();
-  }
-
-  reportTabActivationDuration(durationMs: number) {
-    this.handler.reportTabActivationDuration(durationMs);
-  }
-
-  reportTabDataReceivedDuration(tabCount: number, durationMs: number) {
-    this.handler.reportTabDataReceivedDuration(tabCount, durationMs);
-  }
-
-  reportTabCreationDuration(tabCount: number, durationMs: number) {
-    this.handler.reportTabCreationDuration(tabCount, durationMs);
   }
 
   getCallbackRouter() {

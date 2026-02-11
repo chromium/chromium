@@ -127,12 +127,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/others/histograms.xml:WebUIHostnameForCodeCache) -->
 
-<variants name="WebUITabStripTabCount">
-  <variant name=".01_05" summary="1 to 5 tabs"/>
-  <variant name=".06_20" summary="6 to 20 tabs"/>
-  <variant name=".21_" summary="21 or more tabs"/>
-</variants>
-
 <histogram name="Bubble.{BubbleName}.CloseReason" enum="WidgetClosedReason"
     expires_after="2026-07-22">
   <owner>kerenzhu@chromium.org</owner>
@@ -1059,106 +1053,6 @@ features through Chrome Labs. -->
   <summary>
     True if WebUICodeCache feature is enabled. This counts the number of times
     generated WebUICodeCache JS code cache is instantiated.
-  </summary>
-</histogram>
-
-<histogram name="WebUITabStrip.CloseAction" enum="WebUITabStripCloseActions"
-    expires_after="2025-11-12">
-  <owner>robliao@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <summary>
-    The WebUI tab strip is a more touch-friendly tab strip used in place of
-    Chrome's native tab strip in some cases. It can be opened and closed. This
-    records how a user closed it.
-  </summary>
-</histogram>
-
-<histogram name="WebUITabStrip.CloseTabAction"
-    enum="WebUITabStripCloseTabActions" expires_after="2025-11-12">
-  <owner>robliao@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <summary>
-    The WebUI tab strip is a more touch-friendly tab strip used in place of
-    Chrome's native tab strip in some cases. This records how a user closed a
-    tab within the WebUI tab strip.
-  </summary>
-</histogram>
-
-<histogram name="WebUITabStrip.LoadCompletedTime" units="ms"
-    expires_after="2026-07-26">
-  <owner>robliao@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <summary>
-    The amount of time between the RenderFrameHost StartProvisionalLoad event
-    and the RenderFrameHost DocumentOnLoadCompleted event for the WebUI tab
-    strip page. This happens once when a browser window with WebUI tab strip
-    enabled is created. WebUITabStrip.LoadDocumentTime should be smaller or
-    equal to WebUITabStrip.LoadCoimpletedTime.
-  </summary>
-</histogram>
-
-<histogram name="WebUITabStrip.LoadDocumentTime" units="ms"
-    expires_after="2026-05-17">
-  <owner>robliao@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <summary>
-    The amount of time between the RenderFrameHost StartProvisionalLoad and
-    DidFinishDocumentLoad events for the WebUI tab strip page. This happens once
-    when a browser window with WebUI tab strip enabled is created.
-    WebUITabStrip.LoadDocumentTime should be smaller or equal to
-    WebUITabStrip.LoadCoimpletedTime.
-  </summary>
-</histogram>
-
-<histogram name="WebUITabStrip.OpenAction" enum="WebUITabStripOpenActions"
-    expires_after="2026-06-21">
-  <owner>robliao@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <summary>
-    The WebUI tab strip is a more touch-friendly tab strip used in place of
-    Chrome's native tab strip in some cases. It can be opened and closed. This
-    records how a user opened it.
-  </summary>
-</histogram>
-
-<histogram name="WebUITabStrip.OpenDuration" units="ms"
-    expires_after="2026-07-26">
-  <owner>robliao@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <summary>
-    The WebUI tab strip is a more touch-friendly tab strip used in place of
-    Chrome's native tab strip in some cases. It can be opened and closed. This
-    records how long it was open when closing.
-  </summary>
-</histogram>
-
-<histogram name="WebUITabStrip.TabActivation" units="ms"
-    expires_after="2025-11-12">
-  <owner>robliao@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <summary>
-    WebUI Tabstrip: Time from activating a tab from WebUI to receiving an
-    activation notification in WebUI.
-  </summary>
-</histogram>
-
-<histogram name="WebUITabStrip.TabCreation{WebUITabStripTabCount}" units="ms"
-    expires_after="2025-11-12">
-  <owner>robliao@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <summary>
-    WebUI Tabstrip: Time needed to create all of the tab elements at launch.
-    {WebUITabStripTabCount}
-  </summary>
-</histogram>
-
-<histogram name="WebUITabStrip.TabDataReceived{WebUITabStripTabCount}"
-    units="ms" expires_after="2025-11-12">
-  <owner>robliao@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <summary>
-    WebUI Tabstrip: Time from requesting the tab data to receiving the data.
-    {WebUITabStripTabCount}
   </summary>
 </histogram>
 

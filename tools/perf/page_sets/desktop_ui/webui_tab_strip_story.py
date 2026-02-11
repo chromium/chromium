@@ -15,15 +15,6 @@ from page_sets.desktop_ui import story_tags
 WEBUI_TAB_STRIP_BENCHMARK_UMA = [
     'TabStrip.Tab.Views.ActivationAction',
     'TabStrip.Tab.WebUI.ActivationAction',
-    'WebUITabStrip.CloseAction',
-    'WebUITabStrip.CloseTabAction',
-    'WebUITabStrip.LoadCompletedTime',
-    'WebUITabStrip.LoadDocumentTime',
-    'WebUITabStrip.OpenAction',
-    'WebUITabStrip.OpenDuration',
-    'WebUITabStrip.TabActivation',
-    'WebUITabStrip.TabCreation',
-    'WebUITabStrip.TabDataReceived',
 ]
 
 WEBUI_TAB_STRIP_CUSTOM_METRIC_NAMES = [

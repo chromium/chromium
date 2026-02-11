@@ -59,9 +59,6 @@ export class TestTabsApiProxy extends TestBrowserProxy implements TabsApiProxy {
       'showBackgroundContextMenu',
       'showEditDialogForGroup',
       'showTabContextMenu',
-      'reportTabActivationDuration',
-      'reportTabDataReceivedDuration',
-      'reportTabCreationDuration',
     ]);
 
     this.callbackRouter = new PageCallbackRouter();
@@ -191,17 +188,5 @@ export class TestTabsApiProxy extends TestBrowserProxy implements TabsApiProxy {
 
   showTabContextMenu(tabId: number, locationX: number, locationY: number) {
     this.methodCalled('showTabContextMenu', [tabId, locationX, locationY]);
-  }
-
-  reportTabActivationDuration(durationMs: number) {
-    this.methodCalled('reportTabActivationDuration', [durationMs]);
-  }
-
-  reportTabDataReceivedDuration(tabCount: number, durationMs: number) {
-    this.methodCalled('reportTabDataReceivedDuration', [tabCount, durationMs]);
-  }
-
-  reportTabCreationDuration(tabCount: number, durationMs: number) {
-    this.methodCalled('reportTabCreationDuration', [tabCount, durationMs]);
   }
 }

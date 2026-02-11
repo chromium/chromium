@@ -38,7 +38,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_embedder.h"
-#include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_metrics.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
@@ -731,7 +730,6 @@ void TabStripPageHandler::MoveTab(int32_t tab_id, int32_t to_index) {
 
 void TabStripPageHandler::CloseContainer() {
   // We only autoclose for tab selection.
-  RecordTabStripUICloseHistogram(TabStripUICloseAction::kTabSelected);
   DCHECK(embedder_);
   embedder_->CloseContainer();
 }
@@ -840,25 +838,6 @@ void TabStripPageHandler::SetThumbnailTracked(int32_t tab_id,
   }
 }
 
-void TabStripPageHandler::ReportTabActivationDuration(uint32_t duration_ms) {
-  UMA_HISTOGRAM_TIMES("WebUITabStrip.TabActivation",
-                      base::Milliseconds(duration_ms));
-  base::UmaHistogramEnumeration("TabStrip.Tab.WebUI.ActivationAction",
-                                TabActivationTypes::kTab);
-}
-
-void TabStripPageHandler::ReportTabDataReceivedDuration(uint32_t tab_count,
-                                                        uint32_t duration_ms) {
-  ReportTabDurationHistogram("TabDataReceived", tab_count,
-                             base::Milliseconds(duration_ms));
-}
-
-void TabStripPageHandler::ReportTabCreationDuration(uint32_t tab_count,
-                                                    uint32_t duration_ms) {
-  ReportTabDurationHistogram("TabCreation", tab_count,
-                             base::Milliseconds(duration_ms));
-}
-
 // Callback passed to |thumbnail_tracker_|. Called when a tab's thumbnail
 // changes, or when we start watching the tab.
 void TabStripPageHandler::HandleThumbnailUpdate(
@@ -880,31 +859,6 @@ void TabStripPageHandler::HandleTabCloseCancelled(content::WebContents* tab) {
   tab_before_unload_tracker_.Unobserve(tab);
   const SessionID::id_type tab_id = extensions::ExtensionTabUtil::GetTabId(tab);
   page_->TabCloseCancelled(tab_id);
-}
-
-// Reports a histogram using the format
-// WebUITabStrip.|histogram_fragment|.[tab count bucket].
-void TabStripPageHandler::ReportTabDurationHistogram(
-    const char* histogram_fragment,
-    int tab_count,
-    base::TimeDelta duration) {
-  if (tab_count <= 0) {
-    return;
-  }
-
-  // It isn't possible to report both a number of tabs and duration datapoint
-  // together in a histogram or to correlate two histograms together. As a
-  // result the histogram is manually bucketed.
-  const char* tab_count_bucket = "01_05";
-  if (6 <= tab_count && tab_count <= 20) {
-    tab_count_bucket = "06_20";
-  } else if (20 < tab_count) {
-    tab_count_bucket = "21_";
-  }
-
-  std::string histogram_name = base::JoinString(
-      {"WebUITabStrip", histogram_fragment, tab_count_bucket}, ".");
-  base::UmaHistogramTimes(histogram_name, duration);
 }
 
 gfx::ImageSkia TabStripPageHandler::ThemeFavicon(const gfx::ImageSkia& source,

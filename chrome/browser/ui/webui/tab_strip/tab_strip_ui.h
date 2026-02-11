@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tracker.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip.mojom.h"
-#include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -79,8 +78,6 @@ class TabStripUI : public ui::MojoWebUIController,
   void CreatePageHandler(
       mojo::PendingRemote<tab_strip::mojom::Page> page,
       mojo::PendingReceiver<tab_strip::mojom::PageHandler> receiver) override;
-
-  WebuiLoadTimer webui_load_timer_;
 
   std::unique_ptr<TabStripPageHandler> page_handler_;
 

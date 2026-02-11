@@ -502,44 +502,6 @@ SELECT UMAMetrics(
       WHERE histogram_name = 'TabStrip.Tab.WebUI.ActivationAction'
     )
   ),
-  'web_ui_tab_strip', UMAMetrics_WebUITabStrip(
-    'close_action', (
-      SELECT RepeatedField(sample)
-      FROM histogram_samples
-      WHERE histogram_name = 'WebUITabStrip.CloseAction'),
-    'close_tab_action', (
-      SELECT RepeatedField(sample)
-      FROM histogram_samples
-      WHERE histogram_name = 'WebUITabStrip.CloseTabAction'),
-    'load_completed_time', (
-      SELECT RepeatedField(sample)
-      FROM histogram_samples
-      WHERE histogram_name = 'WebUITabStrip.LoadCompletedTime'),
-    'load_document_time', (
-      SELECT RepeatedField(sample)
-      FROM histogram_samples
-      WHERE histogram_name = 'WebUITabStrip.LoadDocumentTime'),
-    'open_action', (
-      SELECT RepeatedField(sample)
-      FROM histogram_samples
-      WHERE histogram_name = 'WebUITabStrip.OpenAction'),
-    'open_duration', (
-      SELECT RepeatedField(sample)
-      FROM histogram_samples
-      WHERE histogram_name = 'WebUITabStrip.OpenDuration'),
-    'tab_activation', (
-      SELECT RepeatedField(sample)
-      FROM histogram_samples
-      WHERE histogram_name = 'WebUITabStrip.TabActivation'),
-    'tab_creation', (
-      SELECT RepeatedField(sample)
-      FROM histogram_samples
-      WHERE histogram_name = 'WebUITabStrip.TabCreation'),
-    'tab_data_received', (
-      SELECT RepeatedField(sample)
-      FROM histogram_samples
-      WHERE histogram_name = 'WebUITabStrip.TabDataReceived')
-  ),
   'shared_storage', UMAMetrics_SharedStorage(
     'document_timing_add_module', (
       SELECT RepeatedField(sample / 1000.0)

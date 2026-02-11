@@ -46,7 +46,6 @@
 #include "chrome/browser/ui/views/toolbar/webui_tab_counter_button.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
-#include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_metrics.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -207,7 +206,7 @@ TabStripUI* GetTabStripUI(content::WebContents* web_contents) {
 class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
                                                public views::ViewObserver {
  public:
-  using CloseCallback = base::RepeatingCallback<void(TabStripUICloseAction)>;
+  using CloseCallback = base::RepeatingClosure;
 
   AutoCloser(CloseCallback close_callback,
              views::View* top_container,
@@ -275,7 +274,7 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
     }
 
     located_event->StopPropagation();
-    close_callback_.Run(TabStripUICloseAction::kTapInTabContent);
+    close_callback_.Run();
   }
 
   // views::ViewObserver:
@@ -287,7 +286,7 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
       return;
     }
 
-    close_callback_.Run(TabStripUICloseAction::kOmniboxFocusedOrNewTabOpened);
+    close_callback_.Run();
   }
 
   void OnViewIsDeleting(views::View* observed_view) override {
@@ -553,7 +552,6 @@ void WebUITabStripContainerView::OpenForTabDrag() {
     return;
   }
 
-  RecordTabStripUIOpenHistogram(TabStripUIOpenAction::kTabDraggedIntoWindow);
   SetContainerTargetVisibility(true, WebUITabStripOpenCloseReason::kOther);
 }
 
@@ -646,10 +644,6 @@ void WebUITabStripContainerView::EndDragToOpen(
     opening = (fling_direction == WebUITabStripDragDirection::kDown);
   }
 
-  if (opening) {
-    RecordTabStripUIOpenHistogram(TabStripUIOpenAction::kToolbarDrag);
-  }
-
   animation_.Reset(open_proportion);
   SetContainerTargetVisibility(
       opening, fling_direction.has_value()
@@ -659,11 +653,6 @@ void WebUITabStripContainerView::EndDragToOpen(
 
 void WebUITabStripContainerView::TabCounterPressed(const ui::Event& event) {
   const bool new_visibility = !GetVisible();
-  if (new_visibility) {
-    RecordTabStripUIOpenHistogram(TabStripUIOpenAction::kTapOnTabCounter);
-  } else {
-    RecordTabStripUICloseHistogram(TabStripUICloseAction::kTapOnTabCounter);
-  }
 
   SetContainerTargetVisibility(new_visibility,
                                WebUITabStripOpenCloseReason::kOther);
@@ -703,15 +692,7 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
     // are actually directed to the WebUITabStrip.
     web_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
     web_view_->RequestFocus();
-
-    time_at_open_ = base::TimeTicks::Now();
   } else {
-    if (time_at_open_) {
-      RecordTabStripUIOpenDurationHistogram(base::TimeTicks::Now() -
-                                            time_at_open_.value());
-      time_at_open_ = std::nullopt;
-    }
-
     const double current_value = animation_.GetCurrentValue();
     if (current_value > 0.0) {
       animation_.SetSlideDuration(GetTimeDeltaForTabstripOpenClose(
@@ -731,9 +712,7 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
   auto_closer_->set_enabled(target_visible);
 }
 
-void WebUITabStripContainerView::CloseForEventOutsideTabStrip(
-    TabStripUICloseAction reason) {
-  RecordTabStripUICloseHistogram(reason);
+void WebUITabStripContainerView::CloseForEventOutsideTabStrip() {
   SetContainerTargetVisibility(false, WebUITabStripOpenCloseReason::kOther);
 }
 

@@ -137,8 +137,6 @@ export class TabListElement extends CustomElement implements
   private thumbnailTracker_: Map<number, boolean>;
   private intersectionObserver_: IntersectionObserver;
 
-  private activatingTabId_?: number;
-  private activatingTabIdTimestamp_?: number;  // In ms.
   private eventTracker_: EventTracker;
   private lastTargetedItem_: TabElement|TabGroupElement|null = null;
   private lastTouchPoint_?: {clientX: number, clientY: number};
@@ -326,16 +324,9 @@ export class TabListElement extends CustomElement implements
     this.tabsApi_.getLayout().then(
         ({layout}) => this.applyCssDictionary_(layout));
 
-    const getTabsStartTimestamp = Date.now();
     this.tabsApi_.getTabs().then(({tabs}) => {
-      this.tabsApi_.reportTabDataReceivedDuration(
-          tabs.length, Date.now() - getTabsStartTimestamp);
-
-      const createTabsStartTimestamp = Date.now();
       tabs.forEach(tab => this.onTabCreated_(tab));
       this.fetchAndUpdateGroupData_();
-      this.tabsApi_.reportTabCreationDuration(
-          tabs.length, Date.now() - createTabsStartTimestamp);
 
       const callbackRouter = this.tabsApi_.getCallbackRouter();
       callbackRouter.showContextMenu.addListener(
@@ -367,9 +358,6 @@ export class TabListElement extends CustomElement implements
   private createTabElement_(tab: Tab): TabElement {
     const tabElement = new TabElement();
     tabElement.tab = tab;
-    tabElement.onTabActivating = (id) => {
-      this.onTabActivating_(id);
-    };
     return tabElement;
   }
 
@@ -471,13 +459,6 @@ export class TabListElement extends CustomElement implements
   }
 
   private onTabActivated_(tabId: number) {
-    if (this.activatingTabId_ === tabId) {
-      this.tabsApi_.reportTabActivationDuration(
-          Date.now() - this.activatingTabIdTimestamp_!);
-    }
-    this.activatingTabId_ = undefined;
-    this.activatingTabIdTimestamp_ = undefined;
-
     this.updatePreviouslyActiveTabs_(tabId);
     const newlyActiveTab = this.findTabElement_(tabId);
     if (newlyActiveTab) {
@@ -487,21 +468,6 @@ export class TabListElement extends CustomElement implements
         this.scrollToTab_(newlyActiveTab);
       }
     }
-  }
-
-  private onTabActivating_(id: number) {
-    // onTabActivating_() is called when the user clicks on a tab in JavaScript.
-    // We then expect a callback asynchronously from the browser after the tab
-    // we clicked on has finally activated. We may incur multiple calls to
-    // onTabActivating_()  before the active tab actually changes so we only
-    // consider the most recent activating action when recording metrics. (See
-    // crbug.com/1333405)
-    const activeTab = this.getActiveTab_();
-    if (activeTab && activeTab.tab.id === id) {
-      return;
-    }
-    this.activatingTabId_ = id;
-    this.activatingTabIdTimestamp_ = Date.now();
   }
 
   private onTabCloseCancelled_(id: number) {
