@@ -4,7 +4,7 @@
 
 # TODO(crbug.com/348590032) Failing as test relies on window.devicePixelRatio
 # which doesn't work with per-window scaling.
--All/GetDisplayMediaHiDpiBrowserTest.Capture/1
+-All/GetDisplayMediaHiDpiBrowserTest.Capture/3840x2160
 
 -All/PDFExtensionJSInk2Test.Ink2/*
 -All/PDFExtensionJSInk2Test.Ink2BottomToolbar/*
@@ -42,8 +42,8 @@
 
 # TODO(crbug.com/395595608) Also disabled in weston, but maybe this could work
 # in mutter with some additional steps.
--All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/1
--All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/1
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/Standard_Accept
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/Standard_Accept
 
 -BackForwardCachePageLoadMetricsObserverBrowserTest.CumulativeLayoutShiftAfterBackForwardCacheRestore
 -BrowserViewTest.GetAccessibleTabModalDialogTree

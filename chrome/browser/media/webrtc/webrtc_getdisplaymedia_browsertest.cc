@@ -344,7 +344,8 @@ class WebRtcScreenCaptureBrowserTestWithPicker
 #if BUILDFLAG(PLATFORM_CFM)
     if (test_config_.should_prefer_current_tab &&
         !test_config_.accept_this_tab_capture) {
-      GTEST_SKIP();  // CFMs always automatically accept current-tab captures.
+      GTEST_SKIP() << "Skipping test: CFMs always automatically accept "
+                      "current-tab captures.";
     }
 #endif
   }
@@ -374,11 +375,19 @@ class WebRtcScreenCaptureBrowserTestWithPicker
   const TestConfigForPicker test_config_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebRtcScreenCaptureBrowserTestWithPicker,
-                         Combine(
-                             /*should_prefer_current_tab=*/Bool(),
-                             /*accept_this_tab_capture=*/Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebRtcScreenCaptureBrowserTestWithPicker,
+    Combine(
+        /*should_prefer_current_tab=*/Bool(),
+        /*accept_this_tab_capture=*/Bool()),
+    [](const testing::TestParamInfo<
+        WebRtcScreenCaptureBrowserTestWithPicker::ParamType>& info) {
+      return base::JoinString(
+          {std::get<0>(info.param) ? "PreferCurrentTab" : "Standard",
+           std::get<1>(info.param) ? "Accept" : "Reject"},
+          "_");
+    });
 
 // TODO(crbug.com/40744542): Real desktop capture is flaky on below platforms.
 // TODO(crbug.com/41493366): enable this flaky test.
@@ -604,7 +613,15 @@ INSTANTIATE_TEST_SUITE_P(
            TestConfigForFakeUI{/*should_prefer_current_tab=*/false,
                                /*display_surface=*/"browser"},
            TestConfigForFakeUI{/*should_prefer_current_tab=*/true,
-                               /*display_surface=*/"browser"}));
+                               /*display_surface=*/"browser"}),
+    [](const testing::TestParamInfo<
+        WebRtcScreenCaptureBrowserTestWithFakeUI::ParamType>& info) {
+      return base::JoinString(
+          {info.param.should_prefer_current_tab ? "PreferCurrentTab"
+                                                : "Standard",
+           info.param.display_surface},
+          "_");
+    });
 
 class WebRtcScreenCapturePermissionPolicyBrowserTest
     : public WebRtcScreenCaptureBrowserTest,
@@ -638,7 +655,16 @@ INSTANTIATE_TEST_SUITE_P(
     WebRtcScreenCapturePermissionPolicyBrowserTest,
     Combine(Values(GetDisplayMediaVariant::kStandard,
                    GetDisplayMediaVariant::kPreferCurrentTab),
-            /*allowlisted_by_policy=*/Bool()));
+            /*allowlisted_by_policy=*/Bool()),
+    [](const testing::TestParamInfo<
+        WebRtcScreenCapturePermissionPolicyBrowserTest::ParamType>& info) {
+      return base::JoinString(
+          {std::get<0>(info.param) == GetDisplayMediaVariant::kPreferCurrentTab
+               ? "PreferCurrentTab"
+               : "Standard",
+           std::get<1>(info.param) ? "Allowlisted" : "NotAllowlisted"},
+          "_");
+    });
 
 // Flaky on Win bots http://crbug.com/1264805
 #if BUILDFLAG(IS_WIN)
@@ -972,12 +998,12 @@ INSTANTIATE_TEST_SUITE_P(
                    DisplaySurfaceType::kScreen)),
     [](const testing::TestParamInfo<
         GetDisplayMediaVideoTrackBrowserTest::ParamType>& info) {
-      return base::StrCat(
+      return base::JoinString(
           {std::get<0>(info.param) ? "RegionCapture" : "",
-           std::get<1>(info.param) == DisplaySurfaceType::kTab ? "Tab"
-           : std::get<1>(info.param) == DisplaySurfaceType::kWindow
-               ? "Window"
-               : "Screen"});
+           std::get<1>(info.param) == DisplaySurfaceType::kTab      ? "Tab"
+           : std::get<1>(info.param) == DisplaySurfaceType::kWindow ? "Window"
+                                                                    : "Screen"},
+          "_");
     });
 
 // Normally, each of these these would have its own test, but the number of
@@ -1138,7 +1164,11 @@ INSTANTIATE_TEST_SUITE_P(
     Values(TestConfigForMediaResolution{/*constraint_width=*/640,
                                         /*constraint_height=*/480},
            TestConfigForMediaResolution{/*constraint_width=*/3840,
-                                        /*constraint_height=*/2160}));
+                                        /*constraint_height=*/2160}),
+    [](const testing::TestParamInfo<TestConfigForMediaResolution>& info) {
+      return base::StringPrintf("%dx%d", info.param.constraint_width,
+                                info.param.constraint_height);
+    });
 #endif
 
 class GetDisplayMediaChangeSourceBrowserTest
@@ -1205,9 +1235,22 @@ class GetDisplayMediaChangeSourceBrowserTest
   const bool user_shared_audio_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         GetDisplayMediaChangeSourceBrowserTest,
-                         Combine(Bool(), Bool(), Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GetDisplayMediaChangeSourceBrowserTest,
+    Combine(Bool(), Bool(), Bool()),
+    [](const testing::TestParamInfo<
+        GetDisplayMediaChangeSourceBrowserTest::ParamType>& info) {
+      return base::JoinString(
+          {
+              std::get<0>(info.param) ? "Dynamic" : "Static",
+              std::get<1>(info.param) ? "ShareThisTabInsteadButtonEnabled"
+                                      : "ShareThisTabInsteadButtonDisabled",
+              std::get<2>(info.param) ? "UserSharedAudio"
+                                      : "UserDidNotShareAudio",
+          },
+          "_");
+    });
 
 // TODO(crbug.com/40900706) Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
@@ -1439,7 +1482,10 @@ class GetDisplayMediaSelfBrowserSurfaceBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          GetDisplayMediaSelfBrowserSurfaceBrowserTest,
-                         Values("", "include", "exclude"));
+                         Values("", "include", "exclude"),
+                         [](const testing::TestParamInfo<std::string>& info) {
+                           return info.param.empty() ? "Unset" : info.param;
+                         });
 
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaSelfBrowserSurfaceBrowserTest,
                        SelfBrowserSurfaceChangesCapturedTab) {
@@ -1502,17 +1548,17 @@ class GetDisplayMediaTransientActivationRequiredTest
   static std::string GetDescription(
       const testing::TestParamInfo<
           GetDisplayMediaTransientActivationRequiredTest::ParamType>& info) {
-    std::string name = base::StrCat(
-        {std::get<0>(info.param) ? "WithUserGesture_" : "WithoutUserGesture_",
-         std::get<1>(info.param) ? "RequireGestureFeatureEnabled_"
-                                 : "_RequireGestureFeatureDisabled_",
-         std::get<2>(info.param) ? "PreferCurrentTab_"
-                                 : "DontPreferCurrentTab_",
+    std::string name = base::JoinString(
+        {std::get<0>(info.param) ? "WithUserGesture" : "WithoutUserGesture",
+         std::get<1>(info.param) ? "RequireGestureFeatureEnabled"
+                                 : "RequireGestureFeatureDisabled",
+         std::get<2>(info.param) ? "PreferCurrentTab" : "DontPreferCurrentTab",
          std::get<3>(info.param).has_value()
              ? (*std::get<3>(info.param) == kEmbeddedTestServerOrigin)
                    ? "Allowlisted"
                    : "OtherAllowlisted"
-             : "NoPolicySet"});
+             : "NoPolicySet"},
+        "_");
     return name;
   }
 
@@ -1608,9 +1654,9 @@ class GetDisplayMediaConfersTransientActivationTest
     const bool prefer_current_tab = std::get<1>(info.param);
     const bool user_accepts = std::get<2>(info.param);
     return base::StrCat(
-        {"WithFeature", feature_enabled ? "Enabled" : "Disabled",
+        {"WithFeature", feature_enabled ? "Enabled" : "Disabled", "_",
          prefer_current_tab ? "PreferCurrentTabVariant" : "StandardVariant",
-         "User", user_accepts ? "Accepts" : "Rejects", "Prompt"});
+         "_User", user_accepts ? "Accepts" : "Rejects", "Prompt"});
   }
 
   GetDisplayMediaConfersTransientActivationTest()
@@ -1703,8 +1749,8 @@ class GetUserMediaDoesNotConferTransientActivationTest
     const bool video = std::get<0>(info.param);
     const bool audio = std::get<1>(info.param);
     const bool user_accepts = std::get<2>(info.param);
-    return base::StrCat({"Video", video ? "On" : "Off", "Audio",
-                         audio ? "On" : "Off", "User",
+    return base::StrCat({"Video", video ? "On" : "Off", "_Audio",
+                         audio ? "On" : "Off", "_User",
                          user_accepts ? "Accepts" : "Rejects", "Prompt"});
   }
 
@@ -2654,7 +2700,26 @@ INSTANTIATE_TEST_SUITE_P(,
                                 CscAction::kDecreaseZoomLevel,
                                 CscAction::kResetZoomLevel,
                                 CscAction::kGetZoomLevel,
-                                CscAction::kGetSupportedZoomLevels));
+                                CscAction::kGetSupportedZoomLevels),
+                         [](const testing::TestParamInfo<CscAction>& info) {
+                           switch (info.param) {
+                             case CscAction::kForwardWheel:
+                               return "ForwardWheel";
+                             case CscAction::kForwardWheelNull:
+                               return "ForwardWheelNull";
+                             case CscAction::kIncreaseZoomLevel:
+                               return "IncreaseZoomLevel";
+                             case CscAction::kDecreaseZoomLevel:
+                               return "DecreaseZoomLevel";
+                             case CscAction::kResetZoomLevel:
+                               return "ResetZoomLevel";
+                             case CscAction::kGetZoomLevel:
+                               return "GetZoomLevel";
+                             case CscAction::kGetSupportedZoomLevels:
+                               return "GetSupportedZoomLevels";
+                           }
+                           NOTREACHED();
+                         });
 
 IN_PROC_BROWSER_TEST_P(CapturedSurfaceControlIndicatorTest,
                        IndicatorNotShownBeforeApiInvocation) {
@@ -2766,7 +2831,12 @@ class WebRtcScreenCaptureBrowserTestUserRejection
   const bool prefer_current_tab_;
 };
 
-INSTANTIATE_TEST_SUITE_P(, WebRtcScreenCaptureBrowserTestUserRejection, Bool());
+INSTANTIATE_TEST_SUITE_P(,
+                         WebRtcScreenCaptureBrowserTestUserRejection,
+                         Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "PreferCurrentTab" : "Standard";
+                         });
 
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestUserRejection,
                        CorrectErrorReported) {
@@ -2882,11 +2952,23 @@ class GetDisplayMediaRestrictOwnAudioTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         GetDisplayMediaRestrictOwnAudioTest,
-                         Combine(
-                             /*restrict_own_audio=*/Bool(),
-                             /*suppress_local_audio_playback=*/Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GetDisplayMediaRestrictOwnAudioTest,
+    Combine(
+        /*restrict_own_audio=*/Bool(),
+        /*suppress_local_audio_playback=*/Bool()),
+    [](const testing::TestParamInfo<
+        GetDisplayMediaRestrictOwnAudioTest::ParamType>& info) {
+      return base::JoinString(
+          {
+              std::get<0>(info.param) ? "RestrictOwnAudio"
+                                      : "NoRestrictOwnAudio",
+              std::get<1>(info.param) ? "SuppressLocalAudio"
+                                      : "NoSuppressLocalAudio",
+          },
+          "_");
+    });
 
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaRestrictOwnAudioTest,
                        ScreenCaptureWithRestrictOwnAudio) {
