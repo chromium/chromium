@@ -5294,6 +5294,7 @@ shown properly on the user-facing crash UI.
 </enum>
 
 <enum name="Hresult">
+  <int value="-2147483637" label="E_BOUNDS"/>
   <int value="-2147467263" label="E_NOTIMPL"/>
   <int value="-2147467262" label="E_NOINTERFACE"/>
   <int value="-2147467261" label="E_POINTER"/>
@@ -5306,6 +5307,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147312566" label="TYPE_E_CANTLOADLIBRARY"/>
   <int value="-2147221232" label="CLASS_E_NOAGGREGATION"/>
   <int value="-2147221164" label="REGDB_E_CLASSNOTREG"/>
+  <int value="-2147221163" label="REGDB_E_IIDNOTREG"/>
   <int value="-2147220480"
       label="custom error for abort setting badge for non app window"/>
   <int value="-2147220479"
@@ -5438,6 +5440,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147024890" label="E_HANDLE"/>
   <int value="-2147024888" label="E_NOT_ENOUGH_MEMORY"/>
   <int value="-2147024882" label="E_OUTOFMEMORY"/>
+  <int value="-2147024877" label="ERROR_WRITE_PROTECT"/>
   <int value="-2147024874" label="ERROR_BAD_COMMAND"/>
   <int value="-2147024865" label="ERROR_GEN_FAILURE"/>
   <int value="-2147024839" label="ERROR_ADAP_HDW_ERR"/>
@@ -5457,6 +5460,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147023838" label="ERROR_SERVICE_DISABLED"/>
   <int value="-2147023836" label="ERROR_SERVICE_DOES_NOT_EXIST"/>
   <int value="-2147023812" label="ERROR_NOT_SAFEBOOT_SERVICE"/>
+  <int value="-2147023781" label="ERROR_SHUTDOWN_IN_PROGRESS"/>
   <int value="-2147023779" label="ERROR_IO_DEVICE"/>
   <int value="-2147023728" label="ERROR_NOT_FOUND"/>
   <int value="-2147023673" label="ERROR_CANCELLED"/>
@@ -5464,6 +5468,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147023658" label="ERROR_CONNECTION_COUNT_LIMIT"/>
   <int value="-2147023605" label="ERROR_DRIVER_PROCESS_TERMINATED"/>
   <int value="-2147023589" label="ERROR_INVALID_OWNER"/>
+  <int value="-2147023584" label="ERROR_NO_SUCH_LOGON_SESSION"/>
   <int value="-2147023504" label="ERROR_FILE_CORRUPT"/>
   <int value="-2147023446" label="ERROR_NO_SYSTEM_RESOURCES"/>
   <int value="-2147023441" label="ERROR_COMMITMENT_LIMIT"/>
@@ -5479,16 +5484,21 @@ shown properly on the user-facing crash UI.
   <int value="-2147012867" label="WININET_E_CANNOT_CONNECT"/>
   <int value="-2147012866" label="WININET_E_CONNECTION_ABORTED"/>
   <int value="-2147012851" label="WININET_E_INVALID_CA"/>
+  <int value="-2147012744" label="WININET_E_INVALID_SERVER_RESPONSE"/>
   <int value="-2147012721" label="WININET_E_DECODING_FAILED"/>
   <int value="-2147009295" label="ERROR_INSTALL_PACKAGE_NOT_FOUND"/>
   <int value="-2146959355" label="CO_E_SERVER_EXEC_FAILURE"/>
   <int value="-2146959352" label="CO_E_SERVER_STOPPING"/>
+  <int value="-2146893051" label="SEC_E_SECPKG_NOT_FOUND"/>
   <int value="-2146893002" label="SEC_E_WRONG_CREDENTIAL_HANDLE"/>
   <int value="-2146893001" label="SEC_E_CRYPTO_SYSTEM_INVALID"/>
   <int value="-2146762496" label="TRUST_E_NOSIGNATURE"/>
   <int value="-2146435043" label="SCARD_E_NO_SERVICE"/>
   <int value="-2145844845" label="HTTP_E_STATUS_FORBIDDEN"/>
   <int value="-2145844844" label="HTTP_E_STATUS_NOT_FOUND"/>
+  <int value="-2145844843" label="HTTP_E_STATUS_BAD_METHOD"/>
+  <int value="-2145844746" label="HTTP_E_STATUS_BAD_GATEWAY"/>
+  <int value="-2145844745" label="HTTP_E_STATUS_SERVICE_UNAVAIL"/>
   <int value="-2145844744" label="HTTP_E_STATUS_GATEWAY_TIMEOUT"/>
   <int value="-2143309801" label="INSTALL_AGENT_E_PROXY_CONNECTION_FAILED"/>
   <int value="-2140733418" label="APPMODEL_ERROR_PACKAGE_NOT_FOUND"/>
