@@ -91,7 +91,6 @@ SidePanelAnimationCoordinator::SidePanelAnimationCoordinator(
           ? gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED
           : gfx::Tween::Type::ACCEL_45_DECEL_88,
       /*sequences=*/{{.animation_id = kSidePanelBoundsAnimation,
-                      .start = base::Milliseconds(0),
                       .duration = base::Milliseconds(
                           is_content_height_panel ? 450 : 350)}});
   if (!is_content_height_panel) {
@@ -106,26 +105,19 @@ SidePanelAnimationCoordinator::SidePanelAnimationCoordinator(
           /*tween_type=*/gfx::Tween::Type::ACCEL_45_DECEL_88,
           /*sequences=*/{
               {.animation_id = kSidePanelBoundsAnimation,
-               .start = base::Milliseconds(0),
-               .duration = base::Milliseconds(350)},
+               .snap_to_final_value = true},
               {.animation_id = kSidePanelContentTopBoundAnimation,
-               .start = base::Milliseconds(100),
-               .duration = base::Milliseconds(200)},
+               .snap_to_final_value = true},
               {.animation_id = kSidePanelContentBottomBoundAnimation,
-               .start = base::Milliseconds(0),
-               .duration = base::Milliseconds(350)},
+               .snap_to_final_value = true},
               {.animation_id = kSidePanelContentLeftBoundAnimation,
-               .start = base::Milliseconds(0),
                .duration = base::Milliseconds(350)},
               {.animation_id = kSidePanelContentWidthBoundAnimation,
-               .start = base::Milliseconds(0),
                .duration = base::Milliseconds(200)},
               {.animation_id = kSidePanelContentOpacityAnimation,
-               .start = base::Milliseconds(150),
-               .duration = base::Milliseconds(200)},
+               .snap_to_final_value = true},
               {.animation_id = kSidePanelContentCornerRadiusAnimation,
-               .start = base::Milliseconds(0),
-               .duration = base::Milliseconds(350)}});
+               .snap_to_final_value = true}});
   if (!is_content_height_panel) {
     open_with_content_transition_animation_specifications.sequences.push_back(
         {.animation_id = kShadowOverlayOpacityAnimation,
@@ -139,13 +131,11 @@ SidePanelAnimationCoordinator::SidePanelAnimationCoordinator(
               ? gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED
               : gfx::Tween::Type::ACCEL_45_DECEL_88,
           /*sequences=*/{{.animation_id = kSidePanelBoundsAnimation,
-                          .start = base::Milliseconds(0),
                           .duration = base::Milliseconds(
                               is_content_height_panel ? 450 : 350)}});
   if (!is_content_height_panel) {
     close_animation_specifications.sequences.push_back(
         {.animation_id = kShadowOverlayOpacityAnimation,
-         .start = base::Milliseconds(0),
          .duration = base::Milliseconds(100)});
   }
 
@@ -229,11 +219,17 @@ double SidePanelAnimationCoordinator::GetAnimationValueFor(
       GetAnimationSpecificationForAnimationId(animation_id);
 
   if (!specification) {
-    return 0.0f;
+    return IsAnimatingOpen(animation_type_) ? 1.0 : 0.0;
   }
 
   const AnimationSequence& sequence =
       specification->GetSequenceForAnimationId(animation_id);
+
+  // Ignore information about the animation if only the final value should be
+  // used.
+  if (sequence.snap_to_final_value) {
+    return IsAnimatingOpen(animation_type_) ? 1.0 : 0.0;
+  }
 
   base::TimeDelta start_time = sequence.start;
   base::TimeDelta duration = sequence.duration;

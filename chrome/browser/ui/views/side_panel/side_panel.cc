@@ -299,8 +299,8 @@ class ContentParentView : public views::View, public views::ViewObserver {
           GetRoundedCorners());
     }
     if (child->layer()) {
-      child->layer()->SetRoundedCornerRadius(GetRoundedCorners());
       child->layer()->SetIsFastRoundedCorner(true);
+      child->layer()->SetRoundedCornerRadius(GetRoundedCorners());
     }
   }
 
@@ -477,6 +477,8 @@ SidePanel::SidePanel(BrowserView* browser_view,
       this);
 
   animation_coordinator_->AddObserver(kSidePanelBoundsAnimation, this);
+  animation_coordinator_->AddObserver(kSidePanelContentLeftBoundAnimation,
+                                      this);
 
   animation_coordinator_->AddObserver(kSidePanelContentOpacityAnimation, this);
   animation_coordinator_->AddObserver(kSidePanelContentCornerRadiusAnimation,
@@ -687,21 +689,35 @@ double SidePanel::GetAnimationValue() const {
 void SidePanel::OnAnimationSequenceProgressed(
     const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id,
     double animation_value) {
+  static bool layer_features_enabled = base::FeatureList::IsEnabled(
+      features::kSidePanelContentAnimationLayerFeatures);
   if (animation_id == kSidePanelContentCornerRadiusAnimation) {
-    CHECK(browser_view_->GetSidePanelAnimationContent());
-    CHECK(browser_view_->GetSidePanelAnimationContent()->layer());
-    const gfx::RoundedCornersF kRoundedCorners{
-        gfx::Tween::FloatValueBetween(animation_value, 0, 16)};
-    browser_view_->GetSidePanelAnimationContent()
-        ->layer()
-        ->SetRoundedCornerRadius(kRoundedCorners);
+    if (layer_features_enabled) {
+      CHECK(browser_view_->GetSidePanelAnimationContent());
+      CHECK(browser_view_->GetSidePanelAnimationContent()->layer());
+      const gfx::RoundedCornersF kRoundedCorners{
+          gfx::Tween::FloatValueBetween(animation_value, 0, 16)};
+      browser_view_->GetSidePanelAnimationContent()
+          ->layer()
+          ->SetRoundedCornerRadius(kRoundedCorners);
+    }
   } else if (animation_id == kSidePanelContentOpacityAnimation) {
-    CHECK(browser_view_->GetSidePanelAnimationContent());
-    CHECK(browser_view_->GetSidePanelAnimationContent()->layer());
-    browser_view_->GetSidePanelAnimationContent()->layer()->SetOpacity(
-        gfx::Tween::DoubleValueBetween(animation_value, 0.5, 1));
+    if (layer_features_enabled) {
+      CHECK(browser_view_->GetSidePanelAnimationContent());
+      CHECK(browser_view_->GetSidePanelAnimationContent()->layer());
+      browser_view_->GetSidePanelAnimationContent()->layer()->SetOpacity(
+          gfx::Tween::DoubleValueBetween(animation_value, 0.5, 1));
+    }
   } else if (animation_id == kSidePanelBoundsAnimation) {
-    InvalidateLayout();
+    if (last_animation_values_[animation_id] != animation_value) {
+      last_animation_values_[animation_id] = animation_value;
+      InvalidateLayout();
+    }
+  } else if (animation_id == kSidePanelContentLeftBoundAnimation) {
+    if (last_animation_values_[animation_id] != animation_value) {
+      last_animation_values_[animation_id] = animation_value;
+      browser_view_->InvalidateLayout();
+    }
   } else {
     NOTREACHED() << "Observed animation id is not handled";
   }
@@ -709,13 +725,17 @@ void SidePanel::OnAnimationSequenceProgressed(
 
 void SidePanel::OnAnimationTypeStarted(
     SidePanelAnimationCoordinator::AnimationType type) {
+  last_animation_values_.clear();
   if (type == SidePanelAnimationCoordinator::AnimationType::
                   kOpenWithContentTransition) {
-    views::View* animation_content =
-        browser_view_->GetSidePanelAnimationContent();
-    CHECK(animation_content);
-    CHECK(animation_content->layer());
-    animation_content->layer()->SetOpacity(0.5);
+    if (base::FeatureList::IsEnabled(
+            features::kSidePanelContentAnimationLayerFeatures)) {
+      views::View* animation_content =
+          browser_view_->GetSidePanelAnimationContent();
+      CHECK(animation_content);
+      CHECK(animation_content->layer());
+      animation_content->layer()->SetOpacity(0.5);
+    }
   }
 }
 
