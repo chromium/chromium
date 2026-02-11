@@ -79,28 +79,24 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   protected showContextMenuHeaders_: boolean =
       loadTimeData.getBoolean('ShowContextMenuHeaders');
   protected get supportedTools_(): Map<ToolMode, {
-    id: string,
     icon: string,
   }> {
     return new Map([
       [
         ToolMode.kImageGen,
         {
-          id: 'createImages',
           icon: 'composebox:nanoBanana',
         },
       ],
       [
         ToolMode.kDeepSearch,
         {
-          id: 'deepSearch',
           icon: 'composebox:deepSearch',
         },
       ],
       [
         ToolMode.kCanvas,
         {
-          id: 'canvas',
           icon: 'composebox:canvas',
         },
       ],
@@ -108,28 +104,24 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   }
 
   protected get supportedModels_(): Map<ModelMode, {
-    id: string,
     icon: string,
   }> {
     return new Map([
       [
         ModelMode.kGeminiRegular,
         {
-          id: 'geminiModelRegular',
           icon: 'composebox:regularModel',
         },
       ],
       [
         ModelMode.kGeminiProAutoroute,
         {
-          id: 'geminiModelAuto',
           icon: 'composebox:autoModel',
         },
       ],
       [
         ModelMode.kGeminiPro,
         {
-          id: 'geminiModelThinking',
           icon: 'composebox:thinkingModel',
         },
       ],
