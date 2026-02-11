@@ -13,9 +13,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NOTICE;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_FIELD_TYPE;
 
 import android.app.Activity;
 import android.view.View;
@@ -42,6 +46,10 @@ import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsPrope
 import org.chromium.chrome.browser.autofill.editors.common.EditorDialogToolbar;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.autofill.autofill_ai.AttributeInstance;
+import org.chromium.components.autofill.autofill_ai.AttributeType;
+import org.chromium.components.autofill.autofill_ai.AttributeTypeName;
+import org.chromium.components.autofill.autofill_ai.DataType;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
@@ -55,7 +63,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Collections;
+import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -70,7 +78,15 @@ public class EntityEditorModuleTest {
                     /* addEntityTypeString= */ "Add passport",
                     /* editEntityTypeString= */ "Edit passport",
                     /* deleteEntityTypeString= */ "Delete passport",
-                    /* attributeTypes= */ Collections.emptyList());
+                    /* attributeTypes= */ List.of(
+                            new AttributeType(
+                                    /* typeName= */ AttributeTypeName.PASSPORT_NAME,
+                                    /* typeNameAsString= */ "Passport name",
+                                    /* dataType= */ DataType.NAME),
+                            new AttributeType(
+                                    /* typeName= */ AttributeTypeName.PASSPORT_NUMBER,
+                                    /* typeNameAsString= */ "Passport number",
+                                    /* dataType= */ DataType.STRING)));
 
     private static final EntityInstance LOCAL_PASSPORT =
             new EntityInstance.Builder(PASSPORT_TYPE)
@@ -78,6 +94,13 @@ public class EntityEditorModuleTest {
                     .setRecordType(RecordType.LOCAL)
                     .setModifiedDate(LocalDate.now(ZoneId.systemDefault()))
                     .setUseCount(0)
+                    .addAttribute(
+                            new AttributeInstance(
+                                    new AttributeType(
+                                            /* typeName= */ AttributeTypeName.PASSPORT_NUMBER,
+                                            /* typeNameAsString= */ "Passport number",
+                                            /* dataType= */ DataType.STRING),
+                                    /* value= */ "AA123456"))
                     .build();
 
     private static final EntityInstance WALLET_PASSPORT =
@@ -86,6 +109,13 @@ public class EntityEditorModuleTest {
                     .setRecordType(RecordType.SERVER_WALLET)
                     .setModifiedDate(LocalDate.now(ZoneId.systemDefault()))
                     .setUseCount(0)
+                    .addAttribute(
+                            new AttributeInstance(
+                                    new AttributeType(
+                                            /* typeName= */ AttributeTypeName.PASSPORT_NAME,
+                                            /* typeNameAsString= */ "Passport name",
+                                            /* dataType= */ DataType.NAME),
+                                    /* value= */ "John Doe"))
                     .build();
 
     private final CoreAccountInfo mAccountInfo =
@@ -168,6 +198,15 @@ public class EntityEditorModuleTest {
 
     @Test
     @SmallTest
+    public void testEditorFields() {
+        mCoordinator.showEditorDialog(LOCAL_PASSPORT);
+
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        verifyLocalPassportFields(model.get(EntityEditorProperties.EDITOR_FIELDS));
+    }
+
+    @Test
+    @SmallTest
     public void testLocalEntitySourceNotice() {
         mCoordinator.showEditorDialog(LOCAL_PASSPORT);
 
@@ -189,6 +228,27 @@ public class EntityEditorModuleTest {
                 mActivity
                         .getString(R.string.autofill_ai_wallet_entity_editor_source_notice)
                         .replace("$1", USER_EMAIL));
+    }
+
+    private void verifyLocalPassportFields(ListModel<EditorItem> editorFields) {
+        verifyFieldContent(
+                editorFields.get(0),
+                /* attributeTypeName= */ AttributeTypeName.PASSPORT_NAME,
+                /* label= */ "Passport name",
+                /* value= */ "");
+        verifyFieldContent(
+                editorFields.get(1),
+                /* attributeTypeName= */ AttributeTypeName.PASSPORT_NUMBER,
+                /* label= */ "Passport number",
+                /* value= */ "AA123456");
+    }
+
+    private void verifyFieldContent(
+            EditorItem item, @AttributeTypeName int attributeTypeName, String label, String value) {
+        assertEquals(TEXT_INPUT, item.type);
+        assertEquals(attributeTypeName, item.model.get(TEXT_FIELD_TYPE));
+        assertEquals(label, item.model.get(LABEL));
+        assertEquals(value, item.model.get(VALUE));
     }
 
     private void verifySourceNotice(ListModel<EditorItem> editorFields, String expectedNoticeText) {

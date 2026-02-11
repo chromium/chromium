@@ -90,6 +90,10 @@ public class AttributeInstance {
         return mAttributeType;
     }
 
+    public AttributeValue getAttributeValue() {
+        return mAttributeValue;
+    }
+
     @CalledByNative
     public boolean isDateType() {
         return mAttributeValue instanceof DateValue;

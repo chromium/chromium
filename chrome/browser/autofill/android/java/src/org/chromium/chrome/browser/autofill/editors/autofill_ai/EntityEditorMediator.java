@@ -15,10 +15,15 @@ import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEdi
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NOTICE;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_FIELD_TYPE;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -29,6 +34,9 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
+import org.chromium.components.autofill.autofill_ai.AttributeInstance;
+import org.chromium.components.autofill.autofill_ai.AttributeType;
+import org.chromium.components.autofill.autofill_ai.DataType;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.RecordType;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -90,8 +98,38 @@ class EntityEditorMediator {
 
     private ListModel<EditorItem> getEditorFields(EntityInstance entityInstance) {
         ListModel<EditorItem> editorFields = new ListModel<>();
+        for (AttributeType attributeType : entityInstance.getEntityType().getAttributeTypes()) {
+            switch (attributeType.getDataType()) {
+                case DataType.NAME:
+                case DataType.STATE:
+                case DataType.STRING:
+                    editorFields.add(getTextFieldItem(entityInstance, attributeType));
+                    break;
+                    // TODO: crbug.com/476755159 - Implement other data types.
+            }
+        }
         maybeAddEntitySourceNoticeItem(editorFields, entityInstance.getRecordType());
         return editorFields;
+    }
+
+    private EditorItem getTextFieldItem(
+            EntityInstance entityInstance, AttributeType attributeType) {
+        @Nullable AttributeInstance attribute =
+                entityInstance.getAttribute(attributeType.getTypeName());
+        String attributeValue = "";
+        if (attribute != null) {
+            assert attribute.getAttributeValue() instanceof AttributeInstance.StringValue;
+            attributeValue =
+                    ((AttributeInstance.StringValue) attribute.getAttributeValue()).getValue();
+        }
+        return new EditorItem(
+                TEXT_INPUT,
+                new PropertyModel.Builder(TEXT_ALL_KEYS)
+                        .with(LABEL, attributeType.getTypeNameAsString())
+                        .with(TEXT_FIELD_TYPE, attributeType.getTypeName())
+                        .with(VALUE, attributeValue)
+                        .build(),
+                /* isFullLine= */ true);
     }
 
     private void maybeAddEntitySourceNoticeItem(

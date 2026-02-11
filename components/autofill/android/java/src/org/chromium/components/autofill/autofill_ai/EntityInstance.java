@@ -123,6 +123,10 @@ public class EntityInstance {
         return new ArrayList<>(mAttributes.values());
     }
 
+    public @Nullable AttributeInstance getAttribute(@AttributeTypeName int attributeTypeName) {
+        return mAttributes.get(attributeTypeName);
+    }
+
     @CalledByNative
     public EntityMetadata getMetadata() {
         return mMetadata;
