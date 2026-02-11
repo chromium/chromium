@@ -211,7 +211,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       speechRate: chrome.readingMode.speechRate,
       font: chrome.readingMode.fontName,
       highlightGranularity: chrome.readingMode.highlightGranularity,
-      lineFocus: chrome.readingMode.lineFocus,
+      lineFocus: chrome.readingMode.lastNonDisabledLineFocus,
       linksEnabled: chrome.readingMode.linksEnabled,
       imagesEnabled: chrome.readingMode.imagesEnabled,
     };
@@ -575,6 +575,9 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   private restoreSettingsFromPrefs_() {
     this.voiceLanguageController_.restoreFromPrefs();
+    const lineFocus = chrome.readingMode.isLineFocusOn ?
+        chrome.readingMode.lastNonDisabledLineFocus :
+        chrome.readingMode.lineFocusOff;
     this.settingsPrefs_ = {
       letterSpacing: chrome.readingMode.letterSpacing,
       lineSpacing: chrome.readingMode.lineSpacing,
@@ -582,14 +585,15 @@ export class AppElement extends AppElementBase implements SpeechListener,
       speechRate: chrome.readingMode.speechRate,
       font: chrome.readingMode.fontName,
       highlightGranularity: chrome.readingMode.highlightGranularity,
-      lineFocus: chrome.readingMode.lineFocus,
+      lineFocus,
       linksEnabled: chrome.readingMode.linksEnabled,
       imagesEnabled: chrome.readingMode.imagesEnabled,
     };
     this.styleUpdater_.setAllTextStyles();
     if (chrome.readingMode.isLineFocusEnabled) {
       this.lineFocusController_.restoreFromPrefs(
-          this.settingsPrefs_.lineFocus, this.$.container,
+          chrome.readingMode.lastNonDisabledLineFocus,
+          chrome.readingMode.isLineFocusOn, this.$.container,
           this.$.containerParent.clientHeight);
       this.setLineFocus_();
     }

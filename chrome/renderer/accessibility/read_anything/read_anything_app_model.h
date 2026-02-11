@@ -254,9 +254,17 @@ class ReadAnythingAppModel {
     color_theme_ = color_theme;
   }
 
-  read_anything::mojom::LineFocus line_focus() const { return line_focus_; }
-  void set_line_focus(read_anything::mojom::LineFocus line_focus) {
-    line_focus_ = line_focus;
+  read_anything::mojom::LineFocus last_non_disabled_line_focus() const {
+    return last_non_disabled_line_focus_;
+  }
+  void set_last_non_disabled_line_focus(
+      read_anything::mojom::LineFocus last_non_disabled_line_focus) {
+    last_non_disabled_line_focus_ = last_non_disabled_line_focus;
+  }
+
+  bool line_focus_enabled() const { return line_focus_enabled_; }
+  void set_line_focus_enabled(bool line_focus_enabled) {
+    line_focus_enabled_ = line_focus_enabled;
   }
 
   // Sometimes iframes can return selection objects that have a valid id but
@@ -349,7 +357,8 @@ class ReadAnythingAppModel {
       bool links_enabled,
       bool images_enabled,
       read_anything::mojom::Colors color,
-      read_anything::mojom::LineFocus line_focus);
+      read_anything::mojom::LineFocus last_non_disabled_line_focus,
+      bool line_focus_enabled);
 
   void OnScroll(bool on_selection, bool from_reading_mode) const;
 
@@ -582,8 +591,9 @@ class ReadAnythingAppModel {
   read_anything::mojom::Colors color_theme_ =
       read_anything::mojom::Colors::kDefaultValue;
 
-  read_anything::mojom::LineFocus line_focus_ =
-      read_anything::mojom::LineFocus::kDefaultValue;
+  read_anything::mojom::LineFocus last_non_disabled_line_focus_ =
+      read_anything::mojom::LineFocus::kMediumStaticWindow;
+  bool line_focus_enabled_ = false;
 
   // Invariant: Either both endpoints are `!is_valid()`, or they are both valid
   // and non-equal.

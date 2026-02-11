@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
@@ -1132,13 +1133,14 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
     base::DictValue voices,
     base::ListValue languages_enabled_in_pref,
     read_anything::mojom::HighlightGranularity granularity,
-    read_anything::mojom::LineFocus line_focus) {
+    read_anything::mojom::LineFocus last_non_disabled_line_focus,
+    bool line_focus_enabled) {
   read_aloud_model_.OnSettingsRestoredFromPrefs(
       speech_rate, &languages_enabled_in_pref, &voices, granularity);
   bool needs_redraw_for_links = model_.links_enabled() != links_enabled;
-  model_.OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
-                                     font_size, links_enabled, images_enabled,
-                                     color, line_focus);
+  model_.OnSettingsRestoredFromPrefs(
+      line_spacing, letter_spacing, font, font_size, links_enabled,
+      images_enabled, color, last_non_disabled_line_focus, line_focus_enabled);
   ExecuteJavaScript("chrome.readingMode.restoreSettingsFromPrefs();");
   // Only redraw if there is an active tree.
   if (needs_redraw_for_links &&
@@ -1194,7 +1196,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("colorTheme", &ReadAnythingAppController::ColorTheme)
       .SetProperty("highlightGranularity",
                    &ReadAnythingAppController::HighlightGranularity)
-      .SetProperty("lineFocus", &ReadAnythingAppController::LineFocus)
+      .SetProperty("lastNonDisabledLineFocus",
+                   &ReadAnythingAppController::LastNonDisabledLineFocus)
+      .SetProperty("isLineFocusOn", &ReadAnythingAppController::IsLineFocusOn)
       .SetProperty("defaultTheme", &ReadAnythingAppController::DefaultTheme)
       .SetProperty("lightTheme", &ReadAnythingAppController::LightTheme)
       .SetProperty("darkTheme", &ReadAnythingAppController::DarkTheme)
@@ -1503,10 +1507,14 @@ int ReadAnythingAppController::HighlightGranularity() const {
   return read_aloud_model_.highlight_granularity();
 }
 
-int ReadAnythingAppController::LineFocus() const {
+int ReadAnythingAppController::LastNonDisabledLineFocus() const {
   return IsLineFocusEnabled()
-             ? std::to_underlying(model_.line_focus())
+             ? std::to_underlying(model_.last_non_disabled_line_focus())
              : std::to_underlying(read_anything::mojom::LineFocus::kOff);
+}
+
+bool ReadAnythingAppController::IsLineFocusOn() const {
+  return IsLineFocusEnabled() && model_.line_focus_enabled();
 }
 
 int ReadAnythingAppController::StandardLineSpacing() const {
@@ -2204,7 +2212,12 @@ void ReadAnythingAppController::OnLineFocusChanged(int line_focus) {
   if (const auto maybe_enum =
           ToEnum<read_anything::mojom::LineFocus>(line_focus)) {
     page_handler_->OnLineFocusChanged(maybe_enum.value());
-    model_.set_line_focus(maybe_enum.value());
+    bool line_focus_on =
+        maybe_enum.value() != read_anything::mojom::LineFocus::kOff;
+    model_.set_line_focus_enabled(line_focus_on);
+    if (line_focus_on) {
+      model_.set_last_non_disabled_line_focus(maybe_enum.value());
+    }
   }
 }
 

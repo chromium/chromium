@@ -78,6 +78,10 @@ void RegisterReadAnythingProfilePrefs(
         prefs::kAccessibilityReadAnythingLineFocus,
         static_cast<int>(read_anything::mojom::LineFocus::kDefaultValue),
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityReadAnythingLastNonDisabledLineFocus,
+        static_cast<int>(read_anything::mojom::LineFocus::kDefaultValue),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   }
 }
 

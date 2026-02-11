@@ -407,7 +407,11 @@ interface UntrustedPage {
                            mojo_base.mojom.DictionaryValue voices,
                            mojo_base.mojom.ListValue languages_enabled_in_pref,
                            read_anything.mojom.HighlightGranularity granularity,
-                           read_anything.mojom.LineFocus line_focus);
+                           // The last used line focus mode that is not kOff.
+                           read_anything.mojom.LineFocus last_non_disabled_line_focus,
+                           // Whether line focus should be currently enabled
+                           // using the above mode, or whether it should be off.
+                           bool line_focus_enabled);
 
   // Notifies the WebUI that the ScreenAI service is ready on this device.
   ScreenAIServiceReady();

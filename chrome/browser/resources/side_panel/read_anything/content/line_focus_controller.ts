@@ -201,12 +201,15 @@ export class LineFocusController {
     }
   }
 
-  restoreFromPrefs(value: number, container: HTMLElement, height: number) {
+  restoreFromPrefs(
+      lastEnabledValue: number, isOn: boolean, container: HTMLElement,
+      height: number) {
     const lineFocusValues = getLineFocusValues();
-    const lineFocus = lineFocusValues[value];
-    if (lineFocus) {
-      this.setStyleAndMovement_(
-          lineFocus.style, lineFocus.movement, container, height);
+    const lastEnabled = lineFocusValues[lastEnabledValue];
+    if (lastEnabled) {
+      this.model_.setLastEnabledLineFocusStyle(lastEnabled.style);
+      const style = isOn ? lastEnabled.style : LineFocusStyle.OFF;
+      this.setStyleAndMovement_(style, lastEnabled.movement, container, height);
     }
   }
 

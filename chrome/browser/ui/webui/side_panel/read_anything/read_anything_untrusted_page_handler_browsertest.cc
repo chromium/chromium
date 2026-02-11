@@ -103,7 +103,8 @@ class MockPage : public read_anything::mojom::UntrustedPage {
                base::DictValue voices,
                base::ListValue languages_enabled_in_pref,
                read_anything::mojom::HighlightGranularity granularity,
-               read_anything::mojom::LineFocus line_focus));
+               read_anything::mojom::LineFocus last_non_disabled_line_focus,
+               bool line_focus_enabled));
   MOCK_METHOD(void,
               OnImageDataDownloaded,
               (const ui::AXTreeID&, int, const SkBitmap&));
@@ -535,6 +536,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
   read_anything::mojom::HighlightGranularity expected_highlight_granularity =
       read_anything::mojom::HighlightGranularity::kDefaultValue;
   auto expected_line_focus = read_anything::mojom::LineFocus::kDefaultValue;
+  bool expected_line_focus_enabled = false;
   PrefService* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(prefs::kAccessibilityReadAnythingLineSpacing, 3);
   prefs->SetInteger(prefs::kAccessibilityReadAnythingLetterSpacing, 2);
@@ -548,13 +550,14 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
                     expected_images_enabled);
   prefs->SetInteger(prefs::kAccessibilityReadAnythingColorInfo, 4);
 
-  EXPECT_CALL(page_, OnSettingsRestoredFromPrefs(
-                         expected_line_spacing, expected_letter_spacing,
-                         expected_font_name, expected_font_scale,
-                         expected_links_enabled, expected_images_enabled,
-                         expected_color, expected_speech_rate,
-                         testing::IsEmpty(), testing::IsEmpty(),
-                         expected_highlight_granularity, expected_line_focus))
+  EXPECT_CALL(
+      page_,
+      OnSettingsRestoredFromPrefs(
+          expected_line_spacing, expected_letter_spacing, expected_font_name,
+          expected_font_scale, expected_links_enabled, expected_images_enabled,
+          expected_color, expected_speech_rate, testing::IsEmpty(),
+          testing::IsEmpty(), expected_highlight_granularity,
+          expected_line_focus, expected_line_focus_enabled))
       .Times(1);
 
   handler_ = CreateHandler();
@@ -669,6 +672,26 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
   const int LineFocus2 = browser()->profile()->GetPrefs()->GetInteger(
       prefs::kAccessibilityReadAnythingLineFocus);
   ASSERT_EQ(LineFocus2, static_cast<int>(kLineFocus2));
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
+                       OnLineFocusChanged_UpdatesEnabledMode) {
+  const read_anything::mojom::LineFocus kLineFocus1 =
+      read_anything::mojom::LineFocus::kSmallCursorWindow;
+  const read_anything::mojom::LineFocus kLineFocus2 =
+      read_anything::mojom::LineFocus::kOff;
+  handler_ = CreateHandler();
+
+  handler_->OnLineFocusChanged(kLineFocus1);
+  const int LineFocus1 = browser()->profile()->GetPrefs()->GetInteger(
+      prefs::kAccessibilityReadAnythingLastNonDisabledLineFocus);
+  ASSERT_EQ(LineFocus1, static_cast<int>(kLineFocus1));
+
+  // When line focus changes to off, enabled mode should not change
+  handler_->OnLineFocusChanged(kLineFocus2);
+  const int LineFocus2 = browser()->profile()->GetPrefs()->GetInteger(
+      prefs::kAccessibilityReadAnythingLastNonDisabledLineFocus);
+  ASSERT_EQ(LineFocus2, static_cast<int>(kLineFocus1));
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest, OnFontChange) {
@@ -901,7 +924,7 @@ IN_PROC_BROWSER_TEST_P(
   // Verify the values passed to the page are correct.
   EXPECT_CALL(page_, OnSettingsRestoredFromPrefs(
                          _, _, _, _, _, _, _, expected_speech_rate, _, _,
-                         expected_highlight_granularity, _))
+                         expected_highlight_granularity, _, _))
       .Times(1)
       .WillOnce(testing::WithArgs<8, 9>([&](base::DictValue voices,
                                             base::ListValue langs) {

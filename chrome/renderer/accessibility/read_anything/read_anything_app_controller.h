@@ -153,7 +153,8 @@ class ReadAnythingAppController
       base::DictValue voices,
       base::ListValue languages_enabled_in_pref,
       read_anything::mojom::HighlightGranularity granularity,
-      read_anything::mojom::LineFocus line_focus) override;
+      read_anything::mojom::LineFocus last_non_disabled_line_focus,
+      bool line_focus_enabled) override;
   void SetLanguageCode(const std::string& code) override;
   void SetDefaultLanguageCode(const std::string& code) override;
   void ScreenAIServiceReady() override;
@@ -211,7 +212,8 @@ class ReadAnythingAppController
   int LineSpacing() const;
   int ColorTheme() const;
   int HighlightGranularity() const;
-  int LineFocus() const;
+  int LastNonDisabledLineFocus() const;
+  bool IsLineFocusOn() const;
   bool IsHighlightOn();
   int StandardLineSpacing() const;
   int LooseLineSpacing() const;

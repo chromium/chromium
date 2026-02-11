@@ -126,7 +126,8 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     bool links_enabled,
     bool images_enabled,
     read_anything::mojom::Colors color,
-    read_anything::mojom::LineFocus line_focus) {
+    read_anything::mojom::LineFocus last_non_disabled_line_focus,
+    bool line_focus_enabled) {
   line_spacing_ = line_spacing;
   letter_spacing_ = letter_spacing;
   font_name_ = std::move(font_name);
@@ -134,7 +135,8 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
   links_enabled_ = links_enabled;
   images_enabled_ = images_enabled;
   color_theme_ = color;
-  line_focus_ = line_focus;
+  last_non_disabled_line_focus_ = last_non_disabled_line_focus;
+  line_focus_enabled_ = line_focus_enabled;
 }
 
 void ReadAnythingAppModel::Reset(std::vector<ui::AXNodeID> content_node_ids) {

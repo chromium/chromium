@@ -966,15 +966,18 @@ TEST_F(ReadAnythingAppControllerTest,
   languages_enabled_in_pref.Append(language_value);
   auto highlight_granularity =
       read_anything::mojom::HighlightGranularity::kDefaultValue;
-  auto line_focus = read_anything::mojom::LineFocus::kLineCursor;
+  auto line_focus_enabled_mode = read_anything::mojom::LineFocus::kLineCursor;
   controller().SetLanguageForTesting(language_value);
 
   controller().OnSettingsRestoredFromPrefs(
       line_spacing, letter_spacing, font_name, font_size, links_enabled,
       images_enabled, color, speech_rate, std::move(voices),
-      std::move(languages_enabled_in_pref), highlight_granularity, line_focus);
+      std::move(languages_enabled_in_pref), highlight_granularity,
+      line_focus_enabled_mode, false);
 
-  EXPECT_EQ(static_cast<int>(line_focus), controller().LineFocus());
+  EXPECT_EQ(static_cast<int>(line_focus_enabled_mode),
+            controller().LastNonDisabledLineFocus());
+  EXPECT_FALSE(controller().IsLineFocusOn());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -1179,14 +1182,15 @@ TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
   auto highlight_granularity =
       read_anything::mojom::HighlightGranularity::kDefaultValue;
   int highlight_granularity_value = 0;
-  auto line_focus = read_anything::mojom::LineFocus::kLineCursor;
+  auto line_focus_enabled_mode = read_anything::mojom::LineFocus::kLineCursor;
 
   controller().SetLanguageForTesting(language_value);
 
   controller().OnSettingsRestoredFromPrefs(
       line_spacing, letter_spacing, font_name, font_size, links_enabled,
       images_enabled, color, speech_rate, std::move(voices),
-      std::move(languages_enabled_in_pref), highlight_granularity, line_focus);
+      std::move(languages_enabled_in_pref), highlight_granularity,
+      line_focus_enabled_mode, true);
 
   EXPECT_EQ(std::to_underlying(line_spacing), controller().LineSpacing());
   EXPECT_EQ(std::to_underlying(letter_spacing), controller().LetterSpacing());
@@ -1201,7 +1205,8 @@ TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
   EXPECT_EQ(highlight_granularity_value,
             read_aloud_model().highlight_granularity());
   EXPECT_EQ(static_cast<int>(read_anything::mojom::LineFocus::kDefaultValue),
-            controller().LineFocus());
+            controller().LastNonDisabledLineFocus());
+  EXPECT_FALSE(controller().IsLineFocusOn());
 }
 
 TEST_F(ReadAnythingAppControllerTest, RootIdIsSnapshotRootId) {
@@ -2440,12 +2445,13 @@ TEST_F(ReadAnythingAppControllerTest, RequestImageData) {
   languages_enabled_in_pref.Append(language_value);
   auto highlight_granularity =
       read_anything::mojom::HighlightGranularity::kDefaultValue;
-  auto line_focus = read_anything::mojom::LineFocus::kDefaultValue;
+  auto line_focus_enabled_mode = read_anything::mojom::LineFocus::kDefaultValue;
 
   controller().OnSettingsRestoredFromPrefs(
       line_spacing, letter_spacing, font_name, font_size, links_enabled,
       images_enabled, color, speech_rate, std::move(voices),
-      std::move(languages_enabled_in_pref), highlight_granularity, line_focus);
+      std::move(languages_enabled_in_pref), highlight_granularity,
+      line_focus_enabled_mode, false);
   controller().RequestImageData(ax_node_id);
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
@@ -2860,8 +2866,25 @@ TEST_F(ReadAnythingAppControllerTest, OnLineFocusChanged_SetsLineFocus) {
   EnableLineFocus();
   auto line_focus = read_anything::mojom::LineFocus::kLineCursor;
   EXPECT_CALL(page_handler_, OnLineFocusChanged(line_focus)).Times(1);
+
   controller().OnLineFocusChanged(static_cast<int>(line_focus));
-  ASSERT_EQ(line_focus, model().line_focus());
+
+  ASSERT_EQ(line_focus, model().last_non_disabled_line_focus());
+  ASSERT_TRUE(controller().IsLineFocusOn());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnLineFocusChanged_ToOff_SetsLineFocusOff) {
+  EnableLineFocus();
+  auto line_focus_off = read_anything::mojom::LineFocus::kOff;
+  auto line_focus = read_anything::mojom::LineFocus::kLineStatic;
+  EXPECT_CALL(page_handler_, OnLineFocusChanged).Times(2);
+
+  controller().OnLineFocusChanged(static_cast<int>(line_focus));
+  controller().OnLineFocusChanged(static_cast<int>(line_focus_off));
+
+  ASSERT_EQ(line_focus, model().last_non_disabled_line_focus());
+  ASSERT_FALSE(controller().IsLineFocusOn());
 }
 
 TEST_F(ReadAnythingAppControllerTest, SetLanguageCode_UpdatesModelLanguage) {

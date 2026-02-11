@@ -155,19 +155,20 @@ suite('LineFocusController', () => {
     lineFocusController.onStyleChange(
         LineFocusStyle.UNDERLINE, defaultContainer, defaultHeight);
     assertEquals(
-        chrome.readingMode.lineFocusCursorLine, chrome.readingMode.lineFocus,
-        'line');
+        chrome.readingMode.lineFocusCursorLine,
+        chrome.readingMode.lastNonDisabledLineFocus);
 
     lineFocusController.onStyleChange(
         LineFocusStyle.LARGE_WINDOW, defaultContainer, defaultHeight);
     assertEquals(
         chrome.readingMode.lineFocusLargeCursorWindow,
-        chrome.readingMode.lineFocus, 'large window');
+        chrome.readingMode.lastNonDisabledLineFocus);
 
     lineFocusController.onStyleChange(
         LineFocusStyle.OFF, defaultContainer, defaultHeight);
     assertEquals(
-        chrome.readingMode.lineFocusOff, chrome.readingMode.lineFocus, 'off');
+        chrome.readingMode.lineFocusOff,
+        chrome.readingMode.lastNonDisabledLineFocus);
   });
 
   test('style and movement changes do nothing with flag disabled', () => {
@@ -175,11 +176,11 @@ suite('LineFocusController', () => {
 
     lineFocusController.onStyleChange(
         LineFocusStyle.SMALL_WINDOW, defaultContainer, defaultHeight);
-    assertEquals(0, chrome.readingMode.lineFocus);
+    assertEquals(0, chrome.readingMode.lastNonDisabledLineFocus);
 
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, defaultContainer, defaultHeight);
-    assertEquals(0, chrome.readingMode.lineFocus);
+    assertEquals(0, chrome.readingMode.lastNonDisabledLineFocus);
   });
 
   test('onMovementChange propagates line focus mode', () => {
@@ -191,13 +192,13 @@ suite('LineFocusController', () => {
         LineFocusMovement.CURSOR, defaultContainer, defaultHeight);
     assertEquals(
         chrome.readingMode.lineFocusSmallCursorWindow,
-        chrome.readingMode.lineFocus);
+        chrome.readingMode.lastNonDisabledLineFocus);
 
     lineFocusController.onMovementChange(
         LineFocusMovement.STATIC, defaultContainer, defaultHeight);
     assertEquals(
         chrome.readingMode.lineFocusSmallStaticWindow,
-        chrome.readingMode.lineFocus);
+        chrome.readingMode.lastNonDisabledLineFocus);
   });
 
   test('onMovementChange when style is off still propagates off', () => {
@@ -207,11 +208,15 @@ suite('LineFocusController', () => {
 
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, defaultContainer, defaultHeight);
-    assertEquals(chrome.readingMode.lineFocusOff, chrome.readingMode.lineFocus);
+    assertEquals(
+        chrome.readingMode.lineFocusOff,
+        chrome.readingMode.lastNonDisabledLineFocus);
 
     lineFocusController.onMovementChange(
         LineFocusMovement.STATIC, defaultContainer, defaultHeight);
-    assertEquals(chrome.readingMode.lineFocusOff, chrome.readingMode.lineFocus);
+    assertEquals(
+        chrome.readingMode.lineFocusOff,
+        chrome.readingMode.lastNonDisabledLineFocus);
   });
 
   test('onMovementChange updates movement only', () => {
@@ -357,32 +362,59 @@ suite('LineFocusController', () => {
     chrome.readingMode.isLineFocusEnabled = true;
 
     lineFocusController.restoreFromPrefs(
-        chrome.readingMode.lineFocusMediumCursorWindow, defaultContainer,
-        defaultHeight);
+        chrome.readingMode.lineFocusMediumCursorWindow, /*isOn=*/ true,
+        defaultContainer, defaultHeight);
     assertEquals(
         LineFocusStyle.MEDIUM_WINDOW,
         lineFocusController.getCurrentLineFocusStyle());
     assertFalse(lineFocusController.isStatic());
 
     lineFocusController.restoreFromPrefs(
-        chrome.readingMode.lineFocusSmallStaticWindow, defaultContainer,
-        defaultHeight);
+        chrome.readingMode.lineFocusSmallStaticWindow, /*isOn=*/ true,
+        defaultContainer, defaultHeight);
     assertEquals(
         LineFocusStyle.SMALL_WINDOW,
         lineFocusController.getCurrentLineFocusStyle());
     assertTrue(lineFocusController.isStatic());
 
     lineFocusController.restoreFromPrefs(
-        chrome.readingMode.lineFocusOff, defaultContainer, defaultHeight);
+        chrome.readingMode.lineFocusOff, /*isOn=*/ true, defaultContainer,
+        defaultHeight);
     assertEquals(
         LineFocusStyle.OFF, lineFocusController.getCurrentLineFocusStyle());
     assertTrue(lineFocusController.isStatic());
 
     lineFocusController.restoreFromPrefs(
-        chrome.readingMode.lineFocusCursorLine, defaultContainer,
-        defaultHeight);
+        chrome.readingMode.lineFocusCursorLine, /*isOn=*/ true,
+        defaultContainer, defaultHeight);
     assertEquals(
         LineFocusStyle.UNDERLINE,
+        lineFocusController.getCurrentLineFocusStyle());
+    assertFalse(lineFocusController.isStatic());
+  });
+
+  test('restoreFromPrefs with line focus off, uses previous movement', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+
+    lineFocusController.restoreFromPrefs(
+        chrome.readingMode.lineFocusCursorLine, /*isOn=*/ false,
+        defaultContainer, defaultHeight);
+
+    assertEquals(
+        LineFocusStyle.OFF, lineFocusController.getCurrentLineFocusStyle());
+    assertFalse(lineFocusController.isStatic());
+  });
+
+  test('restoreFromPrefs sets last used line focus mode', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+
+    lineFocusController.restoreFromPrefs(
+        chrome.readingMode.lineFocusLargeCursorWindow, /*isOn=*/ false,
+        defaultContainer, defaultHeight);
+    lineFocusController.toggle(defaultContainer, defaultHeight);
+
+    assertEquals(
+        LineFocusStyle.LARGE_WINDOW,
         lineFocusController.getCurrentLineFocusStyle());
     assertFalse(lineFocusController.isStatic());
   });

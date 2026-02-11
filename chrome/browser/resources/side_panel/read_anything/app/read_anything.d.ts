@@ -44,8 +44,11 @@ declare namespace chrome {
     let speechRate: number;
     let highlightGranularity: number;
 
-    // Current line focus value.
-    let lineFocus: number;
+    // The last line focus value used when it was on.
+    let lastNonDisabledLineFocus: number;
+    // Whether line focus is currently on. i.e. it is in a mode other than off.
+    // The feature flag check is separate under isLineFocusEnabled.
+    let isLineFocusOn: boolean;
 
     // Enum values for various visual theme changes.
     let standardLineSpacing: number;

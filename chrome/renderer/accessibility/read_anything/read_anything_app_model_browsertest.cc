@@ -166,11 +166,12 @@ TEST_F(ReadAnythingAppModelTest, OnSettingsRestoredFromPrefs) {
   bool links_enabled = false;
   bool images_enabled = true;
   auto color = read_anything::mojom::Colors::kDark;
-  auto line_focus = read_anything::mojom::LineFocus::kMediumCursorWindow;
+  auto line_focus_enabled_mode =
+      read_anything::mojom::LineFocus::kMediumCursorWindow;
 
   model().OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font_name,
                                       font_size, links_enabled, images_enabled,
-                                      color, line_focus);
+                                      color, line_focus_enabled_mode, false);
 
   EXPECT_EQ(line_spacing, model().line_spacing());
   EXPECT_EQ(letter_spacing, model().letter_spacing());
@@ -179,6 +180,8 @@ TEST_F(ReadAnythingAppModelTest, OnSettingsRestoredFromPrefs) {
   EXPECT_EQ(links_enabled, model().links_enabled());
   EXPECT_EQ(images_enabled, model().images_enabled());
   EXPECT_EQ(color, model().color_theme());
+  EXPECT_EQ(line_focus_enabled_mode, model().last_non_disabled_line_focus());
+  EXPECT_FALSE(model().line_focus_enabled());
 }
 
 TEST_F(ReadAnythingAppModelTest, ResetLineFocusSession_ResetsToStartingValue) {

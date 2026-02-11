@@ -365,6 +365,12 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
           ? static_cast<read_anything::mojom::LineFocus>(
                 prefs->GetInteger(prefs::kAccessibilityReadAnythingLineFocus))
           : read_anything::mojom::LineFocus::kDefaultValue;
+  bool line_focus_enabled = line_focus != read_anything::mojom::LineFocus::kOff;
+  read_anything::mojom::LineFocus last_non_disabled_line_focus =
+      features::IsReadAnythingLineFocusEnabled()
+          ? static_cast<read_anything::mojom::LineFocus>(prefs->GetInteger(
+                prefs::kAccessibilityReadAnythingLastNonDisabledLineFocus))
+          : read_anything::mojom::LineFocus::kDefaultValue;
 
   page_->OnSettingsRestoredFromPrefs(
       static_cast<read_anything::mojom::LineSpacing>(
@@ -382,7 +388,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
       prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled).Clone(),
       static_cast<read_anything::mojom::HighlightGranularity>(prefs->GetDouble(
           prefs::kAccessibilityReadAnythingHighlightGranularity)),
-      line_focus);
+      last_non_disabled_line_focus, line_focus_enabled);
 
   // Get user's default language to check for compatible fonts.
   language::LanguageModel* language_model =
@@ -878,6 +884,11 @@ void ReadAnythingUntrustedPageHandler::OnLineFocusChanged(
   if (features::IsReadAnythingLineFocusEnabled()) {
     profile_->GetPrefs()->SetInteger(prefs::kAccessibilityReadAnythingLineFocus,
                                      static_cast<size_t>(line_focus));
+    if (line_focus != read_anything::mojom::LineFocus::kOff) {
+      profile_->GetPrefs()->SetInteger(
+          prefs::kAccessibilityReadAnythingLastNonDisabledLineFocus,
+          static_cast<size_t>(line_focus));
+    }
   }
 }
 

@@ -28,8 +28,11 @@ export class FakeReadingMode {
   speechRate: number = 1;
   highlightGranularity: number = 0;
 
-  // Current line focus value.
-  lineFocus: number = 0;
+  // The last line focus value used when it was on.
+  lastNonDisabledLineFocus: number = 0;
+  // Whether line focus is currently on. i.e. it is in a mode other than off.
+  // The feature flag check is separate under isLineFocusEnabled.
+  isLineFocusOn: boolean = false;
 
   // Enum values for various visual theme changes.
   standardLineSpacing: number = 0;
@@ -253,7 +256,7 @@ export class FakeReadingMode {
 
   // Called when the line focus mode is changed via the webui toolbar.
   onLineFocusChanged(value: number) {
-    this.lineFocus = value;
+    this.lastNonDisabledLineFocus = value;
   }
 
   // Called when a user toggles a switch in the language menu
