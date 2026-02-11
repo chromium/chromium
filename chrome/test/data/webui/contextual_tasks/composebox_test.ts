@@ -2076,7 +2076,7 @@ suite('ContextualTasksComposeboxTest', () => {
             'When returning to side panel non-zero-state,\
                 composebox wrapper margin');
         assertStyle(
-            contextualTasksApp.$.composebox, 'position', 'static',
+            contextualTasksApp.$.composebox, 'position', 'relative',
             'When returning to side panel non-zero-state,\
                 composebox position');
       });
@@ -2125,7 +2125,7 @@ suite('ContextualTasksComposeboxTest', () => {
         '30px', 'When returning to full tab non-zero-state,\
             composebox wrapper margin');
     assertStyle(
-        contextualTasksApp.$.composebox, 'position', 'static',
+        contextualTasksApp.$.composebox, 'position', 'relative',
         'When returning to full tab mode non-zero-state,\
             composebox position');
   });

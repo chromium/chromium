@@ -17,7 +17,6 @@
   --composebox-border-radius: 24px;
   --composebox-collapsed-height: 90px;
   --composebox-margin-bottom: 30px;
-  --composebox-start-indent: 20px;
   --context-carousel-inline-end-spacing: 24px;
   --context-carousel-inline-start-spacing: 24px;
   --composebox-container-height:
@@ -114,9 +113,6 @@
 
 #composebox {
   --composebox-thumbnail-img-chip-size: 44px;
-  /* 20px on right side. */
-  --composebox-width: calc(100% -
-      var(--composebox-start-indent) - 20px);
   --expanded-border-radius: var(--composebox-border-radius);
   --input-bottom-spacing: 16px;
   --text-input-left-spacing: 24px;
@@ -128,15 +124,11 @@
   box-shadow: none;
   box-sizing: border-box;
   display: block;
-  inset-inline-start: var(--composebox-start-indent);
   max-width: var(--composebox-max-width);
   position: relative;
   /* Fast out (start), slow in (end) box shadow transition. */
   transition: box-shadow 600ms cubic-bezier(0.4, 0.0, 0.2, 1);
-  /* Ensure composebox does not overflow due to indentation.
-   * 20px on right side.
-   */
-  width: var(--composebox-width);
+  width: 100%;
   z-index: 1;
 }
 
@@ -147,45 +139,6 @@
 :host([is-side-panel]) #composeboxContainer #composebox {
   max-width: var(--composebox-max-width);
   min-width: 200px;
-}
-
-/* TODO(crbug.com/466201452): Check this relayout logic
- * once Google.com AIM is RTL that this matches AIM.
- */
-
-@media (min-width: 789px) {
-  :host(:not([is-zero-state])[is-side-panel]) #composeboxContainer {
-    /* 96px gutter + 5px for text indentation in thread. */
-    --composebox-start-indent: 101px;
-  }
-}
-
-@media (min-width: 480px) {
-  :host(:not([is-zero-state]):not([is-side-panel])) #composeboxContainer {
-    /* Google.com uses 96px for indent column, and 5px left padding.
-     * Aligns the input text of the composebox with the AIM thread.
-     */
-    --composebox-start-indent: 101px;
-  }
-}
-
-/* W/more space, indent further to match AIM for both side panel and full tab.*/
-@media (min-width: 1420px) {
-  :host(:not([is-zero-state]):not([is-side-panel])) #composeboxContainer,
-  :host(:not([is-zero-state])[is-side-panel]) #composeboxContainer {
-    /* At this width, indent column should be 280px + 5px left padding.
-     * Google.com AIM has 20 other 36px columns as "inset end space",
-     * with 20px gaps, which = 720px of cols, 21 * 20px = 420px of gaps.
-     * Combined, this is 1140px of fixed space.
-     * The first and last columns are 1fr, so the remaining fluid
-     * space is (100% - 1140px) / 2 since we are splitting between the
-     * 2 columns, which = 50% - 570px per flex column. Since at this
-     * breakpoint, we need at least 280px of left indentation to match
-     * the AIM thread, we do not start growing until flexible
-     * indentation space > 280px of minimum left indentation.
-     */
-    --composebox-start-indent: max(285px, calc(50% - 570px));
-  }
 }
 
 #composebox::part(thumbnail) {
@@ -377,7 +330,8 @@
   order: -1;
   position: fixed;
   transform: translateY(calc(-1 * (var(--composebox-height) + var(--composebox-margin-bottom))));
-  width: calc(var(--composebox-width) - 32px);
+  /* composebox-width defined by app.css */
+  width: calc(var(--composebox-width, 692px) - 32px);
   z-index: 4;
 }
 
@@ -472,7 +426,7 @@
   margin-top: 24px;
   /* Becomes 44px from the 28px ending padding in child. */
   padding-inline-end: 16px;
-  padding-inline-start: 16px;
+  /* Start inline from .flex-center is 16px. */
 }
 
 
@@ -534,7 +488,7 @@
 :host([is-zero-state][is-side-panel])
     #contextualTasksSuggestionsContainer::part(match-icon-container) {
   padding-inline-end: 12px;
-  padding-inline-start: 16px;
+  padding-inline-start: 12px;
 }
 
 :host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-icon) {
