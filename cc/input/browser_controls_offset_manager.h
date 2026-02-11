@@ -15,9 +15,11 @@
 #include "base/types/optional_ref.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
+#include "cc/input/scroll_velocity_tracker.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/trees/browser_controls_params.h"
 #include "components/viz/common/quads/offset_tag.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -163,6 +165,14 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
   float MaximumShownRatioDeltaPerFrame(float min_ratio) const;
 
+  // Returns the viewport Y-offset above which the toolbar will always be shown
+  // when snap animation is enabled.
+  float SnapAnimationAlwaysShownRegionHeight() const;
+
+  // Returns the viewport Y-offset below which the toolbar can be hidden when
+  // snap animation is enabled.
+  float SnapAnimationCanHideRegionHeight() const;
+
  protected:
   BrowserControlsOffsetManager(BrowserControlsOffsetManagerClient* client,
                                float controls_show_threshold,
@@ -171,7 +181,10 @@ class CC_EXPORT BrowserControlsOffsetManager {
  private:
   class Animation;
 
-  void SetupAnimation(AnimationDirection direction);
+  void SetupAnimation(AnimationDirection direction,
+                      int64_t duration_ms,
+                      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+  void SetupSnapAnimation(const gfx::Vector2dF& scroll_delta);
   void StartAnimationIfNecessary();
   void ResetBaseline();
   float OldTopControlsMinShownRatio();
@@ -183,6 +196,9 @@ class CC_EXPORT BrowserControlsOffsetManager {
   void SetTopMinHeightOffsetAnimationRange(float from, float to);
   void SetBottomMinHeightOffsetAnimationRange(float from, float to);
   bool IsAnimatingHeightChange();
+
+  gfx::Vector2dF ScrollByPrecise(const gfx::Vector2dF& pending_delta);
+  void ScrollBySnap(const gfx::Vector2dF& pending_delta);
 
   // The client manages the lifecycle of this.
   raw_ptr<BrowserControlsOffsetManagerClient> client_;
@@ -244,6 +260,14 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // gesture, then we reorder the animation until after the scroll.
   bool show_controls_when_scroll_completes_ = false;
 
+  // Used to track if the browser controls animation ran during the current
+  // scroll sequence.
+  bool did_animate_this_scroll_ = false;
+
+  // If set to true, browser controls will snap to fully show or hide on scroll
+  // instead of moving in pixel-perfect sync with the scroll.
+  const bool use_snap_animation_ = false;
+
   BrowserControlsOffsetTagModifications offset_tag_modifications_;
 
   // Class that holds and manages the state of the controls animations.
@@ -259,7 +283,8 @@ class CC_EXPORT BrowserControlsOffsetManager {
                     float start_value,
                     float stop_value,
                     int64_t duration,
-                    bool jump_to_end_on_reset);
+                    bool jump_to_end_on_reset,
+                    gfx::Tween::Type tween_type);
     // Returns the animated value for the given monotonic time tick if the
     // animation is initialized. Otherwise, returns |std::nullopt|.
     std::optional<float> Tick(base::TimeTicks monotonic_time);
@@ -305,10 +330,13 @@ class CC_EXPORT BrowserControlsOffsetManager {
     // responsibility to actually set the shown ratios using the value returned
     // by ::Reset().
     bool jump_to_end_on_reset_ = false;
+    gfx::Tween::Type tween_type_ = gfx::Tween::LINEAR;
   };
 
   Animation top_controls_animation_;
   Animation bottom_controls_animation_;
+
+  ScrollVelocityTracker scroll_velocity_tracker_;
 };
 
 }  // namespace cc

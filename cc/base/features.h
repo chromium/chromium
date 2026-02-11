@@ -316,6 +316,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(
 // When enabled uses derived state machine for Headless mode.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kHeadlessSchedulerStateMachine);
 
+// When enabled, the browser controls will snap to their fully shown or hidden
+// positions on scroll instead of moving exactly by the scroll delta.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserControlsScrollSnapAnimation);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

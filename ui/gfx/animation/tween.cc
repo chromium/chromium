@@ -229,14 +229,15 @@ float Tween::ClampedFloatValueBetween(const base::TimeTicks& time,
                                       const base::TimeTicks& start_time,
                                       float start,
                                       const base::TimeTicks& target_time,
-                                      float target) {
+                                      float target,
+                                      gfx::Tween::Type type) {
   if (time <= start_time)
     return start;
   if (time >= target_time)
     return target;
 
   const double progress = (time - start_time) / (target_time - start_time);
-  return FloatValueBetween(progress, start, target);
+  return FloatValueBetween(CalculateValue(type, progress), start, target);
 }
 
 // static

@@ -280,4 +280,7 @@ BASE_FEATURE(kBrowserControlsHeightChangeCancelAnimations,
 // Killswitch for disabling Headless scheduler state machine.
 BASE_FEATURE(kHeadlessSchedulerStateMachine, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBrowserControlsScrollSnapAnimation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
