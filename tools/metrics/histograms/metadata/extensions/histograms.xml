@@ -4564,6 +4564,7 @@ This is emitted for two scenarios when a worker may be unregistered:
     enum="SettingsOverriddenDialogResult" expires_after="2026-11-15">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The action taken on the settings overridden dialog that was shown to alert
     the user of an extension overriding the New Tab Page, when the dialog shown
@@ -4578,6 +4579,7 @@ This is emitted for two scenarios when a worker may be unregistered:
     enum="SettingsOverriddenDialogResult" expires_after="2026-07-26">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The action taken on the settings overridden dialog that was shown to alert
     the user of an extension overriding the default search provider, when the
@@ -4592,6 +4594,7 @@ This is emitted for two scenarios when a worker may be unregistered:
     enum="SettingsOverriddenDialogResult" expires_after="2026-07-26">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The action taken on the settings overridden dialog that was shown to alert
     the user of an extension overriding the default search provider, when the
@@ -4606,6 +4609,7 @@ This is emitted for two scenarios when a worker may be unregistered:
     enum="SettingsOverriddenDialogResult" expires_after="2026-11-15">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The action taken on the settings overridden dialog that was shown to alert
     the user of an extension overriding the New Tab Page, when the dialog shown
@@ -4619,6 +4623,7 @@ This is emitted for two scenarios when a worker may be unregistered:
     enum="SettingsOverriddenDialogResult" expires_after="2026-07-26">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The action taken on the settings overridden dialog that was shown to alert
     the user of an extension overriding the default search provider, when the
