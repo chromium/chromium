@@ -34,7 +34,7 @@ export class PostMessageHandler {
     this.browserProxy_ = browserProxy;
 
     this.eventTracker_.add(
-        this.webview_, 'loadstop', this.onLoadStop_.bind(this));
+        this.webview_, 'loadstart', this.onLoadStart_.bind(this));
     this.eventTracker_.add(
         window, 'message', this.onMessageReceived_.bind(this));
 
@@ -66,7 +66,15 @@ export class PostMessageHandler {
     this.resetHandshake_();
   }
 
-  private onLoadStop_() {
+  private onLoadStart_(event: any) {
+    // This event is fired anytime a load starts in the webview, including
+    // subframes and navigations within the same page. Only reset the handshake
+    // if its the top level frame to avoid unnecessary resets.
+    if (!event.isTopLevel) {
+      return;
+    }
+
+    // Reset the handshake and start a new one since the src has changed.
     this.resetHandshake_();
     if (this.webview_.src) {
       this.targetOrigin_ = new URL(this.webview_.src).origin;
@@ -81,7 +89,8 @@ export class PostMessageHandler {
   }
 
   private startHandshake_() {
-    if (this.handshakeIntervalId_ !== null) {
+    if (this.handshakeIntervalId_ !== null || this.handshakeComplete_) {
+      // If the handshake is already in progress, do not start a new one.
       return;
     }
 

@@ -17,9 +17,10 @@ const TARGET_ORIGIN = 'https://local.test';
 
 // Shared helper functions
 let mockWebView: any;
-function simulateLoadStop() {
-  const loadStopEvent = new Event('loadstop');
-  mockWebView.dispatchEvent(loadStopEvent);
+function simulateLoadStart() {
+  const loadStartEvent = new Event('loadstart');
+  Object.assign(loadStartEvent, {isTopLevel: true});
+  mockWebView.dispatchEvent(loadStartEvent);
 }
 
 function simulateMessage(data: any, origin: string) {
@@ -71,7 +72,7 @@ suite('PostMessageHandlerTest', () => {
   });
 
   test('ignores message from wrong origin', async function() {
-    simulateLoadStop();
+    simulateLoadStart();
 
     simulateMessage(new ArrayBuffer(8), 'https://wrong.origin');
     await flushTasks();
@@ -141,7 +142,7 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
 
   test('handles HandshakeResponse', () => {
     // Initialize and start handshake process
-    simulateLoadStop();
+    simulateLoadStart();
 
     // Send a message to be queued
     const pendingMsg = new Uint8Array([4, 5, 6]);
@@ -192,9 +193,9 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
         2, postMessageSpy.calls.length, 'No more messages should be sent');
   });
 
-  test('queues message across loadstop events', () => {
+  test('queues message across loadstart events', () => {
     // Initialize and start handshake process
-    simulateLoadStop();
+    simulateLoadStart();
 
     // Send a message to be queued
     const pendingMsg = new Uint8Array([7, 8, 9]);
@@ -203,11 +204,11 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
         1, postMessageHandler.getPendingMessagesLengthForTesting(),
         'Message should be queued');
 
-    // Simulate another loadstop
-    simulateLoadStop();
+    // Simulate another loadstart
+    simulateLoadStart();
     assertEquals(
         1, postMessageHandler.getPendingMessagesLengthForTesting(),
-        'Message should still be queued after second loadstop');
+        'Message should still be queued after second loadstart');
 
     // Trigger the handshake interval
     mockTimer.tick(HANDSHAKE_INTERVAL_MS);
@@ -234,9 +235,29 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
         'Pending message content should match');
   });
 
+  test('ignores non-top level loadstart events', () => {
+    // Initialize and complete handshake
+    simulateLoadStart();
+    mockTimer.tick(HANDSHAKE_INTERVAL_MS);
+    simulateMessage(HANDSHAKE_RESPONSE_BYTES, TARGET_ORIGIN);
+    assertTrue(
+        postMessageHandler.isHandshakeCompleteForTesting(),
+        'Handshake should be complete');
+
+    // Simulate non-top level loadstart
+    const loadStartEvent = new Event('loadstart');
+    Object.assign(loadStartEvent, {isTopLevel: false});
+    mockWebView.dispatchEvent(loadStartEvent);
+
+    // Handshake should still be complete
+    assertTrue(
+        postMessageHandler.isHandshakeCompleteForTesting(),
+        'Handshake should still be complete after non-top level loadstart');
+  });
+
   test('receives message after handshake', () => {
     // Initial handshake
-    simulateLoadStop();
+    simulateLoadStart();
     mockTimer.tick(HANDSHAKE_INTERVAL_MS);
     simulateMessage(HANDSHAKE_RESPONSE_BYTES, TARGET_ORIGIN);
     assertTrue(
@@ -265,7 +286,7 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
   });
 
   test('handles postMessage error', () => {
-    simulateLoadStop();
+    simulateLoadStart();
 
     // Make postMessage throw an error
     mockWebView.contentWindow.postMessage = () => {
@@ -279,7 +300,7 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
   });
 
   test('stops handshake after max attempts', () => {
-    simulateLoadStop();
+    simulateLoadStart();
 
     for (let i = 0; i < TEST_MAX_HANDSHAKE_ATTEMPTS; i++) {
       mockTimer.tick(HANDSHAKE_INTERVAL_MS);
