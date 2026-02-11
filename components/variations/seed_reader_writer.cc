@@ -237,7 +237,11 @@ bool ShouldStoreWithoutProcessing(std::string_view seed_data) {
 }
 
 base::expected<StoredSeedInfo, LoadSeedResult> ReadSeedInfoFromFile(
-    base::FilePath file_path) {
+    base::FilePath file_path,
+    bool check_missing_seed_file) {
+  if (check_missing_seed_file && !base::PathExists(file_path)) {
+    return base::unexpected(LoadSeedResult::kFileNotFound);
+  }
   std::string seed_file_data;
   if (!base::ReadFileToString(file_path, &seed_file_data)) {
     return base::unexpected(LoadSeedResult::kErrorReadingFile);
@@ -254,6 +258,12 @@ base::expected<StoredSeedInfo, LoadSeedResult> ReadSeedInfoFromFile(
     return base::unexpected(LoadSeedResult::kSeedInfoParseToProtoError);
   }
   return parsed_seed_info;
+}
+
+bool ShouldCheckMissingSeedFile(version_info::Channel channel) {
+  return channel == version_info::Channel::CANARY ||
+         channel == version_info::Channel::DEV ||
+         channel == version_info::Channel::BETA;
 }
 
 }  // namespace
@@ -326,6 +336,9 @@ SeedReaderWriter::SeedReaderWriter(
   if (IsEligibleForSeedFileTrial(channel, seed_file_dir, entropy_providers)) {
     SetUpSeedFileTrial(entropy_providers->default_entropy(), channel);
     if (ShouldUseSeedFile()) {
+      // TODO(crbug.com/445615330): Remove this once we have verified that the
+      // reason for the error is that the seed file is missing.
+      check_missing_seed_file_ = ShouldCheckMissingSeedFile(channel);
       ReadSeedFile();
     } else if (ShouldMigrateToLocalState(channel)) {
       // Because of the new group assignment, it is possible that a client that
@@ -723,7 +736,8 @@ void SeedReaderWriter::DeleteOldSeedFile() {
 void SeedReaderWriter::ReadSeedFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SeedSource seed_source = SeedSource::kNoSource;
-  const auto read_seed_info_result = ReadSeedInfoFromFile(seed_writer_->path());
+  const auto read_seed_info_result =
+      ReadSeedInfoFromFile(seed_writer_->path(), check_missing_seed_file_);
   base::UmaHistogramEnumeration(
       base::StrCat({"Variations.SeedFileReadResult.", histogram_suffix_}),
       read_seed_info_result.error_or(LoadSeedResult::kSuccess));
@@ -732,19 +746,22 @@ void SeedReaderWriter::ReadSeedFile() {
     // Record that the seed file was read successfully.
     seed_source = SeedSource::kSeedFile;
   } else if (read_seed_info_result.error() !=
-             LoadSeedResult::kErrorReadingFile) {
-    // Check if the read failed because the file was missing. We only want to
-    // migrate the seed using the old Seed File or Local State the first time,
-    // when the Seed File doesn't exist yet. In posterior runs the file should
-    // exist. If there's an error for any other reason, we don't want to
-    // fallback, so we just initialize the seed data to empty. Note:
-    // base::ReadFileToString() doesn't provide info about why the read failed,
-    // but this is most probable due to the file not existing.
-
-    // Set seed data to an empty string so we keep it in memory and don't read
-    // it from disk.
+                 LoadSeedResult::kErrorReadingFile &&
+             read_seed_info_result.error() != LoadSeedResult::kFileNotFound) {
+    // If there's an error other than reading the file, set the seed data
+    // to an empty string so we keep it in memory and don't read it from
+    // disk.
     stored_seed_info_.set_data("");
   } else if (ReadOldSeedFile()) {
+    // When the file doesn't exist (kFileNotFound or kErrorReadingFile on
+    // stable), we can read from the old file instead. We only want to migrate
+    // the seed using the old Seed File or Local State the first time, when the
+    // Seed File doesn't exist yet. In posterior runs the file should exist. If
+    // there's an error for any other reason, we don't want to fallback, so we
+    // just initialize the seed data to empty. Note: base::ReadFileToString()
+    // doesn't provide info about why the read failed, but this is most probable
+    // due to the file not existing.
+
     // Record that the seed file was read successfully.
     seed_source = SeedSource::kOldSeedFile;
   } else {
@@ -970,7 +987,9 @@ void SeedReaderWriter::GetSeedDataFromSeedFile(
       },
       std::move(done_callback), histogram_suffix_);
   file_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&ReadSeedInfoFromFile, seed_writer_->path()),
+      FROM_HERE,
+      base::BindOnce(&ReadSeedInfoFromFile, seed_writer_->path(),
+                     check_missing_seed_file_),
       std::move(read_file_cb));
 }
 

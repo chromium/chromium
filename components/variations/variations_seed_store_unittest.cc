@@ -2247,7 +2247,7 @@ TEST_F(LoadSafeSeedDataSeedFilesGroupTest, LoadSafeSeed_NoSeedFile) {
                                      /*channel=*/version_info::Channel::DEV);
   // Verify metrics.
   histogram_tester.ExpectUniqueSample("Variations.SeedFileReadResult.Safe",
-                                      LoadSeedResult::kErrorReadingFile, 1);
+                                      LoadSeedResult::kFileNotFound, 1);
   std::string stored_seed_data;
   auto read_result =
       seed_store.GetSafeSeedReaderWriterForTesting()->ReadSeedDataOnStartup(

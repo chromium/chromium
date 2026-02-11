@@ -419,6 +419,14 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Suffix to be used for histograms, either "Latest" or "Safe".
   const std::string histogram_suffix_;
 
+  // Whether to check for the presence of the seed file before reading it. This
+  // is done to distinguish between a missing seed file and read errors. It may
+  // affect performance due to extra IO, so it's only used in pre-stable
+  // channels.
+  // TODO(crbug.com/445615330): Remove this once we have verified that the
+  // reason for the error is that the seed file is missing.
+  bool check_missing_seed_file_ = false;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SeedReaderWriter> weak_ptr_factory_{this};

@@ -275,6 +275,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Seed Error Parsing To Proto"/>
   <int value="13" label="ZSTD Content Size Error"/>
   <int value="14" label="Seed Corrupt ZSTD Data"/>
+  <int value="15" label="Seed File Not Found"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/variations/metrics.h:LoadSeedResult) -->

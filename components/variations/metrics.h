@@ -44,7 +44,8 @@ enum class LoadSeedResult {
   kSeedInfoParseToProtoError = 12,
   kZstdContentSizeError = 13,
   kCorruptZstd = 14,
-  kMaxValue = kCorruptZstd,
+  kFileNotFound = 15,
+  kMaxValue = kFileNotFound,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/variations/enums.xml:VariationsSeedLoadResult)
 
