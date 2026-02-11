@@ -14,6 +14,8 @@
 #import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
@@ -25,6 +27,7 @@
 #import "ios/chrome/browser/autofill/model/form_input_navigator.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_controller.mm"
+#import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -41,6 +44,13 @@ using PipelineBlock = void (^)(void (^completion)(BOOL));
 using PipelineCompletionBlock = void (^)(NSUInteger index);
 
 namespace {
+
+// TODO(crbug.com/480933607): Change these placeholders to custom symbols when
+// the SVG files are ready.
+NSString* const kPassportSymbol = @"person.crop.rectangle";
+NSString* const kIdCardSymbol = @"rectangle.stack.person.crop";
+NSString* const kSecureFlightIdSymbol = @"person.crop.circle.badge.checkmark";
+NSString* const kFlightReservationSymbol = @"airplane";
 
 // Point size of the SF Symbol used for default icons.
 const CGFloat kSymbolPointSize = 17.0f;
@@ -94,8 +104,64 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
   });
 }
 
+// Returns an entity base on the guid.
+base::optional_ref<const autofill::EntityInstance> GetAutofillAiEntity(
+    const std::string& guid,
+    web::WebState* web_state) {
+  if (guid.empty() || !web_state) {
+    return std::nullopt;
+  }
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+  if (!profile) {
+    return std::nullopt;
+  }
+
+  autofill::EntityDataManager* edm =
+      IOSAutofillEntityDataManagerFactory::GetForProfile(profile);
+  if (!edm) {
+    return std::nullopt;
+  }
+
+  return edm->GetEntityInstance(autofill::EntityInstance::EntityId(
+      base::Uuid::ParseCaseInsensitive(guid)));
+}
+
+// Returns the default icon for the autofill AI entity type.
+UIImage* defaultIconForEntityType(autofill::EntityTypeName entity_type_name) {
+  NSString* symbol_name = nil;
+  switch (entity_type_name) {
+    case autofill::EntityTypeName::kPassport:
+      symbol_name = kPassportSymbol;
+      break;
+    case autofill::EntityTypeName::kDriversLicense:
+    case autofill::EntityTypeName::kNationalIdCard:
+      symbol_name = kIdCardSymbol;
+      break;
+    case autofill::EntityTypeName::kVehicle:
+      symbol_name = kCarSymbol;
+      break;
+    case autofill::EntityTypeName::kKnownTravelerNumber:
+    case autofill::EntityTypeName::kRedressNumber:
+      symbol_name = kSecureFlightIdSymbol;
+      break;
+    case autofill::EntityTypeName::kFlightReservation:
+      symbol_name = kFlightReservationSymbol;
+      break;
+    default:
+      return nil;
+  }
+
+  return SymbolWithPalette(
+      DefaultSymbolWithPointSize(symbol_name, kSymbolPointSize), @[
+        [UIColor colorNamed:kTextPrimaryColor],
+      ]);
+}
+
 // Returns the default icon for the suggestion type.
-UIImage* defaultIconForType(FormSuggestion* suggestion) {
+UIImage* defaultIconForType(FormSuggestion* suggestion,
+                            web::WebState* web_state) {
   switch (suggestion.type) {
     case autofill::SuggestionType::kUndoOrClear:
       if (suggestion.suggestionIconType == SuggestionIconType::kUndoAutofill &&
@@ -139,6 +205,24 @@ UIImage* defaultIconForType(FormSuggestion* suggestion) {
           return nil;
       }
     }
+    case autofill::SuggestionType::kFillAutofillAi:
+      if (std::holds_alternative<autofill::Suggestion::AutofillAiPayload>(
+              suggestion.payload)) {
+        const std::string guid =
+            std::get<autofill::Suggestion::AutofillAiPayload>(
+                suggestion.payload)
+                .guid.value();
+
+        base::optional_ref<const autofill::EntityInstance> entity =
+            GetAutofillAiEntity(guid, web_state);
+        if (!entity.has_value()) {
+          return nil;
+        }
+
+        return defaultIconForEntityType(entity->type().name());
+      }
+
+      return nil;
     case autofill::SuggestionType::kAutocompleteEntry:
     default:
       return nil;
@@ -492,7 +576,7 @@ bool IsRequestDedupingAllowed() {
     (NSArray<FormSuggestion*>*)suggestions {
   NSMutableArray<FormSuggestion*>* suggestionsCopy = [NSMutableArray array];
   for (FormSuggestion* suggestion : suggestions) {
-    UIImage* defaultIcon = defaultIconForType(suggestion);
+    UIImage* defaultIcon = defaultIconForType(suggestion, _webState);
 
     // If there are no icons, but we have a default icon for this suggestion,
     // copy the suggestion and add the default icon, otherwise, update the icon
