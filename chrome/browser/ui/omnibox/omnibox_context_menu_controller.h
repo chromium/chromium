@@ -164,22 +164,22 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   /* Helpers for InputType input_state fields. */
   omnibox::InputType GetInputTypeForCommandId(int command_id) const;
-  bool IsInputTypeAllowed(omnibox::InputType input_type) const;
-  bool IsInputTypeDisabled(omnibox::InputType input_type) const;
+  bool IsInputTypeVisible(omnibox::InputType input_type) const;
+  bool IsInputTypeEnabled(omnibox::InputType input_type) const;
 
   /* Helpers for ToolMode input_state fields. */
   omnibox::ToolMode GetToolModeForCommandId(int command_id) const;
   const omnibox::ToolConfig* GetToolConfig(omnibox::ToolMode tool) const;
   std::optional<omnibox::SectionConfig> GetToolSectionConfig() const;
-  bool IsToolAllowed(omnibox::ToolMode tool) const;
-  bool IsToolDisabled(omnibox::ToolMode tool) const;
+  bool IsToolVisible(omnibox::ToolMode tool) const;
+  bool IsToolEnabled(omnibox::ToolMode tool) const;
 
   /* Helpers for ModelMode input_state fields. */
   omnibox::ModelMode GetModelModeForCommandId(int command_id) const;
   const omnibox::ModelConfig* GetModelConfig(omnibox::ModelMode model) const;
   std::optional<omnibox::SectionConfig> GetModelSectionConfig() const;
-  bool IsModelAllowed(omnibox::ModelMode model) const;
-  bool IsModelDisabled(omnibox::ModelMode model) const;
+  bool IsModelVisible(omnibox::ModelMode model) const;
+  bool IsModelEnabled(omnibox::ModelMode model) const;
 
   raw_ptr<OmniboxController> GetOmniboxController() const;
   raw_ptr<OmniboxEditModel> GetEditModel();
