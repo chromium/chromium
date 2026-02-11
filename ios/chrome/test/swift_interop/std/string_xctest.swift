@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import StdTestHelpers
+import CxxImports
 import XCTest
 
 // TODO(crbug.com/456484598): Move this extension to a public module that can

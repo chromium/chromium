@@ -7,14 +7,9 @@ import("//build/config/apple/swift_source_set.gni")
 if (enable_swift_cxx_interop) {
   swift_cxx_import("base_imports") {
     testonly = true
-    modules = [
-      {
-        name = "BaseImports"
-        sources = [
-          "//base/system/sys_info.h",
-          "//base/time/time.h",
-        ]
-      },
+    sources = [
+      "//base/system/sys_info.h",
+      "//base/time/time.h",
     ]
   }
 
@@ -24,8 +19,8 @@ if (enable_swift_cxx_interop) {
       "sys_info_xctest.swift",
       "time_xctest.swift",
     ]
+    cxx_import_deps = [ ":base_imports" ]
     deps = [
-      ":base_imports",
       "//base",
       "//build/config/ios:xctest",
     ]

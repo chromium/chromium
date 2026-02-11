@@ -5,22 +5,15 @@
 import("//build/config/apple/swift_source_set.gni")
 
 if (enable_swift_cxx_interop) {
-  swift_cxx_import("enum") {
+  swift_cxx_import("enum_import") {
     testonly = true
-    modules = [
-      {
-        name = "Enum"
-        sources = [ "enum.h" ]
-      },
-    ]
+    sources = [ "enum.h" ]
   }
 
   swift_source_set("tests") {
     testonly = true
     sources = [ "enum_xctest.swift" ]
-    deps = [
-      ":enum",
-      "//build/config/ios:xctest",
-    ]
+    cxx_import_deps = [ ":enum_import" ]
+    deps = [ "//build/config/ios:xctest" ]
   }
 }

@@ -5,22 +5,15 @@
 import("//build/config/apple/swift_source_set.gni")
 
 if (enable_swift_cxx_interop) {
-  swift_cxx_import("namespace") {
+  swift_cxx_import("namespace_import") {
     testonly = true
-    modules = [
-      {
-        name = "Namespace"
-        sources = [ "namespace.h" ]
-      },
-    ]
+    sources = [ "namespace.h" ]
   }
 
   swift_source_set("tests") {
     testonly = true
     sources = [ "namespace_xctest.swift" ]
-    deps = [
-      ":namespace",
-      "//build/config/ios:xctest",
-    ]
+    cxx_import_deps = [ ":namespace_import" ]
+    deps = [ "//build/config/ios:xctest" ]
   }
 }

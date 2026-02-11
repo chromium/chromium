@@ -5,22 +5,15 @@
 import("//build/config/apple/swift_source_set.gni")
 
 if (enable_swift_cxx_interop) {
-  swift_cxx_import("struct") {
+  swift_cxx_import("struct_import") {
     testonly = true
-    modules = [
-      {
-        name = "Struct"
-        sources = [ "struct.h" ]
-      },
-    ]
+    sources = [ "struct.h" ]
   }
 
   swift_source_set("tests") {
     testonly = true
     sources = [ "struct_xctest.swift" ]
-    deps = [
-      ":struct",
-      "//build/config/ios:xctest",
-    ]
+    cxx_import_deps = [ ":struct_import" ]
+    deps = [ "//build/config/ios:xctest" ]
   }
 }
