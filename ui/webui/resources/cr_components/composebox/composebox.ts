@@ -827,7 +827,7 @@ export class ComposeboxElement extends I18nMixinLit
       // query, clear autocomplete matches, and recompute whether submission
       // should be enabled.
       this.input_ = e.detail;
-      this.clearAutocompleteMatches();
+      this.queryAutocomplete_(/* clearMatches= */ true);
       this.submitEnabled_ = this.computeSubmitEnabled_();
       this.isVoiceInput_ = true;
       await this.updateComplete;
