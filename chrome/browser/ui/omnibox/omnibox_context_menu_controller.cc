@@ -310,21 +310,28 @@ void OmniboxContextMenuController::AddModelPickerItems() {
 
   auto check_icon = ui::ImageModel::FromVectorIcon(
       kCheckIcon, ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+  bool is_aim_popup_open =
+      GetOmniboxController() &&
+      GetOmniboxController()->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kAim;
 
   auto auto_model_icon =
       ui::ImageModel::FromVectorIcon(kAutorenewIcon, ui::kColorMenuIcon,
                                      ui::SimpleMenuModel::kDefaultIconSize);
-  AddItemWithIcon(IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO, auto_model_label,
-                  input_state_.active_model ==
-                          omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE
-                      ? check_icon
-                      : auto_model_icon);
+  AddItemWithIcon(
+      IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO, auto_model_label,
+      is_aim_popup_open &&
+              input_state_.active_model ==
+                  omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE
+          ? check_icon
+          : auto_model_icon);
 
   auto regular_model_icon = ui::ImageModel::FromVectorIcon(
       kBoltIcon, ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
   AddItemWithIcon(
       IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR, regular_model_label,
-      input_state_.active_model == omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR
+      is_aim_popup_open && input_state_.active_model ==
+                               omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR
           ? check_icon
           : regular_model_icon);
 
@@ -332,7 +339,8 @@ void OmniboxContextMenuController::AddModelPickerItems() {
       kTimerIcon, ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
   AddItemWithIcon(
       IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING, thinking_model_label,
-      input_state_.active_model == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
+      is_aim_popup_open && input_state_.active_model ==
+                               omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
           ? check_icon
           : thinking_model_icon);
 }
