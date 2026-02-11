@@ -1116,8 +1116,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   Profile* profile = browser->profile();
 
-  [self setLastProfile:profile];
   _lastActiveColorProvider = browser->window()->GetColorProvider();
+  [self setLastProfile:profile];
 }
 
 - (void)onVerticalTabStripModeChanged:

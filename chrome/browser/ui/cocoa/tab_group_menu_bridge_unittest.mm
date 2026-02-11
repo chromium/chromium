@@ -110,6 +110,19 @@ class TabGroupMenuBridgeTest : public BrowserWithTestWindowTest {
   NSMenu* __strong tab_groups_menu_;
 };
 
+// Regression test for crbug.com/482257280.
+TEST_F(TabGroupMenuBridgeTest, BuildMenuDuringConstructionWithExistingGroups) {
+  // Add a group before constructing the bridge so OnInitialized() calls
+  // BuildMenu() during construction with groups present.
+  AddGroup(u"Pre-existing Group", tab_groups::TabGroupColorId::kBlue,
+           {GURL("https://example.com")});
+
+  // Must not crash obtaining a color provider.
+  TabGroupMenuBridge bridge(profile(), service());
+
+  ExpectGroupTitlesInMenu({"Pre-existing Group"});
+}
+
 TEST_F(TabGroupMenuBridgeTest, CreatesBlankMenu) {
   TabGroupMenuBridge bridge(profile(), service());
   bridge.BuildMenu();
