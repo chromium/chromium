@@ -248,6 +248,8 @@ ContextProperties ContextImplOrt::GetContextProperties(
        /*gather_indices=*/{DataTypeConstraint::kInt32To64, kMaxRank},
        /*gather_elements_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
+       // TODO(crbug.com/470357751): Support uint32 indices when ORT CPU EP
+       // implements it.
        /*gather_elements_indices=*/
        {DataTypeConstraint::kInt32To64, kMaxNonScalarRank},
        /*gather_nd_input=*/
