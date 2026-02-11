@@ -227,7 +227,11 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   ResourceProviderType type_;
   mutable sk_sp<SkSurface> surface_;  // mutable for lazy init
-  SkSurface::ContentChangeMode mode_ = SkSurface::kRetain_ContentChangeMode;
+
+  // Whether the content of the current resource must be transferred to a new
+  // resource on CopyOnWrite. True by default, but can be set to false as an
+  // optimization if the current resource is known to have been cleared.
+  bool must_preserve_content_on_copy_on_write_ = true;
 
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
 

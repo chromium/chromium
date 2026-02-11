@@ -544,10 +544,10 @@ void CanvasResourceProviderSharedImage::EndWriteAccess() {
   }
 
   if (is_accelerated_) {
-    // We reset |mode_| here since the draw commands which overwrite the
-    // complete canvas must have been flushed at this point without triggering
-    // copy-on-write.
-    mode_ = SkSurface::kRetain_ContentChangeMode;
+    // As a write operation has just completed on the current resource, it is
+    // now necessary to preserve that resource's contents on a subsequent
+    // CopyOnWrite.
+    must_preserve_content_on_copy_on_write_ = true;
   } else {
     if (ShouldReplaceTargetBuffer()) {
       resource_ = NewOrRecycledResource();
@@ -603,7 +603,7 @@ CanvasResourceProviderSharedImage::WillDrawInternal() {
     resource_ = NewOrRecycledResource();
     DCHECK(IsResourceUsable(resource_.get()));
     dst_access = resource_->BeginAccess(/*readonly=*/false);
-    if (mode_ == SkSurface::kRetain_ContentChangeMode) {
+    if (must_preserve_content_on_copy_on_write_) {
       auto old_mailbox =
           old_resource_shared_image->GetClientSharedImage()->mailbox();
       auto mailbox = resource()->GetClientSharedImage()->mailbox();
@@ -618,8 +618,10 @@ CanvasResourceProviderSharedImage::WillDrawInternal() {
     }
 
     UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.ContentChangeMode",
-                          mode_ == SkSurface::kRetain_ContentChangeMode);
-    mode_ = SkSurface::kRetain_ContentChangeMode;
+                          must_preserve_content_on_copy_on_write_);
+    // By default, the contents of the new resource must be preserved on a
+    // subsequent CopyOnWrite.
+    must_preserve_content_on_copy_on_write_ = true;
   } else {
     dst_access = resource_->BeginAccess(/*readonly=*/false);
   }
@@ -1614,8 +1616,9 @@ void CanvasResourceProvider::InitializeForRecording(
 
 void CanvasResourceProvider::RecordingCleared() {
   // Since the recording has been cleared, it contains no draw commands and it
-  // is now safe to update `mode_` to discard the old copy of canvas content.
-  mode_ = SkSurface::kDiscard_ContentChangeMode;
+  // is now safe to discard the old copy of canvas content on a subsequent
+  // CopyOnWrite.
+  must_preserve_content_on_copy_on_write_ = false;
   clear_frame_ = true;
 }
 
