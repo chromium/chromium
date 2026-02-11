@@ -1764,6 +1764,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   RouteMap* routeMap();
 
+  void SetHasCaptureListener() { has_capture_listener_ = true; }
+  bool HasCaptureListener() const { return has_capture_listener_; }
+
   // A non-null template_document_host_ implies that |this| was created by
   // EnsureTemplateDocument().
   bool IsTemplateDocument() const { return template_document_host_ != nullptr; }
@@ -2979,6 +2982,12 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapLinkedHashSet<Member<Element>> elements_with_interest_;
 
   Member<DocumentPartRoot> document_part_root_;
+
+  // This flag is used to indicate whether the capture phase of event
+  // dispatching can be skipped. When an event listener is added to this
+  // document with the capture flag set, then this flag is set to true. Once
+  // set to true, it is never set to false again.
+  bool has_capture_listener_ = false;
 
   int load_event_delay_count_ = 0;
 

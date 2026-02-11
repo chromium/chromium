@@ -5066,6 +5066,12 @@
       status: "stable",
     },
     {
+      // Improves performance of event dispatching by skipping the capture
+      // phase if there are no capture listeners registered on the page.
+      name: "SkipEventCapture",
+      status: "stable",
+    },
+    {
       // When enabled, cursor movement (arrow keys) will skip over non-editable
       // atomic or empty inline elements within editable content, instead of
       // getting stuck or moving into the non-editable content.

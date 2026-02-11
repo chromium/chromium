@@ -3004,6 +3004,10 @@ void Node::AddedEventListener(const AtomicString& event_type,
   EventTarget::AddedEventListener(event_type, registered_listener);
   GetDocument().AddListenerTypeIfNeeded(event_type, *this);
   GetDocument().DidAddEventListeners(/*count*/ 1);
+  if (registered_listener.Capture() &&
+      RuntimeEnabledFeatures::SkipEventCaptureEnabled()) {
+    GetDocument().SetHasCaptureListener();
+  }
   if (auto* frame = GetDocument().GetFrame()) {
     frame->GetEventHandlerRegistry().DidAddEventHandler(
         *this, event_type, registered_listener.Options());
@@ -3088,6 +3092,12 @@ void Node::MoveEventListenersToNewDocument(Document& old_document,
                                       &old_frame->LocalFrameRoot());
   if (moving_into_different_connected_local_root) {
     new_frame->GetEventHandlerRegistry().DidMoveIntoLocalRoot(*this);
+  }
+
+  // This might be faster than going through all of the event
+  // listeners to see if any of them have capture set.
+  if (old_document.HasCaptureListener()) {
+    new_document.SetHasCaptureListener();
   }
 }
 

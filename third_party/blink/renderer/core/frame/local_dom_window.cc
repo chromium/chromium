@@ -2134,6 +2134,10 @@ void LocalDOMWindow::AddedEventListener(
 
   document()->AddListenerTypeIfNeeded(event_type, *this);
   document()->DidAddEventListeners(/*count*/ 1);
+  if (registered_listener.Capture() &&
+      RuntimeEnabledFeatures::SkipEventCaptureEnabled()) {
+    document()->SetHasCaptureListener();
+  }
 
   for (auto& it : event_listener_observers_) {
     it->DidAddEventListener(this, event_type);

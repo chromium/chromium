@@ -305,6 +305,11 @@ inline EventDispatchContinuation EventDispatcher::DispatchEventAtCapturing() {
   // AT_TARGET and fire only the capture listeners on it.
   event_->SetEventPhase(Event::PhaseType::kCapturingPhase);
 
+  if (!node_->GetDocument().HasCaptureListener()) {
+    DCHECK(RuntimeEnabledFeatures::SkipEventCaptureEnabled());
+    return kContinueDispatching;
+  }
+
   if (event_->GetEventPath().GetWindowEventContext().HandleLocalEvents(
           *event_) &&
       event_->PropagationStopped())
