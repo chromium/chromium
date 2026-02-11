@@ -52,7 +52,7 @@ OmniboxContextMenu::OmniboxContextMenu(views::Widget* parent_widget,
 }
 
 int OmniboxContextMenu::GetMaxWidthForMenu(views::MenuItemView* menu) {
-  return 400;
+  return 320;
 }
 
 OmniboxContextMenu::~OmniboxContextMenu() {
@@ -63,6 +63,10 @@ OmniboxContextMenu::~OmniboxContextMenu() {
 
 void OmniboxContextMenu::RunMenuAt(const gfx::Point& point,
                                    ui::mojom::MenuSourceType source_type) {
+  if (menu_ && menu_->HasSubmenu()) {
+    menu_->GetSubmenu()->set_minimum_preferred_width(320);
+  }
+
   menu_runner_->RunMenuAt(parent_widget_, nullptr,
                           gfx::Rect(point, gfx::Size()),
                           views::MenuAnchorPosition::kTopLeft, source_type);
