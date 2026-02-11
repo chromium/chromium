@@ -42,6 +42,7 @@ bool SupportsInvalidation(CSSSelector::MatchType match) {
 bool SupportsInvalidation(CSSSelector::PseudoType type) {
   switch (type) {
     case CSSSelector::kPseudoEmpty:
+    case CSSSelector::kPseudoAnimatedImage:
     case CSSSelector::kPseudoFirstChild:
     case CSSSelector::kPseudoFirstOfType:
     case CSSSelector::kPseudoLastChild:

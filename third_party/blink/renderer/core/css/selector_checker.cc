@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_install_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_bar_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_item_element.h"
@@ -685,6 +686,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoHas:
       return CheckPseudoHas(context, result) ? kFeaturelessMatches
                                              : kFeaturelessFails;
+    case CSSSelector::kPseudoAnimatedImage:
     case CSSSelector::kPseudoActive:
     case CSSSelector::kPseudoActiveOption:
     case CSSSelector::kPseudoActiveViewTransition:
@@ -2279,6 +2281,15 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         element.SetStyleAffectedByEmpty();
       }
       return is_empty;
+    }
+    case CSSSelector::kPseudoAnimatedImage: {
+      CHECK(RuntimeEnabledFeatures::CSSImageAnimationEnabled());
+      if (auto* image_element = DynamicTo<HTMLImageElement>(element)) {
+        if (auto* image = image_element->CachedImage()) {
+          return image->IsAnimatedImage();
+        }
+      }
+      return false;
     }
     case CSSSelector::kPseudoFirstChild:
       if (mode_ == kResolvingStyle) {

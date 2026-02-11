@@ -239,6 +239,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoActiveViewTransition,
     kPseudoActiveViewTransitionType,
     kPseudoAfter,
+    kPseudoAnimatedImage,
     kPseudoAny,
     kPseudoAnyLink,
     kPseudoAutofill,
