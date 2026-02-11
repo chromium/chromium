@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
@@ -297,9 +296,6 @@ class NigoriSyncBridgeImplTest : public testing::Test {
     bridge_->RemoveObserver(&observer_);
     Nigori::SetUseScryptCostParameterForTesting(false);
   }
-
-  void SetUp() override { OSCryptMocker::SetUp(); }
-  void TearDown() override { OSCryptMocker::TearDown(); }
 
   // Mimics the initial sync for Nigori. After the initial sync
   // `nigori_local_data_` persists Nigori local state.

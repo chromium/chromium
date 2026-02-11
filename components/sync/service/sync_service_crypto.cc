@@ -134,6 +134,7 @@ void SyncServiceCrypto::SetEncryptor(
     std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   encryptor_ = std::move(encryptor);
+  CHECK(encryptor_);
 }
 
 void SyncServiceCrypto::Reset() {

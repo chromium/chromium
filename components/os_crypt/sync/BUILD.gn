@@ -22,8 +22,6 @@ component("sync") {
     "//components/os_crypt/sync:test_support",
     "//components/os_crypt/sync:unit_tests",
     "//components/signin/core/browser",
-    "//components/sync:unit_tests",
-    "//components/sync/nigori",
     "//headless:headless_browser",
     "//ios/chrome/browser/web/model:web_internal",
     "//services/network:network_service",
