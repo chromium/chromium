@@ -7,16 +7,16 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
-#include "chrome/browser/ui/webui/skills/skills_dialog.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
+#include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/browser/ui/webui/skills/skills_ui.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -61,12 +61,32 @@ namespace skills {
 SkillsUiTabController::SkillsUiTabController(tabs::TabInterface& tab)
     : SkillsUiTabControllerInterface(tab),
       tab_(tab),
-      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
+  will_detach_subscription_ = tab.RegisterWillDetach(base::BindRepeating(
+      &SkillsUiTabController::OnTabWillDetach, base::Unretained(this)));
+}
 
-SkillsUiTabController::~SkillsUiTabController() = default;
+SkillsUiTabController::~SkillsUiTabController() {
+  if (dialog_widget_) {
+    dialog_widget_->RemoveObserver(this);
+    OnDialogClosing(views::Widget::ClosedReason::kUnspecified);
+  }
+}
+
+void SkillsUiTabController::OnTabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  // Synchronously close the widget on 'kDelete' while the tab's UI
+  // scaffolding is still valid. This prevents re-entrancy crashes during tab
+  // closure.
+  if (reason == tabs::TabInterface::DetachReason::kDelete) {
+    OnDialogClosing(views::Widget::ClosedReason::kUnspecified);
+  }
+}
 
 void SkillsUiTabController::ShowDialog(Skill skill) {
-  if (dialog_delegate_) {
+  if (dialog_widget_) {
+    // Dialog is already open.
     return;
   }
 
@@ -75,44 +95,60 @@ void SkillsUiTabController::ShowDialog(Skill skill) {
   content::WebContents* contents = tab_->GetContents();
   CHECK(contents);
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  auto dialog_view = std::make_unique<skills::SkillsDialogView>(profile);
 
-  auto delegate = std::make_unique<SkillsDialog>(profile);
-  delegate->RegisterOnDialogClosedCallback(base::BindOnce(
-      &SkillsUiTabController::OnDialogClosed, weak_ptr_factory_.GetWeakPtr()));
+  dialog_delegate_ = std::make_unique<views::DialogDelegate>();
+  dialog_delegate_->SetShowCloseButton(false);
+  dialog_delegate_->SetButtons(
+      static_cast<int>(ui::mojom::DialogButton::kNone));
+  dialog_delegate_->SetModalType(ui::mojom::ModalType::kChild);
+  dialog_delegate_->SetOwnershipOfNewWidget(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
-  dialog_delegate_ =
-      ShowConstrainedWebDialog(profile, std::move(delegate), contents);
-
-  if (dialog_delegate_) {
-    content::WebContents* dialog_contents = dialog_delegate_->GetWebContents();
-    if (dialog_contents && dialog_contents->GetWebUI()) {
-      auto* controller = dialog_contents->GetWebUI()->GetController();
-      if (auto* skills_ui = controller->GetAs<skills::SkillsUI>()) {
-        skills_ui->InitializeDialog(weak_ptr_factory_.GetWeakPtr(),
-                                    std::move(skill));
-      }
+  // Create Skills Dialog Delegate.
+  content::WebContents* dialog_contents = dialog_view->web_contents();
+  if (dialog_contents && dialog_contents->GetWebUI()) {
+    if (auto* skills_ui = dialog_contents->GetWebUI()
+                              ->GetController()
+                              ->GetAs<skills::SkillsUI>()) {
+      skills_ui->InitializeDialog(weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(skill));
     }
+  }
+  dialog_delegate_->SetContentsView(std::move(dialog_view));
+  dialog_widget_ = constrained_window::ShowWebModalDialogViewsOwned(
+      dialog_delegate_.get(), tab_->GetContents(),
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+
+  dialog_widget_->MakeCloseSynchronous(base::BindOnce(
+      &SkillsUiTabController::OnDialogClosing, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SkillsUiTabController::OnDialogClosing(
+    views::Widget::ClosedReason reason) {
+  if (!dialog_widget_) {
+    return;
+  }
+  dialog_widget_.reset();
+  dialog_delegate_.reset();
+  if (on_dialog_closed_callback_for_testing_) {
+    std::move(on_dialog_closed_callback_for_testing_).Run();
   }
 }
 
 void SkillsUiTabController::CloseDialog() {
-  if (!dialog_delegate_) {
+  if (!dialog_widget_) {
     return;
   }
-  // Capture pointer and clear member to prevent re-entrancy during teardown.
-  auto* temp_delegate = dialog_delegate_.get();
-  // Manually fire the callback to ensure the result is processed even if the
-  // widget teardown suppresses the signal.
-  OnDialogClosed(std::string());
-  // Triggers the standard close sequence defined by the delegate.
-  temp_delegate->OnDialogCloseFromWebUI();
+  dialog_widget_->Close();
 }
 
-void SkillsUiTabController::OnDialogClosed(const std::string& json_retval) {
-  dialog_delegate_ = nullptr;
-  if (on_dialog_closed_callback_for_testing_) {
-    std::move(on_dialog_closed_callback_for_testing_).Run();
+void SkillsUiTabController::OnWidgetDestroyed(views::Widget* widget) {
+  if (dialog_widget_.get() != widget) {
+    return;
   }
+  // Call the central closing logic to ensure state is reset.
+  OnDialogClosing(views::Widget::ClosedReason::kUnspecified);
 }
 
 void SkillsUiTabController::OnSkillSaved(const std::string& skill_id) {
@@ -126,7 +162,7 @@ void SkillsUiTabController::OnSkillSaved(const std::string& skill_id) {
 }
 
 bool SkillsUiTabController::IsShowing() const {
-  return dialog_delegate_ != nullptr;
+  return dialog_widget_ != nullptr;
 }
 
 void SkillsUiTabController::InvokeSkill(std::string_view skill_id) {

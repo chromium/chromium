@@ -13,7 +13,11 @@
 #include "chrome/common/buildflags.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
+#include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -23,7 +27,9 @@ namespace tabs {
 class TabInterface;
 }
 
-class ConstrainedWebDialogDelegate;
+namespace views {
+class Widget;
+}  // namespace views
 
 namespace glic {
 class GlicKeyedService;
@@ -36,7 +42,8 @@ class SkillsDialogDelegate;
 
 // A controller responsible for managing the skills dialog for the tab.
 class SkillsUiTabController : public SkillsUiTabControllerInterface,
-                              public SkillsDialogDelegate {
+                              public SkillsDialogDelegate,
+                              public views::WidgetObserver {
  public:
   explicit SkillsUiTabController(tabs::TabInterface& tab);
   ~SkillsUiTabController() override;
@@ -52,12 +59,17 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
   void CloseDialog() override;
   void OnSkillSaved(const std::string& skill_id) override;
 
+  // views::WidgetObserver override:
+  void OnWidgetDestroyed(views::Widget* widget) override;
+
+  // Synchronously resets pointers to ensure immediate memory cleanup.
+  void OnDialogClosing(views::Widget::ClosedReason reason);
+
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
+
   void SetOnDialogClosedCallbackForTesting(base::OnceClosure callback) {
     on_dialog_closed_callback_for_testing_ = std::move(callback);
-  }
-
-  ConstrainedWebDialogDelegate* GetDialogDelegateForTesting() {
-    return dialog_delegate_.get();
   }
 
   const std::string& GetPendingSkillIdForTesting() const {
@@ -84,9 +96,6 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
   glic::GlicKeyedService* GetGlicService();
 
  private:
-  // Callback for when the dialog widget is closed by the user or system.
-  void OnDialogClosed(const std::string& json_retval);
-
   // Starts a process that will notify skill to invoke changed once the glic
   // panel is ready.
   void NotifySkillToInvokeChangedWhenReady();
@@ -100,7 +109,15 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
   // The tab this controller belongs to.
   const raw_ref<tabs::TabInterface> tab_;
 
-  raw_ptr<ConstrainedWebDialogDelegate> dialog_delegate_ = nullptr;
+  // Subscription for tab detach events.
+  base::CallbackListSubscription will_detach_subscription_;
+
+  // The Delegate handles the dialog logic and owns the internal View.
+  std::unique_ptr<views::DialogDelegate> dialog_delegate_;
+
+  // The Widget represents the window.
+  // CLIENT_OWNS_WIDGET ensures stability during tab reparenting/dragging.
+  std::unique_ptr<views::Widget> dialog_widget_;
 
   ::ui::ScopedUnownedUserData<SkillsUiTabController> scoped_unowned_user_data_;
 
