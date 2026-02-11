@@ -76,6 +76,7 @@ source_set("util") {
   deps = [
     "//base",
     "//components/browsing_data/core",
+    "//components/search_engines",
     "//components/strings",
     "//ios/chrome/browser/browsing_data/model:counters",
     "//ui/base",
@@ -99,6 +100,7 @@ source_set("unit_tests") {
     "//components/keyed_service/core",
     "//components/password_manager/core/browser/password_store:test_support",
     "//components/prefs",
+    "//components/search_engines:test_support",
     "//components/strings",
     "//components/sync_preferences",
     "//ios/chrome/app/strings",
@@ -107,6 +109,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/model:test_support",
     "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public:features",

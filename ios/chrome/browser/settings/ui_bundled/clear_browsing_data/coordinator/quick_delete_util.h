@@ -7,17 +7,33 @@
 
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 
+class TemplateURLService;
+
 namespace browsing_data {
 enum class TimePeriod;
 }
 
 namespace quick_delete_util {
 
+// Default search engine states.
+enum class DefaultSearchEngineState {
+  // The default search engine is Google.
+  kGoogle,
+  // The default search engine is not Google.
+  kNotGoogle,
+  // The default search engine is null.
+  kError,
+};
+
 // Returns the appropriate summary subtitle for the given counter result per
 // data type on the browsing data page.
 NSString* GetCounterTextFromResult(
     const browsing_data::BrowsingDataCounter::Result& result,
     browsing_data::TimePeriod time_range);
+
+// Returns the user's default search engine state.
+DefaultSearchEngineState GetDefaultSearchEngineState(
+    TemplateURLService* template_url_service);
 
 }  // namespace quick_delete_util
 

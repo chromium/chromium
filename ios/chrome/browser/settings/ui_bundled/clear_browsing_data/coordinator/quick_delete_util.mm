@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"
+#import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browsing_data/model/tabs_counter.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -80,6 +81,21 @@ NSString* GetCounterTextFromResult(
 
   return base::SysUTF16ToNSString(
       browsing_data::GetCounterTextFromResult(&result));
+}
+
+DefaultSearchEngineState GetDefaultSearchEngineState(
+    TemplateURLService* template_url_service) {
+  if (!template_url_service ||
+      !template_url_service->GetDefaultSearchProvider()) {
+    return DefaultSearchEngineState::kError;
+  }
+
+  if (template_url_service->GetDefaultSearchProvider()->GetEngineType(
+          template_url_service->search_terms_data()) == SEARCH_ENGINE_GOOGLE) {
+    return DefaultSearchEngineState::kGoogle;
+  }
+
+  return DefaultSearchEngineState::kNotGoogle;
 }
 
 }  // namespace quick_delete_util

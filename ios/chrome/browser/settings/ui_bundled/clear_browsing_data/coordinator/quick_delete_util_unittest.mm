@@ -8,10 +8,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"
+#import "components/search_engines/search_engines_test_environment.h"
+#import "components/search_engines/template_url.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/browsing_data/model/cache_counter.h"
 #import "ios/chrome/browser/browsing_data/model/tabs_counter.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -25,11 +28,36 @@
 
 class QuickDeleteUtilTest : public PlatformTest {
  public:
-  QuickDeleteUtilTest() { profile_ = TestProfileIOS::Builder().Build(); }
+  QuickDeleteUtilTest() {
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
+
+    profile_ = std::move(builder).Build();
+    template_url_service_ =
+        search_engines_test_environment_.template_url_service();
+  }
+
+  // Sets the default search engine to not be Google.
+  void SetDseToNonGoogle() {
+    TemplateURLData non_google_provider_data;
+    non_google_provider_data.SetURL(
+        "https://www.nongoogle.com/?q={searchTerms}");
+    non_google_provider_data.suggestions_url =
+        "https://www.nongoogle.com/suggest/?q={searchTerms}";
+
+    auto* non_google_provider = template_url_service_->Add(
+        std::make_unique<TemplateURL>(non_google_provider_data));
+    template_url_service_->SetUserSelectedDefaultSearchProvider(
+        non_google_provider);
+  }
 
  protected:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
+  raw_ptr<TemplateURLService> template_url_service_;
 };
 
 // Tests the construction of the counter string for cache in for the all time
@@ -173,4 +201,29 @@ TEST_F(QuickDeleteUtilTest, TestTabsCounter) {
         result, browsing_data::TimePeriod::LAST_HOUR);
     EXPECT_NSEQ(test_case.expected_output, output);
   }
+}
+
+// Tests that `GetDefaultSearchEngineState` returns the correct
+// DefaultSearchEngineState when the DSE is Google.
+TEST_F(QuickDeleteUtilTest, TestDseStateWhenDseIsGoogle) {
+  EXPECT_EQ(
+      quick_delete_util::GetDefaultSearchEngineState(template_url_service_),
+      quick_delete_util::DefaultSearchEngineState::kGoogle);
+}
+
+// Tests that `GetDefaultSearchEngineState` returns the correct
+// DefaultSearchEngineState when the DSE is not Google.
+TEST_F(QuickDeleteUtilTest, TestDseStateWhenDseIsNotGoogle) {
+  SetDseToNonGoogle();
+  EXPECT_EQ(
+      quick_delete_util::GetDefaultSearchEngineState(template_url_service_),
+      quick_delete_util::DefaultSearchEngineState::kNotGoogle);
+}
+
+// Tests that `GetDefaultSearchEngineState` returns the correct
+// DefaultSearchEngineState when the DSE is null.
+TEST_F(QuickDeleteUtilTest, TestDseStateWhenDseIsNull) {
+  EXPECT_EQ(quick_delete_util::GetDefaultSearchEngineState(
+                /*template_url_service=*/nullptr),
+            quick_delete_util::DefaultSearchEngineState::kError);
 }
