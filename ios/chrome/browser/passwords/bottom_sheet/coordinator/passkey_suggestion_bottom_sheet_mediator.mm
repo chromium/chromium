@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_suggestion_bottom_sheet_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
 #import "components/webauthn/ios/passkey_suggestion_utils.h"
@@ -69,6 +70,25 @@
   _webStateList = nullptr;
   _requestInfo.reset();
   _webAuthnCredentialsDelegate = nullptr;
+}
+
+- (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
+                 completion:(ProceduralBlock)completion {
+  CHECK_EQ(suggestion.type, autofill::SuggestionType::kWebauthnCredential);
+
+  // TODO(crbug.com/464290670): Handle reauth.
+
+  // `_webAuthnCredentialsDelegate` can be null if the frame it was created for
+  // was destroyed or navigated away.
+  if (!_webAuthnCredentialsDelegate) {
+    completion();
+    return;
+  }
+
+  _webAuthnCredentialsDelegate->SelectPasskey(
+      webauthn::GetPasskeySuggestionEncodedCredentialId(suggestion),
+      base::BindOnce(completion));
 }
 
 @end

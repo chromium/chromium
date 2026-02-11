@@ -19,6 +19,13 @@ namespace webauthn {
 NSArray<FormSuggestion*>* FormSuggestionsFromPasskeyCredentials(
     const std::vector<password_manager::PasskeyCredential>& passkeys);
 
+// Returns the encoded credential ID associated with the provided
+// `passkey_suggestion`. Returns an empty string if the ID cannot be retrieved.
+// This function should only be called on suggestions of type
+// autofill::SuggestionType::kWebauthnCredential.
+std::string GetPasskeySuggestionEncodedCredentialId(
+    FormSuggestion* passkey_suggestion);
+
 // Merges passkey and password suggestions into a single array.
 NSArray<FormSuggestion*>* MergePasskeyAndPasswordSuggestions(
     NSArray<FormSuggestion*>* passkey_suggestions,

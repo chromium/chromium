@@ -17,7 +17,6 @@
 #import "base/check_op.h"
 #import "base/containers/to_vector.h"
 #import "base/debug/crash_logging.h"
-#import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
@@ -733,22 +732,9 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
           [self retrieveWebAuthnCredentialsDelegateForFrame:frame];
       CHECK(webAuthnCredentialsDelegate);
 
-      // Get the encoded credential ID. Fall back to an empty ID if one wasn't
-      // added to the suggestion, which will result in deferring the passkey
-      // selection to the renderer.
-      const std::string encodedCredentialID =
-          std::holds_alternative<autofill::Suggestion::Guid>(suggestion.payload)
-              ? std::get<autofill::Suggestion::Guid>(suggestion.payload).value()
-              : std::string();
-
-      // An empty `encodedCredentialID` shouldn't cause a crash as there's a
-      // deferring mechanism in place, but it is unexpected.
-      if (encodedCredentialID.empty()) {
-        base::debug::DumpWithoutCrashing();
-      }
-
-      webAuthnCredentialsDelegate->SelectPasskey(encodedCredentialID,
-                                                 base::DoNothing());
+      webAuthnCredentialsDelegate->SelectPasskey(
+          webauthn::GetPasskeySuggestionEncodedCredentialId(suggestion),
+          base::BindOnce(completion));
       return;
     }
     default: {
