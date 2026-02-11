@@ -8,18 +8,6 @@ import type {OmniboxPopupAppElement} from './app.js';
 
 export function getHtml(this: OmniboxPopupAppElement) {
   // clang-format off
-  const searchboxDropdown = html`
-<cr-searchbox-dropdown part="searchbox-dropdown"
-    exportparts="dropdown-content"
-    role="listbox" .result="${this.result_}"
-    ?can-show-secondary-side="${this.canShowSecondarySide}"
-    ?has-secondary-side="${this.hasSecondarySide}"
-    @has-secondary-side-changed="${this.onHasSecondarySideChanged_}"
-    @dom-change="${this.onResultRepaint_}"
-    ?hidden="${!this.hasVisibleMatches_}">
-</cr-searchbox-dropdown>
-  `;
-
   return html`<!--_html_template_start_-->
 ${this.showContextEntrypoint_ ? html`
 <!-- WebUI Omnibox popup w/ "Add Context" button -->
@@ -42,11 +30,28 @@ ${this.showContextEntrypoint_ ? html`
       @add-tab-context="${this.addTabContext_}"
       @context-menu-entrypoint-click="${this.onContextualEntryPointClicked_}"
       @lens-search-click="${this.onLensSearchChipClicked_}">
-    ${searchboxDropdown}
+    <cr-searchbox-dropdown part="searchbox-dropdown"
+        exportparts="dropdown-content"
+        role="listbox" .result="${this.result_}"
+        ?can-show-secondary-side="${this.canShowSecondarySide}"
+        ?has-secondary-side="${this.hasSecondarySide}"
+        @has-secondary-side-changed="${this.onHasSecondarySideChanged_}"
+        @dom-change="${this.onResultRepaint_}"
+        ?hidden="${!this.hasVisibleMatches_}">
+    </cr-searchbox-dropdown>
   </contextual-entrypoint-and-carousel>
 </div>` : html`
 <!-- WebUI Omnibox popup w/o "Add Context" button -->
-  ${searchboxDropdown}`}
+  <cr-searchbox-dropdown part="searchbox-dropdown"
+      exportparts="dropdown-content"
+      role="listbox" .result="${this.result_}"
+      ?can-show-secondary-side="${this.canShowSecondarySide}"
+      ?has-secondary-side="${this.hasSecondarySide}"
+      @has-secondary-side-changed="${this.onHasSecondarySideChanged_}"
+      @dom-change="${this.onResultRepaint_}"
+      ?hidden="${!this.hasVisibleMatches_}">
+  </cr-searchbox-dropdown>
+`}
 <!--_html_template_end_-->`;
   // clang-format on
 }
