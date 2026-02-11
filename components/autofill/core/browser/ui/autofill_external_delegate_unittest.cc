@@ -268,6 +268,10 @@ class MockAutofillClient : public TestAutofillClient {
               GetIdentityCredentialDelegate,
               (),
               (override));
+  MOCK_METHOD(void,
+              ShowAutofillAiFailureNotification,
+              (std::u16string),
+              (override));
 
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
               GetDeviceAuthenticator,
@@ -1746,6 +1750,7 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
   ON_CALL(autofill_client(), GetAutofillSuggestions)
       .WillByDefault(Return(suggestions));
 
+  EXPECT_CALL(autofill_client(), ShowAutofillAiFailureNotification).Times(0);
   {
     InSequence s;
     EXPECT_CALL(wallet_manager(),
@@ -1788,6 +1793,7 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
   EXPECT_CALL(wallet_manager(),
               GetUnmaskedWalletEntityInstance(masked_passport.guid(), _))
       .Times(0);
+  EXPECT_CALL(autofill_client(), ShowAutofillAiFailureNotification).Times(0);
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
@@ -1828,6 +1834,7 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
               GetUnmaskedWalletEntityInstance(masked_passport.guid(), _))
       .WillOnce(RunOnceCallback<1>(std::nullopt));
   EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
+  EXPECT_CALL(autofill_client(), ShowAutofillAiFailureNotification);
   EXPECT_CALL(
       autofill_client(),
       HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));

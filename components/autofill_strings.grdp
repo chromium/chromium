@@ -1163,6 +1163,10 @@
     Couldn't save this info to your Google Wallet. Check your connection.
   </message>
 
+  <message name="IDS_AUTOFILL_AI_WALLET_FETCH_FAILURE_NOTIFICATION" desc="A snackbar (toast) message appearing at the top of the screen. The user sees this error if they attempt to autofill information but the request fails due to network connectivity issues." translateable="false">
+    Trouble filling your info. Check your connection.
+  </message>
+
   <!-- Prompt strings used on Android -->
   <!-- TODO: crbug.com/460410690 - Make strings translateable. -->
   <if expr="is_android">
