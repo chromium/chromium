@@ -128,3 +128,8 @@
   --iron-icon-fill-color: white;
   background-color: var(--color-composebox-tab-selector-button-selected);
 }
+
+#model-check {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+}
