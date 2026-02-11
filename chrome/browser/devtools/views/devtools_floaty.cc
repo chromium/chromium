@@ -359,7 +359,7 @@ void ShowWindow(Profile* profile,
   constexpr int offsetX = 30;
   constexpr int offsetY = 175;
   widget->SetBounds(
-      gfx::Rect(position.x() + offsetX, position.y() + offsetY, 400, 300));
+      gfx::Rect(position.x() + offsetX, position.y() + offsetY, 400, 400));
   widget->Show();
 }
 
