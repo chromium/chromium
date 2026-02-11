@@ -310,8 +310,9 @@ void InputStateModel::UpdateDisabledTools() {
     const omnibox::ToolRule* tool_rule = GetToolRule(rule_set_, tool);
     bool incompatible_with_inputs =
         !tool_rule ||
-        !AreItemsAllowed(GetCurrentInputTypes(session_handle_.get()),
-                         tool_rule->allowed_input_types());
+        (!tool_rule->allow_all_input_types() &&
+         !AreItemsAllowed(GetCurrentInputTypes(session_handle_.get()),
+                          tool_rule->allowed_input_types()));
 
     if (incompatible_with_model || incompatible_with_inputs) {
       state_.disabled_tools.push_back(tool);

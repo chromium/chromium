@@ -526,13 +526,11 @@ TEST_F(InputStateModelCompatibilityTest, MaxTotalInputsDisablesInputs) {
   EXPECT_TRUE(final_state.disabled_input_types.empty());
 }
 
-TEST_F(InputStateModelCompatibilityTest, CanvasToolAllowsAllInputs) {
-  // Set deep search rule `allow_all_input_types` to true.
-  for (auto& rule : *config_.mutable_rule_set()->mutable_tool_rules()) {
-    if (rule.tool() == omnibox::ToolMode::TOOL_MODE_CANVAS) {
-      rule.set_allow_all_input_types(true);
-    }
-  }
+TEST_F(InputStateModelCompatibilityTest, ToolWithAllowAllInputs) {
+  // Set Canvas tool rule `allow_all_input_types` to true.
+  auto* tool_canvas_rule = config_.mutable_rule_set()->add_tool_rules();
+  tool_canvas_rule->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  tool_canvas_rule->set_allow_all_input_types(true);
 
   // Re-create the model with the modified config.
   input_state_model_ =
@@ -540,12 +538,75 @@ TEST_F(InputStateModelCompatibilityTest, CanvasToolAllowsAllInputs) {
   input_state_model_->SetPrefService(&pref_service_);
   input_state_model_->set_state_for_testing(state_);
 
-  // Select Canvas.
-  input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  // Simulate adding a file.
+  std::vector<FileInfo> file_infos;
+  file_infos.emplace_back();
+  file_infos.back().mime_type = lens::MimeType::kPdf;
+  ON_CALL(session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(testing::Return(file_infos));
+
+  // Trigger an update.
+  input_state_model_->OnContextChanged();
   const auto& new_state = input_state_model_->get_state_for_testing();
 
-  // With allow_all_input_types, no inputs should be disabled.
-  EXPECT_TRUE(new_state.disabled_input_types.empty());
+  // With allow_all_input_types, Canvas should not be disabled.
+  // Deep search is disabled as it does not support any inputs.
+  // Image Gen is disabled as it has no rule.
+  EXPECT_THAT(new_state.disabled_tools,
+              UnorderedElementsAre(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH,
+                                   omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
+}
+
+TEST_F(InputStateModelCompatibilityTest, ToolWithSpecificInputs) {
+  // Set up a rule for Canvas tool to only allow images.
+  auto* tool_canvas_rule = config_.mutable_rule_set()->add_tool_rules();
+  tool_canvas_rule->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  tool_canvas_rule->set_allow_all_input_types(false);
+  tool_canvas_rule->add_allowed_input_types(
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+
+  // Re-create the model with the modified config.
+  input_state_model_ =
+      std::make_unique<InputStateModel>(session_handle_, config_);
+  input_state_model_->SetPrefService(&pref_service_);
+  input_state_model_->set_state_for_testing(state_);
+
+  // Simulate adding a file, which is not allowed by Canvas.
+  std::vector<FileInfo> file_infos;
+  file_infos.emplace_back();
+  file_infos.back().mime_type = lens::MimeType::kPdf;
+  ON_CALL(session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(testing::Return(file_infos));
+
+  // Trigger an update.
+  input_state_model_->OnContextChanged();
+  auto new_state = input_state_model_->get_state_for_testing();
+
+  // Canvas tool should be disabled because it doesn't support file inputs.
+  // Deep search is disabled as it does not support any inputs.
+  // Image Gen is disabled as it has no rule.
+  EXPECT_THAT(new_state.disabled_tools,
+              UnorderedElementsAre(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH,
+                                   omnibox::ToolMode::TOOL_MODE_CANVAS,
+                                   omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
+
+  // Now simulate adding an image, which is allowed.
+  file_infos.clear();
+  file_infos.emplace_back();
+  file_infos.back().mime_type = lens::MimeType::kImage;
+  ON_CALL(session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(testing::Return(file_infos));
+
+  // Trigger an update.
+  input_state_model_->OnContextChanged();
+  new_state = input_state_model_->get_state_for_testing();
+
+  // Canvas tool should now be enabled.
+  // Deep search is still disabled because it has no allowed inputs.
+  // Image Gen is still disabled as it has no rule.
+  EXPECT_THAT(new_state.disabled_tools,
+              UnorderedElementsAre(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH,
+                                   omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
 }
 
 }  // namespace contextual_search
