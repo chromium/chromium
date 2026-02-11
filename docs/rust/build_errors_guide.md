@@ -142,3 +142,40 @@ To fix the error above:
     - After editing `gnrt_config.toml` run
       `tools/crates/run_gnrt.py gen` to regenerate `BUILD.gn` files.
 
+## Dependency not visible to an internal Rust target
+
+Rust target templates like `rust_static_library("some_target")`
+internally expand into multiple smaller targets
+(e.g. a `rust_library` for invoking `rustc`,
+an `action` for invoking `clippy-driver`,
+`cxx`-supporting targets, etc.).
+This may cause `gn gen` errors when a dependency is exposed to the main
+target (e.g. `":some_target"`), but not to the internal targets (e.g.
+`":some_target_clippy"` or `":some_target_generator"`).
+
+Example error:
+
+```
+$ gn gen out/Default
+ERROR at //build/rust/gni_impl/rust_target.gni:587:9: Dependency not allowed.
+        action("${_clippy_target_name}") {
+        ^---------------------------------
+The item //foo/bar:some_target_clippy
+can not depend on //foo/bar:internal_impl
+because it is not in //foo/bar:internal_impl's visibility list: [
+  //foo/bar:internal_target1
+  //foo/bar:internal_target2
+]
+```
+
+To fix the error above, we recommend the following approach to
+`visibility` declarations in `BUILD.gn` files:
+
+* Public targets should use unrestricted `visibility`
+* Private targets should restrict their `visibility`
+  to specific directories - e.g. `visibility = [ ":*" ]`
+* Avoid restricting target `visibility` to specific, individual
+  targets - e.g. do **not** say `visibility = [ ":some_target" ]`.
+
+Note: Other fix approaches have been discussed with
+[`@gn-dev` here](https://groups.google.com/a/chromium.org/g/gn-dev/c/8cUBSIsd8Qw/m/32uA6L1iCAAJ).

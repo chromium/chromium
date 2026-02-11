@@ -56,7 +56,7 @@ rust_static_library("ffi_bindings") {
 rust_bindgen("mojo_c_system_bindings") {
   header = "//mojo/public/c/system/thunks.h"
   deps = [ "//mojo/public/c/system" ]
-  visibility = [ ":ffi_bindings" ]
+  visibility = [ ":*" ]
 }
 
 rust_static_library("system_bindings_unittests") {

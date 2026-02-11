@@ -14,10 +14,7 @@ if (media_use_symphonia) {
     crate_root = "symphonia_glue.rs"
     sources = [ "symphonia_glue.rs" ]
     cxx_bindings = [ "symphonia_glue.rs" ]
-    visibility = [
-      ":filters",
-      ":rust_unittests",
-    ]
+    visibility = [ ":*" ]
     deps = [ "//third_party/rust/symphonia/v0_5:lib" ]
   }
 }
