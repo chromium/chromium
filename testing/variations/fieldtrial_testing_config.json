@@ -25956,22 +25956,6 @@
             ]
         }
     ],
-    "StrictHighRankProcessLRU": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20250728",
-                    "enable_features": [
-                        "StrictHighRankProcessLRU"
-                    ]
-                }
-            ]
-        }
-    ],
     "StringWidthCache": [
         {
             "platforms": [

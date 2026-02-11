@@ -132,7 +132,7 @@ public class ContentFeatureList {
             new MutableFlagWithSafeDefault(
                     ContentFeatureMap.getInstance(),
                     ContentInternalFeatures.STRICT_HIGH_RANK_PROCESS_LRU,
-                    false);
+                    true);
 
     public static final MutableFlagWithSafeDefault sRemoveCachedProcessFromBindingManager =
             new MutableFlagWithSafeDefault(
