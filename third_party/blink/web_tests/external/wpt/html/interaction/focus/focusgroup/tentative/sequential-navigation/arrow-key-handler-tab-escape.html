@@ -9,6 +9,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
+<script src="/shadow-dom/focus-navigation/resources/focus-utils.js"></script>
 <script src="../resources/focusgroup-utils.js"></script>
 
 <div id=before tabindex=0>Before focusgroup</div>
@@ -28,7 +29,7 @@
     const bold = document.getElementById("bold");
     const search = document.getElementById("search");
 
-    bold.focus();
+    await focusAndWait(bold);
     assert_equals(document.activeElement, bold, "Precondition: focus starts on bold button");
 
     await focusAndKeyPress(bold, kArrowRight);
@@ -41,7 +42,7 @@
   promise_test(async t => {
     const search = document.getElementById("search");
 
-    search.focus();
+    await focusAndWait(search);
     assert_equals(document.activeElement, search, "Precondition: focus starts on native arrow key handler");
 
     await focusAndKeyPress(search, kArrowRight);
@@ -59,10 +60,10 @@
     const search = document.getElementById("search");
     const italic = document.getElementById("italic");
 
-    search.focus();
+    await focusAndWait(search);
     assert_equals(document.activeElement, search, "Precondition: focus starts on native arrow key handler");
 
-    await sendTabForward();
+    await navigateFocusForward();
     assert_equals(document.activeElement, italic,
                   "Tab from native arrow key handler should move to next segment entry");
   }, "Tab from native arrow key handler moves to next segment entry");
@@ -73,10 +74,10 @@
     const bold = document.getElementById("bold");
     const search = document.getElementById("search");
 
-    search.focus();
+    await focusAndWait(search);
     assert_equals(document.activeElement, search, "Precondition: focus starts on native arrow key handler");
 
-    await sendTabBackward();
+    await navigateFocusBackward();
     assert_equals(document.activeElement, bold,
                   "Shift+Tab from native arrow key handler should go to previous segment entry");
   }, "Shift+Tab from native arrow key handler goes to previous segment entry");

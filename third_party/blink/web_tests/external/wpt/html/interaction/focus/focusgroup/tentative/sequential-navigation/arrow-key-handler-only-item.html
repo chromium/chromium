@@ -9,6 +9,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
+<script src="/shadow-dom/focus-navigation/resources/focus-utils.js"></script>
 <script src="../resources/focusgroup-utils.js"></script>
 
 <button id="before">Before</button>
@@ -22,7 +23,7 @@
   promise_test(async t => {
     const search = document.getElementById("search");
 
-    search.focus();
+    await focusAndWait(search);
 
     // Arrow keys should not move focus (native arrow key handling).
     await assert_arrow_keys_do_not_move_focus(search);
@@ -37,7 +38,7 @@
     await assert_focusgroup_tab_navigation([before, search, after]);
 
     // Shift+Tab from after returns to focused search.
-    await sendTabBackward();
+    await navigateFocusBackward();
     assert_equals(document.activeElement, search);
   }, "Segment with only native arrow key handler navigates correctly based on focus state");
 
