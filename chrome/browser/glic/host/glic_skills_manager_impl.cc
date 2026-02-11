@@ -34,6 +34,7 @@ void GlicSkillsManagerImpl::UpdateSkillPreviews(
   auto* focused_tab = host_->sharing_manager().GetFocusedTabData().focus();
   if (!focused_tab) {
     host_->NotifyContextualSkillsChanged({});
+    contextual_skills_.clear();
     return;
   }
   if (updated_tab && focused_tab != *updated_tab) {
