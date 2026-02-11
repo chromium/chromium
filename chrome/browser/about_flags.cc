@@ -11679,14 +11679,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayPermissionBubbleAlt)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    {"web-signin-leads-to-implicitly-signed-in-state",
-     flag_descriptions::kWebSigninLeadsToImplicitlySignedInStateName,
-     flag_descriptions::kWebSigninLeadsToImplicitlySignedInStateDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(switches::kWebSigninLeadsToImplicitlySignedInState)},
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
     {"autofill-enable-downstream-card-awareness-iph",
      flag_descriptions::kAutofillEnableDownstreamCardAwarenessIphName,
      flag_descriptions::kAutofillEnableDownstreamCardAwarenessIphDescription,

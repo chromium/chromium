@@ -519,12 +519,6 @@ BASE_DECLARE_FEATURE(kUseIssueTokenToFetchAccessTokens);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kUsePrimaryAndTonalButtonsForPromos);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// If enabled, web sign-in will implicitly sign the user in.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kWebSigninLeadsToImplicitlySignedInState);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 #if BUILDFLAG(IS_ANDROID)
 enum class SeamlessSigninStringType {
   // Strings with "Sign in to Chrome" in the title and "Continue as" in the

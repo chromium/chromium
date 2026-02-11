@@ -980,6 +980,10 @@ constexpr char kGlicGuestUrlPresetProd[] = "glic.guest_url_preset_prod";
 // Deprecated 02/2026.
 constexpr char kProfilesDeletedOld[] = "profiles.profiles_deleted";
 
+// Deprecated 02/2026.
+inline constexpr char kExplicitBrowserSigninWithoutFeatureEnabled[] =
+    "signin.explicit_browser_signin";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1359,6 +1363,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterStringPref(kGlicGuestUrlPresetAutopush, std::string());
   registry->RegisterStringPref(kGlicGuestUrlPresetPreprod, std::string());
   registry->RegisterStringPref(kGlicGuestUrlPresetProd, std::string());
+
+  // Deprecated 02/2026.
+  registry->RegisterBooleanPref(kExplicitBrowserSigninWithoutFeatureEnabled,
+                                false);
 }
 
 }  // namespace
@@ -2649,6 +2657,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kGlicGuestUrlPresetAutopush);
   profile_prefs->ClearPref(kGlicGuestUrlPresetPreprod);
   profile_prefs->ClearPref(kGlicGuestUrlPresetProd);
+
+  // Added 02/2026.
+  profile_prefs->ClearPref(kExplicitBrowserSigninWithoutFeatureEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

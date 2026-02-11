@@ -4504,11 +4504,6 @@ inline constexpr char kWebrtcUseMinMaxVEADimensionsDescription[] =
     "When enabled, WebRTC will only use the Video Encode Accelerator for "
     "video resolutions inside those published as supported.";
 
-inline constexpr char kWebSigninLeadsToImplicitlySignedInStateName[] =
-    "Web Signin leads To implicitly signed-in state";
-inline constexpr char kWebSigninLeadsToImplicitlySignedInStateDescription[] =
-    "When enabled, web sign-in will implicitly sign the user in.";
-
 inline constexpr char kWebTransportDeveloperModeName[] =
     "WebTransport Developer Mode";
 inline constexpr char kWebTransportDeveloperModeDescription[] =

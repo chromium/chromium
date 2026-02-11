@@ -9804,11 +9804,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "web-signin-leads-to-implicitly-signed-in-state",
-    "owners": [ "ankushkush@google.com", "droger@chromium.org" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "webium",
     "owners": [ "robliao@chromium.org", "kerenzhu@chromium.org" ],
     "expiry_milestone": 150
