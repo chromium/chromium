@@ -1735,6 +1735,14 @@ void PermissionRequestManager::OnPermissionUiSelectorDone(
   }
 }
 
+void PermissionRequestManager::SwitchToLoudPrompt() {
+  current_request_ui_to_use_ =
+      UiDecision::UseNormalUi(UiDecision::ShowNoWarning(),
+                              current_request_ui_to_use_->geolocation_accuracy);
+  view_.reset();
+  ShowPrompt();
+}
+
 PermissionPromptDisposition
 PermissionRequestManager::DetermineCurrentRequestUIDisposition() {
   if (current_request_prompt_disposition_.has_value()) {

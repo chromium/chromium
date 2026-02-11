@@ -170,6 +170,8 @@ class PermissionRequestManager
     auto_response_prompt_options_for_test_ = std::move(prompt_options);
   }
 
+  void SwitchToLoudPrompt() override;
+
   // WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;

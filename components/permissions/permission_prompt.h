@@ -74,6 +74,7 @@ class PermissionPrompt {
     virtual void Deny(const PromptOptions& prompt_options) = 0;
     virtual void Dismiss(const PromptOptions& prompt_options) = 0;
     virtual void Ignore(const PromptOptions& prompt_options) = 0;
+    virtual void SwitchToLoudPrompt() = 0;
 
     virtual GeolocationAccuracy GetInitialGeolocationAccuracySelection()
         const = 0;

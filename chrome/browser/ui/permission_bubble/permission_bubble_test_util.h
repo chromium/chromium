@@ -49,6 +49,7 @@ class TestPermissionBubbleViewDelegate
   void SetManageClicked() override {}
   void SetLearnMoreClicked() override {}
   void SetHatsShownCallback(base::OnceCallback<void()> callback) override {}
+  void SwitchToLoudPrompt() override {}
 
   std::optional<permissions::PermissionUiSelector::QuietUiReason>
   ReasonForUsingQuietUi() const override;

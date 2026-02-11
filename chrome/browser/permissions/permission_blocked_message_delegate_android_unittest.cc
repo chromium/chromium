@@ -7,9 +7,12 @@
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/permissions/android/permission_prompt/permission_prompt_android.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
@@ -69,6 +72,7 @@ class MockDelegate : public PermissionBlockedMessageDelegate::Delegate {
               (),
               (override));
   MOCK_METHOD(ContentSettingsType, GetContentSettingsType, (), (override));
+  MOCK_METHOD(void, SwitchToLoudPrompt, (), (override));
 };
 
 class TestPermissionBlockedMessageDelegate
@@ -412,4 +416,32 @@ TEST_F(PermissionBlockedMessageDelegateAndroidTest, LoudUI_DismissByTimeout) {
 
   // Message should be dismissed
   EXPECT_EQ(nullptr, GetMessageWrapper());
+}
+
+TEST_F(PermissionBlockedMessageDelegateAndroidTest,
+       SecondaryActionWithApproximateLocation) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      content_settings::features::kApproximateGeolocationPermission};
+  std::unique_ptr<MockDelegate> delegate = GetMockDelegate();
+
+  EXPECT_CALL(*delegate, ShouldUseQuietUI)
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*delegate, ReasonForUsingQuietUi)
+      .WillRepeatedly(testing::Return(
+          std::optional<QuietUiReason>(QuietUiReason::kEnabledInPrefs)));
+  EXPECT_CALL(*delegate, GetContentSettingsType)
+      .WillRepeatedly(
+          testing::Return(ContentSettingsType::GEOLOCATION_WITH_OPTIONS));
+
+  ExpectEnqueued();
+
+  EXPECT_CALL(*delegate, Accept).Times(0);
+  EXPECT_CALL(*delegate, Deny).Times(0);
+  EXPECT_CALL(*delegate, SwitchToLoudPrompt);
+
+  ShowMessage(std::move(delegate));
+
+  TriggerManageClick();
+  TriggerDismiss(messages::DismissReason::SECONDARY_ACTION);
+  TriggerDialogDismiss();
 }

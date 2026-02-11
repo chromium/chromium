@@ -101,6 +101,8 @@ class PermissionPromptAndroid : public PermissionPrompt {
 
   bool IsShowing() const { return this == delegate()->GetCurrentPrompt(); }
 
+  void SwitchToLoudPrompt() { delegate()->SwitchToLoudPrompt(); }
+
   GeolocationAccuracy GetInitialGeolocationAccuracySelection() const;
 
  protected:

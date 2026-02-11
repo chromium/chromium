@@ -102,6 +102,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   void SetManageClicked() override {}
   void SetLearnMoreClicked() override {}
   void SetHatsShownCallback(base::OnceCallback<void()> callback) override {}
+  void SwitchToLoudPrompt() override {}
 
   bool WasCurrentRequestAlreadyDisplayed() override { return false; }
   bool ShouldDropCurrentRequestIfCannotShowQuietly() const override {

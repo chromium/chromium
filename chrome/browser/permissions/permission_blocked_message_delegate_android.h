@@ -48,6 +48,7 @@ class PermissionBlockedMessageDelegate
     virtual std::optional<permissions::PermissionUiSelector::QuietUiReason>
     ReasonForUsingQuietUi();
     virtual ContentSettingsType GetContentSettingsType();
+    virtual void SwitchToLoudPrompt();
 
     permissions::PermissionPromptAndroid* permission_prompt() {
       return permission_prompt_.get();

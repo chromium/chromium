@@ -15,8 +15,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/permissions/android/android_permission_util.h"
+#include "components/permissions/android/permission_prompt/permission_dialog.h"
 #include "components/permissions/android/permission_prompt/permission_dialog_controller.h"
 #include "components/permissions/android/permission_prompt/permission_prompt_android.h"
 #include "components/permissions/permission_request.h"
@@ -259,6 +261,16 @@ void PermissionBlockedMessageDelegate::HandleLoudUiSecondayMenuItemClicked(
 }
 
 void PermissionBlockedMessageDelegate::HandleManageClick() {
+  const ContentSettingsType content_setting_type =
+      delegate_->GetContentSettingsType();
+  if (content_setting_type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
+    CHECK(base::FeatureList::IsEnabled(
+        content_settings::features::kApproximateGeolocationPermission));
+    messages::MessageDispatcherBridge::Get()->DismissMessage(
+        message_.get(), messages::DismissReason::SECONDARY_ACTION);
+    delegate_->SwitchToLoudPrompt();
+    return;
+  }
   if (!dialog_controller_) {
     dialog_controller_ = std::make_unique<PermissionBlockedDialogController>(
         this, web_contents_);
@@ -401,6 +413,13 @@ void PermissionBlockedMessageDelegate::Delegate::SetLearnMoreClicked() {
 
 bool PermissionBlockedMessageDelegate::Delegate::ShouldUseQuietUI() {
   return permission_prompt_->ShouldCurrentRequestUseQuietUI();
+}
+
+void PermissionBlockedMessageDelegate::Delegate::SwitchToLoudPrompt() {
+  if (!permission_prompt_) {
+    return;
+  }
+  permission_prompt_->SwitchToLoudPrompt();
 }
 
 std::optional<permissions::PermissionUiSelector::QuietUiReason>
