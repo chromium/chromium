@@ -26,6 +26,28 @@ class RecordReplayClient;
 // Owned by RecordReplayDriverFactory.
 class RecordReplayDriver : public mojom::RecordReplayDriver {
  public:
+  // TODO(b/476101114): Remove once RecordReplayDriver has a
+  // mojom::RecordReplayAgent.
+  class TestRecordReplayAgent {
+   public:
+    virtual void StartRecording() = 0;
+    virtual void StopRecording() = 0;
+    virtual void GetElementSelector(
+        int64_t dom_node_id,
+        base::OnceCallback<void(const std::string&)> cb) = 0;
+    virtual void GetMatchingElements(
+        const std::string& element_selector,
+        base::OnceCallback<void(const std::vector<int64_t>&)> cb) = 0;
+    virtual void DoClick(int64_t dom_node_id,
+                         base::OnceCallback<void(bool)> cb) = 0;
+    virtual void DoPaste(int64_t dom_node_id,
+                         const std::string& text,
+                         base::OnceCallback<void(bool)> cb) = 0;
+    virtual void DoSelect(int64_t dom_node_id,
+                          const std::string& value,
+                          base::OnceCallback<void(bool)> cb) = 0;
+  };
+
   RecordReplayDriver(content::RenderFrameHost* render_frame_host,
                      RecordReplayClient& client);
   RecordReplayDriver(const RecordReplayDriver&) = delete;
@@ -69,9 +91,14 @@ class RecordReplayDriver : public mojom::RecordReplayDriver {
                     const std::string& element_selector,
                     const std::string& text) override;
 
+  void set_record_replay_agent_for_test(TestRecordReplayAgent* agent) {
+    test_autofill_agent_ = agent;
+  }
+
  private:
   const raw_ref<RecordReplayClient> client_;
   const raw_ref<content::RenderFrameHost> rfh_;
+  raw_ptr<TestRecordReplayAgent> test_autofill_agent_ = nullptr;
   mojo::AssociatedReceiver<mojom::RecordReplayDriver> receiver_{this};
 };
 
