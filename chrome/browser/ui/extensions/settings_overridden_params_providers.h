@@ -22,6 +22,7 @@ namespace settings_overridden_params {
 std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
     Profile* profile);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // Retrieves the params for displaying the dialog indicating that the default
 // search engine has been overridden, if there is a controlling extension, and
 // asynchronously passes them to the supplied callback. Otherwise, the callback
@@ -32,6 +33,7 @@ void GetSearchOverriddenParamsThenRun(
     base::OnceCallback<
         void(std::unique_ptr<ExtensionSettingsOverriddenDialog::Params>)>
         done_callback);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 }  // namespace settings_overridden_params
 

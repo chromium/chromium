@@ -150,6 +150,7 @@ source_set("impl") {
     deps += [
       ":extension_post_install_dialog",
       "//chrome/browser/extensions",
+      "//chrome/browser/image_fetcher",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/signin",
@@ -157,6 +158,7 @@ source_set("impl") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/dialogs",
       "//chrome/browser/ui/toolbar",
+      "//components/image_fetcher/core",
       "//components/sessions",
       "//components/tabs:public",
       "//components/vector_icons",

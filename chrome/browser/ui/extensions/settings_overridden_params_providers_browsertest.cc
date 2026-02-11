@@ -47,6 +47,7 @@ class SettingsOverriddenParamsProvidersBrowserTest
         TemplateURLServiceFactory::GetForProfile(browser()->profile()));
   }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // Makes asynchronous parameter collection synchronous fortesting, by waiting
   // in a run loop for icon resource fetching to complete.
   std::optional<ExtensionSettingsOverriddenDialog::Params>
@@ -66,6 +67,7 @@ class SettingsOverriddenParamsProvidersBrowserTest
     run_loop.Run();
     return result;
   }
+#endif
 
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
