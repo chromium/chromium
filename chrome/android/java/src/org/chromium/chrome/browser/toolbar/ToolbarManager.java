@@ -1807,7 +1807,8 @@ public class ToolbarManager
     private boolean shouldSuppressToolbarLongPress() {
         return mOmniboxFocusStateSupplier.get()
                 || (mToolbarPositionController != null
-                        && mToolbarPositionController.doesPrefMismatchPosition());
+                        && mToolbarPositionController.doesPrefMismatchPosition())
+                || (getNewTabPageForCurrentTab() != null);
     }
 
     private void back(int metaState) {
