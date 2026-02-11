@@ -63,6 +63,9 @@ class CORE_EXPORT FormMCPSchema {
   std::unique_ptr<JSONObject> ComputeDatetimeLocalParameterSchema(
       const ControlVector& controls_for_name,
       bool& required);
+  std::unique_ptr<JSONObject> ComputeMonthParameterSchema(
+      const ControlVector& controls_for_name,
+      bool& required);
   std::unique_ptr<JSONObject> ComputeTimeParameterSchema(
       const ControlVector& controls_for_name,
       bool& required);
@@ -149,6 +152,7 @@ class CORE_EXPORT FormMCPSchema {
   bool IsText(HTMLFormControlElement&) const;
   bool IsDate(HTMLFormControlElement&) const;
   bool IsDatetimeLocal(HTMLFormControlElement&) const;
+  bool IsMonth(HTMLFormControlElement&) const;
   bool IsTime(HTMLFormControlElement&) const;
   bool IsNumber(HTMLFormControlElement&) const;
   bool IsSelect(HTMLFormControlElement&) const;
@@ -160,6 +164,7 @@ class CORE_EXPORT FormMCPSchema {
   bool IsText(const ControlVector& controls_for_name) const;
   bool IsDate(const ControlVector& controls_for_name) const;
   bool IsDatetimeLocal(const ControlVector& controls_for_name) const;
+  bool IsMonth(const ControlVector& controls_for_name) const;
   bool IsTime(const ControlVector& controls_for_name) const;
   bool IsNumber(const ControlVector& controls_for_name) const;
   bool IsSelect(const ControlVector& controls_for_name) const;

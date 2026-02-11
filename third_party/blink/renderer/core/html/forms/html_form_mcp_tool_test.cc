@@ -1685,6 +1685,60 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_DatetimeLocalInput) {
   EXPECT_EQ("2026-02-11T14:13", datetime1->Value());
 }
 
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_MonthInput) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input name="month1" type="month">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "month1": {
+           "type": "string",
+           "format": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_MonthInput) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=month1 name=month1 type=month>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String json_string =
+      R"JSON(
+        {
+          "month1": "2026-02"
+        }
+      )JSON";
+
+  EXPECT_TRUE(FillFormControls(*form_element, json_string));
+
+  HTMLInputElement* month1 = GetInputElement("month1");
+  ASSERT_TRUE(month1);
+  EXPECT_EQ("2026-02", month1->Value());
+}
+
 TEST_F(HTMLFormMcpToolTest, ParameterSchema_TimeInput) {
   SetBodyInnerHTML(
       R"HTML(
