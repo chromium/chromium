@@ -10,8 +10,6 @@
 
 #include <utility>
 
-#include "base/compiler_specific.h"
-
 namespace base::test {
 
 namespace {
@@ -95,22 +93,17 @@ bool FilePathReparsePoint::SetReparsePoint(HANDLE source,
     target_str += kPathPrefix;
   }
   target_str += target_path.value();
-  alignas(REPARSE_DATA_BUFFER) char buffer[2000] = {};
+  alignas(REPARSE_DATA_BUFFER) uint8_t buffer[2000] = {};
   DWORD returned;
+
+  constexpr size_t kPathBufferOffset =
+      offsetof(REPARSE_DATA_BUFFER, MountPointReparseBuffer.PathBuffer);
+  auto dest_span = base::span(buffer).subspan(kPathBufferOffset);
 
   REPARSE_DATA_BUFFER* data = reinterpret_cast<REPARSE_DATA_BUFFER*>(buffer);
   data->ReparseTag = IO_REPARSE_TAG_MOUNT_POINT;
-  // The PathBuffer is the start of the variable data. Calculate how much space
-  // is left in `buffer` array after the struct headers.
-  size_t max_path_bytes =
-      sizeof(buffer) -
-      offsetof(REPARSE_DATA_BUFFER, MountPointReparseBuffer.PathBuffer);
   auto target_str_span = base::as_byte_span(target_str);
-  // SAFETY: Trust max_path_bytes calculation above.
-  auto dest_span = UNSAFE_BUFFERS(base::span(
-      reinterpret_cast<uint8_t*>(data->MountPointReparseBuffer.PathBuffer),
-      max_path_bytes));
-  dest_span.first(target_str_span.size()).copy_from(target_str_span);
+  dest_span.copy_prefix_from(target_str_span);
   std::ranges::fill(dest_span.subspan(target_str_span.size(), 2u), 0);
 
   // Note: Lengths are in bytes and should NOT include the null terminator
