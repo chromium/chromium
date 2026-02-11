@@ -324,6 +324,7 @@ if (is_android) {
       "//components/security_state/core:security_state_enums_java",
       "//components/segmentation_platform/public:public_java",
       "//components/send_tab_to_self:send_tab_to_self_java",
+      "//components/sensitive_content:sensitive_content_features_java",
       "//components/shared_highlighting/core/common:shared_highlighting_android_enums_java",
       "//components/signin/core/browser:signin_enums_java",
       "//components/signin/public/android:java",
@@ -1313,6 +1314,7 @@ if (is_android) {
       "//chrome/browser/settings:search_java",
       "//chrome/browser/tab_group_suggestion:java",
       "//chrome/test/android:chrome_java_transit",
+      "//components/sensitive_content:sensitive_content_features_java",
     ]
   }
 
