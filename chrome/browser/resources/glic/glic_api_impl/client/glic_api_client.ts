@@ -513,6 +513,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private journalHost: GlicBrowserHostJournalImpl;
   private metrics: GlicBrowserHostMetricsImpl;
   private manuallyResizing = ObservableValueImpl.withValue<boolean>(false);
+  private cachedUserProfile?: Promise<UserProfileInfo>;
+  private enableCachedGetUserProfileInfo?: boolean;
   pinnedTabs = ObservableValueImpl.withNoValue<TabData[]>();
   skillPreviews = ObservableValueImpl.withNoValue<SkillPreview[]>();
   skillToInvoke = ObservableValueImpl.withNoValue<Skill>();
@@ -608,6 +610,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.canAttachPanelValue.assignAndSignal(state.canAttach);
     this.chromeVersion = state.chromeVersion;
     this.platform = state.platform;
+    this.enableCachedGetUserProfileInfo = state.enableCachedGetUserProfileInfo;
     this.panelActiveValue.assignAndSignal(state.panelIsActive);
     this.isBrowserOpenValue.assignAndSignal(state.browserIsOpen);
     this.osHotkeyState.assignAndSignal({hotkey: state.hotkey});
@@ -1080,6 +1083,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   }
 
   async getUserProfileInfo?(): Promise<UserProfileInfo> {
+    return this.enableCachedGetUserProfileInfo ? this.fetchUserProfileCached() :
+                                                 this.fetchUserProfileDirect();
+  }
+
+  private async fetchUserProfileDirect(): Promise<UserProfileInfo> {
     const {profileInfo} = await this.sender.requestWithResponse(
         'glicBrowserGetUserProfileInfo', undefined);
     if (!profileInfo) {
@@ -1089,6 +1097,54 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return replaceProperties(
         profileInfo,
         {avatarIcon: async () => avatarIcon && rgbaImageToBlob(avatarIcon)});
+  }
+
+  private async fetchUserProfileCached(): Promise<UserProfileInfo> {
+    if (this.cachedUserProfile) {
+      return this.cachedUserProfile;
+    }
+
+    this.cachedUserProfile = (async () => {
+      try {
+        const {profileInfo} = await this.sender.requestWithResponse(
+            'glicBrowserGetUserProfileInfo', undefined);
+
+        if (!profileInfo) {
+          throw new Error('getUserProfileInfo failed');
+        }
+
+        let blobPromise: Promise<Blob|undefined>|undefined;
+        return replaceProperties(profileInfo, {
+          avatarIcon: () => {
+            if (blobPromise) {
+              return blobPromise;
+            }
+            if (!profileInfo.avatarIcon) {
+              blobPromise = Promise.resolve(undefined);
+              return blobPromise;
+            }
+
+            blobPromise = rgbaImageToBlob(profileInfo.avatarIcon)
+                              .then((blob) => {
+                                // Clear memory after conversion
+                                profileInfo.avatarIcon = undefined;
+                                return blob;
+                              })
+                              .catch((e) => {
+                                console.error('Avatar conversion failed:', e);
+                                return undefined;
+                              });
+
+            return blobPromise;
+          },
+        });
+      } catch (e) {
+        this.cachedUserProfile = undefined;
+        throw e;
+      }
+    })();
+
+    return this.cachedUserProfile;
   }
 
   async refreshSignInCookies(): Promise<void> {
@@ -1251,6 +1307,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   }
 
   maybeRefreshUserStatus?(): void {
+    this.cachedUserProfile = undefined;
     this.sender.requestNoResponse(
         'glicBrowserMaybeRefreshUserStatus', undefined);
   }
@@ -1639,7 +1696,7 @@ async function rgbaImageToBlob(image: RgbaImage): Promise<Blob> {
     throw Error('unsupported colorType');
   }
   // Note that for either alphaType, we swap bytes from BGRA to RGBA order.
-  const pixelData = new Uint8ClampedArray(image.dataRGBA);
+  const pixelData = new Uint8ClampedArray(image.dataRGBA.slice(0));
   if (image.alphaType === ImageAlphaType.PREMUL) {
     for (let i = 0; i + 3 < pixelData.length; i += 4) {
       const alphaInt = pixelData[i + 3]!;
