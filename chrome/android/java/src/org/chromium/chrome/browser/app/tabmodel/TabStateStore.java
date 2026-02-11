@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageService.SharedStoreData;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab.WebContentsState;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -44,6 +45,7 @@ public class TabStateStore implements TabPersistentStore {
     private static final String TAG = "TabStateStore";
 
     private @MonotonicNonNull TabStateStorageService mTabStateStorageService;
+    private final PersistentStoreMigrationManager mMigrationManager;
     private final TabCreatorManager mTabCreatorManager;
     private final TabModelSelector mTabModelSelector;
     private final String mWindowTag;
@@ -143,6 +145,8 @@ public class TabStateStore implements TabPersistentStore {
         mTabCreatorManager = tabCreatorManager;
         mTabPersistencePolicy = tabPersistencePolicy;
         mCipherFactory = cipherFactory;
+
+        mMigrationManager = new PersistentStoreMigrationManagerImpl(mWindowTag);
     }
 
     @Initializer
@@ -319,6 +323,7 @@ public class TabStateStore implements TabPersistentStore {
         assertInitialized();
         // Clearing the state globally is intentional.
         mTabStateStorageService.clearState();
+        mMigrationManager.onAllShadowStoresRazed();
     }
 
     private void cancelLoadingTabs(boolean incognito) {
@@ -378,6 +383,18 @@ public class TabStateStore implements TabPersistentStore {
         assert windowId != TabWindowManager.INVALID_WINDOW_ID;
         String windowTag = Integer.toString(windowId);
         mTabStateStorageService.clearWindow(windowTag);
+
+        PersistentStoreMigrationManager migrationManager =
+                new PersistentStoreMigrationManagerImpl(windowTag);
+        migrationManager.onWindowCleared();
+    }
+
+    @Override
+    public void clearCurrentWindow() {
+        assertInitialized();
+
+        mTabStateStorageService.clearWindow(mWindowTag);
+        mMigrationManager.onShadowStoreRazed();
     }
 
     @Override

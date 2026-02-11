@@ -247,9 +247,26 @@ public class TabModelOrchestrator {
 
     /**
      * Clean up persistent state for a given instance.
+     *
      * @param instanceId Instance ID.
      */
-    public void cleanupInstance(int instanceId) {}
+    public void cleanupInstance(int instanceId) {
+        String windowTag = String.valueOf(instanceId);
+        PersistentStoreMigrationManager migrationManager =
+                new PersistentStoreMigrationManagerImpl(windowTag);
+        migrationManager.onWindowCleared();
+    }
+
+    /** Clean up persisted state for this orchestrator. */
+    public void clearCurrentWindow() {
+        assertInitialized();
+        if (!mTabPersistentStoreDestroyedEarly) {
+            mTabPersistentStore.clearCurrentWindow();
+            if (mShadowTabPersistentStore != null) {
+                mShadowTabPersistentStore.clearCurrentWindow();
+            }
+        }
+    }
 
     /**
      * If there is an asynchronous session restore in-progress, try to synchronously restore the

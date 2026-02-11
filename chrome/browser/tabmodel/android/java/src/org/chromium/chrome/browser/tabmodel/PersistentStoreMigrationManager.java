@@ -1,7 +1,6 @@
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.IntDef;
@@ -13,7 +12,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/** Manages the migration of tab persistence logic between {@link TabPersistentStore}s. */
+/**
+ * Manages the migration of tab persistence logic between {@link TabPersistentStore}s. It is safe to
+ * use multiple instances of a {@link PersistentStoreMigrationManager} for the same window instance,
+ * which may occur during transient states such as reassigning window IDs.
+ */
 @NullMarked
 public interface PersistentStoreMigrationManager {
     @IntDef({
@@ -44,4 +47,29 @@ public interface PersistentStoreMigrationManager {
      */
     @StoreType
     int getShadowStoreType();
+
+    /**
+     * Called when a shadow store is created for the corresponding window.
+     *
+     * @param storeType The type of store created.
+     */
+    void onShadowStoreCreated(@StoreType int storeType);
+
+    /** Called when a shadow store has caught up to the authoritative store. */
+    void onShadowStoreCaughtUp();
+
+    /** Whether the shadow store is caught up. */
+    boolean isShadowStoreCaughtUp();
+
+    /**
+     * Called upon the permanent destruction of a window's persisted shadow store data, such as upon
+     * merging, or closing.
+     */
+    void onShadowStoreRazed();
+
+    /** Called upon the permanent destruction of all windows' persisted shadow store tab data. */
+    void onAllShadowStoresRazed();
+
+    /** Called upon the permanent destruction of a window's persisted data. */
+    void onWindowCleared();
 }
