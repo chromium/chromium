@@ -32,6 +32,7 @@ import androidx.annotation.DimenRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -235,6 +236,9 @@ public class SettingsSearchCoordinator
         View searchBox = mActivity.findViewById(R.id.search_box);
         setSearchBoxVerticalMargin(searchBox, mUseMultiColumn);
         searchBox.setOnClickListener(this::onClickSearchBox);
+        TooltipCompat.setTooltipText(
+                searchBox.findViewById(R.id.search_icon),
+                mActivity.getString(R.string.search_in_settings_hint));
 
         View query = mActivity.findViewById(R.id.search_query_container);
         Drawable bg = ContextCompat.getDrawable(mActivity, R.drawable.pill_background);
@@ -254,6 +258,7 @@ public class SettingsSearchCoordinator
         setUpQueryEdit(queryEdit);
         View backToSettings = mActivity.findViewById(R.id.back_arrow_icon);
         backToSettings.setOnClickListener(v -> handleBackAction());
+        TooltipCompat.setTooltipText(backToSettings, mActivity.getString(R.string.back));
         mBackActionCallback =
                 new OnBackPressedCallback(false) {
                     @Override
@@ -262,7 +267,10 @@ public class SettingsSearchCoordinator
                     }
                 };
         mActivity.getOnBackPressedDispatcher().addCallback(mActivity, mBackActionCallback);
-        query.findViewById(R.id.clear_text).setOnClickListener(v -> clearQueryText());
+        View clearText = query.findViewById(R.id.clear_text);
+        clearText.setOnClickListener(v -> clearQueryText());
+        TooltipCompat.setTooltipText(
+                clearText, mActivity.getString(R.string.search_in_settings_clear_query));
         if (savedState != null) {
             int state = savedState.getInt(KEY_FRAGMENT_STATE);
             if (state == FS_SEARCH || state == FS_RESULTS) {
