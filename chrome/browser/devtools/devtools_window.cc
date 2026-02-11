@@ -37,6 +37,7 @@
 #include "chrome/browser/devtools/process_sharing_infobar_delegate.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
+#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/policy/developer_tools_policy_checker.h"
 #include "chrome/browser/policy/developer_tools_policy_checker_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -1331,6 +1332,16 @@ bool DevToolsWindow::AllowDevToolsFor(Profile* profile,
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode)) {
     return false;
   }
+
+  PolicyBlocklistService* blocklist_service =
+      ChromePolicyBlocklistServiceFactory::GetForProfile(profile);
+  if (blocklist_service &&
+      blocklist_service->GetURLBlocklistState(
+          GURL(chrome::kChromeUIDevToolsURL)) ==
+          policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
+    return false;
+  }
+
   return IsInspectionAllowed(profile, web_contents);
 }
 

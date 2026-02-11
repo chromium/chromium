@@ -42,9 +42,11 @@
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
@@ -99,6 +101,7 @@
 #include "components/lens/lens_testing_utils.h"
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -756,7 +759,14 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
   list.Append("google.com");
   browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
                                             std::move(list));
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  browser()
+      ->profile()
+      ->GetProfilePolicyConnector()
+      ->policy_service()
+      ->RefreshPolicies(run_loop.QuitClosure(),
+                        policy::PolicyFetchReason::kTest);
+  run_loop.Run();
 
   std::unique_ptr<TestRenderViewContextMenu> menu =
       CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
@@ -824,7 +834,14 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
   list.Append("url.com");
   browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
                                             std::move(list));
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  browser()
+      ->profile()
+      ->GetProfilePolicyConnector()
+      ->policy_service()
+      ->RefreshPolicies(run_loop.QuitClosure(),
+                        policy::PolicyFetchReason::kTest);
+  run_loop.Run();
 
   std::unique_ptr<TestRenderViewContextMenu> menu =
       CreateContextMenuMediaTypeImage(GURL("http://url.com/image.png"));

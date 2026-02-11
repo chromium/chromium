@@ -782,7 +782,7 @@ TEST_P(
     EnterpriseReportingPrivateGetContextInfoChromeRemoteDesktopAppBlockedTest,
     BlockedURL) {
   SetURLBlockedPolicy(GetParam());
-
+  task_environment()->RunUntilIdle();
   enterprise_reporting_private::ContextInfo info = GetContextInfo();
 
   ExpectDefaultPolicies(info);
@@ -793,6 +793,7 @@ TEST_P(
     EnterpriseReportingPrivateGetContextInfoChromeRemoteDesktopAppBlockedTest,
     AllowedURL) {
   SetURLAllowedPolicy(GetParam());
+  task_environment()->RunUntilIdle();
 
   enterprise_reporting_private::ContextInfo info = GetContextInfo();
 
@@ -805,6 +806,7 @@ TEST_P(
     BlockedAndAllowedURL) {
   SetURLBlockedPolicy(GetParam());
   SetURLAllowedPolicy(GetParam());
+  task_environment()->RunUntilIdle();
 
   enterprise_reporting_private::ContextInfo info = GetContextInfo();
 

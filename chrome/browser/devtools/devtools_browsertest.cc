@@ -31,6 +31,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -3414,24 +3415,33 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, OpenBlockedDevTools) {
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(std::move(blocklist)), nullptr);
   provider_.UpdateChromePolicy(policies);
-
   WebContents* wc = browser()->tab_strip_model()->GetActiveWebContents();
+  Profile* profile = Profile::FromBrowserContext(wc->GetBrowserContext());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !DevToolsWindow::AllowDevToolsFor(profile, wc); }));
+
   scoped_refptr<content::DevToolsAgentHost> agent(
       GetOrCreateDevToolsHostForWebContents(wc));
   DevToolsWindow* window = DevToolsWindow::FindDevToolsWindow(agent.get());
   ASSERT_EQ(nullptr, window);
   DevToolsWindow::OpenDevToolsWindow(wc, DevToolsOpenedByAction::kUnknown);
   window = DevToolsWindow::FindDevToolsWindow(agent.get());
-  if (window) {
-    base::RunLoop run_loop;
-    DevToolsWindowTesting::Get(window)->SetCloseCallback(
-        run_loop.QuitClosure());
-    run_loop.Run();
-  } else {
-    LOG(INFO) << "DevTools window was not found";
-  }
-  window = DevToolsWindow::FindDevToolsWindow(agent.get());
   ASSERT_EQ(nullptr, window);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, BlockedDevToolsCreationFails) {
+  base::ListValue blocklist;
+  blocklist.Append("devtools://*");
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kURLBlocklist, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(blocklist)), nullptr);
+  provider_.UpdateChromePolicy(policies);
+  WebContents* wc = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !DevToolsWindow::AllowDevToolsFor(
+        Profile::FromBrowserContext(wc->GetBrowserContext()), wc);
+  }));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
