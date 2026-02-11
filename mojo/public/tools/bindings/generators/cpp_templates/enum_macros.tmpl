@@ -51,6 +51,12 @@ inline {{enum_name}} ToKnownEnumValue({{enum_name}} value) {
   return {{enum_name}}::kDefaultValue;
 }
 {%-   endif %}
+
+// Returns true if the enum has an infallible conversion from the mojom enum.
+consteval bool HasInfallibleConversion({{enum_name}}) {
+  return {% if not enum.extensible or enum.default_field %}true{% else %}false{% endif %};
+}
+
 {%- endmacro %}
 
 {%- macro enum_stream(enum) %}

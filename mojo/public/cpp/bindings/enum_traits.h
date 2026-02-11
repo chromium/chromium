@@ -33,10 +33,7 @@ struct EnumTraits {
 template <typename T>
 struct EnumTraits<T, T> {
   static T ToMojom(T input) { return input; }
-  static bool FromMojom(T input, T* output) {
-    *output = input;
-    return true;
-  }
+  static T FromMojom(T input) { return input; }
 };
 
 }  // namespace mojo
