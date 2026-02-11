@@ -18,7 +18,7 @@ if (enable_swift_cxx_interop) {
     deps = [ "//base" ]
   }
 
-  swift_modulemap("swift_pointer") {
+  swift_cxx_import("swift_pointer") {
     testonly = true
     modules = [
       {

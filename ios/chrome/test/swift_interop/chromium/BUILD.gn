@@ -5,7 +5,7 @@
 import("//build/config/apple/swift_source_set.gni")
 
 if (enable_swift_cxx_interop) {
-  swift_modulemap("base_imports") {
+  swift_cxx_import("base_imports") {
     testonly = true
     modules = [
       {
