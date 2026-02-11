@@ -59,35 +59,7 @@ class BrowserPrefsTest : public PlatformTest {
   sync_preferences::TestingPrefServiceSyncable pref_service_;
 };
 
-// [1] Local-state to Profile pref migrations (triggered by
-// `MigrateObsoleteProfilePrefs()`).
-
-TEST_F(BrowserPrefsTest, MigrateSafetyCheckIssuesCountFromLocalToProfile) {
-  const int test_value = 6;
-
-  local_state()->SetInteger(
-      prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, test_value);
-
-  ASSERT_EQ(local_state()->GetInteger(
-                prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount),
-            test_value);
-  ASSERT_TRUE(profile_prefs()
-                  ->FindPreference(
-                      prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount)
-                  ->IsDefaultValue());
-
-  MigrateObsoleteProfilePrefs(profile_prefs());
-
-  EXPECT_TRUE(local_state()
-                  ->FindPreference(
-                      prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount)
-                  ->IsDefaultValue());
-  EXPECT_EQ(profile_prefs()->GetInteger(
-                prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount),
-            test_value);
-}
-
-// [2] Profile pref renaming (triggered by `MigrateObsoleteProfilePrefs()`).
+// [1] Profile pref renaming (triggered by `MigrateObsoleteProfilePrefs()`).
 
 TEST_F(BrowserPrefsTest, RenameSafetyCheckModuleEnabledProfilePref) {
   const bool test_value = false;  // Default is true
@@ -238,7 +210,7 @@ TEST_F(BrowserPrefsTest, RenameMostVisitedModuleEnabledProfilePref) {
             test_value);
 }
 
-// [3] `NSUserDefaults` migrations (triggered by
+// [2] `NSUserDefaults` migrations (triggered by
 // `MigrateObsoleteProfilePrefs()`).
 
 TEST_F(BrowserPrefsTest, MigrateSyncDisabledAlertShownFromUserDefaults) {
@@ -268,7 +240,7 @@ TEST_F(BrowserPrefsTest, MigrateSyncDisabledAlertShownFromUserDefaults) {
   EXPECT_EQ([defaults objectForKey:kSyncDisabledAlertShownKey], nil);
 }
 
-// [4] Local-state pref migrations and cleanup (triggered by
+// [3] Local-state pref migrations and cleanup (triggered by
 // `MigrateObsoleteLocalStatePrefs()`).
 
 TEST_F(BrowserPrefsTest, RenameBottomOmniboxLocalStatePref) {

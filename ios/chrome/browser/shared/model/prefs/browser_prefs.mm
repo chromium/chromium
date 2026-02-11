@@ -148,16 +148,6 @@
 
 namespace {
 
-// Deprecated 03/2025.
-inline constexpr char kIosParcelTrackingOptInPromptDisplayLimitMet[] =
-    "ios.parcel_tracking.opt_in_prompt_displayed";
-inline constexpr char kIosParcelTrackingOptInStatus[] =
-    "ios.parcel_tracking.opt_in_status";
-inline constexpr char kIosParcelTrackingOptInPromptSwipedDown[] =
-    "ios.parcel_tracking.opt_in_prompt_swiped_down";
-inline constexpr char kIosParcelTrackingPolicyEnabled[] =
-    "ios.parcel_tracking.policy_enabled";
-
 // Deprecated 04/2025.
 inline constexpr char kMixedContentAutoupgradeEnabled[] =
     "ios.mixed_content_autoupgrade_enabled";
@@ -258,28 +248,9 @@ inline constexpr char kMagicStackSafetyCheckNotificationsShown[] =
 inline constexpr char kBottomOmniboxByDefault[] =
     "ios.bottom_omnibox_by_default";
 
-// Migrates a integer pref from source to target PrefService.
-void MigrateIntegerPref(std::string_view pref_name,
-                        PrefService* target_pref_service,
-                        PrefService* source_pref_service) {
-  const PrefService::Preference* target_pref =
-      target_pref_service->FindPreference(pref_name);
-  CHECK(target_pref);
-
-  const PrefService::Preference* source_pref =
-      source_pref_service->FindPreference(pref_name);
-  CHECK(source_pref);
-
-  // Only migrate the pref if 1. it is not set in target,
-  // 2. it is not the default in source.
-  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
-    target_pref_service->SetInteger(pref_name,
-                                    source_pref_service->GetInteger(pref_name));
-  }
-
-  // In all cases, clear the pref from source.
-  source_pref_service->ClearPref(pref_name);
-}
+// Deprecated 02/2026.
+inline constexpr char kIosParcelTrackingPolicyEnabled[] =
+    "ios.parcel_tracking.policy_enabled";
 
 // Migrates a Dict pref from source to target PrefService.
 void MigrateDictPref(std::string_view pref_name,
@@ -348,15 +319,6 @@ void RenameBooleanPref(std::string_view target_pref_name,
 
   // In all cases, clear the pref from source.
   pref_service->ClearPref(source_pref_name);
-}
-
-// Helper function migrating the `int` preference from LocalState prefs to
-// Profile prefs.
-void MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
-    std::string_view pref_name,
-    PrefService* profile_pref_service) {
-  MigrateIntegerPref(pref_name, profile_pref_service,
-                     GetApplicationContext()->GetLocalState());
 }
 
 // Helper function migrating the `base::DictValue` preference from LocalState
@@ -485,7 +447,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                 static_cast<int>(BrowserSigninMode::kEnabled));
   registry->RegisterBooleanPref(prefs::kSigninAllowedOnDevice, true);
   registry->RegisterBooleanPref(prefs::kAppStoreRatingPolicyEnabled, true);
-  registry->RegisterBooleanPref(kIosParcelTrackingPolicyEnabled, true);
+  registry->RegisterBooleanPref(kIosParcelTrackingPolicyEnabled, false);
 
   registry->RegisterBooleanPref(prefs::kLensCameraAssistedSearchPolicyAllowed,
                                 true);
@@ -615,13 +577,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       -1);
 
   registry->RegisterBooleanPref(prefs::kMigrateWidgetsPrefs, false);
-
-  // Deprecated 03/2025 (migrated to profile pref).
-  registry->RegisterIntegerPref(prefs::kInactiveTabsTimeThreshold, 0);
-
-  // Deprecated 03/2025, migrated to profile pref.
-  registry->RegisterIntegerPref(
-      prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, 0);
 
   registry->RegisterTimePref(prefs::kLensOverlayLastPresented, base::Time());
 
@@ -861,13 +816,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       enterprise_reporting::kCloudReportingUploadFrequency, base::Hours(24));
   registry->RegisterBooleanPref(
       enterprise_reporting::kPoliciesEverFetchedWithProfileId, false);
-
-  // Preferences related to parcel tracking.
-  // Deprecated 03/2025.
-  registry->RegisterBooleanPref(kIosParcelTrackingOptInPromptDisplayLimitMet,
-                                false);
-  registry->RegisterIntegerPref(kIosParcelTrackingOptInStatus, -1);
-  registry->RegisterBooleanPref(kIosParcelTrackingOptInPromptSwipedDown, false);
 
   // Register prefs used to skip too frequent History Sync Opt-In prompt.
   history_sync::RegisterProfilePrefs(registry);
@@ -1134,9 +1082,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   prefs->ClearPref(
       prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness);
 
-  // Added 03/2025.
-  prefs->ClearPref(kIosParcelTrackingPolicyEnabled);
-
   // Added 06/2025.
   prefs->ClearPref(kVariationsLimitedEntropySyntheticTrialSeed);
   prefs->ClearPref(kVariationsLimitedEntropySyntheticTrialSeedV2);
@@ -1158,6 +1103,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 01/2026.
   prefs->ClearPref(kMagicStackSafetyCheckNotificationsShown);
   prefs->ClearPref(kBottomOmniboxByDefault);
+
+  // Added 02/2026.
+  prefs->ClearPref(kIosParcelTrackingPolicyEnabled);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1170,19 +1118,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 09/2024.
   browsing_data::prefs::MaybeMigrateToQuickDeletePrefValues(prefs);
-
-  // Added 03/2025.
-  MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
-      prefs::kInactiveTabsTimeThreshold, prefs);
-
-  // Added 03/2025.
-  MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
-      prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, prefs);
-
-  // Added 03/2025.
-  prefs->ClearPref(kIosParcelTrackingOptInPromptDisplayLimitMet);
-  prefs->ClearPref(kIosParcelTrackingOptInStatus);
-  prefs->ClearPref(kIosParcelTrackingOptInPromptSwipedDown);
 
   // Added 04/2025.
   prefs->ClearPref(kMixedContentAutoupgradeEnabled);
@@ -1288,12 +1223,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
 void MigrateObsoleteUserDefault() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  // Added 03/2025.
-  [defaults removeObjectForKey:@"FeedLastBackgroundRefreshTimestamp"];
-
-  // Added 03/2025.
-  [defaults removeObjectForKey:@"PreviousSessionInfoConnectedSceneSessionIDs"];
 
   // Added 10/2025.
   [defaults removeObjectForKey:@"TimestampTriggerCriteriaExperimentStarted"];
