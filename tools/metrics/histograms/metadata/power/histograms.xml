@@ -1430,6 +1430,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Power.HighestFanSpeed" units="100rpm"
+    expires_after="2027-01-10">
+  <owner>eshimanovich@google.com</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    ChromeOS highest current fan speed, reported every 30 seconds from the EC.
+    This is logged only on a periodic tick; no other events trigger this report.
+    This is only reported from Chromebooks with fans that interface with the
+    CrOS EC. Multiply value by 100 to get the fan speed in rpm.
+  </summary>
+</histogram>
+
 <histogram name="Power.IdleTimeAfterDimOnAC" units="ms"
     expires_after="2022-04-24">
   <owner>tbroch@chromium.org</owner>
