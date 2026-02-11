@@ -10,6 +10,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
@@ -183,6 +184,24 @@ TEST_P(HTMLDocumentParserTest, AppendNoPrefetch) {
   EXPECT_TRUE(parser->DidPumpTokenizerForTesting());
   // Cancel any pending work to make sure that RuntimeFeatures DCHECKs do not
   // fire.
+  static_cast<DocumentParser*>(parser)->StopParsing();
+}
+
+TEST_P(HTMLDocumentParserTest, ProcessingInstruction) {
+  auto& document = To<HTMLDocument>(GetDocument());
+  HTMLDocumentParser* parser = CreateParser(document);
+  ScopedParserDetacher detacher(parser);
+
+  parser->AppendBytes(base::byte_span_from_cstring("<?target data?>"));
+  test::RunPendingTasks();
+
+  Node* last = document.lastChild();
+  ASSERT_TRUE(last);
+  EXPECT_EQ(Node::kProcessingInstructionNode, last->getNodeType());
+  ProcessingInstruction* pi = To<ProcessingInstruction>(last);
+  EXPECT_EQ("target", pi->target());
+  EXPECT_EQ("data", pi->data());
+
   static_cast<DocumentParser*>(parser)->StopParsing();
 }
 

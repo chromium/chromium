@@ -151,6 +151,9 @@ class HTMLConstructionSite final {
   void FinishedParsing();
 
   void InsertDoctype(AtomicHTMLToken*);
+  void InsertProcessingInstruction(AtomicHTMLToken*);
+  void InsertProcessingInstructionOnDocument(AtomicHTMLToken*);
+  void InsertProcessingInstructionOnHTMLHtmlElement(AtomicHTMLToken*);
   void InsertComment(AtomicHTMLToken*);
   void InsertCommentOnDocument(AtomicHTMLToken*);
   void InsertCommentOnHTMLHtmlElement(AtomicHTMLToken*);

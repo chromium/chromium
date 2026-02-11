@@ -188,8 +188,8 @@ TEST_F(SelectionSampleTest, SerializeNamespace) {
 }
 
 TEST_F(SelectionSampleTest, SerializeProcessingInstruction) {
-  EXPECT_EQ("<!--?foo ba|r ?-->", SetAndGetSelectionText("<?foo ba|r ?>"))
-      << "HTML parser turns PI into comment";
+  EXPECT_EQ("<?foo ba|r ?>", SetAndGetSelectionText("<?foo ba|r ?>"))
+      << "HTML parser parses PIs";
 }
 
 TEST_F(SelectionSampleTest, SerializeProcessingInstruction2) {

@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_part.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
+#include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -847,6 +848,36 @@ void HTMLConstructionSite::InsertDoctype(AtomicHTMLToken* token) {
   else {
     SetCompatibilityModeFromDoctype(token->GetHTMLTag(), public_id, system_id);
   }
+}
+
+namespace {
+ProcessingInstruction* CreateProcessingInstructionFromToken(
+    AtomicHTMLToken* token,
+    Document& document) {
+  return MakeGarbageCollected<ProcessingInstruction>(
+      document, token->ProcessingInstructionTarget(),
+      token->ProcessingInstructionData());
+}
+}  // namespace
+
+void HTMLConstructionSite::InsertProcessingInstruction(AtomicHTMLToken* token) {
+  DCHECK_EQ(token->GetType(), HTMLToken::kProcessingInstruction);
+  AttachLater(CurrentNode(), CreateProcessingInstructionFromToken(
+                                 token, OwnerDocumentForCurrentNode()));
+}
+
+void HTMLConstructionSite::InsertProcessingInstructionOnDocument(
+    AtomicHTMLToken* token) {
+  DCHECK_EQ(token->GetType(), HTMLToken::kProcessingInstruction);
+  AttachLater(attachment_root_,
+              CreateProcessingInstructionFromToken(token, *document_));
+}
+
+void HTMLConstructionSite::InsertProcessingInstructionOnHTMLHtmlElement(
+    AtomicHTMLToken* token) {
+  DCHECK_EQ(token->GetType(), HTMLToken::kProcessingInstruction);
+  AttachLater(open_elements_.RootNode(),
+              CreateProcessingInstructionFromToken(token, *document_));
 }
 
 void HTMLConstructionSite::InsertComment(AtomicHTMLToken* token) {

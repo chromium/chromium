@@ -27,10 +27,10 @@
 [ok].//*[@id]
 [ok].//*[attribute::id]
 [ok].//blockquote/text()
-[ng].//blockquote/comment()
-[ng].//blockquote/processing-instruction()
-[ng].//blockquote/processing-instruction("pi")
-[ng].//blockquote/node()
+[ok].//blockquote/comment()
+[ok].//blockquote/processing-instruction()
+[ok].//blockquote/processing-instruction("pi")
+[ok].//blockquote/node()
 [ok].//blockquote/p
 [ok].//blockquote/*
 [ok].//*[child::* and preceding::font]

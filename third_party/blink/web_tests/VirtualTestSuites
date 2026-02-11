@@ -2481,6 +2481,35 @@
     ],
     "expires": "Jul 1, 2023"
   },
+  "Running existing tests that assert that processing instructions are parsed as bogus comments",
+  "while actual processing-instruction HTML parser support is being worked on",
+  {
+    "prefix": "parse-processing-instructions-as-bogus-comments",
+    "owners": [
+      "nrosenthal@chromium.org",
+      "foolip@chromium.org"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "html5lib/generated/run-html5test-com-data.html",
+      "html5lib/generated/run-html5test-com-write.html",
+      "html5lib/generated/run-tests1-data.html",
+      "html5lib/generated/run-tests1-write.html",
+      "external/wpt/html/syntax/parsing/html5lib_html5test-com.html",
+      "external/wpt/html/syntax/parsing/html5lib_tests1.html",
+      "external/wpt/html/syntax/xmldecl/xmldecl-1.html",
+      "external/wpt/html/syntax/xmldecl/xmldecl-2.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--disable-blink-features=HTMLProcessingInstruction"
+    ],
+    "expires": "Sep 1, 2026"
+  },
   {
     "prefix": "permission-element",
     "platforms": [

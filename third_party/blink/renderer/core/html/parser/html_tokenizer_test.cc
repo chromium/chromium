@@ -27,4 +27,17 @@ TEST(HTMLTokenizerTest, ZeroOffsetAttributeNameRange) {
   EXPECT_EQ(nullptr, tokenizer->NextToken(input2));
 }
 
+TEST(HTMLTokenizerTest, ProcessingInstruction) {
+  test::TaskEnvironment task_environment;
+  HTMLParserOptions options;
+  std::unique_ptr<HTMLTokenizer> tokenizer =
+      std::make_unique<HTMLTokenizer>(options);
+  SegmentedString input("<?target data?>");
+  HTMLToken* token = tokenizer->NextToken(input);
+  ASSERT_TRUE(token);
+  EXPECT_EQ(HTMLToken::kProcessingInstruction, token->GetType());
+  EXPECT_EQ("target", token->GetProcessingInstructionTarget().AsString());
+  EXPECT_EQ("data", String(token->Data().AsString()));
+}
+
 }  // namespace blink

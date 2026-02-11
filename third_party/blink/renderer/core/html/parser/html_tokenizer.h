@@ -101,6 +101,11 @@ class CORE_EXPORT HTMLTokenizer {
     kCharacterReferenceInAttributeValueState,
     kAfterAttributeValueQuotedState,
     kSelfClosingStartTagState,
+    kProcessingInstructionOpenState,
+    kProcessingInstructionTargetState,
+    kAfterProcessingInstructionTargetState,
+    kProcessingInstructionDataState,
+    kProcessingInstructionQuestionableState,
     kBogusCommentState,
     // The ContinueBogusCommentState is not in the HTML5 spec, but we use
     // it internally to keep track of whether we've started the bogus

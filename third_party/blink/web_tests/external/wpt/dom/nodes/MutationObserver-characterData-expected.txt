@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] characterData ProcessingInstruction: data mutations
+  assert_equals: oldValue didn't match expected "?processing data?" but got "data"
+Harness: the test ran to completion.
+

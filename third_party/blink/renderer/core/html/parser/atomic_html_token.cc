@@ -31,6 +31,7 @@ const char* ToString(HTMLToken::TokenType type) {
     DEFINE_STRINGIFY(kCharacter);
     DEFINE_STRINGIFY(kEndOfFile);
     DEFINE_STRINGIFY(kDOMPart);
+    DEFINE_STRINGIFY(kProcessingInstruction);
 #undef DEFINE_STRINGIFY
   }
   return "<unknown>";
@@ -47,6 +48,7 @@ void AtomicHTMLToken::Show() const {
     case HTMLToken::DOCTYPE:
       printf(" name \"%s\"", GetName().GetString().Utf8().c_str());
       break;
+    case HTMLToken::kProcessingInstruction:
     case HTMLToken::kComment:
     case HTMLToken::kCharacter:
       printf(" data \"%s\"", data_.Utf8().c_str());

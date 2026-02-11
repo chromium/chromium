@@ -3056,6 +3056,11 @@
       status: "stable",
     },
     {
+      // Parse processing instructions in HTML.
+      name: "HTMLProcessingInstruction",
+      status: "test",
+    },
+    {
       name: "ICUCapitalization",
       status: "experimental",
     },

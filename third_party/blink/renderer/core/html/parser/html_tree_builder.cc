@@ -472,7 +472,31 @@ void HTMLTreeBuilder::ProcessToken(AtomicHTMLToken* token) {
     case HTMLToken::kDOMPart:
       ProcessDOMPart(token);
       break;
+    case HTMLToken::kProcessingInstruction:
+      ProcessProcessingInstruction(token);
+      break;
   }
+}
+
+void HTMLTreeBuilder::ProcessProcessingInstruction(AtomicHTMLToken* token) {
+  DCHECK_EQ(token->GetType(), HTMLToken::kProcessingInstruction);
+  if (GetInsertionMode() == kInitialMode ||
+      GetInsertionMode() == kBeforeHTMLMode ||
+      GetInsertionMode() == kAfterAfterBodyMode ||
+      GetInsertionMode() == kAfterAfterFramesetMode) {
+    tree_.InsertProcessingInstructionOnDocument(token);
+    return;
+  }
+  if (GetInsertionMode() == kAfterBodyMode) {
+    tree_.InsertProcessingInstructionOnHTMLHtmlElement(token);
+    return;
+  }
+  if (GetInsertionMode() == kInTableTextMode) {
+    DefaultForInTableText();
+    ProcessProcessingInstruction(token);
+    return;
+  }
+  tree_.InsertProcessingInstruction(token);
 }
 
 void HTMLTreeBuilder::ProcessDoctypeToken(AtomicHTMLToken* token) {
@@ -2843,6 +2867,9 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
     // foreign content (e.g. <svg>) inside an element with `parseparts`.
     case HTMLToken::kDOMPart:
       ParseError(token);
+      break;
+    case HTMLToken::kProcessingInstruction:
+      tree_.InsertProcessingInstruction(token);
       break;
     case HTMLToken::kStartTag: {
       const HTMLTag tag = token->GetHTMLTag();

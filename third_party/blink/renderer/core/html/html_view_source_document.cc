@@ -189,6 +189,9 @@ void HTMLViewSourceDocument::AddSource(
     case HTMLToken::kEndTag:
       ProcessTagToken(source, token, attributes_ranges, token_start);
       break;
+    case HTMLToken::kProcessingInstruction:
+      // TODO(nrosenthal): implement processing instructions in view-source.
+      break;
     case HTMLToken::kComment:
       ProcessCommentToken(source, token);
       break;

@@ -108,6 +108,7 @@ class HTMLToken {
     kCharacter,
     kEndOfFile,
     kDOMPart,
+    kProcessingInstruction,
   };
 
   class Attribute {
@@ -170,6 +171,7 @@ class HTMLToken {
 
     type_ = kUninitialized;
     data_.clear();
+    processing_instruction_target_.reset();
     if (current_attribute_) {
       current_attribute_ = nullptr;
       attributes_.clear();
@@ -186,7 +188,7 @@ class HTMLToken {
 
   const DataVector& Data() const {
     DCHECK(type_ == kCharacter || type_ == kComment || type_ == kStartTag ||
-           type_ == kEndTag);
+           type_ == kEndTag || type_ == kProcessingInstruction);
     return data_;
   }
 
@@ -195,8 +197,13 @@ class HTMLToken {
     return data_;
   }
 
+  const DataVector& GetProcessingInstructionTarget() const {
+    DCHECK(type_ == kProcessingInstruction);
+    return *processing_instruction_target_;
+  }
   ALWAYS_INLINE void AppendToName(UChar character) {
-    DCHECK(type_ == kStartTag || type_ == kEndTag || type_ == DOCTYPE);
+    DCHECK(type_ == kStartTag || type_ == kEndTag || type_ == DOCTYPE ||
+           type_ == kProcessingInstruction);
     DCHECK(character);
     data_.AddChar(character);
   }
@@ -373,6 +380,12 @@ class HTMLToken {
     data_.AppendLiteral(characters);
   }
 
+  ALWAYS_INLINE void AppendToProcessingInstructionTarget(UChar character) {
+    DCHECK_EQ(type_, kProcessingInstruction);
+    DCHECK(processing_instruction_target_);
+    processing_instruction_target_->AddChar(character);
+  }
+
   /* Comment Tokens */
 
   const DataVector& Comment() const {
@@ -391,6 +404,12 @@ class HTMLToken {
     data_.AddChar(character);
   }
 
+  ALWAYS_INLINE void AppendToProcessingInstructionData(UChar character) {
+    DCHECK(character);
+    DCHECK_EQ(type_, kProcessingInstruction);
+    data_.AddChar(character);
+  }
+
   /* DOM Part Tokens */
 
   ALWAYS_INLINE void BeginDOMPart(DOMPartTokenType type) {
@@ -403,6 +422,14 @@ class HTMLToken {
   std::unique_ptr<DOMPartData> ReleaseDOMPartData() {
     DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
     return std::move(dom_part_data_);
+  }
+
+  /* Processing Instruction Tokens */
+
+  ALWAYS_INLINE void BeginProcessingInstruction() {
+    DCHECK_EQ(type_, kUninitialized);
+    type_ = kProcessingInstruction;
+    processing_instruction_target_ = std::make_optional<DataVector>();
   }
 
   DOMPartsNeeded GetDOMPartsNeeded() {
@@ -432,6 +459,8 @@ class HTMLToken {
 
   // For DOCTYPE
   std::unique_ptr<DoctypeData> doctype_data_;
+
+  std::optional<DataVector> processing_instruction_target_;
 
   // For DOM Parts API
   std::unique_ptr<DOMPartData> dom_part_data_;

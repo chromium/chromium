@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/html/parser/markup_tokenizer_inlines.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/html_tokenizer_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
@@ -131,8 +132,10 @@ static inline UChar ToLowerCaseIfAlpha(UChar cc) {
   return cc | (IsASCIIUpper(cc) ? 0x20 : 0);
 }
 
-static inline bool VectorEqualsString(const LCharLiteralBuffer<32>& vector,
-                                      const String& string) {
+template <wtf_size_t N, typename CharType>
+static inline bool VectorEqualsString(
+    const LiteralBufferBase<CharType, N>& vector,
+    const String& string) {
   if (vector.size() != string.length())
     return false;
 
@@ -390,11 +393,15 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       } else if (cc == '/') {
         HTML_ADVANCE_PAST_NON_NEWLINE_TO(kEndTagOpenState);
       } else if (cc == '?') {
-        ParseError();
-        // The spec consumes the current character before switching
-        // to the bogus comment state, but it's easier to implement
-        // if we reconsume the current character.
-        HTML_RECONSUME_IN(kBogusCommentState);
+        if (RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled()) {
+          HTML_ADVANCE_PAST_NON_NEWLINE_TO(kProcessingInstructionOpenState);
+        } else {
+          ParseError();
+          // The spec consumes the current character before switching
+          // to the bogus comment state, but it's easier to implement
+          // if we reconsume the current character.
+          HTML_RECONSUME_IN(kBogusCommentState);
+        }
       } else {
         ParseError();
         BufferCharacter('<');
@@ -1152,6 +1159,105 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
     }
     END_STATE()
 
+    HTML_BEGIN_STATE(kProcessingInstructionOpenState) {
+      CHECK(RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled());
+      if (IsASCIIAlpha(cc)) {
+        token_.BeginProcessingInstruction();
+        HTML_RECONSUME_IN(kProcessingInstructionTargetState);
+      } else if (cc == kEndOfFileMarker) {
+        ParseError();
+        return EmitEndOfFile(source);
+      } else {
+        ParseError();
+        token_.BeginComment();
+        token_.AppendToComment('?');
+        HTML_RECONSUME_IN(kContinueBogusCommentState);
+      }
+    }
+    END_STATE()
+
+    HTML_BEGIN_STATE(kProcessingInstructionTargetState) {
+      CHECK(RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled());
+      const HTMLToken::DataVector target =
+          token_.GetProcessingInstructionTarget();
+      auto is_reserved = [&]() {
+        const String target_as_string = target.AsString();
+        return EqualIgnoringASCIICase(target_as_string, "xml") ||
+               EqualIgnoringASCIICase(target_as_string, "xml-stylesheet");
+      };
+      if (cc == kEndOfFileMarker) {
+        ParseError();
+        return EmitEndOfFile(source);
+      } else if (cc == '-' || IsASCIIAlphanumeric(cc)) {
+        token_.AppendToProcessingInstructionTarget(cc);
+        HTML_CONSUME(kProcessingInstructionTargetState);
+      } else {
+        if (!(IsTokenizerWhitespace(cc) || cc == '>' || cc == '?') ||
+            is_reserved()) {
+          ParseError();
+          Reset();
+          token_.BeginComment();
+          token_.AppendToComment('?');
+          for (const UChar c : target) {
+            token_.AppendToComment(c);
+          }
+          HTML_RECONSUME_IN(kContinueBogusCommentState);
+        } else {
+          HTML_RECONSUME_IN(kAfterProcessingInstructionTargetState);
+        }
+      }
+    }
+    END_STATE()
+
+    HTML_BEGIN_STATE(kAfterProcessingInstructionTargetState) {
+      CHECK(RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled());
+      if (!SkipWhitespaces(source, cc)) {
+        return HaveBufferedCharacterToken();
+      }
+
+      if (cc == '?') {
+        HTML_ADVANCE_TO(kProcessingInstructionQuestionableState);
+      } else if (cc == '>') {
+        return EmitAndResumeInDataState(source);
+      } else if (cc == kEndOfFileMarker) {
+        ParseError();
+        return EmitEndOfFile(source);
+      } else {
+        HTML_RECONSUME_IN(kProcessingInstructionDataState);
+      }
+    }
+    END_STATE()
+
+    HTML_BEGIN_STATE(kProcessingInstructionDataState) {
+      CHECK(RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled());
+      if (cc == '?') {
+        HTML_ADVANCE_TO(kProcessingInstructionQuestionableState);
+      } else if (cc == '>') {
+        return EmitAndResumeInDataState(source);
+      } else if (cc == kEndOfFileMarker) {
+        ParseError();
+        return EmitEndOfFile(source);
+      } else {
+        token_.AppendToProcessingInstructionData(cc);
+        HTML_CONSUME(kProcessingInstructionDataState);
+      }
+    }
+    END_STATE()
+
+    HTML_BEGIN_STATE(kProcessingInstructionQuestionableState) {
+      CHECK(RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled());
+      if (cc == '>') {
+        return EmitAndResumeInDataState(source);
+      } else if (cc == kEndOfFileMarker) {
+        ParseError();
+        return EmitEndOfFile(source);
+      } else {
+        token_.AppendToProcessingInstructionData('?');
+        HTML_RECONSUME_IN(kProcessingInstructionDataState);
+      }
+    }
+    END_STATE()
+
     HTML_BEGIN_STATE(kBogusCommentState) {
       token_.BeginComment();
       HTML_RECONSUME_IN(kContinueBogusCommentState);
@@ -1159,11 +1265,11 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
     END_STATE()
 
     HTML_BEGIN_STATE(kContinueBogusCommentState) {
-      if (cc == '>')
+      if (cc == '>') {
         return EmitAndResumeInDataState(source);
-      else if (cc == kEndOfFileMarker)
+      } else if (cc == kEndOfFileMarker) {
         return EmitAndReconsumeInDataState();
-      else {
+      } else {
         token_.AppendToComment(cc);
         HTML_CONSUME(kContinueBogusCommentState);
       }
