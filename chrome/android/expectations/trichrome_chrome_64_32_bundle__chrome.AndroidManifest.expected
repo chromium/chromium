@@ -955,7 +955,7 @@
     <service  # DIFF-ANCHOR: ac8469ff
         android:name="org.chromium.chrome.browser.media.MediaCaptureNotificationService"
         android:exported="false"
-        android:foregroundServiceType="mediaProjection|mediaPlayback">
+        android:foregroundServiceType="camera|microphone|mediaProjection|mediaPlayback">
     </service>  # DIFF-ANCHOR: ac8469ff
     <service  # DIFF-ANCHOR: 7ef9e4e5
         android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$CastListenerService"

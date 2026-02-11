@@ -72,11 +72,8 @@ by a child template that "extends" this file.
     <uses-permission android:name="android.permission.CAPTURE_KEYBOARD" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    {% set is_desktop_android = is_desktop_android|default(0) %}
-    {% if is_desktop_android == "true" %}
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
-    {% endif %}
     {% set enable_screen_capture = enable_screen_capture|default(0) %}
     {% if enable_screen_capture == "true" %}
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
@@ -1172,12 +1169,10 @@ by a child template that "extends" this file.
             android:exported="false"/>
 
         <service android:name="org.chromium.chrome.browser.media.MediaCaptureNotificationService"
-            {% if is_desktop_android == "true" and enable_screen_capture == "true" %}
+            {% if enable_screen_capture == "true" %}
             android:foregroundServiceType="camera|microphone|mediaProjection|mediaPlayback"
-            {% elif is_desktop_android == "true" %}
+            {% else %}
             android:foregroundServiceType="camera|microphone"
-            {% elif enable_screen_capture == "true" %}
-            android:foregroundServiceType="mediaProjection|mediaPlayback"
             {% endif %}
             android:exported="false"/>
         <service android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$PlaybackListenerService"
