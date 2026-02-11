@@ -790,8 +790,11 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
-  protected onContextMenuClosed_() {
+  protected async onContextMenuClosed_() {
     this.contextMenuOpened_ = false;
+
+    await this.updateComplete;
+    this.focusInput();
   }
 
   protected onContextMenuOpened_() {
@@ -969,7 +972,7 @@ export class ComposeboxElement extends I18nMixinLit
     return this.activeToolMode_;
   }
 
-  private async handleToolMode_(tool: ToolMode, enabled: boolean) {
+  private handleToolMode_(tool: ToolMode, enabled: boolean) {
     if (enabled) {
       this.activeToolMode_ = tool;
     } else if (this.activeToolMode_ === tool) {
@@ -980,17 +983,11 @@ export class ComposeboxElement extends I18nMixinLit
     this.queryAutocomplete_(/* clearMatches= */ true);
     this.updateInputPlaceholder_();
     this.fire('active-tool-mode-changed', {value: this.activeToolMode_});
-
-    await this.updateComplete;
-    this.focusInput();
   }
 
-  protected async onModelClick_(e: CustomEvent<{model: ModelMode}>) {
+  protected onModelClick_(e: CustomEvent<{model: ModelMode}>) {
     this.searchboxHandler_.setActiveModelMode(e.detail.model);
     this.updateInputPlaceholder_();
-
-    await this.updateComplete;
-    this.focusInput();
   }
 
   protected onErrorScrimDismissed_() {
