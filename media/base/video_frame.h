@@ -430,10 +430,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   static std::string HexHashOfFrameForTesting(const VideoFrame& frame,
                                               bool visible_data_only = true);
 
-  // Returns true if |frame| is accessible mapped in the VideoFrame memory
-  // space.
-  // static
-  static bool IsStorageTypeMappable(VideoFrame::StorageType storage_type);
+  // Returns true if a VideoFrame backed by `storage_type` would allow direct
+  // CPU access to the backing data in the VideoFrame memory space.
+  static bool StorageTypeAllowsDirectCpuAccess(
+      VideoFrame::StorageType storage_type);
 
   // Returns true if |plane| is a valid plane index for the given |format|.
   static bool IsValidPlane(VideoPixelFormat format, size_t plane);

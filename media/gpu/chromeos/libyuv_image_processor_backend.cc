@@ -146,8 +146,8 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
         /*force_linear_buffer_mapper=*/true);
   }
 
-  if (!input_frame_mapper &&
-      !VideoFrame::IsStorageTypeMappable(input_config.storage_type)) {
+  if (!input_frame_mapper && !VideoFrame::StorageTypeAllowsDirectCpuAccess(
+                                 input_config.storage_type)) {
     VLOGF(2) << "Unsupported input storage type";
     return nullptr;
   }
@@ -160,8 +160,8 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
         /*force_linear_buffer_mapper=*/true);
   }
 
-  if (!output_frame_mapper &&
-      !VideoFrame::IsStorageTypeMappable(output_config.storage_type)) {
+  if (!output_frame_mapper && !VideoFrame::StorageTypeAllowsDirectCpuAccess(
+                                  output_config.storage_type)) {
     VLOGF(2) << "Unsupported output storage type";
     return nullptr;
   }

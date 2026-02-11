@@ -154,7 +154,7 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateInputFrame(
   std::optional<VideoFrameLayout> input_layout = CreateLayout(input_config);
   ASSERT_TRUE_OR_RETURN_NULLPTR(input_layout);
 
-  if (VideoFrame::IsStorageTypeMappable(input_storage_type)) {
+  if (VideoFrame::StorageTypeAllowsDirectCpuAccess(input_storage_type)) {
     return CloneVideoFrame(CreateVideoFrameFromImage(input_image).get(),
                            *input_layout, test_sii_.get(),
                            VideoFrame::STORAGE_OWNED_MEMORY);
@@ -187,7 +187,7 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateOutputFrame(
       output_config.storage_type;
   std::optional<VideoFrameLayout> output_layout = CreateLayout(output_config);
   ASSERT_TRUE_OR_RETURN_NULLPTR(output_layout);
-  if (VideoFrame::IsStorageTypeMappable(output_storage_type)) {
+  if (VideoFrame::StorageTypeAllowsDirectCpuAccess(output_storage_type)) {
     return VideoFrame::CreateFrameWithLayout(
         *output_layout, gfx::Rect(output_image.Size()), output_image.Size(),
         base::TimeDelta(), false /* zero_initialize_memory*/);

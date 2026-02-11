@@ -614,7 +614,7 @@ bool V4L2VideoEncodeAccelerator::InitInputMemoryType(const Config& config) {
     const auto storage_type = image_processor_->output_config().storage_type;
     if (storage_type == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
       input_memory_type_ = V4L2_MEMORY_DMABUF;
-    } else if (VideoFrame::IsStorageTypeMappable(storage_type)) {
+    } else if (VideoFrame::StorageTypeAllowsDirectCpuAccess(storage_type)) {
       input_memory_type_ = V4L2_MEMORY_USERPTR;
     } else {
       LOG(ERROR) << "Unsupported image processor's output StorageType: "

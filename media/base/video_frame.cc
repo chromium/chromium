@@ -98,7 +98,8 @@ std::string VideoFrame::StorageTypeToString(
 }
 
 // static
-bool VideoFrame::IsStorageTypeMappable(VideoFrame::StorageType storage_type) {
+bool VideoFrame::StorageTypeAllowsDirectCpuAccess(
+    VideoFrame::StorageType storage_type) {
   // CPU memory is the only kind of storage that is mappable at the level of
   // VideoFrame itself (other types of storage such as DMA bufs and
   // MappableSharedImage can be mapped, but not at the level of VideoFrame).
@@ -1162,7 +1163,7 @@ void VideoFrame::BackWithOwnedSharedMemory(
 }
 
 bool VideoFrame::HasDirectCpuAccess() const {
-  return IsStorageTypeMappable(storage_type_);
+  return StorageTypeAllowsDirectCpuAccess(storage_type_);
 }
 
 bool VideoFrame::HasSharedImage() const {
