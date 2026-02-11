@@ -792,6 +792,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         }
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
                                    /*via_context_menu=*/true);
+        base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
         break;
       case IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR:
         if (use_input_state_model) {
@@ -800,6 +801,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         }
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
                                    /*via_context_menu=*/true);
+        base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
         break;
       case IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING:
         if (use_input_state_model) {
@@ -808,6 +810,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         }
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
                                    /*via_context_menu=*/true);
+        base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
         break;
       default:
         NOTREACHED();
@@ -868,7 +871,19 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
     return false;
   }
 
+  auto omnibox_controller = GetOmniboxController();
+  if (!omnibox_controller) {
+    return false;
+  }
+
+  const OmniboxPopupState page_type =
+      omnibox_controller->popup_state_manager()->popup_state();
   if (base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
+    const std::string prefix = page_type == OmniboxPopupState::kClassic
+                                   ? kClassicContextTypeHistogramPrefix
+                                   : kAimContextTypeHistogramPrefix;
+    const std::string sliced_prefix = base::StrCat({prefix, ".Shown"});
+
     // Command ID corresponds to "Most recent tabs" menu item.
     if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
         command_id < next_command_id_) {
@@ -877,17 +892,40 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
 
     switch (command_id) {
       case IDC_OMNIBOX_CONTEXT_ADD_IMAGE:
-      case IDC_OMNIBOX_CONTEXT_ADD_FILE:
-        return IsInputTypeEnabled(GetInputTypeForCommandId(command_id));
+      case IDC_OMNIBOX_CONTEXT_ADD_FILE: {
+        const bool input_type_enabled =
+            IsInputTypeEnabled(GetInputTypeForCommandId(command_id));
+        if (input_type_enabled) {
+          base::UmaHistogramEnumeration(sliced_prefix,
+                                        CommandIdToEnum(command_id));
+        }
+        return input_type_enabled;
+      }
       case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
       case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
-      case IDC_OMNIBOX_CONTEXT_CANVAS:
-        return IsToolEnabled(GetToolModeForCommandId(command_id));
+      case IDC_OMNIBOX_CONTEXT_CANVAS: {
+        const bool tool_enabled =
+            IsToolEnabled(GetToolModeForCommandId(command_id));
+        if (tool_enabled) {
+          base::UmaHistogramEnumeration(sliced_prefix,
+                                        CommandIdToEnum(command_id));
+        }
+        return tool_enabled;
+      }
       case IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO:
       case IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR:
-      case IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING:
-        return IsModelEnabled(GetModelModeForCommandId(command_id));
+      case IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING: {
+        const bool model_enabled =
+            IsModelEnabled(GetModelModeForCommandId(command_id));
+        if (model_enabled) {
+          base::UmaHistogramEnumeration(sliced_prefix,
+                                        CommandIdToEnum(command_id));
+        }
+        return model_enabled;
+      }
       default:
+        base::UmaHistogramEnumeration(sliced_prefix,
+                                      CommandIdToEnum(command_id));
         return true;
     }
   }
@@ -914,14 +952,8 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
   auto max_num_files =
       omnibox::FeatureConfig::Get().config.composebox().max_num_files();
 
-  auto omnibox_controller = GetOmniboxController();
-  if (!omnibox_controller) {
-    return false;
-  }
-
-  return IsCommandIdEnabledHelper(
-      command_id, aim_tool_mode, file_infos, max_num_files,
-      omnibox_controller->popup_state_manager()->popup_state());
+  return IsCommandIdEnabledHelper(command_id, aim_tool_mode, file_infos,
+                                  max_num_files, page_type);
 }
 
 bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
