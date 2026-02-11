@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/check.h"
@@ -17,6 +16,7 @@
 #include "cc/cc_export.h"
 #include "cc/trees/animation_effect_timings.h"
 #include "cc/trees/animation_options.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace cc {
 
@@ -128,7 +128,7 @@ class CC_EXPORT MutatorInputState {
 
  private:
   using InputMap =
-      std::unordered_map<int, std::unique_ptr<AnimationWorkletInput>>;
+      absl::flat_hash_map<int, std::unique_ptr<AnimationWorkletInput>>;
 
   // Maps a scope id to its associated AnimationWorkletInput instance.
   // Only contains scope ids for which there is a non-empty input.
