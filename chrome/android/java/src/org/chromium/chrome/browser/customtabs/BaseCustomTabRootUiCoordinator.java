@@ -21,7 +21,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.browser.customtabs.ExperimentalOpenInBrowser;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
@@ -403,7 +402,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         return false;
     }
 
-    @ExperimentalOpenInBrowser
     @Override
     protected void initializeToolbar() {
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
@@ -512,7 +510,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
-    @ExperimentalOpenInBrowser
     @Override
     protected AdaptiveToolbarBehavior createAdaptiveToolbarBehavior(
             Supplier<Tracker> trackerSupplier) {

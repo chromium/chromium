@@ -19,8 +19,6 @@ import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButton
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
-import androidx.browser.customtabs.ExperimentalOpenInBrowser;
-
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -54,7 +52,6 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
     private final List<CustomButtonParams> mToolbarCustomButtons;
     private final Set<Integer> mValidButtons;
 
-    @ExperimentalOpenInBrowser
     public CustomTabAdaptiveToolbarBehavior(
             Context context,
             ActivityTabProvider activityTabProvider,
@@ -95,7 +92,6 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
         return screenWidthDp < AdaptiveToolbarFeatures.MAX_WIDTH_FOR_BUBBLE_DP;
     }
 
-    @ExperimentalOpenInBrowser
     @Override
     public void registerPerSurfaceButtons(
             AdaptiveToolbarButtonController controller,
@@ -134,7 +130,6 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
                 || (SHARE == button && hasCustomShare);
     }
 
-    @ExperimentalOpenInBrowser
     @Override
     public int resultFilter(List<Integer> segmentationResults) {
         // If a customized button is specified by dev (or the default 'share' is on), find the first
@@ -168,7 +163,6 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
     }
 
     /** Whether some static action should be filtered out. */
-    @ExperimentalOpenInBrowser
     private boolean shouldSkipStaticAction(@AdaptiveToolbarButtonVariant int variant) {
         if (!AdaptiveToolbarFeatures.isDynamicAction(variant)) {
             // |contextual_only| filters out all the static actions, unless 'open in browser'
@@ -208,7 +202,6 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
         return isButtonDuplicated(defVariant) ? UNKNOWN : defVariant;
     }
 
-    @ExperimentalOpenInBrowser
     private boolean isOpenInBrowserButtonEnabled() {
         return mIntentDataProvider.getOpenInBrowserButtonState() != OPEN_IN_BROWSER_STATE_OFF;
     }

@@ -62,7 +62,6 @@ import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
 import androidx.browser.customtabs.CustomTabsIntent.OpenInBrowserState;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.ExperimentalCustomContentAction;
-import androidx.browser.customtabs.ExperimentalOpenInBrowser;
 import androidx.browser.customtabs.TrustedWebUtils;
 import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.LaunchHandlerClientMode;
@@ -309,7 +308,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         OpenInBrowserButtonState.OPEN_IN_BROWSER_STATE_DEFAULT
     })
     @Retention(RetentionPolicy.SOURCE)
-    @ExperimentalOpenInBrowser
     public @interface OpenInBrowserButtonState {
         int OPEN_IN_BROWSER_STATE_OFF = CustomTabsIntent.OPEN_IN_BROWSER_STATE_OFF;
         int OPEN_IN_BROWSER_STATE_ON = CustomTabsIntent.OPEN_IN_BROWSER_STATE_ON;
@@ -1833,7 +1831,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return mResolvedDisplayMode;
     }
 
-    @ExperimentalOpenInBrowser
     @Override
     public @OpenInBrowserState int getOpenInBrowserButtonState() {
         return mOpenInBrowserState;
