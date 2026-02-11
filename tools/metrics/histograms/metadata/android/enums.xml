@@ -1255,6 +1255,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="DroppedUnusedOlderStates"/>
   <int value="7" label="TransferBackToBrowserSuccessfully"/>
   <int value="8" label="DroppedTransferBackToBrowserFailed"/>
+  <int value="9" label="SpeculativeTransferStateReplaced"/>
 </enum>
 
 <enum name="LightTheme">
