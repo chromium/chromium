@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
@@ -60,9 +61,8 @@ std::string GenerateSessionId() {
   static uint32_t next_session_id_suffix = 0;
   next_session_id_suffix++;
 
-  return base::HexEncode(&seed, sizeof(seed)) +
-         base::HexEncode(&next_session_id_suffix,
-                         sizeof(next_session_id_suffix));
+  return base::HexEncode(base::byte_span_from_ref(seed)) +
+         base::HexEncode(base::byte_span_from_ref(next_session_id_suffix));
 }
 
 }  // namespace

@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/byte_conversions.h"
@@ -714,7 +715,7 @@ std::string NetworkSpeechRecognitionEngineImpl::GenerateRequestKey() const {
   // probability of collisions.
   int64_t key = (base::Time::Now().ToInternalValue() & kKeepLowBytes) |
                 (base::RandUint64() & kKeepHighBytes);
-  return base::HexEncode(reinterpret_cast<void*>(&key), sizeof(key));
+  return base::HexEncode(base::byte_span_from_ref(key));
 }
 
 void NetworkSpeechRecognitionEngineImpl::UploadAudioChunk(
