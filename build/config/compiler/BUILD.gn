@@ -1036,7 +1036,11 @@ config("linker") {
   ldflags = []
 
   if (!is_win) {
-    if (use_lld) {
+    if (experimental_linker_path != "") {
+      inputs = [ experimental_linker_path ]
+      ldflags += [ "--ld-path=" +
+                   rebase_path(experimental_linker_path, root_build_dir) ]
+    } else if (use_lld) {
       ldflags += [ "-fuse-ld=lld" ]
       if (lld_path != "") {
         ldflags += [ "-B" + rebase_path(lld_path, root_build_dir) ]

@@ -28,11 +28,24 @@ if (is_apple) {
 }
 
 declare_args() {
+  if (!is_win && !is_mac && !is_ios) {
+    # Link using a non-lld linker. See https://crbug.com/40208899
+    experimental_linker_path = ""
+  }
+}
+
+# Disable for host toolchain to prevent all sources from needing to be rebuilt
+# when toggling between linkers.
+if (!defined(experimental_linker_path) || !is_a_target_toolchain) {
+  experimental_linker_path = ""
+}
+
+declare_args() {
   # Set to true to use lld, the LLVM linker.
   # In late bring-up on macOS (see docs/mac_lld.md).
   # Tentatively used on iOS.
   # The default linker everywhere else.
-  use_lld = is_clang && current_os != "zos"
+  use_lld = is_clang && current_os != "zos" && experimental_linker_path == ""
 
   # If false, build using C++20; otherwise, build using C++23.
   use_cxx23 = true

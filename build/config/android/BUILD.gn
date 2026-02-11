@@ -105,7 +105,7 @@ config("lld_branch_target_hardening") {
   # Config opts a shared library into BTI linker hardening. This
   # is an opt-in config (rather than default-enabled) to avoid
   # interfering with the V8 CFI bots (crbug.com/1334614).
-  if (current_cpu == "arm64") {
+  if (current_cpu == "arm64" && use_lld) {
     if (arm_control_flow_integrity == "standard") {
       # Linking objects without GNU_PROPERTY_AARCH64_FEATURE_1_BTI
       # in their .gnu.note section implicitly results in the final

@@ -117,9 +117,12 @@ if (is_fuchsia) {
 
 _build_date_header = "$target_gen_dir/generated_build_date.h"
 
-_enable_code_ordering = is_android && !is_component_build &&
-                        (current_cpu == "arm" || current_cpu == "arm64" ||
-                         current_cpu == "x86" || current_cpu == "x64")
+# mold does not support PROVIDE_HIDDEN.
+# https://github.com/rui314/mold/issues/1055
+_enable_code_ordering =
+    is_android && !is_component_build && experimental_linker_path == "" &&
+    (current_cpu == "arm" || current_cpu == "arm64" || current_cpu == "x86" ||
+     current_cpu == "x64")
 
 if (is_win) {
   # This is in a separate config so the flags can be applied to dependents.

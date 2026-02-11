@@ -61,7 +61,7 @@ void* LoadLibrary(const std::string& library_name,
       BundleUtils::ResolveLibraryPath(library_name, module_name);
   library_handle = dlopen(library_path.c_str(), RTLD_LOCAL);
 #else
-#error "Unsupported configuration."
+  library_handle = dlopen(nullptr, RTLD_NOW);
 #endif  // defined(COMPONENT_BUILD)
   CHECK(library_handle != nullptr)
       << "Could not open feature library " << library_name << ": " << dlerror();

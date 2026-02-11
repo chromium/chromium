@@ -3278,6 +3278,8 @@ static_library("ui") {
     # For version_ui.cc:
     if (use_lld) {
       defines += [ "CHROMIUM_LINKER_NAME=\"lld\"" ]
+    } else if (experimental_linker_path != "") {
+      defines += [ "CHROMIUM_LINKER_NAME=\"experimental\"" ]
     } else {
       defines += [ "CHROMIUM_LINKER_NAME=\"ld\"" ]
     }

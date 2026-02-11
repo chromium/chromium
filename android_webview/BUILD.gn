@@ -1299,7 +1299,7 @@ declare_args() {
        (chrome_pgo_phase == 2 || chrome_pgo_phase == 0)) ||
       ((current_cpu == "arm" || current_cpu == "x86") &&
        chrome_pgo_phase == 0 && is_official_build)) {
-    if (enable_chrome_android_internal) {
+    if (enable_chrome_android_internal && use_lld) {
       # We generate separate orderfiles for 32-bit and 64-bit architectures
       # to improve performance and reduce memory usage.
       # - WebView and Chrome ARM64, see https://crbug.com/41490637.
