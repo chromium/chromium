@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "chrome/browser/browser_process.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 
@@ -54,16 +55,28 @@ void OnDeviceAiSettingsHandler::OnPrefChange() {
   SendOnDeviceAiEnabledChange();
 }
 
+base::DictValue OnDeviceAiSettingsHandler::GetOnDeviceAiState() {
+  PrefService* local_state = g_browser_process->local_state();
+  base::DictValue result;
+  result.Set("enabled",
+             local_state->GetBoolean(kOnDeviceAiUserSettingsEnabled));
+  using optimization_guide::model_execution::prefs::
+      GenAILocalFoundationalModelEnterprisePolicySettings;
+  bool allowedByPolicy =
+      optimization_guide::
+          GetGenAILocalFoundationalModelEnterprisePolicySettings(local_state) ==
+      GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed;
+  result.Set("allowedByPolicy", allowedByPolicy);
+  return result;
+}
+
 void OnDeviceAiSettingsHandler::HandleGetOnDeviceAiEnabled(
     const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  base::DictValue result;
-  result.Set("enabled", g_browser_process->local_state()->GetBoolean(
-                            kOnDeviceAiUserSettingsEnabled));
-  ResolveJavascriptCallback(callback_id, std::move(result));
+  ResolveJavascriptCallback(callback_id, GetOnDeviceAiState());
 }
 
 void OnDeviceAiSettingsHandler::HandleSetOnDeviceAiEnabled(
@@ -75,10 +88,7 @@ void OnDeviceAiSettingsHandler::HandleSetOnDeviceAiEnabled(
 }
 
 void OnDeviceAiSettingsHandler::SendOnDeviceAiEnabledChange() {
-  base::DictValue result;
-  result.Set("enabled", g_browser_process->local_state()->GetBoolean(
-                            kOnDeviceAiUserSettingsEnabled));
-  FireWebUIListener("on-device-ai-enabled-changed", std::move(result));
+  FireWebUIListener("on-device-ai-enabled-changed", GetOnDeviceAiState());
 }
 
 }  // namespace settings

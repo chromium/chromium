@@ -76,7 +76,32 @@ TEST_F(OnDeviceAiSettingsHandlerTest, HandleSetOnDeviceAIEnabled) {
   EXPECT_TRUE(local_state()->GetBoolean(kOnDeviceAiUserSettingsEnabled));
 }
 
-TEST_F(OnDeviceAiSettingsHandlerTest, PrefChangesNotifyPage) {
+TEST_F(OnDeviceAiSettingsHandlerTest,
+       HandleGetOnDeviceAiEnabled_PolicyDisabled) {
+  using optimization_guide::model_execution::prefs::
+      GenAILocalFoundationalModelEnterprisePolicySettings;
+  local_state()->SetInteger(
+      optimization_guide::model_execution::prefs::localstate::
+          kGenAILocalFoundationalModelEnterprisePolicySettings,
+      static_cast<int>(
+          GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed));
+
+  base::ListValue args;
+  args.Append("callback_id");
+  handler()->HandleGetOnDeviceAiEnabled(args);
+
+  EXPECT_EQ(1u, test_web_ui()->call_data().size());
+  const content::TestWebUI::CallData& call_data =
+      *test_web_ui()->call_data()[0];
+  EXPECT_EQ("cr.webUIResponse", call_data.function_name());
+  EXPECT_EQ("callback_id", call_data.arg1()->GetString());
+  EXPECT_TRUE(call_data.arg2()->GetBool());  // success
+  const base::DictValue& result = call_data.arg3()->GetDict();
+  EXPECT_FALSE(result.FindBool("allowedByPolicy").value());
+}
+
+TEST_F(OnDeviceAiSettingsHandlerTest,
+       PrefChangesNotifyPage_UserSettingEnabled) {
   // Toggle the pref.
   local_state()->SetBoolean(
       kOnDeviceAiUserSettingsEnabled,
@@ -85,6 +110,7 @@ TEST_F(OnDeviceAiSettingsHandlerTest, PrefChangesNotifyPage) {
   const content::TestWebUI::CallData& call_data =
       *test_web_ui()->call_data()[0];
   EXPECT_EQ("on-device-ai-enabled-changed", call_data.arg1()->GetString());
+  EXPECT_TRUE(call_data.arg2()->GetDict().FindBool("allowedByPolicy").value());
 
   test_web_ui()->ClearTrackedCalls();
   handler()->DisallowJavascript();
@@ -94,6 +120,26 @@ TEST_F(OnDeviceAiSettingsHandlerTest, PrefChangesNotifyPage) {
       kOnDeviceAiUserSettingsEnabled,
       !local_state()->GetBoolean(kOnDeviceAiUserSettingsEnabled));
   EXPECT_TRUE(test_web_ui()->call_data().empty());
+}
+
+TEST_F(OnDeviceAiSettingsHandlerTest, PrefChangesNotifyPage_PolicyDisabled) {
+  using optimization_guide::model_execution::prefs::
+      GenAILocalFoundationalModelEnterprisePolicySettings;
+  local_state()->SetInteger(
+      optimization_guide::model_execution::prefs::localstate::
+          kGenAILocalFoundationalModelEnterprisePolicySettings,
+      static_cast<int>(
+          GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed));
+
+  // Toggle the pref.
+  local_state()->SetBoolean(
+      kOnDeviceAiUserSettingsEnabled,
+      !local_state()->GetBoolean(kOnDeviceAiUserSettingsEnabled));
+  EXPECT_EQ(1u, test_web_ui()->call_data().size());
+  const content::TestWebUI::CallData& call_data =
+      *test_web_ui()->call_data()[0];
+  EXPECT_EQ("on-device-ai-enabled-changed", call_data.arg1()->GetString());
+  EXPECT_FALSE(call_data.arg2()->GetDict().FindBool("allowedByPolicy").value());
 }
 
 }  // namespace settings

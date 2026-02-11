@@ -6,6 +6,7 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 export interface OnDeviceAiEnabled {
   enabled: boolean;
+  allowedByPolicy: boolean;
 }
 
 export interface OnDeviceAiBrowserProxy {

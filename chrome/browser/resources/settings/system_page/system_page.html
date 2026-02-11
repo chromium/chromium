@@ -27,7 +27,7 @@
         </cr-button>
       </template>
     </settings-toggle-button>
-  <if expr="_google_chrome">
+<if expr="_google_chrome">
     <!-- On device AI settings -->
     <template is="dom-if" if="[[showOnDeviceAiSettings_]]" restamp>
       <div class="hr"></div>
@@ -39,7 +39,7 @@
           on-settings-boolean-control-change="onOnDeviceAiToggleChange_">
       </settings-toggle-button>
     </template>
-    </if>
+</if>
 
     <!-- <if expr="_google_chrome and is_win"> -->
       <template is="dom-if" if="[[showFeatureNotificationsSetting_]]">

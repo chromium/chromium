@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {OnDeviceAiBrowserProxy, SettingsSystemPageElement} from 'chrome://settings/lazy_load.js';
+import type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled, SettingsSystemPageElement} from 'chrome://settings/lazy_load.js';
 import {OnDeviceAiBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
@@ -13,7 +13,10 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 class TestOnDeviceAiBrowserProxy extends TestBrowserProxy implements
     OnDeviceAiBrowserProxy {
-  private onDeviceAiEnabled_: boolean = true;
+  private onDeviceAiEnabled_: OnDeviceAiEnabled = {
+    enabled: true,
+    allowedByPolicy: true,
+  };
 
   constructor() {
     super(['getOnDeviceAiEnabled', 'setOnDeviceAiEnabled']);
@@ -21,11 +24,11 @@ class TestOnDeviceAiBrowserProxy extends TestBrowserProxy implements
 
   getOnDeviceAiEnabled() {
     this.methodCalled('getOnDeviceAiEnabled');
-    return Promise.resolve({enabled: this.onDeviceAiEnabled_});
+    return Promise.resolve(this.onDeviceAiEnabled_);
   }
 
-  setGetOnDeviceAiEnabledResponse(enabled: boolean) {
-    this.onDeviceAiEnabled_ = enabled;
+  setGetOnDeviceAiEnabledResponse(response: OnDeviceAiEnabled) {
+    this.onDeviceAiEnabled_ = response;
   }
 
   setOnDeviceAiEnabled(enabled: boolean) {
@@ -39,20 +42,18 @@ suite('settings system page official', function() {
 
   function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testBrowserProxy = new TestOnDeviceAiBrowserProxy();
-    OnDeviceAiBrowserProxyImpl.setInstance(testBrowserProxy);
-
     systemPage = document.createElement('settings-system-page');
     document.body.appendChild(systemPage);
   }
 
   setup(function() {
+    testBrowserProxy = new TestOnDeviceAiBrowserProxy();
+    OnDeviceAiBrowserProxyImpl.setInstance(testBrowserProxy);
     loadTimeData.overrideValues({
       showOnDeviceAiSettings: false,
     });
     createPage();
   });
-
 
   function queryOnDeviceAiToggle(): SettingsToggleButtonElement|null {
     // Toggle is behind a `dom-if`, so retrieve it via `querySelector`
@@ -74,7 +75,10 @@ suite('settings system page official', function() {
     assertTrue(toggle.checked);
 
     // Disable the setting.
-    testBrowserProxy.setGetOnDeviceAiEnabledResponse(false);
+    testBrowserProxy.setGetOnDeviceAiEnabledResponse({
+      enabled: false,
+      allowedByPolicy: true,
+    });
     toggle.click();
     await flushTasks();
     assertFalse(toggle.checked);
@@ -83,12 +87,38 @@ suite('settings system page official', function() {
 
     // Re-enable the setting.
     testBrowserProxy.resetResolver('setOnDeviceAiEnabled');
-    testBrowserProxy.setGetOnDeviceAiEnabledResponse(true);
+    testBrowserProxy.setGetOnDeviceAiEnabledResponse({
+      enabled: true,
+      allowedByPolicy: true,
+    });
     toggle.click();
     await flushTasks();
     assertTrue(toggle.checked);
     assertTrue(await testBrowserProxy.whenCalled('setOnDeviceAiEnabled'));
     assertTrue((await testBrowserProxy.getOnDeviceAiEnabled()).enabled);
+  });
+
+  test('onDeviceAi toggle disabled by policy', async function() {
+    loadTimeData.overrideValues({
+      showOnDeviceAiSettings: true,
+    });
+    testBrowserProxy.setGetOnDeviceAiEnabledResponse({
+      enabled: true,
+      allowedByPolicy: false,
+    });
+    createPage();
+    await testBrowserProxy.whenCalled('getOnDeviceAiEnabled');
+    await flushTasks();
+
+    const toggle = queryOnDeviceAiToggle();
+    assertTrue(!!toggle);
+    assertTrue(isVisible(toggle));
+    assertTrue(toggle.$.control.disabled);
+    assertFalse(toggle.checked);
+    const policyIndicator =
+        toggle.shadowRoot!.querySelector('cr-policy-pref-indicator');
+    assertTrue(!!policyIndicator);
+    assertTrue(isVisible(policyIndicator));
   });
 
   test('hide onDeviceAi toggle by default', function() {

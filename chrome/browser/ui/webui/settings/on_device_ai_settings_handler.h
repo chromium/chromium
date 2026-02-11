@@ -40,6 +40,9 @@ class OnDeviceAiSettingsHandler : public SettingsPageUIHandler {
   void HandleSetOnDeviceAiEnabled(const base::ListValue& args);
 
  private:
+  // Returns the current state of the on-device AI setting.
+  base::DictValue GetOnDeviceAiState();
+
   // Called when the kOnDeviceAiEnabled preference changes.
   void OnPrefChange();
 
