@@ -5,7 +5,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {AppElement, LanguageToastElement, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {AppStyleUpdater, BrowserProxy, ContentController, ContentType, LineFocusController, LineFocusMovement, LineFocusStyle, NodeStore, ReadAloudNode, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertLT, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -119,7 +119,7 @@ suite('AppContent', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
-        {detail: {data: LineFocusMovement.CURSOR}});
+        {detail: {data: LineFocusMovement.STATIC}});
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_STYLE,
         {detail: {data: LineFocusStyle.UNDERLINE}});
@@ -130,7 +130,9 @@ suite('AppContent', () => {
     await whenCheck(
         app, () => app.style.getPropertyValue('--line-focus-padding') !== '');
 
-    assertNotEquals('', app.style.getPropertyValue('--line-focus-padding'));
+    const actualPadding =
+        +app.style.getPropertyValue('--line-focus-padding').replace('px', '');
+    assertLT(0, actualPadding);
   });
 
   test(

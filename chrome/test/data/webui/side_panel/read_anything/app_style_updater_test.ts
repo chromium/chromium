@@ -57,6 +57,7 @@ suite('AppStyleUpdater', () => {
 
     assertEquals(`${padding}px`, computeStyle('padding-top'));
     assertEquals(`${padding}px`, computeStyle('padding-bottom'));
+    assertEquals(padding, updater.getPaddingForLineFocus());
   });
 
   test('line focus height depends on font scale', () => {

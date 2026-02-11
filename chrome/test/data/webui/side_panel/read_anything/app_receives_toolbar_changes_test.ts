@@ -221,6 +221,29 @@ suite('AppReceivesToolbarChanges', () => {
     assertEquals(expectedData, lineFocusController.getCurrentLineFocusStyle());
   });
 
+  test('line focus style change updates padding', async () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
+        {detail: {data: LineFocusMovement.STATIC}});
+    // The app needs content so it has a non-zero height.
+    app.updateContent();
+
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.UNDERLINE}});
+    await microtasksFinished();
+    const padding =
+        +window.getComputedStyle(app.$.container).paddingTop.replace('px', '');
+    assertLT(0, padding);
+
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.OFF}});
+    await microtasksFinished();
+    assertEquals('', app.$.container.style.paddingTop);
+  });
+
   test('line focus movement change updates line focus', () => {
     chrome.readingMode.isLineFocusEnabled = true;
 
@@ -257,6 +280,31 @@ suite('AppReceivesToolbarChanges', () => {
         +window.getComputedStyle(app.$.container).paddingTop.replace('px', '');
     assertLT(0, padding);
   });
+
+  test(
+      'line focus movement change does nothing with line focus off',
+      async () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS_STYLE,
+            {detail: {data: LineFocusStyle.OFF}});
+        // The app needs content so it has a non-zero height.
+        app.updateContent();
+
+        let expectedData = LineFocusMovement.CURSOR;
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
+            {detail: {data: expectedData}});
+        await microtasksFinished();
+        assertEquals('', app.$.container.style.paddingTop);
+
+        expectedData = LineFocusMovement.STATIC;
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
+            {detail: {data: expectedData}});
+        await microtasksFinished();
+        assertEquals('', app.$.container.style.paddingTop);
+      });
 
   test('line focus change does nothing with flag disabled', async () => {
     chrome.readingMode.isLineFocusEnabled = false;

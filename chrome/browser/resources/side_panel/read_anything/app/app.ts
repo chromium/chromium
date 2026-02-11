@@ -674,28 +674,31 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.lineFocusMovement_ =
           this.lineFocusController_.getCurrentLineFocusMovement();
       this.setLineFocus_();
-      if (!this.lineFocusController_.isEnabled()) {
-        return;
-      }
-
-      const padding = Math.floor(this.$.containerParent.clientHeight / 2);
-      if (this.lineFocusController_.isStatic()) {
-        // Add padding so the top and bottom lines of the page can still be
-        // focused even though line focus stays in the middle.
-        this.styleUpdater_.setPaddingForLineFocus(padding);
-        this.$.containerScroller.scrollBy({top: padding, behavior: 'instant'});
-      } else {
-        // Reset the padding and maintain the current scroll position.
-        this.styleUpdater_.setPaddingForLineFocus(0);
-        this.$.containerScroller.scrollBy({top: -padding, behavior: 'instant'});
-      }
     }
   }
 
   private setLineFocus_() {
-    if (chrome.readingMode.isLineFocusEnabled) {
-      this.styleUpdater_.setLineFocusStyle(
-          this.lineFocusController_.getCurrentLineFocusType());
+    if (!chrome.readingMode.isLineFocusEnabled) {
+      return;
+    }
+    this.styleUpdater_.setLineFocusStyle(
+        this.lineFocusController_.getCurrentLineFocusType());
+
+    const oldPadding = this.styleUpdater_.getPaddingForLineFocus();
+    // Add padding so the top and bottom lines of the page can still be
+    // focused even though static line focus stays in the middle.
+    const shouldAddPadding = this.lineFocusController_.isEnabled() &&
+        this.lineFocusController_.isStatic();
+    const newPadding = shouldAddPadding ?
+        Math.floor(this.$.containerParent.clientHeight / 2) :
+        0;
+    if (oldPadding !== newPadding) {
+      this.styleUpdater_.setPaddingForLineFocus(newPadding);
+      const paddingDiff = newPadding - oldPadding;
+      // Maintain the same scroll position even after adding or removing padding
+      // by scrolling by the difference in padding.
+      this.$.containerScroller.scrollBy(
+          {top: paddingDiff, behavior: 'instant'});
     }
   }
 
