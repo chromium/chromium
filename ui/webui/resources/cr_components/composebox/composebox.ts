@@ -1143,6 +1143,11 @@ export class ComposeboxElement extends I18nMixinLit
   private closeComposebox_() {
     this.resetModes();
     this.searchboxHandler_.clearFiles();
+    if (this.inputState_) {
+      this.searchboxHandler_.setActiveToolMode(ToolMode.kUnspecified);
+      this.searchboxHandler_.setActiveModelMode(
+          this.inputState_?.allowedModels[0] || ModelMode.kUnspecified);
+    }
     this.fire('close-composebox', {composeboxText: this.input_});
 
     if (this.isCollapsible) {
