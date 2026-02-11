@@ -7,6 +7,7 @@
 
 #include "base/containers/lru_cache.h"
 #include "base/memory/raw_ref.h"
+#include "base/sequence_checker.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
@@ -66,7 +67,10 @@ class ContentAnnotatorService
   // case expected data from an observation does not arrive or the user
   // navigates to several URLs faster than data can be collected for the URL and
   // annotations processed.
-  base::LRUCache<GURL, ContentClassificationInput> join_entries_;
+  base::LRUCache<GURL, ContentClassificationInput> join_entries_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace accessibility_annotator

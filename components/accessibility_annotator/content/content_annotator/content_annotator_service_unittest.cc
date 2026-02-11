@@ -14,6 +14,7 @@
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
+#include "components/translate/core/common/language_detection_details.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace accessibility_annotator {
@@ -50,6 +51,8 @@ class ContentAnnotatorServiceTest : public testing::Test {
   ContentAnnotatorService service_;
 };
 
+// TODO(crbug.com/463734845): Remove/replace these tests with meaningful tests
+// once the service has more public functionality that can be tested.
 TEST_F(ContentAnnotatorServiceTest, OnPageContentAnnotatedSucceeds) {
   GURL url1("https://example.com/1");
   base::Time base_time = base::Time::Now();
@@ -59,6 +62,15 @@ TEST_F(ContentAnnotatorServiceTest, OnPageContentAnnotatedSucceeds) {
 
   ASSERT_NO_FATAL_FAILURE(service_.OnPageContentAnnotated(
       page_content_annotations::HistoryVisit(base_time, url1), result));
+}
+
+TEST_F(ContentAnnotatorServiceTest, OnLanguageDeterminedSucceeds) {
+  GURL url1("https://example.com/1");
+  translate::LanguageDetectionDetails details;
+  details.url = url1;
+  details.adopted_language = "en";
+
+  ASSERT_NO_FATAL_FAILURE(service_.OnLanguageDetermined(details));
 }
 
 }  // namespace accessibility_annotator

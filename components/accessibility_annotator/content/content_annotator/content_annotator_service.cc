@@ -28,6 +28,7 @@ ContentAnnotatorService::~ContentAnnotatorService() {
 void ContentAnnotatorService::OnPageContentAnnotated(
     const page_content_annotations::HistoryVisit& visit,
     const page_content_annotations::PageContentAnnotationsResult& result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(result.GetType() ==
         page_content_annotations::AnnotationType::kContentVisibility);
   CacheIterator it = GetOrCreateJoinEntry(visit.url);
@@ -39,7 +40,10 @@ void ContentAnnotatorService::OnPageContentAnnotated(
 
 void ContentAnnotatorService::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
-  // TODO(crbug.com/482057478): Implement logic to store the language.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CacheIterator it = GetOrCreateJoinEntry(details.url);
+  it->second.adopted_language = details.adopted_language;
+  MaybeAnnotate(it);
 }
 
 ContentAnnotatorService::CacheIterator
