@@ -6,12 +6,12 @@ syntax = 'proto3';
 
 option optimize_for = LITE_RUNTIME;
 option java_package = 'org.chromium.components.omnibox';
-option java_outer_classname = 'ModelModeProto';
+option java_outer_classname = 'AimModelsProto';
 
 package omnibox;
 
 // The AIM model mode that is applied to a query.
-// Next ID: 4
+// Next ID: 5
 enum ModelMode {
   // Unspecified model mode.
   MODEL_MODE_UNSPECIFIED = 0;
@@ -21,4 +21,6 @@ enum ModelMode {
   MODEL_MODE_GEMINI_PRO = 2;
   // Autoroute mode.
   MODEL_MODE_GEMINI_PRO_AUTOROUTE = 3;
+  // Gemini Pro model without generative UI.
+  MODEL_MODE_GEMINI_PRO_NO_GEN_UI = 4;
 }

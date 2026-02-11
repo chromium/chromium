@@ -133,9 +133,10 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="AutoModel"/>
   <int value="7" label="ThinkingModel"/>
   <int value="8" label="RegularModel"/>
+  <int value="9" label="ProNoGenUiModel"/>
 </enum>
 
-<!-- LINT.ThenChange(chrome/browser/ui/omnibox/omnibox_context_menu_controller.h:ContextType) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/omnibox/omnibox_context_menu_controller.h:ContextType) -->
 
 <enum name="DocumentProviderAllowedReason">
   <int value="0" label="Allowed"/>

@@ -62,6 +62,8 @@ enum ModelMode {
   kGeminiPro = 2,
   // Uses Gemini Pro Model with automatic routing capabilities.
   kGeminiProAutoroute = 3,
+  // Uses Gemini Pro Model without generative UI.
+  kGeminiProNoGenUi = 4,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchAimModel)
 
