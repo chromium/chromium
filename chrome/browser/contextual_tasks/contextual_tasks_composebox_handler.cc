@@ -798,6 +798,9 @@ void ContextualTasksComposeboxHandler::AddTabContext(
     int32_t tab_id,
     bool delay_upload,
     AddTabContextCallback callback) {
+  const tabs::TabHandle handle = tabs::TabHandle(tab_id);
+  tabs::TabInterface* const tab = handle.Get();
+
   // The delay_upload flag is used to indicate that the tab was auto-added
   // via the composebox. In the contextual-tasks case, added tabs should be
   // contextualized as late as possible so that the viewport and APC are
@@ -807,8 +810,6 @@ void ContextualTasksComposeboxHandler::AddTabContext(
   if (delay_upload) {
     // Because the superclass method is not called if delay_upload is true,
     // RecordTabAddedMetric() needs to be called here explicitly.
-    const tabs::TabHandle handle = tabs::TabHandle(tab_id);
-    tabs::TabInterface* const tab = handle.Get();
     if (tab) {
       RecordTabAddedMetric(tab, /*is_tab_suggestion_chip=*/true);
     }
@@ -818,6 +819,12 @@ void ContextualTasksComposeboxHandler::AddTabContext(
     delayed_tabs_[token] = tab_id;
     std::move(callback).Run(token);
     return;
+  }
+
+  // The tab was explicitly added by the user. Hence remove the URL from the
+  // blocklist.
+  if (tab) {
+    blocklisted_suggestions_.erase(tab->GetContents()->GetLastCommittedURL());
   }
 
   ContextualSearchboxHandler::AddTabContext(tab_id, delay_upload,
@@ -882,22 +889,21 @@ void ContextualTasksComposeboxHandler::OnVisualSelectionAdded(
 void ContextualTasksComposeboxHandler::DeleteContext(
     const base::UnguessableToken& file_token,
     bool from_automatic_chip) {
-  // Get file info before deletion.
-  std::optional<SessionID> associated_tab_id;
+  // Get the URL associated with the chip before deletion. If it's not an
+  // auto-suggest chip the tab info should be already added to the session
+  // handle. For auto-suggest chips, session handle isn't yet aware of it. So we
+  // will get the active tab's URL.
+  std::optional<GURL> deleted_tab_url;
   auto* contextual_session_handle = GetContextualSessionHandle();
   if (contextual_session_handle) {
     const contextual_search::FileInfo* file_info =
         contextual_session_handle->GetController()->GetFileInfo(file_token);
-    if (file_info && file_info->tab_session_id.has_value()) {
-      associated_tab_id = file_info->tab_session_id.value();
+    if (file_info) {
+      deleted_tab_url = file_info->tab_url;
     }
   }
 
   bool was_delayed = delayed_tabs_.erase(file_token);
-
-  if (from_automatic_chip) {
-    web_ui_interface_->DisableActiveTabContextSuggestion();
-  }
 
   // Clear the visual selection token if it matches the deleted token.
   if (visual_selection_token_ && *visual_selection_token_ == file_token) {
@@ -922,18 +928,53 @@ void ContextualTasksComposeboxHandler::DeleteContext(
 
   // Hide the underline for the tab if it was associated with the deleted
   // context.
-  if (associated_tab_id.has_value()) {
-    auto* browser_window_interface = webui::GetBrowserWindowInterface(
-        web_ui_interface_->GetWebUIWebContents());
-    auto* active_task_context_provider =
+  auto* browser_window_interface = webui::GetBrowserWindowInterface(
+      web_ui_interface_->GetWebUIWebContents());
+  auto* active_task_context_provider =
+      browser_window_interface
+          ? contextual_tasks::ActiveTaskContextProvider::From(
+                browser_window_interface)
+          : nullptr;
+  if (active_task_context_provider) {
+    active_task_context_provider->RefreshContext();
+  }
+
+  if (from_automatic_chip) {
+    // If it was an auto-suggestion and user has dismissed it, the URL should be
+    // blocklisted for this thread.
+    // TODO(shaktisahu): Pass the URL of the chip from the UI. This requires URL
+    // to be stored and passed back from Typescript. For now, we can assume that
+    // the URL of the auto chip dismissed is equal to the active tab's URL.
+    TabListInterface* tab_list =
         browser_window_interface
-            ? contextual_tasks::ActiveTaskContextProvider::From(
-                  browser_window_interface)
+            ? TabListInterface::From(browser_window_interface)
             : nullptr;
-    if (active_task_context_provider) {
-      active_task_context_provider->RefreshContext();
+    tabs::TabInterface* active_tab =
+        tab_list ? tab_list->GetActiveTab() : nullptr;
+    if (active_tab) {
+      deleted_tab_url = active_tab->GetContents()->GetLastCommittedURL();
     }
   }
+
+  if (deleted_tab_url) {
+    // Blocklist the URL so that it shouldn't show up in subsequent
+    // auto-suggestions.
+    blocklisted_suggestions_.insert(deleted_tab_url.value());
+  }
+}
+
+void ContextualTasksComposeboxHandler::UpdateSuggestedTabContext(
+    searchbox::mojom::TabInfoPtr candidate_tab_info) {
+  // Filter the suggested tab info based on blocklisted URLs and update the UI.
+  searchbox::mojom::TabInfoPtr filtered_suggestion;
+  if (candidate_tab_info &&
+      !blocklisted_suggestions_.contains(candidate_tab_info->url)) {
+    filtered_suggestion = std::move(candidate_tab_info);
+  }
+
+  has_suggested_tab_context_ = !filtered_suggestion.is_null();
+  SearchboxHandler::page_->UpdateAutoSuggestedTabContext(
+      std::move(filtered_suggestion));
 }
 
 void ContextualTasksComposeboxHandler::CloseLensOverlay(

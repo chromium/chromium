@@ -66,9 +66,6 @@ class ContextualTasksUIInterface : public TaskInfoDelegate {
   virtual void OnPageContextEligibilityChecked(
       bool is_page_context_eligible) = 0;
 
-  // Disables the active tab context suggestion on the compose box.
-  virtual void DisableActiveTabContextSuggestion() = 0;
-
   // Returns whether the active tab context suggestion is currently showing.
   virtual bool IsActiveTabContextSuggestionShowing() const = 0;
 

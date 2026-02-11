@@ -1059,10 +1059,6 @@ size_t ContextualTasksSidePanelCoordinator::GetNumberOfActiveTasks() const {
 
 std::optional<tabs::TabHandle>
 ContextualTasksSidePanelCoordinator::GetAutoSuggestedTabHandle() {
-  if (!ui_service_->auto_tab_context_suggestion_enabled()) {
-    return std::nullopt;
-  }
-
   auto* web_contents = web_view_->GetWebContents();
   auto* web_ui_interface = GetWebUiInterface(web_contents);
   if (!web_ui_interface ||

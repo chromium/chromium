@@ -259,12 +259,6 @@ void ComposeboxHandler::SubmitQuery(
                          std::move(additional_params));
 }
 
-void ComposeboxHandler::UpdateSuggestedTabContext(
-    searchbox::mojom::TabInfoPtr tab_info) {
-  has_suggested_tab_context_ = !tab_info.is_null();
-  SearchboxHandler::page_->UpdateAutoSuggestedTabContext(std::move(tab_info));
-}
-
 std::string ComposeboxHandler::AutocompleteIconToResourceName(
     const gfx::VectorIcon& icon) const {
   // TODO(crbug.com/476137316): Update vector icons returned by server.
@@ -277,4 +271,3 @@ std::string ComposeboxHandler::AutocompleteIconToResourceName(
 
   return SearchboxHandler::AutocompleteIconToResourceName(icon);
 }
-
