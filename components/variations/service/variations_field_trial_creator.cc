@@ -5,13 +5,9 @@
 #include "components/variations/service/variations_field_trial_creator.h"
 
 #include <stddef.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #include <cstdint>
 #include <memory>
-#include <set>
 #include <utility>
 
 #include "base/base64.h"
@@ -21,10 +17,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
-#include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
@@ -57,7 +51,6 @@
 #include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
-#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace variations {
@@ -194,38 +187,8 @@ Study::Channel ConvertProductChannelToStudyChannel(
   NOTREACHED();
 }
 
-void MaybeActivateMetricsNoopTrial() {
-  if (base::FieldTrial* trial =
-          base::FieldTrialList::Find("MetricsNoopRegressionAutoAdvance")) {
-    // The original plan was to randomly activate the field trial half the time,
-    // but the rand() function was not seeded resulting in none of the Enabled
-    // group was activated. Nevertheles, this is an interesting edge case for
-    // us to test so keep this around for now. The replacement is
-    // MetricsNoopRegressionAutoAdvance2 below.
-    if (trial->GetGroupNameWithoutActivation() == "Enabled") {
-      if (rand() % 2 == 0) {
-        trial->Activate();
-      }
-    } else {
-      trial->Activate();
-    }
-  }
-}
-
-void MaybeActivateMetricsNoopTrial2() {
-  if (base::FieldTrial* trial =
-          base::FieldTrialList::Find("MetricsNoopRegressionAutoAdvance2")) {
-    // If the user is in the Enabled group, we want to randomly activate the
-    // field trial half the time.
-    if (trial->GetGroupNameWithoutActivation() == "Enabled") {
-      if (base::RandBool()) {
-        trial->Activate();
-      }
-    } else {
-      trial->Activate();
-    }
-  }
-}
+// No-op feature used to test sticky activation functionality.
+BASE_FEATURE(kVariationsStickyNoopTest, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -386,9 +349,8 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
     base::Process::TerminateCurrentProcessImmediately(0x7E57C0D3);
   }
 
-  // TODO(crbug.com/458408055): Remove these once the experiments are over.
-  MaybeActivateMetricsNoopTrial();
-  MaybeActivateMetricsNoopTrial2();
+  // TODO(crbug.com/467929965): Remove this once the experiment is over.
+  base::FeatureList::IsEnabled(kVariationsStickyNoopTest);
 
   // This must be called after |local_state_| is initialized.
   platform_field_trials->OnVariationsSetupComplete();
