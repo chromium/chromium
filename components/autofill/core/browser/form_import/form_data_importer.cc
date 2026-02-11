@@ -1058,7 +1058,7 @@ std::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
 }
 
 std::optional<Iban> FormDataImporter::ExtractIban(const FormStructure& form) {
-  Iban candidate_iban = ExtractIbanFromForm(form);
+  Iban candidate_iban = GetPaymentsFormDataImporter().ExtractIbanFromForm(form);
   if (candidate_iban.value().empty()) {
     return std::nullopt;
   }
@@ -1181,23 +1181,6 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
   extract_data_and_remove_field_if(fields, &AutofillField::is_autofilled);
   extract_data_and_remove_field_if(fields, [](const auto&) { return true; });
   return result;
-}
-
-Iban FormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
-  // Creates an IBAN candidate with `kUnknown` record type as it is currently
-  // unknown if this IBAN already exists locally or on the server.
-  Iban candidate_iban;
-  for (const auto& field : form) {
-    const std::u16string& value = field->value_for_import();
-    if (!field->IsFieldFillable() || value.empty()) {
-      continue;
-    }
-    if (field->Type().GetTypes().contains(IBAN_VALUE) && Iban::IsValid(value)) {
-      candidate_iban.set_value(value);
-      break;
-    }
-  }
-  return candidate_iban;
 }
 
 base::flat_set<std::string>

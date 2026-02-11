@@ -11,6 +11,10 @@
 namespace autofill {
 
 class AutofillClient;
+class FormDataImporter;
+class FormDataImporterTestApi;
+class FormStructure;
+class Iban;
 
 namespace payments {
 
@@ -62,6 +66,16 @@ class PaymentsFormDataImporter {
 
  private:
   friend class PaymentsFormDataImporterTestApi;
+  // TODO(crbug.com/481379161): Remove `FormDataImporter` and
+  //    `FormDataImporterTestApi` as friend classes once the FDI->PaymentsFDI
+  //    migration is complete. This is very much not ideal and temporary, but
+  //    the alternative is having most functions be public until the last
+  //    second, which probably carries slightly higher risk.
+  friend class autofill::FormDataImporter;
+  friend class autofill::FormDataImporterTestApi;
+
+  // Helper function which extracts the IBAN from the form structure.
+  Iban ExtractIbanFromForm(const FormStructure& form);
 
   const raw_ref<AutofillClient> client_;
 

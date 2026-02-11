@@ -271,9 +271,6 @@ class FormDataImporter : public AddressDataManager::Observer,
       bool allow_prompt,
       ukm::SourceId ukm_source_id);
 
-  // Helper function which extracts the IBAN from the form structure.
-  Iban ExtractIbanFromForm(const FormStructure& form);
-
   // Extracts the GUIDs of profiles used to autofill `submitted_form`, returning
   // an empty set if any field was manually edited.
   base::flat_set<std::string> ExtractGUIDsOfProfilesWithoutManualEdits(
