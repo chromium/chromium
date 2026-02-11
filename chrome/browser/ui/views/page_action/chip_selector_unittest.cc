@@ -10,10 +10,14 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/action_id.h"
+
+const char kActiveChipsHistogram[] =
+    "PageActionController.ActiveSuggestionChips";
 
 namespace page_actions {
 namespace {
@@ -48,20 +52,27 @@ class DefaultChipSelectorTest : public testing::Test {
 };
 
 TEST_F(DefaultChipSelectorTest, ShowSingleChip) {
+  base::HistogramTester histogram_tester;
   selector->RequestChipShow(1, SuggestionChipConfig{});
   EXPECT_THAT(calls, ElementsAre(Pair("show", 1)));
+  EXPECT_EQ(histogram_tester.GetBucketCount(kActiveChipsHistogram, 1), 1);
 }
 
 TEST_F(DefaultChipSelectorTest, ShowChipTwice) {
+  base::HistogramTester histogram_tester;
   selector->RequestChipShow(2, SuggestionChipConfig{});
   selector->RequestChipShow(2, SuggestionChipConfig{});
   EXPECT_THAT(calls, ElementsAre(Pair("show", 2), Pair("show", 2)));
+  EXPECT_EQ(histogram_tester.GetBucketCount(kActiveChipsHistogram, 1), 1);
 }
 
 TEST_F(DefaultChipSelectorTest, ShowTwoChips) {
+  base::HistogramTester histogram_tester;
   selector->RequestChipShow(3, SuggestionChipConfig{});
   selector->RequestChipShow(4, SuggestionChipConfig{});
   EXPECT_THAT(calls, ElementsAre(Pair("show", 3), Pair("show", 4)));
+  EXPECT_EQ(histogram_tester.GetBucketCount(kActiveChipsHistogram, 1), 1);
+  EXPECT_EQ(histogram_tester.GetBucketCount(kActiveChipsHistogram, 2), 1);
 }
 
 TEST_F(DefaultChipSelectorTest, HideUnshownChip) {
@@ -73,6 +84,15 @@ TEST_F(DefaultChipSelectorTest, HideShownChip) {
   selector->RequestChipShow(11, SuggestionChipConfig{});
   selector->RequestChipHide(11);
   EXPECT_THAT(calls, ElementsAre(Pair("show", 11), Pair("hide", 11)));
+}
+
+TEST_F(DefaultChipSelectorTest, HistogramShowHideShow) {
+  base::HistogramTester histogram_tester;
+  selector->RequestChipShow(20, SuggestionChipConfig{});
+  selector->RequestChipHide(20);
+  selector->RequestChipShow(20, SuggestionChipConfig{});
+  EXPECT_EQ(histogram_tester.GetBucketCount(kActiveChipsHistogram, 1), 2);
+  EXPECT_EQ(histogram_tester.GetBucketCount(kActiveChipsHistogram, 2), 0);
 }
 
 }  // namespace

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "ui/actions/action_id.h"
 
@@ -25,9 +26,15 @@ DefaultChipSelector::~DefaultChipSelector() = default;
 
 void DefaultChipSelector::RequestChipShow(actions::ActionId page_action_id,
                                           const SuggestionChipConfig& config) {
+  if (!active_chips_.contains(page_action_id)) {
+    active_chips_.insert(page_action_id);
+    base::UmaHistogramExactLinear("PageActionController.ActiveSuggestionChips",
+                                  active_chips_.size(), 25);
+  }
   show_chip_callback_.Run(page_action_id, config);
 }
 void DefaultChipSelector::RequestChipHide(actions::ActionId page_action_id) {
+  active_chips_.erase(page_action_id);
   hide_chip_callback_.Run(page_action_id);
 }
 }  // namespace internal

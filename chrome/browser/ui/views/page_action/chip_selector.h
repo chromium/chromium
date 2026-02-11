@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_CHIP_SELECTOR_H_
 
 #include <memory>
+#include <set>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -55,6 +56,7 @@ class DefaultChipSelector : public ChipSelector {
                                      const SuggestionChipConfig&)>
       show_chip_callback_;
   const base::RepeatingCallback<void(actions::ActionId)> hide_chip_callback_;
+  std::set<actions::ActionId> active_chips_;
 };
 }  // namespace internal
 
