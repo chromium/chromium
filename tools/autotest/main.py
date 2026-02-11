@@ -248,6 +248,10 @@ def main() -> int:
                       '--no_single_variant',
                       action='store_true',
                       help='Do not add --single-variant for Android tests.')
+  parser.add_argument('--no-build',
+                      '--no-build',
+                      action='store_true',
+                      help='Do not build before running tests.')
   parser.add_argument('files',
                       metavar='FILE_NAME',
                       nargs='*',
@@ -327,28 +331,28 @@ def main() -> int:
 
   assert targets
 
-  build_ok: bool = BuildTestTargets(out_dir, targets, args.dry_run, args.quiet,
-                                    False)
+  if not args.no_build:
+    build_ok: bool = BuildTestTargets(out_dir, targets, args.dry_run,
+                                      args.quiet, False)
 
-  # If we used the target cache, it's possible we chose the wrong target because
-  # a gn file was changed. The build step above will check for gn modifications
-  # and update build.ninja. Use this opportunity the verify the cache is still
-  # valid.
-  if used_cache and not target_cache.IsStillValid():
-    target_cache = target_finder.TargetCache(out_dir)
-    new_targets, _ = target_finder.FindTestTargets(target_cache, out_dir,
-                                                   filenames, args)
-    if targets != new_targets:
-      # Note that this can happen, for example, if you rename a test target.
-      print('gn config was changed, trying to build again', file=sys.stderr)
-      targets = new_targets
-      build_ok: bool = BuildTestTargets(out_dir, targets, args.dry_run,
-                                        args.quiet, True)
+    # If we used the target cache, it's possible we chose the wrong target
+    # because a gn file was changed. The build step above will check for gn
+    # modifications and update build.ninja. Use this opportunity the verify the
+    # cache is still valid.
+    if used_cache and not target_cache.IsStillValid():
+      target_cache = target_finder.TargetCache(out_dir)
+      new_targets, _ = target_finder.FindTestTargets(target_cache, out_dir,
+                                                     filenames, args)
+      if targets != new_targets:
+        # Note that this can happen, for example, if you rename a test target.
+        print('gn config was changed, trying to build again', file=sys.stderr)
+        targets = new_targets
+        build_ok: bool = BuildTestTargets(out_dir, targets, args.dry_run,
+                                          args.quiet, True)
+      telemetry.RecordMainAttributes(targets, gtest_filter, used_cache, out_dir)
 
-  telemetry.RecordMainAttributes(targets, gtest_filter, used_cache, out_dir)
-
-  if not build_ok:
-    return 1
+      if not build_ok:
+        return 1
 
   return RunTestTargets(out_dir, targets, gtest_filter, pref_mapping_filter,
                         _extras, args.dry_run, args.no_try_android_wrappers,
