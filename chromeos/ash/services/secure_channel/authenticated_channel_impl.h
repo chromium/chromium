@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/services/secure_channel/authenticated_channel.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
@@ -86,6 +87,9 @@ class AuthenticatedChannelImpl : public AuthenticatedChannel,
       connection_creation_details_;
   std::unique_ptr<SecureChannel> secure_channel_;
   std::unordered_map<int, base::OnceClosure> sequence_number_to_callback_map_;
+
+  base::ScopedObservation<SecureChannel, SecureChannel::Observer>
+      secure_channel_observation_{this};
 };
 
 }  // namespace ash::secure_channel

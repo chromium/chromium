@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/secure_channel/ble_advertiser.h"
@@ -221,6 +222,9 @@ class BleConnectionManagerImpl : public BleConnectionManager,
   base::flat_map<std::string, std::unique_ptr<ConnectionAttemptTimestamps>>
       remote_device_id_to_timestamps_map_;
   std::optional<std::string> notifying_remote_device_id_;
+
+  base::ScopedObservation<BleScanner, BleScanner::Observer>
+      ble_scanner_observation_{this};
 };
 
 }  // namespace ash::secure_channel

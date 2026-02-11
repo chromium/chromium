@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/services/secure_channel/authenticated_channel.h"
 #include "chromeos/ash/services/secure_channel/connection_details.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
@@ -102,6 +103,9 @@ class MultiplexedChannelImpl : public MultiplexedChannel,
                      std::unique_ptr<SingleClientProxy>,
                      base::UnguessableTokenHash>
       id_to_proxy_map_;
+
+  base::ScopedObservation<AuthenticatedChannel, AuthenticatedChannel::Observer>
+      authenticated_channel_observation_{this};
 };
 
 }  // namespace ash::secure_channel

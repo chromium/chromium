@@ -71,11 +71,7 @@ ConnectionManagerImpl::ConnectionManagerImpl(
   DCHECK(metrics_recorder_);
 }
 
-ConnectionManagerImpl::~ConnectionManagerImpl() {
-  metrics_recorder_.reset();
-  if (channel_)
-    channel_->RemoveObserver(this);
-}
+ConnectionManagerImpl::~ConnectionManagerImpl() = default;
 
 ConnectionManager::Status ConnectionManagerImpl::GetStatus() const {
   // Connection attempt was successful and with an active channel between
@@ -193,7 +189,7 @@ void ConnectionManagerImpl::OnConnection(
                   << "connection between local and remote device.";
   timer_->Stop();
   channel_ = std::move(channel);
-  channel_->AddObserver(this);
+  client_channel_observation_.Observe(channel_.get());
   if (last_status_ == Status::kConnecting) {
     metrics_recorder_->RecordConnectionSuccess(clock_->Now() -
                                                status_change_timestamp_);
@@ -238,8 +234,7 @@ void ConnectionManagerImpl::TearDownConnection() {
   if (secure_channel_structured_metrics_logger_) {
     secure_channel_structured_metrics_logger_->UnbindReceiver();
   }
-  if (channel_)
-    channel_->RemoveObserver(this);
+  client_channel_observation_.Reset();
   channel_.reset();
   if (last_status_ == Status::kConnected) {
     metrics_recorder_->RecordConnectionDuration(clock_->Now() -

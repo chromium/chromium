@@ -47,12 +47,10 @@ NearbyConnectionManagerImpl::NearbyConnectionManagerImpl(
     SecureChannelDisconnector* secure_channel_disconnector)
     : ble_scanner_(ble_scanner),
       secure_channel_disconnector_(secure_channel_disconnector) {
-  ble_scanner_->AddObserver(this);
+  ble_scanner_observation_.Observe(ble_scanner_);
 }
 
-NearbyConnectionManagerImpl::~NearbyConnectionManagerImpl() {
-  ble_scanner_->RemoveObserver(this);
-}
+NearbyConnectionManagerImpl::~NearbyConnectionManagerImpl() = default;
 
 void NearbyConnectionManagerImpl::PerformAttemptNearbyInitiatorConnection(
     const DeviceIdPair& device_id_pair) {

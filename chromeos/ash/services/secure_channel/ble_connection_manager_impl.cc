@@ -219,12 +219,10 @@ BleConnectionManagerImpl::BleConnectionManagerImpl(
                                                          bluetooth_helper,
                                                          ble_synchronizer,
                                                          timer_factory)) {
-  ble_scanner_->AddObserver(this);
+  ble_scanner_observation_.Observe(ble_scanner_);
 }
 
-BleConnectionManagerImpl::~BleConnectionManagerImpl() {
-  ble_scanner_->RemoveObserver(this);
-}
+BleConnectionManagerImpl::~BleConnectionManagerImpl() = default;
 
 void BleConnectionManagerImpl::PerformAttemptBleInitiatorConnection(
     const DeviceIdPair& device_id_pair,

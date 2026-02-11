@@ -60,14 +60,10 @@ BluetoothLowEnergyCharacteristicsFinder::
     : remote_device_(remote_device) {}
 
 BluetoothLowEnergyCharacteristicsFinder::
-    ~BluetoothLowEnergyCharacteristicsFinder() {
-  if (adapter_) {
-    adapter_->RemoveObserver(this);
-  }
-}
+    ~BluetoothLowEnergyCharacteristicsFinder() = default;
 
 void BluetoothLowEnergyCharacteristicsFinder::Start() {
-  adapter_->AddObserver(this);
+  adapter_observation_.Observe(adapter_.get());
   if (bluetooth_device_->IsGattServicesDiscoveryComplete())
     ScanRemoteCharacteristics();
 }

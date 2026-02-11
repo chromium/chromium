@@ -64,12 +64,10 @@ MultiplexedChannelImpl::MultiplexedChannelImpl(
     ConnectionDetails connection_details)
     : MultiplexedChannel(delegate, connection_details),
       authenticated_channel_(std::move(authenticated_channel)) {
-  authenticated_channel_->AddObserver(this);
+  authenticated_channel_observation_.Observe(authenticated_channel_.get());
 }
 
-MultiplexedChannelImpl::~MultiplexedChannelImpl() {
-  authenticated_channel_->RemoveObserver(this);
-}
+MultiplexedChannelImpl::~MultiplexedChannelImpl() = default;
 
 bool MultiplexedChannelImpl::IsDisconnecting() const {
   return is_disconnecting_;

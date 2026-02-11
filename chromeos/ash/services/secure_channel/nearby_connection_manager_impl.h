@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/services/secure_channel/ble_scanner.h"
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/nearby_connection_manager.h"
@@ -130,6 +131,9 @@ class NearbyConnectionManagerImpl : public NearbyConnectionManager,
       remote_device_id_to_secure_channel_map_;
   std::optional<std::string> notifying_remote_device_id_;
   base::flat_set<DeviceIdPair> discovered_device_id_pair_;
+
+  base::ScopedObservation<BleScanner, BleScanner::Observer>
+      ble_scanner_observation_{this};
 };
 
 }  // namespace ash::secure_channel

@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/error_tolerant_ble_advertisement.h"
 #include "chromeos/ash/services/secure_channel/foreground_eid_generator.h"
@@ -96,6 +97,10 @@ class ErrorTolerantBleAdvertisementImpl
 
   bool stopped_ = false;
   base::OnceClosure stop_callback_;
+
+  base::ScopedObservation<device::BluetoothAdvertisement,
+                          device::BluetoothAdvertisement::Observer>
+      advertisement_observation_{this};
 
   base::WeakPtrFactory<ErrorTolerantBleAdvertisementImpl> weak_ptr_factory_{
       this};

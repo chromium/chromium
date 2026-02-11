@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt.h"
@@ -111,6 +112,8 @@ class ConnectionManagerImpl : public ConnectionManager,
   Status last_status_;
   base::Time status_change_timestamp_;
   raw_ptr<base::Clock, DanglingUntriaged> clock_;
+  base::ScopedObservation<ClientChannel, ClientChannel::Observer>
+      client_channel_observation_{this};
   base::WeakPtrFactory<ConnectionManagerImpl> weak_ptr_factory_{this};
 };
 

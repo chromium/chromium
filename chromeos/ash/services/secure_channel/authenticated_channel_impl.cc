@@ -51,12 +51,10 @@ AuthenticatedChannelImpl::AuthenticatedChannelImpl(
   DCHECK(secure_channel_);
   DCHECK_EQ(secure_channel_->status(), SecureChannel::Status::AUTHENTICATED);
 
-  secure_channel_->AddObserver(this);
+  secure_channel_observation_.Observe(secure_channel_.get());
 }
 
-AuthenticatedChannelImpl::~AuthenticatedChannelImpl() {
-  secure_channel_->RemoveObserver(this);
-}
+AuthenticatedChannelImpl::~AuthenticatedChannelImpl() = default;
 
 void AuthenticatedChannelImpl::GetConnectionMetadata(
     base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) {
