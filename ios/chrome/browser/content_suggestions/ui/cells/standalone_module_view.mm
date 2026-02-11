@@ -120,9 +120,7 @@ const CGFloat kSeparatorHeight = 0.5;
   contentStack.alignment = UIStackViewAlignmentTop;
   [self addSubview:contentStack];
   AddSameConstraints(contentStack, self);
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitPreferredContentSizeCategory.class ]);
-  [self registerForTraitChanges:traits
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                      withAction:@selector(hideDescriptionOnTraitChange)];
   if (IsNTPBackgroundCustomizationEnabled()) {
     [self registerForTraitChanges:@[ NewTabPageTrait.class ]

@@ -202,9 +202,7 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
   _priceNotificationsChip.isAccessibilityElement = YES;
   _titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
   // For larger font size, hide price chip.
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitPreferredContentSizeCategory.class ]);
-  [self registerForTraitChanges:traits
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                      withAction:@selector(hideDomainOnTraitChange)];
 }
 

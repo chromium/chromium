@@ -90,9 +90,7 @@ const CGFloat kCornerRadius = 8.0;
     _pointerInteraction = [[UIPointerInteraction alloc] initWithDelegate:self];
     [self addInteraction:self.pointerInteraction];
 
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    [self registerForTraitChanges:traits
+    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                        withAction:@selector(updateTitleLabelOnTraitChange)];
   }
   return self;

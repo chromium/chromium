@@ -159,9 +159,7 @@ NSAttributedString* Strikethrough(NSString* text) {
   self.isAccessibilityElement = YES;
   self.accessibilityLabel =
       [NSString stringWithFormat:@"%@, %@", title.text, description.text];
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitPreferredContentSizeCategory.class ]);
-  [self registerForTraitChanges:traits
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                      withAction:@selector(updateTryButtonWidth)];
 }
 

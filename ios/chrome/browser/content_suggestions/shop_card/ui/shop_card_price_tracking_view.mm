@@ -169,9 +169,7 @@ const CGFloat kVerticalStackSpacing = 6.0f;
   _trackPriceButton.accessibilityLabel = trackPriceButtonAccessibilityLabel;
   _titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
   // For larger font size, domain
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitPreferredContentSizeCategory.class ]);
-  [self registerForTraitChanges:traits
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                      withAction:@selector(hideDomainOnTraitChange)];
   return self;
 }

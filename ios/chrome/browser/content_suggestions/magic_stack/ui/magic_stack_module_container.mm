@@ -199,9 +199,7 @@ const CGFloat kSeparatorHeight = 0.5;
     [NSLayoutConstraint
         activateConstraints:@[ _contentStackViewBottomMarginAnchor ]];
 
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    [self registerForTraitChanges:traits
+    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                        withAction:@selector(updateCardSizing)];
     if (IsNTPBackgroundCustomizationEnabled()) {
       [self registerForTraitChanges:@[ NewTabPageTrait.class ]

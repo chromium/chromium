@@ -65,9 +65,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 
   self.view = _collectionView;
 
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitPreferredContentSizeCategory.class ]);
-  [self registerForTraitChanges:traits
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                      withAction:@selector(updateCardHeightOnTraitChange)];
 }
 

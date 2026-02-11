@@ -150,10 +150,8 @@ const CGFloat kCountBorderWidth = 24;
 // Registers a list of UITraits to observe and invokes the
 // `updateTitleLabelFontOnTraitChange` function whenever one of the observed
 // trait's values change.
-- (void)registerViewForTraitChanges API_AVAILABLE(ios(17.0)) {
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitPreferredContentSizeCategory.class ]);
-  [self registerForTraitChanges:traits
+- (void)registerViewForTraitChanges {
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                      withAction:@selector(updateTitleLabelFontOnTraitChange)];
   if (IsNTPBackgroundCustomizationEnabled()) {
     [self registerForTraitChanges:
