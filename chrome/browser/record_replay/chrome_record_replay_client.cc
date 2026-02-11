@@ -5,11 +5,14 @@
 #include "chrome/browser/record_replay/chrome_record_replay_client.h"
 
 #include "base/check.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/record_replay/record_replay_driver.h"
 #include "chrome/browser/record_replay/record_replay_driver_factory.h"
 #include "chrome/browser/record_replay/recording_data_manager.h"
 #include "chrome/browser/record_replay/recording_data_manager_factory.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/common/record_replay/record_replay.mojom.h"
 #include "chrome/common/record_replay/record_replay_features.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -92,6 +95,11 @@ autofill::AutofillClient* ChromeRecordReplayClient::GetAutofillClient() {
 }
 
 void ChromeRecordReplayClient::ReportToUser(std::string_view message) {
-  // TODO(b/476101114): Implement.
-  LOG(ERROR) << message;
+  ToastController* const toast_controller =
+      ToastController::MaybeGetForWebContents(tab().GetContents());
+  if (toast_controller) {
+    ToastParams params(ToastId::kRecordReplay);
+    params.body_string_override = base::UTF8ToUTF16(message);
+    toast_controller->MaybeShowToast(std::move(params));
+  }
 }

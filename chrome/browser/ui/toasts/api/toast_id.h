@@ -49,7 +49,8 @@ enum class ToastId {
   kSavedAutofillAiEntityToWallet = 26,
   kTranslate = 27,
   kAutofillAiWalletErrorMessage = 28,
-  kMaxValue = kAutofillAiWalletErrorMessage,
+  kRecordReplay = 29,
+  kMaxValue = kRecordReplay,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 

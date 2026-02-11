@@ -350,6 +350,9 @@ void ToastService::RegisterToasts(
       ToastSpecification::Builder(kDeleteIcon, IDS_SKILL_DELETED_TOAST_BODY)
           .Build());
 
+  toast_registry_->RegisterToast(
+      ToastId::kRecordReplay, ToastSpecification::Builder(kInfoIcon).Build());
+
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiWalletPrivatePasses)) {
     toast_registry_->RegisterToast(

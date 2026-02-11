@@ -56,6 +56,8 @@ static_library("impl") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/common/record_replay",
     "//chrome/common/record_replay:mojom",
     "//components/autofill/content/browser",
