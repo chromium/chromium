@@ -652,6 +652,15 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
                           scoped_refptr<ContentVerifier> content_verifier,
                           const ResourceInfo& resource_info) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    // If the BrowserContext is shutting down, keyed services (like
+    // ExtensionRegistry)  may already be destroyed. Abort the request to avoid
+    // crashing.
+    if (browser_context_->ShutdownStarted()) {
+      CompleteRequestAndDeleteThis(net::ERR_FAILED);
+      return;
+    }
+
     const auto& read_file_path = resource_info.file_path;
     const auto& last_modified_time = resource_info.last_modified_time;
     request_.url = net::FilePathToFileURL(read_file_path);
