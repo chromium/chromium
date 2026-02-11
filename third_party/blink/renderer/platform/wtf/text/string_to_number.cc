@@ -202,13 +202,6 @@ int CharactersToInt(base::span<const UChar> data,
   return ToIntegralType<int, UChar, 10>(data, options, ok);
 }
 
-int CharactersToInt(const StringView& string,
-                    NumberParsingOptions options,
-                    bool* ok) {
-  return VisitCharacters(
-      string, [&](auto chars) { return CharactersToInt(chars, options, ok); });
-}
-
 unsigned CharactersToUInt(base::span<const LChar> data,
                           NumberParsingOptions options,
                           bool* ok) {
@@ -219,13 +212,6 @@ unsigned CharactersToUInt(base::span<const UChar> data,
                           NumberParsingOptions options,
                           bool* ok) {
   return ToIntegralType<unsigned, UChar, 10>(data, options, ok);
-}
-
-unsigned CharactersToUInt(const StringView& string,
-                          NumberParsingOptions options,
-                          bool* ok) {
-  return VisitCharacters(
-      string, [&](auto chars) { return CharactersToUInt(chars, options, ok); });
 }
 
 int64_t CharactersToInt64(base::span<const LChar> data,
@@ -326,6 +312,22 @@ float CharactersToFloat(base::span<const UChar> data, size_t& parsed_length) {
       ToDoubleType<UChar, kAllowTrailingJunk>(data, nullptr, parsed_length));
 }
 
+std::optional<int32_t> StringToInt(const StringView& input,
+                                   NumberParsingOptions options) {
+  bool ok = false;
+  int32_t value = VisitCharacters(
+      input, [&](auto chars) { return CharactersToInt(chars, options, &ok); });
+  return ok ? std::optional<int32_t>(value) : std::nullopt;
+}
+
+std::optional<uint32_t> StringToUint(const StringView& input,
+                                     NumberParsingOptions options) {
+  bool ok = false;
+  uint32_t value = VisitCharacters(
+      input, [&](auto chars) { return CharactersToUInt(chars, options, &ok); });
+  return ok ? std::optional<uint32_t>(value) : std::nullopt;
+}
+
 std::optional<int64_t> StringToInt64(const StringView& input,
                                      NumberParsingOptions options) {
   bool ok = false;
@@ -381,20 +383,11 @@ std::optional<uint32_t> StringToUintStrict(const StringView& input) {
 }
 
 std::optional<int32_t> StringToInt(const StringView& input) {
-  bool ok = false;
-  NumberParsingOptions option = NumberParsingOptions::Loose();
-  int32_t value = input.Is8Bit() ? CharactersToInt(input.Span8(), option, &ok)
-                                 : CharactersToInt(input.Span16(), option, &ok);
-  return ok ? std::optional<int32_t>(value) : std::nullopt;
+  return StringToInt(input, NumberParsingOptions::Loose());
 }
 
 std::optional<uint32_t> StringToUint(const StringView& input) {
-  bool ok = false;
-  NumberParsingOptions option = NumberParsingOptions::Loose();
-  uint32_t value = input.Is8Bit()
-                       ? CharactersToUInt(input.Span8(), option, &ok)
-                       : CharactersToUInt(input.Span16(), option, &ok);
-  return ok ? std::optional<uint32_t>(value) : std::nullopt;
+  return StringToUint(input, NumberParsingOptions::Loose());
 }
 
 std::optional<double> StringToDouble(const StringView& input) {

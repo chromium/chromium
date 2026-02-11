@@ -30,9 +30,6 @@ WTF_EXPORT int CharactersToInt(base::span<const LChar>,
 WTF_EXPORT int CharactersToInt(base::span<const UChar>,
                                NumberParsingOptions,
                                bool* ok);
-WTF_EXPORT int CharactersToInt(const StringView&,
-                               NumberParsingOptions,
-                               bool* ok);
 
 // string -> unsigned.
 WTF_EXPORT unsigned HexCharactersToUInt(base::span<const LChar>,
@@ -51,9 +48,6 @@ WTF_EXPORT unsigned CharactersToUInt(base::span<const LChar>,
                                      NumberParsingOptions,
                                      bool* ok);
 WTF_EXPORT unsigned CharactersToUInt(base::span<const UChar>,
-                                     NumberParsingOptions,
-                                     bool* ok);
-WTF_EXPORT unsigned CharactersToUInt(const StringView&,
                                      NumberParsingOptions,
                                      bool* ok);
 
@@ -145,6 +139,14 @@ WTF_EXPORT float CharactersToFloat(base::span<const LChar>,
 WTF_EXPORT float CharactersToFloat(base::span<const UChar>,
                                    size_t& parsed_length);
 
+// Parse `input` as a signed decimal number.
+// If the input string is not acceptable, std::nullopt is returned.
+WTF_EXPORT std::optional<int32_t> StringToInt(const StringView& input,
+                                              NumberParsingOptions);
+// Parse `input` as an unsigned decimal number.
+// If the input string is not acceptable, std::nullopt is returned.
+WTF_EXPORT std::optional<uint32_t> StringToUint(const StringView& input,
+                                                NumberParsingOptions);
 // Parse `input` as a signed decimal number.
 // If the input string is not acceptable, std::nullopt is returned.
 WTF_EXPORT std::optional<int64_t> StringToInt64(const StringView& input,

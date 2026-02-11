@@ -117,11 +117,11 @@ bool IsStringIncrementedByOne(const String& source, const String& target) {
   }
 
   int source_number =
-      CharactersToInt(StringView(source, left, source_right - left),
-                      NumberParsingOptions(), /*ok=*/nullptr);
+      StringToInt(StringView(source, left, source_right - left), {})
+          .value_or(0);
   int target_number =
-      CharactersToInt(StringView(target, left, target_right - left),
-                      NumberParsingOptions(), /*ok=*/nullptr);
+      StringToInt(StringView(target, left, target_right - left), {})
+          .value_or(0);
 
   // The second number should increment by one and the rest of the strings
   // should be the same.

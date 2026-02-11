@@ -161,8 +161,8 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
         value_string == "true") {
       value = 1;
     } else {
-      value = CharactersToInt(value_string, NumberParsingOptions::Loose(),
-                              /*ok=*/nullptr);
+      value =
+          StringToInt(value_string, NumberParsingOptions::Loose()).value_or(0);
     }
 
     if (!ui_features_were_disabled && key_string != "noopener" &&
