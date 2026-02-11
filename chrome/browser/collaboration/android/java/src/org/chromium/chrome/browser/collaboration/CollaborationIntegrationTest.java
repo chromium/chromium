@@ -163,7 +163,6 @@ public class CollaborationIntegrationTest {
     private DataSharingSDKDelegateTestImpl mDataSharingSDKDelegate;
     private CountingShareObserver mCountingShareObserver;
     private CountingSyncObserver mCountingSyncObserver;
-
     private Profile mProfile;
     private String mUrl;
     private CollaborationTestUtils mCollaborationTestUtils;
@@ -185,6 +184,8 @@ public class CollaborationIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile = mActivityTestRule.getProfile(/* incognito= */ false);
+                    mCollaborationTestUtils =
+                            new CollaborationTestUtils(mActivityTestRule, mProfile);
                     FirstRunStatus.setFirstRunFlowComplete(true);
                     DataSharingServiceFactory.getForProfile(mProfile)
                             .addObserver(mCountingShareObserver);
@@ -195,8 +196,6 @@ public class CollaborationIntegrationTest {
                 DataSharingServiceImpl.getDataSharingUrlForTesting(
                                 new GroupToken(TEST_COLLABORATION_ID, "access_token"))
                         .getSpec();
-
-        mCollaborationTestUtils = new CollaborationTestUtils(mActivityTestRule, mProfile);
     }
 
     /* Sets up preview data for the group ID. */

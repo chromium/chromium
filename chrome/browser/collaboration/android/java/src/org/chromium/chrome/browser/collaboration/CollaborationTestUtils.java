@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.collaboration;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
 
-import static org.mockito.Mockito.doReturn;
-
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.addBlankTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
@@ -20,11 +18,11 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 
 import org.hamcrest.Matcher;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -54,16 +52,13 @@ public class CollaborationTestUtils {
 
     private final SyncTestRule mSyncTestRule;
     private final Profile mProfile;
-
-    // Mock ShareDelegate and its supplier for controlling share sheet behavior.
-    @Mock private final MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
-    @Mock private final ShareDelegate mShareDelegate;
+    private final SettableMonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final ShareDelegate mShareDelegate = Mockito.mock(ShareDelegate.class);
 
     public CollaborationTestUtils(SyncTestRule syncTestRule, Profile profile) {
         mSyncTestRule = syncTestRule;
         mProfile = profile;
-        mShareDelegateSupplier = Mockito.mock(MonotonicObservableSupplier.class);
-        mShareDelegate = Mockito.mock(ShareDelegate.class);
     }
 
     /**
@@ -223,7 +218,7 @@ public class CollaborationTestUtils {
     public void setupShareDelegateSupplier(ChromeTabbedActivity cta) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    doReturn(mShareDelegate).when(mShareDelegateSupplier).get();
+                    mShareDelegateSupplier.set(mShareDelegate);
                     var rootUiCoordinator = cta.getRootUiCoordinatorForTesting();
                     DataSharingTabManager dstm = rootUiCoordinator.getDataSharingTabManager();
                     dstm.setShareDelegateSupplierForTesting(mShareDelegateSupplier);

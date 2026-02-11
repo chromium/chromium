@@ -4,6 +4,8 @@
 
 package org.chromium.base.supplier;
 
+import com.google.errorprone.annotations.DoNotMock;
+
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier.NotifyBehavior;
 import org.chromium.build.annotations.NullMarked;
@@ -14,6 +16,9 @@ import java.util.function.Supplier;
 
 /** An interface for Suppliers that can be observed. Implementations are not thread-safe. */
 @NullMarked
+// The mix-in methods here make tests brittle when mocked. We also do not want tests to simulate
+// callbacks incorrectly (e.g. calling them synchronously when they should be posted).
+@DoNotMock("Mock the thing you are supplying instead.")
 public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
     /**
      * Adds an observer to the supplier.
