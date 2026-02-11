@@ -106,7 +106,7 @@ public class HistoryPageOnLffTest {
         boolean isKeyboardAttached =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return DeviceInput.supportsKeyboard();
+                            return DeviceInput.supportsKeyboard(mCtaTestRule.getActivity());
                         });
         if (!isKeyboardAttached) return;
 
@@ -125,7 +125,7 @@ public class HistoryPageOnLffTest {
         boolean isKeyboardAttached =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return DeviceInput.supportsKeyboard();
+                            return DeviceInput.supportsKeyboard(mCtaTestRule.getActivity());
                         });
         if (isKeyboardAttached) return;
 
