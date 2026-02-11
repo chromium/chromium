@@ -28,6 +28,7 @@ crbug.com/446717936 external/wpt/ai/proofreader/proofreader-proofread.tentative.
 # Disables tests on all platforms, since disabling these tests on Mac x64 only is not supported.
 crbug.com/460555196 external/wpt/ai/language-model/language-model-availability-available-multimodal.tentative.https.window.html [ Failure Pass ]
 crbug.com/460555196 external/wpt/ai/language-model/language-model-create-multimodal.tentative.https.window.html [ Failure Pass ]
+crbug.com/460555196 external/wpt/ai/language-model/language-model-prompt-multimodal-audio.tentative.https.window.html [ Failure Pass ]
 
 # These tests frequently time out on Mac platforms.
 # Disables tests on all platforms, since disabling these tests on Mac only is not supported.
@@ -44,5 +45,7 @@ crbug.com/460799715 external/wpt/ai/summarizer/summarizer-summarize-streaming.te
 crbug.com/460799715 external/wpt/ai/writer/writer-abort.tentative.https.window.html [ Timeout Pass ]
 crbug.com/460799715 external/wpt/ai/writer/writer-create-available.tentative.https.window.html [ Timeout Pass ]
 crbug.com/460799715 external/wpt/ai/writer/writer-write-streaming.tentative.https.window.html [ Timeout Pass ]
+crbug.com/459864801 external/wpt/ai/language-model/language-model-prompt-multimodal-image.tentative.https.window.html [ Timeout Pass ]
+crbug.com/459864801 external/wpt/ai/language-model/language-model-prompt-multimodal-video.tentative.https.window.html [ Timeout Pass ]
 
 
