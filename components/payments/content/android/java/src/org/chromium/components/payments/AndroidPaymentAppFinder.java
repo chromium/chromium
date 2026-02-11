@@ -579,6 +579,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
             if (!mDownloader.isInitialized()) {
                 mDownloader.initialize(
                         mFactoryDelegate.getParams().getWebContents(),
+                        mFactoryDelegate.getParams().getRenderFrameHost(),
                         mFactoryDelegate.getParams().getCSPChecker());
             }
 

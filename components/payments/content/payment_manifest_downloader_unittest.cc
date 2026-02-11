@@ -52,9 +52,11 @@ class PaymentManifestDownloaderTestBase : public testing::Test {
         const_csp_checker_(std::make_unique<ConstCSPChecker>(/*allow=*/true)) {}
 
   void InitDownloader() {
+    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh;
+    test_factory_.Clone(url_loader_factory_rfh.BindNewPipeAndPassReceiver());
     downloader_ = std::make_unique<PaymentManifestDownloader>(
         std::make_unique<ErrorLogger>(), const_csp_checker_->GetWeakPtr(),
-        shared_url_loader_factory_);
+        shared_url_loader_factory_, std::move(url_loader_factory_rfh));
   }
 
   MOCK_METHOD3(OnManifestDownload,

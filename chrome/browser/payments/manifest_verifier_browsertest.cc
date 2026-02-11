@@ -23,6 +23,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -51,30 +52,40 @@ class ManifestVerifierBrowserTest : public InProcessBrowserTest {
         "components/test/data/payments");
     https_server_->StartAcceptingConnections();
 
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(content::NavigateToURL(
+        web_contents, https_server_->GetURL("/payment_handler.html")));
+
     const_csp_checker_ = std::make_unique<ConstCSPChecker>(/*allow=*/true);
-    content::BrowserContext* context = browser()->profile();
+
+    mojo::Remote<network::mojom::URLLoaderFactory> renderer_url_loader_factory;
+    web_contents->GetPrimaryMainFrame()->CreateNetworkServiceDefaultFactory(
+        renderer_url_loader_factory.BindNewPipeAndPassReceiver());
+
     test_downloader_ = std::make_unique<TestDownloader>(
         const_csp_checker_->GetWeakPtr(),
-        context->GetDefaultStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess());
+        browser()
+            ->profile()
+            ->GetDefaultStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess(),
+        std::move(renderer_url_loader_factory));
     test_downloader_->AddTestServerURL("https://", https_server_->GetURL("/"));
   }
 
   // Runs the verifier on the |apps| and blocks until the verifier has finished
   // using all resources.
   void Verify(content::InstalledPaymentAppsFinder::PaymentApps apps) {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    content::BrowserContext* context = browser()->profile();
     auto parser = std::make_unique<payments::PaymentManifestParser>(
         std::make_unique<ErrorLogger>());
     auto cache = webdata_services::WebDataServiceWrapperFactory::
         GetWebPaymentsWebDataServiceForBrowserContext(
-            context, ServiceAccessType::EXPLICIT_ACCESS);
+            browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
 
-    ManifestVerifier verifier(url::Origin::Create(GURL("https://chromium.org")),
-                              web_contents, test_downloader_.get(),
-                              parser.get(), cache.get());
+    ManifestVerifier verifier(
+        url::Origin::Create(https_server_->GetURL("/payment_handler.html")),
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        test_downloader_.get(), parser.get(), cache.get());
 
     base::RunLoop run_loop;
     verifier.Verify(

@@ -33,6 +33,7 @@ import org.chromium.components.payments.PaymentManifestVerifier.ManifestVerifyCa
 import org.chromium.components.payments.WebAppManifestSection;
 import org.chromium.components.payments.WebPaymentsWebDataService;
 import org.chromium.components.payments.WebPaymentsWebDataService.WebPaymentsWebDataServiceCallback;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.GURL;
@@ -123,7 +124,10 @@ public class PaymentManifestVerifierTest {
         mDownloader =
                 new PaymentManifestDownloader() {
                     @Override
-                    public void initialize(WebContents webContents, CSPChecker cspChecker) {}
+                    public void initialize(
+                            WebContents webContents,
+                            RenderFrameHost renderFrameHost,
+                            CSPChecker cspChecker) {}
 
                     @Override
                     public void downloadPaymentMethodManifest(
@@ -203,7 +207,9 @@ public class PaymentManifestVerifierTest {
                         new PaymentManifestDownloader() {
                             @Override
                             public void initialize(
-                                    WebContents webContents, CSPChecker cspChecker) {}
+                                    WebContents webContents,
+                                    RenderFrameHost renderFrameHost,
+                                    CSPChecker cspChecker) {}
 
                             @Override
                             public void downloadPaymentMethodManifest(
@@ -239,7 +245,9 @@ public class PaymentManifestVerifierTest {
                         new PaymentManifestDownloader() {
                             @Override
                             public void initialize(
-                                    WebContents webContents, CSPChecker cspChecker) {}
+                                    WebContents webContents,
+                                    RenderFrameHost renderFrameHost,
+                                    CSPChecker cspChecker) {}
 
                             @Override
                             public void downloadPaymentMethodManifest(

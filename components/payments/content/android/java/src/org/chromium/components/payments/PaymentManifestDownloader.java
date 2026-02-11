@@ -11,6 +11,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -60,16 +61,22 @@ public class PaymentManifestDownloader {
      * Initializes the native downloader.
      *
      * @param webContents The web contents to use as the context for the downloads. If this goes
-     *                    away, pending downloads are cancelled.
+     *     away, pending downloads are cancelled.
+     * @param renderFrameHost The render frame host is used to get the url loader factory for
+     *     downloading the manifest.
      * @param cspChecker The Content-Security-Policy (CSP) checker.
      */
-    public void initialize(WebContents webContents, CSPChecker cspChecker) {
+    public void initialize(
+            WebContents webContents, RenderFrameHost renderFrameHost, CSPChecker cspChecker) {
         ThreadUtils.assertOnUiThread();
         assert mNativeObject == 0;
         mCSPCheckerBridge = new CSPCheckerBridge(cspChecker);
         mNativeObject =
                 PaymentManifestDownloaderJni.get()
-                        .init(webContents, mCSPCheckerBridge.getNativeCSPChecker());
+                        .init(
+                                webContents,
+                                renderFrameHost,
+                                mCSPCheckerBridge.getNativeCSPChecker());
     }
 
     /** @return Whether the native downloader is initialized. */
@@ -130,7 +137,10 @@ public class PaymentManifestDownloader {
 
     @NativeMethods
     interface Natives {
-        long init(WebContents webContents, long nativeCSPCheckerAndroid);
+        long init(
+                WebContents webContents,
+                RenderFrameHost renderFrameHost,
+                long nativeCSPCheckerAndroid);
 
         void downloadPaymentMethodManifest(
                 long nativePaymentManifestDownloaderAndroid,

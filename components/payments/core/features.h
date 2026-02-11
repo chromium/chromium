@@ -54,6 +54,9 @@ BASE_DECLARE_FEATURE(kSecurePaymentConfirmationFallback);
 // stop the IsReadyToPay query from being sent to payment handlers.
 BASE_DECLARE_FEATURE(kRestrictIsReadyToPayQuery);
 
+// Used to control the usage of the renderer URL loader in the payment request.
+BASE_DECLARE_FEATURE(kPaymentRequestUseRendererUrlLoader);
+
 }  // namespace features
 }  // namespace payments
 

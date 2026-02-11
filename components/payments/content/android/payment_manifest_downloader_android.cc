@@ -12,9 +12,12 @@
 #include "components/payments/content/android/csp_checker_android.h"
 #include "components/payments/content/developer_console_logger.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -78,8 +81,12 @@ class DownloadCallback {
 PaymentManifestDownloaderAndroid::PaymentManifestDownloaderAndroid(
     std::unique_ptr<ErrorLogger> log,
     base::WeakPtr<CSPChecker> csp_checker,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : downloader_(std::move(log), csp_checker, std::move(url_loader_factory)) {}
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh)
+    : downloader_(std::move(log),
+                  csp_checker,
+                  url_loader_factory,
+                  std::move(url_loader_factory_rfh)) {}
 
 PaymentManifestDownloaderAndroid::~PaymentManifestDownloaderAndroid() = default;
 
@@ -116,21 +123,34 @@ void PaymentManifestDownloaderAndroid::Destroy(JNIEnv* env) {
 static int64_t JNI_PaymentManifestDownloader_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents,
+    const base::android::JavaRef<jobject>& jrender_frame_host,
     int64_t native_csp_checker_android) {
-  if (!jweb_contents || !native_csp_checker_android)
+  if (!jweb_contents || !jrender_frame_host || !native_csp_checker_android) {
     return 0;
+  }
 
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  if (!web_contents)
+  if (!web_contents) {
     return 0;
+  }
 
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
+  if (!render_frame_host) {
+    return 0;
+  }
+
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh;
+  render_frame_host->CreateNetworkServiceDefaultFactory(
+      url_loader_factory_rfh.BindNewPipeAndPassReceiver());
   return reinterpret_cast<int64_t>(new PaymentManifestDownloaderAndroid(
       std::make_unique<DeveloperConsoleLogger>(web_contents),
       payments::CSPCheckerAndroid::GetWeakPtr(native_csp_checker_android),
       web_contents->GetBrowserContext()
           ->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess()));
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      std::move(url_loader_factory_rfh)));
 }
 
 // Static free function declared and called directly from java.

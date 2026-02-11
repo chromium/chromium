@@ -13,6 +13,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_manifest_downloader.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -29,7 +31,8 @@ class PaymentManifestDownloaderAndroid {
   PaymentManifestDownloaderAndroid(
       std::unique_ptr<ErrorLogger> log,
       base::WeakPtr<CSPChecker> csp_checker,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh);
 
   PaymentManifestDownloaderAndroid(const PaymentManifestDownloaderAndroid&) =
       delete;

@@ -55,6 +55,7 @@ import org.chromium.components.payments.PaymentManifestParser;
 import org.chromium.components.payments.WebAppManifestSection;
 import org.chromium.components.payments.WebPaymentsWebDataService;
 import org.chromium.components.payments.intent.WebPaymentIntentHelper;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -574,7 +575,10 @@ public class AndroidPaymentAppFinderUnitTest {
         PaymentManifestDownloader downloader =
                 new PaymentManifestDownloader() {
                     @Override
-                    public void initialize(WebContents webContents, CSPChecker cspChecker) {}
+                    public void initialize(
+                            WebContents webContents,
+                            RenderFrameHost renderFrameHost,
+                            CSPChecker cspChecker) {}
 
                     @Override
                     public void downloadPaymentMethodManifest(

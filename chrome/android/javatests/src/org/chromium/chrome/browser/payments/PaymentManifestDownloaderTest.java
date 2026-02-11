@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.payments.CSPChecker;
 import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestDownloader.ManifestDownloadCallback;
@@ -101,11 +100,12 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     @Before
     public void setUp() throws Throwable {
         mServer = mActivityTestRule.getTestServer();
-        WebPageStation page = mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDownloader.initialize(
-                            page.webContentsElement.value(),
+                            mActivityTestRule.getActivity().getCurrentWebContents(),
+                            mActivityTestRule.getActivity().getCurrentWebContents().getMainFrame(),
                             new CSPChecker() {
                                 @Override
                                 public void allowConnectToSource(

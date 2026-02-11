@@ -11,6 +11,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_manifest_downloader.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 class GURL;
 
@@ -52,7 +54,8 @@ class TestDownloader : public PaymentManifestDownloader {
  public:
   TestDownloader(
       base::WeakPtr<CSPChecker> csp_checker,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh);
 
   TestDownloader(const TestDownloader&) = delete;
   TestDownloader& operator=(const TestDownloader&) = delete;
@@ -116,6 +119,7 @@ class TestDownloader : public PaymentManifestDownloader {
                         bool did_follow_redirect,
                         Download::Type download_type,
                         int allowed_number_of_redirects,
+                        bool use_url_loader_factory_rfh,
                         PaymentManifestDownloadCallback callback) override;
 
   // The mapping from the URL prefix to the URL of the test server to be used.

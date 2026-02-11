@@ -461,12 +461,16 @@ void ServiceWorkerPaymentAppFinder::GetAllPaymentApps(
     downloader = std::move(test_downloader_);
     self_delete_factory->IgnorePortInOriginComparisonForTesting();
   } else {
+    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
+    render_frame_host().CreateNetworkServiceDefaultFactory(
+        url_loader_factory.BindNewPipeAndPassReceiver());
     downloader = std::make_unique<payments::PaymentManifestDownloader>(
         std::make_unique<DeveloperConsoleLogger>(web_contents), csp_checker,
         render_frame_host()
             .GetBrowserContext()
             ->GetDefaultStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess());
+            ->GetURLLoaderFactoryForBrowserProcess(),
+        std::move(url_loader_factory));
   }
 
   self_delete_factory->GetAllPaymentApps(

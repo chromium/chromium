@@ -105,9 +105,17 @@ void PaymentRequestPlatformBrowserTestBase::
   // Set up test manifest downloader that knows how to fake origin.
   content::BrowserContext* context =
       GetActiveWebContents()->GetBrowserContext();
-  auto downloader = std::make_unique<TestDownloader>(
-      GetCSPCheckerForTests(), context->GetDefaultStoragePartition()
-                                   ->GetURLLoaderFactoryForBrowserProcess());
+
+  std::unique_ptr<TestDownloader> downloader;
+  mojo::Remote<network::mojom::URLLoaderFactory> renderer_url_loader_factory;
+  frame->CreateNetworkServiceDefaultFactory(
+      renderer_url_loader_factory.BindNewPipeAndPassReceiver());
+  downloader = std::make_unique<TestDownloader>(
+      GetCSPCheckerForTests(),
+      context->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      std::move(renderer_url_loader_factory));
+
   for (const auto& method : payment_methods) {
     downloader->AddTestServerURL("https://" + method.first + "/",
                                  method.second->GetURL(method.first, "/"));

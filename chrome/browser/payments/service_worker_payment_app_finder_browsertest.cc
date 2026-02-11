@@ -27,6 +27,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -104,6 +105,10 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(StartTestServer("kyle.example.test", &kyle_example_));
     ASSERT_TRUE(StartTestServer("larry.example.test", &larry_example_));
 
+    ASSERT_TRUE(content::NavigateToURL(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        https_server_.GetURL("/payment_handler.html")));
+
     GetPermissionRequestManager()->set_auto_response_for_test(
         permissions::PermissionRequestManager::ACCEPT_ALL);
   }
@@ -135,9 +140,14 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::BrowserContext* context = web_contents->GetBrowserContext();
+    mojo::Remote<network::mojom::URLLoaderFactory> renderer_url_loader_factory;
+    web_contents->GetPrimaryMainFrame()->CreateNetworkServiceDefaultFactory(
+        renderer_url_loader_factory.BindNewPipeAndPassReceiver());
     auto downloader = std::make_unique<TestDownloader>(
-        GetCSPChecker(), context->GetDefaultStoragePartition()
-                             ->GetURLLoaderFactoryForBrowserProcess());
+        GetCSPChecker(),
+        context->GetDefaultStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess(),
+        std::move(renderer_url_loader_factory));
     downloader->AddTestServerURL("https://alicepay.test/",
                                  alicepay_.GetURL("alicepay.test", "/"));
     downloader->AddTestServerURL("https://bobpay.test/",
@@ -195,7 +205,7 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
 
     base::RunLoop run_loop;
     finder->GetAllPaymentApps(
-        url::Origin::Create(GURL("https://chromium.org")),
+        url::Origin::Create(https_server_.GetURL("/payment_handler.html")),
         webdata_services::WebDataServiceWrapperFactory::
             GetWebPaymentsWebDataServiceForBrowserContext(
                 context, ServiceAccessType::EXPLICIT_ACCESS),

@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -23,6 +24,7 @@
 #include "components/payments/core/features.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/url_util.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -35,6 +37,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/url_constants.h"
 
@@ -124,12 +127,15 @@ GURL ParseRedirectUrl(const net::RedirectInfo& redirect_info,
 PaymentManifestDownloader::PaymentManifestDownloader(
     std::unique_ptr<ErrorLogger> log,
     base::WeakPtr<CSPChecker> csp_checker,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh)
     : log_(std::move(log)),
       csp_checker_(csp_checker),
-      url_loader_factory_(std::move(url_loader_factory)) {
-  DCHECK(log_);
-  DCHECK(url_loader_factory_);
+      url_loader_factory_(std::move(url_loader_factory)),
+      url_loader_factory_rfh_(std::move(url_loader_factory_rfh)) {
+  CHECK(log_);
+  CHECK(url_loader_factory_);
+  CHECK(url_loader_factory_rfh_.is_bound());
 }
 
 PaymentManifestDownloader::~PaymentManifestDownloader() = default;
@@ -142,7 +148,8 @@ void PaymentManifestDownloader::DownloadPaymentMethodManifest(
   // Restrict number of redirects for efficiency and breaking circle.
   InitiateDownload(merchant_origin, url, /*url_before_redirects=*/url,
                    /*did_follow_redirect=*/false, Download::Type::LINK_HEADER,
-                   /*allowed_number_of_redirects=*/3, std::move(callback));
+                   /*allowed_number_of_redirects=*/3,
+                   /*use_url_loader_factory_rfh=*/true, std::move(callback));
 }
 
 void PaymentManifestDownloader::DownloadWebAppManifest(
@@ -153,7 +160,8 @@ void PaymentManifestDownloader::DownloadWebAppManifest(
   InitiateDownload(payment_method_manifest_origin, url,
                    /*url_before_redirects=*/url,
                    /*did_follow_redirect=*/false, Download::Type::RESPONSE_BODY,
-                   /*allowed_number_of_redirects=*/0, std::move(callback));
+                   /*allowed_number_of_redirects=*/0,
+                   /*use_url_loader_factory_rfh=*/false, std::move(callback));
 }
 
 GURL PaymentManifestDownloader::FindTestServerURL(const GURL& url) const {
@@ -206,7 +214,7 @@ void PaymentManifestDownloader::OnURLLoaderRedirect(
             /*url_before_redirects=*/download->url_before_redirects,
             /*did_follow_redirect=*/true, Download::Type::LINK_HEADER,
             --download->allowed_number_of_redirects,
-            std::move(download->callback));
+            /*use_url_loader_factory_rfh=*/true, std::move(download->callback));
         return;
       }
       error_message = base::ReplaceStringPlaceholders(
@@ -339,7 +347,8 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
           url::Origin::Create(final_url), payment_method_manifest_url,
           /*url_before_redirects=*/download->url_before_redirects,
           /*did_follow_redirect=*/false, Download::Type::RESPONSE_BODY,
-          /*allowed_number_of_redirects=*/0, std::move(download->callback));
+          /*allowed_number_of_redirects=*/0,
+          /*use_url_loader_factory_rfh=*/false, std::move(download->callback));
       return;
     }
   }
@@ -367,6 +376,7 @@ void PaymentManifestDownloader::InitiateDownload(
     bool did_follow_redirect,
     Download::Type download_type,
     int allowed_number_of_redirects,
+    bool use_url_loader_factory_rfh,
     PaymentManifestDownloadCallback callback) {
   DCHECK(UrlUtil::IsValidManifestUrl(url));
 
@@ -444,10 +454,12 @@ void PaymentManifestDownloader::InitiateDownload(
   csp_checker_->AllowConnectToSource(
       url, url_before_redirects, did_follow_redirect,
       base::BindOnce(&PaymentManifestDownloader::OnCSPCheck,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(download)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(download),
+                     use_url_loader_factory_rfh));
 }
 
 void PaymentManifestDownloader::OnCSPCheck(std::unique_ptr<Download> download,
+                                           bool use_url_loader_factory_rfh,
                                            bool csp_allowed) {
   if (!csp_allowed) {
     RespondWithError(errors::kPaymentManifestCSPDenied, download->original_url,
@@ -459,11 +471,22 @@ void PaymentManifestDownloader::OnCSPCheck(std::unique_ptr<Download> download,
   loader->SetOnRedirectCallback(
       base::BindRepeating(&PaymentManifestDownloader::OnURLLoaderRedirect,
                           weak_ptr_factory_.GetWeakPtr(), loader));
-  loader->DownloadToString(
-      url_loader_factory_.get(),
-      base::BindOnce(&PaymentManifestDownloader::OnURLLoaderComplete,
-                     weak_ptr_factory_.GetWeakPtr(), loader),
-      kMaxManifestSize);
+
+  if (use_url_loader_factory_rfh &&
+      base::FeatureList::IsEnabled(
+          features::kPaymentRequestUseRendererUrlLoader)) {
+    loader->DownloadToString(
+        url_loader_factory_rfh_.get(),
+        base::BindOnce(&PaymentManifestDownloader::OnURLLoaderComplete,
+                       weak_ptr_factory_.GetWeakPtr(), loader),
+        kMaxManifestSize);
+  } else {
+    loader->DownloadToString(
+        url_loader_factory_.get(),
+        base::BindOnce(&PaymentManifestDownloader::OnURLLoaderComplete,
+                       weak_ptr_factory_.GetWeakPtr(), loader),
+        kMaxManifestSize);
+  }
 
   auto insert_result =
       downloads_.insert(std::make_pair(loader, std::move(download)));

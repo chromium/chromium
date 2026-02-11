@@ -106,10 +106,15 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
   void SetDownloaderAndIgnorePortInOriginComparisonForTesting() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
+    mojo::Remote<network::mojom::URLLoaderFactory> renderer_url_loader_factory;
+    web_contents->GetPrimaryMainFrame()->CreateNetworkServiceDefaultFactory(
+        renderer_url_loader_factory.BindNewPipeAndPassReceiver());
     auto downloader = std::make_unique<TestDownloader>(
-        GetCSPCheckerForTests(), web_contents->GetBrowserContext()
-                                     ->GetDefaultStoragePartition()
-                                     ->GetURLLoaderFactoryForBrowserProcess());
+        GetCSPCheckerForTests(),
+        web_contents->GetBrowserContext()
+            ->GetDefaultStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess(),
+        std::move(renderer_url_loader_factory));
     downloader->AddTestServerURL("https://alicepay.test/",
                                  alicepay_.GetURL("alicepay.test", "/"));
     downloader->AddTestServerURL("https://bobpay.test/",
