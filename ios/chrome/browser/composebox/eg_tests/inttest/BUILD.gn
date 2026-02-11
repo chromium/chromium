@@ -1,0 +1,69 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("inttest") {
+  testonly = true
+  sources = [
+    "composebox_inttest_coordinator.h",
+    "composebox_inttest_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/autocomplete/model",
+    "//ios/chrome/browser/composebox/coordinator",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "composebox_inttest_egtest.mm" ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base",
+    "//ios/chrome/browser/composebox/public:features",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+    "//ui/base:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "composebox_inttest_app_interface.h",
+    "composebox_inttest_app_interface.mm",
+  ]
+  visibility = [ "//ios/chrome/test/earl_grey:hooks" ]
+  deps = [
+    ":inttest",
+    "//base",
+    "//ios/chrome/common:string_conversions",
+    "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/earl_grey:eg_app_support+eg2",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//net",
+  ]
+}
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "composebox_inttest_app_interface.h",
+    "composebox_inttest_app_interface_stub.mm",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/chrome/common:string_conversions",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net",
+    "//url",
+  ]
+}

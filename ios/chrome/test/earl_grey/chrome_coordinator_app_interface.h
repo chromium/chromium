@@ -54,6 +54,7 @@
 + (void)startReadingListCoordinator;
 + (void)startBookmarksCoordinator;
 + (void)startPasswordSuggestionCoordinator;
++ (void)startComposeboxCoordinator;
 
 // Stops the currently started coordinator.
 + (void)stopCoordinator;
