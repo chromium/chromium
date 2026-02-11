@@ -107,11 +107,9 @@ CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
   draw_callback(recorder_->getRecordingCanvas());
 
   if (recorder_->HasReleasableDrawOps()) {
-    if (!image_provider_impl_) {
-      image_provider_impl_.emplace(info_);
-    }
+    ImageProviderImpl image_provider(info_);
 
-    cc::PlaybackParams params(&image_provider_impl_.value(),
+    cc::PlaybackParams params(&image_provider,
                               surface->getCanvas()->getLocalToDevice());
     recorder_->ReleaseMainRecording().Playback(surface->getCanvas(), params);
   }

@@ -58,8 +58,6 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
     std::optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
   };
 
-  std::optional<ImageProviderImpl> image_provider_impl_;
-
   const CanvasSnapshotProvider::Info info_;
 
   const cc::PaintImage::Id snapshot_paint_image_id_;
