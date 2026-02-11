@@ -72,16 +72,8 @@ void ConfigAutomaticGainControl(const AudioProcessingSettings& settings,
   apm_config.gain_controller1.analog_gain_controller.enable_digital_adaptive =
       false;
   return;
-#elif BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-  // Configure AGC for CAST.
-  apm_config.gain_controller1.enabled = true;
-  // TODO(bugs.webrtc.org/7494): Switch to AGC2 once APM runtime settings ready.
-  apm_config.gain_controller1.mode = Agc1Mode::kFixedDigital;
-  apm_config.gain_controller1.analog_gain_controller.enabled = false;
-  apm_config.gain_controller2.enabled = false;
-  apm_config.gain_controller2.input_volume_controller.enabled = false;
-  return;
-#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CASTOS) || \
+    BUILDFLAG(IS_CAST_ANDROID)
   // Configure AGC for mobile.
   apm_config.gain_controller1.enabled = false;
   apm_config.gain_controller2.enabled = true;
