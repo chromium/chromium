@@ -991,7 +991,9 @@ void WindowPerformance::ReportEventTimings() {
     bool had_click_tap_interaction = false;
     std::for_each(first, last, [&](auto entry) {
       ReportEvent(interactive_detector, entry);
-      if (entry->HasKnownInteractionID() && entry->interactionId() != 0u) {
+      if (auto interaction_id = entry->GetInteractionIdInfo();
+          interaction_id &&
+          interaction_id->id != PerformanceTimelineEntryIdInfo::kNoId) {
         had_interaction_in_animation_frame = true;
         if (entry->GetEventTimingReportingInfo()->key_code.has_value()) {
           had_key_interaction = true;
@@ -1185,9 +1187,8 @@ void WindowPerformance::ReportFirstInputTiming(
     } else if (event_timing_entry->name() == event_type_names::kPointerup &&
                first_pointer_down_event_timing_) {
       if (event_timing_entry->HasKnownInteractionID()) {
-        first_pointer_down_event_timing_->SetInteractionIdAndOffset(
-            event_timing_entry->interactionId(),
-            event_timing_entry->interactionOffset());
+        first_pointer_down_event_timing_->SetInteractionIdInfo(
+            event_timing_entry->GetInteractionIdInfo());
       }
       DispatchFirstInputTiming(first_pointer_down_event_timing_);
     } else if (event_timing_entry->name() == event_type_names::kPointercancel) {
@@ -1308,7 +1309,7 @@ bool WindowPerformance::SetInteractionIdAndRecordLatency(
   if (!IsEventTypeForInteractionId(entry->name())) {
     // Set 0 interaction id for event timings that do not go into state
     // machine.
-    entry->SetInteractionId(0);
+    entry->SetInteractionIdInfo(PerformanceTimelineEntryIdInfo::kNone);
     return true;
   }
   // We set the interactionId and record the metric in the

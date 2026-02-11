@@ -41,15 +41,6 @@ constexpr int kMinValueForSampling = 1;
 constexpr int kMaxValueForSampling = 100;
 // UKM sampling rate. The sampling strategy is 1/N.
 constexpr int kUkmSamplingRate = 10;
-// Minimum potential value for the first Interaction ID.
-constexpr uint32_t kMinFirstInteractionID = 100;
-// Maximum potential value for the first Interaction ID.
-constexpr uint32_t kMaxFirstInteractionID = 10000;
-// Interaction ID increment. We increase this value by an integer greater than 1
-// to discourage developers from using the value to 'count' the number of user
-// interactions. This is consistent with the spec, which allows the increasing
-// the user interaction value by a small number chosen by the user agent.
-constexpr uint32_t kInteractionIdIncrement = 7;
 // The length of the timer to flush entries from the time pointerup occurs.
 constexpr base::TimeDelta kFlushTimerLength = base::Seconds(1);
 // The name for the histogram which records interaction timings, and the names
@@ -121,14 +112,7 @@ ResponsivenessMetrics::ResponsivenessMetrics(
       composition_end_flush_timer_(
           window_performance_->task_runner_,
           this,
-          &ResponsivenessMetrics::FlushCompositionEndTimerFired),
-      current_interaction_id_for_event_timing_(
-          // Follow the spec by choosing a random integer as the initial value
-          // to discourage developers from using interactionId to count the
-          // number of interactions. See
-          // https://wicg.github.io/event-timing/#user-interaction-value.
-          base::RandIntInclusive(kMinFirstInteractionID,
-                                 kMaxFirstInteractionID)) {}
+          &ResponsivenessMetrics::FlushCompositionEndTimerFired) {}
 
 ResponsivenessMetrics::~ResponsivenessMetrics() = default;
 
@@ -210,7 +194,9 @@ void ResponsivenessMetrics::RecordTapOrClickUKM(
       pointer_info.GetTimeStamps().size() == 1u) {
     return;
   }
-  if (pointer_info.GetEntry()->interactionId() == 0u) {
+  auto interaction_id = pointer_info.GetEntry()->GetInteractionIdInfo();
+  if (!interaction_id ||
+      interaction_id->id == PerformanceTimelineEntryIdInfo::kNoId) {
     return;
   }
   if (pointer_info.GetEntry()
@@ -220,7 +206,7 @@ void ResponsivenessMetrics::RecordTapOrClickUKM(
   }
   RecordUserInteractionUKM(window, UserInteractionType::kTapOrClick,
                            pointer_info.GetTimeStamps(),
-                           pointer_info.GetEntry()->interactionOffset());
+                           interaction_id->offset);
 }
 
 // Event timing pointer events processing
@@ -244,21 +230,22 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
   if (event_type == event_type_names::kPointercancel) {
     if (pointer_info) {
       // Set interaction id to 0 for buffered Pointerdown.
-      pointer_info->GetEntry()->SetInteractionId(0);
+      pointer_info->GetEntry()->SetInteractionIdInfo(
+          PerformanceTimelineEntryIdInfo::kNone);
       NotifyPointerdown(pointer_info->GetEntry());
       // The pointer id of the pointerdown is no longer needed.
       pointer_id_entry_map_.erase(
           entry->GetEventTimingReportingInfo()->pointer_id.value());
     }
     // Set interaction id to 0 for Pointercancel.
-    entry->SetInteractionId(0);
+    entry->SetInteractionIdInfo(PerformanceTimelineEntryIdInfo::kNone);
   } else if (event_type == event_type_names::kContextmenu) {
     // Start a timer to flush event timing entries when times up. On receiving a
     // new pointerup or pointerdown, the timer will be canceled and entries will
     // be flushed immediately.
     contextmenu_flush_timer_.StartOneShot(kFlushTimerLength, FROM_HERE);
     // Set interaction id to 0 for Contextmenu.
-    entry->SetInteractionId(0);
+    entry->SetInteractionIdInfo(PerformanceTimelineEntryIdInfo::kNone);
   } else if (event_type == event_type_names::kPointerdown) {
     // If we were waiting for matching pointerup/keyup after a contextmenu, they
     // won't show up at this point.
@@ -271,7 +258,8 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
         // Set interaction id to 0 for buffered Pointerdown if it's not already
         // set.
         if (!pointer_info->GetEntry()->HasKnownInteractionID()) {
-          pointer_info->GetEntry()->SetInteractionId(0);
+          pointer_info->GetEntry()->SetInteractionIdInfo(
+              PerformanceTimelineEntryIdInfo::kNone);
         } else {
           // Flush the existing entry with non 0 interaction id. We are starting
           // a new interaction.
@@ -304,7 +292,7 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     // Early exit if it's an orphan pointerup, not treating it as an
     // interaction. crbug.com/40935137.
     if (!pointer_info || pointer_info->GetTimeStamps().size() > 1) {
-      entry->SetInteractionId(0);
+      entry->SetInteractionIdInfo(PerformanceTimelineEntryIdInfo::kNone);
       return true;
     }
 
@@ -312,13 +300,11 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
 
     // Generate a new interaction id.
     if (!pointer_down_entry->HasKnownInteractionID()) {
-      UpdateInteractionId();
-      pointer_down_entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
-                                                    GetInteractionCount());
+      pointer_down_entry->SetInteractionIdInfo(
+          interaction_id_generator_.IncrementId());
     }
 
-    entry->SetInteractionIdAndOffset(pointer_down_entry->interactionId(),
-                                     pointer_down_entry->interactionOffset());
+    entry->SetInteractionIdInfo(pointer_down_entry->GetInteractionIdInfo());
 
     if (entry->GetEventTimingReportingInfo()->prevent_counting_as_interaction) {
       pointer_down_entry->GetEventTimingReportingInfo()
@@ -347,13 +333,11 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
         // There are cases where we only see pointerdown and click, for instance
         // with contextmenu.
         if (!previous_entry->HasKnownInteractionID()) {
-          UpdateInteractionId();
-          previous_entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
-                                                    GetInteractionCount());
+          previous_entry->SetInteractionIdInfo(
+              interaction_id_generator_.IncrementId());
         }
         // Click event would always have its interaction id set.
-        entry->SetInteractionIdAndOffset(previous_entry->interactionId(),
-                                         previous_entry->interactionOffset());
+        entry->SetInteractionIdInfo(previous_entry->GetInteractionIdInfo());
         pointer_info->GetTimeStamps().push_back(event_timestamps);
 
         RecordTapOrClickUKM(window, *pointer_info);
@@ -366,11 +350,8 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
         // when the user clicks using a non-pointer device. Generate a new
         // interactionId. No need to add to the map since this is the last event
         // in the interaction.
-        UpdateInteractionId();
-
         // Click event would always have its interaction id set.
-        entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
-                                         GetInteractionCount());
+        entry->SetInteractionIdInfo(interaction_id_generator_.IncrementId());
         RecordTapOrClickUKM(
             window, *PointerEntryAndInfo::Create(entry, event_timestamps));
       }
@@ -413,39 +394,39 @@ void ResponsivenessMetrics::SetKeyIdAndRecordLatency(
       if (IsHoldingKey(key_code)) {
         FlushSequenceBasedKeyboardEvents();
       }
-      UpdateInteractionId();
+      interaction_id_generator_.IncrementId();
     } else if (composition_state_ == kCompositionContinueOngoingInteraction) {
       // Continue interaction; Do not update Interaction Id
     } else if (composition_state_ == kCompositionStartNewInteractionOnKeydown) {
       FlushSequenceBasedKeyboardEvents();
-      UpdateInteractionId();
+      interaction_id_generator_.IncrementId();
       composition_state_ = kCompositionContinueOngoingInteraction;
     } else if (composition_state_ == kEndCompositionOnKeydown) {
       FlushSequenceBasedKeyboardEvents();
-      UpdateInteractionId();
+      interaction_id_generator_.IncrementId();
       composition_state_ = kNonComposition;
     }
 
     // Keydown always has a interaction id set.
-    entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
-                                     GetInteractionCount());
-    sequence_based_keyboard_interaction_info_.SetInteractionIdAndOffset(
-        GetCurrentInteractionId(), GetInteractionCount());
+    entry->SetInteractionIdInfo(interaction_id_generator_.GetValue());
+    sequence_based_keyboard_interaction_info_.SetInteractionIdInfo(
+        interaction_id_generator_.GetValue());
     sequence_based_keyboard_interaction_info_.AddTimestamps(event_timestamps);
 
     if (composition_state_ == kNonComposition) {
-      InteractionInfo keydown_entry(GetCurrentInteractionId(),
-                                    GetInteractionCount(), event_timestamps);
+      InteractionInfo keydown_entry;
+      keydown_entry.SetInteractionIdInfo(interaction_id_generator_.GetValue());
+      keydown_entry.AddTimestamps(event_timestamps);
       key_code_to_interaction_info_map_.Set(key_code, std::move(keydown_entry));
     }
     last_keydown_keycode_info_ =
-        KeycodeInfo(key_code, GetCurrentInteractionId(), GetInteractionCount());
+        KeycodeInfo(key_code, interaction_id_generator_.GetValue());
   } else if (event_type == event_type_names::kKeyup) {
     if (composition_state_ == kNonComposition) {
       CHECK(entry->GetEventTimingReportingInfo()->key_code.has_value());
       auto key_code = entry->GetEventTimingReportingInfo()->key_code.value();
       if (!key_code_to_interaction_info_map_.Contains(key_code)) {
-        entry->SetInteractionId(0);
+        entry->SetInteractionIdInfo(PerformanceTimelineEntryIdInfo::kNone);
         return;
       }
 
@@ -453,21 +434,19 @@ void ResponsivenessMetrics::SetKeyIdAndRecordLatency(
       auto& key_entry = key_code_to_interaction_info_map_.find(key_code)->value;
 
       // Keyup always has a interaction id set.
-      entry->SetInteractionIdAndOffset(key_entry.GetInteractionId(),
-                                       key_entry.GetInteractionOffset());
+      entry->SetInteractionIdInfo(key_entry.GetInteractionIdInfo());
       key_entry.AddTimestamps(event_timestamps);
       RecordKeyboardUKM(window_performance_->DomWindow(),
                         key_entry.GetTimeStamps(),
-                        key_entry.GetInteractionOffset());
+                        key_entry.GetInteractionIdInfo().offset);
       // Remove keycode from the map and reset other values
       key_code_to_interaction_info_map_.erase(key_code);
       sequence_based_keyboard_interaction_info_.Clear();
     } else {
       // Keyup always has a interaction id set.
-      entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
-                                       GetInteractionCount());
-      sequence_based_keyboard_interaction_info_.SetInteractionIdAndOffset(
-          GetCurrentInteractionId(), GetInteractionCount());
+      entry->SetInteractionIdInfo(interaction_id_generator_.GetValue());
+      sequence_based_keyboard_interaction_info_.SetInteractionIdInfo(
+          interaction_id_generator_.GetValue());
       sequence_based_keyboard_interaction_info_.AddTimestamps(event_timestamps);
     }
   } else if (event_type == event_type_names::kKeypress) {
@@ -477,8 +456,7 @@ void ResponsivenessMetrics::SetKeyIdAndRecordLatency(
             last_keydown_keycode_info_.value().keycode) !=
             key_code_to_interaction_info_map_.end()) {
       // Set a interaction id generated by previous keydown entry
-      entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
-                                       GetInteractionCount());
+      entry->SetInteractionIdInfo(interaction_id_generator_.GetValue());
       key_code_to_interaction_info_map_
           .find(last_keydown_keycode_info_.value().keycode)
           ->value.AddTimestamps(event_timestamps);
@@ -486,18 +464,18 @@ void ResponsivenessMetrics::SetKeyIdAndRecordLatency(
       // This happens when keypress cannot be matched to a keydown (or we are in
       // composition mode). For now, don't assign an interactionId here, but
       // consider investigating for use cases.
-      entry->SetInteractionId(0);
+      entry->SetInteractionIdInfo(PerformanceTimelineEntryIdInfo::kNone);
     }
   } else if (event_type == event_type_names::kCompositionstart) {
-    entry->SetInteractionId(0);
+    entry->SetInteractionIdInfo(PerformanceTimelineEntryIdInfo::kNone);
     composition_state_ = kCompositionContinueOngoingInteraction;
     key_code_to_interaction_info_map_.clear();
   } else if (event_type == event_type_names::kCompositionend) {
-    entry->SetInteractionId(0);
+    entry->SetInteractionIdInfo(PerformanceTimelineEntryIdInfo::kNone);
     composition_state_ = kEndCompositionOnKeydown;
     composition_end_flush_timer_.StartOneShot(kFlushTimerLength, FROM_HERE);
   } else if (event_type == event_type_names::kCompositionupdate) {
-    entry->SetInteractionId(0);
+    entry->SetInteractionIdInfo(PerformanceTimelineEntryIdInfo::kNone);
     if (!last_keydown_keycode_info_.has_value()) {
       composition_state_ = kCompositionStartNewInteractionOnInput;
     } else {
@@ -506,28 +484,25 @@ void ResponsivenessMetrics::SetKeyIdAndRecordLatency(
   } else if (event_type == event_type_names::kInput) {
     // Expose interactionId for Input events only under composition
     if (composition_state_ == kNonComposition) {
-      entry->SetInteractionId(0);
+      entry->SetInteractionIdInfo(PerformanceTimelineEntryIdInfo::kNone);
       return;
     }
     // Update Interaction Id when input is selected using IME suggestion without
     // pressing a key. In this case Input event starts and finishes interaction
     if (composition_state_ == kCompositionStartNewInteractionOnInput) {
       FlushSequenceBasedKeyboardEvents();
-      UpdateInteractionId();
-      entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
-                                       GetInteractionCount());
-      sequence_based_keyboard_interaction_info_.SetInteractionIdAndOffset(
-          GetCurrentInteractionId(), GetInteractionCount());
+      entry->SetInteractionIdInfo(interaction_id_generator_.IncrementId());
+      sequence_based_keyboard_interaction_info_.SetInteractionIdInfo(
+          interaction_id_generator_.GetValue());
       sequence_based_keyboard_interaction_info_.AddTimestamps(event_timestamps);
       FlushSequenceBasedKeyboardEvents();
       composition_state_ = kCompositionStartNewInteractionOnKeydown;
     } else {
       // TODO(crbug.com/1252856): fix counts in ChromeOS due to duplicate
       // events.
-      entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
-                                       GetInteractionCount());
-      sequence_based_keyboard_interaction_info_.SetInteractionIdAndOffset(
-          GetCurrentInteractionId(), GetInteractionCount());
+      entry->SetInteractionIdInfo(interaction_id_generator_.GetValue());
+      sequence_based_keyboard_interaction_info_.SetInteractionIdInfo(
+          interaction_id_generator_.GetValue());
       sequence_based_keyboard_interaction_info_.AddTimestamps(event_timestamps);
     }
     last_keydown_keycode_info_.reset();
@@ -541,7 +516,7 @@ void ResponsivenessMetrics::FlushKeydown() {
     // still be counted as a valid interaction and get reported to UKM.
     RecordKeyboardUKM(window_performance_->DomWindow(),
                       entry.value.GetTimeStamps(),
-                      entry.value.GetInteractionOffset());
+                      entry.value.GetInteractionIdInfo().offset);
   }
   key_code_to_interaction_info_map_.clear();
 }
@@ -556,16 +531,7 @@ void ResponsivenessMetrics::FlushAllEventsAtPageHidden() {
 }
 
 uint32_t ResponsivenessMetrics::GetInteractionCount() const {
-  return interaction_count_;
-}
-
-void ResponsivenessMetrics::UpdateInteractionId() {
-  current_interaction_id_for_event_timing_ += kInteractionIdIncrement;
-  interaction_count_++;
-}
-
-uint32_t ResponsivenessMetrics::GetCurrentInteractionId() const {
-  return current_interaction_id_for_event_timing_;
+  return interaction_id_generator_.GetValue().offset;
 }
 
 void ResponsivenessMetrics::SetCurrentInteractionEventQueuedTimestamp(
@@ -595,7 +561,8 @@ void ResponsivenessMetrics::FlushSequenceBasedKeyboardEvents() {
   if (!sequence_based_keyboard_interaction_info_.Empty()) {
     RecordKeyboardUKM(
         window, sequence_based_keyboard_interaction_info_.GetTimeStamps(),
-        sequence_based_keyboard_interaction_info_.GetInteractionOffset());
+        sequence_based_keyboard_interaction_info_.GetInteractionIdInfo()
+            .offset);
     sequence_based_keyboard_interaction_info_.Clear();
   }
 }
@@ -660,9 +627,7 @@ void ResponsivenessMetrics::FlushAllPointerdown() {
   for (const auto& item : pointer_id_entry_map_) {
     PerformanceEventTiming* entry = item.value->GetEntry();
     if (!entry->HasKnownInteractionID()) {
-      UpdateInteractionId();
-      entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
-                                       GetInteractionCount());
+      entry->SetInteractionIdInfo(interaction_id_generator_.IncrementId());
     }
 
     // Pointerdown without pointerup nor click need to notify performance
@@ -749,9 +714,7 @@ bool ResponsivenessMetrics::TryHandleKeyboardEventSimulatedClick(
     return false;
   }
 
-  entry->SetInteractionIdAndOffset(
-      last_keydown_keycode_info_->interactionId,
-      last_keydown_keycode_info_->interactionOffset);
+  entry->SetInteractionIdInfo(last_keydown_keycode_info_->interaction_id);
 
   return true;
 }

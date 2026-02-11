@@ -43,9 +43,9 @@
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
-#include "third_party/blink/renderer/core/timing/navigation_id_generator.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_paint_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -193,8 +193,8 @@ class CORE_EXPORT Performance : public EventTarget {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(resourcetimingbufferfull,
                                   kResourcetimingbufferfull)
 
-  virtual uint32_t NavigationId() const {
-    return blink::kNavigationIdAbsentValue;
+  virtual uint64_t NavigationId() const {
+    return PerformanceTimelineEntryIdInfo::kNoId;
   }
 
   void AddLongTaskTiming(base::TimeTicks start_time,

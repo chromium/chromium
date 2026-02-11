@@ -25,11 +25,12 @@ PerformanceEventTiming* PerformanceEventTiming::Create(
     bool cancelable,
     EventTarget* target,
     DOMWindow* source,
-    uint32_t navigation_id) {
+    uint64_t navigation_id,
+    std::optional<PerformanceTimelineEntryIdInfo> interaction_id) {
   CHECK(source);
   return MakeGarbageCollected<PerformanceEventTiming>(
       event_type, performance_entry_names::kEvent, std::move(reporting_info),
-      cancelable, target, source, navigation_id);
+      cancelable, target, source, navigation_id, interaction_id);
 }
 
 // static
@@ -39,12 +40,9 @@ PerformanceEventTiming* PerformanceEventTiming::CreateFirstInputTiming(
       MakeGarbageCollected<PerformanceEventTiming>(
           entry->name(), performance_entry_names::kFirstInput,
           *entry->GetEventTimingReportingInfo(), entry->cancelable(),
-          entry->target(), entry->source(), entry->navigationId());
+          entry->target(), entry->source(), entry->navigationId(),
+          entry->GetInteractionIdInfo());
   first_input->SetDuration(entry->duration_);
-  if (entry->HasKnownInteractionID()) {
-    first_input->SetInteractionIdAndOffset(entry->interactionId(),
-                                           entry->interactionOffset());
-  }
   return first_input;
 }
 
@@ -77,7 +75,8 @@ PerformanceEventTiming::PerformanceEventTiming(
     bool cancelable,
     EventTarget* target,
     DOMWindow* source,
-    uint32_t navigation_id)
+    uint64_t navigation_id,
+    std::optional<PerformanceTimelineEntryIdInfo> interaction_id)
     : PerformanceEntry(
           /*duration=*/0.0,
           event_type,
@@ -88,6 +87,7 @@ PerformanceEventTiming::PerformanceEventTiming(
           navigation_id),
       entry_type_(entry_type),
       cancelable_(cancelable),
+      interaction_id_(interaction_id),
       reporting_info_(reporting_info) {
   SetTarget(target);
 }
@@ -133,20 +133,16 @@ uint64_t PerformanceEventTiming::interactionId() const {
   if (reporting_info_.prevent_counting_as_interaction) {
     return 0u;
   }
-  CHECK(interaction_id_.has_value());
-  return interaction_id_.value();
-}
-
-void PerformanceEventTiming::SetInteractionId(uint64_t interaction_id) {
-  interaction_id_ = interaction_id;
-}
-
-const AtomicString& PerformanceEventTiming::targetSelector() const {
-  return target_selector_;
+  CHECK(HasKnownInteractionID());
+  return interaction_id_->id;
 }
 
 bool PerformanceEventTiming::HasKnownInteractionID() const {
   return interaction_id_.has_value();
+}
+
+const AtomicString& PerformanceEventTiming::targetSelector() const {
+  return target_selector_;
 }
 
 bool PerformanceEventTiming::HasKnownEndTime() const {
@@ -174,17 +170,6 @@ void PerformanceEventTiming::UpdateFallbackTime(base::TimeTicks fallback_time,
 
     reporting_info_.fallback_reason = reason;
   }
-}
-
-uint32_t PerformanceEventTiming::interactionOffset() const {
-  return interaction_offset_;
-}
-
-void PerformanceEventTiming::SetInteractionIdAndOffset(
-    uint32_t interaction_id,
-    uint32_t interaction_offset) {
-  interaction_id_ = interaction_id;
-  interaction_offset_ = interaction_offset;
 }
 
 void PerformanceEventTiming::SetDuration(double duration) {
@@ -331,9 +316,9 @@ void PerformanceEventTiming::SetPerfettoData(
     base::TimeTicks time_origin) {
   event_timing->set_type(GetEventType(name()));
   event_timing->set_cancelable(cancelable());
-  if (HasKnownInteractionID()) {
-    event_timing->set_interaction_id(interactionId());
-    event_timing->set_interaction_offset(interactionOffset());
+  if (interaction_id_) {
+    event_timing->set_interaction_id(interaction_id_->id);
+    event_timing->set_interaction_offset(interaction_id_->offset);
   }
   event_timing->set_node_id(target_ ? target_->GetDomNodeId()
                                     : kInvalidDOMNodeId);
@@ -362,9 +347,12 @@ std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue(
       (GetEndTime() - reporting_info_.creation_time).InMillisecondsF());
   traced_value->SetBoolean("cancelable", cancelable());
   // If int overflows occurs, the static_cast may not work correctly.
-  traced_value->SetInteger("interactionId", static_cast<int>(interactionId()));
-  traced_value->SetInteger("interactionOffset",
-                           static_cast<int>(interactionOffset()));
+  if (interaction_id_) {
+    traced_value->SetInteger("interactionId",
+                             static_cast<int>(interaction_id_->id));
+    traced_value->SetInteger("interactionOffset",
+                             static_cast<int>(interaction_id_->offset));
+  }
   traced_value->SetInteger(
       "nodeId", target_ ? target_->GetDomNodeId() : kInvalidDOMNodeId);
   traced_value->SetString("frame", GetFrameIdForTracing(frame));

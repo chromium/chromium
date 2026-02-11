@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
+#include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 
 namespace perfetto::protos::pbzero {
 class EventTiming;
@@ -91,12 +92,15 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
     bool is_processing_fully_nested_in_another_event = false;
   };
 
-  static PerformanceEventTiming* Create(const AtomicString& event_type,
-                                        EventTimingReportingInfo,
-                                        bool cancelable,
-                                        EventTarget*,
-                                        DOMWindow*,
-                                        uint32_t navigation_id);
+  static PerformanceEventTiming* Create(
+      const AtomicString& event_type,
+      EventTimingReportingInfo,
+      bool cancelable,
+      EventTarget*,
+      DOMWindow*,
+      uint64_t navigation_id,
+      std::optional<PerformanceTimelineEntryIdInfo> interaction_id =
+          std::nullopt);
 
   static PerformanceEventTiming* CreateFirstInputTiming(
       PerformanceEventTiming* entry);
@@ -109,7 +113,9 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
                          bool cancelable,
                          EventTarget*,
                          DOMWindow*,
-                         uint32_t navigation_id);
+                         uint64_t navigation_id,
+                         std::optional<PerformanceTimelineEntryIdInfo>
+                             interaction_id = std::nullopt);
 
   ~PerformanceEventTiming() override;
 
@@ -127,11 +133,18 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   uint64_t interactionId() const;
 
-  void SetInteractionId(uint64_t interaction_id);
+  std::optional<PerformanceTimelineEntryIdInfo> GetInteractionIdInfo() const {
+    return interaction_id_;
+  }
 
-  const AtomicString& targetSelector() const;
+  void SetInteractionIdInfo(
+      std::optional<PerformanceTimelineEntryIdInfo> interaction_id) {
+    interaction_id_ = interaction_id;
+  }
 
   bool HasKnownInteractionID() const;
+
+  const AtomicString& targetSelector() const;
 
   bool HasKnownEndTime() const;
 
@@ -140,11 +153,6 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   base::TimeTicks GetEndTime() const;
 
   void UpdateFallbackTime(base::TimeTicks fallback_time, FallbackReason reason);
-
-  uint32_t interactionOffset() const;
-
-  void SetInteractionIdAndOffset(uint32_t interaction_id,
-                                 uint32_t interaction_offset);
 
   void SetDuration(double duration);
 
@@ -173,8 +181,7 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   bool cancelable_;
   WeakMember<Node> target_;
   AtomicString target_selector_;
-  std::optional<uint64_t> interaction_id_ = std::nullopt;
-  uint32_t interaction_offset_ = 0;
+  std::optional<PerformanceTimelineEntryIdInfo> interaction_id_;
 
   EventTimingReportingInfo reporting_info_;
 };

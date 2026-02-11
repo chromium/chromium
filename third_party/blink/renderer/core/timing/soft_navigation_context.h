@@ -14,8 +14,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
-#include "third_party/blink/renderer/core/timing/navigation_id_generator.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
+#include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
@@ -60,10 +60,10 @@ class CORE_EXPORT SoftNavigationContext
   }
 
   bool HasNavigationId() const {
-    return navigation_id_ != kNavigationIdAbsentValue;
+    return navigation_id_ != PerformanceTimelineEntryIdInfo::kNoId;
   }
-  uint32_t NavigationId() const { return navigation_id_; }
-  void SetNavigationId(uint32_t navigation_id) {
+  uint64_t NavigationId() const { return navigation_id_; }
+  void SetNavigationId(uint64_t navigation_id) {
     navigation_id_ = navigation_id;
   }
 
@@ -157,11 +157,10 @@ class CORE_EXPORT SoftNavigationContext
  private:
   static uint64_t last_context_id_;
 
-  // Pre-Increment `last_context_id_` such that the newest context uses the
   // largest value and can be used to identify the most recent context.
   const uint64_t context_id_ = ++last_context_id_;
 
-  uint32_t navigation_id_ = kNavigationIdAbsentValue;
+  uint64_t navigation_id_ = PerformanceTimelineEntryIdInfo::kNoId;
   bool was_emitted_ = false;
 
   base::TimeTicks time_origin_;

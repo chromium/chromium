@@ -43,11 +43,11 @@
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/core/timing/event_counts.h"
 #include "third_party/blink/renderer/core/timing/memory_info.h"
-#include "third_party/blink/renderer/core/timing/navigation_id_generator.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_navigation.h"
+#include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -166,16 +166,14 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // For soft navigations and back-forward cache restoration. This increments
   // the navigation ID, as specified in
   // https://w3c.github.io/performance-timeline/.
-  void IncrementNavigationId() {
-    navigation_id_generator_.IncrementNavigationId();
-  }
+  void IncrementNavigationId() { navigation_id_generator_.IncrementId(); }
 
   // Returns the navigation ID, as specified in
   // https://w3c.github.io/performance-timeline/; this appears as navigationId
   // in https://developer.mozilla.org/en-US/docs/Web/API/PerformanceEntry
   // instances.
-  uint32_t NavigationId() const override {
-    return navigation_id_generator_.NavigationId();
+  uint64_t NavigationId() const override {
+    return navigation_id_generator_.GetValue().id;
   }
 
   // PageVisibilityObserver
@@ -304,7 +302,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   // Implements the "assign a new navigation id" algorithm described in
   // https://w3c.github.io/performance-timeline/
-  NavigationIdGenerator navigation_id_generator_;
+  PerformanceTimelineEntryIdGenerator navigation_id_generator_;
 };
 
 }  // namespace blink

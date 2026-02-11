@@ -51,7 +51,7 @@ PerformanceEntry::PerformanceEntry(const AtomicString& name,
                                    double start_time,
                                    double finish_time,
                                    DOMWindow* source,
-                                   uint32_t navigation_id)
+                                   uint64_t navigation_id)
     : PerformanceEntry(finish_time - start_time,
                        name,
                        start_time,
@@ -62,7 +62,7 @@ PerformanceEntry::PerformanceEntry(double duration,
                                    const AtomicString& name,
                                    double start_time,
                                    DOMWindow* source,
-                                   uint32_t navigation_id)
+                                   uint64_t navigation_id)
     : duration_(duration),
       name_(name),
       start_time_(start_time),
@@ -80,7 +80,7 @@ DOMHighResTimeStamp PerformanceEntry::duration() const {
   return duration_;
 }
 
-uint32_t PerformanceEntry::navigationId() const {
+uint64_t PerformanceEntry::navigationId() const {
   return navigation_id_;
 }
 

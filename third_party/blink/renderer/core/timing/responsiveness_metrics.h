@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 #include "third_party/perfetto/include/perfetto/tracing/event_context.h"
@@ -46,21 +47,17 @@ class CORE_EXPORT ResponsivenessMetrics
   // of an entry on a HashMap.
   class InteractionInfo {
    public:
-    InteractionInfo(uint32_t interaction_id,
-                    uint32_t interaction_offset,
+    InteractionInfo(PerformanceTimelineEntryIdInfo interaction_id,
                     EventTimestamps timestamps)
-        : interaction_id_(interaction_id),
-          interaction_offset_(interaction_offset),
-          timestamps_({timestamps}) {}
+        : interaction_id_(interaction_id), timestamps_({timestamps}) {}
 
     InteractionInfo() = default;
     ~InteractionInfo() = default;
-    uint32_t GetInteractionId() const { return interaction_id_; }
-    uint32_t GetInteractionOffset() const { return interaction_offset_; }
-    void SetInteractionIdAndOffset(uint32_t interaction_id,
-                                   uint32_t interaction_offset) {
+    PerformanceTimelineEntryIdInfo GetInteractionIdInfo() const {
+      return interaction_id_;
+    }
+    void SetInteractionIdInfo(PerformanceTimelineEntryIdInfo interaction_id) {
       interaction_id_ = interaction_id;
-      interaction_offset_ = interaction_offset;
     }
     Vector<EventTimestamps> const& GetTimeStamps() { return timestamps_; }
     bool Empty() { return timestamps_.empty(); }
@@ -68,15 +65,13 @@ class CORE_EXPORT ResponsivenessMetrics
       timestamps_.push_back(timestamp);
     }
     void Clear() {
-      interaction_id_ = 0;
-      interaction_offset_ = 0;
+      interaction_id_ = PerformanceTimelineEntryIdInfo::kNone;
       timestamps_.clear();
     }
 
    private:
     // InteractionId associated with the entry.
-    uint32_t interaction_id_ = 0;
-    uint32_t interaction_offset_ = 0;
+    PerformanceTimelineEntryIdInfo interaction_id_;
     // Timestamps associated with the entries of the same interaction.
     Vector<EventTimestamps> timestamps_;
   };
@@ -151,8 +146,7 @@ class CORE_EXPORT ResponsivenessMetrics
   // TODO: Revisit if this is redandunt.
   struct KeycodeInfo {
     int keycode;
-    uint32_t interactionId;
-    uint32_t interactionOffset;
+    PerformanceTimelineEntryIdInfo interaction_id;
   };
 
  private:
@@ -168,11 +162,6 @@ class CORE_EXPORT ResponsivenessMetrics
   void RecordKeyboardUKM(LocalDOMWindow* window,
                          const Vector<EventTimestamps>& event_timestamps,
                          uint32_t interaction_offset);
-
-  // Updates the interactionId counter which is used by Event Timing.
-  void UpdateInteractionId();
-
-  uint32_t GetCurrentInteractionId() const;
 
   // Method called when |pointer_flush_timer_| fires. Ensures that the last
   // interaction of any given pointerId is reported, even if it does not receive
@@ -246,8 +235,7 @@ class CORE_EXPORT ResponsivenessMetrics
   // Queued timestamp of current event being dispatched.
   base::TimeTicks current_interaction_event_queued_timestamp_;
 
-  uint32_t current_interaction_id_for_event_timing_;
-  uint32_t interaction_count_ = 0;
+  PerformanceTimelineEntryIdGenerator interaction_id_generator_;
 
   // Whether to perform UKM sampling.
   bool sampling_ = true;
