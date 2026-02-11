@@ -8140,8 +8140,6 @@ std::optional<PROPERTYID> AXPlatformNodeWin::MojoEventToUIAProperty(
     case ax::mojom::Event::kCheckedStateChanged:
       return UIA_ToggleToggleStatePropertyId;
     case ax::mojom::Event::kExpandedChanged:
-    case ax::mojom::Event::kRowCollapsed:
-    case ax::mojom::Event::kRowExpanded:
       return UIA_ExpandCollapseExpandCollapseStatePropertyId;
     case ax::mojom::Event::kSelection:
     case ax::mojom::Event::kSelectionAdd:

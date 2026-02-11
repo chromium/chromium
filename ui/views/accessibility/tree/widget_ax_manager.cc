@@ -61,6 +61,8 @@ bool ShouldSerializeEvent(Event event_type) {
     // TODO(crbug.com/40672441): Add events here as needed.
     case Event::kLocationChanged:
     case Event::kTreeChanged:
+    case Event::kRowCollapsed:
+    case Event::kRowExpanded:
       return false;
     default:
       break;
@@ -80,8 +82,6 @@ bool ShouldSerializeEvent(Event event_type) {
     case Event::kMenuPopupEnd:
     case Event::kMenuPopupStart:
     case Event::kMenuStart:
-    case Event::kRowCollapsed:
-    case Event::kRowExpanded:
     case Event::kSelection:
     case Event::kSelectedChildrenChanged:
     case Event::kStateChanged:
