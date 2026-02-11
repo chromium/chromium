@@ -5,11 +5,11 @@
 package org.chromium.ui.base;
 
 import static android.view.InputDevice.KEYBOARD_TYPE_ALPHABETIC;
+import static android.view.InputDevice.KEYBOARD_TYPE_NONE;
 import static android.view.InputDevice.SOURCE_MOUSE;
 import static android.view.InputDevice.SOURCE_TOUCHPAD;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.hardware.input.InputManager;
 import android.hardware.input.InputManager.InputDeviceListener;
 import android.util.SparseArray;
@@ -98,13 +98,11 @@ public class DeviceInput implements InputDeviceListener {
     }
 
     /**
-     * Checks if a numeric or alphabetic keyboard is currently attached and usable.
-     *
-     * @return true if a physical keyboard (QWERTY or 12-key) is active and not hidden.
+     * @return Whether any currently connected {@link InputDevice} supports a keyboard.
      */
-    public static boolean supportsKeyboard(Context context) {
+    public static boolean supportsKeyboard() {
         ThreadUtils.assertOnUiThread();
-        return getInstance().supportsKeyboardImpl(context);
+        return getInstance().supportsKeyboardImpl();
     }
 
     /** Implementation of {@link #supportsAlphabeticKeyboard()}. */
@@ -122,18 +120,18 @@ public class DeviceInput implements InputDeviceListener {
     }
 
     /** Implementation of {@link #supportsKeyboard()}. */
-    public boolean supportsKeyboardImpl(Context context) {
+    public boolean supportsKeyboardImpl() {
         ThreadUtils.assertOnUiThread();
         if (sSupportsKeyboardForTesting != null) {
             return sSupportsKeyboardForTesting;
         }
 
-        Configuration config = context.getResources().getConfiguration();
-        boolean hasKeyboard =
-                config.keyboard == Configuration.KEYBOARD_QWERTY
-                        || config.keyboard == Configuration.KEYBOARD_12KEY;
-        boolean isUncovered = config.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO;
-        return hasKeyboard && isUncovered;
+        for (int i = 0; i < mDeviceSnapshotsById.size(); i++) {
+            if (mDeviceSnapshotsById.valueAt(i).supportsKeyboard) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Modifies the output of {@link #supportsPrecisionPointer()} for testing. */
@@ -226,6 +224,9 @@ public class DeviceInput implements InputDeviceListener {
         /** Whether the associated {@link InputDevice} supports an alphabetic keyboard. */
         public final boolean supportsAlphabeticKeyboard;
 
+        /** Whether the associated {@link InputDevice} supports a keyboard. */
+        public final boolean supportsKeyboard;
+
         /**
          * Whether the associated {@link InputDevice} supports precision pointing. Note that this
          * includes not only mice, but also any mice-like pointing devices (e.g. stylus, touchpad,
@@ -243,12 +244,14 @@ public class DeviceInput implements InputDeviceListener {
         private DeviceSnapshot(
                 boolean supportsAlphabeticKeyboard,
                 boolean supportsPrecisionPointer,
+                boolean supportsKeyboard,
                 InputDevice.MotionRange touchpadXAxisMotionRange,
                 InputDevice.MotionRange touchpadYAxisMotionRange) {
             this.supportsAlphabeticKeyboard = supportsAlphabeticKeyboard;
             this.supportsPrecisionPointer = supportsPrecisionPointer;
             this.touchpadXAxisMotionRange = touchpadXAxisMotionRange;
             this.touchpadYAxisMotionRange = touchpadYAxisMotionRange;
+            this.supportsKeyboard = supportsKeyboard;
         }
 
         /**
@@ -262,6 +265,8 @@ public class DeviceInput implements InputDeviceListener {
                     // SOURCE_MOUSE applies to pointer devices, including mouse and touchpad
                     /* supportsPrecisionPointer= */ isPhysical
                             && device.supportsSource(SOURCE_MOUSE),
+                    /* supportsKeyboard= */ isPhysical
+                            && device.getKeyboardType() != KEYBOARD_TYPE_NONE,
                     device.getMotionRange(MotionEvent.AXIS_X, SOURCE_TOUCHPAD),
                     device.getMotionRange(MotionEvent.AXIS_Y, SOURCE_TOUCHPAD));
         }

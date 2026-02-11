@@ -28,7 +28,7 @@ public class DownloadManagerUiConfigHelper {
                 .setShowDangerousItems(showDangerousItems)
                 .setSupportsGrouping(true)
                 .setInlineSearchBar(isLff)
-                .setAutoFocusSearchBox(isLff && DeviceInput.supportsKeyboard(context))
+                .setAutoFocusSearchBox(isLff && DeviceInput.supportsKeyboard())
                 .setShowBlockedSensitiveItems(showBlockedSensitiveItems);
     }
 }
