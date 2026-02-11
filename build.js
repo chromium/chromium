@@ -48,15 +48,24 @@ if (!REPLAY_LOCAL_DRIVER_DIR) {
   const driverArchive = `${currentPlatform()}-recordreplay${archSuffix}.tgz`;
   const driverRevision = driverRevisionIsSet ? DRIVER_REVISION : fs.readFileSync("REPLAY_BACKEND_REV", "utf8");
   const downloadArchive = `${currentPlatform()}-recordreplay-${driverRevision.trim().substring(0,12)}${archSuffix}.tgz`;
-  spawnChecked(
+  const downloadUrl = `https://static.replay.io/downloads/${downloadArchive}`;
+
+  // try versioned driver first, fall back to unversioned (latest)
+  let rv = spawnSync(
     "curl",
-    [
-      `https://static.replay.io/downloads/${downloadArchive}`,
-      "-o",
-      driverArchive,
-    ],
+    ["-f", downloadUrl, "-o", driverArchive],
     { stdio: "inherit" }
   );
+  if (rv.status !== 0) {
+    const fallbackArchive = `${currentPlatform()}-recordreplay${archSuffix}.tgz`;
+    const fallbackUrl = `https://static.replay.io/downloads/${fallbackArchive}`;
+    console.log(`Versioned driver not found, falling back to latest: ${fallbackUrl}`);
+    spawnChecked(
+      "curl",
+      ["-f", fallbackUrl, "-o", driverArchive],
+      { stdio: "inherit" }
+    );
+  }
   spawnChecked("tar", ["xf", driverArchive], { stdio: "inherit" });
   fs.unlinkSync(driverArchive);
 }

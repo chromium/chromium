@@ -1,4 +1,4 @@
-use_remoteexec = true
+use_remoteexec = false
 is_debug = false # we can't really use most debugging symbols right now
 dcheck_always_on = false # disable dchecks
 enable_nacl = false  # no native targets

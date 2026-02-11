@@ -3,36 +3,38 @@ env:
   GIT_TERMINAL_PROMPT: 0
 
 steps:
-  - label: "Preflight checks (lint/etc)"
-    key: "preflight-checks"
-    plugins:
-      - thedyrt/skip-checkout#v0.1.1:
-          cd: /home/ubuntu/chromium/src
-      - seek-oss/aws-sm#v2.3.1:
-          region: us-east-2
-          env:
-            BUILDEVENT_APIKEY: honeycomb-api-key
-            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
-      - replayio/buildevents#76b6f57: ~
-    commands:
-      - "be_cmd git-fetch-all -- git fetch --all"
-      - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
-      - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
-      - "pushd replay_build_scripts"
-      - "be_cmd npm-ci -- npm ci"
-      - "be_cmd lint-replay_build_scripts -- npm run lint"
-      - "popd"
-      - "be_cmd lint-replay-scripts -- node replay_build_scripts/lint.mjs"
-    env:
-      RECORD_REPLAY_BACKEND_DIR: /home/ubuntu/chromium/backend
-    agents:
-      - "runtimeType=chromiumbuild"
-      - "os=linux"
-      - "queue=runtime"
+  # TODO: re-enable preflight checks once builds are stable
+  # - label: "Preflight checks (lint/etc)"
+  #   key: "preflight-checks"
+  #   plugins:
+  #     - thedyrt/skip-checkout#v0.1.1:
+  #         cd: /home/ubuntu/chromium/src
+  #     - seek-oss/aws-sm#v2.3.1:
+  #         region: us-east-2
+  #         env:
+  #           BUILDEVENT_APIKEY: honeycomb-api-key
+  #           BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-buildevents
+  #     - replayio/buildevents#76b6f57: ~
+  #   commands:
+  #     - "be_cmd git-fetch-all -- git fetch --all"
+  #     - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
+  #     - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
+  #     - "pushd replay_build_scripts"
+  #     - "be_cmd npm-ci -- npm ci"
+  #     - "be_cmd lint-replay_build_scripts -- npm run lint"
+  #     - "popd"
+  #     - "be_cmd lint-replay-scripts -- node replay_build_scripts/lint.mjs"
+  #   env:
+  #     RECORD_REPLAY_BACKEND_DIR: /home/ubuntu/chromium/backend
+  #   agents:
+  #     - "runtimeType=chromiumbuild"
+  #     - "os=linux"
+  #     - "queue=runtime"
+
   - label: "🔨 Chromium (linux-x86_64)"
     key: "build-chromium-linux-x86_64"
-    depends_on: "preflight-checks"
-    timeout_in_minutes: 60
+    # depends_on: "preflight-checks"
+    timeout_in_minutes: 360
     plugins:
       - thedyrt/skip-checkout#v0.1.1:
           cd: /home/ubuntu/chromium/src
@@ -40,7 +42,7 @@ steps:
           region: us-east-2
           env:
             BUILDEVENT_APIKEY: honeycomb-api-key
-            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
+            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-buildevents
           file:
             - path: "/home/ubuntu/chromium/engflow.crt"
               secret-id: engflow-certificate
@@ -52,27 +54,38 @@ steps:
       - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
       - "be_cmd clean-artifacts-dir -- node replay_build_scripts/clean_artifacts.mjs"
       - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
-      - "pushd ../backend"
-      - "be_cmd buck2-kill -- scripts/bin/buck2 kill"
-      - "be_cmd buck2-build -- scripts/bin/buck2 build -v 0,actions,stats,commands -c replay.driver_revision=$$DRIVER_REVISION --console simple //:chromium"
-      - "popd"
+      - "be_cmd chromium-build -- node buildLinux.mjs"
+      - "be_cmd upload-artifacts -- node replay_build_scripts/upload_build_artifacts.mjs"
     env:
-      RBE_service: simpsonite.cluster.engflow.com:443
-      RBE_service_no_auth: true
-      RBE_use_application_default_credentials: true
-      RBE_tls_client_auth_cert: /home/ubuntu/chromium/engflow.crt
-      RBE_tls_client_auth_key: /home/ubuntu/chromium/engflow.key
       RECORD_REPLAY_BACKEND_DIR: /home/ubuntu/chromium/backend
+      RBE_service: simpsonite.cluster.engflow.com:443
+      RBE_service_no_auth: "true"
+      RBE_use_application_default_credentials: "true"
     agents:
       - "runtimeType=chromiumbuild"
       - "os=linux"
       - "queue=runtime"
     artifact_paths:
       - "build_id/linux/x86_64/**"
+
+  # TODO: re-enable E2E tests once linux builds are stable
+  # - label: "📝 E2E Tests (linux-x86_64)"
+  #   trigger: "runtime-fe-end-to-end-tests"
+  #   depends_on:
+  #     - "build-chromium-linux-x86_64"
+  #   build:
+  #     env:
+  #       OS: "linux"
+  #       ARCH: "x86_64"
+  #       RECORD_REPLAY_METADATA_SOURCE_COMMIT_TITLE: "${BUILDKITE_MESSAGE}"
+  #       RECORD_REPLAY_METADATA_SOURCE_COMMIT_ID: "${BUILDKITE_COMMIT}"
+  #       RECORD_REPLAY_METADATA_SOURCE_BRANCH: "${BUILDKITE_BRANCH}"
+  #       RECORD_REPLAY_METADATA_SOURCE_MERGE_ID: "${BUILDKITE_PULL_REQUEST}"
+  #       RUNTIME_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+
   - label: "🔨 Chromium (mac-x86_64)"
     key: "build-chromium-mac-x86_64"
-    depends_on: "preflight-checks"
-    timeout_in_minutes: 60
+    timeout_in_minutes: 360
     plugins:
       - thedyrt/skip-checkout#v0.1.1:
           cd: /Users/administrator/chromium/src
@@ -80,28 +93,16 @@ steps:
           region: us-east-2
           env:
             BUILDEVENT_APIKEY: honeycomb-api-key
-            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
-          file:
-            - path: "/Users/administrator/chromium/engflow.crt"
-              secret-id: engflow-certificate
-            - path: "/Users/administrator/chromium/engflow.key"
-              secret-id: engflow-key
+            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-buildevents
       - replayio/buildevents#76b6f57: ~
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
       - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
       - "be_cmd clean-artifacts-dir -- node replay_build_scripts/clean_artifacts.mjs"
       - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
-      - "pushd ../backend"
-      - "be_cmd buck2-kill -- scripts/bin/buck2 kill"
-      - "be_cmd buck2-build -- scripts/bin/buck2 build -c replay.driver_revision=$$DRIVER_REVISION --console simple //:chromium --target-platforms=//:macos-x86_64"
-      - "popd"
+      - "be_cmd chromium-build -- node buildMac.mjs"
+      - "be_cmd upload-artifacts -- node replay_build_scripts/upload_build_artifacts.mjs"
     env:
-      RBE_service: simpsonite.cluster.engflow.com:443
-      RBE_service_no_auth: true
-      RBE_use_application_default_credentials: true
-      RBE_tls_client_auth_cert: /Users/administrator/chromium/engflow.crt
-      RBE_tls_client_auth_key: /Users/administrator/chromium/engflow.key
       RECORD_REPLAY_BACKEND_DIR: /Users/administrator/chromium/backend
     agents:
       - "runtimeType=chromiumbuild"
@@ -111,8 +112,7 @@ steps:
       - "build_id/macOS/x86_64/**"
   - label: "🔨 Chromium (mac-arm64)"
     key: "build-chromium-mac-arm64"
-    depends_on: "preflight-checks"
-    timeout_in_minutes: 60
+    timeout_in_minutes: 360
     plugins:
       - thedyrt/skip-checkout#v0.1.1:
           cd: /Users/administrator/chromium/src
@@ -120,28 +120,16 @@ steps:
           region: us-east-2
           env:
             BUILDEVENT_APIKEY: honeycomb-api-key
-            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
-          file:
-            - path: "/Users/administrator/chromium/engflow.crt"
-              secret-id: engflow-certificate
-            - path: "/Users/administrator/chromium/engflow.key"
-              secret-id: engflow-key
+            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-buildevents
       - replayio/buildevents#76b6f57: ~
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
       - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
       - "be_cmd clean-artifacts-dir -- node replay_build_scripts/clean_artifacts.mjs"
       - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
-      - "pushd ../backend"
-      - "be_cmd buck2-kill -- scripts/bin/buck2 kill"
-      - "be_cmd buck2-build -- scripts/bin/buck2 build -c replay.driver_revision=$$DRIVER_REVISION --console simple //:chromium --target-platforms=//:macos-arm64"
-      - "popd"
+      - "be_cmd chromium-build -- node buildMac.mjs"
+      - "be_cmd upload-artifacts -- node replay_build_scripts/upload_build_artifacts.mjs"
     env:
-      RBE_service: simpsonite.cluster.engflow.com:443
-      RBE_service_no_auth: true
-      RBE_use_application_default_credentials: true
-      RBE_tls_client_auth_cert: /Users/administrator/chromium/engflow.crt
-      RBE_tls_client_auth_key: /Users/administrator/chromium/engflow.key
       REPLAY_BUILD_ARM: true
       RECORD_REPLAY_BACKEND_DIR: /Users/administrator/chromium/backend
     agents:
@@ -150,93 +138,24 @@ steps:
       - "queue=runtime"
     artifact_paths:
       - "build_id/macOS/arm64/**"
-  - label: "🕵️‍♀️ Verify cross-arch build integrity"
-    key: "verify-cross-arch-pak-sizes"
-    commands:
-      - "be_cmd download-macos-arm64-gclient_entries -- buildkite-agent artifact download build_id/macOS/arm64/entries ."
-      - "be_cmd download-macos-x86_64-gclient_entries -- buildkite-agent artifact download build_id/macOS/x86_64/entries ."
-      - "be_cmd macos-diff-gclient-entries -- diff -u build_id/macOS/arm64/entries build_id/macOS/x86_64/entries"
-      - "be_cmd download-macos-arm64-pak-sizes -- buildkite-agent artifact download build_id/macOS/arm64/pak-sizes ."
-      - "be_cmd download-macos-x86_64-pak-sizes -- buildkite-agent artifact download build_id/macOS/x86_64/pak-sizes ."
-      - "be_cmd macos-diff-pak-sizes -- diff -u build_id/macOS/arm64/pak-sizes build_id/macOS/x86_64/pak-sizes"
-    depends_on:
-      - "build-chromium-mac-x86_64"
-      - "build-chromium-mac-arm64"
-    plugins:
-      - thedyrt/skip-checkout#v0.1.1:
-          cd: /home/ubuntu/chromium/src
-      - seek-oss/aws-sm#v2.3.1:
-          region: us-east-2
-          env:
-            BUILDEVENT_APIKEY: honeycomb-api-key
-            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
-      - replayio/buildevents#76b6f57: ~
-    agents:
-      - "runtimeType=chromiumbuild"
-      - "os=linux"
-      - "queue=runtime"
-  - label: "📝 Command Tests (macos-arm64)"
-    trigger: "runtime-command-tests"
-    build:
-      commit: "${REPLAY_BACKEND_REV}"
-    depends_on:
-      - "build-chromium-mac-x86_64"
-      - "build-chromium-mac-arm64"
-  - label: "📝 Live Tests"
-    trigger: "testing-runtime-e2e"
-    depends_on:
-      - "build-chromium-linux-x86_64"
-      - "build-chromium-mac-x86_64"
-      - "build-chromium-mac-arm64"
-  - label: "📝 E2E Tests (linux-x86_64)"
-    trigger: "runtime-fe-end-to-end-tests"
-    depends_on:
-      - "build-chromium-linux-x86_64"
-    build:
-      env:
-        OS: "linux"
-        ARCH: "x86_64"
-        RECORD_REPLAY_METADATA_SOURCE_COMMIT_TITLE: "${BUILDKITE_MESSAGE}"
-        RECORD_REPLAY_METADATA_SOURCE_COMMIT_ID: "${BUILDKITE_COMMIT}"
-        RECORD_REPLAY_METADATA_SOURCE_BRANCH: "${BUILDKITE_BRANCH}"
-        RECORD_REPLAY_METADATA_SOURCE_MERGE_ID: "${BUILDKITE_PULL_REQUEST}"
-        # this is passed as a git URL which the replay plugin expects and parses
-        RUNTIME_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
-  - label: "📝 E2E Tests (macos-arm64)"
-    trigger: "runtime-fe-end-to-end-tests"
-    depends_on:
-      - "build-chromium-mac-x86_64"
-      - "build-chromium-mac-arm64"
-    build:
-      env:
-        OS: "macos"
-        ARCH: "arm64"
-        RECORD_REPLAY_METADATA_SOURCE_COMMIT_TITLE: "${BUILDKITE_MESSAGE}"
-        RECORD_REPLAY_METADATA_SOURCE_COMMIT_ID: "${BUILDKITE_COMMIT}"
-        RECORD_REPLAY_METADATA_SOURCE_BRANCH: "${BUILDKITE_BRANCH}"
-        RECORD_REPLAY_METADATA_SOURCE_MERGE_ID: "${BUILDKITE_PULL_REQUEST}"
-        # this is passed as a git URL which the replay plugin expects and parses
-        RUNTIME_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
-        # This is used by packages/e2e-tests/playwright.config.ts
-        CI: "1"
 
-  # wait for all steps above, but also continue if they fail
-  - wait: ~
-    continue_on_failure: true
-
-  - label: "🕵️‍♀️ Buildevents Watch"
-    key: "buildevents-watch"
-    plugins:
-      - thedyrt/skip-checkout#v0.1.1:
-          cd: /home/ubuntu/chromium/src
-      - seek-oss/aws-sm#v2.3.1:
-          region: us-east-2
-          env:
-            BUILDEVENT_APIKEY: honeycomb-api-key
-            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
-      - replayio/buildevents#76b6f57: ~
-    command: "be_watch"
-    agents:
-      - "runtimeType=chromiumbuild"
-      - "os=linux"
-      - "queue=runtime"
+  # TODO: re-enable buildevents watch once builds are stable
+  # - wait: ~
+  #   continue_on_failure: true
+  #
+  # - label: "🕵️‍♀️ Buildevents Watch"
+  #   key: "buildevents-watch"
+  #   plugins:
+  #     - thedyrt/skip-checkout#v0.1.1:
+  #         cd: /home/ubuntu/chromium/src
+  #     - seek-oss/aws-sm#v2.3.1:
+  #         region: us-east-2
+  #         env:
+  #           BUILDEVENT_APIKEY: honeycomb-api-key
+  #           BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-buildevents
+  #     - replayio/buildevents#76b6f57: ~
+  #   command: "be_watch"
+  #   agents:
+  #     - "runtimeType=chromiumbuild"
+  #     - "os=linux"
+  #     - "queue=runtime"

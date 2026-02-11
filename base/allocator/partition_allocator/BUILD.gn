@@ -306,7 +306,7 @@ component("partition_alloc") {
     ":partition_alloc_implementation",
     ":memory_tagging",
   ]
-  deps = []
+  deps = [ "//base:debugging_buildflags" ]
   public_configs = []
   if (is_android) {
     # tagging.cc requires __arm_mte_set_* functions.

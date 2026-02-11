@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import process from "process";
+import { spawnSync } from "child_process";
 
 import {
   assert,
@@ -626,15 +627,22 @@ function computeBuildId(
     const downloadArchive = `${currentPlatform()}-recordreplay-${driverRevision
       .trim()
       .substring(0, 12)}.tgz`;
-    spawnChecked(
+    const downloadUrl = `https://static.replay.io/downloads/${downloadArchive}`;
+    let rv = spawnSync(
       "curl",
-      [
-        `https://static.replay.io/downloads/${downloadArchive}`,
-        "-o",
-        driverArchive,
-      ],
+      ["-f", downloadUrl, "-o", driverArchive],
       { stdio: "inherit" }
     );
+    if (rv.status !== 0) {
+      const fallbackArchive = `${currentPlatform()}-recordreplay.tgz`;
+      const fallbackUrl = `https://static.replay.io/downloads/${fallbackArchive}`;
+      log(`Versioned driver not found, falling back to latest: ${fallbackUrl}`);
+      spawnChecked(
+        "curl",
+        ["-f", fallbackUrl, "-o", driverArchive],
+        { stdio: "inherit" }
+      );
+    }
 
     spawnChecked("tar", ["xf", driverArchive]);
 
