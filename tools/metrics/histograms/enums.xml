@@ -25765,12 +25765,14 @@ Called by update_net_error_codes.py.-->
     Constraint failure due to foreign key violation
   </int>
   <int value="795" label="SQLITE_NOTICE_RBU">TBD</int>
+  <int value="1025" label="SQLITE_ERROR_RESERVESIZE"/>
   <int value="1032" label="SQLITE_READONLY_DBMOVED">
     Readonly because database file was moved or unlinked while open
   </int>
   <int value="1034" label="SQLITE_IOERR_FSYNC">Error syncing to disk</int>
   <int value="1038" label="SQLITE_CANTOPEN_CONVPATH">TBD</int>
   <int value="1043" label="SQLITE_CONSTRAINT_FUNCTION">TBD</int>
+  <int value="1281" label="SQLITE_ERROR_KEY"/>
   <int value="1288" label="SQLITE_READONLY_CANTINIT">TBD</int>
   <int value="1290" label="SQLITE_IOERR_DIR_FSYNC">
     Error syncing directory changes to disk
@@ -25779,6 +25781,7 @@ Called by update_net_error_codes.py.-->
   <int value="1299" label="SQLITE_CONSTRAINT_NOTNULL">
     NOTNULL constraint violated
   </int>
+  <int value="1537" label="SQLITE_ERROR_UNABLE"/>
   <int value="1544" label="SQLITE_READONLY_DIRECTORY">TBD</int>
   <int value="1546" label="SQLITE_IOERR_TRUNCATE">Error truncating file</int>
   <int value="1550" label="SQLITE_CANTOPEN_SYMLINK">TBD</int>
@@ -25833,6 +25836,8 @@ Called by update_net_error_codes.py.-->
   <int value="8202" label="SQLITE_IOERR_DATA">TBD</int>
   <int value="8458" label="SQLITE_IOERR_CORRUPTFS">TBD</int>
   <int value="8714" label="SQLITE_IOERR_IN_PAGE">TBD</int>
+  <int value="8970" label="SQLITE_IOERR_BADKEY"/>
+  <int value="9226" label="SQLITE_IOERR_CODEC"/>
 </enum>
 
 <enum name="SqliteLoggedResultCode">

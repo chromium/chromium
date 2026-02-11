@@ -79,14 +79,17 @@ enum class SqliteResultCode : int {
   kCantOpenFullPath = 782,                  // SQLITE_CANTOPEN_FULLPATH
   kConstraintForeignKey = 787,              // SQLITE_CONSTRAINT_FOREIGNKEY
   kLoggingNoticeResumableBulkUpdate = 795,  // SQLITE_NOTICE_RBU
+  kErrorReservesize = 1025,                 // SQLITE_ERROR_RESERVESIZE
   kReadOnlyDbMoved = 1032,                  // SQLITE_READONLY_DBMOVED
   kIoFsync = 1034,                          // SQLITE_IOERR_FSYNC
   kCantOpenConvertPath = 1038,              // SQLITE_CANTOPEN_CONVPATH
   kConstraintFunction = 1043,               // SQLITE_CONSTRAINT_FUNCTION
+  kErrorKey = 1281,                         // SQLITE_ERROR_KEY
   kReadOnlyCantInit = 1288,                 // SQLITE_READONLY_CANTINIT
   kIoDirFsync = 1290,                       // SQLITE_IOERR_DIR_FSYNC
   kCantOpenDirtyWal = 1294,                 // SQLITE_CANTOPEN_DIRTYWAL
   kConstraintNotNull = 1299,                // SQLITE_CONSTRAINT_NOTNULL
+  kErrorUnable = 1537,                      // SQLITE_ERROR_UNABLE
   kReadOnlyDirectory = 1544,                // SQLITE_READONLY_DIRECTORY
   kIoTruncate = 1546,                       // SQLITE_IOERR_TRUNCATE
   kCantOpenSymlink = 1550,                  // SQLITE_CANTOPEN_SYMLINK
@@ -125,6 +128,8 @@ enum class SqliteResultCode : int {
   kIoData = 8202,                           // SQLITE_IOERR_DATA
   kIoCorruptFileSystem = 8458,              // SQLITE_IOERR_CORRUPTFS
   kIoInPage = 8714,                         // SQLITE_IOERR_IN_PAGE
+  kIoBadKey = 8970,                         // SQLITE_IOERR_BADKEY
+  kIoCodec = 9226,                          // SQLITE_IOERR_CODEC
 };
 
 enum class SqliteErrorCode : int {
@@ -201,15 +206,18 @@ enum class SqliteErrorCode : int {
       static_cast<int>(SqliteResultCode::kConstraintForeignKey),
   kLoggingNoticeResumableBulkUpdate =
       static_cast<int>(SqliteResultCode::kLoggingNoticeResumableBulkUpdate),
+  kErrorReservesize = static_cast<int>(SqliteResultCode::kErrorReservesize),
   kReadOnlyDbMoved = static_cast<int>(SqliteResultCode::kReadOnlyDbMoved),
   kIoFsync = static_cast<int>(SqliteResultCode::kIoFsync),
   kCantOpenConvertPath =
       static_cast<int>(SqliteResultCode::kCantOpenConvertPath),
   kConstraintFunction = static_cast<int>(SqliteResultCode::kConstraintFunction),
+  kErrorKey = static_cast<int>(SqliteResultCode::kErrorKey),
   kReadOnlyCantInit = static_cast<int>(SqliteResultCode::kReadOnlyCantInit),
   kIoDirFsync = static_cast<int>(SqliteResultCode::kIoDirFsync),
   kCantOpenDirtyWal = static_cast<int>(SqliteResultCode::kCantOpenDirtyWal),
   kConstraintNotNull = static_cast<int>(SqliteResultCode::kConstraintNotNull),
+  kErrorUnable = static_cast<int>(SqliteResultCode::kErrorUnable),
   kReadOnlyDirectory = static_cast<int>(SqliteResultCode::kReadOnlyDirectory),
   kIoTruncate = static_cast<int>(SqliteResultCode::kIoTruncate),
   kCantOpenSymlink = static_cast<int>(SqliteResultCode::kCantOpenSymlink),
@@ -252,6 +260,8 @@ enum class SqliteErrorCode : int {
   kIoCorruptFileSystem =
       static_cast<int>(SqliteResultCode::kIoCorruptFileSystem),
   kIoInPage = static_cast<int>(SqliteResultCode::kIoInPage),
+  kIoBadKey = static_cast<int>(SqliteResultCode::kIoBadKey),
+  kIoCodec = static_cast<int>(SqliteResultCode::kIoCodec),
 };
 
 enum class SqliteLoggedResultCode : int {
