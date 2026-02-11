@@ -104,6 +104,9 @@ public class NtpThemeCollectionsCoordinator {
         mThemeCollectionsBottomSheetRecyclerView =
                 mNtpThemeCollectionsBottomSheetView.findViewById(
                         R.id.theme_collections_recycler_view);
+        // Disable the animation to prevent a crash when switching between theme collections
+        // rapidly.
+        mThemeCollectionsBottomSheetRecyclerView.setItemAnimator(null);
         GridLayoutManager gridLayoutManager =
                 new GridLayoutManager(context, RECYCLE_VIEW_SPAN_COUNT);
         mThemeCollectionsBottomSheetRecyclerView.setLayoutManager(gridLayoutManager);
