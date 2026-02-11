@@ -46,7 +46,19 @@ public class ActivityResultTrackerImpl implements ActivityResultTracker {
         }
     }
 
+    private static class PendingResult {
+        public final ActivityResult result;
+        public final @Nullable Bundle savedInstanceData;
+
+        public PendingResult(ActivityResult result, @Nullable Bundle savedInstanceData) {
+            this.result = result;
+            this.savedInstanceData = savedInstanceData;
+        }
+    }
+
     private static final String REGISTERED_ACTIVITY_RESULT_KEYS = "REGISTERED_ACTIVITY_RESULT_KEYS";
+    private static final String REGISTERED_ACTIVITY_RESULT_CONFIGS =
+            "REGISTERED_ACTIVITY_RESULT_CONFIGS";
 
     private final ActivityResultTracker.Registry mRegistry;
 
@@ -68,6 +80,12 @@ public class ActivityResultTrackerImpl implements ActivityResultTracker {
     private final Map<String, ResultListener> mKeysToListeners = new HashMap<>();
 
     /**
+     * A map of generated unique keys for which an activity has been started, mapped to the optional
+     * bundle containing data saved before starting the activity.
+     */
+    private final Map<String, Bundle> mKeysToSavedInstanceData = new HashMap<>();
+
+    /**
      * A map of generated unique keys for which an activity has been started, mapped to the attached
      * restoration key (provided by {@link ResultListener#getRestorationKey}). This is used to keep
      * track of started activities that haven't returned a result yet and will be restored after the
@@ -81,7 +99,7 @@ public class ActivityResultTrackerImpl implements ActivityResultTracker {
      * launcher is registered for its key. This can happen if the base activity is recreated after
      * an activity is started.
      */
-    private final Map<String, List<ActivityResult>> mRestorationKeyToPendingResults =
+    private final Map<String, List<PendingResult>> mRestorationKeyToPendingResults =
             new HashMap<>();
 
     public ActivityResultTrackerImpl(ActivityResultTracker.Registry registry) {
@@ -100,15 +118,21 @@ public class ActivityResultTrackerImpl implements ActivityResultTracker {
 
         LinkedHashMap<String, String> startedActivityKeysInRegistrationOrder =
                 new LinkedHashMap<>();
+        Bundle configs = new Bundle();
         Set<String> startedActivityKeys = mStartedActivityKeysToRestorationKey.keySet();
         for (String key : mOrderedLaunchers.keySet()) {
             if (startedActivityKeys.contains(key)) {
                 startedActivityKeysInRegistrationOrder.put(
                         key, mStartedActivityKeysToRestorationKey.get(key));
+                Bundle savedConfig = mKeysToSavedInstanceData.get(key);
+                if (savedConfig != null) {
+                    configs.putBundle(key, savedConfig);
+                }
             }
         }
         bundle.putSerializable(
                 REGISTERED_ACTIVITY_RESULT_KEYS, startedActivityKeysInRegistrationOrder);
+        bundle.putBundle(REGISTERED_ACTIVITY_RESULT_CONFIGS, configs);
     }
 
     /**
@@ -124,27 +148,33 @@ public class ActivityResultTrackerImpl implements ActivityResultTracker {
         LinkedHashMap<String, String> keys =
                 (LinkedHashMap<String, String>)
                         bundle.getSerializable(REGISTERED_ACTIVITY_RESULT_KEYS);
-        if (keys == null) {
+        Bundle configs = bundle.getBundle(REGISTERED_ACTIVITY_RESULT_CONFIGS);
+        if (keys == null || configs == null) {
             return;
         }
 
         mStartedActivityKeysToRestorationKey.putAll(keys);
 
         for (String key : keys.keySet()) {
+            if (configs.containsKey(key)) {
+                mKeysToSavedInstanceData.put(key, assumeNonNull(configs.getBundle(key)));
+            }
+
             ActivityResultCallback<ActivityResult> callback =
                     new ActivityResultCallback<ActivityResult>() {
                         @Override
                         public void onActivityResult(ActivityResult result) {
                             String restorationKey =
                                     assumeNonNull(mStartedActivityKeysToRestorationKey.remove(key));
+                            @Nullable Bundle savedConfig = mKeysToSavedInstanceData.remove(key);
 
                             ResultListener listener = findListenerForRestorationKey(restorationKey);
                             if (listener != null) {
-                                listener.onActivityResult(result);
+                                listener.onActivityResult(result, savedConfig);
                             } else {
                                 mRestorationKeyToPendingResults
                                         .computeIfAbsent(restorationKey, k -> new ArrayList<>())
-                                        .add(result);
+                                        .add(new PendingResult(result, savedConfig));
                             }
                             remove(key);
                         }
@@ -169,11 +199,11 @@ public class ActivityResultTrackerImpl implements ActivityResultTracker {
     public void register(ResultListener listener) {
         String restorationKey = listener.getRestorationKey();
 
-        List<ActivityResult> results = mRestorationKeyToPendingResults.get(restorationKey);
-        if (results != null && !results.isEmpty()) {
-            listener.onActivityResult(results.get(0));
-            results.remove(0);
-            if (results.isEmpty()) {
+        List<PendingResult> pendingResults = mRestorationKeyToPendingResults.get(restorationKey);
+        if (pendingResults != null && !pendingResults.isEmpty()) {
+            PendingResult pendingResult = pendingResults.remove(0);
+            listener.onActivityResult(pendingResult.result, pendingResult.savedInstanceData);
+            if (pendingResults.isEmpty()) {
                 mRestorationKeyToPendingResults.remove(restorationKey);
             }
         }
@@ -198,7 +228,8 @@ public class ActivityResultTrackerImpl implements ActivityResultTracker {
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         mStartedActivityKeysToRestorationKey.remove(key);
-                        listener.onActivityResult(result);
+                        @Nullable Bundle savedConfig = mKeysToSavedInstanceData.remove(key);
+                        listener.onActivityResult(result, savedConfig);
                     }
                 };
         ActivityResultLauncher<Intent> launcher =
@@ -207,7 +238,8 @@ public class ActivityResultTrackerImpl implements ActivityResultTracker {
     }
 
     @Override
-    public void startActivity(ResultListener listener, Intent intent) {
+    public void startActivity(
+            ResultListener listener, Intent intent, @Nullable Bundle savedInstanceData) {
         String key = mListenersToKeys.get(listener);
         ActivityResultLauncher<Intent> launcher = mOrderedLaunchers.get(key);
         if (launcher == null) {
@@ -215,6 +247,9 @@ public class ActivityResultTrackerImpl implements ActivityResultTracker {
                     "Callback should be registered before starting activity for result.");
         }
         mStartedActivityKeysToRestorationKey.put(key, listener.getRestorationKey());
+        if (savedInstanceData != null) {
+            mKeysToSavedInstanceData.put(key, savedInstanceData);
+        }
         launcher.launch(intent);
     }
 
@@ -232,6 +267,7 @@ public class ActivityResultTrackerImpl implements ActivityResultTracker {
         if (listener != null) {
             mListenersToKeys.remove(listener);
         }
+        mKeysToSavedInstanceData.remove(key);
         mStartedActivityKeysToRestorationKey.remove(key);
         ActivityResultLauncher<Intent> launcher = mOrderedLaunchers.remove(key);
         if (launcher != null) {

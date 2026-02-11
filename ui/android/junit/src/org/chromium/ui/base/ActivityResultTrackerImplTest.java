@@ -68,7 +68,8 @@ public class ActivityResultTrackerImplTest {
     @Test
     public void testStartActivity_throwIfNoLauncher() {
         Assert.assertThrows(
-                IllegalStateException.class, () -> mTracker.startActivity(mListener, mIntent));
+                IllegalStateException.class,
+                () -> mTracker.startActivity(mListener, mIntent, null));
     }
 
     @Test
@@ -76,7 +77,8 @@ public class ActivityResultTrackerImplTest {
         mTracker.register(mListener);
         recreateTracker();
         Assert.assertThrows(
-                IllegalStateException.class, () -> mTracker.startActivity(mListener, mIntent));
+                IllegalStateException.class,
+                () -> mTracker.startActivity(mListener, mIntent, null));
     }
 
     @Test
@@ -84,20 +86,20 @@ public class ActivityResultTrackerImplTest {
         mTracker.register(mListener);
         verify(mRegistry).register(anyString(), any(), any());
 
-        mTracker.startActivity(mListener, mIntent);
+        mTracker.startActivity(mListener, mIntent, null);
         verify(mLauncher).launch(mIntent);
     }
 
     @Test
     public void testRegister_noPendingResult() {
         mTracker.register(mListener);
-        verify(mListener, never()).onActivityResult(any());
+        verify(mListener, never()).onActivityResult(any(), any());
     }
 
     @Test
     public void testRegister_withPendingResult() {
         mTracker.register(mListener);
-        mTracker.startActivity(mListener, mIntent);
+        mTracker.startActivity(mListener, mIntent, null);
         recreateTracker();
 
         // Verify that the registration happens again after recreation.
@@ -108,7 +110,27 @@ public class ActivityResultTrackerImplTest {
         mTracker.register(mListener);
 
         // Verify that the new callback is called immediately with the pending result.
-        verify(mListener).onActivityResult(mResult);
+        verify(mListener).onActivityResult(mResult, null);
+    }
+
+    @Test
+    public void testRegister_withPendingResultAndSavedInstanceData() {
+        Bundle savedInstanceData = new Bundle();
+        savedInstanceData.putString("test_key", "test_value");
+
+        mTracker.register(mListener);
+        mTracker.startActivity(mListener, mIntent, savedInstanceData);
+        recreateTracker();
+
+        // Verify that the registration happens again after recreation.
+        verify(mRegistry, times(2)).register(anyString(), any(), mCallbackCaptor.capture());
+
+        // Simulate activity result's return before new callback is registered.
+        mCallbackCaptor.getValue().onActivityResult(mResult);
+        mTracker.register(mListener);
+
+        // Verify that the new callback is called immediately with the pending result and config.
+        verify(mListener).onActivityResult(eq(mResult), eq(savedInstanceData));
     }
 
     @Test
@@ -123,14 +145,14 @@ public class ActivityResultTrackerImplTest {
         // Verify that the registration happens again after recreation.
         verify(mRegistry, times(2)).register(anyString(), any(), mCallbackCaptor.capture());
 
-        mTracker.startActivity(mListener, mIntent);
+        mTracker.startActivity(mListener, mIntent, null);
 
         // Simulate the case where activity result is returned to the second listener.
         mCallbackCaptor.getValue().onActivityResult(mResult);
 
         // Verify that the new callback is called immediately with the pending result.
-        verify(listenerWithSameKey).onActivityResult(mResult);
-        verify(mListener, never()).onActivityResult(any());
+        verify(listenerWithSameKey).onActivityResult(mResult, null);
+        verify(mListener, never()).onActivityResult(any(), any());
     }
 
     @Test
@@ -151,9 +173,9 @@ public class ActivityResultTrackerImplTest {
         reset(mRegistry);
 
         // Start activities in reversed registration order.
-        mTracker.startActivity(listener3, mIntent);
-        mTracker.startActivity(listener2, mIntent);
-        mTracker.startActivity(mListener, mIntent);
+        mTracker.startActivity(listener3, mIntent, null);
+        mTracker.startActivity(listener2, mIntent, null);
+        mTracker.startActivity(mListener, mIntent, null);
 
         recreateTracker();
 

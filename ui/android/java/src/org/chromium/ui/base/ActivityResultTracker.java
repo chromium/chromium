@@ -5,6 +5,7 @@
 package org.chromium.ui.base;
 
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -12,6 +13,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Manages activity results, ensuring results are not lost if the calling activity is destroyed and
@@ -87,8 +89,10 @@ public interface ActivityResultTracker {
          * Called when an activity returns a result.
          *
          * @param result The result returned by the activity.
+         * @param savedInstanceData The optional bundle containing data saved before starting the
+         *     activity.
          */
-        void onActivityResult(ActivityResult result);
+        void onActivityResult(ActivityResult result, @Nullable Bundle savedInstanceData);
 
         /**
          * Returns a key that identifies this listener across activity recreation. It's preferable
@@ -118,8 +122,10 @@ public interface ActivityResultTracker {
      * Starts an activity for result. The result handling callback must be registered before calling
      * this method.
      *
-     * @param key The key that was used to register the launcher.
+     * @param listener The listener to be notified when the result is returned.
      * @param intent The intent to start the activity.
+     * @param savedInstanceData The optional bundle containing data to be saved and restored across
+     *     activity recreation.
      */
-    void startActivity(ResultListener listener, Intent intent);
+    void startActivity(ResultListener listener, Intent intent, @Nullable Bundle savedInstanceData);
 }
