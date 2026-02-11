@@ -35,6 +35,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/feedback/report_unsafe_site_dialog.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -2323,7 +2324,7 @@ void OpenFeedbackDialog(BrowserWindowInterface* bwi,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void OpenReportUnsafeSiteDialog(Browser* browser) {
   base::RecordAction(UserMetricsAction("ReportUnsafeSite"));
-  // TODO(crbug.com/468396148): Implement
+  feedback::ReportUnsafeSiteDialog::Show(browser);
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

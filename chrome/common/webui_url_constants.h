@@ -145,6 +145,8 @@ inline constexpr char kChromeUIFaviconHost[] = "favicon";
 inline constexpr char kChromeUIFaviconURL[] = "chrome://favicon/";
 inline constexpr char kChromeUIFeedbackHost[] = "feedback";
 inline constexpr char kChromeUIFeedbackURL[] = "chrome://feedback/";
+inline constexpr char kChromeUIFeedbackReportUnsafeSiteURL[] =
+    "chrome://feedback/report-unsafe-site";
 inline constexpr char kChromeUIFileiconURL[] = "chrome://fileicon/";
 inline constexpr char kChromeUIFlagsHost[] = "flags";
 inline constexpr char kChromeUIFlagsURL[] = "chrome://flags/";

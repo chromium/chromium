@@ -101,13 +101,17 @@ bool FeedbackUI::IsFeedbackEnabled(Profile* profile) {
 }
 
 FeedbackUIConfig::FeedbackUIConfig()
-    : DefaultWebUIConfig(content::kChromeUIScheme,
-                         chrome::kChromeUIFeedbackHost) {}
+    : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
+                                  chrome::kChromeUIFeedbackHost) {}
 
 bool FeedbackUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return FeedbackUI::IsFeedbackEnabled(
       Profile::FromBrowserContext(browser_context));
+}
+
+bool FeedbackUIConfig::ShouldAutoResizeHost() {
+  return true;
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(FeedbackUI)

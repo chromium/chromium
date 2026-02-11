@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_FEEDBACK_REPORT_UNSAFE_SITE_DIALOG_H_
 #define CHROME_BROWSER_FEEDBACK_REPORT_UNSAFE_SITE_DIALOG_H_
 
+class Browser;
 class Profile;
 
 namespace feedback {
@@ -14,6 +15,9 @@ class ReportUnsafeSiteDialog {
  public:
   // Returns whether reporting unsafe sites is currently enabled.
   static bool IsEnabled(const Profile& profile);
+
+  // Shows dialog in the passed-in browser.
+  static void Show(Browser* browser);
 };
 
 }  // namespace feedback

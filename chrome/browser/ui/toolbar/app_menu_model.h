@@ -171,6 +171,21 @@ class ExtensionsMenuModel : public ui::SimpleMenuModel {
   void Build(Browser* browser);
 };
 
+class HelpMenuModel : public ui::SimpleMenuModel {
+ public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kReportUnsafeSiteMenuItem);
+
+  HelpMenuModel(ui::SimpleMenuModel::Delegate* delegate, Browser* browser);
+
+  HelpMenuModel(const HelpMenuModel&) = delete;
+  HelpMenuModel& operator=(const HelpMenuModel&) = delete;
+
+  ~HelpMenuModel() override;
+
+ private:
+  void Build(Browser* browser);
+};
+
 // A menu model that builds the contents of the app menu.
 class AppMenuModel : public ui::SimpleMenuModel,
                      public user_education::HighlightingSimpleMenuModelDelegate,
@@ -197,6 +212,7 @@ class AppMenuModel : public ui::SimpleMenuModel,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInstallAppItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCreateShortcutItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSetBrowserAsDefaultMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHelpMenuItem);
 
   // Number of menus within the app menu with an arbitrarily high (variable)
   // number of menu items. For example, the number of bookmarks menu items
