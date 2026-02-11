@@ -8,8 +8,8 @@
 
 #include "base/functional/bind.h"
 #include "base/rand_util.h"
-#include "chrome/android/features/tab_ui/jni_headers/TabBottomSheetNativeInterface_jni.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/TabBottomSheetNativeInterface_jni.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 

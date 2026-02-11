@@ -93,8 +93,6 @@ android_resources("java_resources") {
     "java/res/layout/price_card.xml",
     "java/res/layout/resizable_tab_grid_message_card_item.xml",
     "java/res/layout/strip_drag_shadow_view.xml",
-    "java/res/layout/tab_bottom_sheet.xml",
-    "java/res/layout/tab_bottom_sheet_toolbar.xml",
     "java/res/layout/tab_card_label_layout.xml",
     "java/res/layout/tab_grid_card_item.xml",
     "java/res/layout/tab_grid_card_item_layout.xml",
@@ -255,8 +253,4 @@ android_library("test_support_javalib") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:url_java",
   ]
-}
-
-generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/tasks/tab_management/tab_bottom_sheet/TabBottomSheetNativeInterface.java" ]
 }

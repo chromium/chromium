@@ -15,6 +15,8 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
@@ -25,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
@@ -136,6 +139,7 @@ import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPoli
 import org.chromium.chrome.browser.ntp_customization.theme.NtpSyncedThemeManager;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
+import org.chromium.chrome.browser.omnibox.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.open_in_app.OpenInAppUtils;
 import org.chromium.chrome.browser.open_in_app.TabbedOpenInAppEntryPoint;
@@ -166,6 +170,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetFusebox.TabBottomSheetFuseboxConfig;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonController;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonControllerFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl;
@@ -187,8 +194,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListFaviconResolverFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
-import org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetManager;
-import org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
@@ -221,6 +226,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -1651,9 +1657,30 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     private void initiateTabBottomSheetManagers() {
         if (TabBottomSheetUtils.isTabBottomSheetEnabled()) {
+            View contentView =
+                    LayoutInflater.from(mActivity).inflate(R.layout.search_activity, null);
+            OmniboxActionDelegate omniboxActionDelegate =
+                    new OmniboxActionDelegateImpl(
+                            mActivity,
+                            () -> null,
+                            /* openUrlInExistingTabElseNewTabCb= */ (url) -> {},
+                            /* openIncognitoTabCb= */ CallbackUtils.emptyRunnable(),
+                            /* openPasswordSettingsCb= */ CallbackUtils.emptyRunnable(),
+                            /* openQuickDeleteCb= */ CallbackUtils.emptyRunnable(),
+                            /* tabWindowManagerSupplier= */ SupplierUtils.ofNull(),
+                            /* bringTabToFrontCallback= */ (tabInfo, url) -> {});
+            TabBottomSheetFuseboxConfig fuseboxConfig =
+                    new TabBottomSheetFuseboxConfig(
+                            contentView,
+                            contentView.findViewById(R.id.search_location_bar),
+                            contentView.findViewById(R.id.toolbar),
+                            contentView.findViewById(R.id.control_container),
+                            contentView.findViewById(R.id.bottom_container),
+                            omniboxActionDelegate);
             mTabBottomSheetManager =
                     new TabBottomSheetManager(
                             mActivity,
+                            fuseboxConfig,
                             mProfileSupplier.asNonNull(),
                             mWindowAndroid,
                             mActivityLifecycleDispatcher,

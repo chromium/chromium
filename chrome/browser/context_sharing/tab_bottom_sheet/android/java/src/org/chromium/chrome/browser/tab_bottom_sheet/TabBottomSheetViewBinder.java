@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet;
+package org.chromium.chrome.browser.tab_bottom_sheet;
 
-import static org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetProperties.FUSEBOX_OFFSET;
+import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.FUSEBOX_OFFSET;
 
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

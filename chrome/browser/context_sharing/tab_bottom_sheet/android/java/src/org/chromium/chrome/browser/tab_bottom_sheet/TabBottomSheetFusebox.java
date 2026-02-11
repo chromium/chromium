@@ -2,33 +2,55 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet;
+package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.app.Activity;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
-import org.chromium.chrome.browser.omnibox.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.NoOpTopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
 /** The fusebox (omnibox) component for the tab bottom sheet. */
 @NullMarked
 public class TabBottomSheetFusebox {
+    /** Delegate for the tab bottom sheet fusebox. */
+    public static class TabBottomSheetFuseboxConfig {
+        public final View contentView;
+        public final View locationBarLayout;
+        public final View anchorView;
+        public final View controlContainer;
+        public final View bottomContainer;
+        public final OmniboxActionDelegate omniboxActionDelegate;
+
+        public TabBottomSheetFuseboxConfig(
+                View contentView,
+                View locationBarLayout,
+                View anchorView,
+                View controlContainer,
+                View bottomContainer,
+                OmniboxActionDelegate omniboxActionDelegate) {
+            this.contentView = contentView;
+            this.locationBarLayout = locationBarLayout;
+            this.anchorView = anchorView;
+            this.controlContainer = controlContainer;
+            this.bottomContainer = bottomContainer;
+            this.omniboxActionDelegate = omniboxActionDelegate;
+        }
+    }
+
     private final BackKeyBehaviorDelegate mBackKeyBehaviorDelegate =
             new BackKeyBehaviorDelegate() {};
     private final LocationBarCoordinator mLocationBarCoordinator;
@@ -37,36 +59,26 @@ public class TabBottomSheetFusebox {
 
     TabBottomSheetFusebox(
             Activity activity,
+            TabBottomSheetFuseboxConfig config,
             NonNullObservableSupplier<Profile> profileSupplier,
             WindowAndroid windowAndroid,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Callback<String> loadUrlCallback,
             SnackbarManager snackbarManager) {
+
         mDataProvider = new TabBottomSheetFuseboxDataProvider();
         mDataProvider.initialize(activity, profileSupplier.get().isOffTheRecord());
 
-        mContentView = LayoutInflater.from(activity).inflate(R.layout.search_activity, null);
-        View locationBarLayout = mContentView.findViewById(R.id.search_location_bar);
-        View anchorView = mContentView.findViewById(R.id.toolbar);
-        View controlContainer = mContentView.findViewById(R.id.control_container);
-        View bottomContainer = mContentView.findViewById(R.id.bottom_container);
+        mContentView = config.contentView;
+        View locationBarLayout = config.locationBarLayout;
+        View anchorView = config.anchorView;
+        View controlContainer = config.controlContainer;
+        View bottomContainer = config.bottomContainer;
 
         LocationBarEmbedderUiOverrides uiOverrides = new LocationBarEmbedderUiOverrides();
         uiOverrides.setForcedPhoneStyleOmnibox();
         uiOverrides.setLensEntrypointAllowed(true);
         uiOverrides.setVoiceEntrypointAllowed(true);
-
-        // LocationBarCoordinator args.
-        OmniboxActionDelegateImpl omniboxActionDelegate =
-                new OmniboxActionDelegateImpl(
-                        activity,
-                        () -> null,
-                        /* openUrlInExistingTabElseNewTabCb= */ (url) -> {},
-                        /* openIncognitoTabCb= */ CallbackUtils.emptyRunnable(),
-                        /* openPasswordSettingsCb= */ CallbackUtils.emptyRunnable(),
-                        /* openQuickDeleteCb= */ CallbackUtils.emptyRunnable(),
-                        /* tabWindowManagerSupplier= */ SupplierUtils.ofNull(),
-                        /* bringTabToFrontCallback= */ (tabInfo, url) -> {});
 
         mLocationBarCoordinator =
                 new LocationBarCoordinator(
@@ -92,7 +104,7 @@ public class TabBottomSheetFusebox {
                         /* bookmarkState= */ (url) -> false,
                         /* isToolbarMicEnabledSupplier= */ () -> true,
                         /* merchantTrustSignalsCoordinatorSupplier= */ null,
-                        omniboxActionDelegate,
+                        config.omniboxActionDelegate,
                         /* browserControlsVisibilityDelegate= */ null,
                         /* backPressManager= */ null,
                         /* omniboxSuggestionsDropdownScrollListener= */ null,

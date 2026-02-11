@@ -1022,17 +1022,6 @@
         Send feedback
       </message>
 
-      <!-- Tab Bottom Sheet Strings -->
-      <message name="IDS_TAB_BOTTOM_SHEET_CLOSED" desc="The announcement when the Tab Bottom Sheet is closed.">
-        Tab Bottom Sheet changes closed.
-      </message>
-      <message name="IDS_TAB_BOTTOM_SHEET_HALF_HEIGHT" desc="The announcement when the Tab Bottom Sheet is opened to half height.">
-        Tab Bottom Sheet at half height.
-      </message>
-      <message name="IDS_TAB_BOTTOM_SHEET_FULL_HEIGHT" desc="The announcement when the Tab Bottom Sheet is opened to full height.">
-        Tab Bottom Sheet at full height
-      </message>
-
       <!-- Auto Delete Decision Promo Strings -->
       <message name="IDS_ARCHIVED_TABS_AUTO_DELETE_PROMO_TITLE" desc="Title text for the Auto Delete Decision Bottom Sheet.">
         Your inactive items won’t pile up

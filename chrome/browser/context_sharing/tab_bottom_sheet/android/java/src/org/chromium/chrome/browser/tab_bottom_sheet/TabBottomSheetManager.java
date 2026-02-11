@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet;
+package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -16,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetFusebox.TabBottomSheetFuseboxConfig;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -80,6 +81,7 @@ public class TabBottomSheetManager implements Destroyable {
      */
     public TabBottomSheetManager(
             Activity activity,
+            @Nullable TabBottomSheetFuseboxConfig fuseboxConfig,
             NonNullObservableSupplier<Profile> profileSupplier,
             WindowAndroid windowAndroid,
             ActivityLifecycleDispatcher lifecycleDispatcher,
@@ -90,10 +92,11 @@ public class TabBottomSheetManager implements Destroyable {
         mBottomSheetController = bottomSheetController;
         mToolbar = new TabBottomSheetSimpleToolbar(activity);
         mWebUi = new TabBottomSheetWebUi(activity, windowAndroid);
-        if (TabBottomSheetUtils.shouldShowFusebox()) {
+        if (TabBottomSheetUtils.shouldShowFusebox() && fuseboxConfig != null) {
             mFusebox =
                     new TabBottomSheetFusebox(
                             activity,
+                            fuseboxConfig,
                             profileSupplier,
                             windowAndroid,
                             lifecycleDispatcher,

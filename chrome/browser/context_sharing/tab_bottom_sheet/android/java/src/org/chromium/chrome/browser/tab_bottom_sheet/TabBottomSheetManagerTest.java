@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet;
+package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import static org.junit.Assert.assertNull;
-
-import android.view.View;
-import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
 
@@ -25,7 +22,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetManager.NativeInterfaceDelegate;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager.NativeInterfaceDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -46,8 +43,6 @@ public class TabBottomSheetManagerTest {
     private WindowAndroid mWindowAndroid;
     private BottomSheetController mBottomSheetController;
     private TabBottomSheetManager mManager;
-    private TabBottomSheetToolbar mToolbar;
-    private View mFusebox;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -67,12 +62,10 @@ public class TabBottomSheetManagerTest {
                     mBottomSheetController =
                             mActivity.getRootUiCoordinatorForTesting().getBottomSheetController();
 
-                    mToolbar = new TabBottomSheetSimpleToolbar(mActivity);
-                    mFusebox = new FrameLayout(mActivity);
-
                     mManager =
                             new TabBottomSheetManager(
                                     mActivity,
+                                    /* fuseboxConfig= */ null,
                                     profileSupplier,
                                     mWindowAndroid,
                                     mActivity.getLifecycleDispatcher(),
