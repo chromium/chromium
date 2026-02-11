@@ -19,6 +19,7 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
 
@@ -176,17 +177,21 @@ tabs::TabInterface* TabListBridge::GetOpenerForTab(tabs::TabHandle target) {
   return tab_strip_->GetOpenerOfTabAt(target_index);
 }
 
-void TabListBridge::DiscardTab(tabs::TabHandle tab) {
+content::WebContents* TabListBridge::DiscardTab(tabs::TabHandle tab) {
   content::WebContents* contents = tab.Get()->GetContents();
-  if (contents) {
-    resource_coordinator::TabLifecycleUnitExternal*
-        tab_lifecycle_unit_external =
-            resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
-                contents);
-    CHECK(tab_lifecycle_unit_external);
-    tab_lifecycle_unit_external->DiscardTab(
-        mojom::LifecycleUnitDiscardReason::EXTERNAL);
+  if (!contents) {
+    return nullptr;
   }
+
+  resource_coordinator::TabLifecycleUnitExternal* tab_lifecycle_unit_external =
+      resource_coordinator::TabLifecycleUnitExternal::FromWebContents(contents);
+  CHECK(tab_lifecycle_unit_external);
+  if (tab_lifecycle_unit_external->DiscardTab(
+          mojom::LifecycleUnitDiscardReason::EXTERNAL)) {
+    return tab_lifecycle_unit_external->GetWebContents();
+  }
+
+  return nullptr;
 }
 
 tabs::TabInterface* TabListBridge::DuplicateTab(tabs::TabHandle tab) {

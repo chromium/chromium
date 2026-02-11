@@ -167,8 +167,9 @@ tabs::TabInterface* TestTabModel::GetOpenerForTab(tabs::TabHandle target) {
   return nullptr;
 }
 
-void TestTabModel::DiscardTab(tabs::TabHandle tab) {
+content::WebContents* TestTabModel::DiscardTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
+  return nullptr;
 }
 
 tabs::TabInterface* TestTabModel::DuplicateTab(tabs::TabHandle tab) {
@@ -479,8 +480,9 @@ tabs::TabInterface* OwningTestTabModel::GetOpenerForTab(
   return nullptr;
 }
 
-void OwningTestTabModel::DiscardTab(tabs::TabHandle tab) {
+content::WebContents* OwningTestTabModel::DiscardTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
+  return nullptr;
 }
 
 tabs::TabInterface* OwningTestTabModel::DuplicateTab(tabs::TabHandle tab) {

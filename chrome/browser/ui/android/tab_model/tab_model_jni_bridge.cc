@@ -519,23 +519,24 @@ tabs::TabInterface* TabModelJniBridge::GetOpenerForTab(tabs::TabHandle target) {
   return Java_TabModelJniBridge_getOpenerForTab(env, jobj, target_tab);
 }
 
-void TabModelJniBridge::DiscardTab(tabs::TabHandle tab) {
+content::WebContents* TabModelJniBridge::DiscardTab(tabs::TabHandle tab) {
   if (!base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
-    return;
+    return nullptr;
   }
 
   TabAndroid* tab_android = TabAndroid::FromTabHandle(tab);
   // For now just don't discard the activated tab. This ruleset could be refined
   // in the future.
   if (!tab_android || tab_android->IsActivated()) {
-    return;
+    return nullptr;
   }
 
   content::WebContents* web_contents = tab_android->web_contents();
   if (!web_contents) {
-    return;
+    return nullptr;
   }
   web_contents->Discard(base::DoNothing());
+  return web_contents;
 }
 
 tabs::TabInterface* TabModelJniBridge::DuplicateTab(tabs::TabHandle tab) {

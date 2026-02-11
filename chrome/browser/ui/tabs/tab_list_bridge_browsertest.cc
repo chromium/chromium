@@ -997,13 +997,14 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, DiscardTab) {
 
   // Discard the second tab.
   tabs::TabInterface* tab_to_discard = tab_list_interface->GetTab(1);
-  tab_list_interface->DiscardTab(tab_to_discard->GetHandle());
+  auto* discarded_contents =
+      tab_list_interface->DiscardTab(tab_to_discard->GetHandle());
 
   // The second tab should now be discarded.
-  web_contents = tab_list_interface->GetTab(1)->GetContents();
+  EXPECT_EQ(tab_list_interface->GetTab(1)->GetContents(), discarded_contents);
   EXPECT_EQ(mojom::LifecycleUnitState::DISCARDED,
             resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
-                web_contents)
+                discarded_contents)
                 ->GetTabState());
 }
 

@@ -14,6 +14,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/range/range.h"
@@ -54,7 +55,7 @@ class MockTabListInterface : public TabListInterface {
               GetOpenerForTab,
               (tabs::TabHandle),
               (override));
-  MOCK_METHOD(void, DiscardTab, (tabs::TabHandle), (override));
+  MOCK_METHOD(content::WebContents*, DiscardTab, (tabs::TabHandle), (override));
   MOCK_METHOD(tabs::TabInterface*, DuplicateTab, (tabs::TabHandle), (override));
   MOCK_METHOD(tabs::TabInterface*, GetTab, (int), (override));
   MOCK_METHOD(int, GetIndexOfTab, (tabs::TabHandle), (override));

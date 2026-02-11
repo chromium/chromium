@@ -22,6 +22,10 @@ class Profile;
 class SessionID;
 class TabListInterfaceObserver;
 
+namespace content {
+class WebContents;
+}
+
 namespace gfx {
 class Range;
 }
@@ -78,11 +82,12 @@ class TabListInterface {
   // Get the `opener` tab from `target` tab.
   virtual tabs::TabInterface* GetOpenerForTab(tabs::TabHandle target) = 0;
 
-  // Attempts to discard the renderer for the `tab` from memory.
+  // Attempts to discard the renderer for the `tab` from memory and return the
+  // discarded WebContents if successful.
   //
   // For details refer to:
   // docs/website/site/chromium-os/chromiumos-design-docs/tab-discarding-and-reloading/index.md
-  virtual void DiscardTab(tabs::TabHandle tab) = 0;
+  virtual content::WebContents* DiscardTab(tabs::TabHandle tab) = 0;
 
   // Duplicates the `tab` to the next adjacent index. Returns the newly-
   // created tab.
