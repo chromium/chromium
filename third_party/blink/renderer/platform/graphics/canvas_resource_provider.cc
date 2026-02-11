@@ -721,7 +721,7 @@ bool CanvasNon2DResourceProviderSharedImage::OverwriteImage(
 }
 
 scoped_refptr<gpu::ClientSharedImage>
-CanvasNon2DResourceProviderSharedImage::GetBackingClientSharedImage(
+CanvasNon2DResourceProviderSharedImage::BeginExternalWrite(
     gpu::SyncToken& internal_access_sync_token) {
   return GetBackingClientSharedImageForExternalWrite(
       gpu::SharedImageUsageSet(), internal_access_sync_token);

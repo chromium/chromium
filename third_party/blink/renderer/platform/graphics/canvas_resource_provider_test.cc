@@ -146,7 +146,7 @@ class CanvasResourceProviderTest : public Test {
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform_;
 };
 
-TEST_F(CanvasResourceProviderTest, GetBackingClientSharedImage) {
+TEST_F(CanvasResourceProviderTest, BeginExternalWrite) {
   const gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
       gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
@@ -162,10 +162,10 @@ TEST_F(CanvasResourceProviderTest, GetBackingClientSharedImage) {
   gpu::SyncToken sync_token;
 
   // The same ClientSharedImage should be returned from sequential calls to
-  // GetBackingClientSharedImage().
-  auto client_si = provider->GetBackingClientSharedImage(sync_token);
-  auto client_si_from_second_call =
-      provider->GetBackingClientSharedImage(sync_token);
+  // BeginExternalWrite().
+  auto client_si = provider->BeginExternalWrite(sync_token);
+  provider->EndExternalWrite(sync_token);
+  auto client_si_from_second_call = provider->BeginExternalWrite(sync_token);
   EXPECT_EQ(client_si_from_second_call, client_si);
 }
 

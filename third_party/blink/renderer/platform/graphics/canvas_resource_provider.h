@@ -721,8 +721,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
   // exists, after flushing the resource and signaling that an external write
   // will occur on it. The caller should wait on `internal_access_sync_token`
-  // before writing the contents.
-  scoped_refptr<gpu::ClientSharedImage> GetBackingClientSharedImage(
+  // before writing the contents. When the external write is complete, the
+  // caller should call `EndExternalWrite()`.
+  scoped_refptr<gpu::ClientSharedImage> BeginExternalWrite(
       gpu::SyncToken& internal_access_sync_token);
 
   // Overwrites the current image (either completely or partially) with the
