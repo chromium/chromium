@@ -3,8 +3,37 @@ env:
   GIT_TERMINAL_PROMPT: 0
 
 steps:
+  # TODO: re-enable preflight checks once builds are stable
+  # - label: "Preflight checks (lint/etc)"
+  #   key: "preflight-checks"
+  #   plugins:
+  #     - thedyrt/skip-checkout#v0.1.1:
+  #         cd: /home/ubuntu/chromium/src
+  #     - seek-oss/aws-sm#v2.3.1:
+  #         region: us-east-2
+  #         env:
+  #           BUILDEVENT_APIKEY: honeycomb-api-key
+  #           BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-buildevents
+  #     - replayio/buildevents#76b6f57: ~
+  #   commands:
+  #     - "be_cmd git-fetch-all -- git fetch --all"
+  #     - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
+  #     - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
+  #     - "pushd replay_build_scripts"
+  #     - "be_cmd npm-ci -- npm ci"
+  #     - "be_cmd lint-replay_build_scripts -- npm run lint"
+  #     - "popd"
+  #     - "be_cmd lint-replay-scripts -- node replay_build_scripts/lint.mjs"
+  #   env:
+  #     RECORD_REPLAY_BACKEND_DIR: /home/ubuntu/chromium/backend
+  #   agents:
+  #     - "runtimeType=chromiumbuild"
+  #     - "os=linux"
+  #     - "queue=runtime"
+
   - label: "🔨 Chromium (linux-x86_64)"
     key: "build-chromium-linux-x86_64"
+    # depends_on: "preflight-checks"
     timeout_in_minutes: 360
     plugins:
       - thedyrt/skip-checkout#v0.1.1:
@@ -38,6 +67,22 @@ steps:
       - "queue=runtime"
     artifact_paths:
       - "build_id/linux/x86_64/**"
+
+  # TODO: re-enable E2E tests once linux builds are stable
+  # - label: "📝 E2E Tests (linux-x86_64)"
+  #   trigger: "runtime-fe-end-to-end-tests"
+  #   depends_on:
+  #     - "build-chromium-linux-x86_64"
+  #   build:
+  #     env:
+  #       OS: "linux"
+  #       ARCH: "x86_64"
+  #       RECORD_REPLAY_METADATA_SOURCE_COMMIT_TITLE: "${BUILDKITE_MESSAGE}"
+  #       RECORD_REPLAY_METADATA_SOURCE_COMMIT_ID: "${BUILDKITE_COMMIT}"
+  #       RECORD_REPLAY_METADATA_SOURCE_BRANCH: "${BUILDKITE_BRANCH}"
+  #       RECORD_REPLAY_METADATA_SOURCE_MERGE_ID: "${BUILDKITE_PULL_REQUEST}"
+  #       RUNTIME_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+
   - label: "🔨 Chromium (mac-x86_64)"
     key: "build-chromium-mac-x86_64"
     timeout_in_minutes: 360
@@ -93,3 +138,24 @@ steps:
       - "queue=runtime"
     artifact_paths:
       - "build_id/macOS/arm64/**"
+
+  # TODO: re-enable buildevents watch once builds are stable
+  # - wait: ~
+  #   continue_on_failure: true
+  #
+  # - label: "🕵️‍♀️ Buildevents Watch"
+  #   key: "buildevents-watch"
+  #   plugins:
+  #     - thedyrt/skip-checkout#v0.1.1:
+  #         cd: /home/ubuntu/chromium/src
+  #     - seek-oss/aws-sm#v2.3.1:
+  #         region: us-east-2
+  #         env:
+  #           BUILDEVENT_APIKEY: honeycomb-api-key
+  #           BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-buildevents
+  #     - replayio/buildevents#76b6f57: ~
+  #   command: "be_watch"
+  #   agents:
+  #     - "runtimeType=chromiumbuild"
+  #     - "os=linux"
+  #     - "queue=runtime"
