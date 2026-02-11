@@ -44,6 +44,12 @@ class ActionTrackerForMetricsTest : public ActorToolsTest {
   ActorKeyedService* actor_keyed_service() {
     return ActorKeyedService::Get(browser()->profile());
   }
+
+  void StopAllTasks() {
+    actor_keyed_service()->ResetForTesting();
+    // Tasks are deleted asynchronously; return only when the task is deleted.
+    WaitForPostedTask();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(ActionTrackerForMetricsTest, WaitAfterClick_Recorded) {
@@ -75,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(ActionTrackerForMetricsTest, WaitAfterClick_Recorded) {
   actor_task().Act(ToRequestList(MakeWaitRequest()), result3.GetCallback());
   ExpectOkResult(result3);
 
-  actor_keyed_service()->ResetForTesting();
+  StopAllTasks();
 
   histogram_tester.ExpectUniqueSample("Actor.Task.SubsequentWaits.Click",
                                       /*sample=*/1,
@@ -121,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(ActionTrackerForMetricsTest, TwoWaits_Recorded) {
   actor_task().Act(ToRequestList(MakeWaitRequest()), result4.GetCallback());
   ExpectOkResult(result4);
 
-  actor_keyed_service()->ResetForTesting();
+  StopAllTasks();
 
   histogram_tester.ExpectUniqueSample("Actor.Task.SubsequentWaits.Click",
                                       /*sample=*/1,
@@ -161,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(ActionTrackerForMetricsTest,
   actor_task().Act(ToRequestList(MakeWaitRequest()), result2.GetCallback());
   ExpectOkResult(result2);
 
-  actor_keyed_service()->ResetForTesting();
+  StopAllTasks();
 
   histogram_tester.ExpectUniqueSample("Actor.Task.SubsequentWaits.Navigate",
                                       /*sample=*/1,
@@ -185,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(ActionTrackerForMetricsTest,
   actor_task().Act(ToRequestList(MakeWaitRequest()), result.GetCallback());
   ExpectOkResult(result);
 
-  actor_keyed_service()->ResetForTesting();
+  StopAllTasks();
 
   histogram_tester.ExpectUniqueSample(kActorTaskSubsequentWaitsMetricName,
                                       /*sample=*/0,
@@ -215,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(ActionTrackerForMetricsTest,
   actor_task().Act(ToRequestList(MakeWaitRequest()), result2.GetCallback());
   ExpectOkResult(result2);
 
-  actor_keyed_service()->ResetForTesting();
+  StopAllTasks();
 
   histogram_tester.ExpectUniqueSample(kActorTaskSubsequentWaitsMetricName,
                                       /*sample=*/0,
@@ -247,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(ActionTrackerForMetricsTest, ZeroDurationWait_Recorded) {
                    result2.GetCallback());
   ExpectOkResult(result2);
 
-  actor_keyed_service()->ResetForTesting();
+  StopAllTasks();
 
   histogram_tester.ExpectUniqueSample(kActorTaskSubsequentWaitsMetricName,
                                       /*sample=*/1,
@@ -275,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(ActionTrackerForMetricsTest,
   actor_task().Act(std::move(actions), result.GetCallback());
   ExpectOkResult(result);
 
-  actor_keyed_service()->ResetForTesting();
+  StopAllTasks();
 
   histogram_tester.ExpectUniqueSample(kActorTaskSubsequentWaitsMetricName,
                                       /*sample=*/0,
@@ -305,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(ActionTrackerForMetricsTest,
   actor_task().Act(ToRequestList(MakeWaitRequest()), result2.GetCallback());
   ExpectOkResult(result2);
 
-  actor_keyed_service()->ResetForTesting();
+  StopAllTasks();
 
   histogram_tester.ExpectUniqueSample(kActorTaskSubsequentWaitsMetricName,
                                       /*sample=*/0,
@@ -339,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(ActionTrackerForMetricsTest,
   actor_task().Act(ToRequestList(MakeWaitRequest()), result3.GetCallback());
   ExpectOkResult(result3);
 
-  actor_keyed_service()->ResetForTesting();
+  StopAllTasks();
 
   histogram_tester.ExpectUniqueSample("Actor.Task.SubsequentWaits.Click",
                                       /*sample=*/1,

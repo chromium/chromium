@@ -599,6 +599,23 @@ IN_PROC_BROWSER_TEST_F(ActorEarlyAddTaskTabsBrowserTest,
   EXPECT_TRUE(tabs_at_acting_start->contains(tab));
 }
 
+// Ensure ActorKeyedService removes a task from its tracked task set when the
+// task is stopped.
+IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, ActorTaskRemovedOnStop) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  TaskId task_id = actor_task().id();
+
+  ASSERT_EQ(actor_task().GetState(), ActorTask::State::kCreated);
+  ASSERT_EQ(actor_keyed_service().GetTask(task_id), &actor_task());
+
+  actor_task().Stop(ActorTask::StoppedReason::kTaskComplete);
+
+  EXPECT_EQ(actor_keyed_service().GetTask(task_id), nullptr);
+}
+
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
                        ActorTaskAvailableInStopStateCallback) {
   const GURL url =

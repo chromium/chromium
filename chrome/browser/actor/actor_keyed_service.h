@@ -198,6 +198,12 @@ class ActorKeyedService : public KeyedService,
 
   std::map<TaskId, std::unique_ptr<ActorTask>> active_tasks_;
 
+  // Tasks that are stopped are deleted asynchronously by being placed into this
+  // map and deleted from a posted task. We use this map so that Shutdown() can
+  // force synchronous deletion since ActorTask holds references to objects
+  // owned by other keyed services which need to be released.
+  std::map<TaskId, std::unique_ptr<ActorTask>> pending_delete_tasks_;
+
   TaskId::Generator next_task_id_;
 
   base::RepeatingCallbackList<void(TaskId, ActorTask::State)>

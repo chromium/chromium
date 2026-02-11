@@ -186,6 +186,12 @@ class ExecutionEngineOriginGatingBrowserTestBase
     return browser()->tab_strip_model()->GetActiveTab();
   }
 
+  void StopAllTasks() {
+    actor_keyed_service().ResetForTesting();
+    // Tasks are deleted asynchronously; return only when the task is deleted.
+    WaitForPostedTask();
+  }
+
   void ClickTarget(
       std::string_view query_selector,
       mojom::ActionResultCode expected_code = mojom::ActionResultCode::kOk) {
@@ -586,7 +592,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   // Test that navigation allowlist is not persisted across separate tasks.
   auto previous_id = actor_task().id();
   RunTestSequence(CloseGlic());
-  actor_keyed_service().ResetForTesting();
+  StopAllTasks();
   OpenGlicAndCreateTask();
   ASSERT_NE(previous_id, actor_task().id());
 
@@ -681,7 +687,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
           url::Origin::Create(blocked_origin_url)))));
 
   // Trigger ExecutionEngine destructor for metrics.
-  actor_keyed_service().ResetForTesting();
+  StopAllTasks();
 
   // Navigation gating should only be applied to the first navigation action.
   histogram_tester_for_init_.ExpectBucketCount(
@@ -739,7 +745,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
           url::Origin::Create(blocked_page)))));
 
   // Trigger ExecutionEngine destructor for metrics.
-  actor_keyed_service().ResetForTesting();
+  StopAllTasks();
 
   // Each actual navigation should not have applied the gate. The origin was
   // confirmed when during MayActOnTab.
@@ -895,7 +901,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   ExpectErrorResult(result,
                     mojom::ActionResultCode::kTriggeredNavigationBlocked);
 
-  actor_keyed_service().ResetForTesting();
+  StopAllTasks();
 
   histogram_tester_for_init_.ExpectUniqueSample(
       "Actor.NavigationGating.GatingDecision",
@@ -1220,7 +1226,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
           url::Origin::Create(second_url)))));
 
   // Trigger ExecutionEngine destructor for metrics.
-  actor_keyed_service().ResetForTesting();
+  StopAllTasks();
 
   // Should add the origin to the allowlist.
   histogram_tester_for_init_.ExpectBucketCount(
@@ -1253,7 +1259,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
   }
 
   // Trigger ExecutionEngine destructor for metrics.
-  actor_keyed_service().ResetForTesting();
+  StopAllTasks();
 
   // If prompting is enabled, there should be a single confirmation.
   histogram_tester_for_init_.ExpectBucketCount(

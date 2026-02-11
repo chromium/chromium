@@ -149,8 +149,6 @@ class ActorTask {
   static State GetTaskStateFromStoppedReason(StoppedReason stopped_reason);
 
   // Sets State to `stop_reason` and cancels any pending actions.
-  // TODO(bokan): It's important that Stop only be called from ActorKeyedService
-  // since that has to clean up actor tasks. Add a PassKey.
   void Stop(StoppedReason stop_reason);
 
   // Pause() is called to indicate that either the actor or user is pausing

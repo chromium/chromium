@@ -235,6 +235,10 @@ void SetUpBlocklist(base::CommandLine* command_line,
 // For tests with link pages whose destination is encoded in URL parameters.
 std::string EncodeURI(const std::string& component);
 
+// Waits until a posted task is invoked. Used to ensures any prior posted tasks
+// are run (assuming a sequenced task runner).
+void WaitForPostedTask();
+
 // Helper to parse a Base64 string into a protobuf of type `ProtoType`.
 template <typename ProtoType>
 base::expected<ProtoType, std::string> ParseBase64Proto(

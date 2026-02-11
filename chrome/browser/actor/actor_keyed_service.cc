@@ -130,6 +130,10 @@ void ActorKeyedService::Shutdown() {
   // Ensure all tasks are stopped here so we don't cause them to stop in the
   // dtor.
   StopAllTasks(ActorTask::StoppedReason::kShutdown);
+
+  // Ensure tasks get deleted synchronously to avoid dangling refs.
+  CHECK(active_tasks_.empty());
+  pending_delete_tasks_.clear();
 }
 
 // static
@@ -366,6 +370,25 @@ base::CallbackListSubscription ActorKeyedService::AddTaskStateChangedCallback(
 void ActorKeyedService::NotifyTaskStateChanged(TaskId task_id,
                                                ActorTask::State state) {
   task_state_change_callback_list_.Notify(task_id, state);
+
+  if (ActorTask::IsCompletedState(state)) {
+    // Remove a stopped task from the active_tasks_ list. Post this since this
+    // call comes from the ActorTask so we don't want to delete it while it's on
+    // the stack.
+    auto node = active_tasks_.extract(task_id);
+    if (!node.empty()) {
+      pending_delete_tasks_.insert(std::move(node));
+
+      RunLater(base::BindOnce(
+          [](base::WeakPtr<ActorKeyedService> self, TaskId task_id) {
+            if (!self) {
+              return;
+            }
+            self->pending_delete_tasks_.erase(task_id);
+          },
+          GetWeakPtr(), task_id));
+    }
+  }
 }
 
 void ActorKeyedService::RequestTabObservation(
@@ -557,7 +580,6 @@ void ActorKeyedService::StopTask(TaskId task_id,
   }
 
   task_itr->second->Stop(stop_reason);
-  active_tasks_.erase(task_itr);
 }
 
 ActorTask* ActorKeyedService::GetTask(TaskId task_id) {

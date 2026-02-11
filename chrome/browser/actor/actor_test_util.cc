@@ -13,6 +13,8 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/enterprise_policy_url_checker.h"
@@ -673,6 +675,15 @@ std::string EncodeURI(const std::string& component) {
   url::RawCanonOutputT<char> encoded;
   url::EncodeURIComponent(component, &encoded);
   return std::string(encoded.view());
+}
+
+void WaitForPostedTask() {
+  {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
 }
 
 ExecutionEngineStateWaiter::ExecutionEngineStateWaiter(

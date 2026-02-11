@@ -6,6 +6,7 @@
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
@@ -302,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
 
   // Verify that the task can be stopped cleanly.
   actor_task().Stop(ActorTask::StoppedReason::kTaskComplete);
-  EXPECT_EQ(actor_task().GetState(), ActorTask::State::kFinished);
+  EXPECT_EQ(actor_keyed_service().GetTask(task_id_), nullptr);
 }
 
 }  // namespace

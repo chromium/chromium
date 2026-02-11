@@ -430,11 +430,11 @@ void ActorTask::Stop(StoppedReason stop_reason) {
 
   SetState(final_state);
 
-    ui_event_dispatcher_->OnActorTaskSyncChange(ui::UiEventDispatcher::StopTask{
-        .task_id = id_,
-        .final_state = final_state,
-        .title = title_,
-        .last_acted_on_tab_handle = last_tab_handle});
+  ui_event_dispatcher_->OnActorTaskSyncChange(ui::UiEventDispatcher::StopTask{
+      .task_id = id_,
+      .final_state = final_state,
+      .title = title_,
+      .last_acted_on_tab_handle = last_tab_handle});
 }
 
 void ActorTask::Pause(bool from_actor, bool cancel_existing_action) {

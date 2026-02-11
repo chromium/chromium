@@ -103,6 +103,13 @@ TEST_F(ActorKeyedServiceTest, StopActiveTask) {
   EXPECT_TRUE(task->IsActingOnTab(tabs::TabHandle(123)));
   EXPECT_TRUE(task->HasTab(tabs::TabHandle(123)));
   actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
+
+  // Tasks are deleted asynchronously.
+  EXPECT_TRUE(task);
+  EXPECT_EQ(task->GetState(), ActorTask::State::kFinished);
+
+  // Ensure the task is eventually deleted.
+  WaitForPostedTask();
   ASSERT_EQ(actor_service->GetActiveTasks().size(), 0u);
   ASSERT_FALSE(task);
 }
@@ -150,6 +157,7 @@ TEST_F(ActorKeyedServiceTest, AddTabToPausedOrStoppedTask) {
 
   // Stop the task and ensure it is gone.
   actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
+  WaitForPostedTask();
   EXPECT_FALSE(task);
 }
 
@@ -207,8 +215,9 @@ TEST_F(ActorKeyedServiceTest, PausedTaskTabs) {
   EXPECT_TRUE(task->IsActingOnTab(tab_handle));
   EXPECT_TRUE(task->HasTab(tab_handle));
 
-  // Stop the task. This should remove the tab from the task.
+  // Stop the task. This should (asynchronously) remove the tab from the task.
   actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
+  WaitForPostedTask();
   EXPECT_FALSE(task);
 }
 
