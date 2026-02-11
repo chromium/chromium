@@ -10,7 +10,6 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -42,6 +41,7 @@
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement_id.h"
 #include "sql/streaming_blob_handle.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 
 // Forward declaration for SQLite structures. Headers in the public sql:: API
@@ -1183,7 +1183,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // A list of all StatementRefs we've given out. Each ref must register with
   // us when it's created or destroyed. This allows us to potentially close
   // any open statements when we encounter an error.
-  std::set<raw_ptr<StatementRef>> open_statements_;
+  absl::flat_hash_set<raw_ptr<StatementRef>> open_statements_;
 
   // The number of blobs open for streaming, tracked for debugging purposes.
   size_t outstanding_blob_count_ = 0;
