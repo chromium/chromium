@@ -1,0 +1,59 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package record_replay;
+
+option optimize_for = LITE_RUNTIME;
+
+// Represents a recording.
+message Recording {
+  message Action {
+    message AutofillSpecifics {
+      enum Type {
+        AUTOFILL_PROFILE = 0;
+        CREDIT_CARD = 1;
+        ENTITY_INSTANCE = 2;
+      }
+      Type type = 1;
+      string guid = 2;
+    }
+
+    message ClickSpecifics {}
+
+    message SelectSpecifics {
+      string value = 1;
+    }
+
+    message TextSpecifics {
+      string value = 1;
+    }
+
+    // The time delta that elapsed between the previous action (or the start of
+    // the recording, if no previous action exists) in microseconds since
+    // Windows epoch.
+    int64 delta = 1;
+
+    // Identifies the element on which the action was executed.
+    // TODO(b/476101114): Generalize to multiple selectors.
+    string element_selector = 2;
+
+    oneof specifics {
+      AutofillSpecifics autofill_specifics = 3;
+      ClickSpecifics click_specifics = 4;
+      SelectSpecifics select_specifics = 5;
+      TextSpecifics text_specifics = 6;
+    }
+  }
+
+  // The start URL.
+  string url = 1;
+
+  // The start time in microseconds since Windows epoch.
+  int64 start_time = 2;
+
+  // The executed actions in sequential order.
+  repeated Action actions = 3;
+}

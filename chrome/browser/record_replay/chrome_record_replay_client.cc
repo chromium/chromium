@@ -8,6 +8,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/record_replay/record_replay_driver.h"
 #include "chrome/browser/record_replay/record_replay_driver_factory.h"
+#include "chrome/browser/record_replay/recording_data_manager.h"
+#include "chrome/browser/record_replay/recording_data_manager_factory.h"
 #include "chrome/common/record_replay/record_replay.mojom.h"
 #include "chrome/common/record_replay/record_replay_features.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -76,8 +78,9 @@ ChromeRecordReplayClient::GetDriverFactory() {
 
 record_replay::RecordingDataManager*
 ChromeRecordReplayClient::GetRecordingDataManager() {
-  // TODO(b/476101114): Implement.
-  return nullptr;
+  Profile* profile =
+      Profile::FromBrowserContext(tab().GetContents()->GetBrowserContext());
+  return record_replay::RecordingDataManagerFactory::GetForProfile(profile);
 }
 
 GURL ChromeRecordReplayClient::GetPrimaryMainFrameUrl() {

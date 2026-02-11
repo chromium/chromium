@@ -131,6 +131,8 @@ std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
       return "DiscountInfosDatabase";
     case ProtoDbType::NOTIFICATION_TELEMETRY_STORE:
       return "NotificationTelemetryStore";
+    case ProtoDbType::RECORD_REPLAY_STORE:
+      return "RecordReplay";
     case ProtoDbType::LAST:
       NOTREACHED();
   }
