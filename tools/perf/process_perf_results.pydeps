@@ -475,6 +475,7 @@ benchmarks/desktop_ui.py
 benchmarks/dummy_benchmark.py
 benchmarks/dummy_wpr_benchmark.py
 benchmarks/jetstream2.py
+benchmarks/jetstream3.py
 benchmarks/loading.py
 benchmarks/loading_metrics_category.py
 benchmarks/media.py
@@ -657,6 +658,7 @@ page_sets/intl_hi_ru.py
 page_sets/intl_ja_zh.py
 page_sets/intl_ko_th_vi.py
 page_sets/jetstream2_pages.py
+page_sets/jetstream3_pages.py
 page_sets/key_mobile_sites_smooth.py
 page_sets/login_helpers/__init__.py
 page_sets/login_helpers/autocad_login.py

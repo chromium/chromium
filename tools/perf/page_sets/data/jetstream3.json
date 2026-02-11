@@ -1,0 +1,12 @@
+{
+    "archives": {
+        "JetStream30": {
+            "DEFAULT": "jetstream3_09c59e8979.wprgo"
+        },
+        "JetStream3": {
+            "DEFAULT": "jetstream3_09c59e8979.wprgo"
+        }
+    },
+    "description": "Describes the Web Page Replay archives for a story set. Don't edit by hand! Use record_wpr for updating.",
+    "platform_specific": true
+}
