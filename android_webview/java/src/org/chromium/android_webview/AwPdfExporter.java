@@ -7,7 +7,6 @@ package org.chromium.android_webview;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import android.print.PrintAttributes;
-import android.util.Log;
 import android.view.ViewGroup;
 
 import org.jni_zero.CalledByNative;
@@ -15,6 +14,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.base.Log;
 import org.chromium.build.annotations.DoNotInline;
 
 /**

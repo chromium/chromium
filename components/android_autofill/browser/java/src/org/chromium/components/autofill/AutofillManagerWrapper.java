@@ -365,6 +365,6 @@ public class AutofillManagerWrapper {
         // Use 'setprop log.tag.AwAutofillManager DEBUG' to enable the log at runtime.
         // NOTE: See the comment on TAG above for why this is still AwAutofillManager.
         // Check the system setting directly.
-        sIsLoggable = android.util.Log.isLoggable(TAG, Log.DEBUG);
+        sIsLoggable = Log.isLoggable(TAG, Log.DEBUG);
     }
 }

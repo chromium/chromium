@@ -21,6 +21,11 @@ android_apk("customtabs_benchmark_apk") {
   min_sdk_version = min_supported_sdk_version
   target_sdk_version = 33
   apk_name = "CustomTabsBenchmark"
+
+  # This small benchmark app intentionally uses android.util.Log to avoid
+  # depending on //base.
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
+
   deps = [
     ":customtabs_benchmark_apk_resources",
     "//third_party/androidx:androidx_browser_browser_java",

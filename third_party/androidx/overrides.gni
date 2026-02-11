@@ -61,6 +61,7 @@ template("define_override_androidx_targets") {
       sources += [ "local_modifications/core/java/androidx/core/view/accessibility/AccessibilityNodeInfoCompat.java" ]
     }
 
+    errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
       ":androidx_annotation_annotation_jvm_java",
@@ -85,6 +86,7 @@ template("define_override_androidx_targets") {
       # Need to include this due to "internal" visibilty.
       "local_modifications/recyclerview/java/org/chromium/ui/recyclerview/widget/ItemTouchUIUtilImpl2.java",
     ]
+    errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
     deps = [
       "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/androidx:androidx_annotation_annotation_java",

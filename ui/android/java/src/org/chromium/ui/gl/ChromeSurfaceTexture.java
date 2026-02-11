@@ -5,12 +5,12 @@
 package org.chromium.ui.gl;
 
 import android.graphics.SurfaceTexture;
-import android.util.Log;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 
 /** Exposes SurfaceTexture APIs to native. */

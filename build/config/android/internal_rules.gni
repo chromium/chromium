@@ -3219,6 +3219,11 @@ if (enable_java_templates) {
       foreach(e, _javac_args) {
         args += [ "--javac-arg=" + e ]
       }
+      if (defined(invoker.xep_args)) {
+        foreach(e, invoker.xep_args) {
+          args += [ "--xep-arg=" + e ]
+        }
+      }
     }
   }
 
@@ -3373,7 +3378,7 @@ if (enable_java_templates) {
   #  requires_android: Optional. True if target can only run on Android.
   #  source_files: Optional list of Java source file paths for this target.
   #  javac_args: Optional list of extra arguments to pass to javac.
-  #  errorprone_args: Optional list of extra arguments to pass to.
+  #  errorprone_args: Optional list of Error Prone -Xep: flags (e.g. -Xep:CheckName:OFF).
   #  srcjar_deps: Optional list of .srcjar targets (not file paths). The Java
   #    source files they contain will also be compiled for this target.
   #  target_sources_file: Optional path to a file which will be written with
@@ -4129,10 +4134,10 @@ if (enable_java_templates) {
           forward_variables_from(invoker, _compile_java_forward_variables)
           enable_errorprone = true
           if (defined(invoker.errorprone_args)) {
-            if (!defined(javac_args)) {
-              javac_args = []
+            if (!defined(xep_args)) {
+              xep_args = []
             }
-            javac_args += invoker.errorprone_args
+            xep_args += invoker.errorprone_args
           }
           if (_kt_files != []) {
             kotlin_jar_path = _kotlinc_jar_path

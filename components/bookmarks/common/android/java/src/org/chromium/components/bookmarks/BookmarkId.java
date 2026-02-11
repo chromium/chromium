@@ -5,10 +5,10 @@
 package org.chromium.components.bookmarks;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 

@@ -14,6 +14,7 @@ android_library("native_test_instrumentation_test_runner_java") {
     "java/src/org/chromium/build/gtest_apk/TestStatusReceiver.java",
   ]
   srcjar_deps = [ ":aidl" ]
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 android_aidl("aidl") {

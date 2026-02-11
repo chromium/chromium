@@ -10,11 +10,11 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.impl.CronetManifest;
 

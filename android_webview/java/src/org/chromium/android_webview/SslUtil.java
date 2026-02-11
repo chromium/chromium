@@ -6,8 +6,8 @@ package org.chromium.android_webview;
 
 import android.net.http.SslCertificate;
 import android.net.http.SslError;
-import android.util.Log;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.net.NetError;

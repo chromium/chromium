@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Log;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -44,6 +45,8 @@ import java.util.concurrent.CountDownLatch;
 @Batch(JavaBridgeActivityTestRule.BATCH)
 @SuppressWarnings("UnusedMethod") // Private methods to test JavascriptInterface
 public class JavaBridgeBasicsTest {
+    private static final String TAG = "JavaBridgeBasicsTest";
+
     @Rule public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
 
     private static class TestController extends Controller {
@@ -613,7 +616,8 @@ public class JavaBridgeBasicsTest {
                                 delete globalInner;
                                 gc();
                                 return (typeof globalInner == 'undefined');
-                         })()"""));
+                         })()\
+                        """));
         // Force GC on the Java side again. The bridge had to release the inner object, so it must
         // be collected this time.
         Runtime.getRuntime().gc();
@@ -690,7 +694,8 @@ public class JavaBridgeBasicsTest {
                                 delete inner2;
                                 gc();
                                 return (typeof inner1 == 'undefined');
-                        })()"""));
+                        })()\
+                        """));
         // Force GC on the Java side again. The bridge had to release the inner object, so it must
         // be collected this time.
         Runtime.getRuntime().gc();
@@ -765,7 +770,7 @@ public class JavaBridgeBasicsTest {
                             try {
                                 Assert.assertTrue(testObject.waitOnTheLatch());
                             } catch (Exception e) {
-                                android.util.Log.e("JavaBridgeBasicsTest", "Wait exception", e);
+                                Log.e(TAG, "Wait exception", e);
                                 Assert.fail("Wait exception");
                             }
                             Assert.assertEquals("unlocked", mTestController.getStringValue());

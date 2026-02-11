@@ -24,7 +24,6 @@ import android.os.ParcelFileDescriptor;
 import android.os.Process;
 import android.security.NetworkSecurityPolicy;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -34,6 +33,7 @@ import org.jni_zero.CalledByNativeUnchecked;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;

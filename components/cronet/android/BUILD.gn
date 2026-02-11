@@ -303,6 +303,7 @@ android_library("cronet_shared_java") {
   # Adding deps here won't include those deps in the cronet_shared_java.jar.
   # Please add to cronet_shared_java_deps_to_package instead.
   deps = [
+           "//base:log_java",
            "//third_party/android_deps:protobuf_lite_runtime_java",
            "//third_party/androidx:androidx_annotation_annotation_java",
          ] + cronet_shared_java_deps_to_package
@@ -452,6 +453,7 @@ android_library("cronet_impl_common_java") {
     ":cronet_api_java",
     ":cronet_shared_java",
     ":impl_version",
+    "//base:log_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -494,6 +496,7 @@ android_library("cronet_impl_platform_java") {
     ":cronet_impl_java_util_java",
     ":cronet_shared_java",
     ":httpengine_native_provider_java",
+    "//base:log_java",
     "//base:metrics_ScopedSysTraceEvent_java",
     "//net/android:net_thread_stats_uid_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
@@ -519,6 +522,7 @@ android_library("cronet_impl_fake_java") {
     ":cronet_impl_common_java",
     ":cronet_impl_java_util_java",
     ":cronet_shared_java",
+    "//base:log_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
@@ -537,6 +541,7 @@ android_library("cronet_urlconnection_impl_java") {
   ]
   deps = [
     ":cronet_api_java",
+    "//base:log_java",
     "//base:metrics_ScopedSysTraceEvent_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
@@ -661,6 +666,7 @@ android_library("httpengine_native_provider_java") {
     ":cronet_api_java",
     ":cronet_impl_common_java",
     ":cronet_shared_java",
+    "//base:log_java",
     "//base:metrics_ScopedSysTraceEvent_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -1508,7 +1514,6 @@ android_library("cronet_javatests") {
     ":cronet_api_helpers_java",
     ":cronet_stats_log_java",
     ":cronet_urlconnection_impl_java",
-    "//third_party/netty4:netty_all_java",
     "//components/cronet:request_context_config_java_proto",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
@@ -1521,6 +1526,7 @@ android_library("cronet_javatests") {
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//third_party/netty4:netty_all_java",
   ]
   deps += cronet_javatests_deps_to_package
   data = [ "//components/cronet/android/test/test_server/data/" ]
@@ -1622,6 +1628,7 @@ instrumentation_test_apk(
            ":cronet_impl_platform_java",
            ":cronet_test_apk_resources",
            "//base:base_java_test_support",
+           "//base:log_java",
            "//third_party/android_sdk:android_test_mock_java",
            "//third_party/google-truth:google_truth_java",
            "//third_party/junit",

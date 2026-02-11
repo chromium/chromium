@@ -21,7 +21,7 @@ public final class WebauthnLogger {
         // Use 'setprop log.tag.ChromiumWebauthn DEBUG' to enable the log at runtime.
         // See https://source.android.com/docs/core/tests/debug/understanding-logging#log-standards
         // for more details.
-        sIsLoggable = android.util.Log.isLoggable(TAG, Log.DEBUG);
+        sIsLoggable = Log.isLoggable(TAG, Log.DEBUG);
     }
 
     /**

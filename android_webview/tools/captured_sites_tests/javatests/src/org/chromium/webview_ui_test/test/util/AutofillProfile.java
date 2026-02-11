@@ -4,10 +4,10 @@
 
 package org.chromium.webview_ui_test.test.util;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import org.chromium.base.Log;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

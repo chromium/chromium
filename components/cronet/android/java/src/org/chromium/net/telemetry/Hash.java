@@ -6,7 +6,7 @@ package org.chromium.net.telemetry;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import android.util.Log;
+import org.chromium.base.Log;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;

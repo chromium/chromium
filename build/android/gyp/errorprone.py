@@ -233,6 +233,10 @@ def main():
   parser.add_argument('--stamp',
                       required=True,
                       help='Path of output .stamp file')
+  parser.add_argument('--xep-arg',
+                      action='append',
+                      default=[],
+                      help='Error Prone -Xep: flags to pass to the plugin')
   options, compile_java_argv = parser.parse_known_args()
 
   compile_java_argv += ['--jar-path', options.stamp]
@@ -334,6 +338,8 @@ def main():
     errorprone_flags += [
         '-XepPatchLocation:IN_PLACE', '-XepPatchChecks:,' + ','.join(to_apply)
     ]
+
+  errorprone_flags.extend(options.xep_arg)
 
   # These are required to use JDK 16, and are taken directly from
   # https://errorprone.info/docs/installation

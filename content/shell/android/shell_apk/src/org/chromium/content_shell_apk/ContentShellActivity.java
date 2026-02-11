@@ -8,11 +8,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;

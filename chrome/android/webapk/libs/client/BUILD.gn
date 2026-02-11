@@ -18,6 +18,7 @@ android_library("client_java") {
     "//chrome/android/webapk/libs/runtime_library:webapk_service_aidl_java",
     "//components/webapk/android/libs/common:java",
   ]
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 robolectric_binary("webapk_client_junit_tests") {

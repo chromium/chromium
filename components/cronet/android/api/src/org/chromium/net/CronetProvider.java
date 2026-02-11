@@ -5,10 +5,10 @@
 package org.chromium.net;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Log;
 import org.chromium.net.impl.CronetLogger;
 
 import java.lang.reflect.Constructor;

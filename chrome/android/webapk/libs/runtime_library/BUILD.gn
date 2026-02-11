@@ -32,6 +32,7 @@ android_library("runtime_library_for_assets_java") {
   sources =
       [ "src/org/chromium/webapk/lib/runtime_library/WebApkServiceImpl.java" ]
   srcjar_deps = [ ":webapk_service_aidl" ]
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 # The subset of runtime_library_from_assets_java needed for tests.
@@ -39,6 +40,7 @@ android_library("runtime_library_for_tests_java") {
   sources =
       [ "src/org/chromium/webapk/lib/runtime_library/WebApkServiceImpl.java" ]
   deps = [ ":webapk_service_aidl_java" ]
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
 }
 
 dist_dex("webapk_runtime_library") {

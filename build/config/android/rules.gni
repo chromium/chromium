@@ -2811,6 +2811,7 @@ if (!is_robolectric && enable_java_templates) {
                                "bytecode_rewriter_target",
                                "chromium_code",
                                "deps",
+                               "errorprone_args",
                                "jacoco_never_instrument",
                                "jar_excluded_patterns",
                                "javac_args",

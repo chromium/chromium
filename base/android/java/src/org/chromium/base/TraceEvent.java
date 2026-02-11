@@ -9,7 +9,6 @@ import android.content.res.Resources.NotFoundException;
 import android.os.Looper;
 import android.os.MessageQueue;
 import android.os.SystemClock;
-import android.util.Log;
 import android.util.Printer;
 import android.view.View;
 import android.view.ViewGroup;
@@ -220,9 +219,11 @@ public class TraceEvent implements AutoCloseable {
             mNumTasksSinceLastIdle++;
         }
 
+        // Uses android.util.Log.println(), which is not available in org.chromium.base.Log.
+        @SuppressWarnings("NoAndroidLog")
         private static void traceAndLog(int level, String message) {
             TraceEvent.instant("TraceEvent.LooperMonitor:IdleStats", message);
-            Log.println(level, TAG, message);
+            android.util.Log.println(level, TAG, message);
         }
 
         @Override

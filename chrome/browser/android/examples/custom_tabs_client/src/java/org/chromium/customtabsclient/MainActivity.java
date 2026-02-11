@@ -50,7 +50,6 @@ import android.os.Looper;
 import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.Pair;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -99,6 +98,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.color.DynamicColors;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.customtabsclient.shared.CustomTabsHelper;

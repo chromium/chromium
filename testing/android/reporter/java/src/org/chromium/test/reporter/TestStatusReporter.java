@@ -6,8 +6,8 @@ package org.chromium.test.reporter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
+import org.chromium.base.Log;
 import org.chromium.build.gtest_apk.TestStatusIntent;
 
 /**

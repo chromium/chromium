@@ -83,13 +83,13 @@ template("webapk_java") {
       "//components/webapk/android/libs/common:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
+    errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
   }
 }
 
 template("webapk_with_service_java") {
   android_library(target_name) {
     forward_variables_from(invoker, [ "deps" ])
-
     sources = [
       "src/org/chromium/webapk/shell_apk/WebApkServiceFactory.java",
       "src/org/chromium/webapk/shell_apk/WebApkServiceImplWrapper.java",
@@ -98,6 +98,7 @@ template("webapk_with_service_java") {
       ":compiled_in_runtime_library_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
+    errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
   }
 }
 

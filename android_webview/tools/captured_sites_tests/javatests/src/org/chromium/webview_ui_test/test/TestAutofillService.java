@@ -15,7 +15,6 @@ import android.service.autofill.FillRequest;
 import android.service.autofill.FillResponse;
 import android.service.autofill.SaveCallback;
 import android.service.autofill.SaveRequest;
-import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.view.autofill.AutofillId;
@@ -24,6 +23,7 @@ import android.widget.RemoteViews;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Log;
 import org.chromium.webview_ui_test.test.util.AutofillProfile;
 
 import java.util.ArrayList;

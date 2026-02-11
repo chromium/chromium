@@ -6,7 +6,6 @@ package org.chromium.components.crash;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
-import android.util.Log;
 
 import org.chromium.base.AndroidInfo;
 import org.chromium.base.ApiCompatibilityUtils;
@@ -14,6 +13,7 @@ import org.chromium.base.ApkInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.Log;
 import org.chromium.base.PiiElider;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.version_info.VersionInfo;

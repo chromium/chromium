@@ -4,10 +4,10 @@
 
 package org.chromium.net;
 
-import android.util.Log;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+
+import org.chromium.base.Log;
 
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;

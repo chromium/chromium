@@ -52,6 +52,11 @@ public class NoAndroidLog extends BugChecker implements ImportTreeMatcher, Membe
 
     @Override
     public Description matchMemberSelect(MemberSelectTree tree, VisitorState state) {
+        // Skip if inside an import statement (already handled by matchImport).
+        if (ASTHelpers.findEnclosingNode(state.getPath(), ImportTree.class) != null) {
+            return Description.NO_MATCH;
+        }
+
         // Check for fully qualified usage like android.util.Log.d()
         if (!tree.getIdentifier().contentEquals("Log")) {
             return Description.NO_MATCH;

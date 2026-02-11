@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -36,7 +37,7 @@ public class JavaBrowserViewRendererHelper {
         try {
             bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         } catch (OutOfMemoryError e) {
-            android.util.Log.e(LOGTAG, "Error allocating bitmap");
+            Log.e(LOGTAG, "Error allocating bitmap");
         }
         return bitmap;
     }

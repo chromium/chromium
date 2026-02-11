@@ -6,11 +6,11 @@ package org.chromium.net.telemetry;
 
 import android.os.Build;
 import android.os.Process;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.ConnectionCloseSource;
 import org.chromium.net.impl.CronetLogger;

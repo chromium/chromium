@@ -5,9 +5,9 @@
 package org.chromium.android_webview;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -55,7 +55,7 @@ public class DefaultVideoPosterRequestHandler {
                                             Bitmap.CompressFormat.PNG, 100, outputStream);
                                     outputStream.flush();
                                 } catch (IOException e) {
-                                    Log.e(TAG, null, e);
+                                    Log.e(TAG, "", e);
                                 } finally {
                                     closeOutputStream(outputStream);
                                 }
@@ -68,11 +68,11 @@ public class DefaultVideoPosterRequestHandler {
         try {
             outputStream.close();
         } catch (IOException e) {
-            Log.e(TAG, null, e);
+            Log.e(TAG, "", e);
         }
     }
 
-    private static final String TAG = "DefaultVideoPosterRequestHandler";
+    private static final String TAG = "VideoPosterHandler";
     private final String mDefaultVideoPosterUrl;
     private final AwContentsClient mContentClient;
 
@@ -94,7 +94,7 @@ public class DefaultVideoPosterRequestHandler {
         try {
             return new WebResourceResponseInfo("image/png", null, getInputStream(mContentClient));
         } catch (IOException e) {
-            Log.e(TAG, null, e);
+            Log.e(TAG, "", e);
             return null;
         }
     }

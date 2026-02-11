@@ -5,10 +5,10 @@
 package org.chromium.net.test.util;
 
 import android.util.Base64;
-import android.util.Log;
 import android.util.Pair;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.Log;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -92,7 +92,7 @@ public class TestWebServer extends WebServer {
                 outputResponse(request, printStream);
             } catch (NoSuchAlgorithmException ignore) {
             } catch (IOException e) {
-                Log.w(TAG, e);
+                Log.w(TAG, "", e);
             } finally {
                 printStream.close();
             }

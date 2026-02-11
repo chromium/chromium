@@ -13,12 +13,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.Html;
 import android.text.Spanned;
-import android.util.Log;
 
 import androidx.browser.customtabs.ContentActionSelectedData;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 
 /**
