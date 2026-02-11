@@ -520,7 +520,7 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
   // TODO(crbug.com/475808971): We don't have property name for random in media
   // query, this should probably be specified.
   CSSParserLocalContext local_context =
-      CSSParserLocalContext::CreateWithoutPropertyForMediaQueries();
+      CSSParserLocalContext::CreateWithoutPropertyForAtRules();
   if (media_feature == media_feature_names::kFallbackMediaFeature) {
     if (CSSValue* fallback_value =
             css_parsing_utils::ConsumeAnchoredFallbackQueryValue(

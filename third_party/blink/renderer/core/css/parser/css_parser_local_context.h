@@ -53,15 +53,6 @@ class CORE_EXPORT CSSParserLocalContext {
     return CSSParserLocalContext();
   }
 
-  // TODO(crbug.com/475808971): Since @media don't have property context, we for
-  // now will use empty property name when caching random() values without user
-  // specified identifier. This behaviour is not defined in spec, there is an
-  // open issue addressing that:
-  // https://drafts.csswg.org/css-values-5/#issue-cd071f29
-  static CSSParserLocalContext CreateWithoutPropertyForMediaQueries() {
-    return CSSParserLocalContext();
-  }
-
   // This is used for view-transition pseudo selectors, like
   // ::view-transition-new(),
   // https://drafts.csswg.org/css-view-transitions/#selectordef-view-transition
