@@ -955,7 +955,7 @@ const base::FeatureParam<bool>
 
 // Enables hardware secure AV1 decoding if supported by the hardware
 // and the OS Content Decryption Module (CDM).
-BASE_FEATURE(kHardwareSecureDecryptionAv1, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHardwareSecureDecryptionAv1, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables hardware secure VP9 decoding if supported by the hardware
 // and the OS Content Decryption Module (CDM).
