@@ -159,6 +159,12 @@ export class ReadAnythingLogger {
     }
   }
 
+  logLineFocusToggled(enabled: boolean) {
+    if (chrome.readingMode.isLineFocusEnabled) {
+      this.metrics.recordLineFocusToggled(enabled);
+    }
+  }
+
   static getInstance(): ReadAnythingLogger {
     return instance || (instance = new ReadAnythingLogger());
   }

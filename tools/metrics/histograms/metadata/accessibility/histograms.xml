@@ -3118,6 +3118,16 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.LineFocusKeyboardToggle"
+    enum="Boolean" expires_after="2027-01-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records when the keyboard shortcut to toggle line focus is used, and whether
+    it was used to enable or disable line focus.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.LineFocusSessionLength" units="ms"
     expires_after="2026-12-01">
   <owner>kristislee@google.com</owner>

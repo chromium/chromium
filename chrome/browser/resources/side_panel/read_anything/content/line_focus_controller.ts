@@ -73,6 +73,7 @@ export class LineFocusController {
     const newStyle = this.isEnabled() ? LineFocusStyle.OFF : lastStyle;
     this.setStyleAndMovement_(
         newStyle, this.model_.getCurrentLineFocusMovement(), container, height);
+    this.logger_.logLineFocusToggled(this.isEnabled());
   }
 
   onScrollEnd(newScrollTop: number) {

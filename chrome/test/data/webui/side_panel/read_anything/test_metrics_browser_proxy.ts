@@ -20,6 +20,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordHighlightGranularity',
       'recordLanguage',
       'recordLineFocusSession',
+      'recordLineFocusToggled',
       'recordNewPage',
       'recordNewPageWithSpeech',
       'recordSpeechError',
@@ -43,6 +44,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordLineFocusSession() {
     this.methodCalled('recordLineFocusSession');
+  }
+
+  recordLineFocusToggled(enabled: boolean) {
+    this.methodCalled('recordLineFocusToggled', enabled);
   }
 
   recordNewPage() {

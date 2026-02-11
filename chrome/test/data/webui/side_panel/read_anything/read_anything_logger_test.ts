@@ -123,6 +123,20 @@ suite('Logger', () => {
     assertEquals(0, metrics.getCallCount('recordLineFocusSession'));
   });
 
+  test('line focus toggled with flag enabled', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    logger.logLineFocusToggled(true);
+    logger.logLineFocusToggled(false);
+    assertEquals(2, metrics.getCallCount('recordLineFocusToggled'));
+  });
+
+  test('line focus toggled with flag disabled', () => {
+    chrome.readingMode.isLineFocusEnabled = false;
+    logger.logLineFocusToggled(true);
+    logger.logLineFocusToggled(false);
+    assertEquals(0, metrics.getCallCount('recordLineFocusToggled'));
+  });
+
   test('logVoiceSpeed', () => {
     logger.logVoiceSpeed(1);
     logger.logVoiceSpeed(2);

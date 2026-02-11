@@ -527,6 +527,20 @@ suite('LineFocusController', () => {
         previousMode.type, lineFocusController.getCurrentLineFocusType());
   });
 
+  test('toggle is logged', async () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const container = createShortContainer();
+    lineFocusController.onStyleChange(
+        LineFocusStyle.OFF, container, defaultHeight);
+
+    lineFocusController.toggle(container, defaultHeight);
+    assertTrue(await metrics.whenCalled('recordLineFocusToggled'));
+
+    metrics.reset();
+    lineFocusController.toggle(container, defaultHeight);
+    assertFalse(await metrics.whenCalled('recordLineFocusToggled'));
+  });
+
   test('onMouseMove does nothing if flag disabled', () => {
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, defaultContainer, defaultHeight);
