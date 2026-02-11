@@ -1944,7 +1944,7 @@ HTMLInputElement::FilteredDataListOptions() const {
   if (iter) {
     for (int word_start = iter->current(), word_end = iter->next();
          word_end != kTextBreakDone; word_end = iter->next()) {
-      String value = editor_value.Substring(word_start, word_end - word_start);
+      StringView value(editor_value, word_start, word_end - word_start);
       word_start = word_end;
 
       if (!IsWordBreak(value[0]))
