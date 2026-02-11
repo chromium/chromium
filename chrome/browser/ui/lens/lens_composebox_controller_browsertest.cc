@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_composebox_user_action.h"
 #include "components/lens/lens_features.h"
@@ -1206,6 +1207,76 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   ASSERT_FALSE(overlay_controller->HasRegionSelection());
   ASSERT_FALSE(
       composebox_controller->vsc_image_data_id_for_testing().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
+                       AddVisualSelectionContextReplacesExisting) {
+  WaitForPaint();
+  auto* controller = GetLensSearchController();
+  ASSERT_TRUE(controller->IsOff());
+
+  // Issue a text search request to open the side panel without the overlay.
+  controller->IssueTextSearchRequest(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuText, "query",
+      {}, AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      /*is_zero_prefix_suggestion=*/false,
+      /*suppress_contextualization=*/true);
+
+  // Wait for side panel to be visible.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsResultsSidePanelShowing(); }));
+
+  // Wait for the composebox handler to be set.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetLensComposeboxController()->composebox_handler_for_testing() !=
+           nullptr;
+  }));
+
+  // Also need to run until the query controller has sent all requests to avoid
+  // flakiness.
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->lens_overlay_query_controller());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return fake_query_controller->num_full_image_requests_sent() == 1 &&
+           fake_query_controller->num_page_content_update_requests_sent() == 1;
+  }));
+
+  auto* composebox_controller = GetLensComposeboxController();
+  auto* test_composebox_controller =
+      static_cast<TestLensComposeboxController*>(composebox_controller);
+  ASSERT_TRUE(test_composebox_controller);
+  MockSearchboxPage& mock_searchbox_page =
+      test_composebox_controller->mock_searchbox_page();
+
+  // Add the first visual selection context.
+  composebox_controller->AddVisualSelectionContext(
+      "data:image/png;base64,data1");
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return composebox_controller->vsc_image_data_id_for_testing().has_value();
+  }));
+  auto first_id =
+      composebox_controller->vsc_image_data_id_for_testing().value();
+
+  // Expect the second add to trigger replacement of the first with
+  // kUploadReplaced status.
+  EXPECT_CALL(
+      mock_searchbox_page,
+      OnContextualInputStatusChanged(
+          first_id, contextual_search::FileUploadStatus::kUploadReplaced,
+          testing::_))
+      .Times(1);
+
+  // Add the second visual selection context.
+  composebox_controller->AddVisualSelectionContext(
+      "data:image/png;base64,data2");
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return composebox_controller->vsc_image_data_id_for_testing().has_value();
+  }));
+  auto second_id =
+      composebox_controller->vsc_image_data_id_for_testing().value();
+  EXPECT_NE(first_id, second_id);
 }
 
 IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
