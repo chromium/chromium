@@ -193,6 +193,7 @@
   E(kActionShowFullUrls, IDC_SHOW_FULL_URLS) \
   E(kActionShowGoogleLensShortcut, IDC_SHOW_GOOGLE_LENS_SHORTCUT) \
   E(kActionShowAiModeOmniboxButton, IDC_SHOW_AI_MODE_OMNIBOX_BUTTON) \
+  E(kActionRecordReplay, IDC_RECORD_REPLAY) \
   E(kActionShowSearchTools, IDC_SHOW_SEARCH_TOOLS) \
   E(kActionCaretBrowsingToggle, IDC_CARET_BROWSING_TOGGLE) \
   E(kActionChromeTips, IDC_CHROME_TIPS) \

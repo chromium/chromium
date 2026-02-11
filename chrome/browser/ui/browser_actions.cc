@@ -70,6 +70,7 @@
 #include "chrome/browser/ui/views/js_optimization/js_optimizations_page_action_controller.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_page_action_controller.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_controller.h"
+#include "chrome/browser/ui/views/location_bar/record_replay_page_action_controller.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -91,6 +92,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/record_replay/record_replay_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/collaboration/public/messaging/activity_log.h"
@@ -430,6 +432,27 @@ void BrowserActions::InitializeBrowserActions() {
                 vector_icons::kCodeIcon,
 #endif
                 ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
+            .SetEnabled(true)
+            .Build());
+  }
+
+  if (base::FeatureList::IsEnabled(
+          record_replay::features::kRecordReplayBase)) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  bwi->GetActiveTabInterface()
+                      ->GetTabFeatures()
+                      ->record_replay_page_action_controller()
+                      ->ExecuteAction(item);
+                },
+                bwi))
+            .SetActionId(kActionRecordReplay)
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                vector_icons::kScreenRecordIcon, ui::kColorIcon,
+                ui::SimpleMenuModel::kDefaultIconSize))
             .SetEnabled(true)
             .Build());
   }

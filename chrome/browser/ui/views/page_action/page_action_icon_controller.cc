@@ -282,6 +282,7 @@ void PageActionIconController::Init(const PageActionIconParams& params,
       case PageActionIconType::kReadingMode:
       case PageActionIconType::kContextualSidePanel:
       case PageActionIconType::kJsOptimizations:
+      case PageActionIconType::kRecordReplay:
         // Do nothing as these actions were added after the migration.
         break;
     }

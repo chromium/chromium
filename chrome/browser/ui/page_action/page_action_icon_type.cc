@@ -80,7 +80,8 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
   // Page actions on the new framework that don't have an implementation on the legacy path
   // and don't have a feature param.
   if (page_action == PageActionIconType::kContextualSidePanel ||
-      page_action == PageActionIconType::kJsOptimizations) {
+      page_action == PageActionIconType::kJsOptimizations ||
+      page_action == PageActionIconType::kRecordReplay) {
     return true;
   }
 

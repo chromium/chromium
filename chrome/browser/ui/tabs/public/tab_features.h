@@ -28,6 +28,7 @@ class MemorySaverChipTabHelper;
 class PinnedTranslateActionListener;
 class Profile;
 class PwaInstallPageActionController;
+class RecordReplayPageActionController;
 class JsOptimizationsPageActionController;
 class ReadAnythingController;
 class ReadAnythingSidePanelController;
@@ -304,6 +305,10 @@ class TabFeatures {
     return pwa_install_page_action_controller_.get();
   }
 
+  RecordReplayPageActionController* record_replay_page_action_controller() {
+    return record_replay_page_action_controller_.get();
+  }
+
   InactiveWindowMouseEventController* inactive_window_mouse_event_controller() {
     return inactive_window_mouse_event_controller_.get();
   }
@@ -455,6 +460,10 @@ class TabFeatures {
 
   // Responsible for managing the "Zoom" page action and bubble.
   std::unique_ptr<zoom::ZoomViewController> zoom_view_controller_;
+
+  // Responsible for managing the "Record/Replay" page action.
+  std::unique_ptr<RecordReplayPageActionController>
+      record_replay_page_action_controller_;
 
   // Responsible for managing the "JS Optimizations" page action.
   std::unique_ptr<JsOptimizationsPageActionController>

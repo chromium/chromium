@@ -99,6 +99,7 @@
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/record_replay/chrome_record_replay_client.h"
+#include "chrome/browser/ui/views/location_bar/record_replay_page_action_controller.h"
 #include "chrome/browser/wallet/chrome_walletable_pass_client.h"
 #include "chrome/common/record_replay/record_replay_features.h"
 #endif
@@ -267,6 +268,15 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           GetUserDataFactory().CreateInstance<BookmarkPageActionController>(
               tab, tab, profile->GetPrefs(), *page_action_controller_);
     }
+
+#if !BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            record_replay::features::kRecordReplayBase)) {
+      record_replay_page_action_controller_ =
+          GetUserDataFactory().CreateInstance<RecordReplayPageActionController>(
+              tab, tab, *page_action_controller_);
+    }
+#endif
 
     js_optimizations_page_action_controller_ =
         std::make_unique<JsOptimizationsPageActionController>(

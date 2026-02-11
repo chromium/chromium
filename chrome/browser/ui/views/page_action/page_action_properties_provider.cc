@@ -65,6 +65,14 @@ constexpr auto kPageActionProperties =
             },
         },
         {
+            kActionRecordReplay,
+            {
+                .histogram_name = "RecordReplay",
+                .type = PageActionIconType::kRecordReplay,
+                .element_identifier = kRecordButtonElementId,
+            },
+        },
+        {
             kActionShowIntentPicker,
             {
                 .histogram_name = "IntentPicker",

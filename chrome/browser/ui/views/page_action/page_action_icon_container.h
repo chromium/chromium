@@ -36,12 +36,12 @@ class PageActionIconContainerView : public views::BoxLayoutView,
 
   PageActionIconController* controller() { return controller_.get(); }
 
+  // PageActionIconContainer:
+  void AddPageActionIcon(std::unique_ptr<views::View> icon) override;
+
  private:
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
-
-  // PageActionIconContainer:
-  void AddPageActionIcon(std::unique_ptr<views::View> icon) override;
 
   std::unique_ptr<PageActionIconController> controller_;
 };

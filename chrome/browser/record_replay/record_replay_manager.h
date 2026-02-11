@@ -63,6 +63,11 @@ class RecordReplayManager {
   void StartReplay();
   void StopReplay();
 
+  // Retrieves the recording for the last committed URL, if there is one, and
+  // passes it to `cb`.
+  void GetMatchingRecording(
+      base::OnceCallback<void(std::optional<Recording>)> cb);
+
   // Retrieves all elements in all active frames that match `element_selector`.
   void GetMatchingElements(const std::string& element_selector,
                            base::OnceCallback<void(std::vector<ElementId>)> cb);
@@ -74,11 +79,6 @@ class RecordReplayManager {
   }
 
  private:
-  // Retrieves the recording for the last committed URL, if there is one, and
-  // passes it to `cb`.
-  void GetMatchingRecording(
-      base::OnceCallback<void(std::optional<Recording>)> cb);
-
   raw_ref<RecordReplayClient> client_;
   std::optional<Recorder> recorder_;
   std::optional<Replayer> replayer_;

@@ -52,7 +52,8 @@ enum class PageActionIconType {
   kReadingMode = 36,
   kContextualSidePanel = 37,
   kJsOptimizations = 38,
-  kMaxValue = kJsOptimizations,
+  kRecordReplay = 39,
+  kMaxValue = kRecordReplay,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:PageActionIconType)
 
@@ -89,6 +90,7 @@ static_assert(static_cast<int>(PageActionIconType::kAiMode) == 35);
 static_assert(static_cast<int>(PageActionIconType::kReadingMode) == 36);
 static_assert(static_cast<int>(PageActionIconType::kContextualSidePanel) == 37);
 static_assert(static_cast<int>(PageActionIconType::kJsOptimizations) == 38);
+static_assert(static_cast<int>(PageActionIconType::kRecordReplay) == 39);
 
 // Returns a bool indicating whether the given page action type has been
 // migrated to the new framework, which is based on ActionItems instead of
