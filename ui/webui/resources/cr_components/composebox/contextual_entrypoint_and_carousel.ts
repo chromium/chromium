@@ -863,7 +863,12 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected handleToolClick_(tool: ComposeboxToolMode) {
     if (this.entrypointName !== 'Realbox') {
       if (this.contextMenuDescriptionEnabled_) {
-        this.showContextMenuDescription_ = !this.showContextMenuDescription_;
+        if (this.activeTool_ === tool) {
+          this.showContextMenuDescription_ = true;
+        } else {
+          this.showContextMenuDescription_ =
+              tool === ComposeboxToolMode.kUnspecified;
+        }
       }
 
       if (this.activeTool_ === tool) {
