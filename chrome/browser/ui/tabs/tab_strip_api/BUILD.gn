@@ -71,6 +71,7 @@ source_set("unit_tests") {
   deps = [
     ":impl",
     ":tab_strip_api",
+    "adapters:unit_tests",
     "converters:unit_tests",
     "events:unit_tests",
     "observation:unit_tests",

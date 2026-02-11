@@ -36,3 +36,18 @@ source_set("impl") {
     "//content/public/browser",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "tab_strip_model_adapter_impl_unittest.cc" ]
+
+  deps = [
+    ":impl",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs:test_support",
+    "//chrome/browser/ui/tabs/tab_strip_api/converters",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+}
