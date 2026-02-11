@@ -3158,10 +3158,10 @@ impl Arg {
     ///         .long("other")
     ///         .default_value_ifs([
     ///             ("flag", "true", Some("default")),
-    ///             ("opt", "channal", Some("chan")),
+    ///             ("opt", "channel", Some("chan")),
     ///         ]))
     ///     .get_matches_from(vec![
-    ///         "prog", "--opt", "channal"
+    ///         "prog", "--opt", "channel"
     ///     ]);
     ///
     /// assert_eq!(m.get_one::<String>("other").unwrap(), "chan");
@@ -3180,7 +3180,7 @@ impl Arg {
     ///         .long("other")
     ///         .default_value_ifs([
     ///             ("flag", "true", Some("default")),
-    ///             ("opt", "channal", Some("chan")),
+    ///             ("opt", "channel", Some("chan")),
     ///         ]))
     ///     .get_matches_from(vec![
     ///         "prog"
@@ -3207,10 +3207,10 @@ impl Arg {
     ///         .long("other")
     ///         .default_value_ifs([
     ///             ("flag", ArgPredicate::IsPresent, Some("default")),
-    ///             ("opt", ArgPredicate::Equals("channal".into()), Some("chan")),
+    ///             ("opt", ArgPredicate::Equals("channel".into()), Some("chan")),
     ///         ]))
     ///     .get_matches_from(vec![
-    ///         "prog", "--opt", "channal", "--flag"
+    ///         "prog", "--opt", "channel", "--flag"
     ///     ]);
     ///
     /// assert_eq!(m.get_one::<String>("other").unwrap(), "default");
