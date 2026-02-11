@@ -4,6 +4,7 @@
 
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/promos/promos_utils.h"
@@ -149,7 +150,14 @@ IN_PROC_BROWSER_TEST_P(IOSPromoBubbleBrowserTest, ShowQRCode_NoPageAction) {
                  kScreenshotBaselineCL));
 }
 
-IN_PROC_BROWSER_TEST_P(IOSPromoBubbleBrowserTest, ShowReminder) {
+#if BUILDFLAG(IS_WIN)
+// Disabled by gardener on 02/10/2026.
+// https://crbug.com/483422434.
+#define MAYBE_ShowReminder DISABLED_ShowReminder
+#else
+#define MAYBE_ShowReminder ShowReminder
+#endif
+IN_PROC_BROWSER_TEST_P(IOSPromoBubbleBrowserTest, MAYBE_ShowReminder) {
   if (GetParam() == PromoType::kAddress || GetParam() == PromoType::kPayment) {
     GTEST_SKIP() << "Reminder bubble not supported for this promo type.";
   }
