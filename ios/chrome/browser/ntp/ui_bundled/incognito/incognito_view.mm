@@ -268,9 +268,8 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
     ];
     ApplyVisualConstraints(constraints, viewsDictionary);
 
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]);
-    [self registerForTraitChanges:traits
+    [self registerForTraitChanges:
+              @[UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class]
                        withAction:@selector(updateToolbarMargins)];
   }
   return self;

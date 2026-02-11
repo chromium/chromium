@@ -313,15 +313,14 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     _lastAnimationPercent = 0;
     _currentHintLabelScale = 1;
 
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
-      UITraitPreferredContentSizeCategory.class, UITraitUserInterfaceStyle.class
-    ]);
     __weak __typeof(self) weakSelf = self;
     UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                      UITraitCollection* previousCollection) {
       [weakSelf updateUIOnTraitChange:previousCollection];
     };
-    [self registerForTraitChanges:traits withHandler:handler];
+    [self registerForTraitChanges:
+              @[UITraitPreferredContentSizeCategory.class, UITraitUserInterfaceStyle.class]
+                      withHandler:handler];
     NSMutableArray<UITrait>* buttonTraits =
         [@[ UITraitUserInterfaceStyle.class ] mutableCopy];
     if (IsNTPBackgroundCustomizationEnabled()) {

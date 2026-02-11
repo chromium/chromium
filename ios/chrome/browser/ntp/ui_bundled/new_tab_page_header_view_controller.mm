@@ -150,10 +150,10 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
     _useNewBadgeForLensButton = useNewBadgeForLensButton;
     _useNewBadgeForCustomizationMenu = useNewBadgeForCustomizationMenu;
 
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+    NSArray<UITrait>* traits = @[
       UITraitHorizontalSizeClass.class,
       UITraitPreferredContentSizeCategory.class, UITraitUserInterfaceStyle.class
-    ]);
+    ];
     __weak __typeof(self) weakSelf = self;
     UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                      UITraitCollection* previousCollection) {
