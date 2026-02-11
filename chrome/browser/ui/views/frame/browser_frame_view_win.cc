@@ -69,7 +69,7 @@ namespace {
 // (go/chrome-performance-work-should-be-finched).
 // TODO(crbug.com/40897031): Clean up when experiment is complete.
 BASE_FEATURE(kAvoidUnnecessaryGetMinimizeButtonOffset,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If nothing has been added to the left of the window title, match native
 // Windows 10 UWP apps that don't have window icons.
