@@ -150,9 +150,6 @@ void ServiceWorkerTaskQueue::RendererDidInitializeServiceWorkerContext(
 
   util::InitializeFileSchemeAccessForExtension(
       render_process_id.GetUnsafeValue(), extension_id, browser_context_);
-  // TODO(jlulejian): Do we need to start tracking this in initialization or
-  // could we start in `RendererDidStartServiceWorkerContext()` instead since
-  // this is for a running (started) worker?
   ProcessManager::Get(browser_context_)
       ->StartTrackingServiceWorkerRunningInstance(
           {extension_id, render_process_id, service_worker_version_id,
