@@ -21,9 +21,8 @@ class InlinedClassTest: XCTestCase {
     XCTAssertEqual(result, 10, "Stack based class didn't work")
   }
 
-  // Temporarily disabled.  Will be re-enabled in follow-up CL
-  // func testRenamed() {
-  //   let obj = RenamedClass()
-  //   XCTAssertTrue(obj.Check())
-  // }
+  func testRenamed() {
+    let obj = RenamedClass()
+    XCTAssertTrue(obj.Check())
+  }
 }
