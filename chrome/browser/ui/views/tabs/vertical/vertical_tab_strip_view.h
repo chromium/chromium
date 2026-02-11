@@ -37,10 +37,11 @@ class VerticalTabStripView final : public views::View,
   VerticalTabStripView& operator=(const VerticalTabStripView&) = delete;
   ~VerticalTabStripView() override;
 
-  views::Separator* tabs_separator_for_testing() { return tabs_separator_; }
+  views::Separator* GetTabsSeparator() { return tabs_separator_; }
   views::ScrollView* unpinned_tabs_scroll_view_for_testing() {
     return unpinned_tabs_scroll_view_;
   }
+
   VerticalPinnedTabContainerView* GetPinnedTabsContainer();
   VerticalUnpinnedTabContainerView* GetUnpinnedTabsContainer();
 

@@ -70,7 +70,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   ~VerticalTabStripRegionView() override;
 
   views::Separator* tabs_separator_for_testing() {
-    return tab_strip_view_->tabs_separator_for_testing();
+    return tab_strip_view_->GetTabsSeparator();
   }
   views::ResizeArea* resize_area_for_testing() { return resize_area_; }
   VerticalPinnedTabContainerView* GetPinnedTabsContainer();

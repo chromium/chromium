@@ -452,26 +452,27 @@ bool VerticalTabStripRegionView::IsPositionInWindowCaption(
     return false;
   }
 
+  if (IsHitInView(top_button_container_, point)) {
+    gfx::Point point_in_child = point;
+    views::View::ConvertPointToTarget(this, top_button_container_,
+                                      &point_in_child);
+    return top_button_container_->IsPositionInWindowCaption(point_in_child);
+  }
+
+  // For any of the other children, absorb the click as non window caption.
   for (views::View* child : children()) {
     if (!child->GetVisible()) {
       continue;
     }
+
     gfx::Point point_in_child = point;
     views::View::ConvertPointToTarget(this, child, &point_in_child);
     if (child->HitTestPoint(point_in_child)) {
-      if (child == top_button_container_) {
-        return top_button_container_->IsPositionInWindowCaption(point_in_child);
-      }
-      if (child == tab_strip_view_) {
-        return tab_strip_view_->IsPositionInWindowCaption(point_in_child);
-      }
-      if (child == bottom_button_container_) {
-        return bottom_button_container_->IsPositionInWindowCaption(
-            point_in_child);
-      }
       return false;
     }
   }
+
+  // If the click doesnt fall under any view,then it counts as window caption.
   return true;
 }
 

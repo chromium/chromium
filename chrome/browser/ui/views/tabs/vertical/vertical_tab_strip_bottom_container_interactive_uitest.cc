@@ -8,6 +8,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
@@ -64,6 +66,51 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
       WaitForShow(kTabGroupHeaderElementId),
       CheckResult([this]() { return browser()->tab_strip_model()->count(); },
                   2));
+}
+
+// This test checks that clicking the new tab button doesn't expose window
+// caption on the vertical tab strip as it is moving down.
+IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
+                       DoubleClickOnNewTabButtonDoesNotMaximizeWindow) {
+  gfx::Point new_tab_button_center;
+  gfx::Point point_above_new_tab_button;
+  RunTestSequence(
+      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      EnsurePresent(kNewTabButtonElementId),
+      WithView(kNewTabButtonElementId,
+               [&new_tab_button_center,
+                &point_above_new_tab_button](views::View* button) {
+                 new_tab_button_center =
+                     button->GetBoundsInScreen().CenterPoint();
+                 gfx::Rect bounds = button->GetBoundsInScreen();
+                 gfx::Insets insets = button->GetInsets();
+                 // A point just above the contents of the button, but within
+                 // the extended hit test area (which includes the top inset).
+                 point_above_new_tab_button = gfx::Point(
+                     bounds.CenterPoint().x(), bounds.y() + insets.top() / 2);
+               }),
+      // Move mouse to the new tab button
+      MoveMouseTo(kNewTabButtonElementId),
+      // Click the new tab button
+      ClickMouse(),
+      // Check that the points are NO LONGER considered hit test caption
+      CheckView(
+          kVerticalTabStripRegionElementId,
+          [&new_tab_button_center,
+           &point_above_new_tab_button](views::View* region_view) {
+            auto* vt_region_view =
+                static_cast<VerticalTabStripRegionView*>(region_view);
+
+            gfx::Point pt_center = new_tab_button_center;
+            views::View::ConvertPointFromScreen(vt_region_view, &pt_center);
+
+            gfx::Point pt_above = point_above_new_tab_button;
+            views::View::ConvertPointFromScreen(vt_region_view, &pt_above);
+
+            return !vt_region_view->IsPositionInWindowCaption(pt_center) &&
+                   !vt_region_view->IsPositionInWindowCaption(pt_above);
+          },
+          "Check that clicking new tab does not expose caption space"));
 }
 
 }  // namespace base::test
