@@ -15,10 +15,9 @@
 #include "gin/thread_isolation.h"
 #include "partition_alloc/thread_isolation/pkey.h"
 
-#if PA_BUILDFLAG(ENABLE_PKEYS)
-#else  // PA_BUILDFLAG(ENABLE_PKEYS)
+#if !PA_BUILDFLAG(ENABLE_PKEYS)
 #error Not implemented for non-pkey thread isolation
-#endif  // PA_BUILDFLAG(ENABLE_PKEYS)
+#endif  // !PA_BUILDFLAG(ENABLE_PKEYS)
 
 namespace gin {
 
