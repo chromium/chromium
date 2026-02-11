@@ -119,6 +119,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -214,6 +215,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
             @NonNull ActivityWindowAndroid windowAndroid,
+            @NonNull ActivityResultTracker activityResultTracker,
             @NonNull OneshotSupplier<ChromeAndroidTask> chromeAndroidTaskSupplier,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull MonotonicObservableSupplier<LayoutManagerImpl> layoutManagerSupplier,
@@ -264,6 +266,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 new OneshotSupplierImpl<>(),
                 browserControlsManager,
                 windowAndroid,
+                activityResultTracker,
                 chromeAndroidTaskSupplier,
                 activityLifecycleDispatcher,
                 layoutManagerSupplier,

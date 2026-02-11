@@ -54,6 +54,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -72,6 +73,7 @@ import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -82,6 +84,8 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.AccountInfo;
@@ -92,20 +96,22 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
+import java.util.function.Supplier;
 
 /** Instrumentation test for Identity Disc. */
+@DoNotBatch(reason = "This test relies on native initialization")
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IdentityDiscControllerTest {
-    private static final String EMAIL = "email@gmail.com";
-    private static final String NAME = "Email Emailson";
-    private static final String FULL_NAME = NAME + ".full";
 
     private final FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
@@ -136,6 +142,12 @@ public class IdentityDiscControllerTest {
     @Mock private MonotonicObservableSupplier<Profile> mProfileSupplier;
     @Mock private ButtonDataProvider.ButtonDataObserver mButtonDataObserver;
     @Mock private Tracker mTracker;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ActivityResultTracker mActivityResultTracker;
+    @Mock private DeviceLockActivityLauncher mDeviceLockActivityLauncher;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    @Mock private SnackbarManager mSnackbarManager;
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
@@ -427,8 +439,7 @@ public class IdentityDiscControllerTest {
                     SettableMonotonicObservableSupplier<Profile> profileSupplier =
                             ObservableSuppliers.createMonotonic();
                     IdentityDiscController identityDiscController =
-                            new IdentityDiscController(
-                                    mActivityTestRule.getActivity(), profileSupplier);
+                            buildController(profileSupplier);
 
                     Assert.assertEquals(
                             UserActionableError.NONE, identityDiscController.getIdentityError());
@@ -458,8 +469,7 @@ public class IdentityDiscControllerTest {
     @MediumTest
     public void onClick_profileNotYetInitialized_doesNothing() {
         TrackerFactory.setTrackerForTests(mTracker);
-        IdentityDiscController identityDiscController =
-                new IdentityDiscController(mActivityTestRule.getActivity(), mProfileSupplier);
+        IdentityDiscController identityDiscController = buildController(mProfileSupplier);
 
         // If the button is tapped before the profile is set, the click shouldn't be recorded.
         identityDiscController.onClick();
@@ -593,11 +603,23 @@ public class IdentityDiscControllerTest {
 
     private IdentityDiscController buildControllerWithObserver(
             ButtonDataProvider.ButtonDataObserver observer) {
-        IdentityDiscController controller =
-                new IdentityDiscController(mActivityTestRule.getActivity(), mProfileSupplier);
+        IdentityDiscController controller = buildController(mProfileSupplier);
         controller.addObserver(observer);
 
         return controller;
+    }
+
+    private IdentityDiscController buildController(
+            MonotonicObservableSupplier<Profile> profileSupplier) {
+        return new IdentityDiscController(
+                mActivityTestRule.getActivity(),
+                mWindowAndroid,
+                mActivityResultTracker,
+                mDeviceLockActivityLauncher,
+                profileSupplier,
+                mBottomSheetController,
+                mModalDialogManagerSupplier,
+                mSnackbarManager);
     }
 
     private PrimaryAccountChangeEvent newSigninEvent(int eventType) {

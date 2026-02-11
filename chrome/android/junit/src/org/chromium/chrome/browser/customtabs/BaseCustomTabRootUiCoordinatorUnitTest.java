@@ -88,6 +88,7 @@ import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.TestActivity;
@@ -125,6 +126,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
             mBrowserStateBrowserControlsVisibilityDelegate;
 
     @Mock private ActivityWindowAndroid mWindowAndroid;
+    @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private OneshotSupplier<ChromeAndroidTask> mChromeAndroidTask;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
@@ -215,6 +217,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         mTabModelSelectorSupplier,
                         mBrowserControlsManager,
                         mWindowAndroid,
+                        mActivityResultTracker,
                         mChromeAndroidTask,
                         mActivityLifecycleDispatcher,
                         mLayoutManagerSupplier,

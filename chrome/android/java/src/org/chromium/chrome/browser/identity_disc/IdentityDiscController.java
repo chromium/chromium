@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.identity_disc;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -18,6 +19,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -40,18 +42,24 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -60,6 +68,11 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.function.Supplier;
 
 /**
  * Handles displaying IdentityDisc on toolbar depending on several conditions (user sign-in state,
@@ -70,9 +83,18 @@ public class IdentityDiscController
         implements ProfileDataCache.Observer,
                 IdentityManager.Observer,
                 SyncService.SyncStateChangedListener,
-                ButtonDataProvider {
+                ButtonDataProvider,
+                BottomSheetSigninAndHistorySyncCoordinator.Delegate {
     // Context is used for fetching resources and launching preferences page.
     private final Context mContext;
+    // Activity is used by sign-in launcher to anchor the bottomsheet.
+    private final Activity mActivity;
+    private final WindowAndroid mWindowAndroid;
+    private final ActivityResultTracker mActivityResultTracker;
+    private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
+    private final BottomSheetController mBottomSheetController;
+    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private final SnackbarManager mSnackbarManager;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver = this::setProfile;
     private @Nullable Profile mProfile;
@@ -93,13 +115,40 @@ public class IdentityDiscController
 
     private @UserActionableError int mIdentityError = UserActionableError.NONE;
 
+    private @Nullable BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
+
     /**
-     * @param context The Context for retrieving resources, launching preference activity, etc.
+     * @param activity The hosting {@link Activity}, for sign-in bottom sheet and retrieving
+     *     resources.
+     * @param windowAndroid The {@link WindowAndroid} for the current window.
+     * @param activityResultTracker The {@link ActivityResultTracker} for launching new activities
+     *     and watching for their result.
+     * @param deviceLockActivityLauncher The launcher for the device lock challenge.
+     * @param profileSupplier The supplier of the current profile.
+     * @param bottomSheetController The {@link BottomSheetController} to show the sign-in bottom
+     *     sheet.
+     * @param modalDialogManagerSupplier The supplier of the {@link ModalDialogManager}.
+     * @param snackbarManager The {@link SnackbarManager} to show sign-in/sign-out snackbars.
      */
     public IdentityDiscController(
-            Context context, MonotonicObservableSupplier<Profile> profileSupplier) {
-        mContext = context;
+            Activity activity,
+            WindowAndroid windowAndroid,
+            ActivityResultTracker activityResultTracker,
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            MonotonicObservableSupplier<Profile> profileSupplier,
+            BottomSheetController bottomSheetController,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+            SnackbarManager snackbarManager) {
+        mContext = activity;
+        mActivity = activity;
+        mWindowAndroid = windowAndroid;
+        mActivityResultTracker = activityResultTracker;
+        mDeviceLockActivityLauncher = deviceLockActivityLauncher;
         mProfileSupplier = profileSupplier;
+        mBottomSheetController = bottomSheetController;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mSnackbarManager = snackbarManager;
+
         mProfileSupplier.addObserver(mProfileSupplierObserver);
 
         mButtonData =
@@ -279,6 +328,11 @@ public class IdentityDiscController
             mSyncService = null;
         }
 
+        if (mSigninCoordinator != null) {
+            mSigninCoordinator.destroy();
+            mSigninCoordinator = null;
+        }
+
         mProfileSupplier.removeObserver(mProfileSupplierObserver);
         mProfile = null;
     }
@@ -360,6 +414,11 @@ public class IdentityDiscController
             mIdentityManager.removeObserver(this);
         }
 
+        if (mSigninCoordinator != null) {
+            mSigninCoordinator.destroy();
+            mSigninCoordinator = null;
+        }
+
         if (profile.isOffTheRecord()) {
             mIdentityManager = null;
             mSyncService = null;
@@ -368,6 +427,7 @@ public class IdentityDiscController
             assumeNonNull(mIdentityManager);
             mIdentityManager.addObserver(this);
             calculateButtonData();
+            initializeSigninCoordinator();
 
             mSyncService = SyncServiceFactory.getForProfile(profile);
             if (mSyncService != null) {
@@ -434,15 +494,19 @@ public class IdentityDiscController
                             .signinSurveyType(
                                     SigninSurveyController.SigninSurveyType.NTP_SIGNIN_BUTTON)
                             .build();
-            @Nullable Intent intent =
-                    SigninAndHistorySyncActivityLauncherImpl.get()
-                            .createBottomSheetSigninIntentOrShowError(
-                                    mContext,
-                                    originalProfile,
-                                    config,
-                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON);
-            if (intent != null) {
-                mContext.startActivity(intent);
+            if (mSigninCoordinator != null) {
+                mSigninCoordinator.startSigninFlow(config);
+            } else {
+                @Nullable Intent intent =
+                        SigninAndHistorySyncActivityLauncherImpl.get()
+                                .createBottomSheetSigninIntentOrShowError(
+                                        mContext,
+                                        originalProfile,
+                                        config,
+                                        SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+                if (intent != null) {
+                    mContext.startActivity(intent);
+                }
             }
         } else {
             SettingsNavigation settingsNavigation =
@@ -457,5 +521,32 @@ public class IdentityDiscController
     @VisibleForTesting
     boolean isProfileDataCacheEmpty() {
         return mProfileDataCache == null;
+    }
+
+    private void initializeSigninCoordinator() {
+        assert mProfile != null;
+        assert !mProfile.isOffTheRecord();
+
+        if (mSigninCoordinator == null
+                && SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+                && SigninFeatureMap.isEnabled(
+                        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)) {
+            OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
+            profileSupplier.set(mProfile);
+
+            mSigninCoordinator =
+                    SigninAndHistorySyncActivityLauncherImpl.get()
+                            .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                                    mWindowAndroid,
+                                    mActivity,
+                                    mActivityResultTracker,
+                                    this,
+                                    mDeviceLockActivityLauncher,
+                                    profileSupplier,
+                                    () -> mBottomSheetController,
+                                    mModalDialogManagerSupplier,
+                                    mSnackbarManager,
+                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+        }
     }
 }

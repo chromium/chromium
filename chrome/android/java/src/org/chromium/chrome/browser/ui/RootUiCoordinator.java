@@ -232,6 +232,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -286,6 +287,7 @@ public class RootUiCoordinator
     protected @Nullable AppMenuCoordinator mAppMenuCoordinator;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     protected final ActivityWindowAndroid mWindowAndroid;
+    protected final ActivityResultTracker mActivityResultTracker;
     private final OneshotSupplier<ChromeAndroidTask> mChromeAndroidTaskSupplier;
 
     protected final ActivityTabProvider mActivityTabProvider;
@@ -482,6 +484,7 @@ public class RootUiCoordinator
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
             @NonNull ActivityWindowAndroid windowAndroid,
+            @NonNull ActivityResultTracker activityResultTracker,
             @NonNull OneshotSupplier<ChromeAndroidTask> chromeAndroidTaskSupplier,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull MonotonicObservableSupplier<LayoutManagerImpl> layoutManagerSupplier,
@@ -519,6 +522,7 @@ public class RootUiCoordinator
         mCallbackController = new CallbackController();
         mActivity = activity;
         mWindowAndroid = windowAndroid;
+        mActivityResultTracker = activityResultTracker;
         mChromeAndroidTaskSupplier = chromeAndroidTaskSupplier;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mOnOmniboxFocusChangedListener = onOmniboxFocusChangedListener;
@@ -1770,6 +1774,8 @@ public class RootUiCoordinator
                     /* onShareRunnable= */ () ->
                             mToolbarManager.setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS),
                     mWindowAndroid,
+                    mActivityResultTracker,
+                    mDeviceLockActivityLauncherSupplier.get(),
                     trackerSupplier,
                     this::getScrimManager,
                     mReaderModeIphControllerSupplier);

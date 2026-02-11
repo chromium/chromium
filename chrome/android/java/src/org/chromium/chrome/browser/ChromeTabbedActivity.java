@@ -3036,6 +3036,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 mLayoutStateProviderSupplier,
                 getBrowserControlsManager(),
                 getWindowAndroid(),
+                getActivityResultTracker(),
                 getChromeAndroidTaskSupplier(),
                 getLifecycleDispatcher(),
                 getLayoutManagerSupplier(),

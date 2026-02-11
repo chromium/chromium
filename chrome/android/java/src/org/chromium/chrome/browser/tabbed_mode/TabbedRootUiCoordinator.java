@@ -234,6 +234,7 @@ import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerFactory;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -443,6 +444,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
             @NonNull ActivityWindowAndroid windowAndroid,
+            @NonNull ActivityResultTracker activityResultTracker,
             @NonNull OneshotSupplier chromeAndroidTaskSupplier,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull MonotonicObservableSupplier<LayoutManagerImpl> layoutManagerSupplier,
@@ -501,6 +503,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 layoutStateProviderOneshotSupplier,
                 browserControlsManager,
                 windowAndroid,
+                activityResultTracker,
                 chromeAndroidTaskSupplier,
                 activityLifecycleDispatcher,
                 layoutManagerSupplier,

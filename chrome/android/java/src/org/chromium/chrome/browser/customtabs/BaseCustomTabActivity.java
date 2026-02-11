@@ -393,6 +393,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getTabModelSelectorSupplier(),
                         getBrowserControlsManager(),
                         getWindowAndroid(),
+                        getActivityResultTracker(),
                         getChromeAndroidTaskSupplier(),
                         getLifecycleDispatcher(),
                         getLayoutManagerSupplier(),
