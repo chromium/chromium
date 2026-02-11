@@ -79,6 +79,8 @@ class ChromeWebClient : public web::WebClient {
                     WKFrameInfo* frame,
                     base::OnceCallback<void(NSArray<NSURL*>*)> completion)
       const override API_AVAILABLE(ios(18.4));
+  web::JSErrorReportLoggingLevel GetJSErrorReportLoggingLevel(
+      web::BrowserState* browser_state) const override;
 
  private:
   // Reference to a view that is attached to a window.

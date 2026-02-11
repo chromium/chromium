@@ -6,6 +6,9 @@
 
 ScriptErrorDetails::ScriptErrorDetails(bool main) : is_main_frame(main) {}
 ScriptErrorDetails::~ScriptErrorDetails() = default;
+ScriptErrorDetails::ScriptErrorDetails(const ScriptErrorDetails& other) =
+    default;
+
 ScriptErrorDetails::ScriptErrorDetails(ScriptErrorDetails&& other) = default;
 ScriptErrorDetails& ScriptErrorDetails::operator=(ScriptErrorDetails&& other) =
     default;

@@ -14,6 +14,7 @@ struct ScriptErrorDetails {
   //  public:
   ScriptErrorDetails(bool is_main_frame);
   ~ScriptErrorDetails();
+  ScriptErrorDetails(const ScriptErrorDetails& other);
   ScriptErrorDetails(ScriptErrorDetails&& other);
   ScriptErrorDetails& operator=(ScriptErrorDetails&& other);
 

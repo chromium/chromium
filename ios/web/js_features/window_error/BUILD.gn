@@ -8,10 +8,11 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 source_set("window_error") {
   deps = [
     ":error_js",
+    ":error_reporting",
     ":script_error_details",
-    ":script_error_stack_util",
     "//base",
     "//ios/web/common:features",
+    "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//net",
     "//url",
@@ -40,6 +41,23 @@ source_set("script_error_stack_util") {
   sources = [
     "script_error_stack_util.h",
     "script_error_stack_util.mm",
+  ]
+}
+
+source_set("error_reporting") {
+  sources = [
+    "ios_javascript_error_report.h",
+    "ios_javascript_error_report.mm",
+    "web_js_error_report_processor.h",
+    "web_js_error_report_processor.mm",
+  ]
+  deps = [
+    ":script_error_details",
+    "//base",
+    "//build:branding_buildflags",
+    "//components/variations",
+    "//ios/web/public",
+    "//services/network/public/cpp",
   ]
 }
 
