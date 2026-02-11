@@ -78,6 +78,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".File" summary=""/>
   <variant name=".Image" summary=""/>
   <variant name=".ImageGen" summary=""/>
+  <variant name=".RegularModel" summary=""/>
   <variant name=".Tab" summary=""/>
   <variant name=".ThinkingModel" summary=""/>
 </variants>

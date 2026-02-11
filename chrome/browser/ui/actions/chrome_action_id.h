@@ -524,6 +524,7 @@
   E(kActionOmniboxContextCanvas, IDC_OMNIBOX_CONTEXT_CANVAS)  \
   E(kActionOmniboxContextSetModelAuto, IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO)  \
   E(kActionOmniboxContextSetModelThinking, IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING)  \
+  E(kActionOmniboxContextSetModelRegular, IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR)  \
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define CHROME_PLATFORM_SPECIFIC_ACTION_IDS \

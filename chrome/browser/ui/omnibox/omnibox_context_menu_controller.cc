@@ -108,6 +108,8 @@ OmniboxContextMenuController::ContextType CommandIdToEnum(int command_id) {
       return OmniboxContextMenuController::ContextType::kAutoModel;
     case IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING:
       return OmniboxContextMenuController::ContextType::kThinkingModel;
+    case IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR:
+      return OmniboxContextMenuController::ContextType::kRegularModel;
     default:
       // There is no command id for tabs due to there being multiple
       // tabs that would have the same command id.
@@ -297,6 +299,13 @@ void OmniboxContextMenuController::AddModelPickerItems() {
       IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO,
       base::UTF8ToUTF16(auto_model_config ? auto_model_config->menu_label()
                                           : ""));
+
+  auto* regular_model_config =
+      GetModelConfig(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  menu_model_->AddCheckItem(
+      IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR,
+      base::UTF8ToUTF16(
+          regular_model_config ? regular_model_config->menu_label() : ""));
 
   auto* thinking_model_config =
       GetModelConfig(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
@@ -562,6 +571,8 @@ omnibox::ModelMode OmniboxContextMenuController::GetModelModeForCommandId(
   switch (command_id) {
     case IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO:
       return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE;
+    case IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR:
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR;
     case IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING:
       return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO;
     default:
@@ -717,6 +728,12 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
               omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
         }
         break;
+      case IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR:
+        if (use_input_state_model) {
+          composebox_handler->SetActiveModelMode(
+              omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+        }
+        break;
       case IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING:
         if (use_input_state_model) {
           composebox_handler->SetActiveModelMode(
@@ -798,6 +815,7 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
       case IDC_OMNIBOX_CONTEXT_CANVAS:
         return !IsToolDisabled(GetToolModeForCommandId(command_id));
       case IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO:
+      case IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR:
       case IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING:
         return !IsModelDisabled(GetModelModeForCommandId(command_id));
       default:
@@ -852,6 +870,7 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
       command_id == IDC_OMNIBOX_CONTEXT_CREATE_IMAGES ||
       command_id == IDC_OMNIBOX_CONTEXT_CANVAS ||
       command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO ||
+      command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR ||
       command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING) {
     auto* browser_window_interface =
         webui::GetBrowserWindowInterface(web_contents_.get());
@@ -879,6 +898,7 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
     } else if (command_id == IDC_OMNIBOX_CONTEXT_CANVAS) {
       return IsToolAllowed(GetToolModeForCommandId(command_id));
     } else if (command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO ||
+               command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR ||
                command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING) {
       return IsModelAllowed(GetModelModeForCommandId(command_id));
     }
@@ -890,9 +910,10 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
 bool OmniboxContextMenuController::IsCommandIdChecked(int command_id) const {
   if (command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO) {
     return input_state_.active_model ==
-               omnibox::ModelMode::MODEL_MODE_UNSPECIFIED ||
-           input_state_.active_model ==
                omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE;
+  } else if (command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR) {
+    return input_state_.active_model ==
+           omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR;
   } else if (command_id == IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING) {
     return input_state_.active_model ==
            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO;
