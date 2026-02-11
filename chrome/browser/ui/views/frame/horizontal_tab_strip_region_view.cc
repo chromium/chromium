@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tab_search_feature.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -32,6 +31,7 @@
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
@@ -254,7 +254,7 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
   std::unique_ptr<TabStripActionContainer> tab_strip_action_container;
   if (browser &&
       (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL)) {
-    if (features::HasTabSearchToolbarButton()) {
+    if (glic::GlicEnabling::IsEnabledByFlags()) {
       tab_strip_action_container = std::make_unique<TabStripActionContainer>(
           browser, browser->GetFeatures().glic_nudge_controller());
 
@@ -541,6 +541,13 @@ views::View* HorizontalTabStripRegionView::GetDefaultFocusableChild() {
   auto* focusable_child = tab_strip_->GetDefaultFocusableChild();
   return focusable_child ? focusable_child
                          : AccessiblePaneView::GetDefaultFocusableChild();
+}
+
+TabStripFlatEdgeButton* HorizontalTabStripRegionView::GetTabSearchButton() {
+  if (combo_button_) {
+    return combo_button_->end_button();
+  }
+  return nullptr;
 }
 
 #if BUILDFLAG(ENABLE_GLIC)

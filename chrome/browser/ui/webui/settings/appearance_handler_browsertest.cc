@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/tab_search_feature.h"
+#include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
@@ -63,7 +63,8 @@ IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest, ResetPinnedToolbarActions) {
 
   EXPECT_TRUE(prefs->GetBoolean(prefs::kShowHomeButton));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kShowForwardButton));
-  if (features::HasTabSearchToolbarButton()) {
+  if (tabs::GetTabSearchPosition(browser()->profile()) ==
+      tabs::TabSearchPosition::kToolbarButton) {
     EXPECT_EQ(3u, actions_model->PinnedActionIds().size());
   } else {
     EXPECT_EQ(2u, actions_model->PinnedActionIds().size());
@@ -79,7 +80,8 @@ IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest, ResetPinnedToolbarActions) {
 
   EXPECT_FALSE(prefs->GetBoolean(prefs::kShowHomeButton));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kShowForwardButton));
-  if (features::HasTabSearchToolbarButton()) {
+  if (tabs::GetTabSearchPosition(browser()->profile()) ==
+      tabs::TabSearchPosition::kToolbarButton) {
     ASSERT_EQ(2u, actions_model->PinnedActionIds().size());
     EXPECT_EQ(kActionShowChromeLabs, actions_model->PinnedActionIds()[0]);
     EXPECT_EQ(kActionTabSearch, actions_model->PinnedActionIds()[1]);

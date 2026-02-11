@@ -68,6 +68,7 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/tab_search_feature.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
@@ -992,7 +993,8 @@ void ToolsMenuModel::Build(Browser* browser) {
   is_tablet_mode = display::Screen::Get()->InTabletMode();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   if (!is_tablet_mode) {
-    if (features::HasTabSearchToolbarButton()) {
+    if (features::HasTabSearchToolbarButton() ||
+        base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton)) {
       AddItemWithStringIdAndVectorIcon(
           this, IDC_TAB_SEARCH, IDS_TAB_SEARCH_MENU, kTabSearchToolbarIcon);
     }

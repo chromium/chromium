@@ -103,7 +103,6 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
-#include "chrome/browser/ui/tab_search_feature.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -4404,7 +4403,13 @@ void BrowserView::UpdateTabSearchBubbleHost() {
         vertical_tab_strip_region_view_->GetTopContainer()
             ->GetTabSearchButton(),
         browser_.get());
-  } else if (features::HasTabSearchToolbarButton()) {
+  } else if (base::FeatureList::IsEnabled(
+                 tabs::kHorizontalTabStripComboButton)) {
+    tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
+        horizontal_tab_strip_region_view_->GetTabSearchButton(),
+        browser_.get());
+  } else if (tabs::GetTabSearchPosition(browser_->profile()) ==
+             tabs::TabSearchPosition::kToolbarButton) {
     tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
         toolbar_->tab_search_button(), browser_.get());
     CHECK(toolbar_button_controller);

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_search_feature.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
@@ -350,7 +351,8 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   add_action(kActionClearBrowsingData,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
 
-  if (features::HasTabSearchToolbarButton()) {
+  if (!base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton) &&
+      features::HasTabSearchToolbarButton()) {
     add_action(kActionTabSearch,
                side_panel::customize_chrome::mojom::CategoryId::kTools);
   }

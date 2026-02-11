@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tab_search_feature.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
@@ -456,7 +457,8 @@ void ToolbarView::Init() {
   pinned_toolbar_actions_container_ = AddChildView(
       std::make_unique<PinnedToolbarActionsContainer>(browser_view_, this));
 
-  if (features::HasTabSearchToolbarButton()) {
+  if (!base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton) &&
+      features::HasTabSearchToolbarButton()) {
     tab_search_button_ =
         pinned_toolbar_actions_container()->CreatePermanentButtonFor(
             kActionTabSearch);

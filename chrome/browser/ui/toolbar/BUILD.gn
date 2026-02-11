@@ -74,6 +74,7 @@ source_set("toolbar") {
       "//chrome/browser/ui:tab_search_feature",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//components/user_education/common",
     ]
   }

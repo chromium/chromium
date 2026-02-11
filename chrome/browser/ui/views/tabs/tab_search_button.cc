@@ -6,7 +6,6 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/tab_search_feature.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
@@ -42,7 +41,6 @@ TabSearchButton::TabSearchButton(
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SEARCH));
 
-  CHECK(!features::HasTabSearchToolbarButton());
   SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
   SetForegroundFrameInactiveColorId(kColorNewTabButtonForegroundFrameInactive);
   SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);

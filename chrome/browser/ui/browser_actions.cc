@@ -53,11 +53,11 @@
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
-#include "chrome/browser/ui/tab_search_feature.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_util.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -613,22 +613,17 @@ void BrowserActions::InitializeBrowserActions() {
           .SetEnabled(IncognitoModePrefs::IsIncognitoAllowed(profile))
           .Build());
 
-  // Both TabSearch in the toolbar and in Vertical Tabs implementations use
-  // ActionItems to represent the 'TabSearch' action.
-  if (features::HasTabSearchToolbarButton() ||
-      tabs::IsVerticalTabsFeatureEnabled()) {
-    root_action_item_->AddChild(
-        ChromeMenuAction(
-            base::BindRepeating(
-                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  chrome::ShowTabSearch(bwi);
-                },
-                bwi),
-            kActionTabSearch, IDS_TAB_SEARCH_MENU, IDS_TAB_SEARCH_MENU,
-            kTabSearchTabStripIcon)
-            .Build());
-  }
+  root_action_item_->AddChild(
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ShowTabSearch(bwi);
+              },
+              bwi),
+          kActionTabSearch, IDS_TAB_SEARCH_MENU, IDS_TAB_SEARCH_MENU,
+          kTabSearchTabStripIcon)
+          .Build());
 
   if (tabs::IsVerticalTabsFeatureEnabled()) {
     root_action_item_->AddChild(

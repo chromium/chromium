@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/tab_search_feature.h"
+#include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
@@ -51,7 +51,8 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
     ASSERT_TRUE(model_);
 
     model_->UpdatePinnedState(kActionShowChromeLabs, false);
-    if (features::HasTabSearchToolbarButton()) {
+    if (tabs::GetTabSearchPosition(profile()) ==
+        tabs::TabSearchPosition::kToolbarButton) {
       model_->UpdatePinnedState(kActionTabSearch, false);
     }
     WaitForAnimations();
@@ -703,10 +704,6 @@ TEST_F(PinnedToolbarActionsContainerTest, MetricsRecordedForPinnableActions) {
   // Only one of history or history clusters should be pinnable. The Split View
   // action is not available via `root_action_item()`.
   size_t expected_pinnable_count = pinnable_action_variants[0].size() - 2;
-  if (!features::HasTabSearchToolbarButton()) {
-    // Tab search is not pinnable if the feature is disabled.
-    expected_pinnable_count -= 1;
-  }
 #if BUILDFLAG(IS_CHROMEOS)
   // Downloads action item does not exist for ChromeOS.
   EXPECT_EQ(pinnable_count, expected_pinnable_count - 1);

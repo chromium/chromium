@@ -74,6 +74,7 @@
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_mojo_handler.h"
+#include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -295,7 +296,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
 #if BUILDFLAG(ENABLE_GLIC)
     if (glic::GlicEnabling::IsProfileEligible(profile)) {
-      DCHECK(features::HasTabSearchToolbarButton());
       glic_iph_controller_ = std::make_unique<glic::GlicIphController>(
           browser, *glic::GlicKeyedService::Get(profile));
       glic_nudge_controller_ =
@@ -816,8 +816,10 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
               *browser_, browser_, std::move(container_overlay_view_pairs));
     }
 
-    if (features::HasTabSearchToolbarButton() ||
-        tabs::IsVerticalTabsFeatureEnabled()) {
+    const tabs::TabSearchPosition tab_search_position =
+        tabs::GetTabSearchPosition(browser_view->GetProfile());
+    if (tab_search_position == tabs::TabSearchPosition::kToolbarButton ||
+        tab_search_position == tabs::TabSearchPosition::kVerticalTabstrip) {
       tab_search_toolbar_button_controller_ =
           std::make_unique<TabSearchToolbarButtonController>(browser_view);
     }

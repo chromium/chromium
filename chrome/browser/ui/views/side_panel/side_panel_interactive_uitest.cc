@@ -12,8 +12,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
-#include "chrome/browser/ui/tab_search_feature.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -285,7 +285,8 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
     PinnedToolbarActionsModel* const actions_model =
         PinnedToolbarActionsModel::Get(browser()->profile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
-    if (features::HasTabSearchToolbarButton()) {
+    if (tabs::GetTabSearchPosition(browser()->profile()) ==
+        tabs::TabSearchPosition::kToolbarButton) {
       actions_model->UpdatePinnedState(kActionTabSearch, false);
     }
     views::test::WaitForAnimatingLayoutManager(

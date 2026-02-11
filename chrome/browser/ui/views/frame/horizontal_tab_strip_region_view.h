@@ -31,6 +31,7 @@ class TabStrip;
 class TabStripScrollContainer;
 class TabSearchPositionMetricsLogger;
 class TabStripControlButton;
+class TabStripFlatEdgeButton;
 
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
@@ -97,6 +98,8 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   const Profile* profile() { return profile_; }
 
   TabStrip* tab_strip() { return tab_strip_; }
+
+  TabStripFlatEdgeButton* GetTabSearchButton();
 
 #if BUILDFLAG(ENABLE_GLIC)
   views::LabelButton* GetGlicButton();
