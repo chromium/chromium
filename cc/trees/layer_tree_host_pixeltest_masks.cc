@@ -582,7 +582,7 @@ TEST_P(LayerTreeHostMasksForBackdropFiltersPixelTestWithLayerList, Test) {
           : base::FilePath(FILE_PATH_LITERAL("mask_of_backdrop_filter.png"));
 
   if (use_skia_vulkan() && use_accelerated_raster()) {
-    // Vulkan with OOP raster has 3 pixels errors (the circle mask shape is
+    // Vulkan with GPU raster has 3 pixels errors (the circle mask shape is
     // slightly different).
     pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
         FuzzyPixelComparator()
@@ -638,7 +638,7 @@ TEST_P(LayerTreeHostMasksForBackdropFiltersPixelTestWithLayerTree, Test) {
           : base::FilePath(FILE_PATH_LITERAL("mask_of_backdrop_filter.png"));
 
   if (use_skia_vulkan() && use_accelerated_raster()) {
-    // Vulkan with OOP raster has 3 pixels errors (the circle mask shape is
+    // Vulkan with GPU raster has 3 pixels errors (the circle mask shape is
     // slightly different).
     pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
         FuzzyPixelComparator()
