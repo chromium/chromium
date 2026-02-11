@@ -70,10 +70,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
@@ -282,16 +283,16 @@ GURL GetSyncConfirmationURL() {
                                            /*is_sync_promo=*/true);
 }
 
-class BrowserAddedWaiter : public BrowserListObserver {
+class BrowserAddedWaiter : public BrowserCollectionObserver {
  public:
   explicit BrowserAddedWaiter(size_t total_count) : total_count_(total_count) {
-    BrowserList::AddObserver(this);
+    observation_.Observe(GlobalBrowserCollection::GetInstance());
   }
 
   BrowserAddedWaiter(const BrowserAddedWaiter&) = delete;
   BrowserAddedWaiter& operator=(const BrowserAddedWaiter&) = delete;
 
-  ~BrowserAddedWaiter() override { BrowserList::RemoveObserver(this); }
+  ~BrowserAddedWaiter() override = default;
 
   BrowserWindowInterface* Wait() {
     if (chrome::GetTotalBrowserCount() == total_count_) {
@@ -303,8 +304,8 @@ class BrowserAddedWaiter : public BrowserListObserver {
   }
 
  private:
-  // BrowserListObserver implementation.
-  void OnBrowserAdded(Browser* browser) override {
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
     if (chrome::GetTotalBrowserCount() != total_count_) {
       return;
     }
@@ -316,6 +317,8 @@ class BrowserAddedWaiter : public BrowserListObserver {
   raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> browser_ =
       nullptr;
   base::RunLoop run_loop_;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      observation_{this};
 };
 
 class TestTabDialogs : public TabDialogs {
@@ -1088,18 +1091,24 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        MAYBE_CreateSignedInProfileClosePicker) {
   // Closes the picker at the same time the new browser is created.
-  class ClosePickerOnBrowserAddedObserver : public BrowserListObserver {
+  class ClosePickerOnBrowserAddedObserver : public BrowserCollectionObserver {
    public:
-    ClosePickerOnBrowserAddedObserver() { BrowserList::AddObserver(this); }
+    ClosePickerOnBrowserAddedObserver() {
+      observation_.Observe(GlobalBrowserCollection::GetInstance());
+    }
 
     // This observer is registered early, before the call to
     // `OpenBrowserWindowForProfile()` in `ProfileManagementFlowController`. It
     // causes the `ProfileManagementFlowController` to be deleted before its
     // `clear_host_callback_` is called
-    void OnBrowserAdded(Browser* browser) override {
-      BrowserList::RemoveObserver(this);
+    void OnBrowserCreated(BrowserWindowInterface* browser) override {
+      observation_.Reset();
       ProfilePicker::Hide();
     }
+
+   private:
+    base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+        observation_{this};
   };
 
   ClosePickerOnBrowserAddedObserver close_picker_on_browser_added;

@@ -30,12 +30,13 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -996,15 +997,17 @@ void WebContentsInteractionTestUtil::OnPollEvent(
 
 class TabWebContentsInteractionTestUtil::NewTabWatcher
     : public TabStripModelObserver,
-      public BrowserListObserver {
+      public BrowserCollectionObserver {
  public:
   NewTabWatcher(TabWebContentsInteractionTestUtil* owner,
                 BrowserWindowInterface* browser)
       : owner_(owner), browser_(browser) {
     if (browser_) {
+      // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
       browser_->GetTabStripModel()->AddObserver(this);
     } else {
-      BrowserList::GetInstance()->AddObserver(this);
+      global_browser_observation_.Observe(
+          GlobalBrowserCollection::GetInstance());
       ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
           [this](BrowserWindowInterface* browser) {
             browser->GetTabStripModel()->AddObserver(this);
@@ -1013,20 +1016,17 @@ class TabWebContentsInteractionTestUtil::NewTabWatcher
     }
   }
 
-  ~NewTabWatcher() override {
-    BrowserList::GetInstance()->RemoveObserver(this);
-  }
+  ~NewTabWatcher() override = default;
 
   BrowserWindowInterface* browser() { return browser_; }
 
  private:
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override {
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
     CHECK(!browser_);
+    // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
     browser->GetTabStripModel()->AddObserver(this);
   }
-
-  void OnBrowserRemoved(Browser* browser) override { CHECK(!browser_); }
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -1046,6 +1046,8 @@ class TabWebContentsInteractionTestUtil::NewTabWatcher
 
   const raw_ptr<TabWebContentsInteractionTestUtil> owner_;
   const raw_ptr<BrowserWindowInterface> browser_;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      global_browser_observation_{this};
 };
 
 TabWebContentsInteractionTestUtil::TabWebContentsInteractionTestUtil(

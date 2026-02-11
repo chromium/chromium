@@ -22,8 +22,6 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
@@ -100,10 +98,12 @@ GURL GetServerURLForRender(const WhatsNewRegistry& whats_new_registry,
 
 namespace {
 
-class WhatsNewFetcher : public BrowserListObserver {
+class WhatsNewFetcher {
  public:
   explicit WhatsNewFetcher(Browser* browser) : browser_(browser) {
-    BrowserList::AddObserver(this);
+    browser_did_close_subscription_ =
+        browser_->RegisterBrowserDidClose(base::BindRepeating(
+            &WhatsNewFetcher::OnBrowserClosed, base::Unretained(this)));
     browser_did_become_active_subscription_ = browser_->RegisterDidBecomeActive(
         base::BindRepeating(&WhatsNewFetcher::OnBrowserDidBecomeActive,
                             base::Unretained(this)));
@@ -190,7 +190,7 @@ class WhatsNewFetcher : public BrowserListObserver {
         kMaxDownloadBytes);
   }
 
-  ~WhatsNewFetcher() override { BrowserList::RemoveObserver(this); }
+  ~WhatsNewFetcher() = default;
 
   void OnBrowserDidBecomeActive(BrowserWindowInterface* browser) {
     browser_closed_or_inactive_ = false;
@@ -200,14 +200,9 @@ class WhatsNewFetcher : public BrowserListObserver {
     browser_closed_or_inactive_ = true;
   }
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override {
-    if (browser != browser_) {
-      return;
-    }
-
+  void OnBrowserClosed(BrowserWindowInterface* browser) {
+    CHECK(browser_ == browser);
     browser_closed_or_inactive_ = true;
-    BrowserList::RemoveObserver(this);
     browser_did_become_active_subscription_ = {};
     browser_did_become_inactive_subscription_ = {};
     browser_ = nullptr;
@@ -276,6 +271,7 @@ class WhatsNewFetcher : public BrowserListObserver {
   raw_ptr<Browser> browser_;
   bool browser_closed_or_inactive_ = false;
   GURL startup_url_;
+  base::CallbackListSubscription browser_did_close_subscription_;
   base::CallbackListSubscription browser_did_become_active_subscription_;
   base::CallbackListSubscription browser_did_become_inactive_subscription_;
 };

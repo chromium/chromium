@@ -10,12 +10,16 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
-class DevToolsBrowserContextManager : public BrowserListObserver,
+class BrowserWindowInterface;
+class GlobalBrowserCollection;
+
+class DevToolsBrowserContextManager : public BrowserCollectionObserver,
                                       public ProfileObserver {
  public:
   static DevToolsBrowserContextManager& GetInstance();
@@ -37,8 +41,8 @@ class DevToolsBrowserContextManager : public BrowserListObserver,
   DevToolsBrowserContextManager();
   ~DevToolsBrowserContextManager() override;
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
@@ -49,6 +53,8 @@ class DevToolsBrowserContextManager : public BrowserListObserver,
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observation_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
   base::flat_map<std::string, raw_ptr<Profile, CtnExperimental>> otr_profiles_;
   base::flat_map<std::string, content::DevToolsManagerDelegate::DisposeCallback>
       pending_context_disposals_;
