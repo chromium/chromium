@@ -31,8 +31,18 @@ namespace {
 
 static const int kMaxChipIgnoredCount = 5;
 const char* const kDenyList[] = {
-    "mail.google.com",         "whatsapp.com", "chatgpt.com", "docs.google.com",
+    "mail.google.com",
+    "whatsapp.com",
+    "chatgpt.com",
+    "docs.google.com",
     "docs.sandbox.google.com",
+    "calendar.google.com",
+    "drive.google.com",
+    "meet.google.com",
+    "instagram.com",
+    "tiktok.com",
+    "youtube.com",
+    "photos.google.com",
 };
 
 int GetOmniboxChipIgnoredCount(PrefService* prefs) {

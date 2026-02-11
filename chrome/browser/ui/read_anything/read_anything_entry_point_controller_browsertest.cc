@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(
     ReadAnythingEntryPointControllerOmniboxBrowserTest,
     CheckIfShouldSuggestReadingModeNaive_ReturnsTrueForAllowedDomains) {
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.google.com"),
+      browser(), GURL("https://www.blog.google.com"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
