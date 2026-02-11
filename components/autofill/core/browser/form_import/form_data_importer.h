@@ -244,9 +244,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   std::optional<CreditCard> TryMatchingExistingServerCard(
       const CreditCard& candidate);
 
-  // Returns the extracted IBAN from the `form` if it is a new IBAN.
-  std::optional<Iban> ExtractIban(const FormStructure& form);
-
   // Tries to initiate the saving of the `extracted_credit_card` if applicable.
   // `submitted_form` is the form from which the card was
   // imported. `is_credit_card_upstream_enabled` indicates if server card

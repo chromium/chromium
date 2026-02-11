@@ -394,7 +394,8 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
 
 #if !BUILDFLAG(IS_IOS)
   if (payment_methods_autofill_enabled) {
-    extracted_form_data.extracted_iban = ExtractIban(submitted_form);
+    extracted_form_data.extracted_iban =
+        GetPaymentsFormDataImporter().ExtractIban(submitted_form);
   }
 #endif  // !BUILDFLAG(IS_IOS)
 
@@ -1055,22 +1056,6 @@ std::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
   }
 
   return candidate;
-}
-
-std::optional<Iban> FormDataImporter::ExtractIban(const FormStructure& form) {
-  Iban candidate_iban = GetPaymentsFormDataImporter().ExtractIbanFromForm(form);
-  if (candidate_iban.value().empty()) {
-    return std::nullopt;
-  }
-
-  // Sets the `kAutofillHasSeenIban` pref to true indicating that the user has
-  // submitted a form with an IBAN, which indicates that the user is familiar
-  // with IBANs as a concept. We set the pref so that even if the user travels
-  // to a country where IBAN functionality is not typically used, they will
-  // still be able to save new IBANs from the settings page using this pref.
-  payments_data_manager().SetAutofillHasSeenIban();
-
-  return candidate_iban;
 }
 
 payments::PaymentsFormDataImporter::ExtractCreditCardFromFormResult

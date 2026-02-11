@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_PAYMENTS_PAYMENTS_FORM_DATA_IMPORTER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_PAYMENTS_PAYMENTS_FORM_DATA_IMPORTER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 
@@ -15,6 +17,7 @@ class FormDataImporter;
 class FormDataImporterTestApi;
 class FormStructure;
 class Iban;
+class PaymentsDataManager;
 
 namespace payments {
 
@@ -64,6 +67,9 @@ class PaymentsFormDataImporter {
     return fetched_payments_data_context_;
   }
 
+  // Returns the extracted IBAN from the `form` if it is a new IBAN.
+  std::optional<Iban> ExtractIban(const FormStructure& form);
+
  private:
   friend class PaymentsFormDataImporterTestApi;
   // TODO(crbug.com/481379161): Remove `FormDataImporter` and
@@ -76,6 +82,8 @@ class PaymentsFormDataImporter {
 
   // Helper function which extracts the IBAN from the form structure.
   Iban ExtractIbanFromForm(const FormStructure& form);
+
+  PaymentsDataManager& payments_data_manager();
 
   const raw_ref<AutofillClient> client_;
 
