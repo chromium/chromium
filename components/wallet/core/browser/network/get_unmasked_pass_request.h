@@ -22,6 +22,7 @@ class GetUnmaskedPassRequest : public WalletRequest {
   // WalletRequest:
   std::string GetRequestUrlPath() const override;
   std::string GetRequestContent() const override;
+  WalletNetworkRequestType GetRequestType() const override;
   void OnResponse(WalletHttpClient::HttpResponse http_response) && override;
 
  private:

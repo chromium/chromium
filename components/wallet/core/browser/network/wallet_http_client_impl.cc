@@ -16,6 +16,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/wallet/core/browser/data_models/wallet_pass.h"
+#include "components/wallet/core/browser/metrics/wallet_metrics.h"
 #include "components/wallet/core/browser/network/get_unmasked_pass_request.h"
 #include "components/wallet/core/browser/network/upsert_private_pass_request.h"
 #include "components/wallet/core/browser/network/upsert_public_pass_request.h"
@@ -174,16 +175,21 @@ void WalletHttpClientImpl::SendRequestInternal(
   loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&WalletHttpClientImpl::OnSimpleLoaderComplete,
-                     weak_ptr_factory_.GetWeakPtr(), it, std::move(request)),
+                     weak_ptr_factory_.GetWeakPtr(), it, std::move(request),
+                     base::TimeTicks::Now()),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
 void WalletHttpClientImpl::OnSimpleLoaderComplete(
     UrlLoaderList::iterator it,
     std::unique_ptr<WalletRequest> request,
+    base::TimeTicks request_start,
     std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   active_loaders_.erase(it);
+  metrics::RecordNetworkRequestLatency(request->GetRequestType(),
+                                       base::TimeTicks::Now() - request_start);
+
   if (!response_body) {
     // TODO(crbug.com/468915960): Handle detailed errors.
     std::move(*request).OnResponse(

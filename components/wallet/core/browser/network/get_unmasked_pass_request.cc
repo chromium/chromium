@@ -29,6 +29,11 @@ std::string GetUnmaskedPassRequest::GetRequestContent() const {
   return request.SerializeAsString();
 }
 
+WalletRequest::WalletNetworkRequestType GetUnmaskedPassRequest::GetRequestType()
+    const {
+  return WalletRequest::WalletNetworkRequestType::kGetUnmaskedPrivatePass;
+}
+
 void GetUnmaskedPassRequest::OnResponse(
     WalletHttpClient::HttpResponse http_response) && {
   if (!http_response.has_value()) {

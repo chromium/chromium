@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "components/wallet/core/browser/data_models/data_model_utils.h"
 
 namespace wallet::metrics {
@@ -33,6 +34,27 @@ void LogSaveEvent(PassCategory pass_category,
       base::StrCat({"Wallet.WalletablePass.Save.Funnel.",
                     PassCategoryToString(pass_category)}),
       event);
+}
+
+void RecordNetworkRequestLatency(WalletRequest::WalletNetworkRequestType type,
+                                 base::TimeDelta request_latency) {
+  base::UmaHistogramTimes(
+      base::ReplaceStringPlaceholders("Wallet.NetworkRequest.$1.Latency",
+                                      {WalletNetworkRequestTypeToString(type)},
+                                      /*offsets=*/nullptr),
+      request_latency);
+}
+
+std::string WalletNetworkRequestTypeToString(
+    WalletRequest::WalletNetworkRequestType type) {
+  switch (type) {
+    case WalletRequest::WalletNetworkRequestType::kUpsertPass:
+      return "UpsertPass";
+    case WalletRequest::WalletNetworkRequestType::kUpsertPrivatePass:
+      return "UpsertPrivatePass";
+    case WalletRequest::WalletNetworkRequestType::kGetUnmaskedPrivatePass:
+      return "GetUnmaskedPrivatePass";
+  }
 }
 
 }  // namespace wallet::metrics

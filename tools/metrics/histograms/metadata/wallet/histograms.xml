@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="Wallet.NetworkRequest.RequestType">
+  <variant name="GetUnmaskedPrivatePass" summary="unmasking a private pass"/>
+  <variant name="UpsertPass" summary="upserting a public pass"/>
+  <variant name="UpsertPrivatePass" summary="upserting a private pass"/>
+</variants>
+
 <variants name="Wallet.WalletablePass.PassCategory">
   <variant name="BoardingPass" summary="boarding passes"/>
   <variant name="DriverLicense" summary="driver licenses"/>
@@ -34,6 +40,18 @@ chromium-metrics-reviews@google.com.
   <variant name="TransitTicket" summary="transit tickets"/>
   <variant name="Unspecified" summary="unspecified pass category"/>
 </variants>
+
+<histogram name="Wallet.NetworkRequest.{RequestType}.Latency" units="ms"
+    expires_after="2026-12-31">
+  <owner>vizcay@google.com</owner>
+  <owner>1p-integrations-autofill@google.com</owner>
+  <summary>
+    Records the latency of network requests made to the wallet server for
+    {RequestType}. This is an important metric to monitor the health of the
+    integration.
+  </summary>
+  <token key="RequestType" variants="Wallet.NetworkRequest.RequestType"/>
+</histogram>
 
 <histogram name="Wallet.WalletablePass.OptIn.Funnel.{PassCategory}"
     enum="WalletablePassOptInFunnelEvents" expires_after="2026-12-31">

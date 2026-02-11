@@ -4,13 +4,16 @@
 
 #include "components/wallet/core/browser/network/wallet_http_client_impl.h"
 
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/version_info/version_info.h"
+#include "components/wallet/core/browser/metrics/wallet_metrics.h"
 #include "components/wallet/core/browser/proto/api_v1.pb.h"
 #include "components/wallet/core/browser/proto/pass.pb.h"
 #include "components/wallet/core/common/wallet_features.h"
@@ -23,12 +26,12 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace wallet {
 namespace {
 
 constexpr char kAccessToken[] = "test access token";
+constexpr base::TimeDelta kLatency = base::Milliseconds(250);
 
 using UpsertPublicPassCallback = base::test::TestFuture<
     const base::expected<std::string, WalletHttpClient::WalletRequestError>&>;
@@ -59,6 +62,14 @@ class WalletHttpClientImplTest : public testing::Test {
     return GURL(kWalletSaveUrl.Get()).Resolve("v1/passes:upsert");
   }
 
+  GURL GetUpsertPrivatePassUrl() {
+    return GURL(kWalletSaveUrl.Get()).Resolve("v1/e/privatePasses:upsert");
+  }
+
+  GURL GetUnmaskedPassUrl() {
+    return GURL(kWalletSaveUrl.Get()).Resolve("v1/e/privatePasses:batchGet");
+  }
+
   WalletHttpClientImpl* client() { return client_.get(); }
 
   signin::IdentityTestEnvironment* identity_test_env() {
@@ -69,8 +80,11 @@ class WalletHttpClientImplTest : public testing::Test {
     return &test_url_loader_factory_;
   }
 
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
+
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -225,6 +239,60 @@ TEST_F(WalletHttpClientImplTest,
   ASSERT_TRUE(request_proto.has_client_info());
   EXPECT_EQ(request_proto.client_info().chrome_client_info().version(),
             version_info::GetVersionNumber());
+}
+
+TEST_F(WalletHttpClientImplTest, UpsertPass_Latency) {
+  base::HistogramTester histogram_tester;
+  UpsertPublicPassCallback callback;
+  client()->UpsertPublicPass(Pass(), callback.GetCallback());
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Max());
+
+  task_environment().FastForwardBy(kLatency);
+  api::UpsertPassResponse response;
+  response.set_pass_id("pass-id");
+  test_url_loader_factory()->SimulateResponseForPendingRequest(
+      GetUpsertPassUrl().spec(), response.SerializeAsString());
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Wallet.NetworkRequest.UpsertPass.Latency", kLatency, 1);
+}
+
+TEST_F(WalletHttpClientImplTest, UpsertPrivatePass_Latency) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<
+      const base::expected<PrivatePass, WalletHttpClient::WalletRequestError>&>
+      callback;
+  client()->UpsertPrivatePass(PrivatePass(), callback.GetCallback());
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Max());
+
+  task_environment().FastForwardBy(kLatency);
+  api::UpsertPrivatePassResponse response;
+  test_url_loader_factory()->SimulateResponseForPendingRequest(
+      GetUpsertPrivatePassUrl().spec(), response.SerializeAsString());
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Wallet.NetworkRequest.UpsertPrivatePass.Latency", kLatency, 1);
+}
+
+TEST_F(WalletHttpClientImplTest, GetUnmaskedPass_Latency) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<
+      const base::expected<PrivatePass, WalletHttpClient::WalletRequestError>&>
+      callback;
+  client()->GetUnmaskedPass("pass-id", callback.GetCallback());
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Max());
+
+  task_environment().FastForwardBy(kLatency);
+  api::GetPrivatePassesResponse response;
+  response.add_results();
+  test_url_loader_factory()->SimulateResponseForPendingRequest(
+      GetUnmaskedPassUrl().spec(), response.SerializeAsString());
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Wallet.NetworkRequest.GetUnmaskedPrivatePass.Latency", kLatency, 1);
 }
 
 }  // namespace

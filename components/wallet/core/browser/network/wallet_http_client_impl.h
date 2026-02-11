@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -71,6 +72,7 @@ class WalletHttpClientImpl : public WalletHttpClient {
   // response body or an error.
   void OnSimpleLoaderComplete(UrlLoaderList::iterator it,
                               std::unique_ptr<WalletRequest> request,
+                              base::TimeTicks request_start,
                               std::optional<std::string> response_body);
 
   // The IdentityManager instance for the current profile.

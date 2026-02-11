@@ -35,6 +35,11 @@ std::string UpsertPrivatePassRequest::GetRequestContent() const {
   return request.SerializeAsString();
 }
 
+WalletRequest::WalletNetworkRequestType
+UpsertPrivatePassRequest::GetRequestType() const {
+  return WalletRequest::WalletNetworkRequestType::kUpsertPrivatePass;
+}
+
 void UpsertPrivatePassRequest::OnResponse(
     WalletHttpClient::HttpResponse http_response) && {
   if (!http_response.has_value()) {
