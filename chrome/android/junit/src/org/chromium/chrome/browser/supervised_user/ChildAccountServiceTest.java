@@ -14,7 +14,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.accounts.Account;
 import android.app.Activity;
 
 import org.junit.Assert;
@@ -30,8 +29,9 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -40,8 +40,6 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class ChildAccountServiceTest {
-    private static final Account CHILD_ACCOUNT1 =
-            AccountUtils.createAccountFromEmail("child.account1@gmail.com");
     private static final long FAKE_NATIVE_CALLBACK = 1000L;
 
     private final FakeAccountManagerFacade mFakeFacade = spy(new FakeAccountManagerFacade());
@@ -58,6 +56,7 @@ public class ChildAccountServiceTest {
 
     @Before
     public void setUp() {
+        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         ChildAccountServiceJni.setInstanceForTesting(mNativeMock);
     }
 
@@ -65,7 +64,7 @@ public class ChildAccountServiceTest {
     public void testReauthenticateChildAccountWhenActivityIsNull() {
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(null));
         ChildAccountService.reauthenticateChildAccount(
-                mWindowAndroidMock, CHILD_ACCOUNT1.name, FAKE_NATIVE_CALLBACK);
+                mWindowAndroidMock, TestAccounts.CHILD_ACCOUNT, FAKE_NATIVE_CALLBACK);
         verify(mNativeMock).onReauthenticationFailed(FAKE_NATIVE_CALLBACK);
     }
 
@@ -75,17 +74,17 @@ public class ChildAccountServiceTest {
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
         doAnswer(
                         invocation -> {
-                            Account account = invocation.getArgument(0);
-                            Assert.assertEquals(CHILD_ACCOUNT1.name, account.name);
+                            CoreAccountInfo accountInfo = invocation.getArgument(0);
+                            Assert.assertEquals(TestAccounts.CHILD_ACCOUNT, accountInfo);
                             Callback<Boolean> callback = invocation.getArgument(2);
                             callback.onResult(true);
                             return null;
                         })
                 .when(mFakeFacade)
-                .updateCredentials(any(Account.class), eq(activity), any());
+                .updateCredentials(any(CoreAccountInfo.class), eq(activity), any());
 
         ChildAccountService.reauthenticateChildAccount(
-                mWindowAndroidMock, CHILD_ACCOUNT1.name, FAKE_NATIVE_CALLBACK);
+                mWindowAndroidMock, TestAccounts.CHILD_ACCOUNT, FAKE_NATIVE_CALLBACK);
         verify(mNativeMock, never()).onReauthenticationFailed(anyLong());
     }
 
@@ -95,17 +94,17 @@ public class ChildAccountServiceTest {
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
         doAnswer(
                         invocation -> {
-                            Account account = invocation.getArgument(0);
-                            Assert.assertEquals(CHILD_ACCOUNT1.name, account.name);
+                            CoreAccountInfo accountInfo = invocation.getArgument(0);
+                            Assert.assertEquals(TestAccounts.CHILD_ACCOUNT, accountInfo);
                             Callback<Boolean> callback = invocation.getArgument(2);
                             callback.onResult(false);
                             return null;
                         })
                 .when(mFakeFacade)
-                .updateCredentials(any(Account.class), eq(activity), any());
+                .updateCredentials(any(CoreAccountInfo.class), eq(activity), any());
 
         ChildAccountService.reauthenticateChildAccount(
-                mWindowAndroidMock, CHILD_ACCOUNT1.name, FAKE_NATIVE_CALLBACK);
+                mWindowAndroidMock, TestAccounts.CHILD_ACCOUNT, FAKE_NATIVE_CALLBACK);
         verify(mNativeMock).onReauthenticationFailed(FAKE_NATIVE_CALLBACK);
     }
 }

@@ -728,9 +728,7 @@ public class AccountPickerBottomSheetMediator
                 };
         assertNonNull(mSelectedAccount);
         mAccountManagerFacade.updateCredentials(
-                CoreAccountInfo.getAndroidAccountFrom(mSelectedAccount),
-                mActivity,
-                onUpdateCredentialsCompleted);
+                mSelectedAccount, mActivity, onUpdateCredentialsCompleted);
     }
 
     private void startSigninTimestampLogging() {

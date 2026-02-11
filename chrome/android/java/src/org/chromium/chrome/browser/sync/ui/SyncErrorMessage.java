@@ -486,8 +486,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
                 mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         assert primaryAccountInfo != null;
         AccountManagerFacadeProvider.getInstance()
-                .updateCredentials(
-                        CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), activity, null);
+                .updateCredentials(primaryAccountInfo, activity, null);
     }
 
     private static @UserActionableError int getError(Profile profile) {

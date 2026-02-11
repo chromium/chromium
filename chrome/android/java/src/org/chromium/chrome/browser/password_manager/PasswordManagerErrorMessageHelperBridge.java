@@ -103,7 +103,7 @@ public class PasswordManagerErrorMessageHelperBridge {
         assert activity != null : "Activity should not be null";
         AccountManagerFacadeProvider.getInstance()
                 .updateCredentials(
-                        CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo),
+                        primaryAccountInfo,
                         activity,
                         (success) -> {
                             RecordHistogram.recordBooleanHistogram(

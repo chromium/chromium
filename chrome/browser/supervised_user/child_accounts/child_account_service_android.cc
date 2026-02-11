@@ -25,7 +25,7 @@ using base::android::ScopedJavaGlobalRef;
 
 void ReauthenticateChildAccount(
     content::WebContents* web_contents,
-    const std::string& email,
+    const CoreAccountInfo& accountInfo,
     const base::RepeatingCallback<void()>& on_failure_callback) {
   ui::WindowAndroid* window_android =
       web_contents->GetNativeView()->GetWindowAndroid();
@@ -40,7 +40,7 @@ void ReauthenticateChildAccount(
 
   JNIEnv* env = AttachCurrentThread();
   Java_ChildAccountService_reauthenticateChildAccount(
-      env, window_android->GetJavaObject(), email,
+      env, window_android->GetJavaObject(), accountInfo,
       reinterpret_cast<int64_t>(callback_copy.release()));
 }
 

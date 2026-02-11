@@ -16,7 +16,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.app.PendingIntent;
 
@@ -185,10 +184,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                             return null;
                         })
                 .when(mFakeAccountManagerFacade)
-                .updateCredentials(
-                        eq(CoreAccountInfo.getAndroidAccountFrom(TestAccounts.ACCOUNT1)),
-                        eq(activity),
-                        any());
+                .updateCredentials(eq(TestAccounts.ACCOUNT1), eq(activity), any());
 
         PasswordManagerErrorMessageHelperBridge.startUpdateAccountCredentialsFlow(
                 mWindowAndroidMock, mProfile);
@@ -213,10 +209,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                             return null;
                         })
                 .when(mFakeAccountManagerFacade)
-                .updateCredentials(
-                        eq(CoreAccountInfo.getAndroidAccountFrom(TestAccounts.ACCOUNT1)),
-                        eq(activity),
-                        any());
+                .updateCredentials(eq(TestAccounts.ACCOUNT1), eq(activity), any());
 
         PasswordManagerErrorMessageHelperBridge.startUpdateAccountCredentialsFlow(
                 mWindowAndroidMock, mProfile);
@@ -259,7 +252,8 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         PasswordManagerErrorMessageHelperBridge.startUpdateAccountCredentialsFlow(
                 mWindowAndroidMock, mProfile);
         verify(mFakeAccountManagerFacade, never())
-                .updateCredentials(any(Account.class), any(Activity.class), any(Callback.class));
+                .updateCredentials(
+                        any(CoreAccountInfo.class), any(Activity.class), any(Callback.class));
     }
 
     @Test

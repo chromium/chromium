@@ -469,14 +469,11 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         mDelegate.createAddAccountIntent(prefilledEmail, callback);
     }
 
-    /**
-     * Asks the user to enter a new password for an account, updating the saved credentials for the
-     * account.
-     */
     @Override
     public void updateCredentials(
-            Account account, Activity activity, @Nullable Callback<Boolean> callback) {
-        mDelegate.updateCredentials(account, activity, callback);
+            CoreAccountInfo accountInfo, Activity activity, @Nullable Callback<Boolean> callback) {
+        mDelegate.updateCredentials(
+                CoreAccountInfo.getAndroidAccountFrom(accountInfo), activity, callback);
     }
 
     @Override

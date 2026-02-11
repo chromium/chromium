@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.supervised_user;
 
-import android.accounts.Account;
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 
 import androidx.annotation.VisibleForTesting;
@@ -18,7 +19,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.ui.base.WindowAndroid;
 
 /** This class serves as a simple interface for native code to re-authenticate a child account. */
@@ -32,7 +33,7 @@ public class ChildAccountService {
     @CalledByNative
     static void reauthenticateChildAccount(
             WindowAndroid windowAndroid,
-            @JniType("std::string") String accountEmail,
+            @JniType("CoreAccountInfo") CoreAccountInfo accountInfo,
             final long nativeOnFailureCallback) {
         ThreadUtils.assertOnUiThread();
         final Activity activity = windowAndroid.getActivity().get();
@@ -45,10 +46,9 @@ public class ChildAccountService {
                     });
             return;
         }
-        Account account = AccountUtils.createAccountFromEmail(accountEmail);
         AccountManagerFacadeProvider.getInstance()
                 .updateCredentials(
-                        account,
+                        assertNonNull(accountInfo),
                         activity,
                         success -> {
                             if (!success) {

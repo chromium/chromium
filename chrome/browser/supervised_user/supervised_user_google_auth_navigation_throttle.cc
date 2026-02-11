@@ -252,7 +252,7 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
           .Run();
     } else {
       ReauthenticateChildAccount(
-          web_contents, account_info.email,
+          web_contents, account_info,
           base::BindRepeating(&SupervisedUserGoogleAuthNavigationThrottle::
                                   OnReauthenticationFailed,
                               weak_ptr_factory_.GetWeakPtr()));

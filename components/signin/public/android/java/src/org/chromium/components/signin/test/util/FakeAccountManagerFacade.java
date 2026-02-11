@@ -309,7 +309,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     @Override
     public void updateCredentials(
-            Account account, Activity activity, @Nullable Callback<Boolean> callback) {}
+            CoreAccountInfo accountInfo, Activity activity, @Nullable Callback<Boolean> callback) {}
 
     @Override
     public void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback) {
