@@ -147,6 +147,7 @@ extern NSString* const kSaveImageActionSymbol;
 extern NSString* const kOpenImageActionSymbol;
 extern NSString* const kQRCodeSymbol;
 extern NSString* const kPrinterSymbol;
+extern NSString* const kCarSymbol;
 extern NSString* const kCreditCardSymbol;
 extern NSString* const kMicrophoneFillSymbol;
 extern NSString* const kMicrophoneSymbol;
