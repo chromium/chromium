@@ -107,8 +107,10 @@ chromium-metrics-reviews@google.com.
 
 <variants name="SyncDataTypeForSyncToSigninMigration">
   <variant name=".BOOKMARK" summary="BOOKMARK"/>
+  <variant name=".EXTENSION" summary="EXTENSIONS"/>
   <variant name=".PASSWORD" summary="PASSWORD"/>
   <variant name=".READING_LIST" summary="READING_LIST"/>
+  <variant name=".THEME" summary="THEMES"/>
 </variants>
 
 <variants name="SyncErrorInfobarTrigger">
