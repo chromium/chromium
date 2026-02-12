@@ -108,4 +108,8 @@
   return [self.delegate nonTabAttachmentCount];
 }
 
+- (NSUInteger)maxTabAttachmentCount {
+  return [self.delegate maxTabAttachmentCount];
+}
+
 @end

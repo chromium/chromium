@@ -13,15 +13,19 @@ class Browser;
 @interface ComposeboxSnackbarPresenter : NSObject
 
 // Shows a snackbar with the attachment limit message.
-- (void)showAttachmentLimitSnackbar;
+- (void)showSnackbarForAttachmentLimit:(NSUInteger)attachmentLimit;
 
 // Shows a snackbar with the attachment limit message for an image generation
 // prompt with a bottom offset.
 - (void)showAttachmentLimitForImageGenerationSnackbarWithBottomOffset:
     (CGFloat)bottomOffset;
 
+// Shows a snackbar with the tab limit message.
+- (void)showSnackbarForTabAttachmentLimit:(NSUInteger)attachmentLimit;
+
 // Shows a snackbar with the attachment limit message with a bottom offset.
-- (void)showAttachmentLimitSnackbarWithBottomOffset:(CGFloat)bottomOffset;
+- (void)showSnackbarForAttachmentLimit:(NSUInteger)attachmentLimit
+                          bottomOffset:(CGFloat)bottomOffset;
 
 // Shows a snackbar with a generic error message with a bottom offset.
 - (void)showUnableToAddAttachmentSnackbarWithBottomOffset:(CGFloat)bottomOffset;
