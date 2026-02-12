@@ -652,6 +652,10 @@ BrowserAccessibilityStateImpl::RegisterFocusChangedCallback(
 
 void BrowserAccessibilityStateImpl::EnableAXModeFromPlatform(
     ui::AXMode modes_to_add) {
+  if (!allow_ax_mode_changes_) {
+    return;
+  }
+
   ui::AXMode old_mode = platform_ax_mode_->mode();
   ui::AXMode new_mode = old_mode | modes_to_add;
   if (old_mode != new_mode) {
