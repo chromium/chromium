@@ -30,6 +30,10 @@
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 
+#if DCHECK_IS_ON()
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#endif
+
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif
@@ -53,12 +57,11 @@ const char kNoScriptChangesErrorMsg[] =
 
 #if DCHECK_IS_ON()
 bool AreScriptsUnique(const UserScriptList& scripts) {
-  std::set<std::string> script_ids;
+  absl::flat_hash_set<std::string> script_ids;
   for (const std::unique_ptr<UserScript>& script : scripts) {
-    if (script_ids.count(script->id())) {
+    if (!script_ids.insert(script->id()).second) {
       return false;
     }
-    script_ids.insert(script->id());
   }
   return true;
 }
