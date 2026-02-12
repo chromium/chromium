@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -15,7 +16,7 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -541,16 +542,16 @@ LONG RegKey::RegDelRecurse(HKEY root_key, const wchar_t* name, REGSAM access) {
 
   // Enumerate the keys.
   const DWORD kMaxKeyNameLength = 256;  // Includes string terminator.
-  auto subkey_buffer = std::make_unique<wchar_t[]>(kMaxKeyNameLength);
+  auto subkey_buffer = base::HeapArray<wchar_t>::WithSize(kMaxKeyNameLength);
   while (true) {
     DWORD key_size = kMaxKeyNameLength;
-    if (::RegEnumKeyEx(target_key.key_, 0, &subkey_buffer[0], &key_size,
+    if (::RegEnumKeyEx(target_key.key_, 0, subkey_buffer.data(), &key_size,
                        nullptr, nullptr, nullptr, nullptr) != ERROR_SUCCESS) {
       break;
     }
     CHECK_LT(key_size, kMaxKeyNameLength);
-    CHECK_EQ(UNSAFE_TODO(subkey_buffer[key_size]), L'\0');
-    if (RegDelRecurse(target_key.key_, &subkey_buffer[0], access) !=
+    CHECK_EQ(subkey_buffer[key_size], L'\0');
+    if (RegDelRecurse(target_key.key_, subkey_buffer.data(), access) !=
         ERROR_SUCCESS) {
       break;
     }
