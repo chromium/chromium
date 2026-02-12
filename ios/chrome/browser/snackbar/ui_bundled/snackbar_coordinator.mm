@@ -6,11 +6,8 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/field_trial_params.h"
-#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
@@ -27,7 +24,6 @@
   __weak id<SnackbarCoordinatorDelegate> _delegate;
   SnackbarView* _snackbarView;
   ChromeOverlayWindow* _overlay_window;
-  __weak id<BWGCommands> _geminiHandler;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -39,10 +35,6 @@
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     _delegate = delegate;
-    if (IsGeminiCopresenceEnabled()) {
-      _geminiHandler =
-          HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
-    }
   }
   return self;
 }
@@ -65,7 +57,6 @@
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   [dispatcher stopDispatchingToTarget:self];
   [self dismissAllSnackbars];
-  _geminiHandler = nil;
 }
 
 #pragma mark - SnackbarCommands
@@ -152,16 +143,7 @@
     _snackbarView.message.completionHandler(NO);
   }
 
-  __weak id<BWGCommands> weakGeminiHandler = _geminiHandler;
-  [_snackbarView
-      dismissAnimated:animated
-           completion:^() {
-             [weakGeminiHandler
-                 updateFloatyVisibilityIfEligibleAnimated:NO
-                                               fromSource:
-                                                   gemini::FloatyUpdateSource::
-                                                       Snackbar];
-           }];
+  [_snackbarView dismissAnimated:animated completion:nil];
   [_overlay_window deactivateOverlay:_snackbarView];
   _snackbarView.delegate = nil;
   _snackbarView = nil;
@@ -197,9 +179,6 @@
   _snackbarView.bottomOffset = offset;
 
   // Add the snackbar to the window and present it.
-  [_geminiHandler
-      hideFloatyIfInvokedAnimated:NO
-                       fromSource:gemini::FloatyUpdateSource::Snackbar];
   [_overlay_window activateOverlay:_snackbarView withLevel:UIWindowLevelNormal];
   [_snackbarView
       presentAnimated:YES

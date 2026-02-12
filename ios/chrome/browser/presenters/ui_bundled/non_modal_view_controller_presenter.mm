@@ -58,11 +58,6 @@ constexpr CGFloat kAnimationOutDuration = 0.1;
 
 - (void)presentAnimated:(BOOL)animated {
   DCHECK(!self.animator) << "Presenting again is not supported.";
-  if ([self.delegate
-          respondsToSelector:@selector(containedPresenterWillPresent:)]) {
-    [self.delegate containedPresenterWillPresent:self];
-  }
-
   __weak __typeof(self) weakSelf = self;
   auto animation = ^{
     weakSelf.containerView.alpha = 1.0;

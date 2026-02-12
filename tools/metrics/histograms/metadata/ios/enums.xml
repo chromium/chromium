@@ -827,15 +827,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="View Transition"/>
   <int value="2" label="Web Navigation"/>
   <int value="3" label="Tab Grid"/>
-  <int value="4" label="Non-Web Context Menu (e.g. Toolbar long press)"/>
+  <int value="4" label="ContextMenu"/>
   <int value="5" label="Web Context Menu"/>
   <int value="6" label="Forced From Fullscreen"/>
-  <int value="7" label="Overlay (e.g. Lens Overlay)"/>
-  <int value="8" label="Ineligible Site"/>
+  <int value="7" label="Overlay"/>
+  <int value="8" label="IneligibleSite"/>
   <int value="9" label="Forced From Query Response"/>
-  <int value="10" label="Snackbar"/>
-  <int value="11" label="Website Alert"/>
-  <int value="12" label="Bottom Banner (e.g. Download Banner)"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h:FloatyUpdateSource) -->

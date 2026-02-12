@@ -15,9 +15,6 @@
 
 @optional
 
-// Tells the delegate that `presenter` will present.
-- (void)containedPresenterWillPresent:(id<ContainedPresenter>)presenter;
-
 // Tells the delegate that `presenter` has finished presenting.
 - (void)containedPresenterDidPresent:(id<ContainedPresenter>)presenter;
 

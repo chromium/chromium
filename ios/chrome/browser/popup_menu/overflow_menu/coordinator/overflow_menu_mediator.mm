@@ -1423,11 +1423,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     if (weakSelf.menuHasBeenDismissed) {
       return;
     }
-    // Ensures that the floaty doesn't show when another view controller is
-    // presented as a result of an overflow item being tapped.
-    [weakSelf.BWGHandler
-        hideFloatyIfInvokedAnimated:NO
-                         fromSource:gemini::FloatyUpdateSource::ViewTransition];
     [weakSelf logFeatureEngagementEventForClickOnAction:actionType];
     handler();
   };

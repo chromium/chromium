@@ -49,10 +49,7 @@ enum class FloatyUpdateSource {
   Overlay = 7,
   IneligibleSite = 8,
   ForcedFromQueryResponse = 9,
-  Snackbar = 10,
-  Alert = 11,
-  Banner = 12,
-  kMaxValue = Banner,
+  kMaxValue = ForcedFromQueryResponse,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFloatyUpdateSource)
 

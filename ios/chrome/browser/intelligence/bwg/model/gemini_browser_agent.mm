@@ -258,29 +258,6 @@ CGFloat GeminiBrowserAgent::GetFloatyOffsetFromFullscreenController(
   return offset;
 }
 
-bool GeminiBrowserAgent::ShouldBlockFloatyFromShowing() {
-  return is_external_overlay_presented_ || is_alert_presented_ ||
-         is_banner_presented_;
-}
-
-void GeminiBrowserAgent::UpdatePresentedSource(
-    gemini::FloatyUpdateSource source,
-    bool is_presented) {
-  switch (source) {
-    case gemini::FloatyUpdateSource::Alert:
-      is_alert_presented_ = is_presented;
-      break;
-    case gemini::FloatyUpdateSource::Banner:
-      is_banner_presented_ = is_presented;
-      break;
-    case gemini::FloatyUpdateSource::Overlay:
-      is_external_overlay_presented_ = is_presented;
-      break;
-    default:
-      break;
-  }
-}
-
 void GeminiBrowserAgent::UpdateForTraitCollection(
     UITraitCollection* traitCollection) {
   // Update the offset for a device orientation update to landscape or portrait.
@@ -540,7 +517,9 @@ void GeminiBrowserAgent::HideFloatyIfInvoked(
   }
 
   floaty_hidden_timestamp_ = base::TimeTicks::Now();
-  UpdatePresentedSource(source, /*is_presented=*/true);
+  if (source == gemini::FloatyUpdateSource::Overlay) {
+    is_external_overlay_presented_ = true;
+  }
 
   if (is_floaty_temporarily_hidden_) {
     return;
@@ -567,7 +546,9 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
     return;
   }
 
-  UpdatePresentedSource(source, /*is_presented=*/false);
+  if (source == gemini::FloatyUpdateSource::Overlay) {
+    is_external_overlay_presented_ = false;
+  }
 
   // `HideFloatyIfInvoked()` may be called when a view controller
   // dismisses. If a view controller dismisses as part of presenting another
@@ -582,7 +563,7 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
   // hiding/showing the floaty are valid invocations.
   bool is_web_navigation = source == gemini::FloatyUpdateSource::WebNavigation;
   if ((!is_web_navigation && triggered_during_transition) ||
-      ShouldBlockFloatyFromShowing()) {
+      is_external_overlay_presented_) {
     return;
   }
 

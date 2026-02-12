@@ -208,15 +208,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   CGFloat GetFloatyOffsetFromFullscreenController(
       FullscreenController* controller);
 
-  // Returns true if a show floaty trigger should be blocked resulting in an
-  // early return and the floaty remaining hidden. Used when the floaty is
-  // forced to be hidden such as an overlay, alert, or banner being presented
-  bool ShouldBlockFloatyFromShowing();
-
-  // Updates the state of a `source` that `is_presented`.
-  void UpdatePresentedSource(gemini::FloatyUpdateSource source,
-                             bool is_presented);
-
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
 
@@ -279,14 +270,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // to avoid showing the floaty when view controllers are presented/dismissed
   // while an overlay is presented.
   bool is_external_overlay_presented_ = false;
-
-  // Whether an alert is currently presented. Used to avoid showing the floaty
-  // when view controllers are presented/dismissed while an alert is presented.
-  bool is_alert_presented_ = false;
-
-  // Whether a banner is currently presented. Used to avoid showing the floaty
-  // when view controllers are presented/dismissed while a banner is presented.
-  bool is_banner_presented_ = false;
 
   // Registrar for pref changes.
   PrefChangeRegistrar pref_change_registrar_;
