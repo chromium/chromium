@@ -2384,6 +2384,14 @@ config("chromium_code") {
       if (is_chromeos_device) {
         fortify_level = "3"
       }
+
+      # _FORTIFY_SOURCE=3 is available in glibc 2.34+. Enable it when building
+      # with the sysroot where support is guaranteed. Clang is also required since
+      # the system gcc is often patched to add _FORTIFY_SOURCE=2 which would conflict
+      # with our definition.
+      if (use_sysroot && is_clang) {
+        fortify_level = "3"
+      }
       defines += [ "_FORTIFY_SOURCE=" + fortify_level ]
     }
 
