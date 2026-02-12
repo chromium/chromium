@@ -282,7 +282,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto provider = CanvasNon2DResourceProviderSharedImage::Create(
+  auto provider = Canvas2DResourceProviderSharedImage::Create(
       kSize, color_params, CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kCPU, shared_image_usage_flags);
 
