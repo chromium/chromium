@@ -140,7 +140,7 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
   [[nodiscard]] std::optional<std::vector<uint8_t>> EncryptString(
       const std::string& data) const;
 
-  // Decrypt data previously encrypted using `EncryptData`. This can be called
+  // Decrypt data previously encrypted using `EncryptString`. This can be called
   // on any thread. If a non-null `flags` is passed, then a set of flags is
   // returned to indicate additional information for the caller. See
   // `DecryptFlags` struct above.
