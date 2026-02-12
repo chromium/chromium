@@ -6,8 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/memory_consumer_registry.h"
@@ -20,9 +22,9 @@
 #include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace content {
 
@@ -89,19 +91,23 @@ class ChildMemoryConsumerRegistryHostTest : public Test {
       ChildProcessId child_process_id,
       mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver) {
     auto host = std::make_unique<ChildMemoryConsumerRegistryHost>(
-        delegate_, process_type, child_process_id);
-    auto* host_ptr = host.get();
-    mojo::ReceiverId id = hosts_.Add(std::move(host), std::move(receiver));
-    host_ptr->SetDisconnectHandler(base::BindOnce(
-        [](mojo::UniqueReceiverSet<mojom::ChildMemoryConsumerRegistryHost>*
-               hosts,
-           mojo::ReceiverId id) { hosts->Remove(id); },
-        &hosts_, id));
+        delegate_, process_type, child_process_id, std::move(receiver),
+        base::BindOnce(&ChildMemoryConsumerRegistryHostTest::OnHostDisconnected,
+                       base::Unretained(this), child_process_id));
+    bool inserted = hosts_.emplace(child_process_id, std::move(host)).second;
+    CHECK(inserted);
+  }
+
+  void OnHostDisconnected(ChildProcessId child_process_id) {
+    size_t removed = hosts_.erase(child_process_id);
+    CHECK_EQ(removed, 1u);
   }
 
   BrowserTaskEnvironment task_environment_;
   MockDelegate delegate_;
-  mojo::UniqueReceiverSet<mojom::ChildMemoryConsumerRegistryHost> hosts_;
+  absl::flat_hash_map<ChildProcessId,
+                      std::unique_ptr<ChildMemoryConsumerRegistryHost>>
+      hosts_;
   TestMemoryConsumerRegistry registry_helper_;
 };
 

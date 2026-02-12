@@ -4,8 +4,10 @@
 
 #include "content/browser/memory_coordinator/child_memory_consumer_registry_host.h"
 
+#include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
@@ -88,10 +90,22 @@ class ChildMemoryConsumerRegistryHost::RenderProcessExitedObserver
 ChildMemoryConsumerRegistryHost::ChildMemoryConsumerRegistryHost(
     Delegate& delegate,
     ProcessType process_type,
-    ChildProcessId child_process_id)
+    ChildProcessId child_process_id,
+    mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver,
+    base::OnceClosure disconnect_handler)
     : delegate_(delegate),
       process_type_(process_type),
-      child_process_id_(child_process_id) {
+      child_process_id_(child_process_id),
+      receiver_(this, std::move(receiver)),
+      disconnect_handler_(std::move(disconnect_handler)) {
+  CHECK(disconnect_handler_);
+
+  // The use of Unretained is safe here because `this` owns the receiver and
+  // will always outlive it.
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&ChildMemoryConsumerRegistryHost::RunDisconnectHandler,
+                     base::Unretained(this)));
+
   if (process_type_ == PROCESS_TYPE_RENDERER) {
     RenderProcessHost* rph = RenderProcessHost::FromID(child_process_id_);
     CHECK(rph);
@@ -111,12 +125,6 @@ ChildMemoryConsumerRegistryHost::~ChildMemoryConsumerRegistryHost() {
   }
 }
 
-void ChildMemoryConsumerRegistryHost::SetDisconnectHandler(
-    base::OnceClosure handler) {
-  CHECK(!disconnect_handler_);
-  disconnect_handler_ = std::move(handler);
-}
-
 void ChildMemoryConsumerRegistryHost::BindCoordinator(
     mojo::PendingRemote<mojom::ChildMemoryCoordinator> coordinator_remote) {
   if (coordinator_remote_.is_bound()) {
@@ -124,8 +132,8 @@ void ChildMemoryConsumerRegistryHost::BindCoordinator(
     return;
   }
   coordinator_remote_.Bind(std::move(coordinator_remote));
-  // The use of Unretained is safe here because `this` owns the remote and
-  // will always outlive it.
+  // The use of Unretained is safe here because `this` owns the remote and will
+  // always outlive it.
   coordinator_remote_.set_disconnect_handler(
       base::BindOnce(&ChildMemoryConsumerRegistryHost::RunDisconnectHandler,
                      base::Unretained(this)));

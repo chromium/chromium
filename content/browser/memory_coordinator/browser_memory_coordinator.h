@@ -5,21 +5,26 @@
 #ifndef CONTENT_BROWSER_MEMORY_COORDINATOR_BROWSER_MEMORY_COORDINATOR_H_
 #define CONTENT_BROWSER_MEMORY_COORDINATOR_BROWSER_MEMORY_COORDINATOR_H_
 
+#include <memory>
+
 #include "base/memory_coordinator/memory_consumer_registry.h"
 #include "content/browser/memory_coordinator/browser_memory_consumer_registry.h"
 #include "content/browser/memory_coordinator/child_memory_consumer_registry_host.h"
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
+#include "content/common/memory_coordinator/mojom/memory_coordinator.mojom-forward.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace content {
 
-// BrowserMemoryCoordinator is a singleton that owns both the
-// BrowserMemoryConsumerRegistry and the ChildMemoryConsumerRegistryHost
-// instances.
+class ChildMemoryConsumerRegistryHost;
+
+// BrowserMemoryCoordinator is a singleton that owns the
+// BrowserMemoryConsumerRegistry, the ChildMemoryConsumerRegistryHost
+// instances, and the MemoryCoordinatorPolicyManager.
 class CONTENT_EXPORT BrowserMemoryCoordinator {
  public:
   static BrowserMemoryCoordinator& Get();
@@ -41,10 +46,15 @@ class CONTENT_EXPORT BrowserMemoryCoordinator {
       mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver);
 
  private:
+  void OnHostDisconnected(ChildProcessId child_process_id);
+
   MemoryCoordinatorPolicyManager policy_manager_;
   base::ScopedMemoryConsumerRegistry<BrowserMemoryConsumerRegistry> registry_{
       policy_manager_};
-  mojo::UniqueReceiverSet<mojom::ChildMemoryConsumerRegistryHost> hosts_;
+
+  absl::flat_hash_map<ChildProcessId,
+                      std::unique_ptr<ChildMemoryConsumerRegistryHost>>
+      hosts_;
 };
 
 }  // namespace content

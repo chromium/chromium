@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,9 @@
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/process_type.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -49,9 +52,15 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
         base::MemoryConsumer* consumer) = 0;
   };
 
-  ChildMemoryConsumerRegistryHost(Delegate& delegate,
-                                  ProcessType process_type,
-                                  ChildProcessId child_process_id);
+  // `disconnect_handler` is the callback that will be run when the connection
+  // with the child process is lost (i.e. a Mojo pipe is closed, or the child
+  // process exited). This must delete the instance.
+  ChildMemoryConsumerRegistryHost(
+      Delegate& delegate,
+      ProcessType process_type,
+      ChildProcessId child_process_id,
+      mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver,
+      base::OnceClosure disconnect_handler);
 
   ChildMemoryConsumerRegistryHost(const ChildMemoryConsumerRegistryHost&) =
       delete;
@@ -59,11 +68,6 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
       const ChildMemoryConsumerRegistryHost&) = delete;
 
   ~ChildMemoryConsumerRegistryHost() override;
-
-  // Sets a callback that will be run when the connection is lost (i.e. the
-  // remote is closed, or the child process exited). This must delete the
-  // instance.
-  void SetDisconnectHandler(base::OnceClosure handler);
 
   // mojom::ChildMemoryConsumerRegistryHost:
   void BindCoordinator(mojo::PendingRemote<mojom::ChildMemoryCoordinator>
@@ -86,9 +90,10 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
   const ProcessType process_type_;
   const ChildProcessId child_process_id_;
 
+  mojo::Receiver<mojom::ChildMemoryConsumerRegistryHost> receiver_;
   mojo::Remote<mojom::ChildMemoryCoordinator> coordinator_remote_;
 
-  // Handles a disconnection with `coordinator_remote_`.
+  // Handles a disconnection with the child process.
   base::OnceClosure disconnect_handler_;
 
   // Holds a ChildMemoryConsumer for each consumer group that lives in a
