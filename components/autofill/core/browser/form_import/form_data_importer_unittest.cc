@@ -46,6 +46,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_import/addresses/address_form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -3954,7 +3955,7 @@ TEST_F(FormDataImporterTest,
   field.set_value(u"First");
 
   base::flat_map<FieldType, std::u16string> observed_field_types =
-      test_api(form_data_importer())
+      test_api(form_data_importer().GetAddressFormDataImporter())
           .GetObservedFieldValues(
               std::to_array<const AutofillField*>({&field}));
   EXPECT_EQ(observed_field_types.size(), 1u);
@@ -3963,9 +3964,10 @@ TEST_F(FormDataImporterTest,
   // classified type, representing that the field was filled using this type as
   // fallback.
   field.set_autofilled_type(NAME_FULL);
-  observed_field_types = test_api(form_data_importer())
-                             .GetObservedFieldValues(
-                                 std::to_array<const AutofillField*>({&field}));
+  observed_field_types =
+      test_api(form_data_importer().GetAddressFormDataImporter())
+          .GetObservedFieldValues(
+              std::to_array<const AutofillField*>({&field}));
   EXPECT_TRUE(observed_field_types.empty());
 }
 
@@ -3979,7 +3981,7 @@ TEST_F(FormDataImporterTest,
                   AutofillPredictionSource::kHeuristics);
   field.set_value(u"First");
   base::flat_map<FieldType, std::u16string> observed_field_types =
-      test_api(form_data_importer())
+      test_api(form_data_importer().GetAddressFormDataImporter())
           .GetObservedFieldValues(
               std::to_array<const AutofillField*>({&field}));
   EXPECT_EQ(observed_field_types.size(), 1u);
@@ -4396,7 +4398,7 @@ TEST_F(FormDataImporterTest, DuplicateFieldsWithIdenticalValuesAreValid) {
   field2.SetTypeTo(AutofillType(NAME_FIRST),
                    AutofillPredictionSource::kHeuristics);
   field2.set_value(u"First");
-  EXPECT_FALSE(test_api(form_data_importer())
+  EXPECT_FALSE(test_api(form_data_importer().GetAddressFormDataImporter())
                    .HasInvalidFieldTypes(
                        std::to_array<const AutofillField*>({&field, &field2})));
 }
@@ -4412,7 +4414,7 @@ TEST_F(FormDataImporterTest, DuplicateFieldsWithDifferentValuesAreInvalid) {
   field2.SetTypeTo(AutofillType(NAME_FIRST),
                    AutofillPredictionSource::kHeuristics);
   field2.set_value(u"Other value");
-  EXPECT_TRUE(test_api(form_data_importer())
+  EXPECT_TRUE(test_api(form_data_importer().GetAddressFormDataImporter())
                   .HasInvalidFieldTypes(
                       std::to_array<const AutofillField*>({&field, &field2})));
 }
@@ -4434,10 +4436,11 @@ TEST_F(FormDataImporterTest, InputFollowedBySelectWithIdenticalValuesAreValid) {
   const std::array<const autofill::AutofillField*, 2> section_fields =
       std::to_array<const AutofillField*>({&field, &field2});
 
-  EXPECT_FALSE(
-      test_api(form_data_importer()).HasInvalidFieldTypes(section_fields));
+  EXPECT_FALSE(test_api(form_data_importer().GetAddressFormDataImporter())
+                   .HasInvalidFieldTypes(section_fields));
   EXPECT_THAT(
-      test_api(form_data_importer()).GetObservedFieldValues(section_fields),
+      test_api(form_data_importer().GetAddressFormDataImporter())
+          .GetObservedFieldValues(section_fields),
       ElementsAre(Pair(Eq(ADDRESS_HOME_COUNTRY), Eq(u"United States"))));
 }
 
@@ -4458,10 +4461,11 @@ TEST_F(FormDataImporterTest, SelectFollowedByInputWithIdenticalValuesAreValid) {
   const std::array<const autofill::AutofillField*, 2> section_fields =
       std::to_array<const AutofillField*>({&field, &field2});
 
-  EXPECT_FALSE(
-      test_api(form_data_importer()).HasInvalidFieldTypes(section_fields));
+  EXPECT_FALSE(test_api(form_data_importer().GetAddressFormDataImporter())
+                   .HasInvalidFieldTypes(section_fields));
   EXPECT_THAT(
-      test_api(form_data_importer()).GetObservedFieldValues(section_fields),
+      test_api(form_data_importer().GetAddressFormDataImporter())
+          .GetObservedFieldValues(section_fields),
       ElementsAre(Pair(Eq(ADDRESS_HOME_COUNTRY), Eq(u"United States"))));
 }
 

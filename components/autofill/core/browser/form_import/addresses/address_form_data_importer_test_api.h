@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_ADDRESSES_ADDRESS_FORM_DATA_IMPORTER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_ADDRESSES_ADDRESS_FORM_DATA_IMPORTER_TEST_API_H_
 
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_import/addresses/address_form_data_importer.h"
+#include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 
 namespace autofill {
 
@@ -13,6 +17,29 @@ class AddressFormDataImporterTestApi {
  public:
   explicit AddressFormDataImporterTestApi(AddressFormDataImporter* address_fdi)
       : address_fdi_(*address_fdi) {}
+
+  base::flat_map<FieldType, std::u16string> GetObservedFieldValues(
+      base::span<const AutofillField* const> section_fields) {
+    ProfileImportMetadata import_metadata;
+    bool has_invalid_field_types = false;
+    bool has_multiple_distinct_email_addresses = false;
+    bool has_address_related_fields = false;
+    return address_fdi_->GetAddressObservedFieldValues(
+        section_fields, import_metadata, nullptr, has_invalid_field_types,
+        has_multiple_distinct_email_addresses, has_address_related_fields);
+  }
+
+  bool HasInvalidFieldTypes(
+      base::span<const AutofillField* const> section_fields) {
+    ProfileImportMetadata import_metadata;
+    bool has_invalid_field_types = false;
+    bool has_multiple_distinct_email_addresses = false;
+    bool has_address_related_fields = false;
+    std::ignore = address_fdi_->GetAddressObservedFieldValues(
+        section_fields, import_metadata, nullptr, has_invalid_field_types,
+        has_multiple_distinct_email_addresses, has_address_related_fields);
+    return has_invalid_field_types;
+  }
 
  private:
   const raw_ref<AddressFormDataImporter> address_fdi_;
