@@ -156,6 +156,31 @@ TEST(ChannelLayoutTest, ChannelLayoutConfig_FromLayout) {
   EXPECT_EQ(0, bitstream_layout.channels());
 }
 
+TEST(ChannelLayoutTest, ChannelLayoutConfig_FromLayoutRuntime) {
+  EXPECT_EQ(ChannelLayoutConfig::Mono(),
+            ChannelLayoutConfig::FromLayout(CHANNEL_LAYOUT_MONO));
+
+  EXPECT_EQ(ChannelLayoutConfig::Stereo(),
+            ChannelLayoutConfig::FromLayout(CHANNEL_LAYOUT_STEREO));
+
+  const auto quad_layout = ChannelLayoutConfig::FromLayout(CHANNEL_LAYOUT_QUAD);
+  EXPECT_EQ(CHANNEL_LAYOUT_QUAD, quad_layout.channel_layout());
+  EXPECT_EQ(4, quad_layout.channels());
+
+  EXPECT_EQ(ChannelLayoutConfig(),
+            ChannelLayoutConfig::FromLayout(CHANNEL_LAYOUT_NONE));
+
+  const auto unsupported_layout =
+      ChannelLayoutConfig::FromLayout(CHANNEL_LAYOUT_UNSUPPORTED);
+  EXPECT_EQ(CHANNEL_LAYOUT_UNSUPPORTED, unsupported_layout.channel_layout());
+  EXPECT_EQ(0, unsupported_layout.channels());
+
+  const auto bitstream_layout =
+      ChannelLayoutConfig::FromLayout(CHANNEL_LAYOUT_BITSTREAM);
+  EXPECT_EQ(CHANNEL_LAYOUT_BITSTREAM, bitstream_layout.channel_layout());
+  EXPECT_EQ(0, bitstream_layout.channels());
+}
+
 #if GTEST_HAS_DEATH_TEST
 
 TEST(ChannelLayoutTest, ChannelLayoutConfig_death_tests) {

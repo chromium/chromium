@@ -231,6 +231,10 @@ class MEDIA_EXPORT ChannelLayoutConfig {
     return ChannelLayoutConfig(layout, ChannelLayoutToChannelCount(layout));
   }
 
+  static ChannelLayoutConfig FromLayout(ChannelLayout layout) {
+    return ChannelLayoutConfig(layout, ChannelLayoutToChannelCount(layout));
+  }
+
   static constexpr ChannelLayoutConfig Mono() {
     return ChannelLayoutConfig(Passkey(), CHANNEL_LAYOUT_MONO, 1u);
   }
