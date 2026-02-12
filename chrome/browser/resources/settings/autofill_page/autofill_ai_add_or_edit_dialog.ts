@@ -381,7 +381,6 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     return (attributeInstance.value as DateValue).year === year;
   }
 
-
   private onCountrySelectChange_(e: DomRepeatEvent<AttributeInstance>): void {
     this.completeAttributeInstanceList_[e.model.index].value =
         (e.target as HTMLSelectElement).value;
@@ -527,6 +526,14 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
 
     return isRequiredCandidate &&
         !this.isAttributeInstanceNotEmpty(attributeInstance);
+  }
+
+  private shouldShowWalletBranding_(): boolean {
+    if (!this.saveToWalletFromSettingsEnabled_) {
+      return false;
+    }
+
+    return !!this.entityInstance?.type.supportsWalletStorage;
   }
 
   /**
