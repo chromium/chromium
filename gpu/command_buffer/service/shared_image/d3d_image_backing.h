@@ -73,13 +73,14 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       bool is_thread_safe = false,
       bool share_dxgi_handle_with_other_backings = true);
 
-  // Creation method meant for buffer resources originating as ID3D12Resources.
-  static std::unique_ptr<D3DImageBacking> CreateFromD3D12Resource(
+  // Creation method meant for buffers originating as placed ID3D12Resources.
+  static std::unique_ptr<D3DImageBacking> CreateFromD3D12Buffer(
       const Mailbox& mailbox,
       const gfx::Size& size,
       gpu::SharedImageUsageSet usage,
       std::string debug_label,
-      Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource,
+      Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_buffer,
+      Microsoft::WRL::ComPtr<ID3D12Heap> d3d12_heap,
       bool is_thread_safe);
 
   static std::unique_ptr<D3DImageBacking> CreateFromSwapChainBuffers(
@@ -273,7 +274,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   const gfx::Size& size,
                   gpu::SharedImageUsageSet usage,
                   std::string debug_label,
-                  Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource,
+                  Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_buffer,
+                  Microsoft::WRL::ComPtr<ID3D12Heap> d3d12_heap,
                   bool is_thread_safe);
 
   bool use_cross_device_fence_synchronization() const {
@@ -366,9 +368,12 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // Null unless created via CreateFromSwapBuffers().
   Microsoft::WRL::ComPtr<ID3D11Texture2D> swap_chain_front_buffer_texture_;
 
-  // Set if this backing is used for a D3D12 resource, otherwise will be
+  // Physical memory allocated for the D3D12 buffer when it exists.
+  const Microsoft::WRL::ComPtr<ID3D12Heap> d3d12_heap_;
+
+  // Set if this backing is used for a D3D12 buffer, otherwise will be
   // nullptr.
-  const Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource_;
+  const Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_buffer_;
 
   // Set if this backing was used for |DCompTextureOverlayImageRepresentation|.
   // Once set, this is cached and reused for future overlay representations.

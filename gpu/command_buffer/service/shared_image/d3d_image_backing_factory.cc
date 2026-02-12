@@ -952,12 +952,12 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
 
   uint64_t buffer_width = size.width();
 
-  D3D12_HEAP_PROPERTIES heap_properties;
-  heap_properties.Type = D3D12_HEAP_TYPE_DEFAULT,
-  heap_properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-  heap_properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-  heap_properties.CreationNodeMask = 1;
-  heap_properties.VisibleNodeMask = 1;
+  D3D12_HEAP_DESC heap_desc = {};
+  heap_desc.Flags = D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS;
+  heap_desc.Properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+  heap_desc.Properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+  heap_desc.Properties.CreationNodeMask = 1;
+  heap_desc.Properties.VisibleNodeMask = 1;
 
   if (usage.Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR)) {
     // DML requires buffers to be in multiple of 4 bytes.
@@ -978,39 +978,89 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
     }
 
     // If adapter supports UMA, create the custom heap with equivalent heap
-    // type.
+    // type. Otherwise, use shared cross-adapter heaps for a discrete (NUMA)
+    // adapter. This is currently required for ORT interop since ORT can only
+    // import mapped buffers.
+    // TODO(crbug.com/6064345): support D3D12_HEAP_TYPE_DEFAULT for NUMA.
     if (arch.UMA == TRUE) {
-      if (usage.Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE)) {
-        heap_properties =
-            d3d12_device_->GetCustomHeapProperties(0, D3D12_HEAP_TYPE_UPLOAD);
-      } else if (usage.Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ)) {
-        heap_properties =
-            d3d12_device_->GetCustomHeapProperties(0, D3D12_HEAP_TYPE_READBACK);
-      } else {
-        // Default to UPLOAD heap to enable CPU read-write access. This is
-        // currently required for ORT interop.
-        heap_properties =
-            d3d12_device_->GetCustomHeapProperties(0, D3D12_HEAP_TYPE_UPLOAD);
+      // Default to UPLOAD heap to enable CPU read-write access. This is
+      // currently required for ORT interop.
+      D3D12_HEAP_TYPE target_heap_type = D3D12_HEAP_TYPE_UPLOAD;
+      if (usage.Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ)) {
+        target_heap_type = D3D12_HEAP_TYPE_READBACK;
       }
+      heap_desc.Properties =
+          d3d12_device_->GetCustomHeapProperties(0, target_heap_type);
+    } else {
+      // Shared cross-adapter heaps require mixed resource heaps.
+      // https://learn.microsoft.com/en-us/windows/win32/direct3d12/shared-heaps
+      D3D12_FEATURE_DATA_D3D12_OPTIONS options = {};
+      if (FAILED(d3d12_device_->CheckFeatureSupport(
+              D3D12_FEATURE_D3D12_OPTIONS, &options, sizeof(options)))) {
+        LOG(ERROR) << "D3D12 device failed to check feature support.";
+        return nullptr;
+      }
+
+      // Mixed resource heaps are required but only supported on ResourceHeap
+      // Tier 2.
+      if (options.ResourceHeapTier == D3D12_RESOURCE_HEAP_TIER_1) {
+        LOG(ERROR)
+            << "D3D12 cross-adapter heaps are not supported on this device.";
+        return nullptr;
+      }
+
+      heap_desc.Flags = D3D12_HEAP_FLAG_ALLOW_ALL_BUFFERS_AND_TEXTURES |
+                        D3D12_HEAP_FLAG_SHARED |
+                        D3D12_HEAP_FLAG_SHARED_CROSS_ADAPTER;
+
+      // Must use L0 memory pool with no CPU caching.
+      heap_desc.Properties.Type = D3D12_HEAP_TYPE_CUSTOM;
+      heap_desc.Properties.CPUPageProperty =
+          D3D12_CPU_PAGE_PROPERTY_NOT_AVAILABLE;
+      heap_desc.Properties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;
     }
+  } else {
+    // Standard WebGPU uses default.
+    heap_desc.Properties.Type = D3D12_HEAP_TYPE_DEFAULT;
   }
 
-  D3D12_RESOURCE_DESC desc;
-  desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-  desc.Alignment = 0;
-  desc.Width = buffer_width;
-  desc.Height = 1;
-  desc.DepthOrArraySize = 1;
-  desc.MipLevels = 1;
-  desc.Format = DXGI_FORMAT_UNKNOWN;
-  desc.SampleDesc = {1, 0};
-  desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-  desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+  // D3D allocates buffers in a multiple of 64KB.
+  // Since a heap only holds a single buffer, use the same aligned size.
+  // https://learn.microsoft.com/en-us/windows/win32/direct3d12/uploading-resources
+  heap_desc.SizeInBytes = base::bits::AlignUp(
+      buffer_width,
+      static_cast<uint64_t>(D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT));
 
-  Microsoft::WRL::ComPtr<ID3D12Resource> resource;
-  HRESULT hr = d3d12_device_->CreateCommittedResource(
-      &heap_properties, D3D12_HEAP_FLAG_NONE, &desc,
-      D3D12_RESOURCE_STATE_UNORDERED_ACCESS, nullptr, IID_PPV_ARGS(&resource));
+  Microsoft::WRL::ComPtr<ID3D12Heap> d3d12_heap;
+  HRESULT hr = d3d12_device_->CreateHeap(&heap_desc, IID_PPV_ARGS(&d3d12_heap));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to create D3D12 heap: "
+               << logging::SystemErrorCodeToString(hr);
+    return nullptr;
+  }
+
+  D3D12_RESOURCE_DESC buffer_desc;
+  buffer_desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+  buffer_desc.Alignment = 0;
+  buffer_desc.Width = buffer_width;
+  buffer_desc.Height = 1;
+  buffer_desc.DepthOrArraySize = 1;
+  buffer_desc.MipLevels = 1;
+  buffer_desc.Format = DXGI_FORMAT_UNKNOWN;
+  buffer_desc.SampleDesc = {1, 0};
+  buffer_desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+  buffer_desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+  // Only NUMA buffers support cross-adapter heaps.
+  // https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ne-d3d12-d3d12_resource_flags
+  if (heap_desc.Flags & D3D12_HEAP_FLAG_SHARED_CROSS_ADAPTER) {
+    buffer_desc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_CROSS_ADAPTER;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_buffer;
+  hr = d3d12_device_->CreatePlacedResource(
+      d3d12_heap.Get(), 0, &buffer_desc, D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+      nullptr, IID_PPV_ARGS(&d3d12_buffer));
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to create D3D12 resource: "
                << logging::SystemErrorCodeToString(hr);
@@ -1018,8 +1068,8 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
   }
 
   debug_label = "D3DSharedBuffer_" + debug_label;
-  hr = resource->SetPrivateData(WKPDID_D3DDebugObjectName, debug_label.length(),
-                                debug_label.c_str());
+  hr = d3d12_buffer->SetPrivateData(WKPDID_D3DDebugObjectName,
+                                    debug_label.length(), debug_label.c_str());
 
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to set resource debug name: "
@@ -1027,12 +1077,12 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
     return nullptr;
   }
 
-  auto backing = D3DImageBacking::CreateFromD3D12Resource(
-      mailbox, size, usage, std::move(debug_label), std::move(resource),
-      is_thread_safe);
+  auto backing = D3DImageBacking::CreateFromD3D12Buffer(
+      mailbox, size, usage, std::move(debug_label), std::move(d3d12_buffer),
+      std::move(d3d12_heap), is_thread_safe);
 
-  // CreateCommittedResource will zero the resource for us, which means we can
-  // set it as cleared.
+  // CreateHeap will zero the resource for us, which means we can set it as
+  // cleared.
   backing->SetCleared();
   return backing;
 }
