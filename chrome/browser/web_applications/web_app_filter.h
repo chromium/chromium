@@ -105,6 +105,15 @@ class WebAppFilter {
   friend WebAppFilter operator&(WebAppFilter lhs, WebAppFilter rhs);
   friend WebAppFilter operator|(WebAppFilter lhs, WebAppFilter rhs);
 
+  // Logical exclusion. This operator returns a filter that matches all apps
+  // that are eligible for manifest updates (i.e., not stubs or uninstalling),
+  // EXCEPT for those that match the provided `filter`.
+  //
+  // Example:
+  // If the registrar contains apps {A, B, C, D} and `filter` matches {A, B},
+  // then `!filter` will match {C, D}.
+  friend WebAppFilter operator!(WebAppFilter filter);
+
  private:
   friend class WebAppRegistrar;
 
@@ -144,7 +153,12 @@ class WebAppFilter {
   };
 
   struct BinaryOp {
-    enum class Op { kAnd, kOr };
+    enum class Op {
+      kAnd,
+      kOr,
+      // Matches `left`, excluding matches for `right`.
+      kExclude
+    };
     BinaryOp(std::unique_ptr<WebAppFilter> left,
              std::unique_ptr<WebAppFilter> right,
              Op op);

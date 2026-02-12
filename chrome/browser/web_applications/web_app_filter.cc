@@ -223,4 +223,9 @@ WebAppFilter operator|(WebAppFilter lhs, WebAppFilter rhs) {
                       WebAppFilter::BinaryOp::Op::kOr);
 }
 
+WebAppFilter operator!(WebAppFilter filter) {
+  return WebAppFilter(WebAppFilter::IsAppEligibleForManifestUpdate(),
+                      std::move(filter), WebAppFilter::BinaryOp::Op::kExclude);
+}
+
 }  // namespace web_app

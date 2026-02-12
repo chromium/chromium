@@ -1008,6 +1008,9 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
                          case WebAppFilter::BinaryOp::Op::kOr:
                            return AppMatches(app_id, *bin_op.left) ||
                                   AppMatches(app_id, *bin_op.right);
+                         case WebAppFilter::BinaryOp::Op::kExclude:
+                           return AppMatches(app_id, *bin_op.left) &&
+                                  !AppMatches(app_id, *bin_op.right);
                        }
                      }},
       filter.data_);
