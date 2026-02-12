@@ -4,7 +4,7 @@
 
 // Test file for @webui-eslint/logic-in-template-file
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {MyDummyElement} from './with_webui_plugin_logic_in_template_file_violations.js';
 
@@ -23,20 +23,21 @@ function getButtonHtml(
 
 // Extra function declaration violation, belongs in protected method in
 // class definition file.
-function computeFoo(this: MyDummyElement) {
-  return (this.bar + this.baz) * 100;
+function computeProgress(this: MyDummyElement) {
+  return Math.round(this.loadProgress * 100);
 }
 
 export function getHtml(this: MyDummyElement) {
+  // If statement violation
+  if (this.data === null) {
+    return nothing;
+  }
+
   // For loop violation, indicating overly complex logic. Belongs in class
-  // definition file.
-  let showFatalError = false;
-  const fatalErrors = [];
-  for (const error of this.errors_) {
-    if (error.isFatal) {
-      showFatalError = true;
-      fatalErrors.push(error);
-    }
+  // definition file, or in a map() statement.
+  const messagesToRender = [];
+  for (const log of this.data.log) {
+    messagesToRender.push(log.dateString + ': ' + log.message);
   }
 
   // Extra function declaration, which is embedded in getHtml().
@@ -46,13 +47,13 @@ export function getHtml(this: MyDummyElement) {
 
   // clang-format off
   return html`
-${showFatalError ? html`
-  <div class="fatal-error">Fatal Errors: ${fatalErrors.join(',')}</div>
-` : html`
-  <div class="title">Dummy Title</div>
-  ${getButtonHtml.bind(this)()}
-  <div>Percent Complete: ${computeFoo.bind(this)()}</div>
+<div class="title">Dummy Title</div>
+${this.loading ? html`
+  <div>Percent Complete: ${computeProgress.bind(this)()}</div>
   ${getSpinnerDiv()}
+` : html`
+  ${messagesToRender.map(message => html`<div>${message}</div>`)}
+  ${getButtonHtml.bind(this)('Reload', !this.enableReload)}
 `}
 `;
   // clang-format on

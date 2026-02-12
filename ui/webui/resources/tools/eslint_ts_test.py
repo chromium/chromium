@@ -345,15 +345,18 @@ class EslintTsTest(unittest.TestCase):
     _EXPECTED_STRING = "@webui-eslint/lit-element-template-structure"
     self.assertTrue(_EXPECTED_STRING in str(context.exception))
 
-    _FOR_STATEMENT_ERROR = "For loop found in the HTML template file 'with_webui_plugin_lit_element_template_structure_violations.html.ts'. Use the map() directive to render the same HTML for an array of items, and delegate more complex logic to the class definition file"
+    _FOR_STATEMENT_ERROR = "For loop found in getHtml() method. Use Array#map() to render the same HTML for an array of items, and delegate more complex logic to the class definition file"
 
-    _FUNCTION_DEFINITION_ERROR = "Extra function definition '%(functionName)s' found in the HTML template file 'with_webui_plugin_lit_element_template_structure_violations.html.ts'. Complex logic should be delegated to the class definition file. Standalone/separate chunks of templates may need a dedicated custom element"
+    _IF_STATEMENT_ERROR = "If statement found in getHtml() method. Use ternary statements for conditional rendering, and delegate more complex logic to the class definition file"
+
+    _FUNCTION_DEFINITION_ERROR = "Extra function definition '%(functionName)s' found in the HTML template file. Complex logic should be delegated to the class definition file. Standalone/separate chunks of templates may need a dedicated custom element"
 
     # The following strings *should* appear in the error output.
     errors = [
         _FOR_STATEMENT_ERROR,
+        _IF_STATEMENT_ERROR,
         _FUNCTION_DEFINITION_ERROR % {
-            'functionName': 'computeFoo'
+            'functionName': 'computeProgress'
         },
         _FUNCTION_DEFINITION_ERROR % {
             'functionName': 'getButtonHtml'

@@ -853,13 +853,13 @@ const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs({
     },
     messages: {
       ifStatementFound:
-          'If statement found in the HTML template file \'{{fileName}}\'. Use ternary statements for conditional rendering, and delegate more complex logic to the class definition file',
+          'If statement found in getHtml() method. Use ternary statements for conditional rendering, and delegate more complex logic to the class definition file',
       forStatementFound:
-          'For loop found in the HTML template file \'{{fileName}}\'. Use the map() directive to render the same HTML for an array of items, and delegate more complex logic to the class definition file',
+          'For loop found in getHtml() method. Use Array#map() to render the same HTML for an array of items, and delegate more complex logic to the class definition file',
       variableDeclarationFound:
-          'Local (const/let) variable \'{{variableName}}\' found in the HTML template file \'{{fileName}}\'. Logic should be delegated to the class definition file',
+          'Local (const/let) variable \'{{variableName}}\' found in the HTML template file. Logic should be delegated to the class definition file',
       functionDefinitionFound:
-          'Extra function definition \'{{functionName}}\' found in the HTML template file \'{{fileName}}\'. Complex logic should be delegated to the class definition file. Standalone/separate chunks of templates may need a dedicated custom element',
+          'Extra function definition \'{{functionName}}\' found in the HTML template file. Complex logic should be delegated to the class definition file. Standalone/separate chunks of templates may need a dedicated custom element',
     },
   },
   defaultOptions: [],
@@ -875,7 +875,7 @@ const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs({
       [`ImportDeclaration[source.value=/${LIT_IMPORT_REGEX}/]`](node) {
         hasLitImport = true;
       },
-      ['FunctionDeclaration[id.name!=/getHtml/]'](node) {
+      ['FunctionDeclaration[id.name!="getHtml"]'](node) {
         if (!hasLitImport) {
           return;
         }
@@ -885,11 +885,10 @@ const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs({
           messageId: 'functionDefinitionFound',
           data: {
             functionName: node.id.name,
-            fileName: path.basename(templateFilename),
           },
         });
       },
-      ['FunctionDeclaration[id.name=/getHtml/] ForStatement'](node) {
+      ['FunctionDeclaration[id.name="getHtml"] ForStatement'](node) {
         if (!hasLitImport) {
           return;
         }
@@ -897,12 +896,9 @@ const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs({
         context.report({
           node,
           messageId: 'forStatementFound',
-          data: {
-            fileName: path.basename(templateFilename),
-          },
         });
       },
-      ['FunctionDeclaration[id.name=/getHtml/] ForOfStatement'](node) {
+      ['FunctionDeclaration[id.name="getHtml"] ForOfStatement'](node) {
         if (!hasLitImport) {
           return;
         }
@@ -910,9 +906,16 @@ const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs({
         context.report({
           node,
           messageId: 'forStatementFound',
-          data: {
-            fileName: path.basename(templateFilename),
-          },
+        });
+      },
+      ['FunctionDeclaration[id.name="getHtml"] IfStatement'](node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        context.report({
+          node,
+          messageId: 'ifStatementFound',
         });
       },
       // TODO (crbug.com/481519338): Enable these parts of the check.
@@ -928,23 +931,9 @@ const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs({
             messageId: 'variableDeclarationFound',
             data: {
               variableName: declaration.id.name,
-              fileName: path.basename(templateFilename),
             },
           });
         }
-      },
-      [FunctionDeclaration[id.name=/getHtml/] 'IfStatement'](node) {
-        if (!hasLitImport) {
-          return;
-        }
-
-        context.report({
-          node,
-          messageId: 'ifStatementFound',
-          data: {
-            fileName: path.basename(templateFilename),
-          },
-        });
       },
       */
     };
