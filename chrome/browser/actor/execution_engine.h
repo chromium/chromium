@@ -25,9 +25,7 @@
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/common/buildflags.h"
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
-#endif
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
@@ -167,7 +165,6 @@ class ExecutionEngine : public ToolDelegate {
       const GURL& url,
       DecisionCallbackWithReason callback) override;
   autofill::ActorFormFillingService& GetActorFormFillingService() override;
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   actor_login::ActorLoginService& GetActorLoginService() override;
   void PromptToSelectCredential(
       const std::vector<actor_login::Credential>& credentials,
@@ -178,7 +175,6 @@ class ExecutionEngine : public ToolDelegate {
       base::OnceClosure affiliations_fetched) override;
   const std::optional<CredentialWithPermission> GetUserSelectedCredential(
       const url::Origin& request_origin) const override;
-#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   void RequestToShowAutofillSuggestions(
       std::vector<autofill::ActorFormFillingRequest> requests,
       AutofillSuggestionSelectedCallback callback) override;
@@ -358,9 +354,7 @@ class ExecutionEngine : public ToolDelegate {
   // Created when task_ is set. Handles execution details for an individual tool
   // request.
   std::unique_ptr<ToolController> tool_controller_;
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   std::unique_ptr<actor_login::ActorLoginService> actor_login_service_;
-#endif
   std::unique_ptr<autofill::ActorFormFillingService>
       actor_form_filling_service_;
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;
@@ -386,13 +380,11 @@ class ExecutionEngine : public ToolDelegate {
   // the user has been prompted about.
   OriginChecker origin_checker_;
 
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   // For multi-step login, this is the credential that the user has chosen to
   // allow the actor to use. The key is the
   // `Credential::request_origin`.
   base::flat_map<url::Origin, CredentialWithPermission>
       user_selected_credentials_;
-#endif
 
   base::OnceCallback<void(bool /*should_cancel*/)> user_takeover_callback_;
   std::optional<mojom::ActionResultCode> user_takeover_result_;

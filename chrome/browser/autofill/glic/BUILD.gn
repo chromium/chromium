@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(!is_android)
-
 static_library("glic") {
   sources = [
     "actor_filling_observer.cc",
@@ -20,6 +18,7 @@ static_library("glic") {
   deps = [
     "//chrome/browser/profiles",
     "//chrome/browser/ui/autofill",
+    "//chrome/common:chrome_features",
     "//components/autofill/content/browser",
     "//components/tabs:public",
   ]
@@ -45,6 +44,7 @@ source_set("unit_tests") {
     ":glic",
     ":test_support",
     "//base/test:test_support",
+    "//chrome/browser/actor",
     "//chrome/test:test_support",
     "//components/autofill/content/browser:test_support",
     "//components/tabs:test_support",

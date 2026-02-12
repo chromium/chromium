@@ -220,11 +220,15 @@ bool ActorLoginDelegateImpl::IsTaskInFocus() {
   // attached to a tab.
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::GetFromContents(web_contents());
+// TODO(crbug.com/482430429): Reconsider the use of BrowserWindowInterface on
+// Android.
+#if !BUILDFLAG(IS_ANDROID)
   BrowserWindowInterface* browser_window =
       tab_interface->GetBrowserWindowInterface();
   if (!browser_window->IsActive()) {
     return false;
   }
+#endif
   if (tab_interface->IsActivated()) {
     return true;
   }

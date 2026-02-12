@@ -16,10 +16,10 @@ void ConvertToVariantFn::Apply(const ActivateTabToolRequest& tr) {
 void ConvertToVariantFn::Apply(const ActivateWindowToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
+#endif
 void ConvertToVariantFn::Apply(const AttemptLoginToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
-#endif
 void ConvertToVariantFn::Apply(const AttemptFormFillingToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }

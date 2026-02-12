@@ -181,6 +181,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/actor",
     "//chrome/browser/autofill",
+    "//chrome/browser/autofill/glic",
     "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/password_manager/factories",
