@@ -29,6 +29,7 @@ public class InputTransferHandler implements WindowAndroid.SelectionHandlesObser
     private @Nullable InputTransferToken mVizToken;
     private boolean mSelectionHandlesActive;
     private final WindowAndroid mWindowAndroid;
+    private boolean mIsInXr;
 
     public InputTransferHandler(InputTransferToken browserToken, WindowAndroid windowAndroid) {
         if (sInitialBrowserToken == null) {
@@ -93,12 +94,23 @@ public class InputTransferHandler implements WindowAndroid.SelectionHandlesObser
             return TransferInputToVizResult.IME_IS_ACTIVE;
         }
 
+        // WebXR sessions process the input and then forward it on to the page in certain scenarios.
+        // If we transfer this input to viz, then the WebXR session stops receiving that input,
+        // which can make it so that the user cannot interact with the WebXR content.
+        if (mIsInXr) {
+            return TransferInputToVizResult.XR_IS_ACTIVE;
+        }
+
         return null;
     }
 
     public void setVizToken(InputTransferToken token) {
         TraceEvent.instant("Storing InputTransferToken");
         mVizToken = token;
+    }
+
+    public void setIsInXr(boolean isInXr) {
+        mIsInXr = isInXr;
     }
 
     public @TransferInputToVizResult int transferInputToViz() {
