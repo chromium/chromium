@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 
+#include <windows.h>
 #include <objbase.h>
 
 #include <memory>
@@ -27,6 +28,7 @@
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_system_caret_win.h"
+#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_win.h"
 #include "ui/accessibility/platform/browser_accessibility_win.h"
 #include "ui/accessibility/platform/one_shot_accessibility_tree_search.h"
@@ -220,6 +222,12 @@ bool LegacyRenderWidgetHostHWND::InitOrDeleteSelf(HWND parent) {
     // ensure it's ready if asked for.
     ax_fragment_root_ = std::make_unique<ui::AXFragmentRootWin>(hwnd(), this);
   }
+
+  // Ensure that the window has a unique ID for accessibility purposes. This is
+  // used by assistive technologies to distinguish this window from others.
+  ::SetWindowLongPtr(
+      hwnd(), GWLP_ID,
+      static_cast<LONG_PTR>(int32_t(ui::AXUniqueId::Create().Get())));
 
   // Continue to send honey pot events until we have kWebContents to
   // ensure screen readers have the opportunity to enable.
