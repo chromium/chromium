@@ -59,7 +59,6 @@ group("resources") {
       "new_tab_shared:resources",
       "omnibox_popup:resources",
       "password_manager:resources",
-      "privacy_sandbox:resources",
       "privacy_sandbox/internals:resources",
       "profile_internals:resources",
       "search_engine_choice:resources",

@@ -401,7 +401,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://policy",
     "chrome://predictors",
     "chrome://prefs-internals",
-    "chrome://privacy-sandbox-dialog/?debug",
     "chrome://process-internals",
     "chrome://quota-internals",
     "chrome://read-later.top-chrome",

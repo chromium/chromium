@@ -238,14 +238,6 @@ inline constexpr char kChromeUIPolicyURL[] = "chrome://policy/";
 inline constexpr char kChromeUIPredictorsHost[] = "predictors";
 inline constexpr char kChromeUIPrefsInternalsHost[] = "prefs-internals";
 inline constexpr char kChromeUIPrintURL[] = "chrome://print/";
-inline constexpr char kChromeUIPrivacySandboxDialogCombinedPath[] = "combined";
-inline constexpr char kChromeUIPrivacySandboxDialogHost[] =
-    "privacy-sandbox-dialog";
-inline constexpr char kChromeUIPrivacySandboxDialogNoticePath[] = "notice";
-inline constexpr char kChromeUIPrivacySandboxDialogNoticeRestrictedPath[] =
-    "restricted";
-inline constexpr char kChromeUIPrivacySandboxDialogURL[] =
-    "chrome://privacy-sandbox-dialog";
 inline constexpr char16_t kChromeUIPrivacySandboxFledgeURL[] =
     u"chrome://settings/adPrivacy/sites";
 inline constexpr char kChromeUIPrivacySandboxInternalsHost[] =
@@ -327,11 +319,6 @@ inline constexpr char kChromeUIUntrustedImageEditorURL[] =
     "chrome-untrusted://image-editor/";
 inline constexpr char kChromeUIUntrustedPrintURL[] =
     "chrome-untrusted://print/";
-inline constexpr char kChromeUIUntrustedPrivacySandboxDialogURL[] =
-    "chrome-untrusted://privacy-sandbox-dialog/";
-inline constexpr char
-    kChromeUIUntrustedPrivacySandboxDialogPrivacyPolicyPath[] =
-        "privacy-policy";
 inline constexpr char kChromeUIUntrustedThemeURL[] =
     "chrome-untrusted://theme/";
 inline constexpr char kChromeUIUntrustedWebUITestURL[] =

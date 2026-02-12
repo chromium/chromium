@@ -67,7 +67,6 @@ ts_library("build_ts") {
     "//chrome/browser/resources/on_device_translation_internals:build_ts",
     "//chrome/browser/resources/pdf:build_ts",
     "//chrome/browser/resources/print_preview:build_ts",
-    "//chrome/browser/resources/privacy_sandbox:build_ts",
     "//chrome/browser/resources/privacy_sandbox/internals/private_state_tokens:build_ts",
     "//chrome/browser/resources/privacy_sandbox/internals/related_website_sets:build_ts",
     "//chrome/browser/resources/profile_internals:build_ts",
