@@ -89,6 +89,9 @@ class PresubmitCache:
           self._cache_contents = loaded_cache
       except pickle.PickleError:
         pass
+      except ModuleNotFoundError:
+        # If changes were made to modules used we should drop the cache as well
+        pass
 
   def _GetForContext(self, context: _PresubmitCheckContext) -> Optional[str]:
     if context.key() not in self._cache_contents.data:
