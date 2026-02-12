@@ -275,9 +275,8 @@ BOOL IsAllSelected(NSUInteger selected_unread_count,
   self.tableView.dragDelegate = self.dragDropHandler;
   self.tableView.dragInteractionEnabled = true;
   self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitPreferredContentSizeCategory.class ]);
-  [self registerForTraitChanges:traits
+
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                      withAction:@selector(verifyTableIsEmpty)];
 }
 
