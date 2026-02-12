@@ -148,6 +148,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Account is fully known"/>
   <int value="1" label="Account is unkown"/>
   <int value="2" label="Account is not full: gaia or email missing"/>
+  <int value="3" label="Account is not full: account id missing"/>
 </enum>
 
 <!-- LINT.IfChange(AccountManagedStatusFinderOutcome) -->

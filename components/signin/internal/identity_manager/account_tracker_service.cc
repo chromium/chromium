@@ -58,8 +58,9 @@ enum class AccountInPrefState {
   kValid = 0,
   kEmptyAccount = 1,
   kEmptyEmailOrGaiaId = 2,
+  kEmptyAccountId = 3,
 
-  kMaxValue = kEmptyEmailOrGaiaId,
+  kMaxValue = kEmptyAccountId,
 };
 
 // Reads a PNG image from disk and decodes it. If the reading/decoding attempt
@@ -269,6 +270,9 @@ void AccountTrackerService::SetAccountInfoFromUserInfo(
   } else if (account_info.gaia.empty() || account_info.email.empty()) {
     // This may happen if account capabilities are fetched first.
     state = AccountInPrefState::kEmptyEmailOrGaiaId;
+  } else if (account_info.GetAccountId().empty()) {
+    // Needed to investigate https://crbug.com/483657395.
+    state = AccountInPrefState::kEmptyAccountId;
   }
   base::UmaHistogramEnumeration("Signin.AccountInPref.State", state);
 
