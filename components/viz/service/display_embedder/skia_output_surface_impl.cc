@@ -929,8 +929,8 @@ void SkiaOutputSurfaceImpl::EndPaint(
         &SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame,
         base::Unretained(impl_on_gpu_.get()), std::move(ddl),
         std::move(overdraw_ddl), std::move(graphite_recording),
-        std::move(images_in_current_paint_), resource_sync_tokens_,
-        std::move(on_finished), std::move(return_release_fence_cb));
+        std::move(images_in_current_paint_), std::move(on_finished),
+        std::move(return_release_fence_cb));
     EnqueueGpuTask(std::move(task), std::move(resource_sync_tokens_),
                    /*make_current=*/true, /*need_framebuffer=*/true);
   } else {
@@ -938,9 +938,8 @@ void SkiaOutputSurfaceImpl::EndPaint(
         &SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass,
         base::Unretained(impl_on_gpu_.get()), current_paint_->mailbox(),
         std::move(ddl), std::move(overdraw_ddl), std::move(graphite_recording),
-        std::move(images_in_current_paint_), resource_sync_tokens_,
-        std::move(on_finished), std::move(return_release_fence_cb), update_rect,
-        is_overlay);
+        std::move(images_in_current_paint_), std::move(on_finished),
+        std::move(return_release_fence_cb), update_rect, is_overlay);
     EnqueueGpuTask(std::move(task), std::move(resource_sync_tokens_),
                    /*make_current=*/true, /*need_framebuffer=*/false);
   }

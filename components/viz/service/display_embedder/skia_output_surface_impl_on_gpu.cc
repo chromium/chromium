@@ -461,7 +461,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     sk_sp<GrDeferredDisplayList> overdraw_ddl,
     std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
     std::vector<raw_ptr<ImageContextImpl, VectorExperimental>> image_contexts,
-    std::vector<gpu::SyncToken> sync_tokens,
     base::OnceClosure on_finished,
     base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame");
@@ -617,7 +616,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     sk_sp<GrDeferredDisplayList> overdraw_ddl,
     std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
     std::vector<raw_ptr<ImageContextImpl, VectorExperimental>> image_contexts,
-    std::vector<gpu::SyncToken> sync_tokens,
     base::OnceClosure on_finished,
     base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
     const gfx::Rect& update_rect,
