@@ -2121,6 +2121,9 @@ ClipboardExtractedData ClientSideDetectionHost::ExtractClipboardData(
     base::UmaHistogramCounts100(
         "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.UrlCount",
         clipboard_data.urls_size());
+    if (kCSDClipboardCopyApiIncludeFullPayload.Get()) {
+      clipboard_data.set_content(base::UTF16ToUTF8(payload));
+    }
   } else {
     // Otherwise, clear out any URL reporting.
     clipboard_data.clear_urls();

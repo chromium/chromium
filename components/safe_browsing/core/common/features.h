@@ -66,6 +66,7 @@ extern const base::FeatureParam<int> kCsdClipboardCopyApiMaxLength;
 extern const base::FeatureParam<int> kCsdClipboardCopyApiMinLength;
 extern const base::FeatureParam<double> kCsdClipboardCopyApiSampleRate;
 extern const base::FeatureParam<bool> kCSDClipboardCopyApiProcessPayload;
+extern const base::FeatureParam<bool> kCSDClipboardCopyApiIncludeFullPayload;
 extern const base::FeatureParam<std::string> kCsdClipboardCopyApiLoaders;
 extern const base::FeatureParam<std::string> kCsdClipboardCopyApiRunners;
 extern const base::FeatureParam<std::string> kCsdClipboardCopyApiRemoteRunners;

@@ -378,6 +378,7 @@ message ClipboardExtractedData {
   optional int32 total_parsed_tokens = 5;
   repeated string urls = 6;
   optional bool is_overall_suspicious = 7;
+  optional string content = 8;
 }
 
 // Verdict based on IntelligentScanInfo included in ClientPhishingRequest
