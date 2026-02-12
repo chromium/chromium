@@ -39,6 +39,17 @@ using base::BucketsAre;
 // Unit tests verifying successful app migrations.
 class ApplyManifestMigrationCommandTest : public WebAppTest {
  public:
+  // Options used to install the web app so that it can be set up for
+  // various migration use-cases. These vary as per the test case, and
+  // is hence constructed as a separate struct.
+  struct InstallOptionsForMigration {
+    proto::InstallState install_state =
+        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION;
+    bool set_valid_migration_source = true;
+    webapps::WebappInstallSource install_source =
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;
+  };
+
   ApplyManifestMigrationCommandTest() {
     scoped_feature_list_.InitAndEnableFeature(
         blink::features::kWebAppMigrationApi);
@@ -92,10 +103,7 @@ class ApplyManifestMigrationCommandTest : public WebAppTest {
       const GURL app_url,
       std::u16string name,
       std::map<SquareSizePx, SkBitmap> icon_map,
-      proto::InstallState install_state,
-      bool set_valid_migration_source = true,
-      webapps::WebappInstallSource install_source =
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON) {
+      InstallOptionsForMigration install_options) {
     std::unique_ptr<WebAppInstallInfo> info =
         WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
     info->title = name;
@@ -105,14 +113,14 @@ class ApplyManifestMigrationCommandTest : public WebAppTest {
         result;
 
     web_app::WebAppInstallParams params;
-    params.install_state = install_state;
-    bool do_os_integration =
-        install_state == proto::InstallState::INSTALLED_WITH_OS_INTEGRATION;
+    params.install_state = install_options.install_state;
+    bool do_os_integration = install_options.install_state ==
+                             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION;
     params.add_to_applications_menu = do_os_integration;
     params.add_to_desktop = do_os_integration;
     params.add_to_quick_launch_bar = do_os_integration;
 
-    if (set_valid_migration_source) {
+    if (install_options.set_valid_migration_source) {
       web_app::proto::WebAppMigrationSource source;
       source.set_manifest_id("https://app.source.com/");
       source.set_behavior(
@@ -122,7 +130,7 @@ class ApplyManifestMigrationCommandTest : public WebAppTest {
 
     fake_provider().scheduler().InstallFromInfoWithParams(
         std::move(info), /*overwrite_existing_manifest_fields=*/true,
-        install_source, result.GetCallback(), params);
+        install_options.install_source, result.GetCallback(), params);
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success) {
@@ -209,9 +217,11 @@ TEST_F(ApplyManifestMigrationCommandTest,
   std::u16string source_app_name = u"Source app";
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+
+  InstallOptionsForMigration install_options;
   const webapps::AppId& source_app_id = InstallAppWithInstallState(
       GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
-      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+      install_options);
   const webapps::ManifestId& source_manifest_id =
       fake_provider().registrar_unsafe().GetAppManifestId(source_app_id);
 
@@ -238,7 +248,7 @@ TEST_F(ApplyManifestMigrationCommandTest,
 
   const webapps::AppId& destination_app_id = InstallAppWithInstallState(
       GURL("https://app.destination.com/"), destination_app_name,
-      std::move(icon_map2), proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+      std::move(icon_map2), install_options);
 
   auto destination_state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
@@ -292,9 +302,11 @@ TEST_F(ApplyManifestMigrationCommandTest,
   std::u16string source_app_name = u"Source app";
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, source_color);
+
+  InstallOptionsForMigration install_options;
   const webapps::AppId& source_app_id = InstallAppWithInstallState(
       GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
-      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+      install_options);
   const webapps::ManifestId& source_manifest_id =
       fake_provider().registrar_unsafe().GetAppManifestId(source_app_id);
 
@@ -319,7 +331,7 @@ TEST_F(ApplyManifestMigrationCommandTest,
 
   const webapps::AppId& destination_app_id = InstallAppWithInstallState(
       GURL("https://app.destination.com/"), destination_app_name,
-      std::move(icon_map2), proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+      std::move(icon_map2), install_options);
 
   auto destination_state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
@@ -377,9 +389,11 @@ TEST_F(ApplyManifestMigrationCommandTest,
   std::u16string source_app_name = u"Source app";
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, source_color);
+
+  InstallOptionsForMigration install_options;
   const webapps::AppId& source_app_id = InstallAppWithInstallState(
       GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
-      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+      install_options);
   const webapps::ManifestId& source_manifest_id =
       fake_provider().registrar_unsafe().GetAppManifestId(source_app_id);
 
@@ -402,9 +416,10 @@ TEST_F(ApplyManifestMigrationCommandTest,
   origin_association_manager().SetMigrationSourcesData(
       {webapps::ManifestId(GURL("https://app.source.com/"))});
 
+  install_options.install_state = proto::InstallState::SUGGESTED_FROM_MIGRATION;
   const webapps::AppId& destination_app_id = InstallAppWithInstallState(
       GURL("https://app.destination.com/"), destination_app_name,
-      std::move(icon_map2), proto::InstallState::SUGGESTED_FROM_MIGRATION);
+      std::move(icon_map2), install_options);
 
   auto destination_state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
@@ -459,9 +474,11 @@ TEST_F(ApplyManifestMigrationCommandTest, SuccessSuggestedForMigration) {
   std::u16string source_app_name = u"Source app";
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+
+  InstallOptionsForMigration install_options;
   const webapps::AppId& source_app_id = InstallAppWithInstallState(
       GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
-      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+      install_options);
   const webapps::ManifestId& source_manifest_id =
       fake_provider().registrar_unsafe().GetAppManifestId(source_app_id);
 
@@ -484,9 +501,10 @@ TEST_F(ApplyManifestMigrationCommandTest, SuccessSuggestedForMigration) {
   origin_association_manager().SetMigrationSourcesData(
       {webapps::ManifestId(GURL("https://app.source.com/"))});
 
+  install_options.install_state = proto::InstallState::SUGGESTED_FROM_MIGRATION;
   const webapps::AppId& destination_app_id = InstallAppWithInstallState(
       GURL("https://app.destination.com/"), destination_app_name,
-      std::move(icon_map2), proto::InstallState::SUGGESTED_FROM_MIGRATION);
+      std::move(icon_map2), install_options);
 
   auto destination_state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
@@ -537,9 +555,11 @@ TEST_F(ApplyManifestMigrationCommandTest, RunOnOsLoginMigrated) {
   std::u16string source_app_name = u"Source app";
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+
+  InstallOptionsForMigration install_options;
   const webapps::AppId& source_app_id = InstallAppWithInstallState(
       GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
-      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+      install_options);
   const webapps::ManifestId& source_manifest_id =
       fake_provider().registrar_unsafe().GetAppManifestId(source_app_id);
 
@@ -570,10 +590,11 @@ TEST_F(ApplyManifestMigrationCommandTest, RunOnOsLoginMigrated) {
   origin_association_manager().SetMigrationSourcesData(
       {webapps::ManifestId(GURL("https://app.source.com/"))});
 
+  install_options.install_state =
+      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
   const webapps::AppId& destination_app_id = InstallAppWithInstallState(
       GURL("https://app.destination.com/"), destination_app_name,
-      std::move(icon_map2),
-      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
+      std::move(icon_map2), install_options);
 
   if (IsOsIntegrationSupported()) {
     EXPECT_FALSE(fake_os_integration().IsRunOnOsLoginEnabled(
@@ -624,9 +645,11 @@ TEST_F(ApplyManifestMigrationCommandTest, DoNotSetValidatedSources) {
   std::u16string source_app_name = u"Source app";
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+
+  InstallOptionsForMigration install_options;
   const webapps::AppId& source_app_id = InstallAppWithInstallState(
       GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
-      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+      install_options);
 
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
@@ -651,8 +674,7 @@ TEST_F(ApplyManifestMigrationCommandTest, DoNotSetValidatedSources) {
 
   const webapps::AppId& destination_app_id = InstallAppWithInstallState(
       GURL("https://app.destination.com/"), destination_app_name,
-      std::move(icon_map2), proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-      /*set_valid_migration_source=*/false);
+      std::move(icon_map2), {.set_valid_migration_source = false});
 
   auto destination_state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
@@ -686,9 +708,8 @@ TEST_F(ApplyManifestMigrationCommandTest, SourceAppPolicyInstalled) {
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
   const webapps::AppId& source_app_id = InstallAppWithInstallState(
       GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
-      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-      /*set_valid_migration_source=*/false,
-      webapps::WebappInstallSource::EXTERNAL_POLICY);
+      {.set_valid_migration_source = false,
+       .install_source = webapps::WebappInstallSource::EXTERNAL_POLICY});
 
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
@@ -713,8 +734,7 @@ TEST_F(ApplyManifestMigrationCommandTest, SourceAppPolicyInstalled) {
 
   const webapps::AppId& destination_app_id = InstallAppWithInstallState(
       GURL("https://app.destination.com/"), destination_app_name,
-      std::move(icon_map2), proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-      /*set_valid_migration_source=*/false);
+      std::move(icon_map2), {.set_valid_migration_source = false});
 
   auto destination_state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
@@ -753,8 +773,7 @@ TEST_F(ApplyManifestMigrationCommandTest, NoSourceApp) {
 
   const webapps::AppId& destination_app_id = InstallAppWithInstallState(
       GURL("https://app.destination.com/"), destination_app_name,
-      std::move(icon_map2), proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-      /*set_valid_migration_source=*/false);
+      std::move(icon_map2), {.set_valid_migration_source = false});
 
   auto destination_state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
@@ -785,9 +804,11 @@ TEST_F(ApplyManifestMigrationCommandTest, NoDestinationApp) {
   std::u16string source_app_name = u"Source app";
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+
+  InstallOptionsForMigration install_options;
   const webapps::AppId& source_app_id = InstallAppWithInstallState(
       GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
-      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+      install_options);
 
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
