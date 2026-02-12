@@ -332,6 +332,10 @@ public class SettingsSearchCoordinator
             AccessibilityState.State newAccessibilityState) {
         if (mActivity.isFinishing() || mActivity.isDestroyed()) return;
 
+        // If #onSaveInstance has already been called, we cannot commit Fragment transactions. The
+        // UI update is safe to skip since the user cannot see the search view in this state.
+        if (getSettingsFragmentManager().isStateSaved()) return;
+
         if (!oldAccessibilityState.equals(newAccessibilityState)) {
             if (mIndexData != null) {
                 mIndexData.setNeedsIndexing();
