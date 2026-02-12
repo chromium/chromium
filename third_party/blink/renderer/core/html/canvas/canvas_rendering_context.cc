@@ -110,10 +110,10 @@ CanvasRenderingContext::GetEnclosingContextForDrawElement(
   if (!canvas) {
     exception_state.ThrowTypeError(build_error(
         RuntimeEnabledFeatures::CanvasDrawElementInSubtreeEnabled()
-            ? ("Only immediate children of the <canvas> element can be "
-               "passed to %s.")
-            : ("Only descendants of the <canvas> element can be passed "
-               "to %s.")));
+            ? ("Only descendants of the <canvas> element can be passed "
+               "to %s.")
+            : ("Only immediate children of the <canvas> element can be "
+               "passed to %s.")));
 
     return nullptr;
   }
