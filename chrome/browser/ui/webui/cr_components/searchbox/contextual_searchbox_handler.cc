@@ -403,6 +403,13 @@ void ContextualSearchboxHandler::AddFileContext(
     searchbox::mojom::SelectedFileInfoPtr file_info_mojom,
     mojo_base::BigBuffer file_bytes,
     AddFileContextCallback callback) {
+  // TODO(crbug.com/483526904): Return synchronous error in the callback.
+  if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile_->GetPrefs())) {
+    std::move(callback).Run(base::UnguessableToken());
+    return;
+  }
+
   auto* contextual_session_handle = GetContextualSessionHandle();
   if (contextual_session_handle) {
     context_input_data_ = std::nullopt;
@@ -424,6 +431,13 @@ void ContextualSearchboxHandler::AddFileContextFromBrowser(
     mojo_base::BigBuffer file_bytes,
     std::optional<lens::ImageEncodingOptions> image_encoding_options,
     AddFileContextCallback callback) {
+  // TODO(crbug.com/483526904): Return synchronous error in the callback.
+  if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile_->GetPrefs())) {
+    std::move(callback).Run(base::UnguessableToken());
+    return;
+  }
+
   auto* contextual_session_handle = GetContextualSessionHandle();
   if (contextual_session_handle) {
     auto context_token = contextual_session_handle->CreateContextToken();
@@ -443,6 +457,13 @@ void ContextualSearchboxHandler::ContinueAddTabContext(
     bool delay_upload,
     base::UnguessableToken context_token,
     AddTabContextCallback callback) {
+  // TODO(crbug.com/483526904): Return synchronous error in the callback.
+  if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile_->GetPrefs())) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
   // TODO(crbug.com/458050417): Move more of the tab context logic to
   // ContextualSessionHandle.
   const tabs::TabHandle handle = tabs::TabHandle(tab_id);

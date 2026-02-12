@@ -37,10 +37,12 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/internal/test_composebox_query_controller.h"
+#include "components/contextual_search/pref_names.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/contextual_search_mojom_traits.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -335,6 +337,136 @@ TEST_F(ContextualSearchboxHandlerTest, ClearFiles) {
   EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
   handler().ClearFiles();
   EXPECT_EQ(handler().GetUploadedContextTokens().size(), 0u);
+}
+
+TEST_F(ContextualSearchboxHandlerTest, AddFile_PolicyDisabled) {
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+
+  searchbox::mojom::SelectedFileInfoPtr file_info =
+      searchbox::mojom::SelectedFileInfo::New();
+  file_info->file_name = "test.pdf";
+  file_info->selection_time = base::Time::Now();
+  file_info->mime_type = "application/pdf";
+
+  std::vector<uint8_t> test_data = {1, 2, 3, 4};
+  auto test_data_span = base::span<const uint8_t>(test_data);
+  mojo_base::BigBuffer file_data(test_data_span);
+
+  base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback;
+  base::UnguessableToken callback_token;
+
+  EXPECT_CALL(query_controller(), StartFileUploadFlow).Times(0);
+  EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));
+  handler().AddFileContext(std::move(file_info), std::move(file_data),
+                           callback.Get());
+
+  EXPECT_TRUE(callback_token.is_empty());
+}
+
+TEST_F(ContextualSearchboxHandlerTest, AddFile_PolicyToggled) {
+  // Start with disabled.
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+
+  searchbox::mojom::SelectedFileInfoPtr file_info_1 =
+      searchbox::mojom::SelectedFileInfo::New();
+  file_info_1->file_name = "test1.pdf";
+  file_info_1->mime_type = "application/pdf";
+  std::vector<uint8_t> test_data_1 = {1};
+  auto test_data_span_1 = base::span<const uint8_t>(test_data_1);
+  mojo_base::BigBuffer file_data_1(test_data_span_1);
+
+  base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback_1;
+  base::UnguessableToken callback_token_1;
+
+  EXPECT_CALL(query_controller(), StartFileUploadFlow).Times(0);
+  EXPECT_CALL(callback_1, Run).WillOnce(testing::SaveArg<0>(&callback_token_1));
+  handler().AddFileContext(std::move(file_info_1), std::move(file_data_1),
+                           callback_1.Get());
+
+  EXPECT_TRUE(callback_token_1.is_empty());
+
+  // Enable policy.
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  searchbox::mojom::SelectedFileInfoPtr file_info_2 =
+      searchbox::mojom::SelectedFileInfo::New();
+  file_info_2->file_name = "test2.pdf";
+  file_info_2->mime_type = "application/pdf";
+  std::vector<uint8_t> test_data_2 = {2};
+  auto test_data_span_2 = base::span<const uint8_t>(test_data_2);
+  mojo_base::BigBuffer file_data_2(test_data_span_2);
+
+  base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback_2;
+  base::UnguessableToken callback_token_2;
+
+  EXPECT_CALL(query_controller(), StartFileUploadFlow).Times(1);
+  EXPECT_CALL(callback_2, Run).WillOnce(testing::SaveArg<0>(&callback_token_2));
+  handler().AddFileContext(std::move(file_info_2), std::move(file_data_2),
+                           callback_2.Get());
+
+  EXPECT_FALSE(callback_token_2.is_empty());
+}
+
+TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_PolicyDisabled) {
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+
+  std::string file_name = "test.pdf";
+  std::string mime_type = "application/pdf";
+  std::vector<uint8_t> test_data = {1, 2, 3, 4};
+  auto test_data_span = base::span<const uint8_t>(test_data);
+  mojo_base::BigBuffer file_data(test_data_span);
+  std::optional<lens::ImageEncodingOptions> image_options;
+
+  base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback;
+  base::UnguessableToken callback_token;
+
+  EXPECT_CALL(query_controller(), StartFileUploadFlow).Times(0);
+  EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));
+  handler().AddFileContextFromBrowser(file_name, mime_type,
+                                      std::move(file_data), image_options,
+                                      callback.Get());
+
+  EXPECT_TRUE(callback_token.is_empty());
+}
+
+TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_PolicyEnabled) {
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  std::string file_name = "test.pdf";
+  std::string mime_type = "application/pdf";
+  std::vector<uint8_t> test_data = {1, 2, 3, 4};
+  auto test_data_span = base::span<const uint8_t>(test_data);
+  mojo_base::BigBuffer file_data(test_data_span);
+  std::optional<lens::ImageEncodingOptions> image_options;
+
+  base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback;
+  base::UnguessableToken controller_file_info_token;
+  base::UnguessableToken callback_token;
+
+  EXPECT_CALL(query_controller(), StartFileUploadFlow)
+      .WillOnce(testing::SaveArg<0>(&controller_file_info_token));
+  EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));
+  handler().AddFileContextFromBrowser(file_name, mime_type,
+                                      std::move(file_data), image_options,
+                                      callback.Get());
+
+  EXPECT_EQ(callback_token, controller_file_info_token);
+  EXPECT_FALSE(callback_token.is_empty());
 }
 
 TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
@@ -665,6 +797,30 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext) {
 
   // Flush the mojo pipe to ensure the callback is run.
   mock_searchbox_page_.FlushForTesting();
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext_PolicyDisabled) {
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+
+  auto sample_url = GURL("https://www.google.com");
+  tabs::TabInterface* tab = AddTab(sample_url);
+  const int sample_tab_id = tab->GetHandle().raw_value();
+
+  EXPECT_CALL(query_controller(), StartFileUploadFlow).Times(0);
+  base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback;
+  std::optional<base::UnguessableToken> callback_token;
+  EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));
+
+  handler().AddTabContext(sample_tab_id, /*delay_upload=*/false,
+                          callback.Get());
+
+  // Flush the mojo pipe to ensure the callback is run.
+  mock_searchbox_page_.FlushForTesting();
+
+  EXPECT_FALSE(callback_token.has_value());
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext_DelayUpload) {
