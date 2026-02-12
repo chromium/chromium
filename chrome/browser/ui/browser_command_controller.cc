@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/debug/profiler.h"
@@ -112,6 +113,7 @@
 #include "content/public/common/profiling.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_urls.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -166,6 +168,12 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #endif
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
+
+using Extension = extensions::Extension;
+using ExtensionRegistry = extensions::ExtensionRegistry;
+using ExtensionRegistryObserver = extensions::ExtensionRegistryObserver;
+using UnloadedExtensionReason = extensions::UnloadedExtensionReason;
 using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
 
 namespace chrome {
@@ -225,6 +233,38 @@ void InvokeAction(actions::ActionId id, actions::ActionItem* scope) {
 }
 
 }  // namespace
+
+///////////////////////////////////////////////////////////////////////////////
+// BrowserCommandController::ExtensionStateObserver
+
+// Observes for extension state changes and notifies the controller.
+class BrowserCommandController::ExtensionStateObserver
+    : public ExtensionRegistryObserver {
+ public:
+  ExtensionStateObserver(BrowserCommandController* controller, Profile* profile)
+      : controller_(CHECK_DEREF(controller)) {
+    registry_observation_.Observe(ExtensionRegistry::Get(profile));
+  }
+  ExtensionStateObserver(const ExtensionStateObserver&) = delete;
+  ExtensionStateObserver& operator=(const ExtensionStateObserver&) = delete;
+  ~ExtensionStateObserver() override = default;
+
+  // ExtensionRegistryObserver:
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const Extension* extension) override {
+    controller_->ExtensionStateChanged();
+  }
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const Extension* extension,
+                           UnloadedExtensionReason reason) override {
+    controller_->ExtensionStateChanged();
+  }
+
+ private:
+  raw_ref<BrowserCommandController> controller_;
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserCommandController, public:
@@ -339,9 +379,13 @@ BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
       tab_restore_service->LoadTabsFromLastSession();
     }
   }
+
+  extension_state_observer_ =
+      std::make_unique<ExtensionStateObserver>(this, profile());
 }
 
 BrowserCommandController::~BrowserCommandController() {
+  extension_state_observer_.reset();
   // TabRestoreService may have been shutdown by the time we get here. Don't
   // trigger creating it.
   sessions::TabRestoreService* tab_restore_service =

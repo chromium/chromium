@@ -20,7 +20,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/app_tab_helper.h"
-#include "chrome/browser/ui/browser_command_controller.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -89,34 +88,10 @@ ExtensionBrowserWindowHelper::ExtensionBrowserWindowHelper(
 
 ExtensionBrowserWindowHelper::~ExtensionBrowserWindowHelper() = default;
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/484035820): Extract BrowserCommandController references into
-// their own class.
-void ExtensionBrowserWindowHelper::SetBrowserCommandController(
-    chrome::BrowserCommandController* command_controller) {
-  CHECK(command_controller);
-  command_controller_ = command_controller;
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-void ExtensionBrowserWindowHelper::OnExtensionLoaded(
-    content::BrowserContext* browser_context,
-    const Extension* extension) {
-#if !BUILDFLAG(IS_ANDROID)
-  CHECK(command_controller_);
-  command_controller_->ExtensionStateChanged();
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
-
 void ExtensionBrowserWindowHelper::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-#if !BUILDFLAG(IS_ANDROID)
-  CHECK(command_controller_);
-  command_controller_->ExtensionStateChanged();
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   // Clean up any tabs from |extension|, unless it was terminated. In the
   // terminated case (as when the extension crashed), we let the sad tabs stay.
   if (reason != extensions::UnloadedExtensionReason::TERMINATE)

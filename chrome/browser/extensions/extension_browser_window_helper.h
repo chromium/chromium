@@ -16,18 +16,12 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 class BrowserWindowInterface;
 class Profile;
 
-namespace chrome {
-class BrowserCommandController;
-}  // namespace chrome
-
 namespace extensions {
 
 // A helper object for extensions-related management for browser objects.
 // It is owned by `BrowserWindowFeatures` or `AndroidBrowserWindow`.
 class ExtensionBrowserWindowHelper : public ExtensionRegistryObserver {
  public:
-  // NOTE: Non-Android platforms are required to call
-  // `SetBrowserCommandController` as part of initialization.
   // Takes a BrowserWindowInterface instead of TabListInterface because the tab
   // list may not be constructed by the time this object is created.
   ExtensionBrowserWindowHelper(BrowserWindowInterface* browser,
@@ -39,15 +33,8 @@ class ExtensionBrowserWindowHelper : public ExtensionRegistryObserver {
 
   ~ExtensionBrowserWindowHelper() override;
 
-#if !BUILDFLAG(IS_ANDROID)
-  void SetBrowserCommandController(
-      chrome::BrowserCommandController* command_controller);
-#endif
-
  private:
   // ExtensionRegistryObserver:
-  void OnExtensionLoaded(content::BrowserContext* browser_context,
-                         const Extension* extension) override;
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
@@ -58,10 +45,6 @@ class ExtensionBrowserWindowHelper : public ExtensionRegistryObserver {
   // These pointers come from the associated Browser object and it will ensure
   // they outlive this object.
   const raw_ref<BrowserWindowInterface> browser_;
-#if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/484035820): Extract this into its own class.
-  raw_ptr<chrome::BrowserCommandController> command_controller_;
-#endif
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};

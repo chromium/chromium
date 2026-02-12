@@ -265,6 +265,10 @@ class BrowserCommandController : public CommandUpdater,
   base::CallbackListSubscription glic_window_activation_subscription_;
   // Callback subscription for listening to changes to the Glic FRE
   base::CallbackListSubscription glic_fre_state_change_subscription_;
+
+  // Observes for extension state changes (load/unload).
+  class ExtensionStateObserver;
+  std::unique_ptr<ExtensionStateObserver> extension_state_observer_;
 };
 
 }  // namespace chrome
