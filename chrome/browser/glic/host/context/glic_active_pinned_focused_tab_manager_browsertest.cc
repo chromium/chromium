@@ -4,7 +4,9 @@
 
 #include "chrome/browser/glic/host/context/glic_active_pinned_focused_tab_manager.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
@@ -125,6 +127,61 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
   auto focused_data_final = manager.GetFocusedTabData();
   ASSERT_TRUE(focused_data_final.focus());
   EXPECT_EQ(focused_data_final.focus()->GetHandle(), tab1->GetHandle());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
+                       DoesNotTriggerFocusChangeOnPinChangesToInactiveTabs) {
+  browser_activator().SetMode(BrowserActivator::Mode::kManual);
+
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+  ASSERT_TRUE(service);
+  auto& manager = service->sharing_manager();
+
+  // Open two tabs.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  tabs::TabInterface* tab1 = browser()->GetActiveTabInterface();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  tabs::TabInterface* tab2 = browser()->GetActiveTabInterface();
+
+  service->ToggleUI(browser(), /*prevent_close=*/false,
+                    mojom::InvocationSource::kTopChromeButton);
+
+  // Pin active tab (tab2).
+  manager.PinTabs({tab2->GetHandle()}, GlicPinTrigger::kUnknown);
+  EXPECT_TRUE(manager.IsTabPinned(tab2->GetHandle()));
+
+  // Verify tab2 is focused.
+  auto focused_data = manager.GetFocusedTabData();
+  ASSERT_TRUE(focused_data.focus());
+  EXPECT_EQ(focused_data.focus()->GetHandle(), tab2->GetHandle());
+
+  // Monitor focus changes.
+  base::test::TestFuture<void> future;
+  auto subscription = manager.AddFocusedTabChangedCallback(
+      base::IgnoreArgs<const FocusedTabData&>(future.GetRepeatingCallback()));
+
+  // Pin the INACTIVE tab (tab1).
+  manager.PinTabs({tab1->GetHandle()}, GlicPinTrigger::kUnknown);
+  EXPECT_TRUE(manager.IsTabPinned(tab1->GetHandle()));
+
+  // Verify focus did not change.
+  EXPECT_FALSE(future.IsReady());
+
+  // Verify focused tab is still tab2.
+  auto focused_data_after = manager.GetFocusedTabData();
+  ASSERT_TRUE(focused_data_after.focus());
+  EXPECT_EQ(focused_data_after.focus()->GetHandle(), tab2->GetHandle());
+
+  // Unpin the INACTIVE tab (tab1).
+  manager.UnpinTabs({tab1->GetHandle()}, GlicUnpinTrigger::kUnknown);
+  EXPECT_FALSE(manager.IsTabPinned(tab1->GetHandle()));
+
+  // Verify focus did not change.
+  EXPECT_FALSE(future.IsReady());
 }
 
 }  // namespace glic
