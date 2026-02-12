@@ -120,7 +120,7 @@ void AsyncWrite(base::ScopedFILE* file,
 void AsyncTruncate(base::ScopedFILE* file) {
   DCHECK(file);
   if (*file) {
-    base::IgnoreResult(base::TruncateFile(file->get()));
+    base::TruncateFile(file->get());
   }
 }
 
@@ -313,7 +313,7 @@ void VisitedLinkWriter::AddURL(const GURL& url, bool update_file) {
   UMA_HISTOGRAM_COUNTS_10M("History.VisitedLinks.HashTableUsageOnLinkAdded",
                            used_items_);
   Hash index = TryToAddURL(url);
-  if (!table_builder_ && !table_is_loading_from_file_ && index != null_hash_) {
+  if (!table_builder_ && !table_is_loading_from_file_ && index != kNullHash) {
     // Not rebuilding, so we want to keep the file on disk up to date.
     if (update_file && persist_to_disk_) {
       WriteUsedItemCountToFile();
@@ -332,7 +332,7 @@ VisitedLinkWriter::Hash VisitedLinkWriter::TryToAddURL(const GURL& url) {
   }
 
   if (!url.is_valid())
-    return null_hash_;  // Don't add invalid URLs.
+    return kNullHash;  // Don't add invalid URLs.
 
   Fingerprint fingerprint = ComputeURLFingerprint(url.spec(), salt_);
   // If the table isn't loaded the table will be rebuilt and after
@@ -360,7 +360,7 @@ VisitedLinkWriter::Hash VisitedLinkWriter::TryToAddURL(const GURL& url) {
   // the table resizing to fail. This check prevents a hang in that case. Note
   // that this is *not* the resize limit, this is just a sanity check.
   if (used_items_ / 8 > table_length_ / 10)
-    return null_hash_;  // Table is more than 80% full.
+    return kNullHash;  // Table is more than 80% full.
 
   return AddFingerprint(fingerprint, true);
 }
@@ -424,14 +424,12 @@ std::optional<uint64_t> VisitedLinkWriter::GetOrAddOriginSalt(
     return std::nullopt;
   }
   // Obtain the salt for this origin if it already exists.
-  auto it = salts_.find(origin);
-  if (it != salts_.end()) {
-    return it->second;
-  }
   // Otherwise, generate a new salt for this origin.
-  const uint64_t generated_salt = base::RandUint64();
-  salts_.insert({origin, generated_salt});
-  return generated_salt;
+  auto [it, inserted] = salts_.try_emplace(origin);
+  if (inserted) {
+    it->second = base::RandUint64();
+  }
+  return it->second;
 }
 
 void VisitedLinkWriter::DeleteURLs(URLIterator* urls) {
@@ -495,10 +493,10 @@ VisitedLinkWriter::Hash VisitedLinkWriter::AddFingerprint(
     if (cur_fingerprint == fingerprint) {
       UMA_HISTOGRAM_ENUMERATION("History.VisitedLinks.TryToAddFingerprint",
                                 AddFingerprint::kAlreadyVisited);
-      return null_hash_;  // This fingerprint is already in there, do nothing.
+      return kNullHash;  // This fingerprint is already in there, do nothing.
     }
 
-    if (cur_fingerprint == null_fingerprint_) {
+    if (cur_fingerprint == kNullFingerprint) {
       // End of probe sequence found, insert here.
       UNSAFE_TODO(hash_table_[cur_hash]) = fingerprint;
       used_items_++;
@@ -528,8 +526,9 @@ void VisitedLinkWriter::DeleteFingerprintsFromCurrentTable(
   bool bulk_write = (fingerprints.size() > kBulkOperationThreshold);
 
   // Delete the URLs from the table.
-  for (auto i = fingerprints.begin(); i != fingerprints.end(); ++i)
-    DeleteFingerprint(*i, !bulk_write);
+  for (auto fingerprint : fingerprints) {
+    DeleteFingerprint(fingerprint, !bulk_write);
+  }
 
   // These deleted fingerprints may make us shrink the table.
   if (ResizeTableIfNecessary())
@@ -577,22 +576,21 @@ bool VisitedLinkWriter::DeleteFingerprint(Fingerprint fingerprint,
   absl::InlinedVector<Fingerprint, 32> shuffled_fingerprints;
   Hash stop_loop = IncrementHash(end_range);  // The end range is inclusive.
   for (Hash i = deleted_hash; i != stop_loop; i = IncrementHash(i)) {
-    if (UNSAFE_TODO(hash_table_[i]) != fingerprint) {
+    auto this_fingerprint =
+        std::exchange(UNSAFE_TODO(hash_table_[i]), kNullFingerprint);
+    if (this_fingerprint != fingerprint) {
       // Don't save the one we're deleting!
-      shuffled_fingerprints.push_back(UNSAFE_TODO(hash_table_[i]));
+      shuffled_fingerprints.push_back(this_fingerprint);
 
       // This will balance the increment of this value in AddFingerprint below
       // so there is no net change.
       used_items_--;
     }
-    UNSAFE_TODO(hash_table_[i]) = null_fingerprint_;
   }
 
-  if (!shuffled_fingerprints.empty()) {
-    // Need to add the new items back.
-    for (size_t i = 0; i < shuffled_fingerprints.size(); i++) {
-      AddFingerprint(shuffled_fingerprints[i], false);
-    }
+  // Need to add any new items back.
+  for (auto shuffled_fingerprint : shuffled_fingerprints) {
+    AddFingerprint(shuffled_fingerprint, false);
   }
 
   // Write the affected range to disk [deleted_hash, end_range].
@@ -621,8 +619,8 @@ void VisitedLinkWriter::WriteFullTable() {
     scoped_file_holder_ = std::make_unique<base::ScopedFILE>();
     base::FilePath filename;
     GetDatabaseFileName(&filename);
-    PostIOTask(FROM_HERE,
-               base::BindOnce(&AsyncOpen, scoped_file_holder_.get(), filename));
+    PostIOTask(FROM_HERE, base::BindOnce(&AsyncOpen, scoped_file_holder_.get(),
+                                         std::move(filename)));
   }
 
   // Write the new header.
@@ -659,8 +657,9 @@ bool VisitedLinkWriter::InitFromFile() {
   TableLoadCompleteCallback callback = base::BindOnce(
       &VisitedLinkWriter::OnTableLoadComplete, weak_ptr_factory_.GetWeakPtr());
 
-  PostIOTask(FROM_HERE, base::BindOnce(&VisitedLinkWriter::LoadFromFile,
-                                       filename, std::move(callback)));
+  PostIOTask(FROM_HERE,
+             base::BindOnce(&VisitedLinkWriter::LoadFromFile,
+                            std::move(filename), std::move(callback)));
 
   return true;
 }
@@ -672,8 +671,8 @@ void VisitedLinkWriter::LoadFromFile(const base::FilePath& filename,
   bool success = LoadApartFromFile(filename, &load_from_file_result);
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), success, load_from_file_result));
+      FROM_HERE, base::BindOnce(std::move(callback), success,
+                                std::move(load_from_file_result)));
 }
 
 // static
@@ -1026,7 +1025,7 @@ uint32_t VisitedLinkWriter::DefaultTableSize() const {
 uint32_t VisitedLinkWriter::NewTableSizeForCount(int32_t item_count) const {
   // These table sizes are selected to be the maximum prime number less than
   // a "convenient" multiple of 1K.
-  static const auto table_sizes = std::to_array<int>({
+  static constexpr auto kTableSizes = std::to_array<const int>({
       16381,     // 16K  = 16384   <- don't shrink below this table size
                  //                   (should be == default_table_size)
       32767,     // 32K  = 32768
@@ -1039,16 +1038,17 @@ uint32_t VisitedLinkWriter::NewTableSizeForCount(int32_t item_count) const {
       4194301,   // 4M   = 4194304
       8388571,   // 8M   = 8388608
       16777199,  // 16M  = 16777216
-      33554347,
-  });  // 32M  = 33554432
+      33554347,  // 32M  = 33554432
+  });
 
   // Try to leave the table 33% full.
   int desired = item_count * 3;
 
   // Find the closest prime.
-  for (size_t i = 0; i < std::size(table_sizes); i++) {
-    if (table_sizes[i] > desired)
-      return table_sizes[i];
+  for (auto size : kTableSizes) {
+    if (size > desired) {
+      return size;
+    }
   }
 
   // Growing very big, just approximate a "good" number, not growing as much
@@ -1078,19 +1078,22 @@ void VisitedLinkWriter::OnTableRebuildComplete(
         static_cast<int>(fingerprints.size() + added_since_rebuild_.size()));
     if (CreateURLTable(new_table_size)) {
       // Add the stored fingerprints to the hash table.
-      for (const auto& fingerprint : fingerprints)
+      for (auto fingerprint : fingerprints) {
         AddFingerprint(fingerprint, false);
+      }
 
       // Also add anything that was added while we were asynchronously
       // generating the new table.
-      for (const auto& fingerprint : added_since_rebuild_)
+      for (auto fingerprint : added_since_rebuild_) {
         AddFingerprint(fingerprint, false);
+      }
       added_since_rebuild_.clear();
 
       // Now handle deletions. Do not shrink the table now, we'll shrink it when
       // adding or deleting an url the next time.
-      for (const auto& fingerprint : deleted_since_rebuild_)
+      for (auto fingerprint : deleted_since_rebuild_) {
         DeleteFingerprint(fingerprint, false);
+      }
       deleted_since_rebuild_.clear();
 
       // Send an update notification to all child processes.

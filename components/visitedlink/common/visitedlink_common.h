@@ -66,8 +66,8 @@ class VisitedLinkCommon {
   typedef int32_t Hash;
 
   // A fingerprint or hash value that does not exist
-  static const Fingerprint null_fingerprint_;
-  static const Hash null_hash_;
+  static constexpr Fingerprint kNullFingerprint = 0;
+  static constexpr Hash kNullHash = -1;
 
   VisitedLinkCommon();
 
@@ -144,7 +144,7 @@ class VisitedLinkCommon {
   // contain endian issues.
   Fingerprint FingerprintAt(int32_t table_offset) const {
     if (!hash_table_)
-      return null_fingerprint_;
+      return kNullFingerprint;
     return UNSAFE_TODO(hash_table_[table_offset]);
   }
 
@@ -172,7 +172,7 @@ class VisitedLinkCommon {
   // into the hashtable.
   static Hash HashFingerprint(Fingerprint fingerprint, int32_t table_length) {
     if (table_length == 0)
-      return null_hash_;
+      return kNullHash;
     return static_cast<Hash>(fingerprint % table_length);
   }
   // Uses the current hashtable.

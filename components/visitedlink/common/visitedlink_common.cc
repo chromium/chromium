@@ -33,9 +33,6 @@ crypto::obsolete::Md5 MakeMd5HasherForVisitedLink() {
   return {};
 }
 
-const VisitedLinkCommon::Fingerprint VisitedLinkCommon::null_fingerprint_ = 0;
-const VisitedLinkCommon::Hash VisitedLinkCommon::null_hash_ = -1;
-
 VisitedLinkCommon::VisitedLinkCommon() = default;
 
 VisitedLinkCommon::~VisitedLinkCommon() = default;
@@ -82,8 +79,9 @@ bool VisitedLinkCommon::IsVisited(Fingerprint fingerprint) const {
   Hash cur_hash = first_hash;
   while (true) {
     Fingerprint cur_fingerprint = FingerprintAt(cur_hash);
-    if (cur_fingerprint == null_fingerprint_)
+    if (cur_fingerprint == kNullFingerprint) {
       return false;  // End of probe sequence found.
+    }
     if (cur_fingerprint == fingerprint)
       return true;  // Found a match.
 
