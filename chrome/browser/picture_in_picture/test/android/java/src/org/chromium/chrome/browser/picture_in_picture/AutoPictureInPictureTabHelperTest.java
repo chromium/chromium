@@ -77,7 +77,8 @@ import java.util.concurrent.TimeoutException;
     MediaFeatures.AUTO_PICTURE_IN_PICTURE_FOR_VIDEO_PLAYBACK
 })
 @Restriction({RESTRICTION_TYPE_NON_AUTO, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@DisableIf.Build(sdk_is_less_than = VERSION_CODES.R) // crbug.com/430452403
+// PictureInPicture#isEnabled() is true on Android 11+.
+@DisableIf.Build(sdk_is_less_than = VERSION_CODES.R)
 @Batch(Batch.PER_CLASS)
 public class AutoPictureInPictureTabHelperTest {
     private static final String TAG = "AutoPipTest";
