@@ -12,15 +12,24 @@
 // the constant declarations, include the file
 // "account_capabilities_constants.h".
 
+// WARNING: Care must be taken to ensure that capabilities are fully available
+// server-side before they are added here. This is because (on some platforms)
+// if one individual capability fails to evaluate, the fetch will fail for all
+// other capabilities as well. To add a capability, please either:
+// 1. Wait for the server-side rollout to complete, then add the capability with
+//    the ACCOUNT_CAPABILITY() macro.
+// 2. Or (if the capability needs to be added to the client before the
+//    server-side rollout is complete), add the capability with the
+//    ACCOUNT_CAPABILITY_F() macro instead. You must then ensure that the flag
+//    is only enabled once the server-side rollout is complete.
+
 // Here we define the values using a macro ACCOUNT_CAPABILITY, so it can be
 // expanded differently in some places. The macro has the following signature:
 // ACCOUNT_CAPABILITY(cpp_label, java_label, name).
 
 // To define a new account capability that is flag-guarded, add a
 // ACCOUNT_CAPABILITY_F(cpp_label, java_label, name, feature_flag) macro
-// instead of ACCOUNT_CAPABILITY. This allows the capability to be submitted
-// before it is fully rolled out server-side.
-// - This is currently not supported for capabilities exposed on Android
+// instead of ACCOUNT_CAPABILITY.
 // - The #include for the feature flag must be added to account_capabilities.cc
 //   and not to this file
 
@@ -139,5 +148,15 @@ ACCOUNT_CAPABILITY(kIsSubjectToEnterprisePoliciesCapabilityName,
 ACCOUNT_CAPABILITY(kIsSubjectToParentalControlsCapabilityName,
                    IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
                    "accountcapabilities/guydolldmfya")
+
+#if !defined(NDEBUG)
+// This is a fake account capability, used for unit tests only.
+// To avoid additional fetches in production code, only define this in debug
+// builds.
+ACCOUNT_CAPABILITY_F(kFakeCapabilityForTestingName,
+                     FAKE_CAPABILITY_FOR_TESTING_NAME,
+                     "accountcapabilities/fakecapabilityfortesting",
+                     kEnableFakeCapabilityForTesting)
+#endif
 
 // keep-sorted end

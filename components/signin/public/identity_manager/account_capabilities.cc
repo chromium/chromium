@@ -25,6 +25,11 @@
 #include "components/signin/public/android/jni_headers/AccountCapabilities_jni.h"
 #endif
 
+#if !defined(NDEBUG)
+BASE_FEATURE(kEnableFakeCapabilityForTesting,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 AccountCapabilities::AccountCapabilities() = default;
 AccountCapabilities::~AccountCapabilities() = default;
 AccountCapabilities::AccountCapabilities(const AccountCapabilities& other) =

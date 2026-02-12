@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -28,6 +29,13 @@ class AccountCapabilitiesFetcherIOS;
 namespace supervised_user {
 class FamilyLinkUserCapabilitiesObserver;
 }  // namespace supervised_user
+
+#if !defined(NDEBUG)
+// A fake feature corresponding to the kFakeCapabilityForTestingName account
+// capability. This is only used in unit tests (and must be left disabled to
+// prevent fetching the fake capability).
+BASE_DECLARE_FEATURE(kEnableFakeCapabilityForTesting);
+#endif
 
 // Stores the information about account capabilities. Capabilities provide
 // information about state and features of Gaia accounts.
@@ -202,6 +210,10 @@ class AccountCapabilities {
                            GetSupportedAccountCapabilityNames_FlagDisabled);
   FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
                            GetSupportedAccountCapabilityNames_FlagEnabled);
+  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
+                           ConversionWithJNI_FlagGuardDisabled_JavaToCpp);
+  FRIEND_TEST_ALL_PREFIXES(AccountCapabilitiesTest,
+                           ConversionWithJNI_FlagGuardDisabled_CppToJava);
   friend class AccountCapabilitiesTestMutator;
   friend class supervised_user::FamilyLinkUserCapabilitiesObserver;
 
