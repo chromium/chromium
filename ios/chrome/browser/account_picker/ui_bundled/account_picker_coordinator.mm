@@ -357,12 +357,15 @@
 - (void)navigationController:(UINavigationController*)navigationController
        didShowViewController:(UIViewController*)viewController
                     animated:(BOOL)animated {
-  DCHECK(navigationController == _navigationController)
+  CHECK_EQ(navigationController, _navigationController,
+           base::NotFatalUntil::M155)
       << base::SysNSStringToUTF8([self description]);
-  DCHECK(navigationController.viewControllers.count > 0)
+  CHECK_GT(navigationController.viewControllers.count, 0U,
+           base::NotFatalUntil::M155)
       << base::SysNSStringToUTF8([self description]);
-  DCHECK(navigationController.viewControllers[0] ==
-         _accountPickerConfirmationScreenCoordinator.viewController)
+  CHECK_EQ(navigationController.viewControllers[0],
+           _accountPickerConfirmationScreenCoordinator.viewController,
+           base::NotFatalUntil::M155)
       << base::SysNSStringToUTF8([self description]);
   if (_navigationController.viewControllers.count == 1 &&
       _accountPickerSelectionScreenCoordinator) {
@@ -384,11 +387,6 @@
       _accountPickerSelectionScreenCoordinator.selectedIdentity;
   [self stopAccountPickerSelectionScreenCoordinator];
   [_navigationController popViewControllerAnimated:YES];
-}
-
-- (void)accountPickerSelectionScreenCoordinatorOpenAddAccount:
-    (AccountPickerSelectionScreenCoordinator*)coordinator {
-  [self openAddAccountCoordinator];
 }
 
 - (void)accountPickerSelectionScreenCoordinatorWantsToBeStopped:
@@ -421,12 +419,13 @@
   _accountPickerSelectionScreenCoordinator =
       [[AccountPickerSelectionScreenCoordinator alloc]
           initWithBaseViewController:_navigationController
-                             browser:self.browser];
+                             browser:self.browser
+                    selectedIdentity:_accountPickerConfirmationScreenCoordinator
+                                         .selectedIdentity
+                         accessPoint:_accessPoint];
   _accountPickerSelectionScreenCoordinator.delegate = self;
   _accountPickerSelectionScreenCoordinator.layoutDelegate = self;
-  [_accountPickerSelectionScreenCoordinator
-      startWithSelectedIdentity:_accountPickerConfirmationScreenCoordinator
-                                    .selectedIdentity];
+  [_accountPickerSelectionScreenCoordinator start];
   [_navigationController
       pushViewController:_accountPickerSelectionScreenCoordinator.viewController
                 animated:YES];
@@ -446,7 +445,8 @@
                             presentingViewController:
                                 (UIViewController*)presentingViewController
                                 sourceViewController:(UIViewController*)source {
-  DCHECK_EQ(_navigationController, presentedViewController)
+  CHECK_EQ(_navigationController, presentedViewController,
+           base::NotFatalUntil::M155)
       << base::SysNSStringToUTF8([self description]);
   AccountPickerScreenPresentationController* controller =
       [[AccountPickerScreenPresentationController alloc]

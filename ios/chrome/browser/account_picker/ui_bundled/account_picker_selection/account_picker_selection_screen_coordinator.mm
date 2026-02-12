@@ -6,10 +6,13 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_mediator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_mediator_delegate.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_view_controller.h"
+#import "ios/chrome/browser/authentication/add_account_signin/coordinator/add_account_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -30,14 +33,32 @@
 @implementation AccountPickerSelectionScreenCoordinator {
   __strong AccountPickerSelectionScreenViewController*
       _accountListViewController;
+  AddAccountSigninCoordinator* _addAccountSigninCoordinator;
+  signin_metrics::AccessPoint _accessPoint;
+  // The identity to display when the view is started.
+  id<SystemIdentity> _selectedIdentity;
 
   __strong AccountPickerSelectionScreenMediator* _mediator;
 }
 
-- (void)startWithSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                          selectedIdentity:(id<SystemIdentity>)selectedIdentity
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    CHECK(selectedIdentity, base::NotFatalUntil::M155);
+    _accessPoint = accessPoint;
+    _selectedIdentity = selectedIdentity;
+  }
+  return self;
+}
+
+- (void)start {
   [super start];
   _mediator = [[AccountPickerSelectionScreenMediator alloc]
-      initWithSelectedIdentity:selectedIdentity
+      initWithSelectedIdentity:_selectedIdentity
                identityManager:IdentityManagerFactory::GetForProfile(
                                    self.profile)
          accountManagerService:ChromeAccountManagerServiceFactory::
@@ -58,7 +79,9 @@
 - (void)stop {
   [super stop];
   [_mediator disconnect];
+  [self stopAddAccountSigninCoordinator];
   _mediator.delegate = nil;
+  _selectedIdentity = nil;
   _mediator = nil;
   _accountListViewController = nil;
 }
@@ -94,7 +117,41 @@
 
 - (void)accountPickerListTableViewControllerDidTapOnAddAccount:
     (AccountPickerSelectionScreenTableViewController*)viewController {
-  [self.delegate accountPickerSelectionScreenCoordinatorOpenAddAccount:self];
+  if (_addAccountSigninCoordinator.viewWillPersist) {
+    return;
+  }
+  [_addAccountSigninCoordinator stop];
+  SigninContextStyle contextStyle = SigninContextStyle::kDefault;
+  auto promoAction = signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+  _addAccountSigninCoordinator = [[AddAccountSigninCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                    contextStyle:contextStyle
+                     accessPoint:_accessPoint
+                     promoAction:promoAction
+                    signinIntent:AddAccountSigninIntent::kAddAccount
+                  prefilledEmail:nil
+            continuationProvider:DoNothingContinuationProvider()];
+  __weak __typeof(self) weakSelf = self;
+  _addAccountSigninCoordinator.signinCompletion =
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
+        [weakSelf addAccountDoneWithSigninCoordinator:coordinator
+                                             identity:identity];
+      };
+  [_addAccountSigninCoordinator start];
+}
+
+- (void)addAccountDoneWithSigninCoordinator:(SigninCoordinator*)coordinator
+                                   identity:(id<SystemIdentity>)identity {
+  CHECK_EQ(coordinator, _addAccountSigninCoordinator,
+           base::NotFatalUntil::M155);
+  [self stopAddAccountSigninCoordinator];
+  if (identity) {
+    _mediator.selectedIdentity = identity;
+    [self.delegate
+        accountPickerSelectionScreenCoordinatorIdentitySelected:self];
+  }
 }
 
 - (void)showManagementHelpPage {
@@ -111,6 +168,13 @@
     (AccountPickerSelectionScreenMediator*)mediator {
   CHECK_EQ(mediator, _mediator, base::NotFatalUntil::M151);
   [self.delegate accountPickerSelectionScreenCoordinatorWantsToBeStopped:self];
+}
+
+#pragma mark - Private
+
+- (void)stopAddAccountSigninCoordinator {
+  [_addAccountSigninCoordinator stop];
+  _addAccountSigninCoordinator = nil;
 }
 
 @end

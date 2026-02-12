@@ -25,6 +25,7 @@ source_set("account_picker_selection") {
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/account_picker/ui_bundled:account_picker_layout",
     "//ios/chrome/browser/account_picker/ui_bundled/account_picker_screen",
+    "//ios/chrome/browser/authentication/add_account_signin/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",

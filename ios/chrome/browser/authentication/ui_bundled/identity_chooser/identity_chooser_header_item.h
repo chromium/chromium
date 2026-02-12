@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 
-// IdentityChooserHeaderItem holds the model data for "Choose an Account" header
+// IdentityChooserHeaderItem holds the model data for "Choose an account" header
 // cell.
 @interface IdentityChooserHeaderItem : TableViewHeaderFooterItem
 @end
