@@ -32,6 +32,8 @@ class MockPage extends TestBrowserProxy implements PageInterface {
       'setTaskDetails',
       'setThreadTitle',
       'showOauthErrorDialog',
+      'lockInput',
+      'unlockInput',
     ]);
   }
 
@@ -112,6 +114,14 @@ class MockPage extends TestBrowserProxy implements PageInterface {
 
   updateComposeboxPosition(position: ComposeboxPosition) {
     this.methodCalled('updateComposeboxPosition', position);
+  }
+
+  lockInput() {
+    this.methodCalled('lockInput');
+  }
+
+  unlockInput() {
+    this.methodCalled('unlockInput');
   }
 }
 

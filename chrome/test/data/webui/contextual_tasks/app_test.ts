@@ -543,4 +543,29 @@ suite('ContextualTasksAppTest', function() {
     assertDeepEquals(
         {type: 'composebox-height-update', height: 123}, sentMessage);
   });
+
+  test(
+      'lockInput and unlockInput updates composebox inputEnabled', async () => {
+        const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+        BrowserProxyImpl.setInstance(proxy);
+
+        const appElement = document.createElement('contextual-tasks-app');
+        document.body.appendChild(appElement);
+        await microtasksFinished();
+
+        const composebox = appElement.$.composebox;
+        assertTrue(composebox.inputEnabled);
+
+        proxy.callbackRouterRemote.lockInput();
+        await proxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertFalse(composebox.inputEnabled);
+
+        proxy.callbackRouterRemote.unlockInput();
+        await proxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertTrue(composebox.inputEnabled);
+      });
 });

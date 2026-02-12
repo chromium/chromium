@@ -82,6 +82,9 @@ class MockPage : public mojom::Page {
               UpdateComposeboxPosition,
               (mojom::ComposeboxPositionPtr position),
               (override));
+  MOCK_METHOD(void, LockInput, (), (override));
+  MOCK_METHOD(void, UnlockInput, (), (override));
+
   mojo::Receiver<mojom::Page> receiver_{this};
 };
 

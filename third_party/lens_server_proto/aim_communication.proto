@@ -34,6 +34,12 @@ enum FeatureCapability {
 
   // SetChromeDesktopInputPlateConfiguration() method
   SET_CHROME_DESKTOP_INPUT_PLATE_CONFIGURATION = 24;
+
+  // unlockInput() method
+  UNLOCK_INPUT = 25;
+
+  // lockInput() method
+  LOCK_INPUT = 26;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -110,8 +116,16 @@ message AimToClientMessage {
     UpdateThreadContextLibrary update_thread_context_library = 7;
     NotifyZeroStateRendered notify_zero_state_rendered = 8;
     InputPlateParametersRequest set_chrome_desktop_input_plate_configuration = 9;
+    UnlockInput unlock_input = 12;
+    LockInput lock_input = 13;
   }
 }
+
+// Message AIM sends to clients to unlock the input plate.
+message UnlockInput {}
+
+// Message AIM sends to clients to lock the input plate.
+message LockInput {}
 
 // Message AIM sends to clients to hide the input plate.
 message HideInput {}

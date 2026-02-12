@@ -208,6 +208,13 @@ interface Page {
   // Called when composebox position should be shifted due
   // to server side events.
   UpdateComposeboxPosition(ComposeboxPosition position);
+
+  // Called by the browser process (C++) to lock/disable the input in the WebUI.
+  LockInput();
+
+  // Called by the browser process (C++) to unlock/enable the input in the
+  // WebUI.
+  UnlockInput();
 };
 
 // Used to bootstrip bi-directional communication between the browser and webui.

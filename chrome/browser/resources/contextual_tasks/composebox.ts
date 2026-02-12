@@ -98,12 +98,17 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      inputEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   accessor enableNativeZeroStateSuggestions: boolean = false;
   accessor isZeroState: boolean = false;
   accessor isSidePanel: boolean = false;
+  accessor inputEnabled: boolean = true;
 
   protected accessor zeroStateSuggestions_: AutocompleteResult = {
     input: '',

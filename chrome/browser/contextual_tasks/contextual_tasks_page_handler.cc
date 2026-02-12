@@ -336,6 +336,10 @@ void ContextualTasksPageHandler::OnWebviewMessage(
     web_ui_controller_->OnZeroStateChange(
         aim_to_client_message.notify_zero_state_rendered()
             .is_zero_state_rendered());
+  } else if (aim_to_client_message.has_lock_input()) {
+    web_ui_controller_->GetPageRemote()->LockInput();
+  } else if (aim_to_client_message.has_unlock_input()) {
+    web_ui_controller_->GetPageRemote()->UnlockInput();
   }
 }
 

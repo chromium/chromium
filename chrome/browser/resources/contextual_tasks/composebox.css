@@ -83,6 +83,15 @@
   position: fixed;
 }
 
+:host(:not([input-enabled])) #composebox::part(composebox) {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+:host(:not([input-enabled])) #composebox::part(input) {
+  caret-color: transparent;
+}
+
 :host(:not([is-zero-state])) #composebox::before {
   background: var(--search-background-color);
   border-radius: var(--composebox-border-radius);
