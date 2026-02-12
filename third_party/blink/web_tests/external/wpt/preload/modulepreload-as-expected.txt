@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Modulepreload should fire onload with as="audioworklet"
+  assert_equals: Expected onload to fire expected "load" but got "error"
+[FAIL] Modulepreload should fire onload with as="paintworklet"
+  assert_equals: Expected onload to fire expected "load" but got "error"
+[FAIL] Modulepreload should fire onload with as="serviceworker"
+  assert_equals: Expected onload to fire expected "load" but got "error"
+[FAIL] Modulepreload should fire onload with as="sharedworker"
+  assert_equals: Expected onload to fire expected "load" but got "error"
+[FAIL] Modulepreload should fire onload with as="worker"
+  assert_equals: Expected onload to fire expected "load" but got "error"
+[FAIL] Modulepreload should fire onload with as="invalid-dest"
+  assert_equals: Expected onload to fire expected "load" but got "error"
+Harness: the test ran to completion.
+
