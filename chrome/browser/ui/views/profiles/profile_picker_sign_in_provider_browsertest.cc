@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerSignInProviderBrowserTest,
     ProfilePickerSignInProvider provider{
         host(),
         &delegate,
-        signin_metrics::AccessPoint::kUnknown,
+        signin_metrics::AccessPoint::kStartPage,
         std::string(),
         signin_finished_callback.Get(),
         base::FilePath(),

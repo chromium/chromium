@@ -124,7 +124,7 @@ CoreAccountId PasswordManagerSigninInterceptTestHelper::AddGaiaAccountToProfile(
   return accounts_mutator->AddOrUpdateAccount(
       gaia_id, email, "refresh_token",
       /*is_under_advanced_protection=*/false,
-      signin_metrics::AccessPoint::kUnknown,
+      signin_metrics::AccessPoint::kStartPage,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 }
 

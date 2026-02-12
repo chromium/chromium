@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemTest, AuthorizationTest) {
                                     identity_manager()->GetPrimaryAccountInfo(
                                         signin::ConsentLevel::kSync),
                                     signin::ConsentLevel::kSync),
-                                signin_metrics::AccessPoint::kUnknown));
+                                signin_metrics::AccessPoint::kStartPage));
   WaitUntilIdle();
 
   bar_created.Reply("resume");

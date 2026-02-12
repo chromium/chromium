@@ -595,7 +595,6 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags, RecordSignInPromoShownWithAccount) {
   // Add an account with cookies, which will record the per-account prefs.
   AccountInfo account = identity_test_env->MakeAccountAvailable(
       identity_test_env->CreateAccountAvailabilityOptionsBuilder()
-          .WithAccessPoint(signin_metrics::AccessPoint::kUnknown)
           .WithCookie(true)
           .Build("test@email.com"));
 
@@ -655,7 +654,6 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
   // Add an account with cookies, which will record the per-account prefs.
   AccountInfo account = identity_test_env->MakeAccountAvailable(
       identity_test_env->CreateAccountAvailabilityOptionsBuilder()
-          .WithAccessPoint(signin_metrics::AccessPoint::kUnknown)
           .WithCookie(true)
           .Build("test@email.com"));
 
@@ -711,7 +709,6 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
   // Add an account with cookies, which will record the per-account prefs.
   identity_test_env->MakeAccountAvailable(
       identity_test_env->CreateAccountAvailabilityOptionsBuilder()
-          .WithAccessPoint(signin_metrics::AccessPoint::kUnknown)
           .WithCookie(true)
           .Build("test@email.com"));
   ASSERT_TRUE(ShouldShowBookmarkSignInPromo(*profile.get()));
@@ -792,7 +789,6 @@ TEST_F(ShowSigninPromoTestWithoutPhase2FollowUp,
   // Add an account with cookies, which will record the per-account prefs.
   identity_test_env->MakeAccountAvailable(
       identity_test_env->CreateAccountAvailabilityOptionsBuilder()
-          .WithAccessPoint(signin_metrics::AccessPoint::kUnknown)
           .WithCookie(true)
           .Build("test@email.com"));
   ASSERT_TRUE(ShouldShowBookmarkSignInPromo(*profile.get()));

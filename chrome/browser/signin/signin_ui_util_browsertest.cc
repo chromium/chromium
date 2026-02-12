@@ -284,7 +284,7 @@ class SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos
     CoreAccountId account_id =
         GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
             GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
-            signin_metrics::AccessPoint::kUnknown,
+            signin_metrics::AccessPoint::kStartPage,
             signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
     // Verify that the primary account is not set before.
@@ -316,11 +316,11 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
-          signin_metrics::AccessPoint::kUnknown,
+          signin_metrics::AccessPoint::kStartPage,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   GetIdentityManager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_id, signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kUnknown);
+      signin_metrics::AccessPoint::kStartPage);
 
   for (bool is_default_promo_account : {true, false}) {
     base::HistogramTester histogram_tester;
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
-          signin_metrics::AccessPoint::kUnknown,
+          signin_metrics::AccessPoint::kStartPage,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
   // Add an account and then put its refresh token into an error state to
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
 
   GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
       kMainGaiaID, kMainEmail, "refresh_token", false,
-      signin_metrics::AccessPoint::kUnknown,
+      signin_metrics::AccessPoint::kStartPage,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
   ExpectNoSigninStartedHistograms(histogram_tester);
@@ -489,11 +489,11 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAlreadySignedInAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
-          signin_metrics::AccessPoint::kUnknown,
+          signin_metrics::AccessPoint::kStartPage,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   GetIdentityManager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_id, signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kUnknown);
+      signin_metrics::AccessPoint::kStartPage);
 
   SignIn(GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id));
 
@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAccountThatNeedsReauth) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
-          signin_metrics::AccessPoint::kUnknown,
+          signin_metrics::AccessPoint::kStartPage,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
   // Add an account and then put its refresh token into an error state to
@@ -854,7 +854,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
-          signin_metrics::AccessPoint::kUnknown,
+          signin_metrics::AccessPoint::kStartPage,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
   for (bool is_default_promo_account : {true, false}) {
@@ -903,7 +903,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithExistingWebOnlyAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
-          signin_metrics::AccessPoint::kUnknown,
+          signin_metrics::AccessPoint::kStartPage,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
   // Verify that the primary account is not set before.
@@ -921,11 +921,11 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, ShowExtensionSigninPromptReauth) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
-          signin_metrics::AccessPoint::kUnknown,
+          signin_metrics::AccessPoint::kStartPage,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   GetIdentityManager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_id, signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kUnknown);
+      signin_metrics::AccessPoint::kStartPage);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       GetIdentityManager(), account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));

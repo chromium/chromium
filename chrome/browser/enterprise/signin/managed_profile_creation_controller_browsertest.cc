@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_P(ManagedProfileCreationBrowserTest, Test) {
       future;
   auto managed_profile_creation_controller =
       ManagedProfileCreationController::CreateManagedProfileForTesting(
-          GetProfile(), account_info, signin_metrics::AccessPoint::kUnknown,
+          GetProfile(), account_info, signin_metrics::AccessPoint::kStartPage,
           future.GetCallback(), GetParam().policies, GetParam().user_choice);
   ASSERT_TRUE(future.Wait());
   Profile* new_profile =
