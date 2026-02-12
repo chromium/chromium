@@ -79,7 +79,7 @@ void SkillsPageHandler::OpenSkillsDialog(
   // TODO(b/475599531): Pass in dialog type.
   if (auto* tab_controller = SkillsUiTabControllerInterface::From(
           tabs::TabInterface::GetFromContents(&web_contents_.get()))) {
-    tab_controller->ShowDialog(skill.value_or(skills::Skill()), dialog_type);
+    tab_controller->ShowDialog(skill.value_or(skills::Skill()));
   }
 }
 

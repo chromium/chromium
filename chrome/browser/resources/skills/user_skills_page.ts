@@ -12,7 +12,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import type {Skill} from './skill.mojom-webui.js';
-import {SkillsDialogType} from './skill.mojom-webui.js';
+import {SkillsDialogType} from './skills.mojom-webui.js';
 import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
 import {getCss} from './user_skills_page.css.js';
 import {getHtml} from './user_skills_page.html.js';

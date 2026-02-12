@@ -33,16 +33,15 @@ source_set("skills") {
 source_set("public") {
   sources = [
     "skills_dialog_launcher.h",
+    "skills_ui_window_controller.h",
     "skills_ui_tab_controller_interface.cc",
     "skills_ui_tab_controller_interface.h",
-    "skills_ui_window_controller.h",
   ]
   deps = [
     "//base",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
     "//components/skills/public",
-    "//components/skills/public:mojo_bindings",
     "//components/tabs:public",
     "//ui/base/unowned_user_data",
   ]
@@ -78,7 +77,6 @@ source_set("ui") {
     "//components/skills:features",
     "//components/skills/proto",
     "//components/skills/public",
-    "//components/skills/public:mojo_bindings",
     "//components/web_modal",
     "//services/service_manager/public/cpp",
     "//ui/base/unowned_user_data",
@@ -112,7 +110,6 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//components/skills:features",
     "//components/skills/public",
-    "//components/skills/public:mojo_bindings",
   ]
   if (enable_glic) {
     deps += [ "//chrome/browser/glic" ]

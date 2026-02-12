@@ -18,7 +18,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Skill} from './skill.mojom-webui.js';
-import {SkillsDialogType, SkillSource} from './skill.mojom-webui.js';
+import {SkillSource} from './skill.mojom-webui.js';
 import {getCss} from './skills_dialog.css.js';
 import {getHtml} from './skills_dialog_app.html.js';
 import {SkillsDialogBrowserProxy} from './skills_dialog_browser_proxy.js';
@@ -127,21 +127,20 @@ export class SkillsDialogAppElement extends CrLitElement {
   /** Initializes dialog. */
   override connectedCallback() {
     super.connectedCallback();
-    SkillsDialogBrowserProxy.getInstance().handler.getInitialState().then(
-        ({initialDialogState}) => {
-          if (initialDialogState) {
-            this.skill_ = initialDialogState.skill;
-            this.skill_.icon = initialDialogState.skill.icon || DEFAULT_EMOJI;
-            switch (initialDialogState.dialogType) {
-              case SkillsDialogType.kAdd:
-                this.dialogTitle_ = loadTimeData.getString('addSkillHeader');
-                this.autoPopulateNameAndIcon_();
-                break;
-              case SkillsDialogType.kEdit:
-                this.dialogTitle_ = loadTimeData.getString('editSkillHeader');
-                break;
-              default:
-                break;
+    SkillsDialogBrowserProxy.getInstance().handler.getInitialSkill().then(
+        ({skill}) => {
+          if (skill) {
+            this.skill_ = skill;
+            this.skill_.icon = skill.icon || DEFAULT_EMOJI;
+            // TODO(marissashen): Update to passing in dialogType from dialog
+            // creation
+            if (!skill.id || skill.source === SkillSource.kFirstParty) {
+              // Creating a new skill or remixing a first party skill.
+              this.dialogTitle_ = loadTimeData.getString('addSkillHeader');
+              this.autoPopulateNameAndIcon_();
+            } else {
+              // Editing a user created skill.
+              this.dialogTitle_ = loadTimeData.getString('editSkillHeader');
             }
           }
         });

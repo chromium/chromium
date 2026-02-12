@@ -9,7 +9,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
-#include "chrome/browser/ui/webui/skills/skills.mojom-forward.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
 #include "chrome/common/buildflags.h"
 #include "components/skills/public/skill.h"
@@ -51,7 +50,7 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
   DECLARE_USER_DATA(SkillsUiTabController);
 
   // Opens the skills dialog.
-  void ShowDialog(Skill skill, mojom::SkillsDialogType dialog_type) override;
+  void ShowDialog(Skill skill) override;
 
   // Invokes the skill with skill_id in sidepanel.
   void InvokeSkill(std::string_view skill_id) override;

@@ -16,7 +16,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
-#include "components/skills/public/skill.mojom.h"
 #include "components/skills/public/skills_metrics.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
@@ -103,8 +102,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   histogram_tester_.ExpectBucketCount(
       "Skills.Actions", skills::SkillsActions::kOpenedCreationDialog, 0);
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill),
-                                         mojom::SkillsDialogType::kEdit);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
 
   EXPECT_TRUE(IsDialogVisible());
   EXPECT_NE(nullptr, GetDialogWebContents());
@@ -115,16 +113,14 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
 // Verify calling ShowDialog twice doesn't open two dialogs.
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, PreventDoubleOpen) {
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill),
-                                         mojom::SkillsDialogType::kEdit);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
 
   views::Widget* first_widget = GetDialogWidget();
   ASSERT_TRUE(first_widget);
 
   // Try to open again immediately.
   skills::Skill test_skill2("id2", "skill_name2", "icon", "Test Prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill2),
-                                         mojom::SkillsDialogType::kEdit);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill2));
 
   // Widget should be exactly the same instance.
   views::Widget* second_widget = GetDialogWidget();
@@ -136,8 +132,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, PreventDoubleOpen) {
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        CloseDialogDestroysWidget) {
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill),
-                                         mojom::SkillsDialogType::kEdit);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
   EXPECT_TRUE(IsDialogVisible());
 
   // Trigger the close.
@@ -152,8 +147,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        NativeCloseCleansUpState) {
   // Open dialog.
   skills::Skill test_skill("id", "name", "icon", "prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill),
-                                         mojom::SkillsDialogType::kEdit);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
 
   views::Widget* widget = GetDialogWidget();
   ASSERT_TRUE(widget);
@@ -172,8 +166,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
 
   // Verify we can reopen (implies internal state was reset).
   skills::Skill test_skill2("id2", "name2", "icon2", "prompt2");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill2),
-                                         mojom::SkillsDialogType::kEdit);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill2));
   EXPECT_TRUE(IsDialogVisible());
 }
 
@@ -181,8 +174,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
 // (Regression test for the destruction race condition).
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, TabCloseDoesNotCrash) {
   skills::Skill test_skill("id", "name", "icon", "prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill),
-                                         mojom::SkillsDialogType::kEdit);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
   EXPECT_TRUE(IsDialogVisible());
 
   // Close the tab.
@@ -197,8 +189,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, TabCloseDoesNotCrash) {
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, DialogIsTabScoped) {
   auto* controller_a = skills_ui_tab_controller();
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
-  controller_a->ShowDialog(std::move(test_skill),
-                           mojom::SkillsDialogType::kEdit);
+  controller_a->ShowDialog(std::move(test_skill));
   EXPECT_TRUE(IsDialogVisible());
 
   // Open a new Tab B and switch to it.
@@ -212,8 +203,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, DialogIsTabScoped) {
   // Controller B shouldn't have a dialog open.
   // Verify this by calling ShowDialog and ensuring it does open one.
   skills::Skill test_skill2("id2", "skill_name2", "icon", "Test Prompt");
-  controller_b->ShowDialog(std::move(test_skill2),
-                           mojom::SkillsDialogType::kEdit);
+  controller_b->ShowDialog(std::move(test_skill2));
 
   EXPECT_TRUE(IsDialogVisible());
 
@@ -231,8 +221,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, VerifyWebUIPlumbing) {
 
   // Show the dialog.
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill),
-                                         mojom::SkillsDialogType::kEdit);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
 
   // Dig down to find the SkillsUI.
   // The controller holds the delegate -> which holds WebContents -> which holds
@@ -264,8 +253,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   // creation.
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
   skills::Skill test_skill("id", "name", "icon", "prompt");
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill),
-                                         mojom::SkillsDialogType::kEdit);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
 
   content::WebContents* web_contents = GetDialogWebContents();
   ASSERT_TRUE(web_contents);
@@ -320,8 +308,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   skills::Skill test_skill("test-id", kTestName, kTestIcon, kTestPrompt);
 
   // Open the dialog.
-  skills_ui_tab_controller()->ShowDialog(std::move(test_skill),
-                                         mojom::SkillsDialogType::kEdit);
+  skills_ui_tab_controller()->ShowDialog(std::move(test_skill));
   EXPECT_TRUE(IsDialogVisible());
 
   //  Get the WebContents and wait for it to load.

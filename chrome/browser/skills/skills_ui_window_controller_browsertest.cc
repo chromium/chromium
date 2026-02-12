@@ -19,7 +19,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
-#include "components/skills/public/skill.mojom.h"
 #include "components/skills/public/skills_metrics.h"
 #include "components/skills/public/skills_service.h"
 #include "content/public/test/browser_test.h"
@@ -193,8 +192,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
   skills::Skill initial_skill(/*id=*/"",
                               /*name=*/"",
                               /*icon=*/"", "Skill Prompt");
-  tab_controller()->ShowDialog(std::move(initial_skill),
-                               mojom::SkillsDialogType::kAdd);
+  tab_controller()->ShowDialog(std::move(initial_skill));
 
   // Get WebContents to inject JS.
   content::WebContents* web_contents = GetDialogWebContents();

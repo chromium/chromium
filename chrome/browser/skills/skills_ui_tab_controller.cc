@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/webui/skills/skills_ui.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/skills/public/skill.h"
-#include "components/skills/public/skill.mojom.h"
 #include "components/skills/public/skills_metrics.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
@@ -86,8 +85,7 @@ void SkillsUiTabController::OnTabWillDetach(
   }
 }
 
-void SkillsUiTabController::ShowDialog(Skill skill,
-                                       mojom::SkillsDialogType dialog_type) {
+void SkillsUiTabController::ShowDialog(Skill skill) {
   if (dialog_widget_) {
     // Dialog is already open.
     return;
@@ -116,7 +114,7 @@ void SkillsUiTabController::ShowDialog(Skill skill,
                               ->GetController()
                               ->GetAs<skills::SkillsUI>()) {
       skills_ui->InitializeDialog(weak_ptr_factory_.GetWeakPtr(),
-                                  std::move(skill), dialog_type);
+                                  std::move(skill));
     }
   }
   dialog_delegate_->SetContentsView(std::move(dialog_view));
