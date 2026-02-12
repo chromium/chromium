@@ -1573,6 +1573,18 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="MIDI_SYSEX"/>
 </enum>
 
+<!-- LINT.IfChange(persistent_state_id_verification) -->
+
+<enum name="PersistentStateIdVerification">
+  <int value="0" label="No persistent state nor id"/>
+  <int value="1" label="Missing persistent state"/>
+  <int value="2" label="Missing persistent state id"/>
+  <int value="3" label="Persistent state match"/>
+  <int value="4" label="Persistent state mismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java:persistent_state_id_verification) -->
+
 <enum name="PhotoPickerDialogAction">
   <int value="0" label="Cancel"/>
   <int value="1" label="Photo picked"/>

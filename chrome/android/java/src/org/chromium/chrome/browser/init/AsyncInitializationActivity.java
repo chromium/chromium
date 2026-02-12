@@ -370,9 +370,16 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
                         mReceivedPersistentState ? "Has persistent state" : "No persistent state");
             }
             mPersistentInstanceState = outPersistentState;
+            verifyPersistentState(outPersistentState);
         }
         super.onCreate(savedInstanceState, outPersistentState);
     }
+
+    /**
+     * Verify that the persistent state received matches the latest state that was saved, if
+     * applicable.
+     */
+    protected void verifyPersistentState(@Nullable PersistableBundle outPersistentState) {}
 
     /**
      * Override to perform operations in the first opportunity after the framework calls {@link

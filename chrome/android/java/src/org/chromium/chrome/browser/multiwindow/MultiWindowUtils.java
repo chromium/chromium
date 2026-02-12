@@ -23,6 +23,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Build.VERSION_CODES_FULL;
+import android.os.PersistableBundle;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -98,6 +99,8 @@ import java.util.function.Supplier;
 public class MultiWindowUtils implements ActivityStateListener {
     public static final int INVALID_TASK_ID = MultiInstanceManager.INVALID_TASK_ID;
 
+    public static final String PERSISTENT_STATE_ID = "persistent_state_id";
+
     static final String HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW =
             "Android.MultiInstance.NumActivities.DesktopWindow";
     static final String HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW =
@@ -106,6 +109,8 @@ public class MultiWindowUtils implements ActivityStateListener {
             "Android.MultiInstance.NumActivities.DesktopWindow.Incognito";
     static final String HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW_INCOGNITO =
             "Android.MultiInstance.NumInstances.DesktopWindow.Incognito";
+    static final String HISTOGRAM_PERSISTENT_STATE_ID_VERIFICATION =
+            "Android.MultiInstance.PersistAcrossReboots.IdVerification";
     static final String OPEN_ADJACENTLY_PARAM = "open_adjacently";
 
     private static MultiWindowUtils sInstance = new MultiWindowUtils();
@@ -140,6 +145,28 @@ public class MultiWindowUtils implements ActivityStateListener {
         int SINGLE_WINDOW = 0;
         int MULTI_WINDOW = 1;
     }
+
+    // LINT.IfChange(persistent_state_id_verification)
+    @IntDef({
+        PersistentStateIdVerification.NO_PERSISTENT_STATE_NOR_ID,
+        PersistentStateIdVerification.MISSING_PERSISTENT_STATE,
+        PersistentStateIdVerification.MISSING_PERSISTENT_STATE_ID,
+        PersistentStateIdVerification.PERSISTENT_STATE_MATCH,
+        PersistentStateIdVerification.PERSISTENT_STATE_MISMATCH,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PersistentStateIdVerification {
+        // These values are used for UMA. Don't reuse or reorder values.
+        // If you add something, update NUM_ENTRIES.
+        int NO_PERSISTENT_STATE_NOR_ID = 0;
+        int MISSING_PERSISTENT_STATE = 1;
+        int MISSING_PERSISTENT_STATE_ID = 2;
+        int PERSISTENT_STATE_MATCH = 3;
+        int PERSISTENT_STATE_MISMATCH = 4;
+        int NUM_ENTRIES = 5;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:persistent_state_id_verification)
 
     protected MultiWindowUtils() {
         mMultiInstanceApi31Enabled = isMultiInstanceApi31Enabled();
@@ -677,6 +704,56 @@ public class MultiWindowUtils implements ActivityStateListener {
         } else {
             return SupportedProfileType.MIXED;
         }
+    }
+
+    /**
+     * Verifies that the persistent state passed in Activity creation matches the persistent state
+     * associated with the current instance. This is to verify that the OS supplied the correct
+     * state, and not an outdated bundle.
+     *
+     * @param instanceId The id of the instance.
+     * @param persistentState The {@link PersistableBundle} passed to the instance in #onCreate().
+     */
+    public static void verifyLatestPersistentStateId(
+            int instanceId, @Nullable PersistableBundle persistentState) {
+        boolean containsPersistentStateId =
+                MultiInstancePersistentStore.containsLatestPersistentStateId(instanceId);
+        int latestPersistentStateId =
+                MultiInstancePersistentStore.readLatestPersistentStateId(instanceId);
+        if (persistentState == null || instanceId == INVALID_WINDOW_ID) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    HISTOGRAM_PERSISTENT_STATE_ID_VERIFICATION,
+                    containsPersistentStateId
+                            ? PersistentStateIdVerification.MISSING_PERSISTENT_STATE
+                            : PersistentStateIdVerification.NO_PERSISTENT_STATE_NOR_ID,
+                    PersistentStateIdVerification.NUM_ENTRIES);
+            return;
+        }
+
+        if (!containsPersistentStateId) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    HISTOGRAM_PERSISTENT_STATE_ID_VERIFICATION,
+                    PersistentStateIdVerification.MISSING_PERSISTENT_STATE_ID,
+                    PersistentStateIdVerification.NUM_ENTRIES);
+            return;
+        }
+
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_PERSISTENT_STATE_ID_VERIFICATION,
+                latestPersistentStateId == persistentState.getInt(PERSISTENT_STATE_ID)
+                        ? PersistentStateIdVerification.PERSISTENT_STATE_MATCH
+                        : PersistentStateIdVerification.PERSISTENT_STATE_MISMATCH,
+                PersistentStateIdVerification.NUM_ENTRIES);
+    }
+
+    /**
+     * @param instanceId The id of the instance.
+     * @param latestPersistentStateId The id of the latest {@link PersistableBundle} associated with
+     *     this instance.
+     */
+    public static void writeLatestPersistentStateId(int instanceId, int latestPersistentStateId) {
+        MultiInstancePersistentStore.writeLatestPersistentStateId(
+                instanceId, latestPersistentStateId);
     }
 
     /**

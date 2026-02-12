@@ -18,7 +18,9 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW;
+import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM_PERSISTENT_STATE_ID_VERIFICATION;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.INVALID_TASK_ID;
+import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.PERSISTENT_STATE_ID;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.app.Activity;
@@ -26,6 +28,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build.VERSION_CODES;
+import android.os.PersistableBundle;
 import android.util.SparseIntArray;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -60,6 +63,7 @@ import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.PersistentStateIdVerification;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtilsUnitTest.ShadowMultiInstanceManagerApi31;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -1232,6 +1236,88 @@ public class MultiWindowUtilsUnitTest {
                 "Instance limit on desktop device is incorrect.",
                 1000,
                 MultiWindowUtils.getMaxInstances());
+    }
+
+    @Test
+    public void testVerifyLatestPersistentStateId_InvalidWindowId() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        HISTOGRAM_PERSISTENT_STATE_ID_VERIFICATION,
+                        PersistentStateIdVerification.NO_PERSISTENT_STATE_NOR_ID);
+        MultiWindowUtils.verifyLatestPersistentStateId(TabWindowManager.INVALID_WINDOW_ID, null);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testVerifyLatestPersistentStateId_NoPersistentStateNorId() {
+        int windowId = INSTANCE_ID_0;
+        // Ensure no id is stored.
+        MultiInstancePersistentStore.deleteInstanceState(windowId);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        HISTOGRAM_PERSISTENT_STATE_ID_VERIFICATION,
+                        PersistentStateIdVerification.NO_PERSISTENT_STATE_NOR_ID);
+        MultiWindowUtils.verifyLatestPersistentStateId(windowId, null);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testVerifyLatestPersistentStateId_MissingPersistentState() {
+        int windowId = INSTANCE_ID_0;
+        MultiInstancePersistentStore.writeLatestPersistentStateId(windowId, 123);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        HISTOGRAM_PERSISTENT_STATE_ID_VERIFICATION,
+                        PersistentStateIdVerification.MISSING_PERSISTENT_STATE);
+        MultiWindowUtils.verifyLatestPersistentStateId(windowId, null);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testVerifyLatestPersistentStateId_MissingPersistentStateId() {
+        int windowId = INSTANCE_ID_0;
+        MultiInstancePersistentStore.deleteInstanceState(windowId);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        HISTOGRAM_PERSISTENT_STATE_ID_VERIFICATION,
+                        PersistentStateIdVerification.MISSING_PERSISTENT_STATE_ID);
+        MultiWindowUtils.verifyLatestPersistentStateId(windowId, new PersistableBundle());
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testVerifyLatestPersistentStateId_Match() {
+        int windowId = INSTANCE_ID_0;
+        PersistableBundle bundle = new PersistableBundle();
+        int persistentStateId = bundle.hashCode();
+        bundle.putInt(PERSISTENT_STATE_ID, persistentStateId);
+        MultiInstancePersistentStore.writeLatestPersistentStateId(windowId, persistentStateId);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        HISTOGRAM_PERSISTENT_STATE_ID_VERIFICATION,
+                        PersistentStateIdVerification.PERSISTENT_STATE_MATCH);
+        MultiWindowUtils.verifyLatestPersistentStateId(windowId, bundle);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testVerifyLatestPersistentStateId_Mismatch() {
+        int windowId = INSTANCE_ID_0;
+        PersistableBundle bundle = new PersistableBundle();
+        int persistentStateId = bundle.hashCode();
+        bundle.putInt(PERSISTENT_STATE_ID, persistentStateId + 1);
+        MultiInstancePersistentStore.writeLatestPersistentStateId(windowId, persistentStateId);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        HISTOGRAM_PERSISTENT_STATE_ID_VERIFICATION,
+                        PersistentStateIdVerification.PERSISTENT_STATE_MISMATCH);
+        MultiWindowUtils.verifyLatestPersistentStateId(windowId, bundle);
+        watcher.assertExpected();
     }
 
     private void updateFeatureParams(String feature, Map<String, Integer> featureParams) {

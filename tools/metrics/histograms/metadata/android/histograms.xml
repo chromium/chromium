@@ -3525,6 +3525,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiInstance.PersistAcrossReboots.IdVerification"
+    enum="PersistentStateIdVerification" expires_after="2026-12-01">
+  <owner>clhager@google.com</owner>
+  <owner>twellington@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    The result of comparing the saved ID of the persistent state received in
+    #onCreate() with the latest ID saved for the persistent state associated
+    with that instance. This verification informs whether the OS has passed the
+    same persistent state to the app after recreation that the app passed to the
+    OS when the original instance was stopping for a device reboot or app
+    update. A mismatch in IDs could indicate an OS bug resulting in the
+    persistent state passed to the app being outdated. Note that only the ID is
+    checked as a proxy for the bundle contents, the contents themselves are not
+    verified.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiInstance.WindowManager.DesktopWindowModeState"
     enum="DesktopWindowModeState" expires_after="2026-07-19">
   <owner>aishwaryarj@google.com</owner>

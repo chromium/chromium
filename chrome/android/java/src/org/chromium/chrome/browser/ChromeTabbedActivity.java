@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING;
 import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl.PREVIOUS_VERSION_CODE;
 import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl.isFromUpdate;
+import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.PERSISTENT_STATE_ID;
 import static org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator.INVALID_TIPS_NOTIFICATION_FEATURE_TYPE;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED;
@@ -3755,6 +3756,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     @Override
+    protected void verifyPersistentState(@Nullable PersistableBundle persistentState) {
+        MultiWindowUtils.verifyLatestPersistentStateId(
+                persistentState != null
+                        ? persistentState.getInt(WINDOW_INDEX, INVALID_WINDOW_ID)
+                        : INVALID_WINDOW_ID,
+                persistentState);
+    }
+
+    @Override
     protected boolean isStartedUpCorrectly(Intent intent) {
         mWindowId = 0;
         mInstanceAllocationType = InstanceAllocationType.DEFAULT;
@@ -4543,6 +4553,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             saveToBaseBundle(outPersistentState);
             CipherLazyHolder.sCipherInstance.saveToPersistableBundle(outPersistentState);
             outPersistentState.putLong(PREVIOUS_VERSION_CODE, BuildConfig.VERSION_CODE);
+
+            // Store a unique id to verify the state that is restored later. The bundle's hashCode
+            // works fine here, though note that it only reflects the object id, not the bundle's
+            // contents.
+            int persistentStateId = outPersistentState.hashCode();
+            MultiWindowUtils.writeLatestPersistentStateId(mWindowId, persistentStateId);
+            outPersistentState.putInt(PERSISTENT_STATE_ID, persistentStateId);
         }
     }
 
