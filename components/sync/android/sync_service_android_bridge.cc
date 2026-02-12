@@ -188,7 +188,7 @@ void SyncServiceAndroidBridge::AcknowledgeBookmarksLimitExceededError(
 }
 
 int32_t SyncServiceAndroidBridge::GetBookmarksLimit(JNIEnv* env) {
-  return kSyncBookmarksLimitValue.Get();
+  return kSyncBookmarksLimit;
 }
 
 bool SyncServiceAndroidBridge::IsSyncFeatureEnabled(JNIEnv* env) {

@@ -67,13 +67,7 @@ BASE_DECLARE_FEATURE(kUnoPhase2FollowUp);
 // Controls whether to enable syncing of Autofill Wallet Credential Data.
 BASE_DECLARE_FEATURE(kSyncAutofillWalletCredentialData);
 
-// If enabled, the bookmarks count limit is controlled by a Finch parameter.
-BASE_DECLARE_FEATURE(kSyncBookmarksLimit);
-
-constexpr size_t kDefaultSyncBookmarksLimit = 100000;
-inline constexpr base::FeatureParam<size_t> kSyncBookmarksLimitValue{
-    &kSyncBookmarksLimit, "sync-bookmarks-limit-value",
-    kDefaultSyncBookmarksLimit};
+constexpr size_t kSyncBookmarksLimit = 100000;
 // If enabled, the error that the bookmarks count exceeded the limit during the
 // last initial merge is reset after a certain period.
 BASE_DECLARE_FEATURE(kSyncResetBookmarksInitialMergeLimitExceededError);

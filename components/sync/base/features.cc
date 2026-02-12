@@ -50,8 +50,6 @@ BASE_FEATURE(kSyncAutofillWalletCredentialData,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kSyncBookmarksLimit, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, shows a user-actionable error when the bookmarks count limit is
 // exceeded.
 BASE_FEATURE(kSyncShowBookmarksLimitExceededError,

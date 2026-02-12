@@ -699,12 +699,7 @@ bool BookmarkDataTypeProcessor::DoesCountExceedLocalBookmarksSyncLimit(
   if (sync_local_bookmarks_limit_for_tests_.has_value()) {
     return count > sync_local_bookmarks_limit_for_tests_.value() + offset;
   }
-  // Count is less than the default limit so should not bother checking against
-  // `kSyncBookmarksLimitValue` which is bound to be >= the default limit.
-  if (count <= syncer::kDefaultSyncBookmarksLimit + offset) {
-    return false;
-  }
-  return count > syncer::kSyncBookmarksLimitValue.Get() + offset;
+  return count > syncer::kSyncBookmarksLimit + offset;
 }
 
 bool BookmarkDataTypeProcessor::
@@ -970,12 +965,7 @@ bool BookmarkDataTypeProcessor::ExceedsRemoteUpdatesLimit(size_t count) const {
   if (sync_local_bookmarks_limit_for_tests_.has_value()) {
     return count > 2 * sync_local_bookmarks_limit_for_tests_.value();
   }
-  // This is to avoid checking against `kSyncBookmarksLimitValue` when the
-  // count is already below the default limit.
-  if (count < 2 * syncer::kDefaultSyncBookmarksLimit) {
-    return false;
-  }
-  return count > 2 * syncer::kSyncBookmarksLimitValue.Get();
+  return count > 2 * syncer::kSyncBookmarksLimit;
 }
 
 void BookmarkDataTypeProcessor::StartTrackingMetadata() {

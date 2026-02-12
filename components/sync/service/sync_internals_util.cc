@@ -410,10 +410,6 @@ base::DictValue ConstructAboutInformation(
       section_local->AddBoolStat("Local Sync Backend Enabled");
   Stat<std::string>* local_backend_path =
       section_local->AddStringStat("Local Backend Path");
-  // TODO(crbug.com/454302754) Remove this once the experiment for determining a
-  // new permanent bookmark limit has finished.
-  Stat<std::string>* bookmarks_limit =
-      section_local->AddStringStat("Bookmarks Limit");
 
   Section* section_network =
       section_list.AddSection("Network", /*is_sensitive=*/false);
@@ -573,7 +569,6 @@ base::DictValue ConstructAboutInformation(
   if (is_local_sync_enabled_state && is_status_valid) {
     local_backend_path->Set(full_status.local_sync_folder);
   }
-  bookmarks_limit->Set(base::NumberToString(kSyncBookmarksLimitValue.Get()));
 
   // Network.
   if (snapshot.is_initialized()) {

@@ -101,7 +101,7 @@ NSString* GetActionSheetCoordinatorMessage(
                                   kBookmarksLimitExceeded) {
         return l10n_util::GetNSStringF(
             IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_BOOKMARKS_LIMIT_EXCEEDED,
-            base::FormatNumber(syncer::kSyncBookmarksLimitValue.Get()));
+            base::FormatNumber(syncer::kSyncBookmarksLimit));
       }
 
       return l10n_util::GetNSString(

@@ -92,7 +92,7 @@ std::string ComputeDialogSubtitle(
     case ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks:
       return l10n_util::GetStringFUTF8(
           IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_TOO_MANY_BOOKMARKS_BODY,
-          base::FormatNumber(syncer::kSyncBookmarksLimitValue.Get()));
+          base::FormatNumber(syncer::kSyncBookmarksLimit));
     default:
       NOTREACHED();
   }
