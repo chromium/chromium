@@ -387,6 +387,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreMostRecentlyClosedWindow) {
   tab_list2->OpenTab(GURL("about:blank"), /*index=*/-1);
   ASSERT_EQ(2, tab_list2->GetTabCount());
 
+  // Pin and activate the first tab so its metadata has non-default values.
+  tabs::TabHandle tab_handle = tab_list2->GetTab(0)->GetHandle();
+  tab_list2->PinTab(tab_handle);
+  tab_list2->ActivateTab(tab_handle);
+  ASSERT_TRUE(tab_list2->GetTab(0)->IsPinned());
+  ASSERT_TRUE(tab_list2->GetTab(0)->IsActivated());
+
   // Navigate the tabs, otherwise window close does not persist it in the tab
   // restore service.
   content::WebContents* contents0 = tab_list2->GetTab(0)->GetContents();
@@ -421,22 +428,26 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreMostRecentlyClosedWindow) {
   ASSERT_TRUE(tabs);
   EXPECT_EQ(2u, tabs->size());
 
+  const base::DictValue* tab0 = (*tabs)[0].GetIfDict();
+  const base::DictValue* tab1 = (*tabs)[1].GetIfDict();
+  ASSERT_TRUE(tab0);
+  ASSERT_TRUE(tab1);
 #if !BUILDFLAG(IS_ANDROID)
   // The tab URLs are chrome://version/ and chrome://credits/.
   // NOTE: On Android, the tabs are still navigating when the return value of
   // the API function is computed, so the "committed" URLs used by the API are
   // not available. However, we verify the loading URLs below in the test.
-  const base::DictValue* tab0 = (*tabs)[0].GetIfDict();
-  const base::DictValue* tab1 = (*tabs)[1].GetIfDict();
-  ASSERT_TRUE(tab0);
-  ASSERT_TRUE(tab1);
-  const std::string* url0 = tab0->FindString("url");
-  const std::string* url1 = tab1->FindString("url");
-  ASSERT_TRUE(url0);
-  ASSERT_TRUE(url1);
-  EXPECT_EQ("chrome://version/", *url0);
-  EXPECT_EQ("chrome://credits/", *url1);
+  EXPECT_EQ("chrome://version/", api_test_utils::GetString(*tab0, "url"));
+  EXPECT_EQ("chrome://credits/", api_test_utils::GetString(*tab1, "url"));
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // The first tab is pinned and active.
+  EXPECT_TRUE(api_test_utils::GetBoolean(*tab0, "pinned"));
+  EXPECT_TRUE(api_test_utils::GetBoolean(*tab0, "active"));
+
+  // The second tab is not pinned and not active.
+  EXPECT_FALSE(api_test_utils::GetBoolean(*tab1, "pinned"));
+  EXPECT_FALSE(api_test_utils::GetBoolean(*tab1, "active"));
 
   // Wait for the browser to be created (it may be asynchronous).
   BrowserWindowInterface* browser3 = browser_waiter.Wait();
@@ -450,6 +461,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreMostRecentlyClosedWindow) {
             tab_list3->GetTab(0)->GetContents()->GetVisibleURL());
   EXPECT_EQ(GURL("chrome://credits/"),
             tab_list3->GetTab(1)->GetContents()->GetVisibleURL());
+
+  // The first tab is pinned and active.
+  EXPECT_TRUE(tab_list3->GetTab(0)->IsPinned());
+  EXPECT_TRUE(tab_list3->GetTab(0)->IsActivated());
+
+  // The second tab is not pinned and not active.
+  EXPECT_FALSE(tab_list3->GetTab(1)->IsPinned());
+  EXPECT_FALSE(tab_list3->GetTab(1)->IsActivated());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreForeignSessionWindow) {

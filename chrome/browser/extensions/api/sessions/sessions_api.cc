@@ -221,6 +221,22 @@ BrowserWindowInterface* FindBrowserWindowInterfaceWithProfile(
   return nullptr;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Updates tab properties for `new_tab` in `new_tab_list` using data from
+// `saved_tab`. There aren't many properties to update because properties like
+// URL, title, favicon, etc. come from loading the page in the tab.
+void UpdateTabState(TabAndroid* saved_tab,
+                    TabListInterface* new_tab_list,
+                    tabs::TabHandle new_tab) {
+  if (saved_tab->IsPinned()) {
+    new_tab_list->PinTab(new_tab);
+  }
+  if (saved_tab->IsActivated()) {
+    new_tab_list->ActivateTab(new_tab);
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 SessionsGetRecentlyClosedFunction::SessionsGetRecentlyClosedFunction() =
@@ -750,7 +766,6 @@ void SessionsRestoreFunction::OnBrowserWindowCreated(
 
   // New Android browser windows start with one tab open already. Load the first
   // URL into that tab's WebContents.
-  // TODO(crbug.com/405219627): Include pinned state, etc.
   CHECK_EQ(new_tab_list->GetTabCount(), 1);
   content::WebContents* first_contents = new_tab_list->GetTab(0)->GetContents();
   CHECK(first_contents);
@@ -767,11 +782,18 @@ void SessionsRestoreFunction::OnBrowserWindowCreated(
   }
 
   // Create new tabs for the rest of the saved tabs.
-  // TODO(crbug.com/405219627): Include pinned state, etc.
   for (int i = 1; i < saved_tab_model->GetTabCount(); ++i) {
     TabAndroid* saved_tab = saved_tab_model->GetTabAt(i);
     CHECK(saved_tab);
     new_tab_list->OpenTab(saved_tab->GetURL(), i);
+  }
+
+  // Update tab state like pinned and active in a separate loop because loading
+  // new tabs may change activation state.
+  for (int i = 0; i < saved_tab_model->GetTabCount(); ++i) {
+    TabAndroid* saved_tab = saved_tab_model->GetTabAt(i);
+    tabs::TabHandle new_tab_handle = new_tab_list->GetTab(i)->GetHandle();
+    UpdateTabState(saved_tab, new_tab_list, new_tab_handle);
   }
 
   // Respond to the API. Note that the tabs have not yet finished loading, so
