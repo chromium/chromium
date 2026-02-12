@@ -52,6 +52,8 @@ BASE_DECLARE_FEATURE(kGlicHibernateAllOnMemoryPressure);
 
 BASE_DECLARE_FEATURE(kGlicHibernateOnMemoryUsage);
 
+BASE_DECLARE_FEATURE(kGlicMaxAwakeInstances);
+
 // An interface to GlicInstanceCoordinatorImpl. Should be used instead of direct
 // access to GlicInstanceCoordinatorImpl to allow for test fakes.
 class GlicInstanceCoordinator : public GlicWindowController {};
@@ -209,6 +211,7 @@ class GlicInstanceCoordinatorImpl
 
   void OnMemoryPressure(base::MemoryPressureLevel level) override;
   void CheckMemoryUsage();
+  void ApplyMaxAwakeInstancesLimit();
 
   void RemoveInstance(GlicInstanceImpl* instance) override;
 

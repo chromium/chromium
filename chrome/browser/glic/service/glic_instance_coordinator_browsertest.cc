@@ -723,4 +723,49 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 #endif
 }
 
+class GlicInstanceCoordinatorHibernationTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  GlicInstanceCoordinatorHibernationTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(kGlicMaxAwakeInstances,
+                                                     {{"limit", "2"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorHibernationTest,
+                       InstanceAwakeLimit) {
+  // Create 4 instances when limit is 2.
+  auto* instance1 = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance1);
+  CreateAndActivateTab(GURL("about:blank"));
+  auto* instance2 = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance2);
+  CreateAndActivateTab(GURL("about:blank"));
+  auto* instance3 = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance3);
+  CreateAndActivateTab(GURL("about:blank"));
+  auto* instance4 = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance4);
+
+  // We should have 4 instances, only the most recent 2 should be unhibernated.
+  EXPECT_TRUE(instance1->IsHibernated());
+  EXPECT_TRUE(instance2->IsHibernated());
+  EXPECT_FALSE(instance3->IsHibernated());
+  EXPECT_FALSE(instance4->IsHibernated());
+
+  // Create a 5th instance. This should hibernate instance 3.
+  CreateAndActivateTab(GURL("about:blank"));
+  auto* instance5 = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance5);
+
+  EXPECT_TRUE(instance1->IsHibernated());
+  EXPECT_TRUE(instance2->IsHibernated());
+  EXPECT_TRUE(instance3->IsHibernated());
+  EXPECT_FALSE(instance4->IsHibernated());
+  EXPECT_FALSE(instance5->IsHibernated());
+}
+
 }  // namespace glic

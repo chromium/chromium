@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 
 #include <algorithm>
+#include <cstdint>
 
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -92,6 +93,10 @@ BASE_FEATURE(kGlicHibernateAllOnMemoryPressure,
              base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<bool> kGlicHibernateAllAggressive{
     &kGlicHibernateAllOnMemoryPressure, "aggressive", false};
+
+BASE_FEATURE(kGlicMaxAwakeInstances, base::FEATURE_ENABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int> kGlicMaxAwakeInstancesLimit{
+    &kGlicMaxAwakeInstances, "limit", 15};
 
 // TODO(refactor): Remove after launching kGlicMultiInstance.
 HostManager& GlicInstanceCoordinatorImpl::host_manager() {
@@ -463,8 +468,49 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplFor(
   return nullptr;
 }
 
+void GlicInstanceCoordinatorImpl::ApplyMaxAwakeInstancesLimit() {
+  if (base::FeatureList::IsEnabled(kGlicMaxAwakeInstances)) {
+    size_t awake_count = 0;
+    for (const auto& [id, instance] : instances_) {
+      if (!instance->IsHibernated()) {
+        awake_count++;
+      }
+    }
+
+    const size_t limit = kGlicMaxAwakeInstancesLimit.Get();
+    if (awake_count < limit) {
+      return;
+    }
+
+    std::vector<GlicInstanceImpl*> hibernatable_instances;
+    for (auto& [id, instance] : instances_) {
+      if (!instance->IsHibernated() && !instance->IsActuating()) {
+        hibernatable_instances.push_back(instance.get());
+      }
+    }
+
+    // Sort candidates by last activation time (ascending = oldest first).
+    std::sort(hibernatable_instances.begin(), hibernatable_instances.end(),
+              [](const GlicInstanceImpl* a, const GlicInstanceImpl* b) {
+                return a->GetLastActivationTimestamp() <
+                       b->GetLastActivationTimestamp();
+              });
+
+    // Hibernate until we reach `limit - 1`.
+    int target_count = limit - 1;
+    size_t excess_count = awake_count - target_count;
+
+    for (size_t i = 0; i < excess_count && i < hibernatable_instances.size();
+         ++i) {
+      hibernatable_instances[i]->Hibernate();
+    }
+  }
+}
+
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::CreateGlicInstance(
     std::optional<InstanceId> instance_id) {
+  ApplyMaxAwakeInstancesLimit();
+
   if (!base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
     if (!warmed_instance_) {
       CreateWarmedInstance();
