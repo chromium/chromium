@@ -259,12 +259,6 @@ WarmUpType ClassifyIntoWarmUpType(content::BrowserContext* current_context,
   }
 }
 
-BASE_FEATURE(kRecordPrenavigationLatency, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsPrenavigationLatencyEnabled() {
-  return base::FeatureList::IsEnabled(kRecordPrenavigationLatency);
-}
-
 bool IsNavigationFromNewTabPage(
     GWSPageLoadMetricsObserver::NavigationSourceType type) {
   switch (type) {
@@ -699,8 +693,7 @@ void GWSPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
       body_chunk_start_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsBodyChunkEndMarkName) {
       record_histogram(internal::kHistogramGWSBodyChunkEnd, timing);
-    } else if (IsPrenavigationLatencyEnabled() &&
-               mark->mark_name == internal::kGwsSGLMarkName) {
+    } else if (mark->mark_name == internal::kGwsSGLMarkName) {
       // Because this is a performance mark for previous navigation, we should
       // not correct the timing for prerender activation, or else we would get
       // inconsistent timing.
@@ -751,7 +744,7 @@ void GWSPageLoadMetricsObserver::LogMetricsOnComplete() {
     return;
   }
 
-  if (IsPrenavigationLatencyEnabled() && aft_end_time_.has_value()) {
+  if (aft_end_time_.has_value()) {
     // There are multiple patterns to record the prenavigation latency events:
     // - For non prerendering cases: If we have prenavigation latency, we should
     // add them to the AFT performance mark to get the total latency.
