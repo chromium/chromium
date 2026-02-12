@@ -758,10 +758,9 @@ CanvasNon2DResourceProviderSharedImage::BeginExternalWrite(
   // resource.
   EndWriteAccess();
 
+  // NOTE: Invoking WillDrawInternal() ensures that this invocation of
+  // EndAccess() will generate a new sync token.
   auto access = WillDrawInternal();
-
-  // NOTE: The above invocation of WillDrawInternal() ensures that this
-  // invocation of EndAccess() will generate a new sync token.
   resource_->EndAccess(std::move(access));
   internal_access_sync_token = resource_->sync_token();
   return resource_->GetClientSharedImage();
