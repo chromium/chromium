@@ -725,10 +725,41 @@ mitigations within the browser. For users, the very marginal security benefit is
 not usually a good trade-off for the compatibility issues and performance
 degradation the toolkit can cause.
 
-<a name="TOC-dangling-pointers"></a>
-### Dangling pointers
+<a name="TOC-Are-MiraclePtr-protected-use-after-frees-security-bugs-"></a>
+### Are MiraclePtr protected use-after-frees security bugs?
 
-Chromium can be instrumented to detect [dangling
+No. ["MiraclePtr"](https://chromium.googlesource.com/chromium/src/+/main/base/memory/raw_ptr.md)
+is a technology designed to deterministically prevent exploitation of
+use-after-free bugs. Address sanitizer is aware of MiraclePtr and will report
+on whether a given use-after-free bug is protected or not:
+
+```
+
+MiraclePtr Status: PROTECTED
+The crash occurred while a raw_ptr<T> object containing a dangling pointer was being dereferenced.
+MiraclePtr should make this crash non-exploitable in regular builds.
+
+```
+
+or
+
+```
+
+MiraclePtr Status: NOT PROTECTED
+No raw_ptr<T> access to this region was detected prior to the crash.
+
+```
+
+Only the NOT PROTECTED case indicates an actual security bug, hence reports
+need to include this section of the ASAN trace showing the MiraclePtr status.
+
+Note that we are interested in the PROTECTED case as well, but these will be
+treated as functional bugs.
+
+<a name="TOC-Are-detected-dangling-pointers-security-bugs-"></a>
+### Are detected dangling pointers security bugs?
+
+No. Chromium can be instrumented to detect [dangling
 pointers](https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr.md):
 
 Notable build flags are:
@@ -739,14 +770,15 @@ Notable runtime flags are:
 - `--enable-features=PartitionAllocDanglingPtr`
 
 It is important to note that detecting a dangling pointer alone does not
-necessarily indicate a security vulnerability. A dangling pointer becomes a
-security vulnerability only when it is dereferenced and used after it becomes
-dangling.
+indicate a security vulnerability. A dangling pointer becomes a security
+vulnerability only when it is dereferenced and used after it becomes dangling.
+Reports are considered vulnerabilities only when there is a demonstrable way
+to show a memory corruption. e.g. a POC causing a crash with ASAN
+**without the flags above**.
 
-In general, dangling pointer issues should be assigned to feature teams as
-ordinary bugs and be fixed by them. However, they can be considered only if
-there is a demonstrable way to show a memory corruption. e.g. with a POC causing
-crash with ASAN **without the flags above**.
+Note that we are interested in dangling pointer findings as well, but these
+will be treated as functional bugs and assigned to feature teams to be fixed
+in the same manner as other functional bugs.
 
 <a name="TOC-hard-coded-lists"></a>
 ### My domain is on the [Public Suffix List / HSTS preload list / etc.] upstream but this is not yet reflected in Chrome! Is this a security bug?
