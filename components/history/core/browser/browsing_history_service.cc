@@ -535,6 +535,55 @@ bool BrowsingHistoryService::ShouldQueryRemote(const QueryHistoryState& state) {
 }
 
 // static
+void BrowsingHistoryService::HoldbackAndPartitionResults(
+    QueryHistoryState* state,
+    const base::Time oldest_local,
+    const base::Time oldest_remote,
+    std::vector<HistoryEntry>* results) {
+  // If the beginning of either source was not reached, that means there are
+  // more results from that source, and the other source needs to have its data
+  // held back until the former source catches up. This only sends the UI
+  // history entries in the correct order. Subsequent continuation requests will
+  // get the delayed entries.
+  base::Time oldest_allowed = base::Time();
+  if (state->local_status == MORE_RESULTS) {
+    oldest_allowed = std::max(oldest_allowed, oldest_local);
+    state->local_end_time_for_continuation = oldest_local;
+  }
+  if (state->remote_status == MORE_RESULTS) {
+    oldest_allowed = std::max(oldest_allowed, oldest_remote);
+    state->remote_end_time_for_continuation = oldest_remote;
+  } else if (CanRetry(state->remote_status) && oldest_local != base::Time()) {
+    // TODO(skym): It is unclear if this is the best behavior. The UI is going
+    // to behave incorrectly if out of order results are received. So to
+    // guarantee that doesn't happen, use `oldest_local` for continuation
+    // calls. This will result in missing history entries for the failed calls.
+    // crbug.com/685866 is related to this problem.
+    state->remote_end_time_for_continuation = oldest_local;
+  }
+
+  HistoryEntry search_entry;
+  search_entry.time = oldest_allowed;
+  auto threshold_iter =
+      std::upper_bound(results->begin(), results->end(), search_entry,
+                       HistoryEntry::SortByTimeDescending);
+
+  // Everything from threshold_iter to results->end() should either be all local
+  // or all remote, never a mix.
+  if (threshold_iter != results->end()) {
+    if (threshold_iter->entry_type == HistoryEntry::LOCAL_ENTRY) {
+      state->local_results.assign(std::make_move_iterator(threshold_iter),
+                                  std::make_move_iterator(results->end()));
+    } else if (threshold_iter->entry_type == HistoryEntry::REMOTE_ENTRY) {
+      state->remote_results.assign(std::make_move_iterator(threshold_iter),
+                                   std::make_move_iterator(results->end()));
+    } else {
+      NOTREACHED();
+    }
+    results->erase(threshold_iter, results->end());
+  }
+}
+
 void BrowsingHistoryService::MergeDuplicateResults(
     QueryHistoryState* state,
     std::vector<HistoryEntry>* results) {
@@ -620,52 +669,110 @@ void BrowsingHistoryService::MergeDuplicateResults(
       // Aggregate visit and typed counts.
       matching_entry->visit_count += entry.visit_count;
       matching_entry->typed_count += entry.typed_count;
+
+      // TODO(crbug.com/481934455): Aggregate all relevant HistoryEntry fields
+      // for combined entries.
     }
   }
 
-  // If the beginning of either source was not reached, that means there are
-  // more results from that source, and the other source needs to have its data
-  // held back until the former source catches up. This only sends the UI
-  // history entries in the correct order. Subsequent continuation requests will
-  // get the delayed entries.
-  base::Time oldest_allowed = base::Time();
-  if (state->local_status == MORE_RESULTS) {
-    oldest_allowed = std::max(oldest_allowed, oldest_local);
-    state->local_end_time_for_continuation = oldest_local;
-  }
-  if (state->remote_status == MORE_RESULTS) {
-    oldest_allowed = std::max(oldest_allowed, oldest_remote);
-    state->remote_end_time_for_continuation = oldest_remote;
-  } else if (CanRetry(state->remote_status)) {
-    // TODO(skym): It is unclear if this is the best behavior. The UI is going
-    // to behave incorrectly if out of order results are received. So to
-    // guarantee that doesn't happen, use `oldest_local` for continuation
-    // calls. This will result in missing history entries for the failed calls.
-    // crbug.com/685866 is related to this problem.
-    state->remote_end_time_for_continuation = oldest_local;
-  }
-
-  HistoryEntry search_entry;
-  search_entry.time = oldest_allowed;
-  auto threshold_iter =
-      std::upper_bound(deduped.begin(), deduped.end(), search_entry,
-                       HistoryEntry::SortByTimeDescending);
-
-  // Everything from threshold_iter to deduped.end() should either be all local
-  // or all remote, never a mix.
-  if (threshold_iter != deduped.end()) {
-    if (threshold_iter->entry_type == HistoryEntry::LOCAL_ENTRY) {
-      state->local_results.assign(std::make_move_iterator(threshold_iter),
-                                  std::make_move_iterator(deduped.end()));
-    } else if (threshold_iter->entry_type == HistoryEntry::REMOTE_ENTRY) {
-      state->remote_results.assign(std::make_move_iterator(threshold_iter),
-                                   std::make_move_iterator(deduped.end()));
-    } else {
-      NOTREACHED();
-    }
-    deduped.erase(threshold_iter, deduped.end());
-  }
+  HoldbackAndPartitionResults(state, oldest_local, oldest_remote, &deduped);
   *results = std::move(deduped);
+}
+
+std::vector<BrowsingHistoryService::HistoryEntry>
+BrowsingHistoryService::GroupSimilarVisits(QueryHistoryState* state) {
+  CHECK(state);
+
+  // Will be used later to decide if we need to hold back results. This iterates
+  // through each entry and makes no assumptions about their ordering.
+  base::Time oldest_local = OldestTime(state->local_results);
+  base::Time oldest_remote = OldestTime(state->remote_results);
+
+  std::vector<HistoryEntry> sorted;
+  sorted.assign(std::make_move_iterator(state->local_results.begin()),
+                std::make_move_iterator(state->local_results.end()));
+  state->local_results.clear();
+  sorted.insert(sorted.end(),
+                std::make_move_iterator(state->remote_results.begin()),
+                std::make_move_iterator(state->remote_results.end()));
+  state->remote_results.clear();
+  std::sort(sorted.begin(), sorted.end(), HistoryEntry::SortByTimeDescending);
+
+  // Pre-reserve the size of the new vector. Since we're working with pointers
+  // later on, not doing this could lead to the vector being resized and to
+  // pointers to invalid locations.
+  std::vector<HistoryEntry> grouped;
+  grouped.reserve(sorted.size());
+  // The GroupingKey consists of a pair of hostname and title.
+  using GroupingKey = std::pair<std::string, std::u16string>;
+
+  // Maps the GroupingKey to the most recent entry on a particular day for
+  // non-actor-initiated visits.
+  std::map<GroupingKey, HistoryEntry*> non_actor_current_day_entries;
+  // Same as above, but for actor-initiated visits.
+  std::map<GroupingKey, HistoryEntry*> actor_current_day_entries;
+
+  // Keeps track of the day that `*_current_day_entries` is holding
+  // entries for in order to handle per-day grouping.
+  base::Time current_day_midnight;
+
+  for (HistoryEntry& entry : sorted) {
+    // Reset the list of found entries when a visit from a new day is
+    // encountered.
+    if (current_day_midnight != entry.time.LocalMidnight()) {
+      non_actor_current_day_entries.clear();
+      actor_current_day_entries.clear();
+      current_day_midnight = entry.time.LocalMidnight();
+    }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    auto& current_day_entries =
+        history::IsBrowsingHistoryActorIntegrationM2Enabled() &&
+                entry.is_actor_visit
+            ? actor_current_day_entries
+            : non_actor_current_day_entries;
+#else   // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    auto& current_day_entries = non_actor_current_day_entries;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+    // TODO(b/481272035): Use the domain name that matches the displayed domain
+    // name in the UI.
+    GroupingKey key(entry.url.GetHost(), entry.title);
+    // Keep this visit if it's the first visit of it's kind on the current day.
+    if (current_day_entries.find(key) == current_day_entries.end()) {
+      grouped.push_back(std::move(entry));
+      current_day_entries[key] = &grouped.back();
+    } else {
+      HistoryEntry* matching_entry = current_day_entries[key];
+
+      // Merge all timestamps from the current entry into the matching entry.
+      // This ensures all visits for similar URLs on the same day are tracked.
+      for (const auto& [url, timestamps] : entry.all_timestamps) {
+        matching_entry->all_timestamps[url].insert(timestamps.begin(),
+                                                   timestamps.end());
+      }
+
+      if (matching_entry->entry_type != entry.entry_type) {
+        matching_entry->entry_type = HistoryEntry::COMBINED_ENTRY;
+      }
+
+      // Get first non-empty remote icon url.
+      if (matching_entry->remote_icon_url_for_uma.is_empty() &&
+          !entry.remote_icon_url_for_uma.is_empty()) {
+        matching_entry->remote_icon_url_for_uma = entry.remote_icon_url_for_uma;
+      }
+
+      // Aggregate visit and typed counts.
+      matching_entry->visit_count += entry.visit_count;
+      matching_entry->typed_count += entry.typed_count;
+
+      // TODO(b/482947398): Aggregate all relevant HistoryEntry fields for
+      // combined entries.
+    }
+  }
+
+  HoldbackAndPartitionResults(state, oldest_local, oldest_remote, &grouped);
+  return grouped;
 }
 
 void BrowsingHistoryService::QueryComplete(
@@ -723,26 +830,35 @@ void BrowsingHistoryService::OnGetAllAppIds(GetAllAppIdsResult result) {
 void BrowsingHistoryService::ReturnResultsToDriver(
     scoped_refptr<QueryHistoryState> state) {
   std::vector<HistoryEntry> results;
+  bool has_remote_results = !state->remote_results.empty();
+  bool group_visits = false;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  group_visits =
+      base::FeatureList::IsEnabled(kBrowsingHistorySimilarVisitsGrouping);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-  // Always merge remote results, because Web History does not deduplicate.
-  // Local history should be using per-query deduplication, but if we are in a
-  // continuation, it's possible that we have carried over pending entries along
-  // with new results, and these two sets may contain duplicates. Assuming every
-  // call to Web History is successful, we shouldn't be able to have empty sync
-  // results at the same time as we have pending local.
-  bool has_remote_results = false;
-  if (!state->remote_results.empty()) {
-    has_remote_results = true;
-    MergeDuplicateResults(state.get(), &results);
+  if (group_visits) {
+    results = GroupSimilarVisits(state.get());
   } else {
-    // TODO(skym): Is the optimization to skip merge on local only results worth
-    // the complexity increase here?
-    if (state->local_status == MORE_RESULTS && !state->local_results.empty()) {
-      state->local_end_time_for_continuation =
-          state->local_results.rbegin()->time;
+    // Always merge remote results, because Web History does not deduplicate.
+    // Local history should be using per-query deduplication, but if we are in a
+    // continuation, it's possible that we have carried over pending entries
+    // along with new results, and these two sets may contain duplicates.
+    // Assuming every call to Web History is successful, we shouldn't be able
+    // to have empty sync results at the same time as we have pending local.
+    if (has_remote_results) {
+      MergeDuplicateResults(state.get(), &results);
+    } else {
+      // TODO(skym): Is the optimization to skip merge on local only results
+      // worth the complexity increase here?
+      if (state->local_status == MORE_RESULTS &&
+          !state->local_results.empty()) {
+        state->local_end_time_for_continuation =
+            state->local_results.rbegin()->time;
+      }
+      results = std::move(state->local_results);
+      state->local_results.clear();
     }
-    results = std::move(state->local_results);
-    state->local_results.clear();
   }
 
   RecordResultsMetrics(results, has_remote_results);
