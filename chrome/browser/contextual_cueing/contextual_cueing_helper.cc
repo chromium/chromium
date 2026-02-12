@@ -401,6 +401,31 @@ void ContextualCueingHelper::OnCueingDecision(
     return;
   }
 
+  // Handle side panel auto-open case: bypass nudge and open panel directly.
+  // If auto-open fails or is disabled, falls through to standard nudge.
+  const bool should_open_side_panel =
+      decision_result->auto_open_eligible &&
+      base::FeatureList::IsEnabled(kEnableAutoOpenGlicSidePanel);
+
+  if (should_open_side_panel) {
+    auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents());
+    auto* browser_window_interface = tab_interface->GetBrowserWindowInterface();
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    auto* glic_service =
+        glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+    if (glic_service && browser_window_interface) {
+      glic_service->ToggleUI(
+          browser_window_interface,
+          /*prevent_close=*/true,
+          glic::mojom::InvocationSource::kAutoOpenedByContextualCue,
+          prompt_suggestion.empty() ? std::nullopt
+                                    : std::make_optional(prompt_suggestion));
+      return;
+    }
+    // Fall through to nudge if side panel open fails.
+  }
+
   GetGlicNudgeController()->UpdateNudgeLabel(
       web_contents(), cue_label,
       prompt_suggestion.empty() ? std::nullopt

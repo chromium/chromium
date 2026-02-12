@@ -13,6 +13,7 @@ namespace contextual_cueing {
 BASE_DECLARE_FEATURE(kContextualCueing);
 BASE_DECLARE_FEATURE(kGlicZeroStateSuggestions);
 BASE_DECLARE_FEATURE(kZeroStateSuggestionsUseLegion);
+BASE_DECLARE_FEATURE(kEnableAutoOpenGlicSidePanel);
 
 // Whether contextual cueing is enabled.
 //
@@ -95,6 +96,7 @@ extern const base::FeatureParam<int> kMaxPinnedPagesForTriggeringSuggestions;
 
 // Timeout before giving up on getting context from a page.
 extern const base::FeatureParam<base::TimeDelta> kZSSPageContextTimeout;
+
 }  // namespace contextual_cueing
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_FEATURES_H_

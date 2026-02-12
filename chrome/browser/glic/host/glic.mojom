@@ -1317,6 +1317,8 @@ enum InvocationSource {
   [MinVersion=6] kHandoffButton = 14,
   // From invoking skills.
   [MinVersion=7] kSkills = 15,
+  // Automatically opened from contextual cueing.
+  [MinVersion=8] kAutoOpenedByContextualCue = 16,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/glic_metrics.h:ResponseSegmentation)
