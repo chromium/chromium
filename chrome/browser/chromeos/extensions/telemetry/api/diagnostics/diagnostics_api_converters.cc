@@ -388,28 +388,28 @@ cx_diag::UserMessageType ConvertRoutineUserMessage(
   NOTREACHED();
 }
 
-crosapi::DiagnosticsDiskReadRoutineTypeEnum ConvertDiskReadRoutineType(
+ash::cros_healthd::mojom::DiskReadRoutineTypeEnum ConvertDiskReadRoutineType(
     cx_diag::DiskReadRoutineType routineType) {
   switch (routineType) {
     case cx_diag::DiskReadRoutineType::kLinear:
-      return crosapi::DiagnosticsDiskReadRoutineTypeEnum::kLinearRead;
+      return ash::cros_healthd::mojom::DiskReadRoutineTypeEnum::kLinearRead;
     case cx_diag::DiskReadRoutineType::kRandom:
-      return crosapi::DiagnosticsDiskReadRoutineTypeEnum::kRandomRead;
+      return ash::cros_healthd::mojom::DiskReadRoutineTypeEnum::kRandomRead;
     case cx_diag::DiskReadRoutineType::kNone:
       break;
   }
   NOTREACHED();
 }
 
-crosapi::DiagnosticsNvmeSelfTestTypeEnum ConvertNvmeSelfTestRoutineType(
+ash::cros_healthd::mojom::NvmeSelfTestTypeEnum ConvertNvmeSelfTestRoutineType(
     cx_diag::RunNvmeSelfTestRequest routine_type) {
   switch (routine_type.test_type) {
     case cx_diag::NvmeSelfTestType::kNone:
-      return crosapi::DiagnosticsNvmeSelfTestTypeEnum::kUnknown;
+      return ash::cros_healthd::mojom::NvmeSelfTestTypeEnum::kUnknown;
     case cx_diag::NvmeSelfTestType::kShortTest:
-      return crosapi::DiagnosticsNvmeSelfTestTypeEnum::kShortSelfTest;
+      return ash::cros_healthd::mojom::NvmeSelfTestTypeEnum::kShortSelfTest;
     case cx_diag::NvmeSelfTestType::kLongTest:
-      return crosapi::DiagnosticsNvmeSelfTestTypeEnum::kLongSelfTest;
+      return ash::cros_healthd::mojom::NvmeSelfTestTypeEnum::kLongSelfTest;
   }
   NOTREACHED();
 }

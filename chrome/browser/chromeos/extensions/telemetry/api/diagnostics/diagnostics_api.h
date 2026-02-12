@@ -87,8 +87,6 @@ class OsDiagnosticsGetRoutineUpdateFunction
 
 class DiagnosticsApiRunRoutineFunctionBase : public DiagnosticsApiFunctionBase {
  public:
-  // OnResult is gradually getting replaced by OnResponse.
-  void OnResult(crosapi::mojom::DiagnosticsRunRoutineResponsePtr ptr);
   void OnResponse(ash::cros_healthd::mojom::RunRoutineResponsePtr ptr);
 
  protected:
@@ -96,8 +94,6 @@ class DiagnosticsApiRunRoutineFunctionBase : public DiagnosticsApiFunctionBase {
 
   // Returns a callback that resolves the corresponding JavaScript call with
   // the response passed to the callback.
-  base::OnceCallback<void(crosapi::mojom::DiagnosticsRunRoutineResponsePtr)>
-  GetOnResult();
   base::OnceCallback<void(ash::cros_healthd::mojom::RunRoutineResponsePtr)>
   GetOnResponse();
 };

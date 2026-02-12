@@ -56,19 +56,6 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
                         crosapi::mojom::DiagnosticsRoutineCommandEnum command,
                         bool include_output,
                         GetRoutineUpdateCallback callback) override;
-  void RunDiskReadRoutine(
-      crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum type,
-      uint32_t length_seconds,
-      uint32_t file_size_mb,
-      RunDiskReadRoutineCallback callback) override;
-  void RunNvmeSelfTestRoutine(
-      crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum nvme_self_test_type,
-      RunNvmeSelfTestRoutineCallback callback) override;
-  void RunPrimeSearchRoutine(uint32_t length_seconds,
-                             RunPrimeSearchRoutineCallback callback) override;
-  void RunSmartctlCheckRoutine(
-      crosapi::mojom::UInt32ValuePtr percentage_used_threshold,
-      RunSmartctlCheckRoutineCallback callback) override;
 
   // Pointer to real implementation.
   mojo::Remote<cros_healthd::mojom::CrosHealthdDiagnosticsService> service_;

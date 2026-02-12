@@ -189,21 +189,6 @@ void OsDiagnosticsGetRoutineUpdateFunction::OnResult(
 
 // DiagnosticsApiRunRoutineFunctionBase ----------------------------------------
 
-void DiagnosticsApiRunRoutineFunctionBase::OnResult(
-    crosapi::mojom::DiagnosticsRunRoutineResponsePtr ptr) {
-  if (!ptr) {
-    // |ptr| should never be null, otherwise Mojo validation will fail.
-    // However it's safer to handle it in case of API changes.
-    Respond(Error("API internal error"));
-    return;
-  }
-
-  cx_diag::RunRoutineResponse result;
-  result.id = ptr->id;
-  result.status = converters::diagnostics::ConvertRoutineStatus(ptr->status);
-  Respond(WithArguments(result.ToValue()));
-}
-
 void DiagnosticsApiRunRoutineFunctionBase::OnResponse(
     ash::cros_healthd::mojom::RunRoutineResponsePtr ptr) {
   if (!ptr) {
@@ -217,11 +202,6 @@ void DiagnosticsApiRunRoutineFunctionBase::OnResponse(
   result.id = ptr->id;
   result.status = converters::diagnostics::ConvertRoutineStatus(ptr->status);
   Respond(WithArguments(result.ToValue()));
-}
-
-base::OnceCallback<void(crosapi::mojom::DiagnosticsRunRoutineResponsePtr)>
-DiagnosticsApiRunRoutineFunctionBase::GetOnResult() {
-  return base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 }
 
 base::OnceCallback<void(ash::cros_healthd::mojom::RunRoutineResponsePtr)>
@@ -378,8 +358,10 @@ void OsDiagnosticsRunCpuPrimeSearchRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  GetRemoteService()->RunPrimeSearchRoutine(params->request.length_seconds,
-                                            GetOnResult());
+  GetService()->RunPrimeSearchRoutine(
+      ash::cros_healthd::mojom::NullableUint32::New(
+          params->request.length_seconds),
+      GetOnResponse());
 }
 
 // OsDiagnosticsRunCpuStressRoutineFunction ------------------------------------
@@ -404,10 +386,10 @@ void OsDiagnosticsRunDiskReadRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  GetRemoteService()->RunDiskReadRoutine(
+  GetService()->RunDiskReadRoutine(
       converters::diagnostics::ConvertDiskReadRoutineType(params->request.type),
       params->request.length_seconds, params->request.file_size_mb,
-      GetOnResult());
+      GetOnResponse());
 }
 
 // OsDiagnosticsRunDnsResolutionRoutineFunction --------------------------------
@@ -460,10 +442,10 @@ void OsDiagnosticsRunNvmeSelfTestRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  GetRemoteService()->RunNvmeSelfTestRoutine(
+  GetService()->RunNvmeSelfTestRoutine(
       converters::diagnostics::ConvertNvmeSelfTestRoutineType(
           std::move(params->request)),
-      GetOnResult());
+      GetOnResponse());
 }
 
 // OsDiagnosticsRunSensitiveSensorRoutineFunction -----------------------------
@@ -484,17 +466,18 @@ void OsDiagnosticsRunSmartctlCheckRoutineFunction::RunIfAllowed() {
   std::optional<cx_diag::RunSmartctlCheckRoutine::Params> params(
       cx_diag::RunSmartctlCheckRoutine::Params::Create(args()));
 
-  crosapi::mojom::UInt32ValuePtr percentage_used;
-  if (params && params->request && params->request->percentage_used_threshold) {
-    percentage_used = crosapi::mojom::UInt32Value::New(
-        params->request->percentage_used_threshold.value());
+  ash::cros_healthd::mojom::NullableUint32Ptr percentage_used;
+  if (params && params->request &&
+      params->request->percentage_used_threshold.has_value()) {
+    percentage_used = ash::cros_healthd::mojom::NullableUint32::New(
+        *params->request->percentage_used_threshold);
   }
 
   // Backwards compatibility: Calling the routine with an null parameter
   // results in the same behaviour as the former `RunSmartctlCheckRoutine`
   // without any parameters.
-  GetRemoteService()->RunSmartctlCheckRoutine(std::move(percentage_used),
-                                              GetOnResult());
+  GetService()->RunSmartctlCheckRoutine(std::move(percentage_used),
+                                        GetOnResponse());
 }
 
 // OsDiagnosticsRunUfsLifetimeRoutineFunction -------------------------------

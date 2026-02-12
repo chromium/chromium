@@ -31,10 +31,10 @@ ash::cros_healthd::mojom::AcPowerStatusEnum ConvertAcPowerStatusRoutineType(
 chromeos::api::os_diagnostics::UserMessageType ConvertRoutineUserMessage(
     crosapi::mojom::DiagnosticsRoutineUserMessageEnum userMessage);
 
-crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum ConvertDiskReadRoutineType(
+ash::cros_healthd::mojom::DiskReadRoutineTypeEnum ConvertDiskReadRoutineType(
     chromeos::api::os_diagnostics::DiskReadRoutineType routineType);
 
-crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum ConvertNvmeSelfTestRoutineType(
+ash::cros_healthd::mojom::NvmeSelfTestTypeEnum ConvertNvmeSelfTestRoutineType(
     chromeos::api::os_diagnostics::RunNvmeSelfTestRequest routineType);
 
 crosapi::mojom::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType

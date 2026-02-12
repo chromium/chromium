@@ -47,93 +47,15 @@ interface DiagnosticsService {
 
   // RunBatteryCapacityRoutine@2 was removed.
   // RunBatteryHealthRoutine@3 was removed.
-
-  // Requests that the SmartctlCheck routine is created and started on the
-  // platform. This routine passes iff a NVMe drive's:
-  // 1. Critical Warning == 0x00 (no warning)
-  // 2. Available Spare >= Available Spare Threshold
-  // 3. Percentage Used <= Percentage Used Threshold (from request)
-  // In addition, above values are also returned in the output.
-  // The availability of this routine can be determined by checking that
-  // kSmartctlCheck (without |percentage_used_threshold|) or
-  // kSmartctlCheckWithPercentageUsed (with |percentage_used_threshold|) is
-  // returned by GetAvailableRoutines.
-  //
-  // The request:
-  // * |percentage_used_threshold| - an optional threshold number in percentage,
-  //                                 range [0, 255] inclusive, that the routine
-  //                                 examines `percentage_used` against. If not
-  //                                 specified, the routine will default to the
-  //                                 max allowed value (255).
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  RunSmartctlCheckRoutine@4([MinVersion=1] UInt32Value?
-      percentage_used_threshold) => (DiagnosticsRunRoutineResponse response);
-
+  // RunSmartctlCheckRoutine@4 was removed.
   // RunAcPowerRoutine@5 was removed.
   // RunCpuCacheRoutine@6 was removed.
   // RunCpuStressRoutine@7 was removed.
   // RunFloatingPointAccuracyRoutine@8 was removed.
   // DEPRECATED_RunNvmeWearLevelRoutine@9 was removed.
-
-  // Requests that the NvmeSelfTest routine is created and started on the
-  // platform. This routine launches the NVMe self-test, a tool to perform
-  // necessary tests to observe the performance and the parameters.
-  // The availability of this routine can be determined by checking that
-  // kNvmeSelfTest is returned by GetAvailableRoutines.
-  //
-  // The request:
-  // * |nvme_self_test_type| - specifies the type of test for short period or
-  //                           extended version.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  RunNvmeSelfTestRoutine@10(DiagnosticsNvmeSelfTestTypeEnum nvme_self_test_type)
-      => (DiagnosticsRunRoutineResponse response);
-
-  // Requests that the DiskRead routine is created and started on the platform.
-  // The routine will create a test file with md5 checksum, read the test file
-  // either randomly or linearly, repeatedly for a dedicated duration. If the
-  // md5 checksum of read back is validated, then the test will pass.
-  // The availability of this routine can be determined by checking that
-  // kDiskRead is returned by GetAvailableRoutines.
-  //
-  // The request:
-  // * |type| - type of how disk reading is performed, either linear or random.
-  //
-  // * |length_seconds| - length of time, in seconds, to run the DiskRead
-  //                      routine for. This parameter needs to be strictly
-  //                      greater than zero.
-  //                    - TODO(b:167963397) - limit routine duration.
-  // * |file_size_mb| - test file size, in mega bytes, to test with DiskRead
-  //                    routine. Maximum file size is 10 GB.
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  RunDiskReadRoutine@11(DiagnosticsDiskReadRoutineTypeEnum type,
-                    uint32 length_seconds, uint32 file_size_mb)
-      => (DiagnosticsRunRoutineResponse response);
-
-  // Requests that the PrimeSearch routine is created and started on the
-  // platform. Calculate prime numbers and verifies the calculation repeatedly
-  // in a duration.
-  // The availability of this routine can be determined by checking that
-  // kPrimeSearch is returned by GetAvailableRoutines.
-  //
-  // The request:
-  // * |length_seconds| - length of time, in seconds, to run the PrimeSearch
-  //                      routine for. This parameter needs to be strictly
-  //                      greater than zero.
-  //
-  // The response:
-  // * |response| - contains a unique identifier and status for the created
-  //                routine.
-  RunPrimeSearchRoutine@12(uint32 length_seconds)
-      => (DiagnosticsRunRoutineResponse response);
-
+  // RunNvmeSelfTestRoutine@10 was removed.
+  // RunDiskReadRoutine@11 was removed.
+  // RunPrimeSearchRoutine@12 was removed.
   // RunBatteryDischargeRoutine@13 was removed.
   // RunBatteryChargeRoutine@14 was removed.
   // RunMemoryRoutine@15() was removed.
