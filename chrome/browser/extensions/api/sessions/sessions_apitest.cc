@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -534,6 +535,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedWindow) {
   tab_list2->OpenTab(GURL("about:blank"), /*index=*/-1);
   ASSERT_EQ(2, tab_list2->GetTabCount());
 
+  // Pin and activate the first tab so its metadata has non-default values.
+  tabs::TabHandle tab_handle = tab_list2->GetTab(0)->GetHandle();
+  tab_list2->PinTab(tab_handle);
+  tab_list2->ActivateTab(tab_handle);
+  ASSERT_TRUE(tab_list2->GetTab(0)->IsPinned());
+  ASSERT_TRUE(tab_list2->GetTab(0)->IsActivated());
+
   // Navigate each tab, otherwise window close does not persist them in the tab
   // restore service. Use different URLs.
   content::WebContents* contents0 = tab_list2->GetTab(0)->GetContents();
@@ -579,16 +587,24 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedWindow) {
   // The first URL is chrome://version/.
   const base::DictValue* tab0 = (*tabs)[0].GetIfDict();
   ASSERT_TRUE(tab0);
-  const std::string* url0 = tab0->FindString("url");
-  ASSERT_TRUE(url0);
-  EXPECT_EQ("chrome://version/", *url0);
+  EXPECT_EQ("chrome://version/", api_test_utils::GetString(*tab0, "url"));
+  EXPECT_EQ("About Version", api_test_utils::GetString(*tab0, "title"));
+  EXPECT_EQ(0, api_test_utils::GetInteger(*tab0, "index"));
 
-  // The seconnd URL is chrome://credits/.
+  // The first tab is pinned and active.
+  EXPECT_TRUE(api_test_utils::GetBoolean(*tab0, "pinned"));
+  EXPECT_TRUE(api_test_utils::GetBoolean(*tab0, "active"));
+
+  // The second URL is chrome://credits/.
   const base::DictValue* tab1 = (*tabs)[1].GetIfDict();
   ASSERT_TRUE(tab1);
-  const std::string* url1 = tab1->FindString("url");
-  ASSERT_TRUE(url1);
-  EXPECT_EQ("chrome://credits/", *url1);
+  EXPECT_EQ("chrome://credits/", api_test_utils::GetString(*tab1, "url"));
+  EXPECT_EQ("Credits", api_test_utils::GetString(*tab1, "title"));
+  EXPECT_EQ(1, api_test_utils::GetInteger(*tab1, "index"));
+
+  // The second tab is not pinned and not active.
+  EXPECT_FALSE(api_test_utils::GetBoolean(*tab1, "pinned"));
+  EXPECT_FALSE(api_test_utils::GetBoolean(*tab1, "active"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedIncognito) {

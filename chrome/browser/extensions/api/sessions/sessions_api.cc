@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -35,6 +36,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/core/live_tab_context.h"
+#include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -107,22 +109,26 @@ bool SortTabsByRecency(const sessions::SessionTab* t1,
   return t1->timestamp > t2->timestamp;
 }
 
-api::tabs::Tab CreateTabModelHelper(
-    const sessions::SerializedNavigationEntry& current_navigation,
-    const std::string& session_id,
-    int index,
-    bool pinned,
-    bool active,
-    const Extension* extension,
-    mojom::ContextType context) {
+// Creates an extensions tab API object. Takes primitive types as parameters
+// so it can be used both with TabRestoreService (on Win/Mac/Linux) and
+// TabModel (on Android).
+api::tabs::Tab CreateTabModelHelper(const GURL& virtual_url,
+                                    const std::u16string& title_utf16,
+                                    const GURL& favicon_url,
+                                    const std::string& session_id,
+                                    int index,
+                                    bool pinned,
+                                    bool active,
+                                    const Extension* extension,
+                                    mojom::ContextType context) {
   api::tabs::Tab tab_struct;
 
-  const GURL& url = current_navigation.virtual_url();
-  std::string title = base::UTF16ToUTF8(current_navigation.title());
+  const GURL& url = virtual_url;
+  std::string title = base::UTF16ToUTF8(title_utf16);
 
   tab_struct.session_id = session_id;
   tab_struct.url = url.spec();
-  tab_struct.fav_icon_url = current_navigation.favicon_url().spec();
+  tab_struct.fav_icon_url = favicon_url.spec();
   if (!title.empty()) {
     tab_struct.title = title;
   } else {
@@ -226,10 +232,12 @@ SessionsGetRecentlyClosedFunction::~SessionsGetRecentlyClosedFunction() =
 api::tabs::Tab SessionsGetRecentlyClosedFunction::CreateTabModel(
     const sessions::tab_restore::Tab& tab,
     bool active) {
-  return CreateTabModelHelper(tab.navigations[tab.current_navigation_index],
-                              base::NumberToString(tab.id.id()),
-                              tab.tabstrip_index, tab.pinned, active,
-                              extension(), source_context_type());
+  const sessions::SerializedNavigationEntry& navigation =
+      tab.navigations[tab.current_navigation_index];
+  return CreateTabModelHelper(
+      navigation.virtual_url(), navigation.title(), navigation.favicon_url(),
+      base::NumberToString(tab.id.id()), tab.tabstrip_index, tab.pinned, active,
+      extension(), source_context_type());
 }
 
 api::windows::Window SessionsGetRecentlyClosedFunction::CreateWindowModel(
@@ -371,31 +379,25 @@ void SessionsGetRecentlyClosedFunction::OnGetRecentlyClosedWindow(
 
   // Extract the URL for the closed windows.
   std::vector<api::tabs::Tab> api_tabs;
-  for (int i = 0; i < model->GetTabCount(); ++i) {
-    TabAndroid* tab = model->GetTabAt(i);
+  for (int index = 0; index < model->GetTabCount(); ++index) {
+    TabAndroid* tab = model->GetTabAt(index);
     CHECK(tab);
     // NOTE: The tabs may not have WebContents, since the window is closed.
-    // TODO(crbug.com/405219627): Extract more metadata from the tab and return
-    // it to the API caller.
-    api::tabs::Tab api_tab;
-    api_tab.index = i;
-    GURL url = tab->GetURL();
-    api_tab.url = url.spec();
-
-    // Scrub any sensitive information from the tab before adding to the list.
-    ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-        ExtensionTabUtil::GetScrubTabBehavior(extension(),
-                                              source_context_type(), url);
-    ExtensionTabUtil::ScrubTabForExtension(extension(), nullptr, &api_tab,
-                                           scrub_tab_behavior);
+    // TODO(crbug.com/405219627): Figure out how to pass the favicon URL.
+    api::tabs::Tab api_tab = CreateTabModelHelper(
+        tab->GetURL(), tab->GetTitle(), /*favicon_url=*/GURL(),
+        base::NumberToString(tab->GetWindowId().id()), index, tab->IsPinned(),
+        tab->IsActivated(), extension(), source_context_type());
     api_tabs.push_back(std::move(api_tab));
   }
 
   // Populate the window and session objects.
-  api::windows::Window window;
-  window.tabs = std::move(api_tabs);
-  api::sessions::Session session;
-  session.window = std::move(window);
+  api::windows::Window window = CreateWindowModelHelper(
+      std::move(api_tabs), base::NumberToString(model->GetSessionId().id()),
+      api::windows::WindowType::kNormal, api::windows::WindowState::kNormal);
+  api::sessions::Session session =
+      CreateSessionModelHelper(base::Time::Now().ToTimeT(), std::nullopt,
+                               std::move(window), std::nullopt);
 
   // Add the session to the result.
   result_.push_back(std::move(session));
@@ -411,9 +413,12 @@ api::tabs::Tab SessionsGetDevicesFunction::CreateTabModel(
     int tab_index,
     bool active) {
   std::string session_id = SessionId(session_tag, tab.tab_id.id()).ToString();
-  return CreateTabModelHelper(
-      tab.navigations[tab.normalized_navigation_index()], session_id, tab_index,
-      tab.pinned, active, extension(), source_context_type());
+  const sessions::SerializedNavigationEntry& navigation =
+      tab.navigations[tab.normalized_navigation_index()];
+  return CreateTabModelHelper(navigation.virtual_url(), navigation.title(),
+                              navigation.favicon_url(), session_id, tab_index,
+                              tab.pinned, active, extension(),
+                              source_context_type());
 }
 
 std::optional<api::windows::Window>
