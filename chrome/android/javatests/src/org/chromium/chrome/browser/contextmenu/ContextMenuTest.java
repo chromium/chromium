@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.media.PictureInPicture;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -1043,14 +1044,14 @@ public class ContextMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    // TODO(crbug.com/483149206): Test is flaky on desktop bots.
-    @DisableIf.Device(DeviceFormFactor.DESKTOP)
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID})
     public void testContextMenuRetrievesVideoOptions() throws TimeoutException {
         Tab tab = mActivityTestRule.getActivityTab();
         DOMUtils.clickNode(mActivityTestRule.getWebContents(), "videoDOMElement");
         mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "videoDOMElement");
 
         Integer[] expectedItems = {R.id.contextmenu_save_video};
+        expectedItems = maybeAddPictureInPictureItem(expectedItems);
         expectedItems = maybeAddInspectElementItem(expectedItems);
         assertMenuItemsAreEqual(mMenuCoordinator, expectedItems);
     }
@@ -1501,6 +1502,13 @@ public class ContextMenuTest {
             for (int i = 0; i < additionalItems.length; i++) variableItems.add(additionalItems[i]);
         }
         return variableItems.toArray(baseItems);
+    }
+
+    private Integer[] maybeAddPictureInPictureItem(Integer[] baseItems) {
+        return addItemsIf(
+                PictureInPicture.isEnabled(mActivityTestRule.getActivity()),
+                baseItems,
+                new Integer[] {R.id.contextmenu_picture_in_picture});
     }
 
     private Integer[] maybeAddInspectElementItem(Integer[] baseItems) {
