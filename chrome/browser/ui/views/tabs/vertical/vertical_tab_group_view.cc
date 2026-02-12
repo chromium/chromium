@@ -331,17 +331,19 @@ void VerticalTabGroupView::UpdateLayoutForDrag() {
 
 void VerticalTabGroupView::HandleTabDragInContainer(
     const gfx::Rect& dragged_tab_bounds) {
+  CHECK(!IsCollapsed());
   views::View* view_at_point = GetViewForDragBounds(
       layout_manager_->target_layout(), dragged_tab_bounds);
-  const TabCollectionNode* node = collection_node_;
+  const TabCollectionNode* node = nullptr;
   if (auto* tab_view = views::AsViewClass<VerticalTabView>(view_at_point)) {
     node = tab_view->collection_node();
   } else if (auto* split_tab_view =
                  views::AsViewClass<VerticalSplitTabView>(view_at_point)) {
     node = split_tab_view->collection_node();
   }
-  CHECK(node);
-  GetDragHandler().HandleDraggedTabsOverNode(*node, std::nullopt);
+  if (node) {
+    GetDragHandler().HandleDraggedTabsOverNode(*node, std::nullopt);
+  }
 }
 
 bool VerticalTabGroupView::GetIsShared() {
@@ -363,6 +365,11 @@ bool VerticalTabGroupView::GetIsShared() {
 }
 
 void VerticalTabGroupView::OnTabDragExited(const gfx::Point& point_in_screen) {
+  if (!IsHandlingDrag()) {
+    // If the drag entered then exited in subsequent drag loop iterations, then
+    // the container will not have had a chance to handle the drag yet.
+    return;
+  }
   auto dragging_tabs_bounds = GetDraggingViewsBoundsAtPoint(
       views::View::ConvertPointFromScreen(this, point_in_screen));
   if (dragging_tabs_bounds.y() < 0) {

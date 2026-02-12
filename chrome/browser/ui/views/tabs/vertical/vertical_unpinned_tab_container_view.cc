@@ -265,7 +265,8 @@ VerticalUnpinnedTabContainerView::GetTabDragTarget(
                             required_overlap_amount)) {
         return *group_view;
       }
-    } else if (layout.bounds.Contains(point_in_container)) {
+    } else if (layout.bounds.y() <= point_in_container.y() &&
+               layout.bounds.bottom() >= point_in_container.y()) {
       // If neither the group or this container are handling a drag and the drag
       // point falls in the group (e.g. when starting the drag), then use the
       // group.

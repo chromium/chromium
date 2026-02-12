@@ -249,11 +249,8 @@ void VerticalTabDragHandlerImpl::EndDrag(EndDragReason reason) {
 void VerticalTabDragHandlerImpl::HandleDraggedTabsOverNode(
     const TabCollectionNode& node,
     std::optional<DragPositionHint> position_hint) {
-  if (!drag_controller_) {
-    // Do nothing if the drag is not attached to our context yet (e.g. on the
-    // first iteration of the drag loop).
-    return;
-  }
+  CHECK(drag_controller_);
+
   switch (node.type()) {
     case TabCollectionNode::Type::TAB:
       HandleTabDragOverTab(node);
@@ -269,30 +266,83 @@ void VerticalTabDragHandlerImpl::HandleDraggedTabsOverNode(
   }
 }
 
+void VerticalTabDragHandlerImpl::HandleDraggedTabsIntoNode(
+    const TabCollectionNode& node) {
+  CHECK(drag_controller_);
+  const auto& drag_session_data = drag_controller_->GetSessionData();
+  // Do nothing if the group is not being changed and either one tab is being
+  // dragged or all tabs in the strip are being dragged.
+  if (node.type() != TabCollectionNode::Type::GROUP &&
+      (drag_session_data.num_dragging_tabs() == 1 ||
+       drag_session_data.num_dragging_tabs() == tab_strip_model_->count())) {
+    return;
+  }
+
+  const TabDragData* source_drag_data =
+      drag_session_data.source_view_drag_data();
+  const content::WebContents* source_contents = source_drag_data->contents;
+  if (!source_contents) {
+    return;
+  }
+
+  int target_index;
+  std::optional<tab_groups::TabGroupId> target_group_id = std::nullopt;
+  if (node.type() == TabCollectionNode::Type::GROUP) {
+    const auto& group = TabGroupDataFromNode(node);
+    target_group_id = group.id();
+    int source_tab_index =
+        tab_strip_model_->GetIndexOfWebContents(source_contents);
+    auto group_indexes = group.ListTabs();
+    if (source_tab_index < static_cast<int>(group_indexes.start())) {
+      target_index = group_indexes.start();
+    } else if (source_tab_index > static_cast<int>(group_indexes.end())) {
+      target_index = group_indexes.end();
+    } else {
+      target_index = source_tab_index;
+    }
+  } else if (auto source_tab_group_id =
+                 tabs::TabInterface::GetFromContents(source_contents)
+                     ->GetGroup()) {
+    const auto* group =
+        tab_strip_model_->group_model()->GetTabGroup(*target_group_id);
+    target_index = group->ListTabs().end();
+  } else {
+    target_index = tab_strip_model_->GetIndexOfWebContents(source_contents);
+  }
+
+  int num_dragged_tabs_before_target = 0;
+  for (const TabDragData& tab_drag_data : drag_session_data.tab_drag_data_) {
+    const content::WebContents* contents = tab_drag_data.contents;
+    if (contents &&
+        tab_strip_model_->GetIndexOfWebContents(contents) < target_index) {
+      ++num_dragged_tabs_before_target;
+    }
+  }
+  target_index = target_index - num_dragged_tabs_before_target;
+  target_index = std::clamp(target_index, 0, tab_strip_model_->count() - 1);
+  tab_strip_model_->MoveSelectedTabsTo(target_index, target_group_id);
+}
+
 void VerticalTabDragHandlerImpl::HandleDraggedTabsOutOfGroup(
     const TabCollectionNode& node,
     DragPositionHint position_hint) {
   CHECK_EQ(node.type(), TabCollectionNode::Type::GROUP);
 
-  const auto* tab_group =
-      static_cast<const tabs::TabGroupTabCollection*>(
-          std::get<const tabs::TabCollection*>(node.GetNodeData()))
-          ->GetTabGroup();
-  CHECK(tab_group);
+  const auto& tab_group = TabGroupDataFromNode(node);
 
   const auto& selection_model = tab_strip_model_->selection_model();
   int insertion_idx;
   switch (position_hint) {
     case DragPositionHint::kBottom: {
       int last_tab_in_group =
-          tab_strip_model_->GetIndexOfTab(tab_group->GetLastTab());
+          tab_strip_model_->GetIndexOfTab(tab_group.GetLastTab());
       insertion_idx =
           last_tab_in_group - selection_model.selected_tabs().size() + 1;
       break;
     }
     case DragPositionHint::kTop: {
       int first_tab_in_group =
-          tab_strip_model_->GetIndexOfTab(tab_group->GetFirstTab());
+          tab_strip_model_->GetIndexOfTab(tab_group.GetFirstTab());
       insertion_idx = first_tab_in_group;
       break;
     }
@@ -360,15 +410,6 @@ void VerticalTabDragHandlerImpl::HandleTabDragOverGroup(
   CHECK(tab_group);
   const auto& selection_model = tab_strip_model_->selection_model();
 
-  if (std::all_of(selection_model.selected_tabs().begin(),
-                  selection_model.selected_tabs().end(),
-                  [tab_group](const tabs::TabInterface* selected_tab) {
-                    return selected_tab->GetGroup() == tab_group->id();
-                  })) {
-    // Selected tabs are already in the group, so return early.
-    return;
-  }
-
   int first_tab_in_group =
       tab_strip_model_->GetIndexOfTab(tab_group->GetFirstTab());
   int last_tab_in_group =
@@ -376,28 +417,16 @@ void VerticalTabDragHandlerImpl::HandleTabDragOverGroup(
   int first_selected_index =
       *selection_model.GetListSelectionModel().selected_indices().cbegin();
 
-  if (tab_strip_model_->IsGroupCollapsed(tab_group->id()) ||
-      IsDraggingGroups()) {
-    // If dragging over a collapsed group or dragging a group, then
-    // move the dragged tabs/header before or after the dragged-over group.
-    int insertion_idx =
-        (first_selected_index < first_tab_in_group)
-            ? last_tab_in_group - selection_model.selected_tabs().size() + 1
-            : first_tab_in_group;
-    if (auto dragged_group = GetDraggingGroupHeaderId()) {
-      tab_strip_model_->MoveGroupTo(*dragged_group, insertion_idx);
-    } else {
-      tab_strip_model_->MoveSelectedTabsTo(insertion_idx, std::nullopt);
-    }
+  // If dragging over a collapsed group or dragging a group, then
+  // move the dragged tabs/header before or after the dragged-over group.
+  int insertion_idx =
+      (first_selected_index < first_tab_in_group)
+          ? last_tab_in_group - selection_model.selected_tabs().size() + 1
+          : first_tab_in_group;
+  if (auto dragged_group = GetDraggingGroupHeaderId()) {
+    tab_strip_model_->MoveGroupTo(*dragged_group, insertion_idx);
   } else {
-    // If dragging over an expanded group, move the selected tabs to the
-    // beginning or end of the group.
-    int insertion_idx =
-        (first_selected_index < first_tab_in_group)
-            ? first_tab_in_group - selection_model.selected_tabs().size()
-            : last_tab_in_group + 1;
-    insertion_idx = std::clamp(insertion_idx, 0, tab_strip_model_->count() - 1);
-    tab_strip_model_->MoveSelectedTabsTo(insertion_idx, tab_group->id());
+    tab_strip_model_->MoveSelectedTabsTo(insertion_idx, std::nullopt);
   }
 }
 
@@ -555,7 +584,6 @@ void VerticalTabDragHandlerImpl::DestroyDragController() {
 void VerticalTabDragHandlerImpl::StartedDragging(
     const std::vector<TabSlotView*>& views) {
   CHECK(drag_controller_);
-  EnsureDraggedTabsContiguous(drag_controller_->GetSessionData());
 
   for (auto* view : views) {
     auto* slot_view = views::AsViewClass<VerticalTabSlotView>(view);
@@ -690,51 +718,6 @@ void VerticalTabDragHandlerImpl::OnNodeWillDestroy(TabCollectionNode& node) {
 
 void VerticalTabDragHandlerImpl::ResetDragState() {
   drag_controller_.reset();
-}
-
-void VerticalTabDragHandlerImpl::EnsureDraggedTabsContiguous(
-    const DragSessionData& drag_session_data) {
-  // Do nothing if only one tab is being dragged, or all tabs in the strip are
-  // being dragged.
-  if (drag_session_data.num_dragging_tabs() == 1 ||
-      drag_session_data.num_dragging_tabs() == tab_strip_model_->count()) {
-    return;
-  }
-
-  const TabDragData* source_drag_data =
-      drag_session_data.source_view_drag_data();
-  const content::WebContents* source_contents = source_drag_data->contents;
-  if (!source_contents) {
-    return;
-  }
-
-  const tabs::TabInterface* source_tab =
-      tabs::TabInterface::GetFromContents(source_contents);
-  std::optional<tab_groups::TabGroupId> group_id = source_tab->GetGroup();
-
-  int target_index;
-  // If we're dragging full groups and the source tab is in a group, then
-  // move all tabs to be after the group.
-  if (group_id && !drag_session_data.dragging_groups.empty()) {
-    const auto* group = tab_strip_model_->group_model()->GetTabGroup(*group_id);
-    CHECK(group);
-    target_index = group->ListTabs().end() + 1;
-    group_id = std::nullopt;
-  } else {
-    target_index = tab_strip_model_->GetIndexOfWebContents(source_contents);
-  }
-
-  int num_dragged_tabs_before_target = 0;
-  for (const TabDragData& tab_drag_data : drag_session_data.tab_drag_data_) {
-    const content::WebContents* contents = tab_drag_data.contents;
-    if (contents &&
-        tab_strip_model_->GetIndexOfWebContents(contents) < target_index) {
-      ++num_dragged_tabs_before_target;
-    }
-  }
-  target_index = target_index - num_dragged_tabs_before_target;
-  target_index = std::clamp(target_index, 0, tab_strip_model_->count() - 1);
-  tab_strip_model_->MoveSelectedTabsTo(target_index, group_id);
 }
 
 BEGIN_METADATA(VerticalTabDragHandlerImpl)

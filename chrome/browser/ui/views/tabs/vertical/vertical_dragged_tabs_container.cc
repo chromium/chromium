@@ -111,16 +111,17 @@ TabDragContext* VerticalDraggedTabsContainer::OnTabDragUpdated(
   gfx::Point point_in_container = views::View::ConvertPointFromScreen(
       base::to_address(host_view_), point_in_screen);
 
-  gfx::Rect dragged_bounds_in_container =
-      GetDraggingViewsBoundsAtPoint(point_in_container);
-  HandleTabDragInContainer(dragged_bounds_in_container);
-
   // Used to determine whether the layout should snap into position without
   // animating at the end of this drag cycle.
   bool is_initial_drag = dragging_views_.empty();
   if (is_initial_drag) {
+    HandleTabDragEnteredContainer();
     InitializeDragState(drag_controller);
   }
+
+  gfx::Rect dragged_bounds_in_container =
+      GetDraggingViewsBoundsAtPoint(point_in_container);
+  HandleTabDragInContainer(dragged_bounds_in_container);
 
   UpdateDraggingViewTransforms(point_in_container);
 
@@ -146,6 +147,12 @@ void VerticalDraggedTabsContainer::OnTabDragEnded() {
 
 bool VerticalDraggedTabsContainer::CanDropTab() {
   return true;
+}
+
+void VerticalDraggedTabsContainer::HandleTabDragEnteredContainer() {
+  CHECK(collection_node_);
+  GetDragHandler().HandleDraggedTabsIntoNode(*collection_node_);
+  UpdateLayoutForDrag();
 }
 
 base::CallbackListSubscription
@@ -186,8 +193,8 @@ void VerticalDraggedTabsContainer::BuildDragLayout(
   auto* source_dragged_view = GetDragHandler().ViewFromTabSlot(
       session_data.source_view_drag_data()->attached_view);
   CHECK(source_dragged_view);
-  CHECK_EQ(dragging_views_bounds_, gfx::Rect());
 
+  dragging_views_bounds_ = gfx::Rect();
   dragging_views_bounds_.Offset(
       GetSourceViewOffsetFromMouse(*source_dragged_view, session_data));
 

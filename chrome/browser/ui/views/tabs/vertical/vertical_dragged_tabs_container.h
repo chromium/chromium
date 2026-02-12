@@ -116,6 +116,10 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   virtual void HandleTabDragInContainer(
       const gfx::Rect& dragged_tab_bounds) = 0;
 
+  // Handles dragged tabs entering this container, applying the necessary
+  // updates to reparent them into this.
+  void HandleTabDragEnteredContainer();
+
   // Updates state related to dragging tabs, to be used when this container
   // starts handling a drag.
   void InitializeDragState(TabDragTarget::DragController& controller);

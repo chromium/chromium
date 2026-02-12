@@ -46,6 +46,10 @@ class VerticalTabDragHandler {
       const TabCollectionNode& node,
       std::optional<DragPositionHint> position_hint) = 0;
 
+  // Handles tab strip model updates to reflect dragged tabs entering a node.
+  // This reparents them to become direct children of the node.
+  virtual void HandleDraggedTabsIntoNode(const TabCollectionNode& node) = 0;
+
   // Handles tab strip model updates to reflect a drag exiting a group.
   // Position hint is used to determine where the drag is, relative to the node.
   virtual void HandleDraggedTabsOutOfGroup(const TabCollectionNode& node,
@@ -95,6 +99,7 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   void HandleDraggedTabsOverNode(
       const TabCollectionNode& node,
       std::optional<DragPositionHint> position_hint) override;
+  void HandleDraggedTabsIntoNode(const TabCollectionNode& node) override;
   void HandleDraggedTabsOutOfGroup(const TabCollectionNode& node,
                                    DragPositionHint position_hint) override;
   TabDragContext* GetDragContext() override;
@@ -169,12 +174,6 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   void HandleTabDragOverTab(const TabCollectionNode& node);
   void HandleTabDragOverSplit(const TabCollectionNode& node);
   void HandleTabDragOverGroup(const TabCollectionNode& node);
-
-  // Ensures that all tabs being dragged are congious.
-  // TODO(crbug.com/477230662): Ideally, the tabs animate into contiguous
-  // position, which will require handling this from within
-  // `VerticalDraggedTabsContainer`.
-  void EnsureDraggedTabsContiguous(const DragSessionData& drag_session_data);
 
   // Returns the group id of the dragged group header, or null if the drag
   // was not initiated by a group header.
