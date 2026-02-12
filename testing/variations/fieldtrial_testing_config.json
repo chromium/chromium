@@ -1108,6 +1108,23 @@
             ]
         }
     ],
+    "AndroidReaderModeFastFollows": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledAll",
+                    "enable_features": [
+                        "ReaderModeBlurTransitionAnimation",
+                        "ReaderModeDelayBottomSheetPeek",
+                        "ReaderModeToggleLinks"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidReaderModeImproveAppExperience": [
         {
             "platforms": [

@@ -66,8 +66,8 @@ public class ReaderModeBottomSheetRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_READER_MODE)
-                    .setRevision(7)
-                    .setDescription("Update font style button container to be scrollable")
+                    .setRevision(8)
+                    .setDescription("Adding toggle links UI to bottom sheet")
                     .build();
 
     private @Captor ArgumentCaptor<ThemeColorProvider.ThemeColorObserver> mThemeColorObserverCaptor;
