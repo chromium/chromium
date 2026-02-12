@@ -2545,6 +2545,7 @@ interface Element : Node
     getter innerHTML
     getter lastElementChild
     getter localName
+    getter marker
     getter namespaceURI
     getter nextElementSibling
     getter onbeforecopy
@@ -2692,6 +2693,7 @@ interface Element : Node
     setter headingReset
     setter id
     setter innerHTML
+    setter marker
     setter onbeforecopy
     setter onbeforecut
     setter onbeforepaste

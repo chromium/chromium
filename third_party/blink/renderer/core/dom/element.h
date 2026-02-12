@@ -1653,6 +1653,12 @@ class CORE_EXPORT Element : public ContainerNode {
   // Returns the list of part names, creating it if it doesn't exist.
   DOMTokenList& part();
 
+  // Returns the list of marker names if it has ever been created.
+  DOMTokenList* GetMarker() const;
+  // IDL method.
+  // Returns the list of marker names, creating it if it doesn't exist.
+  DOMTokenList& marker();
+
   bool HasPartNamesMap() const;
   const NamesMap* PartNamesMap() const;
 

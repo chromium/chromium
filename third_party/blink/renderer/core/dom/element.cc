@@ -3839,6 +3839,8 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
   } else if (name == html_names::kPartAttr) {
     part().DidUpdateAttributeValue(params.old_value, params.new_value);
     GetDocument().GetStyleEngine().PartChangedForElement(*this);
+  } else if (name == html_names::kMarkerAttr) {
+    marker().DidUpdateAttributeValue(params.old_value, params.new_value);
   } else if (name == html_names::kExportpartsAttr) {
     data_ = EnsureRareData().SetPartNamesMap(params.new_value);
     GetDocument().GetStyleEngine().ExportpartsChangedForElement(*this);
@@ -12117,6 +12119,23 @@ DOMTokenList& Element::part() {
     data_ = rare_data.SetPart(part);
   }
   return *part;
+}
+
+DOMTokenList* Element::GetMarker() const {
+  if (const ElementRareDataVector* data = RareData()) {
+    return data->GetMarker();
+  }
+  return nullptr;
+}
+
+DOMTokenList& Element::marker() {
+  ElementRareDataVector& rare_data = EnsureRareData();
+  DOMTokenList* marker = rare_data.GetMarker();
+  if (!marker) {
+    marker = MakeGarbageCollected<DOMTokenList>(*this, html_names::kMarkerAttr);
+    data_ = rare_data.SetMarker(marker);
+  }
+  return *marker;
 }
 
 bool Element::HasPartNamesMap() const {

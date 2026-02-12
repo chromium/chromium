@@ -279,6 +279,9 @@ class CORE_EXPORT ElementRareDataVector final
   [[nodiscard]] ElementRareDataVector* SetPart(DOMTokenList* part);
   DOMTokenList* GetPart() const;
 
+  [[nodiscard]] ElementRareDataVector* SetMarker(DOMTokenList* marker);
+  DOMTokenList* GetMarker() const;
+
   [[nodiscard]] ElementRareDataVector* SetPartNamesMap(
       const AtomicString part_names);
   const NamesMap* PartNamesMap() const;
@@ -641,7 +644,8 @@ class CORE_EXPORT ElementRareDataVector final
     kScrollTimelines = 48,
     kDomParts = 49,
     kDOMNodeId = 50,
-    kNumFields = 51,
+    kMarker = 51,
+    kNumFields = 52,
   };
 
   inline const Member<ElementRareDataField>* ArrayBase() const {
