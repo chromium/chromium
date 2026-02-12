@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/types/expected_macros.h"
 #include "components/policy/core/browser/policy_error_map.h"
+#include "components/prefs/pref_value_map.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -288,6 +289,93 @@ TEST_P(ProxyOverrideRulesPolicyHandlerTest, Test) {
 
   std::u16string messages = errors.GetErrorMessages(kPolicyName);
   ASSERT_EQ(messages, GetParam().expected_messages);
+}
+
+TEST_F(ProxyOverrideRulesPolicyHandlerTest, AffiliationUpdatedWhenPolicyUnset) {
+  auto handler = std::make_unique<ProxyOverrideRulesPolicyHandler>(schema());
+
+  policy::PolicyMap policy_map;
+  // Scenario 1: Affiliated (empty device IDs)
+  policy_map.SetDeviceAffiliationIds({});
+  policy_map.SetUserAffiliationIds({"user_id"});
+
+  PrefValueMap prefs;
+  policy::PolicyErrorMap errors;
+
+  ASSERT_TRUE(handler->CheckPolicySettings(policy_map, &errors));
+  handler->ApplyPolicySettings(policy_map, &prefs);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  bool affiliated = false;
+  EXPECT_TRUE(
+      prefs.GetBoolean(prefs::kProxyOverrideRulesAffiliation, &affiliated));
+  EXPECT_TRUE(affiliated);
+#endif
+
+  // Scenario 2: Unaffiliated
+  policy_map.SetDeviceAffiliationIds({"device_id"});
+  policy_map.SetUserAffiliationIds({"user_id"});
+
+  prefs.Clear();
+  ASSERT_TRUE(handler->CheckPolicySettings(policy_map, &errors));
+  handler->ApplyPolicySettings(policy_map, &prefs);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(
+      prefs.GetBoolean(prefs::kProxyOverrideRulesAffiliation, &affiliated));
+  EXPECT_FALSE(affiliated);
+#endif
+}
+
+TEST_F(ProxyOverrideRulesPolicyHandlerTest,
+       AffiliationUpdatedWhenPolicyValueUnchanged) {
+  auto handler = std::make_unique<ProxyOverrideRulesPolicyHandler>(schema());
+
+  const char kPolicyValue[] = R"([
+    {
+      "DestinationMatchers": ["https://*"],
+      "ProxyList": ["DIRECT"]
+    }
+  ])";
+
+  policy::PolicyMap policy_map;
+  policy_map.Set(
+      kPolicyName, policy::PolicyLevel::POLICY_LEVEL_MANDATORY,
+      policy::PolicyScope::POLICY_SCOPE_USER,
+      policy::PolicySource::POLICY_SOURCE_CLOUD,
+      base::JSONReader::Read(kPolicyValue, base::JSON_ALLOW_TRAILING_COMMAS),
+      nullptr);
+
+  // Scenario 1: Affiliated
+  policy_map.SetDeviceAffiliationIds({"id"});
+  policy_map.SetUserAffiliationIds({"id"});
+
+  PrefValueMap prefs;
+  policy::PolicyErrorMap errors;
+
+  ASSERT_TRUE(handler->CheckPolicySettings(policy_map, &errors));
+  handler->ApplyPolicySettings(policy_map, &prefs);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  bool affiliated = false;
+  EXPECT_TRUE(
+      prefs.GetBoolean(prefs::kProxyOverrideRulesAffiliation, &affiliated));
+  EXPECT_TRUE(affiliated);
+#endif
+
+  // Scenario 2: Unaffiliated
+  policy_map.SetUserAffiliationIds({"different_id"});
+
+  // ApplyPolicySettings should update the affiliation preference even if the
+  // policy value itself hasn't changed.
+  ASSERT_TRUE(handler->CheckPolicySettings(policy_map, &errors));
+  handler->ApplyPolicySettings(policy_map, &prefs);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(
+      prefs.GetBoolean(prefs::kProxyOverrideRulesAffiliation, &affiliated));
+  EXPECT_FALSE(affiliated);
+#endif
 }
 
 }  // namespace

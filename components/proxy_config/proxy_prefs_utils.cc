@@ -61,14 +61,23 @@ net::ProxyChain ProxyOverrideRuleProxyFromString(std::string_view raw_value) {
 bool ProxyOverrideRulesAllowed(const PrefService* pref_service) {
   CHECK(pref_service);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  if (pref_service->GetInteger(prefs::kProxyOverrideRulesScope) ==
-          policy::POLICY_SCOPE_USER &&
-      !pref_service->GetBoolean(prefs::kProxyOverrideRulesAffiliation)) {
-    return pref_service->GetInteger(
-               prefs::kEnableProxyOverrideRulesForAllUsers) == 1;
+  if (pref_service->GetBoolean(prefs::kProxyOverrideRulesAffiliation) ||
+      pref_service->GetInteger(prefs::kEnableProxyOverrideRulesForAllUsers) ==
+          1) {
+    return true;
   }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+  const PrefService::Preference* pref =
+      pref_service->FindPreference(prefs::kProxyOverrideRules);
+  CHECK(pref);
+
+  return !(pref->IsExtensionControlled() ||
+           (pref->IsManaged() &&
+            pref_service->GetInteger(prefs::kProxyOverrideRulesScope) ==
+                policy::POLICY_SCOPE_USER));
+#else   // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   return true;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
 }  // namespace proxy_config
