@@ -2885,8 +2885,11 @@ bool Animation::OnValidateSnapshot(bool snapshot_changed) {
     // on being validated, triggered the animation. So, we need another
     // style+layout pass and we need to invalidate the animating element's
     // style.
+    // A TimelineTrigger may have updated the animation's pending playback
+    // rate. We don't the apply pending playback rate here so that, for a
+    // running animation, the playback rate is not out of sync with other timing
+    // properties during an animation update in the same frame.
     needs_update = true;
-    ApplyPendingPlaybackRate();
   } else if (needs_new_start_time) {
     // Previous current time is used in update finished state to maintain
     // the current time if seeking out of bounds. A range update can place
