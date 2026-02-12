@@ -830,7 +830,7 @@ bool WebViewGuest::PreHandleGestureEvent(WebContents* source,
 
 void WebViewGuest::LoadAbort(bool is_top_level,
                              const GURL& url,
-                             int error_code) {
+                             net::Error error_code) {
   base::DictValue args;
   args.Set(guest_view::kIsTopLevel, is_top_level);
   args.Set(guest_view::kUrl, url.possibly_invalid_spec());
@@ -1245,7 +1245,7 @@ void WebViewGuest::DidFinishNavigation(
       // If a load is blocked, either by WebRequest or security checks, the
       // navigation may or may not have committed. So if we don't see an error
       // code, mark it as blocked.
-      int error_code = navigation_handle->GetNetErrorCode();
+      net::Error error_code = navigation_handle->GetNetErrorCode();
       if (error_code == net::OK) {
         error_code = net::ERR_BLOCKED_BY_CLIENT;
       }
