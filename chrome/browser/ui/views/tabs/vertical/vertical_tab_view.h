@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/hover_card_anchor_target.h"
 #include "chrome/browser/ui/views/tabs/tab/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
@@ -33,6 +34,10 @@ class TabIcon;
 
 namespace views {
 class Label;
+}
+
+namespace tabs {
+class VerticalTabStripStateController;
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -138,6 +143,8 @@ class VerticalTabView : public views::View,
   void UpdateAccessibleName();
   void OnAXNameChanged(ax::mojom::StringAttribute attribute,
                        const std::optional<std::string>& name);
+  void OnCollapsedStateChanged(
+      tabs::VerticalTabStripStateController* controller);
   void OnDataChanged();
   void SetSelection(bool selected);
   void UpdateTabData(tabs::TabInterface* tab);
@@ -181,6 +188,7 @@ class VerticalTabView : public views::View,
 
   base::CallbackListSubscription node_destroyed_subscription_;
   base::CallbackListSubscription data_changed_subscription_;
+  base::CallbackListSubscription collapsed_state_changed_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
 
   TabRendererData tab_data_;

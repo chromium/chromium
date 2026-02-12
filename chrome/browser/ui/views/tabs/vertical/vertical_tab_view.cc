@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab/glow_hover_controller.h"
@@ -214,6 +215,17 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
   data_changed_subscription_ =
       collection_node_->RegisterDataChangedCallback(base::BindRepeating(
           &VerticalTabView::OnDataChanged, base::Unretained(this)));
+
+  if (collection_node_->GetController()) {
+    if (auto* state_controller =
+            collection_node_->GetController()->GetStateController()) {
+      collapsed_state_changed_subscription_ =
+          state_controller->RegisterOnCollapseChanged(
+              base::BindRepeating(&VerticalTabView::OnCollapsedStateChanged,
+                                  base::Unretained(this)));
+      collapsed_ = state_controller->IsCollapsed();
+    }
+  }
 
   set_context_menu_controller(this);
 }
@@ -455,8 +467,6 @@ void VerticalTabView::OnBlur() {
 }
 
 void VerticalTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  collapsed_ = width() < VerticalTabStripRegionView::kCollapsedWidth;
-
   SetClipPath(GetPath());
 }
 
@@ -674,6 +684,11 @@ void VerticalTabView::OnAXNameChanged(ax::mojom::StringAttribute attribute,
   if (GetWidget() && active_) {
     GetWidget()->UpdateAccessibleNameForRootView();
   }
+}
+
+void VerticalTabView::OnCollapsedStateChanged(
+    tabs::VerticalTabStripStateController* controller) {
+  collapsed_ = controller->IsCollapsed();
 }
 
 void VerticalTabView::OnDataChanged() {
