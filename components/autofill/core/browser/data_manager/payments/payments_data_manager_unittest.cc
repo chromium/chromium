@@ -303,8 +303,48 @@ class PaymentsDataManagerSyncTransportModeTest
   void TearDown() override { TearDownTest(); }
 };
 
+class PaymentsDataManagerServerTest : public PaymentsDataManagerHelper,
+                                      public testing::TestWithParam<bool> {
+ public:
+  PaymentsDataManagerServerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                              features::kAutofillEnableAiBasedAmountExtraction},
+        /*disabled_features=*/{});
+  }
+
+  bool UseSyncTransportMode() { return GetParam(); }
+
+ protected:
+  void SetUp() override {
+    SetUpTest();
+    ResetPaymentsDataManager(UseSyncTransportMode());
+    if (UseSyncTransportMode()) {
+      CoreAccountInfo active_info =
+          identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin);
+      SetUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id,
+                                        true);
+      payments_data_manager().Refresh();
+      WaitForOnPaymentsDataChanged();
+    }
+  }
+  void TearDown() override { TearDownTest(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PaymentsDataManagerServerTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "SyncTransportMode"
+                                             : "SyncFeatureEnabled";
+                         });
+
 // Test that server IBANs can be added and automatically loaded/cached.
-TEST_F(PaymentsDataManagerTest, AddAndReloadServerIbans) {
+TEST_P(PaymentsDataManagerServerTest, AddAndReloadServerIbans) {
   Iban server_iban1 = test::GetServerIban();
   Iban server_iban2 = test::GetServerIban2();
 
@@ -316,14 +356,14 @@ TEST_F(PaymentsDataManagerTest, AddAndReloadServerIbans) {
 
   // Reset the PaymentsDataManager. This tests that the personal data was saved
   // to the web database, and that we can load the IBANs from the web database.
-  ResetPaymentsDataManager();
+  ResetPaymentsDataManager(UseSyncTransportMode());
 
   // Verify that we've reloaded the IBANs from the web database.
   ExpectSameElements(expected_ibans, payments_data_manager().GetServerIbans());
 }
 
 // Test that all (local and server) IBANs can be returned.
-TEST_F(PaymentsDataManagerTest, GetIbans) {
+TEST_P(PaymentsDataManagerServerTest, GetIbans) {
   payments_data_manager().SetSyncingForTest(true);
 
   Iban local_iban1;
@@ -363,7 +403,7 @@ TEST_F(PaymentsDataManagerTest, OnPaymentsDataLoaded) {
 // Test that a local IBAN is removed from suggestions when it has a matching
 // prefix and suffix (either equal or starting with) and the same length as a
 // server IBAN.
-TEST_F(PaymentsDataManagerTest,
+TEST_P(PaymentsDataManagerServerTest,
        GetIbansToSuggestRemovesLocalIbanThatMatchesServerIban) {
   payments_data_manager().SetSyncingForTest(true);
 
@@ -390,7 +430,7 @@ TEST_F(PaymentsDataManagerTest,
 
 // Test that IBANs are ordered according to the frecency rating. All of the
 // IBANs in this test case have the use count = 1.
-TEST_F(PaymentsDataManagerTest, GetIbansToSuggestOrdersByFrecency) {
+TEST_P(PaymentsDataManagerServerTest, GetIbansToSuggestOrdersByFrecency) {
   payments_data_manager().SetSyncingForTest(true);
 
   Iban local_iban1 = test::GetLocalIban();
@@ -545,7 +585,7 @@ TEST_F(PaymentsDataManagerTest, RecordIbanUsage_LocalIban) {
   EXPECT_EQ(local_iban.usage_history().modification_date(), kArbitraryTime);
 }
 
-TEST_F(PaymentsDataManagerTest, RecordIbanUsage_ServerIban) {
+TEST_P(PaymentsDataManagerServerTest, RecordIbanUsage_ServerIban) {
   base::HistogramTester histogram_tester;
   // Create the test clock and set the time to a specific value.
   AdvanceClock(kArbitraryTime - base::Time::Now());
@@ -790,7 +830,7 @@ TEST_F(PaymentsDataManagerTest, ClearLocalCvcsUpToMay2025) {
 #endif  // !BUILDFLAG(IS_IOS)
 
 // Test that verify add, update, remove server cvc function working as expected.
-TEST_F(PaymentsDataManagerTest, ServerCvc) {
+TEST_P(PaymentsDataManagerServerTest, ServerCvc) {
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
   const std::u16string kCvc = u"111";
@@ -825,7 +865,7 @@ TEST_F(PaymentsDataManagerTest, ServerCvc) {
 }
 
 // Test that verify clear server cvc function working as expected.
-TEST_F(PaymentsDataManagerTest, ClearServerCvc) {
+TEST_P(PaymentsDataManagerServerTest, ClearServerCvc) {
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
   // Add a server card cvc.
@@ -942,7 +982,7 @@ TEST_F(PaymentsDataManagerTest, AddCreditCard_Invalid) {
   ASSERT_EQ(card, *payments_data_manager().GetCreditCards()[0]);
 }
 
-TEST_F(PaymentsDataManagerTest, GetCreditCardByServerId) {
+TEST_P(PaymentsDataManagerServerTest, GetCreditCardByServerId) {
   CreditCard card = test::GetMaskedServerCardVisa();
   card.set_server_id("server id");
   test_api(payments_data_manager()).AddServerCreditCard(card);
@@ -1045,7 +1085,7 @@ TEST_F(PaymentsDataManagerTest, SetEmptyCreditCard) {
 }
 
 // Tests that GetAutofillOffers returns all available offers.
-TEST_F(PaymentsDataManagerTest, GetAutofillOffers) {
+TEST_P(PaymentsDataManagerServerTest, GetAutofillOffers) {
   // Add two card-linked offers and one promo code offer.
   AddOfferDataForTest(test::GetCardLinkedOfferData1());
   AddOfferDataForTest(test::GetCardLinkedOfferData2());
@@ -1057,7 +1097,8 @@ TEST_F(PaymentsDataManagerTest, GetAutofillOffers) {
 
 // Tests that GetActiveAutofillPromoCodeOffersForOrigin returns only active and
 // site-relevant promo code offers.
-TEST_F(PaymentsDataManagerTest, GetActiveAutofillPromoCodeOffersForOrigin) {
+TEST_P(PaymentsDataManagerServerTest,
+       GetActiveAutofillPromoCodeOffersForOrigin) {
   // Card-linked offers should not be returned.
   AddOfferDataForTest(test::GetCardLinkedOfferData1());
   // Expired promo code offers should not be returned.
@@ -1080,7 +1121,7 @@ TEST_F(PaymentsDataManagerTest, GetActiveAutofillPromoCodeOffersForOrigin) {
 
 // Tests that GetAutofillOffers does not return any offers if
 // |IsAutofillWalletImportEnabled()| returns |false|.
-TEST_F(PaymentsDataManagerTest, GetAutofillOffers_WalletImportDisabled) {
+TEST_P(PaymentsDataManagerServerTest, GetAutofillOffers_WalletImportDisabled) {
   // Add a card-linked offer and a promo code offer.
   AddOfferDataForTest(test::GetCardLinkedOfferData1());
   AddOfferDataForTest(test::GetPromoCodeOfferData());
@@ -1096,7 +1137,8 @@ TEST_F(PaymentsDataManagerTest, GetAutofillOffers_WalletImportDisabled) {
 
 // Tests that GetAutofillOffers does not return any offers if
 // `IsAutofillPaymentMethodsEnabled()` returns `false`.
-TEST_F(PaymentsDataManagerTest, GetAutofillOffers_AutofillCreditCardDisabled) {
+TEST_P(PaymentsDataManagerServerTest,
+       GetAutofillOffers_AutofillCreditCardDisabled) {
   // Add a card-linked offer and a promo code offer.
   AddOfferDataForTest(test::GetCardLinkedOfferData1());
   AddOfferDataForTest(test::GetPromoCodeOfferData());
@@ -1110,7 +1152,7 @@ TEST_F(PaymentsDataManagerTest, GetAutofillOffers_AutofillCreditCardDisabled) {
 
 // Tests that GetActiveAutofillPromoCodeOffersForOrigin does not return any
 // promo code offers if |IsAutofillWalletImportEnabled()| returns |false|.
-TEST_F(PaymentsDataManagerTest,
+TEST_P(PaymentsDataManagerServerTest,
        GetActiveAutofillPromoCodeOffersForOrigin_WalletImportDisabled) {
   // Add an active promo code offer.
   AddOfferDataForTest(test::GetPromoCodeOfferData(
@@ -1133,7 +1175,7 @@ TEST_F(PaymentsDataManagerTest,
 
 // Tests that GetActiveAutofillPromoCodeOffersForOrigin does not return any
 // promo code offers if `IsAutofillPaymentMethodsEnabled()` returns `false`.
-TEST_F(PaymentsDataManagerTest,
+TEST_P(PaymentsDataManagerServerTest,
        GetActiveAutofillPromoCodeOffersForOrigin_AutofillCreditCardDisabled) {
   // Add an active promo code offer.
   AddOfferDataForTest(test::GetPromoCodeOfferData(
@@ -1323,7 +1365,7 @@ TEST_F(PaymentsDataManagerTest,
 // Tests that only the masked card is kept when deduping with a local duplicate
 // of it or vice-versa. This is checked based on the value assigned during the
 // for loop.
-TEST_F(PaymentsDataManagerTest,
+TEST_P(PaymentsDataManagerServerTest,
        GetCreditCardsToSuggest_Deduplication_MaskedIsKept) {
   CreditCard local_card("1141084B-72D7-4B73-90CF-3D6AC154673B",
                         test::kEmptyOrigin);
@@ -1346,7 +1388,7 @@ TEST_F(PaymentsDataManagerTest,
 }
 
 // Tests that different local and server credit cards are not deduped.
-TEST_F(PaymentsDataManagerTest,
+TEST_P(PaymentsDataManagerServerTest,
        GetCreditCardsToSuggest_Deduplication_DifferentCards) {
   CreditCard local_card("002149C1-EE28-4213-A3B9-DA243FFF021B",
                         test::kEmptyOrigin);
@@ -1368,7 +1410,7 @@ TEST_F(PaymentsDataManagerTest,
 
 // Tests case-insensitive deduping of the name field, i.e. the server card is
 // kept for duplicate cards except different name casing.
-TEST_F(PaymentsDataManagerTest,
+TEST_P(PaymentsDataManagerServerTest,
        GetCreditCardsToSuggest_Deduplication_CaseInsensitiveName) {
   CreditCard local_card("1141084B-72D7-4B73-90CF-3D6AC154673B",
                         test::kEmptyOrigin);
@@ -1600,6 +1642,48 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, SwitchServerStorages) {
             payments_data_manager().GetServerCreditCards()[0]->number());
 }
 
+TEST_F(PaymentsDataManagerSyncTransportModeTest, TransitionToTransportMode) {
+  // Start with full sync.
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
+  payments_data_manager().OnStateChanged(&sync_service_);
+  WaitForOnPaymentsDataChanged();
+
+  ASSERT_TRUE(
+      payments_data_manager().IsSyncFeatureEnabledForPaymentsServerMetrics());
+
+  // Add a server card to the profile storage.
+  CreditCard server_card;
+  test::SetCreditCardInfo(&server_card, "Server Card", "3456", "04", "2999",
+                          "1");
+  server_card.set_guid("00000000-0000-0000-0000-000000000007");
+  server_card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
+  server_card.set_server_id("server_id");
+  server_card.SetNetworkForMaskedCard(kVisaCard);
+  test_api(payments_data_manager()).AddServerCreditCard(server_card);
+  WaitForOnPaymentsDataChanged();
+
+  // Transition to Transport Mode (kSignin).
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
+  payments_data_manager().OnStateChanged(&sync_service_);
+  WaitForOnPaymentsDataChanged();
+
+  // Verify sync feature is disabled for metrics.
+  EXPECT_FALSE(
+      payments_data_manager().IsSyncFeatureEnabledForPaymentsServerMetrics());
+
+  // Opt-in to Wallet Sync Transport to see server cards.
+  CoreAccountInfo active_info =
+      identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+  SetUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id, true);
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // Since we switched storage, the profile server card is gone, and account
+  // storage is empty (unless we migrated, which this test implies we didn't).
+  EXPECT_EQ(0U, payments_data_manager().GetServerCreditCards().size());
+}
+
 // Sanity check that the mode where we use the regular, persistent storage for
 // cards still works.
 TEST_F(PaymentsDataManagerSyncTransportModeTest,
@@ -1782,7 +1866,7 @@ TEST_F(PaymentsDataManagerTest, ClearAllCvcs) {
 }
 
 // Tests that benefit getters return expected result for active benefits.
-TEST_F(PaymentsDataManagerTest, GetActiveCreditCardBenefits) {
+TEST_P(PaymentsDataManagerServerTest, GetActiveCreditCardBenefits) {
   // Add active benefits.
   CreditCardFlatRateBenefit flat_rate_benefit =
       test::GetActiveCreditCardFlatRateBenefit();
@@ -1854,7 +1938,7 @@ TEST_F(PaymentsDataManagerTest, GetActiveCreditCardBenefits) {
 }
 
 // Tests benefit getters will not return inactive benefits.
-TEST_F(PaymentsDataManagerTest, GetInactiveCreditCardBenefits) {
+TEST_P(PaymentsDataManagerServerTest, GetInactiveCreditCardBenefits) {
   // Add inactive benefits.
   base::Time future_time = AutofillClock::Now() + base::Days(5);
 
@@ -1904,7 +1988,7 @@ TEST_F(PaymentsDataManagerTest, GetInactiveCreditCardBenefits) {
 }
 
 // Tests benefit getters will not return expired benefits.
-TEST_F(PaymentsDataManagerTest, GetExpiredCreditCardBenefits) {
+TEST_P(PaymentsDataManagerServerTest, GetExpiredCreditCardBenefits) {
   // Add Expired benefits.
   base::Time expired_time = AutofillClock::Now() - base::Days(5);
 
@@ -2375,7 +2459,7 @@ TEST_F(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 // Tests that no linked BNPL issuers are returned if the BNPL sync flag is off.
-TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_FlagOff) {
+TEST_P(PaymentsDataManagerServerTest, GetLinkedBnplIssuers_FlagOff) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kAutofillEnableBuyNowPayLaterSyncing);
@@ -2406,7 +2490,8 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_FlagOff) {
 
 // Tests that no linked BNPL issuers are returned if the "Save and fill payment
 // methods" toggle is off.
-TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_PaymentMethodsDisabled) {
+TEST_P(PaymentsDataManagerServerTest,
+       GetLinkedBnplIssuers_PaymentMethodsDisabled) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBuyNowPayLaterSyncing);
   sync_pb::PaymentInstrument payment_instrument_1 =
@@ -2437,7 +2522,7 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_PaymentMethodsDisabled) {
 
 // Tests that no linked BNPL issuers are cached if the only issuer synced is
 // unsupported.
-TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_UnsupportedIssuer) {
+TEST_P(PaymentsDataManagerServerTest, GetLinkedBnplIssuers_UnsupportedIssuer) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBuyNowPayLaterSyncing);
   sync_pb::PaymentInstrument payment_instrument_1 =
@@ -2460,7 +2545,7 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_UnsupportedIssuer) {
 
 // If the conditions are met to return a linked BNPL issuer, this test ensures
 // it is returned and verifies that they had the expected values upon returning.
-TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers) {
+TEST_P(PaymentsDataManagerServerTest, GetLinkedBnplIssuers) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBuyNowPayLaterSyncing);
   int64_t instrument_id = 1234L;
@@ -2500,7 +2585,7 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers) {
 
 // This test ensures that if the server accidentally returns duplicate linked
 // BNPL issuers it is handled gracefully in Chrome.
-TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_DuplicateIssuers) {
+TEST_P(PaymentsDataManagerServerTest, GetLinkedBnplIssuers_DuplicateIssuers) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBuyNowPayLaterSyncing);
   int64_t instrument_id = 1234L;
@@ -2542,7 +2627,8 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_DuplicateIssuers) {
 
 // If the conditions are met to return a linked BNPL issuer, but it does not
 // have an eligible price range this test ensures it is not returned.
-TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_NoEligiblePriceRange) {
+TEST_P(PaymentsDataManagerServerTest,
+       GetLinkedBnplIssuers_NoEligiblePriceRange) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBuyNowPayLaterSyncing);
   int64_t instrument_id = 1234L;
@@ -2579,7 +2665,8 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_NoEligiblePriceRange) {
 
 // This test verifies that a linked BNPL issuer is not returned when it meets
 // initial criteria but lacks an eligible price range specifying 'USD' currency.
-TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_NonUsdPriceRangeRejected) {
+TEST_P(PaymentsDataManagerServerTest,
+       GetLinkedBnplIssuers_NonUsdPriceRangeRejected) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBuyNowPayLaterSyncing);
   ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
@@ -2601,7 +2688,7 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_NonUsdPriceRangeRejected) {
 
 // Tests that externally linked BNPL issuer will not be added  if flag
 // `AutofillEnableBuyNowPayLaterForExternallyLinked` is disabled.
-TEST_F(PaymentsDataManagerTest,
+TEST_P(PaymentsDataManagerServerTest,
        GetLinkedBnplIssuers_IssuerLinkedExternally_FlagDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -2629,7 +2716,8 @@ TEST_F(PaymentsDataManagerTest,
 
 // Tests that `action_required` is set for BNPL issuers if flag
 // `AutofillEnableBuyNowPayLaterForExternallyLinked` is enabled.
-TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_IssuerLinkedExternally) {
+TEST_P(PaymentsDataManagerServerTest,
+       GetLinkedBnplIssuers_IssuerLinkedExternally) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
@@ -3683,8 +3771,8 @@ TEST_F(PaymentsDataManagerTest, RecordLocalCardAdded) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-TEST_F(
-    PaymentsDataManagerTest,
+TEST_P(
+    PaymentsDataManagerServerTest,
     GetUnlinkedBnplIssuersWhenBnplSyncFeatureDisabled_UnlinkedBnplIssuersNotCached) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
@@ -3709,7 +3797,7 @@ TEST_F(
   EXPECT_EQ(payments_data_manager().GetUnlinkedBnplIssuers().size(), 0u);
 }
 
-TEST_F(PaymentsDataManagerTest,
+TEST_P(PaymentsDataManagerServerTest,
        GetUnlinkedBnplIssuers_UnlinkedBnplIssuersCacheUpdated) {
   // Create a BNPL payment creation option.
   sync_pb::PaymentInstrumentCreationOption creation_option;
@@ -3752,7 +3840,7 @@ TEST_F(PaymentsDataManagerTest,
 
 // This test ensures that if the server accidentally returns duplicate unlinked
 // BNPL issuers it is handled gracefully in Chrome.
-TEST_F(PaymentsDataManagerTest, GetUnlinkedBnplIssuers_DuplicateIssuers) {
+TEST_P(PaymentsDataManagerServerTest, GetUnlinkedBnplIssuers_DuplicateIssuers) {
   // Create a BNPL payment creation option.
   sync_pb::PaymentInstrumentCreationOption creation_option;
   creation_option.set_id("1234");
@@ -3797,7 +3885,8 @@ TEST_F(PaymentsDataManagerTest, GetUnlinkedBnplIssuers_DuplicateIssuers) {
 
 // Tests that no unlinked BNPL issuers are cached if the only synced unlinked
 // issuer is not supported.
-TEST_F(PaymentsDataManagerTest, GetUnlinkedBnplIssuers_UnsupportedIssuerId) {
+TEST_P(PaymentsDataManagerServerTest,
+       GetUnlinkedBnplIssuers_UnsupportedIssuerId) {
   // Create a BNPL payment creation option.
   sync_pb::PaymentInstrumentCreationOption creation_option;
   creation_option.set_id("1234");
@@ -3832,7 +3921,8 @@ TEST_F(PaymentsDataManagerTest, GetUnlinkedBnplIssuers_UnsupportedIssuerId) {
 
 // Tests that no unlinked BNPL issuers are cached if the only synced unlinked
 // issuer does not have an eligible price range.
-TEST_F(PaymentsDataManagerTest, GetUnlinkedBnplIssuers_NoEligiblePriceRange) {
+TEST_P(PaymentsDataManagerServerTest,
+       GetUnlinkedBnplIssuers_NoEligiblePriceRange) {
   // Create a BNPL payment creation option.
   sync_pb::PaymentInstrumentCreationOption creation_option;
   creation_option.set_id("1234");
@@ -3859,8 +3949,8 @@ TEST_F(PaymentsDataManagerTest, GetUnlinkedBnplIssuers_NoEligiblePriceRange) {
   EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
 }
 
-TEST_F(
-    PaymentsDataManagerTest,
+TEST_P(
+    PaymentsDataManagerServerTest,
     GetUnlinkedBnplIssuers_PaymentsDataManagerRefreshedTwice_NoDuplicatedUnlinkedBnplIssuers) {
   ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
       {test::CreatePaymentInstrumentCreationOptionWithBnplIssuer("1234")}));
@@ -3880,7 +3970,7 @@ TEST_F(
 
 // This test verifies that an unlinked BNPL issuer is not returned when it meets
 // initial criteria but lacks an eligible price range specifying 'USD' currency.
-TEST_F(PaymentsDataManagerTest,
+TEST_P(PaymentsDataManagerServerTest,
        GetUnlinkedBnplIssuers_NonUsdPriceRangeRejected) {
   // Create a BNPL payment creation option.
   sync_pb::PaymentInstrumentCreationOption creation_option;
@@ -3911,7 +4001,7 @@ TEST_F(PaymentsDataManagerTest,
 
 // Tests that `GetBnplIssuers` returns all linked and unlinked buy-now-pay-later
 // issuers.
-TEST_F(PaymentsDataManagerTest, GetBnplIssuers) {
+TEST_P(PaymentsDataManagerServerTest, GetBnplIssuers) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
   BnplIssuer linked_issuer = test::GetTestLinkedBnplIssuer();
   BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
@@ -3924,7 +4014,7 @@ TEST_F(PaymentsDataManagerTest, GetBnplIssuers) {
 
 // Tests that Buy-now-pay-later issuer getters does not return any issuers if
 // `IsAutofillPaymentMethodsEnabled()` returns `false`.
-TEST_F(PaymentsDataManagerTest,
+TEST_P(PaymentsDataManagerServerTest,
        BnplIssuerGetters_AutofillPaymentMethodsDisabled) {
   test_api(payments_data_manager())
       .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
@@ -3944,7 +4034,8 @@ TEST_F(PaymentsDataManagerTest,
 
 // Tests that Buy-now-pay-later issuer getters does not return any issuers if
 // `IsAutofillBnplPrefEnabled()` returns `false`.
-TEST_F(PaymentsDataManagerTest, BnplIssuerGetters_AutofillBnplPrefDisabled) {
+TEST_P(PaymentsDataManagerServerTest,
+       BnplIssuerGetters_AutofillBnplPrefDisabled) {
   test_api(payments_data_manager())
       .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
   test_api(payments_data_manager())
@@ -3963,7 +4054,8 @@ TEST_F(PaymentsDataManagerTest, BnplIssuerGetters_AutofillBnplPrefDisabled) {
 
 // Tests that Buy-now-pay-later issuer getters does not return any issuers if
 // `kAutofillEnableBuyNowPayLaterSyncing` feature is disabled.
-TEST_F(PaymentsDataManagerTest, BnplIssuerGetters_AutofillBnplFeatureDisabled) {
+TEST_P(PaymentsDataManagerServerTest,
+       BnplIssuerGetters_AutofillBnplFeatureDisabled) {
   test_api(payments_data_manager())
       .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
   test_api(payments_data_manager())
@@ -3983,20 +4075,20 @@ TEST_F(PaymentsDataManagerTest, BnplIssuerGetters_AutofillBnplFeatureDisabled) {
 }
 
 // Tests that BNPL issuers are supported for "en-US" app locales.
-TEST_F(PaymentsDataManagerTest, AreBnplIssuersSupported_LocaleIsEnUS) {
-  ResetPaymentsDataManager(false, "en-US", "US");
+TEST_P(PaymentsDataManagerServerTest, AreBnplIssuersSupported_LocaleIsEnUS) {
+  ResetPaymentsDataManager(UseSyncTransportMode(), "en-US", "US");
   EXPECT_TRUE(test_api(payments_data_manager()).AreBnplIssuersSupported());
 }
 
 // Tests that BNPL issuers are not supported for "es-US" app locales.
-TEST_F(PaymentsDataManagerTest, AreBnplIssuersSupported_LocaleIsEsUS) {
-  ResetPaymentsDataManager(false, "es-US", "US");
+TEST_P(PaymentsDataManagerServerTest, AreBnplIssuersSupported_LocaleIsEsUS) {
+  ResetPaymentsDataManager(UseSyncTransportMode(), "es-US", "US");
   EXPECT_FALSE(test_api(payments_data_manager()).AreBnplIssuersSupported());
 }
 
 // Tests that Buy-now-pay-later issuer getters does not return any issuers if
 // `experiment_country_code` is not "US".
-TEST_F(PaymentsDataManagerTest,
+TEST_P(PaymentsDataManagerServerTest,
        BnplIssuerGetters_AutofillBnplCountryNotSupported) {
   test_api(payments_data_manager())
       .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
@@ -4007,7 +4099,7 @@ TEST_F(PaymentsDataManagerTest,
   ASSERT_EQ(1U, payments_data_manager().GetUnlinkedBnplIssuers().size());
   ASSERT_EQ(1U, payments_data_manager().GetLinkedBnplIssuers().size());
 
-  ResetPaymentsDataManager(false, "en-US", "CA");
+  ResetPaymentsDataManager(UseSyncTransportMode(), "en-US", "CA");
 
   test_api(payments_data_manager())
       .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
@@ -4022,13 +4114,13 @@ TEST_F(PaymentsDataManagerTest,
 // Tests that Buy-now-pay-later issuer getters returns issuers if
 // `experiment_country_code` is not "US", and the disable country check flag is
 // enabled.
-TEST_F(
-    PaymentsDataManagerTest,
+TEST_P(
+    PaymentsDataManagerServerTest,
     BnplIssuerGetters_AutofillBnplCountryNotSupported_DisableCountryCheckFlagTurnedOn) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillDisableBnplCountryCheckForTesting};
 
-  ResetPaymentsDataManager(false, "en-US", "CA");
+  ResetPaymentsDataManager(UseSyncTransportMode(), "en-US", "CA");
 
   test_api(payments_data_manager())
       .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
@@ -4042,7 +4134,7 @@ TEST_F(
 
 // Tests that `SetAutofillHasSeenBnpl()` sets the pref to `true` regardless of
 // its current value.
-TEST_F(PaymentsDataManagerTest, SetAutofillHasSeenBnpl) {
+TEST_P(PaymentsDataManagerServerTest, SetAutofillHasSeenBnpl) {
   // The pref should always start disabled.
   ASSERT_FALSE(payments_data_manager().IsAutofillHasSeenBnplPrefEnabled());
 
@@ -4057,7 +4149,7 @@ TEST_F(PaymentsDataManagerTest, SetAutofillHasSeenBnpl) {
 
 // Tests that `SetAutofillAmountExtractionAiTermsSeen()` sets the pref to
 // `true` regardless of its current value.
-TEST_F(PaymentsDataManagerTest, SetAutofillAmountExtractionAiTermsSeen) {
+TEST_P(PaymentsDataManagerServerTest, SetAutofillAmountExtractionAiTermsSeen) {
   // The pref should always start disabled.
   EXPECT_FALSE(payments_data_manager()
                    .IsAutofillAmountExtractionAiTermsSeenPrefEnabled());
@@ -4070,7 +4162,7 @@ TEST_F(PaymentsDataManagerTest, SetAutofillAmountExtractionAiTermsSeen) {
                   .IsAutofillAmountExtractionAiTermsSeenPrefEnabled());
 }
 
-TEST_F(PaymentsDataManagerTest,
+TEST_P(PaymentsDataManagerServerTest,
        AutofillAmountExtractionAiTermsNotSeen_WhenTestFlagEnabled) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting};
@@ -4085,8 +4177,8 @@ TEST_F(PaymentsDataManagerTest,
 
 // Tests that Buy-now-pay-later issuers are loaded when the
 // `kAutofillBnplEnabled` pref is turned on.
-TEST_F(
-    PaymentsDataManagerTest,
+TEST_P(
+    PaymentsDataManagerServerTest,
     OnPaymentInstrumentEnabledPrefChange_BnplEnabledPrefIsOn_LoadsBnplIssuers) {
   prefs::SetAutofillBnplEnabled(prefs_.get(), false);
 
@@ -4114,8 +4206,8 @@ TEST_F(
 
 // Tests that Buy-now-pay-later issuers are cleared when the
 // `kAutofillBnplEnabled` pref is turned off.
-TEST_F(
-    PaymentsDataManagerTest,
+TEST_P(
+    PaymentsDataManagerServerTest,
     OnPaymentInstrumentEnabledPrefChange_BnplEnabledPrefIsOff_ClearsBnplIssuers) {
   ASSERT_TRUE(prefs::IsAutofillBnplEnabled(prefs_.get()));
 
@@ -4136,7 +4228,7 @@ TEST_F(
   EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
 }
 
-TEST_F(PaymentsDataManagerTest, ShouldShowBnplSettings) {
+TEST_P(PaymentsDataManagerServerTest, ShouldShowBnplSettings) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableBuyNowPayLater};
   prefs_.get()->SetBoolean(prefs::kAutofillHasSeenBnpl, true);
@@ -4146,7 +4238,7 @@ TEST_F(PaymentsDataManagerTest, ShouldShowBnplSettings) {
   EXPECT_FALSE(payments_data_manager().ShouldShowBnplSettings());
 }
 
-TEST_F(PaymentsDataManagerTest,
+TEST_P(PaymentsDataManagerServerTest,
        ShouldShowBnplSettings_BnplNotSeenButLinkedIssuerPresent) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableBuyNowPayLater};
@@ -4157,7 +4249,7 @@ TEST_F(PaymentsDataManagerTest,
   EXPECT_TRUE(payments_data_manager().ShouldShowBnplSettings());
 }
 
-TEST_F(PaymentsDataManagerTest, ShouldShowBnplSettings_FlagOff) {
+TEST_P(PaymentsDataManagerServerTest, ShouldShowBnplSettings_FlagOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kAutofillEnableBuyNowPayLater);
   prefs_.get()->SetBoolean(prefs::kAutofillHasSeenBnpl, true);

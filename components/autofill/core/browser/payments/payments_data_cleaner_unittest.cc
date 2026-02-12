@@ -27,15 +27,15 @@ namespace autofill {
 using ::testing::UnorderedElementsAre;
 
 class PaymentsDataCleanerTest : public PaymentsDataManagerTestBase,
-                                public testing::Test {
+                                public testing::TestWithParam<bool> {
  public:
   PaymentsDataCleanerTest() = default;
   ~PaymentsDataCleanerTest() override = default;
 
   void SetUp() override {
     SetUpTest();
-    MakePrimaryAccountAvailable(/*use_sync_transport_mode=*/false,
-                                identity_test_env_, sync_service_);
+    MakePrimaryAccountAvailable(UseSyncTransportMode(), identity_test_env_,
+                                sync_service_);
     personal_data_ = std::make_unique<PersonalDataManager>(
         profile_database_service_, account_database_service_, prefs_.get(),
         prefs_.get(), identity_test_env_.identity_manager(),
@@ -56,6 +56,8 @@ class PaymentsDataCleanerTest : public PaymentsDataManagerTestBase,
     personal_data_.reset();
     TearDownTest();
   }
+
+  bool UseSyncTransportMode() { return GetParam(); }
 
  protected:
   void SetServerCards(const std::vector<CreditCard>& server_cards) {
@@ -86,8 +88,16 @@ class PaymentsDataCleanerTest : public PaymentsDataManagerTestBase,
   std::unique_ptr<PaymentsDataCleaner> payments_data_cleaner_;
 };
 
+INSTANTIATE_TEST_SUITE_P(,
+                         PaymentsDataCleanerTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "SyncTransportMode"
+                                             : "SyncFeatureEnabled";
+                         });
+
 // Tests that DeleteDisusedCreditCards deletes desired credit cards only.
-TEST_F(PaymentsDataCleanerTest,
+TEST_P(PaymentsDataCleanerTest,
        DeleteDisusedCreditCards_OnlyDeleteExpiredDisusedLocalCards) {
   // Move the time to 20XX.
   task_environment_.FastForwardBy(base::Days(365) * 31);
@@ -175,7 +185,7 @@ TEST_F(PaymentsDataCleanerTest,
 
 // Tests that all the non settings origins of autofill credit cards are cleared
 // but that the settings origins are untouched.
-TEST_F(PaymentsDataCleanerTest, ClearCreditCardNonSettingsOrigins) {
+TEST_P(PaymentsDataCleanerTest, ClearCreditCardNonSettingsOrigins) {
   // Create three cards with a non settings origin.
   CreditCard credit_card0(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                           "https://www.example.com");

@@ -46,7 +46,7 @@ void PaymentsNetworkInterfaceTestBase::SetUpTest() {
           &test_url_loader_factory_);
   test_personal_data_.test_payments_data_manager().SetAccountInfoForPayments(
       identity_test_env_.MakePrimaryAccountAvailable(
-          "example@gmail.com", signin::ConsentLevel::kSync));
+          "example@gmail.com", signin::ConsentLevel::kSignin));
 }
 
 void PaymentsNetworkInterfaceTestBase::CreateFieldTrialWithId(
