@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -57,6 +58,7 @@
 #include "components/download/public/common/download_target_info.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
@@ -323,13 +325,12 @@ class BrowserCloseManagerBrowserTest : public InProcessBrowserTest {
   }
 
   void WaitForAllBrowsersToClose() {
-    GlobalBrowserCollection::GetInstance()->ForEach(
-        [](BrowserWindowInterface* browser) {
-          ui_test_utils::BrowserDestroyedObserver(browser).Wait();
-          return true;
-        },
-        /*order=*/BrowserCollection::Order::kCreation,
-        /*enumerate_new_browsers=*/true);
+    // Wait until all browser KeepAlive instances have been reset, indicating
+    // all browsers have been closed and destroyed.
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+                 KeepAliveOrigin::BROWSER) == 0;
+    }));
   }
 
   std::vector<raw_ptr<Browser, VectorExperimental>> browsers_;
@@ -1085,10 +1086,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                                                      ->GetActiveWebContents()
                                                      ->GetLastCommittedURL());
 
-  ui_test_utils::BrowserDestroyedObserver observer(otr_browser);
   TestBrowserCloseManager::AttemptClose(
       TestBrowserCloseManager::USER_CHOICE_USER_ALLOWS_CLOSE);
-  observer.Wait();
+  WaitForAllBrowsersToClose();
   EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
   EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   EXPECT_EQ(0, DownloadCoreService::BlockingShutdownCountAllProfiles());
@@ -1192,12 +1192,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                                      ->GetActiveWebContents()
                                      ->GetVisibleURL());
 
-  ui_test_utils::BrowserDestroyedObserver observer1(other_profile_browser);
-  ui_test_utils::BrowserDestroyedObserver observer2(opened_browser);
   TestBrowserCloseManager::AttemptClose(
       TestBrowserCloseManager::USER_CHOICE_USER_ALLOWS_CLOSE);
-  observer1.Wait();
-  observer2.Wait();
+  WaitForAllBrowsersToClose();
   EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
   EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   if (browser_defaults::kBrowserAliveWithNoWindows) {
