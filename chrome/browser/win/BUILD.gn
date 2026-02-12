@@ -32,3 +32,18 @@ source_set("registry_watcher") {
   ]
   deps = [ "//base" ]
 }
+
+source_set("isolated_browser_support") {
+  sources = [
+    "isolated_browser_support.cc",
+    "isolated_browser_support.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common:non_code_constants",
+    "//chrome/elevation_service:public_headers",
+    "//chrome/install_static:install_static_util",
+    "//chrome/installer/util:isolation_support",
+  ]
+}

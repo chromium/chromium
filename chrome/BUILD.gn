@@ -419,6 +419,7 @@ if (is_win) {
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:command_ids",
       "//chrome/app/theme:chrome_unscaled_resources",
+      "//chrome/browser/win:isolated_browser_support",
       "//chrome/chrome_elf",
       "//chrome/common:buildflags",
       "//chrome/common:version_header",

@@ -953,6 +953,11 @@ const char kUninstallAppId[] = "uninstall-app-id";
 // start a second isolated browser.
 const char kIsolated[] = "isolated";
 
+// Specifies that the browser should attempt to launch an isolated browser.
+// TODO(crbug.com/433545123): This is a temporary switch - replace this with a
+// configurable toggle in a future CL.
+const char kLaunchIsolated[] = "launch-isolated";
+
 // Specifies the version of the Progressive-Web-App launcher that launched
 // Chrome, used to determine whether to update all launchers.
 // NOTE: changing this switch requires adding legacy handling for the previous

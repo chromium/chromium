@@ -119,6 +119,7 @@
 #include "base/win/resource_exhaustion.h"
 #include "chrome/browser/chrome_browser_main_win.h"
 #include "chrome/browser/win/browser_util.h"
+#include "chrome/browser/win/isolated_browser_support.h"
 #include "chrome/child/v8_crashpad_support_win.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/common/chrome_version.h"
@@ -1142,6 +1143,17 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
 #if !DCHECK_IS_ON()
   base::win::DisableHandleVerifier();
 #endif
+
+  // Attempt to launch an isolated browser. If this is successful, this browser
+  // process becomes the stub, and will terminate after the main browser has
+  // terminated, with the exit code from the main browser.
+  if (is_browser && !command_line.HasSwitch(::switches::kIsolated) &&
+      chrome::IsIsolationEnabled(command_line)) {
+    const auto isolated_process = chrome::IsolatedBrowser::Launch(command_line);
+    if (isolated_process.has_value()) {
+      return isolated_process.value()->WaitForExit();
+    }
+  }
 
 #endif  // BUILDFLAG(IS_WIN)
 
