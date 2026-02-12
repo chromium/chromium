@@ -2934,7 +2934,7 @@ ci.thin_tester(
     # TODO(crbug.com/473587145): Rename this to "Win11" when the upgrade goes
     # to stable.
     name = "Win10 FYI x64 Release (AMD RX 5500 XT)",
-    description_html = "Runs release GPU tests on stable Windows 10/AMD RX 5500 XT configs",
+    description_html = "Runs release GPU tests on stable Windows 11/AMD RX 5500 XT configs",
     parent = "GPU FYI Win x64 Builder",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -2958,7 +2958,7 @@ ci.thin_tester(
             "gpu_fyi_win_amd_release_telemetry_tests",
         ],
         mixins = [
-            "win10_amd_rx_5500_xt_stable",
+            "win11_amd_rx_5500_xt_stable",
         ],
         per_test_modifications = {
             "gl_unittests": targets.mixin(
@@ -2979,7 +2979,7 @@ ci.thin_tester(
         os_type = targets.os_type.WINDOWS,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Windows|10|x64|AMD",
+        category = "Windows|11|x64|AMD",
         short_name = "rel",
     ),
 )
