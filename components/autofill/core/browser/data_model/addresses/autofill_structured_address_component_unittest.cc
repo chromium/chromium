@@ -7,6 +7,7 @@
 #include <map>
 #include <queue>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
@@ -1891,7 +1892,25 @@ TEST_F(AutofillStructuredAddressAddressComponent, TestFillTreeGapsParsing) {
 
 class PerCountryAutofillStructuredAddressAddressComponentTest
     : public AutofillStructuredAddressAddressComponent,
-      public testing::WithParamInterface<std::string_view> {};
+      public testing::WithParamInterface<std::tuple<std::string_view, bool>> {
+ public:
+  PerCountryAutofillStructuredAddressAddressComponentTest() {
+    features_.InitWithFeatureState(
+        features::kAutofillEnableStreetAddressMergeModes,
+        std::get<1>(GetParam()));
+  }
+
+  std::string GetCountryCode() const {
+    return std::string(std::get<0>(GetParam()));
+  }
+
+  bool IsAutofillUseChildrenAndReformatMergeModeEnabled() const {
+    return std::get<1>(GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
 
 struct TypesByProperties {
   std::set<std::string> types_with_defined_recursive_merge_mode;
@@ -1952,7 +1971,7 @@ TEST_P(PerCountryAutofillStructuredAddressAddressComponentTest,
        MergeModesDefinedExactlyWhereNeeded) {
   AddressComponentsStore address_component_store =
       i18n_model_definition::CreateAddressComponentModel(
-          autofill::AddressCountryCode(std::string(GetParam())));
+          autofill::AddressCountryCode(GetCountryCode()));
 
   TypesByProperties types_by_properties =
       GetTypesByProperties(address_component_store);
@@ -1961,7 +1980,8 @@ TEST_P(PerCountryAutofillStructuredAddressAddressComponentTest,
   // direct descendant of ADDRESS_HOME_ADDRESS - except for India, where it is a
   // leaf of a multi layer tree. This is a bit unfortunate, let's have an
   // exception for that.
-  if (GetParam() == "IN") {
+  if (!IsAutofillUseChildrenAndReformatMergeModeEnabled() &&
+      GetCountryCode() == "IN") {
     types_by_properties.types_with_defined_recursive_merge_mode.erase(
         "ADDRESS_HOME_DEPENDENT_LOCALITY");
   }
@@ -1987,7 +2007,8 @@ std::set<std::string_view> GetAllAutofillCountriesWithHierarchy() {
 INSTANTIATE_TEST_SUITE_P(
     Instantiation,
     PerCountryAutofillStructuredAddressAddressComponentTest,
-    testing::ValuesIn(GetAllAutofillCountriesWithHierarchy()));
+    testing::Combine(testing::ValuesIn(GetAllAutofillCountriesWithHierarchy()),
+                     testing::Bool()));
 
 }  // namespace
 }  // namespace autofill

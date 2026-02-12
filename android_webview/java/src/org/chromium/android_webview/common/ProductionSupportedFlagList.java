@@ -376,6 +376,11 @@ public final class ProductionSupportedFlagList {
                         + " match different types. Applied only for parsing of address forms in"
                         + " Turkish."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_ENABLE_STREET_ADDRESS_MERGE_MODES,
+                "If enabled, the missing merge modes will be re-enabled on nodes. To do that,"
+                        + "MergeMode::kMergeChildrenAndReformatIfNeeded will be also added to all"
+                        + "the nodes where required."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_SUPPORT_PHONETIC_NAME_FOR_JP,
                 "When enabled, Autofill will support phonetic name for Japan."),
         Flag.baseFeature(

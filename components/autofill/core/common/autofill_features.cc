@@ -594,6 +594,13 @@ BASE_FEATURE(kAutofillEnableSecurityTouchEventFilteringAndroid,
 BASE_FEATURE(kAutofillEnableSkippingUnrecognizedAttribute,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, the missing merge modes will be re-enabled on nodes. To do that,
+// MergeMode::kMergeChildrenAndReformatIfNeeded will be also added to all the
+// nodes where required.
+// TODO(crbug.com/447111009): Remove when launched.
+BASE_FEATURE(kAutofillEnableStreetAddressMergeModes,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, chrome will support home and work addresses from account.
 // TODO: crbug.com/354706653 - Clean up when launched.
 BASE_FEATURE(kAutofillEnableSupportForHomeAndWork,
@@ -967,13 +974,6 @@ BASE_FEATURE_PARAM(std::string,
 // TODO: crbug.com/444147005 - Clean up after this feature is rolled out.
 BASE_FEATURE(kAutofillUploadManualFallbackFieldsToServer,
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, the MergeMode::kMergeChildrenAndReformatIfNeeded will be added to
-// the StreetAddressNode, StreetLocationNode and HouseNumberAndApartmentNode's
-// merge mode.
-// TODO(crbug.com/447111009): Remove when launched.
-BASE_FEATURE(kAutofillUseChildrenAndReformatMergeMode,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables using a custom address model for India, overriding the legacy one.
 BASE_FEATURE(kAutofillUseINAddressModel, base::FEATURE_DISABLED_BY_DEFAULT);

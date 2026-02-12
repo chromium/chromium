@@ -156,21 +156,30 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
       return std::make_unique<BetweenStreetsOrLandmarkNode>(
           std::move(children));
+    case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
+      return std::make_unique<StreetLocationAndLocalityNode>(
+          std::move(children));
     case ADDRESS_HOME_LINE1:
     case ADDRESS_HOME_LINE2:
     case ADDRESS_HOME_LINE3:
     case ADDRESS_HOME_APT_TYPE:
     case ADDRESS_HOME_OTHER_SUBUNIT:
     case ADDRESS_HOME_ADDRESS_WITH_NAME:
-    case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
-    case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
-    case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
     case ADDRESS_HOME_ZIP_AND_CITY:
     case ADDRESS_HOME_ZIP_PREFIX:
     case ADDRESS_HOME_ZIP_SUFFIX:
     case DELIVERY_INSTRUCTIONS:
-      // TODO(crbug.com/447111009) Restore `kDefault` merge mode.
-      return std::make_unique<AddressComponent>(type, std::move(children));
+      return std::make_unique<AddressComponent>(
+          type, std::move(children),
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableStreetAddressMergeModes)
+              ? MergeMode::kDefault
+              : MergeMode::kNone);
+    // These are synthesized nodes so they don't require merging.
+    case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
+    case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
+      return std::make_unique<AddressComponent>(type, std::move(children),
+                                                MergeMode::kNone);
     case NO_SERVER_DATA:
     case UNKNOWN_TYPE:
     case EMPTY_TYPE:

@@ -26,10 +26,6 @@ class HouseNumberNode : public AddressComponent {
  public:
   explicit HouseNumberNode(SubcomponentsList children);
   ~HouseNumberNode() override;
-
-  std::u16string GetValueForComparison(
-      const std::u16string& value,
-      const AddressCountryCode& common_country_code) const override;
 };
 
 // A node that represents the house number and apartment.
@@ -127,6 +123,12 @@ class BetweenStreetsOrLandmarkNode : public AddressComponent {
  public:
   explicit BetweenStreetsOrLandmarkNode(SubcomponentsList children);
   ~BetweenStreetsOrLandmarkNode() override;
+};
+
+class StreetLocationAndLocalityNode : public AddressComponent {
+ public:
+  explicit StreetLocationAndLocalityNode(SubcomponentsList children);
+  ~StreetLocationAndLocalityNode() override;
 };
 
 // The StreetAddress incorporates all the information specifically related to
