@@ -112,7 +112,6 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
 
     if (changedProperties.has('lineFocusStyle') &&
         this.lineFocusStyle !== null) {
-      console.error('line focus style change: ', this.lineFocusStyle);
       this.updateOptionsForStyle_(this.lineFocusStyle);
     }
     if (changedProperties.has('lineFocusMovement') &&
@@ -163,9 +162,6 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
     this.styleOptions_.forEach(option => {
       option.selected = option.data === newStyle;
     });
-    console.error(
-        'updated options for style: ',
-        this.styleOptions_.filter(option => option.selected).length);
   }
 
   private updateOptionsForMovement_(newMovement: LineFocusMovement) {
