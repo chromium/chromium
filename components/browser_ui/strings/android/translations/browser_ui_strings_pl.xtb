@@ -314,6 +314,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="4046123991198612571">Następny utwór</translation>
 <translation id="4077310749977440510">Strony zwykle odczytują zawartość schowka na przykład w celu zachowania formatowania kopiowanego tekstu</translation>
 <translation id="4082080074595021446">Wyjątki dla konkretnych witryn są niedozwolone, ponieważ urządzenie z Androidem nie ma wystarczającej ilości pamięci RAM.</translation>
+<translation id="4089304748532599471">Zmieniono niektóre ustawienia Chrome</translation>
 <translation id="4149890623864272035">Czy na pewno chcesz usunąć wszystkie dane lokalne, w tym pliki cookie, i zresetować wszystkie uprawnienia tej witryny?</translation>
 <translation id="4149994727733219643">Uproszczony widok stron internetowych</translation>
 <translation id="4151930093518524179">Domyślne powiększenie</translation>
@@ -349,6 +350,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="4478158430052450698">Łatwiejsze dostosowywanie powiększenia w różnych witrynach</translation>
 <translation id="4479647676395637221">Pytaj, zanim zezwolisz stronom na korzystanie z aparatu (zalecane)</translation>
 <translation id="4505788138578415521">URL pokazany w całości</translation>
+<translation id="4522570452068850558">Szczegóły</translation>
 <translation id="4523472416386354622">Zaloguj się, aby rozpocząć</translation>
 <translation id="4534723447064627427">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do mikrofonu, musisz go też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Wycisz mikrofon</translation>
@@ -685,6 +687,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="8117244575099414087">Gdy ta opcja jest włączona, strony internetowe mogą używać czujników urządzenia. Gdy jest wyłączona, strony nie mogą używać czujników.</translation>
 <translation id="813082847718468539">Wyświetl informacje o witrynie</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
+<translation id="8148160259207090265">To ustawienie pozostanie włączone tak długo, jak długo masz włączoną Ochronę zaawansowaną w ustawieniach Androida.</translation>
 <translation id="8163152278172770963">Nie zezwalaj witrynom na automatyczne włączanie obrazu w obrazie</translation>
 <translation id="8168435359814927499">Treść</translation>
 <translation id="818487310457576362">Aby zamknąć pełny ekran, przeciągnij od krawędzi ekranu.</translation>
@@ -714,6 +717,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="8441146129660941386">Przewiń do tyłu</translation>
 <translation id="8444433999583714703">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do lokalizacji, musisz ją też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Cofnij zgodę na dostęp do urządzenia</translation>
+<translation id="8463843545738141778">To ustawienie jest wyłączone, ponieważ w ustawieniach Androida włączono Ochronę zaawansowaną.</translation>
 <translation id="8467359479529706065">Plansza dolna wyglądu strony nowej karty otwarta do połowy wysokości</translation>
 <translation id="8471525937465764768">Strony zwykle łączą się z urządzeniami USB na przykład w celu drukowania dokumentów lub zapisywania plików na urządzeniu pamięci masowej</translation>
 <translation id="8473055640493819707">Aplikacja „<ph name="APP_NAME" />” jest nieaktualna. Zainstaluj ją ponownie.</translation>

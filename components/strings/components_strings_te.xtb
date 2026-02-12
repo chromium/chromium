@@ -184,7 +184,6 @@
 <translation id="1289129165308566697">మీ హిస్టరీని ఇతర పరికరాలలో చూడండి</translation>
 <translation id="1292571435393770077">ట్రే 16</translation>
 <translation id="1292701964462482250">"మీ కంప్యూటర్‌లో ఉన్న సాఫ్ట్‌వేర్ కారణంగా Chrome సురక్షితంగా వెబ్‌కు కనెక్ట్ కాలేకపోతోంది" (Windows కంప్యూటర్‌ల కోసం మాత్రమే)</translation>
-<translation id="1293154089865862473">ఈ ఆప్షన్‌లను అందించడానికి చెక్ అవుట్ పేజీలోని పేజీ కంటెంట్ Googleతో షేర్ అవుతుంది. ఆటోఫిల్‌లో 'తర్వాత పే చేయండి' ఆప్షన్‌లను దాచడానికి, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />‌కు వెళ్లండి.</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">9 x 11 అంగుళాల ఎన్వలప్</translation>
 <translation id="129553762522093515">ఇటీవల మూసివేయబడినవి</translation>
@@ -651,6 +650,7 @@
 <translation id="2071156619270205202">వర్చువల్ కార్డ్ నంబర్ కోసం ఈ కార్డ్‌కు అర్హత లేదు.</translation>
 <translation id="2071852865256799872">మీ బ్రౌజర్‌ను మీ సంస్థ మేనేజ్ చేస్తోంది, మీ ప్రొఫైల్‌ను <ph name="PROFILE_DOMAIN" /> మేనేజ్ చేస్తోంది</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">సమాచారం, డివైజ్‌లో మాత్రమే సేవ్ అవుతుంది</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" />‌ను అన్‌బ్లాక్ చేయండి</translation>
 <translation id="2074771604462073334">మీరు సందర్శించారు</translation>
 <translation id="2078956195623975415">మ్యూజిక్ &amp; డ్యాన్స్ గేమ్‌లు</translation>
@@ -699,6 +699,7 @@
 <translation id="2137891579555018930">అనుమతి కోసం వేచి ఉంది...</translation>
 <translation id="213826338245044447">మొబైల్ బుక్‌మార్క్‌లు</translation>
 <translation id="2141000681034340397">మీ ఇన్‌పుట్‌ను ఎడిట్ చేయండి</translation>
+<translation id="2141475438898772664">4 వాయిదాలలో లేదా నెలవారీగా పేమెంట్ చేయండి</translation>
 <translation id="2144171668675205303">యాక్టివ్‌గా ఉన్న టాపిక్‌లు ఏవీ లేవు</translation>
 <translation id="2145193671493396738">ఎకానమీ వార్తలు</translation>
 <translation id="214556005048008348">పేమెంట్‌ను రద్దు చేయండి</translation>
@@ -1118,7 +1119,6 @@
 <translation id="2782088940970074970">కార్ రెంటల్స్</translation>
 <translation id="278436560439594386">గృహోపకరణాలు</translation>
 <translation id="2784474685437057136">B5 అదనం</translation>
-<translation id="2784540996156451674">ఈ ఆప్షన్‌లను అందించడానికి చెక్ అవుట్ పేజీలోని పేజీ కంటెంట్ Googleతో షేర్ అవుతుంది.</translation>
 <translation id="2784949926578158345">కనెక్షన్ మళ్ళీ సెట్ చేయబడింది.</translation>
 <translation id="2786008859124691917">సైకిళ్లు &amp; యాక్సెసరీలు</translation>
 <translation id="2792012897584536778">ఈ పరికర నిర్వాహకులు మీరు సందర్శించే వెబ్‌సైట్‌ల కంటెంట్‌ను చూడటానికి వారిని అనుమతించే అవకాశం ఉండే భద్రతా సర్టిఫికెట్‌లను సెటప్ చేశారు.</translation>
@@ -2843,6 +2843,7 @@
 <translation id="5543564889050342791">జూలు, అక్వేరియమ్‌లు &amp; సంరక్షణ కేంద్రాలు</translation>
 <translation id="5543722831081909240">180 డిగ్రీలు</translation>
 <translation id="5544836308113951378">క్రూజ్‌లు &amp; చార్టర్‌లు</translation>
+<translation id="5545314360139398232">తర్వాత పే చేయడానికి <ph name="ISSUER_NAME" />‌ను లింక్ చేయండి</translation>
 <translation id="5547939254150808298">ప్రింటింగ్ &amp; పబ్లిషింగ్</translation>
 <translation id="554815783948612276">ఫోరమ్ &amp; చాట్ ప్రొవైడర్‌లు</translation>
 <translation id="5548606607480005320">భద్రతా చెక్-అప్</translation>
@@ -3690,6 +3691,7 @@
 <translation id="6926216138694948720">టాట్టూలు</translation>
 <translation id="692638818576287323">వాణిజ్యపరమైన వాహనాలు</translation>
 <translation id="6927878187051807444">కెమెరా ఫైల్స్, స్క్రీన్‌షాట్‌లు</translation>
+<translation id="6929949393612835405">మూసివేసి, "<ph name="OPENER_TITLE" />"కు తిరిగి వెళ్లండి</translation>
 <translation id="6930607614725241390">సైడ్ ప్యానెల్‌లో సెర్చ్ చేయండి</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్ వెబ్‌లో సెర్చ్ చేయడానికి మిమ్మల్ని అనుమతిస్తుంది, అదే విధంగా Chrome ఫీచర్‌లను శక్తిమంతం చేస్తుంది<ph name="END_BOLD" /> అంటే అడ్రస్ బార్ నుండి, వెబ్ పేజీలలోని ఇమేజ్‌ల నుండి సెర్చ్ చేయడం వంటివి సులభంగా చేయగలుగుతారు. మీ సెర్చ్ ఇంజిన్ సపోర్ట్ చేయకపోతే, ఏదైనా ఫీచర్ అందుబాటులో లేకపోయే అవకాశం ఉంది.</translation>
 <translation id="6934672428414710184">ఇది మీ Google ఖాతాలో ఉన్న పేరు</translation>
@@ -4896,6 +4898,7 @@
 <translation id="8858065207712248076">మీరు మీ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> పాస్‌వర్డ్‌ని ఇతర సైట్‌లలో తిరిగి ఉపయోగించినట్లయితే దీనిని రీసెట్ చేయాల్సిందిగా Chrome సిఫార్సు చేస్తోంది.</translation>
 <translation id="885906927438988819">స్పెల్లింగ్ సరైనది అయితే, <ph name="BEGIN_LINK" />విండోల సమస్య విశ్లేషణలను రన్ చేయడానికి ట్రై చేయండి<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">ఫోటోగ్రాఫిక్ &amp; డిజిటల్ ఆర్ట్స్</translation>
+<translation id="8861482055962701239">ఈ సమాచారాన్ని మీ Google Walletలో సేవ్ చేయడం సాధ్యపడలేదు. బదులుగా అది, ఈ డివైజ్‌లోని Chromeలో సేవ్ అయింది. తర్వాతిసారి మీరు దీన్ని ఉపయోగించినప్పుడు, Chrome దీన్ని Walletలో సేవ్ చేసే ఆప్షన్‌ను అందిస్తుంది.</translation>
 <translation id="8863218129525348270">తర్వాతిసారి వేగంగా పేమెంట్ చేయడానికి, మీ కార్డ్‌ను మీ పరికరంలో సేవ్ చేయండి</translation>
 <translation id="8864939224504814334">సూట్‌లు &amp; బిజినెస్ సంబంధమైన దుస్తులు</translation>
 <translation id="8866132857352163524">సౌండ్ ట్రాక్‌లు</translation>

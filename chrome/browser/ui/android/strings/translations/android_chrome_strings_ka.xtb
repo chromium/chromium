@@ -432,6 +432,7 @@
 <translation id="2870560284913253234">საიტი</translation>
 <translation id="2871733351037274014">წინასწარ ჩატვირთული გვერდები</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" />-ს სურს, დაუდასტუროთ შემდეგი ვებსაიტი:</translation>
+<translation id="2876556152483133018">Site Search</translation>
 <translation id="2876628302275096482">შეიტყვეთ მეტი იმის შესახებ, თუ <ph name="BEGIN_LINK" />როგორ ინარჩუნებს Chrome თქვენი მონაცემების კონფიდენციალურობას<ph name="END_LINK" /></translation>
 <translation id="2878607776582720720"><ph name="TAB_TITLE" />, არჩეულია რამდენიმე ინკოგნიტო ჩანართი, რომლებიც აზიარებს კონტენტს</translation>
 <translation id="2885355868600171871">მისამართთა ზოლზე გადასვლა</translation>
@@ -621,6 +622,7 @@
 <translation id="3709577906275923507"><ph name="FILE_NAME" /> შეიძლება შეიცავდეს სენსიტიურ ინფორმაციას და არ უნდა გაზიარდეს</translation>
 <translation id="3710501561113687889">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ის მიერ ამ საიტთან გაზიარდება <ph name="FIELDS_STRING" />.</translation>
 <translation id="3710560693796335511">თანამშრომლობა</translation>
+<translation id="3714430408451673233">ჩანართის ქვედა ფურცელი ნახევარ სიმაღლეზე.</translation>
 <translation id="3718765429352682176">შეგიძლიათ, იხილოთ სხვა აპების ისტორია, რომლებიც ბმულებს Chrome-ში ხსნის.</translation>
 <translation id="3721119614952978349">თქვენ და Google</translation>
 <translation id="3727000368239390918">გაიარეთ ავტორიზაცია, რომ მიიღოთ თქვენი ჩანართები და სხვა მონაცემები თქვენს ყველა მოწყობილობაში</translation>
@@ -765,6 +767,7 @@
 <translation id="4326079409704643112">თქვენს Google ანგარიშში Chrome-ის მონაცემები რომ გამოიყენოთ და შეინახოთ, დაადასტურეთ ვინაობა</translation>
 <translation id="433213510553688132">მიმდინარეობს თვალის მიდევნება...</translation>
 <translation id="4335835283689002019">Safe Browsing გამორთულია</translation>
+<translation id="4343250402091037179">კონკრეტულ საიტში ან Chrome-ის ნაწილში რაიმე რომ მოიძიოთ, მისამართთა ზოლში აკრიფეთ მისი მალსახმობი კლავიატურის სასურველ მალსახმობთან ერთად.</translation>
 <translation id="4351244548802238354">დიალოგის დახურვა</translation>
 <translation id="4352287748243729941">გამოიყენებთ <ph name="PROVIDER" /> პაროლს?</translation>
 <translation id="4355272626458588338">თქვენთვის მნიშვნელოვან გვერდზე დაბრუნება შესაძლებელია სანიშნეს დამატებით</translation>
@@ -955,6 +958,7 @@
 <translation id="5056587122125565772">სურათის შექმნა</translation>
 <translation id="506254248375231072">ჩანართები არ არის</translation>
 <translation id="5075939510584558547">დაშიფვრის გარეშე შენახვა</translation>
+<translation id="5078638979202084724">ყველა ჩანართის სანიშნეებში ჩამატება</translation>
 <translation id="5085038751173179818">შედით ამ საიტსა და Chrome-ში, თქვენი სანიშნეებითა და სხვა კონტენტით თქვენს ყველა მოწყობილობაზე რომ ისარგებლოთ</translation>
 <translation id="5091199029769593641">მალე, ახალი ჩანართის გახსნისას, იხილავთ ამბებს <ph name="SITE_NAME" />-დან. თქვენ მიერ თვალმიდევნებული საიტები შეინახება თქვენს Google ანგარიშში. მათი მართვა Discover-ის პარამეტრებიდან შეგიძლიათ.</translation>
 <translation id="509429900233858213">შეცდომა მოხდა.</translation>
@@ -1038,6 +1042,7 @@
 <translation id="544776284582297024">ჩანართების გასახსნელად და ერთდროულად სხვადასხვა გვერდის მოსანახულებლად შეეხეთ ჩანართების გახსნის ღილაკს</translation>
 <translation id="5456381639095306749">გვერდის ჩამოტვირთვა</translation>
 <translation id="5458366071038729214">აქ იპოვით საიტებს, რომლებსაც თვალს ადევნებთ</translation>
+<translation id="5465437530117042974">ჩანართის ქვედა ფურცლის ცვლილებები დაიხურა.</translation>
 <translation id="5469852975082458401">გვერდებზე ნავიგაცია ტექსტური კურსორის მეშვეობით შეგიძლიათ. გამოსართავად დააჭირეთ F7-ს.</translation>
 <translation id="5471273988133666918">ჩანართის „<ph name="TAB_TITLE" />“ გადატანა შეუძლებელია</translation>
 <translation id="548278423535722844">რუკების აპში გახსნა</translation>
@@ -1171,6 +1176,7 @@
 <translation id="604996488070107836"><ph name="FILE_NAME" /> ვერ ჩამოიტვირთა უცნობი შეცდომის გამო.</translation>
 <translation id="605721222689873409">წწ</translation>
 <translation id="6059830886158432458">აქ შეგიძლიათ მართოთ ამბები და აქტივობა</translation>
+<translation id="606985262342505139">ჩანართის ქვედა ფურცელი სრულ სიმაღლეზე</translation>
 <translation id="6071995715087444295">გატეხილი პაროლების შესამოწმებლად შედით თქვენს Google ანგარიშში</translation>
 <translation id="6078323886959318429">მალსახმობის დამატება</translation>
 <translation id="6085886413119427067">განსაზღვრავს დაცული კავშირით ვებსაიტებთან დაკავშირების ხერხს</translation>
@@ -1187,6 +1193,7 @@
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />დაწვრილებით<ph name="END_LINK" /></translation>
 <translation id="6127860394906721547">გახსენით ჩანართების ჯგუფი „<ph name="TITLE_OF_GROUP" />“, <ph name="COLOR_NAME" /> ფერის, ვებსაიტებით <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">ჩანართის ჩაკეცვა</translation>
+<translation id="6132075343662013154">Chrome შემოგთავაზებთ თქვენი პაროლის შენახვას</translation>
 <translation id="6134168885321518274">საძიებო ზოლის გახსნა</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ჩანართი}other{<ph name="TAB_COUNT_MANY" /> ჩანართი}}</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" />-ის ენა</translation>
@@ -1339,6 +1346,7 @@
 <translation id="6672917148207387131"><ph name="DOMAIN" />-ის დამატება</translation>
 <translation id="6674571176963658787">სინქრონიზაციის დასაწყებად შეიყვანეთ თქვენი საიდუმლო ფრაზა</translation>
 <translation id="6676927815633975364">შედით ამ საიტსა და Chrome-ში</translation>
+<translation id="6684262542644248484">შედით ვებსაიტის სისტემაში</translation>
 <translation id="6684809838922667136">გააუმჯობესეთ Chrome</translation>
 <translation id="6689436252814043643">წაკითხვის რეჟიმი ხელმიუწვდომელია</translation>
 <translation id="6700279777779583398">არჩევანი შენახულია</translation>

@@ -1736,6 +1736,7 @@ agente de resolución asociado al agente de resolución configurado por el usuar
 <translation id="2158741059065130266">Si estableces la política como verdadera, los usuarios de la app de Archivos de <ph name="PRODUCT_OS_NAME" /> podrán ver la Papelera y los archivos de Mis archivos y Descargas (incluidos los subordinados creados por el usuario) se enviarán allí cuando los borres.
 
       Si estableces la política como falsa, los archivos de la papelera seguirán disponibles si se muestran los archivos ocultos y si se busca el directorio Papelera en Mis archivos o Descargas.</translation>
+<translation id="215891883000260452">Habilitar la recopilación de registros de diagnóstico de WebRTC para orígenes específicos</translation>
 <translation id="2159092270572925582">Te permite configurar una lista de patrones de URL donde se indiquen los sitios que pueden mostrar contenido mixto (p. ej., contenido HTTP en sitios HTTPS) bloqueable (p. ej., activo) y para los cuales se inhabilitarán las actualizaciones del contenido mixto bloqueable de forma opcional.
 
           Si no estableces esta política, se bloqueará el contenido mixto bloqueable y se actualizará el contenido mixto bloqueable de forma opcional; además, los usuarios podrán establecer excepciones para permitir ese contenido en sitios específicos.
@@ -2611,6 +2612,13 @@ El sistema solo consulta registros AAAA cuando el dispositivo es accesible para 
       Nota: A partir de la versión M114, determinadas aplicaciones de kiosco pueden anular el comportamiento de esta política en sus aplicaciones para casos de uso especiales, como evaluaciones de estudiantes.</translation>
 <translation id="2667894101494585925">Habilitar la recuperación de la guía de optimización</translation>
 <translation id="2669157090883237118">No cambiar la configuración recomendada de <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="2669314653349044073">Esta política permite habilitar la recopilación de registros de diagnóstico para WebRTC en orígenes específicos.
+
+Para obtener información detallada sobre los patrones de entrada válidos, consulta https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política. Esta política solo establece coincidencias basadas en el origen; por lo tanto, se ignoran todas las rutas de acceso que se incluyan en el patrón de URL. Se admiten esquemas y subdominios.
+
+Si se establece la política, se habilitará la recopilación de registros de diagnóstico para los orígenes que coincidan con los patrones de la lista.
+
+Si no estableces la política, la recopilación de registros de diagnóstico se inhabilitará de forma predeterminada.</translation>
 <translation id="2672012807430078509">Controlar el uso de NTLM como protocolo de autenticación para las activaciones de archivos compartidos SMB</translation>
 <translation id="2673363037046384711">El usuario final puede habilitar o inhabilitar el modo de alta eficiencia</translation>
 <translation id="2673968385134502798">Juegos</translation>

@@ -184,7 +184,6 @@
 <translation id="1289129165308566697">查看其他设备上的历史记录</translation>
 <translation id="1292571435393770077">纸匣 16</translation>
 <translation id="1292701964462482250">“您计算机上的软件导致 Chrome 无法安全地连接到网络”（仅限 Windows 计算机）</translation>
-<translation id="1293154089865862473">系统会将结账页中的网页内容分享给 Google，以便提供这些选项。如要隐藏“先买后付”自动填充选项，请前往<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />。</translation>
 <translation id="1293556467332435079">文件</translation>
 <translation id="1293797321964802402">9 x 11 英寸信封</translation>
 <translation id="129553762522093515">最近关闭的标签页</translation>
@@ -656,6 +655,7 @@
 <translation id="2071156619270205202">这张卡的卡号无法用作虚拟卡号。</translation>
 <translation id="2071852865256799872">您的浏览器由您的组织管理，您的个人资料由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">信息仅保存到设备</translation>
 <translation id="2074733626795553847">取消屏蔽“<ph name="TOPIC" />”</translation>
 <translation id="2074771604462073334">上次访问时间：</translation>
 <translation id="2078956195623975415">音乐与舞蹈游戏</translation>
@@ -1123,7 +1123,6 @@
 <translation id="2782088940970074970">租车</translation>
 <translation id="278436560439594386">家用电器</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">系统会将结账页中的网页内容分享给 Google，以便提供这些选项。</translation>
 <translation id="2784949926578158345">连接已重置。</translation>
 <translation id="2786008859124691917">自行车及配件</translation>
 <translation id="2792012897584536778">此设备的管理员设置了安全证书，这些证书可能会允许管理员查看您所访问的网站的内容。</translation>
@@ -2865,6 +2864,7 @@
 <translation id="5570825185877910964">保护账号</translation>
 <translation id="5571083550517324815">无法从此地址取货。请另选一个地址。</translation>
 <translation id="5572434905385510939">22 x 28 英寸</translation>
+<translation id="5573090972398558474">您的组织已禁止在无痕模式下访问此页面。</translation>
 <translation id="5573641252776268565">修改护照信息</translation>
 <translation id="5578606540385219379">服务提供商</translation>
 <translation id="5580958916614886209">请检查您的信用卡到期月份，然后重试</translation>
@@ -4292,6 +4292,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{无}=1{1 个应用（<ph name="EXAMPLE_APP_1" />）}=2{2 个应用（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 个应用（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>
 <translation id="7846161022626028328">出错了，请重试。</translation>
 <translation id="784623644169604270">近期无活动</translation>
+<translation id="7848926355794727168">自动浏览</translation>
 <translation id="7853222852810008596">先买后付服务不支持此币种</translation>
 <translation id="785476343534277563">学院体育</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4895,6 +4896,7 @@
 <translation id="8858065207712248076">如果您在其他网站上重复使用了您的 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密码，Chrome 建议您重置该密码。</translation>
 <translation id="885906927438988819">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行 Windows 网络诊断<ph name="END_LINK" />。</translation>
 <translation id="8861126751581835107">摄影与数码艺术</translation>
+<translation id="8861482055962701239">无法将此信息保存到您的 Google 钱包中。已改为保存到此设备上的 Chrome 中。Chrome 会在您下次使用时询问您是否将其保存到 Google 钱包。</translation>
 <translation id="8863218129525348270">将银行卡保存到设备上，下次就能更快捷地付款</translation>
 <translation id="8864939224504814334">套装和商务着装</translation>
 <translation id="8866132857352163524">原声带</translation>

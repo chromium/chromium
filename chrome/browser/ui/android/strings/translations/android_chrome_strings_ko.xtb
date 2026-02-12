@@ -432,6 +432,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2871733351037274014">페이지 미리 로드</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" />님이 다음 웹사이트의 승인을 요청했습니다.</translation>
+<translation id="2876556152483133018">사이트 검색</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome에서 데이터를 비공개로 유지하는 방법<ph name="END_LINK" /> 자세히 알아보기</translation>
 <translation id="2878607776582720720"><ph name="TAB_TITLE" />, 여러 개 선택되고 공유 중인 시크릿 탭</translation>
 <translation id="2885355868600171871">주소 표시줄로 이동</translation>
@@ -621,6 +622,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3709577906275923507"><ph name="FILE_NAME" />에 민감한 정보가 포함되어 있을 수 있으므로 공유해서는 안 됩니다</translation>
 <translation id="3710501561113687889">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 <ph name="FIELDS_STRING" />을(를) 이 사이트와 공유해야 합니다.</translation>
 <translation id="3710560693796335511">공동작업</translation>
+<translation id="3714430408451673233">탭 하단 시트가 절반 높이로 열렸습니다.</translation>
 <translation id="3718765429352682176">Chrome에서 링크를 열어 다른 앱의 방문 기록을 볼 수 있습니다.</translation>
 <translation id="3721119614952978349">내 Google 서비스 설정</translation>
 <translation id="3727000368239390918">모든 기기에서 내 탭 등을 사용하려면 로그인하세요</translation>
@@ -765,6 +767,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4326079409704643112">Google 계정에서 Chrome 데이터를 사용하고 저장하려면 본인 인증 절차를 거치세요</translation>
 <translation id="433213510553688132">팔로우 중...</translation>
 <translation id="4335835283689002019">세이프 브라우징 사용 안함</translation>
+<translation id="4343250402091037179">특정 사이트 또는 Chrome의 일부를 검색하려면 주소 표시줄에 바로가기를 입력한 다음 원하는 단축키를 누르세요.</translation>
 <translation id="4351244548802238354">대화상자 닫기</translation>
 <translation id="4352287748243729941"><ph name="PROVIDER" /> 비밀번호를 사용하시겠습니까?</translation>
 <translation id="4355272626458588338">중요한 페이지를 북마크에 추가하여 다시 돌아갈 수 있습니다.</translation>
@@ -955,6 +958,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5056587122125565772">이미지 만들기</translation>
 <translation id="506254248375231072">탭 없음</translation>
 <translation id="5075939510584558547">암호화 없이 저장</translation>
+<translation id="5078638979202084724">모든 탭 북마크</translation>
 <translation id="5085038751173179818">이 사이트 및 Chrome에 로그인하여 모든 기기에서 북마크 등을 사용하세요</translation>
 <translation id="5091199029769593641">곧 새 탭을 열 때 <ph name="SITE_NAME" /> 스토리가 표시됩니다. 내가 팔로우하는 사이트는 Google 계정에 저장되며 디스커버 설정에서 관리할 수 있습니다.</translation>
 <translation id="509429900233858213">오류가 발생했습니다.</translation>
@@ -1038,6 +1042,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="544776284582297024">탭을 열어 동시에 여러 페이지를 방문하려면 탭 열기 버튼 탭하기</translation>
 <translation id="5456381639095306749">다운로드 페이지</translation>
 <translation id="5458366071038729214">팔로우하는 사이트가 여기에 표시됩니다</translation>
+<translation id="5465437530117042974">탭 하단 시트 변경사항이 닫혔습니다.</translation>
 <translation id="5469852975082458401">텍스트 커서로 페이지를 탐색할 수 있습니다. 사용 중지하려면 F7을 누르세요.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> 탭을 이동할 수 없습니다.</translation>
 <translation id="548278423535722844">지도 앱에서 열기</translation>
@@ -1171,6 +1176,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="604996488070107836">알 수 없는 오류로 인해 <ph name="FILE_NAME" /> 다운로드에 실패했습니다.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">여기에서 스토리 및 활동을 관리하세요.</translation>
+<translation id="606985262342505139">탭 하단 시트가 전체 높이로 열렸습니다.</translation>
 <translation id="6071995715087444295">유출된 비밀번호가 있는지 확인하려면 Google 계정에 로그인하세요</translation>
 <translation id="6078323886959318429">바로가기 추가</translation>
 <translation id="6085886413119427067">보안 연결을 통해 웹사이트에 연결하는 방법을 지정합니다.</translation>
@@ -1187,6 +1193,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />세부정보 더보기<ph name="END_LINK" /></translation>
 <translation id="6127860394906721547"><ph name="URL_LIST" /> 사이트가 포함된 <ph name="COLOR_NAME" /> 색상의 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 엽니다.</translation>
 <translation id="6130303040046284160">탭 최소화</translation>
+<translation id="6132075343662013154">Chrome에서 비밀번호 저장을 제안합니다.</translation>
 <translation id="6134168885321518274">찾기 창 열기</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개}other{탭 <ph name="TAB_COUNT_MANY" />개}}</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" />의 언어</translation>
@@ -1339,6 +1346,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6672917148207387131"><ph name="DOMAIN" /> 추가</translation>
 <translation id="6674571176963658787">동기화를 시작하려면 암호를 입력하세요.</translation>
 <translation id="6676927815633975364">이 사이트 및 Chrome에 로그인하세요</translation>
+<translation id="6684262542644248484">웹사이트에 로그인합니다.</translation>
 <translation id="6684809838922667136">Chrome 개선에 참여</translation>
 <translation id="6689436252814043643">읽기 모드를 사용할 수 없습니다.</translation>
 <translation id="6700279777779583398">선택사항 저장됨</translation>

@@ -314,6 +314,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="4046123991198612571">Lagu seterusnya</translation>
 <translation id="4077310749977440510">Laman biasanya membaca papan keratan anda untuk ciri seperti mengekalkan format teks yang anda salin</translation>
 <translation id="4082080074595021446">Pengecualian untuk laman web tertentu tidak dibenarkan kerana peranti Android tidak memiliki RAM yang mencukupi.</translation>
+<translation id="4089304748532599471">Sesetengah tetapan Chrome diubah</translation>
 <translation id="4149890623864272035">Adakah anda pasti mahu memadamkan semua data setempat, termasuk kuki dan menetapkan semula semua kebenaran untuk laman web ini?</translation>
 <translation id="4149994727733219643">Paparan ringkas bagi halaman web</translation>
 <translation id="4151930093518524179">Zum lalai</translation>
@@ -349,6 +350,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="4478158430052450698">Mudahkan cara menyesuaikan zum untuk laman yang berbeza</translation>
 <translation id="4479647676395637221">Tanya dahulu sebelum membenarkan tapak menggunakan kamera anda (disyorkan)</translation>
 <translation id="4505788138578415521">URL dikembangkan</translation>
+<translation id="4522570452068850558">Butiran</translation>
 <translation id="4523472416386354622">Log masuk untuk bermula</translation>
 <translation id="4534723447064627427">Untuk membolehkan <ph name="APP_NAME" /> mengakses mikrofon anda, hidupkan juga mikrofon dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Redamkan mikrofon</translation>
@@ -685,6 +687,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="8117244575099414087">Apabila dihidupkan, laman dapat menggunakan penderia peranti anda. Apabila dimatikan, laman tidak dapat menggunakan penderia.</translation>
 <translation id="813082847718468539">Lihat maklumat tapak</translation>
 <translation id="8131740175452115882">Sahkan</translation>
+<translation id="8148160259207090265">Tetapan ini kekal dihidupkan selagi anda menghidupkan Perlindungan Lanjutan dalam Tetapan Android.</translation>
 <translation id="8163152278172770963">Jangan membenarkan laman untuk memasukkan gambar dalam gambar secara automatik</translation>
 <translation id="8168435359814927499">Kandungan</translation>
 <translation id="818487310457576362">Seret daripada bahagian sisi skrin untuk keluar daripada skrin penuh.</translation>
@@ -714,6 +717,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="8441146129660941386">Cari ke belakang</translation>
 <translation id="8444433999583714703">Untuk membolehkan <ph name="APP_NAME" /> mengakses lokasi anda, hidupkan juga lokasi dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Batalkan kebenaran peranti</translation>
+<translation id="8463843545738141778">Tetapan ini dilumpuhkan kerana anda menghidupkan Perlindungan Lanjutan dalam Tetapan Android.</translation>
 <translation id="8467359479529706065">Helaian bawah penampilan halaman tab baharu dibuka pada ketinggian separuh</translation>
 <translation id="8471525937465764768">Tapak biasanya menyambung kepada peranti USB untuk ciri seperti mencetak dokumen atau menyimpan pada peranti storan</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' sudah lapuk. Sila pasang semula apl.</translation>

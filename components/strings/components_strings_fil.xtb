@@ -184,7 +184,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1289129165308566697">Tingnan ang iyong history sa iba pang device</translation>
 <translation id="1292571435393770077">Tray 16</translation>
 <translation id="1292701964462482250">"Pinipigilan ng software sa iyong computer na makakonekta nang ligtas ang Chrome sa web" (mga Windows computer lang)</translation>
-<translation id="1293154089865862473">Shine-share sa Google ang content ng page mula sa page para sa pag-checkout para maialok ang mga opsyong ito. Para i-hide ang mga opsyon sa pay later sa autofill, pumunta sa <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Mga File</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 in</translation>
 <translation id="129553762522093515">Kamakailang isinara</translation>
@@ -656,6 +655,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2071156619270205202">Hindi kwalipikado ang card na ito para sa virtual card number.</translation>
 <translation id="2071852865256799872">Ang iyong browser ay pinapamahalaan ng iyong organisasyon at ang iyong profile ay pinapamahalaan ng <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Naka-save ang impormasyon sa device lang</translation>
 <translation id="2074733626795553847">I-unblock ang <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Binisita Mo</translation>
 <translation id="2078956195623975415">Mga Laro sa Musika at Pagsayaw</translation>
@@ -1124,7 +1124,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2782088940970074970">Mga Rental ng Kotse</translation>
 <translation id="278436560439594386">Mga Appliance sa Bahay</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">Shine-share sa Google ang content ng page mula sa page para sa pag-checkout para maialok ang mga opsyong ito.</translation>
 <translation id="2784949926578158345">Na-reset ang koneksyon.</translation>
 <translation id="2786008859124691917">Mga Bisikleta at Accessory</translation>
 <translation id="2792012897584536778">Nag-set up ang mga administrator ng device na ito ng mga certificate ng seguridad na puwedeng magbigay-daan sa kanilang matingnan ang content ng mga website na binibisita mo.</translation>
@@ -4904,6 +4903,7 @@ Mga karagdagang detalye:
 <translation id="8858065207712248076">Inirerekomenda ng Chrome na i-reset ang iyong password sa <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> kung ginamit mo ito sa iba pang site.</translation>
 <translation id="885906927438988819">Kung tama ang pagbabaybay, <ph name="BEGIN_LINK" />subukang patakbuhin ang Mga Diagnostic ng Network ng Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Photography at Digital Arts</translation>
+<translation id="8861482055962701239">Hindi ma-save ang impormasyong ito sa iyong Google Wallet. Na-save lang ito sa Chrome sa device na ito. Mag-aalok ang Chrome na i-save ito sa Wallet sa susunod na pagkakataong gamitin mo ito.</translation>
 <translation id="8863218129525348270">Para mas mabilis na makapagbayad sa susunod, i-save ang iyong card sa device mo</translation>
 <translation id="8864939224504814334">Mga Suit at Kasuotang Pangnegosyo</translation>
 <translation id="8866132857352163524">Mga soundtrack</translation>

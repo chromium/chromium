@@ -314,6 +314,7 @@
 <translation id="4046123991198612571">Kënga tjetër</translation>
 <translation id="4077310749977440510">Sajtet lexojnë zakonisht kujtesën tënde të fragmenteve për veçoritë si ruajtja e formatimit të tekstit që ke kopjuar</translation>
 <translation id="4082080074595021446">Përjashtimet për uebsajte specifike nuk lejohen sepse pajisja Android nuk ka RAM të mjaftueshëm.</translation>
+<translation id="4089304748532599471">Disa cilësime të Chrome janë ndryshuar</translation>
 <translation id="4149890623864272035">E konfirmon që dëshiron t'i fshish të gjitha të dhënat lokale, duke përfshirë kukit, dhe të rivendosësh të gjitha lejet për këtë uebsajt?</translation>
 <translation id="4149994727733219643">Pamje e thjeshtuar për faqet e uebit</translation>
 <translation id="4151930093518524179">Zmadhimi i parazgjedhur</translation>
@@ -349,6 +350,7 @@
 <translation id="4478158430052450698">Bëje më të lehtë të personalizosh zmadhimin për sajte të ndryshme</translation>
 <translation id="4479647676395637221">Pyet përpara se të lejohen sajtet të përdorin kamerën (rekomandohet)</translation>
 <translation id="4505788138578415521">URL e zgjeruar</translation>
+<translation id="4522570452068850558">Detajet</translation>
 <translation id="4523472416386354622">Identifikohu për të filluar</translation>
 <translation id="4534723447064627427">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te mikrofoni yt, aktivizo gjithashtu mikrofonin në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Çaktivizo mikrofonin</translation>
@@ -685,6 +687,7 @@
 <translation id="8117244575099414087">Kur cilësimi është aktiv, sajtet mund të përdorin sensorët e pajisjes. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin sensorët.</translation>
 <translation id="813082847718468539">Shiko informacionin rreth faqes</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
+<translation id="8148160259207090265">Ky cilësim mbetet aktiv për sa kohë që "Mbrojtja e përparuar" është e aktivizuar te "Cilësimet" e Android.</translation>
 <translation id="8163152278172770963">Mos lejo që sajtet të kalojnë automatikisht në modalitetin "figurë brenda figurës"</translation>
 <translation id="8168435359814927499">Përmbajtja</translation>
 <translation id="818487310457576362">Zvarrit nga ana e ekranit për të dalë nga ekrani i plotë.</translation>
@@ -714,6 +717,7 @@
 <translation id="8441146129660941386">Kërko prapa</translation>
 <translation id="8444433999583714703">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te vendndodhja jote, aktivizo gjithashtu vendndodhjen në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revoko lejen e pajisjes</translation>
+<translation id="8463843545738141778">Ky cilësim është i çaktivizuar sepse ke aktivizuar "Mbrojtjen e përparuar" te "Cilësimet" e Android.</translation>
 <translation id="8467359479529706065">Fleta e poshtme e pamjes së faqeve të skedave të reja u hap në gjysmë lartësi</translation>
 <translation id="8471525937465764768">Sajtet lidhen zakonisht me pajisjet me USB për veçoritë si printimi i një dokumenti ose ruajtja te një pajisje e hapësirës ruajtëse</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> nuk është përditësuar. Riinstalo aplikacionin.</translation>

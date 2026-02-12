@@ -314,6 +314,7 @@
 <translation id="4046123991198612571">下一首</translation>
 <translation id="4077310749977440510">网站通常会读取您的剪贴板内容以实现某些功能，例如保留您所复制文字的格式</translation>
 <translation id="4082080074595021446">由于该 Android 设备的 RAM 不足，因此不允许将特定网站添加为例外网站。</translation>
+<translation id="4089304748532599471">部分 Chrome 设置已更改</translation>
 <translation id="4149890623864272035">确定要删除所有本地数据（包括 Cookie）并重置此网站的所有权限吗？</translation>
 <translation id="4149994727733219643">使用简化版视图查看网页</translation>
 <translation id="4151930093518524179">默认缩放设置</translation>
@@ -349,6 +350,7 @@
 <translation id="4478158430052450698">更轻松地自定义不同网站的缩放级别</translation>
 <translation id="4479647676395637221">在允许网站使用您的摄像头前先询问（推荐）</translation>
 <translation id="4505788138578415521">网址已展开</translation>
+<translation id="4522570452068850558">详情</translation>
 <translation id="4523472416386354622">登录即可开始定制</translation>
 <translation id="4534723447064627427">若要允许 <ph name="APP_NAME" /> 使用您的麦克风，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启麦克风。</translation>
 <translation id="4566417217121906555">将麦克风静音</translation>
@@ -685,6 +687,7 @@
 <translation id="8117244575099414087">开启此设置后，网站可以使用设备的传感器。关闭此设置后，网站无法使用传感器。</translation>
 <translation id="813082847718468539">查看网站信息</translation>
 <translation id="8131740175452115882">确认</translation>
+<translation id="8148160259207090265">只要您在 Android 设置中开启高级保护功能，此设置就会保持开启状态。</translation>
 <translation id="8163152278172770963">不允许网站自动进入画中画模式</translation>
 <translation id="8168435359814927499">内容</translation>
 <translation id="818487310457576362">从屏幕边缘拖动即可退出全屏。</translation>
@@ -714,6 +717,7 @@
 <translation id="8441146129660941386">后退</translation>
 <translation id="8444433999583714703">若要允许 <ph name="APP_NAME" /> 获取您的位置信息，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启位置信息服务。</translation>
 <translation id="8447861592752582886">撤消设备权限</translation>
+<translation id="8463843545738141778">此设置已停用，因为您已在 Android 设置中开启高级保护功能。</translation>
 <translation id="8467359479529706065">“新标签页”页面外观底部动作条已按一半高度显示</translation>
 <translation id="8471525937465764768">网站通常会连接到 USB 设备以实现某些功能（例如打印文档或保存到存储设备）</translation>
 <translation id="8473055640493819707">“<ph name="APP_NAME" />”版本过旧。请重新安装该应用。</translation>

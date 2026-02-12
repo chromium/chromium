@@ -314,6 +314,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="4046123991198612571">Piste suivante</translation>
 <translation id="4077310749977440510">Les sites lisent généralement le contenu du presse-papiers pour proposer certaines fonctionnalités, comme conserver la mise en forme du texte copié</translation>
 <translation id="4082080074595021446">Les exceptions pour des sites Web spécifiques ne sont pas autorisées, car l'appareil Android n'a pas assez de RAM.</translation>
+<translation id="4089304748532599471">Certains paramètres Chrome ont été modifiés</translation>
 <translation id="4149890623864272035">Voulez-vous vraiment supprimer toutes les données locales, y compris les cookies, et réinitialiser toutes les autorisations pour ce site Web ?</translation>
 <translation id="4149994727733219643">Vue simplifiée pour les pages Web</translation>
 <translation id="4151930093518524179">Zoom par défaut</translation>
@@ -349,6 +350,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="4478158430052450698">Permet de faciliter la personnalisation du zoom en fonction des sites</translation>
 <translation id="4479647676395637221">Demander avant d'autoriser des sites à utiliser ma caméra (recommandé)</translation>
 <translation id="4505788138578415521">URL étendue</translation>
+<translation id="4522570452068850558">Détails</translation>
 <translation id="4523472416386354622">Se connecter pour commencer</translation>
 <translation id="4534723447064627427">Pour autoriser <ph name="APP_NAME" /> à accéder au micro, activez également celui-ci dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Désactiver le micro</translation>
@@ -685,6 +687,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="8117244575099414087">Lorsque cette option est activée, les sites peuvent utiliser les capteurs de votre appareil. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser les capteurs.</translation>
 <translation id="813082847718468539">Afficher des informations à propos du site</translation>
 <translation id="8131740175452115882">Confirmer</translation>
+<translation id="8148160259207090265">Ce paramètre reste activé tant que la Protection Avancée est activée dans les paramètres Android.</translation>
 <translation id="8163152278172770963">Ne pas autoriser les sites à passer en Picture-in-picture automatiquement</translation>
 <translation id="8168435359814927499">Contenu</translation>
 <translation id="818487310457576362">Balayez l'écran vers le côté pour quitter le plein écran.</translation>
@@ -714,6 +717,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="8441146129660941386">Retour rapide</translation>
 <translation id="8444433999583714703">Pour autoriser <ph name="APP_NAME" /> à accéder à votre position, activez également la localisation dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Révoquer l'autorisation d'accès à l'appareil</translation>
+<translation id="8463843545738141778">Ce paramètre est désactivé, car vous avez activé la Protection Avancée dans les paramètres Android.</translation>
 <translation id="8467359479529706065">Bottom sheet de l'apparence de la page Nouvel onglet ouverte à mi-hauteur</translation>
 <translation id="8471525937465764768">Les sites se connectent généralement aux appareils USB pour proposer des fonctionnalités comme l'impression de documents ou l'enregistrement sur un périphérique de stockage</translation>
 <translation id="8473055640493819707">L'appli <ph name="APP_NAME" /> est obsolète. Veuillez la réinstaller.</translation>

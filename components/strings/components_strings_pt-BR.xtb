@@ -184,7 +184,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1289129165308566697">Veja seu histórico em outros dispositivos</translation>
 <translation id="1292571435393770077">Bandeja 16</translation>
 <translation id="1292701964462482250">"Algum software no seu computador está impedindo o Google Chrome de se conectar com segurança à Web" (somente computadores Windows)</translation>
-<translation id="1293154089865862473">Para oferecer essas opções, o conteúdo da página de finalização da compra é compartilhado com o Google. Se quiser ocultar as opções de parcelamento no preenchimento automático, acesse as <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Arquivos</translation>
 <translation id="1293797321964802402">Envelope de 23 cm x 28 cm</translation>
 <translation id="129553762522093515">Fechadas recentemente</translation>
@@ -1123,7 +1122,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2782088940970074970">Aluguel de carro</translation>
 <translation id="278436560439594386">Aparelhos domésticos</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">Para oferecer essas opções, o conteúdo da página de finalização da compra é compartilhado com o Google.</translation>
 <translation id="2784949926578158345">A conexão foi redefinida.</translation>
 <translation id="2786008859124691917">Bicicletas e acessórios</translation>
 <translation id="2792012897584536778">Os administradores deste dispositivo configuraram certificados de segurança que podem permitir que eles vejam o conteúdo dos sites que você visita.</translation>
@@ -2869,6 +2867,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5570825185877910964">Proteger conta</translation>
 <translation id="5571083550517324815">Não é possível fazer a retirada nesse endereço. Tente um endereço diferente.</translation>
 <translation id="5572434905385510939">22 x 28 pol.</translation>
+<translation id="5573090972398558474">Sua organização bloqueou esta página no modo de navegação anônima.</translation>
 <translation id="5573641252776268565">Editar passaporte</translation>
 <translation id="5578606540385219379">Provedores de serviços</translation>
 <translation id="5580958916614886209">Verifique o mês de validade e tente novamente</translation>
@@ -4297,6 +4296,7 @@ Mais detalhes:
 <translation id="7844689747373518809">{COUNT,plural, =0{Nenhum}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Ocorreu um erro. Tente de novo.</translation>
 <translation id="784623644169604270">Nenhuma atividade recente</translation>
+<translation id="7848926355794727168">Navegação automática</translation>
 <translation id="7853222852810008596">A opção "Pague depois" não está disponível nesta moeda</translation>
 <translation id="785476343534277563">Esportes universitários</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>

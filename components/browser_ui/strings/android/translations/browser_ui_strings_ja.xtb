@@ -314,6 +314,7 @@
 <translation id="4046123991198612571">次のトラック</translation>
 <translation id="4077310749977440510">コピーしたテキストの書式を保持したりするため、サイトでクリップボードを読み取る場合があります</translation>
 <translation id="4082080074595021446">Android デバイスに十分な RAM がないため、特定のウェブサイトの例外は許可されません。</translation>
+<translation id="4089304748532599471">Chrome の一部の設定が変更されました</translation>
 <translation id="4149890623864272035">Cookie を含むすべてのローカルデータを削除し、このウェブサイトに対するすべての権限をリセットしてもよろしいですか？</translation>
 <translation id="4149994727733219643">ウェブページの簡易表示</translation>
 <translation id="4151930093518524179">デフォルトのズーム</translation>
@@ -349,6 +350,7 @@
 <translation id="4478158430052450698">サイトごとにズーム設定をカスタマイズしやすくします</translation>
 <translation id="4479647676395637221">サイトにカメラの使用を許可する前に確認する（推奨）</translation>
 <translation id="4505788138578415521">URL のフルバージョンです</translation>
+<translation id="4522570452068850558">詳細</translation>
 <translation id="4523472416386354622">ログインして開始</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> にマイクへのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもマイクをオンにしてください。</translation>
 <translation id="4566417217121906555">マイクをミュート</translation>
@@ -685,6 +687,7 @@
 <translation id="8117244575099414087">オンにすると、サイトはデバイスのセンサーを使用できます。オフにすると、サイトはセンサーを使用できません。</translation>
 <translation id="813082847718468539">サイト情報を表示</translation>
 <translation id="8131740175452115882">確認</translation>
+<translation id="8148160259207090265">この設定は、Android の設定で高度な保護機能を有効にしている限り有効です。</translation>
 <translation id="8163152278172770963">サイトにピクチャー イン ピクチャーの自動開始を許可しない</translation>
 <translation id="8168435359814927499">コンテンツ</translation>
 <translation id="818487310457576362">全画面表示を終了するには、画面の端からドラッグします。</translation>
@@ -714,6 +717,7 @@
 <translation id="8441146129660941386">後方にシーク再生</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> に現在地へのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でも位置情報をオンにしてください。</translation>
 <translation id="8447861592752582886">デバイスの許可を取り消します</translation>
+<translation id="8463843545738141778">Android の設定で高度な保護を有効にしたため、この設定は無効になっています。</translation>
 <translation id="8467359479529706065">新しいタブページの外観のボトムシートが画面の下半分に表示されています</translation>
 <translation id="8471525937465764768">ドキュメントの印刷やストレージ デバイスへの保存のため、サイトが USB デバイスに接続する場合があります。</translation>
 <translation id="8473055640493819707">「<ph name="APP_NAME" />」は最新ではありません。アプリを再インストールしてください。</translation>

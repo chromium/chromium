@@ -314,6 +314,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="4046123991198612571">Lagu berikutnya</translation>
 <translation id="4077310749977440510">Situs biasanya membaca papan klip Anda untuk fitur seperti mempertahankan format teks yang Anda salin</translation>
 <translation id="4082080074595021446">Pengecualian untuk situs tertentu tidak diizinkan karena perangkat Android tidak memiliki RAM yang cukup.</translation>
+<translation id="4089304748532599471">Beberapa setelan Chrome diubah</translation>
 <translation id="4149890623864272035">Yakin ingin menghapus semua data lokal, termasuk cookie, dan mereset semua izin untuk situs ini?</translation>
 <translation id="4149994727733219643">Tampilan sederhana untuk halaman web</translation>
 <translation id="4151930093518524179">Zoom default</translation>
@@ -349,6 +350,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="4478158430052450698">Permudah penyesuaian zoom untuk berbagai situs</translation>
 <translation id="4479647676395637221">Minta izin terlebih dahulu sebelum memungkinkan situs menggunakan kamera Anda (disarankan)</translation>
 <translation id="4505788138578415521">URL ditampilkan penuh</translation>
+<translation id="4522570452068850558">Detail</translation>
 <translation id="4523472416386354622">Login untuk memulai</translation>
 <translation id="4534723447064627427">Untuk mengizinkan <ph name="APP_NAME" /> mengakses mikrofon, aktifkan juga mikrofon di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Nonaktifkan mikrofon</translation>
@@ -685,6 +687,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="8117244575099414087">Jika diaktifkan, situs dapat menggunakan sensor perangkat. Jika dinonaktifkan, situs tidak dapat menggunakan sensor.</translation>
 <translation id="813082847718468539">Lihat informasi situs</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>
+<translation id="8148160259207090265">Setelan ini akan tetap aktif selama Perlindungan Lanjutan diaktifkan di Setelan Android.</translation>
 <translation id="8163152278172770963">Jangan izinkan situs masuk ke mode picture-in-picture secara otomatis</translation>
 <translation id="8168435359814927499">Konten</translation>
 <translation id="818487310457576362">Tarik dari sisi layar untuk keluar dari mode layar penuh.</translation>
@@ -714,6 +717,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="8441146129660941386">Cari mundur</translation>
 <translation id="8444433999583714703">Untuk mengizinkan <ph name="APP_NAME" /> mengakses lokasi Anda, aktifkan juga lokasi di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Cabut izin perangkat</translation>
+<translation id="8463843545738141778">Setelan ini dinonaktifkan karena Anda mengaktifkan Perlindungan Lanjutan di Setelan Android.</translation>
 <translation id="8467359479529706065">Panel bawah tampilan halaman tab baru terbuka setengah</translation>
 <translation id="8471525937465764768">Situs biasanya terhubung ke perangkat USB untuk fitur seperti pencetakan dokumen atau penyimpanan ke perangkat penyimpanan</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' sudah usang. Instal ulang aplikasi.</translation>

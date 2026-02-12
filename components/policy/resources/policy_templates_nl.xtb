@@ -1964,6 +1964,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
       Dit beleid overschrijft <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> en de voorkeuren van de gebruiker.
 
       Dit beleid heeft alleen effect op USB-apparaten via de WebUSB API. Zie het beleid <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" /> als je USB-apparaten toegang wilt geven via de Web Serial API.</translation>
+<translation id="2318353380372431186">Gebruikersinstallatie van IWA aanzetten</translation>
 <translation id="2318583605563438459">Toestaan dat ouders accounts toevoegen die onder toezicht staan</translation>
 <translation id="2326031114717677574">Snelheid waarmee audiogegevens worden bemonsterd en verzameld. Het toegestane minimum is 1 minuut.
 
@@ -2611,6 +2612,7 @@ Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar htt
       Als je het beleid niet toepast, kan <ph name="PRODUCT_NAME" /> deze hosts alleen gebruiken als ze zijn geïnstalleerd op systeemniveau.</translation>
 <translation id="2753637905605932878">Het bereik beperken van lokale UDP-poorten die door WebRTC worden gebruikt</translation>
 <translation id="2755847332939882873">Verzameling van prestatietracering voor het hele systeem toestaan</translation>
+<translation id="2755963656455766808">Bepaalt of een gebruiker geïsoleerde web-apps handmatig kan installeren</translation>
 <translation id="2757054304033424106">Typen extensies/apps die mogen worden geïnstalleerd</translation>
 <translation id="275769337615229465">De meeste oorsprongen worden geïsoleerd van andere oorsprongen op dezelfde site.</translation>
 <translation id="2759224876420453487">Het gebruikersgedrag beheren in een multiprofielsessie</translation>
@@ -5654,6 +5656,12 @@ Dit beleid is tijdelijk en wordt verwijderd in 2026.</translation>
        Een hostnaam kan worden toegestaan als deze exact overeenkomt met een host of overeenkomt met een domein. Voor een URL zoals https://foo.example.com/bar kunnen waarschuwingen bijvoorbeeld worden onderdrukt als deze lijst foo.example.com of example.com bevat.</translation>
 <translation id="4852900976354340846">Instellingen voor Direct Sockets</translation>
 <translation id="485419696366295465">Beheert de beleidsregels met betrekking tot het <ph name="BOREALIS_NAME" />-subsysteem.</translation>
+<translation id="4854384393031206645">Hiermee wordt bepaald of de gebruiker geïsoleerde web-apps (GWA's) handmatig kan installeren.
+
+Als je dit beleid instelt op onwaar, wordt de installatie van GWA-gebruikers geblokkeerd.
+
+Als je dit beleid instelt op waar of niet instelt, zijn GWA-gebruikersinstallaties toegestaan.
+</translation>
 <translation id="4855636880814771207">Als je het beleid toepast of niet instelt, kunnen gebruikers bluetooth aan- of uitzetten.
 
       Als je het beleid niet toepast, wordt bluetooth door <ph name="PRODUCT_OS_NAME" /> uitgezet en kunnen gebruikers bluetooth niet aanzetten.
@@ -6063,6 +6071,7 @@ Dit beleid is een tijdelijke uitstelmaatregel om tijd te geven om webcontent te 
       </translation>
 <translation id="5104606191349861549">Sneltoetsen (ondersteund vanaf versie 129)</translation>
 <translation id="5105313908130842249">Vertraging van schermvergrendeling wanneer op de batterij wordt gewerkt</translation>
+<translation id="5105593357527099243">Gebruikersinstallatie van GWA uitzetten</translation>
 <translation id="510604120100968366">De functie voor geluid voor een bijna lege batterij aanzetten.
 
           Deze functie is verantwoordelijk voor het afspelen van het geluid voor een bijna lege batterij.

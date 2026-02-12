@@ -432,6 +432,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2870560284913253234">Lloc web</translation>
 <translation id="2871733351037274014">Precàrrega de pàgines</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> vol que aprovis aquest lloc web:</translation>
+<translation id="2876556152483133018">Cerques al lloc web</translation>
 <translation id="2876628302275096482">Més informació sobre <ph name="BEGIN_LINK" />com Chrome manté la privadesa de les teves dades<ph name="END_LINK" /></translation>
 <translation id="2878607776582720720"><ph name="TAB_TITLE" />, pestanya d'incògnit de compartició multiseleccionada</translation>
 <translation id="2885355868600171871">Ves a la barra d'adreces</translation>
@@ -621,6 +622,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3709577906275923507"><ph name="FILE_NAME" /> pot contenir informació sensible i no s'ha de compartir</translation>
 <translation id="3710501561113687889">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà la teva informació (<ph name="FIELDS_STRING" />) amb aquest lloc web.</translation>
 <translation id="3710560693796335511">Col·laboració</translation>
+<translation id="3714430408451673233">Full inferior de la pestanya a mitja alçada.</translation>
 <translation id="3718765429352682176">És possible que vegis l'historial d'altres aplicacions que obren enllaços a Chrome.</translation>
 <translation id="3721119614952978349">Tu i Google</translation>
 <translation id="3727000368239390918">Inicia la sessió per obtenir les teves pestanyes i més en tots els teus dispositius</translation>
@@ -765,6 +767,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4326079409704643112">Per utilitzar i desar les dades de Chrome al teu Compte de Google, verifica la teva identitat</translation>
 <translation id="433213510553688132">Ho seguiu...</translation>
 <translation id="4335835283689002019">La funció Navegació segura està desactivada</translation>
+<translation id="4343250402091037179">Per cercar en un lloc web específic o en una part de Chrome, escriu la drecera corresponent a la barra d'adreces, seguida de la tecla de drecera que prefereixis.</translation>
 <translation id="4351244548802238354">Tanca el quadre de diàleg</translation>
 <translation id="4352287748243729941">Vols fer servir la contrasenya de <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Afegeix adreces d'interès per tornar a pàgines que consideris importants</translation>
@@ -955,6 +958,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5056587122125565772">Crea una imatge</translation>
 <translation id="506254248375231072">No hi ha cap pestanya</translation>
 <translation id="5075939510584558547">Desa sense encriptació</translation>
+<translation id="5078638979202084724">Afegeix totes les pestanyes a les adreces d'interès</translation>
 <translation id="5085038751173179818">Inicia la sessió en aquest lloc web i a Chrome per accedir a les teves adreces d'interès i més contingut en tots els teus dispositius</translation>
 <translation id="5091199029769593641">Aviat, quan obris una pestanya nova, veuràs històries de: <ph name="SITE_NAME" />. Els llocs web que segueixes es desen al teu Compte de Google. Pots gestionar-los a la configuració de Discover.</translation>
 <translation id="509429900233858213">S'ha produït un error.</translation>
@@ -1038,6 +1042,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="544776284582297024">Per obrir pestanyes i visitar diverses pàgines al mateix temps, toca el botó de pestanyes obertes</translation>
 <translation id="5456381639095306749">Baixa la pàgina</translation>
 <translation id="5458366071038729214">Aquí veuràs els llocs web que segueixes</translation>
+<translation id="5465437530117042974">El full inferior de la pestanya ha canviat a Tancat.</translation>
 <translation id="5469852975082458401">Pots navegar per les pàgines amb un cursor de text. Prem F7 per desactivar aquesta funció.</translation>
 <translation id="5471273988133666918">La pestanya <ph name="TAB_TITLE" /> no es pot moure</translation>
 <translation id="548278423535722844">Obre en una aplicació de mapes</translation>
@@ -1171,6 +1176,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="604996488070107836">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa d'un error desconegut.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla les teves històries i la teva activitat aquí</translation>
+<translation id="606985262342505139">Full inferior de la pestanya a alçada completa</translation>
 <translation id="6071995715087444295">Per comprovar si hi ha contrasenyes en perill, inicia la sessió al teu Compte de Google</translation>
 <translation id="6078323886959318429">Afegeix una drecera</translation>
 <translation id="6085886413119427067">Determina com es connecta a llocs web amb una connexió segura</translation>
@@ -1187,6 +1193,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Més detalls<ph name="END_LINK" /></translation>
 <translation id="6127860394906721547">Obre el grup de pestanyes <ph name="TITLE_OF_GROUP" />, de color <ph name="COLOR_NAME" />, amb els llocs web <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimitza la pestanya</translation>
+<translation id="6132075343662013154">Chrome t'oferirà desar la contrasenya</translation>
 <translation id="6134168885321518274">Obre la barra de cerca</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestanya}other{<ph name="TAB_COUNT_MANY" /> pestanyes}}</translation>
 <translation id="6137022273846704445">Idioma de l'aplicació <ph name="APP_NAME" /></translation>
@@ -1339,6 +1346,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6672917148207387131">Afegeix <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Per iniciar la sincronització, introdueix la frase de contrasenya</translation>
 <translation id="6676927815633975364">Inicia la sessió en aquest lloc web i a Chrome</translation>
+<translation id="6684262542644248484">Inicia la sessió en un lloc web</translation>
 <translation id="6684809838922667136">Millora Chrome</translation>
 <translation id="6689436252814043643">El mode de lectura no està disponible</translation>
 <translation id="6700279777779583398">S'han desat les opcions</translation>

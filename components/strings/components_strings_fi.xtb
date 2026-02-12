@@ -184,7 +184,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1289129165308566697">Katso historiasi muilla laitteilla</translation>
 <translation id="1292571435393770077">Lokero 16</translation>
 <translation id="1292701964462482250">Tietokoneelle asennettu ohjelmisto estää Chromea muodostamasta turvallista yhteyttä verkkoon (vain Windows-tietokoneilla)</translation>
-<translation id="1293154089865862473">Kassasivun sisältö jaetaan Googlelle näiden vaihtoehtojen tarjoamiseksi. Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot automaattisessa täytössä, avaa <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Tiedostot</translation>
 <translation id="1293797321964802402">Kirjekuori 228mm x 279 mm</translation>
 <translation id="129553762522093515">Hiljattain suljetut välilehdet</translation>
@@ -656,6 +655,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2071156619270205202">Tälle kortille ei ole saatavilla virtuaalista korttinumeroa.</translation>
 <translation id="2071852865256799872">Organisaatio ylläpitää selaintasi ja <ph name="PROFILE_DOMAIN" /> ylläpitää profiiliasi</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Tiedot tallennettu vain laitteelle</translation>
 <translation id="2074733626795553847">Kumoa esto: <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Kävit täällä</translation>
 <translation id="2078956195623975415">Musiikki‑ ja tanssipelit</translation>
@@ -1123,7 +1123,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2782088940970074970">Vuokra-autot</translation>
 <translation id="278436560439594386">Kodinkoneet</translation>
 <translation id="2784474685437057136">B5-ekstra</translation>
-<translation id="2784540996156451674">Kassasivun sisältö jaetaan Googlelle näiden vaihtoehtojen tarjoamiseksi.</translation>
 <translation id="2784949926578158345">Yhteys katkaistiin.</translation>
 <translation id="2786008859124691917">Polkupyörät ja pyöräilyvarusteet</translation>
 <translation id="2792012897584536778">Tämän laitteen järjestelmänvalvojat ovat ottaneet käyttöön tietosuojavarmenteita, joiden avulla he saattavat nähdä avaamiesi sivustojen sisällöt.</translation>
@@ -4903,6 +4902,7 @@ Lisätietoja:
 <translation id="8858065207712248076">Chrome suosittelee organisaation <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> salasanasi vaihtamista, jos olet käyttänyt sitä myös muilla sivustoilla.</translation>
 <translation id="885906927438988819">Jos kirjoitusasu on oikein, <ph name="BEGIN_LINK" />kokeile Windowsin verkon diagnostiikkaa<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Valokuvaaminen ja digitaide</translation>
+<translation id="8861482055962701239">Tietoja ei voitu tallentaa Google Walletiin. Ne on sen sijaan tallennettu Chromeen tällä laitteella. Chrome tarjoutuu tallentamaan tiedot Walletiin seuraavan kerran, kun käytät sitä.</translation>
 <translation id="8863218129525348270">Jos haluat maksaa nopeammin ensi kerralla, tallenna kortti laitteelle</translation>
 <translation id="8864939224504814334">Puvut ja edustusasut</translation>
 <translation id="8866132857352163524">Soundtrackit</translation>

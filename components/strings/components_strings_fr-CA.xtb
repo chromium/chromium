@@ -184,7 +184,6 @@
 <translation id="1289129165308566697">Consultez votre historique sur d'autres appareils</translation>
 <translation id="1292571435393770077">Bac 16</translation>
 <translation id="1292701964462482250">« Un logiciel installé sur votre ordinateur empêche Chrome de se connecter au Web de manière sécurisée » (sous Windows uniquement)</translation>
-<translation id="1293154089865862473">Le contenu de la page de paiement est partagé avec Google pour proposer ces options. Pour masquer les options de paiement différé dans le remplissage automatique, accédez aux <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Fichiers</translation>
 <translation id="1293797321964802402">Enveloppe 9 x 11 po</translation>
 <translation id="129553762522093515">Récemment fermés</translation>
@@ -1123,7 +1122,6 @@
 <translation id="2782088940970074970">Location de voitures</translation>
 <translation id="278436560439594386">Appareils ménagers</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">Le contenu de la page de paiement est partagé avec Google pour proposer ces options.</translation>
 <translation id="2784949926578158345">La connexion a été réinitialisée.</translation>
 <translation id="2786008859124691917">Vélos et accessoires</translation>
 <translation id="2792012897584536778">Les administrateurs de cet appareil ont configuré des certificats de sécurité qui leur permettent de voir le contenu des sites Web que vous visitez.</translation>
@@ -2869,6 +2867,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5570825185877910964">Protéger le compte</translation>
 <translation id="5571083550517324815">Impossible d'effectuer un ramassage à partir de cette adresse. Sélectionnez une autre adresse.</translation>
 <translation id="5572434905385510939">22 po x 28 po</translation>
+<translation id="5573090972398558474">Votre organisation a bloqué cette page en mode Navigation privée.</translation>
 <translation id="5573641252776268565">Modifier le passeport</translation>
 <translation id="5578606540385219379">Fournisseurs de services</translation>
 <translation id="5580958916614886209">Vérifiez le mois d'expiration et réessayez</translation>
@@ -4296,6 +4295,7 @@ Détails supplémentaires :
 <translation id="7844689747373518809">{COUNT,plural, =0{Aucune}=1{1 application : <ph name="EXAMPLE_APP_1" />}=2{2 applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# application (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Une erreur est survenue. Réessayez.</translation>
 <translation id="784623644169604270">Aucune activité récente</translation>
+<translation id="7848926355794727168">Navigation automatique</translation>
 <translation id="7853222852810008596">Payer plus tard n'est pas accessible dans cette devise</translation>
 <translation id="785476343534277563">Sports universitaires</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>

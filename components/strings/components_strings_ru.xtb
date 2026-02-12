@@ -184,7 +184,6 @@
 <translation id="1289129165308566697">Доступ к истории на других устройствах</translation>
 <translation id="1292571435393770077">Лоток 16</translation>
 <translation id="1292701964462482250">"ПО, установленное на компьютере, не позволяет Chrome безопасно подключиться к Интернету" (только для Windows)</translation>
-<translation id="1293154089865862473">Чтобы предлагать эти варианты, Google получает доступ к контенту на странице покупки. Если вы хотите скрыть варианты оплаты в рассрочку, предлагаемые автозаполнением, перейдите в <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Файлы</translation>
 <translation id="1293797321964802402">Конверт 229 x 279 мм</translation>
 <translation id="129553762522093515">Недавно закрытые</translation>
@@ -656,6 +655,7 @@
 <translation id="2071156619270205202">Указанный номер нельзя использовать для виртуальной карты.</translation>
 <translation id="2071852865256799872">Этим браузером управляет ваша организация, а профилем – <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Данные сохранены только на устройстве</translation>
 <translation id="2074733626795553847">Разблокировать тему "<ph name="TOPIC" />"</translation>
 <translation id="2074771604462073334">Посещено</translation>
 <translation id="2078956195623975415">Музыкальные и танцевальные игры</translation>
@@ -1123,7 +1123,6 @@
 <translation id="2782088940970074970">Прокат автомобилей</translation>
 <translation id="278436560439594386">Бытовая техника</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">Чтобы предлагать эти варианты, Google получает доступ к контенту на странице покупки.</translation>
 <translation id="2784949926578158345">Соединение сброшено.</translation>
 <translation id="2786008859124691917">Велосипеды и аксессуары</translation>
 <translation id="2792012897584536778">Администраторы этого устройства настроили сертификаты безопасности, которые дают возможность просматривать контент посещаемых вами сайтов.</translation>
@@ -4900,6 +4899,7 @@
 <translation id="8858065207712248076">Chrome рекомендует сбросить пароль, используемый в подразделении <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, если вы указывали его на других сайтах.</translation>
 <translation id="885906927438988819">Если все правильно, <ph name="BEGIN_LINK" />воспользуйтесь инструментом "Диагностика сетей Windows"<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Фотография и цифровые искусства</translation>
+<translation id="8861482055962701239">Информацию не удалось сохранить в Google Кошельке. Она добавлена в Chrome на этом устройстве. Браузер предложит сохранить ее в Кошельке при следующем использовании.</translation>
 <translation id="8863218129525348270">Чтобы оплачивать покупки быстрее, сохраните карту на своем устройстве.</translation>
 <translation id="8864939224504814334">Деловая одежда</translation>
 <translation id="8866132857352163524">Саундтреки</translation>

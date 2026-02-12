@@ -314,6 +314,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="4046123991198612571">Ďalšia skladba</translation>
 <translation id="4077310749977440510">Weby zvyčajne čítajú vašu schránku na poskytovanie funkcií, napríklad aby mohli zachovať formátovanie textu, ktorý ste skopírovali</translation>
 <translation id="4082080074595021446">Výnimky pre konkrétne weby nie sú povolené, pretože zariadenie s Androidom nemá dostatok operačnej pamäte.</translation>
+<translation id="4089304748532599471">Niektoré nastavenia Chromu sa zmenili</translation>
 <translation id="4149890623864272035">Naozaj chcete odstrániť všetky miestne údaje vrátane súborov cookie a resetovať všetky povolenia pre tento web?</translation>
 <translation id="4149994727733219643">Jednoduché zobrazenie webových stránok</translation>
 <translation id="4151930093518524179">Predvolená lupa</translation>
@@ -349,6 +350,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="4478158430052450698">Zjednodušenie prispôsobenia lupy pre rôzne weby</translation>
 <translation id="4479647676395637221">Pýtať sa, či chcete povoliť webu používať kameru (odporúčané)</translation>
 <translation id="4505788138578415521">Webová adresa bola rozbalená</translation>
+<translation id="4522570452068850558">Podrobnosti</translation>
 <translation id="4523472416386354622">Prihlásiť sa a začať</translation>
 <translation id="4534723447064627427">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> používať mikrofón, zapnite ho aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Vypnúť mikrofón</translation>
@@ -685,6 +687,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="8117244575099414087">Keď je táto možnosť zapnutá, weby môžu používať senzory vášho zariadenia. Keď je táto možnosť vypnutá, weby nemôžu používať senzory.</translation>
 <translation id="813082847718468539">Zobraziť informácie o webe</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
+<translation id="8148160259207090265">Toto nastavenie zostane zapnuté, kým budete mať v nastaveniach Androidu zapnutú rozšírenú ochranu.</translation>
 <translation id="8163152278172770963">Nepovoliť webom automaticky spúšťať obraz v obraze</translation>
 <translation id="8168435359814927499">Obsah</translation>
 <translation id="818487310457576362">Režim celej obrazovky ukončíte presunutím z okraja obrazovky.</translation>
@@ -714,6 +717,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="8441146129660941386">Pretočiť dozadu</translation>
 <translation id="8444433999583714703">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> používať vašu polohu, zapnite ju aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Odvolať povolenie pre zariadenie</translation>
+<translation id="8463843545738141778">Toto nastavenie je deaktivované, pretože ste v nastaveniach Androidu zapli rozšírenú ochranu.</translation>
 <translation id="8467359479529706065">Dolný hárok vzhľadu stránky na novej karte je otvorený na polovičnú výšku</translation>
 <translation id="8471525937465764768">Weby sa zvyčajne pripájajú k zariadeniam USB, aby mohli poskytovať funkcie, ako tlač dokumentu alebo uloženie do zariadenia</translation>
 <translation id="8473055640493819707">Aplikácia <ph name="APP_NAME" /> je zastaraná. Preinštalujte ju.</translation>

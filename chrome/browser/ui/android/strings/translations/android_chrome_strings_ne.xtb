@@ -432,6 +432,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2871733351037274014">पेजहरू प्रिलोड गर्नुहोस्</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> तपाईंले यो वेबसाइट अनुमोदन गरिदिनुहोस् भन्ने चाहन्छन्:</translation>
+<translation id="2876556152483133018">साइटमा भएको कुरा खोज्ने सुविधा</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome ले तपाईंको डेटा कसरी गोप्य राख्छ<ph name="END_LINK" /> भन्ने बारेमा थप जान्नुहोस्</translation>
 <translation id="2878607776582720720"><ph name="TAB_TITLE" />, एकभन्दा बढी विकल्प चयन गरिएको सेयरिङ इन्कोग्निटो ट्याब</translation>
 <translation id="2885355868600171871">सीधै एड्रेस बारमा जानुहोस्</translation>
@@ -621,6 +622,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3709577906275923507"><ph name="FILE_NAME" /> मा संवेदनशील जानकारी समावेश हुन सक्ने भएकाले यो फाइल सेयर गर्नु हुँदैन</translation>
 <translation id="3710501561113687889"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि तपाईंको <ph name="FIELDS_STRING" /> यो साइटसँग सेयर गर्ने छ।</translation>
 <translation id="3710560693796335511">सहकार्य</translation>
+<translation id="3714430408451673233">ट्याबको पुछारको पाना आधा स्क्रिनमा खोलिएको छ।</translation>
 <translation id="3718765429352682176">तपाईं Chrome मा लिंक खोल्ने अन्य एपहरूको हिस्ट्री देख्न सक्नुहुन्छ।</translation>
 <translation id="3721119614952978349">तपाईं र Google</translation>
 <translation id="3727000368239390918">आफ्ना सबै डिभाइसमा आफ्ना ट्याबलगायतका थप कुराहरू प्राप्त गर्न साइन इन गर्नुहोस्</translation>
@@ -765,6 +767,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4326079409704643112">तपाईं आफ्नो Google खातामा सेभ गरिएको Chrome को डेटा प्रयोग गर्न र Google खातामा Chrome को थप डेटा सेभ गर्न चाहनुहुन्छ भने आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="433213510553688132">फलो गरिँदै छ…</translation>
 <translation id="4335835283689002019">Safe Browsing अफ छ</translation>
+<translation id="4343250402091037179">तपाईं कुनै निश्चित साइट वा Chrome को कुनै निश्चित भागमा भएका कुराहरू खोज्न चाहनुहुन्छ भने एड्रेस बारमा त्यसको सर्टकट टाइप गर्नुहोस् अनि आफ्नो रोजाइको किबोर्ड सर्टकट थिच्नुहोस्।</translation>
 <translation id="4351244548802238354">सम्बाद बन्द गर्नुहोस्</translation>
 <translation id="4352287748243729941">तपाईंको <ph name="PROVIDER" /> को पासवर्ड प्रयोग गर्ने हो?</translation>
 <translation id="4355272626458588338">कुनै महत्त्वपूर्ण पेजमा सजिलैसँग फर्कन उक्त पेज बुकमार्क गर्नुहोस्</translation>
@@ -954,6 +957,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5056587122125565772">फोटो बनाउनुहोस्</translation>
 <translation id="506254248375231072">कुनै पनि ट्याब छैन</translation>
 <translation id="5075939510584558547">इन्क्रिप्ट नगरिकनै सेभ गर्नुहोस्</translation>
+<translation id="5078638979202084724">सबै ट्याबहरू पृष्ठमञ्जूषा गर्नुहोस्</translation>
 <translation id="5085038751173179818">आफ्ना सबै डिभाइसका बुकमार्कलगायतका कुराहरू प्राप्त गर्न यो साइट र Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="5091199029769593641">चाँडै नै, तपाईंले नयाँ ट्याब खोल्दा <ph name="SITE_NAME" /> का लेखहरू देखाइने छन्। तपाईंले फलो गर्ने साइटहरू तपाईंको Google खातामा सेभ गरिन्छन्। तपाईं Discover सम्बन्धी सेटिङमा गई ती साइटहरू व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="509429900233858213">त्रुटि भयो।</translation>
@@ -1037,6 +1041,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="544776284582297024">एकै पटक ट्याबहरू खोल्न र विभिन्न पृष्ठहरूमा जान 'ट्याबहरू खोल्नुहोस्' बटनमा ट्याप गर्नुहोस्</translation>
 <translation id="5456381639095306749">पृष्ठ डाउनलोड गर्नुहोस्</translation>
 <translation id="5458366071038729214">तपाईं आफूले फलो गरेका साइटहरू यहाँ भेट्टाउनु हुने छ</translation>
+<translation id="5465437530117042974">ट्याबको पुछारको पानामा गरिएका परिवर्तनसम्बन्धी जानकारी बन्द गरिएको छ।</translation>
 <translation id="5469852975082458401">तपाईं टेक्स्ट कर्सर प्रयोग गरी पृष्ठहरूमा नेभिगेट गर्न सक्नुहुन्छ। अफ गर्न F7 थिच्नुहोस्।</translation>
 <translation id="5471273988133666918">ट्याब <ph name="TAB_TITLE" /> सार्न मिल्दैन</translation>
 <translation id="548278423535722844">नक्सा एपमा खोल्नुहोस्</translation>
@@ -1170,6 +1175,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="604996488070107836">एक अज्ञात त्रुटिको कारणले गर्दा <ph name="FILE_NAME" /> को डाउनलोड असफल भयो।</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">यहाँ आफ्नो समाचार फिडमा देखिने सामग्री तथा क्रियाकलाप नियन्त्रण गर्नुहोस्</translation>
+<translation id="606985262342505139">ट्याबको पुछारको पाना पूरै स्क्रिनमा खोलिएको छ</translation>
 <translation id="6071995715087444295">ह्याक वा चोरी भएका पासवर्डहरू हेर्न आफ्नो Google खातामा साइन इन गर्नुहोस्</translation>
 <translation id="6078323886959318429">सर्टकट हाल्नुहोस्</translation>
 <translation id="6085886413119427067">यसले सुरक्षित इन्टरनेटमार्फत वेबसाइटहरूमा जोडिने तरिका निर्धारण गर्छ</translation>
@@ -1186,6 +1192,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />थप विवरणहरू<ph name="END_LINK" /></translation>
 <translation id="6127860394906721547">निम्न साइटहरू भएको <ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> नामक ट्याब समूह खोल्नुहोस्: <ph name="URL_LIST" /></translation>
 <translation id="6130303040046284160">ट्याब मिनिमाइज गर्नुहोस्</translation>
+<translation id="6132075343662013154">Chrome ले तपाईंको पासवर्ड सेभ गरिदिने अनुरोध गर्ने छ</translation>
 <translation id="6134168885321518274">फाइन्ड बार खोल्नुहोस्</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> वटा ट्याब}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब}}</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> को भाषा</translation>
@@ -1338,6 +1345,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6672917148207387131"><ph name="DOMAIN" /> हाल्नुहोस्</translation>
 <translation id="6674571176963658787">सिंक गर्ने कार्य सुरु गर्न आफ्नो पासफ्रेज हाल्नुहोस्</translation>
 <translation id="6676927815633975364">यो साइट र Chrome मा साइन इन गर्नुहोस्</translation>
+<translation id="6684262542644248484">कुनै वेबसाइटमा साइन इन गर्नुहोस्</translation>
 <translation id="6684809838922667136">Chrome मा सुधार गर्नुहोस्</translation>
 <translation id="6689436252814043643">रिडिङ मोड उपलब्ध छैन</translation>
 <translation id="6700279777779583398">तपाईंका छनौटहरू सेभ गरिएका छन्</translation>

@@ -314,6 +314,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="4046123991198612571">Další skladba</translation>
 <translation id="4077310749977440510">Weby obvykle čtou obsah schránky kvůli funkcím, jako je zachování formátu zkopírovaného textu</translation>
 <translation id="4082080074595021446">Výjimky pro konkrétní webové stránky jsou zakázány, protože zařízení s Androidem nemá dostatek paměti RAM.</translation>
+<translation id="4089304748532599471">Některá nastavení Chromu se změnila</translation>
 <translation id="4149890623864272035">Opravdu chcete vymazat všechna místní data, včetně souborů cookie, a resetovat všechna oprávnění tohoto webu?</translation>
 <translation id="4149994727733219643">Zjednodušené zobrazení webových stránek</translation>
 <translation id="4151930093518524179">Výchozí přiblížení</translation>
@@ -349,6 +350,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="4478158430052450698">Usnadnit přizpůsobení velikosti zobrazení pro různé weby</translation>
 <translation id="4479647676395637221">Pokud web bude chtít použít vaši kameru, zobrazit dotaz (doporučeno)</translation>
 <translation id="4505788138578415521">Rozbalená adresa URL</translation>
+<translation id="4522570452068850558">Podrobnosti</translation>
 <translation id="4523472416386354622">Nejdřív se přihlaste</translation>
 <translation id="4534723447064627427">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k mikrofonu, zapněte mikrofon také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Vypnout mikrofon</translation>
@@ -685,6 +687,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="8117244575099414087">Když je tato možnost zapnutá, weby mohou používat senzory zařízení. Když je vypnutá, weby senzory používat nemohou.</translation>
 <translation id="813082847718468539">Zobrazit informace o webu</translation>
 <translation id="8131740175452115882">Potvrdit</translation>
+<translation id="8148160259207090265">Tohle nastavení zůstane zapnuté, dokud budete mít v nastavení Androidu zapnutou pokročilou ochranu.</translation>
 <translation id="8163152278172770963">Nepovolovat webům automaticky aktivovat režim obrazu v obraze</translation>
 <translation id="8168435359814927499">Obsah</translation>
 <translation id="818487310457576362">Přetažením ze strany obrazovky ukončíte celou obrazovku.</translation>
@@ -714,6 +717,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="8441146129660941386">Přetočit dozadu</translation>
 <translation id="8444433999583714703">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit přístup ke své poloze, zapněte polohu také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Zrušit oprávnění zařízení</translation>
+<translation id="8463843545738141778">Tohle nastavení nejde zapnout, protože jste v nastavení Androidu zapnuli pokročilou ochranu.</translation>
 <translation id="8467359479529706065">Spodní panel vzhledu stránky Nová karta otevřený na polovinu výšky</translation>
 <translation id="8471525937465764768">Weby se obvykle připojují k zařízením USB kvůli funkcím, jako je tisk dokumentu nebo uložení obsahu na paměťové zařízení</translation>
 <translation id="8473055640493819707">Aplikace <ph name="APP_NAME" /> je zastaralá. Přeinstalujte ji.</translation>

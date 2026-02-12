@@ -314,6 +314,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="4046123991198612571">Sonraki parça</translation>
 <translation id="4077310749977440510">Kopyaladığınız metnin biçimini koruma gibi özelliklerin kullanılması için siteler genellikle panonuzu okur</translation>
 <translation id="4082080074595021446">Android cihazda yeterli RAM olmadığından belirli web siteleri için istisnalara izin verilmiyor.</translation>
+<translation id="4089304748532599471">Bazı Chrome ayarları değişti</translation>
 <translation id="4149890623864272035">Çerezler de dahil tüm yerel verileri silmek ve bu web sitesine ilişkin tüm izinleri sıfırlamak istediğinizden emin misiniz?</translation>
 <translation id="4149994727733219643">Web sayfalarının basitleştirilmiş görünümü</translation>
 <translation id="4151930093518524179">Varsayılan yakınlaştırma</translation>
@@ -349,6 +350,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="4478158430052450698">Yakınlaştırma işlevini farklı siteler için özelleştirmeyi kolay hale getirin</translation>
 <translation id="4479647676395637221">Sitelerin, kameranızı kullanmasına izin verilmeden önce size sorulsun (önerilir)</translation>
 <translation id="4505788138578415521">URL genişletildi</translation>
+<translation id="4522570452068850558">Ayrıntılar</translation>
 <translation id="4523472416386354622">Başlamak için oturum aç</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> uygulamasının mikrofonunuza erişebilmesi için <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da mikrofonu açın.</translation>
 <translation id="4566417217121906555">Mikrofonun sesini kapat</translation>
@@ -685,6 +687,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="8117244575099414087">Bu düğme açıkken siteler cihazınızın sensörlerini kullanabilir. Düğme kapalıyken siteler sensörleri kullanamaz.</translation>
 <translation id="813082847718468539">Site bilgilerini görüntüle</translation>
 <translation id="8131740175452115882">Onayla</translation>
+<translation id="8148160259207090265">Bu ayar, Android Ayarları'nda Gelişmiş Koruma etkin olduğu sürece açık kalır.</translation>
 <translation id="8163152278172770963">Sitelerin otomatik olarak pencere içinde pencere moduna girmesine izin verme</translation>
 <translation id="8168435359814927499">İçerik</translation>
 <translation id="818487310457576362">Tam ekrandan çıkmak için ekranın kenarından sürükleyin.</translation>
@@ -714,6 +717,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="8441146129660941386">Geriye doğru git</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> uygulamasının konumunuza erişebilmesi için <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da konumu açın.</translation>
 <translation id="8447861592752582886">Cihaz iznini iptal et</translation>
+<translation id="8463843545738141778">Android Ayarları'nda Gelişmiş Koruma'yı etkinleştirdiğiniz için bu ayar devre dışı bırakıldı.</translation>
 <translation id="8467359479529706065">Yeni sekme sayfası görünümü alt sayfası, ekranın yarısına kadar açıldı</translation>
 <translation id="8471525937465764768">Doküman yazdırma veya depolama cihazına kaydetme gibi özelliklerin kullanılması için siteler genellikle USB cihazlara bağlanır</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' güncel değil. Lütfen uygulamayı yeniden yükleyin.</translation>

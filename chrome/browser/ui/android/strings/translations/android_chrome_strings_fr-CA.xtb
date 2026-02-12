@@ -432,6 +432,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Précharger les pages</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> souhaite obtenir votre approbation pour ce site Web :</translation>
+<translation id="2876556152483133018">Recherche de sites</translation>
 <translation id="2876628302275096482">En savoir plus sur la <ph name="BEGIN_LINK" />manière dont Chrome préserve la confidentialité de vos données<ph name="END_LINK" /></translation>
 <translation id="2878607776582720720"><ph name="TAB_TITLE" />, onglet de navigation privée multiséléctionné avec partage en cours</translation>
 <translation id="2885355868600171871">Passer à la barre d'adresse</translation>
@@ -621,6 +622,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3709577906275923507"><ph name="FILE_NAME" /> peut contenir des informations sensibles et ne doit pas être partagé</translation>
 <translation id="3710501561113687889">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre <ph name="FIELDS_STRING" /> avec ce site.</translation>
 <translation id="3710560693796335511">Collaboration</translation>
+<translation id="3714430408451673233">Zone de contenu dans le bas de l'écran de l'onglet à mi-hauteur.</translation>
 <translation id="3718765429352682176">Vous pourriez voir l'historique d'autres applis qui ouvrent des liens dans Chrome.</translation>
 <translation id="3721119614952978349">Vous et Google</translation>
 <translation id="3727000368239390918">Connectez-vous pour accéder à vos onglets et plus encore sur tous vos appareils</translation>
@@ -765,6 +767,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4326079409704643112">Pour utiliser et enregistrer des données Chrome dans votre compte Google, confirmez qu'il s'agit bien de vous</translation>
 <translation id="433213510553688132">Suivi en cours…</translation>
 <translation id="4335835283689002019">La navigation sécurisée est désactivée</translation>
+<translation id="4343250402091037179">Pour rechercher un site ou une partie de Chrome en particulier, entrez son raccourci dans la barre d'adresse, suivi de votre raccourci-clavier favori.</translation>
 <translation id="4351244548802238354">Fermer la boîte de dialogue</translation>
 <translation id="4352287748243729941">Utiliser votre mot de passe <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Vous pouvez revenir à une page importante pour vous en ajoutant un favori</translation>
@@ -955,6 +958,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5056587122125565772">Créer une image</translation>
 <translation id="506254248375231072">Aucun onglet</translation>
 <translation id="5075939510584558547">Enregistrer sans chiffrement</translation>
+<translation id="5078638979202084724">Ajouter tous les onglets aux favoris</translation>
 <translation id="5085038751173179818">Connectez-vous à ce site et à Chrome pour obtenir vos favoris et plus encore sur tous vos appareils</translation>
 <translation id="5091199029769593641">Vous verrez bientôt des histoires de <ph name="SITE_NAME" /> lorsque vous ouvrez un nouvel onglet. Les sites que vous suivez sont enregistrés dans votre compte Google. Vous pouvez les gérer dans les paramètres de Découvertes.</translation>
 <translation id="509429900233858213">Une erreur s'est produite.</translation>
@@ -1038,6 +1042,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="544776284582297024">Pour ouvrir des onglets et visiter différentes pages en même temps, touchez le bouton des onglets ouverts</translation>
 <translation id="5456381639095306749">Télécharger la page</translation>
 <translation id="5458366071038729214">Les sites que vous suivez s'afficheront ici</translation>
+<translation id="5465437530117042974">Modifications apportées à la zone de contenu dans le bas de l'écran de l'onglet fermées.</translation>
 <translation id="5469852975082458401">Vous pouvez parcourir les pages à l'aide d'un curseur de texte. Appuyez sur F7 pour désactiver ce mode.</translation>
 <translation id="5471273988133666918">L'onglet <ph name="TAB_TITLE" /> ne peut pas être déplacé</translation>
 <translation id="548278423535722844">Ouvrir dans l'application Maps</translation>
@@ -1171,6 +1176,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="604996488070107836">Le téléchargement de <ph name="FILE_NAME" /> a échoué en raison d'une erreur inconnue.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Gérez vos histoires et votre activité ici</translation>
+<translation id="606985262342505139">Zone de contenu dans le bas de l'écran de l'onglet à pleine hauteur</translation>
 <translation id="6071995715087444295">Pour vérifier les mots de passe compromis, connectez-vous à votre compte Google</translation>
 <translation id="6078323886959318429">Ajouter un raccourci</translation>
 <translation id="6085886413119427067">Détermine la manière de communiquer avec des sites Web par connexion sécurisée</translation>
@@ -1187,6 +1193,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Plus de détails<ph name="END_LINK" /></translation>
 <translation id="6127860394906721547">Ouvrir le groupe d'onglets <ph name="TITLE_OF_GROUP" />, de couleur <ph name="COLOR_NAME" />, qui comprend les sites <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Réduire l'onglet</translation>
+<translation id="6132075343662013154">Chrome vous proposera d'enregistrer votre mot de passe</translation>
 <translation id="6134168885321518274">Ouvrir la barre de recherche</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_COUNT_MANY" /> onglet}other{<ph name="TAB_COUNT_MANY" /> onglets}}</translation>
 <translation id="6137022273846704445">Langue de l'application <ph name="APP_NAME" /></translation>
@@ -1339,6 +1346,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6672917148207387131">Ajouter <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Pour lancer la synchronisation, entrez votre phrase de passe</translation>
 <translation id="6676927815633975364">Connectez-vous à ce site et à Chrome</translation>
+<translation id="6684262542644248484">Connectez-vous à un site Web</translation>
 <translation id="6684809838922667136">Améliorer Chrome</translation>
 <translation id="6689436252814043643">Le mode Lecture n'est pas accessible</translation>
 <translation id="6700279777779583398">Choix enregistrés</translation>

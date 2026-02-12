@@ -314,6 +314,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="4046123991198612571">Melodia următoare</translation>
 <translation id="4077310749977440510">Site-urile citesc de obicei clipboardul pentru a face acțiuni precum păstrarea formatării textului pe care l-ai copiat</translation>
 <translation id="4082080074595021446">Excepțiile pentru anumite site-uri nu sunt permise deoarece dispozitivul Android nu are suficientă memorie RAM.</translation>
+<translation id="4089304748532599471">Unele setări Chrome s-au schimbat</translation>
 <translation id="4149890623864272035">Sigur dorești să ștergi toate datele locale, inclusiv cookie-urile, și să resetezi toate permisiunile pentru acest site?</translation>
 <translation id="4149994727733219643">Afișare simplificată pentru paginile web</translation>
 <translation id="4151930093518524179">Zoom standard</translation>
@@ -349,6 +350,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="4478158430052450698">Simplifică personalizarea zoomului pentru diferite site-uri</translation>
 <translation id="4479647676395637221">Întreabă înainte de a permite site-urilor să folosească camera foto (recomandat)</translation>
 <translation id="4505788138578415521">Adresă URL extinsă</translation>
+<translation id="4522570452068850558">Detalii</translation>
 <translation id="4523472416386354622">Conectează-te pentru a începe</translation>
 <translation id="4534723447064627427">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze microfonul, activează microfonul și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Dezactivează sunetul microfonului</translation>
@@ -685,6 +687,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="8117244575099414087">Când opțiunea este activată, site-urile pot folosi senzorii dispozitivului. Când opțiunea este dezactivată, site-urile nu pot folosi senzori.</translation>
 <translation id="813082847718468539">Afișează informațiile privind site-ul</translation>
 <translation id="8131740175452115882">Confirmați</translation>
+<translation id="8148160259207090265">Această setare rămâne activată atât timp cât Protecția avansată este activată în Setările Android.</translation>
 <translation id="8163152278172770963">Nu permite site-urilor să intre automat în modul picture-in-picture</translation>
 <translation id="8168435359814927499">Conținut</translation>
 <translation id="818487310457576362">Trage dintr-o parte a ecranului pentru a ieși din ecranul complet.</translation>
@@ -714,6 +717,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="8441146129660941386">Derulează înapoi</translation>
 <translation id="8444433999583714703">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze locația, activează locația și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revocă permisiunea de accesare a dispozitivului</translation>
+<translation id="8463843545738141778">Această setare este dezactivată deoarece ai activat Protecția avansată în Setările Android.</translation>
 <translation id="8467359479529706065">Foaia din partea de jos cu aspectul paginii Filă nouă deschisă la jumătate din înălțime</translation>
 <translation id="8471525937465764768">Site-urile se conectează de obicei la dispozitive USB pentru funcții cum ar fi imprimarea unui document sau salvarea pe un dispozitiv de stocare</translation>
 <translation id="8473055640493819707">Aplicația <ph name="APP_NAME" /> este învechită. Reinstalează aplicația.</translation>

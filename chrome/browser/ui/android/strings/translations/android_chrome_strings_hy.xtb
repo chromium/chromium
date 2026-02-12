@@ -432,6 +432,7 @@
 <translation id="2870560284913253234">Կայք</translation>
 <translation id="2871733351037274014">Էջերի նախաբեռնում</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" />-ն ուզում է, որ հաստատեք այս կայքը՝</translation>
+<translation id="2876556152483133018">Որոնում կայքում</translation>
 <translation id="2876628302275096482">Իմացեք ավելին, թե <ph name="BEGIN_LINK" />ինչպես է Chrome-ը պահպանում ձեր տվյալների գաղտնիությունը<ph name="END_LINK" /></translation>
 <translation id="2878607776582720720"><ph name="TAB_TITLE" />, ընտրված մի քանի ինկոգնիտո ներդիրներից մեկը, որը հասանելի է այլ օգտատերերի</translation>
 <translation id="2885355868600171871">Անցնել հասցեագոտի</translation>
@@ -621,6 +622,7 @@
 <translation id="3709577906275923507"><ph name="FILE_NAME" /> ֆայլը կարող է զգայուն տեղեկություններ պարունակել, այդ պատճառով խորհուրդ չենք տալիս կիսվել դրանով</translation>
 <translation id="3710501561113687889">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունն այս կայքին կփոխանցի հետևյալ տվյալները՝ <ph name="FIELDS_STRING" />։</translation>
 <translation id="3710560693796335511">Համագործակցություն</translation>
+<translation id="3714430408451673233">Ներդիրի ներքևի էկրանը բացված է կիսով չափ։</translation>
 <translation id="3718765429352682176">Դուք կարող եք տեսնել պատմությունն այլ հավելվածներից, որոնք հղումներ են բացում Chrome-ում։</translation>
 <translation id="3721119614952978349">Դուք և Google-ը</translation>
 <translation id="3727000368239390918">Մուտք գործեք՝ ներդիրները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
@@ -765,6 +767,7 @@
 <translation id="4326079409704643112">Հաստատեք ձեր ինքնությունը՝ Chrome-ի տվյալները ձեր Google հաշվում օգտագործելու և պահելու համար</translation>
 <translation id="433213510553688132">Բաժանորդագրում…</translation>
 <translation id="4335835283689002019">Ապահով դիտարկումն անջատված է</translation>
+<translation id="4343250402091037179">Որոշակի կայքում կամ Chrome-ի որևէ բաժնում որոնում կատարելու համար հասցեագոտում մուտքագրեք համապատասխան դյուրանցումը, ապա՝ ձեր նախընտրած ստեղնային դյուրանցումը։</translation>
 <translation id="4351244548802238354">Փակել երկխոսությունը</translation>
 <translation id="4352287748243729941">Օգտագործե՞լ <ph name="PROVIDER" /> կայքի ձեր գաղտնաբառը</translation>
 <translation id="4355272626458588338">Էջանշեք կարևոր էջերը, որպեսզի կարողանաք վերադառնալ դրանց</translation>
@@ -955,6 +958,7 @@
 <translation id="5056587122125565772">Ստեղծել պատկեր</translation>
 <translation id="506254248375231072">Ներդիրներ չկան</translation>
 <translation id="5075939510584558547">Պահում առանց գաղտնագրման</translation>
+<translation id="5078638979202084724">Էջանշել բոլոր ներդիրները</translation>
 <translation id="5085038751173179818">Մուտք գործեք հաշիվ այս կայքում և Chrome-ում՝ ձեր էջանիշները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="5091199029769593641">Շուտով, երբ նոր ներդիր բացեք, կտեսնեք նորություններ <ph name="SITE_NAME" /> կայքից։ Կայքերը, որոնց բաժանորդագրվում եք, պահվում են ձեր Google հաշվում։ Դրանք կարող եք կառավարել «Բացահայտեք» ներդիրի կարգավորումներում:</translation>
 <translation id="509429900233858213">Սխալ առաջացավ:</translation>
@@ -1038,6 +1042,7 @@
 <translation id="544776284582297024">Ներդիրներ բացելու և միաժամանակ մի քանի էջեր այցելելու համար սեղմեք «բաց ներդիրներ» կոճակը</translation>
 <translation id="5456381639095306749">Ներբեռնել էջը</translation>
 <translation id="5458366071038729214">Կայքերը, որոնց հետևում եք, կցուցադրվեն այստեղ</translation>
+<translation id="5465437530117042974">Ներդիրի ներքևի էկրանի փոփոխությունների մասին ծանուցումը փակված է։</translation>
 <translation id="5469852975082458401">Դուք կարող եք մեկ էջից անցնել մյուսը տեսքտի նշորդի միջոցով։ Սեղմեք F7՝ անջատելու համար։</translation>
 <translation id="5471273988133666918">Ներդիր <ph name="TAB_TITLE" />-ը հնարավոր չէ շարժել</translation>
 <translation id="548278423535722844">Բացեք Քարտեզներ հավելվածում</translation>
@@ -1171,6 +1176,7 @@
 <translation id="604996488070107836"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ անհայտ սխալի պատճառով:</translation>
 <translation id="605721222689873409">տարի</translation>
 <translation id="6059830886158432458">Կառավարեք ձեր պատմություններն ու գործողություններն այստեղ</translation>
+<translation id="606985262342505139">Ներդիրի ներքևի էկրանը բացված է ամբողջությամբ</translation>
 <translation id="6071995715087444295">Կոտրված գաղտնաբառերը հայտնաբերելու համար մուտք գործեք ձեր Google հաշիվ</translation>
 <translation id="6078323886959318429">Ավելացնել դյուրանցում</translation>
 <translation id="6085886413119427067">Սահմանում է, թե ինչպես միանալ կայքերին ապահով կապի միջոցով</translation>
@@ -1187,6 +1193,7 @@
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Այլ մանրամասներ<ph name="END_LINK" /></translation>
 <translation id="6127860394906721547">Բացեք ներդիրների «<ph name="TITLE_OF_GROUP" />» խումբը, գույնը՝ <ph name="COLOR_NAME" />, հետևյալ էջերով՝ <ph name="URL_LIST" />։</translation>
 <translation id="6130303040046284160">Ծալել ներդիրը</translation>
+<translation id="6132075343662013154">Chrome-ը կառաջարկի պահել ձեր գաղտնաբառը</translation>
 <translation id="6134168885321518274">Բացել որոնման գոտին</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ներդիր}one{<ph name="TAB_COUNT_MANY" /> ներդիր}other{<ph name="TAB_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> հավելվածի լեզուն</translation>
@@ -1339,6 +1346,7 @@
 <translation id="6672917148207387131">Ավելացնել <ph name="DOMAIN" /> տիրույթը</translation>
 <translation id="6674571176963658787">Համաժամացումը սկսելու համար մուտքագրեք ձեր անցաբառը</translation>
 <translation id="6676927815633975364">Մուտք գործեք այս կայք և Chrome</translation>
+<translation id="6684262542644248484">Մուտք գործեք որևէ կայք</translation>
 <translation id="6684809838922667136">Օգնեք բարելավել Chrome-ի աշխատանքը</translation>
 <translation id="6689436252814043643">Ընթերցման ռեժիմը հասանելի չէ</translation>
 <translation id="6700279777779583398">Ընտրված կարգավորումները պահվել են</translation>

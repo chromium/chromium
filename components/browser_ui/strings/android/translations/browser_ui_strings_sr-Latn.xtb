@@ -314,6 +314,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="4046123991198612571">Sledeća pesma</translation>
 <translation id="4077310749977440510">Sajtovi obično čitaju privremenu memoriju za potrebe funkcija poput zadržavanja formatiranja teksta koji ste kopirali</translation>
 <translation id="4082080074595021446">Izuzeci za određene veb-sajtove nisu dozvoljeni jer Android uređaj nema dovoljno RAM-a.</translation>
+<translation id="4089304748532599471">Neka podešavanja Chrome-a su promenjena</translation>
 <translation id="4149890623864272035">Želite li stvarno da izbrišete sve lokalne podatke, uključujući kolačiće, i resetujete sve dozvole za ovaj veb-sajt?</translation>
 <translation id="4149994727733219643">Pojednostavljen prikaz veb-stranica</translation>
 <translation id="4151930093518524179">Podrazumevani zum</translation>
@@ -349,6 +350,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="4478158430052450698">Olakšajte prilagođavanje zumiranja za različite sajtove</translation>
 <translation id="4479647676395637221">Pitaj pre nego što dozvoliš sajtovima da koriste kameru (preporučeno)</translation>
 <translation id="4505788138578415521">URL je proširen</translation>
+<translation id="4522570452068850558">Detalji</translation>
 <translation id="4523472416386354622">Prijavite se da biste započeli</translation>
 <translation id="4534723447064627427">Da biste dozvolili da <ph name="APP_NAME" /> pristupa mikrofonu, uključite mikrofon i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Isključi zvuk mikrofona</translation>
@@ -685,6 +687,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="8117244575099414087">Kada je uključeno, sajtovi mogu da koriste senzore uređaja. Kada je isključeno, sajtovi ne mogu da koriste senzore.</translation>
 <translation id="813082847718468539">Pogledajte informacije o sajtu</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
+<translation id="8148160259207090265">Ovo podešavanje ostaje uključeno dok je Napredna zaštita uključena u podešavanjima Android-a.</translation>
 <translation id="8163152278172770963">Ne dozvoljavajte sajtovima da automatski ulaze u sliku u slici</translation>
 <translation id="8168435359814927499">Sadržaj</translation>
 <translation id="818487310457576362">Prevucite sa strane ekrana da biste izašli iz režima celog ekrana.</translation>
@@ -714,6 +717,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="8441146129660941386">Premotaj unazad</translation>
 <translation id="8444433999583714703">Da biste dozvolili da <ph name="APP_NAME" /> pristupa lokaciji, uključite lokaciju i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Opozovi dozvolu za uređaj</translation>
+<translation id="8463843545738141778">Ovo podešavanje je onemogućeno jer ste uključili Naprednu zaštitu u podešavanjima Android-a.</translation>
 <translation id="8467359479529706065">Donja tabela za izgled stranice nove kartice je otvorena do polovine ekrana</translation>
 <translation id="8471525937465764768">Sajtovi se obično povezuju sa USB uređajima za potrebe funkcija poput štampanja dokumenata ili čuvanja sadržaja na memorijskim uređajima</translation>
 <translation id="8473055640493819707">Aplikacija <ph name="APP_NAME" /> je zastarela. Ponovo instalirajte aplikaciju.</translation>

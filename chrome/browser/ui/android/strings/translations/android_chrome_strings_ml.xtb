@@ -432,6 +432,7 @@
 <translation id="2870560284913253234">സൈറ്റ്</translation>
 <translation id="2871733351037274014">പേജുകൾ മുൻകൂട്ടി ലോഡ് ചെയ്യുക</translation>
 <translation id="2876136027428473467">ഈ വെബ്സൈറ്റിന് അനുമതി നൽകാൻ <ph name="CHILD_NAME" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു:</translation>
+<translation id="2876556152483133018">സൈറ്റ് തിരയൽ</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome നിങ്ങളുടെ ഡാറ്റ എങ്ങനെ സ്വകാര്യമായി നിലനിർത്തുന്നു<ph name="END_LINK" /> എന്നതിനെക്കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="2878607776582720720"><ph name="TAB_TITLE" />, മൾട്ടിസെലക്റ്റ് ചെയ്ത, ഉള്ളടക്കം പങ്കിടുന്ന അദൃശ്യ ടാബ്</translation>
 <translation id="2885355868600171871">വിലാസ ബാറിലേക്ക് പോകുക</translation>
@@ -621,6 +622,7 @@
 <translation id="3709577906275923507"><ph name="FILE_NAME" /> എന്നതിൽ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട വിവരങ്ങൾ അടങ്ങിയിരിക്കാം, അത് പങ്കിടരുത്</translation>
 <translation id="3710501561113687889">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ <ph name="FIELDS_STRING" /> ഈ സൈറ്റുമായി പങ്കിടും.</translation>
 <translation id="3710560693796335511">കൊളാബറേഷൻ</translation>
+<translation id="3714430408451673233">ടാബ് ബോട്ടം ഷീറ്റ് പകുതി ഉയരത്തിൽ.</translation>
 <translation id="3718765429352682176">Chrome-ൽ ലിങ്കുകൾ തുറക്കുന്ന മറ്റ് ആപ്പുകളിൽ നിന്നുള്ള ചരിത്രവും നിങ്ങൾ കണ്ടേക്കാം.</translation>
 <translation id="3721119614952978349">നിങ്ങളും Google-ഉം</translation>
 <translation id="3727000368239390918">ടാബുകളും മറ്റും നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും നേടുന്നതിന് സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -765,6 +767,7 @@
 <translation id="4326079409704643112">നിങ്ങളുടെ Google Account-ലെ Chrome ഡാറ്റ ഉപയോഗിക്കാനും സംരക്ഷിക്കാനും, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="433213510553688132">ഫോളോയിംഗ്...</translation>
 <translation id="4335835283689002019">സുരക്ഷിത ബ്രൗസിംഗ് ഓഫാണ്</translation>
+<translation id="4343250402091037179">ഒരു നിർദ്ദിഷ്‌ട സൈറ്റോ Chrome-ലെ ഒരു ഭാഗമോ തിരയാൻ, വിലാസ ബാറിൽ അതിന്റെ കുറുക്കുവഴി ടൈപ്പ് ചെയ്ത ശേഷം നിങ്ങൾ മുൻഗണന നൽകിയിട്ടുള്ള കീബോർഡ് കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="4351244548802238354">ഡയലോഗ് അടയ്‌ക്കുക</translation>
 <translation id="4352287748243729941">നിങ്ങളുടെ <ph name="PROVIDER" /> പാസ്‌വേഡ് ഉപയോഗിക്കണോ?</translation>
 <translation id="4355272626458588338">ബുക്ക്‌മാർക്ക് ചേർക്കുന്നതിലൂടെ, നിങ്ങൾക്ക് പ്രധാനപ്പെട്ട പേജിലേക്ക് മടങ്ങാനാകും</translation>
@@ -955,6 +958,7 @@
 <translation id="5056587122125565772">ചിത്രം സൃഷ്ടിക്കുക</translation>
 <translation id="506254248375231072">ടാബുകളൊന്നും ഇല്ല</translation>
 <translation id="5075939510584558547">എൻക്രിപ്ഷൻ ഇല്ലാതെ സംരക്ഷിക്കുക</translation>
+<translation id="5078638979202084724">എല്ലാ ടാബുകളും ബുക്ക്‌മാര്‍ക്ക് ചെയ്യുക</translation>
 <translation id="5085038751173179818">നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകളും മറ്റും നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും നേടാൻ ഈ സൈറ്റിലേക്കും Chrome-ലേക്കും സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="5091199029769593641">ഉടൻ, പുതിയൊരു ടാബ് തുറക്കുമ്പോൾ, നിങ്ങൾക്ക് <ph name="SITE_NAME" /> എന്നതിൽ നിന്നുള്ള സ്റ്റോറികൾ കാണാനാകും. നിങ്ങൾ പിന്തുടരുന്ന സൈറ്റുകൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കുന്നു. Discover ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് അവ മാനേജ് ചെയ്യാനാകും.</translation>
 <translation id="509429900233858213">ഒരു പിശക് സംഭവിച്ചു.</translation>
@@ -1038,6 +1042,7 @@
 <translation id="544776284582297024">ടാബുകൾ തുറക്കാനും ഒരേ സമയം വ്യത്യസ്‌ത പേജുകൾ സന്ദർശിക്കാനും 'തുറന്നിരിക്കുന്ന ടാബുകൾ' ബട്ടൺ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5456381639095306749">പേജ് ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="5458366071038729214">നിങ്ങൾ പിന്തുടരുന്ന സൈറ്റുകൾ ഇവിടെ കാണാം</translation>
+<translation id="5465437530117042974">ടാബ് ബോട്ടം ഷീറ്റിലെ മാറ്റങ്ങൾ അടച്ചു.</translation>
 <translation id="5469852975082458401">ടെക്‌സ്‌റ്റ് കഴ്‌സർ ഉപയോഗിച്ച് നിങ്ങൾക്ക് പേജുകൾക്കിടയിൽ നാവിഗേറ്റ് ചെയ്യാനാകും. ഓഫാക്കാൻ F7 അമർത്തുക.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> ടാബ് നീക്കാനാകില്ല</translation>
 <translation id="548278423535722844">മാപ്‌സ് ആപ്പിൽ തുറക്കുക</translation>
@@ -1171,6 +1176,7 @@
 <translation id="604996488070107836">ഒരു അജ്ഞാതമായ പിശക് കാരണം <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">നിങ്ങളുടെ സ്‌റ്റോറികളും ആക്റ്റിവിറ്റികളും ഇവിടെ നിയന്ത്രിക്കുക</translation>
+<translation id="606985262342505139">ടാബ് ബോട്ടം ഷീറ്റ് മുഴുവൻ ഉയരത്തിൽ</translation>
 <translation id="6071995715087444295">അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾക്കായി പരിശോധിക്കാൻ, നിങ്ങളുടെ Google Account-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="6078323886959318429">കുറുക്കുവഴി ചേർക്കുക</translation>
 <translation id="6085886413119427067">സുരക്ഷിത കണക്ഷനിലൂടെ വെബ്‌സൈറ്റുകളിലേക്ക് എങ്ങനെ കണക്റ്റ് ചെയ്യാമെന്ന് നിർണ്ണയിക്കുന്നു</translation>
@@ -1187,6 +1193,7 @@
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />കൂടുതൽ വിശദാംശങ്ങൾ<ph name="END_LINK" /></translation>
 <translation id="6127860394906721547"><ph name="COLOR_NAME" /> നിറത്തിലുള്ള, <ph name="URL_LIST" /> സൈറ്റുകൾ അടങ്ങിയിട്ടുള്ള <ph name="TITLE_OF_GROUP" /> ടാബ് ഗ്രൂപ്പ് തുറക്കുക.</translation>
 <translation id="6130303040046284160">ടാബ് ചെറുതാക്കുക</translation>
+<translation id="6132075343662013154">നിങ്ങളുടെ പാസ്‌വേഡ് സംരക്ഷിക്കാമെന്ന് Chrome വാഗ്‌ദാനം ചെയ്യും</translation>
 <translation id="6134168885321518274">'ബാർ കണ്ടെത്തുക' തുറക്കുക</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ടാബ്}other{<ph name="TAB_COUNT_MANY" /> ടാബുകൾ}}</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> എന്നതിന്റെ ഭാഷ</translation>
@@ -1339,6 +1346,7 @@
 <translation id="6672917148207387131"><ph name="DOMAIN" /> ചേർക്കുക</translation>
 <translation id="6674571176963658787">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന്, നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സ് നൽകുക</translation>
 <translation id="6676927815633975364">ഈ സൈറ്റിലും Chrome-ലും സൈൻ ഇൻ ചെയ്യുക</translation>
+<translation id="6684262542644248484">ഒരു വെബ്സൈറ്റിലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="6684809838922667136">Chrome മെച്ചപ്പെടുത്തുക</translation>
 <translation id="6689436252814043643">റീഡിംഗ് മോഡ് ലഭ്യമല്ല</translation>
 <translation id="6700279777779583398">തിരഞ്ഞെടുപ്പുകൾ സംരക്ഷിച്ചു</translation>

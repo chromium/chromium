@@ -184,7 +184,6 @@
 <translation id="1289129165308566697">다른 기기에서의 방문 기록 보기</translation>
 <translation id="1292571435393770077">트레이 16</translation>
 <translation id="1292701964462482250">'컴퓨터의 소프트웨어로 인해 Chrome이 안전하게 웹에 접속할 수 없습니다'(Windows 컴퓨터만 해당)</translation>
-<translation id="1293154089865862473">이러한 옵션을 제공하기 위해 결제 페이지의 페이지 콘텐츠가 Google과 공유됩니다. 자동 완성에서 후불 결제 옵션을 숨기려면 <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />으로 이동하세요.</translation>
 <translation id="1293556467332435079">파일</translation>
 <translation id="1293797321964802402">봉투 9 x 11 in</translation>
 <translation id="129553762522093515">최근에 닫은 탭</translation>
@@ -1123,7 +1122,6 @@
 <translation id="2782088940970074970">렌터카</translation>
 <translation id="278436560439594386">가전제품</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">이러한 옵션을 제공하기 위해 결제 페이지의 페이지 콘텐츠가 Google과 공유됩니다.</translation>
 <translation id="2784949926578158345">연결이 재설정되었습니다.</translation>
 <translation id="2786008859124691917">자전거 및 액세서리</translation>
 <translation id="2792012897584536778">이 기기의 관리자가 보안 인증서를 설정했으며, 이를 통해 관리자가 내가 방문하는 웹사이트의 콘텐츠를 확인할 수 있습니다.</translation>
@@ -2869,6 +2867,7 @@
 <translation id="5570825185877910964">계정 보호</translation>
 <translation id="5571083550517324815">이 주소에서 수령할 수 없습니다. 다른 주소를 선택하세요.</translation>
 <translation id="5572434905385510939">22x28인치</translation>
+<translation id="5573090972398558474">조직에서 시크릿 모드의 이 페이지를 차단했습니다.</translation>
 <translation id="5573641252776268565">여권 수정</translation>
 <translation id="5578606540385219379">서비스 제공업체</translation>
 <translation id="5580958916614886209">유효기간 월을 확인한 후 다시 시도해 주세요.</translation>
@@ -4296,6 +4295,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{없음}=1{앱 1개(<ph name="EXAMPLE_APP_1" />)}=2{앱 2개(<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{앱 #개(<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">오류가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="784623644169604270">최근 활동 없음</translation>
+<translation id="7848926355794727168">자동 탐색</translation>
 <translation id="7853222852810008596">이 통화로는 후불 결제를 사용할 수 없습니다</translation>
 <translation id="785476343534277563">대학 스포츠</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>

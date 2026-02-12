@@ -184,7 +184,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1289129165308566697">Peržiūrėkite istoriją kituose įrenginiuose</translation>
 <translation id="1292571435393770077">Šešioliktas dėklas</translation>
 <translation id="1292701964462482250">„Programinė įranga jūsų kompiuteryje neleidžia „Chrome“ saugiai prisijungti prie žiniatinklio“ (tik „Windows“ kompiuteriuose)</translation>
-<translation id="1293154089865862473">Puslapio turinys iš atsiskaitymo puslapio bendrinamas su „Google“, kad būtų galima pasiūlyti šias parinktis. Jei norite paslėpti mokėjimo vėliau parinktis automatinio pildymo funkcijoje, eikite į <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Failai</translation>
 <translation id="1293797321964802402">9 x 11 col. vokas</translation>
 <translation id="129553762522093515">Neseniai uždarytas</translation>
@@ -656,6 +655,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2071156619270205202">Šiai kortelei negali būti suteiktas virtualios kortelės numeris.</translation>
 <translation id="2071852865256799872">Jūsų naršyklę tvarko jūsų organizacija, o profilį tvarko <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informacija išsaugota tik įrenginyje</translation>
 <translation id="2074733626795553847">Panaikinti blokavimą: „<ph name="TOPIC" />“</translation>
 <translation id="2074771604462073334">Lankėtės</translation>
 <translation id="2078956195623975415">Muzikiniai ir šokių žaidimai</translation>
@@ -1124,7 +1124,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2782088940970074970">Automobilių nuoma</translation>
 <translation id="278436560439594386">Namų apyvokos prietaisai</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">Puslapio turinys iš atsiskaitymo puslapio bendrinamas su „Google“, kad būtų galima pasiūlyti šias parinktis.</translation>
 <translation id="2784949926578158345">Ryšys atkurtas.</translation>
 <translation id="2786008859124691917">Dviračiai ir priedai</translation>
 <translation id="2792012897584536778">Šio įrenginio administratoriai nustatė saugos sertifikatus, leidžiančius jiems peržiūrėti svetainių, kuriose lankotės, turinį.</translation>
@@ -4906,6 +4905,7 @@ Papildoma išsami informacija:
 <translation id="8858065207712248076">„Chrome“ rekomenduoja iš naujo nustatyti <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> slaptažodį, jei naudojate jį kitose svetainėse.</translation>
 <translation id="885906927438988819">Jei parašyta tinkamai, <ph name="BEGIN_LINK" />pabandykite paleisti „Windows“ tinklo diagnostiką<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Fotografijos ir skaitmeninis menas</translation>
+<translation id="8861482055962701239">Nepavyko išsaugoti šios informacijos „Google Wallet“. Vietoje to ji išsaugota naršyklėje „Chrome“ šiame įrenginyje. „Chrome“ pasiūlys išsaugoti ją „Wallet“ kitą kartą, kai ją naudosite.</translation>
 <translation id="8863218129525348270">Kad kitą kartą galėtumėte sparčiau atlikti mokėjimą, išsaugokite kortelę įrenginyje</translation>
 <translation id="8864939224504814334">Kostiumai ir verslo drabužiai</translation>
 <translation id="8866132857352163524">Garso takeliai</translation>

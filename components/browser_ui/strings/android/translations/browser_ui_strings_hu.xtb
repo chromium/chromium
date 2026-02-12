@@ -314,6 +314,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="4046123991198612571">Következő szám</translation>
 <translation id="4077310749977440510">A webhelyek általában bizonyos funkciók biztosítása (például a másolt szöveg formázásának megőrzése) érdekében olvassák le a vágólapon lévő szöveget.</translation>
 <translation id="4082080074595021446">A konkrét webhelyekre vonatkozó kivételek nem engedélyezettek, mert az Android-eszköz nem rendelkezik elegendő RAM-mal.</translation>
+<translation id="4089304748532599471">Egyes Chrome-beállítások módosultak</translation>
 <translation id="4149890623864272035">Biztosan törli az összes helyi adatot (a cookie-kkal együtt), és alaphelyzetbe állítja a webhely összes engedélyét?</translation>
 <translation id="4149994727733219643">Weboldalak egyszerűsített nézete</translation>
 <translation id="4151930093518524179">Alapértelmezett nagyítás</translation>
@@ -349,6 +350,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="4478158430052450698">Megkönnyítheti a különböző webhelyek nagyításának személyre szabását</translation>
 <translation id="4479647676395637221">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára a kamera használatát (ajánlott)</translation>
 <translation id="4505788138578415521">URL kibontva</translation>
+<translation id="4522570452068850558">Részletek</translation>
 <translation id="4523472416386354622">Jelentkezzen be a kezdéshez</translation>
 <translation id="4534723447064627427">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a mikrofonhoz, a mikrofont az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="4566417217121906555">Mikrofon némítása</translation>
@@ -685,6 +687,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="8117244575099414087">Ha be van kapcsolva, a webhelyek használhatják az eszköz érzékelőit. Ha ki van kapcsolva, a webhelyek nem használhatnak érzékelőket.</translation>
 <translation id="813082847718468539">Az oldalinformációk megtekintése</translation>
 <translation id="8131740175452115882">Megerősítés</translation>
+<translation id="8148160259207090265">Ez a beállítás addig marad bekapcsolva, amíg be van kapcsolva a Speciális védelem az Android-beállításokban.</translation>
 <translation id="8163152278172770963">A webhelyek nem indíthatják el automatikusan a kép a képben módot</translation>
 <translation id="8168435359814927499">Tartalom</translation>
 <translation id="818487310457576362">A teljes képernyős nézetből való kilépéshez húzza az ujját a képernyő oldalától.</translation>
@@ -714,6 +717,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="8441146129660941386">Ugrás visszafelé</translation>
 <translation id="8444433999583714703">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a helyadatokhoz, a helyadatokat az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="8447861592752582886">Eszközengedély visszavonása</translation>
+<translation id="8463843545738141778">Ez a beállítás le van tiltva, mert bekapcsolta a Speciális védelmet az Android-beállításokban.</translation>
 <translation id="8467359479529706065">Az Új lap oldal megjelenésének alsó lapja félmagasságban van megnyitva</translation>
 <translation id="8471525937465764768">A webhelyek általában bizonyos funkciók (például dokumentumok nyomtatásának vagy tárolóeszközön való mentésének) végrehajtása érdekében csatlakoznak USB-eszközökhöz</translation>
 <translation id="8473055640493819707">A(z) „<ph name="APP_NAME" />” elavult. Telepítse újra az alkalmazást.</translation>

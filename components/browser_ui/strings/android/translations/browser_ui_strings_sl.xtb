@@ -314,6 +314,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="4046123991198612571">Naslednja skladba</translation>
 <translation id="4077310749977440510">Spletna mesta običajno preberejo odložišče zaradi funkcij, kot je ohranjanje oblike kopiranega besedila</translation>
 <translation id="4082080074595021446">Izjeme za določena spletna mesta niso dovoljene, ker naprava Android nima dovolj RAM-a.</translation>
+<translation id="4089304748532599471">Nekatere nastavitve Chroma so se spremenile</translation>
 <translation id="4149890623864272035">Ali ste prepričani, da želite izbrisati vse lokalne podatke, vključno s piškotki, in ponastaviti vsa dovoljenja za to spletno mesto?</translation>
 <translation id="4149994727733219643">Poenostavljen pogled za spletne strani</translation>
 <translation id="4151930093518524179">Privzeta stopnja povečave</translation>
@@ -349,6 +350,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="4478158430052450698">Poenostavljeno nastavljanje povečave po meri za različna spletna mesta</translation>
 <translation id="4479647676395637221">Prikaži poziv, preden se spletnim mestom dovoli uporaba kamere (priporočeno)</translation>
 <translation id="4505788138578415521">URL je razširjen</translation>
+<translation id="4522570452068850558">Podrobnosti</translation>
 <translation id="4523472416386354622">Prijavite se, če želite začeti</translation>
 <translation id="4534723447064627427">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do mikrofona, mikrofon vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Izklopi mikrofon</translation>
@@ -685,6 +687,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="8117244575099414087">Če je ta možnost vklopljena, spletna mesta lahko uporabljajo tipala naprave. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati tipal.</translation>
 <translation id="813082847718468539">Ogled podatkov o mestu</translation>
 <translation id="8131740175452115882">Potrdi</translation>
+<translation id="8148160259207090265">Ta nastavitev ostane vklopljena, dokler je v nastavitvah za Android vklopljena dodatna zaščita.</translation>
 <translation id="8163152278172770963">Spletnim mestom ni dovoljeno samodejno preklapljanje v način slike v sliki</translation>
 <translation id="8168435359814927499">Vsebina</translation>
 <translation id="818487310457576362">Povlecite z roba zaslona, če želite zapreti celozaslonski način.</translation>
@@ -714,6 +717,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="8441146129660941386">Išči nazaj</translation>
 <translation id="8444433999583714703">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do lokacije, lokacijo vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Umik dovoljenja za dostop do naprave</translation>
+<translation id="8463843545738141778">Ta nastavitev je onemogočena, ker ste v nastavitvah za Android vklopili dodatno zaščito.</translation>
 <translation id="8467359479529706065">Razdelek na dnu zaslona za videz strani »Nov zavihek« je odprt pri polovični višini</translation>
 <translation id="8471525937465764768">Spletna mesta običajno vzpostavijo povezavo z napravami USB zaradi funkcij, kot sta tiskanje dokumenta ali shranjevanje podatkov v napravo za shranjevanje.</translation>
 <translation id="8473055640493819707">Aplikacija »<ph name="APP_NAME" />« je zastarela. Znova jo namestite.</translation>

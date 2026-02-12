@@ -432,6 +432,7 @@
 <translation id="2870560284913253234">网站</translation>
 <translation id="2871733351037274014">预加载网页</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" />请求您批准访问此网站：</translation>
+<translation id="2876556152483133018">网站搜索</translation>
 <translation id="2876628302275096482">详细了解 <ph name="BEGIN_LINK" />Chrome 如何确保您数据的私密性<ph name="END_LINK" /></translation>
 <translation id="2878607776582720720"><ph name="TAB_TITLE" />，已选择的多个无痕式标签页之一，正在共享内容</translation>
 <translation id="2885355868600171871">跳转到地址栏</translation>
@@ -621,6 +622,7 @@
 <translation id="3709577906275923507">“<ph name="FILE_NAME" />”可能包含敏感信息，请勿分享</translation>
 <translation id="3710501561113687889">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。</translation>
 <translation id="3710560693796335511">协作</translation>
+<translation id="3714430408451673233">标签页底部动作条已半屏打开。</translation>
 <translation id="3718765429352682176">您可能会看到在 Chrome 中打开了链接的其他应用的历史记录。</translation>
 <translation id="3721119614952978349">您与 Google</translation>
 <translation id="3727000368239390918">登录后即可将标签页等信息同步到您的所有设备上</translation>
@@ -765,6 +767,7 @@
 <translation id="4326079409704643112">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请验证是您本人在操作</translation>
 <translation id="433213510553688132">正在关注…</translation>
 <translation id="4335835283689002019">“安全浏览”功能已关闭</translation>
+<translation id="4343250402091037179">若要在某一特定网站或 Chrome 的某个部分中进行搜索，请先在地址栏中输入相应的快捷字词，然后按您的首选键盘快捷键。</translation>
 <translation id="4351244548802238354">关闭对话框</translation>
 <translation id="4352287748243729941">要使用您的 <ph name="PROVIDER" /> 密码吗？</translation>
 <translation id="4355272626458588338">您可为重要网页添加书签以便返回查看</translation>
@@ -955,6 +958,7 @@
 <translation id="5056587122125565772">创建图片</translation>
 <translation id="506254248375231072">没有任何标签页</translation>
 <translation id="5075939510584558547">直接保存，不加密</translation>
+<translation id="5078638979202084724">为所有标签页添加书签</translation>
 <translation id="5085038751173179818">登录此网站和 Chrome，即可在所有设备上获取保存的书签及其他信息</translation>
 <translation id="5091199029769593641">不久之后，当打开新标签页时，您将看到来自<ph name="SITE_NAME" />的故事。您关注的网站会保存在您的 Google 账号中。您可在“探索”设置中管理它们。</translation>
 <translation id="509429900233858213">出现错误。</translation>
@@ -1038,6 +1042,7 @@
 <translation id="544776284582297024">若要打开多个标签页并同时访问不同网页，请点按“打开的标签页”按钮</translation>
 <translation id="5456381639095306749">下载网页</translation>
 <translation id="5458366071038729214">您会在此处看到自己已关注的网站</translation>
+<translation id="5465437530117042974">标签页底部动作条已关闭。</translation>
 <translation id="5469852975082458401">您可以使用文本光标浏览网页。按 F7 可关闭。</translation>
 <translation id="5471273988133666918">无法移动标签页“<ph name="TAB_TITLE" />”</translation>
 <translation id="548278423535722844">在地图应用中打开</translation>
@@ -1171,6 +1176,7 @@
 <translation id="604996488070107836">出现未知错误，未能下载 <ph name="FILE_NAME" />。</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">在此处控制您的报道和活动</translation>
+<translation id="606985262342505139">标签页底部动作条已全屏打开</translation>
 <translation id="6071995715087444295">若要检查是否存在已泄露的密码，请登录您的 Google 账号</translation>
 <translation id="6078323886959318429">添加快捷方式</translation>
 <translation id="6085886413119427067">确定如何通过安全连接来连接到网站</translation>
@@ -1187,6 +1193,7 @@
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />更多详情<ph name="END_LINK" /></translation>
 <translation id="6127860394906721547">打开<ph name="COLOR_NAME" />的“<ph name="TITLE_OF_GROUP" />”标签页分组，其中包含网站 <ph name="URL_LIST" />。</translation>
 <translation id="6130303040046284160">最小化标签页</translation>
+<translation id="6132075343662013154">Chrome 会询问您是否保存密码</translation>
 <translation id="6134168885321518274">打开查找栏</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 个标签页}other{<ph name="TAB_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> 的语言</translation>
@@ -1339,6 +1346,7 @@
 <translation id="6672917148207387131">添加 <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">若要开始同步，请输入您的密码</translation>
 <translation id="6676927815633975364">登录此网站和 Chrome</translation>
+<translation id="6684262542644248484">登录相应网站</translation>
 <translation id="6684809838922667136">帮助改善 Chrome</translation>
 <translation id="6689436252814043643">无法使用阅读模式</translation>
 <translation id="6700279777779583398">已保存选择</translation>

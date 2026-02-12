@@ -432,6 +432,7 @@
 <translation id="2870560284913253234">సైట్</translation>
 <translation id="2871733351037274014">పేజీలను ప్రీ - లోడ్ చేయండి</translation>
 <translation id="2876136027428473467">మీరు ఈ వెబ్‌సైట్‌ను ఆమోదించాలని <ph name="CHILD_NAME" /> కోరుతున్నారు:</translation>
+<translation id="2876556152483133018">సైట్ సెర్చ్</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome మీ డేటాను ఎలా ప్రైవేట్‌గా ఉంచుతుంది<ph name="END_LINK" /> అనే దాని గురించి మరింత తెలుసుకోండి</translation>
 <translation id="2878607776582720720"><ph name="TAB_TITLE" />, అజ్ఞాత మోడ్‌లో కంటెంట్‌ను షేర్ చేసే మల్టీసెలెక్టెడ్ ట్యాబ్</translation>
 <translation id="2885355868600171871">తక్షణమే అడ్రస్ బార్‌కు వెళ్లండి</translation>
@@ -621,6 +622,7 @@
 <translation id="3709577906275923507"><ph name="FILE_NAME" />‌లో గోప్యమైన సమాచారం ఉండవచ్చు, దాన్ని షేర్ చేయకూడదు</translation>
 <translation id="3710501561113687889">కొనసాగించడానికి, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో మీ <ph name="FIELDS_STRING" />‌ను షేర్ చేస్తుంది.</translation>
 <translation id="3710560693796335511">సహకారం</translation>
+<translation id="3714430408451673233">సగం ఎత్తులో ట్యాబ్ కింద ఉన్న షీట్.</translation>
 <translation id="3718765429352682176">మీరు Chromeలో లింక్‌లను తెరిచే ఇతర యాప్‌ల నుండి హిస్టరీని చూడవచ్చు.</translation>
 <translation id="3721119614952978349">మీరు మరియు Google</translation>
 <translation id="3727000368239390918">మీ డివైజ్‌లన్నింటిలో మీ ఇటీవలి ట్యాబ్‌లతో పాటు, మరిన్ని వివరాలను పొందడానికి సైన్-ఇన్ చేయండి</translation>
@@ -765,6 +767,7 @@
 <translation id="4326079409704643112">మీ Google ఖాతాలో Chrome డేటాను ఉపయోగించడానికి, దానిలో డేటాను సేవ్ చేయడానికి, ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="433213510553688132">ఫాలో చేస్తున్నారు...</translation>
 <translation id="4335835283689002019">సురక్షిత బ్రౌజింగ్ ఆఫ్‌లో ఉంది</translation>
+<translation id="4343250402091037179">నిర్దిష్ట సైట్ లేదా Chromeలో భాగాన్ని సెర్చ్ చేయడానికి, అడ్రస్ బార్‌లో సైట్ షార్ట్‌కట్‌ను టైప్ చేసి, ఆ తర్వాత మీ ప్రాధాన్య కీబోర్డ్ షార్ట్‌కట్‌ను టైప్ చేయండి.</translation>
 <translation id="4351244548802238354">డైలాగ్‌ను మూసివేయండి</translation>
 <translation id="4352287748243729941">మీ <ph name="PROVIDER" /> పాస్‌వర్డ్‌ను ఉపయోగించాలనుకుంటున్నారా?</translation>
 <translation id="4355272626458588338">బుక్‌మార్క్‌ను జోడించడం ద్వారా మీకు ముఖ్యమైన పేజీకి తిరిగి వెళ్లవచ్చు</translation>
@@ -955,6 +958,7 @@
 <translation id="5056587122125565772">ఇమేజ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="506254248375231072">ట్యాబ్‌లు ఏవీ లేవు</translation>
 <translation id="5075939510584558547">ఎన్‌క్రిప్షన్ చేయకుండా సేవ్ చేయండి</translation>
+<translation id="5078638979202084724">అన్ని ట్యాబ్‌లను బుక్‌మార్క్ చేయండి</translation>
 <translation id="5085038751173179818">మీ పరికరాలన్నింటిలో మీ బుక్‌మార్క్‌లతో పాటు మరిన్నింటిని పొందడానికి ఈ సైట్‌కు, Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="5091199029769593641">త్వరలో, మీరు కొత్త ట్యాబ్‌ను తెరిచినప్పుడు మీరు <ph name="SITE_NAME" /> నుండి కథనాలను చూస్తారు. మీరు ఫాలో అయ్యే సైట్‌లు మీ Google ఖాతాలో సేవ్ చేయబడతాయి. మీరు వాటిని Discover సెట్టింగ్‌లలో మేనేజ్ చేయవచ్చు.</translation>
 <translation id="509429900233858213">ఒక ఎర్రర్ ఏర్పడింది.</translation>
@@ -1038,6 +1042,7 @@
 <translation id="544776284582297024">ఒకే సమయంలో ట్యాబ్‍లను తెరిచి వేర్వేరు పేజీలను సందర్శించడానికి, ట్యాబ్‍లను తెరువు బటన్‍ను ట్యాప్ చేయండి</translation>
 <translation id="5456381639095306749">పేజీని డౌన్‌లోడ్ చేయండి</translation>
 <translation id="5458366071038729214">మీరు ఫాలో అయ్యే సైట్‌లు ఇక్కడ కనిపిస్తాయి</translation>
+<translation id="5465437530117042974">ట్యాబ్ కింద ఉన్న షీట్ మార్పులు మూసివేయబడ్డాయి.</translation>
 <translation id="5469852975082458401">టెక్స్ట్ కర్సర్‌తో మీరు పేజీలను నావిగేట్ చేయవచ్చు. ఆఫ్ చేయడానికి F7ను నొక్కండి.</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> ట్యాబ్‌ను తరలించడం సాధ్యం కాదు</translation>
 <translation id="548278423535722844">మ్యాప్స్ యాప్‌లో తెరువు</translation>
@@ -1171,6 +1176,7 @@
 <translation id="604996488070107836">తెలియని ఎర్ర‌ర్‌ కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">ఇక్కడ మీ కథనాలు, యాక్టివిటీని కంట్రోల్ చేయండి</translation>
+<translation id="606985262342505139">ట్యాబ్ కింద ఉన్న షీట్ పూర్తి ఎత్తులో ఉంది</translation>
 <translation id="6071995715087444295">చోరీకి గురైన పాస్‌వర్డ్‌ల కోసం చెక్ చేయడానికి, మీ Google ఖాతాకు సైన్ ఇన్ చేయండి</translation>
 <translation id="6078323886959318429">షార్ట్‌కట్‌ను జోడించండి</translation>
 <translation id="6085886413119427067">సెక్యూర్ కనెక్షన్ ద్వారా వెబ్‌సైట్‌లకు ఎలా కనెక్ట్ కావాలో నిశ్చయిస్తుంది</translation>
@@ -1187,6 +1193,7 @@
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />మరిన్ని వివరాలు<ph name="END_LINK" /></translation>
 <translation id="6127860394906721547"><ph name="URL_LIST" /> సైట్లు ఉండే, <ph name="COLOR_NAME" /> రంగులో ఉండే <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను తెరవండి.</translation>
 <translation id="6130303040046284160">ట్యాబ్‌ను కుదించండి</translation>
+<translation id="6132075343662013154">మీకు Chrome మీ పాస్‌వర్డ్‌ను సేవ్ చేసే ఆప్షన్‌ను ఇస్తుంది</translation>
 <translation id="6134168885321518274">కనుగొనే బార్‌ను తెరవండి</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ట్యాబ్}other{<ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లు}}</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> భాష</translation>
@@ -1337,6 +1344,7 @@
 <translation id="6672917148207387131"><ph name="DOMAIN" />‌ను జోడించండి</translation>
 <translation id="6674571176963658787">సింక్‌ను ప్రారంభించడానికి, రహస్య పదబంధాన్ని ఎంటర్ చేయండి</translation>
 <translation id="6676927815633975364">ఈ సైట్‌కు, అలాగే Chromeకు సైన్ ఇన్ చేయండి</translation>
+<translation id="6684262542644248484">ఏదైనా వెబ్‌సైట్‌కు సైన్ ఇన్ చేయండి</translation>
 <translation id="6684809838922667136">Chromeను మెరుగుపరచండి</translation>
 <translation id="6689436252814043643">రీడింగ్ మోడ్ అందుబాటులో లేదు</translation>
 <translation id="6700279777779583398">ఎంపికలు సేవ్ అయ్యాయి</translation>

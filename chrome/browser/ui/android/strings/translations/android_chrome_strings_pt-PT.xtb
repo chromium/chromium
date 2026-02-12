@@ -432,6 +432,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Pré-carregar páginas</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> quer que aprove este Website:</translation>
+<translation id="2876556152483133018">Site Search</translation>
 <translation id="2876628302275096482">Saiba <ph name="BEGIN_LINK" />como o Chrome mantém os seus dados privados<ph name="END_LINK" /></translation>
 <translation id="2878607776582720720"><ph name="TAB_TITLE" />, separador de navegação anónima a partilhar multisselecionado</translation>
 <translation id="2885355868600171871">Ir para a barra de endereço</translation>
@@ -621,6 +622,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3709577906275923507">O ficheiro <ph name="FILE_NAME" /> pode conter informações confidenciais e não deve ser partilhado</translation>
 <translation id="3710501561113687889">Para continuar, o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu <ph name="FIELDS_STRING" /> com este site.</translation>
 <translation id="3710560693796335511">Colaboração</translation>
+<translation id="3714430408451673233">Secção inferior do separador a meia altura.</translation>
 <translation id="3718765429352682176">Pode ver o histórico de outras apps que abrem links no Chrome.</translation>
 <translation id="3721119614952978349">Eu e a Google</translation>
 <translation id="3727000368239390918">Inicie sessão para ter acesso aos seus separadores e muito mais em todos os seus dispositivos</translation>
@@ -765,6 +767,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4326079409704643112">Para usar e guardar dados do Chrome na sua Conta Google, valide a sua identidade</translation>
 <translation id="433213510553688132">A seguir…</translation>
 <translation id="4335835283689002019">A Navegação segura está desativada.</translation>
+<translation id="4343250402091037179">Para pesquisar um site específico ou parte do Chrome, introduza o respetivo atalho na barra de endereço, seguido do seu atalho de teclado preferido.</translation>
 <translation id="4351244548802238354">Fechar caixa de diálogo</translation>
 <translation id="4352287748243729941">Usar a sua palavra-passe de <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Pode regressar a uma página importante para si ao adicionar um marcador</translation>
@@ -955,6 +958,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5056587122125565772">Criar imagem</translation>
 <translation id="506254248375231072">Nenhum separador</translation>
 <translation id="5075939510584558547">Guarde sem encriptação</translation>
+<translation id="5078638979202084724">Adicionar todos os separadores aos marcadores</translation>
 <translation id="5085038751173179818">Inicie sessão neste site e no Chrome para ter acesso aos seus marcadores e muito mais em todos os seus dispositivos</translation>
 <translation id="5091199029769593641">Em breve, serão apresentadas notícias de <ph name="SITE_NAME" /> quando abrir um novo separador. Os sites que segue são guardados na sua Conta Google. Pode geri-los nas definições do Discover.</translation>
 <translation id="509429900233858213">Ocorreu um erro.</translation>
@@ -1038,6 +1042,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="544776284582297024">Para abrir separadores e visitar várias páginas em simultâneo, toque no botão Abrir separadores.</translation>
 <translation id="5456381639095306749">Transferir página</translation>
 <translation id="5458366071038729214">Encontrará os sites que segue aqui</translation>
+<translation id="5465437530117042974">Alterações à secção inferior do separador fechadas.</translation>
 <translation id="5469852975082458401">Pode navegar pelas páginas com um cursor de texto. Prima F7 para desativar esta opção.</translation>
 <translation id="5471273988133666918">Não é possível mover o separador <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Abrir na aplicação de mapas</translation>
@@ -1171,6 +1176,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="604996488070107836">A transferência de <ph name="FILE_NAME" /> falhou devido a um erro desconhecido.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controle as suas notícias e atividade aqui.</translation>
+<translation id="606985262342505139">Secção inferior do separador à altura total</translation>
 <translation id="6071995715087444295">Para verificar se existem palavras-passe comprometidas, inicie sessão na sua Conta Google</translation>
 <translation id="6078323886959318429">Atalho</translation>
 <translation id="6085886413119427067">Determina como associar a Websites através de uma ligação segura.</translation>
@@ -1187,6 +1193,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mais detalhes<ph name="END_LINK" /></translation>
 <translation id="6127860394906721547">Abra o grupo de separadores <ph name="TITLE_OF_GROUP" />, cor <ph name="COLOR_NAME" />, com os sites <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimizar separador</translation>
+<translation id="6132075343662013154">O Chrome vai oferecer a opção de guardar a sua palavra-passe</translation>
 <translation id="6134168885321518274">Abrir a barra Localizar</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> separador}other{<ph name="TAB_COUNT_MANY" /> separadores}}</translation>
 <translation id="6137022273846704445">Idioma da app <ph name="APP_NAME" /></translation>
@@ -1339,6 +1346,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6672917148207387131">Adicionar <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Para iniciar a sincronização, introduza a sua frase de acesso</translation>
 <translation id="6676927815633975364">Inicie sessão neste site e no Chrome</translation>
+<translation id="6684262542644248484">Inicie sessão num Website</translation>
 <translation id="6684809838922667136">Melhore o Chrome</translation>
 <translation id="6689436252814043643">O modo de leitura não está disponível</translation>
 <translation id="6700279777779583398">Escolhas guardadas</translation>

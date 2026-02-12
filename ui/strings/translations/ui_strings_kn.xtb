@@ -20,6 +20,7 @@
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 ನಿಮಿಷದ ಹಿಂದೆ}one{# ನಿಮಿಷಗಳ ಹಿಂದೆ}other{# ನಿಮಿಷಗಳ ಹಿಂದೆ}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />ವನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{1 ತಿಂಗಳ ಹಿಂದೆ}one{# ತಿಂಗಳುಗಳ ಹಿಂದೆ}other{# ತಿಂಗಳುಗಳ ಹಿಂದೆ}}</translation>
+<translation id="1591017414891297549">ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 ನಿಮಿಷ ಮತ್ತು }one{# ನಿಮಿಷಗಳು ಮತ್ತು }other{# ನಿಮಿಷಗಳು ಮತ್ತು }}</translation>
 <translation id="1643823602425662293">ನೋಟಿಫಿಕೇಶನ್</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -232,6 +233,7 @@
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s </translation>
 <translation id="8725488761726303204">+ <ph name="NUMBER" /> ಇನ್ನಷ್ಟು</translation>
 <translation id="8730621377337864115">ಮುಗಿದಿದೆ</translation>
+<translation id="8741385002816058621">ಇದು ಪೂರ್ವವೀಕ್ಷಣೆಯಲ್ಲಿರುವ ಫೀಚರ್ ಆಗಿದೆ</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1ಗಂ}one{#ಗಂ}other{#ಗಂ}}</translation>
 <translation id="8798099450830957504">ಡಿಫಾಲ್ಟ್</translation>
 <translation id="8841375032071747811">ಹಿಂದೆ ಬಟನ್</translation>

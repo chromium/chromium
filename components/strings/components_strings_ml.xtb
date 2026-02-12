@@ -184,7 +184,6 @@
 <translation id="1289129165308566697">മറ്റ് ഉപകരണങ്ങളിൽ നിങ്ങളുടെ ചരിത്രം കാണുക</translation>
 <translation id="1292571435393770077">ട്രേ 16</translation>
 <translation id="1292701964462482250">"വെബിലേക്ക് സുരക്ഷിതമായി കണക്‌റ്റ് ചെയ്യുന്നതിൽ നിന്ന് Chrome-നെ നിങ്ങളുടെ കമ്പ്യൂട്ടറിലെ സോഫ്റ്റ്‌വെയർ തടയുന്നു" (Windows കമ്പ്യൂട്ടറുകളിൽ മാത്രം)</translation>
-<translation id="1293154089865862473">ഈ ഓപ്ഷനുകൾ ലഭ്യമാക്കാൻ, ചെക്ക്ഔട്ട് പേജിൽ നിന്നുള്ള 'പേജ് ഉള്ളടക്കം' Google-മായി പങ്കിടുന്നു. സ്വയമേവ പൂരിപ്പിക്കലിൽ 'പിന്നീട് പേ ചെയ്യുക' ഓപ്ഷനുകൾ മറയ്ക്കാൻ, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> എന്നതിലേക്ക് പോകുക.</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 ഇഞ്ച്</translation>
 <translation id="129553762522093515">സമീപകാലത്ത് അടച്ചവ</translation>
@@ -1123,7 +1122,6 @@
 <translation id="2782088940970074970">കാർ വാടകയ്‌ക്ക് നൽകൽ</translation>
 <translation id="278436560439594386">ഗൃഹോപകരണങ്ങൾ</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">ഈ ഓപ്ഷനുകൾ ലഭ്യമാക്കാൻ, ചെക്ക്ഔട്ട് പേജിൽ നിന്നുള്ള 'പേജ് ഉള്ളടക്കം' Google-മായി പങ്കിടുന്നു.</translation>
 <translation id="2784949926578158345">കണക്ഷന്‍ റീസെറ്റ് ചെയ്തതാണ്.</translation>
 <translation id="2786008859124691917">സൈക്കിളുകളും ആക്‌സസറികളും</translation>
 <translation id="2792012897584536778">ഈ ഉപകരണത്തിന്റെ അഡ്‌മിൻമാർ സുരക്ഷാ സർട്ടിഫിക്കറ്റുകൾ സജ്ജീകരിച്ചിട്ടുണ്ട്, നിങ്ങൾ സന്ദർശിക്കുന്ന വെബ്‌സൈറ്റുകളുടെ ഉള്ളടക്കം കാണാൻ അവ അവരെ അനുവദിച്ചേക്കാം.</translation>
@@ -2868,6 +2866,7 @@
 <translation id="5570825185877910964">അക്കൗണ്ട് പരിരക്ഷിക്കുക</translation>
 <translation id="5571083550517324815">ഈ വിലാസത്തിൽ നിന്ന് പിക്ക്അപ്പ് ചെയ്യാൻ കഴിയില്ല. മറ്റൊരു വിലാസം തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="5572434905385510939">22 x 28 ഇഞ്ച്</translation>
+<translation id="5573090972398558474">നിങ്ങളുടെ സ്ഥാപനം അദൃശ്യ മോഡിൽ ഈ പേജ് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു.</translation>
 <translation id="5573641252776268565">പാസ്‌പോർട്ട് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="5578606540385219379">സേവന ദാതാക്കൾ</translation>
 <translation id="5580958916614886209">കാലാവധി തീരുന്ന മാസം പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
@@ -4294,6 +4293,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു ആപ്പ് (<ph name="EXAMPLE_APP_1" />)}=2{2 ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">ഒരു പിശകുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="784623644169604270">സമീപകാല ആക്റ്റിവിറ്റിയില്ല</translation>
+<translation id="7848926355794727168">ഓട്ടോ ബ്രൗസ്</translation>
 <translation id="7853222852810008596">ഈ കറൻസിയിൽ പിന്നീട് പേ ചെയ്യൽ ലഭ്യമല്ല</translation>
 <translation id="785476343534277563">കോളേജ് സ്പോർട്‌സ്</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>

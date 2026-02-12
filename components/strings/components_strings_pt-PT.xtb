@@ -184,7 +184,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1289129165308566697">Veja o seu histórico noutros dispositivos</translation>
 <translation id="1292571435393770077">Tabuleiro 16</translation>
 <translation id="1292701964462482250">"Existe software no computador que está a impedir que o Chrome se ligue à Web em segurança" (apenas para computadores com Windows)</translation>
-<translation id="1293154089865862473">O conteúdo da página de pagamento é partilhado com a Google para oferecer estas opções. Para ocultar as opções para pagar depois no preenchimento automático, aceda às <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 pol.</translation>
 <translation id="129553762522093515">Fechados recentemente</translation>
@@ -656,6 +655,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2071156619270205202">Este cartão não é elegível para um número de cartão virtual.</translation>
 <translation id="2071852865256799872">O navegador é gerido pela sua organização e o seu perfil é gerido pelo domínio <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Informações guardadas apenas no dispositivo</translation>
 <translation id="2074733626795553847">Desbloquear <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Visitou</translation>
 <translation id="2078956195623975415">Jogos de música e dança</translation>
@@ -1123,7 +1123,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2782088940970074970">Aluguer de carros</translation>
 <translation id="278436560439594386">Eletrodomésticos</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">O conteúdo da página de pagamento é partilhado com a Google para oferecer estas opções.</translation>
 <translation id="2784949926578158345">A ligação foi reposta.</translation>
 <translation id="2786008859124691917">Bicicletas e acessórios</translation>
 <translation id="2792012897584536778">Os administradores deste dispositivo configuraram certificados de segurança que lhes podem permitir visualizar os conteúdos dos Websites visitados por si.</translation>
@@ -2869,6 +2868,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5570825185877910964">Proteger conta</translation>
 <translation id="5571083550517324815">Não é possível recolher a partir deste endereço. Selecione um diferente.</translation>
 <translation id="5572434905385510939">22 x 28 pol.</translation>
+<translation id="5573090972398558474">A sua organização bloqueou esta página no modo de navegação anónima.</translation>
 <translation id="5573641252776268565">Edite o passaporte</translation>
 <translation id="5578606540385219379">Fornecedores de serviços</translation>
 <translation id="5580958916614886209">Verifique o mês de validade e tente novamente</translation>
@@ -4296,6 +4296,7 @@ Detalhes adicionais:
 <translation id="7844689747373518809">{COUNT,plural, =0{Nenhuma}=1{1 aplicação (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicações (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplicações (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Ocorreu um erro. Tente novamente.</translation>
 <translation id="784623644169604270">Sem atividade recente</translation>
+<translation id="7848926355794727168">Navegação automática</translation>
 <translation id="7853222852810008596">A opção Pagar depois não está disponível nesta moeda</translation>
 <translation id="785476343534277563">Desportos universitários</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4899,6 +4900,7 @@ Detalhes adicionais:
 <translation id="8858065207712248076">O Chrome recomenda a reposição da palavra-passe da <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se a tiver reutilizado noutros sites.</translation>
 <translation id="885906927438988819">Se a ortografia estiver correta, <ph name="BEGIN_LINK" />experimente executar o Diagnóstico de rede do Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Arte fotográfica e digital</translation>
+<translation id="8861482055962701239">Não foi possível guardar estas informações na sua Carteira do Google. Em alternativa, foi guardado no Chrome neste dispositivo. O Chrome vai oferecer a opção de o guardar na Carteira da próxima vez que o usar.</translation>
 <translation id="8863218129525348270">Para pagar mais rapidamente da próxima vez, guarde o seu cartão no dispositivo</translation>
 <translation id="8864939224504814334">Fatos e vestuário formal</translation>
 <translation id="8866132857352163524">Bandas sonoras</translation>

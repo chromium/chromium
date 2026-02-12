@@ -314,6 +314,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="4046123991198612571">Sljedeća pjesma</translation>
 <translation id="4077310749977440510">Web-lokacije obično čitaju vaš međuspremnik radi značajki poput zadržavanja formatiranja kopiranog teksta</translation>
 <translation id="4082080074595021446">Iznimke za određene web-lokacije nisu dopuštene jer Android uređaj nema dovoljno RAM-a.</translation>
+<translation id="4089304748532599471">Promijenjene su neke postavke Chromea</translation>
 <translation id="4149890623864272035">Jeste li sigurni da želite izbrisati sve lokalne podatke, uključujući kolačiće, i poništiti sva dopuštenja za ovu web-lokaciju?</translation>
 <translation id="4149994727733219643">Pojednostavljeni prikaz za web-stranice</translation>
 <translation id="4151930093518524179">Zadano zumiranje</translation>
@@ -349,6 +350,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="4478158430052450698">Olakšavanje prilagodbe zumiranja za različite web-lokacije</translation>
 <translation id="4479647676395637221">Web-lokacije moraju tražiti dopuštenje za pristup kameri (preporučeno)</translation>
 <translation id="4505788138578415521">URL je proširen</translation>
+<translation id="4522570452068850558">Pojedinosti</translation>
 <translation id="4523472416386354622">Prijavite se za početak</translation>
 <translation id="4534723447064627427">Da bi aplikacija <ph name="APP_NAME" /> mogla pristupiti vašem mikrofonu, uključite mikrofon i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Isključi mikrofon</translation>
@@ -685,6 +687,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="8117244575099414087">Kad je ta postavka uključena, web-lokacije mogu upotrebljavati senzore uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati senzore.</translation>
 <translation id="813082847718468539">Prikaz informacija o web-lokaciji</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
+<translation id="8148160259207090265">Ta postavka ostaje uključena dok je napredna zaštita uključena u postavkama Androida.</translation>
 <translation id="8163152278172770963">Ne dopuštaj web-lokacijama automatski unos slike u slici</translation>
 <translation id="8168435359814927499">Sadržaj</translation>
 <translation id="818487310457576362">Povucite od bočne strane zaslona da biste zatvorili prikaz na cijelom zaslonu.</translation>
@@ -714,6 +717,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="8441146129660941386">Traži unatrag</translation>
 <translation id="8444433999583714703">Da bi aplikacija <ph name="APP_NAME" /> mogla pristupiti vašoj lokaciji, uključite lokaciju i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Opozovi odobrenje uređaja</translation>
+<translation id="8463843545738141778">Ta je postavka onemogućena jer ste uključili naprednu zaštitu u postavkama Androida.</translation>
 <translation id="8467359479529706065">Donja tablica izgleda stranice Nova kartica otvorena je na pola visine</translation>
 <translation id="8471525937465764768">Web-lokacije se obično povezuju s USB uređajima radi značajki poput ispisa dokumenta ili njihovog spremanja na uređaj za pohranu</translation>
 <translation id="8473055640493819707">Aplikacija <ph name="APP_NAME" /> je zastarjela. Ponovo instalirajte aplikaciju.</translation>

@@ -314,6 +314,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="4046123991198612571">Seuraava kappale</translation>
 <translation id="4077310749977440510">Sivustot lukevat yleensä leikepöydän sisältöä säilyttääkseen kopioimasi tekstin muotoilun ja muita vastaavia ominaisuuksia varten</translation>
 <translation id="4082080074595021446">Poikkeukset tietyille sivustoille ovat kiellettyjä, koska Android-laitteella ei ole tarpeeksi RAM-muistia.</translation>
+<translation id="4089304748532599471">Jotkin Chromen asetukset muuttuivat</translation>
 <translation id="4149890623864272035">Haluatko varmasti poistaa kaiken paikallisen datan, myös evästeet, ja nollata kaikki tämän verkkosivuston luvat?</translation>
 <translation id="4149994727733219643">Yksinkertaisempi sivunäkymä</translation>
 <translation id="4151930093518524179">Zoomauksen oletusarvo</translation>
@@ -349,6 +350,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="4478158430052450698">Helpota zoomauksen muokkausta eri sivustoilla</translation>
 <translation id="4479647676395637221">Pyydä lupaa, kun sivustot yrittävät käyttää kameraasi (suositus).</translation>
 <translation id="4505788138578415521">URL näkyy laajennettuna</translation>
+<translation id="4522570452068850558">Tiedot</translation>
 <translation id="4523472416386354622">Aloita kirjautumalla sisään</translation>
 <translation id="4534723447064627427">Laita mikrofoni päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn mikrofoniisi.</translation>
 <translation id="4566417217121906555">Mykistä mikrofoni</translation>
@@ -685,6 +687,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="8117244575099414087">Kun tämä on päällä, sivustot voivat käyttää laitteesi antureita. Kun tämä on pois päältä, sivustot eivät voi käyttää antureita.</translation>
 <translation id="813082847718468539">Näytä sivuston tiedot</translation>
 <translation id="8131740175452115882">Vahvista</translation>
+<translation id="8148160259207090265">Tämä asetus pysyy päällä niin kauan kuin Lisäsuojaus on päällä Android-asetuksissa.</translation>
 <translation id="8163152278172770963">Älä salli sivustojen siirtyä pikkuruututilaan automaattisesti</translation>
 <translation id="8168435359814927499">Sisältö</translation>
 <translation id="818487310457576362">Poistu koko näytön tilasta vetämällä näytön reunasta.</translation>
@@ -714,6 +717,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="8441146129660941386">Kelaa taaksepäin</translation>
 <translation id="8444433999583714703">Ota sijaintitiedot käyttöön myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn sijaintiisi.</translation>
 <translation id="8447861592752582886">Peru laitteen käyttöoikeus</translation>
+<translation id="8463843545738141778">Tämä asetus on poistettu käytöstä, koska laitoit Lisäsuojaus-asetuksen päälle Android-asetuksissa.</translation>
 <translation id="8467359479529706065">Uusi välilehti ‐sivun ulkoasun alapaneeli avattu puoliksi</translation>
 <translation id="8471525937465764768">Sivustot yhdistävät yleensä USB-laitteisiin tulostaakseen dokumentteja tai lisätäkseen niitä tallennustilaan</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> on vanhentunut. Asenna sovellus uudelleen.</translation>

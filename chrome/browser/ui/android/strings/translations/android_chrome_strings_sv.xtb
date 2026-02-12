@@ -432,6 +432,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2870560284913253234">Webbplats</translation>
 <translation id="2871733351037274014">Läs in sidor i förväg</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> vill att du godkänner följande webbplats:</translation>
+<translation id="2876556152483133018">Webbplatssökning</translation>
 <translation id="2876628302275096482">Läs mer om <ph name="BEGIN_LINK" />hur Chrome skyddar din data<ph name="END_LINK" /></translation>
 <translation id="2878607776582720720"><ph name="TAB_TITLE" />, inkognitoflik som har valts tillsammans med andra och som delas</translation>
 <translation id="2885355868600171871">Hoppa till adressfältet</translation>
@@ -621,6 +622,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3709577906275923507"><ph name="FILE_NAME" /> kan innehålla känsliga uppgifter och bör inte delas</translation>
 <translation id="3710501561113687889"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar <ph name="FIELDS_STRING" /> med den här webbplatsen om du fortsätter.</translation>
 <translation id="3710560693796335511">Samarbete</translation>
+<translation id="3714430408451673233">Arket för flikar på nedre delen av skärmen har öppnats över halva skärmen.</translation>
 <translation id="3718765429352682176">Du kan se historiken från andra appar som öppnar länkar i Chrome.</translation>
 <translation id="3721119614952978349">Du och Google</translation>
 <translation id="3727000368239390918">Logga in om du vill ha dina flikar med mera på alla dina enheter</translation>
@@ -766,6 +768,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4326079409704643112">Verifiera din identitet om du vill använda och spara Chrome-data i Google-kontot</translation>
 <translation id="433213510553688132">Följer …</translation>
 <translation id="4335835283689002019">Säker webbsökning har inaktiverats</translation>
+<translation id="4343250402091037179">Du kan söka på en viss webbplats eller i en viss avdelning i Chrome genom att först skriva genvägen i adressfältet och därefter trycka på önskat kortkommando.</translation>
 <translation id="4351244548802238354">Stäng dialogrutan</translation>
 <translation id="4352287748243729941">Vill du använda lösenordet för <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Du kan återgå till en sida som är viktig för dig genom att lägga till ett bokmärke</translation>
@@ -956,6 +959,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5056587122125565772">Skapa bild</translation>
 <translation id="506254248375231072">Inga flikar</translation>
 <translation id="5075939510584558547">Spara utan kryptering</translation>
+<translation id="5078638979202084724">Bokmärk alla flikar</translation>
 <translation id="5085038751173179818">Logga in på den här webbplatsen och i Chrome om du vill få dina bokmärken med mera på alla dina enheter</translation>
 <translation id="5091199029769593641">Snart visas artiklar från <ph name="SITE_NAME" /> när du öppnar en ny flik. Webbplatser som du följer sparas i Google-kontot. Du kan hantera dem i inställningarna för Förslag.</translation>
 <translation id="509429900233858213">Det har uppstått ett fel.</translation>
@@ -1039,6 +1043,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="544776284582297024">Tryck på Öppna flikar om du vill öppna flikar och besöka olika sidor samtidigt</translation>
 <translation id="5456381639095306749">Ladda ned sida</translation>
 <translation id="5458366071038729214">Här hittar du webbplatser som du följer</translation>
+<translation id="5465437530117042974">Ändringar för arket för flikar på nedre delen av skärmen har stängts.</translation>
 <translation id="5469852975082458401">Du kan navigera på sidor med en textmarkör. Tryck på F7 om du vill inaktivera detta.</translation>
 <translation id="5471273988133666918">Det går inte att flytta fliken <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Öppna i kartapp</translation>
@@ -1172,6 +1177,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="604996488070107836">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av ett okänt fel.</translation>
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Styr dina berättelser och din aktivitet här</translation>
+<translation id="606985262342505139">Arket för flikar på nedre delen av skärmen har öppnats över hela skärmen</translation>
 <translation id="6071995715087444295">Logga in på Google-kontot för att kontrollera om det finns utsatta lösenord</translation>
 <translation id="6078323886959318429">Genväg</translation>
 <translation id="6085886413119427067">Styr hur du ansluter till webbplatser via en säker anslutning</translation>
@@ -1188,6 +1194,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mer information<ph name="END_LINK" /></translation>
 <translation id="6127860394906721547">Öppna flikgruppen <ph name="TITLE_OF_GROUP" /> i färgen <ph name="COLOR_NAME" /> med webbplatserna <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimera flik</translation>
+<translation id="6132075343662013154">Chrome frågar om du vill spara lösenordet</translation>
 <translation id="6134168885321518274">Öppna fältet Hitta</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> flik}other{<ph name="TAB_COUNT_MANY" /> flikar}}</translation>
 <translation id="6137022273846704445">Språket för <ph name="APP_NAME" /></translation>
@@ -1340,6 +1347,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6672917148207387131">Lägg till <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Ange din lösenfras för att starta synkroniseringen</translation>
 <translation id="6676927815633975364">Logga in på den här webbplatsen och i Chrome</translation>
+<translation id="6684262542644248484">Logga in på en webbplats</translation>
 <translation id="6684809838922667136">Gör Chrome bättre</translation>
 <translation id="6689436252814043643">Läsläget är inte tillgängligt</translation>
 <translation id="6700279777779583398">Dina val har sparats</translation>

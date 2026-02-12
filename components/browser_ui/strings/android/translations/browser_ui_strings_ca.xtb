@@ -314,6 +314,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="4046123991198612571">Pista següent</translation>
 <translation id="4077310749977440510">Els llocs web solen llegir el porta-retalls per a funcions com ara mantenir el format del text que has copiat</translation>
 <translation id="4082080074595021446">Les excepcions per a llocs web concrets no es permeten perquè el dispositiu Android no té prou RAM.</translation>
+<translation id="4089304748532599471">Algunes opcions de configuració de Chrome han canviat</translation>
 <translation id="4149890623864272035">Confirmes que vols suprimir totes les dades locals, incloses les galetes, i restablir tots els permisos d'aquest lloc web?</translation>
 <translation id="4149994727733219643">Visualització simplificada de pàgines web</translation>
 <translation id="4151930093518524179">Zoom predeterminat</translation>
@@ -349,6 +350,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="4478158430052450698">Facilita personalitzar el zoom per a diferents llocs web</translation>
 <translation id="4479647676395637221">Pregunta abans de permetre que els llocs web utilitzin la càmera (opció recomanada)</translation>
 <translation id="4505788138578415521">L'URL s'ha ampliat</translation>
+<translation id="4522570452068850558">Detalls</translation>
 <translation id="4523472416386354622">Inicia la sessió per començar</translation>
 <translation id="4534723447064627427">Perquè <ph name="APP_NAME" /> pugui accedir al micròfon, també has d'activar-lo a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Silencia el micròfon</translation>
@@ -685,6 +687,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="8117244575099414087">Quan aquesta opció està activada, els llocs web poden utilitzar els sensors del dispositiu. Quan aquesta opció està desactivada, els llocs web no poden utilitzar els sensors.</translation>
 <translation id="813082847718468539">Mostra la informació del lloc web</translation>
 <translation id="8131740175452115882">Confirma</translation>
+<translation id="8148160259207090265">Aquesta opció de configuració es manté activada sempre que tinguis activada la Protecció avançada a la configuració d'Android.</translation>
 <translation id="8163152278172770963">No permetis que els llocs web entrin automàticament al mode d'imatge sobre imatge</translation>
 <translation id="8168435359814927499">Contingut</translation>
 <translation id="818487310457576362">Arrossega des del costat de la pantalla per sortir de la pantalla completa.</translation>
@@ -714,6 +717,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="8441146129660941386">Retrocedeix</translation>
 <translation id="8444433999583714703">Perquè <ph name="APP_NAME" /> pugui accedir a la teva ubicació, també has d'activar-la a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revoca el permís d'accés al dispositiu</translation>
+<translation id="8463843545738141778">Aquesta opció de configuració està desactivada perquè has activat la Protecció avançada a la configuració d'Android.</translation>
 <translation id="8467359479529706065">Full inferior de l'aparença de la pàgina Pestanya nova obert a mitja alçada</translation>
 <translation id="8471525937465764768">Els llocs web solen connectar-se a dispositius USB per a funcions com ara desar dades en un dispositiu d'emmagatzematge o imprimir un document</translation>
 <translation id="8473055640493819707">L'aplicació <ph name="APP_NAME" /> no està actualitzada. Torna a instal·lar-la.</translation>

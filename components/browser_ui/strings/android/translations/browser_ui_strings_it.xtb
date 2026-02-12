@@ -314,6 +314,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="4046123991198612571">Traccia successiva</translation>
 <translation id="4077310749977440510">In genere, i siti leggono gli appunti per funzionalità come il mantenimento della formattazione del testo copiato</translation>
 <translation id="4082080074595021446">Eccezioni per siti web specifici non consentite perché la RAM del dispositivo Android non è sufficiente.</translation>
+<translation id="4089304748532599471">Alcune impostazioni di Chrome sono state modificate</translation>
 <translation id="4149890623864272035">Vuoi eliminare tutti i dati locali, compresi i cookie, e reimpostare tutte le autorizzazioni per questo sito web?</translation>
 <translation id="4149994727733219643">Visualizzazione semplificata delle pagine web</translation>
 <translation id="4151930093518524179">Zoom predefinito</translation>
@@ -349,6 +350,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="4478158430052450698">Semplifica la personalizzazione dello zoom per diversi siti</translation>
 <translation id="4479647676395637221">Chiedi conferma prima di consentire ai siti di utilizzare la fotocamera (opzione consigliata)</translation>
 <translation id="4505788138578415521">URL espanso</translation>
+<translation id="4522570452068850558">Dettagli</translation>
 <translation id="4523472416386354622">Accedi per iniziare</translation>
 <translation id="4534723447064627427">Per consentire all'app <ph name="APP_NAME" /> di accedere al tuo microfono, devi attivare il microfono anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Disattiva microfono</translation>
@@ -685,6 +687,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="8117244575099414087">Quando l'opzione è attiva, i siti possono usare i sensori del dispositivo. Quando l'opzione è disattivata, i siti non possono utilizzare i sensori.</translation>
 <translation id="813082847718468539">Visualizza informazioni sul sito</translation>
 <translation id="8131740175452115882">Conferma</translation>
+<translation id="8148160259207090265">Questa impostazione rimane attiva finché hai attivato la protezione avanzata nelle Impostazioni di Android.</translation>
 <translation id="8163152278172770963">Non consentire ai siti di attivare automaticamente la modalità Picture in picture</translation>
 <translation id="8168435359814927499">Contenuti</translation>
 <translation id="818487310457576362">Trascina dal lato dello schermo per uscire dalla modalità a schermo intero.</translation>
@@ -714,6 +717,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="8441146129660941386">Posiziona indietro</translation>
 <translation id="8444433999583714703">Per consentire all'app <ph name="APP_NAME" /> di accedere alla tua posizione, devi attivare la posizione anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revoca autorizzazione dispositivo</translation>
+<translation id="8463843545738141778">Questa impostazione è disattivata perché hai attivato la protezione avanzata nelle Impostazioni di Android.</translation>
 <translation id="8467359479529706065">Riquadro inferiore di Aspetto della pagina Nuova scheda aperto nella parte inferiore dello schermo</translation>
 <translation id="8471525937465764768">In genere, i siti si connettono a dispositivi USB per funzionalità come la stampa di un documento o il salvataggio su un dispositivo di archiviazione</translation>
 <translation id="8473055640493819707">L'app "<ph name="APP_NAME" />" è obsoleta. Reinstalla l'app.</translation>

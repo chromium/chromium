@@ -432,6 +432,7 @@
 <translation id="2870560284913253234">سایت</translation>
 <translation id="2871733351037274014">پیش‌بارگیری صفحات</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> از شما می‌خواهد این وب‌سایت را تأیید کنید:</translation>
+<translation id="2876556152483133018">جستجوی سایت</translation>
 <translation id="2876628302275096482">‏درباره اینکه <ph name="BEGIN_LINK" />Chrome چگونه داده‌های شما را خصوصی نگه می‌دارد<ph name="END_LINK" /> بیشتر بدانید</translation>
 <translation id="2878607776582720720">‫<ph name="TAB_TITLE" />، زبانه ناشناس هم‌رسانی چندانتخابی</translation>
 <translation id="2885355868600171871">رفتن به نوار نشانی</translation>
@@ -621,6 +622,7 @@
 <translation id="3709577906275923507">‫<ph name="FILE_NAME" /> ممکن است حاوی اطلاعات حساس باشد و نباید هم‌رسانی شود</translation>
 <translation id="3710501561113687889">برای ادامه دادن، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> شما را با این سایت هم‌رسانی خواهد کرد.</translation>
 <translation id="3710560693796335511">مشارکت</translation>
+<translation id="3714430408451673233">«برگ زیرین زبانه» در ارتفاع نیمه.</translation>
 <translation id="3718765429352682176">‏ممکن است سابقه را از برنامه‌های دیگری که پیوندها را در Chrome باز می‌کنند مشاهده کنید.</translation>
 <translation id="3721119614952978349">‏شما و Google</translation>
 <translation id="3727000368239390918">به سیستم وارد شوید تا زبانه‌ها و موارد دیگر را در همه دستگاه‌هایتان دریافت کنید</translation>
@@ -765,6 +767,7 @@
 <translation id="4326079409704643112">‏برای ذخیره کردن داده‌های Chrome در «حساب Google» خود و استفاده از آن‌ها، هویتتان را درستی‌سنجی کنید</translation>
 <translation id="433213510553688132">دنبال می‌کنید…</translation>
 <translation id="4335835283689002019">«مرور ایمن» خاموش است</translation>
+<translation id="4343250402091037179">‏برای جستجوی بخش یا سایتی خاص در Chrome، میان‌بر آن را در نوار نشانی تایپ کنید و به‌دنبال آن میان‌بر ترجیحی صفحه‌کلید را فشار دهید.</translation>
 <translation id="4351244548802238354">بستن کادر گفتگو</translation>
 <translation id="4352287748243729941">از گذرواژه <ph name="PROVIDER" /> استفاده شود؟</translation>
 <translation id="4355272626458588338">با اضافه کردن نشانک، می‌توانید به صفحه‌ای که برایتان مهم است برگردید</translation>
@@ -955,6 +958,7 @@
 <translation id="5056587122125565772">ساختن تصویر</translation>
 <translation id="506254248375231072">برگه‌ای باز نیست</translation>
 <translation id="5075939510584558547">ذخیره بدون رمزگذاری</translation>
+<translation id="5078638979202084724">نشانک‌گذاری همه زبانه‌ها</translation>
 <translation id="5085038751173179818">‏برای دریافت نشانک‌ها و موارد دیگر در همه دستگاه‌ها، به سیستم این سایت و Chrome وارد شوید</translation>
 <translation id="5091199029769593641">‏به‌زودی وقتی زبانه جدیدی باز می‌کنید، داستان‌هایی از <ph name="SITE_NAME" /> را خواهید دید. سایت‌هایی که دنبال می‌کنید در «حساب Google» شما ذخیره می‌شوند. می‌توانید در تنظیمات «یافته‌ها»، آن‌ها را مدیریت کنید.</translation>
 <translation id="509429900233858213">خطایی روی داد.</translation>
@@ -1038,6 +1042,7 @@
 <translation id="544776284582297024">برای باز کردن زبانه‌ها و بازدید هم‌زمان از صفحه‌های مختلف، روی دکمه «بازکردن زبانه‌ها» تک‌ضرب بزنید</translation>
 <translation id="5456381639095306749">بارگیری صفحه</translation>
 <translation id="5458366071038729214">سایت‌هایی را که دنبال می‌کنید اینجا پیدا خواهید کرد</translation>
+<translation id="5465437530117042974">تغییرات «برگ زیرین» بسته شد.</translation>
 <translation id="5469852975082458401">‏با نشانگر نوشتار می‌توانید صفحه‌ها را پیمایش کنید. برای خاموش شدن، F7 را فشار دهید.</translation>
 <translation id="5471273988133666918">زبانه <ph name="TAB_TITLE" /> را نمی‌توان منتقل کرد</translation>
 <translation id="548278423535722844">‏باز کردن در برنامه Maps</translation>
@@ -1171,6 +1176,7 @@
 <translation id="604996488070107836">به‌دلیل خطایی ناشناس، بارگیری <ph name="FILE_NAME" /> انجام نشد.</translation>
 <translation id="605721222689873409">سال</translation>
 <translation id="6059830886158432458">داستان‌ها و فعالیت خود را اینجا کنترل کنید</translation>
+<translation id="606985262342505139">برگ زیرین زبانه با ارتفاع کامل.</translation>
 <translation id="6071995715087444295">‏برای بررسی گذرواژه‌های لورفته، به سیستم «حساب Google» خود وارد شوید</translation>
 <translation id="6078323886959318429">افزودن میان‌بر</translation>
 <translation id="6085886413119427067">تعیین چگونگی اتصال به وب‌سایت‌ها ازطریق اتصال ایمن</translation>
@@ -1187,6 +1193,7 @@
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />جزئیات بیشتر<ph name="END_LINK" /></translation>
 <translation id="6127860394906721547">گروه زبانه‌های «<ph name="TITLE_OF_GROUP" />»، به‌رنگ <ph name="COLOR_NAME" />، متشکل از سایت‌های <ph name="URL_LIST" /> باز می‌شود.</translation>
 <translation id="6130303040046284160">کوچک کردن زبانه</translation>
+<translation id="6132075343662013154">‏‫Chrome پیشنهاد می‌دهد که گذرواژه‌تان را ذخیره کند</translation>
 <translation id="6134168885321518274">باز کردن نوار جستجو</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{‫<ph name="TAB_COUNT_ONE" /> زبانه}one{‫<ph name="TAB_COUNT_MANY" /> زبانه}other{‫<ph name="TAB_COUNT_MANY" /> زبانه}}</translation>
 <translation id="6137022273846704445">زبان <ph name="APP_NAME" /></translation>
@@ -1237,7 +1244,7 @@
 <translation id="6301526076346731664">باز کردن ابزارهای توسعه‌دهندگان</translation>
 <translation id="630308129961693966">انتخاب کردن جای نوار نشانی</translation>
 <translation id="6303969859164067831">خروج از سیستم و خاموش کردن همگام‌سازی</translation>
-<translation id="6307241780749477694">هویت خود را به‌تأیید برسانید تا به همه گذرواژه‌هایتان در این دستگاه دسترسی داشته باشید</translation>
+<translation id="6307241780749477694">هویت خود را درستی‌سنجی کنید تا به همه گذرواژه‌هایتان در این دستگاه دسترسی داشته باشید</translation>
 <translation id="6309082029962045994">‫<ph name="TAB_TITLE" />، زبانه شنیداری سنجاق‌شده چندانتخابی</translation>
 <translation id="6312687380483398334">برنامه‌های وب (بی‌صدا)</translation>
 <translation id="6315386555979018699">حذف و ادامه</translation>
@@ -1339,6 +1346,7 @@
 <translation id="6672917148207387131">افزودن <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">برای شروع همگام‌سازی، گذرعبارت را وارد کنید</translation>
 <translation id="6676927815633975364">‏به سیستم این سایت و Chrome وارد شوید</translation>
+<translation id="6684262542644248484">به سیستم وب‌سایتی وارد شوید</translation>
 <translation id="6684809838922667136">‏بهتر کردن Chrome</translation>
 <translation id="6689436252814043643">«حالت خواندن» دردسترس نیست</translation>
 <translation id="6700279777779583398">انتخاب‌ها ذخیره شد</translation>

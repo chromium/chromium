@@ -314,6 +314,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="4046123991198612571">Növbəti trek</translation>
 <translation id="4077310749977440510">Saytlar adətən kopiyaladığınız mətnin formatını saxlamaq kimi funksiyalar üçün mübadilə buferinizi oxuyur</translation>
 <translation id="4082080074595021446">Android cihazında kifayət qədər RAM olmadığı üçün xüsusi veb-saytlar üçün istisnalara icazə verilmir.</translation>
+<translation id="4089304748532599471">Bəzi Chrome ayarları dəyişdirildi</translation>
 <translation id="4149890623864272035">Kukilər daxil olmaqla bütün lokal datanı silmək və bu veb-sayt üçün icazələri sıfırlamaq istədiyinizə əminsiniz?</translation>
 <translation id="4149994727733219643">İnternet səhifələr üçün sadələşdirilmiş görünüş</translation>
 <translation id="4151930093518524179">Defolt zoom</translation>
@@ -349,6 +350,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="4478158430052450698">Fərqli saytlar üçün miqyasdəyişməni fərdiləşdirməyi asanlaşdırın</translation>
 <translation id="4479647676395637221">Saytlara kameranızı istifadə etmək icazəsi verməmişdən əvvəl soruşun (tövsiyə olunur)</translation>
 <translation id="4505788138578415521">URL genişləndirilib</translation>
+<translation id="4522570452068850558">Detallar</translation>
 <translation id="4523472416386354622">Başlamaq üçün hesaba daxil olun</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> tətbiqinə mikrofonunuza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> mikrofonu da aktiv edin.</translation>
 <translation id="4566417217121906555">Mikrofonu susdurun</translation>
@@ -685,6 +687,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="8117244575099414087">Aktiv ediləndə saytlar cihaz sensorlarından istifadə edə bilər. Deaktiv ediləndə saytlar sensorlardan istifadə edə bilməz.</translation>
 <translation id="813082847718468539">Sayt məlumatına baxın</translation>
 <translation id="8131740175452115882">Təsdiq edin</translation>
+<translation id="8148160259207090265">Android ayarlarında Qabaqcıl Qoruma aktiv olduğu müddətcə bu ayar aktiv olaraq qalır.</translation>
 <translation id="8163152278172770963">Saytlara şəkildə şəkil rejiminə avtomatik daxil olmaq icazəsi verməyin</translation>
 <translation id="8168435359814927499">Kontent</translation>
 <translation id="818487310457576362">Tam ekrandan çıxmaq üçün ekranın kənarından dartın.</translation>
@@ -714,6 +717,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="8441146129660941386">Geri axtarı</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> tətbiqinə məkanınıza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> məkanı da aktiv edin.</translation>
 <translation id="8447861592752582886">Cihaz icazəsini ləğv edin</translation>
+<translation id="8463843545738141778">Android Ayarlarında Qabaqcıl Qorumanı yandırdığınız üçün bu ayar deaktiv edilib.</translation>
 <translation id="8467359479529706065">Yeni tab səhifəsi görünüşü üzrə aşağıdakı vərəq yarım hündürlükdə açıldı</translation>
 <translation id="8471525937465764768">Saytlar adətən sənəd çap etmək və ya yaddaş cihazında saxlamaq kimi xüsusiyyətlər üçün USB cihazlarına qoşulur</translation>
 <translation id="8473055640493819707">"<ph name="APP_NAME" />" köhnəlib. Tətbiqi yenidən quraşdırın.</translation>

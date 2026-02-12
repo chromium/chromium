@@ -314,6 +314,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="4046123991198612571">Volgend nummer</translation>
 <translation id="4077310749977440510">Sites lezen je klembord meestal voor functies zoals behoud van opmaak van de tekst die je hebt gekopieerd</translation>
 <translation id="4082080074595021446">Uitzonderingen voor specifieke websites zijn niet toegestaan omdat het Android-apparaat niet genoeg RAM heeft.</translation>
+<translation id="4089304748532599471">Sommige Chrome-instellingen zijn gewijzigd</translation>
 <translation id="4149890623864272035">Weet je zeker dat je alle lokale gegevens (waaronder cookies) wilt verwijderen en alle rechten voor deze website wilt resetten?</translation>
 <translation id="4149994727733219643">Vereenvoudigde weergave voor webpagina's</translation>
 <translation id="4151930093518524179">Standaardzoom</translation>
@@ -349,6 +350,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="4478158430052450698">Maak het makkelijker om op verschillende sites in te zoomen</translation>
 <translation id="4479647676395637221">Eerst vragen voordat sites je camera mogen gebruiken (aanbevolen)</translation>
 <translation id="4505788138578415521">URL uitgevouwen</translation>
+<translation id="4522570452068850558">Details</translation>
 <translation id="4523472416386354622">Inloggen om te starten</translation>
 <translation id="4534723447064627427">Als je <ph name="APP_NAME" /> toegang wilt geven tot je microfoon, moet je de microfoon ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Microfoon uitzetten</translation>
@@ -685,6 +687,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="8117244575099414087">Als deze optie aanstaat, kunnen sites de sensoren van je apparaat gebruiken. Staat de optie uit, dan kunnen sites geen sensoren gebruiken.</translation>
 <translation id="813082847718468539">Sitegegevens bekijken</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
+<translation id="8148160259207090265">Deze instelling blijft aanstaan zolang je Geavanceerde beveiliging hebt aangezet in de Android-instellingen.</translation>
 <translation id="8163152278172770963">Niet toestaan dat sites automatisch scherm-in-scherm openen</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="818487310457576362">Sleep vanaf de zijkant van het scherm om het volledige scherm te sluiten.</translation>
@@ -714,6 +717,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="8441146129660941386">Achteruit zoeken</translation>
 <translation id="8444433999583714703">Als je <ph name="APP_NAME" /> toegang wilt geven tot je locatie, moet je je locatie ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Rechten voor apparaat intrekken</translation>
+<translation id="8463843545738141778">Deze instelling is uitgezet omdat je Geavanceerde beveiliging hebt aangezet in de Android-instellingen.</translation>
 <translation id="8467359479529706065">Blad onderaan voor het uiterlijk van de pagina Nieuw tabblad is op halve hoogte geopend</translation>
 <translation id="8471525937465764768">Sites maken meestal verbinding met USB-apparaten voor functies zoals het afdrukken van een document of opslaan naar een opslagapparaat</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> is verouderd. Installeer de app opnieuw.</translation>

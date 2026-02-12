@@ -314,6 +314,7 @@
 <translation id="4046123991198612571">下一首曲目</translation>
 <translation id="4077310749977440510">網站通常會讀取你的剪貼簿，以提供保留複製文字格式等功能</translation>
 <translation id="4082080074595021446">Android 裝置的 RAM 不足，因此不允許將特定網站設為例外。</translation>
+<translation id="4089304748532599471">部分 Chrome 設定有變</translation>
 <translation id="4149890623864272035">確定要刪除 Cookie 等所有本機資料，並重設此網站的所有權限嗎？</translation>
 <translation id="4149994727733219643">使用簡化檢視模式查看網頁</translation>
 <translation id="4151930093518524179">預設縮放</translation>
@@ -349,6 +350,7 @@
 <translation id="4478158430052450698">可在不同網站上更輕鬆自訂縮放比例</translation>
 <translation id="4479647676395637221">允許網站使用相機前先詢問您 (建議)</translation>
 <translation id="4505788138578415521">展開咗網址</translation>
+<translation id="4522570452068850558">詳情</translation>
 <translation id="4523472416386354622">登入即可開始</translation>
 <translation id="4534723447064627427">如要讓 <ph name="APP_NAME" /> 存取您的麥克風，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟麥克風。</translation>
 <translation id="4566417217121906555">將麥克風設定為靜音</translation>
@@ -685,6 +687,7 @@
 <translation id="8117244575099414087">開咗之後，網站可以使用裝置嘅感應器。閂咗之後，網站唔可以使用感應器。</translation>
 <translation id="813082847718468539">檢視網站資料</translation>
 <translation id="8131740175452115882">確定</translation>
+<translation id="8148160259207090265">只要在 Android 設定中啟用「進階保護功能」，此設定就會保持開啟。</translation>
 <translation id="8163152278172770963">不允許網站自動進入畫中畫</translation>
 <translation id="8168435359814927499">內容</translation>
 <translation id="818487310457576362">從螢幕側邊拖曳即可離開全螢幕。</translation>
@@ -714,6 +717,7 @@
 <translation id="8441146129660941386">向後回轉</translation>
 <translation id="8444433999583714703">如要讓 <ph name="APP_NAME" /> 存取您的位置，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟「位置資訊」功能。</translation>
 <translation id="8447861592752582886">撤消裝置權限</translation>
+<translation id="8463843545738141778">你已在 Android 設定中啟用「進階保護」功能，因此這項設定已停用。</translation>
 <translation id="8467359479529706065">新分頁外觀頁底面板宜家顯示喺畫面下半部</translation>
 <translation id="8471525937465764768">網站通常會連接 USB 裝置，以提供列印文件或儲存至儲存裝置等功能</translation>
 <translation id="8473055640493819707">「<ph name="APP_NAME" />」版本已過期。請重新安裝應用程式。</translation>

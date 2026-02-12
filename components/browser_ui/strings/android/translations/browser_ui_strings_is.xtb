@@ -314,6 +314,7 @@
 <translation id="4046123991198612571">Næsta lag</translation>
 <translation id="4077310749977440510">Vefsvæði fara yfirleitt yfir klippiborðið í leit að eiginleikum, t.d. til að halda sniði textans sem þú afritaðir</translation>
 <translation id="4082080074595021446">Undantekningar fyrir tiltekin vefsvæði afturkallaðar því að ekki er nægt vinnsluminni í Android-tækinu.</translation>
+<translation id="4089304748532599471">Sumar Chrome-stillingar breyttust</translation>
 <translation id="4149890623864272035">Viltu örugglega eyða öllum staðbundnum gögnum, þar á meðal fótsporum, og endurstilla allar heimildir fyrir þetta vefsvæði?</translation>
 <translation id="4149994727733219643">Einfaldað yfirlit fyrir vefsíður</translation>
 <translation id="4151930093518524179">Sjálfgefinn aðdráttur</translation>
@@ -349,6 +350,7 @@
 <translation id="4478158430052450698">Einfaldaðu sérsnið aðdráttar fyrir mismunandi vefsvæði</translation>
 <translation id="4479647676395637221">Spyrja áður en vefsvæðum er veitt heimild til að nota myndavélina þína (ráðlagt)</translation>
 <translation id="4505788138578415521">Öll vefslóðin</translation>
+<translation id="4522570452068850558">Upplýsingar</translation>
 <translation id="4523472416386354622">Skráðu þig inn til að byrja</translation>
 <translation id="4534723447064627427">Til að veita <ph name="APP_NAME" /> aðgang að hljóðnemanum þarftu einnig að kveikja á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Slökkva á hljóðnema</translation>
@@ -685,6 +687,7 @@
 <translation id="8117244575099414087">Þegar kveikt er á þessu geta vefsvæði notað skynjara tækisins þíns. Þegar slökkt er á þessu geta vefsvæði ekki notað skynjara.</translation>
 <translation id="813082847718468539">Skoða upplýsingar um vefsvæði</translation>
 <translation id="8131740175452115882">Staðfesta</translation>
+<translation id="8148160259207090265">Kveikt er á þessari stillingu svo lengi sem þú ert með kveikt á ítarlegri vernd í stillingum Android.</translation>
 <translation id="8163152278172770963">Ekki leyfa vefsvæðum að fara sjálfkrafa í mynd í mynd</translation>
 <translation id="8168435359814927499">Efni</translation>
 <translation id="818487310457576362">Dragðu að brún skjásins til að loka yfirliti á öllum skjánum.</translation>
@@ -714,6 +717,7 @@
 <translation id="8441146129660941386">Spóla til baka</translation>
 <translation id="8444433999583714703">Til að veita <ph name="APP_NAME" /> aðgang að staðsetningu þinni þarftu einnig að kveikja á henni í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Afturkalla tækjaheimild</translation>
+<translation id="8463843545738141778">Slökkt er á þessari stillingu vegna þess að þú kveiktir á ítarlegri vernd í stillingum Android.</translation>
 <translation id="8467359479529706065">Neðsta blað nýrrar flipasíðu er opnað í hálfri hæð</translation>
 <translation id="8471525937465764768">Vefsvæði tengjast yfirleitt USB-tækjum til að nota eiginleika eins og að prenta skjal eða vista í geymslutæki</translation>
 <translation id="8473055640493819707">„<ph name="APP_NAME" />“ er úrelt. Settu forritið aftur upp.</translation>

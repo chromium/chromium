@@ -432,6 +432,7 @@
 <translation id="2870560284913253234">網站</translation>
 <translation id="2871733351037274014">預先載入網頁</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" />想請你核准這個網站：</translation>
+<translation id="2876556152483133018">網站搜尋</translation>
 <translation id="2876628302275096482">進一步瞭解 <ph name="BEGIN_LINK" />Chrome 如何保護你的資料隱私<ph name="END_LINK" /></translation>
 <translation id="2878607776582720720"><ph name="TAB_TITLE" />，多選的無痕分頁，正在分享內容</translation>
 <translation id="2885355868600171871">跳到網址列</translation>
@@ -621,6 +622,7 @@
 <translation id="3709577906275923507"><ph name="FILE_NAME" /> 可能含有機密資訊，請勿分享</translation>
 <translation id="3710501561113687889">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的<ph name="FIELDS_STRING" />提供給這個網站。</translation>
 <translation id="3710560693796335511">協同合作</translation>
+<translation id="3714430408451673233">分頁底部功能表顯示在畫面下半部。</translation>
 <translation id="3718765429352682176">你可以查看透過其他應用程式在 Chrome 中開啟連結的歷史記錄。</translation>
 <translation id="3721119614952978349">你與 Google</translation>
 <translation id="3727000368239390918">只要在裝置上登入帳戶，即可存取分頁和其他資訊</translation>
@@ -765,6 +767,7 @@
 <translation id="4326079409704643112">如要將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料，請驗證身分</translation>
 <translation id="433213510553688132">正在設為追蹤…</translation>
 <translation id="4335835283689002019">安全瀏覽功能已關閉</translation>
+<translation id="4343250402091037179">如要搜尋特定網站或 Chrome，請在網址列輸入相應的搜尋捷徑，然後按下你慣用的鍵盤快速鍵。</translation>
 <translation id="4351244548802238354">關閉對話方塊</translation>
 <translation id="4352287748243729941">要使用 <ph name="PROVIDER" /> 的密碼嗎？</translation>
 <translation id="4355272626458588338">你可以將重要網頁加入書籤，方便日後查看</translation>
@@ -955,6 +958,7 @@
 <translation id="5056587122125565772">生成圖像</translation>
 <translation id="506254248375231072">沒有任何分頁</translation>
 <translation id="5075939510584558547">不加密直接儲存</translation>
+<translation id="5078638979202084724">將所有分頁加入書籤</translation>
 <translation id="5085038751173179818">登入這個網站和 Chrome，即可在所有裝置上存取書籤和其他設定。</translation>
 <translation id="5091199029769593641">不久後，你就會在開啟新分頁時看到「<ph name="SITE_NAME" />」的網路故事。你追蹤的網站會儲存在 Google 帳戶中，你可以在「探索」設定中管理這些網站。</translation>
 <translation id="509429900233858213">發生錯誤。</translation>
@@ -1038,6 +1042,7 @@
 <translation id="544776284582297024">如果想開啟分頁並同時造訪不同的網頁，請輕觸「開啟的分頁」按鈕</translation>
 <translation id="5456381639095306749">下載網頁</translation>
 <translation id="5458366071038729214">這裡會顯示你追蹤的網站</translation>
+<translation id="5465437530117042974">分頁底部功能表已改為關閉。</translation>
 <translation id="5469852975082458401">你可以透過文字游標瀏覽頁面。按下 F7 鍵即可關閉這項功能。</translation>
 <translation id="5471273988133666918">無法移動分頁「<ph name="TAB_TITLE" />」</translation>
 <translation id="548278423535722844">在地圖應用程式中開啟</translation>
@@ -1171,6 +1176,7 @@
 <translation id="604996488070107836">發生不明錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="605721222689873409">年</translation>
 <translation id="6059830886158432458">請在這裡控管你的報導和活動</translation>
+<translation id="606985262342505139">分頁底部功能表顯示在整個畫面上</translation>
 <translation id="6071995715087444295">如要檢查密碼是否外洩，請登入 Google 帳戶</translation>
 <translation id="6078323886959318429">新增捷徑</translation>
 <translation id="6085886413119427067">判斷如何透過安全連線連上網站</translation>
@@ -1187,6 +1193,7 @@
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />更多詳細資料<ph name="END_LINK" /></translation>
 <translation id="6127860394906721547">開啟<ph name="COLOR_NAME" />的「<ph name="TITLE_OF_GROUP" />」分頁群組，內含網站 <ph name="URL_LIST" />。</translation>
 <translation id="6130303040046284160">將分頁縮到最小</translation>
+<translation id="6132075343662013154">Chrome 會詢問你是否要儲存密碼</translation>
 <translation id="6134168885321518274">開啟搜尋列</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="6137022273846704445">「<ph name="APP_NAME" />」的語言</translation>
@@ -1339,6 +1346,7 @@
 <translation id="6672917148207387131">新增 <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">如要開始同步處理，請輸入通關密語</translation>
 <translation id="6676927815633975364">登入這個網站和 Chrome</translation>
+<translation id="6684262542644248484">登入網站</translation>
 <translation id="6684809838922667136">讓 Chrome 更臻完美</translation>
 <translation id="6689436252814043643">無法使用閱讀模式</translation>
 <translation id="6700279777779583398">系統已儲存所選設定</translation>

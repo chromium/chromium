@@ -314,6 +314,7 @@
 <translation id="4046123991198612571">הרצועה הבאה</translation>
 <translation id="4077310749977440510">בדרך כלל אתרים קוראים מידע מהלוח כדי לתמוך בתכונות כמו שמירת העיצוב של הטקסט שהעתקת</translation>
 <translation id="4082080074595021446">‏אי אפשר להגדיר חריגים לאתרים ספציפיים כי אין מספיק זיכרון RAM במכשיר ה-Android.</translation>
+<translation id="4089304748532599471">‏חלק מההגדרות של Chrome השתנו</translation>
 <translation id="4149890623864272035">‏בחרת למחוק את כל הנתונים המקומיים, כולל קובצי cookie, ולאפס את כל ההרשאות של האתר הזה. להמשיך?</translation>
 <translation id="4149994727733219643">תצוגה פשוטה של דפי אינטרנט</translation>
 <translation id="4151930093518524179">ברירת מחדל של מרחק התצוגה</translation>
@@ -350,6 +351,7 @@
 <translation id="4478158430052450698">אפשרות פשוטה יותר להתאים אישית את מרחק התצוגה באתרים שונים</translation>
 <translation id="4479647676395637221">יש לשאול לפני שמאפשרים לאתרים להשתמש במצלמה שלך (מומלץ)</translation>
 <translation id="4505788138578415521">‏כתובת ה-URL הורחבה</translation>
+<translation id="4522570452068850558">פרטים</translation>
 <translation id="4523472416386354622">כניסה לחשבון</translation>
 <translation id="4534723447064627427">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המיקרופון, צריך להפעיל את המיקרופון גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">השתקת המיקרופון</translation>
@@ -686,6 +688,7 @@
 <translation id="8117244575099414087">כשהאפשרות מופעלת, אתרים יכולים להשתמש בחיישני המכשיר. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש בחיישנים.</translation>
 <translation id="813082847718468539">הצגת נתוני אתר</translation>
 <translation id="8131740175452115882">אישור</translation>
+<translation id="8148160259207090265">‏ההגדרה הזו תישאר מופעלת כל עוד ההגנה המתקדמת מופעלת בהגדרות של Android.</translation>
 <translation id="8163152278172770963">אתרים לא יכולים להפעיל 'תמונה בתוך תמונה' אוטומטית</translation>
 <translation id="8168435359814927499">תוכן</translation>
 <translation id="818487310457576362">כדי לצאת מהמסך המלא, גוררים את האצבע מהצד של המסך.</translation>
@@ -715,6 +718,7 @@
 <translation id="8441146129660941386">הרצה לאחור</translation>
 <translation id="8444433999583714703">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המיקום, צריך להפעיל את המיקום גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">שלילת הרשאות מכשיר</translation>
+<translation id="8463843545738141778">‏ההגדרה הזו מושבתת כי ההגנה המתקדמת מופעלת בהגדרות של Android.</translation>
 <translation id="8467359479529706065">הגיליון התחתון של דף הכרטיסייה החדשה נפתח בחצי מגובה המסך</translation>
 <translation id="8471525937465764768">‏אתרים מתחברים בדרך כלל להתקני USB כדי לתמוך בתכונות כמו הדפסת מסמכים או שמירה בהתקן אחסון</translation>
 <translation id="8473055640493819707">האפליקציה <ph name="APP_NAME" /> לא מעודכנת. צריך להתקין אותה מחדש.</translation>

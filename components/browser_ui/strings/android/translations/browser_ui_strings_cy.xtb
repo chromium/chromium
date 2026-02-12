@@ -314,6 +314,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="4046123991198612571">Trac nesaf</translation>
 <translation id="4077310749977440510">Mae gwefannau fel arfer yn darllen eich clipfwrdd ar gyfer nodweddion megis cadw fformat y testun y gwnaethoch ei gopïo</translation>
 <translation id="4082080074595021446">Eithriadau ar gyfer gwefannau penodol wedi'u gwahardd oherwydd nad oes gan ddyfais Android ddigon o RAM.</translation>
+<translation id="4089304748532599471">Mae rhai gosodiadau Chrome wedi'u newid</translation>
 <translation id="4149890623864272035">Ydych chi'n siŵr eich bod chi am ddileu'r holl ddata lleol, gan gynnwys cwcis, ac ailosod yr holl ganiatadau ar gyfer y wefan hon?</translation>
 <translation id="4149994727733219643">Gwedd syml ar gyfer tudalennau gwe</translation>
 <translation id="4151930093518524179">Chwyddo diofyn</translation>
@@ -349,6 +350,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="4478158430052450698">Ei gwneud hi'n haws i addasu chwyddo ar gyfer gwahanol wefannau</translation>
 <translation id="4479647676395637221">Gofyn yn gyntaf cyn caniatáu i wefannau ddefnyddio'ch camera (argymhellir)</translation>
 <translation id="4505788138578415521">URL wedi'i ehangu</translation>
+<translation id="4522570452068850558">Manylion</translation>
 <translation id="4523472416386354622">Mewngofnodwch i ddechrau</translation>
 <translation id="4534723447064627427">I ganiatáu i <ph name="APP_NAME" /> gael mynediad at eich meicroffon, trowch y meicroffon ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
 <translation id="4566417217121906555">Distewi'r meicroffon</translation>
@@ -685,6 +687,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="8117244575099414087">Pan fydd wedi'i droi ymlaen, gall gwefannau ddefnyddio synwyryddion eich dyfais. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio synwyryddion.</translation>
 <translation id="813082847718468539">Gweld gwybodaeth am y wefan</translation>
 <translation id="8131740175452115882">Cadarnhau</translation>
+<translation id="8148160259207090265">Mae'r gosodiad hwn yn parhau i fod ymlaen cyhyd â bod gennych Advanced Protection wedi'i droi ymlaen yng Ngosodiadau Android.</translation>
 <translation id="8163152278172770963">Peidio â chaniatáu gwefannau i gyrchu llun mewn llun yn awtomatig</translation>
 <translation id="8168435359814927499">Cynnwys</translation>
 <translation id="818487310457576362">Llusgwch o ochr y sgrîn i adael y sgrin lawn.</translation>
@@ -714,6 +717,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="8441146129660941386">Mynd yn ôl</translation>
 <translation id="8444433999583714703">I ganiatáu i <ph name="APP_NAME" /> gael mynediad at eich lleoliad, trowch leoliad ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
 <translation id="8447861592752582886">Dirymu caniatâd dyfais</translation>
+<translation id="8463843545738141778">Mae'r gosodiad hwn wedi'i analluogi oherwydd i chi droi Advanced Protection ymlaen yng Ngosodiadau Android.</translation>
 <translation id="8467359479529706065">Ymddangosiad dalen waelod tudalen tab newydd wedi'i hagor ar hanner uchder</translation>
 <translation id="8471525937465764768">Mae gwefannau fel arfer yn cysylltu â dyfeisiau USB ar gyfer nodweddion megis argraffu dogfen neu gynilo i ddyfais storio</translation>
 <translation id="8473055640493819707">Mae '<ph name="APP_NAME" />' yn hen. Ail-osodwch yr ap.</translation>

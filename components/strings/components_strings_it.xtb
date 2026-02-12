@@ -184,7 +184,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1289129165308566697">Visualizza la cronologia su altri dispositivi</translation>
 <translation id="1292571435393770077">Vassoio 16</translation>
 <translation id="1292701964462482250">"Il software installato sul computer sta impedendo a Chrome di connettersi in sicurezza al Web" (solo su computer Windows)</translation>
-<translation id="1293154089865862473">I contenuti della pagina di pagamento vengono condivisi con Google per offrire queste opzioni. Per nascondere le opzioni di pagamento posticipato nella compilazione automatica, vai alle <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">File</translation>
 <translation id="1293797321964802402">Busta 9 x 11 pollici</translation>
 <translation id="129553762522093515">Chiuse di recente</translation>
@@ -1123,7 +1122,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2782088940970074970">Noleggi auto</translation>
 <translation id="278436560439594386">Elettrodomestici</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">I contenuti della pagina di pagamento vengono condivisi con Google per offrire queste opzioni.</translation>
 <translation id="2784949926578158345">La connessione è stata reimpostata.</translation>
 <translation id="2786008859124691917">Biciclette e accessori</translation>
 <translation id="2792012897584536778">Gli amministratori di questo dispositivo hanno configurato certificati di sicurezza che potrebbero consentire loro di visualizzare i contenuti dei siti web che visiti.</translation>
@@ -2866,6 +2864,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5570825185877910964">Proteggi account</translation>
 <translation id="5571083550517324815">Impossibile ritirare dall'indirizzo specificato. Seleziona un indirizzo diverso.</translation>
 <translation id="5572434905385510939">22 x 28 in</translation>
+<translation id="5573090972398558474">La tua organizzazione ha bloccato questa pagina in modalità Incognito.</translation>
 <translation id="5573641252776268565">Modifica passaporto</translation>
 <translation id="5578606540385219379">Fornitori di servizi</translation>
 <translation id="5580958916614886209">Controlla il mese di scadenza e riprova</translation>
@@ -4293,6 +4292,7 @@ Ulteriori dettagli:
 <translation id="7844689747373518809">{COUNT,plural, =0{Nessuna}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Si è verificato un errore. Riprova.</translation>
 <translation id="784623644169604270">Nessuna attività recente</translation>
+<translation id="7848926355794727168">Navigazione automatica</translation>
 <translation id="7853222852810008596">Paga dopo non disponibile in questa valuta</translation>
 <translation id="785476343534277563">Sport universitari</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>

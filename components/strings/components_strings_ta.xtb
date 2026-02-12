@@ -184,7 +184,6 @@
 <translation id="1289129165308566697">உங்கள் பதிவுகளைப் பிற சாதனங்களில் பாருங்கள்</translation>
 <translation id="1292571435393770077">டிரே 16</translation>
 <translation id="1292701964462482250">"உங்கள் கம்ப்யூட்டரில் உள்ள மென்பொருள் இணையத்துடன் பாதுகாப்பாக இணைவதிலிருந்து Chromeமைத் தடுக்கிறது" (Windows கம்ப்யூட்டர்கள் மட்டும்)</translation>
-<translation id="1293154089865862473">இந்த விருப்பங்களை வழங்க, செக்-அவுட் பக்கத்தில் உள்ள பக்க உள்ளடக்கம் Googleளுடன் பகிரப்படும். பிறகு பணம் செலுத்துவதற்கான விருப்பத்தேர்வுகளைத் தானாக நிரப்புதலில் மறைக்க <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> என்பதற்குச் செல்லவும்.</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">என்வெலப் 9 x 11 இன்ச்</translation>
 <translation id="129553762522093515">சமீபத்தில் மூடியவை</translation>
@@ -1123,7 +1122,6 @@
 <translation id="2782088940970074970">வாடகைக் கார்கள்</translation>
 <translation id="278436560439594386">வீட்டு உபயோகப் பொருட்கள்</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">இந்த விருப்பங்களை வழங்க, செக்-அவுட் பக்கத்தில் உள்ள பக்க உள்ளடக்கம் Googleளுடன் பகிரப்படும்.</translation>
 <translation id="2784949926578158345">இணைப்பு மீட்டமைக்கப்பட்டது.</translation>
 <translation id="2786008859124691917">சைக்கிள்கள் &amp; துணைக்கருவிகள்</translation>
 <translation id="2792012897584536778">இந்தச் சாதனத்தின் நிர்வாகிகள் பாதுகாப்புச் சான்றிதழ்களை அமைத்துள்ளனர். இவற்றின் மூலம் நீங்கள் சென்ற இணையதளங்களின் உள்ளடக்கத்தை அவர்கள் பார்க்கக்கூடும்.</translation>
@@ -2865,6 +2863,7 @@
 <translation id="5570825185877910964">கணக்கைப் பாதுகாத்திடு</translation>
 <translation id="5571083550517324815">இந்த முகவரியிலிருந்து பிக்அப் செய்ய முடியாது. வேறு முகவரியைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="5572434905385510939">22 x 28 இன்ச்</translation>
+<translation id="5573090972398558474">மறைநிலை மோடில் இந்தப் பக்கத்தை அணுகுவதை உங்கள் நிறுவனம் தடுத்துள்ளது.</translation>
 <translation id="5573641252776268565">பாஸ்போர்ட் தகவலை மாற்றுதல்</translation>
 <translation id="5578606540385219379">சேவை வழங்குநர்கள்</translation>
 <translation id="5580958916614886209">காலாவதி மாதத்தைச் சரிபார்த்து, மீண்டும் முயலவும்</translation>
@@ -4292,6 +4291,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{எதுவுமில்லை}=1{1 ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />)}=2{2 ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">பிழை ஏற்பட்டது. மீண்டும் முயலவும்.</translation>
 <translation id="784623644169604270">சமீபத்திய செயல்கள் இல்லை</translation>
+<translation id="7848926355794727168">ஆட்டோ பிரவுஸ்</translation>
 <translation id="7853222852810008596">‘பிறகு பணம் செலுத்துங்கள்’ சேவை இந்த நாணயத்திற்குக் கிடையாது</translation>
 <translation id="785476343534277563">கல்லூரி விளையாட்டுகள்</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>

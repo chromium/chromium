@@ -314,6 +314,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="4046123991198612571">Pista siguiente</translation>
 <translation id="4077310749977440510">Los sitios suelen leer el contenido del portapapeles para utilizarlo en funciones como conservar el formato del texto que se ha copiado</translation>
 <translation id="4082080074595021446">No se permiten excepciones para sitios web específicos porque el dispositivo Android no tiene suficiente RAM.</translation>
+<translation id="4089304748532599471">Algunos ajustes de Chrome han cambiado</translation>
 <translation id="4149890623864272035">¿Seguro que quieres eliminar todos los datos locales, incluidas las cookies, y restablecer todos los permisos de este sitio web?</translation>
 <translation id="4149994727733219643">Vista simplificada de páginas web</translation>
 <translation id="4151930093518524179">Zoom predeterminado</translation>
@@ -349,6 +350,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="4478158430052450698">Facilita la personalización del zoom en diferentes sitios</translation>
 <translation id="4479647676395637221">Preguntar antes de permitir que los sitios utilicen la cámara (recomendado)</translation>
 <translation id="4505788138578415521">URL ampliada</translation>
+<translation id="4522570452068850558">Detalles</translation>
 <translation id="4523472416386354622">Inicia sesión para empezar</translation>
 <translation id="4534723447064627427">Para que <ph name="APP_NAME" /> pueda acceder al micrófono, actívalo también en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Silenciar micrófono</translation>
@@ -685,6 +687,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="8117244575099414087">Cuando esta opción está activada, los sitios pueden usar los sensores de tu dispositivo. Si está desactivada, los sitios no pueden usar los sensores.</translation>
 <translation id="813082847718468539">Ver información del sitio</translation>
 <translation id="8131740175452115882">Confirmar</translation>
+<translation id="8148160259207090265">Este ajuste permanecerá activo siempre que tengas activada la Protección Avanzada en los ajustes de Android.</translation>
 <translation id="8163152278172770963">No permitir que los sitios activen la función Imagen en imagen automáticamente</translation>
 <translation id="8168435359814927499">Contenido</translation>
 <translation id="818487310457576362">Arrastra desde el lateral de la pantalla para salir de la pantalla completa.</translation>
@@ -714,6 +717,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="8441146129660941386">Buscar hacia atrás</translation>
 <translation id="8444433999583714703">Para que <ph name="APP_NAME" /> tenga acceso a tu ubicación, actívala también en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revocar permiso de dispositivo</translation>
+<translation id="8463843545738141778">Este ajuste está inhabilitado porque has activado Protección Avanzada en los ajustes de Android.</translation>
 <translation id="8467359479529706065">Hoja inferior de apariencia de la página Nueva pestaña abierta a media altura</translation>
 <translation id="8471525937465764768">Los sitios se suelen conectar a dispositivos USB para usarlos en funciones como la impresión de documentos o el guardado de contenido en dispositivos de almacenamiento.</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> no está actualizada. Vuelve a instalar la aplicación.</translation>

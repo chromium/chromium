@@ -314,6 +314,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="4046123991198612571">Faixa seguinte</translation>
 <translation id="4077310749977440510">Normalmente, os sites leem a sua área de transferência para funcionalidades como manter a formatação do texto que copiou</translation>
 <translation id="4082080074595021446">As exceções para Websites específicos não são permitidas porque o dispositivo Android não tem RAM suficiente.</translation>
+<translation id="4089304748532599471">Algumas definições do Chrome foram alteradas</translation>
 <translation id="4149890623864272035">Quer mesmo eliminar todos os dados locais, incluindo os cookies, e repor todas as autorizações deste Website?</translation>
 <translation id="4149994727733219643">Vista simplificada de páginas Web</translation>
 <translation id="4151930093518524179">Zoom predefinido</translation>
@@ -349,6 +350,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="4478158430052450698">Facilite a personalização do zoom para diferentes sites</translation>
 <translation id="4479647676395637221">Perguntar antes de permitir que os sites utilizem a câmara (recomendado)</translation>
 <translation id="4505788138578415521">URL expandido</translation>
+<translation id="4522570452068850558">Detalhes</translation>
 <translation id="4523472416386354622">Iniciar sessão para começar</translation>
 <translation id="4534723447064627427">Para permitir que a app <ph name="APP_NAME" /> aceda ao microfone, ative também o microfone nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Desativar microfone</translation>
@@ -685,6 +687,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="8117244575099414087">Quando esta opção está ativada, os sites podem usar os sensores do dispositivo. Quando esta opção está desativada, os sites não podem usar sensores.</translation>
 <translation id="813082847718468539">Ver informações do Website</translation>
 <translation id="8131740175452115882">Confirmar</translation>
+<translation id="8148160259207090265">Esta definição permanece ativada enquanto tiver a Proteção avançada ativada nas Definições do Android.</translation>
 <translation id="8163152278172770963">Não permitir que os sites entrem automaticamente no modo ecrã no ecrã</translation>
 <translation id="8168435359814927499">Conteúdo</translation>
 <translation id="818487310457576362">Arraste a partir da parte lateral do ecrã para sair do modo de ecrã inteiro.</translation>
@@ -714,6 +717,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="8441146129660941386">Procurar para trás</translation>
 <translation id="8444433999583714703">Para permitir que a app <ph name="APP_NAME" /> aceda à sua localização, ative também a localização nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revogar autorização do dispositivo</translation>
+<translation id="8463843545738141778">Esta definição está desativada porque ativou a Proteção avançada nas Definições do Android.</translation>
 <translation id="8467359479529706065">Secção inferior de aspeto da página Novo separador aberta a meia altura</translation>
 <translation id="8471525937465764768">Normalmente, os sites estabelecem ligação a dispositivos USB para funcionalidades como imprimir um documento ou guardar num dispositivo de armazenamento.</translation>
 <translation id="8473055640493819707">A app "<ph name="APP_NAME" />" está desatualizada. Reinstale-a.</translation>

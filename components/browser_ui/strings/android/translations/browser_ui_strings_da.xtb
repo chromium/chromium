@@ -314,6 +314,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="4046123991198612571">Næste nummer</translation>
 <translation id="4077310749977440510">Websites læser normalt din udklipsholder for bl.a. at bevare formatet af tekst, du kopierer</translation>
 <translation id="4082080074595021446">Undtagelser for bestemte websites er ikke tilladt, fordi Android-enheden ikke har nok RAM.</translation>
+<translation id="4089304748532599471">Nogle Chrome-indstillinger er ændret</translation>
 <translation id="4149890623864272035">Er du sikker på, at du vil slette alle lokale data, herunder cookies, og nulstille alle tilladelser for dette website?</translation>
 <translation id="4149994727733219643">Enkel visning af websider</translation>
 <translation id="4151930093518524179">Standardzoom</translation>
@@ -349,6 +350,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="4478158430052450698">Gør det nemmere at tilpasse zoom på forskellige websites</translation>
 <translation id="4479647676395637221">Spørg, før websites bruger dit kamera (anbefales)</translation>
 <translation id="4505788138578415521">Webadressen er udvidet</translation>
+<translation id="4522570452068850558">Detaljer</translation>
 <translation id="4523472416386354622">Log ind for at starte</translation>
 <translation id="4534723447064627427">Aktivér også din mikrofon i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til mikrofonen.</translation>
 <translation id="4566417217121906555">Slå mikrofon fra</translation>
@@ -685,6 +687,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="8117244575099414087">Når dette er slået til, kan websites anvende din enheds sensorer. Når dette er slået fra, kan websites ikke anvende sensorer.</translation>
 <translation id="813082847718468539">Se websiteoplysninger</translation>
 <translation id="8131740175452115882">Bekræft</translation>
+<translation id="8148160259207090265">Denne indstilling forbliver aktiveret, så længe Avanceret beskyttelse er aktiveret i Android-indstillingerne.</translation>
 <translation id="8163152278172770963">Tillad ikke, at websites automatisk åbner integreret billede</translation>
 <translation id="8168435359814927499">Indhold</translation>
 <translation id="818487310457576362">Træk fra siden af skærmen for at afslutte fuld skærm.</translation>
@@ -714,6 +717,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="8441146129660941386">Spol tilbage</translation>
 <translation id="8444433999583714703">Aktivér også lokation i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til din lokation.</translation>
 <translation id="8447861592752582886">Tilbagekald adgangstilladelsen til enheden</translation>
+<translation id="8463843545738141778">Denne indstilling er deaktiveret, fordi du har aktiveret Avanceret beskyttelse i Android-indstillingerne.</translation>
 <translation id="8467359479529706065">Feltet i bunden, der viser udseendet af siden Ny fane, er åbnet i halv højde</translation>
 <translation id="8471525937465764768">Websites opretter normalt forbindelse til USB-enheder for at kunne udskrive dokumenter eller gemme filer på en lagerenhed</translation>
 <translation id="8473055640493819707">"<ph name="APP_NAME" />" er forældet. Geninstaller appen.</translation>

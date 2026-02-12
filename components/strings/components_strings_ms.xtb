@@ -184,7 +184,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1289129165308566697">Lihat sejarah anda pada peranti lain</translation>
 <translation id="1292571435393770077">Dulang 16</translation>
 <translation id="1292701964462482250">"Perisian pada komputer anda menghalang Chrome daripada menyambung ke web dengan selamat" (komputer Windows sahaja)</translation>
-<translation id="1293154089865862473">Kandungan halaman daripada halaman semak keluar dikongsi dengan Google untuk menawarkan pilihan ini. Untuk menyembunyikan pilihan bayar kemudian dalam autolengkap, akses <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Fail</translation>
 <translation id="1293797321964802402">Sampul 9 x 11 inci</translation>
 <translation id="129553762522093515">Ditutup baru-baru ini</translation>
@@ -656,6 +655,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2071156619270205202">Kad ini tidak layak untuk nombor kad maya.</translation>
 <translation id="2071852865256799872">Penyemak imbas anda diuruskan oleh organisasi anda dan profil anda diuruskan oleh <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Maklumat disimpan pada peranti sahaja</translation>
 <translation id="2074733626795553847">Nyahsekat <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Anda Lawati</translation>
 <translation id="2078956195623975415">Permainan Muzik &amp; Tarian</translation>
@@ -1124,7 +1124,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2782088940970074970">Sewaan Kereta</translation>
 <translation id="278436560439594386">Perkakas Rumah</translation>
 <translation id="2784474685437057136">B5 Ekstra</translation>
-<translation id="2784540996156451674">Kandungan halaman daripada halaman semak keluar dikongsi dengan Google untuk menawarkan pilihan ini.</translation>
 <translation id="2784949926578158345">Sambungan ditetapkan semula.</translation>
 <translation id="2786008859124691917">Basikal &amp; Aksesori</translation>
 <translation id="2792012897584536778">Pentadbir peranti ini telah menyediakan sijil keselamatan yang mungkin membolehkan mereka melihat kandungan laman web yang anda lawati.</translation>
@@ -4906,6 +4905,7 @@ Butiran tambahan:
 <translation id="8858065207712248076">Chrome mengesyorkan penetapan semula kata laluan <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> jika anda menggunakan semula kata laluan itu di tapak lain.</translation>
 <translation id="885906927438988819">Jika ejaan sudah betul, <ph name="BEGIN_LINK" />cuba jalankan Diagnostik Rangkaian Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Seni Fotografi &amp; Digital</translation>
+<translation id="8861482055962701239">Tidak dapat menyimpan maklumat ini pada Google Wallet anda. Kad ini telah disimpan pada Chrome pada peranti ini. Chrome akan menawarkan untuk menyimpan kad tersebut pada Wallet apabila anda menggunakan kad tersebut pada masa hadapan.</translation>
 <translation id="8863218129525348270">Untuk membayar dengan lebih cepat selepas ini, simpan kad anda pada peranti anda</translation>
 <translation id="8864939224504814334">Pakaian Pejabat &amp; Sut</translation>
 <translation id="8866132857352163524">Muzik filem</translation>

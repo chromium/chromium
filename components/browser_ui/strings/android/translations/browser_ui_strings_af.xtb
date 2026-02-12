@@ -314,6 +314,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="4046123991198612571">Volgende snit</translation>
 <translation id="4077310749977440510">Werwe lees gewoonlik jou knipbord vir kenmerke soos behoud van die formatering van teks wat jy gekopieer het</translation>
 <translation id="4082080074595021446">Uitsonderings vir spesifieke webwerwe word nie toegelaat nie, want Android-toestel het nie genoeg RAM nie.</translation>
+<translation id="4089304748532599471">Sekere Chrome-instellings het verander</translation>
 <translation id="4149890623864272035">Is jy seker jy wil alle plaaslike data, insluitend webkoekies, uitvee en alle toestemmings vir hierdie webwerf terugstel?</translation>
 <translation id="4149994727733219643">Vereenvoudigde aansig vir webbladsye</translation>
 <translation id="4151930093518524179">Verstekzoem</translation>
@@ -349,6 +350,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="4478158430052450698">Maak dit makliker om zoem vir verskillende werwe te pasmaak</translation>
 <translation id="4479647676395637221">Vra eers voordat werwe toegelaat word om jou kamera te gebruik (aanbeveel)</translation>
 <translation id="4505788138578415521">URL is uitgevou</translation>
+<translation id="4522570452068850558">Besonderhede</translation>
 <translation id="4523472416386354622">Meld aan om te begin</translation>
 <translation id="4534723447064627427">Om <ph name="APP_NAME" /> toegang tot jou mikrofoon te gee, moet jy mikrofoon ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="4566417217121906555">Demp mikrofoon</translation>
@@ -685,6 +687,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="8117244575099414087">Wanneer dit aan is, kan werwe jou toestel se sensors gebruik. Wanneer dit af is, kan werwe nie sensors gebruik nie.</translation>
 <translation id="813082847718468539">Bekyk werfinligting</translation>
 <translation id="8131740175452115882">Bevestig</translation>
+<translation id="8148160259207090265">Hierdie instelling bly aan solank jy Gevorderde Beskerming in Android-instellings aangeskakel hou.</translation>
 <translation id="8163152278172770963">Moenie toelaat dat werwe outomaties prent-in-prent ingaan nie</translation>
 <translation id="8168435359814927499">Inhoud</translation>
 <translation id="818487310457576362">Sleep van die kant van die skerm af om volskerm te verlaat.</translation>
@@ -714,6 +717,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="8441146129660941386">Soek agtertoe</translation>
 <translation id="8444433999583714703">Om <ph name="APP_NAME" /> toegang tot jou ligging te gee, moet jy ligging ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="8447861592752582886">Herroep toesteltoestemming</translation>
+<translation id="8463843545738141778">Hierdie instelling is gedeaktiveer omdat jy Gevorderde Beskerming in Android-instellings aangeskakel het</translation>
 <translation id="8467359479529706065">Voorkoms van Nuwe Oortjie-bladsy se onderste blad is teen halwe hoogte oopgemaak</translation>
 <translation id="8471525937465764768">Werwe koppel gewoonlik aan USB-toestelle vir kenmerke soos om 'n dokument te druk of om op 'n bergingtoestel te stoor</translation>
 <translation id="8473055640493819707">“<ph name="APP_NAME" />” is verouderd. Herinstalleer die app.</translation>

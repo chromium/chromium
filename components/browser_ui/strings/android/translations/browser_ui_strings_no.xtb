@@ -314,6 +314,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="4046123991198612571">Neste spor</translation>
 <translation id="4077310749977440510">Nettsteder leser vanligvis utklippstavlen din for å kunne tilby funksjoner som å beholde formateringen på tekst du har kopiert</translation>
 <translation id="4082080074595021446">Unntak for bestemte nettsteder er ikke tillatt fordi Android-enheten ikke har nok RAM.</translation>
+<translation id="4089304748532599471">Noen Chrome-innstillinger er endret</translation>
 <translation id="4149890623864272035">Er du sikker på at du vil slette alle lokale data, inkludert informasjonskapsler, og tilbakestille alle tillatelsene for dette nettstedet?</translation>
 <translation id="4149994727733219643">Forenklet visning av nettsider</translation>
 <translation id="4151930093518524179">Standard zoom</translation>
@@ -349,6 +350,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="4478158430052450698">Gjør det enklere å tilpasse zoomen for ulike nettsteder</translation>
 <translation id="4479647676395637221">Spør før nettsteder får bruke kameraet (anbefales)</translation>
 <translation id="4505788138578415521">Nettadressen er utvidet</translation>
+<translation id="4522570452068850558">Detaljer</translation>
 <translation id="4523472416386354622">Logg på for å komme i gang</translation>
 <translation id="4534723447064627427">For å gi <ph name="APP_NAME" /> tilgang til mikrofonen må du også slå på mikrofonen i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Slå av mikrofonen</translation>
@@ -685,6 +687,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="8117244575099414087">Når dette er på, kan nettsteder bruke sensorene på enheten din. Når dette er av, kan ikke nettsteder bruke sensorer.</translation>
 <translation id="813082847718468539">Vis nettstedsinformasjon</translation>
 <translation id="8131740175452115882">Bekreft</translation>
+<translation id="8148160259207090265">Denne innstillingen forblir på så lenge du har Avansert beskyttelse slått på i Android-innstillingene.</translation>
 <translation id="8163152278172770963">Ikke la nettsteder bruke bilde-i-bilde automatisk</translation>
 <translation id="8168435359814927499">Innhold</translation>
 <translation id="818487310457576362">Dra fra siden av skjermen for å avslutte fullskjerm.</translation>
@@ -714,6 +717,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="8441146129660941386">Spol bakover</translation>
 <translation id="8444433999583714703">For å gi <ph name="APP_NAME" /> tilgang til posisjonen din må du også slå på posisjon i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Opphev tillatelsen til enhetstilgang</translation>
+<translation id="8463843545738141778">Denne innstillingen er deaktivert fordi du har slått på Avansert beskyttelse i Android-innstillingene.</translation>
 <translation id="8467359479529706065">Nytt faneområde som er åpnet i bunnarket vises i halv høyde</translation>
 <translation id="8471525937465764768">Nettsteder kobler vanligvis til USB-enheter for å kunne tilby funksjoner som å skrive ut dokumenter eller lagre filer på lagringsenheter</translation>
 <translation id="8473055640493819707">«<ph name="APP_NAME" />» er utdatert. Installer appen på nytt.</translation>

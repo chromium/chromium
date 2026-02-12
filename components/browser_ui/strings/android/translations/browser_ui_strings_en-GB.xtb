@@ -314,6 +314,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="4046123991198612571">Next track</translation>
 <translation id="4077310749977440510">Sites usually read your clipboard for features like keeping the formatting of text that you copied</translation>
 <translation id="4082080074595021446">Exceptions for specific websites disallowed because Android device does not have enough RAM.</translation>
+<translation id="4089304748532599471">Some Chrome settings changed</translation>
 <translation id="4149890623864272035">Are you sure that you want to delete all local data, including cookies, and reset all permissions for this website?</translation>
 <translation id="4149994727733219643">Simplified view for web pages</translation>
 <translation id="4151930093518524179">Default zoom</translation>
@@ -349,6 +350,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="4478158430052450698">Make it easier to customise zoom for different sites</translation>
 <translation id="4479647676395637221">Ask first before allowing sites to use your camera (recommended)</translation>
 <translation id="4505788138578415521">URL expanded</translation>
+<translation id="4522570452068850558">Details</translation>
 <translation id="4523472416386354622">Sign in to start</translation>
 <translation id="4534723447064627427">To let <ph name="APP_NAME" /> access your microphone, also turn on microphone in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Mute microphone</translation>
@@ -685,6 +687,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="8117244575099414087">When on, sites can use your device's sensors. When off, sites can't use sensors.</translation>
 <translation id="813082847718468539">View site information</translation>
 <translation id="8131740175452115882">Confirm</translation>
+<translation id="8148160259207090265">This setting remains on as long as you have Advanced Protection turned on in Android Settings.</translation>
 <translation id="8163152278172770963">Don't allow sites to enter picture-in-picture automatically</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="818487310457576362">Drag from the side of the screen to exit full screen.</translation>
@@ -714,6 +717,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="8441146129660941386">Seek backward</translation>
 <translation id="8444433999583714703">To let <ph name="APP_NAME" /> access your location, also turn on location in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revoke device permission</translation>
+<translation id="8463843545738141778">This setting is disabled because you turned on Advanced Protection in Android settings.</translation>
 <translation id="8467359479529706065">New tab page appearance bottom sheet opened at half height</translation>
 <translation id="8471525937465764768">Sites usually connect to USB devices for features such as printing a document or saving to a storage device</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' is out of date. Please re-install the app.</translation>

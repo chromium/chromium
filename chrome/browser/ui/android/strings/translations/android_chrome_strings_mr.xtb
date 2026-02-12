@@ -432,6 +432,7 @@
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2871733351037274014">पेज प्रीलोड करा</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> याला तुमच्याकडून या वेबसाइटची मंजुरी हवी आहे:</translation>
+<translation id="2876556152483133018">साइट शोध</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome तुमचा डेटा खाजगी कसा ठेवते<ph name="END_LINK" /> याविषयी अधिक जाणून घ्या</translation>
 <translation id="2878607776582720720"><ph name="TAB_TITLE" />, मल्टीसिलेक्ट केलेला शेअर करत असलेला गुप्त टॅब</translation>
 <translation id="2885355868600171871">अ‍ॅड्रेस बारवर जा</translation>
@@ -621,6 +622,7 @@
 <translation id="3709577906275923507"><ph name="FILE_NAME" /> मध्ये संवेदनशील माहिती असू शकते आणि ती शेअर केली जाऊ नये</translation>
 <translation id="3710501561113687889">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे <ph name="FIELDS_STRING" /> या साइटसोबत शेअर करेल.</translation>
 <translation id="3710560693796335511">सहयोग</translation>
+<translation id="3714430408451673233">अर्धा उंचीवर उघडलेली टॅबची तळाशी असलेली शीट.</translation>
 <translation id="3718765429352682176">तुम्हाला Chrome मध्ये लिंक उघडणाऱ्या इतर ॲप्समधील इतिहास दिसू शकतो.</translation>
 <translation id="3721119614952978349">तुम्ही आणि Google</translation>
 <translation id="3727000368239390918">तुमच्या सर्व डिव्हाइसवर तुमचे टॅब आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
@@ -765,6 +767,7 @@
 <translation id="4326079409704643112">तुमच्या Google खाते मधील Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="433213510553688132">फॉलो करत आहे…</translation>
 <translation id="4335835283689002019">सुरक्षित ब्राउझिंग बंद आहे</translation>
+<translation id="4343250402091037179">विशिष्ट साइट किंवा Chrome चा भाग शोधण्यासाठी, त्याचा शॉर्टकट आणि त्यानंतर तुमचा प्राधान्य दिलेला कीबोर्ड शॉर्टकट अ‍ॅड्रेस बारमध्ये टाइप करा.</translation>
 <translation id="4351244548802238354">डायलॉग बंद करा</translation>
 <translation id="4352287748243729941">तुमचा <ph name="PROVIDER" /> पासवर्ड वापरायचा आहे का?</translation>
 <translation id="4355272626458588338">तुम्ही बुकमार्क जोडून तुमच्यासाठी महत्त्वाच्या असलेल्या पेजवर परत जाऊ शकता</translation>
@@ -955,6 +958,7 @@
 <translation id="5056587122125565772">इमेज तयार करा</translation>
 <translation id="506254248375231072">कोणतेही टॅब नाहीत</translation>
 <translation id="5075939510584558547">एन्क्रिप्शनशिवाय सेव्ह करा</translation>
+<translation id="5078638979202084724">सर्व टॅब बुकमार्क करा</translation>
 <translation id="5085038751173179818">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क आणि आणखी बऱ्याच गोष्टी मिळवण्यासाठी या साइटवर व Chrome मध्ये साइन इन करा</translation>
 <translation id="5091199029769593641">लवकरच, तुम्ही नवीन टॅब उघडल्यानंतर तुम्हाला <ph name="SITE_NAME" /> वरील स्टोरी दिसतील. तुम्ही फॉलो करता त्या साइट तुमच्या Google खात्यामध्ये सेव्ह केल्या जातात. तुम्ही त्या Discover सेटिंग्जमध्ये व्यवस्थापित करू शकता.</translation>
 <translation id="509429900233858213">एक एरर आली आहे.</translation>
@@ -1038,6 +1042,7 @@
 <translation id="544776284582297024">टॅब उघडण्यासाठी आणि एकाच वेळी वेगवेगळ्या पेजना भेट देण्यासाठी, टॅब उघडा बटणावर टॅप करा</translation>
 <translation id="5456381639095306749">पेज डाउनलोड करा</translation>
 <translation id="5458366071038729214">तुम्ही फॉलो करत असलेल्या साइट तुम्हाला येथे दिसतील</translation>
+<translation id="5465437530117042974">टॅबच्या तळाशी असलेल्या शीट मधील बदल बंद केले आहेत.</translation>
 <translation id="5469852975082458401">तुम्ही मजकुराचा कर्सर वापरून पेज नेव्हिगेट करू शकता. बंद करण्यासाठी F7 प्रेस करा.</translation>
 <translation id="5471273988133666918">टॅब <ph name="TAB_TITLE" /> हलवला जाऊ शकत नाही</translation>
 <translation id="548278423535722844">नकाशे ॲपमध्ये उघडा</translation>
@@ -1171,6 +1176,7 @@
 <translation id="604996488070107836">अज्ञात एररमुळे <ph name="FILE_NAME" /> डाउनलोड करणे अयशस्वी झाले.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">तुमच्या स्टोरी आणि अ‍ॅक्टिव्हिटी येथे नियंत्रित करा</translation>
+<translation id="606985262342505139">पूर्ण उंचीवर उघडलेली टॅबची तळाशी असलेली शीट</translation>
 <translation id="6071995715087444295">धोक्यात असलेले पासवर्ड तपासण्यासाठी, तुमच्या Google खाते मध्ये साइन इन करा</translation>
 <translation id="6078323886959318429">शॉर्टकट जोडा</translation>
 <translation id="6085886413119427067">वेबसाइटशी सुरक्षित कनेक्शनवरून कसे कनेक्ट करावे ते निर्धारित करते</translation>
@@ -1187,6 +1193,7 @@
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />आणखी तपशील<ph name="END_LINK" /></translation>
 <translation id="6127860394906721547"><ph name="URL_LIST" /> या साइट असलेला <ph name="COLOR_NAME" /> या रंगाचा <ph name="TITLE_OF_GROUP" /> हा टॅब गट उघडा.</translation>
 <translation id="6130303040046284160">टॅब मिनिमाइझ करा</translation>
+<translation id="6132075343662013154">Chrome तुमचा पासवर्ड सेव्ह करण्याची सुविधा देईल</translation>
 <translation id="6134168885321518274">शोध बार उघडा</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टॅब}other{<ph name="TAB_COUNT_MANY" /> टॅब}}</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> ची भाषा</translation>
@@ -1339,6 +1346,7 @@
 <translation id="6672917148207387131"><ph name="DOMAIN" /> जोडा</translation>
 <translation id="6674571176963658787">सिंक सुरू करण्यासाठी तुमचा पासफ्रेझ एंटर करा</translation>
 <translation id="6676927815633975364">ही साइट आणि Chrome मध्ये साइन इन करा</translation>
+<translation id="6684262542644248484">वेबसाइटमध्ये साइन इन करा</translation>
 <translation id="6684809838922667136">Chrome मध्ये सुधारणा करा</translation>
 <translation id="6689436252814043643">वाचन मोड उपलब्ध नाही</translation>
 <translation id="6700279777779583398">निवडी सेव्ह केल्या आहेत</translation>

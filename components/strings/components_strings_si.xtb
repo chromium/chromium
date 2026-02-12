@@ -184,7 +184,6 @@
 <translation id="1289129165308566697">වෙනත් උපාංගවල ඔබේ ඉතිහාසය බලන්න</translation>
 <translation id="1292571435393770077">Tray 16</translation>
 <translation id="1292701964462482250">"ඔබේ පරිගණකයේ මෘදුකාංග වෙබයට සුරක්ෂිතව සබැඳීමෙන් Chrome නවතයි" (Windows පරිගණක පමණි)</translation>
-<translation id="1293154089865862473">මෙම විකල්ප පිරිනැමීමට ගෙවා පිටවීමේ පිටුවෙන් පිටු අන්තර්ගතය Google සමග බෙදා ගනු ලැබේ. ස්වයං පිරවීමේ පසුව ගෙවීමේ විකල්ප සැඟවීමට, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> වෙත යන්න.</translation>
 <translation id="1293556467332435079">ගොනු</translation>
 <translation id="1293797321964802402">ලියුම් කවරය අඟල් 9 x 11</translation>
 <translation id="129553762522093515">මෑත දී වැසිණි</translation>
@@ -1123,7 +1122,6 @@
 <translation id="2782088940970074970">මෝටර් රථ කුලියට ගැනීම</translation>
 <translation id="278436560439594386">ගෘහ උපකරණ</translation>
 <translation id="2784474685437057136">B5 අමතර</translation>
-<translation id="2784540996156451674">මෙම විකල්ප පිරිනැමීමට ගෙවා පිටවීමේ පිටුවෙන් පිටු අන්තර්ගතය Google සමග බෙදා ගනු ලැබේ.</translation>
 <translation id="2784949926578158345">සබඳතාව යළි සැකසිනි.</translation>
 <translation id="2786008859124691917">පාපැදි සහ ආයිත්තම්</translation>
 <translation id="2792012897584536778">මෙම උපාංගයේ පරිපාලකයින් ඔවුන්ට ඔබ පැමිණෙන වෙබ් අඩවිවල අන්තර්ගතය බැලීමට ඉඩ සැලසිය හැකි ආරක්‍ෂක සහතික සකසා ඇත.</translation>
@@ -2869,6 +2867,7 @@
 <translation id="5570825185877910964">ගිණුම ආරක්‍ෂා කරන්න</translation>
 <translation id="5571083550517324815">මෙම ලිපිනයෙන් ලබා ගැනීමට නොහැකිය. වෙනත් ලිපිනයක් තෝරන්න.</translation>
 <translation id="5572434905385510939">අඟ 22 x 28</translation>
+<translation id="5573090972398558474">ඔබේ සංවිධානය අප්‍රසිද්ධ ප්‍රකාරයේ මෙම පිටුව අවහිර කර ඇත.</translation>
 <translation id="5573641252776268565">ගමන් බලපත්‍රය සංස්කරණය කරන්න</translation>
 <translation id="5578606540385219379">සේවා සපයන්නන්</translation>
 <translation id="5580958916614886209">ඔබේ කල් ඉකුත් වීමේ මාසය පරික්ෂා කර නැවත උත්සාහ කරන්න</translation>
@@ -4296,6 +4295,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{කිසිවක් නැත}=1{1 යෙදුමක් (<ph name="EXAMPLE_APP_1" />)}=2{යෙදුම් 2ක් (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{යෙදුම් #ක් (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{යෙදුම් #ක් (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">දෝෂයක් සිදු විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="784623644169604270">මෑතකාලීන ක්‍රියාකාරකම් නැත</translation>
+<translation id="7848926355794727168">ස්වයංක්‍රීයව පිරික්සන්න</translation>
 <translation id="7853222852810008596">මෙම මුදල් වර්ගයෙන් පසුව ගෙවීම නොමැත</translation>
 <translation id="785476343534277563">පාසල් ක්‍රීඩා</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>

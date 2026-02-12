@@ -184,7 +184,6 @@
 <translation id="1289129165308566697">Таржымалыңызды башка түзмөктөрдө көрүңүз</translation>
 <translation id="1292571435393770077">16-түпкүч</translation>
 <translation id="1292701964462482250">"Компьютериңизде иштеп жаткан программа Chrome’дун Интернетке коопсуз туташуусуна тоскоол болуп жатат" (Windows компьютерлери үчүн гана)</translation>
-<translation id="1293154089865862473">Бул варианттарды сунуштоо үчүн төлөө бетиндеги нерселер Google менен бөлүшүлөт. Автотолтурууда кийинчерээк төлөө варианттарын жашыруу үчүн <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> бөлүмүнө өтүңүз.</translation>
 <translation id="1293556467332435079">Файлдар</translation>
 <translation id="1293797321964802402">Конверт 9 x 11 дюйм</translation>
 <translation id="129553762522093515">Жакында жабылган</translation>
@@ -704,6 +703,7 @@
 <translation id="2137891579555018930">Уруксат күтүлүүдө...</translation>
 <translation id="213826338245044447">Мобилдик кыстармалар</translation>
 <translation id="2141000681034340397">Киргизилген маанини түзөтүү</translation>
+<translation id="2141475438898772664">4 жолу же ай сайын төлөө</translation>
 <translation id="2144171668675205303">Жигердүү темалар жок</translation>
 <translation id="2145193671493396738">Экономикалык жаңылыктар</translation>
 <translation id="214556005048008348">Төлөмдү жокко чыгаруу</translation>
@@ -1123,7 +1123,6 @@
 <translation id="2782088940970074970">Ижарага берилүүчү унаалар</translation>
 <translation id="278436560439594386">Турмуш-тиричилик техникасы</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">Бул варианттарды сунуштоо үчүн төлөө бетиндеги нерселер Google менен бөлүшүлөт.</translation>
 <translation id="2784949926578158345">Туташуу баштапкы абалга келтирилди.</translation>
 <translation id="2786008859124691917">Велосипеддер жана аксессуарлар</translation>
 <translation id="2792012897584536778">Бул түзмөктүн администраторлору коопсуздук тастыктамаларын сиз кирген вебсайттардагы мазмунду көрө алгыдай кылып жөндөштү.</translation>
@@ -2847,6 +2846,7 @@
 <translation id="5543564889050342791">Зоопарктар, аквариумдар жана коруктар</translation>
 <translation id="5543722831081909240">180 градус</translation>
 <translation id="5544836308113951378">Круиздер жана чартерлер</translation>
+<translation id="5545314360139398232">Кийинчерээк төлөө үчүн <ph name="ISSUER_NAME" /> байланыштырыңыз</translation>
 <translation id="5547939254150808298">Басып чыгаруу жана жарыялоо</translation>
 <translation id="554815783948612276">Форум жана чат провайдерлери</translation>
 <translation id="5548606607480005320">Коопсуздукту текшерүү</translation>
@@ -2868,6 +2868,7 @@
 <translation id="5570825185877910964">Аккаунттун коопсуздугун коргоо</translation>
 <translation id="5571083550517324815">Бул даректен алып кетүү мүмкүн эмес. Башка дарек тандаңыз.</translation>
 <translation id="5572434905385510939">22 x 28 дюйм</translation>
+<translation id="5573090972398558474">Уюмуңуз бул баракты Жашыруун режимде бөгөттөп койду.</translation>
 <translation id="5573641252776268565">Паспортту түзөтүү</translation>
 <translation id="5578606540385219379">Кызмат көрсөтүүчүлөр</translation>
 <translation id="5580958916614886209">Мөөнөтү аяктоочу айды текшерип, кайталап көрүңүз</translation>
@@ -3693,6 +3694,7 @@
 <translation id="6926216138694948720">Денеге сүрөт тартуу</translation>
 <translation id="692638818576287323">Кесипкөй унаалар</translation>
 <translation id="6927878187051807444">камерага тартылган файлдар жана скриншоттор</translation>
+<translation id="6929949393612835405">Жаап, "<ph name="OPENER_TITLE" />" бөлүмүнө кайтуу</translation>
 <translation id="6930607614725241390">Капталдагы тилкеден издөө</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Издөө каражатыңыз Интернетте издөөгө мүмкүндүк берип, Chrome функцияларын жакшыртат<ph name="END_BOLD" />, мисалы, дарек тилкесинен жана веб-беттердеги сүрөттөрдөн издей аласыз. Издөө каражатыңыз колдоого албаса, бул функция иштебеши мүмкүн.</translation>
 <translation id="6934672428414710184">Бул ысым Google аккаунтуңуздан алынды</translation>
@@ -4295,6 +4297,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Эч бири}=1{1 колдонмо (<ph name="EXAMPLE_APP_1" />)}=2{2 колдонмо (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# колдонмо (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Ката кетти. Кайра аракет кылыңыз.</translation>
 <translation id="784623644169604270">Жакында эч кандай аракет болгон жок</translation>
+<translation id="7848926355794727168">Авто серептөө</translation>
 <translation id="7853222852810008596">Бул валютада кийинчерээк төлөөгө болбойт</translation>
 <translation id="785476343534277563">Академиялык спорт</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>

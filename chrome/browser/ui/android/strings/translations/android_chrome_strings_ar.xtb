@@ -432,6 +432,7 @@
 <translation id="2870560284913253234">الموقع</translation>
 <translation id="2871733351037274014">تحميل الصفحات مُسبقًا</translation>
 <translation id="2876136027428473467">"<ph name="CHILD_NAME" />" بحاجة إلى موافقتك على زيارة هذا الموقع الإلكتروني:</translation>
+<translation id="2876556152483133018">بحث في الموقع الإلكتروني</translation>
 <translation id="2876628302275096482">‏مزيد من المعلومات حول <ph name="BEGIN_LINK" />الطريقة التي يتّبعها Chrome للحفاظ على خصوصية بياناتك<ph name="END_LINK" /></translation>
 <translation id="2878607776582720720">‫"<ph name="TAB_TITLE" />"، علامة تبويب تم اختيارها مع علامات تبويب أخرى في "وضع التصفّح المتخفي" وتشارك محتواها</translation>
 <translation id="2885355868600171871">الانتقال إلى شريط العناوين</translation>
@@ -622,6 +623,7 @@
 <translation id="3709577906275923507">قد يحتوي "<ph name="FILE_NAME" />" على معلومات حساسة ويجب ألا تتم مشاركته</translation>
 <translation id="3710501561113687889">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> مع هذا الموقع الإلكتروني.</translation>
 <translation id="3710560693796335511">التعاون</translation>
+<translation id="3714430408451673233">تم فتح البطاقة السفلية لعلامة التبويب في نصف الشاشة.</translation>
 <translation id="3718765429352682176">‏قد يظهر لك السجلّ من خلال التطبيقات الأخرى التي تفتح الروابط في Chrome.</translation>
 <translation id="3721119614952978349">‏أنت وGoogle</translation>
 <translation id="3727000368239390918">يمكنك تسجيل الدخول للوصول إلى علامات التبويب وغير ذلك على جميع أجهزتك</translation>
@@ -766,6 +768,7 @@
 <translation id="4326079409704643112">‏عليك إثبات هويتك لاستخدام بيانات Chrome وحفظها في حسابك على Google</translation>
 <translation id="433213510553688132">جارٍ المتابعة…</translation>
 <translation id="4335835283689002019">التصفُّح الآمن غير مُفعّل</translation>
+<translation id="4343250402091037179">‏للبحث في موقع إلكتروني أو جزء محدَّد من Chrome، اكتب اختصاره في شريط العناوين متبوعًا باختصار لوحة المفاتيح المفضَّل لديك.</translation>
 <translation id="4351244548802238354">إغلاق مربع الحوار</translation>
 <translation id="4352287748243729941">هل تريد استخدام كلمة مرور <ph name="PROVIDER" />؟</translation>
 <translation id="4355272626458588338">يمكنك الرجوع إلى أي صفحة تهمك من خلال إضافة إشارة مرجعية لها.</translation>
@@ -956,6 +959,7 @@
 <translation id="5056587122125565772">إنشاء صورة</translation>
 <translation id="506254248375231072">ما مِن علامات تبويب</translation>
 <translation id="5075939510584558547">الحفظ بدون تشفير</translation>
+<translation id="5078638979202084724">وضع إشارات على كل علامات التبويب</translation>
 <translation id="5085038751173179818">‏يمكنك تسجيل الدخول إلى هذا الموقع الإلكتروني وإلى Chrome للوصول إلى إشاراتك المرجعية وغيرها على جميع أجهزتك</translation>
 <translation id="5091199029769593641">‏قريبًا، ستظهر لك قصص من <ph name="SITE_NAME" /> عند فتح علامة تبويب جديدة. تم حفظ المواقع الإلكترونية التي تتابعها في حسابك على Google. ويمكنك إدارة هذه المواقع الإلكترونية من خلال إعدادات "اقتراحات".</translation>
 <translation id="509429900233858213">حدث خطأ.</translation>
@@ -1039,6 +1043,7 @@
 <translation id="544776284582297024">لفتح علامات تبويب وزيارة صفحات مختلفة في آنٍ واحد، انقر على زر "علامات التبويب المفتوحة".</translation>
 <translation id="5456381639095306749">تنزيل الصفحة</translation>
 <translation id="5458366071038729214">تظهر هنا المواقع الإلكترونية التي تتابعها.</translation>
+<translation id="5465437530117042974">تم إغلاق البطاقة السفلية لعلامة التبويب.</translation>
 <translation id="5469852975082458401">‏يمكنك التنقُّل بين الصفحات باستخدام مؤشر النص، ويمكنك الضغط على F7 لإيقافه.</translation>
 <translation id="5471273988133666918">تعذَّر نقل علامة التبويب "<ph name="TAB_TITLE" />"</translation>
 <translation id="548278423535722844">فتح في تطبيق الخرائط</translation>
@@ -1172,6 +1177,7 @@
 <translation id="604996488070107836">تعذّر تنزيل الملف <ph name="FILE_NAME" /> بسبب خطأ غير معلوم.</translation>
 <translation id="605721222689873409">العام</translation>
 <translation id="6059830886158432458">يمكنك التحكُّم بقصصك ونشاطك هنا.</translation>
+<translation id="606985262342505139">تم فتح البطاقة السفلية لعلامة التبويب بطول الشاشة</translation>
 <translation id="6071995715087444295">‏للتحقّق من كلمات المرور المحتمَل تعرّضها للاختراق، يُرجى تسجيل الدخول إلى حسابك على Google</translation>
 <translation id="6078323886959318429">إضافة اختصار</translation>
 <translation id="6085886413119427067">تحديد طريقة الاتصال بمواقع إلكترونية من خلال اتصال آمن</translation>
@@ -1188,6 +1194,7 @@
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />المزيد من التفاصيل<ph name="END_LINK" /></translation>
 <translation id="6127860394906721547">تم فتح مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على قائمة المواقع الإلكترونية <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">تصغير علامة التبويب</translation>
+<translation id="6132075343662013154">‏سيعرض Chrome خيار حفظ كلمة المرور</translation>
 <translation id="6134168885321518274">فتح "شريط البحث"</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />)}zero{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب}two{علامتا تبويب (<ph name="TAB_COUNT_MANY" />)}few{‫<ph name="TAB_COUNT_MANY" /> علامات تبويب}many{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب}other{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="6137022273846704445">لغة <ph name="APP_NAME" /></translation>
@@ -1340,6 +1347,7 @@
 <translation id="6672917148207387131">إضافة <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">لبدء المزامنة، يجب إدخال عبارة المرور.</translation>
 <translation id="6676927815633975364">‏تسجيل الدخول إلى هذا الموقع الإلكتروني وإلى متصفِّح Chrome</translation>
+<translation id="6684262542644248484">تسجيل الدخول إلى موقع إلكتروني</translation>
 <translation id="6684809838922667136">‏تحسين أداء متصفِّح Chrome</translation>
 <translation id="6689436252814043643">"وضع القراءة" غير متاح</translation>
 <translation id="6700279777779583398">تم حفظ الخيارات</translation>

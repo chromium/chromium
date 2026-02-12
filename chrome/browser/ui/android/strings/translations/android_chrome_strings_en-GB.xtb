@@ -432,6 +432,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Preload pages</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> wants you to approve this website:</translation>
+<translation id="2876556152483133018">Site Search</translation>
 <translation id="2876628302275096482">Learn more about <ph name="BEGIN_LINK" />how Chrome keeps your data private<ph name="END_LINK" /></translation>
 <translation id="2878607776582720720"><ph name="TAB_TITLE" />, multi-selected sharing Incognito tab</translation>
 <translation id="2885355868600171871">Jump to address bar</translation>
@@ -621,6 +622,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3709577906275923507"><ph name="FILE_NAME" /> may contain sensitive information and shouldn't be shared</translation>
 <translation id="3710501561113687889">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your <ph name="FIELDS_STRING" /> with this site.</translation>
 <translation id="3710560693796335511">Collaboration</translation>
+<translation id="3714430408451673233">Tab bottom sheet at half height.</translation>
 <translation id="3718765429352682176">You may see the history from other apps that open links in Chrome.</translation>
 <translation id="3721119614952978349">You and Google</translation>
 <translation id="3727000368239390918">Sign in to get your tabs and more on all your devices</translation>
@@ -765,6 +767,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4326079409704643112">To use and save Chrome data in your Google Account, verify that it's you</translation>
 <translation id="433213510553688132">Following…</translation>
 <translation id="4335835283689002019">Safe Browsing is off</translation>
+<translation id="4343250402091037179">To search a specific site or part of Chrome, type its shortcut in the address bar, followed by your preferred keyboard shortcut.</translation>
 <translation id="4351244548802238354">Close dialogue</translation>
 <translation id="4352287748243729941">Use your <ph name="PROVIDER" /> password?</translation>
 <translation id="4355272626458588338">You can get back to a page that's important to you by adding a bookmark</translation>
@@ -955,6 +958,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5056587122125565772">Create image</translation>
 <translation id="506254248375231072">No tabs</translation>
 <translation id="5075939510584558547">Save without encryption</translation>
+<translation id="5078638979202084724">Bookmark all tabs</translation>
 <translation id="5085038751173179818">Sign in to this site and Chrome to get your bookmarks and more on all your devices</translation>
 <translation id="5091199029769593641">Soon, you’ll see stories from <ph name="SITE_NAME" /> when you open a new tab. The sites that you follow are saved in your Google Account. You can manage them in Discover settings.</translation>
 <translation id="509429900233858213">An error occurred.</translation>
@@ -1038,6 +1042,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="544776284582297024">To open tabs and visit different pages at the same time, tap the open tabs button</translation>
 <translation id="5456381639095306749">Download page</translation>
 <translation id="5458366071038729214">You'll find the sites that you follow here</translation>
+<translation id="5465437530117042974">Tab bottom sheet changes closed.</translation>
 <translation id="5469852975082458401">You can navigate pages with a text cursor. Press F7 to turn off.</translation>
 <translation id="5471273988133666918">Tab <ph name="TAB_TITLE" /> can't be moved</translation>
 <translation id="548278423535722844">Open in maps app</translation>
@@ -1171,6 +1176,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="604996488070107836"><ph name="FILE_NAME" /> download failed due to an unknown error.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Control your stories and activity here</translation>
+<translation id="606985262342505139">Tab bottom sheet at full height</translation>
 <translation id="6071995715087444295">To check for compromised passwords, sign in to your Google Account</translation>
 <translation id="6078323886959318429">Add shortcut</translation>
 <translation id="6085886413119427067">Determines how to connect to websites over a secure connection</translation>
@@ -1187,6 +1193,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />More details<ph name="END_LINK" /></translation>
 <translation id="6127860394906721547">Open <ph name="TITLE_OF_GROUP" /> tab group, colour <ph name="COLOR_NAME" />, with sites <ph name="URL_LIST" />.</translation>
 <translation id="6130303040046284160">Minimise tab</translation>
+<translation id="6132075343662013154">Chrome will offer to save your password</translation>
 <translation id="6134168885321518274">Open Find Bar</translation>
 <translation id="6135608400322377268">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tabs}}</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" />’s language</translation>
@@ -1339,6 +1346,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6672917148207387131">Add <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">To start sync, enter your passphrase</translation>
 <translation id="6676927815633975364">Sign in to this site and Chrome</translation>
+<translation id="6684262542644248484">Sign in to a website</translation>
 <translation id="6684809838922667136">Make Chrome better</translation>
 <translation id="6689436252814043643">Reading mode is unavailable</translation>
 <translation id="6700279777779583398">Choices saved</translation>

@@ -314,6 +314,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="4046123991198612571">Järgmine lugu</translation>
 <translation id="4077310749977440510">Tavaliselt loevad saidid teie lõikelaual olevat sisu näiteks teie kopeeritud teksti vormingu säilitamiseks</translation>
 <translation id="4082080074595021446">Kindlate veebisaitide erandid on keelatud, kuna Androidi seadmes pole piisavalt RAM-i.</translation>
+<translation id="4089304748532599471">Mõningaid Chrome'i seadeid on muudetud</translation>
 <translation id="4149890623864272035">Kas olete kindel, et soovite kustutada kõik kohalikud andmed, sh küpsised, ja lähtestada kõik selle veebisaidi õigused?</translation>
 <translation id="4149994727733219643">Veebilehtede lihtsustatud vaade</translation>
 <translation id="4151930093518524179">Vaikesuum</translation>
@@ -349,6 +350,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="4478158430052450698">Muutke erinevate saitide jaoks suumi kohandamine lihtsamaks</translation>
 <translation id="4479647676395637221">Küsi enne saitidele minu kaamera kasutamiseks juurdepääsu lubamist (soovitatav)</translation>
 <translation id="4505788138578415521">Laiendatud URL</translation>
+<translation id="4522570452068850558">Üksikasjad</translation>
 <translation id="4523472416386354622">Alustamiseks logige sisse</translation>
 <translation id="4534723447064627427">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie mikrofonile, lülitage mikrofon sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Vaigista mikrofon</translation>
@@ -685,6 +687,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="8117244575099414087">Kui see on sisse lülitatud, saavad saidid kasutada teie seadme andureid. Kui see on välja lülitatud, ei saa saidid andureid kasutada.</translation>
 <translation id="813082847718468539">Kuvab saidi teabe</translation>
 <translation id="8131740175452115882">Kinnita</translation>
+<translation id="8148160259207090265">See seade jääb sisselülitatuks seniks, kuni teie Androidi seadetes on täiustatud kaitse sisse lülitatud.</translation>
 <translation id="8163152278172770963">Ära luba saitidel automaatselt pilt pildis režiimi siseneda</translation>
 <translation id="8168435359814927499">Sisu</translation>
 <translation id="818487310457576362">Täisekraanilt väljumiseks lohistage ekraani küljelt.</translation>
@@ -714,6 +717,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="8441146129660941386">Keri tagasi</translation>
 <translation id="8444433999583714703">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie asukohale, lülitage funktsioon Asukoht sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Seadme loa tühistamine</translation>
+<translation id="8463843545738141778">See seade on keelatud, kuna lülitasite Androidi seadetes täiustatud kaitse sisse.</translation>
 <translation id="8467359479529706065">Uue vahelehe välimuse alumine leht on avatud poolel kõrgusel</translation>
 <translation id="8471525937465764768">Saidid loovad USB-seadmetega ühenduse tavaliselt teatud funktsioonide jaoks, näiteks dokumentide printimiseks või salvestusseadmele talletamiseks</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> on aegunud. Installige rakendus uuesti.</translation>

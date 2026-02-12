@@ -314,6 +314,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="4046123991198612571">Kitas takelis</translation>
 <translation id="4077310749977440510">Paprastai svetainėse nuskaitoma jūsų iškarpinė ieškant tam tikrų funkcijų, pvz., norint išlaikyti nukopijuoto teksto formatavimą</translation>
 <translation id="4082080074595021446">Konkrečių svetainių išimtys neleidžiamos, nes „Android“ įrenginyje nepakanka RAM.</translation>
+<translation id="4089304748532599471">Kai kurie „Chrome“ nustatymai pakeisti</translation>
 <translation id="4149890623864272035">Ar tikrai norite ištrinti visus vietinius duomenis, įskaitant slapukus, ir iš naujo nustatyti visus šios svetainės leidimus?</translation>
 <translation id="4149994727733219643">Supaprastinta tinklalapių peržiūra</translation>
 <translation id="4151930093518524179">Numatytasis mastelis</translation>
@@ -349,6 +350,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="4478158430052450698">Lengviau tinkinti mastelį skirtingose svetainėse</translation>
 <translation id="4479647676395637221">Pirmiausia klausti prieš leidžiant svetainėms naudoti kamerą (rekomenduojama)</translation>
 <translation id="4505788138578415521">URL išskleistas</translation>
+<translation id="4522570452068850558">Išsami informacija</translation>
 <translation id="4523472416386354622">Prisijungti ir pradėti</translation>
 <translation id="4534723447064627427">Norėdami leisti „<ph name="APP_NAME" />“ pasiekti jūsų mikrofoną, taip pat įjunkite jį <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Nutildyti mikrofoną</translation>
@@ -685,6 +687,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="8117244575099414087">Įjungus svetainėse gali būti naudojami įrenginio jutikliai. Išjungus svetainėse negalima naudoti jutiklių.</translation>
 <translation id="813082847718468539">Žiūrėti svetainės informaciją</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>
+<translation id="8148160259207090265">Šis nustatymas bus įjungtas tol, kol „Android“ nustatymuose įjungta Papildoma apsauga.</translation>
 <translation id="8163152278172770963">Neleisti svetainėms automatiškai įjungti vaizdo vaizde režimo</translation>
 <translation id="8168435359814927499">Turinys</translation>
 <translation id="818487310457576362">Vilkite nuo ekrano šono, kad išeitumėte iš viso ekrano režimo.</translation>
@@ -714,6 +717,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="8441146129660941386">Ieškoti einant atgal</translation>
 <translation id="8444433999583714703">Norėdami leisti „<ph name="APP_NAME" />“ pasiekti jūsų vietovę, taip pat įjunkite ją <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Anuliuoti įrenginio leidimą</translation>
+<translation id="8463843545738141778">Šis nustatymas išjungtas, nes „Android“ nustatymuose įjungėte Papildomą apsaugą.</translation>
 <translation id="8467359479529706065">Naujo skirtuko puslapio išvaizdos apatinis lapas atidarytas iki pusės ekrano aukščio</translation>
 <translation id="8471525937465764768">Paprastai svetainėse prisijungiama prie USB įrenginių vykdant tam tikras funkcijas, pvz., spausdinant dokumentą ar saugant saugyklos įrenginyje</translation>
 <translation id="8473055640493819707">„<ph name="APP_NAME" />“ pasenusi. Iš naujo įdiekite programą.</translation>

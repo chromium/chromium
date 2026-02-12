@@ -184,7 +184,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1289129165308566697">Ikusi historia beste gailu batzuetan</translation>
 <translation id="1292571435393770077">16. erretilua</translation>
 <translation id="1292701964462482250">"Ordenagailuan dagoen software batek ez dio uzten Chrome-ri sarera segurtasunez konektatzen" (Windows ordenagailuak soilik)</translation>
-<translation id="1293154089865862473">Ordainketa-prozesuaren orriko edukia Google-rekin partekatzen da aukera horiek eskaintzeko. Betetze automatikoan geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> atalera.</translation>
 <translation id="1293556467332435079">Fitxategiak</translation>
 <translation id="1293797321964802402">23 cm × 28 cm-ko gutun-azala</translation>
 <translation id="129553762522093515">Itxitako azkenak</translation>
@@ -1123,7 +1122,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2782088940970074970">Auto-alokairuak</translation>
 <translation id="278436560439594386">Etxetresnak</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">Ordainketa-prozesuaren orriko edukia Google-rekin partekatzen da aukera horiek eskaintzeko.</translation>
 <translation id="2784949926578158345">Konexioa berrezarri da.</translation>
 <translation id="2786008859124691917">Bizikletak eta osagarriak</translation>
 <translation id="2792012897584536778">Segurtasun-ziurtagiri batzuk konfiguratu dituzte gailu honen administratzaileek, bisitatzen dituzun webguneen edukia ikusteko aukera eman diezaieketenak.</translation>
@@ -2865,6 +2863,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5570825185877910964">Babestu kontua</translation>
 <translation id="5571083550517324815">Ezin da jaso helbide horretan. Hautatu beste helbide bat.</translation>
 <translation id="5572434905385510939">55,88 × 71,12 cm (22 × 28 in)</translation>
+<translation id="5573090972398558474">Zure erakundeak blokeatu egin du orri hau ezkutuko moduan.</translation>
 <translation id="5573641252776268565">Editatu pasaportea</translation>
 <translation id="5578606540385219379">Zerbitzu-hornitzaileak</translation>
 <translation id="5580958916614886209">Egiaztatu iraungitze-hilabetea eta saiatu berriro</translation>
@@ -4291,6 +4290,7 @@ Xehetasun gehiago:
 <translation id="7844689747373518809">{COUNT,plural, =0{Bat ere ez}=1{1 aplikazio (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikazio (<ph name="EXAMPLE_APP_1" /> eta <ph name="EXAMPLE_APP_2" />)}other{# aplikazio (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> eta<ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Errore bat gertatu da. Saiatu berriro.</translation>
 <translation id="784623644169604270">Ez dago jarduerarik azken aldian</translation>
+<translation id="7848926355794727168">Arakatze automatikoa</translation>
 <translation id="7853222852810008596">Geroago ordaintzeko aukera ez dago erabilgarri dibisa honetan</translation>
 <translation id="785476343534277563">Unibertsitateko kirolak</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>

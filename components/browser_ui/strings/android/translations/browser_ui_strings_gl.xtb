@@ -314,6 +314,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="4046123991198612571">Pista seguinte</translation>
 <translation id="4077310749977440510">Os sitios adoitan acceder ao portapapeis para ofrecerche determinadas funcións (por exemplo, conservar o formato do texto copiado)</translation>
 <translation id="4082080074595021446">Non se permiten excepcións para sitios web específicos porque o dispositivo Android non ten suficiente RAM.</translation>
+<translation id="4089304748532599471">Cambiaron algunhas opcións de configuración de Chrome</translation>
 <translation id="4149890623864272035">Seguro que queres eliminar todos os datos locais, incluídas as cookies, e restablecer todos os permisos deste sitio web?</translation>
 <translation id="4149994727733219643">Vista simplificada de páxinas web</translation>
 <translation id="4151930093518524179">Zoom predeterminado</translation>
@@ -349,6 +350,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="4478158430052450698">Fai que sexa máis fácil personalizar o zoom nos diferentes sitios</translation>
 <translation id="4479647676395637221">Pregunta antes de permitir que os sitios utilicen a túa cámara (recomendado)</translation>
 <translation id="4505788138578415521">URL despregado</translation>
+<translation id="4522570452068850558">Detalles</translation>
 <translation id="4523472416386354622">Inicia sesión para comezar</translation>
 <translation id="4534723447064627427">Para permitir que <ph name="APP_NAME" /> acceda ao micrófono, actívao tamén en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Silenciar micrófono</translation>
@@ -685,6 +687,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="8117244575099414087">Cando esta opción está activada, os sitios poden utilizar os sensores do dispositivo. Cando esta opción está desactivada, os sitios non poden utilizar os sensores do dispositivo.</translation>
 <translation id="813082847718468539">Consulta a información do sitio</translation>
 <translation id="8131740175452115882">Confirmar</translation>
+<translation id="8148160259207090265">Esta opción de configuración permanecerá activada sempre que tamén o estea Protección avanzada na configuración de Android.</translation>
 <translation id="8163152278172770963">Os sitios non poden acceder ao modo de pantalla superposta automaticamente</translation>
 <translation id="8168435359814927499">Contido</translation>
 <translation id="818487310457576362">Arrastra desde o lateral da pantalla para saír da pantalla completa.</translation>
@@ -714,6 +717,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="8441146129660941386">Buscar cara atrás</translation>
 <translation id="8444433999583714703">Para permitir que <ph name="APP_NAME" /> acceda á túa localización, actívaa tamén en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revoga o permiso do dispositivo</translation>
+<translation id="8463843545738141778">Esta opción de configuración está desactivada porque activaches Protección avanzada na configuración de Android.</translation>
 <translation id="8467359479529706065">Panel inferior do aspecto da páxina Nova pestana aberto a altura media</translation>
 <translation id="8471525937465764768">Os sitios adoitan conectarse aos dispositivos USB para ofrecerche determinadas funcións (por exemplo, imprimir documentos ou gardar información nun dispositivo de almacenamento)</translation>
 <translation id="8473055640493819707">A aplicación <ph name="APP_NAME" /> está desactualizada. Volve instalala.</translation>

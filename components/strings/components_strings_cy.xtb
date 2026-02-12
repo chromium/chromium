@@ -184,7 +184,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1289129165308566697">Gweld eich hanes ar ddyfeisiau eraill</translation>
 <translation id="1292571435393770077">Hambwrdd 16</translation>
 <translation id="1292701964462482250">"Mae meddalwedd ar eich cyfrifiadur yn atal Chrome rhag cysylltu'n ddiogel â'r we" (cyfrifiaduron Windows yn unig)</translation>
-<translation id="1293154089865862473">Mae cynnwys tudalen o'r dudalen dalu yn cael ei rannu â Google i gynnig yr opsiynau hyn. I guddio opsiynau talu'n ddiweddarach mewn awtolenwi, ewch i <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">Amlen Envelope 9 x 11 o fodfeddi</translation>
 <translation id="129553762522093515">Wedi'u cau'n ddiweddar</translation>
@@ -656,6 +655,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2071156619270205202">Nid yw'r cerdyn hwn yn gymwys i gael rhif cerdyn rhithwir.</translation>
 <translation id="2071852865256799872">Rheolir eich porwr gan eich sefydliad a rheolir eich proffil gan <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
+<translation id="2073286362006276165">Gwybodaeth wedi'i chadw i ddyfais yn unig</translation>
 <translation id="2074733626795553847">Dadrwystro <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Gwnaethoch Ymweld</translation>
 <translation id="2078956195623975415">Gemau Cerddoriaeth a Dawns</translation>
@@ -1123,7 +1123,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2782088940970074970">Rhentu Ceir</translation>
 <translation id="278436560439594386">Offer Cartref</translation>
 <translation id="2784474685437057136">B5 Ychwanegol</translation>
-<translation id="2784540996156451674">Mae cynnwys tudalen o'r dudalen dalu yn cael ei rannu â Google i gynnig yr opsiynau hyn.</translation>
 <translation id="2784949926578158345">Mae'r cysylltiad wedi'i ailosod.</translation>
 <translation id="2786008859124691917">Beiciau ac Ategolion</translation>
 <translation id="2792012897584536778">Mae gweinyddwyr y ddyfais hon wedi gosod tystysgrifau diogelwch a allai ganiatáu iddynt weld cynnwys y gwefannau rydych yn ymweld â nhw.</translation>
@@ -4900,6 +4899,7 @@ Manylion ychwanegol:
 <translation id="8858065207712248076">Mae Chrome yn argymell ailosod eich cyfrinair ar gyfer <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> os gwnaethoch ei ailddefnyddio ar wefannau eraill.</translation>
 <translation id="885906927438988819">Os yw'r sillafu'n gywir, <ph name="BEGIN_LINK" />rhowch gynnig ar redeg Diagnosteg Rhwydwaith Windows<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Celfyddydau Ffotograffig a Digidol</translation>
+<translation id="8861482055962701239">Ni fu modd cadw'r wybodaeth hon i'ch Google Wallet. Mae wedi'i gadw i Chrome ar y ddyfais hon yn lle hynny. Bydd Chrome yn cynnig ei gadw i Wallet y tro nesaf y byddwch yn ei ddefnyddio.</translation>
 <translation id="8863218129525348270">I dalu'n gyflymach y tro nesaf, cadwch eich cerdyn i'ch dyfais</translation>
 <translation id="8864939224504814334">Siwtiau a Gwisgoedd Busnes</translation>
 <translation id="8866132857352163524">Traciau sain</translation>
