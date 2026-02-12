@@ -36,6 +36,7 @@
 #include "cc/paint/paint_cache.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/paint_op_writer.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
 #include "cc/paint/transfer_cache_entry.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -3172,6 +3173,12 @@ void RasterDecoderImpl::DoCreateTransferCacheEntryINTERNAL(
   if (entry_type == cc::TransferCacheEntryType::kSkottie && !is_privileged_) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCreateTransferCacheEntryINTERNAL",
                        "Attempt to use skottie on a non privileged channel");
+    return;
+  }
+
+  if (data_shm_offset % cc::PaintOpWriter::kMaxAlignment != 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCreateTransferCacheEntryINTERNAL",
+                       "Transfer cache entry offset not aligned.");
     return;
   }
 
