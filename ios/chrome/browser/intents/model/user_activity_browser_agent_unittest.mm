@@ -215,10 +215,8 @@ class UserActivityBrowserAgentTest : public PlatformTest {
 TEST_F(UserActivityBrowserAgentTest,
        ProceedWithUserActivityWithIncognitoBrowser) {
   // UserActivityTypes to test.
-  NSArray* user_activity_types = @[
-    kShortcutNewIncognitoSearch, kSiriShortcutOpenInIncognito,
-    kShortcutLensFromSpotlight
-  ];
+  NSArray* user_activity_types =
+      @[ kShortcutNewIncognitoSearch, kSiriShortcutOpenInIncognito ];
 
   ForceIncognitoMode();
 
@@ -714,7 +712,6 @@ TEST_F(UserActivityBrowserAgentTest,
       kShortcutLensFromAppIconLongPress, @NO, @NO,
       @(START_LENS_FROM_APP_ICON_LONG_PRESS)
     ],
-    @[ kShortcutLensFromSpotlight, @NO, @NO, @(START_LENS_FROM_SPOTLIGHT) ]
   ];
 
   for (id parameters in parameters_to_test) {

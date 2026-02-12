@@ -80,7 +80,6 @@ NSArray* CompatibleModeForActivityType(NSString* activity_type) {
       [activity_type isEqualToString:kShortcutVoiceSearch] ||
       [activity_type isEqualToString:kShortcutQRScanner] ||
       [activity_type isEqualToString:kShortcutLensFromAppIconLongPress] ||
-      [activity_type isEqualToString:kShortcutLensFromSpotlight] ||
       [activity_type isEqualToString:kSiriShortcutAddBookmarkToChrome] ||
       [activity_type isEqualToString:kSiriShortcutAddReadingListItemToChrome] ||
       [activity_type isEqualToString:kSiriShortcutSearchInChrome] ||
@@ -548,8 +547,7 @@ BOOL UserActivityBrowserAgent::HandleShortcutItem(
 
   // Lens entry points should not open an extra new tab page.
   GURL startup_url =
-      ([shortcut_item.type isEqualToString:kShortcutLensFromAppIconLongPress] ||
-       [shortcut_item.type isEqualToString:kShortcutLensFromSpotlight])
+      [shortcut_item.type isEqualToString:kShortcutLensFromAppIconLongPress]
           ? GURL()
           : GURL(kChromeUINewTabURL);
 
@@ -593,12 +591,6 @@ BOOL UserActivityBrowserAgent::HandleShortcutItem(
     base::RecordAction(UserMetricsAction(
         "ApplicationShortcut.LensPressedFromAppIconLongPress"));
     startup_params.postOpeningAction = START_LENS_FROM_APP_ICON_LONG_PRESS;
-    connection_information_.startupParameters = startup_params;
-    return YES;
-  } else if ([shortcut_item.type isEqualToString:kShortcutLensFromSpotlight]) {
-    base::RecordAction(
-        UserMetricsAction("ApplicationShortcut.LensPressedFromSpotlight"));
-    startup_params.postOpeningAction = START_LENS_FROM_SPOTLIGHT;
     connection_information_.startupParameters = startup_params;
     return YES;
   } else if ([shortcut_item.type

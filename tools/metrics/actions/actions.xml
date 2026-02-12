@@ -5632,15 +5632,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="ApplicationShortcut.LensPressedFromSpotlight">
-  <owner>schechter@google.com</owner>
-  <owner>hujasonx@google.com</owner>
-  <description>
-    User tapped the Lens search option of Chrome for iOS from iOS Spotlight
-    search.
-  </description>
-</action>
-
 <action name="ApplicationShortcut.NewIncognitoSearchPressed">
   <owner>olivierrobin@chromium.org</owner>
   <description>

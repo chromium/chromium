@@ -19,8 +19,6 @@ extern NSString* const kShortcutVoiceSearch;
 extern NSString* const kShortcutQRScanner;
 // NSUserActivity for Open Lens from app icon long press intent.
 extern NSString* const kShortcutLensFromAppIconLongPress;
-// NSUserActivity for Open Lens from spotlight intent.
-extern NSString* const kShortcutLensFromSpotlight;
 // NSUserActivity for changing a widget to an app icon.
 extern NSString* const kShortcutChangeWidgetToAppIcon;
 
