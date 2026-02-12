@@ -62,14 +62,12 @@ def __step_config(ctx, step_config):
             "command_prefix": "python3 ../../build/android/gyp/write_build_config.py",
             "handler": "android_write_build_config",
             "remote": remote_run,
-            "canonicalize_dir": True,
             "timeout": "2m",
         },
         {
             "name": "android/ijar",
             "command_prefix": "python3 ../../build/android/gyp/ijar.py",
             "remote": remote_run,
-            "canonicalize_dir": True,
             "timeout": "2m",
         },
         {
@@ -97,7 +95,6 @@ def __step_config(ctx, step_config):
             ],
             "remote": remote_run and not config.get(ctx, "no-remote-javac"),
             "platform_ref": "large",
-            "canonicalize_dir": True,
             "timeout": "2m",
         },
         {
@@ -115,7 +112,6 @@ def __step_config(ctx, step_config):
                 "*.sql",
             ],
             "remote": remote_run,
-            "canonicalize_dir": True,
             "timeout": "5m",
         },
         {
@@ -139,7 +135,6 @@ def __step_config(ctx, step_config):
             "ignore_extra_output_pattern": ".*srcjars.*\\.java",
             "remote": remote_run and not config.get(ctx, "no-remote-javac"),
             "platform_ref": "large",
-            "canonicalize_dir": True,
             "timeout": "2m",
         },
         {
@@ -158,7 +153,6 @@ def __step_config(ctx, step_config):
             ],
             "remote": remote_run_static_analysis and not config.get(ctx, "no-remote-javac"),
             "platform_ref": "large",
-            "canonicalize_dir": True,
             # obj/chrome/android/chrome_java__errorprone.stamp step takes too
             # long.
             "timeout": "6m",
@@ -184,7 +178,6 @@ def __step_config(ctx, step_config):
             "ignore_extra_output_pattern": ".*srcjars.*\\.java",
             "remote": remote_run,
             "platform_ref": "large",
-            "canonicalize_dir": True,
             "timeout": "2m",
         },
         {
@@ -211,14 +204,12 @@ def __step_config(ctx, step_config):
             "ignore_extra_output_pattern": ".*\\.dex",
             "remote": remote_run,
             "platform_ref": "large",
-            "canonicalize_dir": True,
             "timeout": "2m",
         },
         {
             "name": "android/filter_zip",
             "command_prefix": "python3 ../../build/android/gyp/filter_zip.py",
             "remote": remote_run,
-            "canonicalize_dir": True,
             "timeout": "2m",
         },
         {
@@ -235,7 +226,6 @@ def __step_config(ctx, step_config):
             "name": "android/trace_event_bytecode_rewriter",
             "command_prefix": "python3 ../../build/android/gyp/trace_event_bytecode_rewriter.py",
             "handler": "android_trace_event_bytecode_rewriter",
-            "canonicalize_dir": True,
             "remote": remote_run,
             "platform_ref": "large",
             "timeout": "10m",
@@ -264,7 +254,6 @@ def __step_config(ctx, step_config):
                 "*.pak",
                 "*.sql",
             ],
-            "canonicalize_dir": True,
             "remote": remote_run,
             "platform_ref": "large",
             "timeout": "10m",
@@ -283,7 +272,6 @@ def __step_config(ctx, step_config):
                 "*.pak",
                 "*.sql",
             ],
-            "canonicalize_dir": True,
             "remote": remote_run_static_analysis,
             "platform_ref": "large",
             "timeout": "10m",

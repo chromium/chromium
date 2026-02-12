@@ -83,9 +83,6 @@ def __rules(ctx):
     input_root_absolute_path = gn_logs_data.get("clang_need_input_root_absolute_path") == "true"
     input_root_absolute_path_for_objc = gn_logs_data.get("clang_need_input_root_absolute_path_for_objc") == "true"
 
-    canonicalize_dir = not input_root_absolute_path
-    canonicalize_dir_for_objc = not input_root_absolute_path_for_objc
-
     # Remote linking with ThinLTO takes much longer.
     # Linking browser_tests takes 50m locally. On remote with gVisor,
     # it takes even more.
@@ -105,7 +102,6 @@ def __rules(ctx):
                 "exclude_input_patterns": ["*.stamp"],
                 "remote": True,
                 "input_root_absolute_path": input_root_absolute_path,
-                "canonicalize_dir": canonicalize_dir,
                 "timeout": "2m",
             },
             {
@@ -118,7 +114,6 @@ def __rules(ctx):
                 "exclude_input_patterns": ["*.stamp"],
                 "remote": True,
                 "input_root_absolute_path": input_root_absolute_path,
-                "canonicalize_dir": canonicalize_dir,
                 "timeout": "2m",
             },
             {
@@ -148,7 +143,6 @@ def __rules(ctx):
                 "remote": config.get(ctx, "remote-link"),
                 "platform_ref": "large",
                 "input_root_absolute_path": input_root_absolute_path,
-                "canonicalize_dir": canonicalize_dir,
                 "timeout": remote_link_timeout,
             },
             {
@@ -170,7 +164,6 @@ def __rules(ctx):
                 "remote": config.get(ctx, "remote-link"),
                 "platform_ref": "large",
                 "input_root_absolute_path": input_root_absolute_path,
-                "canonicalize_dir": canonicalize_dir,
                 "timeout": remote_link_timeout,
             },
             {
@@ -192,7 +185,6 @@ def __rules(ctx):
                 "remote": config.get(ctx, "remote-link"),
                 "platform_ref": "large",
                 "input_root_absolute_path": input_root_absolute_path,
-                "canonicalize_dir": canonicalize_dir,
                 "timeout": remote_link_timeout,
             },
         ])
@@ -208,7 +200,6 @@ def __rules(ctx):
             "exclude_input_patterns": ["*.stamp"],
             "remote": True,
             "input_root_absolute_path": input_root_absolute_path,
-            "canonicalize_dir": canonicalize_dir,
             "timeout": "2m",
         },
         {
@@ -221,7 +212,6 @@ def __rules(ctx):
             "exclude_input_patterns": ["*.stamp"],
             "remote": True,
             "input_root_absolute_path": input_root_absolute_path,
-            "canonicalize_dir": canonicalize_dir,
             "timeout": "2m",
         },
         {
@@ -234,7 +224,6 @@ def __rules(ctx):
             "exclude_input_patterns": ["*.stamp"],
             "remote": True,
             "input_root_absolute_path": input_root_absolute_path,
-            "canonicalize_dir": canonicalize_dir,
             "timeout": "2m",
         },
         {
@@ -248,7 +237,6 @@ def __rules(ctx):
             "remote": True,
             "timeout": "2m",
             "input_root_absolute_path": input_root_absolute_path_for_objc,
-            "canonicalize_dir": canonicalize_dir_for_objc,
         },
         {
             "name": "clang/objc",
@@ -261,7 +249,6 @@ def __rules(ctx):
             "remote": True,
             "timeout": "2m",
             "input_root_absolute_path": input_root_absolute_path_for_objc,
-            "canonicalize_dir": canonicalize_dir_for_objc,
         },
         {
             "name": "clang/asm",
@@ -272,7 +259,6 @@ def __rules(ctx):
             ],
             "remote": config.get(ctx, "cog"),
             "input_root_absolute_path": input_root_absolute_path,
-            "canonicalize_dir": canonicalize_dir,
             "timeout": "2m",
         },
         {
@@ -286,7 +272,6 @@ def __rules(ctx):
             "handler": "clang_compile_coverage",
             "remote": True,
             "input_root_absolute_path": input_root_absolute_path,
-            "canonicalize_dir": canonicalize_dir,
             "timeout": "2m",
         },
         {
@@ -300,7 +285,6 @@ def __rules(ctx):
             "handler": "clang_compile_coverage",
             "remote": True,
             "input_root_absolute_path": input_root_absolute_path,
-            "canonicalize_dir": canonicalize_dir,
             "timeout": "2m",
         },
         {
@@ -315,7 +299,6 @@ def __rules(ctx):
             "remote": True,
             "timeout": "2m",
             "input_root_absolute_path": input_root_absolute_path_for_objc,
-            "canonicalize_dir": canonicalize_dir_for_objc,
         },
         {
             "name": "clang-coverage/objc",
@@ -329,7 +312,6 @@ def __rules(ctx):
             "remote": True,
             "timeout": "2m",
             "input_root_absolute_path": input_root_absolute_path_for_objc,
-            "canonicalize_dir": canonicalize_dir_for_objc,
         },
         {
             "name": "clang/alink/llvm-ar",
@@ -348,7 +330,6 @@ def __rules(ctx):
             ],
             "handler": "lld_thin_archive",
             "remote": config.get(ctx, "remote-link"),
-            "canonicalize_dir": True,
             "timeout": "2m",
             "platform_ref": "large",
             "accumulate": True,
@@ -367,7 +348,6 @@ def __rules(ctx):
             ],
             "remote": config.get(ctx, "remote-link"),
             "restat_content": True,
-            "canonicalize_dir": True,
             "platform_ref": "large",
             "timeout": remote_link_timeout,
         },
@@ -384,7 +364,6 @@ def __rules(ctx):
                 "*.stamp",
             ],
             "remote": config.get(ctx, "remote-link"),
-            "canonicalize_dir": True,
             "platform_ref": "large",
             "timeout": remote_link_timeout,
         },
@@ -402,7 +381,6 @@ def __rules(ctx):
                 "*.stamp",
             ],
             "remote": config.get(ctx, "remote-link"),
-            "canonicalize_dir": True,
             "platform_ref": "large",
             "timeout": remote_link_timeout,
         },

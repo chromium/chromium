@@ -220,7 +220,6 @@ def __step_config(ctx, step_config):
             "handler": "rust_link_handler",
             "deps": "none",  # disable gcc scandeps
             "remote": remote_link,
-            "canonicalize_dir": True,
             "timeout": "2m",
             "platform_ref": platform_ref,
         },
@@ -232,7 +231,6 @@ def __step_config(ctx, step_config):
             "handler": "rust_link_handler",
             "deps": "none",  # disable gcc scandeps
             "remote": remote_link,
-            "canonicalize_dir": True,
             "timeout": "2m",
             "platform_ref": platform_ref,
         },
@@ -243,7 +241,6 @@ def __step_config(ctx, step_config):
             "indirect_inputs": rust_indirect_inputs,
             "handler": "rust_link_handler",
             "deps": "none",  # disable gcc scandeps
-            "canonicalize_dir": True,
             "remote": remote_link,
             "timeout": "2m",
             "platform_ref": platform_ref,
@@ -255,7 +252,6 @@ def __step_config(ctx, step_config):
             "indirect_inputs": rust_indirect_inputs,
             "deps": "none",  # disable gcc scandeps
             "remote": remote,
-            "canonicalize_dir": True,
             "timeout": "2m",
             "platform_ref": platform_ref,
         },
@@ -266,7 +262,6 @@ def __step_config(ctx, step_config):
             "indirect_inputs": rust_indirect_inputs,
             "deps": "none",  # disable gcc scandeps
             "remote": remote,
-            "canonicalize_dir": True,
             "timeout": "2m",
             "platform_ref": platform_ref,
         },
@@ -279,7 +274,6 @@ def __step_config(ctx, step_config):
             ],
             "handler": "rust_build_handler",
             "remote": remote and config.get(ctx, "cog"),
-            "canonicalize_dir": True,
             "timeout": "2m",
         },
         {
@@ -290,7 +284,6 @@ def __step_config(ctx, step_config):
                 "third_party/rust-toolchain/lib/rustlib:rlib",
             ],
             "remote": remote and config.get(ctx, "cog"),
-            "canonicalize_dir": True,
             "timeout": "2m",
         },
         {
