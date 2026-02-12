@@ -22,13 +22,17 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/core/css/counters_attachment_context.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/increment_load_event_delay_count.h"
+#include "third_party/blink/renderer/core/dom/parser_content_policy.h"
+#include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/xsl_style_sheet_resource.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -98,17 +102,53 @@ CharacterData* ProcessingInstruction::CloneWithData(Document& factory,
 }
 
 void ProcessingInstruction::DidAttributeChanged() {
+  attributes_dirty_ = true;
   if (sheet_) {
-    if (sheet_->IsLoading())
+    if (sheet_->IsLoading()) {
       RemovePendingSheet();
+    }
     ClearSheet();
   }
 
   String href;
   String charset;
-  if (!CheckStyleSheet(href, charset))
+  if (CheckStyleSheet(href, charset)) {
+    ProcessStylesheet(href, charset);
+  }
+}
+
+void ProcessingInstruction::ProcessAttributesIfNeeded() {
+  if (!attributes_dirty_) {
     return;
-  Process(href, charset);
+  }
+
+  attributes_dirty_ = false;
+  attributes_.clear();
+  StringBuilder fake_html;
+  fake_html.Append("<attrs ");
+  fake_html.Append(data_);
+  fake_html.Append("></attrs>");
+  const DocumentFragment* fragment = CreateFragmentFromMarkup(
+      GetDocument(), fake_html.ToString(), GetDocument().BaseURL(),
+      ParserContentPolicy::kDisallowScriptingAndPluginContent);
+  const Node* first = fragment->firstChild();
+  if (!first || first->HasNextSibling() || !first->IsElementNode()) {
+    return;
+  }
+
+  const Element& fake_element = To<Element>(*first);
+
+  CHECK_EQ(fake_element.localName(), "attrs");
+
+  for (const auto& attribute : fake_element.Attributes()) {
+    attributes_.insert(attribute.LocalName(), attribute.Value());
+  }
+}
+
+String ProcessingInstruction::GetAttribute(const String& name) {
+  ProcessAttributesIfNeeded();
+  const auto it = attributes_.find(name);
+  return it == attributes_.end() ? String() : it->value;
 }
 
 bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
@@ -188,7 +228,8 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
   return !alternate_ || !title_.empty();
 }
 
-void ProcessingInstruction::Process(const String& href, const String& charset) {
+void ProcessingInstruction::ProcessStylesheet(const String& href,
+                                              const String& charset) {
   if (IsLocalSheet(href)) {
     local_href_ = href.Substring(1);
     // We need to make a synthetic XSLStyleSheet that is embedded.
@@ -309,7 +350,7 @@ Node::InsertionNotificationRequest ProcessingInstruction::InsertedInto(
                                                                this))
     GetDocument().GetStyleEngine().AddStyleSheetCandidateNode(*this);
   if (is_valid)
-    Process(href, charset);
+    ProcessStylesheet(href, charset);
   return kInsertionDone;
 }
 

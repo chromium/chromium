@@ -2108,6 +2108,7 @@
       status: {
         "default": "test",
       },
+      depends_on: ["HTMLProcessingInstruction"],
     },
     {
       name: "DocumentPictureInPictureAPI",

@@ -68,6 +68,8 @@ class CORE_EXPORT ProcessingInstruction final : public CharacterData,
   EventListener* EventListenerForXSLT();
   void ClearEventListenerForXSLT();
 
+  String GetAttribute(const String& name);
+
  private:
   String nodeName() const override;
   CharacterData* CloneWithData(Document&, const String&) const override;
@@ -76,8 +78,9 @@ class CORE_EXPORT ProcessingInstruction final : public CharacterData,
   void RemovedFrom(ContainerNode&) override;
   void DetachLayoutTree(bool performing_reattach) final {}
 
+  void ProcessAttributesIfNeeded();
   bool CheckStyleSheet(String& href, String& charset);
-  void Process(const String& href, const String& charset);
+  void ProcessStylesheet(const String& href, const String& charset);
 
   void NotifyFinished(Resource*) override;
 
@@ -100,6 +103,8 @@ class CORE_EXPORT ProcessingInstruction final : public CharacterData,
   bool is_xsl_;
 
   Member<DetachableEventListener> listener_for_xslt_;
+  HashMap<String, String> attributes_;
+  bool attributes_dirty_ = true;
 };
 
 template <>
