@@ -514,9 +514,11 @@ public class SettingsSearchCoordinator
     @Initializer
     @EnsuresNonNull("mIndexData")
     private void initIndex() {
-        if (mIndexData == null) {
+        SettingsIndexData indexData = SettingsIndexData.getInstance();
+        if (indexData == null) {
             mIndexData = SettingsIndexData.createInstance();
         } else {
+            mIndexData = indexData;
             if (!mIndexData.needsIndexing()) return;
         }
 
