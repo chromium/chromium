@@ -160,15 +160,6 @@ constexpr float kHeading3FontSizeMultiplier = 1.17;
 constexpr float kHeading5FontSizeMultiplier = 0.83;
 constexpr float kHeading6FontSizeMultiplier = 0.67;
 
-ListBasedHitTestBehavior CollectHitTestNodes(std::vector<DOMNodeId>& hit_nodes,
-                                             const Node& node,
-                                             DOMNodeId dom_node_id) {
-  if (node.GetLayoutObject()) {
-    hit_nodes.push_back(dom_node_id);
-  }
-  return kContinueHitTesting;
-}
-
 // Computes the visible portion of a LayoutObject's bounding box.
 //
 // This function calculates what part of the object is actually visible in the
@@ -2334,57 +2325,33 @@ void AIPageContentAgent::ContentBuilder::ComputeHitTestableNodesInViewport(
                                                     kMapToViewportFlags);
   HitTestLocation location(local_visible_viewport_rect);
 
-  std::vector<DOMNodeId> hit_nodes;
-  HitTestRequest::HitNodeCb hit_node_cb =
-      BindRepeating(&CollectHitTestNodes, std::ref(hit_nodes));
-  HitTestRequest request(
-      HitTestRequest::kReadOnly | HitTestRequest::kActive |
-          HitTestRequest::kListBased | HitTestRequest::kPenetratingList |
-          HitTestRequest::kAvoidCache | HitTestRequest::kHitNodeCbWithId,
-      nullptr, std::move(hit_node_cb));
+  HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
+                             HitTestRequest::kListBased |
+                             HitTestRequest::kPenetratingList |
+                             HitTestRequest::kAvoidCache,
+                         nullptr);
   HitTestResult result(request, location);
   document.GetLayoutView()->HitTest(location, result);
 
-  // TODO(averge): At this point, hit_nodes may contain duplicates due to
-  // multiple passes over the same node while hit testing. These need to
-  // be filtered out. The most correct approach is probably to keep the first
-  // occurrence of each node, because it's more likely it was added in a later
-  // paint phase, which is more representative of what the page actually looks
-  // like to the user (or actor).
-  //
-  // result.ListBasedTestResult() already returns a NodeSet with predictable
-  // iteration order based on order of insertion, which is a fancy way of saying
-  // it already handles duplicates in exactly the way we need. We should eval
-  // using the NodeSet result directly, and if we see improvement, remove
-  // hit_nodes and the associated callback entirely.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAIPageContentZOrderEarlyFiltering)) {
-    std::vector<DOMNodeId> nodes_from_result;
-    for (auto& gc_member : result.ListBasedTestResult()) {
-      Node& node = *gc_member;
-      if (node.GetLayoutObject()) {
-        nodes_from_result.push_back(DOMNodeIds::IdForNode(&node));
-      }
-    }
-
-    hit_nodes = nodes_from_result;
-  }
-
   int32_t next_z_order = 1;
-  for (DOMNodeId node_id : base::Reversed(hit_nodes)) {
-    if (dom_node_to_z_order_.Contains(node_id)) {
+  // Use the list-based NodeSet directly to preserve insertion-order semantics
+  // and duplicate filtering while avoiding intermediate storage.
+  for (const auto& member_node : base::Reversed(result.ListBasedTestResult())) {
+    Node* node = member_node.Get();
+    CHECK(node);
+    if (!node->GetLayoutObject()) {
       continue;
     }
-
-    auto* node = DOMNodeIds::NodeForId(node_id);
-    CHECK(node);
+    if (dom_node_to_z_order_.Contains(node)) {
+      continue;
+    }
 
     if (!node->IsDocumentNode() &&
         !document.ElementForHitTest(node,
                                     TreeScope::HitTestPointType::kInternal)) {
       continue;
     }
-    dom_node_to_z_order_.insert(node_id, next_z_order++);
+    dom_node_to_z_order_.insert(node, next_z_order++);
   }
 }
 
@@ -2569,12 +2536,7 @@ void AIPageContentAgent::ContentBuilder::AddInteractionInfoForHitTesting(
     return;
   }
 
-  DOMNodeId dom_node_id = DOMNodeIds::ExistingIdForNode(node);
-  if (dom_node_id <= kInvalidDOMNodeId) {
-    return;
-  }
-
-  auto it = dom_node_to_z_order_.find(dom_node_id);
+  auto it = dom_node_to_z_order_.find(node);
   if (it != dom_node_to_z_order_.end()) {
     interaction_info.document_scoped_z_order = it->value;
   }

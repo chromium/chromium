@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_log.h"
-#include "base/test/with_feature_override.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -6088,16 +6087,9 @@ TEST_F(AIPageContentAgentTest, CSSHoverPseudoClassNotInherited) {
 }
 
 // Tests hit-testing and z-order computations for AIPageContentAgent.
-class AIPageContentAgentTestZOrder : public base::test::WithFeatureOverride,
-                                     public AIPageContentAgentTest {
- public:
-  AIPageContentAgentTestZOrder()
-      : base::test::WithFeatureOverride(
-            blink::features::kAIPageContentZOrderEarlyFiltering) {}
-  ~AIPageContentAgentTestZOrder() override = default;
-};
+class AIPageContentAgentTestZOrder : public AIPageContentAgentTest {};
 
-TEST_P(AIPageContentAgentTestZOrder, HitTestElementsBasic) {
+TEST_F(AIPageContentAgentTestZOrder, HitTestElementsBasic) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
       "<body>"
@@ -6127,79 +6119,39 @@ TEST_P(AIPageContentAgentTestZOrder, HitTestElementsBasic) {
       body.content_attributes->node_interaction_info->document_scoped_z_order,
       3);
 
-  if (IsParamFeatureEnabled()) {
-    // When relying directly on the hit test result for z order, the tree should
-    // look as follows, with the given z order. This is consistent with "tree
-    // order" depth-first traversal as defined in the CSS spec:
-    // https://www.w3.org/TR/CSS2/zindex.html
-    // root - 1
-    // |_html - 2
-    //    |_body - 3
-    //      |_p - 4
-    //      | |_Text1 - 5
-    //      |_p - 6
-    //        |_Text2 - 7
-    ASSERT_EQ(body.children_nodes.size(), 2u);
-    const auto& p1 = *body.children_nodes.at(0);
-    EXPECT_EQ(
-        p1.content_attributes->node_interaction_info->document_scoped_z_order,
-        4);
+  // The tree should look as follows, with the given z order.
+  // root - 1
+  // |_html - 2
+  //    |_body - 3
+  //      |_p - 4
+  //      | |_Text1 - 5
+  //      |_p - 6
+  //        |_Text2 - 7
+  ASSERT_EQ(body.children_nodes.size(), 2u);
+  const auto& p1 = *body.children_nodes.at(0);
+  EXPECT_EQ(
+      p1.content_attributes->node_interaction_info->document_scoped_z_order, 4);
 
-    ASSERT_EQ(p1.children_nodes.size(), 1u);
-    const auto& text1 = *p1.children_nodes.at(0);
-    CheckTextNode(text1, "Text 1");
-    EXPECT_EQ(text1.content_attributes->node_interaction_info
-                  ->document_scoped_z_order,
-              5);
+  const auto& p2 = *body.children_nodes.at(1);
+  EXPECT_EQ(
+      p2.content_attributes->node_interaction_info->document_scoped_z_order, 6);
 
-    const auto& p2 = *body.children_nodes.at(1);
-    EXPECT_EQ(
-        p2.content_attributes->node_interaction_info->document_scoped_z_order,
-        6);
+  ASSERT_EQ(p1.children_nodes.size(), 1u);
+  const auto& text1 = *p1.children_nodes.at(0);
+  CheckTextNode(text1, "Text 1");
+  EXPECT_EQ(
+      text1.content_attributes->node_interaction_info->document_scoped_z_order,
+      5);
 
-    ASSERT_EQ(p2.children_nodes.size(), 1u);
-    const auto& text2 = *p2.children_nodes.at(0);
-    CheckTextNode(text2, "Text 2");
-    EXPECT_EQ(text2.content_attributes->node_interaction_info
-                  ->document_scoped_z_order,
-              7);
-  } else {
-    // The tree should look as follows, with the given z order.
-    // root - 1
-    // |_html - 2
-    //    |_body - 3
-    //      |_p - 4
-    //      | |_Text1 - 6
-    //      |_p - 5
-    //        |_Text2 - 7
-    ASSERT_EQ(body.children_nodes.size(), 2u);
-    const auto& p1 = *body.children_nodes.at(0);
-    EXPECT_EQ(
-        p1.content_attributes->node_interaction_info->document_scoped_z_order,
-        4);
-
-    const auto& p2 = *body.children_nodes.at(1);
-    EXPECT_EQ(
-        p2.content_attributes->node_interaction_info->document_scoped_z_order,
-        5);
-
-    ASSERT_EQ(p1.children_nodes.size(), 1u);
-    const auto& text1 = *p1.children_nodes.at(0);
-    CheckTextNode(text1, "Text 1");
-    EXPECT_EQ(text1.content_attributes->node_interaction_info
-                  ->document_scoped_z_order,
-              6);
-
-    ASSERT_EQ(p2.children_nodes.size(), 1u);
-    const auto& text2 = *p2.children_nodes.at(0);
-    CheckTextNode(text2, "Text 2");
-    EXPECT_EQ(text2.content_attributes->node_interaction_info
-                  ->document_scoped_z_order,
-              7);
-  }
+  ASSERT_EQ(p2.children_nodes.size(), 1u);
+  const auto& text2 = *p2.children_nodes.at(0);
+  CheckTextNode(text2, "Text 2");
+  EXPECT_EQ(
+      text2.content_attributes->node_interaction_info->document_scoped_z_order,
+      7);
 }
 
-TEST_P(AIPageContentAgentTestZOrder, HitTestElementsFixedPos) {
+TEST_F(AIPageContentAgentTestZOrder, HitTestElementsFixedPos) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
       "<body>"
@@ -6229,7 +6181,7 @@ TEST_P(AIPageContentAgentTestZOrder, HitTestElementsFixedPos) {
       p2.content_attributes->node_interaction_info->document_scoped_z_order, 4);
 }
 
-TEST_P(AIPageContentAgentTestZOrder, HitTestElementsPointerNone) {
+TEST_F(AIPageContentAgentTestZOrder, HitTestElementsPointerNone) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
       "<body>"
@@ -6252,7 +6204,7 @@ TEST_P(AIPageContentAgentTestZOrder, HitTestElementsPointerNone) {
       p2.content_attributes->node_interaction_info->document_scoped_z_order);
 }
 
-TEST_P(AIPageContentAgentTestZOrder, HitTestElementsOffscreen) {
+TEST_F(AIPageContentAgentTestZOrder, HitTestElementsOffscreen) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
       "<body>"
@@ -6272,7 +6224,7 @@ TEST_P(AIPageContentAgentTestZOrder, HitTestElementsOffscreen) {
   EXPECT_FALSE(interaction_info.document_scoped_z_order);
 }
 
-TEST_P(AIPageContentAgentTestZOrder, HitTestElementsIframe) {
+TEST_F(AIPageContentAgentTestZOrder, HitTestElementsIframe) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
       R"HTML(
@@ -6301,19 +6253,12 @@ TEST_P(AIPageContentAgentTestZOrder, HitTestElementsIframe) {
   ASSERT_TRUE(
       p.content_attributes->node_interaction_info->document_scoped_z_order);
 
-  if (IsParamFeatureEnabled()) {
-    // If we're respecting tree-order traversal when computing z-order, the
-    // iframe will have a lower z-order because it is the first child.
-    EXPECT_LT(
-        *iframe.content_attributes->node_interaction_info
-             ->document_scoped_z_order,
-        *p.content_attributes->node_interaction_info->document_scoped_z_order);
-  } else {
-    EXPECT_GT(
-        *iframe.content_attributes->node_interaction_info
-             ->document_scoped_z_order,
-        *p.content_attributes->node_interaction_info->document_scoped_z_order);
-  }
+  // If we're respecting tree-order traversal when computing z-order, the
+  // iframe will have a lower z-order because it is the first child.
+  EXPECT_LT(
+      *iframe.content_attributes->node_interaction_info
+           ->document_scoped_z_order,
+      *p.content_attributes->node_interaction_info->document_scoped_z_order);
 
   ASSERT_EQ(iframe.children_nodes.size(), 1u);
   const auto& doc_inside_iframe = *iframe.children_nodes.at(0);
@@ -6325,7 +6270,7 @@ TEST_P(AIPageContentAgentTestZOrder, HitTestElementsIframe) {
             1);
 }
 
-TEST_P(AIPageContentAgentTestZOrder, OverflowHiddenGeometry) {
+TEST_F(AIPageContentAgentTestZOrder, OverflowHiddenGeometry) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
       "<body>"
@@ -6351,7 +6296,7 @@ TEST_P(AIPageContentAgentTestZOrder, OverflowHiddenGeometry) {
   CheckGeometry(*article, gfx::Rect(8, 8, 50, 300), gfx::Rect(8, 8, 50, 100));
 }
 
-TEST_P(AIPageContentAgentTestZOrder, OverflowVisibleGeometry) {
+TEST_F(AIPageContentAgentTestZOrder, OverflowVisibleGeometry) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
       "<body>"
@@ -6377,7 +6322,7 @@ TEST_P(AIPageContentAgentTestZOrder, OverflowVisibleGeometry) {
   CheckGeometry(*article, gfx::Rect(8, 8, 50, 300), gfx::Rect(8, 8, 50, 300));
 }
 
-TEST_P(AIPageContentAgentTestZOrder, HitTestElementsRelativePos) {
+TEST_F(AIPageContentAgentTestZOrder, HitTestElementsRelativePos) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
       "<body>"
@@ -6406,7 +6351,7 @@ TEST_P(AIPageContentAgentTestZOrder, HitTestElementsRelativePos) {
   CheckGeometry(*article, gfx::Rect(158, 8, 50, 50), gfx::Rect());
 }
 
-TEST_P(AIPageContentAgentTestZOrder, LabelWithText) {
+TEST_F(AIPageContentAgentTestZOrder, LabelWithText) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
       "<body style='margin:0; font:1px/1px Ahem'>"
@@ -6434,7 +6379,7 @@ TEST_P(AIPageContentAgentTestZOrder, LabelWithText) {
   CheckGeometry(text, gfx::Rect(0, 0, 3, 1), gfx::Rect(0, 0, 3, 1));
 }
 
-TEST_P(AIPageContentAgentTestZOrder, HitTestElementsAnchorWithSpanParent) {
+TEST_F(AIPageContentAgentTestZOrder, HitTestElementsAnchorWithSpanParent) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
       R"HTML(
@@ -6473,104 +6418,51 @@ TEST_P(AIPageContentAgentTestZOrder, HitTestElementsAnchorWithSpanParent) {
       3);
   ASSERT_EQ(body.children_nodes.size(), 1u);
 
-  if (IsParamFeatureEnabled()) {
-    // When filtering for duplicate hit test nodes early, the resulting z-order
-    // will follow "tree order", which is depth-first. The resulting tree with
-    // corresponding z-order will be:
-    // root - 1
-    // |_html - 2
-    //    |_body - 3
-    //      |_span - 4
-    //        |_a - 5
-    //          |_span - 6
-    //          | |_text - 7
-    //          |_div - 8
-    //            |_text - 9
+  // The resulting tree with corresponding z-order is:
+  // root - 1
+  // |_html - 2
+  //    |_body - 3
+  //      |_span - 4
+  //        |_a - 5
+  //          |_span - 6
+  //          | |_text - 7
+  //          |_div - 8
+  //            |_text - 9
 
-    const auto& target_span = *body.children_nodes.at(0);
-    EXPECT_EQ(target_span.content_attributes->node_interaction_info
-                  ->document_scoped_z_order,
-              4);
-    ASSERT_EQ(target_span.children_nodes.size(), 1u);
+  const auto& target_span = *body.children_nodes.at(0);
+  EXPECT_EQ(target_span.content_attributes->node_interaction_info
+                ->document_scoped_z_order,
+            4);
+  ASSERT_EQ(target_span.children_nodes.size(), 1u);
 
-    const auto& anchor = *target_span.children_nodes.at(0);
-    EXPECT_EQ(anchor.content_attributes->node_interaction_info
-                  ->document_scoped_z_order,
-              5);
-    ASSERT_EQ(anchor.children_nodes.size(), 2u);
+  const auto& anchor = *target_span.children_nodes.at(0);
+  EXPECT_EQ(
+      anchor.content_attributes->node_interaction_info->document_scoped_z_order,
+      5);
+  ASSERT_EQ(anchor.children_nodes.size(), 2u);
 
-    const auto& inner_span = *anchor.children_nodes.at(0);
-    EXPECT_EQ(inner_span.content_attributes->node_interaction_info
-                  ->document_scoped_z_order,
-              6);
-    ASSERT_EQ(inner_span.children_nodes.size(), 1u);
+  const auto& inner_span = *anchor.children_nodes.at(0);
+  EXPECT_EQ(inner_span.content_attributes->node_interaction_info
+                ->document_scoped_z_order,
+            6);
+  ASSERT_EQ(inner_span.children_nodes.size(), 1u);
 
-    const auto& span_text = *inner_span.children_nodes.at(0);
-    EXPECT_EQ(span_text.content_attributes->node_interaction_info
-                  ->document_scoped_z_order,
-              7);
+  const auto& span_text = *inner_span.children_nodes.at(0);
+  EXPECT_EQ(span_text.content_attributes->node_interaction_info
+                ->document_scoped_z_order,
+            7);
 
-    const auto& inner_div = *anchor.children_nodes.at(1);
-    EXPECT_EQ(inner_div.content_attributes->node_interaction_info
-                  ->document_scoped_z_order,
-              8);
-    ASSERT_EQ(inner_div.children_nodes.size(), 1u);
+  const auto& inner_div = *anchor.children_nodes.at(1);
+  EXPECT_EQ(inner_div.content_attributes->node_interaction_info
+                ->document_scoped_z_order,
+            8);
+  ASSERT_EQ(inner_div.children_nodes.size(), 1u);
 
-    const auto& div_text = *inner_div.children_nodes.at(0);
-    EXPECT_EQ(div_text.content_attributes->node_interaction_info
-                  ->document_scoped_z_order,
-              9);
-  } else {
-    // When we don't filter for duplicate hit test nodes early, the span
-    // containers will be included multiple times, causing tree order to be
-    // violated. The resulting tree with corresponding z-order will be:
-    // root - 1
-    // |_html - 2
-    //    |_body - 3
-    //      |_span - 6
-    //        |_a - 4
-    //          |_span - 7
-    //          | |_text - 8
-    //          |_div - 5
-    //            |_text - 9
-
-    const auto& target_span = *body.children_nodes.at(0);
-    EXPECT_EQ(target_span.content_attributes->node_interaction_info
-                  ->document_scoped_z_order,
-              6);
-    ASSERT_EQ(target_span.children_nodes.size(), 1u);
-
-    const auto& anchor = *target_span.children_nodes.at(0);
-    EXPECT_EQ(anchor.content_attributes->node_interaction_info
-                  ->document_scoped_z_order,
-              4);
-    ASSERT_EQ(anchor.children_nodes.size(), 2u);
-
-    const auto& inner_span = *anchor.children_nodes.at(0);
-    EXPECT_EQ(inner_span.content_attributes->node_interaction_info
-                  ->document_scoped_z_order,
-              7);
-    ASSERT_EQ(inner_span.children_nodes.size(), 1u);
-
-    const auto& span_text = *inner_span.children_nodes.at(0);
-    EXPECT_EQ(span_text.content_attributes->node_interaction_info
-                  ->document_scoped_z_order,
-              8);
-
-    const auto& inner_div = *anchor.children_nodes.at(1);
-    EXPECT_EQ(inner_div.content_attributes->node_interaction_info
-                  ->document_scoped_z_order,
-              5);
-    ASSERT_EQ(inner_div.children_nodes.size(), 1u);
-
-    const auto& div_text = *inner_div.children_nodes.at(0);
-    EXPECT_EQ(div_text.content_attributes->node_interaction_info
-                  ->document_scoped_z_order,
-              9);
-  }
+  const auto& div_text = *inner_div.children_nodes.at(0);
+  EXPECT_EQ(div_text.content_attributes->node_interaction_info
+                ->document_scoped_z_order,
+            9);
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AIPageContentAgentTestZOrder);
 
 TEST_F(AIPageContentAgentTest, LinkWithOverflowGeometry) {
   frame_test_helpers::LoadHTMLString(

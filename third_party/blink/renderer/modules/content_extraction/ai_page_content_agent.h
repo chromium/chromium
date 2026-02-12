@@ -202,8 +202,8 @@ class MODULES_EXPORT AIPageContentAgent final
     const raw_ref<const mojom::blink::AIPageContentOptions> options_;
     const AIPageContentAgent& agent_;
 
-    HashMap<DOMNodeId, int32_t, IntWithZeroKeyHashTraits<DOMNodeId>>
-        dom_node_to_z_order_;
+    // Keyed by Node identity within a single extraction pass.
+    HeapHashMap<Member<const Node>, int32_t> dom_node_to_z_order_;
 
     // Whether the stack depth has exceeded the max tree depth.
     bool stack_depth_exceeded_ = false;
