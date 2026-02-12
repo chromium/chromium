@@ -543,6 +543,25 @@ suite('ContentController', () => {
       assertEquals(buttonText, root.textContent);
     });
 
+    test(
+        'builds a button as a <div> tag when Readability enabled', async () => {
+          chrome.readingMode.isReadabilityEnabled = true;
+          chrome.readingMode.activeDistillationMethod =
+              chrome.readingMode.distillationTypeReadability;
+          const buttonText = 'Buttons should be seen and not clicked';
+          contentController.configureTrustedTypes();
+          readingMode.htmlContent = `<button>${buttonText}</button>`;
+
+          const root = contentController.updateContent();
+          await microtasksFinished();
+
+          assertTrue(!!root);
+          assertFalse(!!(root as DocumentFragment).querySelector('button'));
+          const newDiv = (root as DocumentFragment).querySelector('div > div');
+          assertTrue(!!newDiv);
+          assertEquals(buttonText, newDiv.textContent);
+        });
+
     test('sets text direction', () => {
       const childId = 70;
       readingMode.getHtmlTag = (id) => {
