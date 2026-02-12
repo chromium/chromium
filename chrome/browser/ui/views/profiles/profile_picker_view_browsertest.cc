@@ -252,12 +252,29 @@ std::u16string GetSigninErrorDialogBodyText(
   // Assert that the button exists before trying to click it.
   EXPECT_TRUE(
       content::EvalJs(web_contents, base::StrCat({"!!", button_selector}))
-          .ExtractBool())
-      << "OK button not found in sign-in error dialog.";
+          .ExtractBool());
 
   return content::ExecJs(web_contents,
                          base::StrCat({button_selector, ".click()"}));
 }
+
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+::testing::AssertionResult ClickSigninErrorDialogReauthButton(
+    content::WebContents* web_contents) {
+  const std::string button_selector = base::StrCat(
+      {kSigninErrorDialogPath,
+       ".querySelector('.button-container').querySelector('#button-sign-in')"});
+  // Assert that the button exists before trying to click it.
+  EXPECT_TRUE(
+      content::EvalJs(web_contents, base::StrCat({"!!", button_selector}))
+          .ExtractBool());
+  EXPECT_FALSE(
+      content::EvalJs(web_contents, base::StrCat({button_selector, ".hidden"}))
+          .ExtractBool());
+  return content::ExecJs(web_contents,
+                         base::StrCat({button_selector, ".click()"}));
+}
+#endif // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 
 AccountInfo FillAccountInfo(
     const CoreAccountInfo& core_info,
@@ -1687,6 +1704,12 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
   histogram_tester()->ExpectUniqueSample(
       kReauthResultHistogramName, ProfilePickerReauthResult::kErrorUsedNewEmail,
       1);
+
+  // Expect that the system displays an error dialog that offers a visible
+  // reauth button .
+  EXPECT_TRUE(ClickSigninErrorDialogReauthButton(web_contents()));
+  EXPECT_FALSE(IsSigninErrorDialogShown(web_contents()));
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), initial_browser_count);
 }
 
 // Test in two parts:
@@ -1959,7 +1982,7 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTestWithPRE,
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     ForceSigninProfilePickerCreationFlowBrowserTestWithPRE);
 
-#endif
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 
 // Regression test for crbug.com/1266415.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
