@@ -83,6 +83,8 @@ enum ProcessFilesError {
   FILE_TOO_LARGE = 2,
   FILE_EMPTY = 3,
   MAX_FILES_EXCEEDED = 4,
+  MAX_IMAGES_EXCEEDED = 5,
+  MAX_PDFS_EXCEEDED = 6,
 }
 
 
@@ -728,11 +730,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         {uuid: e.detail.uuid, fromAutoSuggestedChip: fromAutoSuggestedChip});
   }
 
-  private handleProcessFilesError_(error: ProcessFilesError) {
-    if (error === ProcessFilesError.NONE) {
-      return;
-    }
-
+  private getProcessFilesErrorData_(error: ProcessFilesError):
+      {metric: ComposeboxFileValidationError, errorMessage: string} {
     let metric = ComposeboxFileValidationError.NONE;
     let errorMessage = '';
 
@@ -740,6 +739,14 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       case ProcessFilesError.MAX_FILES_EXCEEDED:
         metric = ComposeboxFileValidationError.TOO_MANY_FILES;
         errorMessage = 'maxFilesReachedError';
+        break;
+      case ProcessFilesError.MAX_IMAGES_EXCEEDED:
+        metric = ComposeboxFileValidationError.TOO_MANY_FILES;
+        errorMessage = 'maxImagesReachedError';
+        break;
+      case ProcessFilesError.MAX_PDFS_EXCEEDED:
+        metric = ComposeboxFileValidationError.TOO_MANY_FILES;
+        errorMessage = 'maxPdfsReachedError';
         break;
       case ProcessFilesError.FILE_EMPTY:
         metric = ComposeboxFileValidationError.FILE_EMPTY;
@@ -756,6 +763,15 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         break;
     }
 
+    return {metric, errorMessage};
+  }
+
+  private handleProcessFilesError_(error: ProcessFilesError) {
+    if (error === ProcessFilesError.NONE) {
+      return;
+    }
+
+    const {metric, errorMessage} = this.getProcessFilesErrorData_(error);
     this.recordFileValidationMetric_(metric);
     if (this.contextMenuEnabled_) {
       this.$.contextEntrypoint.closeMenu();
@@ -770,6 +786,30 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         this.isMimeTypeAllowed_(fileType, this.attachmentFileTypes_);
   }
 
+  private getInputType_(type: string): InputType {
+    if (type === 'tab') {
+      return InputType.kBrowserTab;
+    }
+    if (type === 'image') {
+      return InputType.kLensImage;
+    }
+    if (type === 'pdf') {
+      return InputType.kLensFile;
+    }
+
+    if (this.imageFileTypes_.some(t => {
+          if (t.endsWith('/*')) {
+            const prefix = t.slice(0, -1);
+            return type.startsWith(prefix);
+          }
+          return type === t;
+        })) {
+      return InputType.kLensImage;
+    }
+
+    return InputType.kLensFile;
+  }
+
   protected processFiles_(files: FileList|null) {
     if (!files || files.length === 0) {
       return;
@@ -778,7 +818,24 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     const filesToUpload: File[] = [];
     let errorToDisplay = ProcessFilesError.NONE;
 
-    if (this.files_.size + files.length > this.maxFileCount_) {
+    const counts = new Map<InputType, number>();
+    counts.set(InputType.kLensImage, 0);
+    counts.set(InputType.kLensFile, 0);
+    counts.set(InputType.kBrowserTab, 0);
+
+    for (const file of this.files_.values()) {
+      const type = this.getInputType_(file.type);
+      counts.set(type, (counts.get(type) || 0) + 1);
+    }
+
+    let totalCount = this.files_.size;
+
+    let maxTotal = this.maxFileCount_;
+    if (this.inputState && this.inputState.maxTotalInputs > 0) {
+      maxTotal = this.inputState.maxTotalInputs;
+    }
+
+    if (totalCount + files.length > maxTotal) {
       errorToDisplay = ProcessFilesError.MAX_FILES_EXCEEDED;
     }
 
@@ -796,16 +853,53 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         continue;
       }
 
-      if ((this.files_.size + filesToUpload.length) < this.maxFileCount_) {
+      const inputType = this.getInputType_(file.type);
+      let maxType = maxTotal;
+      if (this.inputState &&
+          this.inputState.maxInstances[inputType] !== undefined) {
+        maxType = this.inputState.maxInstances[inputType];
+      }
+
+      const currentTypeCount = counts.get(inputType) || 0;
+
+      if (totalCount < maxTotal && currentTypeCount < maxType) {
         filesToUpload.push(file);
+        totalCount++;
+        counts.set(inputType, currentTypeCount + 1);
+      } else {
+        if (currentTypeCount >= maxType) {
+          switch (inputType) {
+            case InputType.kLensImage:
+              errorToDisplay = ProcessFilesError.MAX_IMAGES_EXCEEDED;
+              break;
+            case InputType.kLensFile:
+              errorToDisplay = ProcessFilesError.MAX_PDFS_EXCEEDED;
+              break;
+            default:
+              errorToDisplay = ProcessFilesError.MAX_FILES_EXCEEDED;
+          }
+        } else {
+          errorToDisplay = ProcessFilesError.MAX_FILES_EXCEEDED;
+        }
       }
     }
 
+    const hasError = errorToDisplay !== ProcessFilesError.NONE;
     if (filesToUpload.length > 0) {
-      this.addFileContext_(filesToUpload);
+      let errorMessage = '';
+      if (this.entrypointName === 'Realbox' && hasError) {
+        const {metric, errorMessage: messageKey} =
+            this.getProcessFilesErrorData_(errorToDisplay);
+        errorMessage = this.i18n(messageKey);
+        this.recordFileValidationMetric_(metric);
+      }
+      this.addFileContext_(filesToUpload, errorMessage);
     }
 
-    this.handleProcessFilesError_(errorToDisplay);
+    if (this.entrypointName !== 'Realbox' || !hasError ||
+        filesToUpload.length === 0) {
+      this.handleProcessFilesError_(errorToDisplay);
+    }
   }
 
   protected onFileChange_(e: Event) {
@@ -817,9 +911,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         ComposeboxContextAddedMethod.CONTEXT_MENU, this.composeboxSource_);
   }
 
-  protected addFileContext_(filesToUpload: File[]) {
+  protected addFileContext_(filesToUpload: File[], errorMessage: string = '') {
     this.fire('add-file-context', {
       files: filesToUpload,
+      errorMessage: errorMessage,
       onContextAdded: (files: Map<UnguessableToken, ComposeboxFile>) => {
         this.files_ = new Map([...this.files_.entries(), ...files.entries()]);
         this.recordFileValidationMetric_(ComposeboxFileValidationError.NONE);

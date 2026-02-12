@@ -151,6 +151,9 @@ struct StructTraits<composebox_query::mojom::InputStateDataView,
   static const std::optional<omnibox::SectionConfig>& model_section_config(
       const omnibox::InputState& input);
   static const std::string& hint_text(const omnibox::InputState& input);
+  static const std::map<omnibox::InputType, int>& max_instances(
+      const omnibox::InputState& input);
+  static int32_t max_total_inputs(const omnibox::InputState& input);
 
   static bool Read(composebox_query::mojom::InputStateDataView data,
                    omnibox::InputState* output);
