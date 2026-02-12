@@ -1593,12 +1593,24 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
           icon_color_.has_value() ? icon_color_.value() : colors.icon_color;
 
       if (!GetEnabledInViewsSubtree()) {
+        // Disabled color.
         icon_color = GetColorProvider()->GetColor(ui::kColorMenuIconDisabled);
-      } else if (foreground_color_id_.has_value() && paint_as_selected &&
-                 !selected_color_id_.has_value()) {
-        icon_color = GetColorProvider()->GetColor(foreground_color_id_.value());
       } else if (paint_as_selected) {
-        icon_color = colors.icon_color;
+        // Selected color.
+        if (foreground_color_id_.has_value() &&
+            !selected_color_id_.has_value()) {
+          // Use foreground color if selected color is unset.
+          icon_color =
+              GetColorProvider()->GetColor(foreground_color_id_.value());
+        } else {
+          // Use calculated icon color if icon color is unset or default.
+          const bool is_default_icon =
+              !icon_color_.has_value() ||
+              icon_color_.value() == ui::kColorMenuIcon;
+          if (is_default_icon) {
+            icon_color = colors.icon_color;
+          }
+        }
       }
       const ui::ImageModel& image_model =
           ui::ImageModel::FromVectorIcon(*icon, icon_color, model.icon_size());
