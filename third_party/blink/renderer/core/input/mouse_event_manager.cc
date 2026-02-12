@@ -944,14 +944,30 @@ DragHandlingResult MouseEventManager::HandleDrag(
     // as a click.
     InvalidateClick();
 
-    // Since drag operation started we need to send a pointercancel for the
-    // corresponding pointer.
-    if (initiated_by_button_press) {
+    if (RuntimeEnabledFeatures::SuppressPointerStreamAfterDragEnabled()) {
+      const auto pointerType = initiator == DragAndDropToolType::kMouse
+                                   ? WebPointerProperties::PointerType::kMouse
+                               : initiator == DragAndDropToolType::kFinger
+                                   ? WebPointerProperties::PointerType::kTouch
+                                   : WebPointerProperties::PointerType::kPen;
+      // When a drag starts we need to suppress the pointer event stream for the
+      // corresponding pointer.
       frame_->GetEventHandler().HandlePointerEvent(
           WebPointerEvent::CreatePointerCausesUaActionEvent(
-              WebPointerProperties::PointerType::kMouse,
-              event.Event().TimeStamp()),
+              pointerType, event.Event().TimeStamp()),
           Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
+    } else {
+      // TODO(crbug.com/452372355): Remove this branch of the `if` once the
+      // suppression feature flag is enabled by default.
+      // Since drag operation started we need to send a pointercancel for the
+      // corresponding pointer.
+      if (initiated_by_button_press) {
+        frame_->GetEventHandler().HandlePointerEvent(
+            WebPointerEvent::CreatePointerCausesUaActionEvent(
+                WebPointerProperties::PointerType::kMouse,
+                event.Event().TimeStamp()),
+            Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
+      }
     }
     drag_initiator_ = initiator;
   }

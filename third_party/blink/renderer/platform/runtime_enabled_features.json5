@@ -5213,6 +5213,14 @@
       name: "SubApps",
       status: "test",
     },
+    // 'pointercancel' and boundary leave ('pointerout' and 'pointerleave')
+    // events would now fire after a mouse drag start, matching the spec's
+    // definition of "pointer stream suppression". See:
+    // https://github.com/w3c/pointerevents/issues/555
+    {
+      name: "SuppressPointerStreamAfterDrag",
+      status: "experimental",
+    },
     {
       name: "Svg2Cascade",
       status: "stable",

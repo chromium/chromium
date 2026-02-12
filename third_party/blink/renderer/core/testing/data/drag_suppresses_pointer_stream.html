@@ -1,0 +1,23 @@
+<html>
+<head>
+  <script>
+    function onLoad() {
+      var target = document.getElementById("target");
+      ["dragstart", "pointercancel", "pointerleave", "pointerout"].forEach(
+        eventName => {
+          target.addEventListener(eventName, () => {
+            document.getElementById(eventName).innerHTML = "true";
+          });
+        });
+    }
+  </script>
+</head>
+
+<body onload="onLoad()">
+  <div id="target" draggable=true> This is a draggable div </div>
+  <div id="dragstart"></div>
+  <div id="pointercancel"></div>
+  <div id="pointerleave"></div>
+  <div id="pointerout"></div>
+</body>
+<html>

@@ -83,6 +83,7 @@ testing/data/display_none_frame.html
 testing/data/div_with_image.html
 testing/data/domfocusout_domfocusin_events.html
 testing/data/double_press_selection.html
+testing/data/drag_suppresses_pointer_stream.html
 testing/data/dv-size.html
 testing/data/edit_context.html
 testing/data/editable_elements.html

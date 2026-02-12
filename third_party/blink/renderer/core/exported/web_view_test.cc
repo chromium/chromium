@@ -2813,6 +2813,96 @@ static void DragAndDropURL(WebViewImpl* web_view, const std::string& url) {
       web_view->MainFrameImpl());
 }
 
+// This test verifies that the pointer event stream is correctly suppressed
+// after a drag starts. Per the HTML spec, to suppress a pointer event stream
+// the UA should send the following events to the drag source: pointercancel,
+// pointerout, pointerleave. See
+// https://w3c.github.io/pointerevents/#suppressing-a-pointer-event-stream
+TEST_F(WebViewTest, MouseDragDropSuppressesPointerStream) {
+  RegisterMockedHttpURLLoad("drag_suppresses_pointer_stream.html");
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "drag_suppresses_pointer_stream.html");
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+  WebMouseEvent mouse_event(WebInputEvent::Type::kMouseDown,
+                            WebInputEvent::kNoModifiers,
+                            WebInputEvent::GetStaticTimeStampForTests());
+  const gfx::PointF center = GetElementCenterPoint(
+      web_view->MainFrameImpl()->GetDocument().GetElementById("target"));
+  mouse_event.SetPositionInWidget(center.x(), center.y());
+  mouse_event.button = WebMouseEvent::Button::kLeft;
+  mouse_event.click_count = 1;
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
+  RunPendingTasks();
+  WebMouseEvent mouse_drag_event(WebInputEvent::Type::kMouseMove,
+                                 WebInputEvent::Modifiers::kNoModifiers,
+                                 WebInputEvent::GetStaticTimeStampForTests());
+  mouse_drag_event.SetPositionInWidget(center.x() + 50, center.y());
+  mouse_drag_event.button = WebMouseEvent::Button::kLeft;
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_drag_event, ui::LatencyInfo()));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+  auto get_element_text = [&](const WebString id) {
+    return web_view->MainFrameImpl()
+        ->GetDocument()
+        .GetElementById(id)
+        .TextContent();
+  };
+  // When a drag starts, the html will set the text "true" on different <p>
+  // elements when the drag source receives the corresponding event.
+  const WebString true_string = WebString::FromUTF8("true");
+  EXPECT_EQ(true_string, get_element_text("dragstart"));
+  EXPECT_EQ(true_string, get_element_text("pointercancel"));
+  EXPECT_EQ(true_string, get_element_text("pointerout"));
+  EXPECT_EQ(true_string, get_element_text("pointerleave"));
+}
+
+// Similar to MouseDragDropSuppressesPointerStream but with a touch initiated
+// drag.
+TEST_F(WebViewTest, TouchDragDropSuppressesPointerStream) {
+  RegisterMockedHttpURLLoad("drag_suppresses_pointer_stream.html");
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "drag_suppresses_pointer_stream.html");
+  web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  const WebString target_id = WebString::FromUTF8("target");
+  const gfx::PointF center = GetElementCenterPoint(
+      web_view->MainFrameImpl()->GetDocument().GetElementById(target_id));
+  WebPointerEvent pointer_down(
+      WebInputEvent::Type::kPointerDown,
+      WebPointerProperties(1, WebPointerProperties::PointerType::kTouch), 5, 5);
+  pointer_down.SetPositionInWidget(center.x(), center.y());
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pointer_down, ui::LatencyInfo()));
+  web_view->MainFrameWidget()->DispatchBufferedTouchEvents();
+
+  // Send long press to start dragging
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target_id));
+
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+  auto get_element_text = [&](const WebString id) {
+    return web_view->MainFrameImpl()
+        ->GetDocument()
+        .GetElementById(id)
+        .TextContent();
+  };
+  // When a drag starts, the html will set the text "true" on different <p>
+  // elements when the drag source receives the corresponding event.
+  const WebString true_string = WebString::FromUTF8("true");
+  EXPECT_EQ(true_string, get_element_text("dragstart"));
+  EXPECT_EQ(true_string, get_element_text("pointercancel"));
+  EXPECT_EQ(true_string, get_element_text("pointerout"));
+  EXPECT_EQ(true_string, get_element_text("pointerleave"));
+}
+
 TEST_F(WebViewTest, DragDropURL) {
   RegisterMockedHttpURLLoad("foo.html");
   RegisterMockedHttpURLLoad("bar.html");

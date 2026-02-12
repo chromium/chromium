@@ -379,18 +379,24 @@ void PointerEventManager::HandlePointerInterruption(
 
     ReleasePointerCapture(pointer_event->pointerId());
 
-    // Send the leave/out events and lostpointercapture if needed.
-    // Note that for mouse due to the web compat we still don't send the
-    // boundary events and for now only send lostpointercapture if needed.
-    // Sending boundary events and possibly updating hover for mouse
-    // in this case may cause some of the existing pages to break.
-    if (web_pointer_event.pointer_type ==
-        WebPointerProperties::PointerType::kMouse) {
-      ProcessPendingPointerCapture(pointer_event);
-    } else {
+    if (RuntimeEnabledFeatures::SuppressPointerStreamAfterDragEnabled()) {
+      // Send the leave/out events and lostpointercapture if needed.
       ProcessCaptureAndPositionOfPointerEvent(pointer_event, nullptr);
+    } else {
+      // TODO(crbug.com/452372355): Remove this branch of the `if` once the
+      // suppression feature flag is enabled by default.
+      // Send the leave/out events and lostpointercapture if needed.
+      // Note that for mouse due to the web compat we still don't send the
+      // boundary events and for now only send lostpointercapture if needed.
+      // Sending boundary events and possibly updating hover for mouse
+      // in this case may cause some of the existing pages to break.
+      if (web_pointer_event.pointer_type ==
+          WebPointerProperties::PointerType::kMouse) {
+        ProcessPendingPointerCapture(pointer_event);
+      } else {
+        ProcessCaptureAndPositionOfPointerEvent(pointer_event, nullptr);
+      }
     }
-
     RemovePointer(pointer_event);
   }
 }
