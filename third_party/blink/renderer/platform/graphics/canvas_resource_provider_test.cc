@@ -184,7 +184,7 @@ TEST_F(CanvasResourceProviderTest,
   gpu::SyncToken sync_token;
   bool was_copy_performed = false;
   auto client_si = provider->GetBackingClientSharedImageForTransferToWebGPU(
-      sync_token, &was_copy_performed);
+      sync_token, was_copy_performed);
   EXPECT_TRUE(was_copy_performed);
   EXPECT_TRUE(client_si->usage().HasAll(shared_image_usage_flags));
   EXPECT_TRUE(client_si->usage().HasAll(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
@@ -193,7 +193,7 @@ TEST_F(CanvasResourceProviderTest,
   // That new backing SI should then be returned on subsequent calls.
   auto client_si_with_no_new_usage_required =
       provider->GetBackingClientSharedImageForTransferToWebGPU(
-          sync_token, &was_copy_performed);
+          sync_token, was_copy_performed);
   EXPECT_EQ(client_si_with_no_new_usage_required, client_si);
   EXPECT_FALSE(was_copy_performed);
 
@@ -208,7 +208,7 @@ TEST_F(CanvasResourceProviderTest,
       context_provider_wrapper_, RasterMode::kGPU,
       shared_image_usages_with_webgpu);
   client_si = provider->GetBackingClientSharedImageForTransferToWebGPU(
-      sync_token, &was_copy_performed);
+      sync_token, was_copy_performed);
   EXPECT_FALSE(was_copy_performed);
   EXPECT_TRUE(client_si->usage().HasAll(shared_image_usages_with_webgpu));
 }

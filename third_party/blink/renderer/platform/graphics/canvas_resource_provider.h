@@ -609,7 +609,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   scoped_refptr<gpu::ClientSharedImage>
   GetBackingClientSharedImageForTransferToWebGPU(
       gpu::SyncToken& internal_access_sync_token,
-      bool* was_copy_performed);
+      bool& was_copy_performed);
 
   void SetResourceRecyclingEnabled(bool value);
 

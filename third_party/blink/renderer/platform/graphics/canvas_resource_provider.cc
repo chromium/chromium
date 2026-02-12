@@ -424,7 +424,7 @@ void CanvasResourceProviderSharedImage::OnResourceRefReturned(
 scoped_refptr<gpu::ClientSharedImage> Canvas2DResourceProviderSharedImage::
     GetBackingClientSharedImageForTransferToWebGPU(
         gpu::SyncToken& internal_access_sync_token,
-        bool* was_copy_performed) {
+        bool& was_copy_performed) {
   // This may cause the current resource and all cached resources to become
   // unusable. WillDrawInternal() will detect this case, drop all cached
   // resources, and copy the current resource to a newly-created resource
@@ -445,10 +445,7 @@ scoped_refptr<gpu::ClientSharedImage> Canvas2DResourceProviderSharedImage::
 
   const CanvasResource* const original_resource = resource_.get();
   auto access = WillDrawInternal();
-
-  if (was_copy_performed != nullptr) {
-    *was_copy_performed = resource_.get() != original_resource;
-  }
+  was_copy_performed = resource_.get() != original_resource;
 
   // NOTE: The above invocation of WillDrawInternal() ensures that this
   // invocation of EndAccess() will generate a new sync token.

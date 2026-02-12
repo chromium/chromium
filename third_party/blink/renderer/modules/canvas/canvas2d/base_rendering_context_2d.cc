@@ -1410,7 +1410,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   bool performed_copy = false;
   scoped_refptr<gpu::ClientSharedImage> client_si =
       provider->GetBackingClientSharedImageForTransferToWebGPU(
-          canvas_access_sync_token, &performed_copy);
+          canvas_access_sync_token, performed_copy);
   if (access_options->requireZeroCopy() && performed_copy) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
