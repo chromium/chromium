@@ -354,9 +354,11 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // The following are helpers for InitFromValue to load various features of the
   // extension from the manifest.
 
-  bool LoadRequiredFeatures(std::u16string* error);
+  bool LoadRequiredFeatures(std::vector<InstallWarning>* install_warnings,
+                            std::u16string* error);
   bool LoadName(std::u16string* error);
-  bool LoadVersion(std::u16string* error);
+  bool LoadVersion(std::vector<InstallWarning>* install_warnings,
+                   std::u16string* error);
 
   bool LoadAppFeatures(std::u16string* error);
   bool LoadExtent(const char* key,

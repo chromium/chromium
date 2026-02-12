@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "extensions/common/error_utils.h"
@@ -100,6 +101,104 @@ testing::AssertionResult RunCreationWithFlags(
   if (extension->GetType() != expected_type) {
     return testing::AssertionFailure()
            << "Wrong type: " << extension->GetType();
+  }
+  return testing::AssertionSuccess();
+}
+
+// Tests successful parsing of extension manifest "version" attribute and
+// validate that the version is serialized into a correct canonical string. For
+// example, for manifest "version" value "1.01" the canonical serialization
+// would be "1.1". If version string is parsed and re-serialized to the same
+// string, then expected_version can be omitted.
+testing::AssertionResult RunVersionSuccess(
+    std::string_view input_version,
+    std::optional<std::string_view> expected_version = std::nullopt) {
+  base::DictValue manifest = base::DictValue()
+                                 .Set(manifest_keys::kName, "My Extension")
+                                 .Set(manifest_keys::kManifestVersion, 3)
+                                 .Set(manifest_keys::kVersion, input_version);
+
+  std::u16string error;
+  scoped_refptr<const Extension> extension =
+      Extension::Create(base::FilePath(), ManifestLocation::kInternal, manifest,
+                        Extension::NO_FLAGS, &error);
+  if (!extension) {
+    return testing::AssertionFailure()
+           << "Extension creation failed: " << error;
+  }
+
+  if (extension->VersionString().empty()) {
+    return testing::AssertionFailure() << "Extension version can not be empty";
+  }
+
+  if (!expected_version || input_version == *expected_version) {
+    // Parsed version should be the same as input string.
+    if (extension->VersionString() != input_version) {
+      return testing::AssertionFailure()
+             << "Extension version should match the manifest value: expected "
+             << input_version << " but got " << extension->VersionString();
+    }
+    if (!extension->install_warnings().empty()) {
+      return testing::AssertionFailure() << "Received an unexpected warning";
+    }
+  } else {
+    // Version string should be successflly parsed but reformatted,
+    // with an appropriate warning being logged.
+    auto expected_warning =
+        base::StringPrintf(manifest_errors::kVersionFormatting,
+                           extension->VersionString().c_str());
+    if (extension->VersionString() != *expected_version) {
+      return testing::AssertionFailure() << "Extension version does not match "
+                                            "the expected value: expected '"
+                                         << *expected_version << "' but got '"
+                                         << extension->VersionString() << "'";
+    }
+    if (extension->install_warnings().empty()) {
+      return testing::AssertionFailure()
+             << "Extension should have received a warning about re-formatted "
+                "version string";
+    } else if (extension->install_warnings().size() > 1) {
+      return testing::AssertionFailure()
+             << "Extension should have received exactly one warning about "
+                "re-formatted version string";
+    } else if (extension->install_warnings()[0].key !=
+                   manifest_keys::kVersion ||
+               extension->install_warnings()[0].message != expected_warning) {
+      testing::AssertionFailure()
+          << "Expected Warning: Key: '" << manifest_keys::kVersion
+          << "' Message: '" << expected_warning << "', Found Warning: Key: '"
+          << extension->install_warnings()[0].key << "' Message: '"
+          << extension->install_warnings()[0].message << "'";
+    }
+    // warnings
+  }
+  return testing::AssertionSuccess();
+}
+
+// Validate failure to install extensions with invalid `version` manifest
+// attribute. If input is `std::nullopt`, then test validates installation failure
+// for extension with `version` omitted entirely.
+testing::AssertionResult RunVersionFailure(
+    std::optional<std::string_view> version) {
+  base::DictValue manifest = base::DictValue()
+                                 .Set(manifest_keys::kName, "My Extension")
+                                 .Set(manifest_keys::kManifestVersion, 3);
+  if (version) {
+    manifest.Set(manifest_keys::kVersion, *version);
+  }
+
+  std::u16string error;
+  scoped_refptr<const Extension> extension =
+      Extension::Create(base::FilePath(), ManifestLocation::kInternal, manifest,
+                        Extension::NO_FLAGS, &error);
+
+  if (extension) {
+    return testing::AssertionFailure() << "Extension creation succeeded.";
+  }
+  if (error != manifest_errors::kInvalidVersion) {
+    return testing::AssertionFailure()
+           << "Expected Error: '" << manifest_errors::kInvalidVersion
+           << "', Found Error: '" << error << "'";
   }
   return testing::AssertionSuccess();
 }
@@ -264,6 +363,27 @@ TEST(ExtensionTest, LoginScreenFlag) {
   EXPECT_TRUE(RunCreationWithFlags(manifest, ManifestLocation::kExternalPolicy,
                                    Manifest::Type::kLoginScreenExtension,
                                    Extension::FOR_LOGIN_SCREEN));
+}
+
+TEST(ExtensionTest, ExtensionVersionFormat) {
+  // Extension "version" is accepted without transformations.
+  EXPECT_TRUE(RunVersionSuccess("1"));
+  EXPECT_TRUE(RunVersionSuccess("1.0"));
+  EXPECT_TRUE(RunVersionSuccess("0.1"));
+  EXPECT_TRUE(RunVersionSuccess("0.0.0"));
+
+  // Extension "version" is parseable, but has a non-canonical form,
+  // e.g., leading zeros.
+  EXPECT_TRUE(RunVersionSuccess("0.0.01", "0.0.1"));
+  EXPECT_TRUE(RunVersionSuccess("1.002.3", "1.2.3"));
+
+  // Extension "version" can not be parsed and causes installation failure.
+  EXPECT_TRUE(RunVersionFailure(std::nullopt));
+  EXPECT_TRUE(RunVersionFailure("01"));
+  EXPECT_TRUE(RunVersionFailure("00.1"));
+  EXPECT_TRUE(RunVersionFailure("-1.0"));
+  EXPECT_TRUE(RunVersionFailure("1.-1"));
+  EXPECT_TRUE(RunVersionFailure("-0.0"));
 }
 
 }  // namespace extensions

@@ -719,6 +719,8 @@ inline constexpr char16_t
         "persistent background page.";
 inline constexpr char kUnrecognizedManifestKey[] =
     "Unrecognized manifest key '*'.";
+inline constexpr char kVersionFormatting[] =
+    "The extension version is parsed as '%s'.";
 inline constexpr char16_t kWebRequestConflictsWithLazyBackground[] =
     u"The 'webRequest' API cannot be used with event pages.";
 #if BUILDFLAG(IS_CHROMEOS)
