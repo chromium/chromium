@@ -71,7 +71,7 @@ public class SuggestionMetricsTracker implements Destroyable {
         resetSuggestionTypeToCounts();
         mCurrentTabSupplier =
                 tabModelSelector.getModel(/* incognito= */ false).getCurrentTabSupplier();
-        mCurrentTabSupplier.addObserver(mOnCurrentTabChangedCallback);
+        mCurrentTabSupplier.addSyncObserverAndPostIfNonNull(mOnCurrentTabChangedCallback);
     }
 
     /** Resets the counters for a new session. */

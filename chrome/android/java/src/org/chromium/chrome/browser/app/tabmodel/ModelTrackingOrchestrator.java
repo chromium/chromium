@@ -364,7 +364,10 @@ public class ModelTrackingOrchestrator {
         }
         Callback<@Nullable Tab> obs =
                 incognito ? mIncognitoActiveTabObserver : mRegularActiveTabObserver;
-        mTabModelSelector.getModel(incognito).getCurrentTabSupplier().addObserver(obs);
+        mTabModelSelector
+                .getModel(incognito)
+                .getCurrentTabSupplier()
+                .addSyncObserverAndPostIfNonNull(obs);
     }
 
     private void initVisualDataTracking(boolean incognito) {

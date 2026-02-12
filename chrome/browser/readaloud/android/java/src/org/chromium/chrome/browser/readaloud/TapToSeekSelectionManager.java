@@ -46,7 +46,8 @@ public class TapToSeekSelectionManager implements SelectionClient.SurroundingTex
             ReadAloudController readAloudController,
             NullableObservableSupplier<Tab> activePlaybackTab) {
         mReadAloudController = readAloudController;
-        activePlaybackTab.addObserver((Callback<@Nullable Tab>) this::onActivePlaybackTabUpdated);
+        activePlaybackTab.addSyncObserverAndPostIfNonNull(
+                (Callback<@Nullable Tab>) this::onActivePlaybackTabUpdated);
     }
 
     @Override

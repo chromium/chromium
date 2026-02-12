@@ -83,7 +83,7 @@ public class TransitiveObservableSupplierTest {
                 parentSupplier.createTransitiveNullable(obs -> obs);
         assertNull(transitiveSupplier.get());
 
-        assertNull(transitiveSupplier.addObserver(mOnChangeCallback));
+        assertNull(transitiveSupplier.addSyncObserverAndPostIfNonNull(mOnChangeCallback));
         verifyNoInteractions(mOnChangeCallback);
 
         parentSupplier.set(targetSupplier1);
@@ -123,7 +123,7 @@ public class TransitiveObservableSupplierTest {
 
         NullableObservableSupplier<String> transitiveSupplier =
                 parentSupplier.createTransitiveNullable(obs -> obs);
-        assertNull(transitiveSupplier.addObserver(mOnChangeCallback));
+        assertNull(transitiveSupplier.addSyncObserverAndPostIfNonNull(mOnChangeCallback));
         assertTrue(parentSupplier.hasObservers());
         assertTrue(targetSupplier.hasObservers());
 
@@ -131,7 +131,8 @@ public class TransitiveObservableSupplierTest {
         assertEquals("valueA", transitiveSupplier.get());
         verify(mOnChangeCallback).onResult(eq("valueA"));
 
-        assertEquals("valueA", transitiveSupplier.addObserver(mOnChangeCallback));
+        assertEquals(
+                "valueA", transitiveSupplier.addSyncObserverAndPostIfNonNull(mOnChangeCallback));
         transitiveSupplier.removeObserver(mOnChangeCallback);
         assertFalse(parentSupplier.hasObservers());
         assertFalse(targetSupplier.hasObservers());
@@ -150,7 +151,8 @@ public class TransitiveObservableSupplierTest {
                 parentSupplier.createTransitiveNullable(obs -> obs);
         assertEquals("valueA", transitiveSupplier.get());
 
-        assertEquals("valueA", transitiveSupplier.addObserver(mOnChangeCallback));
+        assertEquals(
+                "valueA", transitiveSupplier.addSyncObserverAndPostIfNonNull(mOnChangeCallback));
         assertEquals("valueA", transitiveSupplier.get());
         ShadowLooper.idleMainLooper();
         verify(mOnChangeCallback).onResult(eq("valueA"));

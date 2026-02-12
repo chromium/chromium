@@ -53,7 +53,7 @@ public class SettableLookAheadObservableSupplier<T>
 
     @Override
     public @Nullable T addLookAheadObserver(Callback<@Nullable T> obs) {
-        return mLookAheadSupplier.addObserver(obs);
+        return mLookAheadSupplier.addSyncObserverAndPostIfNonNull(obs);
     }
 
     @Override

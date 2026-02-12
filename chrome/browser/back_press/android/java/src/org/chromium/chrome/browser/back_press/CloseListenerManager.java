@@ -37,7 +37,7 @@ public class CloseListenerManager implements BackPressHandler, Destroyable {
 
     public CloseListenerManager(NullableObservableSupplier<Tab> activityTabSupplier) {
         mActivityTabSupplier = activityTabSupplier;
-        mActivityTabSupplier.addObserver(mOnTabChanged);
+        mActivityTabSupplier.addSyncObserverAndPostIfNonNull(mOnTabChanged);
         updateObserver();
     }
 

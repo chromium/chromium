@@ -207,7 +207,7 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
         }
 
         mOnTabUpdate = this::onTabUpdate;
-        mTabSupplier.addObserver(mOnTabUpdate);
+        mTabSupplier.addSyncObserverAndPostIfNonNull(mOnTabUpdate);
     }
 
     @Override

@@ -121,7 +121,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         mModalDialogManagerSupplier = modalDialogManager;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mActivityLifecycleDispatcher.register(this);
-        mActivityTabSupplier.addObserver(mTabChangeCallback);
+        mActivityTabSupplier.addSyncObserverAndPostIfNonNull(mTabChangeCallback);
     }
 
     @Override

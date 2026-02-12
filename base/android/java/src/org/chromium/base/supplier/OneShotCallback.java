@@ -42,7 +42,7 @@ public class OneShotCallback<T> {
     public OneShotCallback(NullableObservableSupplier<T> supplier, Callback<T> callback) {
         mWeakSupplier = new WeakReference<>(supplier);
         mCallback = callback;
-        supplier.addObserver(mCallbackWrapper);
+        supplier.addSyncObserverAndPostIfNonNull(mCallbackWrapper);
     }
 
     private class CallbackWrapper implements Callback<T> {

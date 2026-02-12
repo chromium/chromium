@@ -53,7 +53,7 @@ public class CurrentTabObserver {
                     if (swapCallback != null) swapCallback.onResult(tab);
                 };
         mTabSupplierCallback = mCallbackController.makeCancelable(supplierCallback);
-        mTabSupplier.addObserver(mTabSupplierCallback);
+        mTabSupplier.addSyncObserverAndPostIfNonNull(mTabSupplierCallback);
     }
 
     /** Trigger the event callback for this observer with the current tab. */

@@ -103,7 +103,7 @@ public abstract class AccessorySheetTabCoordinator implements KeyboardAccessoryD
      */
     public void registerDataProvider(
             NullableObservableSupplier<AccessorySheetData> sheetDataProvider) {
-        sheetDataProvider.addObserver(
+        sheetDataProvider.addSyncObserverAndPostIfNonNull(
                 (accessorySheetData) ->
                         getMediator()
                                 .onItemAvailable(getTab().getRecordingType(), accessorySheetData));

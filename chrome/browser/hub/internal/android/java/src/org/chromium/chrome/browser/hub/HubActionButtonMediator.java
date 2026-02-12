@@ -31,7 +31,7 @@ public class HubActionButtonMediator {
 
         mActionButtonDataSupplier =
                 focusedPaneSupplier.createTransitiveNullable(Pane::getActionButtonDataSupplier);
-        mActionButtonDataSupplier.addObserver(mOnActionButtonChangeCallback);
+        mActionButtonDataSupplier.addSyncObserverAndPostIfNonNull(mOnActionButtonChangeCallback);
     }
 
     /** Cleans up observers. */

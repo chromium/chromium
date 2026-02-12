@@ -138,7 +138,7 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
                     CHOICE_REQUIRED_DELAY_MS);
 
             if (mEnableLogging) {
-                mIsChoiceRequired.addObserver(
+                mIsChoiceRequired.addSyncObserverAndPostIfNonNull(
                         value -> Log.i(TAG, "supplier value changed to %s", value));
             }
         }

@@ -80,7 +80,7 @@ public class OmniboxSuggestionsContainerUnitTest {
 
                 @Override
                 public OmniboxAlignment addAlignmentObserver(Callback<OmniboxAlignment> obs) {
-                    return mOmniboxAlignmentSupplier.addObserver(obs);
+                    return mOmniboxAlignmentSupplier.addSyncObserverAndPostIfNonNull(obs);
                 }
 
                 @Override

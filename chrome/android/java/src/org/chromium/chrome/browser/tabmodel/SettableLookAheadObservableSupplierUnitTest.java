@@ -44,7 +44,7 @@ public class SettableLookAheadObservableSupplierUnitTest {
     @Test
     public void testSetWithoutWillSet() {
         mSupplier.addLookAheadObserver(mLookAheadObserver);
-        mSupplier.addObserver(mObserver);
+        mSupplier.addSyncObserverAndPostIfNonNull(mObserver);
 
         mSupplier.set(SUPPLIER_VALUE);
 
@@ -56,7 +56,7 @@ public class SettableLookAheadObservableSupplierUnitTest {
     @Test
     public void testSetWithWillSet() {
         mSupplier.addLookAheadObserver(mLookAheadObserver);
-        mSupplier.addObserver(mObserver);
+        mSupplier.addSyncObserverAndPostIfNonNull(mObserver);
 
         mSupplier.willSet(SUPPLIER_VALUE);
 
@@ -74,7 +74,7 @@ public class SettableLookAheadObservableSupplierUnitTest {
     @Test
     public void testRemoveObservers() {
         mSupplier.addLookAheadObserver(mLookAheadObserver);
-        mSupplier.addObserver(mObserver);
+        mSupplier.addSyncObserverAndPostIfNonNull(mObserver);
 
         mSupplier.removeLookAheadObserver(mLookAheadObserver);
         mSupplier.removeObserver(mObserver);
@@ -92,7 +92,7 @@ public class SettableLookAheadObservableSupplierUnitTest {
         mSupplier.addLookAheadObserver(mLookAheadObserver);
         assertEquals(1, mSupplier.getObserverCount());
 
-        mSupplier.addObserver(mObserver);
+        mSupplier.addSyncObserverAndPostIfNonNull(mObserver);
         assertEquals(2, mSupplier.getObserverCount());
 
         mSupplier.removeLookAheadObserver(mLookAheadObserver);
@@ -121,7 +121,7 @@ public class SettableLookAheadObservableSupplierUnitTest {
     @Test
     public void testDestroy() {
         mSupplier.addLookAheadObserver(mLookAheadObserver);
-        mSupplier.addObserver(mObserver);
+        mSupplier.addSyncObserverAndPostIfNonNull(mObserver);
 
         mSupplier.destroy();
         assertEquals(0, mSupplier.getObserverCount());

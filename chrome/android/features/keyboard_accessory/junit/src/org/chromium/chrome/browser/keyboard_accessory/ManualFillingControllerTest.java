@@ -447,7 +447,7 @@ public class ManualFillingControllerTest {
         mController.registerSheetUpdateDelegate(mLastMockWebContents, firstSheetUpdater);
         getStateForBrowserTab()
                 .getSheetDataProvider(AccessoryTabType.PASSWORDS)
-                .addObserver(firstTabHelper::record);
+                .addSyncObserverAndPostIfNonNull(firstTabHelper::record);
         firstTabHelper.providePasswordSheet("FirstPassword");
         assertThat(firstTabHelper.getFirstRecordedPassword(), is("FirstPassword"));
 
@@ -460,7 +460,7 @@ public class ManualFillingControllerTest {
         mController.registerSheetUpdateDelegate(mLastMockWebContents, secondSheetUpdater);
         getStateForBrowserTab()
                 .getSheetDataProvider(AccessoryTabType.PASSWORDS)
-                .addObserver(secondTabHelper::record);
+                .addSyncObserverAndPostIfNonNull(secondTabHelper::record);
         secondTabHelper.providePasswordSheet("SecondPassword");
         assertThat(secondTabHelper.getFirstRecordedPassword(), is("SecondPassword"));
 
@@ -707,7 +707,7 @@ public class ManualFillingControllerTest {
                 mLastMockWebContents, firstTabHelper.getActionListProvider());
         getStateForBrowserTab()
                 .getSheetDataProvider(AccessoryTabType.PASSWORDS)
-                .addObserver(firstTabHelper::record);
+                .addSyncObserverAndPostIfNonNull(firstTabHelper::record);
         getStateForBrowserTab().getActionsProvider().addObserver(firstTabHelper::record);
         firstTabHelper.providePasswordSheet("FirstPassword");
         firstTabHelper.provideAction(AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY);
@@ -723,7 +723,7 @@ public class ManualFillingControllerTest {
                 mLastMockWebContents, secondTabHelper.getActionListProvider());
         getStateForBrowserTab()
                 .getSheetDataProvider(AccessoryTabType.PASSWORDS)
-                .addObserver(secondTabHelper::record);
+                .addSyncObserverAndPostIfNonNull(secondTabHelper::record);
         getStateForBrowserTab().getActionsProvider().addObserver(secondTabHelper::record);
         secondTabHelper.providePasswordSheet("SecondPassword");
         secondTabHelper.provideAction(AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY);

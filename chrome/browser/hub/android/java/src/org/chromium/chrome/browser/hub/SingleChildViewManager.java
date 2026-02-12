@@ -27,7 +27,7 @@ public class SingleChildViewManager {
             ViewGroup containerView, NullableObservableSupplier<View> overlayViewSupplier) {
         mContainerView = containerView;
         mChildViewSupplier = overlayViewSupplier;
-        mChildViewSupplier.addObserver(mOnViewChanged);
+        mChildViewSupplier.addSyncObserverAndPostIfNonNull(mOnViewChanged);
     }
 
     /** Destroys and removes observers. */

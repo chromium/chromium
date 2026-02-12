@@ -104,7 +104,7 @@ public class ReaderModeBottomSheetManager extends EmptyTabObserver implements De
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mBrowserControlsVisibilityManager.addObserver(mBrowserControlsObserver);
         mThemeColorProvider = themeColorProvider;
-        mTabProvider.asObservable().addObserver(mActivityTabTabObserver);
+        mTabProvider.asObservable().addSyncObserverAndPostIfNonNull(mActivityTabTabObserver);
         mActivityTabTabObserver.onResult(mTabProvider.get());
     }
 

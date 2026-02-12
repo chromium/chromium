@@ -165,7 +165,8 @@ public class HubToolbarMediator {
             // we do not want this. We don't want to rebuild the button data list n times. Instead
             // all of these posted events should have data identical to what we initialize our cache
             // to, and they should all no-op.
-            @Nullable DisplayButtonData currentButtonData = supplier.addObserver(observer);
+            @Nullable DisplayButtonData currentButtonData =
+                    supplier.addSyncObserverAndPostIfNonNull(observer);
             mCachedPaneSwitcherButtonData.add(new Pair<>(paneId, currentButtonData));
 
             mRemoveReferenceButtonObservers.add(() -> supplier.removeObserver(observer));

@@ -164,7 +164,9 @@ public class TabModelSelectorImplTest {
 
     @Test
     public void testCurrentTabSupplier() {
-        mTabModelSelector.getCurrentTabSupplier().addObserver(mTabSupplierObserverMock);
+        mTabModelSelector
+                .getCurrentTabSupplier()
+                .addSyncObserverAndPostIfNonNull(mTabSupplierObserverMock);
         assertNull(mTabModelSelector.getCurrentTabSupplier().get());
 
         MockTab normalTab = new MockTab(1, mProfile);

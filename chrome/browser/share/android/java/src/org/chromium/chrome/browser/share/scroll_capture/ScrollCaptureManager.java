@@ -36,7 +36,7 @@ public class ScrollCaptureManager extends EmptyTabObserver implements Callback<@
             NullableObservableSupplier<Tab> tabSupplier, ScrollCaptureManagerDelegate delegate) {
         mTabSupplier = tabSupplier;
         mDelegate = delegate;
-        mTabSupplier.addObserver(this);
+        mTabSupplier.addSyncObserverAndPostIfNonNull(this);
     }
 
     @Override

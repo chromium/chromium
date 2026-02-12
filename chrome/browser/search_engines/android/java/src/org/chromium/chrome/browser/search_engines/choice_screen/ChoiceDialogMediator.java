@@ -209,7 +209,8 @@ class ChoiceDialogMediator {
             Log.i(TAG, "Mediator initializing");
         }
 
-        mIsDeviceChoiceRequiredSupplier.addObserver(mIsDeviceChoiceRequiredObserver);
+        mIsDeviceChoiceRequiredSupplier.addSyncObserverAndPostIfNonNull(
+                mIsDeviceChoiceRequiredObserver);
         mLifecycleDispatcher.register(mActivityLifecycleObserver);
     }
 

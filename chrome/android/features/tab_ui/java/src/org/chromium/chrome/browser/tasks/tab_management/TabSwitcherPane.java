@@ -176,7 +176,8 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
 
         profileProviderSupplier.onAvailable(this::onProfileProviderAvailable);
         mIsVisibleSupplier.addSyncObserverAndPostIfNonNull(mVisibilityObserver);
-        mTabSwitcherPaneCoordinatorSupplier.addObserver(mOnPaneCoordinatorChanged);
+        mTabSwitcherPaneCoordinatorSupplier.addSyncObserverAndPostIfNonNull(
+                mOnPaneCoordinatorChanged);
     }
 
     @Override

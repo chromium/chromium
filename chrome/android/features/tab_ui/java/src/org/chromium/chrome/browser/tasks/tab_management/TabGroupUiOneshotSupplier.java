@@ -72,7 +72,9 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
             mSetter = setter;
             mActivityTabProvider = activityTabProvider;
             mTabModelSelector = tabModelSelector;
-            activityTabProvider.asObservable().addObserver(mActivityTabObserver);
+            activityTabProvider
+                    .asObservable()
+                    .addSyncObserverAndPostIfNonNull(mActivityTabObserver);
         }
 
         void destroy() {

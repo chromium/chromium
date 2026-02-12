@@ -106,7 +106,7 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
 
         mBookmarkModelSupplier = bookmarkModelSupplier;
         mActivityLifecycleDispatcher.register(this);
-        mBookmarkModelSupplier.addObserver(mBookmarkModelSupplierObserver);
+        mBookmarkModelSupplier.addSyncObserverAndPostIfNonNull(mBookmarkModelSupplierObserver);
         mCurrentTabObserver =
                 new CurrentTabObserver(
                         activeTabSupplier,

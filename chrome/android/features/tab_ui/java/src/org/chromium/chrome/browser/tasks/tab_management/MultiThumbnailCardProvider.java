@@ -574,7 +574,8 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         // tabs thumbnails before the post task normally run by ObservableSupplier#addObserver is
         // run.
         TabGroupModelFilter currentFilter =
-                mCurrentTabGroupModelFilterSupplier.addObserver(mOnTabGroupModelFilterChanged);
+                mCurrentTabGroupModelFilterSupplier.addSyncObserverAndPostIfNonNull(
+                        mOnTabGroupModelFilterChanged);
         if (currentFilter != null) {
             mOnTabGroupModelFilterChanged.onResult(currentFilter);
         }

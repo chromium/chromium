@@ -58,7 +58,7 @@ public class ConstraintsChecker implements Callback<@Nullable Integer> {
      * a long time to result in a call.
      */
     public void scheduleRequestResourceOnUnlock() {
-        mConstraintsSupplier.addObserver(this);
+        mConstraintsSupplier.addSyncObserverAndPostIfNonNull(this);
     }
 
     @Override

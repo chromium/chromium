@@ -98,7 +98,7 @@ public class ActivityTabProviderTest {
                     mProvider = mActivity.getActivityTabProvider();
                     mProvider
                             .asObservable()
-                            .addObserver(
+                            .addSyncObserverAndPostIfNonNull(
                                     tab -> {
                                         mActivityTab = tab;
                                         mActivityTabChangedHelper.notifyCalled();
@@ -130,7 +130,9 @@ public class ActivityTabProviderTest {
         CallbackHelper helper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mProvider.asObservable().addObserver(tab -> helper.notifyCalled());
+                    mProvider
+                            .asObservable()
+                            .addSyncObserverAndPostIfNonNull(tab -> helper.notifyCalled());
                 });
         helper.waitForCallback(0);
 

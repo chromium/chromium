@@ -35,7 +35,7 @@ public class ValueChangedCallbackTest {
                             mNewSuppliedString = newValue;
                             mOldSuppliedString = oldValue;
                         });
-        mSupplier.addObserver(observer);
+        mSupplier.addSyncObserverAndPostIfNonNull(observer);
         ShadowLooper.runUiThreadTasks();
 
         checkState(0, null, null, "before setting first string.");

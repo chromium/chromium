@@ -92,10 +92,10 @@ public class TabGroupColorViewProvider implements Destroyable {
             mTransitiveSharedGroupObserver.setTabGroupId(groupId.getLocalId().tabGroupId);
             mTransitiveSharedGroupObserver
                     .getGroupMembersSupplier()
-                    .addObserver(mOnGroupMembersChanged);
+                    .addSyncObserverAndPostIfNonNull(mOnGroupMembersChanged);
             mTransitiveSharedGroupObserver
                     .getGroupSharedStateSupplier()
-                    .addObserver(mOnGroupSharedStateChanged);
+                    .addSyncObserverAndPostIfNonNull(mOnGroupSharedStateChanged);
         } else {
             mDataSharingService = null;
             mTransitiveSharedGroupObserver = null;

@@ -223,10 +223,10 @@ public class TabGroupUiMediator implements BackPressHandler {
                             tabGroupSyncService, dataSharingService, collaborationService);
             mTransitiveSharedGroupObserver
                     .getGroupSharedStateSupplier()
-                    .addObserver(mOnGroupSharedStateChanged);
+                    .addSyncObserverAndPostIfNonNull(mOnGroupSharedStateChanged);
             mTransitiveSharedGroupObserver
                     .getGroupMembersSupplier()
-                    .addObserver(mOnGroupMembersChanged);
+                    .addSyncObserverAndPostIfNonNull(mOnGroupMembersChanged);
         } else {
             mTransitiveSharedGroupObserver = null;
         }

@@ -193,7 +193,7 @@ public class BottomAttachedUiObserver
                     mAccessorySheetProviderSupplierObserver);
         }
 
-        contextualSearchManagerSupplier.addObserver(
+        contextualSearchManagerSupplier.addSyncObserverAndPostIfNonNull(
                 (manager) -> {
                     if (manager == null) return;
                     manager.getOverlayPanelStateProviderSupplier()

@@ -2963,7 +2963,7 @@ class TabImpl implements Tab {
         mCurrentTabSupplier = currentTabSupplier;
         mSelectionStateSupplier = selectionStateSupplier;
 
-        mCurrentTabSupplier.addObserver(mActiveTabObserver);
+        mCurrentTabSupplier.addSyncObserverAndPostIfNonNull(mActiveTabObserver);
         mCurrentTabSupplier.addLookAheadObserver(mActiveTabLookAheadObserver);
 
         if (mNativeTabAndroid != 0) {

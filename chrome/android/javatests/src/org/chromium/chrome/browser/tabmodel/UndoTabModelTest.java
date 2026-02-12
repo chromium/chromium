@@ -32,15 +32,15 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
@@ -1813,7 +1813,9 @@ public class UndoTabModelTest {
         final CallbackHelper tabSupplierObserver = new CallbackHelper();
         Callback<Tab> observer = (tab) -> tabSupplierObserver.notifyCalled();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> model.getCurrentTabSupplier().addObserver(observer));
+                () -> {
+                    return model.getCurrentTabSupplier().addSyncObserverAndPostIfNonNull(observer);
+                });
 
         Tab[] fullList = new Tab[] {tab0};
 

@@ -94,7 +94,7 @@ public class TabSupplierObserver extends EmptyTabObserver implements Destroyable
 
     @VisibleForTesting
     protected void addObserverToTabSupplier() {
-        mTabSupplier.addObserver(mTabObserver);
+        mTabSupplier.addSyncObserverAndPostIfNonNull(mTabObserver);
     }
 
     @VisibleForTesting

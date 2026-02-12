@@ -902,7 +902,7 @@ public class ToolbarManager
         mToolbarHairline = mControlContainer.findViewById(R.id.toolbar_hairline);
 
         mBookmarkModelSupplier = bookmarkModelSupplier;
-        mBookmarkModelSupplier.addObserver(mBookmarkModelSupplierObserver);
+        mBookmarkModelSupplier.addSyncObserverAndPostIfNonNull(mBookmarkModelSupplierObserver);
 
         mIphController = new ToolbarIphController(activity, mUserEducationHelper);
 

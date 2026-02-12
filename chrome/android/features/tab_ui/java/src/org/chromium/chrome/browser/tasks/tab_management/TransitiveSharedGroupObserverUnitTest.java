@@ -78,9 +78,11 @@ public class TransitiveSharedGroupObserverUnitTest {
         TransitiveSharedGroupObserver observer =
                 new TransitiveSharedGroupObserver(
                         mTabGroupSyncService, mDataSharingService, mCollaborationService);
-        observer.getGroupSharedStateSupplier().addObserver(mOnSharedGroupStateChanged);
-        observer.getGroupMembersSupplier().addObserver(mOnGroupMembersChanged);
-        observer.getCollaborationIdSupplier().addObserver(mOnSharedGroupCollaborationIdChanged);
+        observer.getGroupSharedStateSupplier()
+                .addSyncObserverAndPostIfNonNull(mOnSharedGroupStateChanged);
+        observer.getGroupMembersSupplier().addSyncObserverAndPostIfNonNull(mOnGroupMembersChanged);
+        observer.getCollaborationIdSupplier()
+                .addSyncObserverAndPostIfNonNull(mOnSharedGroupCollaborationIdChanged);
 
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.collaborationId = COLLABORATION_ID1;

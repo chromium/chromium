@@ -82,7 +82,7 @@ public class UnwrapObservableSupplierTest {
         SettableNullableObservableSupplier<Object> parentSupplier =
                 ObservableSuppliers.createNullable();
         NullableObservableSupplier<Integer> unwrapSupplier = make(parentSupplier);
-        unwrapSupplier.addObserver(mOnChangeCallback);
+        unwrapSupplier.addSyncObserverAndPostIfNonNull(mOnChangeCallback);
 
         ShadowLooper.idleMainLooper();
         assertTrue(parentSupplier.hasObservers());
@@ -107,7 +107,7 @@ public class UnwrapObservableSupplierTest {
                 ObservableSuppliers.createNonNull(mObject1);
         NullableObservableSupplier<Integer> unwrapSupplier = make(parentSupplier);
 
-        unwrapSupplier.addObserver(mOnChangeCallback);
+        unwrapSupplier.addSyncObserverAndPostIfNonNull(mOnChangeCallback);
         assertTrue(parentSupplier.hasObservers());
 
         ShadowLooper.idleMainLooper();
@@ -119,7 +119,7 @@ public class UnwrapObservableSupplierTest {
         SettableNonNullObservableSupplier<Object> parentSupplier =
                 ObservableSuppliers.createNonNull(3);
         NullableObservableSupplier<Integer> unwrapSupplier = make(parentSupplier);
-        unwrapSupplier.addObserver(mOnChangeCallback);
+        unwrapSupplier.addSyncObserverAndPostIfNonNull(mOnChangeCallback);
 
         ShadowLooper.idleMainLooper();
         verify(mOnChangeCallback).onResult(eq(3));

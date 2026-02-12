@@ -38,7 +38,7 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
         mRequestAccessButton = requestAccessButton;
 
         mExtensionsToolbarBridge.addObserver(mToolbarObserver);
-        mCurrentTabSupplier.addObserver(mTabSupplierObserver);
+        mCurrentTabSupplier.addSyncObserverAndPostIfNonNull(mTabSupplierObserver);
         refreshRequestAccessButton();
     }
 

@@ -74,7 +74,7 @@ public class LinkHoverStatusBarCoordinator extends EmptyTabObserver
         mCurrentTabObserver = new CurrentTabObserver(tabProvider, this);
         mTabProvider = tabProvider;
         mTabSupplierObserver = (tab) -> updateHoverListener();
-        tabProvider.addObserver(mTabSupplierObserver);
+        tabProvider.addSyncObserverAndPostIfNonNull(mTabSupplierObserver);
 
         mLinkHoverStatusBar = (TextView) statusBarStub.inflate();
         mInitialMaxWidth =

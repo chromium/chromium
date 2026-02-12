@@ -315,13 +315,13 @@ public class TabGridDialogMediator
             // This should be the first supplier set as the other suppliers depend on its value.
             mTransitiveSharedGroupObserver
                     .getCollaborationIdSupplier()
-                    .addObserver(mOnCollaborationIdChanged);
+                    .addSyncObserverAndPostIfNonNull(mOnCollaborationIdChanged);
             mTransitiveSharedGroupObserver
                     .getGroupSharedStateSupplier()
-                    .addObserver(mOnGroupSharedStateChanged);
+                    .addSyncObserverAndPostIfNonNull(mOnGroupSharedStateChanged);
             mTransitiveSharedGroupObserver
                     .getGroupMembersSupplier()
-                    .addObserver(mOnGroupMembersChanged);
+                    .addSyncObserverAndPostIfNonNull(mOnGroupMembersChanged);
             mMessagingBackendService =
                     MessagingBackendServiceFactory.getForProfile(mOriginalProfile);
             mPersistentMessageObserver =

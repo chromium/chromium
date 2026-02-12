@@ -120,7 +120,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
         }
         mDelegateModel
                 .getCurrentTabSupplier()
-                .addObserver(mDelegateModelCurrentTabSupplierObserver);
+                .addSyncObserverAndPostIfNonNull(mDelegateModelCurrentTabSupplierObserver);
         mDelegateModel
                 .getTabCountSupplier()
                 .addSyncObserverAndPostIfNonNull(mDelegateModelTabCountSupplierObserver);

@@ -923,7 +923,7 @@ public class StripLayoutHelper
         mCloseButtonMenu.setModal(true);
 
         mActionConfirmationManager = actionConfirmationManager;
-        mGroupIdToHideSupplier.addObserver(
+        mGroupIdToHideSupplier.addSyncObserverAndPostIfNonNull(
                 (newIdToHide) -> {
                     // If a close animation is requested, we'll just rebuild after the close
                     // animation completes. Doing so now can hit a NPE. Even if it didn't, it would

@@ -134,7 +134,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
             mReadAloudActivePlaybackTab = readAloudController.getActivePlaybackTabSupplier();
         }
         if (mReadAloudActivePlaybackTab != null) {
-            mReadAloudActivePlaybackTab.addObserver(mActivePlaybackTabCallback);
+            mReadAloudActivePlaybackTab.addSyncObserverAndPostIfNonNull(mActivePlaybackTabCallback);
         }
     }
 

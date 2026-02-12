@@ -62,7 +62,7 @@ public class TopControlsLockCoordinator {
         mTabStripVisibilitySupplier = tabStripVisibilitySupplier;
         mDesktopWindowStateManager = desktopWindowStateManager;
 
-        mTabStripVisibilitySupplier.addObserver(mStripVisibilityUpdateCallback);
+        mTabStripVisibilitySupplier.addSyncObserverAndPostIfNonNull(mStripVisibilityUpdateCallback);
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.addObserver(mAppHeaderObserver);
         }
