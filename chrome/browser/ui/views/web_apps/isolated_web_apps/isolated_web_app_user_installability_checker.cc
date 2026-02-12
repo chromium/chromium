@@ -101,6 +101,9 @@ void InstallabilityChecker::OnInstallabilityChecked(
       std::move(callback_).Run(
           BundleNotAllowlistedForUserInstallation(metadata));
       return;
+    case web_app::IsolatedInstallabilityCheckResult::kBlocklisted:
+      std::move(callback_).Run(BundleBlocklisted{});
+      return;
   }
 }
 

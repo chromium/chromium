@@ -46,12 +46,16 @@ class InstallabilityChecker {
   struct BundleNotAllowlistedForUserInstallation {
     SignedWebBundleMetadata metadata;
   };
+
+  struct BundleBlocklisted {};
+
   using Result = std::variant<ProfileShutdown,
                               BundleInvalid,
                               BundleInstallable,
                               BundleUpdatable,
                               BundleOutdated,
-                              BundleNotAllowlistedForUserInstallation>;
+                              BundleNotAllowlistedForUserInstallation,
+                              BundleBlocklisted>;
 
   static std::unique_ptr<InstallabilityChecker> CreateAndStart(
       Profile* profile,

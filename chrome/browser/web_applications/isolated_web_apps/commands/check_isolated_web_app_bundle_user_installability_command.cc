@@ -48,6 +48,12 @@ void CheckIsolatedWebAppBundleUserInstallabilityCommand::StartWithLock(
   lock_ = std::move(lock);
 
   const auto& bundle_id = bundle_metadata_.url_info().web_bundle_id();
+  if (ChromeIwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
+          bundle_id.id())) {
+    ReportResult(IsolatedInstallabilityCheckResult::kBlocklisted, std::nullopt);
+    return;
+  }
+
   if (!ChromeIwaRuntimeDataProvider::GetInstance().GetUserInstallAllowlistData(
           bundle_id.id())) {
     ReportResult(IsolatedInstallabilityCheckResult::kNotOnUserInstallAllowlist,
@@ -115,6 +121,9 @@ void CheckIsolatedWebAppBundleUserInstallabilityCommand::ReportResult(
       break;
     case IsolatedInstallabilityCheckResult::kNotOnUserInstallAllowlist:
       message = "Failure: Bundle is not on the user install allowlist";
+      break;
+    case web_app::IsolatedInstallabilityCheckResult::kBlocklisted:
+      message = "Failure: Bundle is blocklisted";
       break;
     case IsolatedInstallabilityCheckResult::kShutdown:
       NOTREACHED();

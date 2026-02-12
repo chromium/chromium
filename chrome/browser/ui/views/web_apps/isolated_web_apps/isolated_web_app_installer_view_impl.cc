@@ -650,6 +650,16 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
                 CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
                                            ui::kColorAlertMediumSeverityIcon),
                 std::nullopt);
+          },
+          [this](const IsolatedWebAppInstallerModel::
+                     BundleBlocklistedInstallationDialog&) {
+            return ShowChildDialog(
+                IDS_IWA_INSTALLER_INSTALL_FAILED_TITLE,
+                ui::DialogModelLabel(
+                    IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_BLOCKLISTED),
+                CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
+                                           ui::kColorAlertMediumSeverityIcon),
+                std::nullopt);
           }},
       dialog);
 }

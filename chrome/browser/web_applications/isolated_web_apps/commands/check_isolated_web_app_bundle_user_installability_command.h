@@ -34,6 +34,8 @@ enum class IsolatedInstallabilityCheckResult {
   kShutdown,
   // The bundle id is not on the user install allowlist.
   kNotOnUserInstallAllowlist,
+  // The bundle id is on the blocklist.
+  kBlocklisted
 };
 
 // Checks if a Signed Web Bundle is installable as an Isolated Web App. It

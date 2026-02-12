@@ -7,6 +7,7 @@
 #include <variant>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -177,16 +178,63 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
   // The "Not Allowlisted" dialog should appear during the kGetMetadata step.
   // We need to wait for the child widget to appear.
   views::Widget* child_widget = nullptr;
-  while (!child_widget) {
-    child_widget = controller->GetChildWidgetForTesting();
-    base::RunLoop().RunUntilIdle();
-  }
-  ASSERT_TRUE(child_widget);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return child_widget = controller->GetChildWidgetForTesting(); }));
 
   ASSERT_TRUE(model->has_dialog());
   ASSERT_TRUE(
       std::holds_alternative<IsolatedWebAppInstallerModel::
                                  BundleNotAllowlistedForUserInstallationDialog>(
+          model->dialog()));
+
+  views::test::CancelDialog(child_widget);
+  ASSERT_TRUE(on_closed_future.Wait());
+
+  EXPECT_EQ(model->step(), IsolatedWebAppInstallerModel::Step::kGetMetadata);
+
+  webapps::AppId app_id =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(app->web_bundle_id())
+          .app_id();
+  ASSERT_FALSE(
+      provider().registrar_unsafe().GetInstallState(app_id).has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
+                       FailsWhenBlocklisted) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+
+  data_provider_->Update(
+      [&](auto& update) { update.AddToBlocklist(app->web_bundle_id()); });
+
+  base::test::TestFuture<void> on_closed_future;
+
+  IsolatedWebAppInstallerCoordinator* coordinator =
+      IsolatedWebAppInstallerCoordinator::CreateAndStart(
+          profile(), app->path(), on_closed_future.GetCallback());
+
+  IsolatedWebAppInstallerModel* model = coordinator->GetModelForTesting();
+  ASSERT_TRUE(model);
+
+  IsolatedWebAppInstallerViewController* controller =
+      coordinator->GetControllerForTesting();
+  ASSERT_TRUE(controller);
+
+  TestIsolatedWebAppInstallerModelObserver model_observer(model);
+
+  model_observer.WaitForStepChange(
+      IsolatedWebAppInstallerModel::Step::kGetMetadata);
+
+  // The "Not Allowlisted" dialog should appear during the kGetMetadata step.
+  // We need to wait for the child widget to appear.
+  views::Widget* child_widget = nullptr;
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return child_widget = controller->GetChildWidgetForTesting(); }));
+
+  ASSERT_TRUE(model->has_dialog());
+  ASSERT_TRUE(
+      std::holds_alternative<
+          IsolatedWebAppInstallerModel::BundleBlocklistedInstallationDialog>(
           model->dialog()));
 
   views::test::CancelDialog(child_widget);

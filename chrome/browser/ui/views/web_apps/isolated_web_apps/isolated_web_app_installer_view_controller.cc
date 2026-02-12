@@ -159,6 +159,11 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
                               not_allowlisted.metadata.app_name()));
   }
 
+  void operator()(const InstallabilityChecker::BundleBlocklisted& blocklisted) {
+    model_->SetDialog(
+        IsolatedWebAppInstallerModel::BundleBlocklistedInstallationDialog{});
+  }
+
  private:
   raw_ref<IsolatedWebAppInstallerModel> model_;
   raw_ref<IsolatedWebAppInstallerViewController> controller_;

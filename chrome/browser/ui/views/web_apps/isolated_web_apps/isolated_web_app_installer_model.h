@@ -53,12 +53,14 @@ class IsolatedWebAppInstallerModel {
   struct BundleNotAllowlistedForUserInstallationDialog {
     std::u16string bundle_name;
   };
+  struct BundleBlocklistedInstallationDialog {};
 
   using Dialog = std::variant<BundleInvalidDialog,
                               BundleAlreadyInstalledDialog,
                               ConfirmInstallationDialog,
                               InstallationFailedDialog,
-                              BundleNotAllowlistedForUserInstallationDialog>;
+                              BundleNotAllowlistedForUserInstallationDialog,
+                              BundleBlocklistedInstallationDialog>;
 
   explicit IsolatedWebAppInstallerModel(const IwaSourceBundleWithMode& source);
   ~IsolatedWebAppInstallerModel();
