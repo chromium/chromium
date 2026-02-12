@@ -100,18 +100,9 @@ CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
     return nullptr;
   }
 
-  MemoryManagedPaintRecorder recorder(Size(),
-                                      /*client=*/nullptr);
-
-  draw_callback(recorder.getRecordingCanvas());
-
-  if (recorder.HasReleasableDrawOps()) {
-    ImageProviderImpl image_provider(info_);
-
-    cc::PlaybackParams params(&image_provider,
-                              surface->getCanvas()->getLocalToDevice());
-    recorder.ReleaseMainRecording().Playback(surface->getCanvas(), params);
-  }
+  ImageProviderImpl image_provider(info_);
+  cc::SkiaPaintCanvas canvas(surface->getCanvas(), &image_provider);
+  draw_callback(canvas);
 
   cc::PaintImage paint_image;
 
