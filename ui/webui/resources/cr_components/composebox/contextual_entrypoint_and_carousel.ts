@@ -601,7 +601,23 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }));
   }
 
+  private isMimeTypeAllowed_(
+      mimeType: string, allowedTypes: string[]): boolean {
+    const lowerMimeType = mimeType.toLowerCase();
+    return allowedTypes.some(type => {
+      if (type.endsWith('/*')) {
+        const prefix = type.slice(0, -1);
+        return lowerMimeType.startsWith(prefix);
+      }
+      return lowerMimeType === type;
+    });
+  }
+
   private addFileFromAttachment_(fileAttachment: FileAttachment) {
+    if (!this.isFileAllowed_(fileAttachment.mimeType)) {
+      this.handleProcessFilesError_(ProcessFilesError.INVALID_TYPE);
+      return;
+    }
     const pendingStatus = this.pendingFiles_.get(fileAttachment.uuid);
     const composeboxFile: ComposeboxFile = {
       uuid: fileAttachment.uuid,
@@ -749,15 +765,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     });
   }
 
-  private isFileAllowed_(file: File, allowedTypes: string[]): boolean {
-    const fileType = file.type.toLowerCase();
-    return allowedTypes.some(type => {
-      if (type.endsWith('/*')) {
-        const prefix = type.slice(0, -1);
-        return fileType.startsWith(prefix);
-      }
-      return fileType === type;
-    });
+  private isFileAllowed_(fileType: string): boolean {
+    return this.isMimeTypeAllowed_(fileType, this.imageFileTypes_) ||
+        this.isMimeTypeAllowed_(fileType, this.attachmentFileTypes_);
   }
 
   protected processFiles_(files: FileList|null) {
@@ -780,8 +790,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         continue;
       }
 
-      if (!this.isFileAllowed_(file, this.imageFileTypes_) &&
-          !this.isFileAllowed_(file, this.attachmentFileTypes_)) {
+      if (!this.isFileAllowed_(file.type)) {
         errorToDisplay =
             Math.max(errorToDisplay, ProcessFilesError.INVALID_TYPE);
         continue;
