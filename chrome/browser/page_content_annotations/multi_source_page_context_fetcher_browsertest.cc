@@ -584,6 +584,7 @@ IN_PROC_BROWSER_TEST_F(
       browser(),
       GetURL(kHostA, "/password_in_iframe.html?domain=/cross-site/b.test/")));
 
+  // Wait for main frame layout/render.
   {
     base::test::TestFuture<bool> future;
     web_contents()
@@ -591,6 +592,14 @@ IN_PROC_BROWSER_TEST_F(
         ->GetRenderWidgetHost()
         ->InsertVisualStateCallback(future.GetCallback());
     ASSERT_TRUE(future.Wait()) << "Timeout waiting for syncing with renderer";
+  }
+
+  // Wait for cross-site subframe layout/render.
+  {
+    base::test::TestFuture<bool> sub_future;
+    GetSubframe()->GetRenderWidgetHost()->InsertVisualStateCallback(
+        sub_future.GetCallback());
+    ASSERT_TRUE(sub_future.Wait());
   }
 
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
