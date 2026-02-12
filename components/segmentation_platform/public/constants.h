@@ -175,6 +175,7 @@ const char kContextualPageActionModelLabelPriceTracking[] = "price_tracking";
 const char kContextualPageActionModelLabelReaderMode[] = "reader_mode";
 const char kContextualPageActionModelLabelPriceInsights[] = "price_insights";
 const char kContextualPageActionModelLabelTabGrouping[] = "tab_grouping";
+const char kContextualPageActionModelLabelGlic[] = "glic";
 
 // Labels for cross device segment.
 const char kNoCrossDeviceUsage[] = "NoCrossDeviceUsage";
@@ -262,6 +263,7 @@ const char kContextualPageActionModelInputPriceInsights[] =
 const char kContextualPageActionModelInputDiscounts[] = "has_discounts";
 const char kContextualPageActionModelInputTabGrouping[] =
     "has_tab_grouping_suggestion";
+const char kContextualPageActionModelInputGlic[] = "can_open_glic";
 
 const char kComposePrmotionLabelShow[] = "Show";
 const char kComposePrmotionLabelDontShow[] = "DontShow";

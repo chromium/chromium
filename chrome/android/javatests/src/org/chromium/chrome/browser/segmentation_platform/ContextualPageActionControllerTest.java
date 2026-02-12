@@ -30,7 +30,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS})
+@EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, ChromeFeatureList.GLIC})
 @Batch(Batch.PER_CLASS)
 public class ContextualPageActionControllerTest {
     private static final String CONTEXTUAL_PAGE_ACTION_DEFAULT_MODEL_HISTOGRAM =

@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.ai.PageSummaryButtonController;
 import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonController;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
+import org.chromium.chrome.browser.glic.GlicToolbarButtonController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonController;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonDataProvider;
@@ -110,6 +111,10 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
                         AiAssistantService.getInstance(),
                         trackerSupplier);
         controller.addButtonVariant(AdaptiveToolbarButtonVariant.PAGE_SUMMARY, pageSummary);
+        if (AdaptiveToolbarFeatures.isGlicActionEnabled()) {
+            var glicButton = new GlicToolbarButtonController(mContext, mActivityTabProvider);
+            controller.addButtonVariant(AdaptiveToolbarButtonVariant.GLIC, glicButton);
+        }
         if (AdaptiveToolbarFeatures.isTabGroupingPageActionEnabled()) {
             var tabGrouping =
                     new GroupSuggestionsButtonDataProvider(

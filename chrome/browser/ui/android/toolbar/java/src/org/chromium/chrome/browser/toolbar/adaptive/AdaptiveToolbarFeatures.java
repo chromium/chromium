@@ -189,6 +189,10 @@ public class AdaptiveToolbarFeatures {
         return ChromeFeatureList.sCpaTabGroupingButton.isEnabled();
     }
 
+    public static boolean isGlicActionEnabled() {
+        return ChromeFeatureList.sGlic.isEnabled();
+    }
+
     static void setDefaultSegmentForTesting(String defaultSegment) {
         sDefaultSegmentForTesting = defaultSegment;
         ResettersForTesting.register(() -> sDefaultSegmentForTesting = null);
@@ -247,7 +251,7 @@ public class AdaptiveToolbarFeatures {
 
     private AdaptiveToolbarFeatures() {}
 
-    /** @return The minimum device width below which the toolbar button isn't shown. */
+    /** Returns the minimum device width below which the toolbar button isn't shown. */
     public static int getDeviceMinimumWidthForShowingButton() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,

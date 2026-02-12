@@ -118,6 +118,9 @@ public class SegmentationPlatformServiceFactoryTest {
                         inputContext.addEntry(
                                 Constants.CONTEXTUAL_PAGE_ACTIONS_TAB_GROPING_INPUT,
                                 ProcessedValue.fromFloat(0.0f));
+                        inputContext.addEntry(
+                                Constants.CONTEXTUAL_PAGE_ACTIONS_GLIC_INPUT,
+                                ProcessedValue.fromFloat(0.0f));
                         inputContext.addEntry("url", ProcessedValue.fromGURL(GURL.emptyGURL()));
 
                         segmentationPlatformService.getClassificationResult(
