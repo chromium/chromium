@@ -89,12 +89,46 @@ public final class BindService {
         }
     }
 
+    /**
+     * This method should always be used when creating an instance of {@link
+     * Context.BindServiceFlags}. This method removes the incompatible BIND_EXTERNAL_SERVICE flag if
+     * present and replaces it with BIND_EXTERNAL_SERVICE_LONG. If you don't use this method when
+     * creating BindServiceFlags, it could lead to an IllegalArgumentException on some devices.
+     *
+     * <p>Don't:
+     *
+     * <pre>
+     *     int flags = ...;
+     *     BindServiceFlags.of(flags);
+     * </pre>
+     *
+     * Do:
+     *
+     * <pre>
+     *     int flags = ...;
+     *     BindServiceFlags.of(sanitizeFlagsForBindServiceFlags(flags));
+     * </pre>
+     *
+     * This method can be cleaned up once Build.VERSION.SDK_INT >= U is always true.
+     */
+    public static long sanitizeFlagsForBindServiceFlags(int flags) {
+        // crbug.com/482179609 BindServiceFlags is incompatible with BIND_EXTERNAL_SERVICE. We must
+        // use BIND_EXTERNAL_SERVICE_LONG instead.
+        long longFlags = flags;
+        if ((longFlags & Context.BIND_EXTERNAL_SERVICE) != 0) {
+            longFlags &= ~Context.BIND_EXTERNAL_SERVICE;
+            longFlags |= Context.BIND_EXTERNAL_SERVICE_LONG;
+        }
+        return longFlags;
+    }
+
     @SuppressWarnings("NewApi")
     static void doRebindService(Context context, ServiceConnection connection, int flags) {
         if (sBinderCallCounter != null) {
             sBinderCallCounter.mRebindServiceCount++;
         }
-        Context.BindServiceFlags bindServiceFlags = Context.BindServiceFlags.of(flags);
+        Context.BindServiceFlags bindServiceFlags =
+                Context.BindServiceFlags.of(sanitizeFlagsForBindServiceFlags(flags));
         if (context == ContextUtils.getApplicationContext()
                 && ScopedServiceBindingBatch.shouldBatchUpdate()) {
             BindingRequestQueue queue = ScopedServiceBindingBatch.getBindingRequestQueue();
