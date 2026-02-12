@@ -9092,9 +9092,9 @@ crbug.com/389012014 [ Mac13 ] fast/peerconnection/RTCRtpSender-getParameters.htm
 
 # Flaky performance API tests
 crbug.com/387096438 virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-video.tentative.html [ Failure Pass ]
-crbug.com/385337582 external/wpt/paint-timing/fcp-only/fcp-document-opacity-image.html [ Failure Pass ]
+crbug.com/385337582 external/wpt/paint-timing/with-lcp/fcp-document-opacity-image.html [ Failure Pass ]
 crbug.com/383627707 [ Mac ] external/wpt/element-timing/image-carousel.html [ Failure Pass ]
-crbug.com/379474211 external/wpt/paint-timing/fcp-only/fcp-document-opacity-text.html [ Failure Pass ]
+crbug.com/379474211 external/wpt/paint-timing/with-lcp/fcp-document-opacity-text.html [ Failure Pass ]
 
 # Gardener 2025-01-27
 crbug.com/390068099 [ Mac ] fast/mediarecorder/MediaRecorder-error-on-oversize-frame-h264.html [ Failure Pass ]
