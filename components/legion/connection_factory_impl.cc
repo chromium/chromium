@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "components/legion/attestation/handler_impl.h"
 #include "components/legion/connection_basic.h"
 #include "components/legion/connection_metrics.h"
 #include "components/legion/connection_proxy.h"
@@ -16,8 +15,6 @@
 #include "components/legion/connection_token_attestation.h"
 #include "components/legion/phosphor/token_manager.h"
 #include "components/legion/secure_channel_impl.h"
-#include "components/legion/secure_session_async_impl.h"
-#include "components/legion/websocket_client.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -26,25 +23,14 @@ namespace legion {
 
 namespace {
 
-std::unique_ptr<SecureChannel> CreateSecureChannel(
-    const GURL& url,
-    network::mojom::NetworkContext* network_context) {
-  auto transport = std::make_unique<WebSocketClient>(url, network_context);
-  auto secure_session = std::make_unique<SecureSessionAsyncImpl>();
-  auto attestation_handler = std::make_unique<AttestationHandlerImpl>();
-
-  return std::make_unique<SecureChannelImpl>(std::move(transport),
-                                             std::move(secure_session),
-                                             std::move(attestation_handler));
-}
-
 // Creates connection composition: Timeout(Metrics(Basic)).
 std::unique_ptr<Connection> CreateBasicMetricsTimeoutConnection(
     const GURL& url,
     network::mojom::NetworkContext* network_context,
     base::OnceClosure on_disconnect) {
   auto connection_basic = std::make_unique<ConnectionBasic>(
-      CreateSecureChannel(url, network_context), std::move(on_disconnect));
+      std::make_unique<SecureChannelImpl::FactoryImpl>(url, network_context),
+      std::move(on_disconnect));
 
   auto connection_metrics =
       std::make_unique<ConnectionMetrics>(std::move(connection_basic));

@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -29,14 +30,12 @@ using ::testing::Invoke;
 
 class FakeSecureChannel : public SecureChannel {
  public:
-  void SetResponseCallback(ResponseCallback callback) override {
-    response_callback_ = std::move(callback);
+  explicit FakeSecureChannel(ResponseCallback callback)
+      : response_callback_(std::move(callback)) {
+    CHECK(response_callback_);
   }
 
-  void EstablishChannel(EstablishChannelCallback callback) override {
-    // For tests, we'll immediately succeed.
-    std::move(callback).Run(base::ok());
-  }
+  ~FakeSecureChannel() override = default;
 
   bool Write(const Request& request) override {
     // Make sure that `request` is encoded `proto::LegionRequest` proto
@@ -58,10 +57,12 @@ class FakeSecureChannel : public SecureChannel {
     std::vector<uint8_t> response_bytes(response.ByteSizeLong());
     response.SerializeToArray(response_bytes.data(), response_bytes.size());
 
+    CHECK(response_callback_);
     response_callback_.Run(std::move(response_bytes));
   }
 
   void send_back_error(ErrorCode error) {
+    CHECK(response_callback_);
     response_callback_.Run(base::unexpected(error));
   }
 
@@ -71,15 +72,43 @@ class FakeSecureChannel : public SecureChannel {
   bool write_succeeds_ = true;
 };
 
+class FakeSecureChannelFactory : public SecureChannel::Factory {
+ public:
+  using OnCreatedCallback = base::RepeatingCallback<void(FakeSecureChannel*)>;
+
+  explicit FakeSecureChannelFactory(OnCreatedCallback on_created_callback)
+      : on_created_callback_(std::move(on_created_callback)) {}
+
+  ~FakeSecureChannelFactory() override = default;
+
+  std::unique_ptr<SecureChannel> Create(
+      SecureChannel::ResponseCallback callback) override {
+    auto secure_channel =
+        std::make_unique<FakeSecureChannel>(std::move(callback));
+    on_created_callback_.Run(secure_channel.get());
+    return secure_channel;
+  }
+
+ private:
+  OnCreatedCallback on_created_callback_;
+};
+
 class ConnectionBasicTest : public testing::Test {
  public:
   void SetUp() override {
-    auto secure_channel = std::make_unique<FakeSecureChannel>();
-    secure_channel_ = secure_channel.get();
     connection_ = std::make_unique<legion::ConnectionBasic>(
-        std::move(secure_channel),
+        std::make_unique<FakeSecureChannelFactory>(
+            base::BindRepeating(&ConnectionBasicTest::on_secure_channel_created,
+                                base::Unretained(this))),
         base::BindOnce(&ConnectionBasicTest::on_disconnect,
                        base::Unretained(this)));
+
+    // `secure_channel_` should be created after creating a `connection_`.
+    CHECK(secure_channel_);
+  }
+
+  void on_secure_channel_created(FakeSecureChannel* secure_channel) {
+    secure_channel_ = secure_channel;
   }
 
   void on_disconnect() { on_disconnect_counter_++; }

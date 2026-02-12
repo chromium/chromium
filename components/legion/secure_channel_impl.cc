@@ -16,28 +16,55 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/legion/attestation/handler.h"
+#include "components/legion/attestation/handler_impl.h"
 #include "components/legion/legion_common.h"
 #include "components/legion/proto/legion.pb.h"
 #include "components/legion/proto_utils/attestation_evidence_utils.h"
 #include "components/legion/secure_session.h"
+#include "components/legion/secure_session_async_impl.h"
 #include "components/legion/transport.h"
+#include "components/legion/websocket_client.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
+#include "url/gurl.h"
 
 namespace legion {
 
+SecureChannelImpl::FactoryImpl::FactoryImpl(
+    const GURL& url,
+    network::mojom::NetworkContext* network_context)
+    : url_(url), network_context_(network_context) {}
+
+SecureChannelImpl::FactoryImpl::~FactoryImpl() = default;
+
+std::unique_ptr<SecureChannel> SecureChannelImpl::FactoryImpl::Create(
+    ResponseCallback callback) {
+  auto transport = std::make_unique<WebSocketClient>(url_, network_context_);
+  auto secure_session = std::make_unique<SecureSessionAsyncImpl>();
+  auto attestation_handler = std::make_unique<AttestationHandlerImpl>();
+
+  return std::make_unique<SecureChannelImpl>(
+      std::move(callback), std::move(transport), std::move(secure_session),
+      std::move(attestation_handler));
+}
+
 SecureChannelImpl::SecureChannelImpl(
+    ResponseCallback callback,
     std::unique_ptr<Transport> transport,
     std::unique_ptr<SecureSession> secure_session,
     std::unique_ptr<AttestationHandler> attestation_handler)
     : transport_(std::move(transport)),
       secure_session_(std::move(secure_session)),
-      attestation_handler_(std::move(attestation_handler)) {
+      attestation_handler_(std::move(attestation_handler)),
+      response_callback_(std::move(callback)) {
   CHECK(transport_);
   CHECK(secure_session_);
   CHECK(attestation_handler_);
 
   transport_->SetResponseCallback(base::BindRepeating(
       &SecureChannelImpl::OnResponseReceived, weak_factory_.GetWeakPtr()));
+
+  StartSessionEstablishment();
 }
 
 SecureChannelImpl::~SecureChannelImpl() {
@@ -45,44 +72,10 @@ SecureChannelImpl::~SecureChannelImpl() {
   RecordSessionDurationMetrics();
 }
 
-void SecureChannelImpl::SetResponseCallback(ResponseCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  response_callback_ = std::move(callback);
-}
-
-void SecureChannelImpl::EstablishChannel(EstablishChannelCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  switch (state_) {
-    case State::kUninitialized:
-      pending_establishment_callbacks_.push_back(std::move(callback));
-      StartSessionEstablishment();
-      return;
-    case State::kPerformingAttestation:
-    case State::kWaitingHandshakeMessage:
-    case State::kPerformingHandshake:
-    case State::kVerifyingHandshake:
-      pending_establishment_callbacks_.push_back(std::move(callback));
-      return;
-    case State::kEstablished:
-      std::move(callback).Run(base::ok());
-      return;
-    case State::kClosed:
-      DLOG(ERROR) << "SecureChannel is closed.";
-      std::move(callback).Run(base::unexpected(ErrorCode::kError));
-      return;
-  }
-}
-
 bool SecureChannelImpl::Write(const Request& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   switch (state_) {
-    case State::kUninitialized:
-      AddRequestToPendingEncryptionQueue(request);
-      StartSessionEstablishment();
-      return true;
     case State::kPerformingAttestation:
     case State::kWaitingHandshakeMessage:
     case State::kPerformingHandshake:
@@ -139,7 +132,6 @@ void SecureChannelImpl::OnResponseReceived(
         break;
       case State::kWaitingHandshakeMessage:
       case State::kVerifyingHandshake:
-      case State::kUninitialized:
       case State::kClosed:
         // Transport error in these states is unexpected because no requests
         // should be in flight.
@@ -169,7 +161,6 @@ void SecureChannelImpl::OnResponseReceived(
     case State::kEstablished:
       OnEncryptedResponse(session_response);
       break;
-    case State::kUninitialized:
     case State::kWaitingHandshakeMessage:
     case State::kVerifyingHandshake:
     case State::kClosed:
@@ -325,12 +316,6 @@ void SecureChannelImpl::OnHandshakeVerification(bool handshake_verified) {
   state_ = State::kEstablished;
   state_entry_times_[state_] = base::TimeTicks::Now();
 
-  auto callbacks = std::move(pending_establishment_callbacks_);
-  pending_establishment_callbacks_.clear();
-  for (auto& cb : callbacks) {
-    std::move(cb).Run(base::ok());
-  }
-
   ProcessPendingEncryptionRequests();
 }
 
@@ -375,9 +360,7 @@ void SecureChannelImpl::OnDecryptedResponse(
 void SecureChannelImpl::StartSessionEstablishment() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK_EQ(state_, State::kUninitialized);
-  DCHECK(!pending_encryption_requests_.empty() ||
-         !pending_establishment_callbacks_.empty());
+  DCHECK_EQ(state_, State::kPerformingAttestation);
 
   // Step 1: Get and Send Attestation Request
   auto get_attestation_start_time = base::TimeTicks::Now();
@@ -413,12 +396,6 @@ void SecureChannelImpl::FailAllRequestsAndClose(ErrorCode error_code) {
   RecordSessionDurationMetrics();
 
   state_ = State::kClosed;
-
-  auto establishment_callbacks = std::move(pending_establishment_callbacks_);
-  pending_establishment_callbacks_.clear();
-  for (auto& cb : establishment_callbacks) {
-    std::move(cb).Run(base::unexpected(error_code));
-  }
 
   pending_encryption_requests_.clear();
 

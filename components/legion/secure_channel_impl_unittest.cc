@@ -194,24 +194,26 @@ class MockAttestationHandler : public AttestationHandler {
 class SecureChannelImplTest : public ::testing::Test {
  protected:
   SecureChannelImplTest() {
-    auto transport = std::make_unique<StrictMock<MockTransport>>();
-    transport_ = transport.get();
+    transport_ptr_ = std::make_unique<StrictMock<MockTransport>>();
+    transport_ = transport_ptr_.get();
     EXPECT_CALL(*transport_, SetResponseCallback(_))
         .WillOnce(testing::SaveArg<0>(&response_callback_));
-    auto secure_session = std::make_unique<FakeSecureSession>();
-    secure_session_ = secure_session.get();
-    auto attestation_handler =
+    secure_session_ptr_ = std::make_unique<FakeSecureSession>();
+    secure_session_ = secure_session_ptr_.get();
+    attestation_handler_ptr_ =
         std::make_unique<StrictMock<MockAttestationHandler>>();
-    attestation_handler_ = attestation_handler.get();
-
-    secure_channel_ = std::make_unique<SecureChannelImpl>(
-        std::move(transport), std::move(secure_session),
-        std::move(attestation_handler));
+    attestation_handler_ = attestation_handler_ptr_.get();
   }
 
   void TearDown() override {
     testing::Mock::VerifyAndClearExpectations(transport_);
     testing::Mock::VerifyAndClearExpectations(attestation_handler_);
+  }
+
+  void CreateSecureChannel(SecureChannel::ResponseCallback callback) {
+    secure_channel_ = std::make_unique<SecureChannelImpl>(
+        std::move(callback), std::move(transport_ptr_),
+        std::move(secure_session_ptr_), std::move(attestation_handler_ptr_));
   }
 
   void SetUpAttestation();
@@ -222,6 +224,10 @@ class SecureChannelImplTest : public ::testing::Test {
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<SecureChannelImpl> secure_channel_;
+
+  std::unique_ptr<MockTransport> transport_ptr_;
+  std::unique_ptr<FakeSecureSession> secure_session_ptr_;
+  std::unique_ptr<MockAttestationHandler> attestation_handler_ptr_;
 
   raw_ptr<MockTransport> transport_;
   raw_ptr<FakeSecureSession> secure_session_;
@@ -284,7 +290,7 @@ TEST_F(SecureChannelImplTest, WriteAndEstablishSessionSucceeds) {
       });
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  CreateSecureChannel(future.GetRepeatingCallback());
   EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
@@ -315,8 +321,8 @@ TEST_F(SecureChannelImplTest, ChannelClosedIsReported) {
       .WillOnce(Return(std::nullopt));
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
+  CreateSecureChannel(future.GetRepeatingCallback());
+  EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -341,8 +347,8 @@ TEST_F(SecureChannelImplTest, AttestationErrorFailsWrite) {
       .WillOnce(Return(false));
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
+  CreateSecureChannel(future.GetRepeatingCallback());
+  EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -386,8 +392,8 @@ TEST_F(SecureChannelImplTest, AttestationEvidenceConversionFails) {
           [&]() { response_callback_.Run(attestation_session_response); });
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
+  CreateSecureChannel(future.GetRepeatingCallback());
+  EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -424,7 +430,7 @@ TEST_F(SecureChannelImplTest, TransportErrorDuringAttestationFailsRequest) {
       });
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  CreateSecureChannel(future.GetRepeatingCallback());
   EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
@@ -486,7 +492,7 @@ TEST_F(SecureChannelImplTest, TransportErrorDuringHandshakeFailsRequest) {
   }
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  CreateSecureChannel(future.GetRepeatingCallback());
   EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
@@ -533,7 +539,7 @@ TEST_F(SecureChannelImplTest, TransportErrorAfterSessionEstablished) {
       });
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  CreateSecureChannel(future.GetRepeatingCallback());
   EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
@@ -552,8 +558,8 @@ TEST_F(SecureChannelImplTest, GetAttestationRequestFails) {
       .WillOnce(Return(std::nullopt));
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
+  CreateSecureChannel(future.GetRepeatingCallback());
+  EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -589,8 +595,8 @@ TEST_F(SecureChannelImplTest, AttestationResponseMissingFails) {
       });
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
+  CreateSecureChannel(future.GetRepeatingCallback());
+  EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -632,7 +638,7 @@ TEST_F(SecureChannelImplTest, ProcessHandshakeResponseFails) {
       .WillOnce([&]() { response_callback_.Run(handshake_session_response); });
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  CreateSecureChannel(future.GetRepeatingCallback());
   EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
@@ -671,7 +677,7 @@ TEST_F(SecureChannelImplTest, HandshakeResponseMissingFails) {
       });
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  CreateSecureChannel(future.GetRepeatingCallback());
   EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
@@ -685,7 +691,7 @@ TEST_F(SecureChannelImplTest, EncryptRequestFails) {
   SetUpHandshake();
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  CreateSecureChannel(future.GetRepeatingCallback());
   EXPECT_TRUE(secure_channel_->Write(StringToBytes(kEncryptionMustFail)));
 
   const auto& result = future.Get();
@@ -717,7 +723,7 @@ TEST_F(SecureChannelImplTest, DecryptResponseFails) {
       });
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  CreateSecureChannel(future.GetRepeatingCallback());
   EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
@@ -745,7 +751,7 @@ TEST_F(SecureChannelImplTest, EmptyResponseFailsRequest) {
       });
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  CreateSecureChannel(future.GetRepeatingCallback());
   EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
@@ -762,7 +768,7 @@ TEST_F(SecureChannelImplTest, GetHandshakeMessageFails) {
   secure_session_->set_should_fail_handshake_message_generation(true);
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  CreateSecureChannel(future.GetRepeatingCallback());
   EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
@@ -779,110 +785,11 @@ TEST_F(SecureChannelImplTest, WriteInClosedState) {
       .WillOnce(Return(std::nullopt));
 
   base::test::TestFuture<base::expected<Response, ErrorCode>> future;
-  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  CreateSecureChannel(future.GetRepeatingCallback());
 
-  // First write triggers the failure.
-  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
-  ASSERT_FALSE(future.Get().has_value());
-
-  // Second write should fail immediately.
+  // Write fail immediately when channel is closed.
   EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
-}
-
-// Tests the successful establishment of a secure session via EstablishChannel.
-TEST_F(SecureChannelImplTest, EstablishChannelSucceeds) {
-  SetUpAttestation();
-  SetUpHandshake();
-
-  base::test::TestFuture<base::expected<void, ErrorCode>> future;
-  secure_channel_->EstablishChannel(future.GetCallback());
-
-  const auto& result = future.Get();
-  ASSERT_TRUE(result.has_value());
-}
-
-// Tests a failed establishment of a secure session via EstablishChannel.
-TEST_F(SecureChannelImplTest, EstablishChannelFails) {
-  EXPECT_CALL(*attestation_handler_, GetAttestationRequest())
-      .WillOnce(Return(std::nullopt));
-
-  base::test::TestFuture<base::expected<void, ErrorCode>> future;
-  secure_channel_->EstablishChannel(future.GetCallback());
-
-  const auto& result = future.Get();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kAttestationFailed);
-}
-
-// Tests calling EstablishChannel on an already established channel.
-TEST_F(SecureChannelImplTest, EstablishChannelOnEstablishedChannel) {
-  // First, establish the channel.
-  SetUpAttestation();
-  SetUpHandshake();
-  base::test::TestFuture<base::expected<void, ErrorCode>> future;
-  secure_channel_->EstablishChannel(future.GetCallback());
-  ASSERT_TRUE(future.Get().has_value());
-
-  // Now, call it again. It should succeed immediately.
-  base::test::TestFuture<base::expected<void, ErrorCode>> second_future;
-  secure_channel_->EstablishChannel(second_future.GetCallback());
-  const auto& result = second_future.Get();
-  ASSERT_TRUE(result.has_value());
-}
-
-// Tests calling EstablishChannel on a closed channel.
-TEST_F(SecureChannelImplTest, EstablishChannelOnClosedChannel) {
-  // First, force the channel to close.
-  EXPECT_CALL(*attestation_handler_, GetAttestationRequest())
-      .WillOnce(Return(std::nullopt));
-  base::test::TestFuture<base::expected<void, ErrorCode>> future;
-  secure_channel_->EstablishChannel(future.GetCallback());
-  ASSERT_FALSE(future.Get().has_value());
-
-  // Now, call it again. It should fail immediately.
-  base::test::TestFuture<base::expected<void, ErrorCode>> second_future;
-  secure_channel_->EstablishChannel(second_future.GetCallback());
-  const auto& result = second_future.Get();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kError);
-}
-
-// Tests that a write request after EstablishChannel is queued and succeeds.
-TEST_F(SecureChannelImplTest, WriteAfterEstablishChannelSucceeds) {
-  SetUpAttestation();
-  SetUpHandshake();
-
-  oak::session::v1::SessionRequest expected_session_request;
-  {
-    oak::session::v1::EncryptedMessage encrypted_request;
-    encrypted_request.set_ciphertext("encrypted: secret request");
-    *expected_session_request.mutable_encrypted_message() = encrypted_request;
-  }
-
-  EXPECT_CALL(*transport_, Send(EqualsSessionRequest(expected_session_request)))
-      .WillOnce([&]() {
-        oak::session::v1::SessionResponse response;
-        {
-          oak::session::v1::EncryptedMessage encrypted_response;
-          encrypted_response.set_ciphertext("encrypted: secret response");
-          *response.mutable_encrypted_message() = encrypted_response;
-        }
-        response_callback_.Run(response);
-      });
-
-  base::test::TestFuture<base::expected<void, ErrorCode>> establish_future;
-  secure_channel_->EstablishChannel(establish_future.GetCallback());
-
-  base::test::TestFuture<base::expected<Response, ErrorCode>> write_future;
-  secure_channel_->SetResponseCallback(write_future.GetRepeatingCallback());
-  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
-
-  const auto& establish_result = establish_future.Get();
-  ASSERT_TRUE(establish_result.has_value());
-
-  const auto& write_result = write_future.Get();
-  ASSERT_TRUE(write_result.has_value());
-  EXPECT_EQ(BytesToString(write_result.value()), "secret response");
+  EXPECT_FALSE(future.Get().has_value());
 }
 
 }  // namespace

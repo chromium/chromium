@@ -23,13 +23,29 @@
 #include "components/legion/secure_channel.h"
 #include "components/legion/secure_session.h"
 #include "components/legion/transport.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
+#include "url/gurl.h"
 
 namespace legion {
 
 class SecureChannelImpl : public SecureChannel {
  public:
-  SecureChannelImpl(std::unique_ptr<Transport> transport,
+  class FactoryImpl : public SecureChannel::Factory {
+   public:
+    FactoryImpl(const GURL& url,
+                network::mojom::NetworkContext* network_context);
+    ~FactoryImpl() override;
+
+    std::unique_ptr<SecureChannel> Create(ResponseCallback callback) override;
+
+   private:
+    const GURL url_;
+    raw_ptr<network::mojom::NetworkContext> network_context_;
+  };
+
+  SecureChannelImpl(ResponseCallback callback,
+                    std::unique_ptr<Transport> transport,
                     std::unique_ptr<SecureSession> secure_session,
                     std::unique_ptr<AttestationHandler> attestation_handler);
   ~SecureChannelImpl() override;
@@ -38,14 +54,11 @@ class SecureChannelImpl : public SecureChannel {
   SecureChannelImpl& operator=(const SecureChannelImpl&) = delete;
 
   // SecureChannel:
-  void SetResponseCallback(ResponseCallback callback) override;
-  void EstablishChannel(EstablishChannelCallback callback) override;
   bool Write(const Request& request) override;
 
  private:
   // Stages of the secure channel establishment and write process.
   enum class State {
-    kUninitialized,
     kPerformingAttestation,
     kWaitingHandshakeMessage,
     kPerformingHandshake,
@@ -90,12 +103,11 @@ class SecureChannelImpl : public SecureChannel {
   std::unique_ptr<AttestationHandler> attestation_handler_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  State state_ GUARDED_BY_CONTEXT(sequence_checker_) = State::kUninitialized;
+  State state_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      State::kPerformingAttestation;
 
   ResponseCallback response_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::deque<Request> pending_encryption_requests_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  std::vector<EstablishChannelCallback> pending_establishment_callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::map<State, base::TimeTicks> state_entry_times_

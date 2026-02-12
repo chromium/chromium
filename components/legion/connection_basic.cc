@@ -16,23 +16,16 @@
 
 namespace legion {
 
-ConnectionBasic::ConnectionBasic(std::unique_ptr<SecureChannel> secure_channel,
-                                 base::OnceClosure on_disconnect)
-    : secure_channel_(std::move(secure_channel)),
-      on_disconnect_(std::move(on_disconnect)) {
-  CHECK(secure_channel_);
+ConnectionBasic::ConnectionBasic(
+    std::unique_ptr<SecureChannel::Factory> secure_channel_factory,
+    base::OnceClosure on_disconnect)
+    : on_disconnect_(std::move(on_disconnect)) {
+  CHECK(secure_channel_factory);
   CHECK(on_disconnect_);
 
-  secure_channel_->SetResponseCallback(base::BindRepeating(
+  secure_channel_ = secure_channel_factory->Create(base::BindRepeating(
       &ConnectionBasic::OnResponseReceived, weak_factory_.GetWeakPtr()));
-  // Do not handle a callback intentionally to simplify implementation
-  // as the follow-up Send() request will fail anyway.
-  //
-  // Instead we need to completely remove this method as establish channel when
-  // secure channel is created.
-  //
-  // TODO(b/477158049): Remove EstablishChannel method.
-  secure_channel_->EstablishChannel(base::DoNothing());
+  CHECK(secure_channel_);
 }
 
 ConnectionBasic::~ConnectionBasic() = default;

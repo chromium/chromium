@@ -24,8 +24,9 @@ class ConnectionBasic : public Connection {
  public:
   // When `on_disconnect` callback is invoked, all follow-up `Send()` calls will
   // fail immediately without attempting to send a request over the wire.
-  ConnectionBasic(std::unique_ptr<SecureChannel> secure_channel,
-                  base::OnceClosure on_disconnect);
+  ConnectionBasic(
+      std::unique_ptr<SecureChannel::Factory> secure_channel_factory,
+      base::OnceClosure on_disconnect);
   ~ConnectionBasic() override;
 
   ConnectionBasic(const ConnectionBasic&) = delete;
