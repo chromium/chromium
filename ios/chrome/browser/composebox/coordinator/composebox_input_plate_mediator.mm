@@ -1158,10 +1158,19 @@ CreateInputDataFromAnnotatedPageContent(
                                                         kImageGeneration];
       break;
     case ComposeboxMode::kCanvas:
-      // TODO(crbug.com/477244841): Add metrics recording for canvas.
+      [self.metricsRecorder
+          recordComposeboxFocusResultedInNavigation:_inNavigation
+                                    withAttachments:!_items.empty
+                                        requestType:AutocompleteRequestType::
+                                                        kCanvas];
       break;
     case ComposeboxMode::kDeepSearch:
-      // TODO(crbug.com/481280186): Add metrics recording for deep search.
+      [self.metricsRecorder
+          recordComposeboxFocusResultedInNavigation:_inNavigation
+                                    withAttachments:!_items.empty
+                                        requestType:AutocompleteRequestType::
+                                                        kImageGeneration];
+      break;
   }
 }
 
@@ -1719,11 +1728,13 @@ CreateInputDataFromAnnotatedPageContent(
       [self sendText:[NSString cr_fromString16:text]];
       break;
     case ComposeboxMode::kCanvas:
-      // TODO(crbug.com/477244841): Add metrics recording for canvas.
+      [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
+                                AutocompleteRequestType::kCanvas];
       [self sendText:[NSString cr_fromString16:text]];
       break;
     case ComposeboxMode::kDeepSearch:
-      // TODO(crbug.com/481280186): Add metrics recording for deep search.
+      [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
+                                AutocompleteRequestType::kDeepSearch];
       [self sendText:[NSString cr_fromString16:text]];
       break;
   }
