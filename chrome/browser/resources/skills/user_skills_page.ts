@@ -107,7 +107,7 @@ export class UserSkillsPageElement extends CrLitElement {
   }
 
   protected onExploreButtonClick_() {
-    const path = '/browse-skills';
+    const path = '/browse';
     this.fire('route-click', {path});
   }
 

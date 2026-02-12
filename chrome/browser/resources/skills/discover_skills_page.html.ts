@@ -25,8 +25,8 @@ ${this.getOtherCategories_().length > 0 ? html`
   ${this.getOtherCategories_().map(category => html`
     <cr-chip ?selected="${this.isCategorySelected_(category)}"
         data-category="${category}" @click="${this.onCategoryClick_}">
-      <cr-icon icon="${this.isCategorySelected_(category) ?
-          'cr:check' : 'cr:add'}">
+      <cr-icon icon="${this.isCategorySelected_(category) ? 'cr:check' :
+          this.getIconForCategory_(category)}">
       </cr-icon>
       ${category}
     </cr-chip>`)}

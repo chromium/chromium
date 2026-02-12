@@ -12,7 +12,7 @@ import type {DiscoverSkillsPageElement} from 'chrome://skills/discover_skills_pa
 import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillSource} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillsPageBrowserProxy} from 'chrome://skills/skills_page_browser_proxy.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSkillsBrowserProxy} from './test_skills_browser_proxy.js';
@@ -91,7 +91,7 @@ suite('DiscoverSkillsPage', function() {
     assertEquals(0, cards.length);
   });
 
-  test('ChipClickTogglesIcon', async function() {
+  test('DefaultChipShowsAllSkills', async function() {
     await setFirstPartySkills({
       'Shopping': [{id: '1', name: 'Shopping'}],
       'Writing': [{id: '2', name: 'Writing'}],
@@ -99,6 +99,32 @@ suite('DiscoverSkillsPage', function() {
 
     const chips = page.shadowRoot.querySelectorAll('cr-chip');
     assertTrue(!!chips);
+    // All, Shopping, Writing
+    assertEquals(3, chips.length);
+    assertTrue(!!chips[0]);
+    assertTrue(!!chips[1]);
+    const firstIcon = chips[0].querySelector('cr-icon');
+    assertTrue(!!firstIcon);
+
+    assertTrue(chips[0].selected);
+    assertEquals('cr:check', firstIcon.icon);
+    // All skill cards should be shown.
+    assertEquals(2, page.shadowRoot.querySelectorAll('skill-card').length);
+
+    chips[1].click();
+    await microtasksFinished();
+    // Only Shopping skill card should be shown.
+    assertEquals(1, page.shadowRoot.querySelectorAll('skill-card').length);
+  });
+
+  test('ChipClickTogglesIcon', async function() {
+    await setFirstPartySkills({
+      'Shopping': [{id: '1', name: 'Shopping'}],
+    });
+
+    const chips = page.shadowRoot.querySelectorAll('cr-chip');
+    assertTrue(!!chips);
+    // All, Shopping
     assertEquals(2, chips.length);
     assertTrue(!!chips[0]);
     assertTrue(!!chips[1]);
@@ -110,13 +136,13 @@ suite('DiscoverSkillsPage', function() {
     assertTrue(chips[0].selected);
     assertEquals('cr:check', firstIcon.icon);
     assertFalse(chips[1].selected);
-    assertEquals('cr:add', secondIcon.icon);
+    assertNotEquals('cr:check', secondIcon.icon);
 
     chips[1].click();
     await microtasksFinished();
 
     assertFalse(chips[0].selected);
-    assertEquals('cr:add', firstIcon.icon);
+    assertNotEquals('cr:check', firstIcon.icon);
     assertTrue(chips[1].selected);
     assertEquals('cr:check', secondIcon.icon);
   });

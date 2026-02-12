@@ -89,4 +89,8 @@
 
 .dropdown-item {
   justify-content: flex-start;
+  gap: 16px;
+  --iron-icon-width: 16px;
+  --iron-icon-height: 16px;
+  color: var(--color-sys-on-surface);
 }

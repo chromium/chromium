@@ -18,8 +18,8 @@ interface MenuItem {
 }
 
 export enum Page {
-  USER_SKILLS = 'user-skills',
-  DISCOVER_SKILLS = 'browse-skills',
+  USER_SKILLS = 'yourSkills',
+  DISCOVER_SKILLS = 'browse',
 }
 
 export class SkillsSidebarElement extends CrLitElement {
