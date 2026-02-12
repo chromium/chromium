@@ -30,6 +30,7 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.DeleteGesture;
@@ -65,6 +66,7 @@ import org.chromium.blink_public.web.WebInputEventModifier;
 import org.chromium.blink_public.web.WebTextInputMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content.R;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.WindowEventObserver;
@@ -92,6 +94,7 @@ import org.chromium.ui.base.ime.TextInputType;
 import org.chromium.ui.mojom.ImeTextSpanType;
 import org.chromium.ui.mojom.VirtualKeyboardPolicy;
 import org.chromium.ui.mojom.VirtualKeyboardVisibilityRequest;
+import org.chromium.ui.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
@@ -1584,8 +1587,25 @@ public class ImeAdapterImpl
      */
     boolean commitContent(String dataUrl) {
         onImeEvent();
-        if (!isValid()) return false;
-        return ImeAdapterImplJni.get().insertMediaFromURL(mNativeImeAdapterAndroid, dataUrl);
+        if (isValid()
+                && ImeAdapterImplJni.get().insertMediaFromURL(mNativeImeAdapterAndroid, dataUrl)) {
+            return true;
+        } else {
+            try {
+                // If the rich content commit fails, display the failure message.
+                Toast.makeText(
+                                getContainerView().getContext(),
+                                R.string.rich_content_commit_failure_message,
+                                Toast.LENGTH_SHORT)
+                        .show();
+            } catch (WindowManager.BadTokenException e) {
+                Log.w(
+                        TAG,
+                        "Failed to display message toast to notify the rich content commit"
+                                + " failure.");
+            }
+            return false;
+        }
     }
 
     /** Lazily creates/returns a StylusWritingImeCallback object. */

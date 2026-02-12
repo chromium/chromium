@@ -22,9 +22,12 @@ import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.view.inputmethod.CorrectionInfo;
+import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,12 +37,15 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.EventType;
 import org.chromium.blink_public.web.WebInputEventModifier;
+import org.chromium.content.R;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ImeEventObserver;
@@ -50,6 +56,7 @@ import org.chromium.ui.test.util.TestViewAndroidDelegate;
 
 /** Unit tests for {@link ImeAdapterImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowToast.class})
 @DisableFeatures(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)
 public class ImeAdapterImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -74,10 +81,16 @@ public class ImeAdapterImplUnitTest {
                 .when(mWebContentsImpl)
                 .getOrSetUserData(any(), any());
 
+        when(mContainerView.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
         when(mContainerView.getResources())
                 .thenReturn(ApplicationProvider.getApplicationContext().getResources());
         when(mWebContentsImpl.getViewAndroidDelegate())
                 .thenReturn(new TestViewAndroidDelegate(mContainerView));
+    }
+
+    @After
+    public void tearDown() {
+        ShadowToast.reset();
     }
 
     @Test
@@ -233,13 +246,34 @@ public class ImeAdapterImplUnitTest {
     }
 
     @Test
-    public void testCommitContent() {
+    public void testCommitContentSuccessfully() {
+        when(mImeAdapterImplJni.insertMediaFromURL(anyLong(), any())).thenReturn(true);
+
         ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
         adapter.onConnectedToRenderProcess();
 
         adapter.commitContent(/* dataUrl= */ "atestingdataurl");
 
         verify(mImeAdapterImplJni).insertMediaFromURL(anyLong(), eq("atestingdataurl"));
+        Assert.assertNull(ShadowToast.getLatestToast());
+    }
+
+    @Test
+    public void testCommitContent_FailureShowsToast() {
+        when(mImeAdapterImplJni.insertMediaFromURL(anyLong(), any())).thenReturn(false);
+
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        ShadowToast.reset();
+        Assert.assertFalse(adapter.commitContent("atestingdataurl"));
+
+        Assert.assertNotNull(ShadowToast.getLatestToast());
+        TextView textView = (TextView) ShadowToast.getLatestToast().getView();
+        Assert.assertEquals(
+                ApplicationProvider.getApplicationContext()
+                        .getString(R.string.rich_content_commit_failure_message),
+                textView.getText().toString());
     }
 
     @Test
