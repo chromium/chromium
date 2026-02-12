@@ -14,6 +14,7 @@
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/web_contents/web_contents_view_drag_security_info.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
@@ -40,10 +41,10 @@ class SynchronousCompositorClient;
 class WebContentsImpl;
 
 // Android-specific implementation of the WebContentsView.
-class WebContentsViewAndroid : public WebContentsView,
-                               public RenderViewHostDelegateView,
-                               public ui::EventHandlerAndroid,
-                               public WebContentsObserver {
+class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
+                                              public RenderViewHostDelegateView,
+                                              public ui::EventHandlerAndroid,
+                                              public WebContentsObserver {
  public:
   WebContentsViewAndroid(WebContentsImpl* web_contents,
                          std::unique_ptr<WebContentsViewDelegate> delegate);
@@ -156,6 +157,9 @@ class WebContentsViewAndroid : public WebContentsView,
   virtual bool ShouldShowBlurTransitionAnimation(
       NavigationHandle* navigation_handle);
 
+  virtual bool IsDragAllowedByDataControlPolicy(const ClipboardEndpoint& source,
+                                                const DropData& drop_data);
+
   void SetFocus(bool focused);
   void set_device_orientation(int orientation) {
     device_orientation_ = orientation;
@@ -199,7 +203,7 @@ class WebContentsViewAndroid : public WebContentsView,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
                            std::optional<gfx::PointF> transformed_pt);
   void OnDragEnded();
-  void OnSystemDragEnded(RenderWidgetHost* source_rwh);
+  virtual void OnSystemDragEnded(RenderWidgetHost* source_rwh);
 
   SelectPopup* GetSelectPopup();
 

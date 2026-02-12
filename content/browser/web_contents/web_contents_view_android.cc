@@ -31,6 +31,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/android/synchronous_compositor.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
@@ -471,6 +472,31 @@ void WebContentsViewAndroid::StartDragging(
     return;
   }
 
+  GURL source_url = web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL();
+  ui::DataTransferEndpoint data_endpoint(
+      source_url,
+      {.notify_if_restricted = true,
+       .off_the_record = web_contents_->GetBrowserContext()->IsOffTheRecord()});
+
+  // TODO(crbug.com/410835513): Unify with other declarations of
+  // CreateClipboardEndpoint.
+  ClipboardEndpoint source_endpoint(
+      base::optional_ref<const ui::DataTransferEndpoint>(data_endpoint),
+      base::BindRepeating(
+          [](GlobalRenderFrameHostId rfh_id) -> BrowserContext* {
+            auto* rfh = RenderFrameHost::FromID(rfh_id);
+            if (!rfh) {
+              return nullptr;
+            }
+            return rfh->GetBrowserContext();
+          },
+          web_contents_->GetPrimaryMainFrame()->GetGlobalId()),
+      *web_contents_->GetPrimaryMainFrame());
+
+  if (!IsDragAllowedByDataControlPolicy(source_endpoint, drop_data)) {
+    OnSystemDragEnded(source_rwh);
+    return;
+  }
   if (drag_drop_oopif_enabled_) {
     drag_security_info_.OnDragInitiated(source_rwh, drop_data);
   }
@@ -1001,6 +1027,13 @@ bool WebContentsViewAndroid::ShouldShowBlurTransitionAnimation(
     return delegate_->ShouldShowBlurTransitionAnimation(navigation_handle);
   }
   return false;
+}
+
+bool WebContentsViewAndroid::IsDragAllowedByDataControlPolicy(
+    const ClipboardEndpoint& source,
+    const DropData& drop_data) {
+  return GetContentClient()->browser()->IsDragAllowedByPolicy(source,
+                                                              drop_data);
 }
 
 }  // namespace content

@@ -3602,6 +3602,7 @@ test("content_unittests") {
       "../browser/media/key_system_support_android_unittest.cc",
       "../browser/renderer_host/render_widget_host_view_android_unittest.cc",
       "../browser/sms/sms_provider_gms_unittest.cc",
+      "../browser/web_contents/web_contents_view_android_unittest.cc",
       "../renderer/java/gin_java_bridge_value_converter_unittest.cc",
     ]
 
