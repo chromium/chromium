@@ -58,6 +58,9 @@ def main():
   r = subprocess.run([args.clippy_driver, *rustflags], env=rustenv, check=False)
   if r.returncode == 0:
     args.build_stamp_file.touch()
+  else:
+    print("NOTE: See `//docs/rust/clippy.md` for more Clippy info.",
+          file=sys.stderr)
   return r.returncode
 
 
