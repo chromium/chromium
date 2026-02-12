@@ -1,0 +1,15 @@
+[document web]
+++[section]
+++++[push button] name='Show Menu'
+++++[panel]
+++++++[panel]
+++++++++[check menu item] name='Checkbox 1' checked checkable checkable:true
+++++++++[check menu item] name='Checkbox 2' checkable checkable:true
+++++++[panel]
+++++++++[radio menu item] name='Radio 1' checked checkable checkable:true
+++++++++[radio menu item] name='Radio 2' checkable checkable:true
+++++++[panel]
+++++++++[menu item] name='Item 1'
+++++++++[menu item] name='Item 2'
+++++++[menu item] name='Item 3'
+++++++[menu item] name='Item 4'

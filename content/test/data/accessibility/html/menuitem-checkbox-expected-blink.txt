@@ -1,0 +1,34 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++button name='Show Menu'
+++++++++staticText name='Show Menu'
+++++++++++inlineTextBox name='Show Menu'
+++++++group ispopup=auto
+++++++++group
+++++++++++menuItemCheckBox name='Checkbox 1' checkedState=true
+++++++++++++staticText name='Checkbox 1'
+++++++++++++++inlineTextBox name='Checkbox 1'
+++++++++++menuItemCheckBox name='Checkbox 2' checkedState=false
+++++++++++++staticText name='Checkbox 2'
+++++++++++++++inlineTextBox name='Checkbox 2'
+++++++++group
+++++++++++menuItemRadio name='Radio 1' checkedState=true
+++++++++++++staticText name='Radio 1'
+++++++++++++++inlineTextBox name='Radio 1'
+++++++++++menuItemRadio name='Radio 2' checkedState=false
+++++++++++++staticText name='Radio 2'
+++++++++++++++inlineTextBox name='Radio 2'
+++++++++group
+++++++++++menuItem name='Item 1'
+++++++++++++staticText name='Item 1'
+++++++++++++++inlineTextBox name='Item 1'
+++++++++++menuItem name='Item 2'
+++++++++++++staticText name='Item 2'
+++++++++++++++inlineTextBox name='Item 2'
+++++++++menuItem name='Item 3'
+++++++++++staticText name='Item 3'
+++++++++++++inlineTextBox name='Item 3'
+++++++++menuItem name='Item 4'
+++++++++++staticText name='Item 4'
+++++++++++++inlineTextBox name='Item 4'

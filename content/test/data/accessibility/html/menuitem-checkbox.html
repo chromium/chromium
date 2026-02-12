@@ -1,0 +1,27 @@
+<!--
+@BLINK-ALLOW:checked
+@BLINK-ALLOW:role
+-->
+<!DOCTYPE html>
+<button id="button" popovertarget="menu">Show Menu</button>
+<menulist id="menu" popover>
+  <fieldset checkable="multiple">
+    <menuitem defaultchecked>Checkbox 1</menuitem>
+    <menuitem>Checkbox 2</menuitem>
+  </fieldset>
+  <fieldset checkable="single">
+    <menuitem defaultchecked>Radio 1</menuitem>
+    <menuitem>Radio 2</menuitem>
+  </fieldset>
+  <fieldset>
+    <menuitem defaultchecked>Item 1</menuitem>
+    <menuitem>Item 2</menuitem>
+  </fieldset>
+  <menuitem defaultchecked>Item 3</menuitem>
+  <menuitem>Item 4</menuitem>
+</menulist>
+<script>
+  window.addEventListener('load', () => {
+    button.click();
+  });
+</script>

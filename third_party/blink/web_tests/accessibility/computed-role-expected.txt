@@ -114,6 +114,8 @@ PASS roleElement.computedRole is "tree"
 PASS roleElement.computedRole is "treegrid"
 PASS roleElement.computedRole is "treeitem"
 PASS svgAElement.computedRole is "link"
+PASS checkboxItem.computedRole is "menuitemcheckbox"
+PASS radioItem.computedRole is "menuitemradio"
 PASS successfullyParsed is true
 
 TEST COMPLETE

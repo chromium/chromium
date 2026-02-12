@@ -33,6 +33,9 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   bool ShouldAppearChecked() const;
 
   HTMLMenuOwnerElement* OwningMenuElement() const;
+  HTMLFieldSetElement* NearestAncestorFieldSet() const {
+    return nearest_ancestor_field_set_.Get();
+  }
 
   bool CanBeCommandInvoker() const override;
   bool IsValidInterestInvoker(Element& target) const override;

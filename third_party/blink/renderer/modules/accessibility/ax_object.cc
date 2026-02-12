@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_map_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_item_element.h"
 #include "third_party/blink/renderer/core/html/html_no_script_element.h"
 #include "third_party/blink/renderer/core/html/html_progress_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
@@ -3229,8 +3230,7 @@ ax::mojom::blink::CheckedState AXObject::CheckedState() const {
   }
 
   // First test for native checked state
-  if (IsA<HTMLInputElement>(*node)) {
-    const auto* input = DynamicTo<HTMLInputElement>(node);
+  if (const auto* input = DynamicTo<HTMLInputElement>(node)) {
     if (!input) {
       return ax::mojom::blink::CheckedState::kNone;
     }
@@ -3255,6 +3255,10 @@ ax::mojom::blink::CheckedState AXObject::CheckedState() const {
                  ? ax::mojom::blink::CheckedState::kTrue
                  : ax::mojom::blink::CheckedState::kFalse;
     }
+  } else if (auto* menu_item = DynamicTo<HTMLMenuItemElement>(node)) {
+    return menu_item->ShouldAppearChecked()
+               ? ax::mojom::blink::CheckedState::kTrue
+               : ax::mojom::blink::CheckedState::kFalse;
   }
 
   // Try ARIA checked/pressed state

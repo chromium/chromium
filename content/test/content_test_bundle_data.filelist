@@ -4985,6 +4985,9 @@ data/accessibility/html/menu.html
 data/accessibility/html/menubar-element-roles-expected-auralinux.txt
 data/accessibility/html/menubar-element-roles-expected-blink.txt
 data/accessibility/html/menubar-element-roles.html
+data/accessibility/html/menuitem-checkbox-expected-auralinux.txt
+data/accessibility/html/menuitem-checkbox-expected-blink.txt
+data/accessibility/html/menuitem-checkbox.html
 data/accessibility/html/menulist-popover-expected-auralinux.txt
 data/accessibility/html/menulist-popover-expected-blink.txt
 data/accessibility/html/menulist-popover.html

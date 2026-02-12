@@ -137,6 +137,15 @@
 
       <div role="menuitemradio">This is a menuitemradio</div>
 
+      <menulist>
+        <fieldset checkable="multiple">
+          <menuitem id="checkboxItem">Checkbox</menuitem>
+        </fieldset>
+        <fieldset checkable="single">
+          <menuitem id="radioItem">Radio</menuitem>
+        </fieldset>
+      </menulist>
+
       <div role="note">This is a note</div>
 
       <div role="navigation">This is a navigation</div>
@@ -245,6 +254,8 @@ if (window.testRunner) {
     var svgAElement = document.querySelector('svg a');
     var expectedSvgARole = '"' + svgAElement.getAttribute('role') + '"';
     shouldBe('svgAElement.computedRole', expectedSvgARole);
+    shouldBeEqualToString("checkboxItem.computedRole", "menuitemcheckbox");
+    shouldBeEqualToString("radioItem.computedRole", "menuitemradio");
 
     document.querySelector('#test-cases').style.display = 'none';
 }
