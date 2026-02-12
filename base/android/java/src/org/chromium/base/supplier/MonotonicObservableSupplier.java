@@ -50,12 +50,6 @@ public interface MonotonicObservableSupplier<T> extends NullableObservableSuppli
         return addObserver(obs, NotifyBehavior.NOTIFY_ON_ADD | NotifyBehavior.POST_ON_ADD);
     }
 
-    @SuppressWarnings("NullAway") // Changing nullness of Callback<T>
-    @Override
-    default @Nullable T addObserver(Callback<T> obs) {
-        return addSyncObserverAndPostIfNonNull(obs);
-    }
-
     /**
      * @return A {@link NonNullObservableSupplier} if the supplied value is not null.
      */

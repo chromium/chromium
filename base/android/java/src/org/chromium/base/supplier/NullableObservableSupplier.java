@@ -68,16 +68,6 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
         return addObserver(obs, NotifyBehavior.NOTIFY_ON_ADD | NotifyBehavior.POST_ON_ADD);
     }
 
-    /**
-     * Adds an observer to the supplier and posts a notification if the value is not null.
-     *
-     * @param obs The observer to add.
-     * @return The current value of the supplier.
-     */
-    default @Nullable T addObserver(Callback<@Nullable T> obs) {
-        return addSyncObserverAndPostIfNonNull(obs);
-    }
-
     /** Returns whether there are any observers. */
     default boolean hasObservers() {
         return getObserverCount() != 0;
