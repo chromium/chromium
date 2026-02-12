@@ -131,11 +131,12 @@ TEST(ChannelLayoutTest, ChannelLayoutConfig_basic_constructor) {
 }
 
 TEST(ChannelLayoutTest, ChannelLayoutConfig_FromLayout) {
-  EXPECT_EQ(ChannelLayoutConfig::Mono(),
-            ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_MONO>());
+  constexpr auto mono = ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_MONO>();
+  EXPECT_EQ(ChannelLayoutConfig::Mono(), mono);
 
-  EXPECT_EQ(ChannelLayoutConfig::Stereo(),
-            ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_STEREO>());
+  constexpr auto stereo =
+      ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_STEREO>();
+  EXPECT_EQ(ChannelLayoutConfig::Stereo(), stereo);
 
   auto quad_layout = ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_QUAD>();
   EXPECT_EQ(CHANNEL_LAYOUT_QUAD, quad_layout.channel_layout());

@@ -220,7 +220,14 @@ class MEDIA_EXPORT ChannelLayoutConfig {
   constexpr ~ChannelLayoutConfig() = default;
 
   template <ChannelLayout layout>
-  static ChannelLayoutConfig FromLayout() {
+  static constexpr ChannelLayoutConfig FromLayout() {
+    if constexpr (layout == CHANNEL_LAYOUT_MONO) {
+      return Mono();
+    } else if constexpr (layout == CHANNEL_LAYOUT_STEREO) {
+      return Stereo();
+    }
+
+    // Other layouts cannot be used in a constexpr context.
     return ChannelLayoutConfig(layout, ChannelLayoutToChannelCount(layout));
   }
 
@@ -248,9 +255,8 @@ class MEDIA_EXPORT ChannelLayoutConfig {
 // For `CHANNEL_LAYOUT_DISCRETE`, we have to explicitly set the number of
 // channels, so we need to use the normal constructor.
 template <>
-ChannelLayoutConfig ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_DISCRETE>() =
-    delete;
-
+constexpr ChannelLayoutConfig
+ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_DISCRETE>() = delete;
 }  // namespace media
 
 #endif  // MEDIA_BASE_CHANNEL_LAYOUT_H_
