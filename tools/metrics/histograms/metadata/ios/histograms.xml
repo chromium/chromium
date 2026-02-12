@@ -3363,6 +3363,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.JavaScript.ErrorReportProcessor"
+    enum="IOSJavascriptErrorReportProcessorResult" expires_after="2026-08-10">
+  <owner>michaeldo@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    Records the result of creating, and potentially attempting to upload, a
+    Javascript error report.
+  </summary>
+</histogram>
+
 <histogram name="IOS.JavaScript.InterestingScriptError" enum="Boolean"
     expires_after="2026-12-07">
   <owner>michaeldo@google.com</owner>

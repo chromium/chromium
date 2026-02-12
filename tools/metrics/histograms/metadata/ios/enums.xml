@@ -1011,6 +1011,19 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Session Storage"/>
 </enum>
 
+<!-- LINT.IfChange(IOSJavascriptContentBlockType) -->
+
+<enum name="IOSJavascriptErrorReportProcessorResult">
+  <summary>The results of attempting to report a JavaScript error.</summary>
+  <int value="0" label="Processor Unavailable"/>
+  <int value="1" label="Api Missing"/>
+  <int value="2" label="Duplicate"/>
+  <int value="3" label="Upload Failed"/>
+  <int value="4" label="Success"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/web/js_features/window_error/web_js_error_report_processor.mm:IOSJavascriptErrorReportProcessorResult) -->
+
 <enum name="IOSLaunchSource">
   <summary>The way the app was launched on iOS.</summary>
   <int value="0" label="App Icon"/>

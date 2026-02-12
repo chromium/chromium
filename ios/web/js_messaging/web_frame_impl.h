@@ -89,6 +89,9 @@ class WebFrameImpl final : public WebFrame,
   // WebStateObserver:
   void WebStateDestroyed(web::WebState* web_state) override;
 
+  // Sends the response `value` to the message with id `message_id`.
+  void OnJSResultReceivedForMessageWithId(int message_id, id value);
+
  private:
   // Calls the JavaScript function `name` in the frame context in the same
   // manner as the inherited CallJavaScriptFunction functions. `content_world`
@@ -130,9 +133,6 @@ class WebFrameImpl final : public WebFrame,
   // between the various ExecuteJavaScript() functions.
   ExecuteJavaScriptCallbackWithError ExecuteJavaScriptCallbackAdapter(
       base::OnceCallback<void(const base::Value*)> callback);
-  // Prints the information about the error that was generated from the
-  // execution of the given arbitrary JavaScript string.
-  void LogScriptWarning(NSString* script, NSError* error);
 
   // Runs the request associated with the message with id `message_id`. The
   // completion callback, if any, associated with `message_id` will be called

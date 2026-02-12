@@ -22,12 +22,14 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
 #import "ios/web/common/features.h"
+#import "ios/web/js_features/window_error/web_js_error_report_processor.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/web_client.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
@@ -72,6 +74,125 @@ NSString* CreateFunctionCallWithParameters(const std::string& name,
 // error code `WKErrorJavaScriptExceptionOccurred`.
 const NSString* kCannotExecuteJSInDocumentErrorMessage =
     @"Cannot execute JavaScript in this document";
+
+void LogScriptResultError(base::WeakPtr<web::WebState> web_state,
+                          const std::string& api,
+                          NSString* script,
+                          url::Origin security_origin,
+                          bool is_main_frame,
+                          NSError* error) {
+  std::string executed_script = base::SysNSStringToUTF8(script);
+  std::string error_string =
+      base::SysNSStringToUTF8(error.userInfo[NSLocalizedDescriptionKey]);
+  NSString* ns_exception = error.userInfo[@"WKJavaScriptExceptionMessage"];
+  std::string exception = base::SysNSStringToUTF8(ns_exception);
+
+  DLOG(WARNING) << "Script execution of:" << executed_script
+                << "\nfailed with error: " << error_string
+                << "\nand exception: " << exception;
+
+  if (base::FeatureList::IsEnabled(web::features::kAssertOnJavaScriptErrors)) {
+    CHECK(false)
+        << "JavaScript error occurred with kAssertOnJavaScriptErrors enabled.";
+  }
+
+  // Do not log invalid target frame errors. This error means that the frame is
+  // no longer valid. This is an expected failure state as native code only has
+  // an outdated view of the web frames (updated asyncronously via JS messages
+  // or navigation callbacks).
+  if (error.domain == WKErrorDomain &&
+      error.code == WKErrorJavaScriptInvalidFrameTarget) {
+    UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.InterestingScriptError", false);
+    return;
+  }
+
+  // Some frames do not allow JavaScript execution, there is no need to report
+  // this as an error as it is an expected case.
+  if (error.domain == WKErrorDomain &&
+      [kCannotExecuteJSInDocumentErrorMessage isEqualToString:ns_exception]) {
+    UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.InterestingScriptError", false);
+    return;
+  }
+
+  UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.InterestingScriptError", true);
+
+  if (!base::FeatureList::IsEnabled(web::features::kLogCrWebJavaScriptErrors)) {
+    return;
+  }
+
+  if (!web_state) {
+    web::WebJsErrorReportProcessor::LogProcessorUnavailable();
+    return;
+  }
+
+  web::WebJsErrorReportProcessor* report_processor =
+      web::WebJsErrorReportProcessor::FromBrowserState(
+          web_state->GetBrowserState());
+  if (!report_processor) {
+    web::WebJsErrorReportProcessor::LogProcessorUnavailable();
+    return;
+  }
+
+  std::string err;
+  if (!exception.empty()) {
+    err = exception;
+  } else {
+    err = error_string;
+  }
+  report_processor->ReportJavaScriptExecutionFailed(api, security_origin, err,
+                                                    is_main_frame);
+}
+
+void OnJavaScriptExecutedInContentWorld(
+    base::WeakPtr<web::WebState> web_state,
+    NSString* script,
+    url::Origin security_origin,
+    bool is_main_frame,
+    web::ExecuteJavaScriptCallbackWithError callback,
+    id value,
+    NSError* error) {
+  if (error) {
+    LogScriptResultError(web_state, /*api=*/"", script, security_origin,
+                         is_main_frame, error);
+
+    std::move(callback).Run(nullptr, error);
+  } else {
+    std::move(callback).Run(web::ValueResultFromWKResult(value).get(), nil);
+  }
+}
+
+void JSExecutionCompleteReplyWithResultForMessageId(
+    base::WeakPtr<web::WebState> web_state,
+    base::WeakPtr<web::WebFrameImpl> web_frame,
+    int message_id,
+    const std::string& api,
+    NSString* script,
+    url::Origin security_origin,
+    bool is_main_frame,
+    id value,
+    NSError* error) {
+  if (error) {
+    LogScriptResultError(web_state, api, script, security_origin, is_main_frame,
+                         error);
+  }
+
+  if (web_frame) {
+    web_frame->OnJSResultReceivedForMessageWithId(message_id, value);
+  }
+}
+
+void JSExecutionComplete(base::WeakPtr<web::WebState> web_state,
+                         const std::string& api,
+                         NSString* script,
+                         url::Origin security_origin,
+                         bool is_main_frame,
+                         id value,
+                         NSError* error) {
+  if (error) {
+    LogScriptResultError(web_state, api, script, security_origin, is_main_frame,
+                         error);
+  }
+}
 
 }  // namespace
 
@@ -241,20 +362,13 @@ bool WebFrameImpl::ExecuteJavaScriptInContentWorld(
   DCHECK(frame_info_);
 
   NSString* ns_script = base::SysUTF16ToNSString(script);
-  __block auto internal_callback = std::move(callback);
-  void (^completion_handler)(id, NSError*) = ^void(id value, NSError* error) {
-    if (error) {
-      LogScriptWarning(ns_script, error);
-      std::move(internal_callback).Run(nullptr, error);
-    } else {
-      std::move(internal_callback)
-          .Run(ValueResultFromWKResult(value).get(), nil);
-    }
-  };
+  auto completion = base::BindOnce(
+      &OnJavaScriptExecutedInContentWorld, web_state_->GetWeakPtr(), ns_script,
+      security_origin_, is_main_frame_, std::move(callback));
 
-  web::ExecuteJavaScript(frame_info_.webView,
-                         content_world->GetWKContentWorld(), frame_info_,
-                         ns_script, completion_handler);
+  web::ExecuteJavaScript(
+      frame_info_.webView, content_world->GetWKContentWorld(), frame_info_,
+      ns_script, base::CallbackToBlock(std::move(completion)));
   return true;
 }
 
@@ -273,54 +387,7 @@ WebFrameImpl::ExecuteJavaScriptCallbackAdapter(
   });
 }
 
-void WebFrameImpl::LogScriptWarning(NSString* script, NSError* error) {
-  std::u16string executed_script = base::SysNSStringToUTF16(script);
-  std::u16string error_string =
-      base::SysNSStringToUTF16(error.userInfo[NSLocalizedDescriptionKey]);
-  NSString* ns_exception = error.userInfo[@"WKJavaScriptExceptionMessage"];
-  std::u16string exception = base::SysNSStringToUTF16(ns_exception);
 
-  DLOG(WARNING) << "Script execution of:" << executed_script
-                << "\nfailed with error: " << error_string
-                << "\nand exception: " << exception;
-
-  if (base::FeatureList::IsEnabled(features::kAssertOnJavaScriptErrors)) {
-    CHECK(false)
-        << "JavaScript error occurred with kAssertOnJavaScriptErrors enabled.";
-  }
-
-  // Do not log invalid target frame errors. This error means that the frame is
-  // no longer valid. This is an expected failure state as native code only has
-  // an outdated view of the web frames (updated asyncronously via JS messages
-  // or navigation callbacks).
-  if (error.domain == WKErrorDomain &&
-      error.code == WKErrorJavaScriptInvalidFrameTarget) {
-    UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.InterestingScriptError", false);
-    return;
-  }
-
-  // Some frames do not allow JavaScript execution, there is no need to report
-  // this as an error as it is an expected case.
-  if (error.domain == WKErrorDomain &&
-      [kCannotExecuteJSInDocumentErrorMessage isEqualToString:ns_exception]) {
-    UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.InterestingScriptError", false);
-    return;
-  }
-
-  UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.InterestingScriptError", true);
-
-  if (!base::FeatureList::IsEnabled(features::kLogCrWebJavaScriptErrors)) {
-    return;
-  }
-
-  SCOPED_CRASH_KEY_STRING256("JavaScript", "script",
-                             base::UTF16ToUTF8(executed_script));
-  SCOPED_CRASH_KEY_STRING256("JavaScript", "error",
-                             base::UTF16ToUTF8(error_string));
-  SCOPED_CRASH_KEY_STRING256("JavaScript", "exception",
-                             base::UTF16ToUTF8(exception));
-  base::debug::DumpWithoutCrashing();
-}
 
 bool WebFrameImpl::ExecuteJavaScriptFunction(
     JavaScriptContentWorld* content_world,
@@ -331,27 +398,25 @@ bool WebFrameImpl::ExecuteJavaScriptFunction(
   DCHECK(content_world);
   DCHECK(frame_info_);
 
-  NSString* script = CreateFunctionCallWithParameters(name, parameters);
-
-  void (^completion_handler)(id, NSError*) = nil;
-  if (reply_with_result) {
-    base::WeakPtr<WebFrameImpl> weak_frame = weak_ptr_factory_.GetWeakPtr();
-    completion_handler = ^void(id value, NSError* error) {
-      if (error) {
-        LogScriptWarning(script, error);
-      }
-      if (weak_frame) {
-        weak_frame->CompleteRequest(message_id,
-                                    ValueResultFromWKResult(value).get());
-      }
-    };
-  }
-
   WKContentWorld* world = content_world->GetWKContentWorld();
   DCHECK(world);
 
-  web::ExecuteJavaScript(frame_info_.webView, world, frame_info_, script,
-                         completion_handler);
+  NSString* script = CreateFunctionCallWithParameters(name, parameters);
+  if (reply_with_result) {
+    auto callback = base::BindOnce(
+        &JSExecutionCompleteReplyWithResultForMessageId,
+        web_state_->GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(), message_id,
+        name, script, security_origin_, is_main_frame_);
+    web::ExecuteJavaScript(frame_info_.webView, world, frame_info_, script,
+                           base::CallbackToBlock(std::move(callback)));
+  } else {
+    auto callback =
+        base::BindOnce(&JSExecutionComplete, web_state_->GetWeakPtr(), name,
+                       script, security_origin_, is_main_frame_);
+    web::ExecuteJavaScript(frame_info_.webView, world, frame_info_, script,
+                           base::CallbackToBlock(std::move(callback)));
+  }
+
   return true;
 }
 
@@ -392,6 +457,11 @@ void WebFrameImpl::DetachFromWebState() {
 void WebFrameImpl::WebStateDestroyed(web::WebState* web_state) {
   CancelPendingRequests();
   DetachFromWebState();
+}
+
+void WebFrameImpl::OnJSResultReceivedForMessageWithId(int message_id,
+                                                      id value) {
+  CompleteRequest(message_id, web::ValueResultFromWKResult(value).get());
 }
 
 WebFrameImpl::RequestCallbacks::RequestCallbacks(

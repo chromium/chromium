@@ -49,6 +49,7 @@ include_rules = [
   "+ios/chrome/browser/tabs/model/tabs_dependency_installer.h",
   "+ios/chrome/browser/text_selection/model",
   "+ios/chrome/browser/translate/model",
+  "+ios/chrome/browser/unified_consent/model",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web_selection/model",
   # keep-sorted end
