@@ -128,6 +128,9 @@ fn download_crates(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Re
             expecting_placeholder == vendored_is_placeholder
         };
         if is_already_right_version && is_already_right_placeholder_status {
+            if !is_removed(p.id()) {
+                remove_vendored_files(p.name(), p.version(), &config, paths)?;
+            }
             continue;
         }
 
@@ -140,6 +143,7 @@ fn download_crates(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Re
             let msg = format!("Downloading {}", crate_dirname.display());
             println!("{msg}");
             download_crate(p.name(), p.version(), paths).context(msg)?;
+            remove_vendored_files(p.name(), p.version(), &config, paths)?;
 
             apply_patches(p.name(), p.version(), &args.no_patches, paths).context(
                 "Applying patches failed - hopefully \
@@ -451,6 +455,29 @@ fn download_crate(
     std::fs::write(crate_dir.join(".cargo-checksum.json"), "{\"files\":{}}\n")
         .with_context(|| format!("writing .cargo-checksum.json for crate {name}"))?;
 
+    Ok(())
+}
+
+fn remove_vendored_files(
+    name: &str,
+    version: &semver::Version,
+    config: &config::BuildConfig,
+    paths: &paths::ChromiumPaths,
+) -> Result<()> {
+    let crate_vendor_dir = get_vendor_dir_for_package(paths, name, version);
+    let files_to_remove = config.get_combined_set(name, version, |c| &c.remove_vendored_files);
+    for file in files_to_remove {
+        let path = crate_vendor_dir.join(file);
+        if path.is_dir() {
+            println!("Deleting directory {}", path.display());
+            std::fs::remove_dir_all(&path)
+                .with_context(|| format!("removing directory {}", path.display()))?;
+        } else if path.exists() {
+            println!("Deleting file {}", path.display());
+            std::fs::remove_file(&path)
+                .with_context(|| format!("removing file {}", path.display()))?;
+        }
+    }
     Ok(())
 }
 

@@ -707,6 +707,10 @@ third_party/rust/chromium_crates_io/vendor/num-integer-v0_1
 third_party/rust/chromium_crates_io/vendor/num-rational-v0_4
 third_party/rust/chromium_crates_io/vendor/num-traits-v0_2
 third_party/rust/chromium_crates_io/vendor/once_cell-v1/.github/workflows
+third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5
+third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5/.github/workflows
+third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5/opus/celt/x86
+third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5/opus/m4
 third_party/rust/chromium_crates_io/vendor/parking_lot-v0_12/.github/workflows
 third_party/rust/chromium_crates_io/vendor/proc-macro2-v1
 third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/.github/workflows
@@ -745,6 +749,9 @@ third_party/rust/chromium_crates_io/vendor/strum-v0_27/src
 third_party/rust/chromium_crates_io/vendor/subtle-v2
 third_party/rust/chromium_crates_io/vendor/subtle-v2/src
 third_party/rust/chromium_crates_io/vendor/symphonia-bundle-flac-v0_5
+third_party/rust/chromium_crates_io/vendor/symphonia-bundle-mp3-v0_5
+third_party/rust/chromium_crates_io/vendor/symphonia-codec-pcm-v0_5
+third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_5
 third_party/rust/chromium_crates_io/vendor/symphonia-core-v0_5
 third_party/rust/chromium_crates_io/vendor/symphonia-metadata-v0_5
 third_party/rust/chromium_crates_io/vendor/symphonia-utils-xiph-v0_5

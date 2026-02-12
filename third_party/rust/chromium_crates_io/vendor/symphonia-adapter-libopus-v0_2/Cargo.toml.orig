@@ -1,0 +1,27 @@
+[package]
+name = "symphonia-adapter-libopus"
+description = "Adapter to use libopus with Symphonia"
+version = "0.2.5"
+license = "MIT OR Apache-2.0"
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+include.workspace = true
+categories.workspace = true
+keywords.workspace = true
+
+[dependencies]
+opusic-sys = { workspace = true }
+symphonia-core = { workspace = true }
+log = { workspace = true }
+
+[features]
+default = ["bundled"]
+bundled = ["opusic-sys/bundled"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]

@@ -9,45 +9,30 @@
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
-  crate_name = "symphonia"
-  epoch = "0.5"
+  crate_name = "symphonia_adapter_libopus"
+  epoch = "0.2"
   crate_type = "rlib"
-  crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/symphonia-v0_5/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/symphonia-adapter-libopus-v0_2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/symphonia-v0_5/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-adapter-libopus-v0_2/src/decoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-adapter-libopus-v0_2/src/lib.rs",
   ]
-  inputs = []
+  inputs = [ "//third_party/rust/chromium_crates_io/vendor/symphonia-adapter-libopus-v0_2/src/../README.md" ]
 
   build_native_rust_unit_tests = false
-  edition = "2018"
-  cargo_pkg_authors = "Philip Deljanov <philip.deljanov@gmail.com>"
-  cargo_pkg_name = "symphonia"
-  cargo_pkg_description =
-      "Pure Rust media container and audio decoding library."
-  cargo_pkg_repository = "https://github.com/pdeljanov/Symphonia"
-  cargo_pkg_version = "0.5.5"
+  edition = "2024"
+  cargo_pkg_authors = "Austin Schey <aschey13@gmail.com>"
+  cargo_pkg_name = "symphonia-adapter-libopus"
+  cargo_pkg_description = "Adapter to use libopus with Symphonia"
+  cargo_pkg_repository = "https://github.com/aschey/symphonia-adapters"
+  cargo_pkg_version = "0.2.5"
 
-  allow_unsafe = false
+  allow_unsafe = true
 
   deps = [
-    "//third_party/rust/lazy_static/v1:lib",
-    "//third_party/rust/symphonia_bundle_flac/v0_5:lib",
-    "//third_party/rust/symphonia_bundle_mp3/v0_5:lib",
-    "//third_party/rust/symphonia_codec_pcm/v0_5:lib",
-    "//third_party/rust/symphonia_codec_vorbis/v0_5:lib",
+    "//third_party/rust/log/v0_4:lib",
+    "//third_party/rust/opusic_sys/v0_5:lib",
     "//third_party/rust/symphonia_core/v0_5:lib",
-    "//third_party/rust/symphonia_metadata/v0_5:lib",
-  ]
-  features = [
-    "flac",
-    "mp3",
-    "pcm",
-    "symphonia-bundle-flac",
-    "symphonia-bundle-mp3",
-    "symphonia-codec-pcm",
-    "symphonia-codec-vorbis",
-    "vorbis",
   ]
 
   #####################################################################

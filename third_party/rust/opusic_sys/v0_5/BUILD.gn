@@ -9,46 +9,33 @@
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
-  crate_name = "symphonia"
+  crate_name = "opusic_sys"
   epoch = "0.5"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/symphonia-v0_5/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/symphonia-v0_5/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5/src/lib.rs",
   ]
-  inputs = []
+  inputs = [ "//third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5/src/wrapper.h" ]
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_authors = "Philip Deljanov <philip.deljanov@gmail.com>"
-  cargo_pkg_name = "symphonia"
-  cargo_pkg_description =
-      "Pure Rust media container and audio decoding library."
-  cargo_pkg_repository = "https://github.com/pdeljanov/Symphonia"
-  cargo_pkg_version = "0.5.5"
+  cargo_pkg_authors = "Douman <douman@gmx.se>"
+  cargo_pkg_name = "opusic-sys"
+  cargo_pkg_description = "Bindings to libopus"
+  cargo_pkg_repository = "https://github.com/DoumanAsh/opusic-sys"
+  cargo_pkg_version = "0.5.8"
 
-  allow_unsafe = false
+  allow_unsafe = true
 
-  deps = [
-    "//third_party/rust/lazy_static/v1:lib",
-    "//third_party/rust/symphonia_bundle_flac/v0_5:lib",
-    "//third_party/rust/symphonia_bundle_mp3/v0_5:lib",
-    "//third_party/rust/symphonia_codec_pcm/v0_5:lib",
-    "//third_party/rust/symphonia_codec_vorbis/v0_5:lib",
-    "//third_party/rust/symphonia_core/v0_5:lib",
-    "//third_party/rust/symphonia_metadata/v0_5:lib",
-  ]
-  features = [
-    "flac",
-    "mp3",
-    "pcm",
-    "symphonia-bundle-flac",
-    "symphonia-bundle-mp3",
-    "symphonia-codec-pcm",
-    "symphonia-codec-vorbis",
-    "vorbis",
-  ]
+  deps = [ "//third_party/rust/libc/v0_2:lib" ]
+  deps += [ "//third_party/opus" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.

@@ -1,0 +1,34 @@
+name: Rust
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/rust.yml'
+      - 'src/**.rs'
+      - 'tests/**'
+      - 'Cargo.toml'
+      - 'opus/**/*'
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches:
+      - '**'
+    paths:
+      - '.github/workflows/rust.yml'
+      - 'src/**.rs'
+      - 'tests/**'
+      - 'Cargo.toml'
+      - 'opus/**/*'
+jobs:
+  check:
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    if: github.event.pull_request.draft == false
+    uses: DoumanAsh/douman-ci/.github/workflows/rust.yml@master
+    with:
+      runs-on: ${{ matrix.os }}
+      min-rustc-version: "1.82.0"
+      cargo-features: "dred,osce"
+      cargo-no-features: true

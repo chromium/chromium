@@ -133,7 +133,11 @@ version = "0.5.4"
 # codecs specifically added in `features`. Enabling new codec support requires a
 # package configuration through gnrt vendor and gnrt gen.
 default-features = false
-features = ["flac", "mp3", "pcm"]
+features = ["flac", "mp3", "pcm", "vorbis"]
+
+[dependencies.symphonia-adapter-libopus]
+version = "0.2"
+default-features = false
 
 [dependencies.syn]
 version = "2"

@@ -1,0 +1,39 @@
+[package]
+name = "opusic-sys"
+version = "0.5.8"
+authors = ["Douman <douman@gmx.se>"]
+description = "Bindings to libopus"
+keywords = ["opus"]
+readme = "README.md"
+repository = "https://github.com/DoumanAsh/opusic-sys"
+license = "BSD-3-Clause"
+edition = "2018"
+
+[dependencies.libc]
+version = "0.2"
+default-features = false
+
+[build-dependencies.cmake]
+version = "0.1"
+optional = true
+
+[build-dependencies.bindgen]
+version = "0.72"
+optional = true
+
+[features]
+default = ["bundled"]
+# Used internally to generate lib.rs
+build-bindgen = ["bindgen"]
+# enable DRED
+dred = []
+# enable OSCE
+osce = []
+# disable run-time checks that are cheap and safe for use in production.
+no-hardening = []
+# disable stack protection.
+no-stack-protector = []
+# disable protection against buffer overflows.
+no-fortify-source = []
+# bundle "libopus" instead of dynamic linking
+bundled = ["dep:cmake"]

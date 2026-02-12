@@ -9,46 +9,42 @@
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
-  crate_name = "symphonia"
+  crate_name = "symphonia_codec_vorbis"
   epoch = "0.5"
   crate_type = "rlib"
-  crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/symphonia-v0_5/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_5/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/symphonia-v0_5/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_5/src/codebook.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_5/src/common.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_5/src/dsp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_5/src/floor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_5/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_5/src/residue.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_5/src/window.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
   cargo_pkg_authors = "Philip Deljanov <philip.deljanov@gmail.com>"
-  cargo_pkg_name = "symphonia"
+  cargo_pkg_name = "symphonia-codec-vorbis"
   cargo_pkg_description =
-      "Pure Rust media container and audio decoding library."
+      "Pure Rust Vorbis decoder (a part of project Symphonia)."
   cargo_pkg_repository = "https://github.com/pdeljanov/Symphonia"
   cargo_pkg_version = "0.5.5"
 
   allow_unsafe = false
 
   deps = [
-    "//third_party/rust/lazy_static/v1:lib",
-    "//third_party/rust/symphonia_bundle_flac/v0_5:lib",
-    "//third_party/rust/symphonia_bundle_mp3/v0_5:lib",
-    "//third_party/rust/symphonia_codec_pcm/v0_5:lib",
-    "//third_party/rust/symphonia_codec_vorbis/v0_5:lib",
+    "//third_party/rust/log/v0_4:lib",
     "//third_party/rust/symphonia_core/v0_5:lib",
-    "//third_party/rust/symphonia_metadata/v0_5:lib",
+    "//third_party/rust/symphonia_utils_xiph/v0_5:lib",
   ]
-  features = [
-    "flac",
-    "mp3",
-    "pcm",
-    "symphonia-bundle-flac",
-    "symphonia-bundle-mp3",
-    "symphonia-codec-pcm",
-    "symphonia-codec-vorbis",
-    "vorbis",
-  ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.

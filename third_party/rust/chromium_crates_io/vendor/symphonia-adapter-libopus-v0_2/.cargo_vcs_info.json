@@ -1,0 +1,6 @@
+{
+  "git": {
+    "sha1": "29193dbf309d4ee5ac1adb3729a5531073b540bf"
+  },
+  "path_in_vcs": "crates/symphonia-adapter-libopus"
+}

@@ -1,0 +1,11 @@
+Name: opusic-sys
+URL: https://crates.io/crates/opusic-sys
+Version: 0.5.8
+Revision: e0541089fd7818ed2739b71ce56025ff67d30788
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: BSD-3-Clause
+License File: //third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Bindings to libopus

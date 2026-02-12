@@ -204,6 +204,9 @@ pub struct CrateConfig {
     /// If true, the build script should not be built or used.
     #[serde(default)]
     pub remove_build_rs: bool,
+    /// Files or directories to remove from the vendored crate.
+    #[serde(default)]
+    pub remove_vendored_files: Vec<std::path::PathBuf>,
     /// Include rs and input files under these paths relative to the crate's
     /// root source file as part of the crate. The roots may each be a single
     /// file or a directory.
@@ -281,6 +284,29 @@ mod test {
         assert_eq!(combined_set.len(), 2);
         assert!(combined_set.contains("foo"));
         assert!(combined_set.contains("bar"));
+    }
+
+    #[test]
+    fn test_get_combined_set_for_remove_vendored_files() {
+        let all_config = CrateConfig {
+            remove_vendored_files: vec![std::path::PathBuf::from("global_file")],
+            ..CrateConfig::default()
+        };
+        let crate_config = CrateConfig {
+            remove_vendored_files: vec![std::path::PathBuf::from("local_file")],
+            ..CrateConfig::default()
+        };
+        let build_config = BuildConfig {
+            all_config,
+            per_crate_config: [("some_crate".to_string(), crate_config)].into_iter().collect(),
+            ..BuildConfig::default()
+        };
+        let version = Version::new(1, 0, 0);
+        let combined_set =
+            build_config.get_combined_set("some_crate", &version, |cfg| &cfg.remove_vendored_files);
+        assert_eq!(combined_set.len(), 2);
+        assert!(combined_set.contains(std::path::Path::new("global_file")));
+        assert!(combined_set.contains(std::path::Path::new("local_file")));
     }
 
     #[test]
