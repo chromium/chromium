@@ -89,8 +89,8 @@ export function getHtml(this: TopToolbarElement) {
         $i18n{myActivity}
       </button>
       <button class="dropdown-item" @click="${this.onHelpClick_}">
-        <cr-icon icon="cr:help-outline"></cr-icon>
-        $i18n{help}
+        <cr-icon icon="contextual_tasks:feedback"></cr-icon>
+        $i18n{feedback}
       </button>
     </cr-action-menu>`}">
   </cr-lazy-render-lit>

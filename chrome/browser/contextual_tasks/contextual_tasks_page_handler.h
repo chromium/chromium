@@ -68,6 +68,10 @@ class ContextualTasksPageHandler
       const contextual_tasks::ContextualTask& task,
       contextual_tasks::ContextualTasksService::TriggerSource source) override;
 
+  void set_skip_feedback_ui_for_testing(bool skip) {
+    skip_feedback_ui_for_testing_ = skip;
+  }
+
  private:
   void UpdateContextForTask(const base::Uuid& task_id);
   void OnReceivedUpdatedThreadContextLibrary(
@@ -77,6 +81,8 @@ class ContextualTasksPageHandler
   raw_ptr<contextual_tasks::ContextualTasksUIInterface> web_ui_controller_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
   raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;
+
+  bool skip_feedback_ui_for_testing_ = false;
 
   base::ScopedObservation<contextual_tasks::ContextualTasksService,
                           contextual_tasks::ContextualTasksService::Observer>

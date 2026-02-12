@@ -20,6 +20,9 @@ div.innerHTML = getTrustedHTML`
       <g id="open_in_full_tab" viewBox="0 -960 960 960">
         <path d="M144-144v-288h72v165l477-477H528v-72h288v288h-72v-165L267-216h165v72H144Z"/></path>
       </g>
+      <g id="feedback" viewBox="0 0 24 24">
+        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17l-.59.59-.58.58V4h16v12zm-9-4h2v2h-2zm0-6h2v4h-2z"></path>
+      </g>
     </defs>
   </svg>
 </cr-iconset>`;
