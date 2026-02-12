@@ -18,7 +18,6 @@
 #include "base/strings/string_view_util.h"
 #include "base/types/expected.h"
 #include "build/branding_buildflags.h"
-#include "crypto/apple/keychain.h"
 #include "crypto/apple/keychain_v2.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 

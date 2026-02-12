@@ -89,10 +89,6 @@ component("crypto") {
 
   if (is_apple) {
     sources += [
-      "apple/keychain.cc",
-      "apple/keychain.h",
-      "apple/keychain_secitem.h",
-      "apple/keychain_secitem.mm",
       "apple/keychain_util.h",
       "apple/keychain_util.mm",
       "apple/keychain_v2.h",
@@ -175,8 +171,6 @@ if (is_apple) {
     sources = [
       "apple/fake_keychain_v2.h",
       "apple/fake_keychain_v2.mm",
-      "apple/mock_keychain.cc",
-      "apple/mock_keychain.h",
       "apple/scoped_fake_keychain_v2.h",
       "apple/scoped_fake_keychain_v2.mm",
     ]
@@ -239,16 +233,12 @@ test("crypto_unittests") {
   }
 
   if (is_apple) {
-    sources += [ "apple/mock_keychain_unittest.cc" ]
-
     if (!(is_ios && target_platform == "tvos")) {
       sources += [ "apple/unexportable_key_apple_unittest.mm" ]
     }
   }
 
   if (is_ios) {
-    sources += [ "apple/keychain_secitem_ios_unittest.mm" ]
-
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
