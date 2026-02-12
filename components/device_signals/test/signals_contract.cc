@@ -113,7 +113,7 @@ void ChangeContractForUnmanagedDevices(
 
 base::flat_map<std::string,
                base::RepeatingCallback<bool(const base::DictValue&)>>
-GetSignalsContract(bool is_av_signal_enabled) {
+GetSignalsContract() {
   base::flat_map<std::string,
                  base::RepeatingCallback<bool(const base::DictValue&)>>
       contract;
@@ -171,13 +171,8 @@ GetSignalsContract(bool is_av_signal_enabled) {
       base::BindRepeating(VerifyIsSettingInteger, names::kScreenLockSecured);
 
 #if BUILDFLAG(IS_WIN)
-  if (is_av_signal_enabled) {
     contract[names::kAntivirusState] =
         base::BindRepeating(VerifyIsSettingInteger, names::kAntivirusState);
-  } else {
-    contract[names::kAntivirusState] =
-        base::BindRepeating(VerifyUnset, names::kAntivirusState);
-  }
   contract[names::kWindowsMachineDomain] =
       base::BindRepeating(VerifyOptionalString, names::kWindowsMachineDomain);
   contract[names::kWindowsUserDomain] =
@@ -249,10 +244,10 @@ GetSignalsContract(bool is_av_signal_enabled) {
 #if BUILDFLAG(IS_CHROMEOS)
 base::flat_map<std::string,
                base::RepeatingCallback<bool(const base::DictValue&)>>
-GetSignalsContractForUnmanagedDevices(bool is_av_signal_enabled) {
+GetSignalsContractForUnmanagedDevices() {
   base::flat_map<std::string,
                  base::RepeatingCallback<bool(const base::DictValue&)>>
-      contract = GetSignalsContract(is_av_signal_enabled);
+      contract = GetSignalsContract();
 
   ChangeContractForUnmanagedDevices(contract);
   return contract;

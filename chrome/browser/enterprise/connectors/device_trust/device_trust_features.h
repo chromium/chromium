@@ -23,13 +23,6 @@ BASE_DECLARE_FEATURE(kDTCKeyUploadedBySharedAPIEnabled);
 // Return true if a shared API is used for uploading the public key.
 bool IsDTCKeyUploadedBySharedAPI();
 
-// Controls whether the AntiVirus signal will be added to the signals payload
-// collected by DTC.
-BASE_DECLARE_FEATURE(kDTCAntivirusSignalEnabled);
-
-// Return true if `kDTCAntiVirusSignalEnabled` is enabled.
-bool IsDTCAntivirusSignalEnabled();
-
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_FEATURES_H_

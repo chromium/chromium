@@ -305,8 +305,7 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, SignalsContract) {
 
   const base::DictValue& signals_dict = future.Get();
 
-  const auto signals_contract_map =
-      device_signals::test::GetSignalsContract(IsDTCAntivirusSignalEnabled());
+  const auto signals_contract_map = device_signals::test::GetSignalsContract();
   ASSERT_FALSE(signals_contract_map.empty());
   for (const auto& signals_contract_entry : signals_contract_map) {
     // First is the signal name.
@@ -904,8 +903,7 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTestSignalsContractForUnmanagedDevices,
   const base::DictValue& signals_dict = future.Get();
 
   const auto signals_contract_map =
-      device_signals::test::GetSignalsContractForUnmanagedDevices(
-          IsDTCAntivirusSignalEnabled());
+      device_signals::test::GetSignalsContractForUnmanagedDevices();
   ASSERT_FALSE(signals_contract_map.empty());
   for (const auto& signals_contract_entry : signals_contract_map) {
     // First is the signal name.

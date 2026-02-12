@@ -19,10 +19,4 @@ bool IsDTCKeyUploadedBySharedAPI() {
   return base::FeatureList::IsEnabled(kDTCKeyUploadedBySharedAPIEnabled);
 }
 
-BASE_FEATURE(kDTCAntivirusSignalEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsDTCAntivirusSignalEnabled() {
-  return base::FeatureList::IsEnabled(kDTCAntivirusSignalEnabled);
-}
-
 }  // namespace enterprise_connectors
