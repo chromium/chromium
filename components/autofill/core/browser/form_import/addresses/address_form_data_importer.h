@@ -24,9 +24,17 @@ class AddressFormDataImporter {
   AddressFormDataImporter& operator=(const AddressFormDataImporter&) = delete;
   virtual ~AddressFormDataImporter();
 
-  // TODO(crbug.com/481379161): It will be possible to make some of these
-  //    functions/structs/etc. private once all other refactoring finishes.
-  //    Reevaluate at that time.
+  AddressDataManager& address_data_manager();
+
+ private:
+  friend class AddressFormDataImporterTestApi;
+  // TODO(crbug.com/481379161): Remove FormDataImporter and
+  //    FormDataImporterTestApi as friend classes once the FDI->AddressFDI
+  //    migration is complete. This is very much not ideal and temporary, but
+  //    the alternative is having most functions be public until the last
+  //    second, which probably carries slightly higher risk.
+  friend class FormDataImporter;
+  friend class FormDataImporterTestApi;
 
   // Defines an extracted address profile, which is a candidate for address
   // profile import.
@@ -46,11 +54,6 @@ class AddressFormDataImporter {
 
   // Clears all setting-inaccessible values from `profile`.
   void RemoveInaccessibleProfileValues(AutofillProfile& profile);
-
-  AddressDataManager& address_data_manager();
-
- private:
-  friend class AddressFormDataImporterTestApi;
 
   const raw_ref<AutofillClient> client_;
 };

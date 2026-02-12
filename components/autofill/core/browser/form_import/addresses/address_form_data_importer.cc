@@ -19,6 +19,10 @@ AddressFormDataImporter::AddressFormDataImporter(AutofillClient* client)
 
 AddressFormDataImporter::~AddressFormDataImporter() = default;
 
+AddressDataManager& AddressFormDataImporter::address_data_manager() {
+  return client_->GetPersonalDataManager().address_data_manager();
+}
+
 AddressFormDataImporter::ExtractedAddressProfile::ExtractedAddressProfile() =
     default;
 AddressFormDataImporter::ExtractedAddressProfile::ExtractedAddressProfile(
@@ -36,10 +40,6 @@ void AddressFormDataImporter::RemoveInaccessibleProfileValues(
   for (const FieldType inaccessible_field : inaccessible_fields) {
     autofill_metrics::LogRemovedSettingInaccessibleField(inaccessible_field);
   }
-}
-
-AddressDataManager& AddressFormDataImporter::address_data_manager() {
-  return client_->GetPersonalDataManager().address_data_manager();
 }
 
 }  // namespace autofill
