@@ -923,12 +923,14 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   if (_supportXframeSubmission) {
     return;
   }
-  if ([_delegate respondsToSelector:@selector
-                 (autofillController:
-                     didSubmitFormWithName:frameID:perfectFilling:)]) {
+  if ([_delegate
+          respondsToSelector:@selector
+          (autofillController:
+              didSubmitFormWithName:frameID:userInitiated:perfectFilling:)]) {
     [_delegate autofillController:self
             didSubmitFormWithName:base::SysUTF16ToNSString(formData.name())
                           frameID:base::SysUTF8ToNSString(frame->GetFrameId())
+                    userInitiated:userInitiated
                    perfectFilling:perfectFilling];
   }
 }
@@ -960,9 +962,10 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
                     formData:(const autofill::FormData&)form {
   // Skip immediately if the delegate doesn't handle submission to save
   // computation.
-  if (![_delegate respondsToSelector:@selector
-                  (autofillController:
-                      didSubmitFormWithName:frameID:perfectFilling:)]) {
+  if (![_delegate
+          respondsToSelector:@selector
+          (autofillController:
+              didSubmitFormWithName:frameID:userInitiated:perfectFilling:)]) {
     return;
   }
 
@@ -975,9 +978,16 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
 
   BOOL perfectFilling = autofill::IsFormPerfectlyFilled(form);
 
+  // Use YES as a dummy value for `userInitiated` since that bit isn't supported
+  // by the _delegate implementations and we can't get that information on
+  // -onAfterFormSubmitted. Also, a value of YES should cover most of the
+  // submission cases that probably consist of user initiated submissions, and
+  // note that computing that bit is based on a best guess so it isn't that
+  // reliable.
   [_delegate autofillController:self
           didSubmitFormWithName:base::SysUTF16ToNSString(form.name())
                         frameID:nsFrameID
+                  userInitiated:YES
                  perfectFilling:perfectFilling];
 }
 
