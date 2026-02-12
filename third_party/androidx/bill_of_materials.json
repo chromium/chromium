@@ -1247,12 +1247,12 @@
     {
         "name": "play-services-base",
         "group": "com.google.android.gms",
-        "version": "18.5.0"
+        "version": "18.7.2"
     },
     {
         "name": "play-services-basement",
         "group": "com.google.android.gms",
-        "version": "18.5.0"
+        "version": "18.9.0"
     },
     {
         "name": "play-services-fido",
@@ -1262,12 +1262,12 @@
     {
         "name": "play-services-identity-credentials",
         "group": "com.google.android.gms",
-        "version": "16.0.0-alpha08"
+        "version": "16.0.0-alpha11"
     },
     {
         "name": "play-services-tasks",
         "group": "com.google.android.gms",
-        "version": "18.2.0"
+        "version": "18.3.2"
     },
     {
         "name": "googleid",
