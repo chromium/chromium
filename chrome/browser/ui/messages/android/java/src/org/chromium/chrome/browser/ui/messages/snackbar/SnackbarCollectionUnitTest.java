@@ -21,6 +21,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.DismissalReason;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 
 /** Tests for {@link SnackbarCollection}. */
@@ -169,6 +171,69 @@ public class SnackbarCollectionUnitTest {
                 collection.getCurrent());
         collection.removeCurrentDueToTimeout();
         verifyNoMoreInteractions(mMockController);
+    }
+
+    @Test
+    @Feature({"Browser", "Snackbar"})
+    public void testDismissalReasons() {
+        SnackbarCollection collection = new SnackbarCollection();
+
+        // Action
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Snackbar.DismissalReason", DismissalReason.ACTION_BUTTON)
+                        .build();
+        collection.add(makeActionSnackbar());
+        collection.removeCurrentDueToAction();
+        watcher.assertExpected("Action button dismissal should be recorded.");
+
+        // Timeout
+        watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Snackbar.DismissalReason", DismissalReason.TIMEOUT)
+                        .build();
+        collection.add(makeActionSnackbar());
+        collection.removeCurrentDueToTimeout();
+        watcher.assertExpected("Timeout dismissal should be recorded.");
+
+        // Swipe
+        watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Snackbar.DismissalReason", DismissalReason.SWIPE)
+                        .build();
+        collection.add(makeActionSnackbar());
+        collection.removeCurrentDueToSwipe();
+        watcher.assertExpected("Swipe dismissal should be recorded.");
+
+        // Dismissed by caller
+        watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Snackbar.DismissalReason", DismissalReason.DISMISSED_BY_CALLER)
+                        .build();
+        collection.add(makeNotificationSnackbar());
+        collection.removeMatchingSnackbars(mMockController);
+        watcher.assertExpected("Dismissed by caller should be recorded.");
+
+        // Others
+        watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Snackbar.DismissalReason", DismissalReason.OTHERS)
+                        .build();
+        collection.add(makeActionSnackbar());
+        collection.clear();
+        watcher.assertExpected("Others dismissal should be recorded.");
+
+        // Replaced by action snackbar
+        watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Snackbar.DismissalReason",
+                                DismissalReason.REPLACED_BY_ACTION_SNACKBAR)
+                        .build();
+        collection.add(makeNotificationSnackbar());
+        collection.add(makeActionSnackbar());
+        watcher.assertExpected("Replaced by action snackbar should be recorded.");
     }
 
     private Snackbar makeActionSnackbar(SnackbarController controller) {

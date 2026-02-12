@@ -128,7 +128,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
                             @Override
                             public void dismiss() {
                                 mIsBeingDragged = false;
-                                manager.dismissCurrentSnackbar();
+                                manager.dismissCurrentSnackbarDueToSwipe();
                             }
 
                             @Override

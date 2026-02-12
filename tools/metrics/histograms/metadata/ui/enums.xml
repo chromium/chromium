@@ -383,6 +383,19 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="SnackbarDismissalReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Action button"/>
+  <int value="2" label="Timeout"/>
+  <int value="3" label="Swipe"/>
+  <int value="4" label="Dismissed by caller"/>
+  <int value="5" label="Replaced by action snackbar"/>
+  <int value="6" label="Others">
+    The snackbar was cleared by other events, such as activity being stopped or
+    manually cleared by the manager.
+  </int>
+</enum>
+
 <enum name="SnackbarIdentifier">
   <int value="-2" label="TEST_SNACKBAR"/>
   <int value="-1" label="UNKNOWN"/>

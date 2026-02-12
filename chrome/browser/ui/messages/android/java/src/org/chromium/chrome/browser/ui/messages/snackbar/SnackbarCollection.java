@@ -8,8 +8,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.text.TextUtils;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.DismissalReason;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 
 import java.util.ArrayDeque;
@@ -33,7 +35,7 @@ class SnackbarCollection {
     void add(Snackbar snackbar) {
         if (snackbar.isTypeAction()) {
             if (getCurrent() != null && !getCurrent().isTypeAction()) {
-                removeCurrent(false);
+                removeCurrent(DismissalReason.REPLACED_BY_ACTION_SNACKBAR);
             }
             mSnackbars.addFirst(snackbar);
         } else if (snackbar.isTypePersistent()) {
@@ -53,18 +55,25 @@ class SnackbarCollection {
      * button.
      */
     Snackbar removeCurrentDueToAction() {
-        return removeCurrent(true);
+        return removeCurrent(DismissalReason.ACTION_BUTTON);
     }
 
-    private Snackbar removeCurrent(boolean isAction) {
+    /** Removes the current snackbar from the collection after the user has swiped it away. */
+    @Nullable Snackbar removeCurrentDueToSwipe() {
+        return removeCurrent(DismissalReason.SWIPE);
+    }
+
+    private Snackbar removeCurrent(@DismissalReason int reason) {
         Snackbar current = mSnackbars.pollFirst();
         if (current == null) {
             current = mPersistentSnackbars.pollFirst();
         }
         if (current != null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Snackbar.DismissalReason", reason, DismissalReason.NUM_ENTRIES);
             SnackbarController controller = current.getController();
             if (controller != null) {
-                if (isAction) {
+                if (reason == DismissalReason.ACTION_BUTTON) {
                     controller.onAction(current.getActionData());
                 } else {
                     controller.onDismissNoAction(current.getActionData());
@@ -91,7 +100,7 @@ class SnackbarCollection {
 
     void clear() {
         while (!isEmpty()) {
-            removeCurrent(false);
+            removeCurrent(DismissalReason.OTHERS);
         }
     }
 
@@ -103,19 +112,20 @@ class SnackbarCollection {
             // meant to be persistent.
             return;
         }
-        removeCurrent(false);
+        removeCurrent(DismissalReason.TIMEOUT);
         while ((current = getCurrent()) != null && current.isTypeAction()) {
-            removeCurrent(false);
+            removeCurrent(DismissalReason.TIMEOUT);
         }
     }
 
     boolean removeMatchingSnackbars(SnackbarController controller) {
-        return removeSnackbarFromList(mSnackbars, controller)
-                || removeSnackbarFromList(mPersistentSnackbars, controller);
+        return removeSnackbarFromList(mSnackbars, controller, DismissalReason.DISMISSED_BY_CALLER)
+                || removeSnackbarFromList(
+                        mPersistentSnackbars, controller, DismissalReason.DISMISSED_BY_CALLER);
     }
 
     private static boolean removeSnackbarFromList(
-            Deque<Snackbar> list, SnackbarController controller) {
+            Deque<Snackbar> list, SnackbarController controller, @DismissalReason int reason) {
         if (controller == null) return false;
         boolean snackbarRemoved = false;
         Iterator<Snackbar> iter = list.iterator();
@@ -125,6 +135,8 @@ class SnackbarCollection {
             if (snackbar.getController() != controller) continue;
 
             iter.remove();
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Snackbar.DismissalReason", reason, DismissalReason.NUM_ENTRIES);
             controller.onDismissNoAction(snackbar.getActionData());
             snackbarRemoved = true;
         }
@@ -132,12 +144,20 @@ class SnackbarCollection {
     }
 
     boolean removeMatchingSnackbars(SnackbarController controller, Object data) {
-        return removeSnackbarFromList(mSnackbars, controller, data)
-                || removeSnackbarFromList(mPersistentSnackbars, controller, data);
+        return removeSnackbarFromList(
+                        mSnackbars, controller, data, DismissalReason.DISMISSED_BY_CALLER)
+                || removeSnackbarFromList(
+                        mPersistentSnackbars,
+                        controller,
+                        data,
+                        DismissalReason.DISMISSED_BY_CALLER);
     }
 
     private static boolean removeSnackbarFromList(
-            Deque<Snackbar> list, SnackbarController controller, Object data) {
+            Deque<Snackbar> list,
+            SnackbarController controller,
+            Object data,
+            @DismissalReason int reason) {
         if (controller == null) return false;
         boolean snackbarRemoved = false;
         Iterator<Snackbar> iter = list.iterator();
@@ -148,6 +168,8 @@ class SnackbarCollection {
             if (!objectsAreEqual(snackbar.getActionData(), data)) continue;
 
             iter.remove();
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Snackbar.DismissalReason", reason, DismissalReason.NUM_ENTRIES);
             controller.onDismissNoAction(assumeNonNull(snackbar.getActionData()));
             snackbarRemoved = true;
         }

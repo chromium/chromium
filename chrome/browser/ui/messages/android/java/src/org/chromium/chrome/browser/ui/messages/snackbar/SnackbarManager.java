@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
@@ -35,6 +36,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.util.TokenHolder;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -57,6 +60,27 @@ public class SnackbarManager
                 ActivityStateListener,
                 InsetObserver.WindowInsetObserver,
                 ModalDialogManagerObserver {
+    @IntDef({
+        DismissalReason.UNKNOWN,
+        DismissalReason.ACTION_BUTTON,
+        DismissalReason.TIMEOUT,
+        DismissalReason.SWIPE,
+        DismissalReason.DISMISSED_BY_CALLER,
+        DismissalReason.REPLACED_BY_ACTION_SNACKBAR,
+        DismissalReason.OTHERS
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DismissalReason {
+        int UNKNOWN = 0;
+        int ACTION_BUTTON = 1;
+        int TIMEOUT = 2;
+        int SWIPE = 3;
+        int DISMISSED_BY_CALLER = 4;
+        int REPLACED_BY_ACTION_SNACKBAR = 5;
+        int OTHERS = 6;
+        int NUM_ENTRIES = 7;
+    }
+
     /** Interface that shows the ability to provide a snackbar manager. */
     public interface SnackbarManageable {
         /**
@@ -234,6 +258,13 @@ public class SnackbarManager
         updateView();
         assumeNonNull(mView);
         mView.updateAccessibilityPaneTitle();
+    }
+
+    /** Dismisses the currently showing snackbar after user swipe. */
+    void dismissCurrentSnackbarDueToSwipe() {
+        if (mSnackbars.isEmpty()) return;
+        mSnackbars.removeCurrentDueToSwipe();
+        updateView();
     }
 
     /** Dismisses the currently showing snackbar. */
