@@ -5,15 +5,21 @@
 package org.chromium.chrome.browser.vr;
 
 import static org.chromium.chrome.browser.vr.WebXrArTestFramework.PAGE_LOAD_TIMEOUT_S;
+import static org.chromium.chrome.browser.vr.WebXrArTestFramework.POLL_TIMEOUT_LONG_MS;
+import static org.chromium.chrome.browser.vr.WebXrArTestFramework.POLL_TIMEOUT_SHORT_MS;
+
+import android.os.SystemClock;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
@@ -25,6 +31,7 @@ import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
 import org.chromium.chrome.browser.vr.util.ArTestRuleUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.components.webxr.XrSessionCoordinator;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -111,6 +118,59 @@ public class WebXrArHitTestTest {
                 "webxr_test_basic_hittest_cancellation", PAGE_LOAD_TIMEOUT_S);
         mWebXrArTestFramework.enterSessionWithUserGestureOrFail();
         mWebXrArTestFramework.executeStepAndWait("stepStartHitTesting(true)");
+        mWebXrArTestFramework.endTest();
+    }
+
+    private void sendScreenTapToXrSession(
+            final XrSessionCoordinator xrSession, final int x, final int y) {
+        sendScreenTouchDownToXrSession(xrSession, x, y);
+        SystemClock.sleep(100);
+        sendScreenTouchUpToXrSession(xrSession, x, y);
+        SystemClock.sleep(100);
+    }
+
+    private void sendScreenTouchDownToXrSession(
+            final XrSessionCoordinator xrSession, final int x, final int y) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    xrSession.onDrawingSurfaceTouch(true, true, 0, x, y);
+                });
+    }
+
+    private void sendScreenTouchUpToXrSession(
+            final XrSessionCoordinator xrSession, final int x, final int y) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    xrSession.onDrawingSurfaceTouch(true, false, 0, x, y);
+                });
+    }
+
+    /** Tests that hit test returns a valid result in a click event. */
+    @Test
+    @MediumTest
+    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    @ArPlaybackFile("chrome/test/data/xr/ar_playback_datasets/floor_session_12s_30fps.mp4")
+    public void testHitTestForTransientInputValidInClickEvent() {
+        mWebXrArTestFramework.loadFileAndAwaitInitialization(
+                "test_webxr_transient_hit_test_click", PAGE_LOAD_TIMEOUT_S);
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail();
+        mWebXrArTestFramework.runJavaScriptOrFail("stepStartHitTesting()", POLL_TIMEOUT_SHORT_MS);
+        mWebXrArTestFramework.pollJavaScriptBooleanOrFail(
+                "testState == TestState.HitTestSourceAvailable", POLL_TIMEOUT_LONG_MS);
+
+        int retries = 10;
+        int x = mWebXrArTestFramework.getCurrentContentView().getWidth() / 2;
+        int y = mWebXrArTestFramework.getCurrentContentView().getHeight() / 2;
+        XrSessionCoordinator coordinator = XrSessionCoordinator.getActiveInstanceForTesting();
+        boolean testDone = false;
+        while (!testDone && retries > 0) {
+            sendScreenTapToXrSession(coordinator, x, y);
+            testDone =
+                    mWebXrArTestFramework.pollJavaScriptBoolean(
+                            "testState == TestState.Done", POLL_TIMEOUT_SHORT_MS);
+            retries--;
+        }
+        Assert.assertTrue(testDone);
         mWebXrArTestFramework.endTest();
     }
 }

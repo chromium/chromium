@@ -1954,16 +1954,13 @@ void XRSession::UpdatePresentationFrameState(
 
     // Now update the input sources
     // Only process input when we can report it to the page.
+    base::span<const device::mojom::blink::XRInputSourceStatePtr> input_states;
     if (CanReportInputPoses()) {
-      base::span<const device::mojom::blink::XRInputSourceStatePtr>
-          input_states;
       if (frame_data->input_state.has_value()) {
         input_states = frame_data->input_state.value();
       }
 
       OnInputStateChangeInternal(frame_id, input_states);
-
-      ProcessInputSourceEvents(input_states);
     }
 
     // World understanding includes hit testing for transient input sources, and
@@ -1973,6 +1970,14 @@ void XRSession::UpdatePresentationFrameState(
     // generate hit test results. For this to work, this step must happen
     // after OnInputStateChangeInternal which updated input sources.
     UpdateWorldUnderstandingStateForFrame(timestamp, frame_data);
+
+    // Processing input source events may send events to the page. To this end
+    // we need to ensure that this is done *after* the WorldUnderstanding state
+    // is updated, otherwise we would be sending out input events with the old
+    // frame state, which can lead to issues with transient hit test sources.
+    if (CanReportInputPoses()) {
+      ProcessInputSourceEvents(input_states);
+    }
 
     // Now that all pose data is updated trigger a reset event if it's there.
     if (frame_data->mojo_space_reset) {
