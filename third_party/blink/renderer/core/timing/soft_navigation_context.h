@@ -67,8 +67,38 @@ class CORE_EXPORT SoftNavigationContext
     navigation_id_ = navigation_id;
   }
 
-  base::TimeTicks TimeOrigin() const { return time_origin_; }
-  void SetTimeOrigin(base::TimeTicks value) { time_origin_ = value; }
+  // The time origin is used for calculating soft navigation timings, especially
+  // Soft LCP. It is the earlier of the processing end of the interaction and
+  // the url change time. Once the processing of the interaction has ended, it
+  // is guaranteed to be available; once the URL change time has been set,
+  // it's available and final. When not available it may be null.
+  base::TimeTicks TimeOrigin() const;
+
+  // Indicates when the interaction processing is finished, which is after the
+  // event handler has finished executing.
+  base::TimeTicks ProcessingEnd() const { return processing_end_; }
+  void SetProcessingEnd(base::TimeTicks value) { processing_end_ = value; }
+
+  // This is set to the time of the first URL change and is not updated
+  // afterwards.
+  base::TimeTicks UrlChangeTime() const { return url_change_time_; }
+
+  // Sets URL, retaining the first URL only and the first
+  // |same_document_metrics_token|, while also recording the UrlChangeTime() as
+  // base::TimeTicks::Now().
+  void AddUrl(const String& url,
+              base::UnguessableToken same_document_metrics_token);
+
+  base::UnguessableToken SameDocumentMetricsToken() const {
+    return same_document_metrics_token_;
+  }
+
+  // A single interaction / navigation may change URLs multiple times.
+  // For now, we use the initial URL value as the URL to attribute the
+  // performance data to-- but it is reasonable to evaluate using the final URL
+  // as an alternative.
+  const String& AttributionUrl() const { return initial_url_; }
+  bool HasUrl() const { return !initial_url_.empty(); }
 
   bool HasFirstContentfulPaint() const {
     return first_image_or_text_ && first_image_or_text_->HasPaintTime();
@@ -80,23 +110,6 @@ class CORE_EXPORT SoftNavigationContext
   const DOMPaintTimingInfo& FirstContentfulPaintTimingInfo() const {
     CHECK(HasFirstContentfulPaint());
     return first_image_or_text_->PaintTimingInfo();
-  }
-
-  // A single interaction / navigation may change URLs multiple times.
-  // For now, we use the initial URL value as the URL to attribute the
-  // performance data to-- but it is reasonable to evaluate using the final URL
-  // as an alternative.
-  const String& AttributionUrl() const { return initial_url_; }
-  void AddUrl(const String& url,
-              base::UnguessableToken same_document_metrics_token) {
-    if (initial_url_.empty()) {
-      initial_url_ = url;
-      same_document_metrics_token_ = same_document_metrics_token;
-    }
-  }
-  bool HasUrl() const { return !initial_url_.empty(); }
-  base::UnguessableToken SameDocumentMetricsToken() const {
-    return same_document_metrics_token_;
   }
 
   void AddModifiedNode(Node* node);
@@ -163,8 +176,9 @@ class CORE_EXPORT SoftNavigationContext
   uint64_t navigation_id_ = PerformanceTimelineEntryIdInfo::kNoId;
   bool was_emitted_ = false;
 
-  base::TimeTicks time_origin_;
   base::TimeTicks first_input_or_scroll_time_;
+  base::TimeTicks url_change_time_;
+  base::TimeTicks processing_end_;
 
   String initial_url_;
   base::UnguessableToken same_document_metrics_token_;

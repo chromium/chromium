@@ -33,6 +33,26 @@ SoftNavigationContext::SoftNavigationContext(LocalDOMWindow& window)
       });
 }
 
+base::TimeTicks SoftNavigationContext::TimeOrigin() const {
+  if (processing_end_.is_null()) {
+    return url_change_time_;
+  }
+  if (url_change_time_.is_null()) {
+    return processing_end_;
+  }
+  return std::min(url_change_time_, processing_end_);
+}
+
+void SoftNavigationContext::AddUrl(
+    const String& url,
+    base::UnguessableToken same_document_metrics_token) {
+  if (initial_url_.empty()) {
+    initial_url_ = url;
+    same_document_metrics_token_ = same_document_metrics_token;
+    url_change_time_ = base::TimeTicks::Now();
+  }
+}
+
 void SoftNavigationContext::AddModifiedNode(Node* node) {
   ++num_modified_dom_nodes_;
   TRACE_EVENT_INSTANT(
@@ -86,7 +106,13 @@ bool SoftNavigationContext::AddPaintedArea(PaintTimingRecord* record) {
 }
 
 bool SoftNavigationContext::SatisfiesSoftNavNonPaintCriteria() const {
-  return HasDomModification() && HasUrl() && !time_origin_.is_null();
+  if (HasDomModification() && HasUrl() && !ProcessingEnd().is_null()) {
+    CHECK(!UrlChangeTime().is_null());  // Implied by HasUrl()
+    // Implied by !UrlChangeTime().is_null() and !ProcessingEnd().is_null()
+    CHECK(!TimeOrigin().is_null());
+    return true;
+  }
+  return false;
 }
 
 bool SoftNavigationContext::SatisfiesSoftNavPaintCriteria(
@@ -181,7 +207,9 @@ void SoftNavigationContext::WriteIntoTrace(
   dict.Add("performanceTimelineNavigationId", navigation_id_);
 
   dict.Add("URL", AttributionUrl());
-  dict.Add("timeOrigin", time_origin_);
+  dict.Add("timeOrigin", TimeOrigin());
+  dict.Add("urlChangeTime", url_change_time_);
+  dict.Add("processingEnd", processing_end_);
   dict.Add("firstContentfulPaint", FirstContentfulPaint());
 
   dict.Add("domModifications", num_modified_dom_nodes_);

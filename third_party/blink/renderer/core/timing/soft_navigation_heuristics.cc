@@ -631,12 +631,13 @@ SoftNavigationHeuristics::MaybeCreateEventScopeForInputEvent(
 
 void SoftNavigationHeuristics::OnSoftNavigationEventScopeDestroyed(
     const EventScope& event_scope) {
-  // Set the start time to the end of event processing. In case of nested event
-  // scopes, we want this to be the end of the nested `navigate()` event
-  // handler.
+  // Note the end time of the event processing; this is used as the time origin
+  // for the soft navigation metrics, if it's earlier than the URL change time.
+  // In In case of nested event scopes, we want this to be the end of the nested
+  // `navigate()` event handler.
   CHECK(active_interaction_context_);
-  if (active_interaction_context_->TimeOrigin().is_null()) {
-    active_interaction_context_->SetTimeOrigin(base::TimeTicks::Now());
+  if (active_interaction_context_->ProcessingEnd().is_null()) {
+    active_interaction_context_->SetProcessingEnd(base::TimeTicks::Now());
   }
 
   has_active_event_scope_ = event_scope.is_nested_;

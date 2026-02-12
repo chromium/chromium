@@ -35,8 +35,10 @@ Object: {
 			firstContentfulPaint: number
 			paintedArea: number
 			performanceTimelineNavigationId: number
+			processingEnd: number
 			softNavContextId: number
 			timeOrigin: number
+			urlChangeTime: number
 		}
 		frame: string
 	}
