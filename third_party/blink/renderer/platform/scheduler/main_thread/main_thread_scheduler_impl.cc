@@ -488,7 +488,8 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
     trace_event::AddTraceSessionObserver(this);
   }
 
-  if (base::FeatureList::IsEnabled(kInputHandlingModeFromPerformanceScenario)) {
+  if (base::FeatureList::IsEnabled(kInputHandlingModeFromPerformanceScenario) ||
+      base::FeatureList::IsEnabled(kLoadingModeFromPerformanceScenario)) {
     if (auto performance_scenario_observer_list =
             performance_scenarios::PerformanceScenarioObserverList::GetForScope(
                 performance_scenarios::ScenarioScope::kCurrentProcess)) {
@@ -554,7 +555,8 @@ MainThreadSchedulerImpl::~MainThreadSchedulerImpl() {
   CHECK(main_thread_only().detached_task_queues.empty());
   CHECK(!virtual_time_control_task_queue_);
 
-  if (base::FeatureList::IsEnabled(kInputHandlingModeFromPerformanceScenario)) {
+  if (base::FeatureList::IsEnabled(kInputHandlingModeFromPerformanceScenario) ||
+      base::FeatureList::IsEnabled(kLoadingModeFromPerformanceScenario)) {
     if (auto performance_scenario_observer_list =
             performance_scenarios::PerformanceScenarioObserverList::GetForScope(
                 performance_scenarios::ScenarioScope::kCurrentProcess)) {
