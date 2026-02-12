@@ -1277,6 +1277,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.InstallMigrateToApp.Result"
+    enum="InstallMigrateToAppResult" expires_after="2027-02-11">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of the InstallMigrateToAppCommand, which is scheduled
+    when a manifest is seen via user navigation that contains a 'migrate_to'
+    manifest field, signifying that the existing site, if it is an installed
+    PWA, can be migrated to another PWA.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.InstallResult.{Type}" enum="WebAppInstallResultCode"
     expires_after="2026-08-09">
   <owner>dmurph@chromium.org</owner>

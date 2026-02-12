@@ -203,6 +203,31 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Ambient badge dismissed"/>
 </enum>
 
+<!-- LINT.IfChange(InstallMigrateToAppResult) -->
+
+<enum name="InstallMigrateToAppResult">
+  <int value="0" label="kSuccessNewInstall"/>
+  <int value="1" label="kSuccessAlreadyInstalled"/>
+  <int value="2" label="kInstallError"/>
+  <int value="3" label="kWebContentsDestroyed"/>
+  <int value="4" label="kShutdown"/>
+  <int value="5" label="kIconDownloadFailed"/>
+  <int value="6" label="kIconReadFromDiskFailed"/>
+  <int value="7" label="kIconWriteToDiskFailed"/>
+  <int value="8" label="kInstallFinalizeFailed"/>
+  <int value="9" label="kManifestConversionFailed"/>
+  <int value="10" label="kAppNotAllowedToUpdate"/>
+  <int value="11" label="kUserNavigated"/>
+  <int value="12" label="kManifestToWebAppInstallInfoError"/>
+  <int value="13" label="kInstallFromInfoFailed"/>
+  <int value="14" label="kUpdateFailed"/>
+  <int value="15" label="kUrlLoadFailed"/>
+  <int value="16" label="kManifestIdMismatch"/>
+  <int value="17" label="kMigrateFromMismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/web_applications/scheduler/install_migrate_to_app_result.h:InstallMigrateToAppResult) -->
+
 <enum name="IsolatedWebAppCleanupBundleCacheError">
   <int value="0" label="System shutdown"/>
   <int value="1" label="Could not delete all bundles"/>

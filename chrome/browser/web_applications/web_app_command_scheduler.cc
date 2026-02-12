@@ -41,6 +41,7 @@
 #include "chrome/browser/web_applications/commands/install_app_locally_command.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/commands/install_from_sync_command.h"
+#include "chrome/browser/web_applications/commands/install_migrate_to_app_command.h"
 #include "chrome/browser/web_applications/commands/internal/callback_command.h"
 #include "chrome/browser/web_applications/commands/launch_web_app_command.h"
 #include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
@@ -887,6 +888,19 @@ void WebAppCommandScheduler::ScheduleWebAppInstallFromMigrateFromField(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<WebAppInstallFromMigrateFromFieldCommand>(
           web_contents, std::move(manifest), std::move(callback)),
+      location);
+}
+
+void WebAppCommandScheduler::ScheduleInstallMigrateToApp(
+    const webapps::ManifestId& source_manifest_id,
+    const webapps::ManifestId& target_manifest_id,
+    const GURL& target_install_url,
+    InstallMigrateToAppResultCallback callback,
+    const base::Location& location) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<InstallMigrateToAppCommand>(
+          source_manifest_id, target_manifest_id, target_install_url,
+          &*profile_, std::move(callback)),
       location);
 }
 
