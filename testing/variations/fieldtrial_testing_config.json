@@ -15165,6 +15165,15 @@
                     "enable_features": [
                         "TryQuicByDefault"
                     ]
+                },
+                {
+                    "name": "EnabledWithNOIP",
+                    "params": {
+                        "quic_options": "NOIP"
+                    },
+                    "enable_features": [
+                        "TryQuicByDefault"
+                    ]
                 }
             ]
         }
