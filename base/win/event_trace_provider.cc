@@ -17,7 +17,10 @@ EtwTraceProvider::EtwTraceProvider(const GUID& provider_name)
 
 EtwTraceProvider::EtwTraceProvider() = default;
 
-EtwTraceProvider::~EtwTraceProvider() {
+// NOOPT prevents dead code elimination of writes to member variables, to allow
+// accessing them after the object is destructed (even though that's UB.) See
+// crbug.com/483349684.
+NOINLINE NOOPT EtwTraceProvider::~EtwTraceProvider() {
   Unregister();
 }
 
