@@ -753,6 +753,42 @@ TEST_F(PrefProxyConfigOverrideRulesTest, URLAndPacProxyList) {
             net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved);
 }
 
+TEST_F(PrefProxyConfigOverrideRulesTest, IPAddressMatchers) {
+  InitConfigService(net::ProxyConfigService::CONFIG_VALID);
+
+  SetOverrideRules(
+      R"([
+             {
+                 "DestinationMatchers": [
+                     "https://32.123.34.123",
+                     "35.234.543.12",
+                 ],
+                 "ExcludeDestinationMatchers": [
+                     "12.345.678.90",
+                 ],
+                 "ProxyList": [
+                     "HTTPS proxy.app:443",
+                 ],
+             }
+         ])");
+
+  net::ProxyConfigWithAnnotation actual_config;
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+
+  EXPECT_EQ(actual_config.value().proxy_override_rules().size(), 1u);
+
+  const auto& proxy_override_rule =
+      actual_config.value().proxy_override_rules()[0];
+
+  EXPECT_TRUE(
+      proxy_override_rule.MatchesDestination(GURL("https://32.123.34.123")));
+  EXPECT_TRUE(
+      proxy_override_rule.MatchesDestination(GURL("http://35.234.543.12")));
+  EXPECT_FALSE(
+      proxy_override_rule.MatchesDestination(GURL("http://12.345.678.90")));
+}
+
 TEST_F(PrefProxyConfigOverrideRulesTest, DNSProbeHostValues) {
   InitConfigService(net::ProxyConfigService::CONFIG_VALID);
 
