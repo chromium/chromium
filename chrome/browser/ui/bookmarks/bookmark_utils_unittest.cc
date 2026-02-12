@@ -10,13 +10,13 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -269,7 +269,7 @@ TEST_F(BookmarkUtilsGetBookmarkDropOperationTest, DropWhenNodeDeleted) {
 TEST_F(BookmarkUtilsGetBookmarkDropOperationTest,
        ShouldHideBookmarksWhenProjectsPanelEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(tabs::kProjectsPanel);
+  feature_list.InitAndEnableFeature(tab_groups::kProjectsPanel);
   EXPECT_FALSE(chrome::ShouldShowTabGroupsInBookmarkBar(profile()));
 }
 }  // namespace

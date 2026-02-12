@@ -18,7 +18,6 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -29,6 +28,7 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/search/search.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
@@ -236,7 +236,7 @@ bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile) {
 }
 
 bool ShouldShowTabGroupsInBookmarkBar(Profile* profile) {
-  if (tabs::IsProjectsPanelFeatureEnabled()) {
+  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
     return false;
   }
   return profile->GetPrefs()->GetBoolean(

@@ -321,7 +321,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
                   restored_state_uncollapsed_width);
     }
 
-    if (tabs::IsProjectsPanelFeatureEnabled()) {
+    if (tab_groups::IsProjectsPanelFeatureEnabled()) {
       projects_panel_state_controller_ =
           GetUserDataFactory().CreateInstance<ProjectsPanelStateController>(
               *browser, browser, browser_actions_->root_action_item());

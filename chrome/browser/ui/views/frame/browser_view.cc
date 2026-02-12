@@ -249,6 +249,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/search/ntp_features.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/split_tabs/split_tab_id.h"
@@ -1014,7 +1015,7 @@ BrowserView::BrowserView(Browser* browser)
     horizontal_tab_strip_region_view_->InitializeTabStrip();
   }
 
-  if (tabs::IsProjectsPanelFeatureEnabled()) {
+  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
     auto projects_panel_container = std::make_unique<ProjectsPanelView>(
         browser_.get(), browser_->GetActions()->root_action_item());
 
@@ -1066,7 +1067,7 @@ BrowserView::BrowserView(Browser* browser)
     focus_manager_observation_.Observe(GetFocusManager());
   }
 
-  if (tabs::IsProjectsPanelFeatureEnabled()) {
+  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
     projects_panel_subscription_ =
         ProjectsPanelStateController::From(browser_)->RegisterOnStateChanged(
             base::BindRepeating(&BrowserView::OnProjectsPanelStateChanged,

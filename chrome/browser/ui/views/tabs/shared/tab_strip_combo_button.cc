@@ -12,11 +12,11 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/button/menu_button_controller.h"
@@ -32,7 +32,7 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser)
           LayoutConstant::kVerticalTabStripFlatEdgeButtonPadding)));
 
   std::unique_ptr<TabStripFlatEdgeButton> start_button;
-  if (tabs::IsProjectsPanelFeatureEnabled()) {
+  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
     start_button = CreateFlatEdgeButtonFor(
         kActionToggleProjectsPanel, kVerticalTabStripProjectsButtonElementId);
   } else if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(

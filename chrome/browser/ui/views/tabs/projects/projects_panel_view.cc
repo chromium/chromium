@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -157,7 +157,7 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
                               base::Unretained(this))));
   SetScrollViewProperties(*tab_groups_scroll_view_);
 
-  if (tabs::IsThreadsInProjectsPanelEnabled()) {
+  if (tab_groups::IsThreadsInProjectsPanelEnabled()) {
     auto* threads_list_title =
         content_container_->AddChildView(std::make_unique<views::Label>());
     threads_list_title->SetText(

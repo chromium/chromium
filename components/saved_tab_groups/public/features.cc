@@ -44,6 +44,13 @@ BASE_FEATURE(kEnableUrlRestriction, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableOriginatingSavedGroupCleanUp,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether the projects panel is enabled.
+BASE_FEATURE(kProjectsPanel, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether threads should be shown in the projects panel.
+const base::FeatureParam<bool> kProjectsPanelWithThreads{
+    &kProjectsPanel, "include_threads_in_projects_panel", false};
+
 bool IsTabGroupSyncDelegateAndroidEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupSyncDelegateAndroid);
 }
@@ -91,6 +98,14 @@ base::TimeDelta GetOriginatingSavedGroupCleanUpTimeInterval() {
       kGroupCleanUpTimeIntervalInSecondsFinchKey,
       kDefaultGroupCleanUpTimeInternalInSeconds);
   return base::Seconds(time_in_seconds);
+}
+
+bool IsProjectsPanelFeatureEnabled() {
+  return base::FeatureList::IsEnabled(kProjectsPanel);
+}
+
+bool IsThreadsInProjectsPanelEnabled() {
+  return IsProjectsPanelFeatureEnabled() && kProjectsPanelWithThreads.Get();
 }
 
 }  // namespace tab_groups

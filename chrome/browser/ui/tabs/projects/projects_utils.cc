@@ -5,14 +5,14 @@
 #include "chrome/browser/ui/tabs/projects/projects_utils.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/public/features.h"
 
 namespace projects {
 
 bool IsProjectsPanelEntrypointEnabled(const Profile* profile) {
-  return tabs::IsProjectsPanelFeatureEnabled() &&
+  return tab_groups::IsProjectsPanelFeatureEnabled() &&
          profile->GetPrefs()->GetBoolean(
              prefs::kProjectsPanelEntrypointEnabled);
 }

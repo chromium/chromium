@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
@@ -31,7 +32,7 @@ class ProjectsPanelTabGroupsInteractiveUiTest : public InteractiveBrowserTest {
   ProjectsPanelTabGroupsInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(/*enabled_features=*/
                                           {tabs::kVerticalTabs,
-                                           tabs::kProjectsPanel},
+                                           tab_groups::kProjectsPanel},
                                           /*disabled_features=*/{});
     ProjectsPanelView::disable_animations_for_testing();
   }

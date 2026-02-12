@@ -5,7 +5,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
@@ -13,6 +12,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/test/ui_controls.h"
@@ -25,7 +25,7 @@ class ProjectsPanelInteractiveUiTest : public InteractiveBrowserTest {
   ProjectsPanelInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(/* enabled_features */
                                           {tabs::kVerticalTabs,
-                                           tabs::kProjectsPanel},
+                                           tab_groups::kProjectsPanel},
                                           /* disabled_features */ {});
     ProjectsPanelView::disable_animations_for_testing();
   }

@@ -107,6 +107,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -680,7 +681,7 @@ void BrowserActions::InitializeBrowserActions() {
             .Build());
   }
 
-  if (tabs::IsProjectsPanelFeatureEnabled()) {
+  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
     root_action_item_->AddChild(
         actions::ActionItem::Builder(
             base::BindRepeating(

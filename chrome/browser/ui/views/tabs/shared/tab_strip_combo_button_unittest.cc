@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -17,7 +17,7 @@ class TabStripComboButtonTest : public views::ViewsTestBase {
   ~TabStripComboButtonTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({tabs::kProjectsPanel}, {});
+    scoped_feature_list_.InitWithFeatures({tab_groups::kProjectsPanel}, {});
 
     views::ViewsTestBase::SetUp();
     combo_button_ = std::make_unique<TabStripComboButton>(nullptr);

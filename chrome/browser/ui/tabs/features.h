@@ -30,15 +30,9 @@ BASE_DECLARE_FEATURE(kTabSelectionByPointer);
 
 BASE_DECLARE_FEATURE(kBackToOpener);
 
-BASE_DECLARE_FEATURE(kProjectsPanel);
-
 BASE_DECLARE_FEATURE(kHorizontalTabStripComboButton);
 
-extern const base::FeatureParam<bool> kProjectsPanelWithThreads;
-
 bool IsVerticalTabsFeatureEnabled();
-bool IsProjectsPanelFeatureEnabled();
-bool IsThreadsInProjectsPanelEnabled();
 
 }  // namespace tabs
 
