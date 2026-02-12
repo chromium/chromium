@@ -1955,58 +1955,150 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 3);
   });
 
-  test('placeholder text is updated when in deep search mode', async () => {
-    // Assert initial placeholder text.
-    assertEquals(
-        loadTimeData.getString('searchboxComposePlaceholder'),
-        composeboxElement.$.input.placeholder);
+  suite('placeholder text is updated from hint text in ToolConfig', () => {
+    const deepSearchHint = 'Research anything';
+    const imageGenHint = 'Describe your image';
+    const canvasHint = 'Create anything';
+    const defaultApiHint =
+        loadTimeData.getString('searchboxComposePlaceholder');
 
-    // Deep search mode enabled.
-    composeboxElement.$.context.dispatchEvent(
-        new CustomEvent('set-tool-mode', {
-          detail: {tool: ComposeboxToolMode.kDeepSearch, enabled: true},
-        }));
-    await microtasksFinished();
-    assertEquals(
-        loadTimeData.getString('composeDeepSearchPlaceholder'),
-        composeboxElement.$.input.placeholder);
+    const mockInputState: InputState = {
+      hintText: defaultApiHint,
+      toolConfigs: [
+        {
+          tool: ComposeboxToolMode.kDeepSearch,
+          hintText: deepSearchHint,
+          menuLabel: '',
+          chipLabel: '',
+          disableActiveModelSelection: false,
+          aimUrlParams: [],
+        },
+        {
+          tool: ComposeboxToolMode.kImageGen,
+          hintText: imageGenHint,
+          menuLabel: '',
+          chipLabel: '',
+          disableActiveModelSelection: false,
+          aimUrlParams: [],
+        },
+        {
+          tool: ComposeboxToolMode.kCanvas,
+          hintText: canvasHint,
+          menuLabel: '',
+          chipLabel: '',
+          disableActiveModelSelection: false,
+          aimUrlParams: [],
+        },
+      ],
+      modelConfigs: [],
+      allowedModels: [],
+      allowedTools: [],
+      allowedInputTypes: [],
+      activeModel: 0,
+      activeTool: 0,
+      disabledModels: [],
+      disabledTools: [],
+      disabledInputTypes: [],
+      inputTypeConfigs: [],
+      toolsSectionConfig: null,
+      modelSectionConfig: null,
+    };
 
-    // Deep search mode disabled.
-    composeboxElement.$.context.dispatchEvent(
-        new CustomEvent('set-tool-mode', {
-          detail: {tool: ComposeboxToolMode.kDeepSearch, enabled: false},
-        }));
-    await microtasksFinished();
-    assertEquals(
-        loadTimeData.getString('searchboxComposePlaceholder'),
-        composeboxElement.$.input.placeholder);
-  });
+    setup(async () => {
+      createComposeboxElement();
+      searchboxCallbackRouterRemote.onInputStateChanged(mockInputState);
+      await microtasksFinished();
+    });
 
-  test('placeholder text is updated when in create image mode', async () => {
-    // Assert initial placeholder text.
-    assertEquals(
-        loadTimeData.getString('searchboxComposePlaceholder'),
-        composeboxElement.$.input.placeholder);
+    test(
+        'placeholder text is set to  default placeholder textinitially', () => {
+          assertEquals(
+              loadTimeData.getString('searchboxComposePlaceholder'),
+              composeboxElement.$.input.placeholder);
+        });
 
-    // Create image mode enabled.
-    composeboxElement.$.context.dispatchEvent(
-        new CustomEvent('set-tool-mode', {
-          detail: {tool: ComposeboxToolMode.kImageGen, enabled: true},
-        }));
-    await microtasksFinished();
-    assertEquals(
-        loadTimeData.getString('composeCreateImagePlaceholder'),
-        composeboxElement.$.input.placeholder);
+    test(
+        'placeholder text is updated from ToolConfig when in Deep Search mode',
+        async () => {
+          await searchboxCallbackRouterRemote.onInputStateChanged(
+              mockInputState);
+          // Deep search mode enabled.
+          composeboxElement.$.context.dispatchEvent(
+              new CustomEvent('set-tool-mode', {
+                bubbles: true,
+                composed: true,
+                detail: {tool: ComposeboxToolMode.kDeepSearch, enabled: true},
+              }));
+          await microtasksFinished();
+          assertEquals(deepSearchHint, composeboxElement.$.input.placeholder);
 
-    // Create image mode disabled.
-    composeboxElement.$.context.dispatchEvent(
-        new CustomEvent('set-tool-mode', {
-          detail: {tool: ComposeboxToolMode.kImageGen, enabled: false},
-        }));
-    await microtasksFinished();
-    assertEquals(
-        loadTimeData.getString('searchboxComposePlaceholder'),
-        composeboxElement.$.input.placeholder);
+          // Deep search mode disabled.
+          composeboxElement.$.context.dispatchEvent(
+              new CustomEvent('set-tool-mode', {
+                bubbles: true,
+                composed: true,
+                detail: {tool: ComposeboxToolMode.kDeepSearch, enabled: false},
+              }));
+          await microtasksFinished();
+          assertEquals(
+              loadTimeData.getString('searchboxComposePlaceholder'),
+              composeboxElement.$.input.placeholder);
+        });
+
+    test(
+        'placeholder text is updated from ToolConfig when in Create Image mode',
+        async () => {
+          await searchboxCallbackRouterRemote.onInputStateChanged(
+              mockInputState);
+          // Create image mode enabled.
+          composeboxElement.$.context.dispatchEvent(
+              new CustomEvent('set-tool-mode', {
+                bubbles: true,
+                composed: true,
+                detail: {tool: ComposeboxToolMode.kImageGen, enabled: true},
+              }));
+          await microtasksFinished();
+          assertEquals(imageGenHint, composeboxElement.$.input.placeholder);
+
+          // Create image mode disabled.
+          composeboxElement.$.context.dispatchEvent(
+              new CustomEvent('set-tool-mode', {
+                bubbles: true,
+                composed: true,
+                detail: {tool: ComposeboxToolMode.kImageGen, enabled: false},
+              }));
+          await microtasksFinished();
+          assertEquals(
+              loadTimeData.getString('searchboxComposePlaceholder'),
+              composeboxElement.$.input.placeholder);
+        });
+
+    test(
+        'placeholder text is updated from ToolConfig when in Canvas mode',
+        async () => {
+          await searchboxCallbackRouterRemote.onInputStateChanged(
+              mockInputState);
+          // Canvas mode enabled.
+          composeboxElement.$.context.dispatchEvent(
+              new CustomEvent('set-tool-mode', {
+                bubbles: true,
+                composed: true,
+                detail: {tool: ComposeboxToolMode.kCanvas, enabled: true},
+              }));
+          await microtasksFinished();
+          assertEquals(canvasHint, composeboxElement.$.input.placeholder);
+          // Canvas mode disabled.
+          composeboxElement.$.context.dispatchEvent(
+              new CustomEvent('set-tool-mode', {
+                bubbles: true,
+                composed: true,
+                detail: {tool: ComposeboxToolMode.kCanvas, enabled: false},
+              }));
+          await microtasksFinished();
+          assertEquals(
+              loadTimeData.getString('searchboxComposePlaceholder'),
+              composeboxElement.$.input.placeholder);
+        });
   });
 
   test('pasting valid files calls addFileContext', async () => {
