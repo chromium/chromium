@@ -893,11 +893,6 @@ GpuImageDecodeCache::ImageData::ImageData(
       info(std::move(image_info[kAuxImageIndexDefault])),
       gainmap_info(std::move(image_info[kAuxImageIndexGainmap])),
       decode(is_bitmap_backed) {
-  if (info.yuva.has_value()) {
-    // This is the only plane config supported by non-OOP raster.
-    DCHECK_EQ(info.yuva->yuvaInfo().planeConfig(),
-              SkYUVAInfo::PlaneConfig::kY_U_V);
-  }
   if (base::FeatureList::IsEnabled(features::kInitImageDecodeLastUseTime)) {
     last_use = base::TimeTicks::Now();
   }
