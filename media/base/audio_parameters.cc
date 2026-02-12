@@ -298,7 +298,8 @@ std::string AudioParameters::AsHumanReadableString() const {
 }
 
 int AudioParameters::GetBytesPerBuffer(SampleFormat fmt) const {
-  return GetBytesPerFrame(fmt) * frames_per_buffer_;
+  return base::CheckMul(GetBytesPerFrame(fmt), frames_per_buffer_)
+      .ValueOrDie<int>();
 }
 
 int AudioParameters::GetBytesPerFrame(SampleFormat fmt) const {
