@@ -451,21 +451,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void OnContextDestroyed() override;
 
  protected:
-  // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
-  // exists, after flushing the resource and signaling that an external write
-  // will occur on it. The caller should wait on `internal_access_sync_token`
-  // before writing the contents.
-  // `required_shared_image_usages` is a set of usages that the passed-back
-  // ClientSharedImage must support. A copy will be performed if either (a) the
-  // display compositor is reading the current resource or (b) the current
-  // resource does not support `required_shared_image_usages.` In these cases,
-  // `was_copy_performed` will be set to true if it is non-null.
-  scoped_refptr<gpu::ClientSharedImage>
-  GetBackingClientSharedImageForExternalWrite(
-      gpu::SharedImageUsageSet required_shared_image_usages,
-      gpu::SyncToken& internal_access_sync_token,
-      bool* was_copy_performed = nullptr);
-
   CanvasResourceSharedImage* resource() {
     return static_cast<CanvasResourceSharedImage*>(resource_.get());
   }
@@ -477,6 +462,11 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
   bool resource_recycling_enabled_ = true;
+  gpu::SharedImageUsageSet shared_image_usage_flags_;
+  const bool is_accelerated_;
+
+  // The resource that is currently being used by this provider.
+  scoped_refptr<CanvasResourceSharedImage> resource_;
 
  private:
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
@@ -541,14 +531,10 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
-  const bool is_accelerated_;
-  gpu::SharedImageUsageSet shared_image_usage_flags_;
   bool current_resource_has_write_access_ = false;
   bool is_software_ = false;
   bool is_cleared_ = false;
 
-  // The resource that is currently being used by this provider.
-  scoped_refptr<CanvasResourceSharedImage> resource_;
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
 

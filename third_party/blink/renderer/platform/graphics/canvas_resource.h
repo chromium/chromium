@@ -133,6 +133,8 @@ class PLATFORM_EXPORT CanvasResource
     return base::PlatformThread::CurrentRef() != owning_thread_ref_;
   }
 
+  virtual const gpu::SyncToken& sync_token() const = 0;
+
  protected:
   CanvasResource();
 
@@ -167,7 +169,6 @@ class PLATFORM_EXPORT CanvasResource
   // token is already verified by GetSyncToken() so this function is no-op for
   // those classes.
   virtual void VerifySyncToken() {}
-  virtual const gpu::SyncToken& sync_token() const = 0;
 
   bool is_origin_clean_ = true;
 };
@@ -234,6 +235,10 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   void PrepareForWebGPUDummyMailbox();
 
+  const gpu::SyncToken& sync_token() const override {
+    return owning_thread_data_.sync_token;
+  }
+
  private:
   friend class CanvasResourceProviderSharedImage;
 
@@ -276,10 +281,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   const OwningThreadData& owning_thread_data() const {
     DCHECK(!is_cross_thread());
     return owning_thread_data_;
-  }
-
-  const gpu::SyncToken& sync_token() const override {
-    return owning_thread_data_.sync_token;
   }
 
   SkAlphaType GetAlphaType() const { return alpha_type_; }

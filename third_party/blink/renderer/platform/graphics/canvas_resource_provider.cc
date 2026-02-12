@@ -228,12 +228,12 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
                              alpha_type,
                              color_space,
                              delegate),
+      shared_image_usage_flags_(shared_image_usage_flags),
+      is_accelerated_(is_accelerated),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       raster_context_provider_(
           base::WrapRefCounted(context_provider_wrapper_->ContextProvider()
-                                   .RasterContextProvider())),
-      is_accelerated_(is_accelerated),
-      shared_image_usage_flags_(shared_image_usage_flags) {
+                                   .RasterContextProvider())) {
   if (context_provider_wrapper_) {
     // Graphite can handle a large buffer size.
     if (context_provider_wrapper_->ContextProvider()
@@ -273,12 +273,12 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
                              alpha_type,
                              color_space,
                              delegate),
+      shared_image_usage_flags_(gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY),
+      is_accelerated_(false),
       shared_image_interface_provider_(
           shared_image_interface_provider
               ? shared_image_interface_provider->GetWeakPtr()
               : nullptr),
-      is_accelerated_(false),
-      shared_image_usage_flags_(gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY),
       is_software_(true) {
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->AddGpuChannelLostObserver(this);
@@ -425,10 +425,36 @@ scoped_refptr<gpu::ClientSharedImage> Canvas2DResourceProviderSharedImage::
     GetBackingClientSharedImageForTransferToWebGPU(
         gpu::SyncToken& internal_access_sync_token,
         bool* was_copy_performed) {
-  return GetBackingClientSharedImageForExternalWrite(
-      /*required_shared_image_usages=*/gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-      internal_access_sync_token, was_copy_performed);
+  // This may cause the current resource and all cached resources to become
+  // unusable. WillDrawInternal() will detect this case, drop all cached
+  // resources, and copy the current resource to a newly-created resource
+  // which will by definition be usable.
+  shared_image_usage_flags_.PutAll(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                   gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE);
+
+  DCHECK(is_accelerated_);
+
+  if (IsGpuContextLost()) {
+    return nullptr;
+  }
+
+  // End the internal write access before calling WillDrawInternal(), which
+  // has a precondition that there should be no current write access on the
+  // resource.
+  EndWriteAccess();
+
+  const CanvasResource* const original_resource = resource_.get();
+  auto access = WillDrawInternal();
+
+  if (was_copy_performed != nullptr) {
+    *was_copy_performed = resource_.get() != original_resource;
+  }
+
+  // NOTE: The above invocation of WillDrawInternal() ensures that this
+  // invocation of EndAccess() will generate a new sync token.
+  resource_->EndAccess(std::move(access));
+  internal_access_sync_token = resource_->sync_token();
+  return resource_->GetClientSharedImage();
 }
 
 void Canvas2DResourceProviderSharedImage::SetResourceRecyclingEnabled(
@@ -724,8 +750,24 @@ bool CanvasNon2DResourceProviderSharedImage::OverwriteImage(
 scoped_refptr<gpu::ClientSharedImage>
 CanvasNon2DResourceProviderSharedImage::BeginExternalWrite(
     gpu::SyncToken& internal_access_sync_token) {
-  return GetBackingClientSharedImageForExternalWrite(
-      gpu::SharedImageUsageSet(), internal_access_sync_token);
+  DCHECK(is_accelerated_);
+
+  if (IsGpuContextLost()) {
+    return nullptr;
+  }
+
+  // End the internal write access before calling WillDrawInternal(), which
+  // has a precondition that there should be no current write access on the
+  // resource.
+  EndWriteAccess();
+
+  auto access = WillDrawInternal();
+
+  // NOTE: The above invocation of WillDrawInternal() ensures that this
+  // invocation of EndAccess() will generate a new sync token.
+  resource_->EndAccess(std::move(access));
+  internal_access_sync_token = resource_->sync_token();
+  return resource_->GetClientSharedImage();
 }
 
 base::ByteSize CanvasResourceProviderSharedImage::EstimatedSizeInBytes() const {
@@ -805,42 +847,6 @@ bool CanvasResourceProviderSharedImage::HasUnusedResourcesForTesting() const {
     return false;
   }
   return !unused_resources_.empty();
-}
-
-scoped_refptr<gpu::ClientSharedImage>
-CanvasResourceProviderSharedImage::GetBackingClientSharedImageForExternalWrite(
-    gpu::SharedImageUsageSet required_shared_image_usages,
-    gpu::SyncToken& internal_access_sync_token,
-    bool* was_copy_performed) {
-  // This may cause the current resource and all cached resources to become
-  // unusable. WillDrawInternal() will detect this case, drop all cached
-  // resources, and copy the current resource to a newly-created resource
-  // which will by definition be usable.
-  shared_image_usage_flags_.PutAll(required_shared_image_usages);
-
-  DCHECK(is_accelerated_);
-
-  if (IsGpuContextLost()) {
-    return nullptr;
-  }
-
-  // End the internal write access before calling WillDrawInternal(), which
-  // has a precondition that there should be no current write access on the
-  // resource.
-  EndWriteAccess();
-
-  const CanvasResource* const original_resource = resource_.get();
-  auto access = WillDrawInternal();
-
-  if (was_copy_performed != nullptr) {
-    *was_copy_performed = resource_.get() != original_resource;
-  }
-
-  // NOTE: The above invocation of WillDrawInternal() ensures that this
-  // invocation of EndAccess() will generate a new sync token.
-  resource_->EndAccess(std::move(access));
-  internal_access_sync_token = resource_->sync_token();
-  return resource_->GetClientSharedImage();
 }
 
 void Canvas2DResourceProviderSharedImage::TransferBackFromWebGPU(
