@@ -59,14 +59,19 @@ static int64_t JNI_EntityDataManager_Init(JNIEnv* env,
                                           const jni_zero::JavaRef<jobject>& obj,
                                           Profile* profile) {
   CHECK(profile);
+  EntityDataManager* entity_data_manager =
+      AutofillEntityDataManagerFactory::GetForProfile(profile);
+  if (!entity_data_manager) {
+    return 0;
+  }
+
   EntityDataManagerAndroid* entity_data_manager_android =
       new EntityDataManagerAndroid(
           env, obj, GoogleGroupsManagerFactory::GetForBrowserContext(profile),
           profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
           SyncServiceFactory::GetForProfile(profile),
           AccountSettingServiceFactory::GetForBrowserContext(profile),
-          profile->IsOffTheRecord(),
-          AutofillEntityDataManagerFactory::GetForProfile(profile));
+          profile->IsOffTheRecord(), entity_data_manager);
   return reinterpret_cast<intptr_t>(entity_data_manager_android);
 }
 

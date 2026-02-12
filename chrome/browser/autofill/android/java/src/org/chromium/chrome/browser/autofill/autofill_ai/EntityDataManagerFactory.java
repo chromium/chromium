@@ -8,6 +8,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 
@@ -20,8 +21,14 @@ public class EntityDataManagerFactory {
     private static @Nullable EntityDataManager sManagerForTesting;
 
     /** Return the {@link EntityDataManager} associated with the passed in {@link Profile}. */
-    public static EntityDataManager getForProfile(Profile profile) {
+    public static @Nullable EntityDataManager getForProfile(Profile profile) {
         if (sManagerForTesting != null) return sManagerForTesting;
+        // LINT.IfChange(AutofillAiCreateDataManager)
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_CREATE_ENTITY_DATA_MANAGER)
+                && !ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)) {
+            return null;
+        }
+        // LINT.ThenChange(//chrome/browser/autofill/autofill_entity_data_manager_factory.cc:AutofillAiCreateDataManager)
         ThreadUtils.assertOnUiThread();
         return sProfileMap.getForProfile(profile, EntityDataManager::new);
     }
