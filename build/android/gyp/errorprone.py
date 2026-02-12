@@ -42,7 +42,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # Still to look into:
     'AnnotationPosition',
     'AvoidObjectArrays',
-    'BanSerializableRead',
     'BooleanParameter',
     'CannotMockMethod',
     'CatchingUnchecked',
