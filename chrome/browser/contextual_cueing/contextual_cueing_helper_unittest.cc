@@ -48,7 +48,7 @@ std::unique_ptr<KeyedService> CreatePageContentExtractionService(
     content::BrowserContext* context) {
   return std::make_unique<
       page_content_annotations::PageContentExtractionService>(
-      /*os_crypt_async=*/nullptr, context->GetPath());
+      /*os_crypt_async=*/nullptr, context->GetPath(), /*tracker=*/nullptr);
 }
 
 std::unique_ptr<KeyedService> CreateContextualCueingService(

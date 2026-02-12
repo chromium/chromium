@@ -129,7 +129,7 @@ class MockPageContentExtractionService
     : public page_content_annotations::PageContentExtractionService {
  public:
   MockPageContentExtractionService()
-      : PageContentExtractionService(nullptr, base::FilePath()) {}
+      : PageContentExtractionService(nullptr, base::FilePath(), nullptr) {}
   ~MockPageContentExtractionService() override = default;
 
   MOCK_METHOD(std::optional<bool>,
