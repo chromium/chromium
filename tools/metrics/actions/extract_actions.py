@@ -509,7 +509,7 @@ def AddLiteralActions(actions):
   Arguments:
     actions: set of actions to add to.
   """
-  EXTENSIONS = ('.cc', '.cpp', '.mm', '.c', '.m', '.java')
+  EXTENSIONS = ('.cc', '.cpp', '.mm', '.c', '.m', '.java', '.swift')
 
   # Walk the source tree to process all files.
   ash_root = os.path.normpath(os.path.join(REPOSITORY_ROOT, 'ash'))
@@ -531,6 +531,8 @@ def AddLiteralActions(actions):
   webkit_core_root = os.path.normpath(
       os.path.join(REPOSITORY_ROOT, 'third_party/blink/renderer/core'))
   WalkDirectory(webkit_core_root, actions, EXTENSIONS, GrepForActions)
+  ios_root = os.path.normpath(os.path.join(REPOSITORY_ROOT, 'ios'))
+  WalkDirectory(ios_root, actions, EXTENSIONS, GrepForActions)
 
 
 def AddWebUIActions(actions):

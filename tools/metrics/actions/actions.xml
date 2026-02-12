@@ -5657,6 +5657,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ApplicationShortcut.ScanQRCodePressed">
+  <owner>olivierrobin@chromium.org</owner>
+  <description>
+    Force pressed on a springboard shortcut and tapped Scan QR Code in Chrome
+    for iOS.
+  </description>
+</action>
+
 <action name="ApplicationShortcut.VoiceSearchPressed">
   <owner>olivierrobin@chromium.org</owner>
   <description>
@@ -8435,6 +8443,11 @@ should be able to be added at any place in this file.
   <description>
     Recorded when user clicks on the bulk delete hyperlink on the settings page.
   </description>
+</action>
+
+<action name="BulkUploadSettingsOpen">
+  <owner>jlebel@chromium.org</owner>
+  <description>TODO(crbug.com/483958043): Write the description.</description>
 </action>
 
 <action name="Cancel">
@@ -18900,6 +18913,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.WelcomeBack.Stopped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>TODO(crbug.com/483957938): Write the description.</description>
+</action>
+
 <action name="IOSAccountsSettingsCloseWithSwipe">
   <owner>msarda@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
@@ -18978,6 +18997,12 @@ should be able to be added at any place in this file.
   <description>
     Reported when trying to share a tab group or manage it, if already shared.
   </description>
+</action>
+
+<action name="IOSCollaborationInitShareOrManage">
+  <owner>lpromero@google.com</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>TODO(crbug.com/483957682): Write the description.</description>
 </action>
 
 <action name="IOSCollaborationShowDeleteDialog">
@@ -24213,6 +24238,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ManualFallback_CreditCard_OpenAddCreditCard">
+  <owner>tmartino@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <description>
+    The user tapped on &quot;Add credit card&quot; on the Password Manual
+    Fallback view.
+  </description>
+</action>
+
 <action name="ManualFallback_CreditCard_OpenAddPaymentMethod">
   <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -24309,7 +24343,7 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="ManualFallback_ExpandIcon_OpenPaymenMethod">
+<action name="ManualFallback_ExpandIcon_OpenPaymentMethod">
   <owner>noemies@google.com</owner>
   <owner>sugoi@google.com</owner>
   <description>
@@ -24371,6 +24405,11 @@ should be able to be added at any place in this file.
     The user tapped on &quot;Use other password&quot; on the Password Manual
     Fallback view.
   </description>
+</action>
+
+<action name="ManualFallback_Password_OpenSuggestPassword">
+  <owner>kazinova@google.com</owner>
+  <description>TODO(crbug.com/483960232): Write the description.</description>
 </action>
 
 <action name="ManualFallback_Password_OverflowMenu_Edit">
@@ -25494,6 +25533,11 @@ should be able to be added at any place in this file.
   <description>
     User pressed 'Visit Copied Link' in the omnibox context menu (iOS only).
   </description>
+</action>
+
+<action name="Mobile.OmniboxPasteButton.LensCopiedImage">
+  <owner>christianxu@chromium.org</owner>
+  <description>TODO(crbug.com/483963490): Write the description.</description>
 </action>
 
 <action name="Mobile.OmniboxPasteButton.SearchCopiedImage">
@@ -26711,6 +26755,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileEnteredBackground">
+  <owner>bling-fundamentals@google.com</owner>
+  <description>Reported when an app entered the background.</description>
+</action>
+
 <action name="MobileExitStackView">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
@@ -27249,6 +27298,12 @@ should be able to be added at any place in this file.
   <description>
     Reported when Gemini Settings UI was dismissed. iOS only.
   </description>
+</action>
+
+<action name="MobileGeminiSettingsOpened">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>TODO(crbug.com/483963272): Write the description.</description>
 </action>
 
 <action name="MobileGeminiURLOpened">
@@ -27852,6 +27907,12 @@ should be able to be added at any place in this file.
   <description>
     Reported when Language Details Settings UI was dismissed. iOS only.
   </description>
+</action>
+
+<action name="MobileLanguageSettingsBack">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <description>TODO(crbug.com/483962380): Write the description.</description>
 </action>
 
 <action name="MobileLocationBarTapped">
@@ -28809,6 +28870,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileNTPLogoTapped">
+  <owner>justincohen@chromium.org</owner>
+  <description>User tapped on the Google logo on the iOS NTP.</description>
+</action>
+
 <action name="MobileNTPMIAEntryPointTapped">
   <owner>radunitescu@google.com</owner>
   <description>
@@ -29319,6 +29385,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobilePasswordCheckupInteractionIgnoredOnCooldown">
+  <owner>vincb@google.com</owner>
+  <description>TODO(crbug.com/483963166): Write the description.</description>
+</action>
+
 <action name="MobilePasswordCheckupSettingsBack">
   <owner>noemies@google.com</owner>
   <description>
@@ -29559,6 +29630,11 @@ should be able to be added at any place in this file.
   <description>
     Reported when Price Notifications Settings UI was dismissed. iOS only.
   </description>
+</action>
+
+<action name="MobilePrintMenuAirPrint">
+  <owner>asamidoi@chromium.org</owner>
+  <description>Reported when the print menu is opened. iOS only.</description>
 </action>
 
 <action name="MobilePrivacySafeBrowsingSettingsBack">
@@ -30255,6 +30331,39 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileShareMenuGmail">
+  <owner>olivierrobin@chromium.org</owner>
+  <description>User shared to Gmail.</description>
+</action>
+
+<action name="MobileShareMenuGoogleDrive">
+  <owner>olivierrobin@chromium.org</owner>
+  <description>User shared to Google Drive.</description>
+</action>
+
+<action name="MobileShareMenuGooglePlus">
+  <owner>olivierrobin@chromium.org</owner>
+  <description>User shared to Google+.</description>
+</action>
+
+<action name="MobileShareMenuGoogleUnknown">
+  <owner>olivierrobin@chromium.org</owner>
+  <description>
+    User shared to a Google app that has not been explicitly identified in
+    Chrome for iOS.
+  </description>
+</action>
+
+<action name="MobileShareMenuHangouts">
+  <owner>olivierrobin@chromium.org</owner>
+  <description>User shared to Hangout.</description>
+</action>
+
+<action name="MobileShareMenuInbox">
+  <owner>olivierrobin@chromium.org</owner>
+  <description>User shared to Inbox.</description>
+</action>
+
 <action name="MobileShareMenuMarkupPDF">
   <owner>alionadangla@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
@@ -30302,6 +30411,48 @@ should be able to be added at any place in this file.
   <description>
     The user pressed &quot;Send Tab To Self&quot; from the share action menu.
   </description>
+</action>
+
+<action name="MobileShareMenuToContentApp">
+  <owner>olivierrobin@chromium.org</owner>
+  <description>
+    User shared to a non-Google content consuming app, such as Evernote or
+    Pocket.
+  </description>
+</action>
+
+<action name="MobileShareMenuToInstantMessagingApp">
+  <owner>olivierrobin@chromium.org</owner>
+  <description>
+    User shared to a non-Google IM app. This excludes the native iOS Messages
+    app.
+  </description>
+</action>
+
+<action name="MobileShareMenuToMail">
+  <owner>olivierrobin@chromium.org</owner>
+  <description>
+    User shared to a non-Google mail app. This includes shares to the native iOS
+    Mail app.
+  </description>
+</action>
+
+<action name="MobileShareMenuToSMSApp">
+  <owner>olivierrobin@chromium.org</owner>
+  <description>
+    User shared to a non-Google SMS app. This includes shares to the native iOS
+    Messages app.
+  </description>
+</action>
+
+<action name="MobileShareMenuToSocialNetwork">
+  <owner>olivierrobin@chromium.org</owner>
+  <description>User shared to a non-Google social network.</description>
+</action>
+
+<action name="MobileShareMenuUnknown">
+  <owner>olivierrobin@chromium.org</owner>
+  <description>User shared to an unknown app.</description>
 </action>
 
 <action name="MobileShareQRCode">
@@ -30363,6 +30514,16 @@ should be able to be added at any place in this file.
     User tapped on the UNDO button of the snackbar displayed after unpinning a
     tab from the iOS overflow menu.
   </description>
+</action>
+
+<action name="MobileStackSwipeCancelled">
+  <owner>bling-fundamentals@google.com</owner>
+  <description>Reported when swipe is cancelled.</description>
+</action>
+
+<action name="MobileStackSwipeCompleted">
+  <owner>bling-fundamentals@google.com</owner>
+  <description>Reported when swipe is completed.</description>
 </action>
 
 <action name="MobileStackViewCloseTab">
@@ -32241,6 +32402,11 @@ should be able to be added at any place in this file.
   <description>
     Only for Android. Menu is shown by tapping software menu button.
   </description>
+</action>
+
+<action name="MobileVoiceOverActiveOnLaunch">
+  <owner>jyquinn@chromium.org</owner>
+  <description>Chrome is launched with VoiceOver active.</description>
 </action>
 
 <action name="MobileVoiceSearchSettingsBack">
@@ -40589,6 +40755,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.Language">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <description>TODO(crbug.com/483964250): Write the description.</description>
+</action>
+
+<action name="Settings.ManageOptionOnSettingsSelected">
+  <owner>vizcay@google.com</owner>
+  <description>TODO(crbug.com/483963277): Write the description.</description>
+</action>
+
 <action name="Settings.MobileHelpAndFeedback">
   <owner>jinsukkim@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -43471,6 +43648,11 @@ should be able to be added at any place in this file.
     Recorded when the user taps on &quot;Edit Account List&quot; menu entry in
     the account menu. iOS only.
   </description>
+</action>
+
+<action name="Signin_AccountMenu_ErrorButton_BookmarksLimitExceeded">
+  <owner>mtatarski@google.com</owner>
+  <description>TODO(crbug.com/483961997): Write the description.</description>
 </action>
 
 <action name="Signin_AccountMenu_ErrorButton_MDM">
