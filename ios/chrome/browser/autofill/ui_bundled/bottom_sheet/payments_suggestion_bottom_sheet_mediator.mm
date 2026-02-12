@@ -46,10 +46,10 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
 
 namespace {
 
-// Returns true if the payments bottom sheet is at V3.
-bool IsV3() {
+// Returns true if the payments bottom sheet is stateless.
+bool IsStateless() {
   return base::FeatureList::IsEnabled(kStatelessFormSuggestionController) &&
-         base::FeatureList::IsEnabled(kAutofillPaymentsSheetV3Ios);
+         base::FeatureList::IsEnabled(kAutofillPaymentsSheetStateless);
 }
 
 }  // namespace
@@ -58,6 +58,13 @@ bool IsV3() {
     CRWWebStateObserver,
     PersonalDataManagerObserver,
     WebStateListObserving>
+
+// YES if the context is still valid for filling. Determined based the outcome
+// of a best effort to retrieve suggestions before the user accepts a
+// suggestion. The context is deemed valid by default to keep the status quo.
+// Context is invalidated if the suggestions are retrieved in time and
+// contradict the context (i.e. suggestions aren't credit card suggestions).
+@property(nonatomic, assign) BOOL fillContextIsValid;
 
 @end
 
@@ -115,7 +122,8 @@ bool IsV3() {
     _hasCreditCards = NO;
     _webStateList = webStateList;
     _fillAttemptsCount = 0;
-
+    // Context deemed valid by default; status quo.
+    _fillContextIsValid = YES;
     if (personalDataManager) {
       _personalDataManager = personalDataManager;
       _personalDataManagerObserver =
@@ -255,17 +263,29 @@ bool IsV3() {
       formSuggestionTabHelper->GetAccessoryViewProvider();
   CHECK(crossProvider);
 
-  if (crossProvider.type != SuggestionProviderTypeAutofill && !IsV3()) {
-    // Last resort safety exit: On the unlikely event that the provider was
-    // set incorrectly (for example if local predictions and server
-    // predictions are different), simply exit and open the keyboard.
-    // That last resort exit is only required before V3 where the type of the
-    // current provider matters.
+  // Last resort safety exit: On the unlikely event that the provider was
+  // set incorrectly (for example if local predictions and server
+  // predictions are different), simply exit and open the keyboard.
+  if (IsStateless()) {
+    if (!self.fillContextIsValid) {
+      [self disableBottomSheetAndRefocus:YES];
+      [self logExitReason:kBadProvider];
+      return;
+    }
+  } else if (crossProvider.type != SuggestionProviderTypeAutofill) {
     [self disableBottomSheetAndRefocus:YES];
     [self logExitReason:kBadProvider];
     return;
   }
 
+  [self fillCreditCard:creditCardData
+               atIndex:index
+         crossProvider:crossProvider];
+}
+
+- (void)fillCreditCard:(CreditCardData*)creditCardData
+               atIndex:(NSInteger)index
+         crossProvider:(id<FormInputSuggestionsProvider>)crossProvider {
   [self disableBottomSheetAndRefocus:NO];
 
   // Create a form suggestion containing the selected credit card's backend
@@ -292,9 +312,8 @@ bool IsV3() {
                IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
 
   // Attach the extra contextual information to the suggestion when using the
-  // V3 sheet which will be used once the FormSuggestionController becomes
-  // stateless.
-  if (IsV3()) {
+  // Stateless sheet.
+  if (IsStateless()) {
     AutofillTabHelper* autofillTabHelper = [self autofillTabHelper];
     // At this point we know that there is a valid active webstate so there must
     // be an autofill tab helper. Also, the bottom sheet can only be triggered
@@ -416,9 +435,32 @@ bool IsV3() {
   // provider so the bottom sheet can fill the fields later.
   autofill::FormActivityParams params = _params;
   params.has_user_gesture = true;
+
+  FormSuggestionsReadyCompletion completion = nil;
+  if (IsStateless()) {
+    // When stateless, use completion to determine if there are any credit card
+    // suggestions to determine if the context is still valid for filling CC
+    // information.
+    __weak __typeof(self) weakSelf = self;
+    completion = ^(NSArray<FormSuggestion*>* suggestions,
+                   id<FormInputSuggestionsProvider> delegate) {
+      BOOL hasCreditCard =
+          [suggestions
+              indexOfObjectPassingTest:^BOOL(FormSuggestion* suggestion,
+                                             NSUInteger idx, BOOL* stop) {
+                return suggestion.type ==
+                           autofill::SuggestionType::kCreditCardEntry ||
+                       suggestion.type ==
+                           autofill::SuggestionType::kVirtualCreditCardEntry;
+              }] != NSNotFound;
+
+      weakSelf.fillContextIsValid = hasCreditCard;
+    };
+  }
+
   [provider retrieveSuggestionsForForm:params
                               webState:activeWebState
-              accessoryViewUpdateBlock:nil];
+              accessoryViewUpdateBlock:completion];
 }
 
 // Returns the icon associated with the provided credit card.
