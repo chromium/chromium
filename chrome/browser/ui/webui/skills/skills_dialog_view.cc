@@ -43,8 +43,8 @@ SkillsDialogView::SkillsDialogView(Profile* profile) {
       gfx::RoundedCornersF(kCornerRadius));
   web_view_->layer()->SetMasksToBounds(true);
   web_view_->GetWebContents()->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
-  web_view_->LoadInitialURL(
-      GURL(std::string(chrome::kChromeUISkillsURL) + "dialog"));
+  web_view_->LoadInitialURL(GURL(std::string(chrome::kChromeUISkillsURL) +
+                                 chrome::kChromeUISkillsDialogPath));
   AddChildView(std::move(web_view));
 }
 
