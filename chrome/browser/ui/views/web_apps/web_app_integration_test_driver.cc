@@ -858,7 +858,7 @@ AppState::AppState(webapps::AppId app_id,
                    blink::mojom::DisplayMode effective_display_mode,
                    std::optional<mojom::UserDisplayMode> user_display_mode,
                    std::string manifest_launcher_icon_filename,
-                   bool installed_locally,
+                   proto::InstallState install_state,
                    bool shortcut_created)
     : id(std::move(app_id)),
       name(std::move(app_name)),
@@ -868,7 +868,7 @@ AppState::AppState(webapps::AppId app_id,
       user_display_mode(user_display_mode),
       manifest_launcher_icon_filename(
           std::move(manifest_launcher_icon_filename)),
-      is_installed_locally(installed_locally),
+      install_state(install_state),
       is_shortcut_created(shortcut_created) {}
 AppState::~AppState() = default;
 AppState::AppState(const AppState&) = default;
@@ -879,7 +879,7 @@ bool AppState::operator==(const AppState& other) const {
          user_display_mode == other.user_display_mode &&
          manifest_launcher_icon_filename ==
              other.manifest_launcher_icon_filename &&
-         is_installed_locally == other.is_installed_locally &&
+         install_state == other.install_state &&
          is_shortcut_created == other.is_shortcut_created;
 }
 
@@ -946,7 +946,7 @@ std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
                    static_cast<int>(app.effective_display_mode));
       app_dict.Set("manifest_launcher_icon_filename",
                    app.manifest_launcher_icon_filename);
-      app_dict.Set("is_installed_locally", app.is_installed_locally);
+      app_dict.Set("install_state", app.install_state);
       app_dict.Set("is_shortcut_created", app.is_shortcut_created);
 
       app_dicts.Set(app_pair.first, std::move(app_dict));
@@ -2913,7 +2913,8 @@ void WebAppIntegrationTestDriver::CheckAppInListNotLocallyInstalled(Site site) {
   std::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state.has_value());
-  EXPECT_FALSE(app_state->is_installed_locally);
+  EXPECT_NE(app_state->install_state, proto::INSTALLED_WITH_OS_INTEGRATION);
+  EXPECT_NE(app_state->install_state, proto::INSTALLED_WITHOUT_OS_INTEGRATION);
 #if !BUILDFLAG(IS_CHROMEOS)
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
@@ -3085,7 +3086,9 @@ void WebAppIntegrationTestDriver::CheckAppNotInList(Site site) {
   }
   std::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
-  EXPECT_FALSE(app_state.has_value());
+  if (app_state.has_value()) {
+    EXPECT_EQ(app_state->install_state, proto::SUGGESTED_FROM_MIGRATION);
+  }
 #if !BUILDFLAG(IS_CHROMEOS)
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
@@ -4282,15 +4285,14 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
             registrar.GetAppEffectiveDisplayMode(app_id),
             registrar.GetAppUserDisplayMode(app_id),
             manifest_launcher_icon_filename,
-            registrar.IsInstallState(
-                app_id, {web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                         web_app::proto::INSTALLED_WITH_OS_INTEGRATION}),
+            registrar.GetInstallState(app_id).value(),
             IsShortcutAndIconCreated(profile, registrar.GetAppShortName(app_id),
                                      app_id));
 #if !BUILDFLAG(IS_CHROMEOS)
-        if (registrar.IsInstallState(
-                app_id, {web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                         web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
+        if (state.install_state ==
+                web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION ||
+            state.install_state ==
+                web_app::proto::INSTALLED_WITH_OS_INTEGRATION) {
           CheckAppSettingsAppState(profile->GetOriginalProfile(), state);
         }
 #endif

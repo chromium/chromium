@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
@@ -189,7 +190,7 @@ struct AppState {
            blink::mojom::DisplayMode effective_display_mode,
            std::optional<mojom::UserDisplayMode> user_display_mode,
            std::string manifest_launcher_icon_filename,
-           bool is_installed_locally,
+           proto::InstallState install_state,
            bool is_shortcut_created);
   ~AppState();
   AppState(const AppState&);
@@ -202,7 +203,7 @@ struct AppState {
   blink::mojom::DisplayMode effective_display_mode;
   std::optional<mojom::UserDisplayMode> user_display_mode;
   std::string manifest_launcher_icon_filename;
-  bool is_installed_locally;
+  proto::InstallState install_state;
   bool is_shortcut_created;
 };
 
