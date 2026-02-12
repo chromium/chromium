@@ -348,6 +348,17 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Activate the context menu of a tab"/>
 </enum>
 
+<!-- LINT.IfChange(TabDragDestination) -->
+
+<enum name="TabDragDestination">
+  <int value="0" label="Same window"/>
+  <int value="1" label="New window"/>
+  <int value="2" label="Existing window"/>
+  <int value="3" label="Abandoned"/>
+</enum>
+
+<!-- LINT.ThenChange(chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h:TabDragDestination) -->
+
 <!-- LINT.IfChange(TabGroupingTransitionType) -->
 
 <enum name="TabGroupingTransitionType">

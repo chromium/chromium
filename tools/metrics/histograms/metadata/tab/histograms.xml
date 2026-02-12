@@ -3961,6 +3961,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabStrip.{TabStripMode}.TabDragDestination"
+    enum="TabDragDestination" expires_after="2026-07-01">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The destination of a tab drag operation for either vertical or horizontal
+    tabs.
+
+    It will either be in the same window, a new window, an existing distinct
+    window, or abandoned.
+
+    Currently, users cannot drag between tab strips of different types. If that
+    becomes possible, then this metric needs to be updated accordingly to
+    distinguish between those behaviors.
+  </summary>
+  <token key="TabStripMode" variants="TabStripMode"/>
+</histogram>
+
 <histogram name="TabStrip.{TabStripMode}.TabDragDuration" units="ms"
     expires_after="2026-07-01">
   <owner>kunaldaftari@google.com</owner>
