@@ -92,6 +92,7 @@ class PaymentRequestBrowserTestBase
     CVC_PROMPT_SHOWN,
     NOT_SUPPORTED_ERROR,
     ABORT_CALLED,
+    INTERNAL_ERROR,
     PROCESSING_SPINNER_SHOWN,
     PROCESSING_SPINNER_HIDDEN,
     PAYMENT_HANDLER_WINDOW_OPENED,
@@ -119,6 +120,7 @@ class PaymentRequestBrowserTestBase
   void SetIncognito();
   void SetInvalidSsl();
   void SetBrowserWindowInactive();
+  void SetBrowserWindowSizeCheckEnabled();
 
   // PaymentRequest::ObserverForTest:
   void OnCanMakePaymentCalled() override;
@@ -129,6 +131,7 @@ class PaymentRequestBrowserTestBase
   void OnConnectionTerminated() override;
   void OnPayCalled() override;
   void OnAbortCalled() override;
+  void OnInternalError() override;
 
   // PaymentRequestDialogView::ObserverForTest:
   void OnDialogOpened() override;
@@ -320,6 +323,11 @@ class PaymentRequestBrowserTestBase
   bool is_browser_window_active_ = true;
   std::vector<base::WeakPtr<PaymentRequest>> requests_;
   ConstCSPChecker const_csp_checker_{/*allow=*/true};
+
+  // Determines whether or not PaymentRequest will enforce the minimum window
+  // size check. Most tests should run with this disabled, as bots often have
+  // small virtual displays that will fail the check.
+  bool is_browser_window_size_check_enabled_ = false;
 
   base::WeakPtrFactory<PaymentRequestBrowserTestBase> weak_ptr_factory_{this};
 };

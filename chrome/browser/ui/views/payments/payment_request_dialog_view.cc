@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -27,6 +28,8 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/payments/content/payment_request.h"
+#include "components/payments/core/error_strings.h"
+#include "components/payments/core/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -47,6 +50,23 @@
 namespace payments {
 
 namespace {
+
+// The minimum ratio of browser window to Payment Request/Handler dialog that is
+// considered "large enough". We add a small buffer because even if the dialog
+// can technically fit, it's a bad experience if it consumes the entire window.
+constexpr float kMinimumWindowToDialogRatio = 1.05f;
+
+// The amount of time to wait before re-checking if the dialog fits in the
+// browser window during a resize.
+constexpr int kResizeThrottleMs = 100;
+
+views::Widget* GetBrowserWindowWidget(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  return views::Widget::GetTopLevelWidgetForNativeView(
+      web_contents->GetNativeView());
+}
 
 // This function creates an instance of a PaymentRequestSheetController
 // subclass of concrete type |Controller|, passing it non-owned pointers to
@@ -111,6 +131,29 @@ bool PaymentRequestDialogView::ShouldShowCloseButton() const {
 }
 
 void PaymentRequestDialogView::ShowDialog() {
+  if (!DialogFitsInBrowserWindow()) {
+    base::UmaHistogramEnumeration(
+        "PaymentRequest.WindowSizeCheckRejectionReason",
+        WindowSizeCheckRejectionReason::kRejectedAtShow);
+
+    // To avoid tearing down the PaymentRequest class in the middle of showing
+    // the dialog, we post this call asynchronously.
+    //
+    // TODO(crbug.com/483395708): Refactor PaymentRequest::Show so that it can
+    // handle this case synchronously, e.g. via a bool return parameter.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&PaymentRequest::OnInternalError, request_,
+                                  errors::kBrowserWindowTooSmall));
+
+    // Because we never handed over ownership of this object to the widget in
+    // ShowWebModalDialogViews, we need to manually delete ourselves.
+    //
+    // TODO(crbug.com/483413436): Refactor ownership model so that explicit
+    // deletion of 'this' is not required.
+    delete this;
+    return;
+  }
+
   views::Widget* widget = constrained_window::ShowWebModalDialogViews(
       this, request_->web_contents());
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
@@ -118,9 +161,11 @@ void PaymentRequestDialogView::ShowDialog() {
 }
 
 void PaymentRequestDialogView::CloseDialog() {
-  // This calls PaymentRequestDialogView::Cancel() before closing.
-  // ViewHierarchyChanged() also gets called after Cancel().
-  GetWidget()->Close();
+  if (GetWidget()) {
+    // This calls PaymentRequestDialogView::Cancel() before closing.
+    // ViewHierarchyChanged() also gets called after Cancel().
+    GetWidget()->Close();
+  }
 }
 
 void PaymentRequestDialogView::ShowErrorMessage() {
@@ -175,6 +220,17 @@ void PaymentRequestDialogView::ShowPaymentHandlerScreen(
                                        browser_window_content_height));
 
   ResizeDialogWindow();
+
+  // Once we have resized the dialog, re-check that it still fits in the
+  // available window space.
+  if (!DialogFitsInBrowserWindow()) {
+    base::UmaHistogramEnumeration(
+        "PaymentRequest.WindowSizeCheckRejectionReason",
+        WindowSizeCheckRejectionReason::kRejectedAtPaymentHandlerTransition);
+    std::move(callback).Run(false, 0, 0);
+    request_->OnInternalError(errors::kBrowserWindowTooSmall);
+    return;
+  }
 
   view_stack_->Push(
       CreateViewAndInstallController(
@@ -267,6 +323,37 @@ void PaymentRequestDialogView::OnInitialized(
 
   if (request_->state()->are_requested_methods_supported()) {
     OnDialogOpened();
+  }
+}
+
+void PaymentRequestDialogView::OnWidgetDestroying(views::Widget* widget) {
+  browser_widget_observation_.Reset();
+}
+
+void PaymentRequestDialogView::OnWidgetBoundsChanged(
+    views::Widget* widget,
+    const gfx::Rect& new_bounds) {
+  // Note that the widget we are tracking in this method is that of the
+  // containing browser window, not of the Payment Request/Handler dialog.
+
+  if (new_bounds.size() == last_observed_browser_window_size_) {
+    return;
+  }
+  last_observed_browser_window_size_ = new_bounds.size();
+
+  // Throttle calls to `CheckIfDialogFitsInBrowserWindow`, as it requires
+  // (re)calculating widget bounds each time it is called.
+  base::TimeDelta elapsed =
+      base::TimeTicks::Now() - last_check_for_too_small_window_time_;
+  if (elapsed >= base::Milliseconds(kResizeThrottleMs)) {
+    check_for_too_small_window_timer_.Stop();
+    CheckIfDialogFitsInBrowserWindow();
+  } else if (!check_for_too_small_window_timer_.IsRunning()) {
+    check_for_too_small_window_timer_.Start(
+        FROM_HERE, base::Milliseconds(kResizeThrottleMs) - elapsed,
+        base::BindOnce(
+            &PaymentRequestDialogView::CheckIfDialogFitsInBrowserWindow,
+            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -477,6 +564,20 @@ PaymentRequestDialogView::PaymentRequestDialogView(
   DCHECK(request);
   DCHECK(request->spec());
 
+  // Observe our top-level browser window widget, in order to reject the Payment
+  // Request/Handler dialog if the window is resized (programmatically or by the
+  // user) to be too small to contain the dialog.
+  if (base::FeatureList::IsEnabled(
+          features::kPaymentRequestRejectTooSmallWindows)) {
+    views::Widget* browser_widget =
+        GetBrowserWindowWidget(request_->web_contents());
+    if (browser_widget) {
+      browser_widget_observation_.Observe(browser_widget);
+      last_observed_browser_window_size_ =
+          browser_widget->GetWindowBoundsInScreen().size();
+    }
+  }
+
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetModalType(ui::mojom::ModalType::kChild);
 
@@ -648,6 +749,62 @@ void PaymentRequestDialogView::ResizeDialogWindow() {
             ->delegate()
             ->GetWebContentsModalDialogHost(web_contents));
   }
+}
+
+void PaymentRequestDialogView::CheckIfDialogFitsInBrowserWindow() {
+  last_check_for_too_small_window_time_ = base::TimeTicks::Now();
+  if (!DialogFitsInBrowserWindow()) {
+    base::UmaHistogramEnumeration(
+        "PaymentRequest.WindowSizeCheckRejectionReason",
+        WindowSizeCheckRejectionReason::kRejectedAtResize);
+    request_->OnInternalError(errors::kBrowserWindowTooSmall);
+  }
+}
+
+bool PaymentRequestDialogView::DialogFitsInBrowserWindow() const {
+  if (!base::FeatureList::IsEnabled(
+          features::kPaymentRequestRejectTooSmallWindows)) {
+    return true;
+  }
+
+  if (!request_->window_size_check_enabled()) {
+    return true;
+  }
+
+  views::Widget* browser_widget =
+      GetBrowserWindowWidget(request_->web_contents());
+  if (browser_widget) {
+    gfx::Rect browser_bounds = browser_widget->GetWindowBoundsInScreen();
+
+    // This may be called during initial dialog show, before the widget exists,
+    // in order to avoid a flicker before rejecting the show. In that case, we
+    // can only do a rough estimation based on the preferred size. If the widget
+    // exists, we can use it directly to do the size calculation.
+    gfx::Size payment_request_size =
+        CalculatePreferredSize(views::SizeBounds());
+    gfx::Rect dialog_bounds;
+    if (GetWidget()) {
+      dialog_bounds = GetWidget()->GetWindowBoundsInScreen();
+      gfx::Point origin_in_browser = views::View::ConvertPointFromScreen(
+          browser_widget->GetRootView(), dialog_bounds.origin());
+      payment_request_size =
+          gfx::Size(origin_in_browser.x() + dialog_bounds.width(),
+                    origin_in_browser.y() + dialog_bounds.height());
+    }
+
+    // Add a small buffer, as even if the Payment Request/Dialog can technically
+    // fit in the window, it is a bad experience if it consumes the entire
+    // window - the user should remain aware of the background context.
+    payment_request_size = gfx::ScaleToRoundedSize(payment_request_size,
+                                                   kMinimumWindowToDialogRatio);
+
+    if (browser_bounds.width() < payment_request_size.width() ||
+        browser_bounds.height() < payment_request_size.height()) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 BEGIN_METADATA(PaymentRequestDialogView)

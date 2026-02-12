@@ -68,6 +68,7 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
     virtual void OnConnectionTerminated() = 0;
     virtual void OnPayCalled() = 0;
     virtual void OnAbortCalled() = 0;
+    virtual void OnInternalError() = 0;
     virtual void OnCompleteCalled() {}
 
    protected:
@@ -117,6 +118,10 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   void OnShippingAddressSelected(mojom::PaymentAddressPtr address) override;
   void OnPayerInfoSelected(mojom::PayerDetailPtr payer_info) override;
 
+  // Called when the Payment Request is being aborted due to an internal error,
+  // such as the browser window being too small to show the UX.
+  void OnInternalError(const std::string& error_message);
+
   // Called when the user wants to authenticate in a different way. This is
   // different from cancel as this signals that the user still wants to continue
   // with the payment transaction. Will destroy this object and close any
@@ -159,8 +164,14 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
 
   base::WeakPtr<PaymentRequest> GetWeakPtr();
 
+  bool window_size_check_enabled() const { return window_size_check_enabled_; }
+
   void set_observer_for_test(base::WeakPtr<ObserverForTest> observer_for_test) {
     observer_for_testing_ = observer_for_test;
+  }
+
+  void set_window_size_check_enabled_for_test(bool window_size_check_enabled) {
+    window_size_check_enabled_ = window_size_check_enabled;
   }
 
  private:
@@ -291,6 +302,11 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   // activation. Used to record the activationless show JourneyLogger event only
   // if UI was shown.
   bool is_activationless_show_ = false;
+
+  // Whether the PaymentRequest.show() call should check the containing window
+  // size and reject if it is too small before or during the call. Should always
+  // be true in production code.
+  bool window_size_check_enabled_ = true;
 
   base::WeakPtrFactory<PaymentRequest> weak_ptr_factory_{this};
 };

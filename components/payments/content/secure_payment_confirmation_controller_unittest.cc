@@ -79,6 +79,7 @@ class SecurePaymentConfirmationControllerTest
   }
   void OnPayCalled() override {}
   void OnAbortCalled() override {}
+  void OnInternalError() override {}
 
  private:
   base::test::ScopedFeatureList feature_list_;

@@ -57,6 +57,10 @@ BASE_DECLARE_FEATURE(kRestrictIsReadyToPayQuery);
 // Used to control the usage of the renderer URL loader in the payment request.
 BASE_DECLARE_FEATURE(kPaymentRequestUseRendererUrlLoader);
 
+// Used to control whether Payment Request/Handler dialogs are rejected if the
+// browser window is too small to contain them.
+BASE_DECLARE_FEATURE(kPaymentRequestRejectTooSmallWindows);
+
 }  // namespace features
 }  // namespace payments
 

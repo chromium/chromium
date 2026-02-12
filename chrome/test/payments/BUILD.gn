@@ -20,6 +20,7 @@ static_library("test_support") {
   deps = [
     "//chrome/browser",
     "//chrome/browser/autofill",
+    "//chrome/browser/ui/browser_window",
     "//chrome/test:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/payments/content",

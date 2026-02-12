@@ -369,6 +369,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PaymentRequest.WindowSizeCheckRejectionReason"
+    enum="PaymentRequestWindowSizeCheckRejectionReason"
+    expires_after="2026-08-10">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records the reason why a Payment Request or Payment Handler dialog was
+    rejected or closed due to the browser window being too small. This is only
+    recorded on desktop platforms.
+  </summary>
+</histogram>
+
 <histogram name="SecurePaymentRequest.Fallback.Outcome"
     enum="SecurePaymentRequestOutcome" expires_after="2026-11-01">
   <owner>darwinyang@google.com</owner>

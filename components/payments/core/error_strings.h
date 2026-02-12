@@ -119,6 +119,10 @@ extern const char kInvalidPaymentOptions[];
 // determined to be required, i.e. after there has already been one such call.
 extern const char kCannotShowWithoutUserActivation[];
 
+// Used when the browser window is too small to contain the Payment
+// Request/Handler dialog.
+extern const char kBrowserWindowTooSmall[];
+
 }  // namespace errors
 }  // namespace payments
 

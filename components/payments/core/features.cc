@@ -54,5 +54,8 @@ BASE_FEATURE(kSecurePaymentConfirmationFallback,
 BASE_FEATURE(kPaymentRequestUseRendererUrlLoader,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPaymentRequestRejectTooSmallWindows,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace payments

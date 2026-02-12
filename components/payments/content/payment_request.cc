@@ -867,6 +867,24 @@ void PaymentRequest::OnPayerInfoSelected(mojom::PayerDetailPtr payer_info) {
   client_->OnPayerDetailChange(std::move(payer_info));
 }
 
+void PaymentRequest::OnInternalError(const std::string& error_message) {
+  // If |client_| is not bound, then the object is already being destroyed as
+  // a result of a renderer event.
+  if (!client_.is_bound()) {
+    return;
+  }
+
+  RecordFirstAbortReason(JourneyLogger::ABORT_REASON_INTERNAL_ERROR);
+
+  client_->OnError(mojom::PaymentErrorReason::NOT_SUPPORTED, error_message);
+
+  if (observer_for_testing_) {
+    observer_for_testing_->OnInternalError();
+  }
+
+  ResetAndDeleteThis();
+}
+
 void PaymentRequest::OnUserAuthAnotherWay() {
   // If |client_| is not bound, then the object is already being destroyed as
   // a result of a renderer event.
