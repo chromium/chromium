@@ -1112,6 +1112,18 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
       AddStyleRule(nested_declarations->InnerStyleRule(), parent_rule, medium,
                    mixins, add_rule_flags, apply_mixins_stack, container_query,
                    cascade_layer, style_scope);
+    } else if (StyleRuleResult* result_rule =
+                   DynamicTo<StyleRuleResult>(rule)) {
+      // If we see a @result, it means we are within a @mixin.
+      const auto& mixin_parameter_bindings =
+          apply_mixins_stack.back().mixin_parameter_bindings;
+      AddChildRules(
+          parent_rule,
+          To<StyleRuleResult>(
+              result_rule->Clone(parent_rule, mixin_parameter_bindings))
+              ->ChildRules(),
+          medium, mixins, add_rule_flags, container_query, cascade_layer,
+          style_scope, apply_mixins_stack);
     }
   }
 }
@@ -1199,22 +1211,9 @@ void RuleSet::ApplyMixin(StyleRule* parent_rule,
         ApplyingMixin{.mixin = mixin_rule,
                       .invoking_apply_rule = apply_mixin_rule,
                       .mixin_parameter_bindings = mixin_parameter_bindings});
-
-    // TODO(sesse): Support @result blocks wrapped in conditional rules
-    // (which means that they probably need to be evaluated in the
-    // StyleCascade?).
-    for (StyleRuleBase* child_rule : mixin_rule->ChildRules()) {
-      if (StyleRuleResult* result_rule =
-              DynamicTo<StyleRuleResult>(child_rule)) {
-        AddChildRules(
-            parent_rule,
-            To<StyleRuleResult>(
-                result_rule->Clone(parent_rule, mixin_parameter_bindings))
-                ->ChildRules(),
-            medium, mixins, add_rule_flags, container_query, cascade_layer,
-            style_scope, apply_mixins_stack);
-      }
-    }
+    AddChildRules(parent_rule, mixin_rule->ChildRules(), medium, mixins,
+                  add_rule_flags, container_query, cascade_layer, style_scope,
+                  apply_mixins_stack);
     apply_mixins_stack.pop_back();
 
     // If the @mixin we are applying (or currently: any @mixin) was defined
