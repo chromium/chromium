@@ -259,7 +259,7 @@ void TabStripActionContainer::TabStripNudgeAnimationSession::MarkAnimationDone(
 
 TabStripActionContainer::TabStripActionContainer(
     BrowserWindowInterface* browser_window_interface,
-    tabs::GlicNudgeController* glic_nudge_controller)
+    glic::GlicNudgeController* glic_nudge_controller)
     : AnimationDelegateViews(this),
       locked_expansion_view_(this),
       glic_nudge_controller_(glic_nudge_controller),
@@ -455,7 +455,7 @@ void TabStripActionContainer::OnGlicButtonClicked() {
 
   if (glic_button_->GetIsShowingNudge()) {
     glic_nudge_controller_->OnNudgeActivity(
-        tabs::GlicNudgeActivity::kNudgeClicked);
+        glic::GlicNudgeActivity::kNudgeClicked);
   }
 
   ExecuteHideTabStripNudge(glic_button_);
@@ -466,7 +466,7 @@ void TabStripActionContainer::OnGlicButtonClicked() {
 
 void TabStripActionContainer::OnGlicButtonDismissed() {
   glic_nudge_controller_->OnNudgeActivity(
-      tabs::GlicNudgeActivity::kNudgeDismissed);
+      glic::GlicNudgeActivity::kNudgeDismissed);
 
   // Force hide the button when pressed, bypassing locked expansion mode.
   ExecuteHideTabStripNudge(glic_button_);

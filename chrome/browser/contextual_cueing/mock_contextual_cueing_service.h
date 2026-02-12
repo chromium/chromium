@@ -24,7 +24,7 @@ class MockContextualCueingService : public ContextualCueingService {
               OnNudgeActivity,
               (content::WebContents*,
                base::TimeTicks,
-               tabs::GlicNudgeActivity));
+               glic::GlicNudgeActivity));
   MOCK_METHOD(void, CueingNudgeShown, (const GURL&));
   MOCK_METHOD(void, CueingNudgeDismissed, ());
   MOCK_METHOD(void, CueingNudgeClicked, ());

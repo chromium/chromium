@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/glic_nudge_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,7 +16,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #endif
 
-namespace tabs {
+namespace glic {
 
 GlicNudgeController::GlicNudgeController(
     BrowserWindowInterface* browser_window_interface)
@@ -55,10 +55,10 @@ void GlicNudgeController::UpdateNudgeLabel(
   }
 
   if (activity &&
-      (activity == tabs::GlicNudgeActivity::
-                       kNudgeIgnoredOpenedContextualTasksSidePanel ||
-       activity == tabs::GlicNudgeActivity::
-                       kNudgeIgnoredOmniboxContextMenuInteraction) &&
+      (activity ==
+           GlicNudgeActivity::kNudgeIgnoredOpenedContextualTasksSidePanel ||
+       activity ==
+           GlicNudgeActivity::kNudgeIgnoredOmniboxContextMenuInteraction) &&
       delegate_ && delegate_->GetIsShowingGlicNudge()) {
     delegate_->OnHideGlicNudgeUI();
     OnNudgeActivity(*activity);
@@ -82,7 +82,7 @@ void GlicNudgeController::UpdateNudgeLabel(
     CHECK(activity);
     OnNudgeActivity(*activity);
   } else {
-    OnNudgeActivity(tabs::GlicNudgeActivity::kNudgeShown);
+    OnNudgeActivity(GlicNudgeActivity::kNudgeShown);
   }
 
   prompt_suggestion_ = prompt_suggestion;
@@ -137,8 +137,8 @@ void GlicNudgeController::OnActiveTabChanged(
     BrowserWindowInterface* browser_interface) {
   if (delegate_ && delegate_->GetIsShowingGlicNudge()) {
     delegate_->OnHideGlicNudgeUI();
-    OnNudgeActivity(tabs::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
+    OnNudgeActivity(GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
   }
 }
 
-}  // namespace tabs
+}  // namespace glic
