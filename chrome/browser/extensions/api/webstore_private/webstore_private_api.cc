@@ -225,9 +225,6 @@ const char kWebstoreBlockByPolicy[] =
 const char kIncognitoError[] =
     "Apps cannot be installed in guest/incognito mode";
 
-const char kParentBlockedExtensionInstallError[] =
-    "Parent has blocked extension/app installation";
-
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 // The number of user gestures to trace back for the referrer chain.
 const int kExtensionReferrerUserGestureLimit = 2;
@@ -686,7 +683,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::
 void WebstorePrivateBeginInstallWithManifest3Function::
     OnExtensionApprovalBlocked() {
   Respond(BuildResponse(api::webstore_private::Result::kBlockedForChildAccount,
-                        kParentBlockedExtensionInstallError));
+                        l10n_util::GetStringUTF8(
+                            IDS_EXTENSIONS_SUPERVISED_USER_BLOCKED_BY_PARENT)));
 }
 
 bool WebstorePrivateBeginInstallWithManifest3Function::
