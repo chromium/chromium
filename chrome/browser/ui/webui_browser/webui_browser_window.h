@@ -206,7 +206,7 @@ class WebUIBrowserWindow : public BrowserWindow,
   void CloseTabSearchBubble() override;
   void ShowIncognitoClearBrowsingDataDialog() override;
   void ShowIncognitoHistoryDisclaimerDialog() override;
-  bool IsBorderlessModeEnabled() const override;
+  bool IsUnframedModeEnabled() const override;
   bool GetCanResize() override;
   ui::mojom::WindowShowState GetWindowShowState() const override;
   void ShowChromeLabs() override;

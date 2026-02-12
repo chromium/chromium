@@ -301,7 +301,7 @@ bool TestBrowserWindow::IsLocationBarVisible() const {
   return false;
 }
 
-bool TestBrowserWindow::IsBorderlessModeEnabled() const {
+bool TestBrowserWindow::IsUnframedModeEnabled() const {
   return false;
 }
 

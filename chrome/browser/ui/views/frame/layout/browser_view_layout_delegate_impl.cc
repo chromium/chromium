@@ -59,7 +59,7 @@ bool BrowserViewLayoutDelegateImpl::ShouldDrawWebAppFrameToolbar() const {
 }
 
 bool BrowserViewLayoutDelegateImpl::GetBorderlessModeEnabled() const {
-  return browser_view_->IsBorderlessModeEnabled();
+  return browser_view_->IsUnframedModeEnabled();
 }
 
 BrowserLayoutParams BrowserViewLayoutDelegateImpl::GetBrowserLayoutParams(

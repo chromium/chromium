@@ -612,9 +612,9 @@ class BrowserWindow : public ui::BaseWindow {
   // Shows an Incognito history disclaimer dialog.
   virtual void ShowIncognitoHistoryDisclaimerDialog() = 0;
 
-  // Returns true when the borderless mode should be displayed instead
-  // of a full titlebar. This is only supported for desktop web apps.
-  virtual bool IsBorderlessModeEnabled() const = 0;
+  // Returns true when the window should be in unframed display mode. Only
+  // supported in IWAs.
+  virtual bool IsUnframedModeEnabled() const = 0;
 
   // Returns the overall resizability of the `BrowserView` when considering
   // both the value set by the `window.setResizable(bool)` API and browser's

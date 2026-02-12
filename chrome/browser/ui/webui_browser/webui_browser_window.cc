@@ -1076,7 +1076,7 @@ void WebUIBrowserWindow::ShowIncognitoHistoryDisclaimerDialog() {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-bool WebUIBrowserWindow::IsBorderlessModeEnabled() const {
+bool WebUIBrowserWindow::IsUnframedModeEnabled() const {
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }

@@ -904,20 +904,20 @@ class BorderlessIsolatedWebAppBrowserTest
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        AppUsesBorderlessModeAndHasWindowManagementPermission) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
-  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
+  EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
 
   GrantWindowManagementPermission();
 
   ASSERT_TRUE(
       browser_view()->window_management_permission_granted_for_testing());
-  ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
+  ASSERT_TRUE(browser_view()->IsUnframedModeEnabled());
 }
 
 // Regression test for b/321784833.
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        BorderlessModeHidesTitlebarAndWindowingControls) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
-  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
+  EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
 
 #if BUILDFLAG(IS_CHROMEOS)
   // `chromeos::FrameCaptionButtonContainerView` is ChromeOS only thing.
@@ -931,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
 
   EXPECT_TRUE(
       browser_view()->window_management_permission_granted_for_testing());
-  EXPECT_TRUE(browser_view()->IsBorderlessModeEnabled());
+  EXPECT_TRUE(browser_view()->IsUnframedModeEnabled());
   EXPECT_FALSE(web_app_frame_toolbar()->GetVisible());
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(frame_view_cros->caption_button_container()->GetVisible());
@@ -941,7 +941,7 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        DisplayModeMediaCSS) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
-  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
+  EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
   auto* web_contents = browser_view()->GetActiveWebContents();
 
   std::string get_background_color = R"(
@@ -961,7 +961,7 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
   ASSERT_EQ(blue, EvalJs(web_contents, get_background_color));
 
   GrantWindowManagementPermission();
-  ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
+  ASSERT_TRUE(browser_view()->IsUnframedModeEnabled());
 
   // Validate that after granting the permission the display-mode matches with
   // "borderless" and updates the background-color accordingly.
@@ -973,29 +973,29 @@ IN_PROC_BROWSER_TEST_F(
     BorderlessIsolatedWebAppBrowserTest,
     AppUsesBorderlessModeAndDoesNotHaveWindowManagementPermission) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
-  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
-  ASSERT_TRUE(browser_view()->borderless_mode_enabled_for_testing());
+  EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
+  ASSERT_TRUE(browser_view()->unframed_mode_enabled_for_testing());
   ASSERT_FALSE(
       browser_view()->window_management_permission_granted_for_testing());
-  ASSERT_FALSE(browser_view()->IsBorderlessModeEnabled());
+  ASSERT_FALSE(browser_view()->IsUnframedModeEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        AppDoesntUseBorderlessMode) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/false);
-  EXPECT_FALSE(browser_view()->AppUsesBorderlessMode());
-  ASSERT_FALSE(browser_view()->borderless_mode_enabled_for_testing());
+  EXPECT_FALSE(browser_view()->AppUsesUnframedMode());
+  ASSERT_FALSE(browser_view()->unframed_mode_enabled_for_testing());
   ASSERT_FALSE(
       browser_view()->window_management_permission_granted_for_testing());
-  ASSERT_FALSE(browser_view()->IsBorderlessModeEnabled());
+  ASSERT_FALSE(browser_view()->IsUnframedModeEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        PopupToItselfIsBorderless) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
-  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
+  EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
   GrantWindowManagementPermission();
-  ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
+  ASSERT_TRUE(browser_view()->IsUnframedModeEnabled());
 
   // Popup to itself.
   auto url =
@@ -1003,29 +1003,29 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
           .ExtractString();
   BrowserView* popup_browser_view =
       OpenPopup("window.open('" + url + "', '_blank', 'popup');");
-  EXPECT_TRUE(popup_browser_view->IsBorderlessModeEnabled());
+  EXPECT_TRUE(popup_browser_view->IsUnframedModeEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        PopupToAnyOtherOriginIsNotBorderless) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
-  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
+  EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
   GrantWindowManagementPermission();
-  ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
+  ASSERT_TRUE(browser_view()->IsUnframedModeEnabled());
 
   // Popup to any other website outside of the same origin.
   BrowserView* popup_browser_view =
       OpenPopup("window.open('https://google.com', '_blank', 'popup');");
-  EXPECT_FALSE(popup_browser_view->IsBorderlessModeEnabled());
+  EXPECT_FALSE(popup_browser_view->IsUnframedModeEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(
     BorderlessIsolatedWebAppBrowserTest,
     PopupSize_CanSubceedMinimumWindowSize_And_InnerAndOuterSizesAreCorrect) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
-  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
+  EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
   GrantWindowManagementPermission();
-  ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
+  ASSERT_TRUE(browser_view()->IsUnframedModeEnabled());
 
   auto url =
       EvalJs(browser_view()->GetActiveWebContents(), "window.location.href")
@@ -1040,7 +1040,7 @@ IN_PROC_BROWSER_TEST_F(
        base::NumberToString(blink::kMinimumBorderlessWindowSize), "');"});
   BrowserView* popup_browser_view = OpenPopup(kWindowOpenScript);
 
-  EXPECT_TRUE(popup_browser_view->IsBorderlessModeEnabled());
+  EXPECT_TRUE(popup_browser_view->IsUnframedModeEnabled());
   auto* popup_web_contents = popup_browser_view->GetActiveWebContents();
 
   // Make sure the popup is fully ready. The title gets set to Borderless on
@@ -1073,9 +1073,9 @@ IN_PROC_BROWSER_TEST_F(
     BorderlessIsolatedWebAppBrowserTest,
     PopupResize_CanSubceedMinimumWindowSize_And_InnerAndOuterSizesAreCorrect) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
-  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
+  EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
   GrantWindowManagementPermission();
-  ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
+  ASSERT_TRUE(browser_view()->IsUnframedModeEnabled());
 
   auto url =
       EvalJs(browser_view()->GetActiveWebContents(), "window.location.href")
@@ -1086,7 +1086,7 @@ IN_PROC_BROWSER_TEST_F(
                 "', '', 'location=0, status=0, scrollbars=0, "
                 "left=0, top=0, width=400, height=300');");
 
-  EXPECT_TRUE(popup_browser_view->IsBorderlessModeEnabled());
+  EXPECT_TRUE(popup_browser_view->IsUnframedModeEnabled());
   auto* popup_web_contents = popup_browser_view->GetActiveWebContents();
 
   // Make sure the popup is fully ready. The title gets set to Borderless on
@@ -1141,13 +1141,13 @@ IN_PROC_BROWSER_TEST_F(
 // possible. To test the fix for b/265935069.
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, FrameMinimumSize) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
-  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
+  EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
   GrantWindowManagementPermission();
 
-  ASSERT_TRUE(browser_view()->borderless_mode_enabled_for_testing());
+  ASSERT_TRUE(browser_view()->unframed_mode_enabled_for_testing());
   ASSERT_TRUE(
       browser_view()->window_management_permission_granted_for_testing());
-  ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
+  ASSERT_TRUE(browser_view()->IsUnframedModeEnabled());
 
   // The minimum size of a window is smaller for a borderless mode app than for
   // a normal app. The size of the borders is inconsistent (and we don't have
@@ -1173,10 +1173,10 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTestDisabledFlag,
                        AppCannotUseFeatureWhenBorderlessFlagIsDisabled) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
 
-  EXPECT_FALSE(browser_view()->AppUsesBorderlessMode());
+  EXPECT_FALSE(browser_view()->AppUsesUnframedMode());
   EXPECT_FALSE(
       browser_view()->window_management_permission_granted_for_testing());
-  EXPECT_FALSE(browser_view()->IsBorderlessModeEnabled());
+  EXPECT_FALSE(browser_view()->IsUnframedModeEnabled());
 }
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 

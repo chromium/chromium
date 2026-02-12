@@ -292,7 +292,7 @@ bool BrowserFrameViewChromeOS::ShouldShowWebAppFrameToolbar() const {
 
   if (GetBrowserView()->browser()->is_type_app_popup() &&
       !GetBrowserView()->AppUsesWindowControlsOverlay() &&
-      !GetBrowserView()->AppUsesBorderlessMode()) {
+      !GetBrowserView()->AppUsesUnframedMode()) {
     return false;
   }
 
@@ -486,12 +486,12 @@ void BrowserFrameViewChromeOS::OnPaint(gfx::Canvas* canvas) {
 
 void BrowserFrameViewChromeOS::UpdateBorderlessModeEnabled() {
   caption_button_container_->UpdateBorderlessModeEnabled(
-      GetBrowserView()->IsBorderlessModeEnabled());
+      GetBrowserView()->IsUnframedModeEnabled());
 }
 
 bool BrowserFrameViewChromeOS::AppIsPwaWithBorderlessDisplayMode() const {
   return GetBrowserView()->GetIsWebAppType() &&
-         GetBrowserView()->AppUsesBorderlessMode();
+         GetBrowserView()->AppUsesUnframedMode();
 }
 
 void BrowserFrameViewChromeOS::Layout(PassKey) {
@@ -539,12 +539,9 @@ gfx::Size BrowserFrameViewChromeOS::GetMinimumSize() const {
     }
   }
 
-  // The minimum size of a borderless window is only limited by the window's
-  // `highlight_border_overlay_`.
-  if (GetBrowserView()->IsBorderlessModeEnabled()) {
-    // `CalculateImageSourceSize()` returns the minimum size needed to draw the
-    // highlight border, which in turn is the minimum size of a borderless
-    // window.
+  if (GetBrowserView()->IsUnframedModeEnabled()) {
+    // The minimum size of windows in unframed mode is the size of
+    // `highlight_border_overlay_`.
     return highlight_border_overlay_->CalculateImageSourceSize();
   }
 
@@ -1047,7 +1044,7 @@ void BrowserFrameViewChromeOS::UpdateTopViewInset() {
   const bool tab_strip_visible = GetBrowserView()->GetTabStripVisible();
   const int inset = (tab_strip_visible || immersive ||
                      (AppIsPwaWithBorderlessDisplayMode() &&
-                      GetBrowserView()->IsBorderlessModeEnabled()))
+                      GetBrowserView()->IsUnframedModeEnabled()))
                         ? 0
                         : GetTopInset(/*restored=*/false);
   browser_widget()->GetNativeWindow()->SetProperty(aura::client::kTopViewInset,

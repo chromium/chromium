@@ -148,7 +148,7 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(BrowserView* browser_view)
   if (browser_view_->IsWindowControlsOverlayEnabled()) {
     OnWindowControlsOverlayEnabledChanged();
   }
-  if (browser_view_->AppUsesBorderlessMode()) {
+  if (browser_view_->AppUsesUnframedMode()) {
     UpdateBorderlessModeEnabled();
   }
 
@@ -417,7 +417,7 @@ void WebAppFrameToolbarView::OnWindowControlsOverlayEnabledChanged() {
 }
 
 void WebAppFrameToolbarView::UpdateBorderlessModeEnabled() {
-  bool is_borderless_mode_enabled = browser_view_->IsBorderlessModeEnabled();
+  bool is_borderless_mode_enabled = browser_view_->IsUnframedModeEnabled();
 
   // The toolbar is hidden and not set to null, because there are many features
   // that depend on the toolbar and would not work without it. For example all

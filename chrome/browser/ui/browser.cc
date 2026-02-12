@@ -2664,7 +2664,7 @@ blink::mojom::DisplayMode Browser::GetDisplayMode(
 
     if (app_browser_controller &&
         app_browser_controller->AppUsesBorderlessMode() &&
-        window_->IsBorderlessModeEnabled()) {
+        window_->IsUnframedModeEnabled()) {
       return blink::mojom::DisplayMode::kUnframed;
     }
 

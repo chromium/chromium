@@ -157,7 +157,7 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
   bool IsToolbarVisible() const override;
   bool IsLocationBarVisible() const override;
   bool IsToolbarShowing() const override;
-  bool IsBorderlessModeEnabled() const override;
+  bool IsUnframedModeEnabled() const override;
   void ShowChromeLabs() override {}
   BrowserView* AsBrowserView() override;
   SharingDialog* ShowSharingDialog(content::WebContents* contents,

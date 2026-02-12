@@ -454,10 +454,9 @@ class BrowserView : public BrowserWindow,
   base::CallbackListSubscription AddOnLinkOpeningFromGestureCallback(
       OnLinkOpeningFromGestureCallback callback);
 
-  // Updates the variable keeping track of the borderless mode visibility, which
-  // together with the `window_management_permission_granted_` controls whether
-  // the title bar is shown or not.
-  void UpdateBorderlessModeEnabled();
+  // Updates the state that determines if this app window should be in unframed
+  // display mode.
+  void UpdateUnframedModeEnabled();
 
   // Returns true when an app's effective display mode is
   // window-controls-overlay.
@@ -466,8 +465,8 @@ class BrowserView : public BrowserWindow,
   // Returns true when an app's effective display mode is tabbed.
   bool AppUsesTabbed() const;
 
-  // Returns true when an app's effective display mode is borderless.
-  bool AppUsesBorderlessMode() const;
+  // Returns true when an app's effective display mode is unframed.
+  bool AppUsesUnframedMode() const;
 
   // Returns whether any of the features enabling draggable regions is enabled.
   bool AreDraggableRegionsEnabled() const;
@@ -483,8 +482,8 @@ class BrowserView : public BrowserWindow,
   bool WidgetOwnedByAnchorContainsPoint(
       const gfx::Point& point_in_browser_view_coords);
 
-  bool borderless_mode_enabled_for_testing() const {
-    return borderless_mode_enabled_;
+  bool unframed_mode_enabled_for_testing() const {
+    return unframed_mode_enabled_;
   }
 
   bool window_management_permission_granted_for_testing() const {
@@ -587,7 +586,7 @@ class BrowserView : public BrowserWindow,
   bool IsToolbarVisible() const override;
   bool IsToolbarShowing() const override;
   bool IsLocationBarVisible() const override;
-  bool IsBorderlessModeEnabled() const override;
+  bool IsUnframedModeEnabled() const override;
   void ShowChromeLabs() override;
   BrowserView* AsBrowserView() override;
   SharingDialog* ShowSharingDialog(content::WebContents* contents,
@@ -1113,13 +1112,13 @@ class BrowserView : public BrowserWindow,
   void UpdateWindowControlsOverlayToggleVisible();
 
   // Updates the variable keeping track of the Window Management permission,
-  // which together with borderless_mode_enabled_ controls whether the title bar
+  // which together with `unframed_mode_enabled_` controls whether the title bar
   // is shown or not.
   void UpdateWindowManagementPermission(content::PermissionResult result);
 
   // Sets the callback which is called when the status of the Window Management
   // permission changes.
-  void SetWindowManagementPermissionSubscriptionForBorderlessMode(
+  void SetWindowManagementPermissionSubscriptionForUnframedMode(
       content::WebContents* web_contents);
 
   WebAppFrameToolbarView* web_app_frame_toolbar();
@@ -1433,7 +1432,7 @@ class BrowserView : public BrowserWindow,
 
   bool window_controls_overlay_enabled_ = false;
   bool should_show_window_controls_overlay_toggle_ = false;
-  bool borderless_mode_enabled_ = false;
+  bool unframed_mode_enabled_ = false;
   bool window_management_permission_granted_ = false;
   std::optional<content::PermissionController::SubscriptionId>
       window_management_subscription_id_;
