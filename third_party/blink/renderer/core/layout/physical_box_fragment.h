@@ -619,8 +619,10 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
 
 #if DCHECK_IS_ON()
   void InvalidateInkOverflow();
+#if EXPENSIVE_DCHECKS_ARE_ON()
   void AssertFragmentTreeSelf() const;
   void AssertFragmentTreeChildren(bool allow_destroyed_or_moved = false) const;
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 #endif
 
  private:

@@ -1841,6 +1841,7 @@ void PhysicalBoxFragment::CheckIntegrity() const {
   }
 }
 
+#if EXPENSIVE_DCHECKS_ARE_ON()
 void PhysicalBoxFragment::AssertFragmentTreeSelf() const {
   DCHECK(!IsInlineBox());
   DCHECK(OwnerLayoutBox());
@@ -1875,7 +1876,8 @@ void PhysicalBoxFragment::AssertFragmentTreeChildren(
     }
   }
 }
-#endif
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+#endif  // DCHECK_IS_ON()
 
 void PhysicalBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(children_);
