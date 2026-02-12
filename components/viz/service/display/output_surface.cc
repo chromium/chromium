@@ -21,16 +21,6 @@
 
 namespace viz {
 
-namespace {
-
-#if BUILDFLAG(IS_WIN)
-// Use BufferQueue for the primary plane instead of a DXGI swap chain or DComp
-// surface.
-BASE_FEATURE(kBufferQueue, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-}  // namespace
-
 OutputSurface::Capabilities::Capabilities() = default;
 OutputSurface::Capabilities::~Capabilities() = default;
 OutputSurface::Capabilities::Capabilities(const Capabilities& capabilities) =
@@ -108,7 +98,7 @@ bool IsDelegatedCompositingSupportedAndEnabled(
 bool IsBufferQueueSupportedAndEnabled(
     OutputSurface::DCSupportLevel support_level) {
   return support_level >= OutputSurface::DCSupportLevel::kDCompDynamicTexture &&
-         base::FeatureList::IsEnabled(kBufferQueue);
+         base::FeatureList::IsEnabled(features::kBufferQueue);
 }
 #endif
 
