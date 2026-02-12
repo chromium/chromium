@@ -125,6 +125,12 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
           icon: 'composebox:thinkingModel',
         },
       ],
+      [
+        ModelMode.kGeminiProNoGenUi,
+        {
+          icon: 'composebox:thinkingModel',
+        },
+      ],
     ]);
   }
 
