@@ -540,8 +540,8 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
           /*name=*/kLegionServiceName,
           /*scopes=*/{GaiaConstants::kLegionAuthScope});
     case OAuthConsumerId::kWalletPasses: {
-      CHECK(
-          base::FeatureList::IsEnabled(wallet::kWalletApiPrivatePassesEnabled));
+      CHECK(base::FeatureList::IsEnabled(
+          wallet::features::kWalletApiPrivatePassesEnabled));
       return signin::OAuthConsumer(
           /*name=*/kWalletPassesName,
           /*scopes=*/{GaiaConstants::kWalletPassesOAuth2Scope});

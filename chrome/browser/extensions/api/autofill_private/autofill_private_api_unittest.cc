@@ -228,8 +228,9 @@ class AutofillPrivateApiBrowserTest : public extensions::ExtensionApiTest {
             {autofill::features::kAutofillAiWalletFlightReservation, {}},
             {autofill::features::kAutofillAiWalletVehicleRegistration, {}},
             {autofill::features::kAutofillEnableSaveToWalletFromSettings, {}},
-            {wallet::kWalletablePassDetection,
-             {{wallet::kWalletablePassDetectionCountryAllowlist.name, "US"}}},
+            {wallet::features::kWalletablePassDetection,
+             {{wallet::features::kWalletablePassDetectionCountryAllowlist.name,
+               "US"}}},
         },
         /*disabled_features=*/
         {});

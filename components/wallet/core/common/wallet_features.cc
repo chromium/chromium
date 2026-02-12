@@ -4,7 +4,7 @@
 
 #include "components/wallet/core/common/wallet_features.h"
 
-namespace wallet {
+namespace wallet::features {
 
 // Controls whether the Wallet API is enabled.
 BASE_FEATURE(kWalletApiPrivatePassesEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -30,4 +30,5 @@ BASE_FEATURE_PARAM(std::string,
 // Controls whether to enable saving walletable passes.
 // This is a test only flag, and should be removed before starting the rollout.
 BASE_FEATURE(kWalletablePassSave, base::FEATURE_ENABLED_BY_DEFAULT);
-}  // namespace wallet
+
+}  // namespace wallet::features

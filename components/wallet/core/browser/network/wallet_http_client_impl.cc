@@ -41,7 +41,7 @@ WalletHttpClientImpl::~WalletHttpClientImpl() = default;
 
 void WalletHttpClientImpl::UpsertPublicPass(Pass pass,
                                             UpsertPublicPassCallback callback) {
-  CHECK(base::FeatureList::IsEnabled(kWalletablePassDetection));
+  CHECK(base::FeatureList::IsEnabled(features::kWalletablePassDetection));
   SendRequest(std::make_unique<UpsertPublicPassRequest>(std::move(pass),
                                                         std::move(callback)));
 }
@@ -49,7 +49,7 @@ void WalletHttpClientImpl::UpsertPublicPass(Pass pass,
 void WalletHttpClientImpl::UpsertPrivatePass(
     PrivatePass pass,
     UpsertPrivatePassCallback callback) {
-  CHECK(base::FeatureList::IsEnabled(kWalletApiPrivatePassesEnabled));
+  CHECK(base::FeatureList::IsEnabled(features::kWalletApiPrivatePassesEnabled));
   SendRequest(std::make_unique<UpsertPrivatePassRequest>(std::move(pass),
                                                          std::move(callback)));
 }
@@ -120,7 +120,7 @@ void WalletHttpClientImpl::SendRequestInternal(
 
   std::unique_ptr<network::ResourceRequest> resource_request =
       std::make_unique<network::ResourceRequest>();
-  GURL base_url(kWalletSaveUrl.Get());
+  GURL base_url(features::kWalletSaveUrl.Get());
   resource_request->url = base_url.Resolve(request->GetRequestUrlPath());
   resource_request->method = "POST";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;

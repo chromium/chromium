@@ -759,7 +759,8 @@ void ChromeContentRendererClient::RenderFrameCreated(
   }
 #endif
 
-  if (base::FeatureList::IsEnabled(wallet::kWalletablePassDetection) &&
+  if (base::FeatureList::IsEnabled(
+          wallet::features::kWalletablePassDetection) &&
       render_frame->IsMainFrame()) {
     wallet::ImageExtractor::Create(render_frame, registry);
   }

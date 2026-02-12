@@ -122,9 +122,9 @@ class WalletablePassIngestionControllerTest : public testing::Test {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{kWalletablePassDetection,
+        {{features::kWalletablePassDetection,
           {{"walletable_supported_country_allowlist", "US"}}},
-         {kWalletablePassSave, {}}},
+         {features::kWalletablePassSave, {}}},
         {});
     wallet::prefs::RegisterProfilePrefs(test_pref_service().registry());
     ON_CALL(mock_client_, GetOptimizationGuideDecider())

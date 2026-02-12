@@ -44,9 +44,9 @@ class WalletHttpClientImplTest : public testing::Test {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{kWalletApiPrivatePassesEnabled,
+        {{features::kWalletApiPrivatePassesEnabled,
           {{"wallet_pass_save_url", "https://test-wallet.com/"}}},
-         {kWalletablePassDetection, {}}},
+         {features::kWalletablePassDetection, {}}},
         {});
     identity_test_env_.MakePrimaryAccountAvailable(
         "test@example.com", signin::ConsentLevel::kSignin);
@@ -59,15 +59,17 @@ class WalletHttpClientImplTest : public testing::Test {
   void TearDown() override { client_.reset(); }
 
   GURL GetUpsertPassUrl() {
-    return GURL(kWalletSaveUrl.Get()).Resolve("v1/passes:upsert");
+    return GURL(features::kWalletSaveUrl.Get()).Resolve("v1/passes:upsert");
   }
 
   GURL GetUpsertPrivatePassUrl() {
-    return GURL(kWalletSaveUrl.Get()).Resolve("v1/e/privatePasses:upsert");
+    return GURL(features::kWalletSaveUrl.Get())
+        .Resolve("v1/e/privatePasses:upsert");
   }
 
   GURL GetUnmaskedPassUrl() {
-    return GURL(kWalletSaveUrl.Get()).Resolve("v1/e/privatePasses:batchGet");
+    return GURL(features::kWalletSaveUrl.Get())
+        .Resolve("v1/e/privatePasses:batchGet");
   }
 
   WalletHttpClientImpl* client() { return client_.get(); }

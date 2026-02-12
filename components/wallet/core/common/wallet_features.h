@@ -8,7 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-namespace wallet {
+namespace wallet::features {
 
 BASE_DECLARE_FEATURE(kWalletApiPrivatePassesEnabled);
 
@@ -21,6 +21,7 @@ BASE_DECLARE_FEATURE_PARAM(std::string,
 
 // This is a test only flag, and should be removed before starting the rollout.
 BASE_DECLARE_FEATURE(kWalletablePassSave);
-}  // namespace wallet
+
+}  // namespace wallet::features
 
 #endif  // COMPONENTS_WALLET_CORE_COMMON_WALLET_FEATURES_H_

@@ -448,7 +448,7 @@ void WalletablePassIngestionController::OnGetSaveBubbleResult(
   const std::string category = PassCategoryToString(pass_category);
   switch (result) {
     case kAccepted:
-      if (base::FeatureList::IsEnabled(kWalletablePassSave)) {
+      if (base::FeatureList::IsEnabled(features::kWalletablePassSave)) {
         // TODO(crbug.com/465616560): Call GetWalletHttpClient::UpsertPublicPass
       }
       save_strike_db_->ClearStrikes(
