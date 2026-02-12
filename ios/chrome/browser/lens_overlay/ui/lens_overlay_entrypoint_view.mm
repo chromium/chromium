@@ -60,10 +60,8 @@ const CGFloat kVisibilityIndicatorSize = 30.0;
     ]];
 
     __weak __typeof(self) weakSelf = self;
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]);
-
-    [self registerForTraitChanges:traits
+    [self registerForTraitChanges:@[
+      UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class]
                       withHandler:^(id<UITraitEnvironment> traitEnvironment,
                                     UITraitCollection* previousCollection) {
                         [weakSelf setEnabledOnTraitChange:previousCollection];
