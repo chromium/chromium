@@ -25,6 +25,9 @@
                   '|isimpledom' \
                   '|liblouis'
     },
+    'accessibility_annotator': {
+      'filepath': 'accessibility_annotator'
+    },
     'accessibility_component_extensions': {
       'filepath': 'chrome/browser/resources/chromeos/accessibility'
     },
@@ -2550,6 +2553,7 @@
                       'nektar+watch@chromium.org',
                       'yuzo+watch@chromium.org',
                       'francisjp+watcha11y@google.com'],
+    'accessibility_annotator': ['accessibility-annotator-reviews@google.com'],
     'accessibility_component_extensions': ['anastasi+watch@google.com',
                                            'hirokisato+watch@chromium.org',
                                            'katie+watch@chromium.org',
