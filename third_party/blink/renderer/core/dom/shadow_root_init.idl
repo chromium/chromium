@@ -15,6 +15,7 @@ dictionary ShadowRootInit {
   boolean serializable;
   boolean clonable;
   [RuntimeEnabled=ShadowRootReferenceTarget] DOMString? referenceTarget;
+  [RuntimeEnabled=DocumentPatching] sequence<DOMString> marker;
   // Note: if you add a parameter here, be sure to add it to the list of checks
   // in Element::attachShadow() for existing declarative shadow roots.
 };

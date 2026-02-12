@@ -9329,6 +9329,7 @@ interface ShadowRoot : DocumentFragment
     getter fullscreenElement
     getter host
     getter innerHTML
+    getter marker
     getter mode
     getter onslotchange
     getter pictureInPictureElement

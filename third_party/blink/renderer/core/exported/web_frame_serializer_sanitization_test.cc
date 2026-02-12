@@ -105,7 +105,7 @@ class WebFrameSerializerSanitizationTest : public testing::Test {
     shadow_root = &host_element->AttachShadowRootInternal(
         shadow_type, focus_delegation, SlotAssignmentMode::kNamed,
         /*registry*/ nullptr, /*serializable*/ false, /*clonable*/ false,
-        /*reference_target*/ g_null_atom);
+        /*reference_target*/ g_null_atom, /* markers */ Vector<AtomicString>());
     shadow_root->SetDelegatesFocus(focus_delegation ==
                                    FocusDelegation::kDelegateFocus);
     shadow_root->SetInnerHTMLWithoutTrustedTypes(

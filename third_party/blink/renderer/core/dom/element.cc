@@ -1133,7 +1133,8 @@ Node* Element::Clone(Document& factory,
                                         : FocusDelegation::kNone,
           shadow_root->GetSlotAssignmentMode(), shadow_root_registry,
           shadow_root->serializable(),
-          /*clonable*/ true, shadow_root->referenceTarget());
+          /*clonable*/ true, shadow_root->referenceTarget(),
+          shadow_root->marker());
 
       // 6.5 Set copy’s shadow root’s declarative to node’s shadow root’s
       // declarative.
@@ -6493,8 +6494,10 @@ void Element::UpdateAncestorWithDirAuto(UpdateAncestorTraversal traversal) {
   }
 }
 
-ShadowRoot& Element::CreateAndAttachShadowRoot(ShadowRootMode type,
-                                               SlotAssignmentMode mode) {
+ShadowRoot& Element::CreateAndAttachShadowRoot(
+    ShadowRootMode type,
+    SlotAssignmentMode mode,
+    const Vector<AtomicString>& markers) {
 #if DCHECK_IS_ON()
   NestingLevelIncrementer slot_assignment_recalc_forbidden_scope(
       GetDocument().SlotAssignmentRecalcForbiddenRecursionDepth());
@@ -6506,7 +6509,7 @@ ShadowRoot& Element::CreateAndAttachShadowRoot(ShadowRootMode type,
   DCHECK(!GetShadowRoot());
 
   auto* shadow_root =
-      MakeGarbageCollected<ShadowRoot>(GetDocument(), type, mode);
+      MakeGarbageCollected<ShadowRoot>(GetDocument(), type, mode, markers);
 
   if (InActiveDocument()) {
     // We need to call child.RemovedFromFlatTree() before setting a shadow
@@ -7378,6 +7381,16 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
           ? AtomicString(shadow_root_init_dict->referenceTarget())
           : g_null_atom;
 
+  Vector<AtomicString> marker_list;
+  if (shadow_root_init_dict->hasMarker()) {
+    CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+    const auto& marker_from_dict = shadow_root_init_dict->marker();
+    marker_list.ReserveInitialCapacity(marker_from_dict.size());
+    for (const auto& marker_string : marker_from_dict) {
+      marker_list.push_back(AtomicString(marker_string));
+    }
+  }
+
   // 1. Let registry be this's custom element registry.
   // 2. If init["customElementRegistry"] exist then set registry to it.
   bool scoped_registry =
@@ -7431,7 +7444,7 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
 
   ShadowRoot& shadow_root = AttachShadowRootInternal(
       mode, focus_delegation, slot_assignment, registry, serializable, clonable,
-      reference_target);
+      reference_target, marker_list);
 
   // Ensure that the returned shadow root is not marked as declarative so that
   // attachShadow() calls after the first one do not succeed for a shadow host
@@ -7449,7 +7462,8 @@ bool Element::AttachDeclarativeShadowRoot(
     bool clonable,
     const AtomicString& adopted_stylesheets,
     const AtomicString& reference_target,
-    const bool waiting_for_scoped_registry) {
+    const bool waiting_for_scoped_registry,
+    const Vector<AtomicString>& markers) {
   // 12. Run attach a shadow root with shadow host equal to declarative shadow
   // host element, mode equal to declarative shadow mode, and delegates focus
   // equal to declarative shadow delegates focus. If an exception was thrown by
@@ -7479,7 +7493,7 @@ bool Element::AttachDeclarativeShadowRoot(
 
   ShadowRoot& shadow_root = AttachShadowRootInternal(
       mode, focus_delegation, slot_assignment, registry, serializable, clonable,
-      reference_target);
+      reference_target, markers);
   // 10.8.5. Set declarative shadow host element's shadow host's "is declarative
   // shadow root" property to true.
   shadow_root.SetIsDeclarativeShadowRoot(true);
@@ -7502,7 +7516,8 @@ bool Element::AttachDeclarativeShadowRoot(
 ShadowRoot& Element::CreateUserAgentShadowRoot(SlotAssignmentMode mode) {
   DCHECK(!GetShadowRoot());
   GetDocument().SetContainsShadowRoot();
-  return CreateAndAttachShadowRoot(ShadowRootMode::kUserAgent, mode);
+  return CreateAndAttachShadowRoot(ShadowRootMode::kUserAgent, mode,
+                                   Vector<AtomicString>());
 }
 
 ShadowRoot& Element::AttachShadowRootInternal(
@@ -7512,7 +7527,8 @@ ShadowRoot& Element::AttachShadowRootInternal(
     CustomElementRegistry* registry,
     bool serializable,
     bool clonable,
-    const AtomicString& reference_target) {
+    const AtomicString& reference_target,
+    const Vector<AtomicString>& markers) {
   // SVG <use> is a special case for using this API to create a closed shadow
   // root.
   DCHECK(CanAttachShadowRoot() || IsA<SVGUseElement>(*this));
@@ -7537,7 +7553,7 @@ ShadowRoot& Element::AttachShadowRootInternal(
   // 5. Let shadow be a new shadow root whose node document is this’s node
   // document, host is this, and mode is init’s mode.
   ShadowRoot& shadow_root =
-      CreateAndAttachShadowRoot(type, slot_assignment_mode);
+      CreateAndAttachShadowRoot(type, slot_assignment_mode, markers);
   // 6. Set shadow’s delegates focus to init’s delegatesFocus.
   shadow_root.SetDelegatesFocus(focus_delegation ==
                                 FocusDelegation::kDelegateFocus);
@@ -7572,7 +7588,8 @@ ShadowRoot& Element::AttachShadowRootForTesting(ShadowRootMode type) {
                                   /*registry*/ nullptr,
                                   /*serializable*/ false,
                                   /*clonable*/ false,
-                                  /*reference_target*/ g_null_atom);
+                                  /*reference_target*/ g_null_atom,
+                                  /*markers*/ Vector<AtomicString>());
 }
 
 ShadowRoot* Element::OpenShadowRoot() const {

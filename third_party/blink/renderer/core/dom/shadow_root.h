@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -59,7 +60,10 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  ShadowRoot(Document&, ShadowRootMode, SlotAssignmentMode);
+  ShadowRoot(Document&,
+             ShadowRootMode,
+             SlotAssignmentMode,
+             const Vector<AtomicString>& markers);
   ~ShadowRoot() override;
   ShadowRoot(const ShadowRoot&) = delete;
   ShadowRoot& operator=(const ShadowRoot&) = delete;
@@ -133,6 +137,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
                      SetHTMLUnsafeOptions*,
                      ExceptionState&);
   void setHTML(const String& html, SetHTMLOptions*, ExceptionState&);
+  const Vector<AtomicString>& marker() const { return markers_; }
 
   Node* Clone(Document& factory,
               NodeCloningData& data,
@@ -220,6 +225,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   void ReferenceTargetChanged();
 
   Member<SlotAssignment> slot_assignment_;
+  Vector<AtomicString> markers_;
   Member<ReferenceTargetIdObserver> reference_target_id_observer_;
   unsigned child_shadow_root_count_ : 16;
   unsigned mode_ : 2;

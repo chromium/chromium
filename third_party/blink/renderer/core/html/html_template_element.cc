@@ -128,17 +128,25 @@ bool HTMLTemplateElement::BeginPatch(ContainerNode& node) {
     root = GetDocument().documentElement();
   }
 
-  Element* marker_host = nullptr;
+  ContainerNode* marker_host = nullptr;
 
-  for (Node& descendant : NodeTraversal::InclusiveDescendantsOf(*root)) {
-    Element* element = DynamicTo<Element>(descendant);
-    if (!element) {
-      continue;
+  if (ShadowRoot* as_shadow = DynamicTo<ShadowRoot>(root)) {
+    if (as_shadow->marker().Contains(for_attr)) {
+      marker_host = as_shadow;
     }
-    DOMTokenList* marker_attribute = element->GetMarker();
-    if (marker_attribute && marker_attribute->contains(for_attr)) {
-      marker_host = element;
-      break;
+  }
+
+  if (!marker_host) {
+    for (Node& descendant : NodeTraversal::InclusiveDescendantsOf(*root)) {
+      Element* element = DynamicTo<Element>(descendant);
+      if (!element) {
+        continue;
+      }
+      DOMTokenList* marker_attribute = element->GetMarker();
+      if (marker_attribute && marker_attribute->contains(for_attr)) {
+        marker_host = element;
+        break;
+      }
     }
   }
 

@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -92,15 +93,18 @@ struct SameSizeAsShadowRoot : public DocumentFragment,
                               public ElementRareDataField {
   Member<void*> member[2];
   unsigned flags[1];
+  Vector<AtomicString> markers;
 };
 
 ASSERT_SIZE(ShadowRoot, SameSizeAsShadowRoot);
 
 ShadowRoot::ShadowRoot(Document& document,
                        ShadowRootMode mode,
-                       SlotAssignmentMode assignment_mode)
+                       SlotAssignmentMode assignment_mode,
+                       const Vector<AtomicString>& initial_markers)
     : DocumentFragment(nullptr, kCreateShadowRoot),
       TreeScope(*this, document),
+      markers_(initial_markers),
       child_shadow_root_count_(0),
       mode_(static_cast<unsigned>(mode)),
       registered_with_parent_shadow_root_(false),

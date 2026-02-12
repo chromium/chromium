@@ -1046,10 +1046,20 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
         template_stack_item->GetAttributeItem(
             html_names::kShadowrootcustomelementregistryAttr);
 
+    Vector<AtomicString> marker_list;
+    if (auto* marker = template_element->GetMarker()) {
+      CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+      const auto& token_set = marker->TokenSet();
+      marker_list.reserve(token_set.size());
+      for (const auto& marker_token : token_set) {
+        marker_list.push_back(marker_token);
+      }
+    }
+
     bool success = host->AttachDeclarativeShadowRoot(
         *template_element, declarative_shadow_root_mode, focus_delegation,
         slot_assignment_mode, serializable, clonable, adopted_stylesheets,
-        reference_target, waiting_for_scoped_registry);
+        reference_target, waiting_for_scoped_registry, marker_list);
     // If the shadow root attachment fails, e.g. if the host element isn't a
     // valid shadow host, then we leave should_attach_template true, so that
     // a "normal" template element gets attached to the DOM tree.
