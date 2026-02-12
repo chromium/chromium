@@ -1,4 +1,1 @@
-# This filter restricts output to only focus-related events.
-@WIN-ALLOW:EVENT_OBJECT_FOCUS*
-
 EVENT_OBJECT_FOCUS on class=LabelButton role=ROLE_SYSTEM_PUSHBUTTON name="Test Button" FOCUSED,FOCUSABLE

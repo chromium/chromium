@@ -1,1 +1,1 @@
-AutomationFocusChanged on class=LabelButton role=button name="Test Button"
+AutomationFocusChanged on role=button, name=Test Button

@@ -24,13 +24,29 @@ Where `<platform>` is one of:
 
 ## Filtering
 
-Expectation files can include filter directives at the top:
+Filters are declared in C++ test code. The most convenient way is `SetFilters()`,
+which accepts a multi-line string of platform-prefixed directives:
 
-```
+```cpp
+IN_PROC_BROWSER_TEST_P(MyTest, FocusOnly) {
+  SetFilters(R"(
+@AURALINUX-ALLOW:focus-event*
+@MAC-ALLOW:AXFocusedUIElementChanged*
+@UIA-WIN-ALLOW:AutomationFocusChanged*
 @WIN-ALLOW:EVENT_OBJECT_FOCUS*
-@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+)");
+  my_view_->RequestFocus();
+  EXPECT_TRUE(EndTestAndCompareEvents("focus-only"));
+}
 ```
+
+Supported platform prefixes: `@MAC-`, `@WIN-`, `@UIA-WIN-`, `@AURALINUX-`.
+Supported directives: `ALLOW`, `DENY`, `ALLOW-EMPTY`.
+
+You can also use `AddAllowFilter()`, `AddDenyFilter()`, or the lower-level
+`AddPropertyFilter()` for single-platform or cross-platform filters.
 
 ## Skip marker
 
 Add `#<skip>` to an expectation file to skip the test for that platform.
+

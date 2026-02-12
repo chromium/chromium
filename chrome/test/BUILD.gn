@@ -4391,7 +4391,10 @@ if (!is_android) {
     }
 
     if (is_linux) {
-      sources += [ "../browser/ozone_platform_browsertest.cc" ]
+      sources += [
+        "../browser/ozone_platform_browsertest.cc",
+        "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base_auralinux.cc",
+      ]
       deps += [
         "//ui/linux:linux_ui",
         "//ui/linux:linux_ui_factory",
