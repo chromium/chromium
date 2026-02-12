@@ -50,7 +50,7 @@ class GlicRegionCaptureController {
 
   base::RepeatingClosure on_capture_region_for_testing_ = base::DoNothing();
 
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  base::WeakPtr<content::WebContents> web_contents_;
 
   std::unique_ptr<lens::LensRegionSearchController>
       lens_region_search_controller_;

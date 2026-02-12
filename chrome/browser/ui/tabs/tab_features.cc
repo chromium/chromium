@@ -132,6 +132,7 @@
 #include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator_impl.h"
 
@@ -371,6 +372,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       glic_tab_indicator_helper_ =
           GetUserDataFactory().CreateInstance<glic::GlicTabIndicatorHelper>(
               tab, &tab);
+      glic_selection_overlay_controller_ =
+          GetUserDataFactory().CreateInstance<glic::SelectionOverlayController>(
+              tab, &tab, profile->GetPrefs());
     }
     if (glic::GlicEnabling::IsMultiInstanceEnabled() &&
         glic::GlicKeyedService::Get(profile)) {

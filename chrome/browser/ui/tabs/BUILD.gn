@@ -508,6 +508,7 @@ if (!is_android) {
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_tasks",
       "//chrome/browser/favicon",
+      "//chrome/browser/glic/selection",
       "//chrome/browser/image_fetcher",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/profiles",

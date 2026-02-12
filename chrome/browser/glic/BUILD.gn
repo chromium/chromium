@@ -362,6 +362,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/actor/ui",
       "//chrome/browser/glic/browser_ui",
+      "//chrome/browser/glic/selection",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/skills",
       "//chrome/browser/skills:public",
