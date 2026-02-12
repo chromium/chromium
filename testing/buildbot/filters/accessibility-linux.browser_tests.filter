@@ -1,223 +1,189 @@
-# Tests that are equally flaky on other bots (either globally, or on Linux bots),
-# which we want to skip to reduce noise from failures not related to accessibility.
-# Periodically check to see if they are still flaky via the links provided.
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FActorToolsTest.MouseMoveTool_Events
--ActorToolsTest.MouseMoveTool_Events
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FActorToolsTest.TypeTool_FocusMovesFocus
--ActorToolsTest.TypeTool_FocusMovesFocus
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FAIOnDeviceBrowserTest.APIsExposedToWindowAndWorker%2FWithAPIFlag_NoWorkerFlag_NoAPIKillswitch_WithOTToken
--AIOnDeviceBrowserTest.APIsExposedToWindowAndWorker/WithAPIFlag_NoWorkerFlag_NoAPIKillswitch_WithOTToken
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FAIOnDeviceBrowserTest.APIsExposedToWindowAndWorker%2FWithAPIFlag_NoWorkerFlag_WithAPIKillswitch_WithOTToken
--AIOnDeviceBrowserTest.APIsExposedToWindowAndWorker/WithAPIFlag_NoWorkerFlag_WithAPIKillswitch_WithOTToken
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FAIOnDeviceBrowserTest.APIsExposedToWindowAndWorker%2FWithAPIFlag_NoWorkerFlag_WithAPIKillswitch_NoOTToken
--AIOnDeviceBrowserTest.APIsExposedToWindowAndWorker/WithAPIFlag_NoWorkerFlag_WithAPIKillswitch_NoOTToken
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FAIOnDeviceBrowserTest.APIsExposedToWindowAndWorker%2FWithAPIFlag_NoWorkerFlag_WithAPIKillswitch_WithOTToken
--AIOnDeviceBrowserTest.APIsExposedToWindowAndWorker/WithAPIFlag_WithWorkerFlag_NoAPIKillswitch_WithOTToken
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FAIOnDeviceBrowserTest.APIsExposedToWindowAndWorker%2FNoAPIFlag_WithWorkerFlag_WithAPIKillswitch_WithOTToken
--AIOnDeviceBrowserTest.APIsExposedToWindowAndWorker/NoAPIFlag_WithWorkerFlag_WithAPIKillswitch_WithOTToken
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FAdsPageLoadMetricsObserverResourceBrowserTest.ReceivedPrivacyPermissionsUseCounters%2FAll.ReduceTransferSizeUpdatedIPCDisabled
--All/AdsPageLoadMetricsObserverResourceBrowserTest.ReceivedPrivacyPermissionsUseCounters/ReduceTransferSizeUpdatedIPCDisabled
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FCookieSettingsTest.BasicCookies%2FAll.4
--All/CookieSettingsTest.BasicCookies/4
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FCookieSettingsTest.BasicCookiesHttps%2FAll.5
--All/CookieSettingsTest.BasicCookiesHttps/5
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FOmniboxSearchAggregatorHTTPErrorTest.HTTPErrorResponse%2FAll.403
--All/OmniboxSearchAggregatorHTTPErrorTest.HTTPErrorResponse/403
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FOmniboxSearchAggregatorHTTPErrorTest.HTTPErrorResponse%2FAll.405
--All/OmniboxSearchAggregatorHTTPErrorTest.HTTPErrorResponse/405
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FOmniboxSearchAggregatorHTTPErrorTest.HTTPErrorResponse%2FAll.502
--All/OmniboxSearchAggregatorHTTPErrorTest.HTTPErrorResponse/502
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPdfDownloadTestSplitCacheEnabled.OpenDownloadInMostRecentBrowser%2FAll.PdfOopifDisabled_TripleKeyed
--All/PdfDownloadTestSplitCacheEnabled.OpenDownloadInMostRecentBrowser/PdfOopifDisabled_TripleKeyed
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPdfDownloadTestSplitCacheEnabled.OpenDownloadInMostRecentBrowser%2FAll.PdfOopifDisabled_TriplePlusCrossSiteMainFrameNavigationBool
--All/PdfDownloadTestSplitCacheEnabled.OpenDownloadInMostRecentBrowser/PdfOopifDisabled_TriplePlusCrossSiteMainFrameNavigationBool
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPdfDownloadTestSplitCacheEnabled.OpenDownloadInMostRecentBrowser%2FAll.PdfOopifEnabled_TriplePlusCrossSiteMainFrameNavigationBool
--All/PdfDownloadTestSplitCacheEnabled.OpenDownloadInMostRecentBrowser/PdfOopifEnabled_TriplePlusCrossSiteMainFrameNavigationBool
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPDFExtensionJSInk2TextTest.Ink2TextBoxTest%2FAll.0
--All/PDFExtensionJSInk2TextTest.Ink2TextBoxTest/0
-# Flaky on Windows, occasionally on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSearchEnginePreconnectorEnabledOnlyBrowserTest.AllowedSearch%2FAll.1
--All/SearchEnginePreconnectorEnabledOnlyBrowserTest.AllowedSearch/1
-# Occasionally flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSearchEnginePreconnectorWithPreconnect2FeatureBrowserTest.PreconnectSearchAfterOnFailure%2FAll.0
--All/SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest.PreconnectSearchAfterOnFailure/0
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSoftNavigationTest.INP_ClickWithPresentation%2FAll.1
--All/SoftNavigationTest.INP_ClickWithPresentation/1
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FAutocompleteTest.RetentionPolicy_RemovesExpiredEntry
--AutocompleteTest.RetentionPolicy_RemovesExpiredEntry
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FAutocompleteTest.SubmitSimpleValue_OTR_DoesNotSave
--AutocompleteTest.SubmitSimpleValue_OTR_DoesNotSave
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FAutocompleteTest.SubmitSimpleValue_Saves
--AutocompleteTest.SubmitSimpleValue_Saves
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FBookmarksTest.List
--BookmarksTest.List
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FBookmarksTest.List___bookmarks_list__resets_focused_index_if_out_of_bounds
--BookmarksTest.List___bookmarks_list__resets_focused_index_if_out_of_bounds
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FBoundSessionCookieRefreshServiceImplBrowserTest.CookieRotationOnStartup
--BoundSessionCookieRefreshServiceImplBrowserTest.CookieRotationOnStartup
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FBrowserNavigatorTest.SaveAfterFocusTabSwitchTest
--BrowserNavigatorTest.SaveAfterFocusTabSwitchTest
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FCertVerifyProcNetLogBrowserTest.Test
--CertVerifyProcNetLogBrowserTest.Test
-# TODO(crbug.com/469757905): Consistent failures on chromium/ci/linux-blink-web-tests-force-accessibility-rel.
--ChromeAimEligibilityServiceBrowserTest.ComprehensiveEligibilityTest
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FChromeNavigationBrowserTest.NoopenerCorrectlyFocusesNewTab
--ChromeNavigationBrowserTest.NoopenerCorrectlyFocusesNewTab
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FClickToCallBrowserTest.ContextMenu_TelLink_Histograms
--ClickToCallBrowserTest.ContextMenu_TelLink_Histograms
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FCrComponentsSearchboxTest.RealboxTest
--CrComponentsSearchboxTest.RealboxTest
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FCrComponentsSearchboxTest.RealboxTest__NewTabPageRealboxTest_arrow_up_down_moves_selection___focus
--CrComponentsSearchboxTest.RealboxTest__NewTabPageRealboxTest_arrow_up_down_moves_selection___focus
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FCrElementsTest.CrToast
--CrElementsTest.CrToast
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FCrElementsTest.CrToast__cr_toast_stop_and_restart_auto_hide_depending_when_toast_focus_changes
--CrElementsTest.CrToast__cr_toast_stop_and_restart_auto_hide_depending_when_toast_focus_changes
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FDocumentPictureInPictureWindowControllerBrowserTest.CreateTwice
--DocumentPictureInPictureWindowControllerBrowserTest.CreateTwice
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FDownloadToolbarUIControllerBrowserTest.DialogAutoCloses
--DownloadToolbarUIControllerBrowserTest.DialogAutoCloses
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FDownloadToolbarUIControllerBrowserTest.OpenPrimaryDialog
--DownloadToolbarUIControllerBrowserTest.OpenPrimaryDialog
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FExtensionInstallDialogViewTest.InstallButtonDelay
--ExtensionInstallDialogViewTest.InstallButtonDelay
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FExtensionTabsTest.ExecuteScriptOnDevTools
--ExtensionTabsTest.ExecuteScriptOnDevTools
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FFlagsUiBrowserTest.App
--FlagsUiBrowserTest.App
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FFrameNodeImplBackForwardCacheBrowserTest.Bind_BackForwardCache
--FrameNodeImplBackForwardCacheBrowserTest.Bind_BackForwardCache
-# Flaky on Linux; disabled on several Mac bots: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FHistogramsInternalsUIBrowserTest.NoDummyHistograms
+# NOTE: Please list accessibility flakes and failures at the top of this file,
+# followed by tests which are also flaky on other bots. Tests which are not
+# appropriate for this bot should be placed at the end of this file.
+
+# Flaky mostly on the accessibility bot, due to a timeout: crbug.com/483542952
 -HistogramsInternalsUIBrowserTest.NoDummyHistograms
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FHistogramsInternalsUIBrowserTest.RefreshHistograms
 -HistogramsInternalsUIBrowserTest.RefreshHistograms
-# Flaky on Linux; disabled on several Mac bots: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FHistogramsInternalsUIBrowserTest.StopMonitoring
 -HistogramsInternalsUIBrowserTest.StopMonitoring
-# Flaky on Linux; disabled on several Mac bots: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FHistogramsInternalsUIBrowserTest.SubprocessCheckbox
 -HistogramsInternalsUIBrowserTest.SubprocessCheckbox
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FHistoryProductSpecificationsListTest.Load
--HistoryProductSpecificationsListTest.Load
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FHistoryProductSpecificationsListTest.Load__ProductSpecificationsListTest_focus_with_arrow_keys
--HistoryProductSpecificationsListTest.Load__ProductSpecificationsListTest_focus_with_arrow_keys
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FInlineLoginHelperBrowserTest.UntrustedSigninDialogCancel
--InlineLoginHelperBrowserTest.UntrustedSigninDialogCancel
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FLogNetLogInvalidDurationTest.InvalidDurationHandling%2FInvalidDurations.3
--InvalidDurations/LogNetLogInvalidDurationTest.InvalidDurationHandling/3
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FIOSPasswordPromoBubbleTest.InvokeUi_default
--IOSPasswordPromoBubbleTest.InvokeUi_default
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FIOSPaymentPromoBubbleTest.InvokeUi_default
--IOSPaymentPromoBubbleTest.InvokeUi_default
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FLensOverlayControllerContextualFeaturesDisabledTest.PreselectionToastOmniboxFocusState
+-PrefsInternalsTest.TestPrefsAreServed
+
+# Flaky on Linux: crbug.com/483413077
+-AccessCodeCastTest.PasscodeInput
+-AccessCodeCastTest.PasscodeInput__PasscodeInputElementTest_cursor_is_rendered_correctly
+
+# Flaky on most bots: crbug.com/460575305
+-ActorToolAgnosticBrowserTest.EnsureFocusSimulatedWhenActing
+
+# Flaky on Linux: crbug.com/483506395
+-ActorTypeToolBrowserTest.TypeTool_FocusMovesFocus
+
+# Flaky on Linux: crbug.com/483651798
+-ActorWindowManagementToolBrowserTest.CloseWindow
+
+# Flaky on multiple bots for all OSes: crbug.com/462585538
+-AdsPageLoadMetricsObserverBrowserTest.AdFrameRecordMediaStatusNotPlayed
+-AdsPageLoadMetricsObserverPrerenderingBrowserTest.NoMetricsInPrerendering
+
+# Flaky on multiple bots for all OSes: crbug.com/40947143
+-All/NetworkRequestMetricsBrowserTest.CancelDuringBody/2
+
+# Flaky on Linux: crbug.com/483413085
+-All/PDFExtensionJSSaveToDriveTest.SaveToDrive/0
+-All/PDFExtensionJSSaveToDriveTest.SaveToDriveBubble/0
+
+# Flaky on Linux: crbug.com/483542948
+-AutocompleteTest.SubmitSimpleValue_Disabled_DoesNotSave
+
+# Flaky on Linux: crbug.com/483918492
+-AutoPictureInPictureTabHelperBrowserTest.PromptResultRecorded_VideoConferencingAllowOnce
+
+# Flaky on most bots: crbug.com/475126748
+-BookmarksTest.List
+-BookmarksTest.List___bookmarks_list__resets_focused_index_if_out_of_bounds
+
+# Flaky on Linux: crbug.com/483506396
+-BrowserTest.OverscrollDisabledInDevToolsWindows
+
+# Recently starting failing on Linux: crbug.com/483514148
+-BrowsingDataRemoverBrowserTest.StorageRemovedFromDisk
+
+# Flaky on most bots: crbug.com/483298485
+-CrElementsTest.CrToast
+-CrElementsTest.CrToast__cr_toast_stop_and_restart_auto_hide_depending_when_toast_focus_changes
+
+# Flaky on Linux: crbug.com/483413078
+-CrComponentsSearchboxTest.SearchboxFocusTest
+-CrComponentsSearchboxTest.SearchboxFocusTest__SearchboxFocusTest_tabbing_with_inline_autocompletion
+
+# Flaky on Linux: crbug.com/483855024
+-DataProtectionClipboardBrowserTest.ChromePrintReportsInitiator
+
+# Flaky on multiple bots: crbug.com/476255536
+-DefaultIsolation/TaskManagerOOPIFBrowserTest.LeavePageWithCrossSiteIframes/0
+
+# Flaky on Linux: crbug.com/483506397
+-DiceMigrationServiceBrowserTestWithWebApps.NoDialogShown
+
+# Flaky on Linux: crbug.com/483088604
+-DocumentPictureInPictureWindowControllerBrowserTest.CreateTwice
+-DocumentPictureInPictureWindowControllerBrowserTest.CreationAndVisibilityAndActivation
+
+# Flaky on Linux: crbug.com/483092908
+-DownloadToolbarUIControllerBrowserTest.DialogAutoCloses
+-DownloadToolbarUIControllerBrowserTest.OpenPrimaryDialog
+
+# Flaky on most bots: crbug.com/460267283
+-ExtensionCrxInstallerTest.InstallDelayedUntilNextUpdate
+
+# Flaky on Linux: crbug.com/483088605
+-ExtensionTabsTest.ExecuteScriptOnDevTools
+
+# Flaky on Linux: crbug.com/483855009
+-ExtensionWebRequestApiTest.ExtensionRequestRedirectToServer
+
+# Flaky on most bots: crbug.com/483085067
+-FlagsUiBrowserTest.App
+
+# Flaky on most bots: crbug.com/483506399
+-GlicInstanceCoordinatorBrowserTest.DeactivationWhenSwitchingToUnboundTab
+
+# Flaky on Linux: crbug.com/350991033, which was closed as a duplicate of restricted-access crbug.com/377951068
 -LensOverlayControllerContextualFeaturesDisabledTest.PreselectionToastOmniboxFocusState
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FNetworkContextConfigurationReportingAndNelBrowserTest.PersistReportingAndNel%2FOnDiskApp.1
--OnDiskApp/NetworkContextConfigurationReportingAndNelBrowserTest.PersistReportingAndNel/1
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPolicyTest.DefaultCookiesSetting
--PolicyTest.DefaultCookiesSetting
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPopupTrackerBrowserTest.PopupRedirectsTwice_RedirectCountTwo
+
+# Flaky on most bots: crbug.com/474801547
+-MLPromotionBrowserTest.MLPipelineNoCrashForExistingTracker
+
+# Flaky on Linux: crbug.com/483651796
+-NavigationCapturingBrowserNavigatorBrowserTest.FocusExistingUsesLatestActivatedAppWindow
+
+# Flaky on most bots: crbug.com/483506389
+-NewTabPageAppTest.RealboxNext
+-NewTabPageAppTest.RealboxNext__NewTabPageAppTest_RealboxNext_scrim_is_hidden_after_closing_composebox
+
+# Flaky on most bots: crbug.com/483251794
+-PasswordManagerUITest.AddPasswordDialog
+-PasswordManagerUITest.AddPasswordDialog__AddPasswordDialogTest_url_validation_works
+
+# Flaky on Linux: crbug.com/483542949
+-PermissionRequestManagerBrowserTest.MultipleTabsInSplitView
+
+# Flaky on Linux: crbug.com/40749618
 -PopupTrackerBrowserTest.PopupRedirectsTwice_RedirectCountTwo
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPreviewBrowserTest.ErrorOnRedirectionToNonHttpsUrl
--PreviewBrowserTest.ErrorOnRedirectionToNonHttpsUrl
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPreviewBrowserTest.MojoCapabilityControl
--PreviewBrowserTest.MojoCapabilityControl
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPreviewBrowserTest.TrivialSessionHistory
--PreviewBrowserTest.TrivialSessionHistory
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPreviewBrowserTest.ErrorOnNonHttpsUrl
+
+# Flaky on some Linux and Mac bots: crbug.com/483651797
+-PrerenderPageLoadMetricsObserverBrowserTest.ResponseBodyReceivedAfterActivation
+
+# Flaky on most bots: crbug.com/375344340
 -PreviewBrowserTest.ErrorOnNonHttpsUrl
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPreviewBrowserTest.ZoomIsDurableForHost
+-PreviewBrowserTest.ErrorOnRedirectionToNonHttpsUrl
+-PreviewBrowserTest.MojoCapabilityControl
+-PreviewBrowserTest.PromoteToNewTab
+-PreviewBrowserTest.SecPurposeHeader
+-PreviewBrowserTest.TrivialSessionHistory
 -PreviewBrowserTest.ZoomIsDurableForHost
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPreviewBrowserTest.ZoomUsageRecordedOnCancel
 -PreviewBrowserTest.ZoomUsageRecordedOnCancel
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPreviewBrowserTest.ZoomUsageRecordedOnPromoteToNewTab
 -PreviewBrowserTest.ZoomUsageRecordedOnPromoteToNewTab
 
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPrintPreviewScalingSettingsTest.InputNotDisabledOnValidityChange
--PrintPreviewScalingSettingsTest.InputNotDisabledOnValidityChange
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPrintPreviewScalingSettingsTest.InputNotDisabledOnValidityChange__ScalingSettingsTest_InputNotDisabledOnValidityChange
--PrintPreviewScalingSettingsTest.InputNotDisabledOnValidityChange__ScalingSettingsTest_InputNotDisabledOnValidityChange
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FProductSpecificationsTest.ComparisonTableListItem
--ProductSpecificationsTest.ComparisonTableListItem
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FProductSpecificationsTest.ComparisonTableListItem__ComparisonTableListItemTest_context_menu_rename_option_displays_input__and_submitting_emits_event_with_UUID_and_name
--ProductSpecificationsTest.ComparisonTableListItem__ComparisonTableListItemTest_context_menu_rename_option_displays_input__and_submitting_emits_event_with_UUID_and_name
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FProductSpecificationsTest.Header
--ProductSpecificationsTest.Header
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FProductSpecificationsTest.Header
--ProfileMenuViewPixelTest.InvokeUi_default/SignedOut_MultipleProfiles_DarkTheme
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FRecentActivityBubbleDialogViewActionBrowserTest.HandlesActionFocusTab
+# Flaky on most bots: crbug.com/483092903
 -RecentActivityBubbleDialogViewActionBrowserTest.HandlesActionFocusTab
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FRecentActivityBubbleDialogViewActionBrowserTest.HandlesActionOpenTabGroupEditDialog
+-RecentActivityBubbleDialogViewActionBrowserTest.HandlesActionManageSharing
 -RecentActivityBubbleDialogViewActionBrowserTest.HandlesActionOpenTabGroupEditDialog
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FRecentActivityBubbleDialogViewActionBrowserTest.HandlesActionReopenTab
 -RecentActivityBubbleDialogViewActionBrowserTest.HandlesActionReopenTab
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSaveCardBubbleViewsFullFormBrowserTest.Local_ClickingIconShowsManageCards
--SaveCardBubbleViewsFullFormBrowserTest.Local_ClickingIconShowsManageCards
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSaveCardBubbleViewsFullFormBrowserTest.Local_ClickingNoThanksClosesBubble
--SaveCardBubbleViewsFullFormBrowserTest.Local_ClickingNoThanksClosesBubble
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSaveCardBubbleViewsFullFormBrowserTest.Local_ClickingSave_ClosesBubble
--SaveCardBubbleViewsFullFormBrowserTest.Local_ClickingSave_ClosesBubble
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FDocumentPictureInPictureWindowControllerBrowserTest.CreateTwice
--SaveCardBubbleViewsFullFormBrowserTest.Local_ManageCardsDoneButtonClosesBubble
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSaveCardBubbleViewsFullFormBrowserTest.StrikeDatabase_Local_FullFlowTest
--SaveCardBubbleViewsFullFormBrowserTest.StrikeDatabase_Local_FullFlowTest
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream.StrikeDatabase_Upload_FullFlowTest%2FSaveCardBubbleViewsFullFormBrowserTest.0
--SaveCardBubbleViewsFullFormBrowserTest/SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream.StrikeDatabase_Upload_FullFlowTest/0
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream.Upload_EnteringCardholderNameAndClickingSaveAcceptsBubbleIfCardholderNameRequested%2FSaveCardBubbleViewsFullFormBrowserTest.0
--SaveCardBubbleViewsFullFormBrowserTest/SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream.Upload_EnteringCardholderNameAndClickingSaveAcceptsBubbleIfCardholderNameRequested/0
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSaveCardBubbleViewsFullFormBrowserTest.Upload_ClickingSave_ShowsLoadingView
--SaveCardBubbleViewsFullFormBrowserTest.Upload_ClickingSave_ShowsLoadingView
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSearchPrefetchServiceEnabledBrowserTest.HungRequestCanBeServed
+
+# Flaky on multiple bots: crbug.com/474642229
+-SBNavigationObserverBrowserTest.VerifyIdentifyReferrerChainByEventURL
+
+# Flaky on Linux: crbug.com/483542961
+-SearchApiTest.Incognito
+
+# Flaky on most bots: crbug.com/483506391
 -SearchPrefetchServiceEnabledBrowserTest.HungRequestCanBeServed
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSearchPrefetchServiceEnabledBrowserTest.OmniboxEditTriggersPrefetch
 -SearchPrefetchServiceEnabledBrowserTest.OmniboxEditTriggersPrefetch
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSearchPrefetchServiceEnabledBrowserTest.PrefetchFallbackFromError
--SearchPrefetchServiceEnabledBrowserTest.PrefetchFallbackFromError
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSearchPrefetchServiceEnabledBrowserTest.PrefetchFallbackSecureSecurityState
--SearchPrefetchServiceEnabledBrowserTest.PrefetchFallbackSecureSecurityState
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSearchPrefetchServiceEnabledBrowserTest.PrefetchServedBeforeHeaders
--SearchPrefetchServiceEnabledBrowserTest.PrefetchServedBeforeHeaders
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSearchPrefetchServiceNavigationPrefetchBrowserTest.DSEDoesNotAllowPrefetch
--SearchPrefetchServiceNavigationPrefetchBrowserTest.DSEDoesNotAllowPrefetch
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSettingsTest.PaymentsSection
--SettingsTest.PaymentsSection
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSettingsTest.PaymentsSectionCardDialogs
+-SearchPrefetchServiceEnabledBrowserTest.OmniboxNavigateToMatchingEntryStreaming
+-SearchPrefetchServiceNavigationPrefetchBrowserTest.NavigationPrefetchIsServedForOmniboxOpenSelection
+
+# Flaky on most bots: crbug.com/483088602
 -SettingsTest.PaymentsSectionCardDialogs
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSettingsTest.PaymentsSectionCardDialogs__PaymentsSectionCardDialogs_verifyOnlyValidCardNumbersAllowed_InvalidCasesWithNoError
 -SettingsTest.PaymentsSectionCardDialogs__PaymentsSectionCardDialogs_verifyOnlyValidCardNumbersAllowed_InvalidCasesWithNoError
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSettingsTest.PaymentsSectionIban
 -SettingsTest.PaymentsSectionIban
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSettingsTest.PaymentsSectionIban__PaymentsSectionIban_verifyIBANErrorMessage
 -SettingsTest.PaymentsSectionIban__PaymentsSectionIban_verifyIBANErrorMessage
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSSLUITestWithWebApps.InAppTestHTTPSExpiredCertAndPreviouslyProceeded
+
+# Flaky on most bots: crbug.com/483542950
+-SkillsBrowserTest.UserSkillsPage
+-SkillsBrowserTest.UserSkillsPage__UserSkillsPage_CopySkillInstructionsToClipboard
+
+# Flaky on Linux: crbug.com/483092911
 -SSLUITestWithWebApps.InAppTestHTTPSExpiredCertAndPreviouslyProceeded
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FSystemNetworkContextManagerWithFirstPartySetComponentBrowserTest.ReloadsFirstPartySetsAfterCrash
--SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest.ReloadsFirstPartySetsAfterCrash
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FTabStripBrowsertest.TabGroupTabNavigationAccelerators
--TabStripBrowsertest.TabGroupTabNavigationAccelerators
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FTabRestoreTest.RestoreGroupWithUnloadHandlerRejected
+
+# Flaky on Linux: crbug.com/483092912
 -TabRestoreTest.RestoreGroupWithUnloadHandlerRejected
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FTranslateBubbleVisualTest.InvokeUi_before_translate
--TranslateBubbleVisualTest.InvokeUi_before_translate
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FWebAppEngagementBrowserTest.CommandLineWindowByAppId
+
+# Flaky on most bots: crbug.com/483855026
+-TabSearchTest.Item
+-TabSearchTest.Item__TabSearchItemTest_CloseButtonPresence
+
+# Flaky on Linux: crbug.com/483903191
+-TranslateBubbleViewBrowserTest.OpeningFindBarClosesTranslateBubble
+
+# Flaky on Linux, skipped on most other bots: crbug.com/483298489
 -WebAppEngagementBrowserTest.CommandLineWindowByAppId
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FWebAppEngagementBrowserTest.CommandLineWindowByUrl
 -WebAppEngagementBrowserTest.CommandLineWindowByUrl
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FWebAuthenticationProxyApiTest.RemoteSessionStateChange
+
+# Flaky on Linux: crbug.com/483088609
 -WebAuthenticationProxyApiTest.RemoteSessionStateChange
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FWebBluetoothTest.NavigateWithChooserCrossOrigin
--WebBluetoothTest.NavigateWithChooserCrossOrigin
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FWebUIWebViewCoverageDisabledBrowserTest.AddContentScriptsWithNewWindowAPI
--WebUIWebViewCoverageDisabledBrowserTest.AddContentScriptsWithNewWindowAPI
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FWebViewTest.GeolocationAPIEmbedderHasNoAccessAllow%2FInnerWebContents
--WebViewTest.GeolocationAPIEmbedderHasNoAccessAllow/InnerWebContents
-# Flaky on Linux and one Windows bot: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FWebViewTest.PerformanceManager%2FInnerWebContents
--WebViewTest.PerformanceManager/InnerWebContents
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FWebViewTest.Shim_TestPartitionRemovalAfterNavigationFails%2FMPArch
--WebViewTest.Shim_TestPartitionRemovalAfterNavigationFails/MPArch
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FWebViewTest.Shim_TestRendererNavigationRedirectWhileUnattached%2FInnerWebContents
--WebViewTest.Shim_TestRendererNavigationRedirectWhileUnattached/InnerWebContents
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FWebViewTest.Shim_TestTerminateAfterExit%2FInnerWebContents
--WebViewTest.Shim_TestTerminateAfterExit/InnerWebContents
-# Flaky on Linux: https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FWebViewTest.Shim_TestWebRequestAPIAddListener%2FMPArch
--WebViewTest.Shim_TestWebRequestAPIAddListener/MPArch
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FWebViewUsbTest.Shim_TestCannotRequestUsb%2FMPArch
--WebViewUsbTest.Shim_TestCannotRequestUsb/MPArch
+
+# Flaky on multiple bots: crbug.com/483918482
+-WebContentsImplBrowserTest.SetIsOverridingUserAgentNoEntry
+
+# Flaky on multiple bots: crbug.com/476255536
+-WebViewTest.TaskManagerShowAndHide/MPArch
+-WebViewTest.TaskManagerShowAndHide/InnerWebContents
+
+# Flaky on (at least) Linux: crbug.com/483623908
+-WebUiJsTest.TrackedElement
+-WebUiJsTest.TrackedElement__TrackedElementTest_fixed_element_tracking
 
 # These tests are run on the main builders and don't need to also be run here.
 -AccessibilityLabelsMenuObserverTest.*
