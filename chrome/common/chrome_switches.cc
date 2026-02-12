@@ -949,6 +949,10 @@ const char kUninstall[] = "uninstall";
 // Specifies that the WebApp with the specified id should be uninstalled.
 const char kUninstallAppId[] = "uninstall-app-id";
 
+// Specifies that the browser is running isolated and should not attempt to
+// start a second isolated browser.
+const char kIsolated[] = "isolated";
+
 // Specifies the version of the Progressive-Web-App launcher that launched
 // Chrome, used to determine whether to update all launchers.
 // NOTE: changing this switch requires adding legacy handling for the previous

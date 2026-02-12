@@ -60,7 +60,9 @@ source_set("lib") {
 
   deps = [
     "//base/version_info",
+    "//chrome/common:non_code_constants",
     "//chrome/install_static:install_static_util",
+    "//chrome/installer/util:constants",
     "//chrome/windows_services/service_program:common",
     "//components/crx_file",
     "//third_party/zlib/google:zip",
@@ -120,6 +122,7 @@ test("elevation_service_unittests") {
   sources = [
     "caller_validation_unittest.cc",
     "elevated_recovery_unittest.cc",
+    "elevation_service_unittest.cc",
     "elevator_unittest.cc",
     "run_all_unittests.cc",
     "service_main_unittest.cc",
@@ -131,6 +134,7 @@ test("elevation_service_unittests") {
     ":service_lib",
     "//base",
     "//base/test:test_support",
+    "//chrome/common:non_code_constants",
     "//chrome/elevation_service:elevation_service_idl",
     "//chrome/install_static:install_static_util",
     "//chrome/install_static/test:test_support",
@@ -146,7 +150,20 @@ test("elevation_service_unittests") {
 
   data_deps = [
     ":elevation_service",
+    ":elevation_service_test_child",
     ":elevation_service_unittests_files",
+  ]
+}
+
+executable("elevation_service_test_child") {
+  testonly = true
+  sources = [ "elevation_service_test_child.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_config",
+    "//build:branding_buildflags",
+    "//chrome/common:non_code_constants",
+    "//chrome/installer/util:isolation_support",
   ]
 }
 

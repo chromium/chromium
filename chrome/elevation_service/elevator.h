@@ -36,6 +36,8 @@ inline constexpr char kElevatorClsIdForTestingSwitch[] =
     "elevator-clsid-for-testing";
 inline constexpr char kFakeReencryptForTestingSwitch[] =
     "elevator-fake-reencrypt-for-testing";
+inline constexpr char kAllowUntrustedPathForTesting[] =
+    "elevator-allow-untrusted-path-for-testing";
 }  // namespace switches
 
 namespace internal {
@@ -174,7 +176,7 @@ class Elevator
 
   IFACEMETHODIMP RunIsolatedChrome(DWORD flags,
                                    const WCHAR* command_line,
-                                   BSTR* log,
+                                   [[maybe_unused]] BSTR* log,
                                    ULONG_PTR* proc_handle,
                                    DWORD* last_error) override;
 

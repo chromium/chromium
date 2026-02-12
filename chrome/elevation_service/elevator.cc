@@ -7,6 +7,7 @@
 #include <dpapi.h>
 #include <oleauto.h>
 #include <stdint.h>
+#include <userenv.h>
 
 #include <string>
 #include <vector>
@@ -15,21 +16,29 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/version_info/version_info.h"
+#include "base/win/access_token.h"
 #include "base/win/scoped_localalloc.h"
+#include "base/win/scoped_process_information.h"
+#include "base/win/startup_information.h"
 #include "base/win/windows_handle_util.h"
 #include "build/branding_buildflags.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/elevation_service/caller_validation.h"
 #include "chrome/elevation_service/elevated_recovery_impl.h"
 #include "chrome/install_static/install_util.h"
+#include "chrome/installer/util/util_constants.h"
 #include "chrome/windows_services/service_program/get_calling_process.h"
 #include "chrome/windows_services/service_program/scoped_client_impersonation.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/elevation_service/internal/elevation_service_internal.h"
@@ -239,10 +248,147 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
 
 HRESULT Elevator::RunIsolatedChrome(DWORD flags,
                                     const WCHAR* command_line,
-                                    BSTR* log,
+                                    [[maybe_unused]] BSTR* log,
                                     ULONG_PTR* proc_handle,
                                     DWORD* last_error) {
-  return E_NOTIMPL;
+  *last_error = ERROR_SUCCESS;
+  bool success = false;
+  absl::Cleanup maybe_set_last_error = [last_error, &success]() {
+    if (!success) {
+      *last_error = ::GetLastError();
+    }
+  };
+
+  std::optional<base::win::AccessToken> impersonation_token;
+
+  if (ScopedClientImpersonation impersonate; impersonate.is_valid()) {
+    impersonation_token = base::win::AccessToken::FromCurrentThread(
+        /*open_as_self=*/true, TOKEN_DUPLICATE | TOKEN_QUERY);
+  } else {
+    return impersonate.result();
+  }
+
+  if (!impersonation_token) {
+    PLOG(ERROR) << "Cannot create impersonation token.";
+    return kErrorCouldNotObtainThreadToken;
+  }
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  auto primary_token = CreatePrimaryToken(std::move(*impersonation_token));
+#else
+  auto primary_token = impersonation_token->DuplicatePrimary(
+      TOKEN_ASSIGN_PRIMARY | TOKEN_DUPLICATE | TOKEN_QUERY);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+  base::win::StartupInformation startup_information;
+  if (!startup_information.InitializeProcThreadAttributeList(
+          /*attribute_count=*/1u)) {
+    PLOG(ERROR) << "Cannot Init process and thread attribute list.";
+    return E_OUTOFMEMORY;
+  }
+
+  base::Process calling_process =
+      GetCallingProcess(PROCESS_CREATE_PROCESS | PROCESS_DUP_HANDLE);
+  if (!calling_process.IsValid()) {
+    PLOG(ERROR) << "Could not obtain calling process.";
+    return kErrorCouldNotObtainCallingProcess;
+  }
+
+  HANDLE parent = calling_process.Handle();
+
+  startup_information.UpdateProcThreadAttribute(
+      PROC_THREAD_ATTRIBUTE_PARENT_PROCESS, &parent, sizeof(parent));
+
+  base::CommandLine untrusted_command_line =
+      base::CommandLine::FromString(command_line);
+  std::optional<base::CommandLine> trusted_command_line;
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAllowUntrustedPathForTesting)) {
+    trusted_command_line.emplace(untrusted_command_line.GetProgram());
+  } else {
+    base::FilePath chrome_exe;
+    if (!base::PathService::Get(base::DIR_EXE, &chrome_exe)) {
+      return kErrorChromePathNotFound;
+    }
+    chrome_exe = chrome_exe.DirName().Append(installer::kChromeExe);
+    if (!base::PathExists(chrome_exe)) {
+      LOG(ERROR) << "Chrome path does not exist at " << chrome_exe;
+      return kErrorChromePathNotFound;
+    }
+
+    trusted_command_line.emplace(chrome_exe);
+  }
+  const auto other_args = untrusted_command_line.GetArgs();
+
+  const char* const kAllowedSwitches[] = {
+      // Allow selection of profile.
+      ::switches::kProfileDirectory, ::switches::kUserDataDir};
+
+  trusted_command_line->CopySwitchesFrom(untrusted_command_line,
+                                         kAllowedSwitches);
+
+  trusted_command_line->AppendSwitch(::switches::kIsolated);
+  for (const auto& arg : other_args) {
+    // Safety check.
+    if (arg[0] == L'-') {
+      continue;
+    }
+    trusted_command_line->AppendArgNative(arg);
+  }
+
+  std::wstring writeable_command_line(
+      trusted_command_line->GetCommandLineString());
+
+  DWORD creation_flags = CREATE_UNICODE_ENVIRONMENT;
+  if (startup_information.has_extended_startup_info()) {
+    creation_flags |= EXTENDED_STARTUPINFO_PRESENT;
+  }
+  LPVOID env;
+  if (!::CreateEnvironmentBlock(&env, primary_token->get(),
+                                /*bInherit=*/false)) {
+    PLOG(ERROR) << "Cannot create user environment.";
+    return kErrorCouldNotObtainUserEnvironment;
+  }
+
+  // TODO(wfh): Sanitize environment especially the PATH.
+  absl::Cleanup destroy_environment = [&env] {
+    ::DestroyEnvironmentBlock(env);
+  };
+
+  PROCESS_INFORMATION temp_process_info = {};
+  if (!::CreateProcessAsUserW(
+          primary_token->get(),
+          std::data(trusted_command_line->GetProgram().value()),
+          std::data(writeable_command_line),
+          /*lpProcessAttributes=*/nullptr, /*lpThreadAttributes=*/nullptr,
+          /*bInheritHandles=*/FALSE,
+          /*dwCreationFlags=*/creation_flags,
+          /*lpEnvironment=*/env, /*lpCurrentDirectory=*/
+          std::data(trusted_command_line->GetProgram().DirName().value()),
+          startup_information.startup_info(), &temp_process_info)) {
+    PLOG(ERROR) << "Cannot create browser process.";
+    return kErrorCouldNotLaunchBrowser;
+  }
+  base::win::ScopedProcessInformation process_info(temp_process_info);
+
+  HANDLE duplicate_proc_handle = nullptr;
+
+  if (!::DuplicateHandle(
+          /*hSourceProcessHandle=*/::GetCurrentProcess(),
+          /*hSourceHandle=*/process_info.process_handle(),
+          /*hTargetProcessHandle=*/calling_process.Handle(),
+          /*lpTargetHandle=*/&duplicate_proc_handle,
+          /*dwDesiredAccess=*/PROCESS_QUERY_LIMITED_INFORMATION |
+              PROCESS_TERMINATE | SYNCHRONIZE,
+          /*bInheritHandle=*/FALSE, /*dwOptions=*/0)) {
+    PLOG(ERROR) << "Cannot duplicate browser process handle.";
+    return kErrorCouldNotDuplicateHandle;
+  }
+
+  *proc_handle = base::win::HandleToUint32(duplicate_proc_handle);
+
+  success = true;
+  return S_OK;
 }
 
 HRESULT Elevator::AcceptInvitation(const wchar_t* server_name) {
