@@ -70,8 +70,6 @@
 #include "ui/gfx/image/image.h"
 
 namespace {
-// TODO(crbug.com/457815342): Add this to config when available.
-constexpr int kMaxRecentTabs = 5;
 constexpr int kMinOmniboxContextMenuRecentTabsCommandId = 33000;
 
 bool IsValidTab(GURL url) {
@@ -118,8 +116,8 @@ OmniboxContextMenuController::ContextType CommandIdToEnum(int command_id) {
       // There is no command id for tabs due to there being multiple
       // tabs that would have the same command id.
       CHECK_GE(command_id, kMinOmniboxContextMenuRecentTabsCommandId);
-      CHECK_LT(command_id,
-               kMinOmniboxContextMenuRecentTabsCommandId + kMaxRecentTabs);
+      CHECK_LT(command_id, kMinOmniboxContextMenuRecentTabsCommandId +
+                               omnibox::kContextMenuMaxTabSuggestions.Get());
       return OmniboxContextMenuController::ContextType::kTab;
   }
 }
@@ -446,7 +444,8 @@ OmniboxContextMenuController::GetRecentTabs() {
 
   // Sort tabs by most recently active.
   int max_tab_suggestions =
-      std::min(static_cast<int>(tabs.size()), kMaxRecentTabs);
+      std::min(static_cast<int>(tabs.size()),
+               omnibox::kContextMenuMaxTabSuggestions.Get());
   std::partial_sort(tabs.begin(), tabs.begin() + max_tab_suggestions,
                     tabs.end(),
                     [](const OmniboxContextMenuController::TabInfo& a,
