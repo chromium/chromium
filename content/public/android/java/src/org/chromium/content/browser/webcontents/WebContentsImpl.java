@@ -80,8 +80,10 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -95,6 +97,12 @@ public class WebContentsImpl
                 RenderFrameHostDelegate,
                 WindowEventObserver {
     private static final String TAG = "WebContentsImpl";
+
+    // Using ScopedJavaGlobalRef in the owning C++ object to keep the Java object alive consumes an
+    // entry per instance in the finite global ref table. This scales poorly with a large number of
+    // WebContents. As a workaround, the C++ owner uses a JavaObjectWeakGlobalRef and an entry is
+    // kept in the a static map of the native pointer to Java objects to prevent garbage collection.
+    private static final Map<Long, WebContentsImpl> sWebContentsMap = new HashMap<>();
 
     private static final String PARCEL_VERSION_KEY = "version";
     private static final String PARCEL_WEBCONTENTS_KEY = "webcontents";
@@ -211,6 +219,7 @@ public class WebContentsImpl
         assert nativeWebContentsAndroid != 0;
         mNativeWebContentsAndroid = nativeWebContentsAndroid;
         mNavigationController = navigationController;
+        sWebContentsMap.put(mNativeWebContentsAndroid, this);
     }
 
     @CalledByNative
@@ -288,11 +297,15 @@ public class WebContentsImpl
     @VisibleForTesting
     void clearNativePtr() {
         mNativeDestroyThrowable = new RuntimeException("clearNativePtr");
+        long nativeWebContentsAndroid = mNativeWebContentsAndroid;
+        assert nativeWebContentsAndroid != 0;
         mNativeWebContentsAndroid = 0;
         if (mObserverProxy != null) {
             mObserverProxy.webContentsDestroyed();
             mObserverProxy = null;
         }
+        var removedValue = sWebContentsMap.remove(nativeWebContentsAndroid);
+        assert removedValue != null;
     }
 
     // =================== RenderFrameHostDelegate overrides ===================

@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_weak_ref.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -278,8 +279,7 @@ class CONTENT_EXPORT WebContentsAndroid {
       JNIEnv* env);
 
  private:
-  void OnFinishDownloadImage(const base::android::JavaRef<jobject>& obj,
-                             const base::android::JavaRef<jobject>& callback,
+  void OnFinishDownloadImage(const base::android::JavaRef<jobject>& callback,
                              int id,
                              int http_status_code,
                              const GURL& url,
@@ -299,7 +299,11 @@ class CONTENT_EXPORT WebContentsAndroid {
   raw_ptr<WebContentsImpl> web_contents_;
 
   NavigationControllerAndroid navigation_controller_;
-  base::android::ScopedJavaGlobalRef<jobject> obj_;
+  // A weak reference to the Java object. The Java object will be kept alive by
+  // a static map in the Java code. ScopedJavaGlobalRef would scale poorly with
+  // a large number of WebContents as each entry would consume a slot in the
+  // finite global ref table.
+  JavaObjectWeakGlobalRef obj_;
 
   base::ObserverList<DestructionObserver> destruction_observers_;
 
