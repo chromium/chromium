@@ -1371,6 +1371,14 @@ if (!(_is_default_toolchain && use_webview_pgo_profile)) {
       jni_registration_toolchain = webview_toolchain
     }
   }
+} else {
+  copy("copy_webview_lib_unstripped") {
+    _webview_toolchain_out_dir = get_label_info(":libwebviewchromium($webview_toolchain)", "root_out_dir")
+    _sofile = "$_webview_toolchain_out_dir/lib.unstripped/libwebviewchromium$shlib_extension"
+    sources = [ _sofile ]
+    outputs = [ "$root_out_dir/lib.unstripped/{{source_file_part}}" ]
+    deps = [ ":libwebviewchromium($webview_toolchain)" ]
+  }
 }
 
 if (_is_default_toolchain && enable_resource_allowlist_generation) {
