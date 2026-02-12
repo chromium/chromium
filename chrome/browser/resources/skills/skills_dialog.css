@@ -238,3 +238,16 @@ cr-icon-button {
   cursor: pointer;
   outline: none;
 }
+
+#nameLoaderContainer {
+  height: 38px;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--cr-fallback-color-neutral-outline);
+  border-radius: 8px;
+  background-color: var(--color-sys-surface);
+  overflow: hidden;
+  display: block;
+  margin-bottom: 19px;
+  padding-right: 10px;
+}

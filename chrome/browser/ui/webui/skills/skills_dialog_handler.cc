@@ -112,6 +112,7 @@ void SkillsDialogHandler::OnRefineSkillResponse(
   skills::Skill refined_skill;
   refined_skill.prompt = suggestion.prompt();  // The refined prompt
   refined_skill.name = suggestion.name();      // Suggested name
+  refined_skill.icon = suggestion.icon();      // Suggested icon/emoji
 
   std::move(wrapped_callback).Run(std::move(refined_skill));
 }

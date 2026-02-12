@@ -4,6 +4,7 @@
 
 import 'chrome://skills/skills_dialog_app.js';
 
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillSource} from 'chrome://skills/skill.mojom-webui.js';
@@ -501,5 +502,133 @@ suite('SkillsDialogAppPage', function() {
     // 7. Verify the "Late" response was IGNORED
     assertEquals('Original Text', instructionsInput.value);
     assertFalse(errorMessage.hidden);
+  });
+
+  test('AutoPopulatesNameAndIconOnLoad', async function() {
+    // 1. Setup the mock response for the auto-population call.
+    const generatedName = 'Auto Generated Name';
+    const generatedIcon = '🤖';
+    dialogHandler.setResultFor('refineSkill', Promise.resolve({
+      refinedSkill: {
+        id: '',
+        sourceSkillId: '',
+        name: generatedName,
+        icon: generatedIcon,
+        prompt: 'refined prompt',
+        description: '',
+        source: SkillSource.kUserCreated,
+        creationTime: {internalValue: 0n},
+        lastUpdateTime: {internalValue: 0n},
+      },
+    }));
+
+    // 2. Initialize a new skill with a prompt but no name/icon.
+    const newSkill: Skill = {
+      id: '',
+      sourceSkillId: '',
+      name: '',
+      icon: '⚡',  // Default
+      prompt: 'Instruction that triggers auto-gen',
+      description: '',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+
+    // 3. Mount the component
+    await setupDialogWithSkill(newSkill);
+
+    // 4. Assert that values updated automatically
+    assertEquals(generatedName, skillsDialogApp.$.nameText.value);
+    assertEquals(generatedIcon, skillsDialogApp.$.emojiTrigger.value);
+  });
+
+  test('AutoPopulateDoesNotOverwriteExistingData', async function() {
+    // 1. Setup mock response
+    dialogHandler.setResultFor('refineSkill', Promise.resolve({
+      refinedSkill: {
+        name: 'Should Not Be Used',
+        icon: '❌',
+        prompt: '',
+      },
+    }));
+
+    // 2. Initialize with user-defined name and icon
+    const existingName = 'My Custom Name';
+    const existingIcon = '✅';
+    const customSkill: Skill = {
+      id: '',
+      sourceSkillId: '',
+      name: existingName,
+      icon: existingIcon,
+      prompt: 'Instructions',
+      source: SkillSource.kUserCreated,
+      description: '',
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+
+    // 3. Mount
+    await setupDialogWithSkill(customSkill);
+
+    // 4. Assert values were preserved
+    assertEquals(existingName, skillsDialogApp.$.nameText.value);
+    assertEquals(existingIcon, skillsDialogApp.$.emojiTrigger.value);
+  });
+
+  test('AutoPopulateLoadingState', async function() {
+    // 1. Control the promise to check loading state
+    const resolver = new PromiseResolver<{refinedSkill: Skill}>();
+    dialogHandler.refineSkill = () => resolver.promise;
+
+    const newSkill: Skill = {
+      id: '',
+      sourceSkillId: '',
+      name: '',
+      icon: '⚡',
+      prompt: 'Instructions',
+      source: SkillSource.kUserCreated,
+      description: '',
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+
+    // 2. Mount - this triggers the call immediately in connectedCallback
+    await setupDialogWithSkill(newSkill);
+
+    // 3. Assert Loading State: Input should not be visible, Loader should be
+    const nameInput = skillsDialogApp.shadowRoot.querySelector('#nameText');
+    const loader =
+        skillsDialogApp.shadowRoot.querySelector('#nameLoaderContainer');
+
+    assertEquals(null, nameInput);
+    assertTrue(!!loader);
+
+    // 4. Resolve the request
+    resolver.resolve({
+      refinedSkill: {
+        name: 'Done',
+        icon: '🏁',
+        prompt: '',
+        id: '',
+        sourceSkillId: '',
+        description: '',
+        source: SkillSource.kUserCreated,
+        creationTime: {internalValue: 0n},
+        lastUpdateTime: {internalValue: 0n},
+      },
+    });
+
+    await microtasksFinished();
+
+    // 5. Assert Normal State: Input visible, Loader gone
+    const nameInputAfter =
+        skillsDialogApp.shadowRoot.querySelector('#nameText');
+    const loaderAfter =
+        skillsDialogApp.shadowRoot.querySelector('#nameLoaderContainer');
+
+    assertTrue(!!nameInputAfter);
+    assertEquals(null, loaderAfter);
+    assertEquals('Done', (nameInputAfter as CrInputElement).value);
   });
 });
