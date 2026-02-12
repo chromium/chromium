@@ -1473,4 +1473,19 @@ TEST_F(RenderFrameHostImplTest, CapturedMediaStreamAddedRemoved) {
       RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream);
 }
 
+// Ensure that an invalid WindowOpenDisposition in CreateNewWindow causes a bad
+// message.
+TEST_F(RenderFrameHostImplTest, CreateNewWindowInvalidDisposition) {
+  mojom::CreateNewWindowParamsPtr params = mojom::CreateNewWindowParams::New();
+  params->disposition = WindowOpenDisposition::UNKNOWN;
+
+  // The bad message is reported to the process.
+  EXPECT_EQ(0, process()->bad_msg_count());
+
+  static_cast<RenderFrameHostImpl*>(main_rfh())
+      ->CreateNewWindow(std::move(params), base::DoNothing());
+
+  EXPECT_EQ(1, process()->bad_msg_count());
+}
+
 }  // namespace content

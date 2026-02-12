@@ -316,6 +316,7 @@
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
@@ -9940,6 +9941,15 @@ void RenderFrameHostImpl::CreateNewWindow(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::CreateNewWindow",
                "render_frame_host", this, "url", params->target_url);
+
+  // Filter out invalid UNKNOWN disposition to prevent renderer-triggered
+  // browser crashes.
+  if (params->disposition == WindowOpenDisposition::UNKNOWN) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFH_CREATE_NEW_WINDOW_INVALID_DISPOSITION);
+    std::move(callback).Run(mojom::CreateNewWindowStatus::kBlocked, nullptr);
+    return;
+  }
 
   // Only top-most frames can open picture-in-picture windows.
   if (params->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE &&

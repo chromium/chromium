@@ -3427,6 +3427,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest,
                            CheckIsCurrentBeforeAndAfterUnload);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplTest, NavigationStateKeepAlive);
+  FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplTest,
+                           CreateNewWindowInvalidDisposition);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest,
                            FindImmediateLocalRoots);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest,
