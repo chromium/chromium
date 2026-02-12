@@ -29,6 +29,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/common_preconditions.h"
 #include "components/user_education/common/user_education_features.h"
+#include "components/user_education/views/view_subregion_anchor.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "content/public/browser/web_contents.h"
@@ -66,6 +67,9 @@ user_education::FeaturePromoResult WindowActivePrecondition::CheckPrecondition(
   views::Widget* widget = nullptr;
   if (auto* const view_el = element_ref.get_as<views::TrackedElementViews>()) {
     widget = view_el->view()->GetWidget();
+  } else if (auto* const subregion_el =
+                 element_ref.get_as<user_education::ViewSubregionAnchor>()) {
+    widget = subregion_el->view().GetWidget();
   } else if (auto* web_el =
                  element_ref.get_as<
                      user_education::TrackedElementHelpBubbleWebUIAnchor>()) {

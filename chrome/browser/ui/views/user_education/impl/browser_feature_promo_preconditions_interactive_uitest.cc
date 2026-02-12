@@ -103,6 +103,13 @@ IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, ElementInActiveBrowser) {
 }
 
 IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest,
+                       RegionElementInActiveBrowser) {
+  RunTestSequence(
+      CaptureAnchor(kBrowserDialogAnchorElementId),
+      CheckWindowActiveResult(user_education::FeaturePromoResult::Success()));
+}
+
+IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest,
                        ElementInInactiveBrowser) {
   auto* const incog = CreateIncognitoBrowser();
   RunTestSequence(
@@ -113,6 +120,24 @@ IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest,
                 Steps(WaitForShow(kToolbarAppMenuButtonElementId),
                       ActivateSurface(kToolbarAppMenuButtonElementId))),
       WithElement(kToolbarAppMenuButtonElementId,
+                  [this](ui::TrackedElement* anchor) {
+                    *anchor_element_data_ = anchor;
+                  }),
+      CheckWindowActiveResult(
+          user_education::FeaturePromoResult::kAnchorSurfaceNotActive));
+}
+
+IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest,
+                       RegionElementInInactiveBrowser) {
+  auto* const incog = CreateIncognitoBrowser();
+  RunTestSequence(
+      WaitForShow(kToolbarAppMenuButtonElementId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              "Linux window activation issues."),
+      InContext(BrowserElements::From(incog)->GetContext(),
+                Steps(WaitForShow(kToolbarAppMenuButtonElementId),
+                      ActivateSurface(kToolbarAppMenuButtonElementId))),
+      WithElement(kBrowserDialogAnchorElementId,
                   [this](ui::TrackedElement* anchor) {
                     *anchor_element_data_ = anchor;
                   }),
