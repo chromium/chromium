@@ -184,7 +184,13 @@ bool HTMLVideoElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
   return HTMLElement::LayoutObjectIsNeeded(style);
 }
 
-LayoutObject* HTMLVideoElement::CreateLayoutObject(const ComputedStyle&) {
+LayoutObject* HTMLVideoElement::CreateLayoutObject(const ComputedStyle& style) {
+  if (auto* content_image =
+          DynamicTo<ImageContentData>(style.GetContentData())) {
+    if (!content_image->GetImage()->ErrorOccurred()) {
+      return LayoutObject::CreateObject(this, style);
+    }
+  }
   return MakeGarbageCollected<LayoutVideo>(this);
 }
 

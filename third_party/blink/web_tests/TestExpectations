@@ -1345,7 +1345,6 @@ crbug.com/1353560 [ Mac12 ] external/wpt/css/css-content/quotes-020.html [ Failu
 crbug.com/1353560 [ Mac12-arm64 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
 crbug.com/1353560 [ Mac13-arm64 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
 crbug.com/1353560 [ Win ] external/wpt/css/css-content/quotes-030.html [ Failure ]
-crbug.com/1067277 external/wpt/css/css-content/element-replacement-on-replaced-element.tentative.html [ Failure ]
 crbug.com/1335893 external/wpt/css/css-content/content-none-select-1.html [ Failure Pass ]
 crbug.com/995106 external/wpt/css/css-lists/inline-list.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-lists/inline-list-marker.html [ Failure ]
