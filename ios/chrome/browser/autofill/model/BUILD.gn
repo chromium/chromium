@@ -29,6 +29,8 @@ source_set("model") {
     "ios_autofill_ai_model_executor_factory.mm",
     "ios_autofill_entity_data_manager_factory.h",
     "ios_autofill_entity_data_manager_factory.mm",
+    "ios_autofill_entity_data_manager_observer_bridge.h",
+    "ios_autofill_entity_data_manager_observer_bridge.mm",
     "personal_data_manager_factory.h",
     "personal_data_manager_factory.mm",
     "strike_database_factory.h",

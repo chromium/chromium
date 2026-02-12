@@ -27,6 +27,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_edit_profile_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/settings_autofill_edit_profile_bottom_sheet_handler.h"
@@ -112,11 +114,15 @@ NSString* GetFallbackDetailTextForLocalProfile(
 @interface AutofillProfileTableViewController () <
     AutofillProfileEditCoordinatorDelegate,
     PersonalDataManagerObserver,
+    IOSAutofillEntityDataManagerObserver,
     PopoverLabelViewControllerDelegate> {
   raw_ptr<autofill::PersonalDataManager> _personalDataManager;
+  raw_ptr<autofill::EntityDataManager> _entityDataManager;
 
   raw_ptr<Browser> _browser;
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge> _observer;
+  std::unique_ptr<autofill::IOSAutofillEntityDataManagerObserverBridge>
+      _entityDataManagerObserver;
 
   // Deleting profiles updates PersonalDataManager resulting in an observer
   // callback, which handles general data updates with a reloadData.
@@ -132,7 +138,7 @@ NSString* GetFallbackDetailTextForLocalProfile(
   // signed-in user.
   NSString* _userEmail;
 
-  // Coordinator that managers a UIAlertController to delete addresses.
+  // Coordinator that manages a UIAlertController to delete addresses.
   ActionSheetCoordinator* _deletionSheetCoordinator;
 
   // Coordinator to view/edit profile details.
@@ -170,6 +176,14 @@ NSString* GetFallbackDetailTextForLocalProfile(
         _browser->GetProfile());
     _observer = std::make_unique<autofill::PersonalDataManagerObserverBridge>(
         _personalDataManager, self);
+
+    _entityDataManager = IOSAutofillEntityDataManagerFactory::GetForProfile(
+        _browser->GetProfile());
+    if (_entityDataManager) {
+      _entityDataManagerObserver = std::make_unique<
+          autofill::IOSAutofillEntityDataManagerObserverBridge>(
+          _entityDataManager, self);
+    }
   }
   return self;
 }
@@ -398,9 +412,11 @@ NSString* GetFallbackDetailTextForLocalProfile(
 
   // Remove observer bridges.
   _observer.reset();
+  _entityDataManagerObserver.reset();
 
   // Clear C++ ivars.
   _personalDataManager = nullptr;
+  _entityDataManager = nullptr;
   _browser = nullptr;
 
   _settingsAreDismissed = YES;
@@ -662,6 +678,12 @@ NSString* GetFallbackDetailTextForLocalProfile(
           [model itemAtIndexPath:switchPath]);
   [switchItem setEnabled:enabled];
   [self reconfigureCellsForItems:@[ switchItem ]];
+}
+
+#pragma mark - IOSAutofillEntityDataManagerObserver
+
+- (void)onEntityInstancesChanged {
+  // TODO(crbug.com/480934103): Update UI.
 }
 
 #pragma mark - PersonalDataManagerObserver
