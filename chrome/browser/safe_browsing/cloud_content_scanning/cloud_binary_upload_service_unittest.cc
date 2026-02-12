@@ -194,7 +194,7 @@ class CloudBinaryUploadServiceTest : public ::testing::Test {
  public:
   CloudBinaryUploadServiceTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    MultipartUploadRequest::RegisterFactoryForTests(&fake_factory_);
+    ConnectorUploadRequest::RegisterFactoryForTests(&fake_factory_);
 
     // Since we have mocked the MultipartUploadRequest, we don't need a
     // URLLoaderFactory, so pass nullptr here.
@@ -204,8 +204,7 @@ class CloudBinaryUploadServiceTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    ResumableUploadRequest::RegisterFactoryForTests(nullptr);
-    MultipartUploadRequest::RegisterFactoryForTests(nullptr);
+    ConnectorUploadRequest::RegisterFactoryForTests(nullptr);
   }
 
   void ExpectNetworkResponse(
@@ -513,11 +512,6 @@ TEST_F(CloudBinaryUploadServiceTest, PasteSucceeds) {
 }
 
 TEST_F(CloudBinaryUploadServiceTest, PasteImageResumableSucceeds) {
-  FakeConnectorUploadRequestFactory resumable_factory{
-      /*should_succeed=*/true, enterprise_connectors::ContentAnalysisResponse(),
-      net::HTTP_OK};
-  ResumableUploadRequest::RegisterFactoryForTests(&resumable_factory);
-
   enterprise_connectors::ScanRequestUploadResult scanning_result;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
 
@@ -546,18 +540,16 @@ TEST_F(CloudBinaryUploadServiceTest, PasteImageResumableSucceeds) {
   UploadForDeepScanning(std::move(request));
   content::RunAllTasksUntilIdle();
 
-  EXPECT_TRUE(resumable_factory.called());
+  EXPECT_TRUE(fake_factory_.called());
   EXPECT_EQ(scanning_result,
             enterprise_connectors::ScanRequestUploadResult::kSuccess);
-
-  ResumableUploadRequest::RegisterFactoryForTests(nullptr);
 }
 
 TEST_F(CloudBinaryUploadServiceTest, PasteImageResumableFails) {
-  FakeConnectorUploadRequestFactory resumable_factory{
+  FakeConnectorUploadRequestFactory fake_factory{
       /*should_succeed=*/false,
       enterprise_connectors::ContentAnalysisResponse(), net::HTTP_OK};
-  ResumableUploadRequest::RegisterFactoryForTests(&resumable_factory);
+  ConnectorUploadRequest::RegisterFactoryForTests(&fake_factory);
 
   enterprise_connectors::ScanRequestUploadResult scanning_result;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
@@ -587,11 +579,9 @@ TEST_F(CloudBinaryUploadServiceTest, PasteImageResumableFails) {
   UploadForDeepScanning(std::move(request));
   content::RunAllTasksUntilIdle();
 
-  EXPECT_TRUE(resumable_factory.called());
+  EXPECT_TRUE(fake_factory.called());
   EXPECT_EQ(scanning_result,
             enterprise_connectors::ScanRequestUploadResult::kUploadFailure);
-
-  ResumableUploadRequest::RegisterFactoryForTests(nullptr);
 }
 
 TEST_F(CloudBinaryUploadServiceTest, FailsWhenUploadFails) {
