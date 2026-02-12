@@ -23,6 +23,7 @@ source_set("default_browser_prompt") {
     "default_browser_bubble_dialog.h",
     "default_browser_bubble_dialog_manager.h",
     "default_browser_infobar_manager.h",
+    "default_browser_surface_manager.h",
   ]
 
   public_deps = [
@@ -39,6 +40,8 @@ source_set("default_browser_prompt") {
     "//components/infobars/core",
     "//content/public/browser",
   ]
+
+  deps = [ "//chrome/browser/default_browser" ]
 }
 
 source_set("impl") {

@@ -50,14 +50,12 @@ using CloseReason = DefaultBrowserPromptManager::CloseReason;
 DefaultBrowserInfoBarManager::DefaultBrowserInfoBarManager() = default;
 DefaultBrowserInfoBarManager::~DefaultBrowserInfoBarManager() = default;
 
-void DefaultBrowserInfoBarManager::ShowInfoBars(bool can_pin_to_taskbar) {
+void DefaultBrowserInfoBarManager::Show(
+    std::unique_ptr<default_browser::DefaultBrowserController> controller,
+    bool can_pin_to_taskbar) {
   can_pin_to_taskbar_ = can_pin_to_taskbar;
 
-  default_browser_controller_ =
-      default_browser::DefaultBrowserManager::CreateControllerFor(
-          default_browser::DefaultBrowserEntrypointType::kStartupInfobar);
-  CHECK(default_browser_controller_);
-
+  default_browser_controller_ = std::move(controller);
   default_browser_controller_->OnShown();
 
   browser_collection_observation_.Observe(
@@ -69,7 +67,7 @@ void DefaultBrowserInfoBarManager::ShowInfoBars(bool can_pin_to_taskbar) {
   browser_tab_strip_tracker_->Init();
 }
 
-void DefaultBrowserInfoBarManager::CloseAllInfoBars() {
+void DefaultBrowserInfoBarManager::CloseAll() {
   can_pin_to_taskbar_ = false;
   user_initiated_info_bar_close_pending_.reset();
 
@@ -228,4 +226,9 @@ void DefaultBrowserInfoBarManager::OnDismiss() {
                             NUM_INFO_BAR_USER_INTERACTION_TYPES);
 
   user_initiated_info_bar_close_pending_ = CloseReason::kDismiss;
+}
+
+default_browser::DefaultBrowserEntrypointType
+DefaultBrowserInfoBarManager::GetEntrypointType() const {
+  return default_browser::DefaultBrowserEntrypointType::kStartupInfobar;
 }

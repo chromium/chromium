@@ -10,12 +10,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-
-namespace default_browser {
-class DefaultBrowserController;
-}
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_surface_manager.h"
 
 namespace views {
 class Widget;
@@ -25,7 +23,8 @@ class BrowserWindowInterface;
 
 // Manages the default browser dialog, ensuring it is shown on all appropriate
 // browser windows and handling user interactions.
-class DefaultBrowserBubbleDialogManager : public BrowserCollectionObserver {
+class DefaultBrowserBubbleDialogManager : public BrowserCollectionObserver,
+                                          public DefaultBrowserSurfaceManager {
  public:
   DefaultBrowserBubbleDialogManager();
   ~DefaultBrowserBubbleDialogManager() override;
@@ -35,16 +34,13 @@ class DefaultBrowserBubbleDialogManager : public BrowserCollectionObserver {
   DefaultBrowserBubbleDialogManager& operator=(
       const DefaultBrowserBubbleDialogManager&) = delete;
 
-  // Shows the default browser dialog on all eligible browser windows.
-  // `controller` is the default browser controller to use for the dialog.
-  // `can_pin_to_taskbar` indicates if the pin-to-taskbar option should be
-  // enabled.
+  // DefaultBrowserSurfaceManager:
   void Show(
       std::unique_ptr<default_browser::DefaultBrowserController> controller,
-      bool can_pin_to_taskbar);
-
-  // Closes all currently open default browser dialogs.
-  void CloseAll();
+      bool can_pin_to_taskbar) override;
+  void CloseAll() override;
+  default_browser::DefaultBrowserEntrypointType GetEntrypointType()
+      const override;
 
  private:
   void OnAccept();

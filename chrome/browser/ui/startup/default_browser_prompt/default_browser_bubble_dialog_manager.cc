@@ -117,3 +117,8 @@ void DefaultBrowserBubbleDialogManager::CloseAll() {
   dialog_widgets_.clear();
   browser_collection_observation_.Reset();
 }
+
+default_browser::DefaultBrowserEntrypointType
+DefaultBrowserBubbleDialogManager::GetEntrypointType() const {
+  return default_browser::DefaultBrowserEntrypointType::kBubbleDialog;
+}

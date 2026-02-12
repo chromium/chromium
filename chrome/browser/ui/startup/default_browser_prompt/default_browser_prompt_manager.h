@@ -9,7 +9,7 @@
 
 #include "base/memory/singleton.h"
 
-class DefaultBrowserInfoBarManager;
+class DefaultBrowserSurfaceManager;
 
 // DefaultBrowserPromptManager is a Global singleton class that is responsible
 // for owning and displaying prompts that nudge user to set Chrome as their
@@ -32,6 +32,7 @@ class DefaultBrowserPromptManager {
   // Returns true if the prompt was shown, false if not.
   bool MaybeShowPrompt();
 
+  void ShowPrompts(bool can_pin_to_taskbar);
   void CloseAllPrompts(CloseReason close_reason);
 
  private:
@@ -47,7 +48,9 @@ class DefaultBrowserPromptManager {
 
   bool show_app_menu_item_ = false;
 
-  std::unique_ptr<DefaultBrowserInfoBarManager> infobar_manager_;
+  // The manager responsible for the UI surface of the default browser prompt.
+  // This can vary (e.g., Infobar vs. Bubble) based on configuration.
+  std::unique_ptr<DefaultBrowserSurfaceManager> prompt_surface_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_PROMPT_MANAGER_H_
