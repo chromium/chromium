@@ -3287,6 +3287,8 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
 
   if (commit_status == blink::mojom::CommitResult::Ok) {
     base::WeakPtr<RenderFrameImpl> weak_this = weak_factory_.GetWeakPtr();
+    base::WeakPtr<DocumentState> weak_document_state =
+        document_state->GetWeakPtr();
     // Same-document navigations on data URLs loaded with a valid base URL
     // should keep the base URL as document URL.
     bool use_base_url_for_data_url =
@@ -3345,7 +3347,8 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
     // Similarly, check whether `navigation_state` is still the state associated
     // with the WebDocumentLoader. It may have been preempted by a navigation
     // started by an event handler.
-    if (!weak_this || document_state->navigation_state() != navigation_state) {
+    if (!weak_this || !weak_document_state ||
+        document_state->navigation_state() != navigation_state) {
       return;
     }
   }
