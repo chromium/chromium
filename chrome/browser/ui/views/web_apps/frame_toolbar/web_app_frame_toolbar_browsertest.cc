@@ -240,6 +240,7 @@ class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
         {{features::kPageActionsMigration,
           {{features::kPageActionsMigrationZoom.name, "true"}}},
          {features::kWebAppPredictableAppUpdating, {}},
+         {blink::features::kWebAppMigrationApi, {}},
          {features::kWebAppUsePrimaryIcon, {}}},
         /*disabled_features=*/{});
   }
@@ -588,6 +589,48 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, MenuButtonUpdatePending) {
     update_info.set_was_ignored(true);
     update->UpdateApp(app_id)->SetPendingUpdateInfo(std::move(update_info));
   }
+  menu_button->UpdateStateForTesting();
+  EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
+  EXPECT_EQ(menu_button->GetViewAccessibility().GetCachedName(),
+            u"Customize and control A minimal-ui app");
+  EXPECT_EQ(menu_button->GetRenderedTooltipText(gfx::Point()),
+            u"Customize and control A minimal-ui app");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
+                       MenuButtonMigrationPending) {
+  const GURL app_url("https://old.app.com ");
+  webapps::AppId app_id = helper()->InstallAndLaunchWebApp(browser(), app_url);
+
+  WebAppMenuButton* const menu_button = static_cast<WebAppMenuButton*>(
+      helper()->browser_view()->toolbar_button_provider()->GetAppMenuButton());
+  EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
+
+  // Set pending migration info.
+  {
+    web_app::ScopedRegistryUpdate update =
+        provider().sync_bridge_unsafe().BeginUpdate();
+    web_app::proto::PendingMigrationInfo migration_info;
+    migration_info.set_manifest_id("https://new.app.com ");
+    migration_info.set_behavior(
+        web_app::proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+    update->UpdateApp(app_id)->SetPendingMigrationInfo(
+        std::move(migration_info));
+  }
+
+  menu_button->UpdateStateForTesting();
+  EXPECT_TRUE(menu_button->IsLabelPresentAndVisible());
+  EXPECT_EQ(menu_button->GetViewAccessibility().GetCachedName(),
+            u"Customize and control A minimal-ui app. Update is available.");
+  EXPECT_EQ(menu_button->GetRenderedTooltipText(gfx::Point()),
+            u"Customize and control A minimal-ui app. Update is available.");
+
+  {
+    web_app::ScopedRegistryUpdate update =
+        provider().sync_bridge_unsafe().BeginUpdate();
+    update->UpdateApp(app_id)->SetPendingMigrationInfo(std::nullopt);
+  }
+
   menu_button->UpdateStateForTesting();
   EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
   EXPECT_EQ(menu_button->GetViewAccessibility().GetCachedName(),

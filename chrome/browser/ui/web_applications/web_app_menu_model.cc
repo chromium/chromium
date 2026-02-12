@@ -31,6 +31,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -113,7 +114,8 @@ void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
       break;
     case IDC_WEB_APP_UPGRADE_DIALOG:
       CHECK(base::FeatureList::IsEnabled(
-          features::kWebAppPredictableAppUpdating));
+                features::kWebAppPredictableAppUpdating) ||
+            base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi));
       LogMenuAction(MENU_ACTION_TRIGGER_APP_UPDATE_DIALOG);
       browser()->app_controller()->CreateMetadataAndTriggerAppUpdateDialog(
           base::TimeTicks::Now());
@@ -128,9 +130,15 @@ void WebAppMenuModel::Build() {
   CHECK(browser()->app_controller());
   web_app::WebAppBrowserController* app_controller =
       browser()->app_controller()->AsWebAppBrowserController();
-  if (app_controller && app_controller->HasPendingUpdate()) {
-    CHECK(
-        base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating));
+  if (app_controller && (app_controller->HasPendingUpdate() ||
+                         app_controller->HasPendingMigration())) {
+    if (app_controller->HasPendingUpdate()) {
+      CHECK(base::FeatureList::IsEnabled(
+          features::kWebAppPredictableAppUpdating));
+    }
+    if (app_controller->HasPendingMigration()) {
+      CHECK(base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi));
+    }
     AddSeparator(ui::SPACING_SEPARATOR);
     gfx::ImageSkia icon = app_controller->GetAppMenuIcon();
     ui::ImageModel update_icon;

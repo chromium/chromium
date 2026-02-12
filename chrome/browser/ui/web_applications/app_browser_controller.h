@@ -275,6 +275,9 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // not been ignored by the user.
   virtual bool HasPendingUpdateNotIgnoredByUser() const;
 
+  // Returns true if there is a pending migration available for this app.
+  virtual bool HasPendingMigration() const;
+
   // Constructs the metadata required for app identity updating and triggers the
   // corresponding dialog.
   virtual void CreateMetadataAndTriggerAppUpdateDialog(

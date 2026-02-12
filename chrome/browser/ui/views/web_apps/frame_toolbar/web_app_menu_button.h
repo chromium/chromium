@@ -47,12 +47,12 @@ class WebAppMenuButton : public AppMenuButton,
   // WebAppRegistrarObserver:
   void OnWebAppPendingUpdateChanged(const webapps::AppId& app_id,
                                     bool has_pending_update) override;
+  void OnWebAppPendingMigrationInfoChanged(const webapps::AppId& app_id,
+                                           bool has_pending_migration) override;
   void OnAppRegistrarDestroyed() override;
 
   // Causes this button to re-evaluate if a text label should be displayed
-  // alongside the three-dot icon. Currently only exposed for tests, but
-  // eventually production code needs to trigger something like this as well
-  // when the update available state changes.
+  // alongside the three-dot icon. Only exposed for tests.
   void UpdateStateForTesting();
 
   // Shows the app menu. |run_types| denotes the MenuRunner::RunTypes associated
@@ -79,9 +79,17 @@ class WebAppMenuButton : public AppMenuButton,
  private:
   void FadeHighlightOff();
 
+  // Causes this button to re-evaluate if a text label should be displayed
+  // alongside the three-dot icon.
+  void UpdateState();
+
   // Determines whether a pending update is available and can be shown on the
   // UX, based on whether the update is new and hasn't been ignored by the user.
   bool CanShowPendingUpdate();
+
+  // Determines whether a migration update is available and can be shown on the
+  // UX.
+  bool CanShowPendingMigration();
 
   void UpdateTextAndHighlightColor(bool is_pending_update);
 

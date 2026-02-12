@@ -274,6 +274,14 @@ bool WebAppBrowserController::HasPendingUpdate() const {
   return app && app->pending_update_info().has_value();
 }
 
+bool WebAppBrowserController::HasPendingMigration() const {
+  if (!base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
+    return false;
+  }
+  const WebApp* app = registrar().GetAppById(app_id());
+  return app && app->pending_migration_info().has_value();
+}
+
 bool WebAppBrowserController::HasPendingUpdateNotIgnoredByUser() const {
   if (!base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating)) {
     return false;

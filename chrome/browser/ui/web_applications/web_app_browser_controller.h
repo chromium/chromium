@@ -118,6 +118,7 @@ class WebAppBrowserController : public AppBrowserController,
   gfx::Rect GetDefaultBounds() const override;
   bool HasReloadButton() const override;
   bool HasPendingUpdate() const override;
+  bool HasPendingMigration() const override;
   bool HasPendingUpdateNotIgnoredByUser() const override;
   void CreateMetadataAndTriggerAppUpdateDialog(
       base::TimeTicks start_time) const override;

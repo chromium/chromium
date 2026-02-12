@@ -54,6 +54,7 @@ class WebAppMenuBrowserTest
   WebAppMenuBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kWebAppPredictableAppUpdating,
+         blink::features::kWebAppMigrationApi,
          blink::features::kDesktopPWAsTabStrip,
          blink::features::kDesktopPWAsTabStripCustomizations},
         {});
@@ -169,6 +170,18 @@ IN_PROC_BROWSER_TEST_F(WebAppMenuBrowserTest, InvokeUi_main_pending_update) {
     update_info.set_name("Updated app name");
     update_info.set_was_ignored(false);
     update->UpdateApp(app_id())->SetPendingUpdateInfo(std::move(update_info));
+  }
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppMenuBrowserTest, InvokeUi_main_pending_migration) {
+  {
+    ScopedRegistryUpdate update = provider().sync_bridge_unsafe().BeginUpdate();
+    proto::PendingMigrationInfo migration_info;
+    migration_info.set_manifest_id("https://new.app.com/");
+    update->UpdateApp(app_id())->SetPendingMigrationInfo(
+        std::move(migration_info));
   }
 
   ShowAndVerifyUi();
