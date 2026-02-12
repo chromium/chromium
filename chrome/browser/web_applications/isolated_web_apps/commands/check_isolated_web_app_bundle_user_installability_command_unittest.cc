@@ -235,6 +235,49 @@ TEST_F(CheckIsolatedWebAppBundleUserInstallabilityCommandTest,
   ASSERT_FALSE(installed_version.has_value());
 }
 
+TEST_F(CheckIsolatedWebAppBundleUserInstallabilityCommandTest,
+       FailsWhenNotOnUserInstallAllowlist) {
+  std::unique_ptr<BundledIsolatedWebApp> app =
+      CreateApp("7.7.8", /*add_to_user_install_allowlist=*/false,
+                /*add_to_blocklist=*/false);
+
+  ASSERT_OK_AND_ASSIGN(SignedWebBundleMetadata metadata,
+                       GetBundleMetadata(*app));
+
+  base::test::TestFuture<IsolatedInstallabilityCheckResult,
+                         std::optional<IwaVersion>>
+      command_future;
+  ScheduleCommand(metadata, command_future.GetCallback());
+  IsolatedInstallabilityCheckResult result = command_future.Get<0>();
+  std::optional<IwaVersion> installed_version = command_future.Get<1>();
+
+  ASSERT_EQ(result,
+            IsolatedInstallabilityCheckResult::kNotOnUserInstallAllowlist);
+  ASSERT_FALSE(installed_version.has_value());
+}
+
+TEST_F(CheckIsolatedWebAppBundleUserInstallabilityCommandTest,
+       FailsWhenAlreadyInstalledAndRemovedFromUserInstallAllowlist) {
+  std::unique_ptr<BundledIsolatedWebApp> app =
+      CreateApp("7.7.8", /*add_to_user_install_allowlist=*/false,
+                /*add_to_blocklist=*/false);
+  ASSERT_THAT(app->Install(profile()), HasValue());
+
+  ASSERT_OK_AND_ASSIGN(SignedWebBundleMetadata metadata,
+                       GetBundleMetadata(*app));
+
+  base::test::TestFuture<IsolatedInstallabilityCheckResult,
+                         std::optional<IwaVersion>>
+      command_future;
+  ScheduleCommand(metadata, command_future.GetCallback());
+  IsolatedInstallabilityCheckResult result = command_future.Get<0>();
+  std::optional<IwaVersion> installed_version = command_future.Get<1>();
+
+  ASSERT_EQ(result,
+            IsolatedInstallabilityCheckResult::kNotOnUserInstallAllowlist);
+  ASSERT_FALSE(installed_version.has_value());
+}
+
 class CheckIsolatedWebAppBundleUserInstallabilityCommandDevModeTest
     : public CheckIsolatedWebAppBundleUserInstallabilityCommandTest {
  private:
@@ -310,47 +353,5 @@ TEST_F(CheckIsolatedWebAppBundleUserInstallabilityCommandDevModeTest,
   EXPECT_EQ(installed_version, *IwaVersion::Create("7.7.8"));
 }
 
-TEST_F(CheckIsolatedWebAppBundleUserInstallabilityCommandDevModeTest,
-       FailsWhenNotOnUserInstallAllowlist) {
-  std::unique_ptr<BundledIsolatedWebApp> app =
-      CreateApp("7.7.8", /*add_to_user_install_allowlist=*/false,
-                /*add_to_blocklist=*/false);
-
-  ASSERT_OK_AND_ASSIGN(SignedWebBundleMetadata metadata,
-                       GetBundleMetadata(*app));
-
-  base::test::TestFuture<IsolatedInstallabilityCheckResult,
-                         std::optional<IwaVersion>>
-      command_future;
-  ScheduleCommand(metadata, command_future.GetCallback());
-  IsolatedInstallabilityCheckResult result = command_future.Get<0>();
-  std::optional<IwaVersion> installed_version = command_future.Get<1>();
-
-  ASSERT_EQ(result,
-            IsolatedInstallabilityCheckResult::kNotOnUserInstallAllowlist);
-  ASSERT_FALSE(installed_version.has_value());
-}
-
-TEST_F(CheckIsolatedWebAppBundleUserInstallabilityCommandDevModeTest,
-       FailsWhenAlreadyInstalledAndRemovedFromUserInstallAllowlist) {
-  std::unique_ptr<BundledIsolatedWebApp> app =
-      CreateApp("7.7.8", /*add_to_user_install_allowlist=*/false,
-                /*add_to_blocklist=*/false);
-  ASSERT_THAT(app->Install(profile()), HasValue());
-
-  ASSERT_OK_AND_ASSIGN(SignedWebBundleMetadata metadata,
-                       GetBundleMetadata(*app));
-
-  base::test::TestFuture<IsolatedInstallabilityCheckResult,
-                         std::optional<IwaVersion>>
-      command_future;
-  ScheduleCommand(metadata, command_future.GetCallback());
-  IsolatedInstallabilityCheckResult result = command_future.Get<0>();
-  std::optional<IwaVersion> installed_version = command_future.Get<1>();
-
-  ASSERT_EQ(result,
-            IsolatedInstallabilityCheckResult::kNotOnUserInstallAllowlist);
-  ASSERT_FALSE(installed_version.has_value());
-}
 }  // namespace
 }  // namespace web_app
