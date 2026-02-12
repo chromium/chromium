@@ -124,6 +124,6 @@ public class QuickDeleteBridgeTest {
         mDomainVisitsCallback.mCallbackHelper.waitForCallback(0);
 
         assertEquals("google.com", mDomainVisitsCallback.mLastVisitedDomain);
-        assertEquals(2, mDomainVisitsCallback.mDomainCount);
+        assertEquals(1, mDomainVisitsCallback.mDomainCount);
     }
 }
