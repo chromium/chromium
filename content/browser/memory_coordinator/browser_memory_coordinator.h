@@ -9,10 +9,9 @@
 
 #include "base/memory_coordinator/memory_consumer_registry.h"
 #include "content/browser/memory_coordinator/browser_memory_consumer_registry.h"
-#include "content/browser/memory_coordinator/child_memory_consumer_registry_host.h"
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
-#include "content/common/memory_coordinator/mojom/memory_coordinator.mojom-forward.h"
+#include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -44,6 +43,10 @@ class CONTENT_EXPORT BrowserMemoryCoordinator {
       ProcessType process_type,
       ChildProcessId child_process_id,
       mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver);
+
+  // For testing only. Notifies all registered consumer groups.
+  void NotifyReleaseMemoryForTesting();
+  void NotifyUpdateMemoryLimitForTesting(int percentage);
 
  private:
   void OnHostDisconnected(ChildProcessId child_process_id);

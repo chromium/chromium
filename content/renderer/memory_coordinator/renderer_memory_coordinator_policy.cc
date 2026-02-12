@@ -4,7 +4,7 @@
 
 #include "content/renderer/memory_coordinator/renderer_memory_coordinator_policy.h"
 
-#include "base/memory_coordinator/traits.h"
+#include "base/check_op.h"
 #include "content/child/memory_coordinator/child_memory_coordinator.h"
 
 namespace content {
@@ -71,7 +71,7 @@ void RendererMemoryCoordinatorPolicy::OnV8HeapLastResortGC() {
   // The V8 heap is full and can't free enough memory. To help the impending GC,
   // notify consumers that retain references to the v8 heap.
   for (const std::string& consumer_id : consumer_ids_) {
-    manager().SetMemoryLimit(this, consumer_id, ChildProcessId(), 0);
+    manager().UpdateMemoryLimit(this, consumer_id, ChildProcessId(), 0);
     manager().ReleaseMemory(consumer_id, ChildProcessId());
   }
 
@@ -89,8 +89,8 @@ void RendererMemoryCoordinatorPolicy::OnV8HeapLastResortGC() {
 
 void RendererMemoryCoordinatorPolicy::OnRestoreLimitTimerFired() {
   for (const std::string& consumer_id : consumer_ids_) {
-    manager().SetMemoryLimit(this, consumer_id, ChildProcessId(),
-                             base::MemoryConsumer::kDefaultMemoryLimit);
+    manager().UpdateMemoryLimit(this, consumer_id, ChildProcessId(),
+                                base::MemoryConsumer::kDefaultMemoryLimit);
   }
 }
 

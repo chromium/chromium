@@ -17,30 +17,6 @@
 
 namespace content {
 
-// ChildMemoryConsumerRegistryHost::ChildMemoryConsumer -----------------------
-
-// An implementation of base::MemoryConsumer that proxy calls to the process's
-// mojom::ChildMemoryCoordinator. This enables uniform handling of local and
-// remote MemoryConsumers.
-class ChildMemoryConsumerRegistryHost::ChildMemoryConsumer
-    : public base::MemoryConsumer {
- public:
-  ChildMemoryConsumer(ChildMemoryConsumerRegistryHost& host,
-                      std::string consumer_id)
-      : host_(host), consumer_id_(std::move(consumer_id)) {}
-  ~ChildMemoryConsumer() override = default;
-
-  // base::MemoryConsumer:
-  void OnReleaseMemory() override { host_->NotifyReleaseMemory(consumer_id_); }
-  void OnUpdateMemoryLimit() override {
-    host_->NotifyUpdateMemoryLimit(consumer_id_, memory_limit());
-  }
-
- private:
-  const raw_ref<ChildMemoryConsumerRegistryHost> host_;
-  const std::string consumer_id_;
-};
-
 // ChildMemoryConsumerRegistryHost::RenderProcessExitedObserver ----------------
 
 // Helper class that observes a `RenderProcessHost` for exit signals.
@@ -88,17 +64,19 @@ class ChildMemoryConsumerRegistryHost::RenderProcessExitedObserver
 // ChildMemoryConsumerRegistryHost --------------------------------------------
 
 ChildMemoryConsumerRegistryHost::ChildMemoryConsumerRegistryHost(
-    Delegate& delegate,
+    MemoryConsumerGroupController& controller,
     ProcessType process_type,
     ChildProcessId child_process_id,
     mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver,
     base::OnceClosure disconnect_handler)
-    : delegate_(delegate),
+    : controller_(controller),
       process_type_(process_type),
       child_process_id_(child_process_id),
       receiver_(this, std::move(receiver)),
       disconnect_handler_(std::move(disconnect_handler)) {
   CHECK(disconnect_handler_);
+
+  controller_->AddMemoryConsumerGroupHost(child_process_id_, this);
 
   // The use of Unretained is safe here because `this` owns the receiver and
   // will always outlive it.
@@ -119,10 +97,10 @@ ChildMemoryConsumerRegistryHost::ChildMemoryConsumerRegistryHost(
 }
 
 ChildMemoryConsumerRegistryHost::~ChildMemoryConsumerRegistryHost() {
-  for (auto& [consumer_id, consumer] : consumers_) {
-    delegate_->RemoveMemoryConsumerFromChildProcess(
-        consumer_id, child_process_id_, consumer.get());
+  for (const auto& consumer_id : consumers_) {
+    controller_->OnConsumerGroupRemoved(consumer_id, child_process_id_);
   }
+  controller_->RemoveMemoryConsumerGroupHost(child_process_id_);
 }
 
 void ChildMemoryConsumerRegistryHost::BindCoordinator(
@@ -147,18 +125,14 @@ void ChildMemoryConsumerRegistryHost::Register(
     return;
   }
 
-  auto [it, inserted] = consumers_.try_emplace(consumer_id);
+  auto [_, inserted] = consumers_.insert(consumer_id);
   if (!inserted) {
     mojo::ReportBadMessage("Register called for an existing consumer_id");
     return;
   }
-  std::unique_ptr<ChildMemoryConsumer>& child_memory_consumer = it->second;
 
-  child_memory_consumer =
-      std::make_unique<ChildMemoryConsumer>(*this, consumer_id);
-  delegate_->AddMemoryConsumerFromChildProcess(consumer_id, traits,
-                                               process_type_, child_process_id_,
-                                               child_memory_consumer.get());
+  controller_->OnConsumerGroupAdded(consumer_id, traits, process_type_,
+                                    child_process_id_);
 }
 
 void ChildMemoryConsumerRegistryHost::Unregister(
@@ -169,8 +143,7 @@ void ChildMemoryConsumerRegistryHost::Unregister(
     return;
   }
 
-  delegate_->RemoveMemoryConsumerFromChildProcess(
-      consumer_id, child_process_id_, it->second.get());
+  controller_->OnConsumerGroupRemoved(consumer_id, child_process_id_);
   consumers_.erase(it);
 }
 
@@ -179,15 +152,16 @@ void ChildMemoryConsumerRegistryHost::RunDisconnectHandler() {
   std::move(disconnect_handler_).Run();
 }
 
-void ChildMemoryConsumerRegistryHost::NotifyReleaseMemory(
-    const std::string& consumer_id) {
-  coordinator_remote_->NotifyReleaseMemory(consumer_id);
+void ChildMemoryConsumerRegistryHost::UpdateMemoryLimit(
+    std::string_view consumer_id,
+    int percentage) {
+  coordinator_remote_->NotifyUpdateMemoryLimit(std::string(consumer_id),
+                                               percentage);
 }
 
-void ChildMemoryConsumerRegistryHost::NotifyUpdateMemoryLimit(
-    const std::string& consumer_id,
-    int percentage) {
-  coordinator_remote_->NotifyUpdateMemoryLimit(consumer_id, percentage);
+void ChildMemoryConsumerRegistryHost::ReleaseMemory(
+    std::string_view consumer_id) {
+  coordinator_remote_->NotifyReleaseMemory(std::string(consumer_id));
 }
 
 }  // namespace content

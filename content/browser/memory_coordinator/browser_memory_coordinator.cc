@@ -47,9 +47,18 @@ void BrowserMemoryCoordinator::Bind(
   }
 
   it->second = std::make_unique<ChildMemoryConsumerRegistryHost>(
-      registry_.Get(), process_type, child_process_id, std::move(receiver),
+      policy_manager_, process_type, child_process_id, std::move(receiver),
       base::BindOnce(&BrowserMemoryCoordinator::OnHostDisconnected,
                      base::Unretained(this), child_process_id));
+}
+
+void BrowserMemoryCoordinator::NotifyReleaseMemoryForTesting() {
+  policy_manager_.NotifyReleaseMemoryForTesting();
+}
+
+void BrowserMemoryCoordinator::NotifyUpdateMemoryLimitForTesting(
+    int percentage) {
+  policy_manager_.NotifyUpdateMemoryLimitForTesting(percentage);
 }
 
 void BrowserMemoryCoordinator::OnHostDisconnected(

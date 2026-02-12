@@ -7,16 +7,21 @@
 
 #include <memory>
 #include <string>
-#include <tuple>
+#include <string_view>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/memory_consumer_group_controller.h"
-#include "content/common/memory_coordinator/memory_coordinator_policy.h"
+#include "content/public/common/child_process_id.h"
+#include "content/public/common/process_type.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace content {
+
+class MemoryCoordinatorPolicy;
 
 // Manages memory coordinator policies and aggregates their memory limit
 // requests for consumer groups, ensuring the most restrictive (lowest) limit is
@@ -40,46 +45,58 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
   void RemovePolicy(MemoryCoordinatorPolicy* policy);
 
   // MemoryConsumerGroupController:
+  void AddMemoryConsumerGroupHost(ChildProcessId child_process_id,
+                                  MemoryConsumerGroupHost* host) override;
+  void RemoveMemoryConsumerGroupHost(ChildProcessId child_process_id) override;
   void OnConsumerGroupAdded(std::string_view consumer_id,
                             base::MemoryConsumerTraits traits,
                             ProcessType process_type,
-                            ChildProcessId child_process_id,
-                            base::RegisteredMemoryConsumer consumer) override;
+                            ChildProcessId child_process_id) override;
   void OnConsumerGroupRemoved(std::string_view consumer_id,
                               ChildProcessId child_process_id) override;
 
   // Called by policies to request actions on a consumer group.
-  void SetMemoryLimit(MemoryCoordinatorPolicy* policy,
-                      std::string_view consumer_id,
-                      ChildProcessId child_process_id,
-                      int percentage);
+  void UpdateMemoryLimit(MemoryCoordinatorPolicy* policy,
+                         std::string_view consumer_id,
+                         ChildProcessId child_process_id,
+                         int percentage);
   void ReleaseMemory(std::string_view consumer_id,
                      ChildProcessId child_process_id);
 
- private:
-  using ConsumerGroupKey = std::tuple<std::string, ChildProcessId>;
+  // For testing only. Notifies all registered consumer groups.
+  void NotifyReleaseMemoryForTesting();
+  void NotifyUpdateMemoryLimitForTesting(int percentage);
 
+ private:
   struct GroupState {
-    GroupState(base::MemoryConsumerTraits traits,
-               ProcessType process_type,
-               base::RegisteredMemoryConsumer consumer);
+    GroupState(base::MemoryConsumerTraits traits, ProcessType process_type);
     ~GroupState();
 
     base::MemoryConsumerTraits traits;
     ProcessType process_type;
-    base::RegisteredMemoryConsumer consumer;
 
     // The limit requested by each policy.
-    absl::flat_hash_map<MemoryCoordinatorPolicy*, int> requested_limits;
+    base::flat_map<MemoryCoordinatorPolicy*, int> requested_limits;
+
+    // The last memory limit that was applied to this group.
+    int current_limit = base::MemoryConsumer::kDefaultMemoryLimit;
   };
 
-  // Computes the memory limit based on existing policies applied to
-  // `group_state`.
-  void RecomputeMemoryLimit(GroupState& group_state);
+  struct HostState {
+    explicit HostState(MemoryConsumerGroupHost* host);
+    ~HostState();
+
+    raw_ptr<MemoryConsumerGroupHost> host;
+    absl::flat_hash_map<std::string, std::unique_ptr<GroupState>> groups;
+  };
+
+  // Computes the memory limit based on existing policies.
+  int RecomputeMemoryLimit(
+      const base::flat_map<MemoryCoordinatorPolicy*, int>& requested_limits);
 
   base::flat_set<MemoryCoordinatorPolicy*> policies_;
 
-  absl::flat_hash_map<ConsumerGroupKey, std::unique_ptr<GroupState>> groups_;
+  absl::flat_hash_map<ChildProcessId, std::unique_ptr<HostState>> hosts_;
 };
 
 }  // namespace content

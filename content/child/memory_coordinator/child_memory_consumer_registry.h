@@ -16,34 +16,40 @@
 #include "base/memory_coordinator/traits.h"
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/memory_consumer_group_controller.h"
+#include "content/common/memory_coordinator/memory_consumer_group_host.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace content {
 
-// This is an implementation of the MemoryConsumerRegistry meant to live in a
-// child process.
+// An implementation of MemoryConsumerRegistry for child processes.
+// It groups consumers with the same ID and registers the group with a
+// MemoryConsumerGroupController.
 class CONTENT_EXPORT ChildMemoryConsumerRegistry
-    : public base::MemoryConsumerRegistry {
+    : public base::MemoryConsumerRegistry,
+      public MemoryConsumerGroupHost {
  public:
   explicit ChildMemoryConsumerRegistry(
       MemoryConsumerGroupController& controller);
   ~ChildMemoryConsumerRegistry() override;
 
+  // MemoryConsumerGroupHost:
+  void UpdateMemoryLimit(std::string_view consumer_id, int percentage) override;
+  void ReleaseMemory(std::string_view consumer_id) override;
+
   // Returns the number of consumers with different IDs.
   size_t size() const { return consumer_groups_.size(); }
 
  private:
-  // An implementation of MemoryConsumer that groups all consumers with the same
-  // consumer ID to ensure they are treated identically.
-  class ConsumerGroup : public base::MemoryConsumer {
+  // Groups all consumers with the same consumer ID to ensure they are treated
+  // identically.
+  class ConsumerGroup {
    public:
     explicit ConsumerGroup(base::MemoryConsumerTraits traits);
 
-    ~ConsumerGroup() override;
+    ~ConsumerGroup();
 
-    // base::MemoryConsumer:
-    void OnReleaseMemory() override;
-    void OnUpdateMemoryLimit() override;
+    void ReleaseMemory();
+    void UpdateMemoryLimit(int percentage);
 
     // Adds/removes a consumer.
     void AddMemoryConsumer(base::RegisteredMemoryConsumer consumer);
@@ -55,6 +61,8 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistry
 
    private:
     base::MemoryConsumerTraits traits_;
+
+    int memory_limit_ = base::MemoryConsumer::kDefaultMemoryLimit;
 
     std::vector<base::RegisteredMemoryConsumer> memory_consumers_;
   };

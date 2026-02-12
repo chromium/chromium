@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/memory_coordinator/memory_consumer.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/process_type.h"
 
@@ -27,15 +26,17 @@ ChildMemoryConsumerRegistry::ConsumerGroup::~ConsumerGroup() {
   CHECK(memory_consumers_.empty());
 }
 
-void ChildMemoryConsumerRegistry::ConsumerGroup::OnReleaseMemory() {
+void ChildMemoryConsumerRegistry::ConsumerGroup::ReleaseMemory() {
   for (base::RegisteredMemoryConsumer& consumer : memory_consumers_) {
     consumer.ReleaseMemory();
   }
 }
 
-void ChildMemoryConsumerRegistry::ConsumerGroup::OnUpdateMemoryLimit() {
+void ChildMemoryConsumerRegistry::ConsumerGroup::UpdateMemoryLimit(
+    int percentage) {
+  memory_limit_ = percentage;
   for (base::RegisteredMemoryConsumer& consumer : memory_consumers_) {
-    consumer.UpdateMemoryLimit(memory_limit());
+    consumer.UpdateMemoryLimit(memory_limit_);
   }
 }
 
@@ -46,8 +47,8 @@ void ChildMemoryConsumerRegistry::ConsumerGroup::AddMemoryConsumer(
 
   // Ensure the added consumer is up to date with the current memory limit
   // applied to this consumer group.
-  if (memory_limit() != base::MemoryConsumer::kDefaultMemoryLimit) {
-    consumer.UpdateMemoryLimit(memory_limit());
+  if (memory_limit_ != base::MemoryConsumer::kDefaultMemoryLimit) {
+    consumer.UpdateMemoryLimit(memory_limit_);
   }
 }
 
@@ -61,12 +62,30 @@ void ChildMemoryConsumerRegistry::ConsumerGroup::RemoveMemoryConsumer(
 
 ChildMemoryConsumerRegistry::ChildMemoryConsumerRegistry(
     MemoryConsumerGroupController& controller)
-    : controller_(controller) {}
+    : controller_(controller) {
+  controller_->AddMemoryConsumerGroupHost(ChildProcessId(), this);
+}
 
 ChildMemoryConsumerRegistry::~ChildMemoryConsumerRegistry() {
   NotifyDestruction();
-
+  controller_->RemoveMemoryConsumerGroupHost(ChildProcessId());
   CHECK(consumer_groups_.empty());
+}
+
+void ChildMemoryConsumerRegistry::UpdateMemoryLimit(
+    std::string_view consumer_id,
+    int percentage) {
+  auto it = consumer_groups_.find(consumer_id);
+  CHECK(it != consumer_groups_.end());
+
+  it->second->UpdateMemoryLimit(percentage);
+}
+
+void ChildMemoryConsumerRegistry::ReleaseMemory(std::string_view consumer_id) {
+  auto it = consumer_groups_.find(consumer_id);
+  CHECK(it != consumer_groups_.end());
+
+  it->second->ReleaseMemory();
 }
 
 void ChildMemoryConsumerRegistry::OnMemoryConsumerAdded(
@@ -80,9 +99,8 @@ void ChildMemoryConsumerRegistry::OnMemoryConsumerAdded(
     // First time seeing a consumer with this ID.
     consumer_group = std::make_unique<ConsumerGroup>(traits);
 
-    controller_->OnConsumerGroupAdded(
-        consumer_id, traits, PROCESS_TYPE_UNKNOWN, ChildProcessId(),
-        CreateRegisteredMemoryConsumer(consumer_group.get()));
+    controller_->OnConsumerGroupAdded(consumer_id, traits, PROCESS_TYPE_UNKNOWN,
+                                      ChildProcessId());
   }
 
   CHECK(consumer_group->traits() == traits);

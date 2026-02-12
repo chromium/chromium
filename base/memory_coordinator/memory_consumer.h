@@ -106,7 +106,7 @@ class BASE_EXPORT MemoryConsumer {
   // `memory_limit()`.
   void ReleaseMemory();
 
-  int memory_limit_ = 100;
+  int memory_limit_ = kDefaultMemoryLimit;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -3,15 +3,19 @@
 This directory contains the browser-side implementation of the
 MemoryCoordinator.
 
-MemoryConsumers from the browser process are directly registered with
-`BrowserMemoryConsumerRegistry`. MemoryConsumers from child processes are
-indirectly registered by `ChildMemoryConsumerRegistryHost`.
+MemoryConsumers from the browser process are grouped by ID in the
+`MemoryConsumerRegistry`. MemoryConsumers from child processes are
+represented by a `ChildMemoryConsumerRegistryHost`.
 
-`MemoryCoordinatorPolicy` is the base class to apply policy logic to registered
-MemoryConsumers.
+Both components notify the `MemoryCoordinatorPolicyManager` when consumer
+groups are added or removed.
 
-`MemoryCoordinatorPolicyManager` aggregates the requests from all
-MemoryCoordinatorPolicy instances to ensure the lowest memory limit is applied.
+`MemoryCoordinatorPolicy` is the base class to apply policy logic to these
+registered groups.
+
+`MemoryCoordinatorPolicyManager` tracks all active consumer groups in the
+system and aggregates the requests from all `MemoryCoordinatorPolicy`
+instances to ensure the most restrictive memory limit is applied.
 
 Take a look at
 [memory_consumer.h](/base/memory_coordinator/memory_consumer.h) for more

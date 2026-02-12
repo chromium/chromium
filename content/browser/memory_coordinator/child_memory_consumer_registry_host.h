@@ -10,11 +10,11 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/traits.h"
 #include "content/common/content_export.h"
+#include "content/common/memory_coordinator/memory_consumer_group_controller.h"
+#include "content/common/memory_coordinator/memory_consumer_group_host.h"
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/process_type.h"
@@ -22,41 +22,23 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace content {
 
-// An implementation of mojom::ChildMemoryConsumerRegistryHost that connects
-// memory consumers in a child process with the main registry in the browser
-// process. An instance of this class is created for each child process
-// connection.
+// An implementation of mojom::ChildMemoryConsumerRegistryHost that registers
+// memory consumer groups in a child process with a
+// MemoryConsumerGroupController. An instance of this class is created for each
+// child process connection.
 class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
-    : public mojom::ChildMemoryConsumerRegistryHost {
+    : public mojom::ChildMemoryConsumerRegistryHost,
+      public MemoryConsumerGroupHost {
  public:
-  // A delegate interface that receives registrations and deregistrations of
-  // remote MemoryConsumers.
-  class Delegate {
-   public:
-    virtual ~Delegate() = default;
-
-    virtual void AddMemoryConsumerFromChildProcess(
-        std::string_view consumer_id,
-        base::MemoryConsumerTraits traits,
-        ProcessType process_type,
-        ChildProcessId child_process_id,
-        base::MemoryConsumer* consumer) = 0;
-
-    virtual void RemoveMemoryConsumerFromChildProcess(
-        std::string_view consumer_id,
-        ChildProcessId child_process_id,
-        base::MemoryConsumer* consumer) = 0;
-  };
-
   // `disconnect_handler` is the callback that will be run when the connection
   // with the child process is lost (i.e. a Mojo pipe is closed, or the child
   // process exited). This must delete the instance.
   ChildMemoryConsumerRegistryHost(
-      Delegate& delegate,
+      MemoryConsumerGroupController& controller,
       ProcessType process_type,
       ChildProcessId child_process_id,
       mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver,
@@ -76,16 +58,16 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
                 base::MemoryConsumerTraits traits) override;
   void Unregister(const std::string& consumer_id) override;
 
+  // MemoryConsumerGroupHost:
+  void UpdateMemoryLimit(std::string_view consumer_id, int percentage) override;
+  void ReleaseMemory(std::string_view consumer_id) override;
+
  private:
-  class ChildMemoryConsumer;
   class RenderProcessExitedObserver;
 
   void RunDisconnectHandler();
 
-  void NotifyReleaseMemory(const std::string& consumer_id);
-  void NotifyUpdateMemoryLimit(const std::string& consumer_id, int percentage);
-
-  const raw_ref<Delegate> delegate_;
+  const raw_ref<MemoryConsumerGroupController> controller_;
 
   const ProcessType process_type_;
   const ChildProcessId child_process_id_;
@@ -96,10 +78,8 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
   // Handles a disconnection with the child process.
   base::OnceClosure disconnect_handler_;
 
-  // Holds a ChildMemoryConsumer for each consumer group that lives in a
-  // child process.
-  absl::flat_hash_map<std::string, std::unique_ptr<ChildMemoryConsumer>>
-      consumers_;
+  // Holds the IDs of consumers living in the child process.
+  absl::flat_hash_set<std::string> consumers_;
 
   std::unique_ptr<RenderProcessExitedObserver> process_observer_;
 };

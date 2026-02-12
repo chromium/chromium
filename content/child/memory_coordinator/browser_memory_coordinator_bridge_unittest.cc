@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "base/memory_coordinator/mock_memory_consumer.h"
-#include "base/memory_coordinator/traits.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"

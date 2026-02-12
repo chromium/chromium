@@ -57,7 +57,8 @@ void BrowserMemoryCoordinatorBridge::NotifyUpdateMemoryLimit(
     int percentage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (groups_.contains(consumer_id)) {
-    manager().SetMemoryLimit(this, consumer_id, ChildProcessId(), percentage);
+    manager().UpdateMemoryLimit(this, consumer_id, ChildProcessId(),
+                                percentage);
   }
 }
 

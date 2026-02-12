@@ -4,16 +4,16 @@
 
 #include "content/public/test/memory_coordinator_browsertest_util.h"
 
-#include "content/browser/memory_coordinator/browser_memory_consumer_registry.h"
+#include "content/browser/memory_coordinator/browser_memory_coordinator.h"
 
 namespace content::test {
 
 void NotifyReleaseMemory() {
-  BrowserMemoryConsumerRegistry::NotifyReleaseMemoryForTesting();
+  BrowserMemoryCoordinator::Get().NotifyReleaseMemoryForTesting();
 }
 
 void NotifyUpdateMemoryLimit(int percentage) {
-  BrowserMemoryConsumerRegistry::NotifyUpdateMemoryLimitForTesting(percentage);
+  BrowserMemoryCoordinator::Get().NotifyUpdateMemoryLimitForTesting(percentage);
 }
 
 }  // namespace content::test
