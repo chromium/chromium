@@ -127,6 +127,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
                                      browser()->GetWeakPtr());
 
         EXPECT_TRUE(observer.was_inserted());
+      }),
+      Do([&]() {
+        // Close side panel.
+        coordinator->Close();
       }));
   browser()->tab_strip_model()->RemoveObserver(&observer);
 
@@ -136,6 +140,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
                 "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel"),
             1);
   histogram_tester.ExpectUniqueSample("ContextualTasks.ActiveTasksCount", 1, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Session.Completed", true,
+                                      1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,

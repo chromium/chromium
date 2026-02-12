@@ -221,6 +221,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.Session.Completed" enum="Boolean"
+    expires_after="2026-06-28">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time a cobrowsing session has completed in the contextual
+    tasks framework. This can happen if the side panel is explicitly closed by
+    the user, the window housing the side panel is closed, or the Chrome session
+    has ended. Note that a cobrowsing session is only considered to have started
+    if a user enters a query via the side panel. Always recorded as true.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.TabAffiliationCount" units="count"
     expires_after="2026-06-28">
   <owner>sophiechang@chromium.org</owner>

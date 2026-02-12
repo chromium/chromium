@@ -278,6 +278,14 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
         active_tab_handle = active_tab->GetHandle();
       }
     }
+
+    auto* controller = contextual_tasks::ContextualTasksPanelController::From(
+        browser_window_interface);
+    if (controller && controller->IsPanelOpenForContextualTask()) {
+      // Assume that if the panel is open for contextual tasks, the query is
+      // being submitted from the side panel.
+      controller->OnAiInteraction();
+    }
   }
 
   // Fetch the context for the task, including pending context from the current

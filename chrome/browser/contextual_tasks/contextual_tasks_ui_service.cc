@@ -468,6 +468,14 @@ void ContextualTasksUiService::OnThreadLinkClicked(
                          existing_tab->GetWeakPtr(), url, task_id, browser));
     }
 
+    if (auto* controller =
+            contextual_tasks::ContextualTasksPanelController::From(
+                browser.get())) {
+      // Count as part of a cobrowsing session if the user interacted with the
+      // AI response.
+      controller->OnAiInteraction();
+    }
+
     return;
   }
 
