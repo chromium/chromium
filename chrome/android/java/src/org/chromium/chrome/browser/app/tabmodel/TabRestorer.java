@@ -19,10 +19,12 @@ import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -398,9 +400,14 @@ class TabRestorer {
 
     private @Nullable Tab resolveTab(TabState tabState, @TabId int tabId, int index) {
         assert mData != null;
-        if (mData.getActiveTabIndex() != index && shouldSkipTab(tabState)) {
+        boolean isActiveTab = mData.getActiveTabIndex() == index;
+        if (!isActiveTab && shouldSkipTab(tabState)) {
             mRestoreFilteredTabCount++;
             return null;
+        } else if (isActiveTab && tabState.contentsState == null && tabState.url != null) {
+            // Use fallback url if no contents state is available.
+            return mTabCreator.createNewTab(
+                    new LoadUrlParams(tabState.url), TabLaunchType.FROM_RESTORE, null, index);
         }
         return mTabCreator.createFrozenTab(tabState, tabId, index);
     }
