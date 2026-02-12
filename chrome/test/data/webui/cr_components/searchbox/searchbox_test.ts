@@ -3353,58 +3353,6 @@ suite('NewTabPageRealboxNextTest', () => {
     assertFalse((realbox as any).pastedInInput_);
   });
 
-  test('pasting too many files does not add them', async () => {
-    loadTimeData.overrideValues({
-      composeboxFileMaxCount: 1,
-    });
-    // Re-create realbox to pick up new loadTimeData.
-    realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});
-
-    const pngFile1 = new File([''], 'pasted1.png', {type: 'image/png'});
-    const pngFile2 = new File([''], 'pasted2.png', {type: 'image/png'});
-
-    const dataTransfer = new DataTransfer();
-    dataTransfer.items.add(pngFile1);
-    dataTransfer.items.add(pngFile2);
-    const pasteEvent = new ClipboardEvent('paste', {
-      clipboardData: dataTransfer,
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-    });
-
-    realbox.$.input.dispatchEvent(pasteEvent);
-    await microtasksFinished();
-
-    assertTrue(pasteEvent.defaultPrevented);
-    assertEquals(
-        loadTimeData.getString('maxFilesReachedError'),
-        realbox.$.errorScrim.errorMessage);
-    assertFalse((realbox.$.context as any).showFileCarousel_);
-    assertFalse((realbox as any).pastedInInput_);
-  });
-
-  test('pasting unsupported files shows error', async () => {
-    realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});
-
-    const txtFile = new File([''], 'pasted.txt', {type: 'text/plain'});
-    const dataTransfer = new DataTransfer();
-    dataTransfer.items.add(txtFile);
-    const pasteEvent = new ClipboardEvent('paste', {
-      clipboardData: dataTransfer,
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-    });
-
-    realbox.$.input.dispatchEvent(pasteEvent);
-    await microtasksFinished();
-
-    assertTrue(pasteEvent.defaultPrevented);
-    assertTrue(!!realbox.$.errorScrim.errorMessage);
-    assertFalse((realbox as any).pastedInInput_);
-  });
-
   test('pasting text sets pastedInInput flag', async () => {
     // Re-create realbox to pick up new loadTimeData.
     realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});

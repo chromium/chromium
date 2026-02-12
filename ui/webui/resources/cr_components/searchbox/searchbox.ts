@@ -7,14 +7,12 @@ import './searchbox_dropdown.js';
 import './searchbox_icon.js';
 import './searchbox_thumbnail.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
-import '//resources/cr_components/composebox/error_scrim.js';
 import '//resources/cr_components/composebox/recent_tab_chip.js';
 import '//resources/cr_components/search/animated_glow.js';
 
 import type {ComposeboxFile, ContextualUpload, FileUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
 import {GlifAnimationState} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndCarouselElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
-import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
 import type {RecentTabChipElement} from '//resources/cr_components/composebox/recent_tab_chip.js';
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
@@ -189,7 +187,6 @@ export interface SearchboxElement {
     inputWrapper: HTMLElement,
     matches: SearchboxDropdownElement,
     context: ContextualEntrypointAndCarouselElement,
-    errorScrim: ErrorScrimElement,
   };
 }
 
@@ -411,7 +408,6 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
         type: String,
       },
-      errorMessage_: {type: String},
       showModelPicker_: {
         type: Boolean,
       },
@@ -443,7 +439,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   accessor placeholderText: string = '';
   accessor isDraggingFile: boolean = false;
   accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
-  protected accessor errorMessage_: string = '';
   protected accessor inputAriaLive_: string = '';
   protected accessor inputFocused_: boolean = false;
   private accessor isLensSearchbox_: boolean =
@@ -1140,9 +1135,7 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   protected addFileContext_(e: CustomEvent<{
     files: File[],
-    errorMessage?: string,
-                onContextAdded:
-                    (files: Map<UnguessableToken, ComposeboxFile>) => void,
+    onContextAdded: (files: Map<UnguessableToken, ComposeboxFile>) => void,
   }>) {
     const uploads: ContextualUpload[] = [];
     for (const file of e.detail.files) {
@@ -1151,9 +1144,7 @@ export class SearchboxElement extends SearchboxElementBase implements
       };
       uploads.push(attachment);
     }
-    this.openComposebox_(
-        uploads, ToolMode.kUnspecified, ModelMode.kUnspecified,
-        e.detail.errorMessage);
+    this.openComposebox_(uploads);
   }
 
   protected addTabContext_(e: CustomEvent<{
@@ -1186,11 +1177,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.tabSuggestions_ = [...tabs];
   }
 
-  protected onFileValidationError_(e: CustomEvent<{errorMessage: string}>) {
-    this.errorMessage_ = e.detail.errorMessage;
-    this.dropdownIsVisible = false;
-  }
-
   protected async getTabPreview_(e: CustomEvent<{
     tabId: number,
     onPreviewFetched: (previewDataUrl: string) => void,
@@ -1198,10 +1184,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     const {previewDataUrl} =
         await this.pageHandler_.getTabPreview(e.detail.tabId);
     e.detail.onPreviewFetched(previewDataUrl || '');
-  }
-
-  protected onErrorScrimDismissed_() {
-    this.errorMessage_ = '';
   }
 
   protected onContextMenuContainerClick_() {
@@ -1275,7 +1257,7 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   protected openComposebox_(
       uploads: ContextualUpload[] = [], mode: ToolMode = ToolMode.kUnspecified,
-      model: ModelMode = ModelMode.kUnspecified, errorMessage: string = '') {
+      model: ModelMode = ModelMode.kUnspecified) {
     if (this.ntpRealboxNextEnabled) {
       this.$.context.closeMenu();
     }
@@ -1286,7 +1268,6 @@ export class SearchboxElement extends SearchboxElementBase implements
         mode: mode,
         model: model,
         inputState: this.inputState_,
-        errorMessage: errorMessage,
       },
       bubbles: true,
       composed: true,
@@ -1459,10 +1440,6 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   protected useCompactLayout_(): boolean {
     return this.searchboxLayoutMode === 'Compact';
-  }
-
-  protected getInnerInputInert_(): boolean {
-    return !!this.errorMessage_ && this.ntpRealboxNextEnabled;
   }
 }
 

@@ -458,7 +458,6 @@ export class AppElement extends AppElementBase {
   private pendingComposeboxMode_: ToolMode = ToolMode.kUnspecified;
   private pendingComposeboxModel_: ModelMode = ModelMode.kUnspecified;
   private pendingComposeboxInputState_: InputState|null = null;
-  private pendingComposeboxErrorMessage_: string = '';
   private pendingAutoRemovalToasts_:
       Array<{message: string, undo: () => void}> = [];
 
@@ -872,18 +871,17 @@ export class AppElement extends AppElementBase {
   protected onComposeboxInitialized_(e: CustomEvent<{
     initializeComposeboxState:
         (text: string, files: ContextualUpload[], mode: ToolMode, model: number,
-         inputState: InputState|null, errorMessage: string) => void,
+         inputState: InputState|null) => void,
   }>) {
     e.detail.initializeComposeboxState(
         this.pendingComposeboxText_, this.pendingComposeboxContextFiles_,
         this.pendingComposeboxMode_, this.pendingComposeboxModel_,
-        this.pendingComposeboxInputState_, this.pendingComposeboxErrorMessage_);
+        this.pendingComposeboxInputState_);
     this.pendingComposeboxContextFiles_ = [];
     this.pendingComposeboxText_ = '';
     this.pendingComposeboxMode_ = ToolMode.kUnspecified;
     this.pendingComposeboxModel_ = ModelMode.kUnspecified;
     this.pendingComposeboxInputState_ = null;
-    this.pendingComposeboxErrorMessage_ = '';
   }
 
   protected openComposebox_(e: CustomEvent<{
@@ -892,7 +890,6 @@ export class AppElement extends AppElementBase {
     mode: ToolMode,
     model: ModelMode,
     inputState: InputState|null,
-    errorMessage: string,
   }>) {
     if (e.detail.searchboxText) {
       this.pendingComposeboxText_ = e.detail.searchboxText;
@@ -903,9 +900,6 @@ export class AppElement extends AppElementBase {
     this.pendingComposeboxMode_ = e.detail.mode;
     this.pendingComposeboxModel_ = e.detail.model;
     this.pendingComposeboxInputState_ = e.detail.inputState;
-    if (e.detail.errorMessage) {
-      this.pendingComposeboxErrorMessage_ = e.detail.errorMessage;
-    }
     this.toggleComposebox_();
   }
 
