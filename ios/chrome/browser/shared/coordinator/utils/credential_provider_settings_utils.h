@@ -10,6 +10,7 @@
 enum class TurnOnCredentialProviderExtensionPromptSource {
   kPasswordSettings,
   kCredentialProviderExtensionPromo,
+  kCredentialImport,
 };
 
 // Opens the iOS settings for the user to set the app as a credential provider.

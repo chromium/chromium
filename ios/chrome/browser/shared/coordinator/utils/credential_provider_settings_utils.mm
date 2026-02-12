@@ -27,6 +27,8 @@ std::string TurnOnCredentialProviderExtensionPromptSourceToString(
     case TurnOnCredentialProviderExtensionPromptSource::
         kCredentialProviderExtensionPromo:
       return "Promo";
+    case TurnOnCredentialProviderExtensionPromptSource::kCredentialImport:
+      return "CredentialImport";
   }
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/histograms.xml:IOSTurnOnCredentialProviderExtensionPromptSource)

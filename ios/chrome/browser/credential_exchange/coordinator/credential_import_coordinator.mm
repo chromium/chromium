@@ -4,11 +4,14 @@
 
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_coordinator.h"
 
+#import <AuthenticationServices/AuthenticationServices.h>
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
 #import "base/not_fatal_until.h"
 #import "base/notreached.h"
+#import "base/task/bind_post_task.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -34,7 +37,9 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/utils/password_auto_fill_status_manager.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/utils/credential_provider_settings_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -236,9 +241,34 @@
     }
     case CredentialImportStage::kImporting:
       NOTREACHED() << "Primary action button should be disabled";
-    case CredentialImportStage::kImported:
-      [self.delegate credentialImportCoordinatorDidFinish:self];
+    case CredentialImportStage::kImported: {
+      if (@available(iOS 18.0, *)) {
+        // On successful import, display the credential provider prompt, if the
+        // AutoFill is not already enabled.
+        PasswordAutoFillStatusManager* sharedManager =
+            [PasswordAutoFillStatusManager sharedManager];
+        if (!sharedManager.ready || sharedManager.autoFillEnabled) {
+          [_delegate credentialImportCoordinatorDidFinish:self];
+          break;
+        }
+
+        // The completion handler of the OS library function might not run on
+        // the main thread, ensure that the UI dismissal does.
+        __weak __typeof(self) weakSelf = self;
+        auto callback = base::BindPostTask(
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            base::BindOnce(^(BOOL appWasEnabledForAutoFill) {
+              [weakSelf
+                  handleTurnOnAutoFillPromptOutcome:appWasEnabledForAutoFill];
+            }));
+        [ASSettingsHelper
+            requestToTurnOnCredentialProviderExtensionWithCompletionHandler:
+                base::CallbackToBlock(std::move(callback))];
+      } else {
+        NOTREACHED() << "Credential import is only available on iOS 26+.";
+      }
       break;
+    }
   }
 }
 
@@ -419,6 +449,15 @@
   [_passkeyWelcomeScreenCoordinator stopWithCompletion:completion];
   _passkeyWelcomeScreenCoordinator.delegate = nil;
   _passkeyWelcomeScreenCoordinator = nil;
+}
+
+// Handles outcome of user's choice in the credential provider promo prompt.
+- (void)handleTurnOnAutoFillPromptOutcome:(BOOL)appWasEnabledForAutoFill {
+  RecordTurnOnCredentialProviderExtensionPromptOutcome(
+      TurnOnCredentialProviderExtensionPromptSource::kCredentialImport,
+      appWasEnabledForAutoFill);
+
+  [_delegate credentialImportCoordinatorDidFinish:self];
 }
 
 @end

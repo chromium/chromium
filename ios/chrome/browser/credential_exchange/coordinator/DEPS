@@ -5,6 +5,7 @@ include_rules = [
   "+ios/chrome/browser/passwords/coordinator",
   "+ios/chrome/browser/passwords/model",
   "+ios/chrome/browser/settings/ui_bundled/password",
+  "+ios/chrome/browser/settings/ui_bundled/utils/password_auto_fill_status_manager.h",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/webauthn",

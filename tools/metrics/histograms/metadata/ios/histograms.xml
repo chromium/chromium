@@ -106,6 +106,8 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(IOSTurnOnCredentialProviderExtensionPromptSource) -->
 
 <variants name="IOSTurnOnCredentialProviderExtensionPromptSource">
+  <variant name="CredentialImport"
+      summary="The prompt was presented after a successful credential import."/>
   <variant name="PasswordSettings"
       summary="The prompt was presented from Password Settings."/>
   <variant name="Promo"
