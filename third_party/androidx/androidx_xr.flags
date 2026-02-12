@@ -4,3 +4,11 @@
 
 -dontwarn com.google.ar.imp.core.web.FragmentHost
 -dontwarn androidx.xr.arcore.internal.PerceptionRuntimeFactory
+
+# TODO(crbug.com/481288291): Remove these once the JXR can be upgraded to alpha12.
+-dontwarn org.jetbrains.annotations.VisibleForTesting
+-keep class !**.R$**,androidx.xr.runtime.**,androidx.xr.arcore.**,androidx.xr.scenecore.**,com.google.imp.splitengine.extensions.** {
+  <methods>;
+  <fields>;
+}
+

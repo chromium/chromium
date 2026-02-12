@@ -68,6 +68,13 @@
 -dontwarn com.google.ar.imp.core.web.FragmentHost
 -dontwarn androidx.xr.arcore.internal.PerceptionRuntimeFactory
 
+# TODO(crbug.com/481288291): Remove these once the JXR can be upgraded to alpha12.
+-dontwarn org.jetbrains.annotations.VisibleForTesting
+-keep class !**.R$**,androidx.xr.runtime.**,androidx.xr.arcore.**,androidx.xr.scenecore.**,com.google.imp.splitengine.extensions.** {
+  <methods>;
+  <fields>;
+}
+
 # File: ../../third_party/jni_zero/checkdiscard_proguard.flags
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
