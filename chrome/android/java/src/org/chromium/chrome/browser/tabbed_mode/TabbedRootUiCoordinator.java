@@ -35,7 +35,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -150,8 +149,6 @@ import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandbox3pcdRollbackMessageController;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
-import org.chromium.chrome.browser.privacy_sandbox.SurfaceType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIphController;
 import org.chromium.chrome.browser.readaloud.ReadAloudIphController;
@@ -1258,37 +1255,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
-    boolean maybeTriggerPsDialogSuppression(Profile profile) {
-        // Handles whether the PS Dialog should be suppressed, logs whether it was suppressed and
-        // returns whether a promo was triggered
-        Tab tab = mActivityTabProvider.get();
-
-        boolean isTabLaunchedFromExternalApp =
-                tab != null && tab.getLaunchType() == TabLaunchType.FROM_EXTERNAL_APP;
-        boolean shouldSuppressPsDialogForExternalAppLaunches =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4,
-                        "suppress-dialog-for-external-app-launches",
-                        true);
-        boolean shouldSuppressPsDialog =
-                isTabLaunchedFromExternalApp && shouldSuppressPsDialogForExternalAppLaunches;
-
-        String histogramName =
-                "Startup.Android.PrivacySandbox.DialogNotShownDueToTabLaunchedFromExternalApp";
-        RecordHistogram.recordBooleanHistogram(histogramName, shouldSuppressPsDialog);
-
-        if (!shouldSuppressPsDialog) {
-            return PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                    mActivity, profile, SurfaceType.BR_APP, mWindowAndroid);
-        }
-
-        return false;
-    }
-
-    private boolean maybeTriggerPrivacySandboxPrompt(Profile profile) {
-        return maybeTriggerPsDialogSuppression(profile);
-    }
-
     // Private class methods
     private void initializeIph(Profile profile, boolean intentWithEffect) {
         if (mActivity == null) return;
@@ -1912,10 +1878,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 new PrivacySandbox3pcdRollbackMessageController(
                         mActivity, profile, mActivityTabProvider, mMessageDispatcher);
         if (mPrivacySandbox3pcdRollbackMessageController.maybeShow()) {
-            return true;
-        }
-
-        if (maybeTriggerPrivacySandboxPrompt(profile)) {
             return true;
         }
 

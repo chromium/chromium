@@ -665,28 +665,6 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-notice-row-for-testing/true/notice-required/true/suppress-dialog-for-external-app-launches/false"
-    })
-    @CommandLineFlags.Remove({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-    public void brAppLaunchDialogUpdatesDialogClass() throws IOException {
-        // Do not call mActivityTestRule.startOnBlankPage() like other tests because the blank
-        // page isn't actually shown, but covered .
-        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_ROW);
-        // Launch a basic activity and click a button
-        mActivityTestRule.getActivityTestRule().loadUrlNoWaiting(mTestPage);
-
-        onViewWaiting(withId(R.id.privacy_sandbox_dialog), true);
-        tryClickOn(withId(R.id.ack_button));
-        assertEquals(
-                "Set surface type",
-                SurfaceType.BR_APP,
-                (int) mFakePrivacySandboxBridge.getLastSurfaceType());
-    }
-
-    @Test
-    @SmallTest
     public void controllerShowsEEAConsent() throws IOException {
         mPage = mActivityTestRule.startOnBlankPage();
         PrivacySandboxDialogController.disableEEANotice(true);

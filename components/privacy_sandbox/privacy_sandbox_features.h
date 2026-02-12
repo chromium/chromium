@@ -73,12 +73,6 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<bool>
     kPrivacySandboxSettings4ShowSampleDataForTesting;
 
-// When true, suppress any Privacy Sandbox dialog if Chrome is launched
-// from an external app.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<bool>
-    kPrivacySandboxSettings4SuppressDialogForExternalAppLaunches;
-
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kOverridePrivacySandboxSettingsLocalTesting);
 

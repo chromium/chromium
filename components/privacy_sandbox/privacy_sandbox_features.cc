@@ -54,11 +54,6 @@ const base::FeatureParam<bool> kPrivacySandboxSettings4ShowSampleDataForTesting{
     &kPrivacySandboxSettings4,
     kPrivacySandboxSettings4ShowSampleDataForTestingName, false};
 
-const base::FeatureParam<bool>
-    kPrivacySandboxSettings4SuppressDialogForExternalAppLaunches{
-        &kPrivacySandboxSettings4, "suppress-dialog-for-external-app-launches",
-        true};
-
 BASE_FEATURE(kOverridePrivacySandboxSettingsLocalTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
