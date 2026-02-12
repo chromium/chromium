@@ -3186,6 +3186,9 @@ if (enable_java_templates) {
           "--enable-nullaway",
           "--processorpath=@FileArg($_rebased_errorprone_buildconfig:processed_classpath)",
         ]
+        if (defined(invoker.min_sdk_version)) {
+          args += [ "--xep-arg=-XepOpt:JdkObsolete:AndroidMinSdkVersion=${invoker.min_sdk_version}" ]
+        }
         inputs += [
           _nullaway_jar,
 
@@ -4069,6 +4072,14 @@ if (enable_java_templates) {
             chromium_code = _chromium_code
           }
           include_android_sdk = _requires_robolectric || _requires_android
+
+          if (_supports_android && enable_errorprone) {
+            if (defined(invoker.min_sdk_version)) {
+              min_sdk_version = invoker.min_sdk_version
+            } else {
+              min_sdk_version = default_min_sdk_version
+            }
+          }
         }
       }
       _compile_java_forward_variables = [
