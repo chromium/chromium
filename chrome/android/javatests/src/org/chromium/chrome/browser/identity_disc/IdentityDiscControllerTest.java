@@ -15,6 +15,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -32,7 +36,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -56,6 +59,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -88,6 +92,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -206,7 +211,11 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    public void testIdentityDiscSignedOut() throws Exception {
+    @DisableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+    })
+    public void testIdentityDiscSignedOut_noAccount_legacy() throws Exception {
         // When user is signed out, a signed-out avatar should be visible on the NTP.
         @StringRes int descriptionId = R.string.accessibility_toolbar_btn_signed_out_identity_disc;
         ViewUtils.waitForVisibleView(
@@ -228,7 +237,30 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    public void testIdentityDiscSignedOut_signinDisabled() {
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+    })
+    public void testIdentityDiscSignedOut_noAccount() {
+        // When user is signed out, a signed-out avatar should be visible on the NTP.
+        @StringRes int descriptionId = R.string.accessibility_toolbar_btn_signed_out_identity_disc;
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.optional_toolbar_button),
+                        isDisplayed(),
+                        withContentDescription(descriptionId)));
+
+        // Clicking the signed-out avatar should lead to the correct sign-in screen.
+        onView(withId(R.id.optional_toolbar_button)).perform(click());
+
+        // The no account picker bottom sheet should be shown.
+        ViewUtils.waitForVisibleView(
+                allOf(withId(R.id.account_picker_state_no_account), isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testIdentityDiscSignedOut_signinDisabled_leadsToSettingsScreen() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -252,10 +284,12 @@ public class IdentityDiscControllerTest {
                                 R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
 
         // Clicking the signed-out avatar should lead to the settings screen.
-        ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(),
-                SettingsActivity.class,
-                () -> onView(withId(R.id.optional_toolbar_button)).perform(click()));
+        Activity settingsActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SettingsActivity.class,
+                        () -> onView(withId(R.id.optional_toolbar_button)).perform(click()));
+        ApplicationTestUtils.finishActivity(settingsActivity);
     }
 
     @Test
@@ -405,7 +439,7 @@ public class IdentityDiscControllerTest {
         var chromeTabbedActivity = incognitoNewTabPageStation.getActivity();
         if (chromeTabbedActivity.isIncognitoWindow()) {
             // For an incognito window, Identity Disc shouldn't be inflated.
-            Assert.assertNull(chromeTabbedActivity.findViewById(R.id.optional_toolbar_button));
+            assertNull(chromeTabbedActivity.findViewById(R.id.optional_toolbar_button));
         } else {
             // For an incognito tab, Identity Disc is inflated, but shouldn't be visible.
             waitForNoView(withId(R.id.optional_toolbar_button));
@@ -415,7 +449,7 @@ public class IdentityDiscControllerTest {
     @Test
     @SmallTest
     @UiThreadTest
-    public void onPrimaryAccountChanged_accountSet() {
+    public void testOnPrimaryAccountChanged_accountSet() {
         IdentityDiscController identityDiscController =
                 buildControllerWithObserver(mButtonDataObserver);
         PrimaryAccountChangeEvent accountSetEvent =
@@ -430,7 +464,7 @@ public class IdentityDiscControllerTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
     @UiThreadTest
-    public void preExistingErrorAtCreation() {
+    public void testPreExistingErrorAtCreation() {
         // Fake an identity error.
         FakeSyncServiceImpl fakeSyncService = new FakeSyncServiceImpl();
         SyncServiceFactory.setInstanceForTesting(fakeSyncService);
@@ -439,11 +473,11 @@ public class IdentityDiscControllerTest {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         IdentityDiscController identityDiscController = buildController();
 
-        Assert.assertEquals(UserActionableError.NONE, identityDiscController.getIdentityError());
+        assertEquals(UserActionableError.NONE, identityDiscController.getIdentityError());
 
         mProfileSupplier.set(ProfileManager.getLastUsedRegularProfile());
 
-        Assert.assertEquals(
+        assertEquals(
                 UserActionableError.NEEDS_CLIENT_UPGRADE,
                 identityDiscController.getIdentityError());
     }
@@ -451,7 +485,7 @@ public class IdentityDiscControllerTest {
     @Test
     @SmallTest
     @UiThreadTest
-    public void onPrimaryAccountChanged_accountCleared() {
+    public void testOnPrimaryAccountChanged_accountCleared() {
         IdentityDiscController identityDiscController =
                 buildControllerWithObserver(mButtonDataObserver);
         PrimaryAccountChangeEvent accountClearedEvent =
@@ -459,13 +493,13 @@ public class IdentityDiscControllerTest {
         identityDiscController.onPrimaryAccountChanged(accountClearedEvent);
 
         verify(mButtonDataObserver).buttonDataChanged(false);
-        Assert.assertTrue(identityDiscController.isProfileDataCacheEmpty());
+        assertTrue(identityDiscController.isProfileDataCacheEmpty());
     }
 
     @Test
     @MediumTest
     @UiThreadTest
-    public void onClick_profileNotYetInitialized_doesNothing() {
+    public void testOnClick_profileNotYetInitialized_doesNothing() {
         TrackerFactory.setTrackerForTests(mTracker);
         IdentityDiscController identityDiscController = buildController();
 
@@ -586,6 +620,54 @@ public class IdentityDiscControllerTest {
         mRenderTestRule.render(
                 mActivityTestRule.getActivity().findViewById(R.id.optional_toolbar_button),
                 "identity_disc_signed_in_identity_error_exist");
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+    })
+    public void testSetProfile_IncognitoProfile_DoesNotCreateSigninCoordinator() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    IdentityDiscController identityDiscController = buildController();
+
+                    Profile otrProfile =
+                            ProfileManager.getLastUsedRegularProfile()
+                                    .getPrimaryOtrProfile(/* createIfNeeded= */ true);
+                    mProfileSupplier.set(otrProfile);
+
+                    assertNull(
+                            "Signin coordinator should not be instantiated for ingognito profile",
+                            identityDiscController.getSigninCoordinatorForTesting());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+    })
+    public void testSetProfile_SwitchToIncognito_DestroysSigninCoordinator() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    IdentityDiscController identityDiscController = buildController();
+
+                    Profile regularProfile = ProfileManager.getLastUsedRegularProfile();
+                    mProfileSupplier.set(regularProfile);
+                    assertNotNull(identityDiscController.getSigninCoordinatorForTesting());
+
+                    Profile otrProfile =
+                            ProfileManager.getLastUsedRegularProfile()
+                                    .getPrimaryOtrProfile(/* createIfNeeded= */ true);
+                    mProfileSupplier.set(otrProfile);
+
+                    assertNull(
+                            "Signin coordinator should be destroyed when switched to incognito",
+                            identityDiscController.getSigninCoordinatorForTesting());
+                });
     }
 
     private void leaveNtp() {

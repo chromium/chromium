@@ -549,4 +549,8 @@ public class IdentityDiscController
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
         }
     }
+
+    @Nullable BottomSheetSigninAndHistorySyncCoordinator getSigninCoordinatorForTesting() {
+        return mSigninCoordinator;
+    }
 }
