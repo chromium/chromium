@@ -50,9 +50,7 @@ NSString* const kLensTutorialAnimationDarkViewId =
   self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_START_BROWSING_BUTTON);
 
-  NSArray<UITrait>* traits =
-      TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-  [self registerForTraitChanges:traits
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                      withAction:@selector(selectAnimationForCurrentStyle)];
 
   [self createAnimationViews];

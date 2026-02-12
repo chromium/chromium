@@ -78,9 +78,7 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
   self.subtitleBottomMargin = 0;
   self.titleTopMarginWhenNoHeaderImage = kTitleTopMarginWhenNoHeaderImage;
 
-  NSArray<UITrait>* traits =
-      TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-  [self registerForTraitChanges:traits
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                      withAction:@selector(selectAnimationForCurrentStyle)];
 
   if (![self.titleText length] || ![self.subtitleText length]) {
