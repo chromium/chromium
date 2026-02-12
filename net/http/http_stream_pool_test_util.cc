@@ -53,12 +53,6 @@ FakeServiceEndpointResolution::CompleteStartSynchronously(int rv) {
   return *this;
 }
 
-FakeServiceEndpointResolution& FakeServiceEndpointResolution::set_start_result(
-    int start_result) {
-  start_result_ = start_result;
-  return *this;
-}
-
 FakeServiceEndpointResolution& FakeServiceEndpointResolution::set_endpoints(
     std::vector<ServiceEndpoint> endpoints) {
   endpoints_ = std::move(endpoints);
@@ -136,9 +130,25 @@ FakeServiceEndpointRequest& FakeServiceEndpointRequest::set_priority(
   return *this;
 }
 
+FakeServiceEndpointRequest& FakeServiceEndpointRequest::set_start_callback(
+    base::OnceClosure start_callback) {
+  DCHECK(!start_callback_);
+  start_callback_ = std::move(start_callback);
+  return *this;
+}
+
 FakeServiceEndpointRequest&
 FakeServiceEndpointRequest::CompleteStartSynchronously(int rv) {
   resolution_.CompleteStartSynchronously(rv);
+  return *this;
+}
+
+FakeServiceEndpointRequest&
+FakeServiceEndpointRequest::CompleteStartAsynchronously(int rv) {
+  DCHECK(!resolution_.endpoints_crypto_ready());
+  DCHECK_EQ(resolution_.start_result(), ERR_IO_PENDING);
+  set_start_callback(base::BindOnce(&FakeServiceEndpointRequest::CompleteAsync,
+                                    weak_ptr_factory_.GetWeakPtr(), rv));
   return *this;
 }
 
@@ -161,6 +171,10 @@ int FakeServiceEndpointRequest::Start(Delegate* delegate) {
   CHECK(!delegate_);
   CHECK(delegate);
   delegate_ = delegate;
+  if (start_callback_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(start_callback_));
+  }
   return resolution_.start_result();
 }
 
@@ -193,6 +207,11 @@ bool FakeServiceEndpointRequest::IsStaleWhileRefresing() const {
 void FakeServiceEndpointRequest::ChangeRequestPriority(
     RequestPriority priority) {
   resolution_.set_priority(priority);
+}
+
+void FakeServiceEndpointRequest::CompleteAsync(int rv) {
+  set_crypto_ready(true);
+  CallOnServiceEndpointRequestFinished(rv);
 }
 
 FakeServiceEndpointResolver::FakeServiceEndpointResolver() = default;

@@ -874,7 +874,14 @@ void MockClientSocketFactory::AddSSLSocketDataProvider(
 
 void MockClientSocketFactory::ResetNextMockIndexes() {
   mock_data_.ResetNextIndex();
+  mock_tcp_data_.ResetNextIndex();
   mock_ssl_data_.ResetNextIndex();
+}
+
+bool MockClientSocketFactory::AllDataProvidersUsed() const {
+  return mock_data_.no_more_data_providers() &&
+         mock_tcp_data_.no_more_data_providers() &&
+         mock_ssl_data_.no_more_data_providers();
 }
 
 std::unique_ptr<DatagramClientSocket>

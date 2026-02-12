@@ -771,8 +771,9 @@ class SocketDataProviderArray {
   // having no remaining elements is expected in some cases and is handled
   // safely.
   T* GetNextWithoutAsserting() {
-    if (next_index_ == data_providers_.size())
+    if (no_more_data_providers()) {
       return nullptr;
+    }
     return data_providers_[next_index_++];
   }
 
@@ -784,6 +785,10 @@ class SocketDataProviderArray {
   size_t next_index() { return next_index_; }
 
   void ResetNextIndex() { next_index_ = 0; }
+
+  bool no_more_data_providers() const {
+    return next_index_ == data_providers_.size();
+  }
 
  private:
   // Index of the next |data_providers_| element to use. Not an iterator
@@ -833,6 +838,11 @@ class MockClientSocketFactory : public ClientSocketFactory {
   void set_enable_read_if_ready(bool enable_read_if_ready) {
     enable_read_if_ready_ = enable_read_if_ready;
   }
+
+  // Returns true if all top-level data providers have been used. Does not check
+  // if all individual reads/writes have been used. ResetNextMockIndexes() will
+  // reset the value this returns.
+  bool AllDataProvidersUsed() const;
 
   // ClientSocketFactory
   std::unique_ptr<DatagramClientSocket> CreateDatagramClientSocket(

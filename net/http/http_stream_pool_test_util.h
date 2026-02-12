@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
 #include "net/base/completion_once_callback.h"
@@ -53,7 +54,6 @@ class FakeServiceEndpointResolution {
 
   // These setters return `this&` to allow chaining.
   FakeServiceEndpointResolution& CompleteStartSynchronously(int rv);
-  FakeServiceEndpointResolution& set_start_result(int start_result);
   FakeServiceEndpointResolution& set_endpoints(
       std::vector<ServiceEndpoint> endpoints);
   FakeServiceEndpointResolution& add_endpoint(ServiceEndpoint endpoint);
@@ -90,12 +90,24 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
       ResolveErrorInfo resolve_error_info);
   FakeServiceEndpointRequest& set_priority(RequestPriority priority);
 
+  // Sets a callback that will be invoked asynchronously after Start() is
+  // invoked. It's async so that CallOnServiceEndpointsUpdated() and
+  // CallOnServiceEndpointRequestFinished() may be safely invoked from the
+  // callback. May not be used with CompleteStartSynchronously().
+  FakeServiceEndpointRequest& set_start_callback(
+      base::OnceClosure start_callback);
+
   // Make `this` complete synchronously when ServiceEndpointRequest::Start()
   // is called.
   FakeServiceEndpointRequest& CompleteStartSynchronously(int rv);
 
+  // Make `this` call CallOnServiceEndpointRequestFinished() asynchronously when
+  // ServiceEndpointRequest::Start() is called. May not be used with
+  // set_start_callback() or CompleteStartSynchronously();
+  FakeServiceEndpointRequest& CompleteStartAsynchronously(int rv);
+
   // Calls `delegate_->OnServiceEndpointsUpdated()`. Must not be used after
-  // calling CompleteStartSynchronously() or
+  // calling CompleteStartSynchronously(), CompleteStartAsynchronously(), or
   // CallOnServiceEndpointRequestFinished()
   FakeServiceEndpointRequest& CallOnServiceEndpointsUpdated();
 
@@ -118,9 +130,13 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
  private:
   friend class FakeServiceEndpointResolver;
 
+  void CompleteAsync(int rv);
+
   raw_ptr<Delegate> delegate_;
 
   FakeServiceEndpointResolution resolution_;
+
+  base::OnceClosure start_callback_;
 
   base::WeakPtrFactory<FakeServiceEndpointRequest> weak_ptr_factory_{this};
 };

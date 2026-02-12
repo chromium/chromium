@@ -365,9 +365,8 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
       // This configures the FakeServiceEndpointResolver in much the same way
       // SpdySessionDeps configures the default MockHostResolver.
       host_resolver->ConfigureDefaultResolution()
-          .set_start_result(OK)
           .add_endpoint(ServiceEndpointBuilder().add_v4("127.0.2.1").endpoint())
-          .set_crypto_ready(true);
+          .CompleteStartSynchronously(OK);
       session_deps_.alternate_host_resolver = std::move(host_resolver);
     }
   }
