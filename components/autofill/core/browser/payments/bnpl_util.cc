@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -149,6 +150,24 @@ std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
   return result;
 }
 
+Suggestion::Icon GetBnplSuggestionIcon(BnplIssuer::IssuerId issuer_id,
+                                       bool is_linked) {
+  switch (issuer_id) {
+    case BnplIssuer::IssuerId::kBnplAffirm:
+      return is_linked ? Suggestion::Icon::kBnplAffirmLinked
+                       : Suggestion::Icon::kBnplAffirmUnlinked;
+    case BnplIssuer::IssuerId::kBnplAfterpay:
+      return is_linked ? Suggestion::Icon::kBnplAfterpayLinked
+                       : Suggestion::Icon::kBnplAfterpayUnlinked;
+    case BnplIssuer::IssuerId::kBnplKlarna:
+      return is_linked ? Suggestion::Icon::kBnplKlarnaLinked
+                       : Suggestion::Icon::kBnplKlarnaUnlinked;
+    case BnplIssuer::IssuerId::kBnplZip:
+      return is_linked ? Suggestion::Icon::kBnplZipLinked
+                       : Suggestion::Icon::kBnplZipUnlinked;
+  }
+}
+
 std::u16string GetBnplIssuerSelectionOptionText(
     BnplIssuer::IssuerId issuer_id,
     const std::string& app_locale,
@@ -188,24 +207,43 @@ std::u16string GetBnplIssuerSelectionOptionText(
           return l10n_util::GetStringUTF16(
               IDS_AUTOFILL_BNPL_ISSUER_SELECTION_TEXT_AFFIRM_BOTTOM_SHEET);
 #else
-          return l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY);
+          if (base::FeatureList::IsEnabled(
+                  features::kAutofillEnablePayNowPayLaterTabs)) {
+            return l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY);
+          } else {
+            return l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY);
+          }
 #endif  // BUILDFLAG(IS_ANDROID)
         case BnplIssuer::IssuerId::kBnplZip:
 #if BUILDFLAG(IS_ANDROID)
           return l10n_util::GetStringUTF16(
               IDS_AUTOFILL_BNPL_ISSUER_SELECTION_TEXT_ZIP_BOTTOM_SHEET);
 #else
-          return l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_ZIP);
+          if (base::FeatureList::IsEnabled(
+                  features::kAutofillEnablePayNowPayLaterTabs)) {
+            return l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_ZIP);
+          } else {
+            return l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_ZIP);
+          }
+
 #endif  // BUILDFLAG(IS_ANDROID)
         case BnplIssuer::IssuerId::kBnplKlarna:
 #if BUILDFLAG(IS_ANDROID)
           return l10n_util::GetStringUTF16(
               IDS_AUTOFILL_BNPL_ISSUER_SELECTION_TEXT_KLARNA_BOTTOM_SHEET);
 #else
-          return l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_KLARNA);
+          if (base::FeatureList::IsEnabled(
+                  features::kAutofillEnablePayNowPayLaterTabs)) {
+            return l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_KLARNA);
+          } else {
+            return l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_KLARNA);
+          }
 #endif  // BUILDFLAG(IS_ANDROID)
       }
       NOTREACHED();

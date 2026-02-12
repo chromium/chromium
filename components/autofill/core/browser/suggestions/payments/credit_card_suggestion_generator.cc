@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
@@ -36,46 +37,25 @@ namespace autofill {
 
 namespace {
 
-Suggestion CreateBnplSuggestion(const BnplIssuer& bnpl_issuer) {
+Suggestion CreateBnplSuggestion(
+    const payments::BnplIssuerContext& issuer_context,
+    const std::string& app_locale) {
+  const bool is_linked = issuer_context.issuer.payment_instrument().has_value();
+
   Suggestion bnpl_suggestion(SuggestionType::kBnplEntry);
-
-  const bool is_linked = bnpl_issuer.payment_instrument().has_value();
-
-  if (is_linked) {
-    bnpl_suggestion.main_text = Suggestion::Text(
-        bnpl_issuer.GetDisplayName(), Suggestion::Text::IsPrimary(true));
-  } else {
-    bnpl_suggestion.main_text = Suggestion::Text(
-        l10n_util::GetStringFUTF16(
-            IDS_AUTOFILL_BNPL_UNLINKED_ISSUER_SUGGESTION_MAIN_TEXT,
-            bnpl_issuer.GetDisplayName()),
-        Suggestion::Text::IsPrimary(true));
-  }
-
-  switch (bnpl_issuer.issuer_id()) {
-    case BnplIssuer::IssuerId::kBnplAffirm:
-      bnpl_suggestion.icon = is_linked ? Suggestion::Icon::kBnplAffirmLinked
-                                       : Suggestion::Icon::kBnplAffirmUnlinked;
-      bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY))}};
-      break;
-    case BnplIssuer::IssuerId::kBnplKlarna:
-      bnpl_suggestion.icon = is_linked ? Suggestion::Icon::kBnplKlarnaLinked
-                                       : Suggestion::Icon::kBnplKlarnaUnlinked;
-      bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_KLARNA))}};
-      break;
-    case BnplIssuer::IssuerId::kBnplZip:
-      bnpl_suggestion.icon = is_linked ? Suggestion::Icon::kBnplZipLinked
-                                       : Suggestion::Icon::kBnplZipUnlinked;
-      bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_ZIP))}};
-      break;
-    case BnplIssuer::IssuerId::kBnplAfterpay:
-      NOTREACHED();
-  }
-
-  bnpl_suggestion.payload = Suggestion::BnplIssuer(bnpl_issuer);
+  bnpl_suggestion.main_text = Suggestion::Text(
+      is_linked ? issuer_context.issuer.GetDisplayName()
+                : l10n_util::GetStringFUTF16(
+                      IDS_AUTOFILL_BNPL_UNLINKED_ISSUER_SUGGESTION_MAIN_TEXT,
+                      issuer_context.issuer.GetDisplayName()),
+      Suggestion::Text::IsPrimary(true));
+  bnpl_suggestion.labels = {
+      {Suggestion::Text(payments::GetBnplIssuerSelectionOptionText(
+          issuer_context.issuer.issuer_id(), app_locale,
+          base::span_from_ref(issuer_context)))}};
+  bnpl_suggestion.icon = payments::GetBnplSuggestionIcon(
+      issuer_context.issuer.issuer_id(), is_linked);
+  bnpl_suggestion.payload = Suggestion::BnplIssuer(issuer_context.issuer);
 
   return bnpl_suggestion;
 }
@@ -196,15 +176,14 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
       payments::ShouldAppendBnplSuggestion(client, is_card_number_field_empty,
                                            trigger_field_type);
 
-  // TODO(crbug.com/477689220) Randomize issuers and sort based on eligiblity,
-  // using BnplManager::GetSortedBnplIssuerContext() as an example.
   if (should_show_bnpl_suggestions &&
       base::FeatureList::IsEnabled(
           features::kAutofillEnablePayNowPayLaterTabs)) {
-    for (const BnplIssuer& bnpl_issuer : client.GetPersonalDataManager()
-                                             .payments_data_manager()
-                                             .GetBnplIssuers()) {
-      suggestions.push_back(CreateBnplSuggestion(bnpl_issuer));
+    for (const payments::BnplIssuerContext& context :
+         payments::GetSortedBnplIssuerContext(
+             client, /*checkout_amount=*/std::nullopt)) {
+      suggestions.push_back(
+          CreateBnplSuggestion(context, client.GetAppLocale()));
     }
   }
 

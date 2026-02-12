@@ -348,6 +348,8 @@ struct Suggestion {
     kBnplGeneric,
     kBnplAffirmLinked,
     kBnplAffirmUnlinked,
+    kBnplAfterpayLinked,
+    kBnplAfterpayUnlinked,
     kBnplZipLinked,
     kBnplZipUnlinked,
     kBnplKlarnaLinked,

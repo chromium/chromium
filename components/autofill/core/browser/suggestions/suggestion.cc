@@ -152,6 +152,10 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kBnplAffirmLinked";
     case Suggestion::Icon::kBnplAffirmUnlinked:
       return "kBnplAffirmUnlinked";
+    case Suggestion::Icon::kBnplAfterpayLinked:
+      return "kBnplAfterpayLinked";
+    case Suggestion::Icon::kBnplAfterpayUnlinked:
+      return "kBnplAfterpayUnlinked";
     case Suggestion::Icon::kBnplZipLinked:
       return "kBnplZipLinked";
     case Suggestion::Icon::kBnplZipUnlinked:

@@ -357,6 +357,8 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kBnplGeneric:
     case Suggestion::Icon::kBnplAffirmUnlinked:
     case Suggestion::Icon::kBnplAffirmLinked:
+    case Suggestion::Icon::kBnplAfterpayLinked:
+    case Suggestion::Icon::kBnplAfterpayUnlinked:
     case Suggestion::Icon::kBnplZipUnlinked:
     case Suggestion::Icon::kBnplZipLinked:
     case Suggestion::Icon::kBnplKlarnaUnlinked:

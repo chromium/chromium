@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
@@ -87,6 +88,11 @@ struct BnplTosModel {
 std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
     const AutofillClient& client,
     std::optional<int64_t> checkout_amount);
+
+// Returns the appropriate suggestion icon based on the issuer and its link
+// status.
+Suggestion::Icon GetBnplSuggestionIcon(BnplIssuer::IssuerId issuer_id,
+                                       bool is_linked);
 
 // Returns the selection option text for a given BNPL issuer.
 std::u16string GetBnplIssuerSelectionOptionText(
