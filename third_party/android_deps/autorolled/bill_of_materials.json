@@ -1327,7 +1327,7 @@
     {
         "name": "play-services-identity-credentials",
         "group": "com.google.android.gms",
-        "version": "16.0.0-alpha08"
+        "version": "16.0.0-alpha11"
     },
     {
         "name": "play-services-iid",
