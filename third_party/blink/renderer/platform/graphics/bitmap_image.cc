@@ -53,10 +53,16 @@
 
 namespace blink {
 
+namespace {
+
+// Reserved ids for non-running frames.
+constexpr DOMNodeId kNormalCachedFrameId = -2;
+constexpr DOMNodeId kPausedCachedFrameId = -3;
+
 int GetRepetitionCountWithPolicyOverride(
     int actual_count,
     mojom::blink::ImageAnimationPolicy policy,
-    ImageNodeAnimationInfo* node_info) {
+    const ImageNodeAnimationInfo* node_info) {
   if (actual_count == kAnimationNone ||
       policy == mojom::blink::ImageAnimationPolicy::
                     kImageAnimationPolicyNoAnimation ||
@@ -73,6 +79,8 @@ int GetRepetitionCountWithPolicyOverride(
 
   return actual_count;
 }
+
+}  // namespace
 
 BitmapImage::BitmapImage(ImageObserver* observer, bool is_multipart)
     : Image(observer, is_multipart),
@@ -428,16 +436,18 @@ PaintImage BitmapImage::PaintImageForCurrentFrameWithInfo(
     ImageNodeAnimationInfo* image_node_animation_info) {
   auto alpha_type = decoder_ ? decoder_->AlphaType() : kUnknown_SkAlphaType;
 
-  DOMNodeId id = NORMAL_CACHED_FRAME_ID;
+  DOMNodeId id = kNormalCachedFrameId;
 
   if (image_node_animation_info) {
-    if (image_node_animation_info->image_animation ==
-        ImageAnimationEnum::kPaused) {
-      id = PAUSED_CACHED_FRAME_ID;
-    }
-    if (image_node_animation_info->image_animation ==
-        ImageAnimationEnum::kRunning) {
-      id = image_node_animation_info->node_id;
+    switch (image_node_animation_info->image_animation) {
+      case ImageAnimationEnum::kPaused:
+        id = kPausedCachedFrameId;
+        break;
+      case ImageAnimationEnum::kRunning:
+        id = image_node_animation_info->node_id;
+        break;
+      case ImageAnimationEnum::kNormal:
+        break;
     }
   }
 

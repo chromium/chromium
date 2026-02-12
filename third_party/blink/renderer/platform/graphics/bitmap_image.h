@@ -167,9 +167,6 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   // ensure re-use of generated decodes. This is cleared each time the encoded
   // data is updated in DataChanged.
   HashMap<DOMNodeId, PaintImage> cached_frames_;
-  // Reserved ids for non-running frames.
-  const DOMNodeId NORMAL_CACHED_FRAME_ID = -2;
-  const DOMNodeId PAUSED_CACHED_FRAME_ID = -3;
 
   HashMap<DOMNodeId, ImageAnimationEnum> image_animation_map_;
 
