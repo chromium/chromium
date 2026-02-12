@@ -3218,7 +3218,7 @@ bool Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
       cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior);
 }
 
-bool Element::HandleScrollCommand(CommandEventType command) {
+bool Element::HandleScrollByPageCommand(CommandEventType command) {
   DCHECK(RuntimeEnabledFeatures::HTMLCommandForScrollCommandsEnabled());
 
   if (!InActiveDocument()) {

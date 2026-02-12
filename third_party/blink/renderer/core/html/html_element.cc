@@ -2567,7 +2567,7 @@ bool HTMLElement::IsValidBuiltinCommand(HTMLElement& invoker,
            command == CommandEventType::kRequestFullscreen ||
            command == CommandEventType::kExitFullscreen)) ||
          (RuntimeEnabledFeatures::HTMLCommandForScrollCommandsEnabled() &&
-          Element::IsScrollCommand(command));
+          Element::IsScrollByPageCommand(command));
 }
 
 bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,

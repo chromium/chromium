@@ -1262,7 +1262,7 @@ class CORE_EXPORT Element : public ContainerNode {
       Element* new_focused_element,
       InputDeviceCapabilities* source_capabilities = nullptr);
 
-  static bool IsScrollCommand(CommandEventType command) {
+  static bool IsScrollByPageCommand(CommandEventType command) {
     return command == CommandEventType::kPageUp ||
            command == CommandEventType::kPageDown ||
            command == CommandEventType::kPageLeft ||
@@ -1289,15 +1289,15 @@ class CORE_EXPORT Element : public ContainerNode {
           command != CommandEventType::kNone);
 
     // Handle scroll commands
-    if (IsScrollCommand(command)) {
-      return HandleScrollCommand(command);
+    if (IsScrollByPageCommand(command)) {
+      return HandleScrollByPageCommand(command);
     }
 
     return false;
   }
 
   // Helper method to handle scroll commands
-  bool HandleScrollCommand(CommandEventType command);
+  bool HandleScrollByPageCommand(CommandEventType command);
 
   // These are slightly different than e.g. checking popover->popoverOpen(),
   // because they also catch the case where the element *was* open as a popover
