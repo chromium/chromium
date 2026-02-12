@@ -39,7 +39,7 @@ assert(!is_cronet_build)
 if (android_64bit_target_cpu) {
   # We are assuming that all webview targets have the same Java - if this
   # is no longer true, we should add more targets to this array.
-  webview_java_for_jni_targets = [ ":system_webview_64_bundle" ]
+  webview_java_for_jni_targets = [ ":system_webview_64_bundle($default_toolchain)" ]
 } else {
   webview_java_for_jni_targets = [ ":system_webview_bundle" ]
 }
@@ -1360,9 +1360,17 @@ template("webview_chromium_library") {
   }
 }
 
-# The shared library used by standalone WebView.
-webview_chromium_library("libwebviewchromium") {
-  use_webview_orderfile = true
+# The shared library used by standalone WebView. Make sure we don't define it
+# in the default toolchain if we're using the WebView PGO profile, as the target
+# should always be built with a dedicated toolchain in these circumstances.
+if (!(_is_default_toolchain && use_webview_pgo_profile)) {
+  webview_chromium_library("libwebviewchromium") {
+    use_webview_orderfile = true
+    if (use_webview_pgo_profile_default_toolchain) {
+      force_current_toolchain = current_toolchain == webview_toolchain
+      jni_registration_toolchain = webview_toolchain
+    }
+  }
 }
 
 if (_is_default_toolchain && enable_resource_allowlist_generation) {

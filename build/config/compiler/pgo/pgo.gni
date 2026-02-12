@@ -47,6 +47,12 @@ declare_args() {
   pgo_gs_bucket_path = ""
 }
 
+declare_args() {
+  # This is passed to secondary toolchains on Android so they can infer
+  # the correct toolchain for JNI registration.
+  chrome_pgo_phase_default_toolchain = chrome_pgo_phase
+}
+
 # TODO(crbug.com/409738601): Remove assert once clang no
 # longer crashes with PGO enabled for a debug build.
 assert(!is_debug || chrome_pgo_phase == 0,

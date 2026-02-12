@@ -166,6 +166,13 @@ template("generate_jni_registration") {
   }
 
   _invoke_jni_zero(target_name) {
+    gen_deps = [ ":${target_name}__java_sources" ]
+    if (defined(_native_sources_list)) {
+      gen_deps += [ ":${target_name}__native_sources" ]
+    }
+    if (defined(_priority_java_sources_list)) {
+      gen_deps += [ ":${target_name}__priority_java_sources" ]
+    }
     # Cannot depend on jni_sources_list targets since they likely depend on
     # this target via srcjar_deps. Depfiles are used to add the dep instead.
     deps = []
@@ -580,7 +587,11 @@ template("native_with_jni") {
       (_manual_jni_registration || enable_jni_multiplexing) &&
       !(defined(invoker.collect_inputs_only) && invoker.collect_inputs_only)
   _needs_native_dep = _enable_underlying_native && _needs_cpp_codegen
-  if ((_needs_cpp_codegen && current_toolchain == default_toolchain) ||
+  _force_current_toolchain = defined(invoker.force_current_toolchain) &&
+                             invoker.force_current_toolchain
+  _use_current_toolchain = _force_current_toolchain ||
+                           current_toolchain == default_toolchain
+  if ((_needs_cpp_codegen && _use_current_toolchain) ||
       _needs_native_dep) {
     _subdir = rebase_path(target_gen_dir, root_gen_dir)
     _registration_cpp_codegen_output =
@@ -594,11 +605,11 @@ template("native_with_jni") {
       _registration_cpp_codegen_output += ".cc"
     }
   }
-  if (_needs_native_dep || current_toolchain == default_toolchain) {
+  if (_needs_native_dep || _use_current_toolchain) {
     _jni_registration_target_name = "${target_name}__jni_registration"
   }
 
-  if (current_toolchain == default_toolchain) {
+  if (_use_current_toolchain) {
     if (defined(invoker.visibility)) {
       _target_name_for_visibility = target_name
     }
@@ -669,7 +680,11 @@ template("native_with_jni") {
           # filter_include is for.
           configs += [ "//third_party/jdk" ]
         }
-        deps += [ ":$_jni_registration_target_name($default_toolchain)" ]
+        if (defined(invoker.jni_registration_toolchain)) {
+          deps += [ ":$_jni_registration_target_name(${invoker.jni_registration_toolchain})" ]
+        } else {
+          deps += [ ":$_jni_registration_target_name($default_toolchain)" ]
+        }
         if (!defined(sources)) {
           sources = []
         }

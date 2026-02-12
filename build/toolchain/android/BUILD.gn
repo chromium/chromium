@@ -29,6 +29,7 @@ template("android_clang_toolchain") {
       current_os = "android"
       use_debug_fission = false
       is_high_end_android = is_high_end_android_secondary_toolchain
+      chrome_pgo_phase_default_toolchain = chrome_pgo_phase_default_toolchain
     }
 
     # Output linker map files for binary size analysis.
@@ -77,6 +78,14 @@ android_clang_toolchain("android_clang_x64") {
 android_clang_toolchain("android_clang_arm64") {
   toolchain_args = {
     current_cpu = "arm64"
+  }
+}
+
+android_clang_toolchain("android_clang_arm64_webview") {
+  toolchain_args = {
+    current_cpu = "arm64"
+    pgo_data_path = "//android_webview/tools/orderfiles/arm64/pgo_profile.arm64.profdata"
+    is_high_end_android_secondary_toolchain = true
   }
 }
 

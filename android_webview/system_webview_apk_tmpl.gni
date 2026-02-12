@@ -191,10 +191,18 @@ template("system_webview_apk_or_module_tmpl") {
     if (!_is_trichrome) {
       if ((!android_64bit_target_cpu && _include_32_bit_webview) ||
           (android_64bit_target_cpu && _include_64_bit_webview)) {
-        shared_libraries = [ "//android_webview:libwebviewchromium" ]
+        if (use_webview_pgo_profile) {
+          _using_webview_toolchain = true
+          shared_libraries = [ "//android_webview:libwebviewchromium($webview_toolchain)" ]
+        } else {
+          shared_libraries = [ "//android_webview:libwebviewchromium" ]
+        }
         _include_primary_support = true
       }
       if (android_64bit_target_cpu && _include_32_bit_webview) {
+        if (use_webview_pgo_profile) {
+          _using_webview_toolchain = true
+        }
         secondary_abi_shared_libraries = [ "//android_webview:libwebviewchromium($android_secondary_abi_toolchain)" ]
         _include_secondary_support = true
       }
@@ -244,7 +252,11 @@ template("system_webview_apk_or_module_tmpl") {
       foreach(_lib, _jni_registrations) {
         _label =
             get_label_info(_lib, "label_no_toolchain") + "__jni_registration"
-        srcjar_deps += [ "$_label($default_toolchain)" ]
+        if (defined(_using_webview_toolchain) && _using_webview_toolchain) {
+          srcjar_deps += [ "$_label($webview_toolchain)" ]
+        } else {
+          srcjar_deps += [ "$_label($default_toolchain)" ]
+        }
       }
     }
 
