@@ -61,6 +61,21 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Basic) {
   EXPECT_EQ(action_results.at(0).result->script_tool_response->name, "echo");
   EXPECT_EQ(action_results.at(0).result->script_tool_response->input_arguments,
             input_arguments);
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->tool->name,
+            "echo");
+  EXPECT_EQ(
+      action_results.at(0).result->script_tool_response->tool->description,
+      "echo input");
+  EXPECT_EQ(action_results.at(0)
+                .result->script_tool_response->tool->annotations->read_only,
+            true);
+
+  const std::string expected_input_schema =
+      R"JSON({"type":"object","properties":{"text":{"description":)JSON"
+      R"JSON("Value to echo","type":"string"}},"required":["text"]})JSON";
+  EXPECT_EQ(
+      action_results.at(0).result->script_tool_response->tool->input_schema,
+      expected_input_schema);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, BadToolName) {
@@ -225,6 +240,16 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeToolCrossDocument) {
             "declarative_tool");
   EXPECT_EQ(action_results.at(0).result->script_tool_response->input_arguments,
             declarative_input);
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->tool->name,
+            "declarative_tool");
+  EXPECT_EQ(
+      action_results.at(0).result->script_tool_response->tool->description,
+      "A declarative WebMCP tool");
+  EXPECT_FALSE(
+      action_results.at(0).result->script_tool_response->tool->annotations);
+  EXPECT_EQ(
+      action_results.at(0).result->script_tool_response->tool->input_schema,
+      "{}");
 
   base::Value actual_json = base::test::ParseJson(
       *action_results.at(0).result->script_tool_response->result);

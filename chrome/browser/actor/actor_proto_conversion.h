@@ -108,6 +108,16 @@ void CopyScriptToolResults(
       script_tool_result->set_result(*response->result);
       script_tool_result->set_tool_name(response->name);
       script_tool_result->set_input_arguments(response->input_arguments);
+      auto* tool = script_tool_result->mutable_tool();
+      tool->set_name(response->tool->name);
+      tool->set_description(response->tool->description);
+      if (response->tool->input_schema.has_value()) {
+        tool->set_input_schema(response->tool->input_schema.value());
+      }
+      if (response->tool->annotations) {
+        tool->mutable_annotations()->set_read_only(
+            response->tool->annotations->read_only);
+      }
     }
   }
 }

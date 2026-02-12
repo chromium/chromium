@@ -219,7 +219,7 @@ class BLINK_EXPORT WebDocument : public WebNode {
   // Executes a script tool with the given `name` and `input_arguments`.
   //
   // The associated callback is invoked once the async execution of the tool is
-  // finished along with the result of the execution.
+  // finished along with the result of the execution and the tool declaration.
   // A null response indicates a navigation was triggered and the response will
   // be on the next Document.
   // An error is returned if the execution failed.
@@ -245,12 +245,18 @@ class BLINK_EXPORT WebDocument : public WebNode {
     }
     bool operator==(Code other_code) const { return code == other_code; }
   };
-  using ScriptToolExecutedCallback =
-      base::OnceCallback<void(base::expected<WebString, ScriptToolError>)>;
+  struct BLINK_EXPORT ScriptToolDeclaration {
+    WebString description;
+    WebString input_schema;
+    std::optional<bool> read_only;
+  };
+  using ScriptToolResultCallback =
+      base::OnceCallback<void(std::unique_ptr<ScriptToolDeclaration>,
+                              base::expected<WebString, ScriptToolError>)>;
   std::optional<uint32_t> ExecuteScriptTool(
       const WebString& name,
       const WebString& input_arguments,
-      ScriptToolExecutedCallback tool_executed_cb);
+      ScriptToolResultCallback tool_result_cb);
 
   // Provides the result of a script tool execution initiated on an old
   // Document.

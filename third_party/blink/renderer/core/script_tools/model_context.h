@@ -55,17 +55,24 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
                     ExceptionState& exception_state);
   void unregisterTool(const String& name, ExceptionState& exception_state);
 
+  void SetScriptToolDeclaration(
+      const String& name,
+      WebDocument::ScriptToolDeclaration* tool_declaration) const;
+
   void provideContext(ScriptState* state,
                       ProvideContextParams* params,
                       ExceptionState& exception_state);
   void clearContext();
+
+  using ScriptToolExecutedCallback = base::OnceCallback<void(
+      base::expected<WebString, WebDocument::ScriptToolError>)>;
 
   // TODO: crbug.com/479291237 - remove public/web dependency
   std::optional<uint32_t> ExecuteTool(
       const String& name,
       const String& input_arguments,
       AbortSignal* signal,
-      WebDocument::ScriptToolExecutedCallback tool_executed_cb);
+      ScriptToolExecutedCallback tool_executed_cb);
   using CrossDocumentScriptToolResultCallback =
       base::OnceCallback<void(String)>;
   void GetCrossDocumentScriptToolResult(
@@ -93,11 +100,10 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
       const String& name,
       const String& input_arguments,
       AbortSignal* signal,
-      WebDocument::ScriptToolExecutedCallback tool_executed_cb);
-  void ExecuteDeclarativeTool(
-      DeclarativeWebMCPTool* tool,
-      const String& input_arguments,
-      WebDocument::ScriptToolExecutedCallback tool_executed_cb);
+      ScriptToolExecutedCallback tool_executed_cb);
+  void ExecuteDeclarativeTool(DeclarativeWebMCPTool* tool,
+                              const String& input_arguments,
+                              ScriptToolExecutedCallback tool_executed_cb);
 
   class ToolData : public GarbageCollected<ToolData> {
    public:
@@ -123,7 +129,7 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   uint32_t next_execution_id_ = 0;
   struct PendingExecution {
     String tool_name;
-    WebDocument::ScriptToolExecutedCallback callback;
+    ScriptToolExecutedCallback callback;
   };
   HashMap<uint32_t, PendingExecution> pending_executions_;
 

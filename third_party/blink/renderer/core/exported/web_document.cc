@@ -36,6 +36,7 @@
 #include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
+#include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
 #include "third_party/blink/public/platform/web_distillability.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_dom_event.h"
@@ -410,13 +411,18 @@ size_t WebDocument::ActiveResourceRequestCount() const {
 std::optional<uint32_t> WebDocument::ExecuteScriptTool(
     const WebString& name,
     const WebString& input_arguments,
-    ScriptToolExecutedCallback tool_executed_cb) {
+    ScriptToolResultCallback tool_result_cb) {
   if (auto* model_context = ModelContextSupplement::modelContext(
           *Unwrap<Document>()->domWindow()->navigator())) {
+    std::unique_ptr<ScriptToolDeclaration> tool_declaration =
+        std::make_unique<ScriptToolDeclaration>();
+    model_context->SetScriptToolDeclaration(name, tool_declaration.get());
     // TODO(481899636): PLUMB SIGNAL TO THE BROWSER SIDE!
-    return model_context->ExecuteTool(name, input_arguments,
-                                      /* signal= */ nullptr,
-                                      std::move(tool_executed_cb));
+    return model_context->ExecuteTool(
+        name, input_arguments,
+        /* signal= */ nullptr,
+        blink::BindOnce(std::move(tool_result_cb),
+                        std::move(tool_declaration)));
   }
   return std::nullopt;
 }
