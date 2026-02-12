@@ -51,7 +51,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     unowned_first_party_extension_ids[first_party_extension_id_count] = nullptr;
   }
 
-  redaction::RedactionTool redactor(unowned_first_party_extension_ids.data());
+  redaction::RedactionTool redactor(
+      unowned_first_party_extension_ids.as_span());
   redactor.EnableCreditCardRedaction(true);
   redactor.Redact(provider.ConsumeRemainingBytesAsString());
   return 0;
