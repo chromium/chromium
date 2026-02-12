@@ -542,6 +542,14 @@ UIImage* GetManualFillSymbol() {
             IDS_IOS_AUTOFILL_PAYMENT_METHOD_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
+      case FillingProduct::kAutofillAi:
+        // TODO(crbug.com/480933607): Reusing the Autocomplete announcement for
+        // AutofillAi. Add an AutofillAi specific accessibility announcement.
+        if (!base::FeatureList::IsEnabled(kIOSEnhancedAutofill)) {
+          // Only allow kAutofillAi if the associated feature is enabled.
+          NOTREACHED();
+        }
+        [[fallthrough]];
       case FillingProduct::kAutocomplete:
         mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_AUTOCOMPLETE_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
@@ -549,7 +557,6 @@ UIImage* GetManualFillSymbol() {
         break;
       case FillingProduct::kMerchantPromoCode:
       case FillingProduct::kCompose:
-      case FillingProduct::kAutofillAi:
       case FillingProduct::kLoyaltyCard:
       case FillingProduct::kIdentityCredential:
       case FillingProduct::kDataList:
