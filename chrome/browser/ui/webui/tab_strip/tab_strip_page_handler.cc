@@ -360,11 +360,6 @@ void TabStripPageHandler::OnTabPinnedStateChanged(tabs::TabInterface* tab,
   page_->TabUpdated(GetTabData(tab->GetContents(), tab, index));
 }
 
-void TabStripPageHandler::OnTabBlockedStateChanged(tabs::TabInterface* tab,
-                                                   int index) {
-  page_->TabUpdated(GetTabData(tab->GetContents(), tab, index));
-}
-
 bool TabStripPageHandler::PreHandleGestureEvent(
     content::WebContents* source,
     const blink::WebGestureEvent& event) {

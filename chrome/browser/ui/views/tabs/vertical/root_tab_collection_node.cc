@@ -229,11 +229,6 @@ void RootTabCollectionNode::OnTabChangedAt(tabs::TabInterface* tab,
   UpdateTabsData({tab});
 }
 
-void RootTabCollectionNode::OnTabBlockedStateChanged(tabs::TabInterface* tab,
-                                                     int model_index) {
-  UpdateTabsData({tab});
-}
-
 void RootTabCollectionNode::UpdateTabsData(
     const std::set<tabs::TabInterface*>& changed_tabs) {
   std::set<TabCollectionNode*> nodes_to_notify;

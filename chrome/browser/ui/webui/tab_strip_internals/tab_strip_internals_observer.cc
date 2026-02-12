@@ -149,12 +149,6 @@ void TabStripInternalsObserver::OnTabPinnedStateChanged(
   FireUpdate();
 }
 
-void TabStripInternalsObserver::OnTabBlockedStateChanged(
-    tabs::TabInterface* /*tab*/,
-    int /*index*/) {
-  FireUpdate();
-}
-
 void TabStripInternalsObserver::TabGroupedStateChanged(
     TabStripModel* /*tab_strip_model*/,
     std::optional<tab_groups::TabGroupId> /*old_group*/,

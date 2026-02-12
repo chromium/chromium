@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/scrim_view_controller.h"
 
+#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
@@ -29,9 +30,12 @@ void ScrimViewController::OnTabStripModelChanged(
   }
 }
 
-void ScrimViewController::OnTabBlockedStateChanged(tabs::TabInterface* tab,
-                                                   int index) {
-  UpdateScrimViews();
+void ScrimViewController::OnTabChangedAt(tabs::TabInterface* tab,
+                                         int index,
+                                         TabChangeType change_type) {
+  if (change_type == TabChangeType::kBlockedOnly) {
+    UpdateScrimViews();
+  }
 }
 
 void ScrimViewController::OnSplitTabChanged(const SplitTabChange& change) {

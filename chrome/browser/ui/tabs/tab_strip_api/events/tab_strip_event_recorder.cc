@@ -112,11 +112,6 @@ void TabStripEventRecorder::OnTabChangedAt(tabs::TabInterface* tab,
   Handle(ToEvent(tab_strip_model_adapter_, index, change_type));
 }
 
-void TabStripEventRecorder::OnTabBlockedStateChanged(tabs::TabInterface* tab,
-                                                     int index) {
-  OnTabChangedAt(tab, index, TabChangeType::kAll);
-}
-
 void TabStripEventRecorder::OnTabGroupChanged(const TabGroupChange& change) {
   if (change.type == TabGroupChange::Type::kEditorOpened) {
     NOTIMPLEMENTED();

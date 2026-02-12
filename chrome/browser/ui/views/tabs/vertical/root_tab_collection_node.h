@@ -60,8 +60,6 @@ class RootTabCollectionNode : public TabCollectionNode,
   void OnTabChangedAt(tabs::TabInterface* tab,
                       int model_index,
                       TabChangeType change_type) override;
-  void OnTabBlockedStateChanged(tabs::TabInterface* tab,
-                                int model_index) override;
 
   void UpdateTabsData(const std::set<tabs::TabInterface*>& changed_tabs);
 

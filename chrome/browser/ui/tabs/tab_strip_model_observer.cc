@@ -363,9 +363,6 @@ void TabStripModelObserver::OnTabChangedAt(tabs::TabInterface* tab,
 void TabStripModelObserver::OnTabPinnedStateChanged(tabs::TabInterface* tab,
                                                     int index) {}
 
-void TabStripModelObserver::OnTabBlockedStateChanged(tabs::TabInterface* tab,
-                                                     int index) {}
-
 void TabStripModelObserver::TabGroupedStateChanged(
     TabStripModel* tab_strip_model,
     std::optional<tab_groups::TabGroupId> old_group,

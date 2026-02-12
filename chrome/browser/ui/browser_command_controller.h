@@ -25,6 +25,7 @@ class Browser;
 class BrowserWindow;
 class BrowserWindowInterface;
 class Profile;
+enum class TabChangeType;
 
 namespace input {
 struct NativeWebKeyboardEvent;
@@ -120,7 +121,9 @@ class BrowserCommandController : public CommandUpdater,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void OnTabBlockedStateChanged(tabs::TabInterface* tab, int index) override;
+  void OnTabChangedAt(tabs::TabInterface* tab,
+                      int index,
+                      TabChangeType change_type) override;
 
   // Overridden from TabRestoreServiceObserver:
   void TabRestoreServiceChanged(sessions::TabRestoreService* service) override;

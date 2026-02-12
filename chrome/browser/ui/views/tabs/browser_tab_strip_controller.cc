@@ -799,12 +799,6 @@ void BrowserTabStripController::OnTabPinnedStateChanged(tabs::TabInterface* tab,
   SetTabDataAt(model_index);
 }
 
-void BrowserTabStripController::OnTabBlockedStateChanged(
-    tabs::TabInterface* tab,
-    int model_index) {
-  SetTabDataAt(model_index);
-}
-
 void BrowserTabStripController::TabGroupedStateChanged(
     TabStripModel* tab_strip_model,
     std::optional<tab_groups::TabGroupId> old_group,

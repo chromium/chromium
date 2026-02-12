@@ -66,7 +66,6 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
                       int index,
                       TabChangeType change_type) override;
   void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) override;
-  void OnTabBlockedStateChanged(tabs::TabInterface* tab, int index) override;
 
   // content::WebContentsDelegate:
   bool PreHandleGestureEvent(content::WebContents* source,
