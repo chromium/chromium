@@ -18,7 +18,6 @@
 #include <set>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -33,7 +32,7 @@
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_value_store.h"
 #include "components/prefs/prefs_export.h"
-#include "components/prefs/transparent_unordered_string_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -419,9 +418,8 @@ class COMPONENTS_PREFS_EXPORT PrefService {
  private:
   // Hash map expected to be fastest here since it minimises expensive
   // string comparisons. Order is unimportant, and deletions are rare.
-  // Confirmed on Android where this speeded Chrome startup by roughly 50ms
-  // vs. std::map, and by roughly 180ms vs. std::set of Preference pointers.
-  using PreferenceMap = TransparentUnorderedStringMap<Preference>;
+  using PreferenceMap =
+      absl::flat_hash_map<std::string, std::unique_ptr<Preference>>;
 
   // Give access to ReportUserPrefChanged() and GetMutableUserPref().
   friend class subtle::ScopedUserPrefUpdateBase;

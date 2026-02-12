@@ -201,17 +201,16 @@ const PrefService::Preference* PrefService::FindPreference(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = prefs_map_.find(path);
   if (it != prefs_map_.end())
-    return &(it->second);
+    return it->second.get();
   const base::Value* default_value = nullptr;
   if (!pref_registry_->defaults()->GetValue(path, &default_value)) {
     return nullptr;
   }
   it = prefs_map_
-           .insert(std::make_pair(
-               std::string(path),
-               Preference(this, std::string(path), default_value->type())))
+           .emplace(path, std::make_unique<Preference>(this, std::string(path),
+                                                       default_value->type()))
            .first;
-  return &(it->second);
+  return it->second.get();
 }
 
 bool PrefService::ReadOnly() const {
