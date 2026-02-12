@@ -971,8 +971,12 @@ void HostProcess::CreateAuthenticatorFactory() {
           std::move(auth_config));
 
 #if BUILDFLAG(IS_POSIX)
-  // On Linux and Mac, perform a PAM authorization step after authentication.
-  factory = std::make_unique<PamAuthorizationFactory>(std::move(factory));
+  // For Linux and Mac single-process hosts, perform a PAM authorization step
+  // after authentication. For multi-process hosts, the check will be done by
+  // the daemon process.
+  if (!multi_process_) {
+    factory = std::make_unique<PamAuthorizationFactory>(std::move(factory));
+  }
 #endif  // BUILDFLAG(IS_POSIX)
   host_->SetAuthenticatorFactory(std::move(factory));
 }

@@ -29,6 +29,7 @@
 #include "remoting/host/linux/linux_process_launcher_delegate.h"
 #include "remoting/host/linux/remote_display_session_manager.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
+#include "remoting/host/pam_utils.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
 #include "remoting/host/worker_process_launcher.h"
 
@@ -127,6 +128,14 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::
     // it is running.
     launcher_.reset();
     return;
+  }
+
+  if (!IsLocalLoginAllowed(info.user_info->username)) {
+    LOG(ERROR) << "User " << info.user_info->username
+               << " is not allowed for local login.";
+    // TODO: crbug.com/475611769 - Pass the SESSION_REJECTED error code to the
+    // network process so that the client can see the correct error message.
+    TerminateSession();
   }
 
   // TODO: crbug.com/475611769 - See if we need a dedicated desktop process

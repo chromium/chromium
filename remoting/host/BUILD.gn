@@ -122,6 +122,7 @@ source_set("common_headers") {
     "host_status_monitor.h",
     "host_status_observer.h",
     "legacy_interaction_strategy.h",
+    "pam_utils.h",
     "persistent_display_layout_manager.h",
     "polling_desktop_display_info_monitor.h",
     "sas_injector.h",
@@ -574,9 +575,12 @@ static_library("common") {
   if (is_posix) {
     sources += [
       "host_event_logger_posix.cc",
+      "pam_utils.cc",
       "posix/signal_handler.cc",
       "posix/signal_handler.h",
     ]
+
+    libs += [ "pam" ]
 
     if (!is_android) {
       deps += [ "//components/policy/core/common:policy_path_constants" ]
@@ -604,8 +608,6 @@ static_library("common") {
       "linux/certificate_watcher.cc",
       "linux/certificate_watcher.h",
     ]
-
-    libs += [ "pam" ]
 
     deps += [ "//build/config/linux/gtk" ]
 
@@ -1217,10 +1219,6 @@ if (enable_me2me_host) {
 
     if (is_linux) {
       deps += [ "//build/config/linux/gtk" ]
-    }
-
-    if (is_linux || is_mac) {
-      libs = [ "pam" ]
     }
 
     if (is_mac) {

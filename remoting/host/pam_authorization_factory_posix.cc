@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/username.h"
+#include "remoting/host/pam_utils.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
@@ -43,13 +44,7 @@ class PamAuthorizer : public protocol::Authenticator {
 
  private:
   void MaybeCheckLocalLogin();
-  bool IsLocalLoginAllowed();
   void OnMessageProcessed(base::OnceClosure resume_callback);
-
-  static int PamConversation(int num_messages,
-                             const struct pam_message** messages,
-                             struct pam_response** responses,
-                             void* context);
 
   std::unique_ptr<protocol::Authenticator> underlying_;
   enum { NOT_CHECKED, ALLOWED, DISALLOWED } local_login_status_;
@@ -139,73 +134,14 @@ PamAuthorizer::CreateChannelAuthenticator() const {
 
 void PamAuthorizer::MaybeCheckLocalLogin() {
   if (local_login_status_ == NOT_CHECKED && state() == ACCEPTED) {
-    local_login_status_ = IsLocalLoginAllowed() ? ALLOWED : DISALLOWED;
-  }
-}
-
-bool PamAuthorizer::IsLocalLoginAllowed() {
-  HOST_LOG << "Running local login check.";
-  std::string username = GetUsername();
-  if (username.empty()) {
-    LOG(ERROR) << "Failed to get username.";
-    return false;
-  }
-  struct pam_conv conv = {PamConversation, nullptr};
-  pam_handle_t* handle = nullptr;
-  HOST_LOG << "Calling pam_start() with username " << username;
-  int result =
-      pam_start("chrome-remote-desktop", username.c_str(), &conv, &handle);
-  if (result != PAM_SUCCESS) {
-    LOG(ERROR) << "pam_start() returned error " << result;
-  } else {
-    HOST_LOG << "Calling pam_acct_mgmt()";
-    result = pam_acct_mgmt(handle, 0);
-    if (result != PAM_SUCCESS) {
-      LOG(ERROR) << "pam_acct_mgmt() returned error " << result;
+    std::string username = GetUsername();
+    if (username.empty()) {
+      LOG(ERROR) << "Failed to get username.";
+      local_login_status_ = DISALLOWED;
+      return;
     }
+    local_login_status_ = IsLocalLoginAllowed(username) ? ALLOWED : DISALLOWED;
   }
-  HOST_LOG << "Calling pam_end()";
-  pam_end(handle, result);
-
-  HOST_LOG << "Local login check for " << username
-           << (result == PAM_SUCCESS ? " succeeded." : " failed.");
-
-  return result == PAM_SUCCESS;
-}
-
-int PamAuthorizer::PamConversation(int num_messages,
-                                   const struct pam_message** messages,
-                                   struct pam_response** responses,
-                                   void* context) {
-  // Assume we're only being asked to log messages, in which case our response
-  // need to be free()-able zero-initialized memory.
-  *responses = static_cast<struct pam_response*>(
-      calloc(num_messages, sizeof(struct pam_response)));
-  // SAFETY: `messages` is a pointer to a dynamically allocated array of
-  // `pam_message`s, which should be at least `num_messages` long.
-  // PamConversation is invoked as a callback from pam_start API, and is
-  // documented to have this signature:
-  // https://man7.org/linux/man-pages/man3/pam_start.3.html,
-  // https://linux.die.net/man/3/pam_conv
-  auto messages_span =
-      UNSAFE_BUFFERS(base::span(messages, static_cast<size_t>(num_messages)));
-  // We don't expect this function to be called. Since we have no easy way
-  // of returning a response, we consider it to be an error if we're asked
-  // for one and abort. Informational and error messages are logged.
-  for (const pam_message* message : messages_span) {
-    switch (message->msg_style) {
-      case PAM_ERROR_MSG:
-        LOG(ERROR) << "PAM conversation error message: " << message->msg;
-        break;
-      case PAM_TEXT_INFO:
-        HOST_LOG << "PAM conversation message: " << message->msg;
-        break;
-      default:
-        LOG(FATAL) << "Unexpected PAM conversation response required: "
-                   << message->msg << "; msg_style = " << message->msg_style;
-    }
-  }
-  return PAM_SUCCESS;
 }
 
 PamAuthorizationFactory::PamAuthorizationFactory(
