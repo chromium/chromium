@@ -348,6 +348,15 @@ class WebRtcScreenCaptureBrowserTestWithPicker
                       "current-tab captures.";
     }
 #endif
+
+#if BUILDFLAG(IS_WIN)
+    if (!test_config_.should_prefer_current_tab) {
+      // Win bots don't usually have GPU adapter, therefore DXGI capturers
+      // aren't available. WGC capturers aren't available on older platforms.
+      // Therefore we can't capture screens.
+      GTEST_SKIP() << "Skipping desktop capture tests";
+    }
+#endif
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -392,8 +401,7 @@ INSTANTIATE_TEST_SUITE_P(
 // TODO(crbug.com/40744542): Real desktop capture is flaky on below platforms.
 // TODO(crbug.com/41493366): enable this flaky test.
 // TODO(crbug.com/461258716): enable this flaky test.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
 #define MAYBE_ScreenCaptureVideo DISABLED_ScreenCaptureVideo
 #else
 #define MAYBE_ScreenCaptureVideo ScreenCaptureVideo
@@ -466,7 +474,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
 // TODO(crbug.com/40744542): Real desktop capture is flaky on below platforms.
 // TODO(crbug.com/41493366): enable this flaky test.
 // TODO(crbug.com/461258716): enable this flaky test.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux debug bots, it's flaky as well.
 #elif BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
