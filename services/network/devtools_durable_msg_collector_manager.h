@@ -52,8 +52,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessageCollectorManager
       const base::UnguessableToken& profile_id);
 
   std::vector<DevtoolsDurableMessageCollector*> GetCollectorsForTesting() {
-    return std::vector<DevtoolsDurableMessageCollector*>(
-        managed_collectors_testing_.begin(), managed_collectors_testing_.end());
+    return std::vector<DevtoolsDurableMessageCollector*>(collectors_.begin(),
+                                                         collectors_.end());
   }
 
  private:
@@ -68,8 +68,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessageCollectorManager
   size_t total_memory_usage_ = 0;
 
   // A set of collectors managed by this class.
-  std::set<raw_ptr<DevtoolsDurableMessageCollector>>
-      managed_collectors_testing_;
+  std::set<raw_ptr<DevtoolsDurableMessageCollector>> collectors_;
 
   // Keeps track of collectors being attached to a DevTools profile.
   std::multimap<const base::UnguessableToken,

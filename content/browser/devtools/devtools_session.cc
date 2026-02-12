@@ -95,6 +95,9 @@ const char kSessionId[] = "sessionId";
 // Clients match against this error message verbatim (http://crbug.com/1001678).
 const char kTargetClosedMessage[] = "Inspected target navigated or closed";
 const char kTargetCrashedMessage[] = "Target crashed";
+
+std::atomic<int> g_root_session_count{0};
+
 }  // namespace
 
 DevToolsSession::PendingMessage::PendingMessage(PendingMessage&&) = default;
@@ -107,8 +110,15 @@ DevToolsSession::PendingMessage::PendingMessage(int call_id,
 
 DevToolsSession::PendingMessage::~PendingMessage() = default;
 
+// static
+int DevToolsSession::GetRootSessionCount() {
+  return g_root_session_count.load();
+}
+
 DevToolsSession::DevToolsSession(DevToolsAgentHostClient* client, Mode mode)
-    : client_(client), mode_(mode) {}
+    : client_(client), mode_(mode) {
+  ++g_root_session_count;
+}
 
 DevToolsSession::DevToolsSession(DevToolsAgentHostClient* client,
                                  const std::string& session_id,
@@ -123,6 +133,10 @@ DevToolsSession::DevToolsSession(DevToolsAgentHostClient* client,
 }
 
 DevToolsSession::~DevToolsSession() {
+  if (!root_session_) {
+    --g_root_session_count;
+    CHECK_GE(g_root_session_count, 0);
+  }
   if (proxy_delegate_)
     proxy_delegate_->Detach(this);
   // It is Ok for session to be deleted without the dispose -

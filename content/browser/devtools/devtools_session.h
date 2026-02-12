@@ -55,6 +55,8 @@ class DevToolsSession : public protocol::FrontendChannel,
                         public DevToolsExternalAgentProxy,
                         public content::DevToolsAgentHostClientChannel {
  public:
+  static int GetRootSessionCount();
+
   // For sessions attached to the Tab target, the mode is set to TabTarget.
   // For other sessions, the mode is inherited from the parent.
   // This is used as an indication that the client has opted in into using

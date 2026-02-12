@@ -42,7 +42,7 @@ void DevtoolsDurableMessageCollectorManager::AddCollector(
 
 void DevtoolsDurableMessageCollectorManager::OnCollectorCreated(
     DevtoolsDurableMessageCollector* collector) {
-  managed_collectors_testing_.insert(collector);
+  collectors_.insert(collector);
 }
 
 void DevtoolsDurableMessageCollectorManager::OnCollectorDestroyed(
@@ -57,7 +57,7 @@ void DevtoolsDurableMessageCollectorManager::OnCollectorDestroyed(
       ++it;
     }
   }
-  managed_collectors_testing_.erase(collector);
+  collectors_.erase(collector);
 }
 
 void DevtoolsDurableMessageCollectorManager::OnCollectorAddedBytes(
@@ -79,6 +79,9 @@ bool DevtoolsDurableMessageCollectorManager::OnMemoryDump(
   dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                   base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                   total_memory_usage_);
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
+                  collectors_.size());
   return true;
 }
 

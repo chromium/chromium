@@ -178,6 +178,10 @@ TEST_F(DevtoolsDurableMessageCollectorManagerTest, ReportAggregateMemoryUsage) {
   ASSERT_NE(dump, nullptr);
   MemoryAllocatorDump::Entry entry("size", "bytes", 5 * 1024 * 1024u);
   EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(entry))));
+  MemoryAllocatorDump::Entry object_count_entry(
+      MemoryAllocatorDump::kNameObjectCount, MemoryAllocatorDump::kUnitsObjects,
+      1u);
+  EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(object_count_entry))));
 
   collector_remote.reset();
   EXPECT_TRUE(base::test::RunUntil(

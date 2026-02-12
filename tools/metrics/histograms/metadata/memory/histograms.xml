@@ -72,6 +72,7 @@ chromium-metrics-reviews@google.com.
   <variant name="DawnSharedContext"/>
   <variant name="DevTools"/>
   <variant name="DevtoolsDurableMessageCollectorManager"/>
+  <variant name="DevToolsManager"/>
   <variant name="DiscardableSharedMemoryManager"/>
   <variant name="DOMStorage"/>
   <variant name="DownloadService"/>
@@ -182,11 +183,16 @@ chromium-metrics-reviews@google.com.
   <variant name=".DawnSharedContext.Textures"
       summary="Only counting textures' memory used by the Graphite Dawn
                shared context."/>
+  <variant name=".DevTools.Sessions.ActiveCount"
+      summary="Reports the number of active DevTools sessions."/>
   <variant name=".Discardable"
       summary="Only counting memory used by Discardable manager."/>
   <variant name=".DurableMessages.AggregateMemoryUsage"
       summary="Reports the aggregate memory usage in megabytes by all
                DevToolsDurableMessageCollector instances."/>
+  <variant name=".DurableMessages.CollectorCount"
+      summary="Reports the number of DevToolsDurableMessageCollector
+               instances."/>
   <variant name=".ExtensionFunctions"
       summary="Only counting memory used by ExtensionFunctions."/>
   <variant name=".Extensions.ValueStore"
