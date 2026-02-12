@@ -137,8 +137,8 @@ class SkillsService : public KeyedService {
   virtual const std::vector<std::unique_ptr<Skill>>& GetSkills() const = 0;
 
   // Returns a const reference to the currently loaded 1p skills. If skills have
-  // not been loaded yet, returns an empty map. Returns an empty map if the
-  // service is not in kReady state.
+  // not been loaded yet, returns an empty map. The service does not have to be
+  // in a kReady state since these skills are loaded from a SCS file.
   virtual const SkillsMap& Get1PSkills() const = 0;
 
   // Registers an observer for the service notifications.

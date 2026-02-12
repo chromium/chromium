@@ -160,9 +160,6 @@ void SkillsPageHandler::GetInitial1PSkills(
       std::move(callback), FirstPartySkillsMap());
   auto* service =
       SkillsServiceFactory::GetForProfile(base::to_address(profile_));
-  if (!isServiceReady(service)) {
-    return;
-  }
   std::move(scoped_callback).Run(Translate1PSkillsMap(service->Get1PSkills()));
 }
 
