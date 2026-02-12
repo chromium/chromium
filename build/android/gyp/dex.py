@@ -80,9 +80,9 @@ def _ParseArgs(args):
   parser.add_argument(
       '--incremental-dir',
       help='Path of directory to put intermediate dex files.')
-  parser.add_argument('--library',
+  parser.add_argument('--intermediate',
                       action='store_true',
-                      help='Allow numerous dex files within output.')
+                      help='Dex must still be merged before being used.')
   parser.add_argument('--r8-jar-path', required=True, help='Path to R8 jar.')
   parser.add_argument('--skip-custom-d8',
                       action='store_true',
@@ -275,7 +275,8 @@ def _CreateFinalDex(d8_inputs,
                     service_jars=None):
   tmp_dex_output = os.path.join(tmp_dir, 'tmp_dex_output.zip')
   needs_dexing = not all(f.endswith('.dex') for f in d8_inputs)
-  needs_dexmerge = output.endswith('.dex') or not (options and options.library)
+  needs_dexmerge = output.endswith('.dex') or not (options
+                                                   and options.intermediate)
   services_map = _CreateServicesMap(service_jars or [])
   if needs_dexing or needs_dexmerge:
     tmp_dex_dir = os.path.join(tmp_dir, 'tmp_dex_dir')
@@ -429,7 +430,7 @@ def _CreateIntermediateDexFiles(changes, options, tmp_dir, dex_cmd):
   # If the only change is deleting a file, class_files will be empty.
   if class_files:
     # Dex necessary classes into intermediate dex files.
-    dex_cmd = dex_cmd + ['--intermediate', '--file-per-class-file']
+    dex_cmd = dex_cmd + ['--file-per-class-file']
     if options.desugar_dependencies and not options.skip_custom_d8:
       # Adding os.sep to remove the entire prefix.
       dex_cmd += ['--file-tmp-prefix', tmp_extract_dir + os.sep]
@@ -529,6 +530,8 @@ def main(args):
 
   if options.release:
     dex_cmd += ['--release']
+  elif options.intermediate:
+    dex_cmd += ['--intermediate']
   if options.min_api:
     dex_cmd += ['--min-api', options.min_api]
 

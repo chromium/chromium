@@ -1698,7 +1698,7 @@ if (enable_java_templates) {
           ]
         }
         if (_is_library) {
-          args += [ "--library" ]
+          args += [ "--intermediate" ]
         }
         if (defined(invoker.input_dex_filearg)) {
           args += [ "--dex-inputs-filearg=${invoker.input_dex_filearg}" ]
