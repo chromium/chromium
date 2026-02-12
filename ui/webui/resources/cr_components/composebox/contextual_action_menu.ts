@@ -136,12 +136,15 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
     this.$.menu.close();
   }
 
+  private onWindowBlur_ = this.close.bind(this);
+
   showAt(anchor: HTMLElement) {
     this.$.menu.showAt(anchor, {
       top: anchor.getBoundingClientRect().bottom,
       width: MENU_WIDTH_PX,
       anchorAlignmentX: AnchorAlignment['AFTER_START'],
     });
+    window.addEventListener('blur', this.onWindowBlur_);
   }
 
   protected isToolAllowed_(tool: ToolMode): boolean {
@@ -419,6 +422,7 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   }
 
   protected onMenuClose_() {
+    window.removeEventListener('blur', this.onWindowBlur_);
     this.dispatchEvent(new CustomEvent('close', {
       bubbles: true,
       composed: true,
