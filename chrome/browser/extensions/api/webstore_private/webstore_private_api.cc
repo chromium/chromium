@@ -582,12 +582,28 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallStatusCheckDone(
 
     if (ShouldShowFrictionDialog(profile_)) {
       ShowInstallFrictionDialog(web_contents);
+#if BUILDFLAG(IS_ANDROID)
+    } else if (supervised_user::AreExtensionsPermissionsEnabled(profile_) &&
+               !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
+                   profile_)) {
+      // This install requires parent permission, so show the Ask Parent dialog.
+      ShowExtensionInstallAskParentDialog(
+          web_contents,
+          /*cancel_callback=*/
+          base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
+                             OnRequestParentApprovalPromptCancelled,
+                         this),
+          /*approve_callback=*/
+          base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
+                             RequestExtensionApproval,
+                         this, web_contents));
+#endif  // BUILDFLAG(IS_ANDROID)
     } else {
       ShowInstallDialog(web_contents);
     }
   }
-  // Control flow finishes up in OnInstallPromptDone, OnRequestPromptDone or
-  // OnBlockByPolicyPromptDone.
+  // Control flow finishes up in OnInstallPromptDone, OnRequestPromptDone,
+  // OnBlockByPolicyPromptDone, or OnRequestParentApprovalPromptCancelled.
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseFailure(
@@ -605,6 +621,17 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseFailure(
 
 void WebstorePrivateBeginInstallWithManifest3Function::RequestExtensionApproval(
     content::WebContents* web_contents) {
+  if (!web_contents) {
+    // The browser window has gone away. This may be due to the user closing
+    // the window, or something in the background could have closed the web
+    // contents.
+    Respond(BuildResponse(api::webstore_private::Result::kUserCancelled,
+                          kWebstoreUserCancelledError));
+    // Matches the AddRef in Run().
+    Release();
+    return;
+  }
+
   SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
       ManagementAPI::GetFactoryInstance()
           ->Get(profile_)
@@ -798,10 +825,19 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnRequestPromptDone(
   // Matches the AddRef in Run().
   Release();
 }
+
 void WebstorePrivateBeginInstallWithManifest3Function::
     OnBlockByPolicyPromptDone() {
   Respond(BuildResponse(api::webstore_private::Result::kBlockedByPolicy,
                         kWebstoreBlockByPolicy));
+  // Matches the AddRef in Run().
+  Release();
+}
+
+void WebstorePrivateBeginInstallWithManifest3Function::
+    OnRequestParentApprovalPromptCancelled() {
+  Respond(BuildResponse(api::webstore_private::Result::kUserCancelled,
+                        kWebstoreUserCancelledError));
   // Matches the AddRef in Run().
   Release();
 }

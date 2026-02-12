@@ -5338,6 +5338,15 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_EXTENSION_REPAIR_PROMPT_TITLE" desc="Titlebar of the extension or app installation prompt. Asks the user if they want to update the extension/app.">
         Repair "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>"?
       </message>
+      <message name="IDS_EXTENSION_ASK_PARENT_PROMPT_TITLE" desc="Titlebar of the extension ask parent prompt. Tells the user they need to ask their parent for approval to install this extension.">
+        Ask parent for approval
+      </message>
+      <message name="IDS_EXTENSION_ASK_PARENT_PROMPT_BODY" desc="Body of the extension ask parent prompt. Tells the user they need to ask their parent for approval to install this extension.">
+        Show your parent or guardian this screen so they can say whether it's OK for you to add this extension
+      </message>
+      <message name="IDS_EXTENSION_ASK_PARENT_PROMPT_ASK_IN_PERSON_BUTTON" desc="Text for the ask-in-person button on the extension ask parent for approval install prompt.">
+        Ask in person
+      </message>
       <if expr="use_titlecase">
         <message name="IDS_EXTENSION_EXTERNAL_INSTALL_PROMPT_ACCEPT_BUTTON_EXTENSION" desc="In Title Case: Button on the external install prompt to enable an extension installed by a third party.">
           Enable Extension

@@ -159,6 +159,15 @@ void ShowExtensionInstallBlockedByParentDialog(
     content::WebContents* web_contents,
     base::OnceClosure done_callback);
 
+#if BUILDFLAG(IS_ANDROID)
+// Shows a dialog to notify the user that they need to ask their parent for
+// approval to install an extension. This is the first of a set of dialogs for
+// supervised user accounts on Android.
+void ShowExtensionInstallAskParentDialog(content::WebContents* web_contents,
+                                         base::OnceClosure cancel_callback,
+                                         base::OnceClosure approve_callback);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Shows a dialog when the user tries to upload an extension to their account.
 void ShowUploadExtensionToAccountDialog(Profile* profile,
                                         gfx::NativeWindow parent,
