@@ -11,8 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "components/sessions/core/session_id.h"
@@ -55,7 +53,6 @@ class ActiveTaskContextProvider;
 
 class ContextualTasksSidePanelCoordinator
     : public ContextualTasksPanelController,
-      public TabStripModelObserver,
       public TabListInterfaceObserver,
       public SidePanelEntryObserver,
       content::WebContentsObserver {
@@ -162,12 +159,6 @@ class ContextualTasksSidePanelCoordinator
   // Update the associated WebContents for active tab. Returns whether the web
   // contents was changed.
   bool UpdateWebContentsForActiveTab();
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
 
   // Create the side panel view.
   std::unique_ptr<views::View> CreateSidePanelView(SidePanelEntryScope& scope);

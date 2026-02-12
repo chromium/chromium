@@ -47,10 +47,6 @@ BASE_DECLARE_FEATURE(
 // param.
 BASE_DECLARE_FEATURE(kEnableNotifyZeroStateRenderedCapability);
 
-// Enables use of TabListInterfaceObserver in
-// ContextualTasksSidePanelCoordinator.
-BASE_DECLARE_FEATURE(kContextualTasksTabListInterfaceObserver);
-
 // Replace the overflow menu in the side panel with an explicit button to move
 // the thread to a new tab.
 BASE_DECLARE_FEATURE(kContextualTasksExpandButton);
