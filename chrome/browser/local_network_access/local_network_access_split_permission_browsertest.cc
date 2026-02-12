@@ -335,6 +335,60 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
                             QueryPermissionScript("local-network-access")));
 }
 
+// Test of the permissionStatus.onchange handler for the LOOBPACK_NETWORK
+// permission.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
+                       PermissionStatusOnchangeNewPermission) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_public_server().GetURL(
+          "a.com", "/local_network_access/permission-status-onchange.html")));
+
+  // Enable auto-accept of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // permission status onchange handler should be triggered.
+  ASSERT_EQ("granted",
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace("permission_onstatus($1, $2)",
+                                   https_server().GetURL("b.com", kLnaPath),
+                                   "loopback-network")));
+
+  // It should be the loopback-network permission that is granted.
+  ASSERT_EQ("granted",
+            content::EvalJs(web_contents(),
+                            QueryPermissionScript("loopback-network")));
+}
+
+// Test of the permissionStatus.onchange handler for the LOCAL_NETWORK_ACCESS
+// permission alias. Regression test for crbug.com/480069043.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
+                       PermissionStatusOnchangeOldPermission) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_public_server().GetURL(
+          "a.com", "/local_network_access/permission-status-onchange.html")));
+
+  // Enable auto-accept of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // permission status onchange handler should be triggered.
+  ASSERT_EQ("granted",
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace("permission_onstatus($1, $2)",
+                                   https_server().GetURL("b.com", kLnaPath),
+                                   "local-network-access")));
+
+  // It should be the loopback-network permission that is granted.
+  ASSERT_EQ("granted",
+            content::EvalJs(web_contents(),
+                            QueryPermissionScript("loopback-network")));
+}
+
 // Open a public page that iframes a public page, then navigate it to a loopback
 // page.
 IN_PROC_BROWSER_TEST_F(

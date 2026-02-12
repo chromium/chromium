@@ -251,6 +251,11 @@ class PermissionContextBase : public content_settings::Observer {
   // Implementors can override this method to avoid using automatic embargo.
   virtual bool UsesAutomaticEmbargo() const;
 
+  // Implementors can override this method to use custom notification logic.
+  virtual void NotifyObservers(const ContentSettingsPattern& primary_pattern,
+                               const ContentSettingsPattern& secondary_pattern,
+                               ContentSettingsTypeSet content_type_set) const;
+
   // Derived classes can use this function to find some particular permission
   // request.
   const PermissionRequest* FindPermissionRequest(
@@ -293,10 +298,6 @@ class PermissionContextBase : public content_settings::Observer {
   void PermissionDecided(PermissionDecision decision,
                          bool is_final_decision,
                          const PermissionRequestData& request_data);
-
-  void NotifyObservers(const ContentSettingsPattern& primary_pattern,
-                       const ContentSettingsPattern& secondary_pattern,
-                       ContentSettingsTypeSet content_type_set) const;
 
   raw_ptr<content::BrowserContext> browser_context_;
   const ContentSettingsType content_settings_type_;
