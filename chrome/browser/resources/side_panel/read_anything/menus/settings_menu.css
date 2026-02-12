@@ -19,9 +19,10 @@
   color: inherit;
   cursor: pointer;
   display: flex;
-  height: 20px;
   justify-content: space-between;
-  padding: 4px var(--cr-section-padding, 20px);
+  line-height: var(--immersive-menu-line-height);
+  padding-block: 4px;
+  padding-inline: 24px 20px;
   text-align: start;
   width: 100%;
 }
@@ -63,6 +64,10 @@
 
 :host-context([dir='rtl']) .end-icon {
   transform: scaleX(-1);
+}
+
+#settings-menu-dialog {
+  --cr-action-menu-padding: 0;
 }
 
 #settings-menu-dialog::part(dialog) {
