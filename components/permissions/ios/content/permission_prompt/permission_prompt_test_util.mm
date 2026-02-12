@@ -69,6 +69,7 @@ void MockPermissionPromptDelegate::SetManageClicked() {}
 void MockPermissionPromptDelegate::SetLearnMoreClicked() {}
 void MockPermissionPromptDelegate::SetHatsShownCallback(
     base::OnceCallback<void()> callback) {}
+void MockPermissionPromptDelegate::SwitchToLoudPrompt() {}
 
 content::WebContents* MockPermissionPromptDelegate::GetAssociatedWebContents() {
   return nullptr;
