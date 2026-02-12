@@ -6,7 +6,6 @@
 
 #include <numeric>
 #include <optional>
-#include <unordered_set>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -575,26 +574,6 @@ SavedTabGroup SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
   }
 
   return saved_tab_group;
-}
-
-// static
-std::unordered_set<std::string> SavedTabGroupUtils::GetURLsInSavedTabGroup(
-    Profile* profile,
-    const base::Uuid& saved_id) {
-  TabGroupSyncService* tab_group_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
-
-  const std::optional<SavedTabGroup> saved_group =
-      tab_group_service->GetGroup(saved_id);
-  CHECK(saved_group.has_value());
-
-  std::unordered_set<std::string> saved_urls;
-  for (const tab_groups::SavedTabGroupTab& saved_tab :
-       saved_group->saved_tabs()) {
-    saved_urls.emplace(saved_tab.url().spec());
-  }
-
-  return saved_urls;
 }
 
 // static

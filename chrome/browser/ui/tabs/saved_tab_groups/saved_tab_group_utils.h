@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_UTILS_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_UTILS_H_
 
-#include <unordered_set>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -122,11 +121,6 @@ class SavedTabGroupUtils {
   // Returns the list of WebContentses in the local group `group_id` in order.
   static std::vector<content::WebContents*> GetWebContentsesInGroup(
       tab_groups::TabGroupId group_id);
-
-  // Returns the set of urls currently stored in the saved tab group.
-  static std::unordered_set<std::string> GetURLsInSavedTabGroup(
-      Profile* profile,
-      const base::Uuid& saved_id);
 
   // Activates the first tab in the saved group. If a tab in the group is
   // already activated, then we focus the window the group belongs to instead.
