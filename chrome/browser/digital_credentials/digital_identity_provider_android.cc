@@ -117,11 +117,10 @@ void DigitalIdentityProviderAndroid::Create(content::WebContents* web_contents,
       origin.Serialize(), *request_str);
 }
 
-void DigitalIdentityProviderAndroid::OnReceive(
-    JNIEnv* env,
-    std::optional<std::string> protocol,
-    std::string result,
-    int32_t j_status_for_metrics) {
+void DigitalIdentityProviderAndroid::OnReceive(JNIEnv* env,
+                                               std::string protocol,
+                                               std::string result,
+                                               int32_t j_status_for_metrics) {
   if (!callback_) {
     return;
   }

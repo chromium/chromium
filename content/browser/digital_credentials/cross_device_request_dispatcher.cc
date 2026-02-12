@@ -181,25 +181,22 @@ void RequestDispatcher::OnComplete(
   }
 
   // The CTAP protocol standards defines the format of the mobile devices
-  // response contains a JSON object that has both a protocol and data. Mobile
-  // devices are being migrated to support the CTAP standards. First, try to
-  // read the proper format, otherwise, fallback to the legacy format.
+  // response contains a JSON object that has both a protocol and data.
   if (data->is_dict()) {
     const base::DictValue& data_dict = data->GetDict();
     const base::Value* wallet_data = data_dict.Find("data");
-    if (wallet_data) {
+    const std::string* protocol = data_dict.FindString("protocol");
+    if (wallet_data && protocol) {
       FIDO_LOG(EVENT) << "Standard format is received from the mobile device.";
       std::move(callback_).Run(
           Response(DigitalIdentityProvider::DigitalCredential(
-              base::OptionalFromPtr(data_dict.FindString("protocol")),
-              wallet_data->Clone())));
+              *protocol, wallet_data->Clone())));
       return;
     }
   }
-  FIDO_LOG(EVENT) << "No proper standard format is received from the mobile "
-                     "device. Fallback to legacy format.";
-  std::move(callback_).Run(Response(DigitalIdentityProvider::DigitalCredential(
-      /*protocol=*/std::nullopt, data->Clone())));
+  FIDO_LOG(ERROR) << "No proper standard format is received from the mobile "
+                     "device.";
+  std::move(callback_).Run(base::unexpected(ProtocolError::kInvalidResponse));
 }
 
 }  // namespace content::digital_credentials::cross_device

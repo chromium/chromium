@@ -34,7 +34,7 @@ class DigitalIdentityProviderAndroid : public content::DigitalIdentityProvider {
   // Implementation of corresponding JNI methods in
   // DigitalIdentityProviderAndroid.Natives.*
   void OnReceive(JNIEnv*,
-                 std::optional<std::string> protocol,
+                 std::string protocol,
                  std::string result,
                  int32_t j_status_for_metrics);
 

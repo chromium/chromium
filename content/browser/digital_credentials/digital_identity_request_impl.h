@@ -85,15 +85,13 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   // Called when the user has fulfilled the interstitial requirement. Will be
   // called immediately after OnGetRequestJsonParsed() if no interstitial is
   // needed.
-  void OnInterstitialDone(std::optional<std::string> protocol,
-                          base::Value request_to_send,
+  void OnInterstitialDone(base::Value request_to_send,
                           DigitalIdentityProvider::RequestStatusForMetrics
                               status_after_interstitial);
 
   // Infers blink::mojom::RequestDigitalIdentityStatus based on
   // `status_for_metrics`.
   void CompleteRequest(
-      std::optional<std::string> protocol,
       base::expected<DigitalIdentityProvider::DigitalCredential,
                      DigitalIdentityProvider::RequestStatusForMetrics>
           status_for_metrics);
@@ -102,7 +100,6 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
       DigitalIdentityProvider::RequestStatusForMetrics status_for_metrics);
 
   void CompleteRequestWithStatus(
-      std::optional<std::string> protocol,
       blink::mojom::RequestDigitalIdentityStatus status,
       base::expected<DigitalIdentityProvider::DigitalCredential,
                      DigitalIdentityProvider::RequestStatusForMetrics>

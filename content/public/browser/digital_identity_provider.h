@@ -27,14 +27,14 @@ class WebContents;
 class CONTENT_EXPORT DigitalIdentityProvider {
  public:
   struct CONTENT_EXPORT DigitalCredential {
-    DigitalCredential(std::optional<std::string> protocol, base::Value data);
+    DigitalCredential(std::string protocol, base::Value data);
     DigitalCredential(DigitalCredential&& other);
     DigitalCredential& operator=(DigitalCredential&& other);
     DigitalCredential(DigitalCredential& other) = delete;
     DigitalCredential& operator=(const DigitalCredential&) = delete;
     ~DigitalCredential();
 
-    std::optional<std::string> protocol;
+    std::string protocol;
     base::Value data;
   };
   // Do not reorder or change the values because the enum values are being
