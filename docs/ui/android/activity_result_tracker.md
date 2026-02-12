@@ -85,6 +85,11 @@ killed by the OS in the background to free memory during the flow.
       component used to start the new activity will be called to handle the
       result.
 
+5.  **Unregister the listener when closing the UI owning it:**
+    ```java
+    tracker.unregister(myComponent);
+    ```
+
 ## The initial problem: lost results on Activity recreation
 
 Chrome mainly relies on

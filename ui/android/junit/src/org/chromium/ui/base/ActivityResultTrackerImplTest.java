@@ -156,6 +156,19 @@ public class ActivityResultTrackerImplTest {
     }
 
     @Test
+    public void testRegisterAfterUnregister() {
+        mTracker.register(mListener);
+        verify(mRegistry).register(anyString(), any(), any());
+
+        mTracker.unregister(mListener);
+        verify(mLauncher).unregister();
+
+        reset(mRegistry);
+        mTracker.register(mListener);
+        verify(mRegistry).register(any(), any(), any());
+    }
+
+    @Test
     public void testRecreation_inflightActivitiesRegisteredInOrder() {
         ActivityResultTracker.ResultListener listener2 =
                 Mockito.mock(ActivityResultTracker.ResultListener.class);

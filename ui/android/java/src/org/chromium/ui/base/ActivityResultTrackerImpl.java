@@ -15,7 +15,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -176,7 +175,7 @@ public class ActivityResultTrackerImpl implements ActivityResultTracker {
                                         .computeIfAbsent(restorationKey, k -> new ArrayList<>())
                                         .add(new PendingResult(result, savedConfig));
                             }
-                            remove(key);
+                            unregister(key);
                         }
                     };
             // This will never be used to start an activity again, but is put to the launchers map
@@ -253,16 +252,23 @@ public class ActivityResultTrackerImpl implements ActivityResultTracker {
         launcher.launch(intent);
     }
 
-    @VisibleForTesting
-    public void removeAll() {
+    @Override
+    public void unregister(ResultListener listener) {
+        String key = mListenersToKeys.get(listener);
+        if (key != null) {
+            unregister(key);
+        }
+    }
+
+    private void removeAll() {
         ArrayList<String> keysSnapshot = new ArrayList<>(mOrderedLaunchers.keySet());
         for (String key : keysSnapshot) {
-            remove(key);
+            unregister(key);
         }
         mRestorationKeyToPendingResults.clear();
     }
 
-    private void remove(String key) {
+    private void unregister(String key) {
         ResultListener listener = mKeysToListeners.remove(key);
         if (listener != null) {
             mListenersToKeys.remove(listener);

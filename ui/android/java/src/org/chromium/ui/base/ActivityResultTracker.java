@@ -119,6 +119,21 @@ public interface ActivityResultTracker {
     void register(ResultListener listener);
 
     /**
+     * Unregisters the listener if it has been registered previously. This should be called when
+     * leaving the UI registering the listener initially (e.g. recent tabs page). This way, when the
+     * UI is opened again in the same activity, a new ip-to-date listener can be registered with the
+     * same key.
+     *
+     * <p>Note that if the UI is closed due to activity recreation, the key should have been saved
+     * in the instance state earlier during onSaveInstanceState(), as MVC destruction happens during
+     * onDestroy() usually, so the pending result should be caught after the base activity's
+     * recreation.
+     *
+     * @param listener the ResultListener to be unregistered.
+     */
+    void unregister(ResultListener listener);
+
+    /**
      * Starts an activity for result. The result handling callback must be registered before calling
      * this method.
      *
