@@ -40,13 +40,13 @@ NegotiatingClientAuthenticator::NegotiatingClientAuthenticator(
 NegotiatingClientAuthenticator::~NegotiatingClientAuthenticator() = default;
 
 void NegotiatingClientAuthenticator::ProcessMessage(
-    const jingle_xmpp::XmlElement* message,
+    const JingleAuthentication& message,
     base::OnceClosure resume_callback) {
   DCHECK_EQ(state(), WAITING_MESSAGE);
   state_ = PROCESSING_MESSAGE;
 
-  std::string method_attr = message->Attr(kMethodAttributeQName);
-  AuthenticationMethod method = ParseAuthenticationMethodString(method_attr);
+  AuthenticationMethod method =
+      message.method.value_or(AuthenticationMethod::INVALID);
 
   // The host picked a method different from the one the client had selected.
   if (method != current_method_) {
@@ -76,48 +76,35 @@ void NegotiatingClientAuthenticator::ProcessMessage(
     CreateAuthenticatorForCurrentMethod(
         WAITING_MESSAGE,
         base::BindOnce(&NegotiatingAuthenticatorBase::ProcessMessageInternal,
-                       base::Unretained(this),
-                       base::Owned(new jingle_xmpp::XmlElement(*message)),
+                       base::Unretained(this), message,
                        std::move(resume_callback)));
     return;
   }
   ProcessMessageInternal(message, std::move(resume_callback));
 }
 
-std::unique_ptr<jingle_xmpp::XmlElement>
-NegotiatingClientAuthenticator::GetNextMessage() {
+JingleAuthentication NegotiatingClientAuthenticator::GetNextMessage() {
   DCHECK_EQ(state(), MESSAGE_READY);
 
   // This is the first message to the host, send a list of supported methods.
   if (current_method_ == AuthenticationMethod::INVALID) {
     // If no authentication method has been chosen, see if we can optimistically
     // choose one.
-    std::unique_ptr<jingle_xmpp::XmlElement> result;
+    JingleAuthentication result;
     if (current_authenticator_) {
       DCHECK(current_authenticator_->state() == MESSAGE_READY);
       result = GetNextMessageInternal();
-    } else {
-      result = CreateEmptyAuthenticatorMessage();
     }
 
     if (is_paired()) {
       // If the client is paired with the host then attach pairing client_id to
       // the message.
-      jingle_xmpp::XmlElement* pairing_tag =
-          new jingle_xmpp::XmlElement(kPairingInfoTag);
-      result->AddElement(pairing_tag);
-      pairing_tag->AddAttr(kClientIdAttribute, config_.pairing_client_id);
+      result.pairing_info =
+          JingleAuthentication::PairingInfo{config_.pairing_client_id};
     }
 
     // Include a list of supported methods.
-    std::string supported_methods;
-    for (AuthenticationMethod method : methods_) {
-      if (!supported_methods.empty()) {
-        supported_methods += kSupportedMethodsSeparator;
-      }
-      supported_methods += AuthenticationMethodToString(method);
-    }
-    result->AddAttr(kSupportedMethodsAttributeQName, supported_methods);
+    result.supported_methods = methods_;
     state_ = WAITING_MESSAGE;
     return result;
   }

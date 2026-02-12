@@ -22,8 +22,7 @@ TEST(ContentDescriptionTest, FormatAndParse) {
   // serialized.
   // TODO: crbug.com/375470501 - Fix the test for WebRTC.
   config->set_ice_supported(true);
-  ContentDescription description(
-      std::move(config), Authenticator::CreateEmptyAuthenticatorMessage());
+  ContentDescription description(std::move(config), JingleAuthentication());
   std::unique_ptr<jingle_xmpp::XmlElement> xml(description.ToXml());
   LOG(ERROR) << xml->Str();
   std::unique_ptr<ContentDescription> parsed(

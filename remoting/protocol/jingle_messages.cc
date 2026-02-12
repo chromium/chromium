@@ -144,11 +144,22 @@ JingleAuthentication::JingleAuthentication() = default;
 JingleAuthentication::JingleAuthentication(const JingleAuthentication&) =
     default;
 JingleAuthentication::JingleAuthentication(JingleAuthentication&&) = default;
+
 JingleAuthentication& JingleAuthentication::operator=(
     const JingleAuthentication&) = default;
+
 JingleAuthentication& JingleAuthentication::operator=(JingleAuthentication&&) =
     default;
+
 JingleAuthentication::~JingleAuthentication() = default;
+
+bool JingleAuthentication::is_empty() const {
+  return supported_methods.empty() && !method && spake_message.empty() &&
+         verification_hash.empty() && certificate.empty() && !pairing_info &&
+         session_authz_host_token.empty() &&
+         session_authz_session_token.empty() && pairing_error.empty() &&
+         id.empty() && test_id.empty() && test_key.empty();
+}
 
 IceTransportInfo::NamedCandidate::NamedCandidate() = default;
 

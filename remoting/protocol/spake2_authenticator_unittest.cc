@@ -86,11 +86,11 @@ TEST_F(Spake2AuthenticatorTest, InvalidSecret) {
   reinterpret_cast<Spake2Authenticator*>(client_.get())->state_ =
       Authenticator::MESSAGE_READY;
 
-  std::unique_ptr<jingle_xmpp::XmlElement> message(client_->GetNextMessage());
-  ASSERT_TRUE(message.get());
+  JingleAuthentication message = client_->GetNextMessage();
+  ASSERT_FALSE(message.is_empty());
 
   ASSERT_EQ(Authenticator::WAITING_MESSAGE, client_->state());
-  host_->ProcessMessage(message.get(), base::DoNothing());
+  host_->ProcessMessage(message, base::DoNothing());
   // This assumes that Spake2Authenticator::ProcessMessage runs synchronously.
   ASSERT_EQ(Authenticator::REJECTED, host_->state());
 }

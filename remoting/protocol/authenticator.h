@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/protocol/credentials_type.h"
+#include "remoting/protocol/jingle_messages.h"
 
 namespace jingle_xmpp {
 class XmlElement;
@@ -200,12 +201,12 @@ class Authenticator {
   // ownership of |message|. |resume_callback| will be called when processing is
   // finished. The implementation must guarantee that |resume_callback| is not
   // called after the Authenticator is destroyed.
-  virtual void ProcessMessage(const jingle_xmpp::XmlElement* message,
+  virtual void ProcessMessage(const JingleAuthentication& message,
                               base::OnceClosure resume_callback) = 0;
 
   // Must be called when in MESSAGE_READY state. Returns next
   // authentication message that needs to be sent to the peer.
-  virtual std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() = 0;
+  virtual JingleAuthentication GetNextMessage() = 0;
 
   // Returns the auth key received as result of the authentication handshake.
   virtual const std::string& GetAuthKey() const = 0;

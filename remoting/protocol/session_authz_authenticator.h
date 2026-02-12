@@ -31,11 +31,6 @@ namespace remoting::protocol {
 // See go/crd-sessionauthz-integration for internal details.
 class SessionAuthzAuthenticator : public Authenticator {
  public:
-  static constexpr jingle_xmpp::StaticQName kHostTokenTag = {
-      remoting::kChromotingXmlNamespace, "host-token"};
-  static constexpr jingle_xmpp::StaticQName kSessionTokenTag = {
-      remoting::kChromotingXmlNamespace, "session-token"};
-
   SessionAuthzAuthenticator(
       CredentialsType credentials_type,
       std::unique_ptr<SessionAuthzServiceClient> service_client,
@@ -72,9 +67,9 @@ class SessionAuthzAuthenticator : public Authenticator {
   bool started() const override;
   RejectionReason rejection_reason() const override;
   RejectionDetails rejection_details() const override;
-  void ProcessMessage(const jingle_xmpp::XmlElement* message,
+  void ProcessMessage(const JingleAuthentication& message,
                       base::OnceClosure resume_callback) override;
-  std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
+  JingleAuthentication GetNextMessage() override;
   const std::string& GetAuthKey() const override;
   const SessionPolicies* GetSessionPolicies() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
@@ -121,11 +116,10 @@ class SessionAuthzAuthenticator : public Authenticator {
       base::OnceClosure resume_callback,
       const HttpStatus& status,
       std::unique_ptr<internal::GenerateHostTokenResponseStruct> response);
-  void AddHostTokenElement(jingle_xmpp::XmlElement* message);
-  void VerifySessionToken(const jingle_xmpp::XmlElement& message,
+  void VerifySessionToken(const JingleAuthentication& message,
                           base::OnceClosure resume_callback);
   void OnVerifiedSessionToken(
-      const jingle_xmpp::XmlElement& message,
+      const JingleAuthentication& message,
       base::OnceClosure resume_callback,
       const HttpStatus& status,
       std::unique_ptr<internal::VerifySessionTokenResponseStruct> response);

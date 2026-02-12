@@ -71,12 +71,14 @@ struct SessionDescription {
   // A serialized string representation of the sdp.
   std::string sdp;
 
-  // Base64-encoded HMAC of the SDP description, for validation.
+  // Raw HMAC bytes of the SDP description, for validation.
   std::vector<uint8_t> signature;
 };
 
 // The authentication payload used in session-initiate, session-accept, and
 // session-info messages.
+// TODO: joedow - Consider using sub-messages to limit the fields for each
+// authenticator type.
 struct JingleAuthentication {
   JingleAuthentication();
   JingleAuthentication(const JingleAuthentication&);
@@ -91,17 +93,38 @@ struct JingleAuthentication {
   // The current auth method.
   std::optional<remoting::AuthenticationMethod> method;
 
-  // Base64-encoded SPAKE message.
+  // Raw SPAKE message bytes.
   std::vector<uint8_t> spake_message;
 
-  // Base64-encoded verification hash.
+  // Raw verification hash bytes.
   std::vector<uint8_t> verification_hash;
 
+  // Raw certificate bytes.
+  std::vector<uint8_t> certificate;
+
+  // Pairing information.
+  struct PairingInfo {
+    std::string client_id;
+  };
+  std::optional<PairingInfo> pairing_info;
+
+  // Generic ID attribute, used by some authenticators (e.g. FakeAuthenticator).
+  std::string id;
+
   // SessionAuthz host token.
-  std::vector<uint8_t> session_authz_host_token;
+  std::string session_authz_host_token;
 
   // SessionAuthz session token.
-  std::vector<uint8_t> session_authz_session_token;
+  std::string session_authz_session_token;
+
+  // Pairing error message, if any.
+  std::string pairing_error;
+
+  // Fake values for testing.
+  std::string test_id;
+  std::vector<uint8_t> test_key;
+
+  bool is_empty() const;
 };
 
 struct IceTransportInfo {

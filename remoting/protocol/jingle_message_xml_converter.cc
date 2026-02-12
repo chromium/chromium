@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -18,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/name_value_map.h"
+#include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/content_description.h"
 #include "remoting/protocol/jingle_messages.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
@@ -87,6 +89,33 @@ const jingle_xmpp::StaticQName kQNameHostAttributes = {kChromotingXmlNamespace,
                                                        "host-attributes"};
 const jingle_xmpp::StaticQName kQNameHostConfiguration = {
     kChromotingXmlNamespace, "host-configuration"};
+
+const jingle_xmpp::StaticQName kQNameAuthentication = {kChromotingXmlNamespace,
+                                                       "authentication"};
+const jingle_xmpp::StaticQName kQNameSpakeMessage = {kChromotingXmlNamespace,
+                                                     "spake-message"};
+const jingle_xmpp::StaticQName kQNameVerificationHash = {
+    kChromotingXmlNamespace, "verification-hash"};
+const jingle_xmpp::StaticQName kQNameCertificate = {kChromotingXmlNamespace,
+                                                    "certificate"};
+const jingle_xmpp::StaticQName kQNameHostToken = {kChromotingXmlNamespace,
+                                                  "host-token"};
+const jingle_xmpp::StaticQName kQNameSessionToken = {kChromotingXmlNamespace,
+                                                     "session-token"};
+const jingle_xmpp::StaticQName kQNamePairingInfo = {kChromotingXmlNamespace,
+                                                    "pairing-info"};
+const jingle_xmpp::StaticQName kQNamePairingFailed = {kChromotingXmlNamespace,
+                                                      "pairing-failed"};
+const jingle_xmpp::StaticQName kQNameTestId = {kChromotingXmlNamespace,
+                                               "test-id"};
+const jingle_xmpp::StaticQName kQNameTestKey = {kChromotingXmlNamespace,
+                                                "test-key"};
+
+const jingle_xmpp::StaticQName kQNameSupportedMethods = {kEmptyNamespace,
+                                                         "supported-methods"};
+const jingle_xmpp::StaticQName kQNameMethod = {kEmptyNamespace, "method"};
+const jingle_xmpp::StaticQName kQNameClientId = {kEmptyNamespace, "client-id"};
+const jingle_xmpp::StaticQName kQNameError = {kEmptyNamespace, "error"};
 
 const int kPortMin = 1000;
 const int kPortMax = 65535;
@@ -285,9 +314,13 @@ bool ParseInitiateOrAccept(const XmlElement* jingle_tag,
   }
 
   if (action == JingleMessage::ActionType::kSessionInitiate) {
-    message->SetPayload(SessionInitiate());
+    SessionInitiate initiate;
+    initiate.authentication = message->description->authentication();
+    message->SetPayload(std::move(initiate));
   } else {
-    message->SetPayload(SessionAccept());
+    SessionAccept accept;
+    accept.authentication = message->description->authentication();
+    message->SetPayload(std::move(accept));
   }
   return true;
 }
@@ -334,13 +367,21 @@ bool ParseSessionInfoAction(const XmlElement* jingle_tag,
   while (child && child->Name() == kQNameAttachments) {
     child = child->NextElement();
   }
+
+  SessionInfo session_info;
   if (child) {
-    // session-info is allowed to be empty.
+    if (Authenticator::IsAuthenticatorMessage(child)) {
+      JingleAuthentication authentication;
+      if (JingleAuthenticationFromXml(child, &authentication)) {
+        session_info.authentication = std::move(authentication);
+      }
+    }
+    // session-info is allowed to be empty or contain non-auth messages.
     message->info_legacy = std::make_unique<XmlElement>(*child);
   } else {
     message->info_legacy.reset();
   }
-  message->SetPayload(SessionInfo());
+  message->SetPayload(std::move(session_info));
   return true;
 }
 
@@ -476,7 +517,14 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
   }
 
   if (message.action() == JingleMessage::ActionType::kSessionInfo) {
-    if (message.info_legacy) {
+    if (auto* session_info = std::get_if<SessionInfo>(&message.payload())) {
+      if (session_info->authentication) {
+        jingle_tag->AddElement(
+            JingleAuthenticationToXml(*session_info->authentication).release());
+      }
+    }
+    if (message.info_legacy &&
+        !Authenticator::IsAuthenticatorMessage(message.info_legacy.get())) {
       jingle_tag->AddElement(new XmlElement(*message.info_legacy));
     }
     return root;
@@ -784,6 +832,187 @@ bool AttachmentFromXml(const jingle_xmpp::XmlElement* element,
       config.settings[pair.first] = pair.second;
     }
     attachment->host_config = std::move(config);
+  }
+
+  return true;
+}
+
+std::unique_ptr<jingle_xmpp::XmlElement> JingleAuthenticationToXml(
+    const JingleAuthentication& authentication) {
+  auto result = std::make_unique<XmlElement>(kQNameAuthentication);
+
+  if (!authentication.supported_methods.empty()) {
+    std::vector<std::string> method_names;
+    for (const auto& method : authentication.supported_methods) {
+      method_names.push_back(AuthenticationMethodToString(method));
+    }
+    result->SetAttr(kQNameSupportedMethods,
+                    base::JoinString(method_names, ","));
+  }
+
+  if (authentication.method) {
+    result->SetAttr(kQNameMethod,
+                    AuthenticationMethodToString(*authentication.method));
+  }
+
+  if (!authentication.id.empty()) {
+    result->SetAttr(kQNameId, authentication.id);
+  }
+
+  if (!authentication.spake_message.empty()) {
+    auto spake_el = std::make_unique<XmlElement>(kQNameSpakeMessage);
+    spake_el->SetBodyText(base::Base64Encode(authentication.spake_message));
+    result->AddElement(spake_el.release());
+  }
+
+  if (!authentication.verification_hash.empty()) {
+    auto hash_el = std::make_unique<XmlElement>(kQNameVerificationHash);
+    hash_el->SetBodyText(base::Base64Encode(authentication.verification_hash));
+    result->AddElement(hash_el.release());
+  }
+
+  if (!authentication.certificate.empty()) {
+    auto cert_el = std::make_unique<XmlElement>(kQNameCertificate);
+    cert_el->SetBodyText(base::Base64Encode(authentication.certificate));
+    result->AddElement(cert_el.release());
+  }
+
+  if (!authentication.session_authz_host_token.empty()) {
+    auto host_token_el = std::make_unique<XmlElement>(kQNameHostToken);
+    host_token_el->SetBodyText(authentication.session_authz_host_token);
+    result->AddElement(host_token_el.release());
+  }
+
+  if (!authentication.session_authz_session_token.empty()) {
+    auto session_token_el = std::make_unique<XmlElement>(kQNameSessionToken);
+    session_token_el->SetBodyText(authentication.session_authz_session_token);
+    result->AddElement(session_token_el.release());
+  }
+
+  if (authentication.pairing_info) {
+    auto pairing_el = std::make_unique<XmlElement>(kQNamePairingInfo);
+    pairing_el->SetAttr(kQNameClientId, authentication.pairing_info->client_id);
+    result->AddElement(pairing_el.release());
+  }
+
+  if (!authentication.pairing_error.empty()) {
+    auto pairing_failed_el = std::make_unique<XmlElement>(kQNamePairingFailed);
+    pairing_failed_el->SetAttr(kQNameError, authentication.pairing_error);
+    result->AddElement(pairing_failed_el.release());
+  }
+
+  if (!authentication.test_id.empty()) {
+    auto test_id_el = std::make_unique<XmlElement>(kQNameTestId);
+    test_id_el->SetBodyText(authentication.test_id);
+    result->AddElement(test_id_el.release());
+  }
+
+  if (!authentication.test_key.empty()) {
+    auto test_key_el = std::make_unique<XmlElement>(kQNameTestKey);
+    test_key_el->SetBodyText(base::Base64Encode(authentication.test_key));
+    result->AddElement(test_key_el.release());
+  }
+
+  return result;
+}
+
+bool JingleAuthenticationFromXml(const jingle_xmpp::XmlElement* element,
+                                 JingleAuthentication* authentication) {
+  if (element->Name() != kQNameAuthentication) {
+    return false;
+  }
+
+  std::string supported_methods_attr = element->Attr(kQNameSupportedMethods);
+  if (!supported_methods_attr.empty()) {
+    std::vector<std::string> method_names =
+        base::SplitString(supported_methods_attr, ",", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
+    for (const auto& name : method_names) {
+      AuthenticationMethod method = ParseAuthenticationMethodString(name);
+      if (method != AuthenticationMethod::INVALID) {
+        authentication->supported_methods.push_back(method);
+      }
+    }
+  }
+
+  std::string method_attr = element->Attr(kQNameMethod);
+  if (!method_attr.empty()) {
+    authentication->method = ParseAuthenticationMethodString(method_attr);
+  }
+
+  authentication->id = element->Attr(kQNameId);
+
+  const XmlElement* spake_el = element->FirstNamed(kQNameSpakeMessage);
+  if (spake_el) {
+    auto spake_message = base::Base64Decode(
+        base::CollapseWhitespaceASCII(spake_el->BodyText(), false));
+    if (spake_message.has_value()) {
+      authentication->spake_message = std::move(*spake_message);
+    } else {
+      LOG(WARNING)
+          << "Failed to decode the spake message in the incoming message";
+      return false;
+    }
+  }
+
+  const XmlElement* hash_el = element->FirstNamed(kQNameVerificationHash);
+  if (hash_el) {
+    auto verification_hash = base::Base64Decode(
+        base::CollapseWhitespaceASCII(hash_el->BodyText(), false));
+    if (verification_hash.has_value()) {
+      authentication->verification_hash = std::move(*verification_hash);
+    } else {
+      LOG(WARNING)
+          << "Failed to decode the verification hash in the incoming message";
+      return false;
+    }
+  }
+
+  const XmlElement* cert_el = element->FirstNamed(kQNameCertificate);
+  if (cert_el) {
+    auto certificate = base::Base64Decode(
+        base::CollapseWhitespaceASCII(cert_el->BodyText(), false));
+    if (certificate.has_value()) {
+      authentication->certificate = std::move(*certificate);
+    } else {
+      LOG(WARNING)
+          << "Failed to decode the certificate in the incoming message";
+      return false;
+    }
+  }
+
+  const XmlElement* host_token_el = element->FirstNamed(kQNameHostToken);
+  if (host_token_el) {
+    authentication->session_authz_host_token = host_token_el->BodyText();
+  }
+
+  const XmlElement* session_token_el = element->FirstNamed(kQNameSessionToken);
+  if (session_token_el) {
+    authentication->session_authz_session_token = session_token_el->BodyText();
+  }
+
+  const XmlElement* pairing_el = element->FirstNamed(kQNamePairingInfo);
+  if (pairing_el) {
+    JingleAuthentication::PairingInfo pairing_info;
+    pairing_info.client_id = pairing_el->Attr(kQNameClientId);
+    authentication->pairing_info = std::move(pairing_info);
+  }
+
+  const XmlElement* pairing_failed_el =
+      element->FirstNamed(kQNamePairingFailed);
+  if (pairing_failed_el) {
+    authentication->pairing_error = pairing_failed_el->Attr(kQNameError);
+  }
+
+  const XmlElement* test_id_el = element->FirstNamed(kQNameTestId);
+  if (test_id_el) {
+    authentication->test_id = test_id_el->BodyText();
+  }
+
+  const XmlElement* test_key_el = element->FirstNamed(kQNameTestKey);
+  if (test_key_el) {
+    authentication->test_key = base::Base64Decode(test_key_el->BodyText())
+                                   .value_or(std::vector<uint8_t>());
   }
 
   return true;

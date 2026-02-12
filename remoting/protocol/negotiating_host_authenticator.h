@@ -32,9 +32,9 @@ class NegotiatingHostAuthenticator : public NegotiatingAuthenticatorBase {
   ~NegotiatingHostAuthenticator() override;
 
   // NegotiatingAuthenticatorBase:
-  void ProcessMessage(const jingle_xmpp::XmlElement* message,
+  void ProcessMessage(const JingleAuthentication& message,
                       base::OnceClosure resume_callback) override;
-  std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
+  JingleAuthentication GetNextMessage() override;
 
  private:
   // (Asynchronously) creates an authenticator, and stores it in

@@ -110,13 +110,13 @@ Authenticator::RejectionDetails SessionAuthzAuthenticator::rejection_details()
 }
 
 void SessionAuthzAuthenticator::ProcessMessage(
-    const jingle_xmpp::XmlElement* message,
+    const JingleAuthentication& message,
     base::OnceClosure resume_callback) {
   DCHECK_EQ(state(), WAITING_MESSAGE);
 
   switch (session_authz_state_) {
     case SessionAuthzState::WAITING_FOR_SESSION_TOKEN:
-      VerifySessionToken(*message, std::move(resume_callback));
+      VerifySessionToken(message, std::move(resume_callback));
       break;
     case SessionAuthzState::SHARED_SECRET_FETCHED:
       DCHECK_EQ(underlying_->state(), WAITING_MESSAGE);
@@ -129,20 +129,19 @@ void SessionAuthzAuthenticator::ProcessMessage(
   }
 }
 
-std::unique_ptr<jingle_xmpp::XmlElement>
-SessionAuthzAuthenticator::GetNextMessage() {
+JingleAuthentication SessionAuthzAuthenticator::GetNextMessage() {
   DCHECK_EQ(state(), MESSAGE_READY);
 
-  std::unique_ptr<jingle_xmpp::XmlElement> message;
+  JingleAuthentication message;
   if (underlying_ && underlying_->state() == MESSAGE_READY) {
     message = underlying_->GetNextMessage();
     StartReauthorizerIfNecessary();
-  } else {
-    message = CreateEmptyAuthenticatorMessage();
   }
 
   if (session_authz_state_ == SessionAuthzState::READY_TO_SEND_HOST_TOKEN) {
-    AddHostTokenElement(message.get());
+    DCHECK(!host_token_.empty());
+    message.session_authz_host_token = host_token_;
+    session_authz_state_ = SessionAuthzState::WAITING_FOR_SESSION_TOKEN;
   }
 
   return message;
@@ -208,32 +207,19 @@ void SessionAuthzAuthenticator::OnHostTokenGenerated(
   std::move(resume_callback).Run();
 }
 
-void SessionAuthzAuthenticator::AddHostTokenElement(
-    jingle_xmpp::XmlElement* message) {
-  DCHECK_EQ(session_authz_state_, SessionAuthzState::READY_TO_SEND_HOST_TOKEN);
-  DCHECK(!host_token_.empty());
-
-  jingle_xmpp::XmlElement* host_token_element =
-      new jingle_xmpp::XmlElement(kHostTokenTag);
-  host_token_element->SetBodyText(host_token_);
-  message->AddElement(host_token_element);
-  session_authz_state_ = SessionAuthzState::WAITING_FOR_SESSION_TOKEN;
-}
-
 void SessionAuthzAuthenticator::VerifySessionToken(
-    const jingle_xmpp::XmlElement& message,
+    const JingleAuthentication& message,
     base::OnceClosure resume_callback) {
   session_authz_state_ = SessionAuthzState::VERIFYING_SESSION_TOKEN;
-  std::string session_token = message.TextNamed(kSessionTokenTag);
   service_client_->VerifySessionToken(
-      session_token,
+      message.session_authz_session_token,
       base::BindOnce(&SessionAuthzAuthenticator::OnVerifiedSessionToken,
                      base::Unretained(this), message,
                      std::move(resume_callback)));
 }
 
 void SessionAuthzAuthenticator::OnVerifiedSessionToken(
-    const jingle_xmpp::XmlElement& message,
+    const JingleAuthentication& message,
     base::OnceClosure resume_callback,
     const HttpStatus& status,
     std::unique_ptr<internal::VerifySessionTokenResponseStruct> response) {
@@ -248,7 +234,7 @@ void SessionAuthzAuthenticator::OnVerifiedSessionToken(
     rejection_details_ = RejectionDetails(base::StringPrintf(
         "Session token verification failed. Expected session ID: %s, actual: "
         "%s",
-        session_id_, response->session_id));
+        session_id_.c_str(), response->session_id.c_str()));
     std::move(resume_callback).Run();
     return;
   }
@@ -259,7 +245,7 @@ void SessionAuthzAuthenticator::OnVerifiedSessionToken(
                                                         WAITING_MESSAGE);
   session_policies_ = std::move(response->session_policies);
   verify_token_response_ = std::move(response);
-  underlying_->ProcessMessage(&message, std::move(resume_callback));
+  underlying_->ProcessMessage(message, std::move(resume_callback));
   StartReauthorizerIfNecessary();
 }
 

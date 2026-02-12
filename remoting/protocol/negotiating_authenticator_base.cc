@@ -21,17 +21,7 @@
 
 namespace remoting::protocol {
 
-const jingle_xmpp::StaticQName
-    NegotiatingAuthenticatorBase::kMethodAttributeQName = {"", "method"};
-const jingle_xmpp::StaticQName
-    NegotiatingAuthenticatorBase::kSupportedMethodsAttributeQName = {
-        "", "supported-methods"};
 const char NegotiatingAuthenticatorBase::kSupportedMethodsSeparator = ',';
-
-const jingle_xmpp::StaticQName NegotiatingAuthenticatorBase::kPairingInfoTag = {
-    kChromotingXmlNamespace, "pairing-info"};
-const jingle_xmpp::StaticQName
-    NegotiatingAuthenticatorBase::kClientIdAttribute = {"", "client-id"};
 
 NegotiatingAuthenticatorBase::NegotiatingAuthenticatorBase(
     Authenticator::State initial_state)
@@ -75,7 +65,7 @@ NegotiatingAuthenticatorBase::rejection_details() const {
 }
 
 void NegotiatingAuthenticatorBase::ProcessMessageInternal(
-    const jingle_xmpp::XmlElement* message,
+    const JingleAuthentication& message,
     base::OnceClosure resume_callback) {
   DCHECK_EQ(state_, PROCESSING_MESSAGE);
 
@@ -114,21 +104,21 @@ void NegotiatingAuthenticatorBase::UpdateState(
   std::move(resume_callback).Run();
 }
 
-std::unique_ptr<jingle_xmpp::XmlElement>
-NegotiatingAuthenticatorBase::GetNextMessageInternal() {
+JingleAuthentication NegotiatingAuthenticatorBase::GetNextMessageInternal() {
   DCHECK_EQ(state(), MESSAGE_READY);
   DCHECK(current_method_ != AuthenticationMethod::INVALID);
 
-  std::unique_ptr<jingle_xmpp::XmlElement> result;
+  JingleAuthentication result;
   if (current_authenticator_->state() == MESSAGE_READY) {
     result = current_authenticator_->GetNextMessage();
-  } else {
-    result = CreateEmptyAuthenticatorMessage();
   }
   state_ = current_authenticator_->state();
+  // |state_| may be MESSAGE_READY if the underlying authenticator has
+  // multiple messages to send.
   DCHECK(state_ == ACCEPTED || state_ == WAITING_MESSAGE);
-  result->AddAttr(kMethodAttributeQName,
-                  AuthenticationMethodToString(current_method_));
+  if (!result.is_empty()) {
+    result.method = current_method_;
+  }
   return result;
 }
 

@@ -17,12 +17,6 @@
 
 namespace remoting::protocol {
 
-namespace {
-const jingle_xmpp::StaticQName kPairingFailedTag = {kChromotingXmlNamespace,
-                                                    "pairing-failed"};
-const jingle_xmpp::StaticQName kPairingErrorAttribute = {"", "error"};
-}  // namespace
-
 PairingAuthenticatorBase::PairingAuthenticatorBase() {}
 PairingAuthenticatorBase::~PairingAuthenticatorBase() = default;
 
@@ -69,7 +63,7 @@ Authenticator::RejectionDetails PairingAuthenticatorBase::rejection_details()
 }
 
 void PairingAuthenticatorBase::ProcessMessage(
-    const jingle_xmpp::XmlElement* message,
+    const JingleAuthentication& message,
     base::OnceClosure resume_callback) {
   DCHECK_EQ(state(), WAITING_MESSAGE);
 
@@ -85,8 +79,7 @@ void PairingAuthenticatorBase::ProcessMessage(
     CreateSpakeAuthenticatorWithPin(
         WAITING_MESSAGE,
         base::BindOnce(&PairingAuthenticatorBase::ProcessMessage,
-                       weak_factory_.GetWeakPtr(),
-                       base::Owned(new jingle_xmpp::XmlElement(*message)),
+                       weak_factory_.GetWeakPtr(), message,
                        std::move(resume_callback)));
     return;
   }
@@ -101,12 +94,10 @@ void PairingAuthenticatorBase::ProcessMessage(
                      weak_factory_.GetWeakPtr(), std::move(resume_callback)));
 }
 
-std::unique_ptr<jingle_xmpp::XmlElement>
-PairingAuthenticatorBase::GetNextMessage() {
+JingleAuthentication PairingAuthenticatorBase::GetNextMessage() {
   DCHECK_EQ(state(), MESSAGE_READY);
-  std::unique_ptr<jingle_xmpp::XmlElement> result =
-      spake2_authenticator_->GetNextMessage();
-  MaybeAddErrorMessage(result.get());
+  JingleAuthentication result = spake2_authenticator_->GetNextMessage();
+  MaybeAddErrorMessage(result);
   return result;
 }
 
@@ -124,25 +115,20 @@ PairingAuthenticatorBase::CreateChannelAuthenticator() const {
 }
 
 void PairingAuthenticatorBase::MaybeAddErrorMessage(
-    jingle_xmpp::XmlElement* message) {
+    JingleAuthentication& message) {
   if (!error_message_.empty()) {
-    jingle_xmpp::XmlElement* pairing_failed_tag =
-        new jingle_xmpp::XmlElement(kPairingFailedTag);
-    pairing_failed_tag->AddAttr(kPairingErrorAttribute, error_message_);
-    message->AddElement(pairing_failed_tag);
+    message.pairing_error = error_message_;
     error_message_.clear();
   }
 }
 
 bool PairingAuthenticatorBase::HasErrorMessage(
-    const jingle_xmpp::XmlElement* message) const {
-  const jingle_xmpp::XmlElement* pairing_failed_tag =
-      message->FirstNamed(kPairingFailedTag);
-  if (pairing_failed_tag) {
-    std::string error = pairing_failed_tag->Attr(kPairingErrorAttribute);
-    LOG(ERROR) << "Pairing failed: " << error;
+    const JingleAuthentication& message) const {
+  if (!message.pairing_error.empty()) {
+    LOG(ERROR) << "Pairing failed: " << message.pairing_error;
+    return true;
   }
-  return pairing_failed_tag != nullptr;
+  return false;
 }
 
 void PairingAuthenticatorBase::CheckForFailedSpakeExchange(

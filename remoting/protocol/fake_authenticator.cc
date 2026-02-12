@@ -175,24 +175,24 @@ Authenticator::RejectionDetails FakeAuthenticator::rejection_details() const {
   return {};
 }
 
-void FakeAuthenticator::ProcessMessage(const jingle_xmpp::XmlElement* message,
+void FakeAuthenticator::ProcessMessage(const JingleAuthentication& message,
                                        base::OnceClosure resume_callback) {
   EXPECT_EQ(WAITING_MESSAGE, state());
-  std::string id =
-      message->TextNamed(jingle_xmpp::QName(kChromotingXmlNamespace, "id"));
-  EXPECT_EQ(id, base::NumberToString(messages_));
+  // |test_id| is used for sequence tracking in FakeAuthenticator to avoid
+  // conflicting with the |id| field which may be used for JIDs or other
+  // purposes by authenticators which wrap this one.
+  EXPECT_EQ(message.test_id, base::NumberToString(messages_));
 
   // On the client receive the key in the last message.
   if (type_ == CLIENT && messages_ == config_.round_trips * 2 - 1) {
-    std::string key_base64 =
-        message->TextNamed(jingle_xmpp::QName(kChromotingXmlNamespace, "key"));
-    EXPECT_TRUE(!key_base64.empty());
-    EXPECT_TRUE(base::Base64Decode(key_base64, &auth_key_));
+    EXPECT_FALSE(message.test_key.empty());
+    auth_key_.assign(reinterpret_cast<const char*>(message.test_key.data()),
+                     message.test_key.size());
   }
 
   // Receive peer's id.
   if (messages_ < 2) {
-    EXPECT_EQ(remote_id_, message->Attr(jingle_xmpp::QName("", "id")));
+    EXPECT_EQ(remote_id_, message.id);
   }
 
   ++messages_;
@@ -204,29 +204,21 @@ void FakeAuthenticator::ProcessMessage(const jingle_xmpp::XmlElement* message,
   std::move(resume_callback).Run();
 }
 
-std::unique_ptr<jingle_xmpp::XmlElement> FakeAuthenticator::GetNextMessage() {
+JingleAuthentication FakeAuthenticator::GetNextMessage() {
   EXPECT_EQ(MESSAGE_READY, state());
 
-  std::unique_ptr<jingle_xmpp::XmlElement> result(new jingle_xmpp::XmlElement(
-      jingle_xmpp::QName(kChromotingXmlNamespace, "authentication")));
-  jingle_xmpp::XmlElement* id = new jingle_xmpp::XmlElement(
-      jingle_xmpp::QName(kChromotingXmlNamespace, "id"));
-  id->AddText(base::NumberToString(messages_));
-  result->AddElement(id);
+  JingleAuthentication result;
+  result.test_id = base::NumberToString(messages_);
 
   // Send local id in the first outgoing message.
   if (messages_ < 2) {
-    result->AddAttr(jingle_xmpp::QName("", "id"), local_id_);
+    result.id = local_id_;
   }
 
   // Add authentication key in the last message sent from host to client.
   if (type_ == HOST && messages_ == config_.round_trips * 2 - 1) {
     auth_key_ = base::RandBytesAsString(16);
-    jingle_xmpp::XmlElement* key = new jingle_xmpp::XmlElement(
-        jingle_xmpp::QName(kChromotingXmlNamespace, "key"));
-    std::string key_base64 = base::Base64Encode(auth_key_);
-    key->AddText(key_base64);
-    result->AddElement(key);
+    result.test_key.assign(auth_key_.begin(), auth_key_.end());
   }
 
   ++messages_;

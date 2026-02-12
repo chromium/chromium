@@ -84,7 +84,7 @@ void AuthenticatorTestBase::ContinueAuthExchangeWith(Authenticator* sender,
                                                      Authenticator* receiver,
                                                      bool sender_started,
                                                      bool receiver_started) {
-  std::unique_ptr<jingle_xmpp::XmlElement> message;
+  JingleAuthentication message;
   ASSERT_NE(Authenticator::WAITING_MESSAGE, sender->state());
   if (sender->state() == Authenticator::ACCEPTED ||
       sender->state() == Authenticator::REJECTED) {
@@ -103,12 +103,12 @@ void AuthenticatorTestBase::ContinueAuthExchangeWith(Authenticator* sender,
 
   ASSERT_EQ(Authenticator::MESSAGE_READY, sender->state());
   message = sender->GetNextMessage();
-  ASSERT_TRUE(message.get());
+  ASSERT_FALSE(message.is_empty());
   ASSERT_NE(Authenticator::MESSAGE_READY, sender->state());
 
   ASSERT_EQ(Authenticator::WAITING_MESSAGE, receiver->state());
   receiver->ProcessMessage(
-      message.get(),
+      message,
       base::BindOnce(&AuthenticatorTestBase::ContinueAuthExchangeWith,
                      base::Unretained(receiver), base::Unretained(sender),
                      receiver->started(), sender->started()));

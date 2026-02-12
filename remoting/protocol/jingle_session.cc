@@ -304,10 +304,10 @@ void JingleSession::AcceptIncomingConnection(
 
   ProcessIncomingPluginMessage(initiate_message);
   // Process the first authentication message.
-  const jingle_xmpp::XmlElement* first_auth_message =
-      initiate_message.description->authenticator_message();
+  const JingleAuthentication& first_auth_message =
+      initiate_message.description->authentication();
 
-  if (!first_auth_message) {
+  if (first_auth_message.is_empty()) {
     Close(ErrorCode::INVALID_ARGUMENT,
           "Cannot find the first authentication message.", FROM_HERE);
     return;
@@ -335,13 +335,13 @@ void JingleSession::ContinueAcceptIncomingConnection() {
   auto message = std::make_unique<JingleMessage>(peer_address_, SessionAccept(),
                                                  session_id_);
 
-  std::unique_ptr<jingle_xmpp::XmlElement> auth_message;
+  JingleAuthentication auth_message;
   if (authenticator_->state() == Authenticator::MESSAGE_READY) {
     auth_message = authenticator_->GetNextMessage();
   }
 
   message->description = std::make_unique<ContentDescription>(
-      CandidateSessionConfig::CreateFrom(*config_), std::move(auth_message));
+      CandidateSessionConfig::CreateFrom(*config_), auth_message);
   SendMessage(std::move(message));
 
   // Update state.
@@ -640,9 +640,9 @@ void JingleSession::OnAccept(std::unique_ptr<JingleMessage> message,
 
   std::move(reply_callback).Run(JingleMessageReply::NONE);
 
-  const jingle_xmpp::XmlElement* auth_message =
-      message->description->authenticator_message();
-  if (!auth_message) {
+  const JingleAuthentication& auth_message =
+      message->description->authentication();
+  if (auth_message.is_empty()) {
     Close(ErrorCode::INVALID_ARGUMENT,
           "Received session-accept without authentication message", FROM_HERE);
     return;
@@ -667,8 +667,14 @@ void JingleSession::OnAccept(std::unique_ptr<JingleMessage> message,
 
 void JingleSession::OnSessionInfo(std::unique_ptr<JingleMessage> message,
                                   ReplyCallback reply_callback) {
-  if (!message->info_legacy.get() ||
-      !Authenticator::IsAuthenticatorMessage(message->info_legacy.get())) {
+  const JingleAuthentication* auth_message = nullptr;
+  if (auto* session_info = std::get_if<SessionInfo>(&message->payload())) {
+    if (session_info->authentication) {
+      auth_message = &*session_info->authentication;
+    }
+  }
+
+  if (!auth_message) {
     std::move(reply_callback).Run(JingleMessageReply::UNSUPPORTED_INFO);
     return;
   }
@@ -677,18 +683,15 @@ void JingleSession::OnSessionInfo(std::unique_ptr<JingleMessage> message,
       authenticator_->state() != Authenticator::WAITING_MESSAGE) {
     std::move(reply_callback).Run(JingleMessageReply::UNEXPECTED_REQUEST);
     Close(ErrorCode::INVALID_ARGUMENT,
-          base::StringPrintf("Received unexpected authenticator message %s",
-                             message->info_legacy->Str()),
-          FROM_HERE);
+          "Received unexpected authenticator message", FROM_HERE);
     return;
   }
 
   std::move(reply_callback).Run(JingleMessageReply::NONE);
 
   authenticator_->ProcessMessage(
-      message->info_legacy.get(),
-      base::BindOnce(&JingleSession::ProcessAuthenticationStep,
-                     base::Unretained(this)));
+      *auth_message, base::BindOnce(&JingleSession::ProcessAuthenticationStep,
+                                    base::Unretained(this)));
 }
 
 void JingleSession::OnTransportInfo(std::unique_ptr<JingleMessage> message,
@@ -824,8 +827,9 @@ void JingleSession::ProcessAuthenticationStep() {
   if (authenticator_->state() == Authenticator::MESSAGE_READY) {
     auto message = std::make_unique<JingleMessage>(peer_address_, SessionInfo(),
                                                    session_id_);
-    message->info_legacy = authenticator_->GetNextMessage();
-    DCHECK(message->info_legacy.get());
+    SessionInfo session_info;
+    session_info.authentication = authenticator_->GetNextMessage();
+    message->SetPayload(std::move(session_info));
     SendMessage(std::move(message));
   }
   DCHECK_NE(authenticator_->state(), Authenticator::MESSAGE_READY);
@@ -920,9 +924,14 @@ void JingleSession::SendSessionInitiateMessage() {
       peer_address_, SessionInitiate(), session_id_);
   message->initiator =
       session_manager_->signal_strategy_->GetLocalAddress().id();
+
+  JingleAuthentication auth_message;
+  if (authenticator_->state() == Authenticator::MESSAGE_READY) {
+    auth_message = authenticator_->GetNextMessage();
+  }
+
   message->description = std::make_unique<ContentDescription>(
-      session_manager_->protocol_config_->Clone(),
-      authenticator_->GetNextMessage());
+      session_manager_->protocol_config_->Clone(), auth_message);
   SendMessage(std::move(message));
 }
 

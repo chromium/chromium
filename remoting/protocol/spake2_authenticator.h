@@ -51,9 +51,9 @@ class Spake2Authenticator : public Authenticator {
   bool started() const override;
   RejectionReason rejection_reason() const override;
   RejectionDetails rejection_details() const override;
-  void ProcessMessage(const jingle_xmpp::XmlElement* message,
+  void ProcessMessage(const JingleAuthentication& message,
                       base::OnceClosure resume_callback) override;
-  std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
+  JingleAuthentication GetNextMessage() override;
   const std::string& GetAuthKey() const override;
   const SessionPolicies* GetSessionPolicies() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
@@ -68,7 +68,7 @@ class Spake2Authenticator : public Authenticator {
                       bool is_host,
                       State initial_state);
 
-  virtual void ProcessMessageInternal(const jingle_xmpp::XmlElement* message);
+  virtual void ProcessMessageInternal(const JingleAuthentication& message);
 
   std::string CalculateVerificationHash(bool from_host,
                                         const std::string& local_id,

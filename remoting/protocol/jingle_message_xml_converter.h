@@ -19,6 +19,7 @@ class JingleMessage;
 struct JingleMessageReply;
 struct JingleTransportInfo;
 struct Attachment;
+struct JingleAuthentication;
 
 // Converts between JingleMessage and its XML representation.
 std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
@@ -52,6 +53,12 @@ std::unique_ptr<jingle_xmpp::XmlElement> AttachmentToXml(
     const Attachment& attachment);
 bool AttachmentFromXml(const jingle_xmpp::XmlElement* element,
                        Attachment* attachment);
+
+// Converts between JingleAuthentication and its XML representation.
+std::unique_ptr<jingle_xmpp::XmlElement> JingleAuthenticationToXml(
+    const JingleAuthentication& authentication);
+bool JingleAuthenticationFromXml(const jingle_xmpp::XmlElement* element,
+                                 JingleAuthentication* authentication);
 
 }  // namespace remoting::protocol
 

@@ -14,6 +14,7 @@
 #include "remoting/base/constants.h"
 #include "remoting/base/name_value_map.h"
 #include "remoting/protocol/authenticator.h"
+#include "remoting/protocol/jingle_message_xml_converter.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 using jingle_xmpp::QName;
@@ -118,9 +119,8 @@ bool ParseChannelConfig(const XmlElement* element,
 
 ContentDescription::ContentDescription(
     std::unique_ptr<CandidateSessionConfig> config,
-    std::unique_ptr<jingle_xmpp::XmlElement> authenticator_message)
-    : candidate_config_(std::move(config)),
-      authenticator_message_(std::move(authenticator_message)) {}
+    const JingleAuthentication& authentication)
+    : candidate_config_(std::move(config)), authentication_(authentication) {}
 
 ContentDescription::~ContentDescription() = default;
 
@@ -162,9 +162,9 @@ XmlElement* ContentDescription::ToXml() const {
     }
   }
 
-  if (authenticator_message_) {
-    DCHECK(Authenticator::IsAuthenticatorMessage(authenticator_message_.get()));
-    root->AddElement(new XmlElement(*authenticator_message_));
+  auto authentication_xml = JingleAuthenticationToXml(authentication_);
+  if (authentication_xml) {
+    root->AddElement(authentication_xml.release());
   }
 
   return root;
@@ -223,14 +223,14 @@ std::unique_ptr<ContentDescription> ContentDescription::ParseXml(
     }
   }
 
-  std::unique_ptr<XmlElement> authenticator_message;
+  JingleAuthentication authentication;
   const XmlElement* child = Authenticator::FindAuthenticatorMessage(element);
   if (child) {
-    authenticator_message = std::make_unique<XmlElement>(*child);
+    JingleAuthenticationFromXml(child, &authentication);
   }
 
-  return base::WrapUnique(new ContentDescription(
-      std::move(config), std::move(authenticator_message)));
+  return base::WrapUnique(
+      new ContentDescription(std::move(config), authentication));
 }
 
 }  // namespace remoting::protocol

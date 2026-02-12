@@ -98,9 +98,8 @@ void ValidatingAuthenticatorTest::SetUp() {
 
 void ValidatingAuthenticatorTest::SendMessageAndWaitForCallback() {
   base::RunLoop run_loop;
-  std::unique_ptr<jingle_xmpp::XmlElement> first_message(
-      Authenticator::CreateEmptyAuthenticatorMessage());
-  validating_authenticator_->ProcessMessage(first_message.get(),
+  JingleAuthentication first_message;
+  validating_authenticator_->ProcessMessage(first_message,
                                             run_loop.QuitClosure());
   run_loop.Run();
 }
@@ -135,13 +134,8 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_TwoMessages) {
   EXPECT_CALL(*mock_authenticator_, state())
       .WillRepeatedly(Return(Authenticator::WAITING_MESSAGE));
 
-  // This dance is needed because GMock doesn't handle unique_ptrs very well.
-  // The mock method receives a raw pointer which it wraps and returns when
-  // GetNextMessage() is called.
-  std::unique_ptr<jingle_xmpp::XmlElement> next_message(
-      Authenticator::CreateEmptyAuthenticatorMessage());
-  EXPECT_CALL(*mock_authenticator_, GetNextMessagePtr())
-      .WillOnce(Return(next_message.release()));
+  EXPECT_CALL(*mock_authenticator_, GetNextMessage())
+      .WillOnce(Return(JingleAuthentication()));
 
   validating_authenticator_->GetNextMessage();
   ASSERT_EQ(Authenticator::WAITING_MESSAGE, validating_authenticator_->state());
@@ -163,15 +157,11 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_SendBeforeAccept) {
 
   EXPECT_CALL(*mock_authenticator_, state())
       .WillOnce(Return(Authenticator::MESSAGE_READY))
-      .WillOnce(Return(Authenticator::ACCEPTED));
+      .WillRepeatedly(Return(Authenticator::ACCEPTED));
 
-  // This dance is needed because GMock doesn't handle unique_ptrs very well.
-  // The mock method receives a raw pointer which it wraps and returns when
-  // GetNextMessage() is called.
-  std::unique_ptr<jingle_xmpp::XmlElement> next_message(
-      Authenticator::CreateEmptyAuthenticatorMessage());
-  EXPECT_CALL(*mock_authenticator_, GetNextMessagePtr())
-      .WillOnce(Return(next_message.release()));
+  JingleAuthentication message;
+  message.spake_message = {1};
+  EXPECT_CALL(*mock_authenticator_, GetNextMessage()).WillOnce(Return(message));
 
   SendMessageAndWaitForCallback();
   ASSERT_TRUE(validate_complete_called_);
@@ -221,15 +211,11 @@ TEST_F(ValidatingAuthenticatorTest,
 
   EXPECT_CALL(*mock_authenticator_, state())
       .WillOnce(Return(Authenticator::MESSAGE_READY))
-      .WillOnce(Return(Authenticator::ACCEPTED));
+      .WillRepeatedly(Return(Authenticator::ACCEPTED));
 
-  // This dance is needed because GMock doesn't handle unique_ptrs very well.
-  // The mock method receives a raw pointer which it wraps and returns when
-  // GetNextMessage() is called.
-  std::unique_ptr<jingle_xmpp::XmlElement> next_message(
-      Authenticator::CreateEmptyAuthenticatorMessage());
-  EXPECT_CALL(*mock_authenticator_, GetNextMessagePtr())
-      .WillOnce(Return(next_message.release()));
+  JingleAuthentication message;
+  message.spake_message = {1};
+  EXPECT_CALL(*mock_authenticator_, GetNextMessage()).WillOnce(Return(message));
 
   validation_result_ = ValidationResult::ERROR_REJECTED_BY_USER;
 

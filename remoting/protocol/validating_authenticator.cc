@@ -45,7 +45,7 @@ const Authenticator& ValidatingAuthenticator::implementing_authenticator()
 }
 
 Authenticator::State ValidatingAuthenticator::state() const {
-  return pending_auth_message_ ? MESSAGE_READY : state_;
+  return pending_auth_message_.has_value() ? MESSAGE_READY : state_;
 }
 
 bool ValidatingAuthenticator::started() const {
@@ -76,7 +76,7 @@ ValidatingAuthenticator::CreateChannelAuthenticator() const {
 }
 
 void ValidatingAuthenticator::ProcessMessage(
-    const jingle_xmpp::XmlElement* message,
+    const JingleAuthentication& message,
     base::OnceClosure resume_callback) {
   DCHECK_EQ(state_, WAITING_MESSAGE);
   state_ = PROCESSING_MESSAGE;
@@ -87,15 +87,16 @@ void ValidatingAuthenticator::ProcessMessage(
                      weak_factory_.GetWeakPtr(), std::move(resume_callback)));
 }
 
-std::unique_ptr<jingle_xmpp::XmlElement>
-ValidatingAuthenticator::GetNextMessage() {
-  if (pending_auth_message_) {
+JingleAuthentication ValidatingAuthenticator::GetNextMessage() {
+  if (pending_auth_message_.has_value()) {
     DCHECK(state_ == ACCEPTED || state_ == WAITING_MESSAGE);
-    return std::move(pending_auth_message_);
+    JingleAuthentication result = std::move(*pending_auth_message_);
+    pending_auth_message_.reset();
+    state_ = current_authenticator_->state();
+    return result;
   }
 
-  std::unique_ptr<jingle_xmpp::XmlElement> result(
-      current_authenticator_->GetNextMessage());
+  JingleAuthentication result = current_authenticator_->GetNextMessage();
   state_ = current_authenticator_->state();
   DCHECK(state_ == ACCEPTED || state_ == WAITING_MESSAGE);
 
@@ -152,8 +153,13 @@ void ValidatingAuthenticator::UpdateState(base::OnceClosure resume_callback) {
     rejection_reason_ = current_authenticator_->rejection_reason();
     rejection_details_ = current_authenticator_->rejection_details();
   } else if (state_ == MESSAGE_READY) {
-    DCHECK(!pending_auth_message_);
-    pending_auth_message_ = current_authenticator_->GetNextMessage();
+    DCHECK(!pending_auth_message_.has_value());
+    JingleAuthentication message = current_authenticator_->GetNextMessage();
+    // Only pre-fetch the message if it contains data. This ensures the state()
+    // remains correct (WAITING_MESSAGE or ACCEPTED) if no data is being sent.
+    if (!message.is_empty()) {
+      pending_auth_message_ = std::move(message);
+    }
     state_ = current_authenticator_->state();
   }
 

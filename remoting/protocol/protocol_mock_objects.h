@@ -68,17 +68,13 @@ class MockAuthenticator : public Authenticator {
   MOCK_CONST_METHOD0(GetAuthKey, const std::string&());
   MOCK_CONST_METHOD0(CreateChannelAuthenticatorPtr, ChannelAuthenticator*());
   MOCK_METHOD2(ProcessMessage,
-               void(const jingle_xmpp::XmlElement* message,
+               void(const JingleAuthentication& message,
                     base::OnceClosure resume_callback));
-  MOCK_METHOD0(GetNextMessagePtr, jingle_xmpp::XmlElement*());
+  MOCK_METHOD(JingleAuthentication, GetNextMessage, (), (override));
 
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
       const override {
     return base::WrapUnique(CreateChannelAuthenticatorPtr());
-  }
-
-  std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override {
-    return base::WrapUnique(GetNextMessagePtr());
   }
 
   // Make this method public.

@@ -93,9 +93,9 @@ class FakeClientAuthenticator : public Authenticator {
   bool started() const override;
   RejectionReason rejection_reason() const override;
   RejectionDetails rejection_details() const override;
-  void ProcessMessage(const jingle_xmpp::XmlElement* message,
+  void ProcessMessage(const JingleAuthentication& message,
                       base::OnceClosure resume_callback) override;
-  std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
+  JingleAuthentication GetNextMessage() override;
   const std::string& GetAuthKey() const override;
   const SessionPolicies* GetSessionPolicies() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
@@ -123,7 +123,7 @@ class FakeClientAuthenticator : public Authenticator {
   CredentialsType credentials_type_ = CredentialsType::CORP_SESSION_AUTHZ;
   std::unique_ptr<Authenticator> underlying_;
   std::string host_token_;
-  std::unique_ptr<jingle_xmpp::XmlElement> message_;
+  JingleAuthentication message_;
   base::OnceClosure resume_callback_;
   bool underlying_authenticator_message_suppressed_ = false;
 };
@@ -178,12 +178,11 @@ Authenticator::RejectionDetails FakeClientAuthenticator::rejection_details()
 }
 
 void FakeClientAuthenticator::ProcessMessage(
-    const jingle_xmpp::XmlElement* message,
+    const JingleAuthentication& message,
     base::OnceClosure resume_callback) {
   switch (session_authz_state_) {
     case SessionAuthzState::WAITING_FOR_HOST_TOKEN:
-      host_token_ =
-          message->TextNamed(SessionAuthzAuthenticator::kHostTokenTag);
+      host_token_ = message.session_authz_host_token;
       ASSERT_FALSE(host_token_.empty());
       session_authz_state_ = SessionAuthzState::READY_TO_SEND_SESSION_TOKEN;
       underlying_ = create_base_authenticator_callback_.Run(
@@ -198,10 +197,9 @@ void FakeClientAuthenticator::ProcessMessage(
   }
 }
 
-std::unique_ptr<jingle_xmpp::XmlElement>
-FakeClientAuthenticator::GetNextMessage() {
+JingleAuthentication FakeClientAuthenticator::GetNextMessage() {
   EXPECT_EQ(state(), MESSAGE_READY);
-  std::unique_ptr<jingle_xmpp::XmlElement> message;
+  JingleAuthentication message;
   if (underlying_ && underlying_->state() == MESSAGE_READY) {
     if (underlying_authenticator_message_suppressed_) {
       underlying_->GetNextMessage();
@@ -209,15 +207,8 @@ FakeClientAuthenticator::GetNextMessage() {
       message = underlying_->GetNextMessage();
     }
   }
-  if (!message) {
-    message = CreateEmptyAuthenticatorMessage();
-  }
   if (session_authz_state_ == SessionAuthzState::READY_TO_SEND_SESSION_TOKEN) {
-    jingle_xmpp::XmlElement* session_token_element =
-        new jingle_xmpp::XmlElement(
-            SessionAuthzAuthenticator::kSessionTokenTag);
-    session_token_element->SetBodyText(std::string(kFakeSessionToken));
-    message->AddElement(session_token_element);
+    message.session_authz_session_token = std::string(kFakeSessionToken);
     session_authz_state_ = SessionAuthzState::AUTHORIZED;
   }
   return message;

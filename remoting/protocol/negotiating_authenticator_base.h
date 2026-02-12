@@ -12,10 +12,6 @@
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/host_authentication_config.h"
 
-namespace jingle_xmpp {
-struct StaticQName;
-}  // namespace jingle_xmpp
-
 namespace remoting::protocol {
 
 // This class provides the common base for a meta-authenticator that allows
@@ -80,18 +76,13 @@ class NegotiatingAuthenticatorBase : public Authenticator {
 
   // Calls |current_authenticator_| to process |message|, passing the supplied
   // |resume_callback|.
-  void ProcessMessageInternal(const jingle_xmpp::XmlElement* message,
+  void ProcessMessageInternal(const JingleAuthentication& message,
                               base::OnceClosure resume_callback);
 
  protected:
   friend class NegotiatingAuthenticatorTest;
 
-  static const jingle_xmpp::StaticQName kMethodAttributeQName;
-  static const jingle_xmpp::StaticQName kSupportedMethodsAttributeQName;
   static const char kSupportedMethodsSeparator;
-
-  static const jingle_xmpp::StaticQName kPairingInfoTag;
-  static const jingle_xmpp::StaticQName kClientIdAttribute;
 
   explicit NegotiatingAuthenticatorBase(Authenticator::State initial_state);
 
@@ -105,7 +96,7 @@ class NegotiatingAuthenticatorBase : public Authenticator {
 
   // Gets the next message from |current_authenticator_|, if any, and fills in
   // the 'method' tag with |current_method_|.
-  virtual std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessageInternal();
+  virtual JingleAuthentication GetNextMessageInternal();
 
   std::vector<AuthenticationMethod> methods_;
   AuthenticationMethod current_method_ = AuthenticationMethod::INVALID;

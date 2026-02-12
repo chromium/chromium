@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/session_config.h"
 
 namespace jingle_xmpp {
@@ -25,18 +26,16 @@ class ContentDescription {
  public:
   static const char kChromotingContentName[];
 
-  ContentDescription(
-      std::unique_ptr<CandidateSessionConfig> config,
-      std::unique_ptr<jingle_xmpp::XmlElement> authenticator_message);
+  // TODO: joedow - Add a c'tor which accepts a JingleAuthentication&&.
+  ContentDescription(std::unique_ptr<CandidateSessionConfig> config,
+                     const JingleAuthentication& authentication);
   ~ContentDescription();
 
   const CandidateSessionConfig* config() const {
     return candidate_config_.get();
   }
 
-  const jingle_xmpp::XmlElement* authenticator_message() const {
-    return authenticator_message_.get();
-  }
+  const JingleAuthentication& authentication() const { return authentication_; }
 
   jingle_xmpp::XmlElement* ToXml() const;
 
@@ -46,7 +45,7 @@ class ContentDescription {
 
  private:
   std::unique_ptr<const CandidateSessionConfig> candidate_config_;
-  std::unique_ptr<const jingle_xmpp::XmlElement> authenticator_message_;
+  JingleAuthentication authentication_;
 
   static bool ParseChannelConfigs(const jingle_xmpp::XmlElement* const element,
                                   const char tag_name[],

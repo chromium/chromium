@@ -49,16 +49,14 @@ Authenticator::RejectionDetails RejectingAuthenticator::rejection_details()
   return rejection_details_;
 }
 
-void RejectingAuthenticator::ProcessMessage(
-    const jingle_xmpp::XmlElement* message,
-    base::OnceClosure resume_callback) {
+void RejectingAuthenticator::ProcessMessage(const JingleAuthentication& message,
+                                            base::OnceClosure resume_callback) {
   DCHECK_EQ(state_, WAITING_MESSAGE);
   state_ = REJECTED;
   std::move(resume_callback).Run();
 }
 
-std::unique_ptr<jingle_xmpp::XmlElement>
-RejectingAuthenticator::GetNextMessage() {
+JingleAuthentication RejectingAuthenticator::GetNextMessage() {
   NOTREACHED();
 }
 
