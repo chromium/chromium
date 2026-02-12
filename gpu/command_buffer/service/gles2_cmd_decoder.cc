@@ -2429,7 +2429,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   // if not returning an error.
   error::Error current_decoder_error_;
 
-  bool has_fragment_precision_high_ = false;
   scoped_refptr<ShaderTranslatorInterface> vertex_translator_;
   scoped_refptr<ShaderTranslatorInterface> fragment_translator_;
 
@@ -3160,13 +3159,6 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
     state_.viewport_height = surface->GetSize().height();
   }
 
-  GLint range[2] = {0, 0};
-  GLint precision = 0;
-  QueryShaderPrecisionFormat(GL_FRAGMENT_SHADER, GL_HIGH_FLOAT, range,
-                             &precision);
-  has_fragment_precision_high_ =
-      PrecisionMeetsSpecForHighpFloat(range[0], range[1], precision);
-
   GLint viewport_params[4] = {};
   api()->glGetIntegervFn(GL_MAX_VIEWPORT_DIMS, viewport_params);
   viewport_max_width_ = viewport_params[0];
@@ -3542,7 +3534,6 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
     resources.MinProgramTexelOffset = group_->min_program_texel_offset();
   }
 
-  resources.FragmentPrecisionHigh = has_fragment_precision_high_;
   resources.EXT_YUV_target = features().ext_yuv_target ? 1 : 0;
 
   ShShaderSpec shader_spec;

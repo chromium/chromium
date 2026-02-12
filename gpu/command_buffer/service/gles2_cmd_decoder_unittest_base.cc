@@ -354,10 +354,6 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
       .WillOnce(SetArgPointee<1>(normalized_init.has_stencil ? 8 : 0))
       .RetiresOnSaturation();
 
-  EXPECT_CALL(*gl_,
-              GetShaderPrecisionFormat(GL_FRAGMENT_SHADER, GL_HIGH_FLOAT, _, _))
-      .RetiresOnSaturation();
-
   static auto max_viewport_dims =
       std::to_array<GLint>({kMaxViewportWidth, kMaxViewportHeight});
   EXPECT_CALL(*gl_, GetIntegerv(GL_MAX_VIEWPORT_DIMS, _))
