@@ -93,7 +93,7 @@ class BASE_EXPORT SequenceManager {
     }
 
     // Sets a mapping functions from custom priority to ThreadType, which
-    // will be returned by SingleThreadTaskRunner::GetCurrentThreadType().
+    // will be returned by internal::GetCurrentTaskImportance().
     void SetThreadTypeMapping(ThreadTypeMapping thread_type_mapping) {
       thread_type_mapping_ = thread_type_mapping;
     }
@@ -101,6 +101,8 @@ class BASE_EXPORT SequenceManager {
     perfetto::protos::pbzero::SequenceManagerTask::Priority TaskPriorityToProto(
         TaskQueue::QueuePriority priority) const;
 
+    // Returns the ThreadType corresponding to `priority`, using the mapping
+    // provided via SetThreadTypeMapping() if applicable.
     ThreadType TaskPriorityToThreadType(
         TaskQueue::QueuePriority priority) const;
 

@@ -51,9 +51,7 @@ base::ThreadType ToThreadType(NetworkServiceTaskPriority priority) {
     case NetworkServiceTaskPriority::kLowPriority:
       return base::ThreadType::kUtility;
     case NetworkServiceTaskPriority::kLowestPriority:
-      return base::ThreadType::kBackground;
     case NetworkServiceTaskPriority::kIdlePriority:
-      return base::ThreadType::kBackground;
     case NetworkServiceTaskPriority::kThrottledPriority:
       return base::ThreadType::kBackground;
     case NetworkServiceTaskPriority::kPriorityCount:

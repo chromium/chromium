@@ -151,11 +151,11 @@ class BASE_EXPORT TaskTracker {
   bool HasIncompleteTaskSourcesForTesting() const;
 
  protected:
-  // Runs and deletes |task|. |task| is deleted in the environment where it
-  // runs. |task_source| is the task source from which |task| was extracted.
-  // |traits| are the traits of |task_source|. An override is expected to call
-  // its parent's implementation but is free to perform extra work before and
-  // after doing so.
+  // Runs and deletes `task`. `task` is deleted in the environment where it
+  // runs. `task_source` is the task source from which `task` was extracted. The
+  // `traits` and `thread_type` related to `task_source` are provided. An
+  // override is expected to call its parent's implementation but is free to
+  // perform extra work before and after doing so.
   virtual void RunTask(Task task,
                        TaskSource* task_source,
                        const TaskTraits& traits,

@@ -45,9 +45,7 @@ ProtoPriority TaskPriorityToProto(
 base::ThreadType ToThreadType(BrowserTaskPriority priority) {
   switch (priority) {
     case BrowserTaskPriority::kControlPriority:
-      return base::ThreadType::kPresentation;
     case BrowserTaskPriority::kHighestPriority:
-      return base::ThreadType::kPresentation;
     case BrowserTaskPriority::kHighPriority:
       return base::ThreadType::kPresentation;
     case BrowserTaskPriority::kNormalPriority:

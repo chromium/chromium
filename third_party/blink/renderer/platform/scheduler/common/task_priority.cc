@@ -54,23 +54,16 @@ ProtoPriority TaskPriorityToProto(
 base::ThreadType ToThreadType(TaskPriority priority) {
   switch (priority) {
     case TaskPriority::kControlPriority:
-      return base::ThreadType::kPresentation;
     case TaskPriority::kHighestPriority:
-      return base::ThreadType::kPresentation;
     case TaskPriority::kExtremelyHighPriority:
-      return base::ThreadType::kPresentation;
     case TaskPriority::kVeryHighPriority:
-      return base::ThreadType::kPresentation;
     case TaskPriority::kHighPriorityContinuation:
-      return base::ThreadType::kPresentation;
     case TaskPriority::kHighPriority:
       return base::ThreadType::kPresentation;
     case TaskPriority::kNormalPriorityContinuation:
-      return base::ThreadType::kDefault;
     case TaskPriority::kNormalPriority:
       return base::ThreadType::kDefault;
     case TaskPriority::kLowPriorityContinuation:
-      return base::ThreadType::kUtility;
     case TaskPriority::kLowPriority:
       return base::ThreadType::kUtility;
     case TaskPriority::kBestEffortPriority:

@@ -53,9 +53,11 @@ BASE_EXPORT std::string_view ThreadTypeToString(ThreadType type);
 
 namespace internal {
 
-// Return the ThreadType that represents the importance of the executing
-// task. This will be equal or lower than the current thread's ThreadType
-// this task executes on.
+// Returns the ThreadType that represents the importance of the executing
+// task. This will be equal to or lower than the current thread's ThreadType
+// this task executes on. This is used to influence the priority of other tasks
+// posted from the current task, but not to influence OS-thread Priority of the
+// current task.
 ThreadType GetCurrentTaskImportance();
 
 // Overrides the ThreadType returned by GetCurrentTaskImportance(). ThreadType
