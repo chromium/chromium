@@ -53,6 +53,7 @@
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -363,8 +364,19 @@ void OmniboxContextMenuController::AddModelPickerItems() {
           ? check_icon
           : regular_model_icon);
 
+  const bool thinking_icon_update_enabled =
+      base::FeatureList::IsEnabled(omnibox::kThinkingModelIconUpdate);
+  const bool has_thinking_model =
+      IsModelVisible(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  const bool has_pro_no_gen_ui_model =
+      IsModelVisible(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI);
+  const bool use_new_thinking_icon = thinking_icon_update_enabled &&
+                                     has_thinking_model &&
+                                     has_pro_no_gen_ui_model;
+
   auto thinking_model_icon = ui::ImageModel::FromVectorIcon(
-      kTimerIcon, ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+      use_new_thinking_icon ? kAstrophotographyModeIcon : kTimerIcon,
+      ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
   auto* thinking_model_config =
       GetModelConfig(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
   auto thinking_model_label =

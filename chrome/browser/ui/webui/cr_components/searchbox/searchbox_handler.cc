@@ -440,6 +440,9 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                      base::FeatureList::IsEnabled(omnibox::kAimUsePecApi));
   source->AddBoolean("ShowContextMenuHeaders",
                      ntp_composebox::kShowContextMenuHeaders.Get());
+  source->AddBoolean(
+      "thinkingModelIconUpdate",
+      base::FeatureList::IsEnabled(omnibox::kThinkingModelIconUpdate));
 }
 
 std::string SearchboxHandler::AutocompleteIconToResourceName(
