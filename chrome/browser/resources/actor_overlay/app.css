@@ -138,10 +138,14 @@
   }
 }
 
-#magicCursor.loading #cursorImage {
-  animation:
-    loading-intro 750ms forwards,
-    loading-loop 3200ms infinite 750ms;
+/* Only apply the loading animation if the user has NOT requested
+reduced motion */
+@media (prefers-reduced-motion: no-preference) {
+  #magicCursor.loading #cursorImage {
+    animation:
+      loading-intro 750ms forwards,
+      loading-loop 3200ms infinite 750ms;
+  }
 }
 
 @keyframes cursor-click {
