@@ -123,6 +123,11 @@ void LogPixCodeCopied(ukm::SourceId ukm_source_id) {
       .Record(ukm::UkmRecorder::Get());
 }
 
+void LogPixCodeCopiedInIframe() {
+  base::UmaHistogramBoolean("FacilitatedPayments.Pix.PixCodeCopied.Iframe",
+                            /*sample=*/true);
+}
+
 void LogPaymentLinkDetected(ukm::SourceId ukm_source_id) {
   base::UmaHistogramBoolean("FacilitatedPayments.PaymentLinkDetected",
                             /*sample=*/true);

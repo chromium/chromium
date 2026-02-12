@@ -65,6 +65,17 @@ TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopied) {
                                       /*expected_bucket_count=*/1);
 }
 
+TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopiedInIframe) {
+  base::HistogramTester histogram_tester;
+
+  LogPixCodeCopiedInIframe();
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PixCodeCopied.Iframe",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
 TEST(FacilitatedPaymentsMetricsTest, LogEwalletPaymentLinkDetected) {
   base::HistogramTester histogram_tester;
 

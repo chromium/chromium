@@ -232,9 +232,12 @@ enum class PixCodeValidationResult {
 // Converts `PaymentLinkValidator::Scheme` to a string for logging.
 std::string SchemeToString(PaymentLinkValidator::Scheme scheme);
 
-// Log when a Pix code is copied to the clippboard on an allowlisted merchant
+// Log when a Pix code is copied to the clippboard on any merchant
 // website.
 void LogPixCodeCopied(ukm::SourceId ukm_source_id);
+
+// Log that a Pix code is copied to the clipboard within any iframe.
+void LogPixCodeCopiedInIframe();
 
 // Log when a given payment link in a certain page for an eWallet push payment
 // flow is detected.

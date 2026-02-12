@@ -729,6 +729,49 @@ TEST_P(PixManagerTestWithAccountLinkingEnabled,
 }
 
 TEST_P(PixManagerTestWithAccountLinkingEnabled,
+       CopyTrigger_InIframe_LogPixCodeCopiedInIframe) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
+
+  GURL main_frame_url("https://merchant.com/");
+  GURL iframe_url("https://unknown-psp.com/");
+  url::Origin origin = url::Origin::Create(main_frame_url);
+
+  pix_manager_->OnPixCodeCopiedToClipboard(
+      main_frame_url, iframe_url, origin, PixCodeRustValidationResult::kDynamic,
+      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+      ukm::UkmRecorder::GetNewSourceID());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PixCodeCopied.Iframe",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_P(PixManagerTestWithAccountLinkingEnabled,
+       CopyTrigger_NotInIframe_PixCodeCopiedIframeNotLogged) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
+
+  GURL main_frame_url("https://merchant.com/");
+  // Empty iframe_url since copy event did not happen in an iframe.
+  std::optional<GURL> iframe_url;
+  url::Origin origin = url::Origin::Create(main_frame_url);
+
+  pix_manager_->OnPixCodeCopiedToClipboard(
+      main_frame_url, iframe_url, origin, PixCodeRustValidationResult::kDynamic,
+      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+      ukm::UkmRecorder::GetNewSourceID());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PixCodeCopied.Iframe",
+      /*sample=*/true,
+      /*expected_bucket_count=*/0);
+}
+
+TEST_P(PixManagerTestWithAccountLinkingEnabled,
        TestPayFlowCanBeTriggeredOnlyOncePerPageLoad) {
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));

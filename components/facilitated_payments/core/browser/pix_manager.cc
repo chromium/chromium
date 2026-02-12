@@ -107,6 +107,7 @@ void PixManager::OnPixCodeCopiedToClipboard(
   // If the copy event happened inside an iframe, check whether the iframe URL
   // is allowlisted. Otherwise, check whether the main frame URL is allowlisted.
   if (iframe_url.has_value()) {
+    LogPixCodeCopiedInIframe();
     if (!IsIframeUrlAllowlisted(iframe_url.value())) {
       // The iframe URL is not part of the allowlist, ignore the copy event.
       LogPixFlowExitedReason(PixFlowExitedReason::kIframeUrlNotAllowlisted);
