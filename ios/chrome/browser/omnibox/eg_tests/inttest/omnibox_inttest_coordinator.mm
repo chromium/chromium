@@ -7,16 +7,16 @@
 #import <memory>
 
 #import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
+#import "ios/chrome/browser/autocomplete/test/fake_suggestions_autocomplete_controller.h"
+#import "ios/chrome/browser/autocomplete/test/fake_suggestions_builder.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_coordinator+Testing.h"
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_coordinator.h"
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/fake_omnibox_client.h"
-#import "ios/chrome/browser/omnibox/eg_tests/inttest/fake_suggestions_builder.h"
-#import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_view_controller.h"
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_view_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller+Testing.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -28,9 +28,6 @@
 @implementation OmniboxInttestCoordinator {
   OmniboxInttestViewController* _viewController;
   raw_ptr<FakeOmniboxClient> _fakeOmniboxClient;
-  raw_ptr<FakeSuggestionsBuilder> _fakeSuggestionsBuilder;
-  // TODO(crbug.com/462066136): Move to a TestAutocompleteBrowserAgent.
-  std::unique_ptr<OmniboxInttestAutocompleteController> _autocompleteController;
 }
 
 - (void)start {
@@ -59,13 +56,6 @@
   omniboxCoordinator.searchOnlyUI = YES;
   [omniboxCoordinator start];
 
-  _autocompleteController =
-      std::make_unique<OmniboxInttestAutocompleteController>();
-  _fakeSuggestionsBuilder = _autocompleteController->fake_suggestions_builder();
-
-  [omniboxCoordinator.omniboxAutocompleteController
-      setAutocompleteController:_autocompleteController.get()];
-
   [omniboxCoordinator.managedViewController
       willMoveToParentViewController:_viewController];
   [_viewController
@@ -82,19 +72,14 @@
 
 - (void)stop {
   _fakeOmniboxClient = nullptr;
-  _fakeSuggestionsBuilder = nullptr;
   [self.omniboxCoordinator stop];
   self.omniboxCoordinator = nil;
-  _autocompleteController = nullptr;
 
   _viewController.delegate = nil;
   [_viewController.presentingViewController dismissViewControllerAnimated:NO
                                                                completion:nil];
   _viewController = nil;
-}
-
-- (FakeSuggestionsBuilder*)fakeSuggestionsBuilder {
-  return _fakeSuggestionsBuilder;
+  AutocompleteBrowserAgent::FromBrowser(self.browser)->RemoveServices();
 }
 
 - (void)simulateNTP {
@@ -110,14 +95,6 @@
 
 - (void)resetLastURLLoaded {
   _fakeOmniboxClient->set_on_autocomplete_accept_destination_url(GURL());
-}
-
-- (void)setFakeSuggestionEnabled:(BOOL)fakeSuggestionEnabled {
-  _autocompleteController->fake_suggestion_enabled() = fakeSuggestionEnabled;
-}
-
-- (BOOL)isFakeSuggestionEnabled {
-  return _autocompleteController->fake_suggestion_enabled();
 }
 
 #pragma mark - OmniboxInttestViewControllerDelegate

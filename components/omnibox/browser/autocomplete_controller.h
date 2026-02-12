@@ -321,7 +321,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   friend class extensions::UnscopedOmniboxApiTest;
   friend class SearchPreloadResponseController;
 #if BUILDFLAG(IS_IOS)
-  friend class OmniboxInttestAutocompleteController;
+  friend class FakeSuggestionsAutocompleteController;
 #endif
   FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
                            FilterMatchesForInstantKeywordWithBareAt);

@@ -46,6 +46,11 @@ class AutocompleteBrowserAgent
   // Removes AutocompleteController and Shortcuts helper for all context.
   void RemoveServices();
 
+  // Sets the AutocompleteController for the given context.
+  void SetAutocompleteControllerForTesting(
+      OmniboxPresentationContext context,
+      std::unique_ptr<AutocompleteController> controller);
+
   using PageClassificationCallback =
       base::RepeatingCallback<metrics::OmniboxEventProto::PageClassification()>;
 

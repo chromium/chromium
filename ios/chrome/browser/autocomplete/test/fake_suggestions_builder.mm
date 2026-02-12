@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/eg_tests/inttest/fake_suggestions_builder.h"
+#import "ios/chrome/browser/autocomplete/test/fake_suggestions_builder.h"
 
 #import <optional>
 #import <vector>

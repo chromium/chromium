@@ -54,6 +54,12 @@ OmniboxShortcutsHelper* AutocompleteBrowserAgent::GetOmniboxShortcutsHelper(
   return helper_ptr;
 }
 
+void AutocompleteBrowserAgent::SetAutocompleteControllerForTesting(
+    OmniboxPresentationContext context,
+    std::unique_ptr<AutocompleteController> controller) {
+  controllers_[context] = std::move(controller);
+}
+
 void AutocompleteBrowserAgent::RemoveServices() {
   for (auto it = web_state_list_prefetchers_.begin();
        it != web_state_list_prefetchers_.end(); ++it) {

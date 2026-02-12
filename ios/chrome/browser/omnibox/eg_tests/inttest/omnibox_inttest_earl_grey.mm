@@ -33,14 +33,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   }
 }
 
-- (void)addURLShortcutMatch:(NSString*)shortcutText
-             destinationURL:(const GURL&)shortcutURL {
-  GREYAssertTrue(shortcutURL.is_valid(), @"shortcutURL should be valid.");
-  [OmniboxInttestAppInterface
-       addURLShortcutMatch:shortcutText
-      destinationURLString:[NSString cr_fromString:shortcutURL.spec()]];
-}
-
 - (void)assertURLLoaded:(const GURL&)URL {
   NSURL* loadedURL = [self waitForURLLoad];
   GREYAssertEqualObjects(loadedURL, net::NSURLWithGURL(URL),

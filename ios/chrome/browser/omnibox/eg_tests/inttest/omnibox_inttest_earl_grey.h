@@ -24,10 +24,6 @@ class GURL;
 /// Focuses the omnibox and type `text`.
 - (void)focusOmniboxAndType:(NSString*)text;
 
-/// Adds an URL shortcut match with `shortcutText` and `shortcutURL`.
-- (void)addURLShortcutMatch:(NSString*)shortcutText
-             destinationURL:(const GURL&)shortcutURL;
-
 /// Asserts that`URL`is loaded by the omnibox.
 - (void)assertURLLoaded:(const GURL&)URL;
 

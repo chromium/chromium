@@ -47,6 +47,7 @@ source_set("hooks") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/aim/model:test_support",
     "//ios/chrome/browser/authentication/test:eg_app_support+eg2",
+    "//ios/chrome/browser/autocomplete/test:eg_app_support+eg2",
     "//ios/chrome/browser/composebox/eg_tests/inttest:eg_app_support+eg2",
     "//ios/chrome/browser/composebox/model:test_support",
     "//ios/chrome/browser/drive/model:test_support",

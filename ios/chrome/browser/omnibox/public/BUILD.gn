@@ -6,7 +6,6 @@ source_set("public") {
   sources = [
     "omnibox_metrics_helper.h",
     "omnibox_metrics_helper.mm",
-    "omnibox_presentation_context.h",
     "omnibox_suggestion_icon_util.h",
     "omnibox_suggestion_icon_util.mm",
     "omnibox_util.h",
@@ -65,6 +64,7 @@ source_set("constants") {
     "omnibox_icon_type.mm",
     "omnibox_popup_accessibility_identifier_constants.h",
     "omnibox_popup_accessibility_identifier_constants.mm",
+    "omnibox_presentation_context.h",
   ]
   deps = [
     "//base",

@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_autocomplete_controller.h"
+#import "ios/chrome/browser/autocomplete/test/fake_suggestions_autocomplete_controller.h"
 
 #import "components/omnibox/browser/autocomplete_classifier.h"
 #import "components/omnibox/browser/autocomplete_controller_config.h"
@@ -10,9 +10,9 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/fake_autocomplete_provider.h"
 #import "components/omnibox/browser/fake_autocomplete_provider_client.h"
-#import "ios/chrome/browser/omnibox/eg_tests/inttest/fake_suggestions_builder.h"
+#import "ios/chrome/browser/autocomplete/test/fake_suggestions_builder.h"
 
-OmniboxInttestAutocompleteController::OmniboxInttestAutocompleteController()
+FakeSuggestionsAutocompleteController::FakeSuggestionsAutocompleteController()
     : AutocompleteController(
           std::make_unique<FakeAutocompleteProviderClient>(),
           AutocompleteControllerConfig{
@@ -22,18 +22,15 @@ OmniboxInttestAutocompleteController::OmniboxInttestAutocompleteController()
   suggestions_builder_ = std::make_unique<FakeSuggestionsBuilder>();
 }
 
-OmniboxInttestAutocompleteController::~OmniboxInttestAutocompleteController() {
+FakeSuggestionsAutocompleteController::
+    ~FakeSuggestionsAutocompleteController() {
   provider_ = nullptr;
   suggestions_builder_ = nullptr;
 }
 
-void OmniboxInttestAutocompleteController::Start(
+void FakeSuggestionsAutocompleteController::Start(
     const AutocompleteInput& input) {
   {
-    if (!fake_suggestion_enabled_) {
-      AutocompleteController::Start(input);
-      return;
-    }
     AutocompleteResult& results = internal_result_;
     results.ClearMatches();
     results.AppendMatches(

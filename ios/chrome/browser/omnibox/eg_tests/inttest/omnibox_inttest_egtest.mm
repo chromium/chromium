@@ -4,11 +4,13 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/autocomplete/test/autocomplete_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_earl_grey.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_earl_grey.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_matchers.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_test_util.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/NSString+Chromium.h"
@@ -37,6 +39,9 @@ const GURL kShortcutURL = GURL("https://www.shortcut.com");
 /// URL of google search by image.
 const GURL kSearchByImageURL =
     GURL("https://www.google.com/searchbyimage/upload");
+/// Omnibox presentation context used in `OmniboxInttestCoordinator`.
+const OmniboxPresentationContext kPresentationContext =
+    OmniboxPresentationContext::kLensOverlay;
 
 /// Returns Search Copied Image button from UIMenuController.
 id<GREYMatcher> SearchCopiedImageMenuButton() {
@@ -61,9 +66,11 @@ id<GREYMatcher> SearchCopiedImageMenuButton() {
 
 - (void)setUp {
   [super setUp];
-  [ChromeCoordinatorAppInterface startOmniboxCoordinator];
   // Stub autocomplete suggestions with fake suggestions.
-  [OmniboxInttestAppInterface enableFakeSuggestions];
+  [ChromeCoordinatorAppInterface startBrowser];
+  [AutocompleteAppInterface
+      enableFakeSuggestionsInContext:kPresentationContext];
+  [ChromeCoordinatorAppInterface startOmniboxCoordinator];
 }
 
 - (void)tearDownHelper {
@@ -75,8 +82,10 @@ id<GREYMatcher> SearchCopiedImageMenuButton() {
 
 // Tests accepting a shortcut suggestion.
 - (void)testRichInlineSelection {
-  [OmniboxInttestEarlGrey addURLShortcutMatch:kShortcutText
-                               destinationURL:kShortcutURL];
+  [AutocompleteAppInterface
+       addURLShortcutMatch:kShortcutText
+      destinationURLString:base::SysUTF8ToNSString(kShortcutURL.spec())
+                   context:kPresentationContext];
   [OmniboxInttestEarlGrey focusOmniboxAndType:@"short"];
 
   [OmniboxEarlGrey acceptOmniboxText];
@@ -85,8 +94,10 @@ id<GREYMatcher> SearchCopiedImageMenuButton() {
 
 // Tests removing shortcut suggestion by tapping the textfield.
 - (void)testRichInlineRemovedByTap {
-  [OmniboxInttestEarlGrey addURLShortcutMatch:kShortcutText
-                               destinationURL:kShortcutURL];
+  [AutocompleteAppInterface
+       addURLShortcutMatch:kShortcutText
+      destinationURLString:base::SysUTF8ToNSString(kShortcutURL.spec())
+                   context:kPresentationContext];
   [OmniboxInttestEarlGrey focusOmniboxAndType:@"short"];
 
   // Tap the omnibox to accept autocomplete and remove rich inline.
@@ -99,8 +110,10 @@ id<GREYMatcher> SearchCopiedImageMenuButton() {
 
 // Tests removing shorcut suggestion by pressing delete.
 - (void)testRichInlineRemovedByDelete {
-  [OmniboxInttestEarlGrey addURLShortcutMatch:kShortcutText
-                               destinationURL:kShortcutURL];
+  [AutocompleteAppInterface
+       addURLShortcutMatch:kShortcutText
+      destinationURLString:base::SysUTF8ToNSString(kShortcutURL.spec())
+                   context:kPresentationContext];
   [OmniboxInttestEarlGrey focusOmniboxAndType:@"short"];
 
   // Press the backspace HW keyboard key.
@@ -112,8 +125,10 @@ id<GREYMatcher> SearchCopiedImageMenuButton() {
 
 // Tests removing shortcut suggestion by pressing an arrow key.
 - (void)testRichInlineRemovedWithArrowKey {
-  [OmniboxInttestEarlGrey addURLShortcutMatch:kShortcutText
-                               destinationURL:kShortcutURL];
+  [AutocompleteAppInterface
+       addURLShortcutMatch:kShortcutText
+      destinationURLString:base::SysUTF8ToNSString(kShortcutURL.spec())
+                   context:kPresentationContext];
   [OmniboxInttestEarlGrey focusOmniboxAndType:@"short"];
 
   // Simulate press the HW left arrow key.

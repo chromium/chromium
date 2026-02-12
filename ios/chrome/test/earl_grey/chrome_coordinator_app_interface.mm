@@ -254,6 +254,12 @@
   return URLLoader->last_params.in_incognito;
 }
 
++ (void)startBrowser {
+  // The browser is lazily initialized. Access the browser to ensure it has
+  // been created.
+  [self.helper browser];
+}
+
 #pragma mark - Methods to start coordinators
 
 + (void)startLensPromoCoordinator {

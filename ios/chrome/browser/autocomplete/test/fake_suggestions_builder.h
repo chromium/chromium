@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_INTTEST_FAKE_SUGGESTIONS_BUILDER_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_INTTEST_FAKE_SUGGESTIONS_BUILDER_H_
-
-#import <UIKit/UIKit.h>
+#ifndef IOS_CHROME_BROWSER_AUTOCOMPLETE_TEST_FAKE_SUGGESTIONS_BUILDER_H_
+#define IOS_CHROME_BROWSER_AUTOCOMPLETE_TEST_FAKE_SUGGESTIONS_BUILDER_H_
 
 #import <string>
 #import <vector>
@@ -46,4 +44,4 @@ class FakeSuggestionsBuilder {
   std::vector<ShortcutData> shortcuts_;
 };
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_INTTEST_FAKE_SUGGESTIONS_BUILDER_H_
+#endif  // IOS_CHROME_BROWSER_AUTOCOMPLETE_TEST_FAKE_SUGGESTIONS_BUILDER_H_
