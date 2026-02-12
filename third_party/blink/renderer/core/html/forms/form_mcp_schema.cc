@@ -919,7 +919,7 @@ String FormMCPSchema::LabelText(HTMLFormControlElement& control) {
 void FormMCPSchema::ProcessForm(HTMLFormElement& form) {
   for (ListedElement* element : form.ListedElements()) {
     if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
-      if (form_control->IsDisabledFormControl()) {
+      if (form_control->IsDisabledOrReadOnly()) {
         continue;
       }
       String name = form_control->GetWebMCPParameterName();
