@@ -21,7 +21,7 @@ if (REPLAY_LOCAL_DRIVER_DIR && driverRevisionIsSet) {
   );
 }
 
-const buildArm = process.env.REPLAY_BUILD_ARM == true;
+const buildArm = !!process.env.REPLAY_BUILD_ARM;
 const outdir = buildArm ? "out/Release-ARM" : "out/Release";
 
 // Ensure that the git repository is "trusted", otherwise we'll get errors like:
