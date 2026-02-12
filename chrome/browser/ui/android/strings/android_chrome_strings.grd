@@ -7579,6 +7579,32 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TAB_BOTTOM_SHEET_FULL_HEIGHT" desc="The announcement when the Tab Bottom Sheet is opened to full height.">
         Tab Bottom Sheet at full height
       </message>
+
+      <!-- Chrome Finds -->
+      <message name="IDS_CHROME_FINDS_OPT_IN_BOTTOM_SHEET_TITLE" desc="Title of the Chrome Finds opt-in bottom sheet promo. [CHAR_LIMIT=32]">
+        Let Chrome keep looking?
+      </message>
+      <message name="IDS_CHROME_FINDS_OPT_IN_BOTTOM_SHEET_DESCRIPTION" desc="Description of the Chrome Finds opt-in bottom sheet promo.">
+        Get notified when Chrome finds the best results for your searches while you\u2019re away.
+      </message>
+      <message name="IDS_CHROME_FINDS_OPT_IN_BOTTOM_SHEET_POSITIVE_BUTTON_TEXT" desc="Button text for the Chrome Finds opt-in bottom sheet to accept notifications. [CHAR_LIMIT=32]">
+        Notify me
+      </message>
+      <message name="IDS_CHROME_FINDS_OPT_IN_BOTTOM_SHEET_NEGATIVE_BUTTON_TEXT" desc="Button text for the Chrome Finds opt-in bottom sheet to reject notifications. [CHAR_LIMIT=32]">
+        No, thanks
+      </message>
+      <message name="IDS_CHROME_FINDS_OPT_IN_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Content description of the Chrome Finds opt-in bottom sheet informing the user on what Chrome Finds is and asking whether to opt-in.">
+        Chrome Finds opt-in bottom sheet
+      </message>
+      <message name="IDS_CHROME_FINDS_OPT_IN_BOTTOM_SHEET_CLOSED_CONTENT_DESCRIPTION" desc="Content description of the Chrome Finds opt-in bottom sheet when closed.">
+        Chrome Finds opt-in closed
+      </message>
+      <message name="IDS_CHROME_FINDS_OPT_IN_BOTTOM_SHEET_HALF_HEIGHT_CONTENT_DESCRIPTION" desc="Content description of the Chrome Finds opt-in bottom sheet when opened at half height.">
+        Chrome Finds opt-in opened at half height
+      </message>
+      <message name="IDS_CHROME_FINDS_OPT_IN_BOTTOM_SHEET_FULL_HEIGHT_CONTENT_DESCRIPTION" desc="Content description of the Chrome Finds opt-in bottom sheet when opened at full height.">
+        Chrome Finds opt-in opened at full height
+      </message>
     </messages>
   </release>
 </grit>

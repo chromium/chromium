@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:paddingBottom="21dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ImageView
+        android:id="@+id/drag_handle"
+        android:layout_width="32dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="8dp"
+        android:importantForAccessibility="no"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/drag_handlebar" />
+
+    <ImageView
+        android:id="@+id/finds_opt_in_illustration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="33dp"
+        android:paddingBottom="28dp"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        app:layout_constraintTop_toBottomOf="@+id/drag_handle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/finds_opt_in_illustration"/>
+
+    <TextView
+        android:id="@+id/opt_in_title_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginHorizontal="@dimen/chrome_finds_opt_in_bottom_sheet_horizontal_margin"
+        android:textAppearance="@style/TextAppearance.Headline"
+        android:gravity="center_horizontal|top"
+        android:text="@string/chrome_finds_opt_in_bottom_sheet_title"
+        android:accessibilityHeading="true"
+        app:layout_constraintTop_toBottomOf="@+id/finds_opt_in_illustration"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/opt_in_description_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/chrome_finds_opt_in_bottom_sheet_horizontal_margin"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:gravity="center_horizontal|top"
+        android:text="@string/chrome_finds_opt_in_bottom_sheet_description"
+        app:layout_constraintTop_toBottomOf="@+id/opt_in_title_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/opt_in_positive_button"
+        style="@style/FilledButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/chrome_finds_opt_in_bottom_sheet_horizontal_margin"
+        android:layout_marginTop="24dp"
+        android:text="@string/chrome_finds_opt_in_bottom_sheet_positive_button_text"
+        app:layout_constraintTop_toBottomOf="@+id/opt_in_description_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/opt_in_negative_button"
+        style="@style/TextButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/chrome_finds_opt_in_bottom_sheet_horizontal_margin"
+        android:text="@string/chrome_finds_opt_in_bottom_sheet_negative_button_text"
+        app:layout_constraintTop_toBottomOf="@+id/opt_in_positive_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
