@@ -99,7 +99,6 @@ public class UrlBar extends AutocompleteEditText {
 
     private @Nullable UrlBarDelegate mUrlBarDelegate;
     private @Nullable Callback<String> mTextChangeListener;
-    private @Nullable Runnable mTypingStartedListener;
     private @Nullable OnKeyListener mKeyDownListener;
     private @Nullable UrlBarTextContextMenuDelegate mTextContextMenuDelegate;
     private @Nullable Callback<Integer> mUrlDirectionListener;
@@ -110,7 +109,6 @@ public class UrlBar extends AutocompleteEditText {
     private boolean mFocused;
     private boolean mFocusEventEmitted;
     private boolean mAllowFocus = true;
-    private boolean mShouldSendTypingStartedEvent;
 
     private boolean mPendingScroll;
     private boolean mIsInCct;
@@ -281,7 +279,6 @@ public class UrlBar extends AutocompleteEditText {
         setOnFocusChangeListener(null);
         mTextContextMenuDelegate = null;
         mTextChangeListener = null;
-        mTypingStartedListener = null;
     }
 
     /** Set the delegate to be used for text context menu actions. */
@@ -342,8 +339,6 @@ public class UrlBar extends AutocompleteEditText {
             mPendingScroll = false;
         }
         fixupTextDirection();
-
-        mShouldSendTypingStartedEvent = focused;
     }
 
     @Override
@@ -442,13 +437,6 @@ public class UrlBar extends AutocompleteEditText {
 
     @Override
     protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
-        if (mShouldSendTypingStartedEvent && lengthAfter > 0) {
-            if (mTypingStartedListener != null) {
-                mTypingStartedListener.run();
-            }
-            mShouldSendTypingStartedEvent = false;
-        }
-
         // Do not move this to the top of the method!
         // Make sure to emit the "TypingStarted" signal ahead of "onTextChanged", to allow the
         // Autocomplete session to begin.
@@ -628,14 +616,6 @@ public class UrlBar extends AutocompleteEditText {
      */
     public void setTextChangeListener(Callback<String> listener) {
         mTextChangeListener = listener;
-    }
-
-    /**
-     * Install the listener notified when the user begins typing in recently focused Omnibox for the
-     * first time. When <null>, callback is removed.
-     */
-    /* package */ void setTypingStartedListener(@Nullable Runnable r) {
-        mTypingStartedListener = r;
     }
 
     /**

@@ -58,6 +58,7 @@ public class AutocompleteInput implements UserData {
     private String mUserText;
     private boolean mAllowExactKeywordMatch;
     private boolean mHasAttachments;
+    private boolean mSuppressAutomaticSuggestionsUntilUserStartsTyping;
     private Range<Integer> mSelection;
     private @RefineActionUsage int mRefineActionUsage;
     private boolean mSuggestionsListScrolled;
@@ -324,6 +325,7 @@ public class AutocompleteInput implements UserData {
         mRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
         mUrlFocusTime = 0;
         mSuggestionsListScrolled = false;
+        mSuppressAutomaticSuggestionsUntilUserStartsTyping = false;
 
         return this;
     }
@@ -343,5 +345,19 @@ public class AutocompleteInput implements UserData {
 
     public void setSuggestionsListScrolled() {
         mSuggestionsListScrolled = true;
+    }
+
+    /**
+     * Whether to instantly show suggestions for the supplied input (false), or wait until the user
+     * actually began typing query (true).
+     */
+    public boolean shouldSuppressAutomaticSuggestionsUntilUserStartsTyping() {
+        return mSuppressAutomaticSuggestionsUntilUserStartsTyping;
+    }
+
+    public AutocompleteInput setSuppressAutomaticSuggestionsUntilUserStartsTyping(
+            boolean suppress) {
+        mSuppressAutomaticSuggestionsUntilUserStartsTyping = suppress;
+        return this;
     }
 }

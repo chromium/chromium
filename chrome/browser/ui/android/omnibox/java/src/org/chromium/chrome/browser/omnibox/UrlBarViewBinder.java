@@ -136,8 +136,6 @@ class UrlBarViewBinder {
         } else if (UrlBarProperties.TEXT_WRAPPED_CALLBACK.equals(propertyKey)) {
             view.setUrlTextWrappingChangeListener(
                     model.get(UrlBarProperties.TEXT_WRAPPED_CALLBACK));
-        } else if (UrlBarProperties.TYPING_STARTED_LISTENER.equals(propertyKey)) {
-            view.setTypingStartedListener(model.get(UrlBarProperties.TYPING_STARTED_LISTENER));
         } else if (UrlBarProperties.KEY_DOWN_LISTENER.equals(propertyKey)) {
             view.setKeyDownListener(model.get(UrlBarProperties.KEY_DOWN_LISTENER));
         } else if (UrlBarProperties.HAS_URL_SUGGESTIONS.equals(propertyKey)) {

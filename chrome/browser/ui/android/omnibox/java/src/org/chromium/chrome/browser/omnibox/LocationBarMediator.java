@@ -590,6 +590,7 @@ class LocationBarMediator
         // described in the documentation for LocationBar#showUrlBarCursorWithoutFocusAnimations.
         setUrlBarFocus(
                 new AutocompleteInput()
+                        .setSuppressAutomaticSuggestionsUntilUserStartsTyping(true)
                         .setFocusReason(OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD));
     }
 
@@ -2050,20 +2051,9 @@ class LocationBarMediator
         // the scrim on the web contents, which is not desirable.
         if (!TextUtils.isEmpty(mUrlCoordinator.getTextWithoutAutocomplete())) return;
         recordOmniboxFocusReason(OmniboxFocusReason.TAP_AFTER_FOCUS_FROM_KEYBOARD);
-        completeUrlFocusAnimationAndEnableSuggestions();
-    }
-
-    /**
-     * Trigger focus animations to adequately enable Autocomplete and Suggestions. This is required
-     * only when the intention is to trigger the suggestions dropdown after the omnibox has gained
-     * focus without animations.
-     *
-     * <p>This call trusts the caller has performed all necessary verifications, and will display
-     * suggestions unconditionally.
-     */
-    /* package */ void completeUrlFocusAnimationAndEnableSuggestions() {
-        if (!mUrlFocusedWithoutAnimations || mUrlCoordinator == null) return;
-        handleUrlFocusAnimation(true);
+        setUrlBarFocus(
+                new AutocompleteInput()
+                        .setFocusReason(OmniboxFocusReason.TAP_AFTER_FOCUS_FROM_KEYBOARD));
     }
 
     // BackPressHandler implementation.

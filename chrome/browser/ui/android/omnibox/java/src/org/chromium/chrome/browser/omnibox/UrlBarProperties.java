@@ -187,10 +187,6 @@ class UrlBarProperties {
     public static final WritableObjectPropertyKey<Callback<Boolean>> TEXT_WRAPPED_CALLBACK =
             new WritableObjectPropertyKey<>();
 
-    /** The callback to be notified when user begins typing. */
-    public static final WritableObjectPropertyKey<Runnable> TYPING_STARTED_LISTENER =
-            new WritableObjectPropertyKey<>();
-
     /** The listener to be notified of URL direction changes. */
     public static final WritableObjectPropertyKey<Callback<Integer>> URL_DIRECTION_LISTENER =
             new WritableObjectPropertyKey<>();
@@ -221,7 +217,6 @@ class UrlBarProperties {
                 TEXT_CONTEXT_MENU_DELEGATE,
                 TEXT_STATE,
                 TEXT_WRAPPED_CALLBACK,
-                TYPING_STARTED_LISTENER,
                 URL_DIRECTION_LISTENER,
                 USE_SMALL_TEXT
             };

@@ -5,13 +5,7 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -26,8 +20,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -38,19 +30,14 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.ui.base.Clipboard;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -77,8 +64,6 @@ public class UrlBarTest {
     private WebPageStation mStartingPage;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private Runnable mListener;
 
     @Before
     public void setUpTest() throws Exception {
@@ -681,222 +666,5 @@ public class UrlBarTest {
         mOmnibox.typeText("test", false);
         mOmnibox.clearFocus();
         mOmnibox.checkText(equalTo(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL), null);
-    }
-
-    @Test
-    @SmallTest
-    public void typingStarted_emittedOncePerFocus() {
-        testTypingStarted_emittedOncePerFocus();
-    }
-
-    @Test
-    @SmallTest
-    public void typingStarted_emittedOncePerFocusWithRetainOmniboxOnFocusDisabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
-        testTypingStarted_emittedOncePerFocus();
-    }
-
-    @Test
-    @SmallTest
-    public void typingStarted_emittedOncePerFocusWithRetainOmniboxOnFocusEnabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
-        testTypingStarted_emittedOncePerFocus();
-    }
-
-    private void testTypingStarted_emittedOncePerFocus() {
-        var listener = mock(Runnable.class);
-
-        mOmnibox.clearFocus();
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mUrlBar.setTypingStartedListener(listener);
-        mOmnibox.requestFocus();
-
-        verifyNoInteractions(listener);
-
-        // Verify that UrlBar emits a single Typing Started event.
-        mOmnibox.typeText("a", false);
-        verify(listener).run();
-
-        clearInvocations(listener);
-
-        // Verify no subsequent events emitted.
-        mOmnibox.typeText("a", false);
-        verifyNoInteractions(listener);
-    }
-
-    @Test
-    @SmallTest
-    public void typingStarted_emittedOnceEveryFocus() {
-        testTypingStarted_emittedOnceEveryFocus();
-    }
-
-    @Test
-    @SmallTest
-    public void typingStarted_emittedOnceEveryFocusWithRetainOmniboxOnFocusDisabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
-        testTypingStarted_emittedOnceEveryFocus();
-    }
-
-    @Test
-    @SmallTest
-    public void typingStarted_emittedOnceEveryFocusWithRetainOmniboxOnFocusEnabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
-        testTypingStarted_emittedOnceEveryFocus();
-    }
-
-    private void testTypingStarted_emittedOnceEveryFocus() {
-        var listener = mock(Runnable.class);
-
-        mOmnibox.clearFocus();
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mUrlBar.setTypingStartedListener(listener);
-        mOmnibox.requestFocus();
-
-        verifyNoInteractions(listener);
-
-        // Verify that UrlBar emits a single Typing Started event.
-        mOmnibox.typeText("a", false);
-        verify(listener).run();
-
-        mOmnibox.clearFocus();
-        clearInvocations(listener);
-        mOmnibox.requestFocus();
-
-        // Verify no subsequent events emitted.
-        mOmnibox.typeText("a", false);
-        verify(listener).run();
-    }
-
-    @Test
-    @SmallTest
-    @RequiresRestart("crbug.com/358170962")
-    public void typingStarted_notEmittedForNonTypingCharacters() {
-        testTypingStarted_notEmittedForNonTypingCharacters(
-                /* expectRetainOmniboxOnFocus= */ ThreadUtils.runOnUiThreadBlocking(
-                        OmniboxFeatures::shouldRetainOmniboxOnFocus));
-    }
-
-    @Test
-    @SmallTest
-    @RequiresRestart("crbug.com/358170962")
-    public void typingStarted_notEmittedForNonTypingCharactersWithRetainOmniboxOnFocusDisabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
-        testTypingStarted_notEmittedForNonTypingCharacters(/* expectRetainOmniboxOnFocus= */ false);
-    }
-
-    @Test
-    @SmallTest
-    @RequiresRestart("crbug.com/358170962")
-    public void typingStarted_notEmittedForNonTypingCharactersWithRetainOmniboxOnFocusEnabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
-        testTypingStarted_notEmittedForNonTypingCharacters(/* expectRetainOmniboxOnFocus= */ true);
-    }
-
-    private void testTypingStarted_notEmittedForNonTypingCharacters(
-            boolean expectRetainOmniboxOnFocus) {
-        var listener = mock(Runnable.class);
-
-        mOmnibox.clearFocus();
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mUrlBar.setTypingStartedListener(listener);
-        mOmnibox.requestFocus();
-
-        var nonTypingKeys =
-                new ArrayList<>(
-                        List.of(
-                                KeyEvent.KEYCODE_F1,
-                                KeyEvent.KEYCODE_SHIFT_LEFT,
-                                KeyEvent.KEYCODE_DEL,
-                                KeyEvent.KEYCODE_PAGE_UP,
-                                KeyEvent.KEYCODE_DPAD_LEFT));
-
-        // When retaining omnibox on focus, the tab key causes selection of the first omnibox
-        // suggestion. This results in a push to the model which, in turn, results in a typing
-        // started event. This is not a real world scenario for the NTP on Large-Form-Factor
-        // devices, where the omnibox is pre-focused and the tab key reveals the suggestions list,
-        // so this is acceptable.
-        if (!expectRetainOmniboxOnFocus) {
-            nonTypingKeys.add(KeyEvent.KEYCODE_TAB);
-        }
-
-        for (int key : nonTypingKeys) {
-            mOmnibox.sendKey(key);
-            verifyNoInteractions(listener);
-        }
-    }
-
-    @Test
-    @SmallTest
-    public void typingStarted_clipboardPasteTriggersTypingStarted() {
-        testTypingStarted_clipboardPasteTriggersTypingStarted();
-    }
-
-    @Test
-    @SmallTest
-    public void
-            typingStarted_clipboardPasteTriggersTypingStartedWithRetainOmniboxOnFocusDisabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
-        testTypingStarted_clipboardPasteTriggersTypingStarted();
-    }
-
-    @Test
-    @SmallTest
-    @DisabledTest(message = "Disabled because of crbug.com/483152321")
-    public void typingStarted_clipboardPasteTriggersTypingStartedWithRetainOmniboxOnFocusEnabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
-        testTypingStarted_clipboardPasteTriggersTypingStarted();
-    }
-
-    private void testTypingStarted_clipboardPasteTriggersTypingStarted() {
-        var listener = mock(Runnable.class);
-
-        mOmnibox.clearFocus();
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mUrlBar.setTypingStartedListener(listener);
-        mOmnibox.requestFocus();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Clipboard.getInstance().setText("");
-                    // Paste directly. This is because Keyboard paste normally goes through an IME,
-                    // which requires a lengthier process, rendering test flaky.
-                    mUrlBar.onTextContextMenuItem(android.R.id.paste);
-                });
-        verifyNoInteractions(listener);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Clipboard.getInstance().setText("asdf");
-                    // Paste directly. This is because Keyboard paste normally goes through an IME,
-                    // which requires a lengthier process, rendering test flaky.
-                    mUrlBar.onTextContextMenuItem(android.R.id.paste);
-                });
-        verify(listener).run();
-    }
-
-    @Test
-    @SmallTest
-    // Added to prevent regression of crbug.com/410642190
-    public void notify_typingStarted_beforeTextChange() {
-        // Setup.
-        AutocompleteEditTextModelBase model = spy(mUrlBar.getModelForTesting());
-        mUrlBar.setModelForTesting(model);
-        InOrder inOrder = inOrder(mListener, model);
-
-        mOmnibox.clearFocus();
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mUrlBar.setTypingStartedListener(mListener);
-        mOmnibox.requestFocus();
-        verifyNoInteractions(mListener);
-        clearInvocations(model);
-
-        // Set text and wait for listeners to be called.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mUrlBar.onTextChanged(EXAMPLE_STRING, 0, 0, EXAMPLE_STRING.length()));
-
-        // Verify that the typing started listener is called before model.onTextChanged is called.
-        inOrder.verify(mListener).run();
-        inOrder.verify(model, times(1))
-                .onTextChanged(EXAMPLE_STRING, 0, 0, EXAMPLE_STRING.length());
     }
 }

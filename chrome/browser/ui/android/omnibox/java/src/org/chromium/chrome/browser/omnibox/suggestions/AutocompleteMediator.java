@@ -60,7 +60,6 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxFeatures;
-import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
@@ -463,7 +462,7 @@ class AutocompleteMediator
             mOmniboxFocusResultedInNavigation = false;
         }
 
-        if (input.getFocusReason() != OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD) {
+        if (!input.shouldSuppressAutomaticSuggestionsUntilUserStartsTyping()) {
             // Ask directly for zero-suggestions related to current input, unless the user is
             // currently visiting SearchActivity and the input is populated from the launch intent.
             // In all contexts, the input will most likely be empty, triggering the same response
@@ -927,6 +926,13 @@ class AutocompleteMediator
     public void onTextChanged(String textWithoutAutocomplete, boolean isOnFocusContext) {
         if (!isInInputSession()) return;
         if (mShouldPreventOmniboxAutocomplete) return;
+
+        if (mAutocompleteInput.shouldSuppressAutomaticSuggestionsUntilUserStartsTyping()
+                && TextUtils.equals(mAutocompleteInput.getUserText(), textWithoutAutocomplete)) {
+            return;
+        }
+        // User started typing.
+        mAutocompleteInput.setSuppressAutomaticSuggestionsUntilUserStartsTyping(false);
 
         // Always re-set the list's final state when we're about to request new suggestions.
         // This avoids a problem, where the property does not get an explicit update that the list

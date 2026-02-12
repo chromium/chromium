@@ -871,7 +871,8 @@ public class LocationBarMediatorTest {
         mMediator.onUrlFocusChange(true);
         mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
 
-        mMediator.completeUrlFocusAnimationAndEnableSuggestions();
+        // Typing started will emit suggestions changed.
+        mMediator.onSuggestionsChanged(null);
 
         verify(mUrlCoordinator, times(2)).onUrlFocusChange(true);
     }
