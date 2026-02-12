@@ -139,9 +139,6 @@ void DaemonProcessLinux::OnChannelConnected(int32_t peer_pid) {
       desktop_session_connection_events_.BindNewEndpointAndPassReceiver());
 
   DaemonProcess::OnChannelConnected(peer_pid);
-
-  // TODO: crbug.com/475611769 - Remove this.
-  CreateDesktopSession(1, {}, false);
 }
 
 void DaemonProcessLinux::OnWorkerProcessStopped() {

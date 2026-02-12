@@ -61,13 +61,15 @@ void RemoteDisplaySessionManager::Start(Delegate* delegate, Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(start_state_, StartState::NOT_STARTED);
   DCHECK(delegate);
+  DCHECK(callback);
 
   start_state_ = StartState::STARTING;
   delegate_ = delegate;
 
+  init_callback_ = std::move(callback);
   GDBusConnectionRef::CreateForSystemBus(
       base::BindOnce(&RemoteDisplaySessionManager::OnCreateDbusConnectionResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void RemoteDisplaySessionManager::CreateRemoteDisplay(
@@ -165,14 +167,27 @@ void RemoteDisplaySessionManager::PopulateSessionEnvironment(
   delegate_->OnRemoteDisplaySessionChanged(display_name, display_info);
 }
 
+void RemoteDisplaySessionManager::HandleSessionInfoQueriesBlockingStartup() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (start_state_ == StartState::STARTED) {
+    return;
+  }
+
+  DCHECK_EQ(start_state_, StartState::STARTING);
+  if (session_info_queries_blocking_startup_.empty()) {
+    start_state_ = StartState::STARTED;
+    std::move(init_callback_).Run(base::ok());
+  }
+}
+
 void RemoteDisplaySessionManager::OnCreateDbusConnectionResult(
-    Callback callback,
     base::expected<GDBusConnectionRef, Loggable> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!result.has_value()) {
     start_state_ = StartState::NOT_STARTED;
-    std::move(callback).Run(base::unexpected(std::move(result).error()));
+    std::move(init_callback_).Run(base::unexpected(std::move(result).error()));
     return;
   }
 
@@ -182,23 +197,36 @@ void RemoteDisplaySessionManager::OnCreateDbusConnectionResult(
       connection_, this,
       base::BindOnce(
           &RemoteDisplaySessionManager::OnGdmRemoteDisplayManagerStarted,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void RemoteDisplaySessionManager::OnGdmRemoteDisplayManagerStarted(
-    Callback callback,
     base::expected<void, Loggable> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!result.has_value()) {
     start_state_ = StartState::NOT_STARTED;
-    std::move(callback).Run(base::unexpected(std::move(result).error()));
+    std::move(init_callback_).Run(base::unexpected(std::move(result).error()));
     return;
   }
 
   login_session_reporter_server_.StartServer();
-  start_state_ = StartState::STARTED;
-  std::move(callback).Run(base::ok());
+  for (const auto& [display_path, remote_display] :
+       remote_display_manager_.remote_displays()) {
+    std::string display_name = GetRemoteDisplayName(remote_display.remote_id);
+    if (display_name.empty()) {
+      VLOG(1) << "Ignoring unrelated remote display: "
+              << remote_display.remote_id.value();
+      continue;
+    }
+    remote_displays_[display_name] = RemoteDisplayInfo();
+
+    if (!remote_display.session_id.empty()) {
+      session_info_queries_blocking_startup_.insert(display_name);
+      QuerySessionInfo(display_name, remote_display.session_id);
+    }
+  }
+  HandleSessionInfoQueriesBlockingStartup();
 }
 
 void RemoteDisplaySessionManager::OnRemoteDisplayCreated(
@@ -325,6 +353,8 @@ void RemoteDisplaySessionManager::OnSessionInfoReady(
     PopulateSessionEnvironment(display_name, remote_display_info,
                                std::move(session_reporter_info));
   }
+  session_info_queries_blocking_startup_.erase(display_name);
+  HandleSessionInfoQueriesBlockingStartup();
 }
 
 }  // namespace remoting

@@ -123,7 +123,8 @@ class GdmRemoteDisplayManager {
       base::expected<std::tuple<>, Loggable> result);
   void OnInterfacesAddedInternal(
       const gvariant::ObjectPath& display_path,
-      gvariant::GVariantRef<"a{sa{sv}}"> interfaces_and_properties);
+      gvariant::GVariantRef<"a{sa{sv}}"> interfaces_and_properties,
+      bool notify_observer);
   void OnInterfacesAdded(std::tuple<gvariant::ObjectPath,
                                     gvariant::GVariantRef<"a{sa{sv}}">> args);
   void OnInterfacesRemoved(

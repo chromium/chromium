@@ -57,6 +57,8 @@ class DesktopSessionFactoryLinux final
  private:
   class DesktopSessionLinux;
 
+  void OnStartResult(Callback callback, base::expected<void, Loggable> result);
+
   void OnCreateRemoteDisplayResult(std::string_view display_name,
                                    base::expected<void, Loggable> result);
 

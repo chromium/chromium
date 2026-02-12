@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -58,6 +59,9 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
     base::EnvironmentMap environment_variables;
   };
 
+  using RemoteDisplayMap =
+      base::flat_map<std::string /*display_name*/, RemoteDisplayInfo>;
+
   class Delegate {
    public:
     virtual ~Delegate() = default;
@@ -99,6 +103,11 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
   // remote display doesn't exist.
   const RemoteDisplayInfo* GetRemoteDisplayInfo(std::string_view display_name);
 
+  const RemoteDisplayMap& remote_displays() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return remote_displays_;
+  }
+
  private:
   enum class StartState {
     NOT_STARTED,
@@ -113,11 +122,13 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
       RemoteDisplayInfo& display_info,
       mojom::LoginSessionInfoPtr session_reporter_info);
 
+  // If `start_state_` is `STARTING` and there are no more session info queries
+  // blocking startup, then transition to `STARTED` and run the init callback.
+  void HandleSessionInfoQueriesBlockingStartup();
+
   void OnCreateDbusConnectionResult(
-      Callback init_callback,
       base::expected<GDBusConnectionRef, Loggable> result);
-  void OnGdmRemoteDisplayManagerStarted(Callback callback,
-                                        base::expected<void, Loggable> result);
+  void OnGdmRemoteDisplayManagerStarted(base::expected<void, Loggable> result);
 
   // GdmRemoteDisplayManager::Observer:
   void OnRemoteDisplayCreated(
@@ -140,6 +151,7 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
 
   StartState start_state_ GUARDED_BY_CONTEXT(sequence_checker_) =
       StartState::NOT_STARTED;
+  Callback init_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
   raw_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
   GdmRemoteDisplayManager remote_display_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
@@ -155,6 +167,17 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
   // information from the systemd D-BUS call.
   base::flat_map<std::string /*session_id*/, mojom::LoginSessionInfoPtr>
       pending_session_reporter_info_;
+
+  // Tracks remote displays awaiting systemd session info which blocks the
+  // startup process.
+  // If there are remote displays with associated session IDs, that exist before
+  // Start() was called, then the start callback won't be called until the
+  // `session_info` of all of these remote displays have been populated. This
+  // allows the caller to terminate all CRD-managed remote displays that were
+  // leaked from the previous CRD host incarnation.
+  base::flat_set<std::string /*display_name*/>
+      session_info_queries_blocking_startup_
+          GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<RemoteDisplaySessionManager> weak_ptr_factory_{this};
 };
