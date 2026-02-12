@@ -108,9 +108,7 @@ class DependencyParserModelLoaderBrowserTest
  public:
   DependencyParserModelLoaderBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud,
-         features::kReadAnythingReadAloudPhraseHighlighting},
-        {});
+        {features::kReadAnythingReadAloudPhraseHighlighting}, {});
   }
 
   void SetUp() override {

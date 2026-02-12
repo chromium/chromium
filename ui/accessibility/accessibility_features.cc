@@ -398,26 +398,18 @@ GetReadAnythingMenuShuffleExperimentGroup() {
   return kReadAnythingMenuShuffleExperimentParam.Get();
 }
 
-BASE_FEATURE(kReadAnythingReadAloud, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsReadAnythingReadAloudEnabled() {
-  return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud);
-}
-
 BASE_FEATURE(kReadAnythingReadAloudPhraseHighlighting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsReadAnythingReadAloudPhraseHighlightingEnabled() {
-  return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud) &&
-         base::FeatureList::IsEnabled(
-             ::features::kReadAnythingReadAloudPhraseHighlighting);
+  return base::FeatureList::IsEnabled(
+      ::features::kReadAnythingReadAloudPhraseHighlighting);
 }
 
 BASE_FEATURE(kReadAnythingReadAloudTSTextSegmentation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAnythingReadAloudTSTextSegmentationEnabled() {
-  return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud) &&
-         base::FeatureList::IsEnabled(
-             ::features::kReadAnythingReadAloudTSTextSegmentation);
+  return base::FeatureList::IsEnabled(
+      ::features::kReadAnythingReadAloudTSTextSegmentation);
 }
 
 BASE_FEATURE(kReadAnythingOmniboxChip, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -322,10 +322,6 @@ GetReadAnythingMenuShuffleExperimentGroup();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingMenuShuffleExperiment);
 AX_BASE_EXPORT bool IsReadAnythingMenuShuffleExperimentEnabled();
 
-// Show the Read Aloud feature in Read Anything.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloud);
-AX_BASE_EXPORT bool IsReadAnythingReadAloudEnabled();
-
 // Enable phrase highlighting in Read Anything Read Aloud.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloudPhraseHighlighting);
 AX_BASE_EXPORT bool IsReadAnythingReadAloudPhraseHighlightingEnabled();
