@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -54,6 +55,20 @@ class RedactionTool {
   // The `metrics_recorder` is the instance of recorder that should be used on
   // this instance instead of the default for the platform.
   RedactionTool(const char* const* first_party_extension_ids,
+                std::unique_ptr<RedactionToolMetricsRecorder> metrics_recorder);
+
+  // Spanified versions of the above.
+  //
+  // TODO(https://crbug.com/439455382): these exist for the sole purpose
+  // of migrating all callers, which either pass `nullptr` (can be
+  // elided) or a constant array. We can migrate users per-directory,
+  // preventing the "big CL many owners" pattern. Once migrated, we can
+  // delete the above constructors in one shot; if we miss anything, we
+  // don't get the "big CL many owners" revert.
+  explicit RedactionTool(
+      base::span<const char* const> first_party_extension_ids =
+          base::span<const char* const>());
+  RedactionTool(base::span<const char* const> first_party_extension_ids,
                 std::unique_ptr<RedactionToolMetricsRecorder> metrics_recorder);
   ~RedactionTool();
 
@@ -223,9 +238,32 @@ class RedactionToolContainer
   explicit RedactionToolContainer(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const char* const* first_party_extension_ids);
+
+  // TODO(https://crbug.com/439455382): see the comment on the spanified
+  // c'tors of `RedactionTool`.
+  explicit RedactionToolContainer(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      base::span<const char* const> first_party_extension_ids =
+          base::span<const char* const>());
+
+  // TODO(https://crbug.com/439455382): The `metrics_recorder` parameter
+  // appears to be unused. Investigate and remove it if confirmed.
+  //
+  // See also:
+  // https://crrev.com/c/7556932/comment/f6119a96_77ae64e7/
   explicit RedactionToolContainer(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const char* const* first_party_extension_ids,
+      std::unique_ptr<RedactionToolMetricsRecorder> metrics_recorder);
+
+  // TODO(https://crbug.com/439455382): The `metrics_recorder` parameter
+  // appears to be unused. Investigate and remove it if confirmed.
+  //
+  // See also:
+  // https://crrev.com/c/7556932/comment/f6119a96_77ae64e7/
+  explicit RedactionToolContainer(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      base::span<const char* const> first_party_extension_ids,
       std::unique_ptr<RedactionToolMetricsRecorder> metrics_recorder);
 
   // Returns a pointer to the instance of this redactor. May only be called

@@ -586,6 +586,16 @@ RedactionTool::RedactionTool(
   }
 }
 
+RedactionTool::RedactionTool(
+    base::span<const char* const> first_party_extension_ids)
+    : RedactionTool(first_party_extension_ids.data()) {}
+
+RedactionTool::RedactionTool(
+    base::span<const char* const> first_party_extension_ids,
+    std::unique_ptr<RedactionToolMetricsRecorder> metrics_recorder)
+    : RedactionTool(first_party_extension_ids.data(),
+                    std::move(metrics_recorder)) {}
+
 RedactionTool::~RedactionTool() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
@@ -1348,7 +1358,21 @@ RedactionToolContainer::RedactionToolContainer(
 
 RedactionToolContainer::RedactionToolContainer(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
+    base::span<const char* const> first_party_extension_ids)
+    : redactor_(new RedactionTool(first_party_extension_ids)),
+      task_runner_(task_runner) {}
+
+RedactionToolContainer::RedactionToolContainer(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     const char* const* first_party_extension_ids,
+    std::unique_ptr<RedactionToolMetricsRecorder> metrics_recorder)
+    : redactor_(new RedactionTool(first_party_extension_ids,
+                                  std::move(metrics_recorder))),
+      task_runner_(task_runner) {}
+
+RedactionToolContainer::RedactionToolContainer(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    base::span<const char* const> first_party_extension_ids,
     std::unique_ptr<RedactionToolMetricsRecorder> metrics_recorder)
     : redactor_(new RedactionTool(first_party_extension_ids,
                                   std::move(metrics_recorder))),
