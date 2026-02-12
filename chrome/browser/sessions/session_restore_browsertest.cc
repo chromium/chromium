@@ -1743,8 +1743,10 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, CloseSingleTabRestoresNothing) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
 
   Profile* profile = browser()->profile();
-  std::unique_ptr<ScopedKeepAlive> keep_alive(new ScopedKeepAlive(
-      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED));
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::SESSION_RESTORE,
+                             KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
 
   ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseTab(browser());
@@ -1764,8 +1766,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, CloseSingleTabRestoresNothing) {
 
   restore_observer.Wait();
   WaitForTabsToLoad(new_browser);
-
-  keep_alive.reset();
 
   AssertOneWindowWithOneTab(new_browser);
   EXPECT_EQ(chrome::kChromeUINewTabURL,

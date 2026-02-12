@@ -9,6 +9,8 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -86,9 +88,12 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile) {
 // Click on "Edit" will open a new browser if none exists for a profile.
 IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_NoBrowser) {
   // Keep the browser process running while browsers are closed.
+  Profile* profile = browser()->profile();
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
                              KeepAliveRestartOption::DISABLED);
-  Profile* profile = browser()->profile();
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
   ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsersWithProfile(profile);
   observer.Wait();
@@ -125,6 +130,8 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_SigninRequired) {
   // Keep the browser process running while browsers are closed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
                              KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
   ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsersWithProfile(profile);
   observer.Wait();
