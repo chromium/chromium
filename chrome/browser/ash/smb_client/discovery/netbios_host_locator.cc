@@ -192,8 +192,8 @@ void NetBiosHostLocator::AddHostToResult(const net::IPEndPoint& sender_ip,
 bool NetBiosHostLocator::WouldOverwriteResult(
     const net::IPEndPoint& sender_ip,
     const std::string& hostname) const {
-  return results_.count(hostname) &&
-         results_.at(hostname) != sender_ip.address();
+  auto it = results_.find(hostname);
+  return it != results_.end() && it->second != sender_ip.address();
 }
 
 }  // namespace ash::smb_client
