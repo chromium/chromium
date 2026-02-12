@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../../components/buttons/oobe_text_button.js';
+
 import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
 import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
 import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
+import {FjordTouchControllerPageHandlerRemote} from '../../mojom-webui/screens_common.mojom-webui.js';
+import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './fjord_touch_controller.html.js';
 
@@ -29,6 +33,7 @@ export class FjordTouchControllerScreen extends
   }
 
   private webview: chrome.webviewTag.WebView;
+  private handler: FjordTouchControllerPageHandlerRemote;
 
   override onBeforeShow(): void {
     super.onBeforeShow();
@@ -42,6 +47,10 @@ export class FjordTouchControllerScreen extends
     this.initializeLoginScreen('FjordTouchControllerScreen');
     this.webview =
         this.shadowRoot!.querySelector<chrome.webviewTag.WebView>('webview')!;
+    this.handler = new FjordTouchControllerPageHandlerRemote();
+    OobeScreensFactoryBrowserProxy.getInstance()
+        .screenFactory.establishFjordTouchControllerScreenPipe(
+            this.handler.$.bindNewPipeAndPassReceiver());
   }
 
   /**
@@ -49,6 +58,11 @@ export class FjordTouchControllerScreen extends
    */
   override get defaultControl(): HTMLElement|null {
     return this.shadowRoot!.querySelector('#oobeFrame');
+  }
+
+
+  private onDoneButtonClicked(): void {
+    this.handler.onSetupComplete();
   }
 }
 

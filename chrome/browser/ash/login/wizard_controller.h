@@ -487,6 +487,7 @@ class WizardController : public OobeUI::Observer {
       PersonalizedRecommendAppsScreen::Result result);
   void OnPerksDiscoveryScreenExit(PerksDiscoveryScreen::Result result);
   void OnAppLaunchSplashScreenExit();
+  void OnFjordTouchControllerScreenExit();
   void OnFjordStationSetupScreenExit();
   void OnFjordFwUpdateScreenExit();
 

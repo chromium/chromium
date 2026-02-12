@@ -60,6 +60,15 @@ interface FjordStationSetupPageHandler {
   OnSetupComplete();
 };
 
+// Interface for the FjordTouchControllerScreen. Lives in the browser process.
+// A renderer uses this to invoke methods that are implemented in
+// the browser process.
+interface FjordTouchControllerPageHandler {
+  // Emits a done button clicked.
+  OnSetupComplete();
+};
+
+
 // Interface for the gaia info screen. Lives in the browser process.
 // A renderer uses this to invoke methods that are implemented in
 // the browser process.

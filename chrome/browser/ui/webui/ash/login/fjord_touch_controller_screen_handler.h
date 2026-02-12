@@ -45,7 +45,7 @@ class FjordTouchControllerScreenHandler final
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
-      ::login::LocalizedValuesBuilder* builder) override {}
+      ::login::LocalizedValuesBuilder* builder) override;
 
   // FjordTouchControllerScreenView:
   void Show() override;

@@ -10,15 +10,31 @@
 namespace ash {
 
 FjordTouchControllerScreen::FjordTouchControllerScreen(
-    base::WeakPtr<FjordTouchControllerScreenView> view)
+    base::WeakPtr<FjordTouchControllerScreenView> view,
+    const base::RepeatingClosure& exit_callback)
     : BaseScreen(FjordTouchControllerScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
+      OobeMojoBinder(this),
+      exit_callback_(exit_callback),
       view_(std::move(view)) {}
 
 FjordTouchControllerScreen::~FjordTouchControllerScreen() = default;
 
 void FjordTouchControllerScreen::ShowImpl() {
   view_->Show();
+}
+
+bool FjordTouchControllerScreen::ExitScreen() {
+  if (is_hidden()) {
+    return false;
+  }
+
+  exit_callback_.Run();
+  return true;
+}
+
+void FjordTouchControllerScreen::OnSetupComplete() {
+  ExitScreen();
 }
 
 }  // namespace ash

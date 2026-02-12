@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/login/fjord_touch_controller_screen_handler.h"
 
+#include "chrome/grit/generated_resources.h"
+
 namespace ash {
 
 FjordTouchControllerScreenHandler::FjordTouchControllerScreenHandler()
@@ -11,6 +13,12 @@ FjordTouchControllerScreenHandler::FjordTouchControllerScreenHandler()
 
 FjordTouchControllerScreenHandler::~FjordTouchControllerScreenHandler() =
     default;
+
+void FjordTouchControllerScreenHandler::DeclareLocalizedValues(
+    ::login::LocalizedValuesBuilder* builder) {
+  builder->Add("fjordTouchControllerNextButton",
+               IDS_FJORD_TOUCH_CONTROLLER_NEXT_BUTTON_TEXT);
+}
 
 void FjordTouchControllerScreenHandler::Show() {
   ShowInWebUI();
