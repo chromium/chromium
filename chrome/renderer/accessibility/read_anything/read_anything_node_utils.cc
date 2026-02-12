@@ -238,6 +238,9 @@ std::u16string GetPrefixText(const ui::AXNode* ax_node,
                              bool is_docs) {
   auto original_text = GetTextContent(ax_node, is_pdf, is_docs);
   auto* node = ax_node->GetPreviousUnignoredInTreeOrder();
+  if (!node) {
+    return std::u16string();
+  }
   auto prefix_text = GetTextContent(node, is_pdf, is_docs);
   // TODO(crbug.com/c/459160459): Update this logic for use with Readability
   // distillation.

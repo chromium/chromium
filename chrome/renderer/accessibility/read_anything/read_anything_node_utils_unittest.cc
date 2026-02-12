@@ -618,3 +618,22 @@ TEST_F(ReadAnythingNodeUtilsTest, GetNameAttributeText_GetsChildText) {
   EXPECT_EQ(a11y::GetNameAttributeText(tree.root()),
             u"Not like you- You lost your nerve You lost the game");
 }
+
+TEST_F(ReadAnythingNodeUtilsTest,
+       GetPrefixText_NoPreviousNode_ReturnsEmptyString) {
+  std::u16string sentence1 = u"Some text";
+  static constexpr ui::AXNodeID rootId = 1;
+  ui::AXNodeData root_data = test::TextNode(rootId, sentence1);
+
+  ui::AXTree tree;
+  ui::AXNode root(&tree, nullptr, 1, 0);
+  root.SetData(std::move(root_data));
+  ui::AXTreeUpdate update;
+  update.root_id = root_data.id;
+  update.nodes = {root_data};
+  tree.Unserialize(update);
+
+  EXPECT_EQ(a11y::GetPrefixText(tree.root(), /*is_pdf=*/false,
+                                /*is_docs=*/false),
+            u"");
+}
