@@ -686,6 +686,9 @@ class TabDragController : public views::WidgetObserver,
   // external factors. Destruction while this is true will DCHECK.
   bool expect_stay_alive_ = false;
 
+  // Duration of drag operation, used in metrics.
+  std::optional<base::TimeTicks> drag_start_time_;
+
   // The current candidate that may handle a tab drop.
   raw_ptr<TabDragTarget> current_drag_target_;
   base::CallbackListSubscription drag_target_destroyed_subscription_;

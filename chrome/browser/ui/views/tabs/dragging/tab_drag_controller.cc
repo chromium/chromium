@@ -12,6 +12,7 @@
 #include <variant>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -743,6 +744,18 @@ void TabDragController::EndDrag(EndDragReason reason) {
     GetAttachedBrowserWidget()->EndMoveLoop();
   }
 
+  if (reason == EndDragReason::kComplete && drag_start_time_.has_value()) {
+    BrowserView* browser_view = GetBrowserViewForContext(attached_context_);
+    CHECK(browser_view);
+    // If we support a mixture of dragging between VT and HT, then update this
+    // metric accordingly.
+    base::UmaHistogramTimes(browser_view->ShouldDrawVerticalTabStrip()
+                                ? "TabStrip.VerticalTabStrip.TabDragDuration"
+                                : "TabStrip.HorizontalTabStrip.TabDragDuration",
+                            base::TimeTicks::Now() - drag_start_time_.value());
+  }
+  drag_start_time_.reset();
+
   EndDragImpl(reason != EndDragReason::kComplete && source_context_
                   ? EndDragType::kCanceled
                   : EndDragType::kNormal);
@@ -1295,6 +1308,8 @@ void TabDragController::StartDrag() {
   attached_context_ = source_context_;
 
   AttachImpl();
+
+  drag_start_time_ = base::TimeTicks::Now();
 
   // Request a thumbnail to use as drag image if we'll use fallback tab
   // dragging.
