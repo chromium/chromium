@@ -47,7 +47,10 @@ optimize_ts("error_js") {
   visibility = [ ":window_error" ]
 
   sources = [ "resources/error.ts" ]
-  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb_error",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
 source_set("unittests") {

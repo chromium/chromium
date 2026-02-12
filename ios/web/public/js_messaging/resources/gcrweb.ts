@@ -99,7 +99,6 @@ class CrWeb {
     }
   }
 
-  // TODO(crbug.com/399666983): Remove legacy API handling
   /**
    * Interface to convert actual calls from the native side into
    * new CrWeb calls or call legacy code for that function or property.
@@ -107,23 +106,12 @@ class CrWeb {
    */
   callFunctionInGcrWeb(
       apiName: string, funcOrPropName: string, args: unknown[]): unknown {
-    try {
-      if (this.hasRegisteredApi(apiName)) {
-        const registeredApi = gCrWeb.getRegisteredApi(apiName);
-        if (registeredApi.hasFunction(funcOrPropName)) {
-          const func = registeredApi.getFunction(funcOrPropName);
-          return func(...args);
-        }
-        return registeredApi.getProperty(funcOrPropName);
-      }
-    } catch (error) {
-      if (error instanceof CrWebError) {
-        sendWebKitMessage(
-            'WindowErrorResultHandler',
-            {'message': error.message, 'is_crweb': true});
-      }
+    const registeredApi = gCrWeb.getRegisteredApi(apiName);
+    if (registeredApi.hasFunction(funcOrPropName)) {
+      const func = registeredApi.getFunction(funcOrPropName);
+      return func(...args);
     }
-    return undefined;
+    return registeredApi.getProperty(funcOrPropName);
   }
 }
 
