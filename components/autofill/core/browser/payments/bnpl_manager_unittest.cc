@@ -1787,6 +1787,8 @@ TEST_F(BnplManagerTest, UpdateBnplPaymentInstrument_Failure) {
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
+// TODO(crbug.com/477689220): Move unittests that only test sorting logic of
+// `GetSortedBnplIssuerContext()` to `bnpl_util_unittest.cc`.
 // Tests the sorting logic of `GetSortedBnplIssuerContext` for BNPL Issuers
 // based on their linked status and eligibility. The expected order is:
 // 1. Linked & Eligible

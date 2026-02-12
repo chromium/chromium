@@ -83,10 +83,6 @@ class BnplManagerTestApi {
     bnpl_manager_->UpdateBnplPaymentInstrument();
   }
 
-  std::vector<BnplIssuerContext> GetSortedBnplIssuerContext() {
-    return bnpl_manager_->GetSortedBnplIssuerContext();
-  }
-
   bool HasSeenAmountExtractionAiTerms() {
     return bnpl_manager_->HasSeenAmountExtractionAiTerms();
   }

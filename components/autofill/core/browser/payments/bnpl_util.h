@@ -81,6 +81,13 @@ struct BnplTosModel {
   LegalMessageLines legal_message_lines;
 };
 
+// Return all BNPL Issuer contexts including eligibility in order of:
+// eligible + linked, eligible + unlinked, uneligible + linked,
+// uneligible + unlinked.
+std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
+    const AutofillClient& client,
+    std::optional<int64_t> checkout_amount);
+
 // Returns the selection option text for a given BNPL issuer.
 std::u16string GetBnplIssuerSelectionOptionText(
     BnplIssuer::IssuerId issuer_id,

@@ -8,7 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -72,6 +74,80 @@ BnplTosModel& BnplTosModel::operator=(BnplTosModel&& other) = default;
 BnplTosModel::~BnplTosModel() = default;
 
 bool BnplTosModel::operator==(const BnplTosModel&) const = default;
+
+std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
+    const AutofillClient& client,
+    std::optional<int64_t> checkout_amount) {
+  AutofillOptimizationGuideDecider* autofill_optimization_guide =
+      client.GetAutofillOptimizationGuideDecider();
+  const GURL& merchant_url =
+      client.GetLastCommittedPrimaryMainFrameOrigin().GetURL();
+
+  // Check BNPL issuer eligibility for the current page and save the
+  // eligibility with the corresponding issuer to the vector of
+  // `BnplIssuerContext`.
+  std::vector<BnplIssuerContext> result = base::ToVector(
+      client.GetPaymentsAutofillClient()
+          ->GetPaymentsDataManager()
+          .GetBnplIssuers(),
+      [&autofill_optimization_guide, &merchant_url,
+       checkout_amount](const BnplIssuer& issuer) -> BnplIssuerContext {
+        // For MVP, BNPL will only target US users and support USD.
+        const base::optional_ref<const BnplIssuer::EligiblePriceRange>
+            price_range =
+                issuer.GetEligiblePriceRangeForCurrency(/*currency=*/"USD");
+        CHECK(price_range.has_value());
+
+        BnplIssuerEligibilityForPage eligibility;
+
+        if (!autofill_optimization_guide->IsUrlEligibleForBnplIssuer(
+                issuer.issuer_id(), merchant_url)) {
+          eligibility = BnplIssuerEligibilityForPage::
+              kNotEligibleIssuerDoesNotSupportMerchant;
+        } else if (!checkout_amount) {
+          // The only case this code gets hit is if the BNPL issuer needs to be
+          // shown before the LLM call returns a valid checkout amount.
+          eligibility = BnplIssuerEligibilityForPage::
+              kTemporarilyEligibleCheckoutAmountNotYetKnown;
+        } else if (checkout_amount < price_range->price_lower_bound) {
+          eligibility =
+              BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow;
+        } else if (checkout_amount > price_range->price_upper_bound) {
+          eligibility =
+              BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh;
+        } else {
+          eligibility = BnplIssuerEligibilityForPage::kIsEligible;
+        }
+        return {issuer, eligibility};
+      });
+
+  // Shuffle `result` before sorting so that the order of two
+  // equivalently-sorted elements are randomized. This is to ensure there is no
+  // implicit preference towards any issuers.
+  base::RandomShuffle(result.begin(), result.end());
+
+  // Sort the `BnplIssuerContext` vector so that it follows below rules:
+  // 1. Eligible issuers should be in front of uneligible ones in a sorted
+  //    vector.
+  // 2. Linked issuers must go before unlinked ones if they have the same
+  //    eligibility.
+  // Note: If one issuer has a payment instrument and the other doesn't,
+  //    then one is linked and the other is unlinked.
+  std::ranges::stable_sort(
+      result, [](const BnplIssuerContext& rhs, const BnplIssuerContext& lhs) {
+        // Lambda comparator which returns true if `rhs` should be in front of
+        // `lhs`.
+        // Note: Boolean value `false` is less than boolean value `true`.
+        return std::forward_as_tuple(
+                   rhs.eligibility == BnplIssuerEligibilityForPage::kIsEligible,
+                   rhs.issuer.payment_instrument().has_value()) >
+               std::forward_as_tuple(
+                   lhs.eligibility == BnplIssuerEligibilityForPage::kIsEligible,
+                   lhs.issuer.payment_instrument().has_value());
+      });
+
+  return result;
+}
 
 std::u16string GetBnplIssuerSelectionOptionText(
     BnplIssuer::IssuerId issuer_id,
