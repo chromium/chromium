@@ -6170,15 +6170,15 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5549" label="SelectMultipleShowPopup"/>
   <int value="5550" label="SharedWorkerExtendedLifetimeFeatureEnabled"/>
   <int value="5551" label="SharedWorkerExtendedLifetimeIsTrue"/>
-  <int value="5552" label="EditContextTextFormatUpdateAddListener"/>
-  <int value="5553" label="EditContextTextFormatUpdateFireEvent"/>
+  <int value="5552" label="OBSOLETE_EditContextTextFormatUpdateAddListener"/>
+  <int value="5553" label="OBSOLETE_EditContextTextFormatUpdateFireEvent"/>
   <int value="5554"
-      label="EditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone"/>
+      label="OBSOLETE_EditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone"/>
   <int value="5555" label="C2PAManifest"/>
   <int value="5556" label="LanguageModel_Append"/>
   <int value="5557" label="IntegrityPolicyInServiceWorkerResponse"/>
-  <int value="5558" label="EditContextTextFormatUnderlineStyle"/>
-  <int value="5559" label="EditContextTextFormatUnderlineThickness"/>
+  <int value="5558" label="OBSOLETE_EditContextTextFormatUnderlineStyle"/>
+  <int value="5559" label="OBSOLETE_EditContextTextFormatUnderlineThickness"/>
   <int value="5560" label="Proofreader_IncludeCorrectionTypes"/>
   <int value="5561" label="Proofreader_IncludeCorrectionExplanations"/>
   <int value="5562" label="Proofreader_ExpectedInputLanguages"/>

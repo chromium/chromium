@@ -70,17 +70,6 @@ ExecutionContext* EditContext::GetExecutionContext() const {
   return execution_context_;
 }
 
-void EditContext::AddedEventListener(
-    const AtomicString& event_type,
-    RegisteredEventListener& registered_listener) {
-  EventTarget::AddedEventListener(event_type, registered_listener);
-
-  if (event_type == event_type_names::kTextformatupdate) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kEditContextTextFormatUpdateAddListener);
-  }
-}
-
 void EditContext::SetExecutionContext(ExecutionContext* context) {
   execution_context_ = context;
 }
@@ -150,7 +139,6 @@ void EditContext::DispatchTextFormatEvent(
   DCHECK(has_composition_);
   HeapVector<Member<TextFormat>> text_formats;
   text_formats.reserve(base::checked_cast<wtf_size_t>(ime_text_spans.size()));
-  bool is_text_format_underline_style_or_thickness_not_none = false;
 
   for (const auto& ime_text_span : ime_text_spans) {
     const auto range_start = base::checked_cast<wtf_size_t>(
@@ -200,27 +188,11 @@ void EditContext::DispatchTextFormatEvent(
     text_formats.push_back(
         TextFormat::Create(range_start, range_end, underline_style,
                            underline_thickness, ASSERT_NO_EXCEPTION));
-
-    String none_value = use_spec_values ? "none" : "None";
-    if (underline_style != none_value || underline_thickness != none_value) {
-      is_text_format_underline_style_or_thickness_not_none = true;
-    }
   }
 
   TextFormatUpdateEvent* event = MakeGarbageCollected<TextFormatUpdateEvent>(
       event_type_names::kTextformatupdate, text_formats);
   DispatchEvent(*event);
-
-  if (HasEventListeners(event_type_names::kTextformatupdate)) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kEditContextTextFormatUpdateFireEvent);
-    if (is_text_format_underline_style_or_thickness_not_none) {
-      UseCounter::Count(
-          GetExecutionContext(),
-          WebFeature::
-              kEditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone);
-    }
-  }
 }
 
 void EditContext::Focus() {
