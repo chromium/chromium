@@ -1484,6 +1484,7 @@ void LocalFrameMojoHandler::UpdatePrerenderURL(
   CHECK(SecurityOrigin::Create(matched_url)
             ->IsSameOriginWith(
                 &*GetDocument()->GetExecutionContext()->GetSecurityOrigin()));
+  TRACE_EVENT("navigation", "LocalFrameMojoHandler::UpdatePrerenderURL");
   auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
       matched_url, NavigateEventType::kPrerenderNoVarySearchActivation,
       WebFrameLoadType::kReplaceCurrentItem);
