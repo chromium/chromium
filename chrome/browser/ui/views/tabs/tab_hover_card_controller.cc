@@ -118,7 +118,7 @@ base::TimeDelta GetShowDelay(int tab_width) {
   if (tab_width >= tab_standard_width) {
     delay += base::Milliseconds(max_width_additional_delay);
   }
-  return std::max(kMaximumTriggerDelay, delay);
+  return delay;
 }
 
 bool IsBrowserForSystemWebApp(
