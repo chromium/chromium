@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.CustomSigninFirstRunFragment;
 import org.chromium.chrome.browser.signin.services.SigninChecker;
@@ -59,7 +59,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.prefs.PrefService;
@@ -121,10 +121,8 @@ public class SigninFirstRunFragmentRenderTest {
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_FIRST_RUN)
                     .build();
 
-    @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
-    @Mock private Profile mProfileMock;
     @Mock private ProfileProvider mProfileProviderMock;
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
     @Mock private FirstRunPageDelegate mFirstRunPageDelegateMock;
@@ -161,7 +159,7 @@ public class SigninFirstRunFragmentRenderTest {
                             OneshotSupplierImpl<ProfileProvider> supplier =
                                     new OneshotSupplierImpl<>();
                             when(mProfileProviderMock.getOriginalProfile())
-                                    .thenReturn(mProfileMock);
+                                    .thenReturn(ProfileManager.getLastUsedRegularProfile());
                             supplier.set(mProfileProviderMock);
                             return supplier;
                         });
@@ -197,7 +195,7 @@ public class SigninFirstRunFragmentRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testFragmentRotationToLandscapeWithAccount() throws IOException {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         launchActivityWithFragment(Configuration.ORIENTATION_PORTRAIT);
 
         ActivityTestUtils.rotateActivityToOrientation(
@@ -214,7 +212,7 @@ public class SigninFirstRunFragmentRenderTest {
     @Feature("RenderTest")
     @DisableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
     public void testFragmentRotationToPortraitWithAccount_Legacy() throws IOException {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         launchActivityWithFragment(Configuration.ORIENTATION_LANDSCAPE);
 
         ActivityTestUtils.rotateActivityToOrientation(
@@ -231,7 +229,7 @@ public class SigninFirstRunFragmentRenderTest {
     @Feature("RenderTest")
     @EnableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
     public void testFragmentRotationToPortraitWithAccount() throws IOException {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         launchActivityWithFragment(Configuration.ORIENTATION_LANDSCAPE);
 
         ActivityTestUtils.rotateActivityToOrientation(
@@ -250,7 +248,7 @@ public class SigninFirstRunFragmentRenderTest {
     @DisableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
     public void testFragmentWithAccount_Legacy(boolean nightModeEnabled, int orientation)
             throws IOException {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         launchActivityWithFragment(orientation);
 
@@ -268,7 +266,7 @@ public class SigninFirstRunFragmentRenderTest {
     @EnableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
     public void testFragmentWithAccount(boolean nightModeEnabled, int orientation)
             throws IOException {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         launchActivityWithFragment(orientation);
 
@@ -285,7 +283,7 @@ public class SigninFirstRunFragmentRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
     public void testFragmentWithSupervisedAccount(boolean nightModeEnabled, int orientation)
             throws IOException {
-        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
+        mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
         launchActivityWithFragment(orientation);
 
@@ -304,7 +302,7 @@ public class SigninFirstRunFragmentRenderTest {
     public void testFragmentWithAccountOnManagedDevice_Legacy(
             boolean nightModeEnabled, int orientation) throws IOException {
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         launchActivityWithFragment(orientation);
 
@@ -323,7 +321,7 @@ public class SigninFirstRunFragmentRenderTest {
     public void testFragmentWithAccountOnManagedDevice(boolean nightModeEnabled, int orientation)
             throws IOException {
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         launchActivityWithFragment(orientation);
 
@@ -342,7 +340,7 @@ public class SigninFirstRunFragmentRenderTest {
     public void testFragmentWithAccountOnManagedDevice_doesNotApplyFREStringVariations_Legacy(
             boolean nightModeEnabled, int orientation) throws IOException {
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         launchActivityWithFragment(orientation);
 
@@ -361,7 +359,7 @@ public class SigninFirstRunFragmentRenderTest {
     public void testFragmentWithAccountOnManagedDevice_doesNotApplyFREStringVariations(
             boolean nightModeEnabled, int orientation) throws IOException {
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         launchActivityWithFragment(orientation);
 
@@ -380,7 +378,7 @@ public class SigninFirstRunFragmentRenderTest {
             boolean nightModeEnabled, int orientation) throws IOException {
         when(mPrefService.getBoolean(Pref.SIGNIN_ALLOWED)).thenReturn(false);
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         launchActivityWithFragment(orientation);
 
@@ -397,7 +395,7 @@ public class SigninFirstRunFragmentRenderTest {
             boolean nightModeEnabled, int orientation) throws IOException {
         when(mPrefService.getBoolean(Pref.SIGNIN_ALLOWED)).thenReturn(false);
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         launchActivityWithFragment(orientation);
 
@@ -470,7 +468,7 @@ public class SigninFirstRunFragmentRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
     public void testFragmentWithChildAccount(boolean nightModeEnabled, int orientation)
             throws IOException {
-        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
+        mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
         launchActivityWithFragment(orientation);
 
@@ -488,7 +486,7 @@ public class SigninFirstRunFragmentRenderTest {
     @DisableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
     public void testFragmentWithChildAccount_doesNotApplyFREStringVariation_Legacy(
             boolean nightModeEnabled, int orientation) throws IOException {
-        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
+        mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
         launchActivityWithFragment(orientation);
 
@@ -506,7 +504,7 @@ public class SigninFirstRunFragmentRenderTest {
     @EnableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
     public void testFragmentWithChildAccount_doesNotApplyFREStringVariation(
             boolean nightModeEnabled, int orientation) throws IOException {
-        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
+        mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
         launchActivityWithFragment(orientation);
 
@@ -585,7 +583,7 @@ public class SigninFirstRunFragmentRenderTest {
 
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
 
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         launchActivityWithFragment(orientation);
 
@@ -609,7 +607,7 @@ public class SigninFirstRunFragmentRenderTest {
 
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
 
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         launchActivityWithFragment(orientation);
 
@@ -632,7 +630,7 @@ public class SigninFirstRunFragmentRenderTest {
 
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
 
-        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
+        mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
         launchActivityWithFragment(orientation);
 

@@ -22,6 +22,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -111,6 +112,7 @@ public class FullscreenSigninMediator
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
     private final AccountManagerFacade mAccountManagerFacade;
+    private @MonotonicNonNull SigninManager mSigninManager;
     private final Delegate mDelegate;
     private final PrivacyPreferencesManager mPrivacyPreferencesManager;
     private final @SigninAccessPoint int mAccessPoint;
@@ -130,6 +132,7 @@ public class FullscreenSigninMediator
     // in AccountManagerFacade for sign-in.
     private @Nullable String mPendingAddedAccountEmail;
     private boolean mAllowMetricsAndCrashUploading;
+    private boolean mIsSigninForced;
 
     FullscreenSigninMediator(
             Context context,
@@ -263,15 +266,16 @@ public class FullscreenSigninMediator
      */
     void onInitialLoadCompleted(boolean hasPolicies) {
         Profile profile = assumeNonNull(mDelegate.getProfileSupplier().get()).getOriginalProfile();
+        final IdentityServicesProvider identityServicesProvider = IdentityServicesProvider.get();
         if (mProfileDataCache == null) {
-            IdentityManager identityManager =
-                    IdentityServicesProvider.get().getIdentityManager(profile);
+            IdentityManager identityManager = identityServicesProvider.getIdentityManager(profile);
             mProfileDataCache =
                     ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                             mContext, assertNonNull(identityManager));
             mProfileDataCache.addObserver(this);
             updateSelectedAccountData();
         }
+        mSigninManager = assertNonNull(identityServicesProvider.getSigninManager(profile));
 
         AccountUtils.checkIsSubjectToParentalControls(
                 mAccountManagerFacade,
@@ -286,6 +290,10 @@ public class FullscreenSigninMediator
             mModel.set(
                     FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE,
                     mDelegate.shouldDisplayManagementNoticeOnManagedDevices());
+            mIsSigninForced =
+                    SigninFeatureMap.isEnabled(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
+                            && mSigninManager.isForceSigninEnabled();
+            mModel.set(FullscreenSigninProperties.IS_SIGNIN_FORCED, mIsSigninForced);
         }
 
         boolean isSigninSupported =
@@ -508,12 +516,9 @@ public class FullscreenSigninMediator
      */
     private void finishSignIn(SigninFlowTimestampsLogger signinTimestampsLogger) {
         @Nullable CoreAccountInfo signedInAccount = getSignedInAccount();
-        final SigninManager signinManager =
-                IdentityServicesProvider.get().getSigninManager(assumeNonNull(getProfile()));
-        assumeNonNull(signinManager);
         final SignInCallback signInCallback = getSigninCallback(signinTimestampsLogger);
         final @SigninAccessPoint int accessPoint =
-                mModel.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED)
+                mModel.get(FullscreenSigninProperties.IS_SIGNIN_FORCED)
                         ? SigninAccessPoint.FORCED_SIGNIN
                         : mAccessPoint;
         assumeNonNull(mSelectedAccount);
@@ -521,15 +526,11 @@ public class FullscreenSigninMediator
             // If there already exists another signed-in account, first
             // sign-out and then sign-in with the selected account.
             signOutThenSignInWithSelectedAccount(
-                    mSelectedAccount,
-                    signinManager,
-                    accessPoint,
-                    signinTimestampsLogger,
-                    signInCallback);
+                    mSelectedAccount, accessPoint, signinTimestampsLogger, signInCallback);
         } else {
             FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                     mSelectedAccount,
-                    signinManager,
+                    assertNonNull(mSigninManager),
                     signinTimestampsLogger,
                     accessPoint,
                     signInCallback,
@@ -578,14 +579,12 @@ public class FullscreenSigninMediator
      * Signs out from the current account and then signs in with the selected account.
      *
      * @param selectedAccount The account to sign in with.
-     * @param signinManager The signin manager.
      * @param accessPoint The signin access point.
      * @param signinTimestampsLogger a logger for signin flow events.
      * @param signInCallback The callback to be called after sign-in completes or aborts.
      */
     private void signOutThenSignInWithSelectedAccount(
             CoreAccountInfo selectedAccount,
-            SigninManager signinManager,
             @SigninAccessPoint int accessPoint,
             SigninFlowTimestampsLogger signinTimestampsLogger,
             @Nullable SignInCallback signInCallback) {
@@ -593,14 +592,17 @@ public class FullscreenSigninMediator
                 () ->
                         FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                                 selectedAccount,
-                                signinManager,
+                                assertNonNull(mSigninManager),
                                 signinTimestampsLogger,
                                 accessPoint,
                                 signInCallback,
                                 mContext,
                                 mModalDialogManager);
-        signinManager.signOut(
-                SignoutReason.ABORT_SIGNIN, signOutCallback, /* forceWipeUserData= */ false);
+        assumeNonNull(mSigninManager)
+                .signOut(
+                        SignoutReason.ABORT_SIGNIN,
+                        signOutCallback,
+                        /* forceWipeUserData= */ false);
     }
 
     /**
@@ -665,7 +667,7 @@ public class FullscreenSigninMediator
 
                         mDelegate.advanceToNextPage();
                     };
-            assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile))
+            assumeNonNull(mSigninManager)
                     .signOut(
                             SignoutReason.ABORT_SIGNIN,
                             signOutCallback,
@@ -738,7 +740,8 @@ public class FullscreenSigninMediator
         if (mProfileDataCache == null) {
             return;
         }
-        mModel.set(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
+        mModel.set(FullscreenSigninProperties.SHOW_ACCOUNT_SUPERVISION_NOTICE, isChild);
+        mModel.set(FullscreenSigninProperties.IS_SIGNIN_FORCED, isChild || mIsSigninForced);
         // Selected account data will be updated in {@link #onProfileDataUpdated}
         mProfileDataCache.setBadge(
                 isChild

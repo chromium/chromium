@@ -49,13 +49,6 @@ class FullscreenSigninViewBinder {
         } else if (propertyKey == FullscreenSigninProperties.SELECTED_ACCOUNT_DATA) {
             updateSelectedAccount(view, model);
             updateBottomGroupVisibility(view, model);
-        } else if (propertyKey == FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED) {
-            final boolean isSelectedAccountSupervised =
-                    model.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
-            view.getSelectedAccountView().setEnabled(!isSelectedAccountSupervised);
-
-            updateBrowserManagedHeaderView(view, model);
-            updateBottomGroupVisibility(view, model);
         } else if (propertyKey == FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER) {
             final boolean showInitialLoadProgressSpinner =
                     model.get(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER);
@@ -71,8 +64,14 @@ class FullscreenSigninViewBinder {
             }
             updateBottomGroupVisibility(view, model);
             updateBrowserManagedHeaderView(view, model);
-        } else if (propertyKey == FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE) {
+        } else if ((propertyKey == FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE)
+                || (propertyKey == FullscreenSigninProperties.SHOW_ACCOUNT_SUPERVISION_NOTICE)) {
             updateBrowserManagedHeaderView(view, model);
+        } else if (propertyKey == FullscreenSigninProperties.IS_SIGNIN_FORCED) {
+            final boolean isSigninForced = model.get(FullscreenSigninProperties.IS_SIGNIN_FORCED);
+            view.getSelectedAccountView().setEnabled(!isSigninForced);
+
+            updateBottomGroupVisibility(view, model);
         } else if (propertyKey == FullscreenSigninProperties.IS_SIGNIN_SUPPORTED) {
             updateSelectedAccount(view, model);
             updateBottomGroupVisibility(view, model);
@@ -149,7 +148,7 @@ class FullscreenSigninViewBinder {
         if (model.get(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER)) {
             return;
         }
-        if (model.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
+        if (model.get(FullscreenSigninProperties.SHOW_ACCOUNT_SUPERVISION_NOTICE)) {
             view.getBrowserManagedHeaderView().setVisibility(View.VISIBLE);
             view.getPrivacyDisclaimer().setText(R.string.fre_browser_managed_by_parent);
             view.getPrivacyDisclaimer()
@@ -196,16 +195,17 @@ class FullscreenSigninViewBinder {
 
         final boolean showInitialLoadProgressSpinner =
                 model.get(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER);
-        final boolean isSelectedAccountSupervised =
-                model.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
+        final boolean showAccountSupervisionNotice =
+                model.get(FullscreenSigninProperties.SHOW_ACCOUNT_SUPERVISION_NOTICE);
         final boolean showManagementNotice =
                 model.get(FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE);
+        final boolean isSigninForced = model.get(FullscreenSigninProperties.IS_SIGNIN_FORCED);
         final String text = model.get(FullscreenSigninProperties.SUBTITLE_STRING);
         view.getTitle().setVisibility(showInitialLoadProgressSpinner ? View.GONE : View.VISIBLE);
         view.getSubtitle()
                 .setVisibility(
                         !showInitialLoadProgressSpinner
-                                        && !isSelectedAccountSupervised
+                                        && !showAccountSupervisionNotice
                                         && !showManagementNotice
                                         && text != null
                                 ? View.VISIBLE
@@ -221,13 +221,13 @@ class FullscreenSigninViewBinder {
         view.getSelectedAccountView().setVisibility(selectedAccountVisibility);
         view.getExpandIconView()
                 .setVisibility(
-                        selectedAccountVisibility == View.VISIBLE && isSelectedAccountSupervised
+                        selectedAccountVisibility == View.VISIBLE && isSigninForced
                                 ? View.INVISIBLE
                                 : View.VISIBLE);
         final int dismissButtonVisibility =
                 !showInitialLoadProgressSpinner
                                 && model.get(FullscreenSigninProperties.IS_SIGNIN_SUPPORTED)
-                                && !isSelectedAccountSupervised
+                                && !isSigninForced
                         ? View.VISIBLE
                         : View.GONE;
         view.getDismissButtonView().setVisibility(dismissButtonVisibility);
@@ -245,8 +245,7 @@ class FullscreenSigninViewBinder {
         final boolean showSigninProgressSpinner =
                 model.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT)
                         || model.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER);
-        final boolean isSelectedAccountSupervised =
-                model.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
+        final boolean isSigninForced = model.get(FullscreenSigninProperties.IS_SIGNIN_FORCED);
         final boolean showSigningInText =
                 model.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT);
 
@@ -257,8 +256,8 @@ class FullscreenSigninViewBinder {
         }
         final int bottomGroupVisibility = showSigninProgressSpinner ? View.INVISIBLE : View.VISIBLE;
         view.getSelectedAccountView().setVisibility(bottomGroupVisibility);
-        if (!isSelectedAccountSupervised) {
-            // Only adjust dismiss button visibility if it's not already removed for a child user.
+        if (!isSigninForced) {
+            // Only adjust dismiss button visibility if it's not already removed.
             view.getDismissButtonView().setVisibility(bottomGroupVisibility);
         }
         view.getContinueButtonView().setVisibility(bottomGroupVisibility);
