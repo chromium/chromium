@@ -257,7 +257,8 @@ class AudioDecoderTest
                     AVPacketData(*packet), nullptr, &sample_rate,
                     &channel_layout, nullptr, nullptr, &extra_data),
                 0);
-      config.Initialize(AudioCodec::kAAC, kSampleFormatS16, channel_layout,
+      config.Initialize(AudioCodec::kAAC, kSampleFormatS16,
+                        ChannelLayoutConfig::FromLayout(channel_layout),
                         sample_rate, extra_data, EncryptionScheme::kUnencrypted,
                         base::TimeDelta(), 0);
       ASSERT_FALSE(config.extra_data().empty());

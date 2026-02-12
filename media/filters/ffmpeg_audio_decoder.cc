@@ -286,17 +286,10 @@ bool FFmpegAudioDecoder::OnNewFrame(const DecoderBuffer& buffer,
         << config_.samples_per_second() << ", ChannelLayout: " << channel_layout
         << " vs " << config_.channel_layout() << ", Channels: " << channels
         << " vs " << config_.channels();
-    config_.Initialize(config_.codec(), config_.sample_format(), channel_layout,
-                       frame->sample_rate, config_.extra_data(),
-                       config_.encryption_scheme(), config_.seek_preroll(),
-                       config_.codec_delay());
-
-    // If the channel layout is discrete, then the decoder config is not
-    // capable of deriving the channel count from the layout and the channel
-    // count must be set manually.
-    if (channel_layout == CHANNEL_LAYOUT_DISCRETE) {
-      config_.SetChannelsForDiscrete(channels);
-    }
+    config_.Initialize(config_.codec(), config_.sample_format(),
+                       {channel_layout, channels}, frame->sample_rate,
+                       config_.extra_data(), config_.encryption_scheme(),
+                       config_.seek_preroll(), config_.codec_delay());
 
     if (is_sample_rate_change)
       ResetTimestampState(config_);

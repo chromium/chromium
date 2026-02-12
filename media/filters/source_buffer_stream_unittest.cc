@@ -97,7 +97,7 @@ class SourceBufferStreamTest : public testing::Test {
   void SetAudioStream() {
     video_config_ = TestVideoConfig::Invalid();
     audio_config_.Initialize(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                             CHANNEL_LAYOUT_STEREO, kSampleRate,
+                             ChannelLayoutConfig::Stereo(), kSampleRate,
                              EmptyExtraData(), EncryptionScheme::kUnencrypted,
                              base::TimeDelta(), 0);
     ResetStream<>(audio_config_);
@@ -3930,8 +3930,8 @@ TEST_F(SourceBufferStreamTest, SameTimestamp_Video_Overlap_3) {
 // Test all the valid same timestamp cases for audio.
 TEST_F(SourceBufferStreamTest, SameTimestamp_Audio) {
   AudioDecoderConfig config(AudioCodec::kMP3, kSampleFormatF32,
-                            CHANNEL_LAYOUT_STEREO, 44100, EmptyExtraData(),
-                            EncryptionScheme::kUnencrypted);
+                            ChannelLayoutConfig::Stereo(), 44100,
+                            EmptyExtraData(), EncryptionScheme::kUnencrypted);
   ResetStream<>(config);
   Seek(0);
   NewCodedFrameGroupAppend("0K 0K 30K 30K");
@@ -4487,9 +4487,10 @@ TEST_F(SourceBufferStreamTest, Audio_SpliceFrame_NoMillisecondSplices) {
   EXPECT_MEDIA_LOG(SkippingSpliceTooLittleOverlap(1250, 250));
 
   video_config_ = TestVideoConfig::Invalid();
-  audio_config_.Initialize(
-      AudioCodec::kVorbis, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO, 4000,
-      EmptyExtraData(), EncryptionScheme::kUnencrypted, base::TimeDelta(), 0);
+  audio_config_.Initialize(AudioCodec::kVorbis, kSampleFormatPlanarF32,
+                           ChannelLayoutConfig::Stereo(), 4000,
+                           EmptyExtraData(), EncryptionScheme::kUnencrypted,
+                           base::TimeDelta(), 0);
   ResetStream<>(audio_config_);
   // Equivalent to 0.5ms per frame.
   SetStreamInfo(2000, 2000);
@@ -4520,7 +4521,7 @@ TEST_F(SourceBufferStreamTest, Audio_PrerollFrame) {
 
 TEST_F(SourceBufferStreamTest, Audio_ConfigChangeWithPreroll) {
   AudioDecoderConfig new_config(
-      AudioCodec::kVorbis, kSampleFormatPlanarF32, CHANNEL_LAYOUT_MONO,
+      AudioCodec::kVorbis, kSampleFormatPlanarF32, ChannelLayoutConfig::Mono(),
       kSampleRate, EmptyExtraData(), EncryptionScheme::kUnencrypted);
   SetAudioStream();
   Seek(0);
@@ -4566,8 +4567,8 @@ TEST_F(SourceBufferStreamTest, Audio_Opus_SeekToJustBeforeRangeStart) {
   // interval requires a nonzero seek_preroll value.
   video_config_ = TestVideoConfig::Invalid();
   audio_config_.Initialize(AudioCodec::kOpus, kSampleFormatPlanarF32,
-                           CHANNEL_LAYOUT_STEREO, kSampleRate, EmptyExtraData(),
-                           EncryptionScheme::kUnencrypted,
+                           ChannelLayoutConfig::Stereo(), kSampleRate,
+                           EmptyExtraData(), EncryptionScheme::kUnencrypted,
                            base::Milliseconds(10), 0);
   ResetStream<>(audio_config_);
 

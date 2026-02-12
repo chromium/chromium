@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
+#include "media/base/channel_layout.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/test_helpers.h"
@@ -25,8 +26,9 @@ static const base::TimeDelta kSeekPreroll;
 static const int kSamplesPerSecond = 10000;
 static const base::TimeDelta kBufferDuration = base::Milliseconds(20);
 static const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+static constexpr ChannelLayoutConfig kChannelLayoutConfig =
+    ChannelLayoutConfig::Stereo();
 static const int kChannelCount = 2;
-static const int kChannels = ChannelLayoutToChannelCount(kChannelLayout);
 static const int kFramesPerBuffer = kBufferDuration.InMicroseconds() *
                                     kSamplesPerSecond /
                                     base::Time::kMicrosecondsPerSecond;
@@ -61,7 +63,7 @@ class AudioTimestampValidatorTest
 
 TEST_P(AudioTimestampValidatorTest, WarnForEraticTimes) {
   AudioDecoderConfig decoder_config;
-  decoder_config.Initialize(kCodec, kSampleFormat, kChannelLayout,
+  decoder_config.Initialize(kCodec, kSampleFormat, kChannelLayoutConfig,
                             kSamplesPerSecond, EmptyExtraData(),
                             EncryptionScheme::kUnencrypted, kSeekPreroll,
                             codec_delay_);
@@ -110,7 +112,7 @@ TEST_P(AudioTimestampValidatorTest, WarnForEraticTimes) {
 
 TEST_P(AudioTimestampValidatorTest, NoWarningForValidTimes) {
   AudioDecoderConfig decoder_config;
-  decoder_config.Initialize(kCodec, kSampleFormat, kChannelLayout,
+  decoder_config.Initialize(kCodec, kSampleFormat, kChannelLayoutConfig,
                             kSamplesPerSecond, EmptyExtraData(),
                             EncryptionScheme::kUnencrypted, kSeekPreroll,
                             codec_delay_);
@@ -150,7 +152,7 @@ TEST_P(AudioTimestampValidatorTest, NoWarningForValidTimes) {
 
 TEST_P(AudioTimestampValidatorTest, SingleWarnForSingleLargeGap) {
   AudioDecoderConfig decoder_config;
-  decoder_config.Initialize(kCodec, kSampleFormat, kChannelLayout,
+  decoder_config.Initialize(kCodec, kSampleFormat, kChannelLayoutConfig,
                             kSamplesPerSecond, EmptyExtraData(),
                             EncryptionScheme::kUnencrypted, kSeekPreroll,
                             codec_delay_);
@@ -196,7 +198,7 @@ TEST_P(AudioTimestampValidatorTest, SingleWarnForSingleLargeGap) {
 
 TEST_P(AudioTimestampValidatorTest, RepeatedWarnForSlowAccumulatingDrift) {
   AudioDecoderConfig decoder_config;
-  decoder_config.Initialize(kCodec, kSampleFormat, kChannelLayout,
+  decoder_config.Initialize(kCodec, kSampleFormat, kChannelLayoutConfig,
                             kSamplesPerSecond, EmptyExtraData(),
                             EncryptionScheme::kUnencrypted, kSeekPreroll,
                             codec_delay_);

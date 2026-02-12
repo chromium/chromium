@@ -988,22 +988,23 @@ class AACAudioEncoderTest : public AudioEncodersTest {
   void InitializeDecoder() {
     decoder_ = std::make_unique<FFmpegAudioDecoder>(
         base::SequencedTaskRunner::GetCurrentDefault(), &media_log);
-    ChannelLayout channel_layout = CHANNEL_LAYOUT_NONE;
+    ChannelLayoutConfig channel_layout_config;
     switch (options_.channels) {
       case 1:
-        channel_layout = CHANNEL_LAYOUT_MONO;
+        channel_layout_config = ChannelLayoutConfig::Mono();
         break;
       case 2:
-        channel_layout = CHANNEL_LAYOUT_STEREO;
+        channel_layout_config = ChannelLayoutConfig::Stereo();
         break;
       case 6:
-        channel_layout = CHANNEL_LAYOUT_5_1_BACK;
+        channel_layout_config =
+            ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_5_1_BACK>();
         break;
       default:
         NOTREACHED();
     }
     AudioDecoderConfig config(AudioCodec::kAAC, SampleFormat::kSampleFormatS16,
-                              channel_layout, options_.sample_rate,
+                              channel_layout_config, options_.sample_rate,
                               /*extra_data=*/std::vector<uint8_t>(),
                               EncryptionScheme::kUnencrypted);
     auto init_cb = [](DecoderStatus decoder_status) {

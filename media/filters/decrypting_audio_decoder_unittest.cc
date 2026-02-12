@@ -16,6 +16,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_buffer.h"
+#include "media/base/channel_layout.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_util.h"
@@ -40,7 +41,8 @@ const int kSampleRate = 44100;
 // configs used in this test.
 const int kFakeAudioFrameSize = 48;
 const int kDecodingDelay = 3;
-
+static constexpr ChannelLayoutConfig kChannelLayoutConfig =
+    ChannelLayoutConfig::Stereo();
 class DecryptingAudioDecoderTest : public testing::Test {
  public:
   DecryptingAudioDecoderTest()
@@ -107,7 +109,7 @@ class DecryptingAudioDecoderTest : public testing::Test {
     });
 
     config_.Initialize(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                       CHANNEL_LAYOUT_STEREO, kSampleRate, EmptyExtraData(),
+                       kChannelLayoutConfig, kSampleRate, EmptyExtraData(),
                        EncryptionScheme::kCenc, base::TimeDelta(), 0);
     InitializeAndExpectResult(config_, true);
   }
@@ -275,7 +277,7 @@ TEST_F(DecryptingAudioDecoderTest, Initialize_Normal) {
 // Ensure decoder handles invalid audio configs without crashing.
 TEST_F(DecryptingAudioDecoderTest, Initialize_InvalidAudioConfig) {
   AudioDecoderConfig config(AudioCodec::kUnknown, kUnknownSampleFormat,
-                            CHANNEL_LAYOUT_STEREO, 0, EmptyExtraData(),
+                            kChannelLayoutConfig, 0, EmptyExtraData(),
                             EncryptionScheme::kCenc);
 
   InitializeAndExpectResult(config, false);
@@ -292,16 +294,16 @@ TEST_F(DecryptingAudioDecoderTest, Initialize_UnsupportedAudioConfig) {
       .WillOnce(RunOnceCallback<1>(false));
 
   AudioDecoderConfig config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                            CHANNEL_LAYOUT_STEREO, kSampleRate,
-                            EmptyExtraData(), EncryptionScheme::kCenc);
+                            kChannelLayoutConfig, kSampleRate, EmptyExtraData(),
+                            EncryptionScheme::kCenc);
   InitializeAndExpectResult(config, false);
 }
 
 TEST_F(DecryptingAudioDecoderTest, Initialize_CdmWithoutDecryptor) {
   SetCdmType(CDM_WITHOUT_DECRYPTOR);
   AudioDecoderConfig config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                            CHANNEL_LAYOUT_STEREO, kSampleRate,
-                            EmptyExtraData(), EncryptionScheme::kCenc);
+                            kChannelLayoutConfig, kSampleRate, EmptyExtraData(),
+                            EncryptionScheme::kCenc);
   InitializeAndExpectResult(config, false);
 }
 
@@ -381,9 +383,10 @@ TEST_F(DecryptingAudioDecoderTest, Reinitialize_EncryptedToEncrypted) {
 
   // The new config is different from the initial config in bytes-per-channel,
   // channel layout and samples_per_second.
-  AudioDecoderConfig new_config(AudioCodec::kVorbis, kSampleFormatPlanarS16,
-                                CHANNEL_LAYOUT_5_1, 88200, EmptyExtraData(),
-                                EncryptionScheme::kCenc);
+  AudioDecoderConfig new_config(
+      AudioCodec::kVorbis, kSampleFormatPlanarS16,
+      ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_5_1>(), 88200,
+      EmptyExtraData(), EncryptionScheme::kCenc);
   EXPECT_NE(new_config.bytes_per_channel(), config_.bytes_per_channel());
   EXPECT_NE(new_config.channel_layout(), config_.channel_layout());
   EXPECT_NE(new_config.samples_per_second(), config_.samples_per_second());
@@ -403,9 +406,10 @@ TEST_F(DecryptingAudioDecoderTest, Reinitialize_EncryptedToClear) {
 
   // The new config is different from the initial config in bytes-per-channel,
   // channel layout and samples_per_second.
-  AudioDecoderConfig new_config(AudioCodec::kVorbis, kSampleFormatPlanarS16,
-                                CHANNEL_LAYOUT_5_1, 88200, EmptyExtraData(),
-                                EncryptionScheme::kUnencrypted);
+  AudioDecoderConfig new_config(
+      AudioCodec::kVorbis, kSampleFormatPlanarS16,
+      ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_5_1>(), 88200,
+      EmptyExtraData(), EncryptionScheme::kUnencrypted);
   EXPECT_NE(new_config.bytes_per_channel(), config_.bytes_per_channel());
   EXPECT_NE(new_config.channel_layout(), config_.channel_layout());
   EXPECT_NE(new_config.samples_per_second(), config_.samples_per_second());

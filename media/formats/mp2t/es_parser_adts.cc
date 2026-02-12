@@ -243,7 +243,8 @@ bool EsParserAdts::UpdateAudioConfiguration(
       sbr_in_mimetype_ ? std::min<int>(2 * orig_sample_rate, 48000)
                        : orig_sample_rate;
   AudioDecoderConfig audio_decoder_config(
-      AudioCodec::kAAC, kSampleFormatS16, channel_layout,
+      AudioCodec::kAAC, kSampleFormatS16,
+      ChannelLayoutConfig::FromLayout(channel_layout),
       extended_samples_per_second, extra_data, init_encryption_scheme_);
 
   if (!audio_decoder_config.IsValidConfig()) {

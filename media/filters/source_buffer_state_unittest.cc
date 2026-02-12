@@ -36,7 +36,7 @@ static constexpr int kSampleRate = 3000;
 
 AudioDecoderConfig CreateAudioConfig(AudioCodec codec) {
   return AudioDecoderConfig(codec, kSampleFormatPlanarF32,
-                            CHANNEL_LAYOUT_STEREO, kSampleRate,
+                            ChannelLayoutConfig::Stereo(), kSampleRate,
                             EmptyExtraData(), EncryptionScheme::kUnencrypted);
 }
 

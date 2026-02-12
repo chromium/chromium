@@ -509,27 +509,30 @@ gfx::Size TestVideoConfig::ExtraLargeCodedSize() {
   return kExtraLargeSize;
 }
 
+static constexpr ChannelLayoutConfig kStereoConfig =
+    ChannelLayoutConfig::Stereo();
+
 AudioDecoderConfig TestAudioConfig::Normal() {
   return AudioDecoderConfig(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                            CHANNEL_LAYOUT_STEREO, NormalSampleRateValue(),
+                            kStereoConfig, NormalSampleRateValue(),
                             EmptyExtraData(), EncryptionScheme::kUnencrypted);
 }
 
 AudioDecoderConfig TestAudioConfig::NormalEncrypted() {
   return AudioDecoderConfig(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                            CHANNEL_LAYOUT_STEREO, NormalSampleRateValue(),
+                            kStereoConfig, NormalSampleRateValue(),
                             EmptyExtraData(), EncryptionScheme::kCenc);
 }
 
 AudioDecoderConfig TestAudioConfig::HighSampleRate() {
   return AudioDecoderConfig(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                            CHANNEL_LAYOUT_STEREO, HighSampleRateValue(),
+                            kStereoConfig, HighSampleRateValue(),
                             EmptyExtraData(), EncryptionScheme::kUnencrypted);
 }
 
 AudioDecoderConfig TestAudioConfig::HighSampleRateEncrypted() {
   return AudioDecoderConfig(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                            CHANNEL_LAYOUT_STEREO, HighSampleRateValue(),
+                            kStereoConfig, HighSampleRateValue(),
                             EmptyExtraData(), EncryptionScheme::kCenc);
 }
 
@@ -543,8 +546,8 @@ int TestAudioConfig::HighSampleRateValue() {
 
 // static
 AudioParameters TestAudioParameters::Normal() {
-  return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         ChannelLayoutConfig::Stereo(), 48000, 2048);
+  return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY, kStereoConfig,
+                         48000, 2048);
 }
 
 template <class T>

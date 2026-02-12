@@ -78,11 +78,10 @@ bool WebMAudioClient::InitializeConfig(
   }
 
   config->Initialize(
-      audio_codec, sample_format, channel_layout, samples_per_second,
-      codec_private, encryption_scheme,
+      audio_codec, sample_format, {channel_layout, channels_},
+      samples_per_second, codec_private, encryption_scheme,
       base::Microseconds((seek_preroll != -1 ? seek_preroll : 0) / 1000),
       codec_delay_in_frames);
-  config->SetChannelsForDiscrete(channels_);
   return config->IsValidConfig();
 }
 

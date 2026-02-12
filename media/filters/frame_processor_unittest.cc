@@ -21,6 +21,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "media/base/channel_layout.h"
 #include "media/base/media_log.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
@@ -426,16 +427,17 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
                                                       MediaTrack::Id("1"));
         AudioDecoderConfig decoder_config;
         static constexpr int kSampleRate = 3000;
+        static constexpr ChannelLayoutConfig kChannelLayoutConfig =
+            ChannelLayoutConfig::Stereo();
         if (support_audio_nonkeyframes) {
           decoder_config = AudioDecoderConfig(
-              AudioCodec::kAAC, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO,
+              AudioCodec::kAAC, kSampleFormatPlanarF32, kChannelLayoutConfig,
               kSampleRate, EmptyExtraData(), EncryptionScheme::kUnencrypted);
           decoder_config.set_profile(AudioCodecProfile::kXHE_AAC);
         } else {
           decoder_config = AudioDecoderConfig(
-              AudioCodec::kVorbis, kSampleFormatPlanarF32,
-              CHANNEL_LAYOUT_STEREO, kSampleRate, EmptyExtraData(),
-              EncryptionScheme::kUnencrypted);
+              AudioCodec::kVorbis, kSampleFormatPlanarF32, kChannelLayoutConfig,
+              kSampleRate, EmptyExtraData(), EncryptionScheme::kUnencrypted);
         }
         frame_processor_->OnPossibleAudioConfigUpdate(decoder_config);
         ASSERT_TRUE(

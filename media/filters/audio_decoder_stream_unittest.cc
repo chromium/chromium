@@ -13,6 +13,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "media/base/channel_layout.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
 #include "media/filters/decoder_stream.h"
@@ -59,7 +60,7 @@ class AudioDecoderStreamTest : public testing::Test {
     // Any valid config will do.
     demuxer_stream_.set_audio_decoder_config({AudioCodec::kAAC,
                                               kSampleFormatS16,
-                                              CHANNEL_LAYOUT_STEREO,
+                                              ChannelLayoutConfig::Stereo(),
                                               44100,
                                               {},
                                               {}});

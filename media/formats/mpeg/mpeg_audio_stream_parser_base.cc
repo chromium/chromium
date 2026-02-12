@@ -284,7 +284,8 @@ int MPEGAudioStreamParserBase::ParseFrame(base::span<const uint8_t> data,
   }
 
   if (!config_.IsValidConfig()) {
-    config_.Initialize(audio_codec_, kSampleFormatF32, channel_layout,
+    config_.Initialize(audio_codec_, kSampleFormatF32,
+                       ChannelLayoutConfig::FromLayout(channel_layout),
                        sample_rate, extra_data, EncryptionScheme::kUnencrypted,
                        base::TimeDelta(), codec_delay_);
     if (audio_codec_ == AudioCodec::kAAC)

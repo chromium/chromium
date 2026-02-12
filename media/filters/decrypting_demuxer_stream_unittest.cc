@@ -15,6 +15,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
+#include "media/base/channel_layout.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_util.h"
@@ -40,6 +41,8 @@ namespace media {
 static const int kFakeBufferSize = 16;
 static const uint8_t kFakeKeyId[] = {0x4b, 0x65, 0x79, 0x20, 0x49, 0x44};
 static const uint8_t kFakeIv[DecryptConfig::kDecryptionKeySize] = {};
+static constexpr ChannelLayoutConfig kChannelLayoutConfig =
+    ChannelLayoutConfig::Stereo();
 
 // Create a fake non-empty buffer in an encrypted stream. When |is_clear| is
 // true, the buffer is not encrypted (signaled by an empty IV).
@@ -148,7 +151,7 @@ class DecryptingDemuxerStreamTest : public testing::Test {
     });
 
     AudioDecoderConfig input_config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                                    CHANNEL_LAYOUT_STEREO, 44100,
+                                    kChannelLayoutConfig, 44100,
                                     EmptyExtraData(), EncryptionScheme::kCenc);
 
     EXPECT_MEDIA_LOG(HasSubstr("kAudioTracks")).Times(audio_init_times);
@@ -345,8 +348,8 @@ TEST_F(DecryptingDemuxerStreamTest, Initialize_NormalVideo) {
 TEST_F(DecryptingDemuxerStreamTest, Initialize_CdmWithoutDecryptor) {
   SetCdmType(CDM_WITHOUT_DECRYPTOR);
   AudioDecoderConfig input_config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                                  CHANNEL_LAYOUT_STEREO, 44100,
-                                  EmptyExtraData(), EncryptionScheme::kCenc);
+                                  kChannelLayoutConfig, 44100, EmptyExtraData(),
+                                  EncryptionScheme::kCenc);
   EXPECT_MEDIA_LOG(HasSubstr("kAudioTracks"));
   EXPECT_MEDIA_LOG(HasSubstr("kVideoTracks"));
   InitializeAudioAndExpectStatus(input_config, DECODER_ERROR_NOT_SUPPORTED);
@@ -545,7 +548,7 @@ TEST_F(DecryptingDemuxerStreamTest, DemuxerRead_ConfigChanged) {
   Initialize(2, 2);
 
   AudioDecoderConfig new_config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                                CHANNEL_LAYOUT_STEREO, 88200, EmptyExtraData(),
+                                kChannelLayoutConfig, 88200, EmptyExtraData(),
                                 EncryptionScheme::kCenc);
   input_audio_stream_->set_audio_decoder_config(new_config);
 
