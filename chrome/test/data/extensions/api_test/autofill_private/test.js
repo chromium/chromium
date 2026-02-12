@@ -1306,7 +1306,7 @@ var availableTests = [
     chrome.autofillPrivate.addOrUpdateEntityInstance(
         ENTITY_INSTANCE_WITH_INCOMPLETE_DATE, () => {
           chrome.test.assertLastError(
-              'The provided Autofill AI entity/attribute is invalid.');
+              'Add or update entity instance - The provided Autofill AI entity/attribute is invalid.');
           chrome.test.succeed();
         });
   },
