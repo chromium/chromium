@@ -86,6 +86,15 @@ class SingleClientExtensionAppsSyncTest : public SyncTest {
   SingleClientExtensionAppsSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientExtensionAppsSyncTest() override = default;
 
+  void TearDownOnMainThread() override {
+    // The installation of platform apps can be completed asynchronously after
+    // the test has already started the browser shutdown. The following call
+    // ensures that the test waits until the app installation is completed.
+    content::RunAllTasksUntilIdle();
+
+    SyncTest::TearDownOnMainThread();
+  }
+
   // Apps sync is only supported with Sync-the-feature.
   SetupSyncMode GetSetupSyncMode() const override {
     return SetupSyncMode::kSyncTheFeature;
@@ -161,24 +170,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsSyncTest, InstallSomeApps) {
   const std::string id1 = InstallPlatformApp(GetProfile(0), 1);
 
   ASSERT_TRUE(FakeServerAppChecker({id0, id1}).Wait());
-
-  // Context: the call to `InstallPlatformApp` installs and loads a temporary
-  // app. In detail, the background page of the app is built in the
-  // ExtensionURLLoader::LoadExtension method and then sent to the renderer by
-  // calling ExtensionURLLoader::WriteData. The browser then waits for the
-  // renderer to request a second app asset, which will trigger a second call to
-  // ExtensionURLLoader::LoadExtension. This second invocation reaches the end
-  // of the method to the async call to ReadResourceInfo and OnResourceInfoRead.
-  // This last method calls ShouldVerifyContent where the ExtensionRegistry is
-  // accessed.
-  //
-  // The following call ensures that ShouldVerifyContent is invoked while the
-  // ExtensionRegistryFactory is still valid. The other tests in this file do
-  // not need this call as  they install 2 apps, calling WriteData 2 times. This
-  // fills the mojo buffer, so that it gets flushed and transmitted immediately,
-  // effectively making both installations synchronous, and resulting in the
-  // execution of ShouldVerifyContent before the test is completed.
-  content::RunAllTasksUntilIdle();
 }
 
 std::vector<sync_pb::SyncEntity> FilterForBookmarkApps(
