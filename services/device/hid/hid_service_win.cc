@@ -15,6 +15,10 @@
 #include <wdmguid.h>
 #include <winioctl.h>
 
+// LogSeverity is both a macro in setupapi.h and an enum in absl, which is used
+// indirectly via //base.
+#undef LogSeverity
+
 #include <algorithm>
 #include <limits>
 #include <memory>

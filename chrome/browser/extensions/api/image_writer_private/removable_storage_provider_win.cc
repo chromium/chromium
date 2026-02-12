@@ -9,10 +9,11 @@
 
 #include <setupapi.h>
 
-// LogSeverity is both a macro in setupapi.h and a typedef in base/logging.h
-#undef LogSeverity
-
 #include <winioctl.h>
+
+// LogSeverity is both a macro in setupapi.h and an enum in absl, which is used
+// indirectly via //base.
+#undef LogSeverity
 
 #include <memory>
 

@@ -17,6 +17,10 @@
 #include <stdint.h>
 #include <usbiodef.h>
 
+// LogSeverity is both a macro in setupapi.h and an enum in absl, which is used
+// indirectly via //base.
+#undef LogSeverity
+
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/free_deleter.h"

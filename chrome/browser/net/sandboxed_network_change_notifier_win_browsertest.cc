@@ -5,11 +5,8 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 
 // clang-format off
-#include <windows.h>  // Must be in front of other Windows header files.
+#include <windows.h>   // Must be in front of other Windows header files.
 #include <initguid.h>  // Must be in front of devpkey.h.
-// Must be in front of Windows includes because they define LogSeverity and this
-// breaks gmock.
-#include "testing/gmock/include/gmock/gmock.h"
 // clang-format on
 
 #include <cfgmgr32.h>
@@ -20,8 +17,8 @@
 #include <shlobj.h>
 #include <stdint.h>
 
-// LogSeverity is both a macro in setupapi.h and in absl, which is used
-// indirectly within InProcessBrowserTest.
+// LogSeverity is both a macro in setupapi.h and an enum in absl, which is used
+// indirectly via //base.
 #undef LogSeverity
 
 #include <optional>
@@ -46,6 +43,7 @@
 #include "net/base/features.h"
 #include "sandbox/policy/features.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {

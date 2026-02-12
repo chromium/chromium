@@ -13,6 +13,10 @@
 #include <setupapi.h>
 #include <stdint.h>
 
+// LogSeverity is both a macro in setupapi.h and an enum in absl, which is used
+// indirectly via //base.
+#undef LogSeverity
+
 #include <algorithm>
 #include <memory>
 #include <string>
