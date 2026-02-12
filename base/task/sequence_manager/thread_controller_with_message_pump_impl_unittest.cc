@@ -151,7 +151,7 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
                         TaskExecutionTraceLogger(),
                         static_cast<TaskQueue::QueuePriority>(
                             TaskQueue::DefaultQueuePriority::kNormalPriority),
-                        QueueName::TEST_TQ);
+                        ThreadType::kDefault, QueueName::TEST_TQ);
   }
 
   void DidRunTask(LazyNow& lazy_now) override {

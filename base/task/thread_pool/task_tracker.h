@@ -158,7 +158,8 @@ class BASE_EXPORT TaskTracker {
   // after doing so.
   virtual void RunTask(Task task,
                        TaskSource* task_source,
-                       const TaskTraits& traits);
+                       const TaskTraits& traits,
+                       ThreadType thread_type);
 
   // Allow a subclass to wait more interactively for any running shutdown tasks
   // before blocking the thread.

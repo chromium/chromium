@@ -455,6 +455,9 @@ std::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     AutoReset<bool> ban_nested_application_tasks(
         &main_thread_only().task_execution_allowed, false);
 
+    base::internal::CurrentTaskImportanceOverride thread_type_override(
+        selected_task->thread_type);
+
     // Trace-parsing tools (DevTools, Lighthouse, etc) consume this event to
     // determine long tasks.
     // See https://crbug.com/681863 and https://crbug.com/874982

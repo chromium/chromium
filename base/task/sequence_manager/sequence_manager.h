@@ -21,6 +21,7 @@
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_type.h"
 #include "base/time/default_tick_clock.h"
 
 namespace base {
@@ -48,12 +49,16 @@ class BASE_EXPORT SequenceManager {
 
   class BASE_EXPORT PrioritySettings {
    public:
+    using ThreadTypeMapping = ThreadType (*)(TaskQueue::QueuePriority);
+
     // This limit is based on an implementation detail of `TaskQueueSelector`'s
     // `ActivePriorityTracker`, which can be refactored if more priorities are
     // needed.
     static constexpr size_t kMaxPriorities = sizeof(size_t) * 8 - 1;
 
     static PrioritySettings CreateDefault();
+    static ThreadType DefaultTaskPriorityToThreadType(
+        TaskQueue::QueuePriority priority);
 
     template <typename T>
       requires(std::is_enum_v<T>)
@@ -87,7 +92,16 @@ class BASE_EXPORT SequenceManager {
       proto_priority_converter_ = proto_priority_converter;
     }
 
+    // Sets a mapping functions from custom priority to ThreadType, which
+    // will be returned by SingleThreadTaskRunner::GetCurrentThreadType().
+    void SetThreadTypeMapping(ThreadTypeMapping thread_type_mapping) {
+      thread_type_mapping_ = thread_type_mapping;
+    }
+
     perfetto::protos::pbzero::SequenceManagerTask::Priority TaskPriorityToProto(
+        TaskQueue::QueuePriority priority) const;
+
+    ThreadType TaskPriorityToThreadType(
         TaskQueue::QueuePriority priority) const;
 
    private:
@@ -96,6 +110,8 @@ class BASE_EXPORT SequenceManager {
 
     perfetto::protos::pbzero::SequenceManagerTask::Priority (
         *proto_priority_converter_)(TaskQueue::QueuePriority) = nullptr;
+
+    ThreadTypeMapping thread_type_mapping_ = &DefaultTaskPriorityToThreadType;
   };
 
   // Settings defining the desired SequenceManager behaviour.

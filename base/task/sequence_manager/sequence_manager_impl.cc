@@ -586,7 +586,10 @@ SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
     return SelectedTask(
         executing_task.pending_task,
         executing_task.task_queue->task_execution_trace_logger(),
-        executing_task.priority, executing_task.task_queue_name);
+        executing_task.priority,
+        settings().priority_settings.TaskPriorityToThreadType(
+            executing_task.priority),
+        executing_task.task_queue_name);
   }
 }
 

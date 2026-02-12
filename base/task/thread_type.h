@@ -5,6 +5,7 @@
 #ifndef BASE_TASK_THREAD_TYPE_H_
 #define BASE_TASK_THREAD_TYPE_H_
 
+#include <optional>
 #include <string_view>
 
 #include "base/base_export.h"
@@ -49,6 +50,31 @@ enum class ThreadType : int {
 };
 
 BASE_EXPORT std::string_view ThreadTypeToString(ThreadType type);
+
+namespace internal {
+
+// Return the ThreadType that represents the importance of the executing
+// task. This will be equal or lower than the current thread's ThreadType
+// this task executes on.
+ThreadType GetCurrentTaskImportance();
+
+// Overrides the ThreadType returned by GetCurrentTaskImportance(). ThreadType
+// can only be lowered; a higher ThreadType will be ignored.
+class BASE_EXPORT CurrentTaskImportanceOverride {
+ public:
+  explicit CurrentTaskImportanceOverride(ThreadType override);
+
+  CurrentTaskImportanceOverride(const CurrentTaskImportanceOverride&) = delete;
+  CurrentTaskImportanceOverride& operator=(
+      const CurrentTaskImportanceOverride&) = delete;
+
+  ~CurrentTaskImportanceOverride();
+
+ private:
+  std::optional<ThreadType> previous_override_;
+};
+
+}  // namespace internal
 
 }  // namespace base
 

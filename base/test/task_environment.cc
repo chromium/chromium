@@ -165,7 +165,8 @@ class TaskEnvironment::TestTaskTracker
   // internal::ThreadPoolImpl::TaskTrackerImpl:
   void RunTask(internal::Task task,
                internal::TaskSource* sequence,
-               const TaskTraits& traits) override;
+               const TaskTraits& traits,
+               ThreadType thread_type) override;
   void BeginCompleteShutdown(base::WaitableEvent& shutdown_event) override;
   void AssertFlushForTestingAllowed() override;
 
@@ -1016,7 +1017,8 @@ bool TaskEnvironment::TestTaskTracker::DisallowRunTasks(TimeDelta timeout) {
 
 void TaskEnvironment::TestTaskTracker::RunTask(internal::Task task,
                                                internal::TaskSource* sequence,
-                                               const TaskTraits& traits) {
+                                               const TaskTraits& traits,
+                                               ThreadType thread_type) {
   const Location posted_from = task.posted_from;
   int task_number;
   {
@@ -1037,7 +1039,7 @@ void TaskEnvironment::TestTaskTracker::RunTask(internal::Task task,
   // test suites to run slowly.
   base::TimeTicks before = base::subtle::TimeTicksNowIgnoringOverride();
   internal::ThreadPoolImpl::TaskTrackerImpl::RunTask(std::move(task), sequence,
-                                                     traits);
+                                                     traits, thread_type);
   base::TimeTicks after = base::subtle::TimeTicksNowIgnoringOverride();
 
   const TimeDelta kTimeout = TestTimeouts::action_max_timeout();

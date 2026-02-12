@@ -36,6 +36,7 @@ class SequencedTaskSource {
     SelectedTask(Task& task,
                  TaskExecutionTraceLogger task_execution_trace_logger,
                  TaskQueue::QueuePriority priority,
+                 ThreadType thread_type,
                  QueueName task_queue_name);
     ~SelectedTask();
 
@@ -47,6 +48,7 @@ class SequencedTaskSource {
     TaskExecutionTraceLogger task_execution_trace_logger =
         TaskExecutionTraceLogger();
     TaskQueue::QueuePriority priority;
+    ThreadType thread_type;
     QueueName task_queue_name;
   };
 

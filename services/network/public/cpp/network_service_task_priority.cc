@@ -42,6 +42,32 @@ ProtoPriority TaskPriorityToProto(
   return ToProtoPriority(static_cast<NetworkServiceTaskPriority>(priority));
 }
 
+base::ThreadType ToThreadType(NetworkServiceTaskPriority priority) {
+  switch (priority) {
+    case NetworkServiceTaskPriority::kHighestPriority:
+      return base::ThreadType::kPresentation;
+    case NetworkServiceTaskPriority::kMediumPriority:
+      return base::ThreadType::kDefault;
+    case NetworkServiceTaskPriority::kLowPriority:
+      return base::ThreadType::kUtility;
+    case NetworkServiceTaskPriority::kLowestPriority:
+      return base::ThreadType::kBackground;
+    case NetworkServiceTaskPriority::kIdlePriority:
+      return base::ThreadType::kBackground;
+    case NetworkServiceTaskPriority::kThrottledPriority:
+      return base::ThreadType::kBackground;
+    case NetworkServiceTaskPriority::kPriorityCount:
+      NOTREACHED();
+  }
+}
+
+base::ThreadType TaskPriorityToThreadType(
+    base::sequence_manager::TaskQueue::QueuePriority priority) {
+  CHECK_LT(static_cast<size_t>(priority),
+           static_cast<size_t>(NetworkServiceTaskPriority::kPriorityCount));
+  return ToThreadType(static_cast<NetworkServiceTaskPriority>(priority));
+}
+
 }  // namespace
 
 base::sequence_manager::SequenceManager::PrioritySettings
@@ -50,6 +76,7 @@ CreateNetworkServiceTaskPrioritySettings() {
       NetworkServiceTaskPriority::kPriorityCount,
       NetworkServiceTaskPriority::kDefaultPriority);
   settings.SetProtoPriorityConverter(&TaskPriorityToProto);
+  settings.SetThreadTypeMapping(&TaskPriorityToThreadType);
   return settings;
 }
 

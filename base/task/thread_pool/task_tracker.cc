@@ -375,11 +375,13 @@ RegisteredTaskSource TaskTracker::RunAndPopNextTask(
   // Run the next task in |task_source|.
   std::optional<Task> task;
   TaskTraits traits;
+  ThreadType thread_type;
   {
     auto transaction = task_source->BeginTransaction();
     task = should_run_tasks ? task_source.TakeTask(&transaction)
                             : task_source.Clear(&transaction);
     traits = transaction.traits();
+    thread_type = transaction.thread_type();
   }
 
   if (task) {
@@ -389,7 +391,7 @@ RegisteredTaskSource TaskTracker::RunAndPopNextTask(
     }
 
     // Run the |task| (whether it's a worker task or the Clear() closure).
-    RunTask(std::move(task.value()), task_source.get(), traits);
+    RunTask(std::move(task.value()), task_source.get(), traits, thread_type);
   }
   if (should_run_tasks) {
     AfterRunTask(task_source->shutdown_behavior());
@@ -422,7 +424,8 @@ void TaskTracker::EndFizzlingBlockShutdownTasks() {
 
 void TaskTracker::RunTask(Task task,
                           TaskSource* task_source,
-                          const TaskTraits& traits) {
+                          const TaskTraits& traits,
+                          ThreadType thread_type) {
   DCHECK(task_source);
 
   const auto environment = task_source->GetExecutionEnvironment();
@@ -463,6 +466,7 @@ void TaskTracker::RunTask(Task task,
                              TaskSourceExecutionMode::kSingleThread);
     ScopedSetTaskPriorityForCurrentThread
         scoped_set_task_priority_for_current_thread(traits.priority());
+    internal::CurrentTaskImportanceOverride thread_type_override(thread_type);
 
     // Local storage map used if none is provided by |environment|.
     std::optional<SequenceLocalStorageMap> local_storage_map;

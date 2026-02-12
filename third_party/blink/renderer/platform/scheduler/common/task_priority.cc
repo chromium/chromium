@@ -6,6 +6,7 @@
 
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
+#include "base/task/thread_type.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 
 namespace blink::scheduler {
@@ -50,6 +51,42 @@ ProtoPriority TaskPriorityToProto(
   return ToProtoPriority(static_cast<TaskPriority>(priority));
 }
 
+base::ThreadType ToThreadType(TaskPriority priority) {
+  switch (priority) {
+    case TaskPriority::kControlPriority:
+      return base::ThreadType::kPresentation;
+    case TaskPriority::kHighestPriority:
+      return base::ThreadType::kPresentation;
+    case TaskPriority::kExtremelyHighPriority:
+      return base::ThreadType::kPresentation;
+    case TaskPriority::kVeryHighPriority:
+      return base::ThreadType::kPresentation;
+    case TaskPriority::kHighPriorityContinuation:
+      return base::ThreadType::kPresentation;
+    case TaskPriority::kHighPriority:
+      return base::ThreadType::kPresentation;
+    case TaskPriority::kNormalPriorityContinuation:
+      return base::ThreadType::kDefault;
+    case TaskPriority::kNormalPriority:
+      return base::ThreadType::kDefault;
+    case TaskPriority::kLowPriorityContinuation:
+      return base::ThreadType::kUtility;
+    case TaskPriority::kLowPriority:
+      return base::ThreadType::kUtility;
+    case TaskPriority::kBestEffortPriority:
+      return base::ThreadType::kBackground;
+    case TaskPriority::kPriorityCount:
+      NOTREACHED();
+  }
+}
+
+base::ThreadType TaskPriorityToThreadType(
+    base::sequence_manager::TaskQueue::QueuePriority priority) {
+  DCHECK_LT(static_cast<size_t>(priority),
+            static_cast<size_t>(TaskPriority::kPriorityCount));
+  return ToThreadType(static_cast<TaskPriority>(priority));
+}
+
 }  // namespace
 
 base::sequence_manager::SequenceManager::PrioritySettings
@@ -58,6 +95,7 @@ CreatePrioritySettings() {
   base::sequence_manager::SequenceManager::PrioritySettings settings(
       TaskPriority::kPriorityCount, TaskPriority::kDefaultPriority);
   settings.SetProtoPriorityConverter(&TaskPriorityToProto);
+  settings.SetThreadTypeMapping(&TaskPriorityToThreadType);
   return settings;
 }
 

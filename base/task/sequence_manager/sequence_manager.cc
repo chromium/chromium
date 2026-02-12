@@ -36,7 +36,13 @@ SequenceManager::PrioritySettings::CreateDefault() {
       TaskQueue::DefaultQueuePriority::kQueuePriorityCount,
       TaskQueue::DefaultQueuePriority::kNormalPriority);
   settings.SetProtoPriorityConverter(&DefaultTaskPriorityToProto);
+  settings.SetThreadTypeMapping(&DefaultTaskPriorityToThreadType);
   return settings;
+}
+
+ThreadType SequenceManager::PrioritySettings::DefaultTaskPriorityToThreadType(
+    TaskQueue::QueuePriority priority) {
+  return ThreadType::kDefault;
 }
 
 SequenceManager::PrioritySettings::PrioritySettings(
@@ -54,6 +60,12 @@ SequenceManager::PrioritySettings::TaskPriorityToProto(
   DCHECK(proto_priority_converter_)
       << "A tracing priority-to-proto-priority function was not provided";
   return proto_priority_converter_(priority);
+}
+
+ThreadType SequenceManager::PrioritySettings::TaskPriorityToThreadType(
+    TaskQueue::QueuePriority priority) const {
+  DCHECK(thread_type_mapping_);
+  return thread_type_mapping_(priority);
 }
 
 SequenceManager::PrioritySettings::~PrioritySettings() = default;
