@@ -2042,6 +2042,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                                                kXButtonWidthInButton]
   ]];
 
+  [button
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+
   [self setupXMarkInButton:button];
 
   return button;
