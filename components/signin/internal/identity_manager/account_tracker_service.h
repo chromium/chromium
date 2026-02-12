@@ -156,7 +156,7 @@ class AccountTrackerService {
  protected:
   // Available to be called in tests.
   void SetAccountInfoFromUserInfo(const CoreAccountId& account_id,
-                                  const base::DictValue& user_info);
+                                  std::optional<AccountInfo> fetched_user_info);
 
   // Updates the account image. Does nothing if |account_id| does not exist in
   // |accounts_|.

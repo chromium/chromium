@@ -23,6 +23,7 @@
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 #include "components/signin/internal/identity_manager/account_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/account_info_fetcher_gaia.h"
+#include "components/signin/internal/identity_manager/account_info_util.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
@@ -252,7 +253,8 @@ void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
 void AccountFetcherService::OnUserInfoFetchSuccess(
     const CoreAccountId& account_id,
     const base::DictValue& user_info) {
-  account_tracker_service_->SetAccountInfoFromUserInfo(account_id, user_info);
+  account_tracker_service_->SetAccountInfoFromUserInfo(
+      account_id, signin::AccountInfoFromUserInfo(user_info));
   auto it = user_info_fetch_start_times_.find(account_id);
   if (it != user_info_fetch_start_times_.end()) {
     base::UmaHistogramMediumTimes(
