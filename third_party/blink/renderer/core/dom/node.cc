@@ -3702,7 +3702,16 @@ void Node::FlatTreeParentChanged() {
       // already dirty.
       MarkAncestorsWithChildNeedsStyleRecalc();
     } else {
-      SetNeedsStyleRecalc(kLocalStyleChange,
+      // We retain the ComputedStyles for elements moved with moveBefore(), but
+      // need to invalidate all styles in the subtree since any element in the
+      // subtree may have styles changed via e.g. selector matching changes or
+      // @container query changes. Also, DynamicRestyleFlags potentially need
+      // updating, which happens during style recalc.
+      StyleChangeType change_type =
+          GetDocument().StatePreservingAtomicMoveInProgress()
+              ? kSubtreeStyleChange
+              : kLocalStyleChange;
+      SetNeedsStyleRecalc(change_type,
                           StyleChangeReasonForTracing::Create(
                               style_change_reason::kFlatTreeChange));
     }
