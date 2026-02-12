@@ -289,36 +289,6 @@ public class UrlBar extends AutocompleteEditText {
         mTextContextMenuDelegate = delegate;
     }
 
-    /**
-     * When predictive back gesture is enabled, keycode_back will not be sent from Android OS
-     * starting from T. {@link LocationBarMediator} will intercept the back press instead.
-     */
-    @Override
-    public boolean onKeyPreIme(int keyCode, KeyEvent event) {
-        // NOTE: Do not pass ENTER key to listeners from here. This is because Enter key may also
-        // come from a software keyboard.
-        // - If we pass the event here, it will be emitted twice (once before IME and once after),
-        // - if we don't pass the event after IME, soft keyboard navigation will not work.
-        // DPAD and TAB keys are also not passed into the listeners here. This is to prevent those
-        // keys from being consumed too early. Premature consumption of these keys can break certain
-        // IME features, for example, keyboard navigation within the Chinese / Japanese candidate
-        // window.
-        return (KeyNavigationUtil.isActionDown(event)
-                        // Pass NUMPAD_ENTER as IME inserts a newline character.
-                        && event.getKeyCode() != KeyEvent.KEYCODE_ENTER
-                        && !KeyNavigationUtil.isGoAnyDirection(event)
-                        && !KeyNavigationUtil.isTabNavigation(event)
-                        && (mKeyDownListener != null
-                                && mKeyDownListener.onKey(this, keyCode, event)))
-                || super_onKeyPreIme(keyCode, event);
-    }
-
-    @CheckDiscard("exposed for testing; should be inlined")
-    @VisibleForTesting
-    public boolean super_onKeyPreIme(int keyCode, KeyEvent event) {
-        return super.onKeyPreIme(keyCode, event);
-    }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return ((KeyNavigationUtil.isEnter(event)

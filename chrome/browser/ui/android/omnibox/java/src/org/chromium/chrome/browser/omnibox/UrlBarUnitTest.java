@@ -204,14 +204,6 @@ public class UrlBarUnitTest {
         measureAndLayoutUrlBarForSize(URL_BAR_WIDTH, URL_BAR_HEIGHT);
     }
 
-    private KeyEvent keyEvent(int keyCode) {
-        return keyEvent(keyCode, 0);
-    }
-
-    private KeyEvent keyEvent(int keyCode, int metaState) {
-        return new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, keyCode, 0, metaState);
-    }
-
     @Test
     public void testAutofillStructureReceivesFullURL() {
         mUrlBar.setTextForAutofillServices("https://www.google.com");
@@ -707,38 +699,12 @@ public class UrlBarUnitTest {
         for (int keyCode : keysToCheck) {
             var event = new KeyEvent(KeyEvent.ACTION_DOWN, keyCode);
 
-            // Pre-IME Key Down, consumed: do not pass to IME.
-            doReturn(true).when(listener).onKey(any(), anyInt(), any());
-            assertTrue(mUrlBar.onKeyPreIme(keyCode, event));
-            verify(listener).onKey(mUrlBar, keyCode, event);
-            verify(mUrlBar, never()).super_onKeyPreIme(anyInt(), any());
-
-            clearInvocations(listener, mUrlBar);
-
-            // Pre-IME Key Down, not consumed: pass to IME.
-            doReturn(false).when(listener).onKey(any(), anyInt(), any());
-            doReturn(false).when(mUrlBar).super_onKeyPreIme(anyInt(), any());
-            assertFalse(mUrlBar.onKeyPreIme(keyCode, event));
-            verify(listener).onKey(mUrlBar, keyCode, event);
-            verify(mUrlBar).super_onKeyPreIme(keyCode, event);
-
-            clearInvocations(listener, mUrlBar);
-
-            // Pre-IME Key Down, not consumed: return IME result.
-            doReturn(true).when(mUrlBar).super_onKeyPreIme(anyInt(), any());
-            assertTrue(mUrlBar.onKeyPreIme(keyCode, event));
-            verify(mUrlBar).super_onKeyPreIme(keyCode, event);
-
-            clearInvocations(listener, mUrlBar);
-
-            // Post-IME Key Down: never passed to the listener.
             doReturn(false).when(mUrlBar).super_onKeyDown(anyInt(), any());
             assertFalse(mUrlBar.onKeyDown(keyCode, event));
             verifyNoMoreInteractions(listener);
 
             clearInvocations(listener, mUrlBar);
 
-            // Post-IME Key Down: return IME result.
             doReturn(true).when(mUrlBar).super_onKeyDown(anyInt(), any());
             assertTrue(mUrlBar.onKeyDown(keyCode, event));
             verifyNoMoreInteractions(listener);
@@ -768,7 +734,6 @@ public class UrlBarUnitTest {
 
             // Post-IME Key Down: not consumed keys passed to View.
             doReturn(false).when(listener).onKey(any(), anyInt(), any());
-            doReturn(true).when(mUrlBar).super_onKeyPreIme(anyInt(), any());
             assertTrue(mUrlBar.onKeyDown(keyCode, event));
             verify(listener).onKey(mUrlBar, keyCode, event);
             verify(mUrlBar).super_onKeyDown(keyCode, event);
@@ -794,15 +759,6 @@ public class UrlBarUnitTest {
         for (int keyCode : keysToCheck) {
             var event = new KeyEvent(KeyEvent.ACTION_DOWN, keyCode);
 
-            // Pre-IME Key Down: passed only to IME.
-            doReturn(false).when(mUrlBar).super_onKeyPreIme(anyInt(), any());
-            assertFalse(mUrlBar.onKeyPreIme(keyCode, event));
-            verify(listener, never()).onKey(any(), anyInt(), any());
-            verify(mUrlBar).super_onKeyPreIme(keyCode, event);
-
-            clearInvocations(listener, mUrlBar);
-
-            // Post-IME Key Down: consumed keys not passed to View.
             doReturn(true).when(listener).onKey(any(), anyInt(), any());
             assertTrue(mUrlBar.onKeyDown(keyCode, event));
             verify(listener).onKey(mUrlBar, keyCode, event);
@@ -840,64 +796,9 @@ public class UrlBarUnitTest {
         for (int keyCode : keysToCheck) {
             var event = new KeyEvent(KeyEvent.ACTION_UP, keyCode);
 
-            // Pre-IME, not consumed by IME.
-            doReturn(false).when(mUrlBar).super_onKeyPreIme(anyInt(), any());
-            assertFalse(mUrlBar.onKeyPreIme(keyCode, event));
-            verify(mUrlBar).super_onKeyPreIme(keyCode, event);
-            verifyNoMoreInteractions(listener);
-
-            clearInvocations(mUrlBar);
-
-            // Pre-IME, consumed by IME.
-            doReturn(true).when(mUrlBar).super_onKeyPreIme(anyInt(), any());
-            assertTrue(mUrlBar.onKeyPreIme(keyCode, event));
-            verify(mUrlBar).super_onKeyPreIme(keyCode, event);
-            verifyNoMoreInteractions(listener);
-
-            clearInvocations(mUrlBar);
-
-            // Post-IME.
             assertFalse(mUrlBar.onKeyUp(keyCode, event));
             verifyNoMoreInteractions(listener);
 
-            clearInvocations(mUrlBar);
-        }
-    }
-
-    @Test
-    public void onKeyPreIme_numpadEnterAlwaysPassedToClient() {
-        var listener = mock(View.OnKeyListener.class);
-        mUrlBar.setKeyDownListener(listener);
-        doReturn(true).when(listener).onKey(any(), anyInt(), any());
-
-        var testEvents =
-                List.of(
-                        keyEvent(KeyEvent.KEYCODE_NUMPAD_ENTER),
-                        keyEvent(KeyEvent.KEYCODE_NUMPAD_ENTER, KeyEvent.META_SHIFT_ON),
-                        keyEvent(KeyEvent.KEYCODE_NUMPAD_ENTER, KeyEvent.META_CTRL_ON));
-
-        for (var event : testEvents) {
-            assertTrue(mUrlBar.onKeyPreIme(event.getKeyCode(), event));
-            verify(listener).onKey(mUrlBar, event.getKeyCode(), event);
-            clearInvocations(listener);
-        }
-    }
-
-    @Test
-    public void onKeyPreIme_enterAlwaysPassedToIme() {
-        var listener = mock(View.OnKeyListener.class);
-        mUrlBar.setKeyDownListener(listener);
-
-        var testEvents =
-                List.of(
-                        keyEvent(KeyEvent.KEYCODE_ENTER),
-                        keyEvent(KeyEvent.KEYCODE_ENTER, KeyEvent.META_SHIFT_ON),
-                        keyEvent(KeyEvent.KEYCODE_ENTER, KeyEvent.META_CTRL_ON));
-
-        for (var event : testEvents) {
-            mUrlBar.onKeyPreIme(event.getKeyCode(), event);
-            verify(mUrlBar).super_onKeyPreIme(event.getKeyCode(), event);
-            verify(listener, never()).onKey(any(), anyInt(), any());
             clearInvocations(mUrlBar);
         }
     }
