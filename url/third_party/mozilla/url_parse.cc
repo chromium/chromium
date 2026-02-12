@@ -59,8 +59,7 @@ std::ostream& operator<<(std::ostream& os, const Parsed& parsed) {
 
 Component MakeRange(size_t begin, size_t end) {
   CHECK_LE(begin, end);
-  return Component(base::checked_cast<int>(begin),
-                   base::checked_cast<int>(end - begin));
+  return Component::Create(begin, end - begin);
 }
 
 namespace {
@@ -320,7 +319,7 @@ bool DoExtractScheme(std::basic_string_view<CharT> url, Component* scheme) {
 // "http://foo.com/" link, it will be colored.
 template <typename CHAR>
 void DoParseAfterSpecialScheme(std::basic_string_view<CHAR> spec,
-                               int after_scheme,
+                               size_t after_scheme,
                                Parsed* parsed) {
   size_t num_slashes = CountConsecutiveSlashesOrBackslashes(spec, after_scheme);
   size_t after_slashes = after_scheme + num_slashes;
@@ -352,16 +351,16 @@ Parsed DoParseStandardUrl(std::basic_string_view<CharT> url) {
   auto [begin, url_len] = TrimUrl(url);
   url = url.substr(0, url_len);
 
-  int after_scheme;
+  size_t after_scheme;
   Parsed parsed;
   if (DoExtractScheme(url, &parsed.scheme)) {
-    after_scheme = parsed.scheme.end() + 1;  // Skip past the colon.
+    after_scheme = parsed.scheme.CheckedEnd() + 1;  // Skip past the colon.
   } else {
     // Say there's no scheme when there is no colon. We could also say that
     // everything is the scheme. Both would produce an invalid URL, but this way
     // seems less wrong in more cases.
     parsed.scheme.reset();
-    after_scheme = base::checked_cast<int>(begin);
+    after_scheme = begin;
   }
   DoParseAfterSpecialScheme(url, after_scheme, &parsed);
   return parsed;
@@ -369,7 +368,7 @@ Parsed DoParseStandardUrl(std::basic_string_view<CharT> url) {
 
 template <typename CHAR>
 void DoParseAfterNonSpecialScheme(std::basic_string_view<CHAR> spec,
-                                  int after_scheme,
+                                  size_t after_scheme,
                                   Parsed* parsed) {
   // The implementation is similar to `DoParseAfterSpecialScheme()`, but there
   // are many subtle differences. So we have a different function for parsing
@@ -449,8 +448,8 @@ void DoParseAfterNonSpecialScheme(std::basic_string_view<CHAR> spec,
   parsed->port.reset();
 
   // Everything starting after scheme to the end is the path.
-  Component full_path(after_scheme, spec_len - after_scheme);
-  ParsePath(spec, full_path, &parsed->path, &parsed->query, &parsed->ref);
+  ParsePath(spec, MakeRange(after_scheme, spec_len), &parsed->path,
+            &parsed->query, &parsed->ref);
 }
 
 // The main parsing function for non-special scheme URLs.
@@ -461,10 +460,10 @@ Parsed DoParseNonSpecialUrl(std::basic_string_view<CharT> url,
   auto [begin, url_len] = TrimUrl(url, trim_path_end);
   url = url.substr(0, url_len);
 
-  int after_scheme;
+  size_t after_scheme;
   Parsed parsed;
   if (DoExtractScheme(url, &parsed.scheme)) {
-    after_scheme = parsed.scheme.end() + 1;  // Skip past the colon.
+    after_scheme = parsed.scheme.CheckedEnd() + 1;  // Skip past the colon.
   } else {
     // Say there's no scheme when there is no colon. We could also say that
     // everything is the scheme. Both would produce an invalid URL, but this way

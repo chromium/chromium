@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <type_traits>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -36,9 +37,20 @@ struct Component {
   constexpr Component(int b, int l) : begin(b), len(l) {}
 
   // Construct a Component covering the whole `view`.
-  template <typename CharT>
-  explicit Component(std::basic_string_view<CharT> view)
+  template <typename T>
+    requires std::is_same_v<T, std::string> ||
+                 std::is_same_v<T, std::string_view> ||
+                 std::is_same_v<T, std::u16string> ||
+                 std::is_same_v<T, std::u16string_view>
+  explicit Component(const T& view)
       : begin(0), len(base::checked_cast<int>(view.size())) {}
+
+  // A size_t variant of `Component(int, int)` constructor.
+  // This crashes if an argument is too large for `int`.
+  constexpr static Component Create(size_t begin, size_t len) {
+    return Component(base::checked_cast<int>(begin),
+                     base::checked_cast<int>(len));
+  }
 
   // Adjusts the beginning of the component by the given offset. This is useful
   // for adjusting component offsets when they are relative to a substring

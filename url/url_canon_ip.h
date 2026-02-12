@@ -346,8 +346,7 @@ constexpr bool DoParseIPv6(std::basic_string_view<CHAR> host,
         }
 
         parsed->hex_components[parsed->num_hex_components++] =
-            Component(base::checked_cast<int>(cur_component_begin),
-                      base::checked_cast<int>(component_len));
+            Component::Create(cur_component_begin, component_len);
       }
     }
 
@@ -382,9 +381,7 @@ constexpr bool DoParseIPv6(std::basic_string_view<CHAR> host,
           // Since IPv4 address can only appear at the end, assume the rest
           // of the string is an IPv4 address. (We will parse this separately
           // later).
-          parsed->ipv4_component =
-              Component(base::checked_cast<int>(cur_component_begin),
-                        base::checked_cast<int>(end - cur_component_begin));
+          parsed->ipv4_component = MakeRange(cur_component_begin, end);
           break;
         } else {
           // The character was neither a hex digit, nor an IPv4 character.

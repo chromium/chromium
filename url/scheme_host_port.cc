@@ -34,8 +34,7 @@ bool IsCanonicalHost(std::string_view host, bool is_file_scheme) {
   std::string canon_host;
 
   // Try to canonicalize the host (copy/pasted from net/base. :( ).
-  const Component raw_host_component(0,
-                                     base::checked_cast<int>(host.length()));
+  const Component raw_host_component(host);
   StdStringCanonOutput canon_host_output(&canon_host);
   CanonHostInfo host_info;
   if (is_file_scheme) {

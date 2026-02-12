@@ -116,8 +116,7 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
     if (query_cases[i].input16) {
       std::u16string input16(
           test_utils::TruncateWStringToUtf16(query_cases[i].input16));
-      int len = static_cast<int>(input16.length());
-      Component in_comp(0, len);
+      Component in_comp(input16);
       std::string out_str;
 
       StdStringCanonOutput output(&out_str);

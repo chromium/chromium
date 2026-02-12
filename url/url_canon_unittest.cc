@@ -663,8 +663,7 @@ TEST_F(URLCanonHostTest, Host) {
     // Narrow version.
     if (host_case.input8) {
       std::string_view input8(host_case.input8);
-      int host_len = static_cast<int>(input8.length());
-      Component in_comp(0, host_len);
+      Component in_comp(input8);
       Component out_comp;
 
       out_str.clear();
@@ -687,8 +686,7 @@ TEST_F(URLCanonHostTest, Host) {
     if (host_case.input16) {
       std::u16string input16(
           test_utils::TruncateWStringToUtf16(host_case.input16));
-      int host_len = static_cast<int>(input16.length());
-      Component in_comp(0, host_len);
+      Component in_comp(input16);
       Component out_comp;
 
       out_str.clear();
@@ -709,8 +707,7 @@ TEST_F(URLCanonHostTest, Host) {
     // Narrow version.
     if (host_case.input8) {
       std::string_view input8(host_case.input8);
-      int host_len = static_cast<int>(input8.length());
-      Component in_comp(0, host_len);
+      Component in_comp(input8);
 
       out_str.clear();
       StdStringCanonOutput output(&out_str);
@@ -735,8 +732,7 @@ TEST_F(URLCanonHostTest, Host) {
     if (host_case.input16) {
       std::u16string input16(
           test_utils::TruncateWStringToUtf16(host_case.input16));
-      int host_len = static_cast<int>(input16.length());
-      Component in_comp(0, host_len);
+      Component in_comp(input16);
 
       out_str.clear();
       StdStringCanonOutput output(&out_str);
@@ -1648,8 +1644,7 @@ TEST_F(URLCanonTest, Query) {
     if (query_case.input16) {
       std::u16string input16(
           test_utils::TruncateWStringToUtf16(query_case.input16));
-      int len = static_cast<int>(input16.length());
-      Component in_comp(0, len);
+      Component in_comp(input16);
       std::string out_str;
 
       StdStringCanonOutput output(&out_str);
@@ -1721,8 +1716,7 @@ TEST_F(URLCanonTest, Ref) {
     if (ref_case.input16) {
       std::u16string input16(
           test_utils::TruncateWStringToUtf16(ref_case.input16));
-      int len = static_cast<int>(input16.length());
-      Component in_comp(0, len);
+      Component in_comp(input16);
       Component out_comp;
 
       std::string out_str;
@@ -3052,9 +3046,8 @@ TEST_F(URLCanonTest, OpaqueHost) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     Component out_comp;
-    bool success = CanonicalizeNonSpecialHost(
-        input8, Component(0, static_cast<int>(input8.length())), output,
-        out_comp);
+    bool success =
+        CanonicalizeNonSpecialHost(input8, Component(input8), output, out_comp);
     output.Complete();
     ComponentCaseMatches(success, out_str, out_comp, host_case);
   }
@@ -3067,9 +3060,8 @@ TEST_F(URLCanonTest, OpaqueHost) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     Component out_comp;
-    bool success = CanonicalizeNonSpecialHost(
-        input16, Component(0, static_cast<int>(input16.length())), output,
-        out_comp);
+    bool success = CanonicalizeNonSpecialHost(input16, Component(input16),
+                                              output, out_comp);
     output.Complete();
     ComponentCaseMatches(success, out_str, out_comp, host_case);
   }
@@ -3118,9 +3110,8 @@ TEST_F(URLCanonTest, NonSpecialHostIPv6Address) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     CanonHostInfo host_info;
-    CanonicalizeNonSpecialHostVerbose(
-        view8, Component(0, static_cast<int>(view8.length())), output,
-        host_info);
+    CanonicalizeNonSpecialHostVerbose(view8, Component(view8), output,
+                                      host_info);
     output.Complete();
     IPAddressCaseMatches(out_str, host_info, ip_address_case);
   }
@@ -3134,9 +3125,8 @@ TEST_F(URLCanonTest, NonSpecialHostIPv6Address) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     CanonHostInfo host_info;
-    CanonicalizeNonSpecialHostVerbose(
-        input16, Component(0, static_cast<int>(input16.length())), output,
-        host_info);
+    CanonicalizeNonSpecialHostVerbose(input16, Component(input16), output,
+                                      host_info);
     output.Complete();
     IPAddressCaseMatches(out_str, host_info, ip_address_case);
   }
