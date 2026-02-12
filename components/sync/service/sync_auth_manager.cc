@@ -221,7 +221,7 @@ SyncTokenStatus SyncAuthManager::GetSyncTokenStatus() const {
   DCHECK(partial_token_status_.next_token_request_time.is_null());
 
   SyncTokenStatus token_status = partial_token_status_;
-  token_status.has_token = !access_token_.empty();
+  token_status.has_token = !access_token_info_.token.empty();
   if (request_access_token_retry_timer_.IsRunning()) {
     base::TimeDelta delta =
         request_access_token_retry_timer_.desired_run_time() -
@@ -233,7 +233,7 @@ SyncTokenStatus SyncAuthManager::GetSyncTokenStatus() const {
 
 SyncCredentials SyncAuthManager::GetCredentials() const {
   return {.email = sync_account_.Get().account_info.email,
-          .access_token = access_token_};
+          .access_token_info = access_token_info_};
 }
 
 void SyncAuthManager::ConnectionOpened() {
@@ -244,7 +244,7 @@ void SyncAuthManager::ConnectionOpened() {
 
   // At this point, we must not already have an access token or an attempt to
   // get one.
-  DCHECK(access_token_.empty());
+  DCHECK(access_token_info_.token.empty());
   DCHECK(!ongoing_access_token_fetch_);
   DCHECK(!request_access_token_retry_timer_.IsRunning());
 
@@ -281,12 +281,12 @@ void SyncAuthManager::ConnectionStatusChanged(ConnectionStatus status) {
       if (ongoing_access_token_fetch_) {
         // A request is already in flight; nothing further needs to be done at
         // this point.
-        DCHECK(access_token_.empty());
+        DCHECK(access_token_info_.token.empty());
         DCHECK(!request_access_token_retry_timer_.IsRunning());
       } else if (request_access_token_retry_timer_.IsRunning()) {
         // The timer to perform a request later is already running; nothing
         // further needs to be done at this point.
-        DCHECK(access_token_.empty());
+        DCHECK(access_token_info_.token.empty());
       } else {
         // Drop any access token here, to maintain the invariant that only one
         // of a token OR a pending request OR a pending retry can exist at any
@@ -318,27 +318,27 @@ void SyncAuthManager::ConnectionStatusChanged(ConnectionStatus status) {
 void SyncAuthManager::InvalidateAccessToken() {
   DCHECK(registered_for_auth_notifications_);
 
-  if (access_token_.empty()) {
+  if (access_token_info_.token.empty()) {
     return;
   }
 
   identity_manager_->RemoveAccessTokenFromCache(
       sync_account_.Get().account_info.account_id,
-      signin::OAuthConsumerId::kSync, access_token_);
+      signin::OAuthConsumerId::kSync, access_token_info_.token);
 
-  access_token_.clear();
+  access_token_info_ = signin::AccessTokenInfo();
   delegate_->SyncAuthCredentialsChanged();
 }
 
 void SyncAuthManager::ClearAccessTokenAndRequest() {
-  access_token_.clear();
+  access_token_info_ = signin::AccessTokenInfo();
   request_access_token_retry_timer_.Stop();
   ongoing_access_token_fetch_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void SyncAuthManager::ScheduleAccessTokenRequest() {
-  DCHECK(access_token_.empty());
+  DCHECK(access_token_info_.token.empty());
   DCHECK(!ongoing_access_token_fetch_);
   DCHECK(!request_access_token_retry_timer_.IsRunning());
 
@@ -412,7 +412,7 @@ void SyncAuthManager::OnRefreshTokenUpdatedForAccount(
     if (connection_open_) {
       RequestAccessToken();
     }
-  } else if (!access_token_.empty() ||
+  } else if (!access_token_info_.token.empty() ||
              request_access_token_retry_timer_.IsRunning()) {
     // If we already have an access token or previously failed to retrieve one
     // (and hence the retry timer is running), then request a fresh access token
@@ -530,7 +530,7 @@ void SyncAuthManager::RequestAccessToken() {
 
   // Only one active request at a time.
   if (ongoing_access_token_fetch_) {
-    DCHECK(access_token_.empty());
+    DCHECK(access_token_info_.token.empty());
     DCHECK(!request_access_token_retry_timer_.IsRunning());
     return;
   }
@@ -576,11 +576,11 @@ void SyncAuthManager::AccessTokenFetched(
     return;
   }
 
-  access_token_ = access_token_info.token;
+  access_token_info_ = access_token_info;
   partial_token_status_.token_response_time = base::Time::Now();
   partial_token_status_.last_get_token_error = error;
 
-  DCHECK_EQ(access_token_.empty(),
+  DCHECK_EQ(access_token_info_.token.empty(),
             error.state() != GoogleServiceAuthError::NONE);
 
   if (error.IsTransientError()) {

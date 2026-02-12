@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 
 namespace syncer {
 
@@ -116,12 +117,12 @@ class ServerConnectionManager {
     return server_response_.http_status_code;
   }
 
-  // Sets a new access token. If `access_token` is empty, the current token is
-  // invalidated and cleared. Returns false if the server is in authentication
-  // error state.
-  bool SetAccessToken(const std::string& access_token);
+  // Sets a new access token. If `access_token_info` is empty, the current token
+  // is invalidated and cleared. Returns false if the server is in
+  // authentication error state.
+  bool SetAccessTokenInfo(const signin::AccessTokenInfo& access_token_info);
 
-  bool HasInvalidAccessToken() { return access_token_.empty(); }
+  bool HasInvalidAccessToken() { return access_token_info_.token.empty(); }
 
  protected:
   // Updates `server_response_` and notifies listeners if the server status
@@ -140,7 +141,7 @@ class ServerConnectionManager {
   void NotifyStatusChanged();
 
   // The access token to use in authenticated requests.
-  std::string access_token_;
+  signin::AccessTokenInfo access_token_info_;
 
   base::ObserverList<ServerConnectionEventListener> listeners_;
 

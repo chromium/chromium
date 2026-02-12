@@ -96,15 +96,16 @@ ServerConnectionManager::ServerConnectionManager()
 
 ServerConnectionManager::~ServerConnectionManager() = default;
 
-bool ServerConnectionManager::SetAccessToken(const std::string& access_token) {
+bool ServerConnectionManager::SetAccessTokenInfo(
+    const signin::AccessTokenInfo& access_token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!access_token.empty()) {
-    access_token_.assign(access_token);
+  if (!access_token_info.token.empty()) {
+    access_token_info_ = access_token_info;
     return true;
   }
 
-  access_token_.clear();
+  ClearAccessToken();
 
   // The access token could be non-empty in cases like server outage/bug. E.g.
   // token returned by first request is considered invalid by sync server and
@@ -117,7 +118,7 @@ bool ServerConnectionManager::SetAccessToken(const std::string& access_token) {
 }
 
 void ServerConnectionManager::ClearAccessToken() {
-  access_token_.clear();
+  access_token_info_ = signin::AccessTokenInfo();
 }
 
 void ServerConnectionManager::SetServerResponse(
@@ -146,7 +147,8 @@ HttpResponse ServerConnectionManager::PostBufferWithCachedAuth(
     const std::string& buffer_in,
     std::string* buffer_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  HttpResponse http_response = PostBuffer(buffer_in, access_token_, buffer_out);
+  HttpResponse http_response =
+      PostBuffer(buffer_in, access_token_info_.token, buffer_out);
   SetServerResponse(http_response);
   return http_response;
 }

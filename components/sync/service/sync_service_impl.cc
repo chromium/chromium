@@ -1305,7 +1305,7 @@ void SyncServiceImpl::SyncAuthCredentialsChanged() {
   // Cache in prefs whether a persistent auth error exists.
   if (auth_manager_->IsSyncPaused()) {
     sync_prefs_.SetHasCachedPersistentAuthErrorForMetrics(true);
-  } else if (!auth_manager_->GetCredentials().access_token.empty()) {
+  } else if (!auth_manager_->GetCredentials().access_token_info.token.empty()) {
     if (!IsSyncFeatureEnabled() &&
         sync_prefs_.HasCachedPersistentAuthErrorForMetrics()) {
       // An auth error is being fixed while in transport mode. Record the amount
@@ -1343,7 +1343,7 @@ void SyncServiceImpl::SyncAuthCredentialsChanged() {
   } else {
     // If the engine already exists, just propagate the new credentials.
     SyncCredentials credentials = auth_manager_->GetCredentials();
-    if (credentials.access_token.empty()) {
+    if (credentials.access_token_info.token.empty()) {
       engine_->InvalidateCredentials();
     } else {
       engine_->UpdateCredentials(credentials);
@@ -2240,7 +2240,7 @@ bool SyncServiceImpl::IsRetryingAccessTokenFetchForTest() const {
 std::string SyncServiceImpl::GetAccessTokenForTest() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_IS_TEST();
-  return auth_manager_->access_token();
+  return auth_manager_->GetCredentials().access_token_info.token;
 }
 
 SyncTokenStatus SyncServiceImpl::GetSyncTokenStatusForDebugging() const {
@@ -2311,7 +2311,8 @@ void SyncServiceImpl::RemoveClientFromServer() const {
   const std::string cache_guid = engine_->GetCacheGuid();
   const std::string birthday = engine_->GetBirthday();
   DCHECK(!cache_guid.empty());
-  const std::string& access_token = auth_manager_->access_token();
+  const std::string& access_token =
+      auth_manager_->GetCredentials().access_token_info.token;
   const bool report_sync_stopped = !access_token.empty() && !birthday.empty();
   base::UmaHistogramBoolean("Sync.SyncStoppedReported", report_sync_stopped);
   if (report_sync_stopped) {

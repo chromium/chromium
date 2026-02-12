@@ -6,10 +6,14 @@
 
 #include <algorithm>
 #include <map>
+#include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/location.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/sync/engine/syncer_proto_util.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
@@ -32,12 +36,17 @@ using sync_pb::SyncEnums;
 
 namespace syncer {
 
-static char kValidAccessToken[] = "AccessToken";
-static char kCacheGuid[] = "kqyg7097kro6GSUod+GSg==";
+constexpr std::string_view kValidAccessToken = "AccessToken";
+constexpr std::string_view kCacheGuid = "kqyg7097kro6GSUod+GSg==";
+constexpr base::TimeDelta kValidAccessTokenTtl = base::Hours(1);
 
 MockConnectionManager::MockConnectionManager() {
   SetNewTimestamp(0);
-  SetAccessToken(kValidAccessToken);
+
+  signin::AccessTokenInfo access_token_info;
+  access_token_info.token = kValidAccessToken;
+  access_token_info.expiration_time = base::Time::Now() + kValidAccessTokenTtl;
+  SetAccessTokenInfo(access_token_info);
 }
 
 MockConnectionManager::~MockConnectionManager() {
