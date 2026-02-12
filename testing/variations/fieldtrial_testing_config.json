@@ -8995,13 +8995,13 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "Value": "l1_enabled"
+                        "RequireOriginTrialTokens": "false",
+                        "SchemaVersion": "3"
                     },
                     "enable_features": [
                         "DeviceBoundSessions",
                         "DeviceBoundSessionsFederatedRegistration",
                         "DeviceBoundSessionsForRestrictedSites",
-                        "DeviceBoundSessionsForRestrictedSitesExperimentId",
                         "EnableChromeRefreshTokenBinding",
                         "EnableOAuthMultiloginStandardCookiesBinding",
                         "PersistDeviceBoundSessions",
