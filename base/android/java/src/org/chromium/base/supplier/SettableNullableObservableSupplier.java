@@ -14,7 +14,6 @@ import org.chromium.build.annotations.Nullable;
  * @param <T> The type of the object supplied.
  */
 @NullMarked
-// TODO(agrieve): Add @DoNotMock
 public interface SettableNullableObservableSupplier<T>
         extends NullableObservableSupplier<T>, Destroyable {
     /**

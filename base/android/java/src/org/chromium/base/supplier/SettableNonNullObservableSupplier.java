@@ -13,7 +13,6 @@ import org.chromium.build.annotations.NullMarked;
  * @param <T> The type of the object supplied.
  */
 @NullMarked
-// TODO(agrieve): Add @DoNotMock
 public interface SettableNonNullObservableSupplier<T>
         extends NonNullObservableSupplier<T>, Destroyable {
     /**

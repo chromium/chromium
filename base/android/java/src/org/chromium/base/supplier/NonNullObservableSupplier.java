@@ -16,7 +16,6 @@ import java.util.function.Supplier;
  * @param <T> The type of the result.
  */
 @NullMarked
-// TODO(agrieve): Add @DoNotMock
 public interface NonNullObservableSupplier<T> extends Supplier<T>, MonotonicObservableSupplier<T> {
     @Override
     default T addSyncObserver(Callback<T> obs) {
