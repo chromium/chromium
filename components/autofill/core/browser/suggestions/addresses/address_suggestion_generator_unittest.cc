@@ -315,10 +315,21 @@ TEST_F(AddressSuggestionGeneratorTest,
 
 TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_HideSubsets) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
+  test::SetProfileInfo(
+      &profile, test::SetProfileInfoOptionsBuilder()
+                    .with_first_name("Marion")
+                    .with_middle_name("Mitchell")
+                    .with_last_name("Morrison")
+                    .with_email("johnwayne@me.xyz")
+                    .with_company("Fox")
+                    .with_address1("123 Zoo St.\nSecond Line\nThird line")
+                    .with_address2("unit 5")
+                    .with_city("Hollywood")
+                    .with_state("CA")
+                    .with_zipcode("91601")
+                    .with_country("US")
+                    .with_phone("12345678910")
+                    .Build());
 
   // Dupe profile, except different in email address (irrelevant for this form).
   AutofillProfile profile1 = profile;
@@ -358,10 +369,21 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_SuggestionsLimit) {
   std::vector<AutofillProfile> profiles;
   for (size_t i = 0; i < 2 * kMaxDeduplicatedProfilesForSuggestion; ++i) {
     AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-    test::SetProfileInfo(&profile, base::StringPrintf("Marion%zu", i).c_str(),
-                         "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox",
-                         "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                         "Hollywood", "CA", "91601", "US", "12345678910");
+    test::SetProfileInfo(
+        &profile, test::SetProfileInfoOptionsBuilder()
+                      .with_first_name(base::StringPrintf("Marion%zu", i))
+                      .with_middle_name("Mitchell")
+                      .with_last_name("Morrison")
+                      .with_email("johnwayne@me.xyz")
+                      .with_company("Fox")
+                      .with_address1("123 Zoo St.\nSecond Line\nThird line")
+                      .with_address2("unit 5")
+                      .with_city("Hollywood")
+                      .with_state("CA")
+                      .with_zipcode("91601")
+                      .with_country("US")
+                      .with_phone("12345678910")
+                      .Build());
     address_data().AddProfile(profile);
     profiles.push_back(profile);
   }
@@ -381,11 +403,22 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
   for (size_t i = 0; i < kMaxPrefixMatchedProfilesForSuggestion; ++i) {
     AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
 
-    test::SetProfileInfo(
-        &profile, "Marion", "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox",
-        base::StringPrintf("%zu123 Zoo St.\nSecond Line\nThird line", i)
-            .c_str(),
-        "unit 5", "Hollywood", "CA", "91601", "US", "12345678910");
+    test::SetProfileInfo(&profile,
+                         test::SetProfileInfoOptionsBuilder()
+                             .with_first_name("Marion")
+                             .with_middle_name("Mitchell")
+                             .with_last_name("Morrison")
+                             .with_email("johnwayne@me.xyz")
+                             .with_company("Fox")
+                             .with_address1(base::StringPrintf(
+                                 "%zu123 Zoo St.\nSecond Line\nThird line", i))
+                             .with_address2("unit 5")
+                             .with_city("Hollywood")
+                             .with_state("CA")
+                             .with_zipcode("91601")
+                             .with_country("US")
+                             .with_phone("12345678910")
+                             .Build());
 
     // Set ranking score such that they appear before the "last" profile (added
     // next).
@@ -398,10 +431,21 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
 
   // Add another profile that matches, but that will get stripped out.
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile, "Marie", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "000 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
+  test::SetProfileInfo(
+      &profile, test::SetProfileInfoOptionsBuilder()
+                    .with_first_name("Marie")
+                    .with_middle_name("Mitchell")
+                    .with_last_name("Morrison")
+                    .with_email("johnwayne@me.xyz")
+                    .with_company("Fox")
+                    .with_address1("000 Zoo St.\nSecond Line\nThird line")
+                    .with_address2("unit 5")
+                    .with_city("Hollywood")
+                    .with_state("CA")
+                    .with_zipcode("91601")
+                    .with_country("US")
+                    .with_phone("12345678910")
+                    .Build());
   profile.usage_history().set_use_count(1);
   profile.usage_history().set_use_date(AutofillClock::Now() - base::Days(7));
   address_data().AddProfile(profile);
@@ -422,28 +466,61 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
   // Set up the profiles. They are named with number suffixes X so the X is the
   // order in which they should be ordered by the ranking formula.
   AutofillProfile profile3(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile3, "Marion3", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
+  test::SetProfileInfo(
+      &profile3, test::SetProfileInfoOptionsBuilder()
+                     .with_first_name("Marion3")
+                     .with_middle_name("Mitchell")
+                     .with_last_name("Morrison")
+                     .with_email("johnwayne@me.xyz")
+                     .with_company("Fox")
+                     .with_address1("123 Zoo St.\nSecond Line\nThird line")
+                     .with_address2("unit 5")
+                     .with_city("Hollywood")
+                     .with_state("CA")
+                     .with_zipcode("91601")
+                     .with_country("US")
+                     .with_phone("12345678910")
+                     .Build());
   profile3.usage_history().set_use_date(AutofillClock::Now() - base::Days(1));
   profile3.usage_history().set_use_count(5);
   address_data().AddProfile(profile3);
 
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile1, "Marion1", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
+  test::SetProfileInfo(
+      &profile1, test::SetProfileInfoOptionsBuilder()
+                     .with_first_name("Marion1")
+                     .with_middle_name("Mitchell")
+                     .with_last_name("Morrison")
+                     .with_email("johnwayne@me.xyz")
+                     .with_company("Fox")
+                     .with_address1("123 Zoo St.\nSecond Line\nThird line")
+                     .with_address2("unit 5")
+                     .with_city("Hollywood")
+                     .with_state("CA")
+                     .with_zipcode("91601")
+                     .with_country("US")
+                     .with_phone("12345678910")
+                     .Build());
   profile1.usage_history().set_use_date(AutofillClock::Now() - base::Days(1));
   profile1.usage_history().set_use_count(10);
   address_data().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile2, "Marion2", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
+  test::SetProfileInfo(
+      &profile2, test::SetProfileInfoOptionsBuilder()
+                     .with_first_name("Marion2")
+                     .with_middle_name("Mitchell")
+                     .with_last_name("Morrison")
+                     .with_email("johnwayne@me.xyz")
+                     .with_company("Fox")
+                     .with_address1("123 Zoo St.\nSecond Line\nThird line")
+                     .with_address2("unit 5")
+                     .with_city("Hollywood")
+                     .with_state("CA")
+                     .with_zipcode("91601")
+                     .with_country("US")
+                     .with_phone("12345678910")
+                     .Build());
   profile2.usage_history().set_use_date(AutofillClock::Now() - base::Days(15));
   profile2.usage_history().set_use_count(300);
   address_data().AddProfile(profile2);
@@ -461,24 +538,57 @@ TEST_F(AddressSuggestionGeneratorTest,
        GetProfilesToSuggest_NumberOfSuggestions) {
   // Set up 3 different profiles.
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile1, "Marion1", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
+  test::SetProfileInfo(
+      &profile1, test::SetProfileInfoOptionsBuilder()
+                     .with_first_name("Marion1")
+                     .with_middle_name("Mitchell")
+                     .with_last_name("Morrison")
+                     .with_email("johnwayne@me.xyz")
+                     .with_company("Fox")
+                     .with_address1("123 Zoo St.\nSecond Line\nThird line")
+                     .with_address2("unit 5")
+                     .with_city("Hollywood")
+                     .with_state("CA")
+                     .with_zipcode("91601")
+                     .with_country("US")
+                     .with_phone("12345678910")
+                     .Build());
   address_data().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile2, "Marion2", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
+  test::SetProfileInfo(
+      &profile2, test::SetProfileInfoOptionsBuilder()
+                     .with_first_name("Marion2")
+                     .with_middle_name("Mitchell")
+                     .with_last_name("Morrison")
+                     .with_email("johnwayne@me.xyz")
+                     .with_company("Fox")
+                     .with_address1("123 Zoo St.\nSecond Line\nThird line")
+                     .with_address2("unit 5")
+                     .with_city("Hollywood")
+                     .with_state("CA")
+                     .with_zipcode("91601")
+                     .with_country("US")
+                     .with_phone("12345678910")
+                     .Build());
   address_data().AddProfile(profile2);
 
   AutofillProfile profile3(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile3, "Marion3", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
+  test::SetProfileInfo(
+      &profile3, test::SetProfileInfoOptionsBuilder()
+                     .with_first_name("Marion3")
+                     .with_middle_name("Mitchell")
+                     .with_last_name("Morrison")
+                     .with_email("johnwayne@me.xyz")
+                     .with_company("Fox")
+                     .with_address1("123 Zoo St.\nSecond Line\nThird line")
+                     .with_address2("unit 5")
+                     .with_city("Hollywood")
+                     .with_state("CA")
+                     .with_zipcode("91601")
+                     .with_country("US")
+                     .with_phone("12345678910")
+                     .Build());
   address_data().AddProfile(profile3);
 
   // Verify that all the profiles are suggested.
@@ -536,20 +646,42 @@ TEST_F(AddressSuggestionGeneratorTest,
        GetProfilesToSuggest_SuppressDisusedProfilesOnEmptyField) {
   // Set up 2 different profiles.
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile1, "Marion1", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
+  test::SetProfileInfo(
+      &profile1, test::SetProfileInfoOptionsBuilder()
+                     .with_first_name("Marion1")
+                     .with_middle_name("Mitchell")
+                     .with_last_name("Morrison")
+                     .with_email("johnwayne@me.xyz")
+                     .with_company("Fox")
+                     .with_address1("123 Zoo St.\nSecond Line\nThird line")
+                     .with_address2("unit 5")
+                     .with_city("Hollywood")
+                     .with_state("CA")
+                     .with_zipcode("91601")
+                     .with_country("US")
+                     .with_phone("12345678910")
+                     .Build());
   profile1.usage_history().set_use_date(AutofillClock::Now() - base::Days(200));
   profile1.usage_history().set_modification_date(AutofillClock::Now() -
                                                  base::Days(200));
   address_data().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile2, "Marion2", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "456 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
+  test::SetProfileInfo(
+      &profile2, test::SetProfileInfoOptionsBuilder()
+                     .with_first_name("Marion2")
+                     .with_middle_name("Mitchell")
+                     .with_last_name("Morrison")
+                     .with_email("johnwayne@me.xyz")
+                     .with_company("Fox")
+                     .with_address1("456 Zoo St.\nSecond Line\nThird line")
+                     .with_address2("unit 5")
+                     .with_city("Hollywood")
+                     .with_state("CA")
+                     .with_zipcode("91601")
+                     .with_country("US")
+                     .with_phone("12345678910")
+                     .Build());
   profile2.usage_history().set_use_date(AutofillClock::Now() - base::Days(20));
   profile2.usage_history().set_modification_date(AutofillClock::Now() -
                                                  base::Days(20));
@@ -808,10 +940,21 @@ TEST_F(AddressSuggestionGeneratorTest,
 
 TEST_F(AddressSuggestionGeneratorTest, CreateSuggestionsFromProfiles) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
+  test::SetProfileInfo(
+      &profile, test::SetProfileInfoOptionsBuilder()
+                    .with_first_name("Marion")
+                    .with_middle_name("Mitchell")
+                    .with_last_name("Morrison")
+                    .with_email("johnwayne@me.xyz")
+                    .with_company("Fox")
+                    .with_address1("123 Zoo St.\nSecond Line\nThird line")
+                    .with_address2("unit 5")
+                    .with_city("Hollywood")
+                    .with_state("CA")
+                    .with_zipcode("91601")
+                    .with_country("US")
+                    .with_phone("12345678910")
+                    .Build());
   FormFieldData triggering_field;
   triggering_field.set_label(u"Street address");
 
@@ -841,10 +984,21 @@ TEST_F(AddressSuggestionGeneratorTest, CreateSuggestionsUsingEmailOverride) {
 TEST_F(AddressSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_PhoneSubstring) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
+  test::SetProfileInfo(
+      &profile, test::SetProfileInfoOptionsBuilder()
+                    .with_first_name("Marion")
+                    .with_middle_name("Mitchell")
+                    .with_last_name("Morrison")
+                    .with_email("johnwayne@me.xyz")
+                    .with_company("Fox")
+                    .with_address1("123 Zoo St.\nSecond Line\nThird line")
+                    .with_address2("unit 5")
+                    .with_city("Hollywood")
+                    .with_state("CA")
+                    .with_zipcode("91601")
+                    .with_country("US")
+                    .with_phone("12345678910")
+                    .Build());
   FormFieldData triggering_field;
   triggering_field.set_label(u"Phone");
 
@@ -1176,9 +1330,20 @@ TEST_F(AddressLabelSuggestionGeneratorTest,
   base::test::ScopedFeatureList features{
       features::kAutofillSupportPhoneticNameForJP};
   AutofillProfile profile(AddressCountryCode("JP"));
-  test::SetProfileInfo(&profile, "firstName", "middleName", "lastName",
-                       "mail@mail.com", "company", "line1", "line2", "city",
-                       "state", "zip", "JP", "phone");
+  test::SetProfileInfo(&profile, test::SetProfileInfoOptionsBuilder()
+                                     .with_first_name("firstName")
+                                     .with_middle_name("middleName")
+                                     .with_last_name("lastName")
+                                     .with_email("mail@mail.com")
+                                     .with_company("company")
+                                     .with_address1("line1")
+                                     .with_address2("line2")
+                                     .with_city("city")
+                                     .with_state("state")
+                                     .with_zipcode("zip")
+                                     .with_country("JP")
+                                     .with_phone("phone")
+                                     .Build());
   profile.SetRawInfo(ALTERNATIVE_GIVEN_NAME, u"あおい");
   profile.SetRawInfo(ALTERNATIVE_FAMILY_NAME, u"やまもと");
   profile.FinalizeAfterImport();
@@ -1204,9 +1369,20 @@ TEST_F(
   base::test::ScopedFeatureList features{
       features::kAutofillSupportPhoneticNameForJP};
   AutofillProfile profile(AddressCountryCode("JP"));
-  test::SetProfileInfo(&profile, "firstName", "middleName", "lastName",
-                       "mail@mail.com", "company", "line1", "line2", "city",
-                       "state", "zip", "JP", "phone");
+  test::SetProfileInfo(&profile, test::SetProfileInfoOptionsBuilder()
+                                     .with_first_name("firstName")
+                                     .with_middle_name("middleName")
+                                     .with_last_name("lastName")
+                                     .with_email("mail@mail.com")
+                                     .with_company("company")
+                                     .with_address1("line1")
+                                     .with_address2("line2")
+                                     .with_city("city")
+                                     .with_state("state")
+                                     .with_zipcode("zip")
+                                     .with_country("JP")
+                                     .with_phone("phone")
+                                     .Build());
   const std::u16string hiragana = u"はるか";
   const std::u16string katakana = u"ハルカ";
   profile.SetRawInfo(ALTERNATIVE_FAMILY_NAME, hiragana);
@@ -1233,9 +1409,20 @@ TEST_F(
   base::test::ScopedFeatureList features{
       features::kAutofillSupportPhoneticNameForJP};
   AutofillProfile profile(AddressCountryCode("JP"));
-  test::SetProfileInfo(&profile, "firstName", "middleName", "lastName",
-                       "mail@mail.com", "company", "line1", "line2", "city",
-                       "state", "zip", "JP", "phone");
+  test::SetProfileInfo(&profile, test::SetProfileInfoOptionsBuilder()
+                                     .with_first_name("firstName")
+                                     .with_middle_name("middleName")
+                                     .with_last_name("lastName")
+                                     .with_email("mail@mail.com")
+                                     .with_company("company")
+                                     .with_address1("line1")
+                                     .with_address2("line2")
+                                     .with_city("city")
+                                     .with_state("state")
+                                     .with_zipcode("zip")
+                                     .with_country("JP")
+                                     .with_phone("phone")
+                                     .Build());
   const std::u16string hiragana = u"はるか";
   profile.SetRawInfo(ALTERNATIVE_FAMILY_NAME, hiragana);
   profile.SetRawInfo(ALTERNATIVE_GIVEN_NAME, hiragana);

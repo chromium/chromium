@@ -998,10 +998,20 @@ class TestBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
 
 AutofillProfile FillDataToAutofillProfile(const TestAddressFillData& data) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile, data.first, data.middle, data.last, data.email,
-                       data.company, data.address1, data.address2, data.city,
-                       data.state, data.postal_code, data.country_short,
-                       data.phone);
+  test::SetProfileInfo(&profile, test::SetProfileInfoOptionsBuilder()
+                                     .with_first_name(data.first)
+                                     .with_middle_name(data.middle)
+                                     .with_last_name(data.last)
+                                     .with_email(data.email)
+                                     .with_company(data.company)
+                                     .with_address1(data.address1)
+                                     .with_address2(data.address2)
+                                     .with_city(data.city)
+                                     .with_state(data.state)
+                                     .with_zipcode(data.postal_code)
+                                     .with_country(data.country_short)
+                                     .with_phone(data.phone)
+                                     .Build());
   return profile;
 }
 
@@ -1470,17 +1480,29 @@ class BrowserAutofillManagerTest
 
     AutofillProfile profile2(
         i18n_model_definition::kLegacyHierarchyCountryCode);
-    test::SetProfileInfo(&profile2, "Charles", "Hardin", "Holley",
-                         "buddy@gmail.com", "Decca", "123 Apple St.", "unit 6",
-                         "Lubbock", "Texas", "79401", "US", "23456789012");
+    test::SetProfileInfo(&profile2, test::SetProfileInfoOptionsBuilder()
+                                        .with_first_name("Charles")
+                                        .with_middle_name("Hardin")
+                                        .with_last_name("Holley")
+                                        .with_email("buddy@gmail.com")
+                                        .with_company("Decca")
+                                        .with_address1("123 Apple St.")
+                                        .with_address2("unit 6")
+                                        .with_city("Lubbock")
+                                        .with_state("Texas")
+                                        .with_zipcode("79401")
+                                        .with_country("US")
+                                        .with_phone("23456789012")
+                                        .Build());
     profile2.set_guid(MakeGuid(2));
     profile2.usage_history().set_use_date(base::Time::Now() - base::Days(1));
     personal_data().address_data_manager().AddProfile(profile2);
 
     AutofillProfile profile3(
         i18n_model_definition::kLegacyHierarchyCountryCode);
-    test::SetProfileInfo(&profile3, "", "", "", "", "", "", "", "", "", "",
-                         "US", "");
+    test::SetProfileInfo(
+        &profile3,
+        test::SetProfileInfoOptionsBuilder().with_country("US").Build());
     profile3.set_guid(MakeGuid(3));
     profile3.usage_history().set_use_date(base::Time::Now());
     personal_data().address_data_manager().AddProfile(profile3);
@@ -3768,8 +3790,9 @@ TEST_F(BrowserAutofillManagerTest, GetFieldSuggestionsWithDuplicateValues) {
 
   // |profile| will be owned by the mock PersonalDataManager.
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile, "Elvis", "", "", "", "", "", "", "", "", "",
-                       "", "");
+  test::SetProfileInfo(
+      &profile,
+      test::SetProfileInfoOptionsBuilder().with_first_name("Elvis").Build());
   profile.set_guid(MakeGuid(101));
   personal_data().address_data_manager().AddProfile(profile);
 

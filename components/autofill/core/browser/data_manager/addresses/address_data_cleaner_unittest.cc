@@ -335,16 +335,28 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountMerge) {
   base::Time now = base::Time::Now();
 
   AutofillProfile local_profile(AddressCountryCode{"CA"});
-  test::SetProfileInfo(&local_profile, "", "", "", "", "", "6543 CH BACON",
-                       "APP 3", "Montreal", "QUÉBEC", "HHH999", "CA", "");
+  test::SetProfileInfo(&local_profile, test::SetProfileInfoOptionsBuilder()
+                                           .with_address1("6543 CH BACON")
+                                           .with_address2("APP 3")
+                                           .with_city("Montreal")
+                                           .with_state("QUÉBEC")
+                                           .with_zipcode("HHH999")
+                                           .with_country("CA")
+                                           .Build());
   local_profile.usage_history().set_use_date(now - base::Minutes(5));
   test_api(local_profile)
       .set_record_type(AutofillProfile::RecordType::kLocalOrSyncable);
   test_adm_.AddProfile(local_profile);
 
   AutofillProfile account_profile(AddressCountryCode{"CA"});
-  test::SetProfileInfo(&account_profile, "", "", "", "", "", "6543, Bacon Rd",
-                       "", "Montreal", "QC", "hhh 999", "CA", "+1123456789");
+  test::SetProfileInfo(&account_profile, test::SetProfileInfoOptionsBuilder()
+                                             .with_address1("6543, Bacon Rd")
+                                             .with_city("Montreal")
+                                             .with_state("QC")
+                                             .with_zipcode("hhh 999")
+                                             .with_country("CA")
+                                             .with_phone("+1123456789")
+                                             .Build());
   account_profile.usage_history().set_use_date(now);
   test_api(account_profile)
       .set_record_type(AutofillProfile::RecordType::kAccount);

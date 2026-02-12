@@ -162,9 +162,11 @@ void ForceSync(int profile) {
 const AutofillProfile AutofillProfileSyncPerfTest::NextAutofillProfile() {
   AutofillProfile profile(
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
-  autofill::test::SetProfileInfoWithGuid(&profile, NextGUID().c_str(),
-                                         NextName().c_str(), "", "", "", "", "",
-                                         "", "", "", "", "", "");
+  autofill::test::SetProfileInfo(&profile,
+                                 autofill::test::SetProfileInfoOptionsBuilder()
+                                     .with_guid(NextGUID().c_str())
+                                     .with_first_name(NextName().c_str())
+                                     .Build());
   return profile;
 }
 

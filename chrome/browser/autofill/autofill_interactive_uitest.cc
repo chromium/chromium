@@ -693,14 +693,20 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   void CreateTestProfile() {
     AutofillProfile profile(AddressCountryCode(kDefaultAddressValues.country));
-    test::SetProfileInfo(
-        &profile, kDefaultAddressValues.first_name,
-        kDefaultAddressValues.middle_name, kDefaultAddressValues.last_name,
-        kDefaultAddressValues.email, kDefaultAddressValues.company,
-        kDefaultAddressValues.address1, kDefaultAddressValues.address2,
-        kDefaultAddressValues.city, kDefaultAddressValues.state,
-        kDefaultAddressValues.zip, kDefaultAddressValues.country,
-        kDefaultAddressValues.phone);
+    test::SetProfileInfo(&profile, test::SetProfileInfoOptionsBuilder()
+                                       .with_first_name(kDefaultAddressValues.first_name)
+                                       .with_middle_name(kDefaultAddressValues.middle_name)
+                                       .with_last_name(kDefaultAddressValues.last_name)
+                                       .with_email(kDefaultAddressValues.email)
+                                       .with_company(kDefaultAddressValues.company)
+                                       .with_address1(kDefaultAddressValues.address1)
+                                       .with_address2(kDefaultAddressValues.address2)
+                                       .with_city(kDefaultAddressValues.city)
+                                       .with_state(kDefaultAddressValues.state)
+                                       .with_zipcode(kDefaultAddressValues.zip)
+                                       .with_country(kDefaultAddressValues.country)
+                                       .with_phone(kDefaultAddressValues.phone)
+                                       .Build());
     profile.usage_history().set_use_count(
         9999999);  // We want this to be the first profile.
     AddTestProfile(browser()->profile(), profile);
@@ -708,10 +714,20 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   void CreateSecondTestProfile() {
     AutofillProfile profile(AddressCountryCode("US"));
-    test::SetProfileInfo(&profile, "Alice", "M.", "Wonderland",
-                         "alice@wonderland.com", "Magic", "333 Cat Queen St.",
-                         "Rooftop", "Liliput", "CA", "10003", "US",
-                         "15166900292");
+    test::SetProfileInfo(&profile, test::SetProfileInfoOptionsBuilder()
+                                       .with_first_name("Alice")
+                                       .with_middle_name("M.")
+                                       .with_last_name("Wonderland")
+                                       .with_email("alice@wonderland.com")
+                                       .with_company("Magic")
+                                       .with_address1("333 Cat Queen St.")
+                                       .with_address2("Rooftop")
+                                       .with_city("Liliput")
+                                       .with_state("CA")
+                                       .with_zipcode("10003")
+                                       .with_country("US")
+                                       .with_phone("15166900292")
+                                       .Build());
     AddTestProfile(browser()->profile(), profile);
   }
 

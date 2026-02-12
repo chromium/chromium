@@ -189,27 +189,64 @@ AutofillProfile CreateAutofillProfile(ProfileType type) {
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   switch (type) {
     case PROFILE_MARION:
-      autofill::test::SetProfileInfoWithGuid(
-          &profile, "C837507A-6C3B-4872-AC14-5113F157D668", "Marion",
-          "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox", "123 Zoo St.",
-          "unit 5", "Hollywood", "CA", "91601", "US", "12345678910");
+      autofill::test::SetProfileInfo(
+          &profile, autofill::test::SetProfileInfoOptionsBuilder()
+                        .with_guid("C837507A-6C3B-4872-AC14-5113F157D668")
+                        .with_first_name("Marion")
+                        .with_middle_name("Mitchell")
+                        .with_last_name("Morrison")
+                        .with_email("johnwayne@me.xyz")
+                        .with_company("Fox")
+                        .with_address1("123 Zoo St.")
+                        .with_address2("unit 5")
+                        .with_city("Hollywood")
+                        .with_state("CA")
+                        .with_zipcode("91601")
+                        .with_country("US")
+                        .with_phone("12345678910")
+                        .Build());
       break;
     case PROFILE_HOMER:
-      autofill::test::SetProfileInfoWithGuid(
-          &profile, "137DE1C3-6A30-4571-AC86-109B1ECFBE7F", "Homer", "J.",
-          "Simpson", "homer@abc.com", "SNPP", "742 Evergreen Terrace",
-          "PO Box 1", "Springfield", "MA", "94101", "US", "14155551212");
+      autofill::test::SetProfileInfo(
+          &profile, autofill::test::SetProfileInfoOptionsBuilder()
+                        .with_guid("137DE1C3-6A30-4571-AC86-109B1ECFBE7F")
+                        .with_first_name("Homer")
+                        .with_middle_name("J.")
+                        .with_last_name("Simpson")
+                        .with_email("homer@abc.com")
+                        .with_company("SNPP")
+                        .with_address1("742 Evergreen Terrace")
+                        .with_address2("PO Box 1")
+                        .with_city("Springfield")
+                        .with_state("MA")
+                        .with_zipcode("94101")
+                        .with_country("US")
+                        .with_phone("14155551212")
+                        .Build());
       break;
     case PROFILE_FRASIER:
-      autofill::test::SetProfileInfoWithGuid(
-          &profile, "9A5E6872-6198-4688-BF75-0016E781BB0A", "Frasier",
-          "Winslow", "Crane", "", "randomness", "", "Apt. 4", "Seattle", "WA",
-          "99121", "US", "0000000000");
+      autofill::test::SetProfileInfo(
+          &profile, autofill::test::SetProfileInfoOptionsBuilder()
+                        .with_guid("9A5E6872-6198-4688-BF75-0016E781BB0A")
+                        .with_first_name("Frasier")
+                        .with_middle_name("Winslow")
+                        .with_last_name("Crane")
+                        .with_email("")
+                        .with_company("randomness")
+                        .with_address1("")
+                        .with_address2("Apt. 4")
+                        .with_city("New York")
+                        .with_state("WA")
+                        .with_zipcode("99121")
+                        .with_country("US")
+                        .with_phone("0000000000")
+                        .Build());
       break;
     case PROFILE_NULL:
-      autofill::test::SetProfileInfoWithGuid(
-          &profile, "FE461507-7E13-4198-8E66-74C7DB6D8322", "", "", "", "", "",
-          "", "", "", "", "", "", "");
+      autofill::test::SetProfileInfo(
+          &profile, autofill::test::SetProfileInfoOptionsBuilder()
+                        .with_guid("FE461507-7E13-4198-8E66-74C7DB6D8322")
+                        .Build());
       break;
   }
   profile.FinalizeAfterImport();
@@ -218,10 +255,23 @@ AutofillProfile CreateAutofillProfile(ProfileType type) {
 
 AutofillProfile CreateUniqueAutofillProfile() {
   AutofillProfile profile(autofill::AddressCountryCode("US"));
-  autofill::test::SetProfileInfoWithGuid(
-      &profile, base::Uuid::GenerateRandomV4().AsLowercaseString().c_str(),
-      "First", "Middle", "Last", "email@domain.tld", "Company", "123 Main St",
-      "Apt 456", "Nowhere", "OK", "73038", "US", "12345678910");
+  autofill::test::SetProfileInfo(
+      &profile,
+      autofill::test::SetProfileInfoOptionsBuilder()
+          .with_guid(base::Uuid::GenerateRandomV4().AsLowercaseString())
+          .with_first_name("First")
+          .with_middle_name("Middle")
+          .with_last_name("Last")
+          .with_email("email@domain.tld")
+          .with_company("Company")
+          .with_address1("123 Main St")
+          .with_address2("Apt 456")
+          .with_city("Nowhere")
+          .with_state("OK")
+          .with_zipcode("73038")
+          .with_country("US")
+          .with_phone("12345678910")
+          .Build());
   profile.FinalizeAfterImport();
   return profile;
 }

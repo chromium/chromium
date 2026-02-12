@@ -1842,10 +1842,16 @@ TEST_F(FormDataImporterTest,
   ExtractAddressProfiles(/*extraction_successful=*/true, *form_structure);
 
   AutofillProfile expected(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&expected, "George", nullptr, "Washington",
-                       "theprez@gmail.com", nullptr,
-                       "No. 43 Bo Aung Gyaw Street", nullptr, "Yangon", "",
-                       "11181", "MM", nullptr);
+  test::SetProfileInfo(&expected,
+                       test::SetProfileInfoOptionsBuilder()
+                           .with_first_name("George")
+                           .with_last_name("Washington")
+                           .with_email("theprez@gmail.com")
+                           .with_address1("No. 43 Bo Aung Gyaw Street")
+                           .with_city("Yangon")
+                           .with_zipcode("11181")
+                           .with_country("MM")
+                           .Build());
   EXPECT_THAT(address_data_manager().GetProfiles(),
               UnorderedElementsCompareEqual(expected));
 }

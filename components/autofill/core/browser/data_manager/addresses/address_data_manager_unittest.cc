@@ -366,9 +366,20 @@ TEST_F(AddressDataManagerTest, GetProfilesToSuggest_ProfileAutofillDisabled) {
   // Add two different profiles, a local and a server one.
   AutofillProfile local_profile(
       i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&local_profile, "Josephine", "Alicia", "Saenz",
-                       "joewayne@me.xyz", "Fox", "1212 Center.", "Bld. 5",
-                       "Orlando", "FL", "32801", "US", "19482937549");
+  test::SetProfileInfo(&local_profile, test::SetProfileInfoOptionsBuilder()
+                                           .with_first_name("Josephine")
+                                           .with_middle_name("Alicia")
+                                           .with_last_name("Saenz")
+                                           .with_email("joewayne@me.xyz")
+                                           .with_company("Fox")
+                                           .with_address1("1212 Center.")
+                                           .with_address2("Bld. 5")
+                                           .with_city("Orlando")
+                                           .with_state("FL")
+                                           .with_zipcode("32801")
+                                           .with_country("US")
+                                           .with_phone("19482937549")
+                                           .Build());
   AddProfileToAddressDataManager(local_profile);
 
   // Disable Profile autofill.
@@ -389,9 +400,20 @@ TEST_F(AddressDataManagerTest,
   // Add two different profiles, a local and a server one.
   AutofillProfile local_profile(
       i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&local_profile, "Josephine", "Alicia", "Saenz",
-                       "joewayne@me.xyz", "Fox", "1212 Center.", "Bld. 5",
-                       "Orlando", "FL", "32801", "US", "19482937549");
+  test::SetProfileInfo(&local_profile, test::SetProfileInfoOptionsBuilder()
+                                           .with_first_name("Josephine")
+                                           .with_middle_name("Alicia")
+                                           .with_last_name("Saenz")
+                                           .with_email("joewayne@me.xyz")
+                                           .with_company("Fox")
+                                           .with_address1("1212 Center.")
+                                           .with_address2("Bld. 5")
+                                           .with_city("Orlando")
+                                           .with_state("FL")
+                                           .with_zipcode("32801")
+                                           .with_country("US")
+                                           .with_phone("19482937549")
+                                           .Build());
   AddProfileToAddressDataManager(local_profile);
 
   address_data_manager().LoadProfiles();
@@ -637,19 +659,51 @@ TEST_F(AddressDataManagerTest, AddProfile_Invalid) {
 
 TEST_F(AddressDataManagerTest, AddUpdateRemoveProfiles) {
   AutofillProfile profile0(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile0, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
+  test::SetProfileInfo(&profile0, test::SetProfileInfoOptionsBuilder()
+                                      .with_first_name("Marion")
+                                      .with_middle_name("Mitchell")
+                                      .with_last_name("Morrison")
+                                      .with_email("johnwayne@me.xyz")
+                                      .with_company("Fox")
+                                      .with_address1("123 Zoo St.")
+                                      .with_address2("unit 5")
+                                      .with_city("Hollywood")
+                                      .with_state("CA")
+                                      .with_zipcode("91601")
+                                      .with_country("US")
+                                      .with_phone("12345678910")
+                                      .Build());
 
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile1, "Josephine", "Alicia", "Saenz",
-                       "joewayne@me.xyz", "Fox", "903 Apple Ct.", nullptr,
-                       "Orlando", "FL", "32801", "US", "19482937549");
+  test::SetProfileInfo(&profile1, test::SetProfileInfoOptionsBuilder()
+                                      .with_first_name("Josephine")
+                                      .with_middle_name("Alicia")
+                                      .with_last_name("Saenz")
+                                      .with_email("joewayne@me.xyz")
+                                      .with_company("Fox")
+                                      .with_address1("903 Apple Ct.")
+                                      .with_city("Orlando")
+                                      .with_state("FL")
+                                      .with_zipcode("32801")
+                                      .with_country("US")
+                                      .with_phone("19482937549")
+                                      .Build());
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile2, "Josephine", "Alicia", "Saenz",
-                       "joewayne@me.xyz", "Fox", "1212 Center.", "Bld. 5",
-                       "Orlando", "FL", "32801", "US", "19482937549");
+  test::SetProfileInfo(&profile2, test::SetProfileInfoOptionsBuilder()
+                                      .with_first_name("Josephine")
+                                      .with_middle_name("Alicia")
+                                      .with_last_name("Saenz")
+                                      .with_email("joewayne@me.xyz")
+                                      .with_company("Fox")
+                                      .with_address1("1212 Center.")
+                                      .with_address2("Bld. 5")
+                                      .with_city("Orlando")
+                                      .with_state("FL")
+                                      .with_zipcode("32801")
+                                      .with_country("US")
+                                      .with_phone("19482937549")
+                                      .Build());
 
   // Add two test profiles to the database.
   AddProfileToAddressDataManager(profile0);
@@ -835,8 +889,9 @@ TEST_F(AddressDataManagerTest, MigrateProfileToAccount) {
 // correctly on load.
 TEST_F(AddressDataManagerTest, PopulateUniqueIDsOnLoad) {
   AutofillProfile profile0(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile0, "y", "", "", "", "", "", "", "", "", "", "",
-                       "");
+  test::SetProfileInfo(
+      &profile0,
+      test::SetProfileInfoOptionsBuilder().with_first_name("y").Build());
 
   // Add the profile0 to the db.
   AddProfileToAddressDataManager(profile0);
@@ -849,8 +904,9 @@ TEST_F(AddressDataManagerTest, PopulateUniqueIDsOnLoad) {
 
   // Add a new profile.
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile1, "z", "", "", "", "", "", "", "", "", "", "",
-                       "");
+  test::SetProfileInfo(
+      &profile1,
+      test::SetProfileInfoOptionsBuilder().with_first_name("z").Build());
   AddProfileToAddressDataManager(profile1);
 
   // Make sure the two profiles have different GUIDs, both valid.
@@ -864,8 +920,7 @@ TEST_F(AddressDataManagerTest, PopulateUniqueIDsOnLoad) {
 
 TEST_F(AddressDataManagerTest, SetEmptyProfile) {
   AutofillProfile profile0(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile0, "", "", "", "", "", "", "", "", "", "", "",
-                       "");
+  test::SetProfileInfo(&profile0, test::SetProfileInfoOptionsBuilder().Build());
 
   // Add the empty profile to the database.
   AddProfileToAddressDataManager(profile0);
@@ -881,14 +936,35 @@ TEST_F(AddressDataManagerTest, SetEmptyProfile) {
 
 TEST_F(AddressDataManagerTest, Refresh) {
   AutofillProfile profile0(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile0, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
+  test::SetProfileInfo(&profile0, test::SetProfileInfoOptionsBuilder()
+                                      .with_first_name("Marion")
+                                      .with_middle_name("Mitchell")
+                                      .with_last_name("Morrison")
+                                      .with_email("johnwayne@me.xyz")
+                                      .with_company("Fox")
+                                      .with_address1("123 Zoo St.")
+                                      .with_address2("unit 5")
+                                      .with_city("Hollywood")
+                                      .with_state("CA")
+                                      .with_zipcode("91601")
+                                      .with_country("US")
+                                      .with_phone("12345678910")
+                                      .Build());
 
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile1, "Josephine", "Alicia", "Saenz",
-                       "joewayne@me.xyz", "Fox", "903 Apple Ct.", nullptr,
-                       "Orlando", "FL", "32801", "US", "19482937549");
+  test::SetProfileInfo(&profile1, test::SetProfileInfoOptionsBuilder()
+                                      .with_first_name("Josephine")
+                                      .with_middle_name("Alicia")
+                                      .with_last_name("Saenz")
+                                      .with_email("joewayne@me.xyz")
+                                      .with_company("Fox")
+                                      .with_address1("903 Apple Ct.")
+                                      .with_city("Orlando")
+                                      .with_state("FL")
+                                      .with_zipcode("32801")
+                                      .with_country("US")
+                                      .with_phone("19482937549")
+                                      .Build());
 
   // Add the test profiles to the database.
   AddProfileToAddressDataManager(profile0);
@@ -898,9 +974,20 @@ TEST_F(AddressDataManagerTest, Refresh) {
               UnorderedElementsAre(Pointee(profile0), Pointee(profile1)));
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile2, "Josephine", "Alicia", "Saenz",
-                       "joewayne@me.xyz", "Fox", "1212 Center.", "Bld. 5",
-                       "Orlando", "FL", "32801", "US", "19482937549");
+  test::SetProfileInfo(&profile2, test::SetProfileInfoOptionsBuilder()
+                                      .with_first_name("Josephine")
+                                      .with_middle_name("Alicia")
+                                      .with_last_name("Saenz")
+                                      .with_email("joewayne@me.xyz")
+                                      .with_company("Fox")
+                                      .with_address1("1212 Center.")
+                                      .with_address2("Bld. 5")
+                                      .with_city("Orlando")
+                                      .with_state("FL")
+                                      .with_zipcode("32801")
+                                      .with_country("US")
+                                      .with_phone("19482937549")
+                                      .Build());
 
   profile_database_service_->AddAutofillProfile(profile2, base::DoNothing());
 
@@ -936,9 +1023,20 @@ TEST_F(AddressDataManagerTest, Refresh) {
 
 TEST_F(AddressDataManagerTest, UpdateLanguageCodeInProfile) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
+  test::SetProfileInfo(&profile, test::SetProfileInfoOptionsBuilder()
+                                     .with_first_name("Marion")
+                                     .with_middle_name("Mitchell")
+                                     .with_last_name("Morrison")
+                                     .with_email("johnwayne@me.xyz")
+                                     .with_company("Fox")
+                                     .with_address1("123 Zoo St.")
+                                     .with_address2("unit 5")
+                                     .with_city("Hollywood")
+                                     .with_state("CA")
+                                     .with_zipcode("91601")
+                                     .with_country("US")
+                                     .with_phone("12345678910")
+                                     .Build());
   AddProfileToAddressDataManager(profile);
 
   // Make sure everything is set up correctly.

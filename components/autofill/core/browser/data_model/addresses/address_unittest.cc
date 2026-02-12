@@ -451,10 +451,12 @@ TEST_F(AddressTest, TestMergeStructuredAddresses) {
   // We use SetProfileInfo instead of SetRawInfo as it calls
   // FinalizeAfterImport() making it more similar to how the tree is handled in
   // prod - which is recommended as we're using tree's interfaces for merging.
-  test::SetProfileInfo(&profile1, "", "", "", "", "", "", "", "", "", "",
-                       /*zipcode=*/"12345", "", "");
-  test::SetProfileInfo(&profile2, "", "", "", "", "", "", "", "", "", "",
-                       /*zipcode=*/"1234", "", "");
+  test::SetProfileInfo(
+      &profile1,
+      test::SetProfileInfoOptionsBuilder().with_zipcode("12345").Build());
+  test::SetProfileInfo(
+      &profile2,
+      test::SetProfileInfoOptionsBuilder().with_zipcode("1234").Build());
 
   EXPECT_TRUE(profile_comparator.AreMergeable(profile1, profile2));
 
@@ -482,8 +484,9 @@ TEST_F(AddressTest, TestMergeStructuredAddresses) {
   AutofillProfile profile3("3", AutofillProfile::RecordType::kAccount,
                            AddressCountryCode(kLegacyHierarchyCountryCode));
 
-  test::SetProfileInfo(&profile3, "", "", "", "", "", "", "", "", "", "",
-                       "67890", "", "");
+  test::SetProfileInfo(
+      &profile3,
+      test::SetProfileInfoOptionsBuilder().with_zipcode("67890").Build());
   EXPECT_FALSE(profile_comparator.AreMergeable(profile1, profile3));
 }
 

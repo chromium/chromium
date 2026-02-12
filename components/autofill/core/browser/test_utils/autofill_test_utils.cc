@@ -241,9 +241,9 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
 inline void check_and_set(
     FormGroup* profile,
     FieldType type,
-    const char* value,
+    std::string_view value,
     VerificationStatus status = VerificationStatus::kObserved) {
-  if (value) {
+  if (!value.empty()) {
     profile->SetRawInfoWithVerificationStatus(type, base::UTF8ToUTF16(value),
                                               status);
   }
@@ -251,48 +251,101 @@ inline void check_and_set(
 
 AutofillProfile GetFullValidProfileForCanada() {
   AutofillProfile profile(AddressCountryCode("CA"));
-  SetProfileInfo(&profile, "Alice", "", "Wonderland", "alice@wonderland.ca",
-                 "Fiction", "666 Notre-Dame Ouest", "Apt 8", "Montreal", "QC",
-                 "H3B 2T9", "CA", "15141112233");
+  SetProfileInfo(&profile, SetProfileInfoOptionsBuilder()
+                               .with_first_name("Alice")
+                               .with_last_name("Wonderland")
+                               .with_email("alice@wonderland.ca")
+                               .with_company("Fiction")
+                               .with_address1("666 Notre-Dame Ouest")
+                               .with_address2("Apt 8")
+                               .with_city("Montreal")
+                               .with_state("QC")
+                               .with_zipcode("H3B 2T9")
+                               .with_country("CA")
+                               .with_phone("15141112233")
+                               .Build());
   return profile;
 }
 
 AutofillProfile GetFullProfile(AddressCountryCode country_code) {
   AutofillProfile profile(country_code);
-  SetProfileInfo(&profile, "John", "H.", "Doe", "johndoe@hades.com",
-                 "Underworld", "666 Erebus St.", "Apt 8", "Elysium", "CA",
-                 "91111", country_code->c_str(), "16502111111");
+  SetProfileInfo(&profile, SetProfileInfoOptionsBuilder()
+                               .with_first_name("John")
+                               .with_middle_name("H.")
+                               .with_last_name("Doe")
+                               .with_email("johndoe@hades.com")
+                               .with_company("Underworld")
+                               .with_address1("666 Erebus St.")
+                               .with_address2("Apt 8")
+                               .with_city("Elysium")
+                               .with_state("CA")
+                               .with_zipcode("91111")
+                               .with_country(country_code->c_str())
+                               .with_phone("16502111111")
+                               .Build());
   return profile;
 }
 
 AutofillProfile GetFullProfile2(AddressCountryCode country_code) {
   AutofillProfile profile(country_code);
-  SetProfileInfo(&profile, "Jane", "A.", "Smith", "jsmith@example.com", "ACME",
-                 "123 Main Street", "Unit 1", "Greensdale", "MI", "48838",
-                 country_code->c_str(), "13105557889");
+  SetProfileInfo(&profile, SetProfileInfoOptionsBuilder()
+                               .with_first_name("Jane")
+                               .with_middle_name("A.")
+                               .with_last_name("Smith")
+                               .with_email("jsmith@example.com")
+                               .with_company("ACME")
+                               .with_address1("123 Main Street")
+                               .with_address2("Unit 1")
+                               .with_city("Greensdale")
+                               .with_state("MI")
+                               .with_zipcode("48838")
+                               .with_country(country_code->c_str())
+                               .with_phone("13105557889")
+                               .Build());
   return profile;
 }
 
 AutofillProfile GetFullCanadianProfile() {
   AutofillProfile profile(AddressCountryCode("CA"));
-  SetProfileInfo(&profile, "Wayne", "", "Gretzky", "wayne@hockey.com", "NHL",
-                 "123 Hockey rd.", "Apt 8", "Moncton", "New Brunswick",
-                 "E1A 0A6", "CA", "15068531212");
+  SetProfileInfo(&profile, SetProfileInfoOptionsBuilder()
+                               .with_first_name("Wayne")
+                               .with_last_name("Gretzky")
+                               .with_email("wayne@hockey.com")
+                               .with_company("NHL")
+                               .with_address1("123 Hockey rd.")
+                               .with_address2("Apt 8")
+                               .with_city("Moncton")
+                               .with_state("New Brunswick")
+                               .with_zipcode("E1A 0A6")
+                               .with_country("CA")
+                               .with_phone("15068531212")
+                               .Build());
   return profile;
 }
 
 AutofillProfile GetIncompleteProfile1() {
   AutofillProfile profile(AddressCountryCode("US"));
-  SetProfileInfo(&profile, "John", "H.", "Doe", "jsmith@example.com", "ACME",
-                 "123 Main Street", "Unit 1", "Greensdale", "MI", "48838", "US",
-                 "");
+  SetProfileInfo(&profile, SetProfileInfoOptionsBuilder()
+                               .with_first_name("John")
+                               .with_middle_name("H.")
+                               .with_last_name("Doe")
+                               .with_email("jsmith@example.com")
+                               .with_company("ACME")
+                               .with_address1("123 Main Street")
+                               .with_address2("Unit 1")
+                               .with_city("Greensdale")
+                               .with_state("MI")
+                               .with_zipcode("48838")
+                               .with_country("US")
+                               .Build());
   return profile;
 }
 
 AutofillProfile GetIncompleteProfile2() {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  SetProfileInfo(&profile, "", "", "", "jsmith@example.com", "", "", "", "", "",
-                 "", "", "");
+  SetProfileInfo(
+      &profile,
+      SetProfileInfoOptionsBuilder().with_email("jsmith@example.com").Build());
   return profile;
 }
 
@@ -806,115 +859,137 @@ void SetUpCreditCardAndBenefitData(
   personal_data.test_payments_data_manager().AddServerCreditCard(card);
 }
 
-void SetProfileInfo(AutofillProfile* profile,
-                    const char* first_name,
-                    const char* middle_name,
-                    const char* last_name,
-                    const char* email,
-                    const char* company,
-                    const char* address1,
-                    const char* address2,
-                    const char* dependent_locality,
-                    const char* city,
-                    const char* state,
-                    const char* zipcode,
-                    const char* country,
-                    const char* phone,
-                    bool finalize,
-                    VerificationStatus status) {
-  check_and_set(profile, NAME_FIRST, first_name, status);
-  check_and_set(profile, NAME_MIDDLE, middle_name, status);
-  check_and_set(profile, NAME_LAST, last_name, status);
-  check_and_set(profile, EMAIL_ADDRESS, email, status);
-  check_and_set(profile, COMPANY_NAME, company, status);
-  check_and_set(profile, ADDRESS_HOME_LINE1, address1, status);
-  check_and_set(profile, ADDRESS_HOME_LINE2, address2, status);
-  check_and_set(profile, ADDRESS_HOME_DEPENDENT_LOCALITY, dependent_locality,
-                status);
-  check_and_set(profile, ADDRESS_HOME_CITY, city, status);
-  check_and_set(profile, ADDRESS_HOME_STATE, state, status);
-  check_and_set(profile, ADDRESS_HOME_ZIP, zipcode, status);
-  check_and_set(profile, ADDRESS_HOME_COUNTRY, country, status);
-  check_and_set(profile, PHONE_HOME_WHOLE_NUMBER, phone, status);
-  if (finalize) {
-    profile->FinalizeAfterImport();
-  }
+SetProfileInfoOptions::SetProfileInfoOptions() = default;
+SetProfileInfoOptions::SetProfileInfoOptions(const SetProfileInfoOptions&) =
+    default;
+SetProfileInfoOptions::SetProfileInfoOptions(SetProfileInfoOptions&&) = default;
+SetProfileInfoOptions& SetProfileInfoOptions::operator=(
+    const SetProfileInfoOptions&) = default;
+SetProfileInfoOptions& SetProfileInfoOptions::operator=(
+    SetProfileInfoOptions&&) = default;
+SetProfileInfoOptions::~SetProfileInfoOptions() = default;
+
+SetProfileInfoOptionsBuilder::SetProfileInfoOptionsBuilder() = default;
+SetProfileInfoOptionsBuilder::SetProfileInfoOptionsBuilder(
+    const SetProfileInfoOptionsBuilder&) = default;
+SetProfileInfoOptionsBuilder& SetProfileInfoOptionsBuilder::operator=(
+    const SetProfileInfoOptionsBuilder&) = default;
+SetProfileInfoOptionsBuilder::~SetProfileInfoOptionsBuilder() = default;
+
+SetProfileInfoOptionsBuilder& SetProfileInfoOptionsBuilder::with_guid(
+    std::string_view guid) {
+  options_.guid = guid;
+  return *this;
+}
+SetProfileInfoOptionsBuilder& SetProfileInfoOptionsBuilder::with_first_name(
+    std::string_view first_name) {
+  options_.first_name = first_name;
+  return *this;
+}
+SetProfileInfoOptionsBuilder& SetProfileInfoOptionsBuilder::with_middle_name(
+    std::string_view middle_name) {
+  options_.middle_name = middle_name;
+  return *this;
+}
+SetProfileInfoOptionsBuilder& SetProfileInfoOptionsBuilder::with_last_name(
+    std::string_view last_name) {
+  options_.last_name = last_name;
+  return *this;
+}
+SetProfileInfoOptionsBuilder& SetProfileInfoOptionsBuilder::with_full_name(
+    std::string_view full_name) {
+  options_.full_name = full_name;
+  return *this;
+}
+SetProfileInfoOptionsBuilder& SetProfileInfoOptionsBuilder::with_email(
+    std::string_view email) {
+  options_.email = email;
+  return *this;
+}
+SetProfileInfoOptionsBuilder& SetProfileInfoOptionsBuilder::with_company(
+    std::string_view company) {
+  options_.company = company;
+  return *this;
+}
+SetProfileInfoOptionsBuilder& SetProfileInfoOptionsBuilder::with_address1(
+    std::string_view address1) {
+  options_.address1 = address1;
+  return *this;
+}
+SetProfileInfoOptionsBuilder& SetProfileInfoOptionsBuilder::with_address2(
+    std::string_view address2) {
+  options_.address2 = address2;
+  return *this;
+}
+SetProfileInfoOptionsBuilder&
+SetProfileInfoOptionsBuilder::with_dependent_locality(
+    std::string_view dependent_locality) {
+  options_.dependent_locality = dependent_locality;
+  return *this;
+}
+SetProfileInfoOptionsBuilder& SetProfileInfoOptionsBuilder::with_city(
+    std::string_view city) {
+  options_.city = city;
+  return *this;
+}
+SetProfileInfoOptionsBuilder& SetProfileInfoOptionsBuilder::with_state(
+    std::string_view state) {
+  options_.state = state;
+  return *this;
+}
+SetProfileInfoOptionsBuilder& SetProfileInfoOptionsBuilder::with_zipcode(
+    std::string_view zipcode) {
+  options_.zipcode = zipcode;
+  return *this;
+}
+SetProfileInfoOptionsBuilder& SetProfileInfoOptionsBuilder::with_country(
+    std::string_view country) {
+  options_.country = country;
+  return *this;
+}
+SetProfileInfoOptionsBuilder& SetProfileInfoOptionsBuilder::with_phone(
+    std::string_view phone) {
+  options_.phone = phone;
+  return *this;
+}
+SetProfileInfoOptionsBuilder& SetProfileInfoOptionsBuilder::with_status(
+    VerificationStatus status) {
+  options_.status = status;
+  return *this;
+}
+
+SetProfileInfoOptions SetProfileInfoOptionsBuilder::Build() {
+  return std::move(options_);
 }
 
 void SetProfileInfo(AutofillProfile* profile,
-                    const char* first_name,
-                    const char* middle_name,
-                    const char* last_name,
-                    const char* email,
-                    const char* company,
-                    const char* address1,
-                    const char* address2,
-                    const char* city,
-                    const char* state,
-                    const char* zipcode,
-                    const char* country,
-                    const char* phone,
-                    bool finalize,
-                    VerificationStatus status) {
+                    SetProfileInfoOptions options,
+                    bool finalize) {
+  if (!options.guid.empty()) {
+    profile->set_guid(options.guid);
+  }
   // Set the country first to ensure that the proper address model is used.
-  check_and_set(profile, ADDRESS_HOME_COUNTRY, country, status);
+  check_and_set(profile, ADDRESS_HOME_COUNTRY, options.country, options.status);
 
-  check_and_set(profile, NAME_FIRST, first_name, status);
-  check_and_set(profile, NAME_MIDDLE, middle_name, status);
-  check_and_set(profile, NAME_LAST, last_name, status);
-  check_and_set(profile, EMAIL_ADDRESS, email, status);
-  check_and_set(profile, COMPANY_NAME, company, status);
-  check_and_set(profile, ADDRESS_HOME_LINE1, address1, status);
-  check_and_set(profile, ADDRESS_HOME_LINE2, address2, status);
-  check_and_set(profile, ADDRESS_HOME_CITY, city, status);
-  check_and_set(profile, ADDRESS_HOME_STATE, state, status);
-  check_and_set(profile, ADDRESS_HOME_ZIP, zipcode, status);
-  check_and_set(profile, PHONE_HOME_WHOLE_NUMBER, phone, status);
-  if (finalize) {
-    profile->FinalizeAfterImport();
-  }
-}
-
-void SetProfileInfo(AutofillProfile* profile,
-                    const char* first_name,
-                    const char* middle_name,
-                    const char* last_name,
-                    const char* country,
-                    bool finalize,
-                    VerificationStatus status) {
-  // Set the country first to ensure that the proper address model is used.
-  check_and_set(profile, ADDRESS_HOME_COUNTRY, country, status);
-  check_and_set(profile, NAME_FIRST, first_name, status);
-  check_and_set(profile, NAME_MIDDLE, middle_name, status);
-  check_and_set(profile, NAME_LAST, last_name, status);
+  check_and_set(profile, NAME_FIRST, options.first_name, options.status);
+  check_and_set(profile, NAME_MIDDLE, options.middle_name, options.status);
+  check_and_set(profile, NAME_LAST, options.last_name, options.status);
+  check_and_set(profile, NAME_FULL, options.full_name, options.status);
+  check_and_set(profile, EMAIL_ADDRESS, options.email, options.status);
+  check_and_set(profile, COMPANY_NAME, options.company, options.status);
+  check_and_set(profile, ADDRESS_HOME_LINE1, options.address1, options.status);
+  check_and_set(profile, ADDRESS_HOME_LINE2, options.address2, options.status);
+  check_and_set(profile, ADDRESS_HOME_DEPENDENT_LOCALITY,
+                options.dependent_locality, options.status);
+  check_and_set(profile, ADDRESS_HOME_CITY, options.city, options.status);
+  check_and_set(profile, ADDRESS_HOME_STATE, options.state, options.status);
+  check_and_set(profile, ADDRESS_HOME_ZIP, options.zipcode, options.status);
+  check_and_set(profile, PHONE_HOME_WHOLE_NUMBER, options.phone,
+                options.status);
 
   if (finalize) {
     profile->FinalizeAfterImport();
   }
-}
-
-void SetProfileInfoWithGuid(AutofillProfile* profile,
-                            const char* guid,
-                            const char* first_name,
-                            const char* middle_name,
-                            const char* last_name,
-                            const char* email,
-                            const char* company,
-                            const char* address1,
-                            const char* address2,
-                            const char* city,
-                            const char* state,
-                            const char* zipcode,
-                            const char* country,
-                            const char* phone,
-                            bool finalize,
-                            VerificationStatus status) {
-  if (guid) {
-    profile->set_guid(guid);
-  }
-  SetProfileInfo(profile, first_name, middle_name, last_name, email, company,
-                 address1, address2, city, state, zipcode, country, phone,
-                 finalize, status);
 }
 
 void SetCreditCardInfo(CreditCard* credit_card,
@@ -924,10 +999,14 @@ void SetCreditCardInfo(CreditCard* credit_card,
                        const char* expiration_year,
                        const std::string& billing_address_id,
                        const std::u16string& cvc) {
-  check_and_set(credit_card, CREDIT_CARD_NAME_FULL, name_on_card);
-  check_and_set(credit_card, CREDIT_CARD_NUMBER, card_number);
-  check_and_set(credit_card, CREDIT_CARD_EXP_MONTH, expiration_month);
-  check_and_set(credit_card, CREDIT_CARD_EXP_4_DIGIT_YEAR, expiration_year);
+  check_and_set(credit_card, CREDIT_CARD_NAME_FULL,
+                name_on_card ? name_on_card : "");
+  check_and_set(credit_card, CREDIT_CARD_NUMBER,
+                card_number ? card_number : "");
+  check_and_set(credit_card, CREDIT_CARD_EXP_MONTH,
+                expiration_month ? expiration_month : "");
+  check_and_set(credit_card, CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                expiration_year ? expiration_year : "");
   credit_card->set_cvc(cvc);
   credit_card->set_billing_address_id(billing_address_id);
 }

@@ -261,67 +261,68 @@ void SetUpCreditCardAndBenefitData(
     TestPersonalDataManager& personal_data,
     AutofillOptimizationGuideDecider* optimization_guide);
 
+struct SetProfileInfoOptions {
+  SetProfileInfoOptions();
+  SetProfileInfoOptions(const SetProfileInfoOptions&);
+  SetProfileInfoOptions(SetProfileInfoOptions&&);
+  SetProfileInfoOptions& operator=(const SetProfileInfoOptions&);
+  SetProfileInfoOptions& operator=(SetProfileInfoOptions&&);
+  ~SetProfileInfoOptions();
+
+  std::string guid;
+  std::string first_name;
+  std::string middle_name;
+  std::string last_name;
+  std::string full_name;
+  std::string email;
+  std::string company;
+  std::string address1;
+  std::string address2;
+  std::string dependent_locality;
+  std::string city;
+  std::string state;
+  std::string zipcode;
+  std::string country;
+  std::string phone;
+  VerificationStatus status = VerificationStatus::kObserved;
+};
+
+class SetProfileInfoOptionsBuilder {
+ public:
+  SetProfileInfoOptionsBuilder();
+  SetProfileInfoOptionsBuilder(const SetProfileInfoOptionsBuilder&);
+  SetProfileInfoOptionsBuilder& operator=(const SetProfileInfoOptionsBuilder&);
+  ~SetProfileInfoOptionsBuilder();
+
+  SetProfileInfoOptionsBuilder& with_guid(std::string_view guid);
+  SetProfileInfoOptionsBuilder& with_first_name(std::string_view first_name);
+  SetProfileInfoOptionsBuilder& with_middle_name(std::string_view middle_name);
+  SetProfileInfoOptionsBuilder& with_last_name(std::string_view last_name);
+  SetProfileInfoOptionsBuilder& with_full_name(std::string_view full_name);
+  SetProfileInfoOptionsBuilder& with_email(std::string_view email);
+  SetProfileInfoOptionsBuilder& with_company(std::string_view company);
+  SetProfileInfoOptionsBuilder& with_address1(std::string_view address1);
+  SetProfileInfoOptionsBuilder& with_address2(std::string_view address2);
+  SetProfileInfoOptionsBuilder& with_dependent_locality(
+      std::string_view dependent_locality);
+  SetProfileInfoOptionsBuilder& with_city(std::string_view city);
+  SetProfileInfoOptionsBuilder& with_state(std::string_view state);
+  SetProfileInfoOptionsBuilder& with_zipcode(std::string_view zipcode);
+  SetProfileInfoOptionsBuilder& with_country(std::string_view country);
+  SetProfileInfoOptionsBuilder& with_phone(std::string_view phone);
+  SetProfileInfoOptionsBuilder& with_status(VerificationStatus status);
+
+  [[nodiscard]] SetProfileInfoOptions Build();
+
+ private:
+  SetProfileInfoOptions options_;
+};
+
 // A unit testing utility that is common to a number of the Autofill unit
-// tests.  |SetProfileInfo| provides a quick way to populate a profile with
-// c-strings.
+// tests.  |SetProfileInfo| provides a quick way to populate a profile.
 void SetProfileInfo(AutofillProfile* profile,
-                    const char* first_name,
-                    const char* middle_name,
-                    const char* last_name,
-                    const char* email,
-                    const char* company,
-                    const char* address1,
-                    const char* address2,
-                    const char* dependent_locality,
-                    const char* city,
-                    const char* state,
-                    const char* zipcode,
-                    const char* country,
-                    const char* phone,
-                    bool finalize = true,
-                    VerificationStatus status = VerificationStatus::kObserved);
-
-// This one doesn't require the |dependent_locality|.
-void SetProfileInfo(AutofillProfile* profile,
-                    const char* first_name,
-                    const char* middle_name,
-                    const char* last_name,
-                    const char* email,
-                    const char* company,
-                    const char* address1,
-                    const char* address2,
-                    const char* city,
-                    const char* state,
-                    const char* zipcode,
-                    const char* country,
-                    const char* phone,
-                    bool finalize = true,
-                    VerificationStatus status = VerificationStatus::kObserved);
-
-void SetProfileInfo(AutofillProfile* profile,
-                    const char* first_name,
-                    const char* middle_name,
-                    const char* last_name,
-                    const char* country,
-                    bool finalize = true,
-                    VerificationStatus status = VerificationStatus::kObserved);
-
-void SetProfileInfoWithGuid(AutofillProfile* profile,
-                            const char* guid,
-                            const char* first_name,
-                            const char* middle_name,
-                            const char* last_name,
-                            const char* email,
-                            const char* company,
-                            const char* address1,
-                            const char* address2,
-                            const char* city,
-                            const char* state,
-                            const char* zipcode,
-                            const char* country,
-                            const char* phone,
-                            bool finalize = true,
-                            VerificationStatus = VerificationStatus::kObserved);
+                    SetProfileInfoOptions options,
+                    bool finalize = true);
 
 // A unit testing utility that is common to a number of the Autofill unit
 // tests.  |SetCreditCardInfo| provides a quick way to populate a credit card

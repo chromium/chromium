@@ -108,10 +108,17 @@ TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressSanity) {
 
 TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWhenEmptyFullname) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile, /*first_name=*/"", /*middle_name=*/"",
-                       /*last_name=*/"", "johndoe@hades.com", "Underworld",
-                       "666 Erebus St.", "Apt 8", "Elysium", "CA", "91111",
-                       "US", "16502111111");
+  test::SetProfileInfo(&profile, test::SetProfileInfoOptionsBuilder()
+                                     .with_email("johndoe@hades.com")
+                                     .with_company("Underworld")
+                                     .with_address1("666 Erebus St.")
+                                     .with_address2("Apt 8")
+                                     .with_city("Elysium")
+                                     .with_state("CA")
+                                     .with_zipcode("91111")
+                                     .with_country("US")
+                                     .with_phone("16502111111")
+                                     .Build());
 
   std::u16string address =
       GetEnvelopeStyleAddress(profile, GetLocale(), /*include_recipient=*/true,
@@ -125,9 +132,19 @@ TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWhenEmptyFullname) {
 TEST_F(AddressFormattingTest,
        GetEnvelopeStyleAddressWhenEmptyCompanyShouldHaveNoEmptyLines) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile, "FirstName", "MiddleName", "LastName",
-                       "johndoe@hades.com", /*company=*/"", "666 Erebus St.",
-                       "Apt 8", "Elysium", "CA", "91111", "US", "16502111111");
+  test::SetProfileInfo(&profile, test::SetProfileInfoOptionsBuilder()
+                                     .with_first_name("FirstName")
+                                     .with_middle_name("MiddleName")
+                                     .with_last_name("LastName")
+                                     .with_email("johndoe@hades.com")
+                                     .with_address1("666 Erebus St.")
+                                     .with_address2("Apt 8")
+                                     .with_city("Elysium")
+                                     .with_state("CA")
+                                     .with_zipcode("91111")
+                                     .with_country("US")
+                                     .with_phone("16502111111")
+                                     .Build());
 
   std::u16string address =
       GetEnvelopeStyleAddress(profile, GetLocale(), /*include_recipient=*/true,
@@ -142,10 +159,19 @@ TEST_F(
     AddressFormattingTest,
     GetEnvelopeStyleAddressWhenEmptyStateShouldHaveNoConsecutiveWhitespaces) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile, "FirstName", "MiddleName", "LastName",
-                       "johndoe@hades.com", "Underworld", "666 Erebus St.",
-                       "Apt 8", "Elysium", /*state=*/"", "91111", "US",
-                       "16502111111");
+  test::SetProfileInfo(&profile, test::SetProfileInfoOptionsBuilder()
+                                     .with_first_name("FirstName")
+                                     .with_middle_name("MiddleName")
+                                     .with_last_name("LastName")
+                                     .with_email("johndoe@hades.com")
+                                     .with_company("Underworld")
+                                     .with_address1("666 Erebus St.")
+                                     .with_address2("Apt 8")
+                                     .with_city("Elysium")
+                                     .with_zipcode("91111")
+                                     .with_country("US")
+                                     .with_phone("16502111111")
+                                     .Build());
 
   std::u16string address =
       GetEnvelopeStyleAddress(profile, GetLocale(), /*include_recipient=*/true,
@@ -159,10 +185,19 @@ TEST_F(
 // is extended by a state field.
 TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWithExtensions) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile, "FirstName", "MiddleName", "LastName",
-                       "johndoe@hades.com", /*company=*/"", "666 Erebus St.",
-                       "Apt 8", "Elysium", /*state=*/"Greater London",
-                       "WC2H 8AG", "GB", "+44 20 7031 3000");
+  test::SetProfileInfo(&profile, test::SetProfileInfoOptionsBuilder()
+                                     .with_first_name("FirstName")
+                                     .with_middle_name("MiddleName")
+                                     .with_last_name("LastName")
+                                     .with_email("johndoe@hades.com")
+                                     .with_address1("666 Erebus St.")
+                                     .with_address2("Apt 8")
+                                     .with_city("Elysium")
+                                     .with_state("Greater London")
+                                     .with_zipcode("WC2H 8AG")
+                                     .with_country("GB")
+                                     .with_phone("+44 20 7031 3000")
+                                     .Build());
 
   std::u16string address =
       GetEnvelopeStyleAddress(profile, GetLocale(), /*include_recipient=*/true,

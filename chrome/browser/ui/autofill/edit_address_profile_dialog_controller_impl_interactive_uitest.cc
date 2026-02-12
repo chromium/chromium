@@ -34,10 +34,21 @@ class EditAddressProfileDialogControllerImplTest
         AddressCountryCode("US"));
     local_profile_->SetRawInfoWithVerificationStatus(
         NAME_FULL, u"Mona J. Liza", VerificationStatus::kUserVerified);
-    test::SetProfileInfo(local_profile_.get(), "", "", "", "email@example.com",
-                         "Company Inc.", "33 Narrow Street", "Apt 42",
-                         "Playa Vista", "LA", "12345", "US", "13105551234",
-                         /*finalize=*/true, VerificationStatus::kUserVerified);
+    test::SetProfileInfo(
+        local_profile_.get(),
+        test::SetProfileInfoOptionsBuilder()
+            .with_email("email@example.com")
+            .with_company("Company Inc.")
+            .with_address1("33 Narrow Street")
+            .with_address2("Apt 42")
+            .with_city("Playa Vista")
+            .with_state("LA")
+            .with_zipcode("12345")
+            .with_country("US")
+            .with_phone("13105551234")
+            .with_status(VerificationStatus::kUserVerified)
+            .Build(),
+        /*finalize=*/true);
     local_profile_->set_language_code("en");
   }
 
