@@ -22,6 +22,7 @@ class AutofillClient;
 class AutofillField;
 class AutofillProfile;
 class LogBuffer;
+class PhoneCombineHelper;
 
 // Owned by `FormDataImporter`. Responsible for address-related form data
 // importing functionality, including form extraction and processing.
@@ -70,8 +71,29 @@ class AddressFormDataImporter {
       bool& has_multiple_distinct_email_addresses,
       bool& has_address_related_fields) const;
 
+  // Helper method to construct an `AutofillProfile` out of observed values in
+  // the form. Used during `ExtractAddressProfileFromSection()`.
+  AutofillProfile ConstructProfileFromObservedValues(
+      const base::flat_map<FieldType, std::u16string>& observed_values,
+      LogBuffer* import_log_buffer,
+      ProfileImportMetadata& import_metadata);
+
   // Clears all setting-inaccessible values from `profile`.
   void RemoveInaccessibleProfileValues(AutofillProfile& profile);
+
+  // If the `profile`'s country is not empty, complements it with
+  // `AddressDataManager::GetDefaultCountryCodeForNewAddress()`, while logging
+  // to the `import_log_buffer`.
+  // Returns true if the country was complemented.
+  bool ComplementCountry(AutofillProfile& profile,
+                         LogBuffer* import_log_buffer);
+
+  // Sets the `profile`'s PHONE_HOME_WHOLE_NUMBER to the `combined_phone`, if
+  // possible. The phone number's region is deduced based on the profile's
+  // country or alternatively the app locale.
+  // Returns false if the provided `combined_phone` is invalid.
+  bool SetPhoneNumber(AutofillProfile& profile,
+                      const PhoneNumber::PhoneCombineHelper& combined_phone);
 
   const raw_ref<AutofillClient> client_;
 };

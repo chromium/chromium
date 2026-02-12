@@ -168,13 +168,6 @@ class FormDataImporter : public AddressDataManager::Observer,
       std::vector<AddressFormDataImporter::ExtractedAddressProfile>*
           extracted_address_profiles);
 
-  // Helper method to construct an AutofillProfile out of observed values in the
-  // form. Used during `ExtractAddressProfileFromSection()`.
-  AutofillProfile ConstructProfileFromObservedValues(
-      const base::flat_map<FieldType, std::u16string>& observed_values,
-      LogBuffer* import_log_buffer,
-      ProfileImportMetadata& import_metadata);
-
   // Helper method for ExtractAddressProfiles which only considers the fields
   // for a specified `section`. If no section is passed, the import is
   // performed on the union of all sections.
@@ -250,20 +243,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   // an empty set if any field was manually edited.
   base::flat_set<std::string> ExtractGUIDsOfProfilesWithoutManualEdits(
       const FormStructure& submitted_form) const;
-
-  // If the `profile`'s country is not empty, complements it with
-  // `AddressDataManager::GetDefaultCountryCodeForNewAddress()`, while logging
-  // to the `import_log_buffer`.
-  // Returns true if the country was complemented.
-  bool ComplementCountry(AutofillProfile& profile,
-                         LogBuffer* import_log_buffer);
-
-  // Sets the `profile`'s PHONE_HOME_WHOLE_NUMBER to the `combined_phone`, if
-  // possible. The phone number's region is deduced based on the profile's
-  // country or alternatively the app locale.
-  // Returns false if the provided `combined_phone` is invalid.
-  bool SetPhoneNumber(AutofillProfile& profile,
-                      const PhoneNumber::PhoneCombineHelper& combined_phone);
 
   PaymentsDataManager& payments_data_manager();
 

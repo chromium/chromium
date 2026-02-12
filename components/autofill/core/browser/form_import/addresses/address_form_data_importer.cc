@@ -11,7 +11,10 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/addresses/phone_number.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
@@ -269,6 +272,74 @@ AddressFormDataImporter::GetAddressObservedFieldValues(
       });
 }
 
+AutofillProfile AddressFormDataImporter::ConstructProfileFromObservedValues(
+    const base::flat_map<FieldType, std::u16string>& observed_values,
+    LogBuffer* import_log_buffer,
+    ProfileImportMetadata& import_metadata) {
+  AutofillProfile candidate_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
+
+  auto country_it = observed_values.find(ADDRESS_HOME_COUNTRY);
+  if (country_it != observed_values.end()) {
+    // Try setting the collected country value into the profile and report
+    // invalid country if the operation failed.
+    candidate_profile.SetInfoWithVerificationStatus(
+        ADDRESS_HOME_COUNTRY, country_it->second, client_->GetAppLocale(),
+        VerificationStatus::kObserved);
+
+    // Track the validity of the entered country for metrics.
+    import_metadata.observed_invalid_country =
+        !candidate_profile.HasRawInfo(ADDRESS_HOME_COUNTRY);
+  }
+
+  // When setting a phone number, the region is deduced from the profile's
+  // country or the app locale. For the variation country code to take
+  // precedence over the app locale, country code complemention needs to happen
+  // before `SetPhoneNumber()`.
+  import_metadata.did_complement_country =
+      ComplementCountry(candidate_profile, import_log_buffer);
+
+  // We only set complete phone, so aggregate phone parts in these vars and set
+  // complete at the end.
+  PhoneNumber::PhoneCombineHelper combined_phone;
+
+  // Populate the profile with the collected values. Note that this is after the
+  // profile's country has been set to make sure the correct address
+  // representation is used.
+  for (const auto& [type, value] : observed_values) {
+    // The profile country has already been established by this point. It's
+    // ignored here to avoid re-setting up a potentially invalid country that
+    // was present in the form.
+    if (type == ADDRESS_HOME_COUNTRY) {
+      continue;
+    }
+    if (GroupTypeOfFieldType(type) == FieldTypeGroup::kPhone) {
+      // We need to store phone data in the variables, before building the whole
+      // number at the end.
+      combined_phone.SetInfo(type, value);
+    } else {
+      candidate_profile.SetInfoWithVerificationStatus(
+          type, value, client_->GetAppLocale(), VerificationStatus::kObserved);
+    }
+  }
+
+  // Track if the form contains split zip fields such that at least zip prefix
+  // field is not empty for metrics. It's enough to verify
+  // ADDRESS_HOME_ZIP_PREFIX because a field can be classified as
+  // ADDRESS_HOME_ZIP_PREFIX only if the next field is ADDRESS_HOME_ZIP_SUFFIX.
+  // Note that the value of ADDRESS_HOME_ZIP_SUFFIX can be empty in the USA,
+  // since the suffix is an optional part of the zip code.
+  import_metadata.observed_split_zip =
+      candidate_profile.HasRawInfo(ADDRESS_HOME_ZIP_PREFIX);
+
+  if (!SetPhoneNumber(candidate_profile, combined_phone)) {
+    import_metadata.phone_import_status = PhoneImportStatus::kInvalid;
+  } else if (!combined_phone.IsEmpty()) {
+    import_metadata.phone_import_status = PhoneImportStatus::kValid;
+  }
+  return candidate_profile;
+}
+
 void AddressFormDataImporter::RemoveInaccessibleProfileValues(
     AutofillProfile& profile) {
   const FieldTypeSet inaccessible_fields =
@@ -279,6 +350,36 @@ void AddressFormDataImporter::RemoveInaccessibleProfileValues(
   for (const FieldType inaccessible_field : inaccessible_fields) {
     autofill_metrics::LogRemovedSettingInaccessibleField(inaccessible_field);
   }
+}
+
+bool AddressFormDataImporter::ComplementCountry(AutofillProfile& profile,
+                                                LogBuffer* import_log_buffer) {
+  if (profile.HasRawInfo(ADDRESS_HOME_COUNTRY)) {
+    return false;
+  }
+  const std::string fallback =
+      address_data_manager().GetDefaultCountryCodeForNewAddress().value();
+  if (import_log_buffer) {
+    *import_log_buffer
+        << LogMessage::kImportAddressProfileComplementedCountryCode << fallback
+        << CTag{};
+  }
+  return profile.SetInfoWithVerificationStatus(
+      ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16(fallback),
+      client_->GetAppLocale(), VerificationStatus::kObserved);
+}
+
+bool AddressFormDataImporter::SetPhoneNumber(
+    AutofillProfile& profile,
+    const PhoneNumber::PhoneCombineHelper& combined_phone) {
+  if (combined_phone.IsEmpty()) {
+    return true;
+  }
+
+  bool parsed_successfully = PhoneNumber::ImportPhoneNumberToProfile(
+      combined_phone, client_->GetAppLocale(), profile);
+  autofill_metrics::LogPhoneNumberImportParsingResult(parsed_successfully);
+  return parsed_successfully;
 }
 
 }  // namespace autofill
