@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -516,6 +517,53 @@ void TemplateUrlServiceAndroid::GetTemplateUrls(
         env, template_url_list_obj,
         CreateTemplateUrlAndroid(env, template_url));
   }
+}
+
+std::vector<const TemplateURL*>
+TemplateUrlServiceAndroid::FilterTemplateUrlsByCategory(
+    const std::vector<raw_ptr<TemplateURL, VectorExperimental>>& template_urls,
+    TemplateUrlServiceAndroid::TemplateUrlCategory category) {
+  std::vector<const TemplateURL*> result;
+  for (TemplateURL* turl : template_urls) {
+    bool is_default = template_url_service_->ShowInDefaultList(turl);
+    bool is_extension = turl->type() == TemplateURL::OMNIBOX_API_EXTENSION;
+    bool is_active = template_url_service_->ShowInActivesList(turl);
+    bool is_hidden = template_url_service_->HiddenFromLists(turl);
+
+    switch (category) {
+      case TemplateUrlCategory::kDefault:
+        if (is_default) {
+          result.push_back(turl);
+        }
+        break;
+      case TemplateUrlCategory::kActiveSiteSearch:
+        if (!is_default && !is_hidden && !is_extension && is_active) {
+          result.push_back(turl);
+        }
+        break;
+      case TemplateUrlCategory::kInactiveSiteSearch:
+        if (!is_default && !is_hidden && !is_extension && !is_active) {
+          result.push_back(turl);
+        }
+        break;
+      case TemplateUrlCategory::kExtension:
+        if (!is_default && !is_hidden && is_extension) {
+          result.push_back(turl);
+        }
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+  return result;
+}
+
+std::vector<const TemplateURL*>
+TemplateUrlServiceAndroid::GetTemplateUrlsByCategory(
+    JNIEnv* env,
+    TemplateUrlCategory category) {
+  return FilterTemplateUrlsByCategory(template_url_service_->GetTemplateURLs(),
+                                      category);
 }
 
 base::android::ScopedJavaLocalRef<jobject>

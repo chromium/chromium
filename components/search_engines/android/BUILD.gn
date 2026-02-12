@@ -10,6 +10,10 @@ java_group("delegate_java") {
   public_deps = [ ":java" ]
 }
 
+java_cpp_enum("template_url_category_enum") {
+  sources = [ "template_url_service_android.h" ]
+}
+
 android_library("java") {
   deps = [
     "//base:base_java",
@@ -23,6 +27,7 @@ android_library("java") {
 
   srcjar_deps = [
     ":jni_headers",
+    ":template_url_category_enum",
     "//components/search_engines:search_engine_enums_java",
   ]
   sources = [

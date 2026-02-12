@@ -166,3 +166,110 @@ TEST_F(TemplateUrlServiceAndroidUnitTest, FilterUserSelectableTemplateUrls) {
     run_test(test_case);
   }
 }
+
+TEST_F(TemplateUrlServiceAndroidUnitTest, FilterTemplateUrlsByCategory) {
+  using Category = TemplateUrlServiceAndroid::TemplateUrlCategory;
+
+  TemplateURLData dse_data;
+  dse_data.SetShortName(u"dse");
+  dse_data.SetKeyword(u"dse");
+  dse_data.SetURL("http://dse.com/q={searchTerms}");
+  dse_data.is_active = TemplateURLData::ActiveStatus::kTrue;
+  dse_data.safe_for_autoreplace = false;
+  TemplateURL* t_dse =
+      template_url_service().Add(std::make_unique<TemplateURL>(dse_data));
+  template_url_service().SetUserSelectedDefaultSearchProvider(t_dse);
+
+  TemplateURLData prepop_data;
+  prepop_data.SetShortName(u"prepop");
+  prepop_data.SetKeyword(u"prepop");
+  prepop_data.SetURL("http://prepop.com/q={searchTerms}");
+  prepop_data.prepopulate_id = 1;
+  TemplateURL* t_prepop =
+      template_url_service().Add(std::make_unique<TemplateURL>(prepop_data));
+
+  TemplateURLData active_data;
+  active_data.SetShortName(u"active");
+  active_data.SetKeyword(u"active");
+  active_data.SetURL("http://active.com/q={searchTerms}");
+  active_data.is_active = TemplateURLData::ActiveStatus::kTrue;
+  active_data.safe_for_autoreplace = false;
+  TemplateURL* t_active =
+      template_url_service().Add(std::make_unique<TemplateURL>(active_data));
+
+  TemplateURLData inactive_data;
+  inactive_data.SetShortName(u"inactive");
+  inactive_data.SetKeyword(u"inactive");
+  inactive_data.SetURL("http://inactive.com/q={searchTerms}");
+  inactive_data.is_active = TemplateURLData::ActiveStatus::kFalse;
+  inactive_data.safe_for_autoreplace = false;
+  TemplateURL* t_inactive =
+      template_url_service().Add(std::make_unique<TemplateURL>(inactive_data));
+
+  TemplateURLData extension_data;
+  extension_data.SetShortName(u"extension");
+  extension_data.SetKeyword(u"extension");
+  extension_data.SetURL("http://extension.com/q={searchTerms}");
+  TemplateURL* t_extension =
+      template_url_service().Add(std::make_unique<TemplateURL>(
+          extension_data, TemplateURL::OMNIBOX_API_EXTENSION));
+
+  // Create two engines with the same keyword. One will be hidden.
+  TemplateURLData visible_data;
+  visible_data.SetShortName(u"visible");
+  visible_data.SetKeyword(u"duplicate");
+  visible_data.SetURL("http://visible.com/q={searchTerms}");
+  visible_data.safe_for_autoreplace = false;
+  TemplateURL* t_visible =
+      template_url_service().Add(std::make_unique<TemplateURL>(visible_data));
+
+  TemplateURLData hidden_data;
+  hidden_data.SetShortName(u"hidden");
+  hidden_data.SetKeyword(u"duplicate");
+  hidden_data.SetURL("http://hidden.com/q={searchTerms}");
+  hidden_data.safe_for_autoreplace = false;
+  TemplateURL* t_hidden_candidate =
+      template_url_service().Add(std::make_unique<TemplateURL>(hidden_data));
+  TemplateURL* t_best =
+      template_url_service().GetTemplateURLForKeyword(u"duplicate");
+
+  TemplateURL* t_hidden =
+      (t_best == t_visible) ? t_hidden_candidate : t_visible;
+
+  std::vector<raw_ptr<TemplateURL, VectorExperimental>> input_urls;
+  input_urls.push_back(t_dse);
+  input_urls.push_back(t_prepop);
+  input_urls.push_back(t_active);
+  input_urls.push_back(t_inactive);
+  input_urls.push_back(t_extension);
+  input_urls.push_back(t_hidden);
+
+  {
+    auto result = template_url_service_android().FilterTemplateUrlsByCategory(
+        input_urls, Category::kDefault);
+    EXPECT_EQ(result.size(), 2u);
+    EXPECT_EQ(result[0], t_dse);
+    EXPECT_EQ(result[1], t_prepop);
+  }
+
+  {
+    auto result = template_url_service_android().FilterTemplateUrlsByCategory(
+        input_urls, Category::kActiveSiteSearch);
+    EXPECT_EQ(result.size(), 1u);
+    EXPECT_EQ(result[0], t_active);
+  }
+
+  {
+    auto result = template_url_service_android().FilterTemplateUrlsByCategory(
+        input_urls, Category::kInactiveSiteSearch);
+    EXPECT_EQ(result.size(), 1u);
+    EXPECT_EQ(result[0], t_inactive);
+  }
+
+  {
+    auto result = template_url_service_android().FilterTemplateUrlsByCategory(
+        input_urls, Category::kExtension);
+    EXPECT_EQ(result.size(), 1u);
+    EXPECT_EQ(result[0], t_extension);
+  }
+}

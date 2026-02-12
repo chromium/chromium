@@ -378,6 +378,18 @@ public class TemplateUrlService {
     }
 
     /**
+     * Returns a list of template URLs filtered by the specified category.
+     *
+     * @param category The category of template URLs to retrieve.
+     */
+    public List<TemplateUrl> getTemplateUrlsByCategory(
+            @JniType("TemplateUrlServiceAndroid::TemplateUrlCategory") int category) {
+        ThreadUtils.assertOnUiThread();
+        return TemplateUrlServiceJni.get()
+                .getTemplateUrlsByCategory(mNativeTemplateUrlServiceAndroid, category);
+    }
+
+    /**
      * Adds a search engine, set by Play API.
      *
      * @param name The name of the search engine to be added.
@@ -507,6 +519,11 @@ public class TemplateUrlService {
                 @Nullable String imageTranslateTargetLanguageParamKey);
 
         void getTemplateUrls(long nativeTemplateUrlServiceAndroid, List<TemplateUrl> templateUrls);
+
+        @JniType("std::vector<const TemplateURL*>")
+        List<TemplateUrl> getTemplateUrlsByCategory(
+                long nativeTemplateUrlServiceAndroid,
+                @JniType("TemplateUrlServiceAndroid::TemplateUrlCategory") int category);
 
         TemplateUrl getDefaultSearchEngine(long nativeTemplateUrlServiceAndroid);
 
