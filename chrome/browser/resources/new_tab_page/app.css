@@ -11,8 +11,9 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --cr-composebox-input-placeholder-color:
-      var(--color-new-tab-page-common-input-placeholder);
+  --cr-composebox-input-placeholder-color: var(
+    --color-new-tab-page-common-input-placeholder
+  );
   --cr-focus-outline-color: var(--color-new-tab-page-focus-ring);
   --cr-searchbox-height: 48px;
   --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
@@ -25,14 +26,14 @@
   --ntp-one-google-bar-height: 56px;
   --ntp-search-box-width: 337px;
   --ntp-menu-shadow:
-      var(--color-new-tab-page-menu-inner-shadow) 0 1px 2px 0,
-      var(--color-new-tab-page-menu-outer-shadow) 0 2px 6px 2px;
+    var(--color-new-tab-page-menu-inner-shadow) 0 1px 2px 0,
+    var(--color-new-tab-page-menu-outer-shadow) 0 2px 6px 2px;
   --ntp-module-width: 360px;
   --ntp-module-layout-width: 360px;
   --ntp-module-border-radius: 16px;
   --ntp-module-item-border-radius: 12px;
   --ntp-protected-icon-background-color: transparent;
-  --ntp-protected-icon-background-color-hovered: rgba(255, 255, 255, .1);
+  --ntp-protected-icon-background-color-hovered: rgba(255, 255, 255, 0.1);
   --ntp-scrim-opacity_: 1;
   --threads-rail-width: 76px;
   --threads-rail-focus-outline-color: var(--color-new-tab-page-focus-ring);
@@ -43,11 +44,15 @@
  * so they are not tabbable.
  */
 :host([show-composebox_]:not([ntp-realbox-next-enabled_])) cr-most-visited,
-:host([show-composebox_]:not([ntp-realbox-next-enabled_])) ntp-middle-slot-promo,
+:host([show-composebox_]:not([ntp-realbox-next-enabled_]))
+  ntp-middle-slot-promo,
 :host([show-composebox_]:not([ntp-realbox-next-enabled_])) ntp-modules,
-:host([show-composebox_]:not([ntp-realbox-next-enabled_])) #backgroundImageAttribution,
-:host([show-composebox_]:not([ntp-realbox-next-enabled_])) ntp-customize-buttons,
-:host([show-composebox_]:not([ntp-realbox-next-enabled_])) setup-list-module-wrapper{
+:host([show-composebox_]:not([ntp-realbox-next-enabled_]))
+  #backgroundImageAttribution,
+:host([show-composebox_]:not([ntp-realbox-next-enabled_]))
+  ntp-customize-buttons,
+:host([show-composebox_]:not([ntp-realbox-next-enabled_]))
+  setup-list-module-wrapper {
   display: none;
 }
 
@@ -85,22 +90,24 @@
 }
 
 cr-most-visited {
-  --add-shortcut-background-color:
-      var(--color-new-tab-page-add-shortcut-background);
-  --add-shortcut-foreground-color:
-      var(--color-new-tab-page-add-shortcut-foreground);
+  --add-shortcut-background-color: var(
+    --color-new-tab-page-add-shortcut-background
+  );
+  --add-shortcut-foreground-color: var(
+    --color-new-tab-page-add-shortcut-foreground
+  );
   --cr-menu-shadow: var(--ntp-menu-shadow);
   --most-visited-focus-shadow: var(--ntp-focus-shadow);
-  --most-visited-text-color:
-      var(--color-new-tab-page-most-visited-foreground);
+  --most-visited-text-color: var(--color-new-tab-page-most-visited-foreground);
   --most-visited-text-shadow: var(--ntp-theme-text-shadow);
 }
 
 :host([show-background-image_]) {
-  --ntp-theme-text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.5),
-      0px 0px 2px rgba(0, 0, 0, 0.2), 0px 0px 10px rgba(0, 0, 0, 0.1);
-  --ntp-protected-icon-background-color: rgba(0, 0, 0, .6);
-  --ntp-protected-icon-background-color-hovered: rgba(0, 0, 0, .7);
+  --ntp-theme-text-shadow:
+    0.5px 0.5px 1px rgba(0, 0, 0, 0.5), 0px 0px 2px rgba(0, 0, 0, 0.2),
+    0px 0px 10px rgba(0, 0, 0, 0.1);
+  --ntp-protected-icon-background-color: rgba(0, 0, 0, 0.6);
+  --ntp-protected-icon-background-color-hovered: rgba(0, 0, 0, 0.7);
 }
 
 /* The styles to create a stacking context for the OGB-related elements.
@@ -121,10 +128,12 @@ cr-most-visited {
 }
 
 #oneGoogleBarScrim {
-  background: linear-gradient(rgba(0,0,0,0.25) 0%,
-                              rgba(0,0,0,0.12) 45%,
-                              rgba(0,0,0,0.05) 65%,
-                              transparent 100%);
+  background: linear-gradient(
+    rgba(0, 0, 0, 0.25) 0%,
+    rgba(0, 0, 0, 0.12) 45%,
+    rgba(0, 0, 0, 0.05) 65%,
+    transparent 100%
+  );
   height: 80px;
   position: absolute;
   top: 0;
@@ -148,7 +157,7 @@ cr-most-visited {
   display: flex;
   flex-direction: column;
   height: calc(100vh - var(--ntp-one-google-bar-height));
-  min-width: fit-content;  /* Prevents OneGoogleBar cutoff at 500% zoom. */
+  min-width: fit-content; /* Prevents OneGoogleBar cutoff at 500% zoom. */
   padding-top: var(--ntp-one-google-bar-height);
   position: relative;
   z-index: 1;
@@ -172,7 +181,7 @@ cr-most-visited {
 
 #logo {
   margin-bottom: 38px;
-  z-index: 1;  /* Needed so it layers on top of OneGoogleBar. */
+  z-index: 1; /* Needed so it layers on top of OneGoogleBar. */
 }
 
 :host([show-composebox_]) #logo,
@@ -214,7 +223,6 @@ cr-searchbox {
 cr-searchbox[shown] {
   visibility: visible;
 }
-
 
 /* ~ because the dom-if results in a template between the middle-slot-promo
    and ntp-modules. */
@@ -279,11 +287,11 @@ ntp-middle-slot-promo:not([hidden]) ~ #modules {
 }
 
 #backgroundImageAttribution1 {
-  font-size: .875rem;
+  font-size: 0.875rem;
 }
 
 #backgroundImageAttribution2 {
-  font-size: .75rem;
+  font-size: 0.75rem;
 }
 
 #customizeButtons {
@@ -311,8 +319,7 @@ svg {
 
 cr-composebox {
   --cr-composebox-width: var(--ntp-search-box-width);
-  --cr-composebox-background-color:
-      var(--color-composebox-background);
+  --cr-composebox-background-color: var(--color-composebox-background);
   --text-input-inline-end-spacing: 90px;
 }
 
@@ -332,6 +339,10 @@ ntp-lens-upload-dialog {
   position: fixed;
   transition: all 250ms ease;
   z-index: 1;
+}
+
+:host([reduced-motion-preferred_]) #scrim {
+  transition: none;
 }
 
 #webstoreToast {

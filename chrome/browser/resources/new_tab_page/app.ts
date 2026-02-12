@@ -333,6 +333,10 @@ export class AppElement extends AppElementBase {
        * Whether to show the AIM threads rail when composebox is open.
        */
       enableThreadsRail_: {type: Boolean},
+      reducedMotionPreferred_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -414,10 +418,10 @@ export class AppElement extends AppElementBase {
       loadTimeData.getInteger('maxTilesBeforeShowMore');
   protected accessor containerFocused_: boolean = false;
   protected accessor showScrim_: boolean = false;
-  private reducedMotionPreferred_: boolean =
-      WindowProxy.getInstance()
-          .matchMedia('(prefers-reduced-motion: reduce)')
-          .matches;
+  private reducedMotionMediaQueryList_: MediaQueryList =
+      WindowProxy.getInstance().matchMedia('(prefers-reduced-motion: reduce)');
+  protected accessor reducedMotionPreferred_: boolean =
+      this.reducedMotionMediaQueryList_.matches;
   protected accessor contextMenuGlifAnimationState_: GlifAnimationState =
       !this.reducedMotionPreferred_ && this.ntpNextFeaturesEnabled_ &&
           this.isActionChipsVisible_ ?
@@ -510,7 +514,9 @@ export class AppElement extends AppElementBase {
   override connectedCallback() {
     super.connectedCallback();
     realboxCanShowSecondarySideMediaQueryList.addEventListener(
-        'change', this.onRealboxCanShowSecondarySideChanged_.bind(this));
+        'change', this.onRealboxCanShowSecondarySideChanged_);
+    this.reducedMotionMediaQueryList_.addEventListener(
+        'change', this.onReducedMotionChanged_);
 
     // Listen for chrome-untrusted://ntp-microsoft-auth iframe trying to
     // connect to the NTP.
@@ -622,7 +628,9 @@ export class AppElement extends AppElementBase {
   override disconnectedCallback() {
     super.disconnectedCallback();
     realboxCanShowSecondarySideMediaQueryList.removeEventListener(
-        'change', this.onRealboxCanShowSecondarySideChanged_.bind(this));
+        'change', this.onRealboxCanShowSecondarySideChanged_);
+    this.reducedMotionMediaQueryList_.removeEventListener(
+        'change', this.onReducedMotionChanged_);
     this.callbackRouter_.removeListener(
         this.connectMicrosoftAuthToParentDocumentListenerId_!);
     this.callbackRouter_.removeListener(this.setThemeListenerId_!);
@@ -830,9 +838,13 @@ export class AppElement extends AppElementBase {
          this.modulesLoadedStatus_ === ModuleLoadStatus.MODULE_LOAD_COMPLETE);
   }
 
-  private onRealboxCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
+  private onRealboxCanShowSecondarySideChanged_ = (e: MediaQueryListEvent) => {
     this.realboxCanShowSecondarySide = e.matches;
-  }
+  };
+
+  private onReducedMotionChanged_ = (e: MediaQueryListEvent) => {
+    this.reducedMotionPreferred_ = e.matches;
+  };
 
   private onLazyRendered_() {
     // Integration tests use this attribute to determine when lazy load has
@@ -858,8 +870,8 @@ export class AppElement extends AppElementBase {
 
   protected onComposeboxInitialized_(e: CustomEvent<{
     initializeComposeboxState:
-        (text: string, files: ContextualUpload[], mode: ToolMode,
-         model: number, inputState: InputState|null) => void,
+        (text: string, files: ContextualUpload[], mode: ToolMode, model: number,
+         inputState: InputState|null) => void,
   }>) {
     e.detail.initializeComposeboxState(
         this.pendingComposeboxText_, this.pendingComposeboxContextFiles_,
@@ -1448,11 +1460,11 @@ export class AppElement extends AppElementBase {
 
   protected onActionChipsRetrievalStateChanged_(
       e: CustomEvent<{state: ActionChipsRetrievalState}>) {
-    const state = e.detail.state;
     if (this.reducedMotionPreferred_) {
       // The animation should not be started.
       return;
     }
+    const state = e.detail.state;
     // Mapping of ActionChipsRetrievalState => GlifAnimationState:
     // REQUESTED => SPINNER_ONLY
     // UPDATED => STARTED (or FINISHED if cr_context_menu_entrypoint sets it)
