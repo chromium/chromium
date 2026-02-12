@@ -50,6 +50,7 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   void ShowBubble() override;
   void HideBubble(bool initiated_by_bubble_manager) override;
   bool CanBeReshown() const override;
+  bool ShouldReshowOnTabVisible() const override;
   bool IsShowingBubble() const override;
   bool IsMouseHovered() const override;
 

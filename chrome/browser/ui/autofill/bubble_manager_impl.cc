@@ -405,7 +405,9 @@ void BubbleManagerImpl::TabWillEnterBackground(
   if (active_bubble_controller_) {
     base::UmaHistogramEnumeration("Autofill.Bubble.HideDueToTabHide",
                                   active_bubble_controller_->GetBubbleType());
-    AddToPendingQueue(active_bubble_controller_);
+    if (active_bubble_controller_->ShouldReshowOnTabVisible()) {
+      AddToPendingQueue(active_bubble_controller_);
+    }
     active_bubble_controller_->HideBubble(/*initiated_by_bubble_manager=*/true);
     active_bubble_controller_ = nullptr;
   }

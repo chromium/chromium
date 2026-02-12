@@ -186,9 +186,12 @@ void AutofillAiImportDataControllerImpl::OnVisibilityChanged(
   AutofillBubbleControllerBase::OnVisibilityChanged(visibility);
   if (visibility == content::Visibility::VISIBLE &&
       reopen_bubble_when_web_contents_becomes_visible_) {
-    reopen_bubble_when_web_contents_becomes_visible_ = false;
     QueueOrShowBubble();
   }
+}
+
+bool AutofillAiImportDataControllerImpl::ShouldReshowOnTabVisible() const {
+  return reopen_bubble_when_web_contents_becomes_visible_;
 }
 
 void AutofillAiImportDataControllerImpl::OnBubbleClosed(
@@ -227,6 +230,7 @@ void AutofillAiImportDataControllerImpl::DoShowBubble() {
     NOTREACHED();
   };
 
+  reopen_bubble_when_web_contents_becomes_visible_ = false;
   SetBubbleView(get_bubble());
   CHECK(bubble_view());
 }

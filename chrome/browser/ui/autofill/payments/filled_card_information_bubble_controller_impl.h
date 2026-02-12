@@ -67,6 +67,7 @@ class FilledCardInformationBubbleControllerImpl
   // BubbleControllerBase:
   void OnBubbleDiscarded() override;
   BubbleType GetBubbleType() const override;
+  bool ShouldReshowOnTabVisible() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
  protected:

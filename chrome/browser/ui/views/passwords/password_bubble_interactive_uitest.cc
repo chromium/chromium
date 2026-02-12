@@ -503,11 +503,7 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
   tab_model->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  if (GetParam()) {
-    EXPECT_TRUE(IsBubbleShowing());
-  } else {
-    EXPECT_FALSE(IsBubbleShowing());
-  }
+  EXPECT_FALSE(IsBubbleShowing());
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
@@ -557,11 +553,7 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
   int previous_tab_count = tab_model->count();
   tab_model->CloseWebContentsAt(0, 0);
   ASSERT_EQ(previous_tab_count - 1, tab_model->count());
-  if (GetParam()) {
-    EXPECT_TRUE(IsBubbleShowing());
-  } else {
-    EXPECT_FALSE(IsBubbleShowing());
-  }
+  EXPECT_FALSE(IsBubbleShowing());
 
   // The bubble is not destroyed. However, the WebContents _is_ destroyed.
   // Emptying the runloop will process the queued event, and should not cause a
