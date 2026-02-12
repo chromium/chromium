@@ -25,8 +25,6 @@ class DnsConfigService;
 //
 // This class is thread and sequence safe except that RemoveObserver() must be
 // called on the same sequence as the matched AddObserver() call.
-//
-// TODO(crbug.com/40630884): Use this class in HostResolverManager.
 class NET_EXPORT_PRIVATE SystemDnsConfigChangeNotifier {
  public:
   class Observer {
