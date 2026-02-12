@@ -3251,7 +3251,16 @@ public class StripLayoutHelper
                                 public void onReopenClosedEntry() {
                                     RecordUserAction.record(
                                             "Android.TabStripMenu.ReopenClosedEntry");
-                                    if (mModel != null) mModel.openMostRecentlyClosedEntry();
+                                    if (mModel != null) {
+                                        RecordHistogram.recordBooleanHistogram(
+                                                "Android.TabStripMenu.ReopenClosedEntry.Result",
+                                                true);
+                                        mModel.openMostRecentlyClosedEntry();
+                                    } else {
+                                        RecordHistogram.recordBooleanHistogram(
+                                                "Android.TabStripMenu.ReopenClosedEntry.Result",
+                                                false);
+                                    }
                                 }
 
                                 @Override
@@ -3261,6 +3270,7 @@ public class StripLayoutHelper
 
                                 @Override
                                 public void onBookmarkAllTabs() {
+                                    RecordUserAction.record("Android.TabStripMenu.BookmarkAllTabs");
                                     if (mModel == null) {
                                         RecordHistogram.recordEnumeratedHistogram(
                                                 "Android.TabStripMenu.BookmarkAllTabs.Result",

@@ -4844,6 +4844,14 @@ should be able to be added at any place in this file.
   <description>The survey infobar was displayed.</description>
 </action>
 
+<action name="Android.TabStripMenu.BookmarkAllTabs">
+  <owner>mklw@google.com</owner>
+  <description>
+    User tapped 'Bookmark all tabs' on the tab strip context menu to bookmark
+    all tabs.
+  </description>
+</action>
+
 <action name="Android.TabStripMenu.ChangeWindowName">
   <owner>aishwaryarj@google.com</owner>
   <description>
