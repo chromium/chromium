@@ -2,10 +2,36 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("core") {
+  sources = [
+    "accessibility_annotator_data_provider.cc",
+    "accessibility_annotator_data_provider.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/accessibility_annotator/core/data_models",
+    "//components/keyed_service/core",
+    "//url",
+  ]
+}
+
 source_set("features") {
   sources = [
     "accessibility_annotator_features.cc",
     "accessibility_annotator_features.h",
   ]
   deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "data_models/entity_unittest.cc" ]
+
+  deps = [
+    "//base",
+    "//components/accessibility_annotator/core/data_models",
+    "//testing/gtest",
+  ]
 }
