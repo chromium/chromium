@@ -9,9 +9,12 @@
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+class BrowserWindowInterface;
 class Profile;
-class TabStripModel;
 
 namespace chrome {
 class BrowserCommandController;
@@ -19,20 +22,27 @@ class BrowserCommandController;
 
 namespace extensions {
 
-// A helper object for extensions-related management for Browser* objects.
-// It is owned by `BrowserWindowFeatures`.
+// A helper object for extensions-related management for browser objects.
+// It is owned by `BrowserWindowFeatures` or `AndroidBrowserWindow`.
 class ExtensionBrowserWindowHelper : public ExtensionRegistryObserver {
  public:
-  ExtensionBrowserWindowHelper(
-      chrome::BrowserCommandController* command_controller,
-      TabStripModel* tab_strip_model,
-      Profile* profile);
+  // NOTE: Non-Android platforms are required to call
+  // `SetBrowserCommandController` as part of initialization.
+  // Takes a BrowserWindowInterface instead of TabListInterface because the tab
+  // list may not be constructed by the time this object is created.
+  ExtensionBrowserWindowHelper(BrowserWindowInterface* browser,
+                               Profile* profile);
 
   ExtensionBrowserWindowHelper(const ExtensionBrowserWindowHelper&) = delete;
   ExtensionBrowserWindowHelper& operator=(const ExtensionBrowserWindowHelper&) =
       delete;
 
   ~ExtensionBrowserWindowHelper() override;
+
+#if !BUILDFLAG(IS_ANDROID)
+  void SetBrowserCommandController(
+      chrome::BrowserCommandController* command_controller);
+#endif
 
  private:
   // ExtensionRegistryObserver:
@@ -47,8 +57,11 @@ class ExtensionBrowserWindowHelper : public ExtensionRegistryObserver {
 
   // These pointers come from the associated Browser object and it will ensure
   // they outlive this object.
-  const raw_ref<chrome::BrowserCommandController> command_controller_;
-  const raw_ref<TabStripModel> tab_strip_model_;
+  const raw_ref<BrowserWindowInterface> browser_;
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/484035820): Extract this into its own class.
+  raw_ptr<chrome::BrowserCommandController> command_controller_;
+#endif
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};

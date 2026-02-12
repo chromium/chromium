@@ -7,10 +7,9 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/tab_list/tab_list_interface_observer.h"
+#include "chrome/browser/tab_list/tab_removed_reason.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -20,6 +19,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
@@ -30,44 +30,52 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 namespace {
 
-// A helper class to wait for a particular tab count. Requires the tab strip
+// A helper class to wait for a particular tab count. Requires the tab list
 // to outlive this object.
-class TestTabStripModelObserver : public TabStripModelObserver {
+class TestTabListObserver : public TabListInterfaceObserver {
  public:
-  explicit TestTabStripModelObserver(TabStripModel* model)
-      : model_(model), desired_count_(0) {
-    model->AddObserver(this);
+  explicit TestTabListObserver(TabListInterface* tab_list)
+      : tab_list_(tab_list) {
+    tab_list_->AddTabListInterfaceObserver(this);
   }
 
-  TestTabStripModelObserver(const TestTabStripModelObserver&) = delete;
-  TestTabStripModelObserver& operator=(const TestTabStripModelObserver&) =
-      delete;
+  TestTabListObserver(const TestTabListObserver&) = delete;
+  TestTabListObserver& operator=(const TestTabListObserver&) = delete;
 
-  ~TestTabStripModelObserver() override = default;
+  ~TestTabListObserver() override {
+    tab_list_->RemoveTabListInterfaceObserver(this);
+  }
 
   void WaitForTabCount(int count) {
-    if (model_->count() == count)
+    if (tab_list_->GetTabCount() == count) {
       return;
+    }
     desired_count_ = count;
     run_loop_.Run();
   }
 
  private:
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override {
-    if (model_->count() == desired_count_)
+  // TabListInterfaceObserver:
+  void OnTabAdded(tabs::TabInterface* tab, int index) override {
+    if (tab_list_->GetTabCount() == desired_count_) {
       run_loop_.Quit();
+    }
   }
 
-  raw_ptr<TabStripModel> model_;
-  int desired_count_;
+  void OnTabRemoved(tabs::TabInterface* tab, TabRemovedReason reason) override {
+    if (tab_list_->GetTabCount() == desired_count_) {
+      run_loop_.Quit();
+    }
+  }
+
+  raw_ptr<TabListInterface> tab_list_;
+  int desired_count_ = 0;
   base::RunLoop run_loop_;
 };
 
@@ -79,6 +87,12 @@ class ExtensionUnloadBrowserTest : public ExtensionBrowserTest {
     ExtensionBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("maps.google.com", "127.0.0.1");
   }
+
+  TabListInterface* GetTabListInterface() {
+    auto* tab_list = TabListInterface::From(browser_window_interface());
+    CHECK(tab_list);
+    return tab_list;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, TestUnload) {
@@ -87,17 +101,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, TestUnload) {
       LoadExtension(test_data_dir_.AppendASCII("unload_listener"));
   ASSERT_TRUE(extension);
   std::string id = extension->id();
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  auto* tab_list = GetTabListInterface();
+  ASSERT_EQ(1, tab_list->GetTabCount());
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), GURL("chrome://version/")));
   GURL initial_tab_url =
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetLastCommittedURL();
+      tab_list->GetTab(0)->GetContents()->GetLastCommittedURL();
   NavigateToURLInNewTab(extension->GetResourceURL("page.html"));
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, tab_list->GetTabCount());
   DisableExtension(id);
   // There should only be one remaining web contents - the initial one.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(
-      initial_tab_url,
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetLastCommittedURL());
+  ASSERT_EQ(1, tab_list->GetTabCount());
+  EXPECT_EQ(initial_tab_url,
+            tab_list->GetTab(0)->GetContents()->GetLastCommittedURL());
 }
 
 // After an extension is uninstalled, network requests from its content scripts
@@ -110,7 +125,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, UnloadWithContentScripts) {
       LoadExtension(test_data_dir_.AppendASCII("xhr_from_content_script"));
   ASSERT_TRUE(extension);
   std::string id = extension->id();
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  auto* tab_list = GetTabListInterface();
+  ASSERT_EQ(1, tab_list->GetTabCount());
   GURL test_url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), test_url));
 
@@ -119,8 +135,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, UnloadWithContentScripts) {
   // xhr.txt.mock-http-headers says `Access-Control-Allow-Origin: *`).
   const char kSendXhrScript[] = "document.getElementById('xhrButton').click();";
   content::DOMMessageQueue message_queue;
-  EXPECT_TRUE(content::ExecJs(
-      browser()->tab_strip_model()->GetActiveWebContents(), kSendXhrScript));
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), kSendXhrScript));
   std::string ack;
   EXPECT_TRUE(message_queue.WaitForMessage(&ack));
   EXPECT_EQ("true", ack);
@@ -128,30 +143,27 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, UnloadWithContentScripts) {
   DisableExtension(id);
 
   // The tab should still be open with the content script injected.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(
-      test_url,
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetLastCommittedURL());
+  ASSERT_EQ(1, tab_list->GetTabCount());
+  EXPECT_EQ(test_url,
+            tab_list->GetTab(0)->GetContents()->GetLastCommittedURL());
 
   // The content script sends an XHR with the webpage's (rather than
   // extension's) Origin header - this should succeed (given that
   // xhr.txt.mock-http-headers says `Access-Control-Allow-Origin: *`).
-  EXPECT_TRUE(content::ExecJs(
-      browser()->tab_strip_model()->GetActiveWebContents(), kSendXhrScript));
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), kSendXhrScript));
   EXPECT_TRUE(message_queue.WaitForMessage(&ack));
   EXPECT_EQ("true", ack);
 
   // Ensure the process has not been killed.
-  EXPECT_TRUE(browser()
-                  ->tab_strip_model()
-                  ->GetActiveWebContents()
-                  ->GetPrimaryMainFrame()
-                  ->IsRenderFrameLive());
+  EXPECT_TRUE(
+      GetActiveWebContents()->GetPrimaryMainFrame()->IsRenderFrameLive());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that windows with opaque origins opened by the extension are closed
 // when the extension is unloaded. Regression test for
 // https://crbug.com/40092671.
+// TODO(crbug.com/483480455): Port to desktop Android.
 IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, OpenedOpaqueWindows) {
   TestExtensionDir test_dir;
   constexpr char kManifest[] =
@@ -174,9 +186,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, OpenedOpaqueWindows) {
   ASSERT_TRUE(extension);
   about_blank_observer.WaitForNavigationFinished();
 
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* tab_list = GetTabListInterface();
+  EXPECT_EQ(2, tab_list->GetTabCount());
+  content::WebContents* web_contents = GetActiveWebContents();
   EXPECT_EQ(about_blank, web_contents->GetLastCommittedURL());
   url::Origin frame_origin =
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
@@ -185,14 +197,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, OpenedOpaqueWindows) {
   EXPECT_EQ(kExtensionScheme, precursor_tuple.scheme());
   EXPECT_EQ(extension->id(), precursor_tuple.host());
 
-  TestTabStripModelObserver test_tab_strip_model_observer(
-      browser()->tab_strip_model());
+  TestTabListObserver test_tab_strip_model_observer(tab_list);
   extension_registrar()->DisableExtension(
       extension->id(), {disable_reason::DISABLE_USER_ACTION});
   test_tab_strip_model_observer.WaitForTabCount(1);
 
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, tab_list->GetTabCount());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, CrashedTabs) {
   TestExtensionDir test_dir;
@@ -210,22 +222,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, CrashedTabs) {
   const GURL page_url = extension->GetResourceURL("page.html");
   NavigateToURLInNewTab(page_url);
 
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  auto* tab_list = GetTabListInterface();
+  EXPECT_EQ(2, tab_list->GetTabCount());
 
-  content::WebContents* active_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* active_tab = GetActiveWebContents();
   EXPECT_EQ(page_url, active_tab->GetLastCommittedURL());
 
   {
     content::ScopedAllowRendererCrashes allow_renderer_crashes(
         active_tab->GetPrimaryMainFrame()->GetProcess());
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL("chrome://crash"), WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    // Ignore the return value for navigation, since it will crash.
+    (void)NavigateToURL(active_tab, GURL("chrome://crash"));
   }
 
   // There should still be two open tabs, but the active one is crashed.
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, tab_list->GetTabCount());
   EXPECT_TRUE(active_tab->IsCrashed());
 
   // Even though the tab is crashed, it should still have the last committed
@@ -234,19 +245,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, CrashedTabs) {
 
   // Unloading the extension should close the crashed tab, since its origin was
   // still the extension's origin.
-  TestTabStripModelObserver test_tab_strip_model_observer(
-      browser()->tab_strip_model());
+  TestTabListObserver test_tab_list_observer(tab_list);
   extension_registrar()->DisableExtension(
       extension->id(), {disable_reason::DISABLE_USER_ACTION});
-  test_tab_strip_model_observer.WaitForTabCount(1);
+  test_tab_list_observer.WaitForTabCount(1);
 
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_NE(extension->url().DeprecatedGetOriginAsURL(),
-            browser()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetLastCommittedURL()
-                .DeprecatedGetOriginAsURL());
+  EXPECT_EQ(1, tab_list->GetTabCount());
+  EXPECT_NE(
+      extension->url().DeprecatedGetOriginAsURL(),
+      GetActiveWebContents()->GetLastCommittedURL().DeprecatedGetOriginAsURL());
 }
 
 // TODO(devlin): Investigate what to do for embedded iframes.

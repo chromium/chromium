@@ -12,7 +12,12 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/sessions/core/session_id.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+
+namespace extensions {
+class ExtensionBrowserWindowHelper;
+}  // namespace extensions
 
 // Android implementation of |BrowserWindowInterface|.
 class AndroidBrowserWindow final : public BrowserWindowInterface {
@@ -62,6 +67,13 @@ class AndroidBrowserWindow final : public BrowserWindowInterface {
   const BrowserWindowInterface::Type type_;
   const raw_ref<Profile> profile_;
   const SessionID session_id_;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // Android doesn't have BrowserWindowFeatures, so this lives here.
+  // TODO(crbug.com/484037810): Introduce BrowserWindowFeatures for Android.
+  std::unique_ptr<extensions::ExtensionBrowserWindowHelper>
+      extension_browser_window_helper_;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   base::WeakPtrFactory<AndroidBrowserWindow> weak_ptr_factory_{this};
 };

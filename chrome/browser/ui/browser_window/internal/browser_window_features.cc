@@ -409,9 +409,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extension_browser_window_helper_ =
-      std::make_unique<extensions::ExtensionBrowserWindowHelper>(
-          browser_command_controller_.get(), browser->GetTabStripModel(),
-          profile);
+      std::make_unique<extensions::ExtensionBrowserWindowHelper>(browser,
+                                                                 profile);
+  extension_browser_window_helper_->SetBrowserCommandController(
+      browser_command_controller_.get());
 #endif
 
   if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {

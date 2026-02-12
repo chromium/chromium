@@ -61,7 +61,6 @@ source_set("internal") {
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/devtools",
-      "//chrome/browser/extensions",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/prefs",
@@ -145,6 +144,10 @@ source_set("internal") {
     if (use_aura) {
       deps += [ "//chrome/browser/ui:overscroll_pref_manager" ]
     }
+  }
+
+  if (enable_extensions_core) {
+    deps += [ "//chrome/browser/extensions" ]
   }
 }
 
