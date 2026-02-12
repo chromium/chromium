@@ -110,7 +110,7 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns a reference to Page Java counterpart.
-  virtual const base::android::JavaRef<jobject>& GetJavaPage() = 0;
+  virtual base::android::ScopedJavaLocalRef<jobject> GetJavaPage() = 0;
 #endif
 
  private:

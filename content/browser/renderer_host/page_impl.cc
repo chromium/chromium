@@ -118,8 +118,8 @@ const std::string& PageImpl::GetContentsMimeType() const {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-const base::android::JavaRef<jobject>& PageImpl::GetJavaPage() {
-  return page_proxy_->java_page();
+base::android::ScopedJavaLocalRef<jobject> PageImpl::GetJavaPage() {
+  return page_proxy_->GetJavaPage();
 }
 #endif
 

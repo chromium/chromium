@@ -76,7 +76,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   bool IsPageScaleFactorOne() override;
   const std::string& GetContentsMimeType() const override;
 #if BUILDFLAG(IS_ANDROID)
-  const base::android::JavaRef<jobject>& GetJavaPage() override;
+  base::android::ScopedJavaLocalRef<jobject> GetJavaPage() override;
 #endif
 
   base::WeakPtr<PageImpl> GetWeakPtrImpl();
