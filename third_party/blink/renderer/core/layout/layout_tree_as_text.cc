@@ -320,9 +320,6 @@ void WriteLayoutObject(StringBuilder& ts,
     if (needs_layout)
       ts << ")";
   }
-
-  if (o.ChildLayoutBlockedByDisplayLock())
-    ts << " (display-locked)";
 }
 
 static void WriteTextFragment(StringBuilder& ts,

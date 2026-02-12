@@ -2153,6 +2153,9 @@ String LayoutObject::DecoratedName() const {
   name.Append(GetName());
 
   Vector<const char*> attributes;
+  if (ChildLayoutBlockedByDisplayLock()) {
+    attributes.push_back("display-locked");
+  }
   if (IsAnonymous()) {
     attributes.push_back("anonymous");
   }
@@ -2649,8 +2652,6 @@ void LayoutObject::DumpLayoutObject(StringBuilder& string_builder,
     string_builder.Append('\t');
     string_builder.Append(GetNode()->ToString());
   }
-  if (ChildLayoutBlockedByDisplayLock())
-    string_builder.Append(" (display-locked)");
 }
 
 void LayoutObject::DumpLayoutTreeAndMark(StringBuilder& string_builder,
