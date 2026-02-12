@@ -278,6 +278,24 @@ TEST_F(FormStructureRationalizerTest, RationalizePhoneNumberTrunkTypes) {
   EXPECT_THAT(GetTypes(*form_structure), ElementsAreArray(expected_types));
 }
 
+// Tests that `(PHONE_HOME_COUNTRY_CODE, PHONE_HOME_WHOLE_NUMBER)` is
+// rationalized to `(PHONE_HOME_COUNTRY_CODE,
+// PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX)`.
+TEST_F(FormStructureRationalizerTest,
+       RationalizePhoneNumberTrunkTypes_CountryCodeAndWholeNumber) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillImprovePhoneNumberRationalization};
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure({
+      {"Name", "name", NAME_FULL},
+      {"Country Code", "country_code", PHONE_HOME_COUNTRY_CODE},
+      {"Phone Number", "phone", PHONE_HOME_WHOLE_NUMBER},
+  });
+
+  EXPECT_THAT(GetTypes(*form_structure),
+              FieldTypesAre(NAME_FULL, PHONE_HOME_COUNTRY_CODE,
+                            PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX));
+}
+
 // Tests that a form that has only one address predicted as
 // ADDRESS_HOME_STREET_ADDRESS is not modified by the address rationalization.
 TEST_F(FormStructureRationalizerTest,

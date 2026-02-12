@@ -612,6 +612,7 @@ std::vector<std::pair<base::test::FeatureRef, bool>> GetWipFeatures(
       {features::kAutofillImprovePhoneFieldParser, true},
       {features::kAutofillNewAugmentedPhoneCountryCodeRegex, true},
       {features::kAutofillPreferPhoneCountryCodeTypeOverCountryHtmlType, true},
+      {features::kAutofillImprovePhoneNumberRationalization, true},
       // TODO(crbug.com/320965828): Understand the changes to the expectations
       // caused by this feature.
       {features::kAutofillBetterLocalHeuristicPlaceholderSupport, false},
