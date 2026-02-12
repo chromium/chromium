@@ -296,13 +296,16 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInAndSynced) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
+                       ClickObject_SignedInAndSyncingHistory) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in and sync to opted in test account.
   CHECK(test_account.has_value());
-  sign_in_functions.TurnOnSync(*test_account, 0);
-  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
+  sign_in_functions.SignInFromSettingsWithSyncChoice(
+      *test_account, 0,
+      signin::test::SignInFunctions::SyncChoice::
+          kAcceptAllOptionalDataTypesSync);
 
   // Navigate to a website and wait for paint before starting controller.
   WaitForPaint(kNpsObjectUrl);
@@ -343,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInAndSynced) {
   VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInNotSynced) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInOnWebOnly) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in but do not sync to opted in test account.
@@ -468,8 +471,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in and sync to opted in test account.
   CHECK(test_account.has_value());
-  sign_in_functions.TurnOnSync(*test_account, 0);
-  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
+  sign_in_functions.SignInFromSettingsWithSyncChoice(
+      *test_account, 0,
+      signin::test::SignInFunctions::SyncChoice::
+          kAcceptAllOptionalDataTypesSync);
 
   // Navigate to a website and wait for paint before starting controller.
   WaitForPaint(kNpsTranslateUrl);
@@ -507,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
-                       TranslateScreen_SignedInNotSynced) {
+                       TranslateScreen_SignedInOnWebOnly) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in but do not sync to opted in test account.
