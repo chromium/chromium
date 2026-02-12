@@ -19,7 +19,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/policy/policy_export.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
 #include "url/gurl.h"

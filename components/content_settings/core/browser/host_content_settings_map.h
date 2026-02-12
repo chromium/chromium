@@ -34,7 +34,6 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
 
 // In the context of active expiry enforcement, content settings are considered
 // expired if their expiration time is before 'Now() + `kEagerExpiryBuffer` at

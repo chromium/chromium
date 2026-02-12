@@ -18,7 +18,6 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
