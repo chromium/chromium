@@ -274,9 +274,6 @@ void BrowserAccessibilityManagerWin::FireSourceEvent(
       if (node->GetData().IsInvocable())
         FireUiaAccessibilityEvent(UIA_Invoke_InvokedEventId, node);
       break;
-    case ax::mojom::Event::kControlsChanged:
-      FireUiaPropertyChangedEvent(UIA_ControllerForPropertyId, node);
-      break;
     case ax::mojom::Event::kEndOfTest:
       // Event tests use kEndOfTest as a sentinel to mark the end of the test.
       FireUiaAccessibilityEvent(
