@@ -276,15 +276,21 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
           PermissionManagerFactory::GetForProfile(browser()->profile())
               ->GetPermissionContextForTesting(
                   ContentSettingsType::MEDIASTREAM_CAMERA));
+  camera_permission_context->set_can_request_device_permission_for_test(
+      /*can_request=*/false);
   camera_permission_context->set_has_device_permission_for_test(
       /*has_permission=*/false);
   permission_service.AddPermissionStatusObserver(
       blink::mojom::PermissionName::VIDEO_CAPTURE);
   ClickElementWithId(web_contents(), "camera");
   // Simulate that we accept the device permission request.
+  camera_permission_context->set_can_request_device_permission_for_test(
+      /*can_request=*/true);
   camera_permission_context->set_has_device_permission_for_test(
       /*has_permission=*/true);
   permission_service.WaitForPermissionGranted();
+  camera_permission_context->set_can_request_device_permission_for_test(
+      std::nullopt);
   camera_permission_context->set_has_device_permission_for_test(std::nullopt);
 }
 

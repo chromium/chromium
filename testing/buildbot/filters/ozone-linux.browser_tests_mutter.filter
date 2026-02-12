@@ -55,7 +55,6 @@
 -HeadlessModeProtocolBrowserTest.InputClipboardOps
 -OmniboxSearchAggregatorTest.*
 -ParameterizedFrameNodeImplBrowserTest.ViewportIntersection_OutOfView/*
--PermissionElementBrowserTest.CombinedPermissionAndDeviceStatusesGranted
 -ProfileHelperTest.OpenNewWindowForProfile
 -SearchPrefetchServiceNavigationPrefetchBrowserTest.NavigationPrefetchIsServedForOmniboxOpenSelection
 
