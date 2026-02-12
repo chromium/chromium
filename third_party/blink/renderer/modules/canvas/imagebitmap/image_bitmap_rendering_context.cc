@@ -186,7 +186,7 @@ bool ImageBitmapRenderingContext::PushFrame() {
           CanvasNon2DResourceProviderSharedImage::Create(
               Host()->Size(), format, alpha_type, color_space,
               CanvasResourceProvider::ShouldInitialize::kCallClear,
-              SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
+              SharedGpuContext::ContextProviderWrapper(),
               gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, Host());
     } else if (static_cast<OffscreenCanvas*>(Host())->HasPlaceholderCanvas()) {
       resource_provider_for_offscreen_canvas_ =

@@ -852,7 +852,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     resource_provider = CanvasNon2DResourceProviderSharedImage::Create(
         size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
         kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
-        RasterMode::kGPU, shared_image_usages);
+        shared_image_usages);
 
     if (!resource_provider || !resource_provider->IsValid()) {
       return nullptr;
@@ -1998,8 +1998,8 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
     }
     resource_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
         Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
-        SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-        shared_image_usage_flags, Host());
+        SharedGpuContext::ContextProviderWrapper(), shared_image_usage_flags,
+        Host());
   } else {
     resource_provider_ =
         CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(

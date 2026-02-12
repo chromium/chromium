@@ -66,7 +66,7 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
       image_info.alphaType(),
       SkColorSpaceToGfxColorSpace(image_info.refColorSpace()),
       CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
-      RasterMode::kGPU, kSharedImageUsageFlags);
+      kSharedImageUsageFlags);
   if (!provider || !provider->IsAccelerated())
     return nullptr;
 
