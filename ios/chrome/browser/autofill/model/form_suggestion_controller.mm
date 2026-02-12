@@ -45,13 +45,6 @@ using PipelineCompletionBlock = void (^)(NSUInteger index);
 
 namespace {
 
-// TODO(crbug.com/480933607): Change these placeholders to custom symbols when
-// the SVG files are ready.
-NSString* const kPassportSymbol = @"person.crop.rectangle";
-NSString* const kIdCardSymbol = @"rectangle.stack.person.crop";
-NSString* const kSecureFlightIdSymbol = @"person.crop.circle.badge.checkmark";
-NSString* const kFlightReservationSymbol = @"airplane";
-
 // Point size of the SF Symbol used for default icons.
 const CGFloat kSymbolPointSize = 17.0f;
 
@@ -133,21 +126,27 @@ UIImage* defaultIconForEntityType(autofill::EntityTypeName entity_type_name) {
   NSString* symbol_name = nil;
   switch (entity_type_name) {
     case autofill::EntityTypeName::kPassport:
-      symbol_name = kPassportSymbol;
+      // TODO(crbug.com/480933607): Change this placeholder to a custom passport
+      // symbol when the SVG file is ready.
+      symbol_name = kPersonTextRectangleSymbol;
       break;
     case autofill::EntityTypeName::kDriversLicense:
     case autofill::EntityTypeName::kNationalIdCard:
-      symbol_name = kIdCardSymbol;
+      symbol_name = kPersonTextRectangleSymbol;
       break;
     case autofill::EntityTypeName::kVehicle:
       symbol_name = kCarSymbol;
       break;
     case autofill::EntityTypeName::kKnownTravelerNumber:
     case autofill::EntityTypeName::kRedressNumber:
-      symbol_name = kSecureFlightIdSymbol;
+      symbol_name = kPersonFillCheckmarkSymbol;
       break;
     case autofill::EntityTypeName::kFlightReservation:
-      symbol_name = kFlightReservationSymbol;
+      if (@available(iOS 26, *)) {
+        symbol_name = kAirplaneUpRightSymbol;
+      } else {
+        symbol_name = kAirplaneSymbol;
+      }
       break;
     default:
       return nil;
