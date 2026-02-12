@@ -244,6 +244,13 @@ BrowserViewTabbedLayoutImpl::CalculateHorizontalLayout(
                             (toolbar_minimum_width + layout.side_panel_padding);
       layout.force_top_container_to_top =
           remainder < min_toolbar_height_side_panel_width;
+
+      // If still allowing toolbar height, clamp the sidepanel based on what the
+      // toolbar actually supports.
+      if (!layout.force_top_container_to_top) {
+        preferred_toolbar_height_side_panel_width =
+            std::min(preferred_toolbar_height_side_panel_width, remainder);
+      }
     }
   }
 
@@ -267,6 +274,16 @@ BrowserViewTabbedLayoutImpl::CalculateHorizontalLayout(
     // Side panel implies a separator, which means we have to give a little
     // more room for the contents.
     layout.min_content_width += views::Separator::kThickness;
+  }
+
+  // If the top container is not forced to the top, it occupies the same
+  // horizontal row as the side panel. In this case, ensure that the minimum
+  // width of the content area includes the minimum width of the toolbar.
+  if (IsParentedToAndVisible(views().toolbar_height_side_panel.get(),
+                             views().browser_view) &&
+      !layout.force_top_container_to_top) {
+    layout.min_content_width =
+        std::max(layout.min_content_width, toolbar_minimum_width);
   }
 
   // When both side panels are present, one is animating in and the other is

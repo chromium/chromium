@@ -3168,3 +3168,59 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(
       toolbar_height_side_panel->GetContentParentView()->children().size(), 1);
 }
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
+                       ToolbarHeightSidePanelClampsToToolbar) {
+  Init();
+
+  // Register a toolbar-height side panel entry.
+  auto* registry = browser()
+                       ->GetActiveTabInterface()
+                       ->GetTabFeatures()
+                       ->side_panel_registry();
+  registry->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights));
+  registry->Register(std::make_unique<SidePanelEntry>(
+      SidePanelEntry::PanelType::kToolbar,
+      SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights),
+      base::BindRepeating(
+          [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
+      /*default_content_width_callback=*/base::NullCallback()));
+
+  coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
+
+  // Ensure the side panel is visible and laid out.
+  auto* browser_view = &browser()->GetBrowserView();
+  coordinator()->DisableAnimationsForTesting();
+  views::test::RunScheduledLayout(browser_view);
+
+  auto* side_panel = browser_view->toolbar_height_side_panel();
+  ASSERT_TRUE(side_panel->GetVisible());
+
+  // Set the browser window to a specific width.
+  // We need enough width for the toolbar minimum size + some side panel width.
+  int toolbar_min_width = browser_view->toolbar()->GetMinimumSize().width();
+
+  // Set window width to toolbar_min + 400.
+  // This ensures remainder >= min_side_panel_width (approx 377), so it stays
+  // on the same row, but is small enough to clamp a larger desired width.
+  int target_window_width = toolbar_min_width + 400;
+
+  // Resize the browser window.
+  gfx::Rect bounds = browser_view->GetWidget()->GetWindowBoundsInScreen();
+  bounds.set_width(target_window_width);
+  browser_view->GetWidget()->SetBounds(bounds);
+  views::test::RunScheduledLayout(browser_view);
+
+  // Try to set side panel to 600.
+  int desired_width = 600;
+  side_panel->SetPanelWidth(desired_width);
+  views::test::RunScheduledLayout(browser_view);
+
+  // It should be clamped.
+  EXPECT_LT(side_panel->width(), desired_width);
+
+  // Verify it is taking up the remaining space roughly.
+  // It should be around 400 - padding.
+  EXPECT_GT(side_panel->width(), 300);
+}
