@@ -121,7 +121,7 @@ bool IsOpsDisplayScaleFactorEnabled() {
 // and "ReducePPMs". In case of errors this flag can be disabled without
 // affecting the rest of the experiment.
 BASE_FEATURE(kScreenWinDisplayLookupByHMONITOR,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsScreenWinDisplayLookupByHMONITOREnabled() {
   return base::FeatureList::IsEnabled(base::features::kReducePPMs) &&
