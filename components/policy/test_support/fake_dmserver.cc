@@ -113,6 +113,9 @@ void ParseManagedUsers(const base::DictValue* dict,
         policy_storage->add_managed_user(*managed_val);
       }
     }
+  } else {
+    LOG(INFO) << "The managed_users key isn't found, all users are managed";
+    policy_storage->add_managed_user("*");
   }
 }
 

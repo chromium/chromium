@@ -110,10 +110,25 @@ define the actual policies to be applied.
 
 ### Example `policies.json`
 
+Minimal example:
+
 ```json
 {
-  "policy_user": "<user>@gmail.com",
-  "managed_users": ["*"],
+  "user": {
+    "AllowDinosaurEasterEgg": true
+  },
+  "machine-level-user": {
+    "HomepageLocation": "https://www.google.com"
+  }
+}
+```
+
+More complete example showcasing some of fake_dmserver's features:
+
+```json
+{
+  "policy_user": "alice@example.com",
+  "managed_users": ["alice@example.com", "bob@example.com"],
   "user": {
     "AllowDinosaurEasterEgg": true,
     "ShowHomeButton": true,
