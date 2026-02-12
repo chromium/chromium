@@ -108,21 +108,10 @@ CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
 
   auto sk_image = surface->makeImageSnapshot();
   if (sk_image) {
-    auto last_snapshot_sk_image_id = snapshot_sk_image_id_;
-    snapshot_sk_image_id_ = sk_image->uniqueID();
-
-    // Ensure that a new PaintImage::ContentId is used only when the underlying
-    // SkImage changes. This is necessary to ensure that the same image results
-    // in a cache hit in cc's ImageDecodeCache.
-    if (snapshot_paint_image_content_id_ == PaintImage::kInvalidContentId ||
-        last_snapshot_sk_image_id != snapshot_sk_image_id_) {
-      snapshot_paint_image_content_id_ = PaintImage::GetNextContentId();
-    }
-
     paint_image =
         PaintImageBuilder::WithDefault()
             .set_id(snapshot_paint_image_id_)
-            .set_image(std::move(sk_image), snapshot_paint_image_content_id_)
+            .set_image(std::move(sk_image), PaintImage::GetNextContentId())
             .TakePaintImage();
   }
 
