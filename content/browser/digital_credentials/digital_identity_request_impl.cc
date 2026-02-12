@@ -406,7 +406,7 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
         status, response->protocol.has_value() ? response->protocol : protocol,
         std::move(response->data));
   } else {
-    std::move(callback_).Run(status, std::nullopt, std::nullopt);
+    std::move(callback_).Run(status, std::nullopt, base::Value());
   }
 }
 
@@ -446,7 +446,7 @@ void DigitalIdentityRequestImpl::Get(
               "size", digital_credential_requests.size());
   if (!webid::IsDigitalCredentialsEnabled()) {
     std::move(callback).Run(RequestDigitalIdentityStatus::kError,
-                            /*protocol=*/std::nullopt, /*token=*/std::nullopt);
+                            /*protocol=*/std::nullopt, /*token=*/base::Value());
     return;
   }
 
@@ -460,7 +460,7 @@ void DigitalIdentityRequestImpl::Get(
   if (callback_) {
     // Only allow one in-flight wallet request.
     std::move(callback).Run(RequestDigitalIdentityStatus::kErrorTooManyRequests,
-                            /*protocol=*/std::nullopt, /*token=*/std::nullopt);
+                            /*protocol=*/std::nullopt, /*token=*/base::Value());
     return;
   }
 
@@ -540,7 +540,7 @@ void DigitalIdentityRequestImpl::Create(
               static_cast<int>(digital_credential_requests.size()));
   if (!webid::IsDigitalCredentialsCreationEnabled()) {
     std::move(callback).Run(RequestDigitalIdentityStatus::kError,
-                            /*protocol=*/std::nullopt, /*token=*/std::nullopt);
+                            /*protocol=*/std::nullopt, /*token=*/base::Value());
     return;
   }
 
@@ -554,7 +554,7 @@ void DigitalIdentityRequestImpl::Create(
   if (callback_) {
     // Only allow one in-flight wallet request.
     std::move(callback).Run(RequestDigitalIdentityStatus::kErrorTooManyRequests,
-                            /*protocol=*/std::nullopt, /*token=*/std::nullopt);
+                            /*protocol=*/std::nullopt, /*token=*/base::Value());
     return;
   }
 

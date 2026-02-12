@@ -64,8 +64,8 @@ class TestDigitalIdentityProvider final
     // Calling the callback might destroy `this`.
     std::move(callback).Run(DigitalCredential(
         /*protocol=*/std::nullopt,
-        base::JSONReader::Read(R"({"token" : "test token"})",
-                               base::JSON_PARSE_CHROMIUM_EXTENSIONS)));
+        *base::JSONReader::Read(R"({"token" : "test token"})",
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS)));
     if (observer) {
       std::move(observer).Run();
     }

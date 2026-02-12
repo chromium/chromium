@@ -127,14 +127,21 @@ void DigitalIdentityProviderAndroid::OnReceive(
   }
   auto status_for_metrics =
       static_cast<RequestStatusForMetrics>(j_status_for_metrics);
-  std::move(callback_).Run(
-      (status_for_metrics == RequestStatusForMetrics::kSuccess)
-          ? base::expected<DigitalCredential, RequestStatusForMetrics>(
-                DigitalCredential(
-                    std::move(protocol),
-                    base::JSONReader::Read(
-                        result, base::JSON_PARSE_CHROMIUM_EXTENSIONS)))
-          : base::unexpected(status_for_metrics));
+
+  if (status_for_metrics != RequestStatusForMetrics::kSuccess) {
+    std::move(callback_).Run(base::unexpected(status_for_metrics));
+    return;
+  }
+
+  auto data =
+      base::JSONReader::Read(result, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (data) {
+    std::move(callback_).Run(
+        DigitalCredential(std::move(protocol), std::move(*data)));
+  } else {
+    std::move(callback_).Run(
+        base::unexpected(RequestStatusForMetrics::kErrorInvalidJson));
+  }
 }
 
 DEFINE_JNI(DigitalIdentityProvider)
