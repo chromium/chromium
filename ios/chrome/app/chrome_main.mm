@@ -50,15 +50,9 @@ int g_double_free_or_corruption_detected_count = 0;
 NSString* const kUIApplicationDelegateInfoKey = @"UIApplicationDelegate";
 
 void StartCrashController() {
-// TODO(crbug.com/399131917): Disable CrashHelper for blink for now. The
-// chromium binary is loaded via a framework with blink and that appears to
-// cause the task_set_exception_ports/task_swap_exception_port to fail. It may
-// be that setting the exception ports from a framework library isn't allowed.
-#if !BUILDFLAG(USE_BLINK)
   @autoreleasepool {
     crash_helper::Start();
   }
-#endif
 }
 
 void SetTextDirectionIfPseudoRTLEnabled() {
