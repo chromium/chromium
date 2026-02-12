@@ -52,6 +52,7 @@
 #include "ui/gl/test/gl_surface_test_support.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "components/viz/service/display/overlay_processor_mac.h"
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #endif
 
@@ -310,7 +311,19 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
       viz::SkiaOutputSurfaceImpl::Create(display_dependency.get(),
                                          renderer_settings_, &debug_settings_);
 
-  auto overlay_processor = std::make_unique<viz::OverlayProcessorStub>();
+  std::unique_ptr<viz::OverlayProcessorInterface> overlay_processor;
+#if BUILDFLAG(IS_MAC)
+  if (output_to_window_) {
+    // On macOS, OverlayProcessorMac is essential for interactive rendering
+    // (e.g., in views_examples) to avoid a blank/white screen, as it handles
+    // the translation of quads to CALayer parameters.
+    overlay_processor = std::make_unique<viz::OverlayProcessorMac>();
+  } else {
+    overlay_processor = std::make_unique<viz::OverlayProcessorStub>();
+  }
+#else
+  overlay_processor = std::make_unique<viz::OverlayProcessorStub>();
+#endif
 
   std::unique_ptr<viz::BeginFrameSource> begin_frame_source;
   if (disable_vsync_) {
