@@ -4,6 +4,39 @@
 
 module record_replay.mojom;
 
+// There is one instance of this interface per RenderFrame in the render
+// process. The events are initiated by the browser process.
+//
+// Beware that data sent from the renderer to the browser is not to be trusted.
+// In particular, element selectors shall not be parsed in the browser process.
+interface RecordReplayAgent {
+  // Instructs the renderer to send events to the RecordReplayDriver.
+  StartRecording();
+
+  // Instructs the renderer to stop sending events to the RecordReplayDriver.
+  StopRecording();
+
+  // Determines a selector for a given DOM element.
+  // If unsuccessful, `element_selector` is the empty string.
+  // TDOO(b/476101114): Generalize to multiple selectors.
+  GetElementSelector(int64 dom_node_id) => (string element_selector);
+
+  // Determines all elements that match the given selector. The response is a
+  // list of DOM node IDs.
+  GetMatchingElements(string element_selector) => (array<int64> elements);
+
+  // Dispatches a click event on the given DOM element.
+  DoClick(int64 dom_node_id) => (bool success);
+
+  // Dispatches a paste event into the given form control element element which
+  // replaces its content with `text`.
+  DoPaste(int64 dom_node_id, string text) => (bool success);
+
+  // Selects the first option of the given select element that has the given
+  // `value`.
+  DoSelect(int64 dom_node_id, string value) => (bool success);
+};
+
 // There is one instance of this interface per RenderFrameHost in the browser
 // process. The events are initiated by the renderer process.
 //
@@ -15,6 +48,9 @@ module record_replay.mojom;
 //   Currently this is a CSS selector, but the browser should make no
 //   assumptions about the format.
 //   TODO(b/476101114): Generalize to multiple selectors.
+//
+// Beware that data sent from the renderer to the browser is not to be trusted.
+// In particular, element selectors shall not be parsed in the browser process.
 interface RecordReplayDriver {
   // Fired when a left-click or tap on the given element happens.
   OnClick(int64 dom_node_id, string element_selector);

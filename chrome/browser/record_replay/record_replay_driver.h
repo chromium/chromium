@@ -96,10 +96,13 @@ class RecordReplayDriver : public mojom::RecordReplayDriver {
   }
 
  private:
+  const mojo::AssociatedRemote<mojom::RecordReplayAgent>& GetAgent();
+
   const raw_ref<RecordReplayClient> client_;
   const raw_ref<content::RenderFrameHost> rfh_;
   raw_ptr<TestRecordReplayAgent> test_autofill_agent_ = nullptr;
   mojo::AssociatedReceiver<mojom::RecordReplayDriver> receiver_{this};
+  mojo::AssociatedRemote<mojom::RecordReplayAgent> agent_;
 };
 
 }  // namespace record_replay

@@ -1,0 +1,30 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+static_library("record_replay") {
+  sources = [
+    "record_replay_agent.cc",
+    "record_replay_agent.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common/record_replay",
+    "//chrome/common/record_replay:mojom",
+    "//content/public/renderer",
+    "//third_party/blink/public:blink",
+    "//third_party/blink/public/common",
+  ]
+}
+
+source_set("test_support") {
+  sources = [ "record_replay_agent_test_api.h" ]
+
+  deps = [
+    ":record_replay",
+    "//base",
+  ]
+}

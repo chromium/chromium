@@ -27,6 +27,14 @@ void RecordReplayDriver::BindPendingReceiver(
   receiver_.Bind(std::move(pending_receiver));
 }
 
+const mojo::AssociatedRemote<mojom::RecordReplayAgent>&
+RecordReplayDriver::GetAgent() {
+  if (!agent_) {
+    rfh_->GetRemoteAssociatedInterfaces()->GetInterface(&agent_);
+  }
+  return agent_;
+}
+
 bool RecordReplayDriver::IsActive() const {
   return rfh_->IsActive();
 }
@@ -36,61 +44,68 @@ const blink::LocalFrameToken& RecordReplayDriver::GetFrameToken() const {
 }
 
 void RecordReplayDriver::StartRecording() {
-  // TODO(b/476101114): Implement.
   if (test_autofill_agent_) {
     test_autofill_agent_->StartRecording();
+    return;
   }
+  GetAgent()->StartRecording();
 }
 
 void RecordReplayDriver::StopRecording() {
-  // TODO(b/476101114): Implement.
   if (test_autofill_agent_) {
     test_autofill_agent_->StopRecording();
+    return;
   }
+  GetAgent()->StopRecording();
 }
 
 void RecordReplayDriver::GetElementSelector(
     int64_t dom_node_id,
     base::OnceCallback<void(const std::string&)> cb) {
-  // TODO(b/476101114): Implement.
   if (test_autofill_agent_) {
     test_autofill_agent_->GetElementSelector(dom_node_id, std::move(cb));
+    return;
   }
+  GetAgent()->GetElementSelector(dom_node_id, std::move(cb));
 }
 
 void RecordReplayDriver::GetMatchingElements(
     const std::string& element_selector,
     base::OnceCallback<void(const std::vector<int64_t>&)> cb) {
-  // TODO(b/476101114): Implement.
   if (test_autofill_agent_) {
     test_autofill_agent_->GetMatchingElements(element_selector, std::move(cb));
+    return;
   }
+  GetAgent()->GetMatchingElements(element_selector, std::move(cb));
 }
 
 void RecordReplayDriver::DoClick(int64_t dom_node_id,
                                  base::OnceCallback<void(bool)> cb) {
-  // TODO(b/476101114): Implement.
   if (test_autofill_agent_) {
     test_autofill_agent_->DoClick(dom_node_id, std::move(cb));
+    return;
   }
+  GetAgent()->DoClick(dom_node_id, std::move(cb));
 }
 
 void RecordReplayDriver::DoPaste(int64_t dom_node_id,
                                  const std::string& text,
                                  base::OnceCallback<void(bool)> cb) {
-  // TODO(b/476101114): Implement.
   if (test_autofill_agent_) {
     test_autofill_agent_->DoPaste(dom_node_id, text, std::move(cb));
+    return;
   }
+  GetAgent()->DoPaste(dom_node_id, text, std::move(cb));
 }
 
 void RecordReplayDriver::DoSelect(int64_t dom_node_id,
                                   const std::string& value,
                                   base::OnceCallback<void(bool)> cb) {
-  // TODO(b/476101114): Implement.
   if (test_autofill_agent_) {
     test_autofill_agent_->DoSelect(dom_node_id, value, std::move(cb));
+    return;
   }
+  GetAgent()->DoSelect(dom_node_id, value, std::move(cb));
 }
 
 void RecordReplayDriver::OnClick(int64_t dom_node_id,
