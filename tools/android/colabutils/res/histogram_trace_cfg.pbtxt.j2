@@ -1,4 +1,3 @@
-
 buffers {
   size_kb: 65536
   fill_policy: DISCARD
@@ -36,10 +35,12 @@ data_sources {
   config {
     name: "org.chromium.histogram_sample"
     chromium_histogram_samples {
+      {% for name in histogram_names %}
       histograms {
-        histogram_name: "PageLoad.PaintTiming.NavigationToFirstContentfulPaint"
+        histogram_name: "{{ name }}"
       }
+      {% endfor %}
     }
   }
 }
-duration_ms: 10000
+duration_ms: {{ duration | default(10000) }}

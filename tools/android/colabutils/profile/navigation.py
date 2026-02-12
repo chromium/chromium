@@ -9,6 +9,8 @@ from contextlib import ExitStack
 
 from .. import trace
 
+__FCP_HISTOGRAM_NAME = "PageLoad.PaintTiming.NavigationToFirstContentfulPaint"
+
 
 async def measure_fcp(app, url, trace_file=None, trace_config=None):
     """Measures FCP to navigate to `url` by checking the value recorded into
@@ -32,15 +34,15 @@ async def measure_fcp(app, url, trace_file=None, trace_config=None):
     Returns:
         The FCP time in milliseconds.
     """
-    if trace_config is None:
-        # This assumes the current working directory is the chromium src root.
-        trace_config = os.path.join(os.getcwd(), "tools", "android",
-                                    "colabutils", "res", "fcp_trace_cfg.pbtxt")
-
-    if not os.path.exists(trace_config):
-        raise FileNotFoundError(f"Trace config not found at {trace_config}")
-
     with ExitStack() as stack:
+        if trace_config is None:
+            trace_config = stack.enter_context(
+                trace.histograms_trace_config(__FCP_HISTOGRAM_NAME))
+
+        if not os.path.exists(trace_config):
+            raise FileNotFoundError(
+                f"Trace config not found at {trace_config}")
+
         # If no trace file is provided, create a temporary one that will be
         # cleaned up upon exiting the context.
         if trace_file is None:
@@ -59,32 +61,9 @@ async def _measure_fcp(app, url, trace_file, trace_config):
         await app.start(url=url)
         await asyncio.sleep(10)
 
-    df = await trace_file.query(_FCP_TIME_QUERY)
+    df = await trace_file.query(
+        trace.histogram_values_query(__FCP_HISTOGRAM_NAME))
     try:
         return int(df.iloc[0, 0])
     except IndexError:
         raise LookupError
-
-
-_FCP_TIME_QUERY = r"""
-INCLUDE PERFETTO MODULE slices.with_context;
-
-SELECT
--- Select the display_value from the second join to the args table.
--- This will be the value for 'chrome_histogram_sample.sample'.
-args_sample.display_value AS sample_value
-FROM
-thread_or_process_slice AS slice
--- First join to args table to FIND the event by its name.
-LEFT JOIN
-args AS args_name ON slice.arg_set_id = args_name.arg_set_id
--- Second join to the same args table to GET the sample value from that event.
-LEFT JOIN
-args AS args_sample ON slice.arg_set_id = args_sample.arg_set_id
-WHERE
--- Use the first join to filter for the specific event name.
-args_name.display_value = 'PageLoad.PaintTiming.NavigationToFirstContentfulPaint'
-AND args_name.key = 'chrome_histogram_sample.name'
--- Use the second join to specify which key's value you want to select.
-AND args_sample.key = 'chrome_histogram_sample.sample'
-"""

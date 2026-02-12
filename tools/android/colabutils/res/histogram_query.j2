@@ -1,0 +1,20 @@
+INCLUDE PERFETTO MODULE slices.with_context;
+
+SELECT
+-- Select the display_value from the second join to the args table.
+-- This will be the value for 'chrome_histogram_sample.sample'.
+args_sample.display_value AS sample_value
+FROM
+thread_or_process_slice AS slice
+-- First join to args table to FIND the event by its name.
+LEFT JOIN
+args AS args_name ON slice.arg_set_id = args_name.arg_set_id
+-- Second join to the same args table to GET the sample value from that event.
+LEFT JOIN
+args AS args_sample ON slice.arg_set_id = args_sample.arg_set_id
+WHERE
+-- Use the first join to filter for the specific event name.
+args_name.display_value = '{{histogram_name}}'
+AND args_name.key = 'chrome_histogram_sample.name'
+-- Use the second join to specify which key's value you want to select.
+AND args_sample.key = 'chrome_histogram_sample.sample'

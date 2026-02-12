@@ -8,6 +8,9 @@ import io
 import contextlib
 import asyncio
 import signal
+from jinja2 import Template
+from contextlib import ExitStack
+import tempfile
 
 from . import command_line
 
@@ -65,3 +68,56 @@ class TraceFile:
                 await recording_task
             except asyncio.CancelledError:
                 pass
+
+
+@contextlib.contextmanager
+def histograms_trace_config(histograms, duration=10000):
+    """
+    Create a temporary trace configuration file for recording the histogram(s)
+    listed in `histograms`.
+
+    Args:
+        histograms: A string or a list of strings with the name of the
+                    histogram(s) to record.
+        duration: The duration of the trace.
+
+    Returns:
+        The path to the temporary trace configuration file.
+    """
+    if isinstance(histograms, str):
+        histograms = [histograms]
+    elif not isinstance(histograms, list):
+        raise TypeError("histograms must be a string or a list of strings")
+
+    # This assumes the current working directory is the chromium src root.
+    jinja_file = os.path.join(os.getcwd(), "tools", "android", "colabutils",
+                              "res", "histogram_trace_cfg.pbtxt.j2")
+    with open(jinja_file, 'r') as f:
+        template_content = f.read()
+    template = Template(template_content)
+    rendered_config = template.render(histogram_names=histograms,
+                                      duration=duration)
+
+    with tempfile.NamedTemporaryFile(mode='w') as temporary_config_file:
+        temporary_config_file.write(rendered_config)
+        temporary_config_file.flush()
+        yield temporary_config_file.name
+
+
+def histogram_values_query(histogram):
+    """
+    Create a perfetto trace query to obtain all recorded values of a histogram.
+
+    Args:
+        histogram: The name of the histogram to query.
+
+    Returns:
+        A string containing the query.
+    """
+    jinja_file = os.path.join(os.getcwd(), "tools", "android", "colabutils",
+                              "res", "histogram_query.j2")
+    with open(jinja_file, 'r') as f:
+        template_content = f.read()
+    template = Template(template_content)
+    rendered_config = template.render(histogram_name=histogram)
+    return rendered_config
