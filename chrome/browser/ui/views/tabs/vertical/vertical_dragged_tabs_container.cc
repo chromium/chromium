@@ -28,26 +28,6 @@
 
 namespace {
 
-// Returns drag data sorted by index in the source tab strip model. Data without
-// a source index a placed at the end.
-// TODO(crbug.com/476084253): Update `DragSessionData` to ensure the tab drag
-// data is already sorted.
-std::vector<TabDragData> GetSortedTabDragData(
-    const DragSessionData& session_data) {
-  std::vector<TabDragData> drag_data = session_data.tab_drag_data_;
-  std::sort(drag_data.begin(), drag_data.end(),
-            [](const TabDragData& a, const TabDragData& b) {
-              if (!a.source_model_index.has_value()) {
-                return false;
-              }
-              if (!b.source_model_index.has_value()) {
-                return true;
-              }
-              return a.source_model_index < b.source_model_index;
-            });
-  return drag_data;
-}
-
 // Calculates the offset of the source dragged view (i.e. the main view being
 // dragged) from the mouse.
 gfx::Vector2d GetSourceViewOffsetFromMouse(
@@ -198,11 +178,8 @@ void VerticalDraggedTabsContainer::BuildDragLayout(
   dragging_views_bounds_.Offset(
       GetSourceViewOffsetFromMouse(*source_dragged_view, session_data));
 
-  for (const auto& datum : GetSortedTabDragData(session_data)) {
-    if (!datum.attached_view) {
-      continue;
-    }
-    auto* dragging_view = GetDragHandler().ViewFromTabSlot(datum.attached_view);
+  for (auto* attached_view : session_data.attached_views()) {
+    auto* dragging_view = GetDragHandler().ViewFromTabSlot(attached_view);
     CHECK(dragging_view);
 
     if (dragging_view->parent() != base::to_address(host_view_)) {

@@ -136,9 +136,12 @@ VerticalTabDragHandlerImpl::DragInitData::operator=(
 VerticalTabDragHandlerImpl::DragInitData
 VerticalTabDragHandlerImpl::GetDragInitDataForTabDrag(
     TabCollectionNode& source_node) {
-  const auto& selected_tabs =
-      tab_strip_model_->selection_model().selected_tabs();
-
+  const auto& selected_tabs_indices =
+      tab_strip_model_->selection_model().GetListSelectionModel();
+  std::vector<tabs::TabInterface*> selected_tabs;
+  for (int index : selected_tabs_indices.selected_indices()) {
+    selected_tabs.push_back(tab_strip_model_->GetTabAtIndex(index));
+  }
   DragInitData drag_init_data;
   drag_init_data.dragged_views.reserve(selected_tabs.size());
 
@@ -200,7 +203,7 @@ VerticalTabDragHandlerImpl::GetDragInitDataForGroupHeaderDrag(
 }
 
 std::vector<TabSlotView*> VerticalTabDragHandlerImpl::GetFullySelectedGroups(
-    const std::unordered_set<raw_ptr<tabs::TabInterface>>& selected_tabs) {
+    const std::vector<tabs::TabInterface*>& selected_tabs) {
   std::map<tab_groups::TabGroupId, int> dragged_group_tab_counts;
   for (tabs::TabInterface* tab : selected_tabs) {
     if (auto group_id = tab->GetGroup()) {

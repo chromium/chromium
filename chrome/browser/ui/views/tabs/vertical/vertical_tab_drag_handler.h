@@ -153,7 +153,7 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   DragInitData GetDragInitDataForGroupHeaderDrag(
       TabCollectionNode& source_node);
   std::vector<TabSlotView*> GetFullySelectedGroups(
-      const std::unordered_set<raw_ptr<tabs::TabInterface>>& selected_tabs);
+      const std::vector<tabs::TabInterface*>& selected_tabs);
 
   TabCollectionNode* GetNodeForContents(content::WebContents* contents);
   TabCollectionNode* GetNodeForTabGroup(const tab_groups::TabGroupId& group_id);

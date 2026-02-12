@@ -133,6 +133,8 @@ class TabDragController : public views::WidgetObserver,
   // and is only non-empty if the original selection isn't the same as the
   // dragging set. Returns Liveness::DELETED if `this` was deleted during this
   // call, and Liveness::ALIVE if `this` still exists.
+  // Note: `dragging_views` must be ordered by their position in the source
+  // tabstrip (both visually and in the model).
   [[nodiscard]] Liveness Init(TabDragContext* source_context,
                               TabSlotView* source_view,
                               const std::vector<TabSlotView*>& dragging_views,
