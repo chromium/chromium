@@ -1,0 +1,2 @@
+# kControlsChanged fires UIA_ControllerForPropertyId on Windows UIA.
+# TODO: Run test with --generate-accessibility-test-expectations to capture actual output.
