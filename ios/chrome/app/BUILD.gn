@@ -76,17 +76,27 @@ source_set("app") {
   frameworks = [ "Foundation.framework" ]
 }
 
-source_set("tasks_handling") {
+source_set("tasks_handling_header") {
   sources = [
     "task_orchestrator.h",
-    "task_orchestrator.mm",
     "task_request+testing.h",
     "task_request.h",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("tasks_handling") {
+  sources = [
+    "task_orchestrator.mm",
     "task_request.mm",
   ]
 
+  public_deps = [ ":tasks_handling_header" ]
+
   deps = [
     "//base",
+    "//ios/chrome/browser/intents/model:user_activity_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/public/features",
   ]
@@ -433,6 +443,7 @@ source_set("app_internal") {
     ":mode",
     ":safe_mode_app_state_agent",
     ":task_names",
+    ":tasks_handling",
     ":tests_hook",
     ":variations_app_state_agent",
     "//base",

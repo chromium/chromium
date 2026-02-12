@@ -153,7 +153,7 @@ source_set("app_state") {
     "//base",
     "//ios/chrome/app",
     "//ios/chrome/app:task_names",
-    "//ios/chrome/app:tasks_handling",
+    "//ios/chrome/app:tasks_handling_header",
     "//ios/chrome/app/background_refresh:headers",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/device_orientation/ui_bundled",

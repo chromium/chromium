@@ -11,9 +11,14 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"
 #import "components/previous_session_info/previous_session_info.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/main_application_delegate.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/task_orchestrator.h"
+#import "ios/chrome/app/task_request.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
 
 namespace {
@@ -172,8 +177,18 @@ void SyncBreadcrumbsLog() {
     performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                completionHandler:(void (^)(BOOL succeeded))completionHandler {
   _sceneState.startupHadExternalIntent = YES;
-  [_sceneController performActionForShortcutItem:shortcutItem
-                               completionHandler:completionHandler];
+  if (IsEnableNewStartupFlowEnabled()) {
+    TaskRequest* request = [[TaskRequest alloc]
+        initWithShortcutItem:shortcutItem
+                  sceneState:_sceneState
+                  taskSource:TaskSource::TaskSourceQuickAction
+                     handler:completionHandler];
+
+    [_sceneState.profileState.appState.taskOrchestrator addTaskRequest:request];
+  } else {
+    [_sceneController performActionForShortcutItem:shortcutItem
+                                 completionHandler:completionHandler];
+  }
 }
 
 - (void)scene:(UIScene*)scene
