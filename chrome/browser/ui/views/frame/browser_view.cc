@@ -2916,7 +2916,7 @@ ui::mojom::WindowShowState BrowserView::GetWindowShowState() const {
 
 void BrowserView::SetResizableFromWebApi(std::optional<bool> resizable) {
   // The API is allowed only for PWAs and IWAs
-  CHECK_EQ(browser()->GetType(), BrowserWindowInterface::TYPE_APP);
+  CHECK(browser()->app_controller());
   if (resizable == resizable_from_web_api_) {
     return;
   }
