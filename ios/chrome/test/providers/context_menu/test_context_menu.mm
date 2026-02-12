@@ -16,6 +16,13 @@ ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
   return nil;
 }
 
+UIContextMenuConfiguration* GetDefaultContextMenuConfiguration() {
+  return nil;
+}
+
+void UpdateContextMenuConfiguration(UIContextMenuConfiguration* config,
+                                    UIContextMenuConfiguration* update) {}
+
 NSTextCheckingType GetHandledIntentTypes(web::WebState* web_state) {
   return 0;
 }

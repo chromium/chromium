@@ -88,6 +88,10 @@ class WebStateDelegateBrowserAgent
       web::WebState* source,
       const web::ContextMenuParams& params,
       void (^completion_handler)(UIContextMenuConfiguration*)) override;
+  UIContextMenuConfiguration* GetCustomContextMenuConfiguration() override;
+  void ContextMenuConfigurationLoaded(
+      UIContextMenuConfiguration* configuration,
+      UIContextMenuConfiguration* update) override;
   void ContextMenuWillCommitWithAnimator(
       web::WebState* source,
       id<UIContextMenuInteractionCommitAnimating> animator) override;

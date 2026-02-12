@@ -122,6 +122,9 @@ BASE_DECLARE_FEATURE(kEnableBEContextMenuConfiguration);
 // DownloadTaskImpl::GenerateFileName.
 BASE_DECLARE_FEATURE(kIOSDownloadSanitizeFilename);
 
+// Feature flag to enable the timeout in the context menu run loop.
+BASE_DECLARE_FEATURE(kEnableContextMenuTimeout);
+
 }  // namespace web::features
 
 #endif  // IOS_WEB_COMMON_FEATURES_H_
