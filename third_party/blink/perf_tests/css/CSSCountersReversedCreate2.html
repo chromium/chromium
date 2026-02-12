@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src="../resources/runner.js"></script>
+<style>
+  body {
+    counter-reset: none;
+  }
+  body.force-recalc {
+    counter-reset: reversed(my-counter);
+  }
+  div {
+    counter-increment: my-counter 1;
+  }
+  div::before {
+    content: counter(my-counter);
+  }
+</style>
+<body></body>
+<script>
+  function createTree(root, numElements, depth) {
+    if (!depth) {
+      return;
+    }
+    for (let i = 0; i < numElements; ++i) {
+      const div = document.createElement('div');
+      root.append(div);
+      createTree(div, numElements, depth - 1);
+    }
+  }
+
+  createTree(document.body, 5, 6);
+
+  PerfTestRunner.measureTime({
+    description: 'Measure Pure Style Recalc time for reversed counters',
+    run: function() {
+      document.body.classList.add('force-recalc');
+      document.body.offsetTop;
+
+      document.body.classList.remove('force-recalc');
+      document.body.offsetTop;
+    },
+    iterationCount: 10,
+  });
+</script>

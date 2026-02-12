@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<script src="../resources/runner.js"></script>
+<style>
+  div {
+    counter-increment: my-counter;
+  }
+  .set-counter {
+    counter-set: my-counter 10;
+  }
+  .reset-counter {
+    counter-reset: my-counter 0;
+  }
+  .reset-reversed {
+    counter-reset: reversed(my-counter);
+  }
+  div::before {
+    content: counter(my-counter);
+  }
+</style>
+<body></body>
+<script>
+  const COUNTER_SET_EVERY_NTH = 10;
+  const COUNTER_RESET_EVERY_NTH = 50;
+  let totalNodes = 0;
+
+  function createTree(root, numElements, depth) {
+    if (!depth) {
+      return;
+    }
+    for (let i = 0; i < numElements; ++i) {
+      const div = document.createElement('div');
+      totalNodes++;
+
+      if (totalNodes % COUNTER_RESET_EVERY_NTH === 0) {
+        if ((totalNodes / COUNTER_RESET_EVERY_NTH) % 2 === 0) {
+          div.className = 'reset-reversed';
+        } else {
+          div.className = 'reset-counter';
+        }
+      } else if (totalNodes % COUNTER_SET_EVERY_NTH === 0) {
+        div.className = 'set-counter';
+      }
+
+      root.append(div);
+      createTree(div, numElements, depth - 1);
+    }
+  }
+
+  PerfTestRunner.measureTime({
+    description: 'Measure the performance impact of reversed counters with mixed set/reset',
+    run: function() {
+      document.body.innerHTML = '';
+      totalNodes = 0;
+      createTree(document.body, 5, 6);
+    },
+    iterationCount: 5,
+  });
+</script>
