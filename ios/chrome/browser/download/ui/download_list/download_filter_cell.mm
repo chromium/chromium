@@ -84,9 +84,7 @@ NSString* GetFilterTypeSymbolName(DownloadFilterType filterType) {
   self = [super initWithFrame:frame];
   if (self) {
     [self setupViews];
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-    [self registerForTraitChanges:traits
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                        withAction:@selector(updateBorderColor)];
   }
   return self;
