@@ -215,7 +215,7 @@ final class PendingActionManager {
         mIsActiveFuture = true;
 
         // A window of given bounds will be launched.
-        mFutureBoundsInDp = pendingTaskInfo.mCreateParams.getInitialBoundsInDp();
+        mFutureBoundsInDp = pendingTaskInfo.mCreateParams.getInitialBounds();
         mFutureRestoredBoundsInDp = mFutureBoundsInDp;
 
         // Update states based on PendingTaskInfo

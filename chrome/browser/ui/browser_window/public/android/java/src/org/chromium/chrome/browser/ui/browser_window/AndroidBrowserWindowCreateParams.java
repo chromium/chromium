@@ -21,7 +21,7 @@ interface AndroidBrowserWindowCreateParams {
     Profile getProfile();
 
     /** Returns the initial bounds of the window. */
-    Rect getInitialBoundsInDp();
+    Rect getInitialBounds();
 
     /** Returns the initial show state of the window. */
     @WindowShowState.EnumType
