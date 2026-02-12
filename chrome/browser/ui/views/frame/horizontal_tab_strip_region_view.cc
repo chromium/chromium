@@ -260,7 +260,8 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
 
       tab_strip_action_container->SetProperty(views::kCrossAxisAlignmentKey,
                                               views::LayoutAlignment::kStart);
-    } else {
+    } else if (!base::FeatureList::IsEnabled(
+                   tabs::kHorizontalTabStripComboButton)) {
       tab_search_container = std::make_unique<TabSearchContainer>(
           render_tab_search_before_tab_strip_, this, tab_strip_);
       tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,

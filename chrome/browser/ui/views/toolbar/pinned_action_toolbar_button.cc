@@ -341,24 +341,6 @@ void PinnedActionToolbarButtonActionViewInterface::ActionItemChangedImpl(
   action_view_->SetActionEngaged(
       action_item->GetProperty(kActionItemUnderlineIndicatorKey));
 
-  bool is_pinnable = true;
-  switch (static_cast<actions::ActionPinnableState>(
-      action_item->GetProperty(actions::kActionItemPinnableKey))) {
-    case actions::ActionPinnableState::kNotPinnable:
-      is_pinnable = false;
-      break;
-    case actions::ActionPinnableState::kPinnable:
-    case actions::ActionPinnableState::kEnterpriseControlled:
-      is_pinnable = true;
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  if (!is_pinnable && action_view_->IsPinned()) {
-    action_view_->SetVisible(false);
-  }
-
   OnViewChangedImpl(action_item);
 
   action_view_->SetIsActionShowingBubble(action_item->GetIsShowingBubble());
@@ -393,10 +375,27 @@ void PinnedActionToolbarButtonActionViewInterface::InvokeActionImpl(
 
 void PinnedActionToolbarButtonActionViewInterface::OnViewChangedImpl(
     actions::ActionItem* action_item) {
+  bool is_pinnable = true;
+  switch (static_cast<actions::ActionPinnableState>(
+      action_item->GetProperty(actions::kActionItemPinnableKey))) {
+    case actions::ActionPinnableState::kNotPinnable:
+      is_pinnable = false;
+      break;
+    case actions::ActionPinnableState::kPinnable:
+    case actions::ActionPinnableState::kEnterpriseControlled:
+      is_pinnable = true;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  if (!is_pinnable && action_view_->IsPinned()) {
+    action_view_->SetVisible(false);
+  }
+
   // Update the button's icon. If the action item is a stateful image action
   // item, use the stateful image. Otherwise, use the action item's image.
   ui::ImageModel image_model;
-
   if (actions::IsActionItemClass<actions::StatefulImageActionItem>(
           action_item)) {
     image_model = static_cast<actions::StatefulImageActionItem*>(action_item)

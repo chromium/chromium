@@ -6,11 +6,17 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -30,7 +36,31 @@
 
 namespace {
 
-class TabSearchToolbarButtonInteractiveUiTest : public InteractiveBrowserTest {
+class TabSearchToolbarButtonTest : public InteractiveBrowserTest {
+ public:
+  auto CheckElementCount(ui::ElementIdentifier id, size_t expected_count) {
+    return Check([id, expected_count, this]() {
+      return views::ElementTrackerViews::GetInstance()
+                 ->GetAllMatchingViews(
+                     id, BrowserView::GetBrowserViewForBrowser(browser())
+                             ->GetElementContext())
+                 .size() == expected_count;
+    });
+  }
+
+  auto SendTabSearchKeyPress(ui::ElementIdentifier target) {
+#if BUILDFLAG(IS_MAC)
+    return SendKeyPress(target, ui::VKEY_A,
+                        ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+#else
+    return SendKeyPress(target, ui::VKEY_A,
+                        ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+#endif
+  }
+};
+
+class TabSearchToolbarButtonInteractiveUiTest
+    : public TabSearchToolbarButtonTest {
  public:
   TabSearchToolbarButtonInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -42,19 +72,10 @@ class TabSearchToolbarButtonInteractiveUiTest : public InteractiveBrowserTest {
 #endif  // BUILDFLAG(IS_CHROMEOS)
         },
         /*disabled_features=*/{features::kGlicLocaleFiltering,
-                               features::kGlicCountryFiltering});
+                               features::kGlicCountryFiltering,
+                               tabs::kHorizontalTabStripComboButton});
   }
   ~TabSearchToolbarButtonInteractiveUiTest() override = default;
-
-  auto SendTabSearchKeyPress(ui::ElementIdentifier target) {
-#if BUILDFLAG(IS_MAC)
-    return SendKeyPress(target, ui::VKEY_A,
-                        ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
-#else
-    return SendKeyPress(target, ui::VKEY_A,
-                        ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-#endif
-  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -66,6 +87,11 @@ IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonInteractiveUiTest,
   RunTestSequence(
       // Clicking Tab Search Button.
       WaitForShow(kTabSearchButtonElementId),
+      CheckElementCount(kTabSearchButtonElementId, 1),
+      CheckView(kTabSearchButtonElementId,
+                [](views::View* view) {
+                  return views::IsViewClass<PinnedActionToolbarButton>(view);
+                }),
       EnsurePresent(kTabSearchButtonElementId),
       MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
       WaitForShow(kTabSearchBubbleElementId),
@@ -73,6 +99,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonInteractiveUiTest,
       SendKeyPress(kTabSearchButtonElementId, ui::VKEY_ESCAPE),
       WaitForHide(kTabSearchBubbleElementId));
 }
+
 // This test verifies the TabSearch functionality after unpinning.
 IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonInteractiveUiTest,
                        VerifyTabSearchWhenUnpinned) {
@@ -83,6 +110,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonInteractiveUiTest,
 #endif
   RunTestSequence(
       // Unpinning Tab Search Button
+      WaitForShow(kTabSearchButtonElementId),
+      CheckElementCount(kTabSearchButtonElementId, 1),
       MoveMouseTo(kTabSearchButtonElementId),
       MayInvolveNativeContextMenu(
           ClickMouse(ui_controls::RIGHT),
@@ -97,6 +126,78 @@ IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonInteractiveUiTest,
       // Closing Tab Search Bubble.
       SendKeyPress(kTabSearchBubbleElementId, ui::VKEY_ESCAPE),
       WaitForHide(kTabSearchBubbleElementId));
+}
+
+class TabSearchToolbarButtonGlicDisabledTest
+    : public TabSearchToolbarButtonTest {
+ public:
+  TabSearchToolbarButtonGlicDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kGlic);
+  }
+  ~TabSearchToolbarButtonGlicDisabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// This test verifies that the TabSearch button is NOT in the toolbar when Glic
+// is disabled.
+IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonGlicDisabledTest,
+                       ButtonNotInToolbar) {
+  RunTestSequence(WaitForShow(kTabSearchButtonElementId),
+                  CheckElementCount(kTabSearchButtonElementId, 1),
+                  CheckView(kTabSearchButtonElementId, [](views::View* view) {
+                    // When Glic is disabled, the TabSearch button should be in
+                    // the tab strip, not a PinnedActionToolbarButton in the
+                    // toolbar.
+                    return !views::IsViewClass<PinnedActionToolbarButton>(view);
+                  }));
+}
+
+class TabSearchToolbarButtonComboEnabledTest
+    : public TabSearchToolbarButtonTest {
+ public:
+  TabSearchToolbarButtonComboEnabledTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {tabs::kHorizontalTabStripComboButton, features::kGlic}, {});
+  }
+  ~TabSearchToolbarButtonComboEnabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// This test verifies that the TabSearch button is NOT in the toolbar when
+// the horizontal tab strip combo button is enabled.
+IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonComboEnabledTest,
+                       ButtonNotInToolbar) {
+  RunTestSequence(WaitForShow(kTabSearchButtonElementId),
+                  CheckElementCount(kTabSearchButtonElementId, 1),
+                  CheckView(kTabSearchButtonElementId, [](views::View* view) {
+                    // When combo button is enabled, the TabSearch button should
+                    // be in the tab strip combo button, not a
+                    // PinnedActionToolbarButton in the toolbar.
+                    return !views::IsViewClass<PinnedActionToolbarButton>(view);
+                  }));
+}
+
+// This test verifies that the TabSearch button is NOT in the toolbar when
+// the horizontal tab strip combo button is enabled, even if it is pinned in the
+// model.
+IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonComboEnabledTest,
+                       ButtonNotInToolbarEvenIfPinned) {
+  // Pin the tab search button in the model.
+  PinnedToolbarActionsModel::Get(browser()->profile())
+      ->UpdatePinnedState(kActionTabSearch, true);
+
+  RunTestSequence(WaitForShow(kTabSearchButtonElementId),
+                  CheckElementCount(kTabSearchButtonElementId, 1),
+                  CheckView(kTabSearchButtonElementId, [](views::View* view) {
+                    // When combo button is enabled, the TabSearch button should
+                    // be in the tab strip combo button, not a
+                    // PinnedActionToolbarButton in the toolbar.
+                    return !views::IsViewClass<PinnedActionToolbarButton>(view);
+                  }));
 }
 
 }  // namespace
