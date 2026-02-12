@@ -293,8 +293,9 @@ public class LocationBarCoordinator
                                         : mBrowserControlsStateProvider.getControlsPosition(),
                         mDeferredIMEWindowInsetApplicationCallback::getCurrentKeyboardHeight,
                         bottomWindowPaddingSupplier,
+                        fuseboxStateSupplier,
                         locationBarDataProvider,
-                        fuseboxStateSupplier);
+                        topInsetProvider);
 
         mPageZoomIndicatorCoordinator =
                 pageZoomManager != null
@@ -361,7 +362,6 @@ public class LocationBarCoordinator
                         shareDelegateSupplier,
                         locationBarDataProvider,
                         profileObservableSupplier,
-                        topInsetProvider,
                         bringTabGroupToFrontCallback,
                         bookmarkState,
                         omniboxActionDelegate,

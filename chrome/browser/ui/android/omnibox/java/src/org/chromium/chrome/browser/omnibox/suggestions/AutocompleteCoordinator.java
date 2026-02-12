@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -63,10 +62,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     private final ViewGroup mParent;
-    private final AutocompleteDelegate mDelegate;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
-    private final TopInsetProvider mTopInsetProvider;
-    private final TopInsetProvider.Observer mTopInsetProviderObserver;
     private final Callback<Profile> mProfileChangeCallback;
     private final AutocompleteMediator mMediator;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
@@ -96,7 +92,6 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
             LocationBarDataProvider locationBarDataProvider,
             MonotonicObservableSupplier<Profile> profileObservableSupplier,
-            TopInsetProvider topInsetProvider,
             Callback<String> bringTabGroupToForegroundCallback,
             BookmarkState bookmarkState,
             OmniboxActionDelegate omniboxActionDelegate,
@@ -107,9 +102,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             DeferredIMEWindowInsetApplicationCallback deferredIMEWindowInsetApplicationCallback,
             FuseboxCoordinator fuseboxCoordinator) {
         mParent = parent;
-        mDelegate = delegate;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mTopInsetProvider = topInsetProvider;
         Context context = parent.getContext();
 
         ModelList listItems = new ModelList();
@@ -185,10 +178,6 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             mRecycledViewPool = null;
         }
 
-        // Set up observer to handle edge-to-edge changes.
-        mTopInsetProviderObserver = this::onToEdgeChange;
-        mTopInsetProvider.addObserver(mTopInsetProviderObserver);
-
         // https://crbug.com/966227 Set initial layout direction ahead of inflating the suggestions.
         updateSuggestionListLayoutDirection();
     }
@@ -199,7 +188,6 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             mRecycledViewPool.destroy();
         }
         mProfileSupplier.removeObserver(mProfileChangeCallback);
-        mTopInsetProvider.removeObserver(mTopInsetProviderObserver);
         mMediator.destroy();
         if (mContainer != null) {
             mContainer.destroy();
@@ -532,23 +520,5 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     public void removeOmniboxSuggestionsDropdownScrollListener(
             OmniboxSuggestionsDropdownScrollListener listener) {
         mScrollListenerList.removeObserver(listener);
-    }
-
-    /**
-     * Called when the edge-to-edge state changes to update the suggestions container padding.
-     *
-     * @param systemTopInset The top inset from the system in pixels.
-     * @param consumeTopInset Whether the top inset should be consumed.
-     */
-    private void onToEdgeChange(int systemTopInset, boolean consumeTopInset) {
-        if (mContainer == null) {
-            return;
-        }
-        boolean isToolbarBottomAnchored = mDelegate.isToolbarBottomAnchored();
-        // When the toolbar is at the bottom, the omnibox suggestions container displays above the
-        // toolbar, starting from the top of the screen. In edge-to-edge mode, we need to add top
-        // padding to prevent content from entering the status bar area.
-        int topPadding = (consumeTopInset && isToolbarBottomAnchored) ? systemTopInset : 0;
-        mContainer.onToEdgeChange(topPadding);
     }
 }
