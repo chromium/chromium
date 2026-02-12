@@ -11,8 +11,10 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockingEnabled(true);
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockedPatterns([{url: 'resources/resource.php', enabled: true}]);
+  SDK.NetworkManager.MultitargetNetworkManager.instance().requestConditions.conditionsEnabled = true;
+  SDK.NetworkManager.MultitargetNetworkManager.instance().requestConditions.add(
+      SDK.NetworkManager.RequestCondition.createFromSetting(
+          {url: '*://*:*/*/resources/resource.php', enabled: true}));
 
   NetworkTestRunner.makeFetchInWorker('resource.php', {}, fetchCallback);
 
