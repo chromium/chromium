@@ -454,7 +454,6 @@ fast/dom/Element/hostname-host.html
 fast/dom/Element/onclick-case.html
 fast/dom/Element/setAttribute-case-insensitivity.html
 fast/dom/Element/setAttributeNode-case-insensitivity-xhtml.xhtml
-fast/dom/elementsFromPoint/elementsFromPoint-inline.html
 fast/dom/getElementsByClassName/015.html
 fast/dom/HTMLAnchorElement/set-href-attribute-hostname.html
 fast/dom/HTMLAreaElement/area-download.html
