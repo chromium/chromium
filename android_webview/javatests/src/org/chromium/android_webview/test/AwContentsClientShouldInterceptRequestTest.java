@@ -505,13 +505,12 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
     public void testDoesNotCrashOnSlowStream() throws Throwable {
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
         final String aboutPageData = makePageWithTitle("some title");
-        final String encoding = "UTF-8";
 
         final SlowWebResourceResponseInfo slowWebResourceResponseInfo =
                 new SlowWebResourceResponseInfo(
                         "text/html",
-                        encoding,
-                        new ByteArrayInputStream(aboutPageData.getBytes(encoding)));
+                        "UTF-8",
+                        new ByteArrayInputStream(aboutPageData.getBytes(StandardCharsets.UTF_8)));
 
         mShouldInterceptRequestHelper.enqueueResponse(slowWebResourceResponseInfo);
         int callCount = slowWebResourceResponseInfo.getReadStartedCallbackHelper().getCallCount();

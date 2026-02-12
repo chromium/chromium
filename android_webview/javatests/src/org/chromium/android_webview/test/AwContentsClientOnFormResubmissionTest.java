@@ -27,6 +27,7 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.util.TestWebServer;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -138,7 +139,7 @@ public class AwContentsClientOnFormResubmissionTest extends AwParameterizedTest 
         mContentsClient.setAutoProcess(false);
         String url = mServer.setResponse("/form", LOAD_RESPONSE, null);
         String postData = "content=blabla";
-        byte[] data = Base64.encode(postData.getBytes("UTF-8"), Base64.DEFAULT);
+        byte[] data = Base64.encode(postData.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
         mActivityTestRule.postUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), url, data);
         Assert.assertEquals(0, mContentsClient.getResubmissions());
@@ -174,7 +175,7 @@ public class AwContentsClientOnFormResubmissionTest extends AwParameterizedTest 
     protected void doReload() throws Throwable {
         String url = mServer.setResponse("/form", LOAD_RESPONSE, null);
         String postData = "content=blabla";
-        byte[] data = Base64.encode(postData.getBytes("UTF-8"), Base64.DEFAULT);
+        byte[] data = Base64.encode(postData.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
         mActivityTestRule.postUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), url, data);
         Assert.assertEquals(0, mContentsClient.getResubmissions());

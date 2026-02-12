@@ -35,6 +35,7 @@ import org.chromium.net.impl.TestLogger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.concurrent.Executors;
 
@@ -192,7 +193,7 @@ public class QuicTest {
         byte[] data = new byte[(int) file.length()];
         fileInputStream.read(data);
         fileInputStream.close();
-        return new String(data, "UTF-8").contains(content);
+        return new String(data, StandardCharsets.UTF_8).contains(content);
     }
 
     /** Tests that the network quality listeners are propoerly notified when QUIC is enabled. */

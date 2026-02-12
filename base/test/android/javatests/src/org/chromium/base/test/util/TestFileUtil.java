@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /** Utility class for dealing with files for test. */
@@ -29,7 +30,7 @@ public class TestFileUtil {
 
         Writer writer = null;
         try {
-            writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+            writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
             writer.write(
                     "<html><meta charset=\"UTF-8\" />"
                             + "     <head><title>"
@@ -77,7 +78,7 @@ public class TestFileUtil {
                                 + sizeLimit);
             }
             char[] buffer = new char[(int) f.length()];
-            reader = new InputStreamReader(new FileInputStream(f), "UTF-8");
+            reader = new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8);
             int charsRead = reader.read(buffer);
             // Debug check that we've exhausted the input stream (will fail e.g. if the
             // file grew after we inspected its length).

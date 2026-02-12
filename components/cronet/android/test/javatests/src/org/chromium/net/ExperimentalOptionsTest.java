@@ -47,6 +47,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 
 /** Tests for experimental options. */
@@ -197,7 +198,7 @@ public class ExperimentalOptionsTest {
             fileInputStream = new FileInputStream(file);
             byte[] data = new byte[(int) file.length()];
             fileInputStream.read(data);
-            String actual = new String(data, "UTF-8");
+            String actual = new String(data, StandardCharsets.UTF_8);
             boolean contains = actual.contains(content);
             if (!contains) {
                 Log.i(TAG, "file content [%s]", actual);

@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.omaha.XMLParser.Node;
  * Parses XML responses from the Omaha Update Server.
  *
  * <pre>
- *
  * Expects XML formatted like:
  *
  * <?xml version="1.0" encoding="UTF-8"?>

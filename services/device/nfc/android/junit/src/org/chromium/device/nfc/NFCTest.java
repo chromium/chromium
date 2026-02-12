@@ -60,7 +60,6 @@ import org.chromium.device.mojom.NfcClient;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -265,7 +264,9 @@ public class NFCTest {
         assertEquals(DUMMY_RECORD_ID, utf8TextMojoNdefMessage.data[0].id);
         assertEquals(ENCODING_UTF8, utf8TextMojoNdefMessage.data[0].encoding);
         assertEquals(LANG_EN_US, utf8TextMojoNdefMessage.data[0].lang);
-        assertEquals(TEST_TEXT, new String(utf8TextMojoNdefMessage.data[0].data, "UTF-8"));
+        assertEquals(
+                TEST_TEXT,
+                new String(utf8TextMojoNdefMessage.data[0].data, StandardCharsets.UTF_8));
 
         // Test text record conversion for UTF-16 content.
         byte[] textBytes = TEST_TEXT.getBytes(StandardCharsets.UTF_16BE);
@@ -284,7 +285,9 @@ public class NFCTest {
         assertEquals(DUMMY_RECORD_ID, utf16TextMojoNdefMessage.data[0].id);
         assertEquals(ENCODING_UTF16, utf16TextMojoNdefMessage.data[0].encoding);
         assertEquals(LANG_EN_US, utf16TextMojoNdefMessage.data[0].lang);
-        assertEquals(TEST_TEXT, new String(utf16TextMojoNdefMessage.data[0].data, "UTF-16"));
+        assertEquals(
+                TEST_TEXT,
+                new String(utf16TextMojoNdefMessage.data[0].data, StandardCharsets.UTF_16));
 
         // Test mime record conversion with "text/plain" mime type.
         android.nfc.NdefMessage mimeNdefMessage =
@@ -555,7 +558,7 @@ public class NFCTest {
         utf16TextMojoNdefRecord.id = DUMMY_RECORD_ID;
         utf16TextMojoNdefRecord.encoding = ENCODING_UTF16;
         utf16TextMojoNdefRecord.lang = LANG_EN_US;
-        utf16TextMojoNdefRecord.data = TEST_TEXT.getBytes(Charset.forName("UTF-16"));
+        utf16TextMojoNdefRecord.data = TEST_TEXT.getBytes(StandardCharsets.UTF_16);
         NdefMessage utf16TextMojoNdefMessage = createMojoNdefMessage(utf16TextMojoNdefRecord);
         android.nfc.NdefMessage utf16TextNdefMessage =
                 NdefMessageUtils.toNdefMessage(utf16TextMojoNdefMessage);

@@ -19,7 +19,7 @@ import java.io.OutputStream;
 import java.io.SequenceInputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -145,7 +145,7 @@ public final class CastCrashUploader {
                 logHeader.append("\n");
                 InputStream logHeaderStream =
                         new ByteArrayInputStream(
-                                logHeader.toString().getBytes(Charset.forName("UTF-8")));
+                                logHeader.toString().getBytes(StandardCharsets.UTF_8));
                 // Upload: prepend the log file for uploading
                 uploadCrashDumpStream =
                         new SequenceInputStream(logHeaderStream, uploadCrashDumpStream);
@@ -163,7 +163,7 @@ public final class CastCrashUploader {
                 uploadCrashDumpStream =
                         new SequenceInputStream(
                                 new ByteArrayInputStream(
-                                        uuidBuilder.toString().getBytes(Charset.forName("UTF-8"))),
+                                        uuidBuilder.toString().getBytes(StandardCharsets.UTF_8)),
                                 uploadCrashDumpStream);
             } else {
                 Log.d(TAG, "No UUID");
@@ -182,7 +182,7 @@ public final class CastCrashUploader {
                 feedbackHeader.append("\n");
                 InputStream feedbackHeaderStream =
                         new ByteArrayInputStream(
-                                feedbackHeader.toString().getBytes(Charset.forName("UTF-8")));
+                                feedbackHeader.toString().getBytes(StandardCharsets.UTF_8));
                 // Upload: prepend the log file for uploading
                 uploadCrashDumpStream =
                         new SequenceInputStream(feedbackHeaderStream, uploadCrashDumpStream);
@@ -267,7 +267,8 @@ public final class CastCrashUploader {
      * @return First line of the input stream.
      */
     private String getFirstLine(InputStream inputStream) throws IOException {
-        try (InputStreamReader streamReader = new InputStreamReader(inputStream, "UTF-8");
+        try (InputStreamReader streamReader =
+                        new InputStreamReader(inputStream, StandardCharsets.UTF_8);
                 BufferedReader reader = new BufferedReader(streamReader)) {
             return reader.readLine();
         } catch (UnsupportedCharsetException e) {

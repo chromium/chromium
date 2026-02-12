@@ -21,7 +21,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.media_router.MediaSource;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 /** Abstracts parsing the Cast application id and other parameters from the source id. */
 @NullMarked
@@ -64,11 +64,10 @@ public class RemotingMediaSource implements MediaSource {
         String mediaUrl;
         try {
             String encodedSource = sourceUri.getQueryParameter(ENCODED_SOURCE_KEY);
-            mediaUrl = new String(Base64.decode(encodedSource, Base64.URL_SAFE), "UTF-8");
-        } catch (UnsupportedOperationException
-                | NullPointerException
-                | IllegalArgumentException
-                | UnsupportedEncodingException e) {
+            mediaUrl =
+                    new String(
+                            Base64.decode(encodedSource, Base64.URL_SAFE), StandardCharsets.UTF_8);
+        } catch (Exception e) {
             Log.e(TAG, "Couldn't parse the source id.", e);
             return null;
         }

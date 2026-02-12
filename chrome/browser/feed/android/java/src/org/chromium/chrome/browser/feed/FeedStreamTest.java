@@ -753,7 +753,7 @@ public class FeedStreamTest {
 
         verify(mWebFeedBridgeJni)
                 .followWebFeedById(
-                        eq("webFeed1".getBytes("UTF8")),
+                        eq("webFeed1".getBytes(StandardCharsets.UTF_8)),
                         eq(false),
                         eq(WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU),
                         mFollowResultsCallbackCaptor.capture());
@@ -821,7 +821,7 @@ public class FeedStreamTest {
 
         verify(mWebFeedBridgeJni)
                 .followWebFeedById(
-                        eq("webFeed1".getBytes("UTF8")),
+                        eq("webFeed1".getBytes(StandardCharsets.UTF_8)),
                         eq(true),
                         eq(WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU),
                         mFollowResultsCallbackCaptor.capture());
@@ -870,7 +870,7 @@ public class FeedStreamTest {
 
         verify(mWebFeedBridgeJni)
                 .unfollowWebFeed(
-                        eq("webFeed1".getBytes("UTF8")),
+                        eq("webFeed1".getBytes(StandardCharsets.UTF_8)),
                         eq(true),
                         eq(WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU),
                         mUnfollowResultsCallbackCaptor.capture());
@@ -957,7 +957,7 @@ public class FeedStreamTest {
 
         verify(mWebFeedBridgeJni)
                 .unfollowWebFeed(
-                        eq("webFeed1".getBytes("UTF8")),
+                        eq("webFeed1".getBytes(StandardCharsets.UTF_8)),
                         eq(true),
                         eq(WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU),
                         mUnfollowResultsCallbackCaptor.capture());

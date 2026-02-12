@@ -6,7 +6,7 @@ package org.chromium.net.test;
 
 import org.chromium.net.UrlResponseInfo;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -280,20 +280,8 @@ public class FakeUrlResponse {
         outputString.append(" Negotiated Protocol: " + mNegotiatedProtocol);
         outputString.append(" Proxy Server: " + mProxyServer);
         outputString.append(" Response Body ");
-        try {
-            String bodyString = new String(mResponseBody, "UTF-8");
-            outputString.append("(UTF-8): " + bodyString);
-        } catch (UnsupportedEncodingException e) {
-            outputString.append("(hexadecimal): " + getHexStringFromBytes());
-        }
+        String bodyString = new String(mResponseBody, StandardCharsets.UTF_8);
+        outputString.append("(UTF-8): " + bodyString);
         return outputString.toString();
-    }
-
-    private String getHexStringFromBytes() {
-        StringBuilder bytesToHexStringBuilder = new StringBuilder();
-        for (byte b : mResponseBody) {
-            bytesToHexStringBuilder.append(String.format("%02x", b));
-        }
-        return bytesToHexStringBuilder.toString();
     }
 }

@@ -62,6 +62,7 @@ public class UrlUtils {
 
     /**
      * Construct a data:text/html URI for loading from an inline HTML.
+     *
      * @param html An unencoded HTML
      * @return String An URI that contains the given HTML
      */

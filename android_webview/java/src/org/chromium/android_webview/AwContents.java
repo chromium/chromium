@@ -152,6 +152,7 @@ import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -2549,19 +2550,15 @@ public class AwContents implements SmartClipProvider {
             // "dump" that string of data into the WebView without going through regular URL
             // loading steps such as decoding URL-encoded entities. We achieve this same behavior by
             // base64 encoding the data that is passed here and then loading that as a data: URL.
-            try {
-                loadUrlParams =
-                        LoadUrlParams.createLoadDataParamsWithBaseUrl(
-                                Base64.encodeToString(data.getBytes("utf-8"), Base64.DEFAULT),
-                                mimeType,
-                                true,
-                                baseUrl,
-                                historyUrl,
-                                "utf-8");
-            } catch (java.io.UnsupportedEncodingException e) {
-                Log.wtf(TAG, "Unable to load data string %s", data, e);
-                return;
-            }
+            loadUrlParams =
+                    LoadUrlParams.createLoadDataParamsWithBaseUrl(
+                            Base64.encodeToString(
+                                    data.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT),
+                            mimeType,
+                            true,
+                            baseUrl,
+                            historyUrl,
+                            "utf-8");
         }
 
         // This is a workaround for an issue with PlzNavigate and one of Samsung's OEM mail apps.

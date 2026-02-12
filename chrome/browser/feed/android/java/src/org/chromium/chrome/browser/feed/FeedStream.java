@@ -75,7 +75,6 @@ import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -241,13 +240,7 @@ public class FeedStream implements Stream {
 
         @Override
         public void updateWebFeedFollowState(WebFeedFollowUpdate update) {
-            byte[] webFeedId;
-            try {
-                webFeedId = update.webFeedName().getBytes("UTF8");
-            } catch (UnsupportedEncodingException e) {
-                Log.i(TAG, "Invalid webFeedName", e);
-                return;
-            }
+            byte[] webFeedId = update.webFeedName().getBytes(StandardCharsets.UTF_8);
             WebFeedFollowUpdate.Callback updateCallback = update.callback();
             if (update.isFollow()) {
                 Callback<WebFeedBridge.FollowResults> followCallback =

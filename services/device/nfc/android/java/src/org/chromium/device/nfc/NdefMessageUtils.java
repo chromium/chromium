@@ -17,7 +17,6 @@ import org.chromium.device.mojom.NdefRecordTypeCategory;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -204,7 +203,8 @@ public final class NdefMessageUtils {
             case android.nfc.NdefRecord.TNF_MIME_MEDIA:
                 record =
                         createMIMERecord(
-                                new String(ndefRecord.getType(), "UTF-8"), ndefRecord.getPayload());
+                                new String(ndefRecord.getType(), StandardCharsets.UTF_8),
+                                ndefRecord.getPayload());
                 break;
             case android.nfc.NdefRecord.TNF_ABSOLUTE_URI:
                 record = createURLRecord(ndefRecord.toUri(), /* isAbsUrl= */ true);
@@ -218,11 +218,12 @@ public final class NdefMessageUtils {
             case android.nfc.NdefRecord.TNF_EXTERNAL_TYPE:
                 record =
                         createExternalTypeRecord(
-                                new String(ndefRecord.getType(), "UTF-8"), ndefRecord.getPayload());
+                                new String(ndefRecord.getType(), StandardCharsets.UTF_8),
+                                ndefRecord.getPayload());
                 break;
         }
         if ((record != null) && (ndefRecord.getTnf() != android.nfc.NdefRecord.TNF_EMPTY)) {
-            record.id = new String(ndefRecord.getId(), "UTF-8");
+            record.id = new String(ndefRecord.getId(), StandardCharsets.UTF_8);
         }
         return record;
     }
@@ -284,7 +285,7 @@ public final class NdefMessageUtils {
         // 7  : 0 - text is in UTF-8 encoding, 1 - text is in UTF-16 encoding.
         nfcRecord.encoding = (text[0] & (1 << 7)) == 0 ? ENCODING_UTF8 : ENCODING_UTF16;
         int langCodeLength = (text[0] & (byte) 0x3F);
-        nfcRecord.lang = new String(text, 1, langCodeLength, "US-ASCII");
+        nfcRecord.lang = new String(text, 1, langCodeLength, StandardCharsets.US_ASCII);
         int textBodyStartPos = langCodeLength + 1;
         if (textBodyStartPos > text.length) {
             return null;
@@ -331,7 +332,7 @@ public final class NdefMessageUtils {
         // Prefix the raw local type with ':' to differentiate from other type names in WebNFC APIs,
         // e.g. |localType| being "text" will become ":text" to differentiate from the standardized
         // "text" record.
-        String recordType = ':' + new String(record.getType(), "UTF-8");
+        String recordType = ':' + new String(record.getType(), StandardCharsets.UTF_8);
         // We do not validate if we're in the context of a parent record but just expose to JS as is
         // what has been read from the nfc tag.
         if (isValidLocalType(recordType)) {
@@ -363,7 +364,7 @@ public final class NdefMessageUtils {
     /** Creates a TNF_WELL_KNOWN + RTD_URI or TNF_ABSOLUTE_URI android.nfc.NdefRecord. */
     public static android.nfc.NdefRecord createPlatformUrlRecord(
             byte[] url, @Nullable String id, boolean isAbsUrl) throws UnsupportedEncodingException {
-        Uri uri = Uri.parse(new String(url, "UTF-8"));
+        Uri uri = Uri.parse(new String(url, StandardCharsets.UTF_8));
         assert uri != null;
         uri = uri.normalizeScheme();
         String uriString = uri.toString();
@@ -578,13 +579,10 @@ public final class NdefMessageUtils {
                 payload);
     }
 
-    /**
-     * Validates external types.
-     * https://w3c.github.io/web-nfc/#dfn-validate-external-type
-     */
+    /** Validates external types. https://w3c.github.io/web-nfc/#dfn-validate-external-type */
     private static boolean isValidExternalType(String input) {
         // Must be an ASCII string first.
-        if (!Charset.forName("US-ASCII").newEncoder().canEncode(input)) return false;
+        if (!StandardCharsets.US_ASCII.newEncoder().canEncode(input)) return false;
 
         if (input.isEmpty() || input.length() > 255) return false;
 
@@ -602,13 +600,10 @@ public final class NdefMessageUtils {
         return true;
     }
 
-    /**
-     * Validates local types.
-     * https://w3c.github.io/web-nfc/#dfn-validate-local-type
-     */
+    /** Validates local types. https://w3c.github.io/web-nfc/#dfn-validate-local-type */
     private static boolean isValidLocalType(String input) {
         // Must be an ASCII string first.
-        if (!Charset.forName("US-ASCII").newEncoder().canEncode(input)) return false;
+        if (!StandardCharsets.US_ASCII.newEncoder().canEncode(input)) return false;
 
         // The prefix ':' will be omitted when we actually write the record type into the nfc tag.
         // We're taking it into consideration for validating the length here.

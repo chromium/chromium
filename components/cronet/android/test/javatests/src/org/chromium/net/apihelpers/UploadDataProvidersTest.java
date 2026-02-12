@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 /** Test the default provided implementations of {@link UploadDataProvider} */
 @DoNotBatch(reason = "crbug/1459563")
@@ -60,7 +61,7 @@ public class UploadDataProvidersTest {
                                 + "/tmpfile");
         FileOutputStream fileOutputStream = new FileOutputStream(mFile);
         try {
-            fileOutputStream.write(LOREM.getBytes("UTF-8"));
+            fileOutputStream.write(LOREM.getBytes(StandardCharsets.UTF_8));
         } finally {
             fileOutputStream.close();
         }
@@ -155,7 +156,8 @@ public class UploadDataProvidersTest {
                                 mNativeTestServer.getRedirectToEchoBody(),
                                 callback,
                                 callback.getExecutor());
-        UploadDataProvider dataProvider = UploadDataProviders.create(LOREM.getBytes("UTF-8"));
+        UploadDataProvider dataProvider =
+                UploadDataProviders.create(LOREM.getBytes(StandardCharsets.UTF_8));
         builder.setUploadDataProvider(dataProvider, callback.getExecutor());
         builder.addHeader("Content-Type", "useless/string");
         builder.build().start();
@@ -321,7 +323,7 @@ public class UploadDataProvidersTest {
                                 callback,
                                 callback.getExecutor());
         builder.addHeader("Content-Type", "useless/string");
-        byte[] uploadData = LOREM.getBytes("UTF-8");
+        byte[] uploadData = LOREM.getBytes(StandardCharsets.UTF_8);
         int offset = 5;
         byte[] uploadDataWithPadding = new byte[uploadData.length + offset];
         System.arraycopy(uploadData, 0, uploadDataWithPadding, offset, uploadData.length);

@@ -39,7 +39,7 @@ import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.net.test.util.TestWebServer;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -296,14 +296,10 @@ public class PostMessageTest extends AwParameterizedTest {
         InstrumentationRegistry.getInstrumentation()
                 .runOnMainSync(
                         () -> {
-                            try {
-                                mAwContents.postMessageToMainFrame(
-                                        new MessagePayload(testString.getBytes("UTF-8")),
-                                        mWebServer.getBaseUrl(),
-                                        null);
-                            } catch (UnsupportedEncodingException e) {
-                                throw new RuntimeException(e);
-                            }
+                            mAwContents.postMessageToMainFrame(
+                                    new MessagePayload(testString.getBytes(StandardCharsets.UTF_8)),
+                                    mWebServer.getBaseUrl(),
+                                    null);
                         });
         expectTitle(testString);
     }
@@ -322,11 +318,9 @@ public class PostMessageTest extends AwParameterizedTest {
                                     new MessagePayload("1"),
                                     mWebServer.getBaseUrl(),
                                     new MessagePort[] {channel[1]});
-                            try {
-                                channel[0].postMessage(
-                                        new MessagePayload(testString.getBytes("UTF-8")), null);
-                            } catch (UnsupportedEncodingException e) {
-                            }
+                            channel[0].postMessage(
+                                    new MessagePayload(testString.getBytes(StandardCharsets.UTF_8)),
+                                    null);
                             channel[0].close();
                         });
         expectTitle(testString);
@@ -791,7 +785,7 @@ public class PostMessageTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-PostMessage"})
     public void testMessageChannelSendAndReceiveArrayBuffer() throws Throwable {
-        final byte[] bytes = HELLO.getBytes("UTF-8");
+        final byte[] bytes = HELLO.getBytes(StandardCharsets.UTF_8);
         verifyEchoArrayBuffer(ECHO_ARRAY_BUFFER_PAGE, bytes);
     }
 
@@ -809,7 +803,7 @@ public class PostMessageTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-PostMessage"})
     public void testMessageChannelSendAndReceiveNonTransferableArrayBuffer() throws Throwable {
-        final byte[] bytes = HELLO.getBytes("UTF-8");
+        final byte[] bytes = HELLO.getBytes(StandardCharsets.UTF_8);
         verifyEchoArrayBuffer(ECHO_NON_TRANFERABLE_ARRAY_BUFFER_PAGE, bytes);
     }
 

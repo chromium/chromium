@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
@@ -149,7 +150,8 @@ public class FlushingReTrace {
                                     new StackTraceSupplier() {
                                         final BufferedReader mReader =
                                                 new BufferedReader(
-                                                        new InputStreamReader(System.in, "UTF-8"));
+                                                        new InputStreamReader(
+                                                                System.in, StandardCharsets.UTF_8));
 
                                         @Override
                                         public @Nullable List<String> get() {
@@ -167,7 +169,7 @@ public class FlushingReTrace {
                                     })
                             .build();
             Retrace.run(retraceCommand);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             // Print a verbose stack trace.
             ex.printStackTrace();
             System.exit(1);

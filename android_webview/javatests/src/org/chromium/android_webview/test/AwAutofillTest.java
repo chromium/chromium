@@ -72,6 +72,7 @@ import org.chromium.net.test.util.TestWebServer;
 
 import java.io.ByteArrayInputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -224,19 +225,20 @@ public class AwAutofillTest extends AwParameterizedTest {
     private static class AwAutofillSessionUMATestHelper {
         private static final String DATA =
                 """
-                    <html>
-                    <head></head>
-                    <body>
-                        <form action="a.html" name="formname" id="formid">
-                            <label>User Name:</label>
-                               <input type="text" id="text1" name="username"
-                                      placeholder="placeholder@placeholder.com"
-                                      autocomplete="username name" />
-                               <input type="submit" />
-                        </form>
-                        <form><input type="text" id="text2" /></form>
-                    </body>
-                    </html>""";
+                <html>
+                <head></head>
+                <body>
+                    <form action="a.html" name="formname" id="formid">
+                        <label>User Name:</label>
+                           <input type="text" id="text1" name="username"
+                                  placeholder="placeholder@placeholder.com"
+                                  autocomplete="username name" />
+                           <input type="submit" />
+                    </form>
+                    <form><input type="text" id="text2" /></form>
+                </body>
+                </html>\
+                """;
 
         private static final int TOTAL_CONTROLS = 1; // text1
 
@@ -490,22 +492,23 @@ public class AwAutofillTest extends AwParameterizedTest {
         final String url =
                 loadHTML(
                         """
-                            <form action='a.html' name='formname'>
-                                <label>User Name:</label>
-                                    <input type='text' id='text1' name='name' maxlength='30'
-                                        placeholder='Your name'
-                                        autocomplete='name given-name'>
-                                    <input type='checkbox' id='checkbox1' name='showpassword'>
-                                    <select id='select1' name='month'>
-                                        <option value='1'>Jan</option>
-                                        <option value='2'>Feb</option>
-                                    </select><textarea id='textarea1'></textarea>
-                                    <div contenteditable id='div1'>hello</div>
-                                    <input type='submit'>
-                                    <input type='reset' id='reset1'>
-                                    <input type='color' id='color1'><input type='file' id='file1'>
-                                    <input type='image' id='image1'>
-                            </form>""");
+                        <form action='a.html' name='formname'>
+                            <label>User Name:</label>
+                                <input type='text' id='text1' name='name' maxlength='30'
+                                    placeholder='Your name'
+                                    autocomplete='name given-name'>
+                                <input type='checkbox' id='checkbox1' name='showpassword'>
+                                <select id='select1' name='month'>
+                                    <option value='1'>Jan</option>
+                                    <option value='2'>Feb</option>
+                                </select><textarea id='textarea1'></textarea>
+                                <div contenteditable id='div1'>hello</div>
+                                <input type='submit'>
+                                <input type='reset' id='reset1'>
+                                <input type='color' id='color1'><input type='file' id='file1'>
+                                <input type='image' id='image1'>
+                        </form>\
+                        """);
         final int totalControls = 3; // text1, select1, textarea1
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
@@ -626,12 +629,13 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testCrossFrameAutofill() throws Throwable {
         loadHTML(
                 """
-                    <form>
-                        <input autocomplete=cc-name>
-                        <iframe srcdoc='<input autocomplete=cc-number>'></iframe>
-                        <iframe srcdoc='<input autocomplete=cc-exp>'></iframe>
-                        <iframe srcdoc='<input autocomplete=cc-csc>'></iframe>
-                   </form>""");
+                 <form>
+                     <input autocomplete=cc-name>
+                     <iframe srcdoc='<input autocomplete=cc-number>'></iframe>
+                     <iframe srcdoc='<input autocomplete=cc-exp>'></iframe>
+                     <iframe srcdoc='<input autocomplete=cc-csc>'></iframe>
+                </form>\
+                """);
         int cnt = 0;
         executeJavaScriptAndWaitForResult(
                 "window.frames[0].document.body.firstElementChild.select();");
@@ -813,13 +817,14 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testCommit() throws Throwable {
         loadHTML(
                 """
-                    <form action='a.html' name='formname' id='formid'>
-                        <input type='text' id='text1' name='username'
-                            placeholder='placeholder@placeholder.com'
-                            autocomplete='username name'>
-                        <input type='password' id='passwordid' name='passwordname'>
-                        <input type='submit'>
-                    </form>""");
+                <form action='a.html' name='formname' id='formid'>
+                    <input type='text' id='text1' name='username'
+                        placeholder='placeholder@placeholder.com'
+                        autocomplete='username name'>
+                    <input type='password' id='passwordid' name='passwordname'>
+                    <input type='submit'>
+                </form>\
+                """);
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
@@ -866,13 +871,14 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testCommitWithChangedFormProperties() throws Throwable {
         loadHTML(
                 """
-                    <form action='a.html' name='formname' id='formid'>
-                        <input type='text' id='text1' name='username'
-                            placeholder='placeholder@placeholder.com'
-                            autocomplete='username name'>
-                        <input type='password' id='passwordid' name='passwordname'>
-                        <input type='submit'>
-                    </form>""");
+                <form action='a.html' name='formname' id='formid'>
+                    <input type='text' id='text1' name='username'
+                        placeholder='placeholder@placeholder.com'
+                        autocomplete='username name'>
+                    <input type='password' id='passwordid' name='passwordname'>
+                    <input type='submit'>
+                </form>\
+                """);
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
@@ -931,13 +937,14 @@ public class AwAutofillTest extends AwParameterizedTest {
         // the fields.
         loadHTML(
                 """
-                    <form>
-                        <input id=name>
-                        <iframe srcdoc='<form action=arbitrary.html method=GET>
-                            <input id=num></form>'></iframe>
-                        <iframe srcdoc='<input id=exp>'></iframe>
-                        <iframe srcdoc='<input id=csc>'></iframe>
-                   </form>""");
+                 <form>
+                     <input id=name>
+                     <iframe srcdoc='<form action=arbitrary.html method=GET>
+                         <input id=num></form>'></iframe>
+                     <iframe srcdoc='<input id=exp>'></iframe>
+                     <iframe srcdoc='<input id=csc>'></iframe>
+                </form>\
+                """);
         int cnt = 0;
         // Fill name field.
         executeJavaScriptAndWaitForResult("document.forms[0].elements[0].select();");
@@ -1034,18 +1041,19 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testMovingToOtherForm() throws Throwable {
         loadHTML(
                 """
-                    <form action='a.html' name='formname' id='formid'>
-                        <input type='text' id='text1' name='username'
-                            placeholder='placeholder@placeholder.com'
-                            autocomplete='username name'>
-                        <input type='submit'>
-                    </form>
-                    <form action='a.html' name='formname' id='formid2'>
-                        <input type='text' id='text2' name='username'
-                            placeholder='placeholder@placeholder.com'
-                            autocomplete='username name'>
-                        <input type='submit'>
-                    </form>""");
+                <form action='a.html' name='formname' id='formid'>
+                    <input type='text' id='text1' name='username'
+                        placeholder='placeholder@placeholder.com'
+                        autocomplete='username name'>
+                    <input type='submit'>
+                </form>
+                <form action='a.html' name='formname' id='formid2'>
+                    <input type='text' id='text2' name='username'
+                        placeholder='placeholder@placeholder.com'
+                        autocomplete='username name'>
+                    <input type='submit'>
+                </form>\
+                """);
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
@@ -1090,17 +1098,18 @@ public class AwAutofillTest extends AwParameterizedTest {
                         + "</body></html>";
         final String iframeData =
                 """
-                    <html>
-                    <head></head>
-                    <body>
-                        <form name='formname' id='formid'>
-                            <input type='text' id='text1' name='username'
-                                placeholder='placeholder@placeholder.com'
-                                autocomplete='username name' autofocus>
-                            <input type='submit'>
-                        </form>
-                    </body>
-                    </html>""";
+                <html>
+                <head></head>
+                <body>
+                    <form name='formname' id='formid'>
+                        <input type='text' id='text1' name='username'
+                            placeholder='placeholder@placeholder.com'
+                            autocomplete='username name' autofocus>
+                        <input type='submit'>
+                    </form>
+                </body>
+                </html>\
+                """;
         final String url = mWebServer.setResponse(FILE, data, null);
         mContentsClient.setShouldInterceptRequestImpl(
                 new AwAutofillTestClient.ShouldInterceptRequestImpl() {
@@ -1113,12 +1122,11 @@ public class AwAutofillTest extends AwParameterizedTest {
                             if (url.equals(request.getUrl())) {
                                 // Only intercept the iframe's request.
                                 if (mCallCount == 1) {
-                                    final String encoding = "UTF-8";
                                     return new WebResourceResponseInfo(
                                             "text/html",
-                                            encoding,
+                                            "UTF-8",
                                             new ByteArrayInputStream(
-                                                    iframeData.getBytes(encoding)));
+                                                    iframeData.getBytes(StandardCharsets.UTF_8)));
                                 }
                                 mCallCount++;
                             }
@@ -1182,10 +1190,11 @@ public class AwAutofillTest extends AwParameterizedTest {
         int cnt = 0;
         loadHTML(
                 """
-                    <form action='a.html' name='formname' id='formid'>
-                        <input type='password' id='passwordid'
-                            name='passwordname'> <input type='submit'>
-                    </form>""");
+                <form action='a.html' name='formname' id='formid'>
+                    <input type='password' id='passwordid'
+                        name='passwordname'> <input type='submit'>
+                </form>\
+                """);
         DOMUtils.waitForNonZeroNodeBounds(mAwContents.getWebContents(), "passwordid");
         // Note that we currently depend on keyboard app's behavior.
         // TODO(changwan): mock out IME interaction.
@@ -1212,12 +1221,13 @@ public class AwAutofillTest extends AwParameterizedTest {
         int cnt = 0;
         loadHTML(
                 """
-                    <form action='a.html' name='formname' id='formid'>
-                        <input type='text' id='text1' name='username'
-                            placeholder='placeholder@placeholder.com'
-                            autocomplete='username name'>
-                        <input type='password' id='passwordid' name='passwordname'>
-                    </form>""");
+                <form action='a.html' name='formname' id='formid'>
+                    <input type='text' id='text1' name='username'
+                        placeholder='placeholder@placeholder.com'
+                        autocomplete='username name'>
+                    <input type='password' id='passwordid' name='passwordname'>
+                </form>\
+                """);
 
         // Start the session by clicking on the username element.
         DOMUtils.waitForNonZeroNodeBounds(mAwContents.getWebContents(), "text1");
@@ -1258,13 +1268,14 @@ public class AwAutofillTest extends AwParameterizedTest {
         int cnt = 0;
         loadHTML(
                 """
-                    <form action='a.html' name='formname' id='formid'>
-                        <input type='text' id='text1' name='username'
-                            placeholder='placeholder@placeholder.com'
-                            autocomplete='username name'>
-                        <input type='password' id='passwordid' name='passwordname'>
-                    </form>
-                    >""");
+                <form action='a.html' name='formname' id='formid'>
+                    <input type='text' id='text1' name='username'
+                        placeholder='placeholder@placeholder.com'
+                        autocomplete='username name'>
+                    <input type='password' id='passwordid' name='passwordname'>
+                </form>
+                >\
+                """);
         final String success = "<!DOCTYPE html>" + "<html>" + "<body>" + "</body>" + "</html>";
         mWebServer.setResponse("/success.html", success, null);
 
@@ -1298,12 +1309,13 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testNoSubmissionWithoutFillingForm() throws Throwable {
         loadHTML(
                 """
-                    <form action='a.html' name='formname' id='formid'>
-                        <input type='text' id='text1' name='username'
-                        placeholder='placeholder@placeholder.com'
-                            autocomplete='username name'>
-                        <input type='password' id='passwordid' name='passwordname'>
-                    </form>""");
+                <form action='a.html' name='formname' id='formid'>
+                    <input type='text' id='text1' name='username'
+                    placeholder='placeholder@placeholder.com'
+                        autocomplete='username name'>
+                    <input type='password' id='passwordid' name='passwordname'>
+                </form>\
+                """);
         final String success = "<!DOCTYPE html>" + "<html>" + "<body>" + "</body>" + "</html>";
         mWebServer.setResponse("/success.html", success, null);
         executeJavaScriptAndWaitForResult("window.location.href = 'success.html'; ");
@@ -1319,13 +1331,14 @@ public class AwAutofillTest extends AwParameterizedTest {
         int cnt = 0;
         loadHTML(
                 """
-                    <form action='a.html' name='formname' id='formid'>
-                        <input type='text' id='text1' name='username'>
-                        <select id='color' autofocus>
-                            <option value='red'>red</option>
-                            <option value='blue' id='blue'>blue</option>
-                        </select>
-                    </form>""");
+                <form action='a.html' name='formname' id='formid'>
+                    <input type='text' id='text1' name='username'>
+                    <select id='color' autofocus>
+                        <option value='red'>red</option>
+                        <option value='blue' id='blue'>blue</option>
+                    </select>
+                </form>\
+                """);
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         cnt +=
@@ -1367,13 +1380,14 @@ public class AwAutofillTest extends AwParameterizedTest {
         int cnt = 0;
         loadHTML(
                 """
-                    <form action='a.html' name='formname' id='formid'>
-                        <input type='text' id='text1' name='username'>
-                        <select id='color' autofocus>
-                            <option value='red'>red</option>
-                            <option value='blue' id='blue'>blue</option>
-                        </select>
-                    </form>""");
+                <form action='a.html' name='formname' id='formid'>
+                    <input type='text' id='text1' name='username'>
+                    <select id='color' autofocus>
+                        <option value='red'>red</option>
+                        <option value='blue' id='blue'>blue</option>
+                    </select>
+                </form>\
+                """);
         // Change select control first shall start autofill session.
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_SPACE);
         // Use key B to select 'blue'.
@@ -1414,18 +1428,19 @@ public class AwAutofillTest extends AwParameterizedTest {
         int cnt = 0;
         loadHTML(
                 """
-                    <script>
-                        function myFunction() {
-                            document.getElementById('color').value = 'blue';
-                        }
-                    </script>
-                    <form action='a.html' name='formname' id='formid'>
-                        <button onclick='myFunction();' autofocus>button </button>
-                        <select id='color'>
-                            <option value='red'>red</option>
-                            <option value='blue' id='blue'>blue</option>
-                        </select>
-                    </form>""");
+                <script>
+                    function myFunction() {
+                        document.getElementById('color').value = 'blue';
+                    }
+                </script>
+                <form action='a.html' name='formname' id='formid'>
+                    <button onclick='myFunction();' autofocus>button </button>
+                    <select id='color'>
+                        <option value='red'>red</option>
+                        <option value='blue' id='blue'>blue</option>
+                    </select>
+                </form>\
+                """);
         // Change select control first shall start autofill session.
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_SPACE);
         cnt +=
@@ -1450,21 +1465,22 @@ public class AwAutofillTest extends AwParameterizedTest {
         int cnt = 0;
         loadHTML(
                 """
-                    <script>
-                        function myFunction() {
-                            document.getElementById('color').value = 'blue';
-                        }
-                    </script>
-                    <script defer>
-                        myFunction();
-                    </script>
-                    <form action='a.html' name='formname' id='formid'>
-                        <button onclick='myFunction();' autofocus>button </button>
-                        <select id='color'>
-                            <option value='red'>red</option>
-                            <option value='blue' id='blue'>blue</option>
-                        </select>
-                    </form>""");
+                <script>
+                    function myFunction() {
+                        document.getElementById('color').value = 'blue';
+                    }
+                </script>
+                <script defer>
+                    myFunction();
+                </script>
+                <form action='a.html' name='formname' id='formid'>
+                    <button onclick='myFunction();' autofocus>button </button>
+                    <select id='color'>
+                        <option value='red'>red</option>
+                        <option value='blue' id='blue'>blue</option>
+                    </select>
+                </form>\
+                """);
         // There is no good way to verify no callback occurred, we just simulate user trigger
         // the autofill and verify autofill is only triggered once, then this proves javascript
         // didn't trigger the autofill, since
@@ -1495,20 +1511,21 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testUaAutofillHints() throws Throwable {
         loadHTML(
                 """
-                    <form action='a.html' name='formname'>
-                        <label for=\"frmAddressB\">Address</label>
-                        <input name=\"bill-address\" id=\"frmAddressB\">
-                        <label for=\"frmCityB\">City</label>
-                        <input name=\"bill-city\" id=\"frmCityB\">
-                        <label for=\"frmStateB\">State</label>
-                        <input name=\"bill-state\" id=\"frmStateB\">
-                        <label for=\"frmZipB\">Zip</label>
-                        <input name=\"bill-zip\" id=\"frmZipB\">
-                        <input type='checkbox' id='checkbox1' name='showpassword'>
-                        <label for=\"frmCountryB\">Country</label>
-                        <input name=\"bill-country\" id=\"frmCountryB\">
-                        <input type='submit'>
-                    </form>""");
+                <form action='a.html' name='formname'>
+                    <label for=\"frmAddressB\">Address</label>
+                    <input name=\"bill-address\" id=\"frmAddressB\">
+                    <label for=\"frmCityB\">City</label>
+                    <input name=\"bill-city\" id=\"frmCityB\">
+                    <label for=\"frmStateB\">State</label>
+                    <input name=\"bill-state\" id=\"frmStateB\">
+                    <label for=\"frmZipB\">Zip</label>
+                    <input name=\"bill-zip\" id=\"frmZipB\">
+                    <input type='checkbox' id='checkbox1' name='showpassword'>
+                    <label for=\"frmCountryB\">Country</label>
+                    <input name=\"bill-country\" id=\"frmCountryB\">
+                    <input type='submit'>
+                </form>\
+                """);
         final int totalControls = 5;
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('frmAddressB').select();");
@@ -2140,24 +2157,24 @@ public class AwAutofillTest extends AwParameterizedTest {
                         });
         loadHTML(
                 """
-                    <div id='parent'>
-                        <iframe id='frame' srcdoc='<input id="username">'></iframe>
-                    </div>""");
+                <div id='parent'>
+                    <iframe id='frame' srcdoc='<input id="username">'></iframe>
+                </div>\
+                """);
 
         int cnt = 0;
         executeJavaScriptAndWaitForResult(
                 """
-                    var iframe = document.getElementById('frame');
-                    var frame_doc = iframe.contentDocument;
-                    frame_doc.getElementById('username').select();""");
+                var iframe = document.getElementById('frame');
+                var frame_doc = iframe.contentDocument;
+                frame_doc.getElementById('username').select();\
+                """);
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         cnt +=
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_VIEW_ENTERED,
-                            AUTOFILL_SESSION_STARTED,
-                            AUTOFILL_VALUE_CHANGED
+                            AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED, AUTOFILL_VALUE_CHANGED
                         });
         invokeOnProvideAutoFillVirtualStructure();
         executeJavaScriptAndWaitForResult(
@@ -2200,9 +2217,10 @@ public class AwAutofillTest extends AwParameterizedTest {
 
         loadHTML(
                 """
-                    <input id='username'>
-                    <a id='link' href='#destination'></a>
-                    <div id='destination'></div>""");
+                <input id='username'>
+                <a id='link' href='#destination'></a>
+                <div id='destination'></div>\
+                """);
 
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('username').select();");
@@ -2218,8 +2236,9 @@ public class AwAutofillTest extends AwParameterizedTest {
         invokeOnProvideAutoFillVirtualStructure();
         executeJavaScriptAndWaitForResult(
                 """
-                    document.getElementById('link').click();
-                    document.getElementById('username').remove();""");
+                document.getElementById('link').click();
+                document.getElementById('username').remove();\
+                """);
         cnt +=
                 waitForCallbackAndVerifyTypes(
                         cnt,
@@ -2275,10 +2294,11 @@ public class AwAutofillTest extends AwParameterizedTest {
         executeJavaScriptAndWaitForResult(
                 String.format(
                         """
-                    document.getElementById('username').remove();
-                    const xhr = new XMLHttpRequest();
-                    xhr.open('GET', '%s', true);
-                    xhr.send(null);""",
+                        document.getElementById('username').remove();
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('GET', '%s', true);
+                        xhr.send(null);\
+                        """,
                         xhrUrl));
         cnt +=
                 waitForCallbackAndVerifyTypes(
@@ -2364,12 +2384,13 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testPageScrollTriggerViewExitAndEnter() throws Throwable {
         loadHTML(
                 """
-                    <form action='a.html' name='formname'>
-                        <input type='text' id='text1' name='username'
-                            placeholder='placeholder@placeholder.com'
-                            autocomplete='username name'>
-                    </form>
-                    <p style='height: 100vh'>Hello</p>""");
+                <form action='a.html' name='formname'>
+                    <input type='text' id='text1' name='username'
+                        placeholder='placeholder@placeholder.com'
+                        autocomplete='username name'>
+                </form>
+                <p style='height: 100vh'>Hello</p>\
+                """);
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
@@ -2542,10 +2563,11 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testVisibility() throws Throwable {
         loadHTML(
                 """
-                    <form action='a.html' name='formname'>
-                        <input type='text' id='text1' name='username'>
-                        <input type='text' name='email' id='text2' style='display: none;' />
-                    </form>""");
+                <form action='a.html' name='formname'>
+                    <input type='text' id='text1' name='username'>
+                    <input type='text' name='email' id='text2' style='display: none;' />
+                </form>\
+                """);
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
@@ -2574,10 +2596,11 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testServerPredictionArrivesBeforeAutofillStart() throws Throwable {
         loadHTML(
                 """
-                    <form action='a.html' name='formname'>
-                        <input type='text' id='text1' name='username'>
-                        <input type='text' name='email' id='text2' autocomplete='email' />
-                    </form>""");
+                <form action='a.html' name='formname'>
+                    <input type='text' id='text1' name='username'>
+                    <input type='text' name='email' id='text2' autocomplete='email' />
+                </form>\
+                """);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         AutofillProviderTestHelper
@@ -2656,13 +2679,14 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testCrossFrameServerPredictionArrivesBeforeAutofillStart() throws Throwable {
         loadHTML(
                 """
-                    <form>
-                        <input id=name>
-                        <iframe srcdoc='<form action=arbitrary.html method=GET>
-                                    <input id=num autocomplete=cc-number></form>' sandbox></iframe>
-                        <iframe srcdoc='<input id=exp>'></iframe>
-                        <iframe srcdoc='<input id=csc>'></iframe>
-                    </form>""");
+                <form>
+                    <input id=name>
+                    <iframe srcdoc='<form action=arbitrary.html method=GET>
+                                <input id=num autocomplete=cc-number></form>' sandbox></iframe>
+                    <iframe srcdoc='<input id=exp>'></iframe>
+                    <iframe srcdoc='<input id=csc>'></iframe>
+                </form>\
+                """);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         AutofillProviderTestHelper
@@ -2769,10 +2793,11 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testServerPredictionPrimaryTypeArrivesBeforeAutofillStart() throws Throwable {
         loadHTML(
                 """
-                    <form action='a.html' name='formname'>
-                        <input type='text' id='text1' name='username'>
-                        <input type='text' name='email' id='text2' autocomplete='email' />
-                    </form>""");
+                <form action='a.html' name='formname'>
+                    <input type='text' id='text1' name='username'>
+                    <input type='text' name='email' id='text2' autocomplete='email' />
+                </form>\
+                """);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         AutofillProviderTestHelper
@@ -2840,10 +2865,11 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testServerPredictionArrivesAfterAutofillStart() throws Throwable {
         loadHTML(
                 """
-                    <form action='a.html' name='formname'>
-                        <input type='text' id='text1' name='username'>
-                        <input type='text' name='email' id='text2' autocomplete='email' />
-                    </form>""");
+                <form action='a.html' name='formname'>
+                    <input type='text' id='text1' name='username'>
+                    <input type='text' name='email' id='text2' autocomplete='email' />
+                </form>\
+                """);
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
@@ -2931,10 +2957,11 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testServerPredictionPrimaryTypeArrivesAfterAutofillStart() throws Throwable {
         loadHTML(
                 """
-                    <form action='a.html' name='formname'>
-                        <input type='text' id='text1' name='username'>
-                        <input type='text' name='email' id='text2' autocomplete='email' />
-                    </form>""");
+                <form action='a.html' name='formname'>
+                    <input type='text' id='text1' name='username'>
+                    <input type='text' name='email' id='text2' autocomplete='email' />
+                </form>\
+                """);
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
@@ -3017,10 +3044,11 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testServerPredictionArrivesBeforeCallbackRegistered() throws Throwable {
         loadHTML(
                 """
-                    <form action='a.html' name='formname'>
-                        <input type='text' id='text1' name='username'>
-                        <input type='text' name='email' id='text2' autocomplete='email' />
-                    </form>""");
+                <form action='a.html' name='formname'>
+                    <input type='text' id='text1' name='username'>
+                    <input type='text' name='email' id='text2' autocomplete='email' />
+                </form>\
+                """);
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
@@ -3111,12 +3139,13 @@ public class AwAutofillTest extends AwParameterizedTest {
         // fill.
         loadHTML(
                 """
-                    <form action='a.html' name='formname'>
-                        <label>User Name:</label>
-                        <input type='text' id='text1' name='name' />
-                        <label>Password:</label>
-                        <input type='password' id='pwdid' name='pwd' />
-                    </form>""");
+                <form action='a.html' name='formname'>
+                    <label>User Name:</label>
+                    <input type='text' id='text1' name='name' />
+                    <label>Password:</label>
+                    <input type='password' id='pwdid' name='pwd' />
+                </form>\
+                """);
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
@@ -3136,8 +3165,9 @@ public class AwAutofillTest extends AwParameterizedTest {
         // Append a field.
         executeJavaScriptAndWaitForResult(
                 """
-                    document.getElementById('pwdid').insertAdjacentHTML(
-                        'afterend', '<input type=\"password\" id=\"pwdid2\"/>');""");
+                document.getElementById('pwdid').insertAdjacentHTML(
+                    'afterend', '<input type=\"password\" id=\"pwdid2\"/>');\
+                """);
 
         // Autofill the original form.
         SparseArray<AutofillValue> values = new SparseArray<AutofillValue>();
@@ -3171,12 +3201,13 @@ public class AwAutofillTest extends AwParameterizedTest {
         // executing the fill.
         loadHTML(
                 """
-                    <form action='a.html' name='formname'>
-                        <label>User Name:</label>
-                        <input type='text' id='text1' name='name' />
-                        <label>Password:</label>
-                        <input type='password' id='pwdid' name='pwd' />
-                    </form>""");
+                <form action='a.html' name='formname'>
+                    <label>User Name:</label>
+                    <input type='text' id='text1' name='name' />
+                    <label>Password:</label>
+                    <input type='password' id='pwdid' name='pwd' />
+                </form>\
+                """);
         int cnt = 0;
         // Focus on the second element, since the first one is about to be removed. Removing the
         // element on which the fill was triggered would cancel the filling operation.
@@ -3221,46 +3252,49 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testFrameDetachedOnFormSubmission() throws Throwable {
         final String subFrame =
                 """
-                    <html>
-                    <body>
-                        <script>
-                            function send_post() {
-                                window.parent.postMessage('SubmitComplete', '*');
-                            }
-                        </script>
-                        <form action='inner_frame_address_form.html' id='deleting_form'
-                            onsubmit='send_post(); return false;'>
-                            <input type='text' id='address_field' name='address'
-                                autocomplete='on'>
-                            <input type='submit' id='submit_button'
-                                name='submit_button'>
-                        </form>
-                    </body>
-                    </html>""";
+                <html>
+                <body>
+                    <script>
+                        function send_post() {
+                            window.parent.postMessage('SubmitComplete', '*');
+                        }
+                    </script>
+                    <form action='inner_frame_address_form.html' id='deleting_form'
+                        onsubmit='send_post(); return false;'>
+                        <input type='text' id='address_field' name='address'
+                            autocomplete='on'>
+                        <input type='submit' id='submit_button'
+                            name='submit_button'>
+                    </form>
+                </body>
+                </html>\
+                """;
         final String subFrameURL =
                 mWebServer.setResponse("/inner_frame_address_form.html", subFrame, null);
         assertTrue(Uri.parse(subFrameURL).getPath().equals("/inner_frame_address_form.html"));
         loadHTML(
                 """
-                    <script>
-                        function receiveMessage(event) {
-                            var address_iframe = document.getElementById('address_iframe');
-                            address_iframe.parentNode.removeChild(address_iframe);
-                            setTimeout(delayedUpload, 0);
-                        }
-                        window.addEventListener('message', receiveMessage, false);
-                    </script>
-                    <iframe src='inner_frame_address_form.html' id='address_iframe'
-                        name='address_iframe'>
-                    </iframe>""");
+                <script>
+                    function receiveMessage(event) {
+                        var address_iframe = document.getElementById('address_iframe');
+                        address_iframe.parentNode.removeChild(address_iframe);
+                        setTimeout(delayedUpload, 0);
+                    }
+                    window.addEventListener('message', receiveMessage, false);
+                </script>
+                <iframe src='inner_frame_address_form.html' id='address_iframe'
+                    name='address_iframe'>
+                </iframe>\
+                """);
 
         int cnt = 0;
         pollJavascriptResult(
                 """
-                    var iframe = document.getElementById('address_iframe');
-                    var frame_doc = iframe.contentDocument;
-                    frame_doc.getElementById('address_field').focus();
-                    frame_doc.activeElement.id;""",
+                var iframe = document.getElementById('address_iframe');
+                var frame_doc = iframe.contentDocument;
+                frame_doc.getElementById('address_field').focus();
+                frame_doc.activeElement.id;\
+                """,
                 "\"address_field\"");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         cnt +=
@@ -3273,9 +3307,10 @@ public class AwAutofillTest extends AwParameterizedTest {
                         });
         executeJavaScriptAndWaitForResult(
                 """
-                    var iframe = document.getElementById('address_iframe');
-                    var frame_doc = iframe.contentDocument;
-                    frame_doc.getElementById('submit_button').click();""");
+                var iframe = document.getElementById('address_iframe');
+                var frame_doc = iframe.contentDocument;
+                frame_doc.getElementById('submit_button').click();\
+                """);
         waitForCallbackAndVerifyTypes(
                 cnt, new Integer[] {AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT, AUTOFILL_CANCEL});
         assertEquals(SubmissionSource.FORM_SUBMISSION, mSubmissionSource);
@@ -3288,39 +3323,42 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testFrameDetachedOnFormlessSubmission() throws Throwable {
         final String subFrame =
                 """
-                    <html>
-                    <body>
-                        <script>
-                            function send_post() {
-                                window.parent.postMessage('SubmitComplete', '*');
-                            }
-                        </script>
-                        <input type='text' id='address_field' name='address' autocomplete='on'>
-                        <input type='button' id='submit_button' name='submit_button' onclick='send_post()'>
-                    </body>
-                    </html>""";
+                <html>
+                <body>
+                    <script>
+                        function send_post() {
+                            window.parent.postMessage('SubmitComplete', '*');
+                        }
+                    </script>
+                    <input type='text' id='address_field' name='address' autocomplete='on'>
+                    <input type='button' id='submit_button' name='submit_button' onclick='send_post()'>
+                </body>
+                </html>\
+                """;
         final String subFrameURL =
                 mWebServer.setResponse("/inner_frame_address_formless.html", subFrame, null);
         assertTrue(Uri.parse(subFrameURL).getPath().equals("/inner_frame_address_formless.html"));
         loadHTML(
                 """
-                    <script>
-                        function receiveMessage(event) {
-                            var address_iframe = document.getElementById('address_iframe');
-                            address_iframe.parentNode.removeChild(address_iframe);
-                        }
-                        window.addEventListener('message', receiveMessage, false);
-                    </script>
-                    <iframe src='inner_frame_address_formless.html' id='address_iframe' name='address_iframe'>
-                    </iframe>""");
+                <script>
+                    function receiveMessage(event) {
+                        var address_iframe = document.getElementById('address_iframe');
+                        address_iframe.parentNode.removeChild(address_iframe);
+                    }
+                    window.addEventListener('message', receiveMessage, false);
+                </script>
+                <iframe src='inner_frame_address_formless.html' id='address_iframe' name='address_iframe'>
+                </iframe>\
+                """);
 
         int cnt = 0;
         pollJavascriptResult(
                 """
-                    var iframe = document.getElementById('address_iframe');
-                    var frame_doc = iframe.contentDocument;
-                    frame_doc.getElementById('address_field').focus();
-                    frame_doc.activeElement.id;""",
+                var iframe = document.getElementById('address_iframe');
+                var frame_doc = iframe.contentDocument;
+                frame_doc.getElementById('address_field').focus();
+                frame_doc.activeElement.id;\
+                """,
                 "\"address_field\"");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         cnt +=
@@ -3333,9 +3371,10 @@ public class AwAutofillTest extends AwParameterizedTest {
                         });
         executeJavaScriptAndWaitForResult(
                 """
-                    var iframe = document.getElementById('address_iframe');
-                    var frame_doc = iframe.contentDocument;
-                    frame_doc.getElementById('submit_button').click();""");
+                var iframe = document.getElementById('address_iframe');
+                var frame_doc = iframe.contentDocument;
+                frame_doc.getElementById('submit_button').click();\
+                """);
         // The additional AUTOFILL_VIEW_EXITED event caused by 'click' of the button.
         waitForCallbackAndVerifyTypes(
                 cnt,
@@ -3352,13 +3391,14 @@ public class AwAutofillTest extends AwParameterizedTest {
     public void testLabelChange() throws Throwable {
         loadHTML(
                 """
-                    <form action='a.html'>
-                        <label id='label_id'> Address </label>
-                        <input type='text' id='address' name='address' autocomplete='on' />
-                        <p id='p_id'>Address 1</p>
-                        <input type='text' name='address1' autocomplete='on' />
-                        <input type='submit' id='submit_button' name='submit_button' />
-                    </form>""");
+                <form action='a.html'>
+                    <label id='label_id'> Address </label>
+                    <input type='text' id='address' name='address' autocomplete='on' />
+                    <p id='p_id'>Address 1</p>
+                    <input type='text' name='address1' autocomplete='on' />
+                    <input type='submit' id='submit_button' name='submit_button' />
+                </form>\
+                """);
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('address').focus();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
@@ -3606,12 +3646,12 @@ public class AwAutofillTest extends AwParameterizedTest {
         final String data =
                 String.format(
                         """
-                    <html>
-                    <head></head>
-                    <body>
-                    %s
-                    </body>
-                    </html>
+                        <html>
+                        <head></head>
+                        <body>
+                        %s
+                        </body>
+                        </html>
                         """,
                         htmlBody);
         final String url = mWebServer.setResponse(FILE, data, null);

@@ -16,7 +16,7 @@ import org.junit.runner.RunWith;
 import org.chromium.net.UrlResponseInfo;
 import org.chromium.net.impl.UrlResponseInfoImpl;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,15 +82,12 @@ public class FakeUrlResponseTest {
     @Test
     @SmallTest
     public void testResponseBodyIsSame() {
-        try {
-            FakeUrlResponse responseWithBodySetAsBytes =
-                    mTestResponse.toBuilder().setResponseBody(TEST_BODY.getBytes("UTF-8")).build();
-            assertThat(mTestResponse.getResponseBody())
-                    .isEqualTo(responseWithBodySetAsBytes.getResponseBody());
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(
-                    "Exception occurred while encoding response body: " + TEST_BODY);
-        }
+        FakeUrlResponse responseWithBodySetAsBytes =
+                mTestResponse.toBuilder()
+                        .setResponseBody(TEST_BODY.getBytes(StandardCharsets.UTF_8))
+                        .build();
+        assertThat(mTestResponse.getResponseBody())
+                .isEqualTo(responseWithBodySetAsBytes.getResponseBody());
     }
 
     @Test

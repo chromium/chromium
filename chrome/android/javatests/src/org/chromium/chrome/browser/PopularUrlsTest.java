@@ -39,8 +39,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -97,17 +97,14 @@ public class PopularUrlsTest {
     }
 
     private BufferedReader getInputStream(File inputFile) throws FileNotFoundException {
-        try {
-            Reader fileReader = new InputStreamReader(new FileInputStream(inputFile), "UTF-8");
-            return new BufferedReader(fileReader);
-        } catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException("UTF-8 not present...time to give up on this charade.", ex);
-        }
+        Reader fileReader =
+                new InputStreamReader(new FileInputStream(inputFile), StandardCharsets.UTF_8);
+        return new BufferedReader(fileReader);
     }
 
     private OutputStreamWriter getOutputStream(File outputFile) throws IOException {
         return new OutputStreamWriter(
-                new FileOutputStream(outputFile, mStatus.getIsRecovery()), "UTF-8");
+                new FileOutputStream(outputFile, mStatus.getIsRecovery()), StandardCharsets.UTF_8);
     }
 
     private void logToStream(String str, OutputStreamWriter writer) throws IOException {
@@ -138,7 +135,7 @@ public class PopularUrlsTest {
             mIteration = 0;
             mPage = 0;
             try {
-                input = new InputStreamReader(new FileInputStream(mFile), "UTF-8");
+                input = new InputStreamReader(new FileInputStream(mFile), StandardCharsets.UTF_8);
                 mIsRecovery = true;
                 reader = new BufferedReader(input);
                 String line = reader.readLine();
@@ -175,7 +172,8 @@ public class PopularUrlsTest {
                 mFile.delete();
             }
             try {
-                output = new OutputStreamWriter(new FileOutputStream(mFile), "UTF-8");
+                output =
+                        new OutputStreamWriter(new FileOutputStream(mFile), StandardCharsets.UTF_8);
                 output.write(mIteration + NEW_LINE);
                 output.write(mPage + NEW_LINE);
                 output.write(mUrl + NEW_LINE);
