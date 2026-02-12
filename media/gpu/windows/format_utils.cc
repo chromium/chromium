@@ -75,6 +75,22 @@ DXGI_FORMAT VideoPixelFormatToDxgiFormat(VideoPixelFormat format) {
   }
 }
 
+DXGI_FORMAT SharedImageFormatToDXGIFormat(viz::SharedImageFormat format) {
+  if (format == viz::MultiPlaneFormat::kNV12) {
+    return DXGI_FORMAT_NV12;
+  }
+  if (format == viz::MultiPlaneFormat::kP010) {
+    return DXGI_FORMAT_P010;
+  }
+  if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+    return DXGI_FORMAT_B8G8R8A8_UNORM;
+  }
+  if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
+    return DXGI_FORMAT_R10G10B10A2_UNORM;
+  }
+  return DXGI_FORMAT_UNKNOWN;
+}
+
 bool IsRec709(const gfx::ColorSpace& color_space) {
   return color_space.GetPrimaryID() == gfx::ColorSpace::PrimaryID::BT709 &&
          color_space.GetTransferID() == gfx::ColorSpace::TransferID::BT709 &&

@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "media/base/video_frame.h"
@@ -91,7 +92,7 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   // ProcessTexture, the dxgi format must be the same for all of them.
   DefaultTexture2DWrapper(const gfx::Size& size,
                           const gfx::ColorSpace& output_color_space,
-                          DXGI_FORMAT dxgi_format,
+                          viz::SharedImageFormat output_si_format,
                           ComD3D11Device device);
   ~DefaultTexture2DWrapper() override;
 
@@ -127,7 +128,7 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
                  GetCommandBufferHelperCB get_helper_cb,
                  const gfx::Size& size,
                  const gfx::ColorSpace& color_space,
-                 DXGI_FORMAT dxgi_format,
+                 viz::SharedImageFormat output_si_format,
                  ComD3D11Device video_device,
                  ComD3D11Texture2D texture,
                  size_t array_slice,
@@ -153,7 +154,7 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   const gfx::ColorSpace output_color_space_;
   base::SequenceBound<GpuResources> gpu_resources_;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
-  DXGI_FORMAT dxgi_format_;
+  viz::SharedImageFormat output_si_format_;
 
   std::unique_ptr<gpu::VideoImageRepresentation> shared_image_rep_;
   std::unique_ptr<gpu::VideoImageRepresentation::ScopedWriteAccess>

@@ -951,10 +951,11 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
   // video. As a result, we should not allow overlay for non-NV12/P010 formats
   // which may cause chroma downsampling when blitting into the back buffer.
   // See https://crbugs.com/331679628 for more details.
+  auto output_si_format = texture_selector_->OutputSharedImageFormat();
   if (!config_.is_encrypted()) {
     frame->metadata().allow_overlay =
-        texture_selector_->OutputDXGIFormat() == DXGI_FORMAT_P010 ||
-        texture_selector_->OutputDXGIFormat() == DXGI_FORMAT_NV12;
+        output_si_format == viz::MultiPlaneFormat::kP010 ||
+        output_si_format == viz::MultiPlaneFormat::kNV12;
   }
   frame->metadata().power_efficient = true;
 
@@ -971,7 +972,7 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
 
   frame->metadata().is_webgpu_compatible =
       !(gpu_workarounds_.disable_sharing_nv12_from_d3d11_to_d3d12 &&
-        texture_selector_->OutputDXGIFormat() == DXGI_FORMAT_NV12) &&
+        output_si_format == viz::MultiPlaneFormat::kNV12) &&
       use_shared_handle_;
 
   output_cb_.Run(frame);

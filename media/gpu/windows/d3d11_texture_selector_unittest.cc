@@ -87,7 +87,7 @@ TEST_F(D3D11TextureSelectorUnittest, NV12BindsToNV12) {
   auto tex_sel = CreateWithDefaultGPUInfo(DXGI_FORMAT_NV12);
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_NV12);
-  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_NV12);
+  EXPECT_EQ(tex_sel->OutputSharedImageFormat(), viz::MultiPlaneFormat::kNV12);
   EXPECT_FALSE(tex_sel->WillCopyForTesting());
 }
 
@@ -97,7 +97,7 @@ TEST_F(D3D11TextureSelectorUnittest, NV12CopiesToNV12WithoutSharingSupport) {
       CreateWithDefaultGPUInfo(DXGI_FORMAT_NV12, ZeroCopyEnabled::kFalse);
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_NV12);
-  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_NV12);
+  EXPECT_EQ(tex_sel->OutputSharedImageFormat(), viz::MultiPlaneFormat::kNV12);
   EXPECT_TRUE(tex_sel->WillCopyForTesting());
 }
 
@@ -108,7 +108,7 @@ TEST_F(D3D11TextureSelectorUnittest, NV12CopiesToNV12WithWorkaround) {
                                ZeroCopyDisabledByWorkaround::kTrue);
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_NV12);
-  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_NV12);
+  EXPECT_EQ(tex_sel->OutputSharedImageFormat(), viz::MultiPlaneFormat::kNV12);
   EXPECT_TRUE(tex_sel->WillCopyForTesting());
 }
 
@@ -120,7 +120,7 @@ TEST_F(D3D11TextureSelectorUnittest, P010BindsToP010WithVideoProcessorSupport) {
       CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue);
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_P010LE);
-  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_P010);
+  EXPECT_EQ(tex_sel->OutputSharedImageFormat(), viz::MultiPlaneFormat::kP010);
   EXPECT_FALSE(tex_sel->WillCopyForTesting());
 }
 
@@ -133,7 +133,7 @@ TEST_F(D3D11TextureSelectorUnittest,
       CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue);
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_P010LE);
-  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_P010);
+  EXPECT_EQ(tex_sel->OutputSharedImageFormat(), viz::MultiPlaneFormat::kP010);
   EXPECT_FALSE(tex_sel->WillCopyForTesting());
 }
 
@@ -144,7 +144,8 @@ TEST_F(D3D11TextureSelectorUnittest, P010CopiesTo10BitRGB) {
       CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kFalse);
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_XB30);
-  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_R10G10B10A2_UNORM);
+  EXPECT_EQ(tex_sel->OutputSharedImageFormat(),
+            viz::SinglePlaneFormat::kRGBA_1010102);
   EXPECT_TRUE(tex_sel->WillCopyForTesting());
 }
 
@@ -156,7 +157,8 @@ TEST_F(D3D11TextureSelectorUnittest, P010CopiesTo8bitRGB) {
       CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kFalse);
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_ARGB);
-  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_B8G8R8A8_UNORM);
+  EXPECT_EQ(tex_sel->OutputSharedImageFormat(),
+            viz::SinglePlaneFormat::kBGRA_8888);
   EXPECT_TRUE(tex_sel->WillCopyForTesting());
 }
 
@@ -166,7 +168,8 @@ TEST_F(D3D11TextureSelectorUnittest,
   auto tex_sel = CreateWithDefaultGPUInfo(DXGI_FORMAT_AYUV);
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_ARGB);
-  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_B8G8R8A8_UNORM);
+  EXPECT_EQ(tex_sel->OutputSharedImageFormat(),
+            viz::SinglePlaneFormat::kBGRA_8888);
   EXPECT_TRUE(tex_sel->WillCopyForTesting());
 }
 
@@ -181,7 +184,7 @@ TEST_F(D3D11TextureSelectorUnittest, AYUVCopiesToNV12WithHDRColorSpace) {
                       gfx::ColorSpace::RangeID::LIMITED));
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_NV12);
-  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_NV12);
+  EXPECT_EQ(tex_sel->OutputSharedImageFormat(), viz::MultiPlaneFormat::kNV12);
   EXPECT_TRUE(tex_sel->WillCopyForTesting());
 }
 
@@ -196,7 +199,7 @@ TEST_F(D3D11TextureSelectorUnittest,
           gfx::ColorSpace::MatrixID::YCOCG, gfx::ColorSpace::RangeID::LIMITED));
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_NV12);
-  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_NV12);
+  EXPECT_EQ(tex_sel->OutputSharedImageFormat(), viz::MultiPlaneFormat::kNV12);
   EXPECT_TRUE(tex_sel->WillCopyForTesting());
 }
 
@@ -206,7 +209,8 @@ TEST_F(D3D11TextureSelectorUnittest,
   auto tex_sel = CreateWithDefaultGPUInfo(DXGI_FORMAT_Y410);
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_XB30);
-  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_R10G10B10A2_UNORM);
+  EXPECT_EQ(tex_sel->OutputSharedImageFormat(),
+            viz::SinglePlaneFormat::kRGBA_1010102);
   EXPECT_TRUE(tex_sel->WillCopyForTesting());
 }
 
@@ -221,7 +225,7 @@ TEST_F(D3D11TextureSelectorUnittest, Y410CopiesToP010WithHDRColorSpace) {
                       gfx::ColorSpace::RangeID::LIMITED));
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_P010LE);
-  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_P010);
+  EXPECT_EQ(tex_sel->OutputSharedImageFormat(), viz::MultiPlaneFormat::kP010);
   EXPECT_TRUE(tex_sel->WillCopyForTesting());
 }
 
@@ -236,7 +240,7 @@ TEST_F(D3D11TextureSelectorUnittest,
           gfx::ColorSpace::MatrixID::GBR, gfx::ColorSpace::RangeID::LIMITED));
 
   EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_P010LE);
-  EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_P010);
+  EXPECT_EQ(tex_sel->OutputSharedImageFormat(), viz::MultiPlaneFormat::kP010);
   EXPECT_TRUE(tex_sel->WillCopyForTesting());
 }
 
