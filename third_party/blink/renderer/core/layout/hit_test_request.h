@@ -66,14 +66,11 @@ class HitTestRequest {
     kAvoidCache = 1 << 13,
     kIgnoreZeroOpacityObjects = 1 << 14,
     kHitTestVisualOverflow = 1 << 15,
-    kHitNodeCbWithId = 1 << 16,
   };
 
   typedef unsigned HitTestRequestType;
-
   using HitNodeCb =
-      base::RepeatingCallback<ListBasedHitTestBehavior(const Node& node,
-                                                       DOMNodeId dom_node_id)>;
+      base::RepeatingCallback<ListBasedHitTestBehavior(const Node& node)>;
 
   HitTestRequest(HitTestRequestType request_type,
                  const LayoutObject* stop_node = nullptr,
@@ -120,7 +117,10 @@ class HitTestRequest {
   HitTestRequestType GetType() const { return request_type_; }
   const LayoutObject* GetStopNode() const { return stop_node_.Get(); }
 
-  ListBasedHitTestBehavior RunHitNodeCb(Node& node) const;
+  ListBasedHitTestBehavior RunHitNodeCb(const Node& node) const {
+    DCHECK(hit_node_cb_);
+    return hit_node_cb_->Run(node);
+  }
 
   // The Cacheability bits don't affect hit testing computation.
   // TODO(dtapuska): These bits really shouldn't be fields on the HitTestRequest

@@ -147,8 +147,7 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
 
   ListBasedHitTestBehavior ComputeOcclusion(const ClientIdsSet& client_ids_set,
                                             Metrics& counts,
-                                            const Node& node,
-                                            DOMNodeId node_id);
+                                            const Node& node);
 
   bool MeetsVisibilityThreshold(Metrics& counts, const PhysicalRect& rect);
 
