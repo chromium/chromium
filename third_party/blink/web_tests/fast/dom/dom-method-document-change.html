@@ -4,12 +4,6 @@
 if (window.testRunner)
     testRunner.dumpAsText();
 
-handler = function()
-{
-    this.removeEventListener("DOMNodeRemoved", handler, false);
-    doc.adoptNode(this.parentElement);
-}
-
 showFailure = function(s)
 {
     document.body.innerHTML = "FAILURE: " + s;
@@ -26,10 +20,23 @@ window.onload = function()
     doc = document.implementation.createHTMLDocument();
     
     parent.appendChild(element1);
-    element1.addEventListener("DOMNodeRemoved", handler, false);
+    const observer = new MutationObserver((records) => {
+        for (const r of records) {
+            if (r.type !== 'childList') continue;
+            for (const n of (r.removedNodes || [])) {
+                if (n === element1) {
+                    doc.adoptNode(parent);
+                    observer.disconnect();
+                    return;
+                }
+            }
+        }
+    });
+    observer.observe(parent, { childList: true });
     try {
         document.body.appendChild(element1);
     } catch (e) { }
+    observer.disconnect();
     if (element1.ownerDocument != element1.parentElement.ownerDocument)
         return showFailure("appendChild");
     

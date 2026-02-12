@@ -33,7 +33,11 @@ function sendXHR()
     };
     xhr.send();
 }
-window.addEventListener("DOMSubtreeModified", sendXHR);
+const observer = new MutationObserver(() => {
+    observer.disconnect();
+    sendXHR();
+});
+observer.observe(document, { childList: true, subtree: true, characterData: true });
 addElement();
 </script>
 This tests that when we re-entrantly create and cancel XHRs, we don't try to disconnect the same CachedResourceClient

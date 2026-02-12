@@ -20,6 +20,7 @@
 description('This test verify dragging an image in the page keeps its attributes. To test manually, drag the image and drop it in the rect with a blue border.');
 var jsTestIsAsync = true;
 var target = document.getElementById('target');
+var observer;
 
 function contentInserted() {
     shouldBe('target.getElementsByTagName("input").length', '1');
@@ -34,7 +35,16 @@ function contentInserted() {
 }
 
 function runTest() {
-    target.addEventListener('DOMNodeInserted', contentInserted, false);
+    observer = new MutationObserver((records) => {
+        for (const r of records) {
+            if (r.type === 'childList' && r.addedNodes && r.addedNodes.length) {
+                observer.disconnect();
+                contentInserted();
+                return;
+            }
+        }
+    });
+    observer.observe(target, { childList: true });
     if (!window.testRunner)
         return;
 

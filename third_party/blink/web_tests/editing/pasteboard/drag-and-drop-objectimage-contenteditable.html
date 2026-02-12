@@ -21,6 +21,7 @@ description('This test verifies dropping an image does nothing. To test manually
 var jsTestIsAsync = true;
 var target = document.getElementById('target');
 var imageIsInserted = false;
+var observer;
 
 function contentInserted() {
     shouldBe('target.getElementsByTagName("object").length', '1');
@@ -34,10 +35,21 @@ function contentInserted() {
 }
 
 function runTest() {
-    target.addEventListener('DOMNodeInserted', contentInserted, false);
+    // Legacy mutation events are gone; observe childList mutations instead.
+    observer = new MutationObserver((records) => {
+        for (const r of records) {
+            if (r.type === 'childList' && r.addedNodes && r.addedNodes.length) {
+                observer.disconnect();
+                contentInserted();
+                return;
+            }
+        }
+    });
+    observer.observe(target, { childList: true });
 
     document.getElementById('source').addEventListener('dragend', function() {
         shouldBeFalse('imageIsInserted');
+        if (observer) observer.disconnect();
         finishJSTest();
     });
 

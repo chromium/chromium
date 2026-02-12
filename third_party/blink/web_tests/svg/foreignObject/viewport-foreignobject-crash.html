@@ -8,14 +8,15 @@ var script = document.getElementsByTagName("script")[0];
 script.parentNode.removeChild(script);
 
 var count = 0;
-function crash() {
-    var element = event.srcElement;
+function crash(element) {
+    if (!element)
+      return;
     document.adoptNode(element);
     if (!document.body.innerHTML)
         return;
     document.execCommand('InsertHTML', false, document.body.innerHTML);
     if (count == 1) {
-        document.removeEventListener("DOMNodeInserted", crash, false);
+        observer.disconnect();
         t.done();
         return;
     }
@@ -25,7 +26,18 @@ function crash() {
     element.focus();
 }
 
-document.addEventListener("DOMNodeInserted", crash, false);
+const observer = new MutationObserver((records) => {
+    for (const r of records) {
+        if (r.type !== 'childList') continue;
+        for (const n of r.addedNodes) {
+            if (n && n.nodeType === Node.ELEMENT_NODE) {
+                crash(n);
+                return;
+            }
+        }
+    }
+});
+observer.observe(document, { childList: true, subtree: true });
 document.addEventListener("DOMContentLoaded", function () {
     document.execCommand("SelectAll", false, false);
     var range = window.getSelection().getRangeAt(0);

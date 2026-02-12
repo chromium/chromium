@@ -9,13 +9,21 @@
     </p>
     <pre id="console"></pre>
     <script>
-        var expectedRecordCount = 10;
+        var expectedRecordCount = 12;
         var recordCount = 0;
-        document.getElementById("console").addEventListener("DOMNodeInserted", function(e) {
-            if (++recordCount === expectedRecordCount && window.testRunner)
-                testRunner.notifyDone();
-        }, false);
-
+        const consoleEl = document.getElementById("console");
+        const observer = new MutationObserver((records) => {
+            for (const r of records) {
+                if (r.type !== 'childList') continue;
+                recordCount += (r.addedNodes ? r.addedNodes.length : 0);
+                if (recordCount >= expectedRecordCount && window.testRunner) {
+                    observer.disconnect();
+                    testRunner.notifyDone();
+                    return;
+                }
+            }
+        });
+        observer.observe(consoleEl, { childList: true });
 
         var throwExceptions = function(isolatedWorld)
         {

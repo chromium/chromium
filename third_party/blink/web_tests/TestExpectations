@@ -222,9 +222,7 @@ crbug.com/1446498 custom-elements/cereactions-with-exception.html [ Failure Pass
 crbug.com/1446498 dom/node/replace_child_recheck.html [ Failure Pass ]
 crbug.com/1446498 editing/execCommand/crash-inserting-list.html [ Failure Pass ]
 crbug.com/1446498 editing/execCommand/replaceSelectorCommand-crash.html [ Pass Timeout ]
-crbug.com/1446498 editing/pasteboard/drag-and-drop-objectimage-contenteditable.html [ Failure Pass ]
 crbug.com/1446498 fast/dom/dom-constructors.html [ Failure Pass ]
-crbug.com/1446498 fast/dom/dom-method-document-change.html [ Failure Pass ]
 crbug.com/1446498 fast/dom/global-constructors.html [ Failure Pass ]
 crbug.com/1446498 fast/dom/move-nodes-across-documents.html [ Failure Pass ]
 crbug.com/1446498 fast/dom/replaceChild-domsubtreemodified.html [ Failure Pass ]
@@ -235,13 +233,6 @@ crbug.com/1446498 fast/dom/MutationObserver/observe-characterdata.html [ Failure
 crbug.com/1446498 fast/dom/Window/get-set-properties.html [ Failure Pass ]
 crbug.com/1446498 fast/dom/Window/window-lookup-precedence.html [ Failure Pass ]
 crbug.com/1446498 fast/dom/shadow/shadow-boundary-crossing.html [ Failure Pass ]
-crbug.com/1446498 http/tests/xmlhttprequest/reentrant-cancel-abort.html [ Failure Pass ]
-
-crbug.com/1446498 editing/pasteboard/drag-and-drop-image-contenteditable.html [ Pass Timeout ]
-crbug.com/1446498 editing/pasteboard/drag-and-drop-inputimage-contenteditable.html [ Pass Timeout ]
-crbug.com/1446498 fast/events/window-onerror-isolatedworld-02.html [ Pass Timeout ]
-crbug.com/1446498 http/tests/xmlhttprequest/reentrant-cancel.html [ Pass Timeout ]
-crbug.com/1446498 svg/foreignObject/viewport-foreignobject-crash.html [ Pass Timeout ]
 # ====== Mutation Events tests to here ========================
 
 

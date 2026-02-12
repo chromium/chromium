@@ -43,7 +43,11 @@ function sendAndAbort()
     xhr.send();
     xhr.abort();
 }
-window.addEventListener("DOMSubtreeModified", sendAndAbort);
+const observer = new MutationObserver(() => {
+    observer.disconnect();
+    sendAndAbort();
+});
+observer.observe(document, { childList: true, subtree: true, characterData: true });
 addElement();
 </script>
 Reentrancy, cancellation and explicit abort. Check that we don't crash
