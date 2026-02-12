@@ -127,10 +127,9 @@ TEST(CreateCardRequestTest, GetRequestContent_ContainsExpectedData) {
   std::string expected_request_content = base::StringPrintf(
       "requestContentType=application/json; charset=utf-8&request=%s"
       "&s7e_21_pan=%s&s7e_13_cvc=%s",
-      base::EscapeUrlEncodedData(expected_json_content, true).c_str(),
-      base::EscapeUrlEncodedData(base::UTF16ToASCII(u"4111111111111111"), true)
-          .c_str(),
-      base::EscapeUrlEncodedData(base::UTF16ToASCII(u"123"), true).c_str());
+      base::EscapeUrlEncodedData(expected_json_content, true),
+      base::EscapeUrlEncodedData(base::UTF16ToASCII(u"4111111111111111"), true),
+      base::EscapeUrlEncodedData(base::UTF16ToASCII(u"123"), true));
 
   EXPECT_EQ(request->GetRequestContent(), expected_request_content);
 }

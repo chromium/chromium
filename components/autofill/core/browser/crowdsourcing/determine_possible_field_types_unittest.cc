@@ -309,8 +309,8 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 
   SCOPED_TRACE(base::StringPrintf(
       "Test: input_value='%s', field_type=%s, structured_names=%s ",
-      test_case.input_value,
-      FieldTypeToString(*test_case.field_types.begin()).c_str(), "true"));
+      test_case.input_value, FieldTypeToString(*test_case.field_types.begin()),
+      "true"));
 
   // Take the field types depending on the state of the structured names
   // feature.

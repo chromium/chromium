@@ -133,8 +133,8 @@ TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_HistoryLimit) {
   std::vector<FieldGlobalId> fields_id(kMaxStorableFieldFillHistory);
   for (size_t i = 0; i < kMaxStorableFieldFillHistory; ++i) {
     fields_id[i] =
-        AddNewFieldFilling(("field-label" + base::NumberToString(i)).c_str(),
-                           ("field-name" + base::NumberToString(i)).c_str(), "",
+        AddNewFieldFilling(("field-label" + base::NumberToString(i)),
+                           ("field-name" + base::NumberToString(i)), "",
                            FormControlType::kInputText, UNKNOWN_TYPE);
   }
   AddFormFilling(/*is_refill=*/false);
@@ -162,8 +162,8 @@ TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_HistoryLimit) {
 TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_FormBiggerThanLimit) {
   // Adding a few form fill entries.
   for (int i = 0; i < 5; ++i) {
-    AddNewFieldFilling(("field-label" + base::NumberToString(i)).c_str(),
-                       ("field-name" + base::NumberToString(i)).c_str(), "",
+    AddNewFieldFilling(("field-label" + base::NumberToString(i)),
+                       ("field-name" + base::NumberToString(i)), "",
                        FormControlType::kInputText, UNKNOWN_TYPE);
     AddFormFilling(/*is_refill=*/false);
     filled_fields_.clear();
@@ -174,8 +174,8 @@ TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_FormBiggerThanLimit) {
   std::vector<FieldGlobalId> fields_id(kMaxStorableFieldFillHistory + 1);
   for (size_t i = 0; i < kMaxStorableFieldFillHistory + 1; ++i) {
     fields_id[i] =
-        AddNewFieldFilling(("field-label" + base::NumberToString(i)).c_str(),
-                           ("field-name" + base::NumberToString(i)).c_str(), "",
+        AddNewFieldFilling(("field-label" + base::NumberToString(i)),
+                           ("field-name" + base::NumberToString(i)), "",
                            FormControlType::kInputText, UNKNOWN_TYPE);
   }
   AddFormFilling(/*is_refill=*/false);
@@ -205,8 +205,8 @@ TEST_F(FormAutofillHistoryTest, AddFormFillingEntry_RefillOnEmptyHistory) {
   std::vector<FieldGlobalId> fields_id(kMaxStorableFieldFillHistory + 1);
   for (size_t i = 0; i < kMaxStorableFieldFillHistory + 1; ++i) {
     fields_id[i] =
-        AddNewFieldFilling(("field-label" + base::NumberToString(i)).c_str(),
-                           ("field-name" + base::NumberToString(i)).c_str(), "",
+        AddNewFieldFilling(("field-label" + base::NumberToString(i)),
+                           ("field-name" + base::NumberToString(i)), "",
                            FormControlType::kInputText, UNKNOWN_TYPE);
   }
   AddFormFilling(/*is_refill=*/false);

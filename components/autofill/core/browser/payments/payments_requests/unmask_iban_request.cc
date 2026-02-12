@@ -66,8 +66,7 @@ std::string UnmaskIbanRequest::GetRequestContent() {
 
   std::string json_request = base::WriteJson(request_dict).value();
   std::string request_content = base::StringPrintf(
-      kUnmaskIbanRequestFormat,
-      base::EscapeUrlEncodedData(json_request, true).c_str());
+      kUnmaskIbanRequestFormat, base::EscapeUrlEncodedData(json_request, true));
   return request_content;
 }
 

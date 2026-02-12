@@ -488,7 +488,7 @@ TEST_F(FormCacheBrowserTest, FormCacheSizeUpperBound) {
   for (unsigned int i = 0; i < kMaxExtractableFields + 1; ++i) {
     html += "<form><input></form>";
   }
-  LoadHTML(html.c_str());
+  LoadHTML(html);
 
   FormCache::UpdateFormCacheResult forms = UpdateFormCache();
 
@@ -506,7 +506,7 @@ TEST_F(FormCacheBrowserTest, FieldLimit) {
   for (unsigned int i = 0; i < kMaxExtractableFields + 1; ++i) {
     html += "<form><input></form>";
   }
-  LoadHTML(html.c_str());
+  LoadHTML(html);
 
   ASSERT_EQ(kMaxExtractableFields + 1, GetDocument().GetTopLevelForms().size());
 
@@ -523,7 +523,7 @@ TEST_F(FormCacheBrowserTest, FrameLimit) {
   for (unsigned int i = 0; i < kMaxExtractableChildFrames + 1; ++i) {
     html += "<form><iframe></iframe></form>";
   }
-  LoadHTML(html.c_str());
+  LoadHTML(html);
 
   ASSERT_EQ(kMaxExtractableChildFrames + 1,
             GetDocument().GetTopLevelForms().size());
@@ -557,7 +557,7 @@ TEST_F(FormCacheBrowserTest, FieldAndFrameLimit) {
   for (size_t i = 0; i < kNumFormsWithoutFrame; ++i) {
     html += "<form><input></form>";
   }
-  LoadHTML(html.c_str());
+  LoadHTML(html);
 
   ASSERT_EQ(kMaxExtractableFields + 1,
             GetDocument().GetElementsByHTMLTagName("form").length());

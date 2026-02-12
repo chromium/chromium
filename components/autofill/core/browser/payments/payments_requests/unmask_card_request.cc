@@ -372,22 +372,20 @@ std::string UnmaskCardRequest::GetRequestContent() {
   if (is_cvc_auth) {
     request_content = base::StringPrintf(
         kUnmaskCardRequestFormatWithCvc,
-        base::EscapeUrlEncodedData(json_request, true).c_str(),
+        base::EscapeUrlEncodedData(json_request, true),
         base::EscapeUrlEncodedData(
-            base::UTF16ToASCII(request_details_.user_response.cvc), true)
-            .c_str());
+            base::UTF16ToASCII(request_details_.user_response.cvc), true));
   } else if (is_otp_auth) {
-    request_content = base::StringPrintf(
-        kUnmaskCardRequestFormatWithOtp,
-        base::EscapeUrlEncodedData(json_request, true).c_str(),
-        base::EscapeUrlEncodedData(base::UTF16ToASCII(request_details_.otp),
-                                   true)
-            .c_str());
+    request_content =
+        base::StringPrintf(kUnmaskCardRequestFormatWithOtp,
+                           base::EscapeUrlEncodedData(json_request, true),
+                           base::EscapeUrlEncodedData(
+                               base::UTF16ToASCII(request_details_.otp), true));
   } else {
     // If neither cvc nor otp request, use the normal request format.
-    request_content = base::StringPrintf(
-        kUnmaskCardRequestFormat,
-        base::EscapeUrlEncodedData(json_request, true).c_str());
+    request_content =
+        base::StringPrintf(kUnmaskCardRequestFormat,
+                           base::EscapeUrlEncodedData(json_request, true));
   }
 
   DVLOG(3) << "getrealpan request body: " << request_content;

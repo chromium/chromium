@@ -76,9 +76,8 @@ std::string TestAutofillManagerWaiter::DescribeState() const {
   return base::StringPrintf(
       "TestAutofillManagerWaiter created at %s for %zu relevant events has "
       "seen events [%s] is %stimed out",
-      waiter_location_.ToString().c_str(), state_->num_expected_relevant_events,
-      base::JoinString(events_vector, ", ").c_str(),
-      state_->timed_out ? "" : "not ");
+      waiter_location_.ToString(), state_->num_expected_relevant_events,
+      base::JoinString(events_vector, ", "), state_->timed_out ? "" : "not ");
 }
 
 size_t TestAutofillManagerWaiter::num_pending_events() const {

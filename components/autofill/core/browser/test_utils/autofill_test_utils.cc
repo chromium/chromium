@@ -159,11 +159,11 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
   return factory.Create(registry);
 }
 
-[[nodiscard]] FormData CreateTestAddressFormData(const char* unique_id) {
+[[nodiscard]] FormData CreateTestAddressFormData(std::string_view unique_id) {
   FormData form;
   form.set_host_frame(MakeLocalFrameToken());
   form.set_renderer_id(MakeFormRendererId());
-  form.set_name(u"MyForm" + ASCIIToUTF16(unique_id ? unique_id : ""));
+  form.set_name(u"MyForm" + ASCIIToUTF16(unique_id));
   form.set_button_titles({std::make_pair(
       u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
   form.set_url(GURL("https://myform.com/form.html"));

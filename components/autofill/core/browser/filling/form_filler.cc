@@ -980,7 +980,7 @@ void FormFiller::FillOrPreviewForm(
         << base::StringPrintf(
                "Field %zu Fillable - has value: %d->%d; autofilled: %d->%d. %s",
                i, has_value_before, has_value_after, is_autofilled_before,
-               is_autofilled_after, failure_to_fill.c_str());
+               is_autofilled_after, failure_to_fill);
   }
   if (may_refill_in_future) {
     refill_context->filled_form = form;

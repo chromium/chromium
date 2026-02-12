@@ -104,16 +104,15 @@ std::string UploadCardRequest::GetRequestContent() {
   if (request_details_.cvc.empty()) {
     request_content = base::StringPrintf(
         kUploadCardRequestFormatWithoutCvc,
-        base::EscapeUrlEncodedData(json_request, true).c_str(),
-        base::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true).c_str());
+        base::EscapeUrlEncodedData(json_request, true),
+        base::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true));
   } else {
     request_content = base::StringPrintf(
         kUploadCardRequestFormat,
-        base::EscapeUrlEncodedData(json_request, true).c_str(),
-        base::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true).c_str(),
+        base::EscapeUrlEncodedData(json_request, true),
+        base::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true),
         base::EscapeUrlEncodedData(base::UTF16ToASCII(request_details_.cvc),
-                                   true)
-            .c_str());
+                                   true));
   }
   DVLOG(3) << "savecard request body: " << request_content;
   return request_content;

@@ -368,8 +368,7 @@ TEST_F(FormAutofillUtilsTest, TruncateLargeOptionValuesAndContents) {
       </select>
     </form>
   )",
-                              huge_option.c_str(), huge_option.c_str())
-               .c_str());
+                              huge_option, huge_option));
 
   auto web_form = GetFormElementById(GetDocument(), "form");
 
@@ -637,7 +636,7 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_TooLongTitle) {
   }
   kFormHtml += "</form>";
 
-  LoadHTML(kFormHtml.c_str());
+  LoadHTML(kFormHtml);
   WebFormElement form_target = GetFormElementById(GetDocument(), "target");
   ButtonTitlesCache cache;
 
@@ -1535,7 +1534,8 @@ TEST_F(FormAutofillUtilsTest, GetFormFieldElements_Unowned) {
 TEST_P(FieldFramesTest, ExtractFormData_ExtractFieldsAndFrames) {
   FieldFramesTestParam test_case = GetParam();
   SCOPED_TRACE(testing::Message() << "HTML: " << test_case.html);
-  LoadHTML(test_case.html.c_str());
+  LoadHTML(test_case.html);
+
   WebDocument doc = GetDocument();
 
   // Extract the |form_data|.
@@ -1647,8 +1647,7 @@ INSTANTIATE_TEST_SUITE_P(
                   : base::StringPrintf("<input id='%s'>", field_or_frame.id);
         }
         if (!is_synthetic_form) {
-          html = base::StringPrintf("<form id='%s'>%s</form>", form_id,
-                                    html.c_str());
+          html = base::StringPrintf("<form id='%s'>%s</form>", form_id, html);
           const char* other_forms =
               "<input><iframe></iframe> <form><input><iframe></iframe></form>";
           html = base::StrCat({other_forms, html, other_forms});
@@ -1656,7 +1655,8 @@ INSTANTIATE_TEST_SUITE_P(
           const char* other_form = "<form><input><iframe></iframe></form>";
           html = base::StrCat({other_form, html, other_form});
         }
-        html = base::StringPrintf("<body>%s</body>", html.c_str());
+        html = base::StringPrintf("<body>%s</body>", html);
+
         return FieldFramesTestParam{.html = html,
                                     .form_id = form_id,
                                     .fields_and_frames = fields_and_frames};
@@ -1715,7 +1715,7 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_ExtractNoFramesIfTooManyIframes) {
   auto AddElementToForm = [this](const char* element) {
     std::string js = base::StringPrintf(
         "document.forms[0].appendChild(document.createElement('%s'))", element);
-    ExecuteJavaScriptForTests(js.c_str());
+    ExecuteJavaScriptForTests(js);
   };
 
   LoadHTML(R"(<html><body><form id='f'></form>)");
@@ -1749,7 +1749,7 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyFields) {
   auto AddElementToForm = [this](const char* element) {
     std::string js = base::StringPrintf(
         "document.forms[0].appendChild(document.createElement('%s'))", element);
-    ExecuteJavaScriptForTests(js.c_str());
+    ExecuteJavaScriptForTests(js);
   };
 
   LoadHTML(R"(<html><body><form id='f'></form>)");

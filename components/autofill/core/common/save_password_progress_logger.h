@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "components/autofill/core/common/form_data.h"
 #include "url/gurl.h"
@@ -269,7 +270,7 @@ class SavePasswordProgressLogger {
   // will be still possible to match the scrubbed string to the original ID or
   // name in the HTML doc. That's good enough for the logging purposes, and
   // provides some security benefits.
-  static std::string ScrubElementID(const std::u16string& element_id);
+  static std::string ScrubElementID(std::u16string_view element_id);
 
   // The UTF-8 version of the function above.
   static std::string ScrubElementID(std::string element_id);

@@ -115,16 +115,15 @@ std::string CreateCardRequest::GetRequestContent() {
   if (request_details_.cvc.empty()) {
     request_content = base::StringPrintf(
         kCreateCardRequestFormatWithoutCvc,
-        base::EscapeUrlEncodedData(json_request, true).c_str(),
-        base::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true).c_str());
+        base::EscapeUrlEncodedData(json_request, true),
+        base::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true));
   } else {
     request_content = base::StringPrintf(
         kCreateCardRequestFormat,
-        base::EscapeUrlEncodedData(json_request, true).c_str(),
-        base::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true).c_str(),
+        base::EscapeUrlEncodedData(json_request, true),
+        base::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true),
         base::EscapeUrlEncodedData(base::UTF16ToASCII(request_details_.cvc),
-                                   true)
-            .c_str());
+                                   true));
   }
 
   DVLOG(3) << "createcard request body: " << request_content;

@@ -107,9 +107,7 @@ void TestPaymentsAutofillClient::ConfirmExpirationDateFixFlow(
     base::OnceCallback<void(const std::u16string&, const std::u16string&)>
         callback) {
   credit_card_name_fix_flow_bubble_was_shown_ = true;
-  std::move(callback).Run(
-      std::u16string(u"03"),
-      std::u16string(base::ASCIIToUTF16(test::NextYear().c_str())));
+  std::move(callback).Run(u"03", base::ASCIIToUTF16(test::NextYear()));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

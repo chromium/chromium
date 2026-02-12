@@ -50,7 +50,7 @@ class PasswordFormBuilder {
                      : "");
     base::StringAppendF(
         &html_, "<INPUT type=\"text\" name=\"%s\" id=\"%s\" value=\"%s\" %s/>",
-        name_and_id, name_and_id, value, autocomplete_attribute.c_str());
+        name_and_id, name_and_id, value, autocomplete_attribute);
   }
 
   // Appends a new password-type field at the end of the form, having the
@@ -65,7 +65,7 @@ class PasswordFormBuilder {
     base::StringAppendF(
         &html_,
         "<INPUT type=\"password\" name=\"%s\" id=\"%s\" value=\"%s\" %s/>",
-        name_and_id, name_and_id, value, autocomplete_attribute.c_str());
+        name_and_id, name_and_id, value, autocomplete_attribute);
   }
 
   // Appends a new hidden-type field at the end of the form, having the
@@ -101,9 +101,9 @@ class PasswordFormConversionUtilsTest : public content::RenderViewTest {
                            WebFormElement* form,
                            const char* origin) {
     if (origin)
-      LoadHTMLWithUrlOverride(html.c_str(), origin);
+      LoadHTMLWithUrlOverride(html, origin);
     else
-      LoadHTML(html.c_str());
+      LoadHTML(html);
 
     GetFirstForm(form);
   }

@@ -95,8 +95,7 @@ TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest, GetRequestContent) {
             base::StringPrintf(
                 "requestContentType=application/json; charset=utf-8&request=%s",
                 base::EscapeUrlEncodedData(
-                    base::WriteJson(request_dict).value(), /*use_plus=*/true)
-                    .c_str()));
+                    base::WriteJson(request_dict).value(), /*use_plus=*/true)));
 }
 
 TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest,

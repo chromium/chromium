@@ -1012,7 +1012,7 @@ TEST_F(
   std::vector<FormData> forms;
   for (size_t i = 0; i < kAutofillManagerMaxFormCacheSize + 1; ++i) {
     forms.push_back(test::CreateTestAddressFormData(
-        base::NumberToString(static_cast<int>(i)).c_str()));
+        base::NumberToString(static_cast<int>(i))));
   }
   std::vector<FormSignature> form_signatures =
       base::ToVector(forms, &CalculateFormSignature);

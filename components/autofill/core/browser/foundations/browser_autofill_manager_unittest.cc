@@ -1015,9 +1015,9 @@ AutofillProfile FillDataToAutofillProfile(const TestAddressFillData& data) {
   return profile;
 }
 
-void ExpectFilledField(const char* expected_label,
-                       const char* expected_name,
-                       const char* expected_value,
+void ExpectFilledField(std::string_view expected_label,
+                       std::string_view expected_name,
+                       std::string_view expected_value,
                        FormControlType expected_form_control_type,
                        const FormFieldData& field) {
   SCOPED_TRACE(expected_label);
@@ -1097,7 +1097,7 @@ void ExpectFilledForm(
         date = exp_year + "-" + exp_month;
       }
 
-      ExpectFilledField("Expiration Date", "ccmonth", date.c_str(),
+      ExpectFilledField("Expiration Date", "ccmonth", date,
                         FormControlType::kInputMonth,
                         filled_form.fields()[offset + 2]);
     } else {
@@ -3733,8 +3733,7 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
          {"UnconditionalAblation", "ConditionalAblation"}) {
       histogram_tester.ExpectTotalCount(
           base::StrCat({"Autofill.Ablation.", metric, ".",
-                        complementary_form_type_str.c_str(), ".",
-                        ablation_type}),
+                        complementary_form_type_str, ".", ablation_type}),
           /*expected_count=*/0);
     }
   }
@@ -8788,12 +8787,11 @@ TEST_F(BrowserAutofillManagerTest,
   auto create_fill_submit_and_find_cached_form =
       [this, &url, &address_form_unique_id](
           bool is_credit_card_form) -> const FormStructure* {
-    FormData form =
-        is_credit_card_form
-            ? CreateTestCreditCardFormData(/*is_https=*/true,
-                                           /*use_month_type=*/false)
-            : CreateTestAddressFormData(
-                  base::NumberToString(++address_form_unique_id).c_str());
+    FormData form = is_credit_card_form
+                        ? CreateTestCreditCardFormData(/*is_https=*/true,
+                                                       /*use_month_type=*/false)
+                        : CreateTestAddressFormData(
+                              base::NumberToString(++address_form_unique_id));
     form.set_url(url);
     form.set_main_frame_origin(url::Origin::Create(url));
 

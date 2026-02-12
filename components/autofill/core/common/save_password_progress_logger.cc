@@ -128,13 +128,12 @@ std::string SavePasswordProgressLogger::GetFormFieldDataLogString(
              ScrubElementID(field.autocomplete_attribute()));
   return base::StringPrintf(
       "%s: signature=%s, type=%s, renderer_id=%s, %s, %s%s",
-      ScrubElementID(field.name()).c_str(),
-      base::NumberToString(*CalculateFieldSignatureForField(field)).c_str(),
+      ScrubElementID(field.name()),
+      base::NumberToString(*CalculateFieldSignatureForField(field)),
       ScrubElementID(
-          std::string(FormControlTypeToString(field.form_control_type())))
-          .c_str(),
-      base::NumberToString(*field.renderer_id()).c_str(), is_visible, is_empty,
-      autocomplete.c_str());
+          std::string(FormControlTypeToString(field.form_control_type()))),
+      base::NumberToString(*field.renderer_id()), is_visible, is_empty,
+      autocomplete);
 }
 
 // static
@@ -156,7 +155,7 @@ void SavePasswordProgressLogger::LogValue(StringID label,
 
 // static
 std::string SavePasswordProgressLogger::ScrubElementID(
-    const std::u16string& element_id) {
+    std::u16string_view element_id) {
   return ScrubElementID(base::UTF16ToUTF8(element_id));
 }
 

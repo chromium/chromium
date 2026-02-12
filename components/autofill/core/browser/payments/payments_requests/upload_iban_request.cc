@@ -70,12 +70,10 @@ std::string UploadIbanRequest::GetRequestContent() {
   request_dict.Set("context_token", request_details_.context_token);
 
   std::string json_request = base::WriteJson(request_dict).value();
-  std::string request_content =
-      base::StringPrintf(kUploadIbanRequestFormat,
-                         base::EscapeUrlEncodedData(json_request, true).c_str(),
-                         base::EscapeUrlEncodedData(
-                             base::UTF16ToASCII(request_details_.value), true)
-                             .c_str());
+  std::string request_content = base::StringPrintf(
+      kUploadIbanRequestFormat, base::EscapeUrlEncodedData(json_request, true),
+      base::EscapeUrlEncodedData(base::UTF16ToASCII(request_details_.value),
+                                 true));
   DVLOG(3) << "savediban request body: " << request_content;
   return request_content;
 }

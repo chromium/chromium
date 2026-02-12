@@ -82,8 +82,7 @@ bool AutofillRendererTest::SimulateElementClickAndWait(
 void AutofillRendererTest::SimulateElementFocusAndWait(
     std::string_view element_id) {
   ExecuteJavaScriptForTests(
-      base::StrCat({"document.getElementById('", element_id, "').focus();"})
-          .c_str());
+      base::StrCat({"document.getElementById('", element_id, "').focus();"}));
   task_environment_.RunUntilIdle();
 }
 
