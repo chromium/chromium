@@ -63,7 +63,10 @@ enum class ActivityType {
   kPreFirstTab,
 
   // Chrome is running embedded in another application as auth-dedicated tab.
-  // TODO(b/353517557): Add a link to a developer guide
+  //
+  // See:
+  //   -
+  //   https://developer.android.com/reference/androidx/browser/auth/AuthTabIntent
   kAuthTab,
 
   kMaxValue = kAuthTab,
