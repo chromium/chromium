@@ -23,7 +23,6 @@ import com.google.android.gms.identitycredentials.GetCredentialException;
 import com.google.android.gms.identitycredentials.GetCredentialRequest;
 import com.google.android.gms.identitycredentials.IdentityCredentialClient;
 import com.google.android.gms.identitycredentials.IdentityCredentialManager;
-import com.google.android.gms.identitycredentials.IntentHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,7 +36,6 @@ import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate.DigitalCred
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 @NullMarked
 public class DigitalCredentialsPresentationDelegate {
@@ -45,7 +43,6 @@ public class DigitalCredentialsPresentationDelegate {
 
     @VisibleForTesting public static final String DC_API_RESPONSE_PROTOCOL_KEY = "protocol";
     @VisibleForTesting public static final String DC_API_RESPONSE_DATA_KEY = "data";
-    @VisibleForTesting public static final String BUNDLE_KEY_IDENTITY_TOKEN = "identityToken";
 
     @VisibleForTesting
     public static final String BUNDLE_KEY_PROVIDER_DATA =
@@ -76,7 +73,13 @@ public class DigitalCredentialsPresentationDelegate {
                     protected void onReceiveResult(int code, Bundle data) {
                         Log.d(TAG, "Received a response");
                         try {
-                            result.fulfill(extractDigitalCredentialFromResponseBundle(code, data));
+                            var credential = extractDigitalCredentialFromResponseBundle(code, data);
+                            if (credential == null) {
+                                result.reject(
+                                        new Exception("Response does not contain a credential"));
+                            } else {
+                                result.fulfill(credential);
+                            }
                         } catch (Exception e) {
                             Log.e(TAG, e.toString());
 
@@ -135,45 +138,14 @@ public class DigitalCredentialsPresentationDelegate {
     /**
      * Extracts a DigitalCredential from a response bundle.
      *
-     * <p>This method attempts to extract a DigitalCredential from the given response bundle. It
-     * first tries to parse the response in the new format. If that fails, it falls back to the
-     * legacy format.
-     *
      * @param code The result code from the activity.
      * @param bundle The bundle containing the response data.
      * @return The extracted DigitalCredential.
      * @throws JSONException If there is an error parsing the JSON data.
-     * @throws NullPointerException If required data is missing in the legacy format.
-     * @throws GetCredentialException If there is an issue with the credential.
      */
     @VisibleForTesting
-    public static DigitalCredential extractDigitalCredentialFromResponseBundle(
-            int code, Bundle bundle)
-            throws JSONException, NullPointerException, GetCredentialException {
-        // Try to read the new format.
-        var digitalCredential = extractDigitalCredentialFromModernResponse(bundle);
-        if (digitalCredential != null) {
-            return digitalCredential;
-        }
-        // TODO(crbug.com/336329411) Handle the case when the intent doesn't contain the modern
-        // response, but contains the modern exception.
-
-        // Fallback to the legacy format.
-        var response = IntentHelper.extractGetCredentialResponse(code, bundle);
-        var token = response.getCredential().getData().getByteArray(BUNDLE_KEY_IDENTITY_TOKEN);
-
-        return new DigitalCredential(null, Objects.requireNonNull(token));
-    }
-
-    /**
-     * Extracts a DigitalCredential from a response bundle in the modern format.
-     *
-     * @param bundle The bundle containing the response data.
-     * @return The extracted DigitalCredential, or null if the response is not in the modern format.
-     * @throws JSONException If there is an error parsing the JSON data.
-     */
-    private static @Nullable DigitalCredential extractDigitalCredentialFromModernResponse(
-            Bundle bundle) throws JSONException {
+    public static @Nullable DigitalCredential extractDigitalCredentialFromResponseBundle(
+            int code, Bundle bundle) throws JSONException {
         Intent intent = IntentUtils.safeGetParcelable(bundle, BUNDLE_KEY_PROVIDER_DATA);
         if (intent == null) {
             return null;
@@ -191,15 +163,10 @@ public class DigitalCredentialsPresentationDelegate {
             return null;
         }
         JSONObject credential = new JSONObject(credentialJson);
-        // Unless the json contains the protocol, return null to fallback to the legacy format.
-        if (credential.has(DC_API_RESPONSE_PROTOCOL_KEY)) {
-            String protocol = credential.getString(DC_API_RESPONSE_PROTOCOL_KEY);
-            var data = credential.getJSONObject(DC_API_RESPONSE_DATA_KEY);
-            return new DigitalCredential(protocol, data.toString());
-        }
-        // Otherwise, treat the whole json as the response. This is added for backward compatibility
-        // where GMSCore was setting the modern response with the contents of the legacy response
-        // without a protocol.
-        return new DigitalCredential(null, credentialJson);
+        String protocol = credential.getString(DC_API_RESPONSE_PROTOCOL_KEY);
+        var data = credential.getJSONObject(DC_API_RESPONSE_DATA_KEY);
+        return new DigitalCredential(protocol, data.toString());
+        // TODO(crbug.com/336329411) Handle the case when the intent doesn't contain the
+        // response, but contains an exception.
     }
 }

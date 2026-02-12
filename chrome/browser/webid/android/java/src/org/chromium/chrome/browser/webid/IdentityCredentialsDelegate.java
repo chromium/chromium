@@ -14,15 +14,10 @@ public class IdentityCredentialsDelegate {
     private static final String TAG = "IdentityCredentials";
 
     public static class DigitalCredential {
-        @Nullable public String mProtocol;
+        public String mProtocol;
         public String mData;
 
-        public DigitalCredential(@Nullable String protocol, byte[] data) {
-            this.mProtocol = protocol;
-            this.mData = new String(data);
-        }
-
-        public DigitalCredential(@Nullable String protocol, String data) {
+        public DigitalCredential(String protocol, String data) {
             this.mProtocol = protocol;
             this.mData = data;
         }

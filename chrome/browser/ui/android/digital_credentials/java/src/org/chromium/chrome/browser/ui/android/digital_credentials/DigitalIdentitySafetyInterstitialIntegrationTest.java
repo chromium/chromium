@@ -104,7 +104,7 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
         @Override
         public Promise<DigitalCredential> get(WindowAndroid window, String origin, String request) {
             return Promise.fulfilled(
-                    new DigitalCredential("protocol", "{\"token\" : \"test_token\"}".getBytes()));
+                    new DigitalCredential("protocol", "{\"token\" : \"test_token\"}"));
         }
     }
 

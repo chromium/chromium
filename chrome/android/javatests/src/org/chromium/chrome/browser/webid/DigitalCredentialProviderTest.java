@@ -80,8 +80,7 @@ public class DigitalCredentialProviderTest {
                                 Promise.fulfilled(
                                         new DigitalCredential(
                                                 "protocol",
-                                                ("{\"token\": \"" + EXPECTED_MDOC + "\"}")
-                                                        .getBytes())));
+                                                "{\"token\": \"" + EXPECTED_MDOC + "\"}")));
 
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
         DOMUtils.clickNode(mActivityTestRule.getWebContents(), "request_age_only_button");
