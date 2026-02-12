@@ -446,25 +446,12 @@ class DimOverlayView : public views::View {
 BEGIN_METADATA(DimOverlayView)
 END_METADATA
 
-void IsolatedWebAppInstallerViewImpl::Dim(
-    bool dim,
+void IsolatedWebAppInstallerViewImpl::ApplyDim(
     const views::DialogDelegate* dialog_delegate) {
-  CHECK(!dim || dialog_delegate);
+  CHECK(dialog_delegate);
 
   views::View* parent_view = parent();
   CHECK(parent_view);
-
-  // Undim: remove all |DimOverlayView|
-  if (!dim) {
-    for (views::View* child : parent_view->children()) {
-      if (child->GetObjectName().compare("DimOverlayView") == 0) {
-        // |RemoveChildViewT()| returns the ownership of the child, which gets
-        // dropped, effectively deleting the child from memory.
-        parent_view->RemoveChildViewT(child);
-      }
-    }
-    return;
-  }
 
   auto dim_overlay = std::make_unique<DimOverlayView>(
       CHECK_DEREF(dialog_delegate).GetCornerRadius());
@@ -479,6 +466,17 @@ void IsolatedWebAppInstallerViewImpl::Dim(
 
   // Dim: add a |DimOverlayView| as the last child.
   parent_view->AddChildView((std::move(dim_overlay)));
+}
+
+void IsolatedWebAppInstallerViewImpl::RemoveDim() {
+  views::View* parent_view = parent();
+  for (views::View* child : parent_view->children()) {
+    if (child->GetObjectName().compare("DimOverlayView") == 0) {
+      // |RemoveChildViewT()| returns the ownership of the child, which gets
+      // dropped, effectively deleting the child from memory.
+      parent_view->RemoveChildViewT(child);
+    }
+  }
 }
 
 // static
@@ -599,7 +597,7 @@ void IsolatedWebAppInstallerViewImpl::ShowInstallSuccessScreen(
 views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
     const IsolatedWebAppInstallerModel::Dialog& dialog,
     const views::DialogDelegate* dialog_delegate) {
-  Dim(true, dialog_delegate);
+  ApplyDim(dialog_delegate);
   return std::visit(
       absl::Overload{
           [this](const IsolatedWebAppInstallerModel::BundleInvalidDialog&) {
@@ -766,7 +764,7 @@ void IsolatedWebAppInstallerViewImpl::ShowChildView(views::View* view) {
 
 void IsolatedWebAppInstallerViewImpl::OnChildDialogDestroying() {
   dialog_visible_ = false;
-  Dim(false, /*dialog_delegate=*/nullptr);
+  RemoveDim();
   delegate_->OnChildDialogDestroying();
 }
 

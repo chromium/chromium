@@ -67,7 +67,8 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
     return AddChildView(std::make_unique<T>(std::forward<Args>(args)...));
   }
 
-  void Dim(bool dim, const views::DialogDelegate* dialog_delegate);
+  void ApplyDim(const views::DialogDelegate* dialog_delegate);
+  void RemoveDim();
 
   views::Widget* ShowChildDialog(int title,
                                  const ui::DialogModelLabel& subtitle,
