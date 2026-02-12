@@ -260,11 +260,9 @@ AudioConfig DecoderConfigAdapter::ToCastAudioConfig(
   ::media::AudioDecoderConfig audio_decoder_config(
       ToMediaAudioCodec(config.codec),
       ToMediaSampleFormat(config.sample_format),
-      ToMediaChannelLayout(config.channel_layout), config.samples_per_second,
-      config.extra_data, ToMediaEncryptionScheme(config.encryption_scheme));
-  if (config.channel_layout == ChannelLayout::DISCRETE) {
-    audio_decoder_config.SetChannelsForDiscrete(config.channel_number);
-  }
+      {ToMediaChannelLayout(config.channel_layout), config.channel_number},
+      config.samples_per_second, config.extra_data,
+      ToMediaEncryptionScheme(config.encryption_scheme));
   return audio_decoder_config;
 }
 

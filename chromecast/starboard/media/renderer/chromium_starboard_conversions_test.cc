@@ -31,6 +31,7 @@ namespace {
 using ::media::AudioCodec;
 using ::media::AudioDecoderConfig;
 using ::media::ChannelLayout;
+using ::media::ChannelLayoutConfig;
 using ::media::EncryptionScheme;
 using ::media::SampleFormat;
 using ::media::VideoCodec;
@@ -44,7 +45,8 @@ TEST(StarboardConversionsTest, ConvertsValidAudioConfigToStarboardConfig) {
   EXPECT_THAT(
       ToStarboardAudioSampleInfo(AudioDecoderConfig(
           AudioCodec::kAAC, SampleFormat::kSampleFormatS32,
-          ChannelLayout::CHANNEL_LAYOUT_5_1, /*samples_per_second=*/48000,
+          ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_5_1>(),
+          /*samples_per_second=*/48000,
           /*extra_data=*/{}, EncryptionScheme::kCenc)),
       Optional(MatchesAudioSampleInfo({
           .codec = StarboardAudioCodec::kStarboardAudioCodecAac,
@@ -62,11 +64,13 @@ TEST(StarboardConversionsTest, ConvertsValidAudioConfigToStarboardConfig) {
 
 TEST(StarboardConversionsTest, ReturnsNulloptForInvalidAudioConfig) {
   // DTS is not supported in starboard.
-  EXPECT_EQ(ToStarboardAudioSampleInfo(AudioDecoderConfig(
-                AudioCodec::kDTS, SampleFormat::kSampleFormatS32,
-                ChannelLayout::CHANNEL_LAYOUT_5_1, /*samples_per_second=*/48000,
-                /*extra_data=*/{}, EncryptionScheme::kCenc)),
-            std::nullopt);
+  EXPECT_EQ(
+      ToStarboardAudioSampleInfo(AudioDecoderConfig(
+          AudioCodec::kDTS, SampleFormat::kSampleFormatS32,
+          ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_5_1>(),
+          /*samples_per_second=*/48000,
+          /*extra_data=*/{}, EncryptionScheme::kCenc)),
+      std::nullopt);
 }
 
 TEST(StarboardConversionsTest, ConvertsValidVideoConfigToStarboardConfig) {

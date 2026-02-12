@@ -83,7 +83,7 @@ void RunPendingTasks() {
 ::media::AudioDecoderConfig GetChromiumAudioConfig() {
   return ::media::AudioDecoderConfig(
       ::media::AudioCodec::kAAC, ::media::SampleFormat::kSampleFormatS32,
-      ::media::ChannelLayout::CHANNEL_LAYOUT_STEREO, 48000, /*extra_data=*/{},
+      ::media::ChannelLayoutConfig::Stereo(), 48000, /*extra_data=*/{},
       ::media::EncryptionScheme::kUnencrypted);
 }
 

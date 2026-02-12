@@ -73,8 +73,9 @@ void RunPendingTasks() {
         ::media::EncryptionScheme::kUnencrypted) {
   return ::media::AudioDecoderConfig(
       ::media::AudioCodec::kAC3, ::media::SampleFormat::kSampleFormatS32,
-      ::media::ChannelLayout::CHANNEL_LAYOUT_5_1, 44100, /*extra_data=*/{},
-      encryption_scheme);
+      ::media::ChannelLayoutConfig::FromLayout<
+          ::media::ChannelLayout::CHANNEL_LAYOUT_5_1>(),
+      44100, /*extra_data=*/{}, encryption_scheme);
 }
 
 // Returns a valid video config with values arbitrarily set. The values will

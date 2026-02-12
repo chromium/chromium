@@ -11,6 +11,7 @@
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/test/frame_generator_for_test.h"
 #include "media/base/audio_decoder_config.h"
+#include "media/base/channel_layout.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
 #include "media/base/video_decoder_config.h"
@@ -87,8 +88,8 @@ void MockFrameProvider::DoRead(ReadCB read_cb) {
 
     audio_config = ::media::AudioDecoderConfig(
         ::media::AudioCodec::kAAC, ::media::kSampleFormatS16,
-        ::media::CHANNEL_LAYOUT_STEREO, 44100, ::media::EmptyExtraData(),
-        ::media::EncryptionScheme::kUnencrypted);
+        ::media::ChannelLayoutConfig::Stereo(), 44100,
+        ::media::EmptyExtraData(), ::media::EncryptionScheme::kUnencrypted);
   }
 
   std::move(read_cb).Run(buffer, audio_config, video_config);

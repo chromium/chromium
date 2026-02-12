@@ -368,7 +368,7 @@ TEST_F(DemuxerStreamReaderTest, ReadsAudioBufferAndConvertsPcmToS16) {
   // * encryption scheme = unencrypted
   audio_stream_.set_audio_decoder_config(AudioDecoderConfig(
       ::media::AudioCodec::kPCM, ::media::SampleFormat::kSampleFormatS32,
-      ::media::ChannelLayout::CHANNEL_LAYOUT_MONO, 44100, {},
+      ::media::ChannelLayoutConfig::Mono(), 44100, {},
       ::media::EncryptionScheme::kUnencrypted));
 
   EXPECT_CALL(handle_eos_cb_, Call).Times(0);

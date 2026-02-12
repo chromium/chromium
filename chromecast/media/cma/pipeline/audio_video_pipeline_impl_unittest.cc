@@ -22,6 +22,7 @@
 #include "chromecast/public/media/cast_decoder_buffer.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/callback_registry.h"
+#include "media/base/channel_layout.h"
 #include "media/base/media_util.h"
 #include "media/base/video_decoder_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -138,8 +139,8 @@ class PipelineHelper {
     if (have_audio_) {
       ::media::AudioDecoderConfig audio_config(
           ::media::AudioCodec::kMP3, ::media::kSampleFormatS16,
-          ::media::CHANNEL_LAYOUT_STEREO, 44100, ::media::EmptyExtraData(),
-          ::media::EncryptionScheme::kUnencrypted);
+          ::media::ChannelLayoutConfig::Stereo(), 44100,
+          ::media::EmptyExtraData(), ::media::EncryptionScheme::kUnencrypted);
       AvPipelineClient client;
       client.eos_cb = base::BindRepeating(&PipelineHelper::OnEos,
                                           base::Unretained(this), STREAM_AUDIO);
