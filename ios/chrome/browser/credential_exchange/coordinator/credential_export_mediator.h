@@ -25,6 +25,10 @@ namespace webauthn {
 class PasskeyModel;
 }  // namespace webauthn
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace syncer {
 class SyncService;
 }  // namespace syncer
@@ -61,7 +65,8 @@ class FaviconLoader;
         reauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
                  exportHandler:(id<PasswordExportHandler>)exportHandler
                    syncService:(syncer::SyncService*)syncService
-                     userEmail:(NSString*)userEmail NS_DESIGNATED_INITIALIZER;
+               identityManager:(signin::IdentityManager*)identityManager
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

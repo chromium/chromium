@@ -57,9 +57,6 @@
   // which point it is moved from and should not be accessed.
   std::vector<password_manager::AffiliatedGroup> _affiliatedGroups;
 
-  // Email of the signed in user account.
-  std::string _userEmail;
-
   // Module handling reauthentication before accessing sensitive data.
   ReauthenticationModule* _reauthModule;
 
@@ -93,21 +90,19 @@
 
 - (void)start {
   _viewController = [[CredentialExportViewController alloc] init];
+  ProfileIOS* profile = self.profile;
   FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
+      IOSChromeFaviconLoaderFactory::GetForProfile(profile);
   _reauthModule = password_manager::BuildReauthenticationModule();
-  _userEmail = IdentityManagerFactory::GetForProfile(self.profile)
-                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                   .email;
   _mediator = [[CredentialExportMediator alloc]
               initWithWindow:_baseNavigationController.view.window
             affiliatedGroups:std::move(_affiliatedGroups)
-                passkeyModel:IOSPasskeyModelFactory::GetForProfile(self.profile)
+                passkeyModel:IOSPasskeyModelFactory::GetForProfile(profile)
                faviconLoader:faviconLoader
       reauthenticationModule:_reauthModule
                exportHandler:self
-                 syncService:SyncServiceFactory::GetForProfile(self.profile)
-                   userEmail:base::SysUTF8ToNSString(_userEmail)];
+                 syncService:SyncServiceFactory::GetForProfile(profile)
+             identityManager:IdentityManagerFactory::GetForProfile(profile)];
   _affiliatedGroups = {};
   _viewController.delegate = _mediator;
   _mediator.delegate = self;

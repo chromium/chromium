@@ -6,9 +6,12 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/favicon_base/favicon_types.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/ios/passkey_types.h"
@@ -57,8 +60,8 @@ const CGFloat kMinFaviconSize = 16.0;
   // Service to know whether passwords are synced.
   raw_ptr<syncer::SyncService> _syncService;
 
-  // Email of the signed-in user account.
-  NSString* _userEmail;
+  // Used to provide information about the user's account.
+  raw_ptr<signin::IdentityManager> _identityManager;
 }
 
 - (instancetype)initWithWindow:(UIWindow*)window
@@ -69,7 +72,7 @@ const CGFloat kMinFaviconSize = 16.0;
         reauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
                  exportHandler:(id<PasswordExportHandler>)exportHandler
                    syncService:(syncer::SyncService*)syncService
-                     userEmail:(NSString*)userEmail {
+               identityManager:(signin::IdentityManager*)identityManager {
   self = [super init];
   if (self) {
     _window = window;
@@ -78,7 +81,7 @@ const CGFloat kMinFaviconSize = 16.0;
     _faviconLoader = faviconLoader;
     _exportHandler = exportHandler;
     _syncService = syncService;
-    _userEmail = userEmail;
+    _identityManager = identityManager;
     _passwordExporter =
         [[PasswordExporter alloc] initWithReauthenticationModule:reauthModule
                                                         delegate:self];
@@ -199,10 +202,13 @@ const CGFloat kMinFaviconSize = 16.0;
                                         passkeys {
   if (@available(iOS 26, *)) {
     _credentialExporter = [[CredentialExporter alloc] initWithWindow:_window];
+    NSString* userEmail = base::SysUTF8ToNSString(
+        _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .email);
     [_credentialExporter startExportWithPasswords:std::move(passwords)
                                          passkeys:std::move(passkeys)
                                  trustedVaultKeys:std::move(trustedVaultKeys)
-                                        userEmail:_userEmail];
+                                        userEmail:userEmail];
   }
 }
 

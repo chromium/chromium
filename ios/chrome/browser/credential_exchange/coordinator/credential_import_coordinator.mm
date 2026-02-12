@@ -78,9 +78,6 @@
   // Bridge to the PasskeyKeychainProvider that manages passkey vault keys.
   PasskeyKeychainProviderBridge* _passkeyKeychainProviderBridge;
 
-  // Email of the signed in user account.
-  std::string _userEmail;
-
   // Reauthentication module used in credential import flow.
   id<ReauthenticationProtocol> _reauthModule;
 
@@ -113,9 +110,6 @@
   _viewController = [[CredentialImportViewController alloc] init];
   _viewController.delegate = self;
   ProfileIOS* profile = self.profile;
-  _userEmail = IdentityManagerFactory::GetForProfile(profile)
-                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                   .email;
   std::unique_ptr<password_manager::SavedPasswordsPresenter>
       savedPasswordsPresenter =
           std::make_unique<password_manager::SavedPasswordsPresenter>(
@@ -128,7 +122,7 @@
   _mediator = [[CredentialImportMediator alloc]
                  initWithUUID:_UUID
                      delegate:self
-                    userEmail:_userEmail
+              identityManager:IdentityManagerFactory::GetForProfile(profile)
       savedPasswordsPresenter:std::move(savedPasswordsPresenter)
                  passkeyModel:IOSPasskeyModelFactory::GetForProfile(
                                   self.profile)
@@ -345,7 +339,7 @@
 }
 
 - (void)providerDidCompleteReauthentication {
-  // TODO(crbug.com/450982128): Implement if needed.
+  // Not actionable for credential import.
 }
 
 #pragma mark - PasskeyWelcomeScreenCoordinatorDelegate

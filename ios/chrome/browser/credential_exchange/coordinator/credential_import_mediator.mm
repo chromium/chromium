@@ -4,12 +4,16 @@
 
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_mediator.h"
 
+#import "base/check.h"
 #import "base/functional/callback_helpers.h"
+#import "base/not_fatal_until.h"
 #import "base/task/bind_post_task.h"
 #import "components/password_manager/core/browser/import/import_results.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_importer.h"
@@ -32,6 +36,7 @@ namespace {
 
 using ::password_manager::prefs::kCredentialsEnablePasskeys;
 using ::password_manager::prefs::kCredentialsEnableService;
+using ::signin::ConsentLevel;
 
 // Returns true if an import is blocked by a policy with `pref_name`.
 bool ImportBlockedByPolicy(const PrefService* pref_service,
@@ -53,8 +58,8 @@ bool ImportBlockedByPolicy(const PrefService* pref_service,
   // Delegate for this mediator.
   id<CredentialImportMediatorDelegate> _delegate;
 
-  // Email of the signed in user account.
-  std::string _userEmail;
+  // Used to provide information about the user's account.
+  raw_ptr<signin::IdentityManager> _identityManager;
 
   // Used by the `PasswordImporter` class. Needs to be kept alive during import.
   std::unique_ptr<password_manager::SavedPasswordsPresenter>
@@ -72,7 +77,7 @@ bool ImportBlockedByPolicy(const PrefService* pref_service,
 
 - (instancetype)initWithUUID:(NSUUID*)UUID
                     delegate:(id<CredentialImportMediatorDelegate>)delegate
-                   userEmail:(std::string)userEmail
+             identityManager:(signin::IdentityManager*)identityManager
      savedPasswordsPresenter:
          (std::unique_ptr<password_manager::SavedPasswordsPresenter>)
              savedPasswordsPresenter
@@ -90,7 +95,7 @@ bool ImportBlockedByPolicy(const PrefService* pref_service,
                    passkeyModel:passkeyModel];
     [_credentialImporter prepareImport:UUID];
     _delegate = delegate;
-    _userEmail = std::move(userEmail);
+    _identityManager = identityManager;
     _faviconLoader = faviconLoader;
     _syncService = syncService;
     _prefService = prefService;
@@ -104,7 +109,13 @@ bool ImportBlockedByPolicy(const PrefService* pref_service,
   }
 
   _consumer = consumer;
-  [_consumer setUserEmail:_userEmail];
+
+  // Sign-in is required as a first step in the import flow.
+  CHECK(_identityManager->HasPrimaryAccount(ConsentLevel::kSignin),
+        base::NotFatalUntil::M152);
+  [_consumer setUserEmail:_identityManager
+                              ->GetPrimaryAccountInfo(ConsentLevel::kSignin)
+                              .email];
 }
 
 #pragma mark - Public

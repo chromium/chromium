@@ -17,6 +17,10 @@ namespace password_manager {
 class SavedPasswordsPresenter;
 }  // namespace password_manager
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace syncer {
 class SyncService;
 }  // namespace syncer
@@ -76,7 +80,7 @@ class PrefService;
 // passed back to the OS to receive the credential data.
 - (instancetype)initWithUUID:(NSUUID*)UUID
                     delegate:(id<CredentialImportMediatorDelegate>)delegate
-                   userEmail:(std::string)userEmail
+             identityManager:(signin::IdentityManager*)identityManager
      savedPasswordsPresenter:
          (std::unique_ptr<password_manager::SavedPasswordsPresenter>)
              savedPasswordsPresenter
