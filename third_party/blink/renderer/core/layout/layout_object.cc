@@ -617,7 +617,10 @@ bool LayoutObject::RequiresAnonymousTableWrappers(
   return false;
 }
 
+#if DCHECK_IS_ON()
+
 #if EXPENSIVE_DCHECKS_ARE_ON()
+
 void LayoutObject::AssertFragmentTree(bool display_locked) const {
   NOT_DESTROYED();
   for (const LayoutObject* layout_object = this; layout_object;) {
@@ -649,6 +652,8 @@ void LayoutObject::AssertFragmentTree(bool display_locked) const {
     layout_object = layout_object->NextInPreOrder(this);
   }
 }
+
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
 void LayoutObject::AssertClearedPaintInvalidationFlags() const {
   NOT_DESTROYED();
@@ -693,7 +698,8 @@ void LayoutObject::AssertClearedPaintInvalidationFlags() const {
     DCHECK_EQ(fragment_count, To<LayoutBox>(this)->PhysicalFragmentCount());
   }
 }
-#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+
+#endif  // DCHECK_IS_ON()
 
 DISABLE_CFI_PERF
 void LayoutObject::AddChild(LayoutObject* new_child,
