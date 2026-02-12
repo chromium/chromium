@@ -12,7 +12,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
@@ -265,8 +267,19 @@ void FetchIconsThenRun(std::vector<IconFetchParams>& lookups,
       extensions_features::kSearchEngineExplicitChoiceDialog));
 
   // A barrier closure will invoke the callback when called once per resource.
-  base::RepeatingClosure barrier_closure =
-      base::BarrierClosure(lookups.size(), std::move(done_callback));
+  // Post the callback task so it always runs asynchronously, even if all
+  // fetches are synchronous. This ensures that the callback doesn't run before
+  // the code that's queuing it finishes (dangling pointer issues).
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      lookups.size(),
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         std::move(done_callback)));
+
+  // If there were no lookups, the barrier closer will have just executed,
+  // and we can bail out.
+  if (lookups.empty()) {
+    return;
+  }
 
   image_fetcher::ImageFetcher* image_fetcher =
       ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/time/clock.h"
 #include "components/image_fetcher/core/cache/image_cache.h"
 #include "components/image_fetcher/core/cached_image_fetcher.h"
@@ -32,6 +33,10 @@ ImageFetcherService::ImageFetcherService(
                                                read_only)),
       reduced_mode_image_fetcher_(std::make_unique<ReducedModeImageFetcher>(
           cached_image_fetcher_.get())) {}
+
+ImageFetcherService::ImageFetcherService() {
+  CHECK_IS_TEST();
+}
 
 ImageFetcherService::~ImageFetcherService() = default;
 

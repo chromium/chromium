@@ -10,7 +10,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
+#include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -22,16 +24,46 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/image_fetcher/core/image_fetcher_service.h"
+#include "components/image_fetcher/core/mock_image_fetcher.h"
+#include "components/image_fetcher/core/request_metadata.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension_features.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
+
+using testing::_;
+
+// This makes icon fetching testable on the dialog, without resorting to
+// fallback/placeholder icons.
+class MockImageFetcherService : public image_fetcher::ImageFetcherService {
+ public:
+  MockImageFetcherService() = default;
+  ~MockImageFetcherService() override = default;
+
+  image_fetcher::MockImageFetcher* mock_image_fetcher() {
+    return &mock_image_fetcher_;
+  }
+
+  // image_fetcher::ImageFetcherService:
+  image_fetcher::ImageFetcher* GetImageFetcher(
+      image_fetcher::ImageFetcherConfig config) override {
+    return &mock_image_fetcher_;
+  }
+
+ private:
+  image_fetcher::MockImageFetcher mock_image_fetcher_;
+};
 
 class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
     : public InteractiveBrowserTest {
@@ -39,13 +71,33 @@ class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
   SettingsOverriddenExplicitChoiceDialogInteractiveUiTest() {
     feature_list_.InitAndEnableFeature(
         extensions_features::kSearchEngineExplicitChoiceDialog);
+
+    // Register a mock image-fetcher factory service so that it's created
+    // in place of the default image-fetcher service.
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &SettingsOverriddenExplicitChoiceDialogInteractiveUiTest::
+                    OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
   }
   ~SettingsOverriddenExplicitChoiceDialogInteractiveUiTest() override = default;
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+    SetUpMockImageFetcher();
     search_test_utils::WaitForTemplateURLServiceToLoad(
         TemplateURLServiceFactory::GetForProfile(browser()->profile()));
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
+    ImageFetcherServiceFactory::GetInstance()->SetTestingFactory(
+        profile->GetProfileKey(),
+        base::BindRepeating(
+            [](SimpleFactoryKey* key) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<MockImageFetcherService>();
+            }));
   }
 
  protected:
@@ -138,11 +190,43 @@ class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
             "Screenshot can only run in pixel_tests on Windows."),
         Screenshot("Dialog",
                    /*screenshot_name=*/std::string(),
-                   /*baseline_cl=*/"7539783"));
+                   /*baseline_cl=*/"7563250"));
     return steps;
   }
 
  private:
+  // Sets up the mock ImageFetcher so that we can exercise icon fetching, rather
+  // than having the dialog fall back to generated placeholder icons. Note that
+  // we could also try and do this end-to-end by setting up URL fetch
+  // intercepters, but that's more complexity and fragility just to include
+  // ImageFetcher in this dialog testing.
+  void SetUpMockImageFetcher() {
+    auto* service = static_cast<MockImageFetcherService*>(
+        ImageFetcherServiceFactory::GetForKey(
+            browser()->profile()->GetProfileKey()));
+    // These icons are arbitrary. The goal is to ensure icons are fetched, vs.
+    // falling back to generated placeholder icons.
+    constexpr int kFaviconSize = 32;
+    gfx::Image icon(gfx::CreateVectorIcon(vector_icons::kBusinessIcon,
+                                          kFaviconSize, SK_ColorRED));
+    gfx::Image google_icon(gfx::CreateVectorIcon(vector_icons::kGoogleColorIcon,
+                                                 kFaviconSize, SK_ColorBLUE));
+
+    EXPECT_CALL(*service->mock_image_fetcher(), FetchImageAndData_(_, _, _, _))
+        .WillRepeatedly([icon, google_icon](
+                            const GURL& url,
+                            image_fetcher::ImageDataFetcherCallback*,
+                            image_fetcher::ImageFetcherCallback* callback,
+                            image_fetcher::ImageFetcherParams) {
+          const gfx::Image& image =
+              url.host().find("google.com") != std::string::npos ? google_icon
+                                                                 : icon;
+          std::move(*callback).Run(image, image_fetcher::RequestMetadata());
+        });
+  }
+
+ private:
+  base::CallbackListSubscription create_services_subscription_;
   base::test::ScopedFeatureList feature_list_;
   extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
