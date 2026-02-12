@@ -25907,26 +25907,6 @@
             ]
         }
     ],
-    "SyncDetermineAccountManagedStatus": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SyncDetermineAccountManagedStatus"
-                    ]
-                }
-            ]
-        }
-    ],
     "SyncDeviceInfoUseWallClockTimer": [
         {
             "platforms": [
