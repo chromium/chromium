@@ -241,6 +241,7 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/data_controls_commands.h"
+#import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
@@ -453,7 +454,8 @@ const char kChromeAppStoreUrl[] =
     WebNavigationNTPDelegate,
     WebUsageEnablerBrowserAgentObserving,
     WelcomeBackPromoCommands,
-    WhatsNewCommands>
+    WhatsNewCommands,
+    DockingPromoCommands>
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -1222,6 +1224,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(GoogleOneCommands),
     @protocol(WelcomeBackPromoCommands),
     @protocol(DataControlsCommands),
+    @protocol(DockingPromoCommands),
   ];
 
   for (Protocol* protocol in protocols) {
@@ -1629,12 +1632,6 @@ const char kChromeAppStoreUrl[] =
       _promosManagerCoordinator;
   [_credentialProviderPromoCoordinator start];
 
-  _dockingPromoCoordinator = [[DockingPromoCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  _dockingPromoCoordinator.promosUIHandler = _promosManagerCoordinator;
-  [_dockingPromoCoordinator start];
-
   _lensOverlayCoordinator = [[LensOverlayCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
@@ -1814,6 +1811,7 @@ const char kChromeAppStoreUrl[] =
   [self stopPasskeyWelcomeScreenCoordinator];
   [self dismissSearchWhatYouSeePromo];
   [self dismissNotificationsOptIn];
+  [self dismissDockingPromo];
   [self hideWelcomeBackPromo];
   [self hideComposeboxImmediately:YES completion:nil];
 }
@@ -3441,24 +3439,17 @@ const char kChromeAppStoreUrl[] =
     id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
         HandlerForProtocol(self.browser->GetCommandDispatcher(),
                            CredentialProviderPromoCommands);
-    id<DockingPromoCommands> dockingPromoHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), DockingPromoCommands);
 
     self.promosManagerCoordinator = [[PromosManagerCoordinator alloc]
             initWithBaseViewController:self.viewController
                                browser:self.browser
                           sceneHandler:sceneHandler
-        credentialProviderPromoHandler:credentialProviderPromoHandler
-                   dockingPromoHandler:dockingPromoHandler];
+        credentialProviderPromoHandler:credentialProviderPromoHandler];
 
     // CredentialProviderPromoCoordinator is initialized earlier than this, so
     // make sure to set its UI handler.
     _credentialProviderPromoCoordinator.promosUIHandler =
         self.promosManagerCoordinator;
-
-    // _dockingPromoCoordinator is initialized earlier than this, so
-    // make sure to set its UI handler.
-    _dockingPromoCoordinator.promosUIHandler = self.promosManagerCoordinator;
 
     [self.promosManagerCoordinator start];
   } else {
@@ -3554,6 +3545,14 @@ const char kChromeAppStoreUrl[] =
   CHECK(_NTPCoordinator.isNTPActiveForCurrentWebState);
   [_NTPCoordinator showHomeBackgroundCustomizationPromoWithUIHandler:
                        _promosManagerCoordinator];
+}
+
+- (void)showDockingPromo {
+  _dockingPromoCoordinator = [[DockingPromoCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  _dockingPromoCoordinator.promosUIHandler = self.promosManagerCoordinator;
+  [_dockingPromoCoordinator start];
 }
 
 #pragma mark - PageActionMenuCommands
@@ -5053,6 +5052,13 @@ const char kChromeAppStoreUrl[] =
 - (void)showWhatsNewIPH {
   [HandlerForProtocol(_dispatcher, HelpCommands)
       presentInProductHelpWithType:InProductHelpType::kWhatsNew];
+}
+
+#pragma mark - DockingPromoCommands
+
+- (void)dismissDockingPromo {
+  [_dockingPromoCoordinator stop];
+  _dockingPromoCoordinator = nil;
 }
 
 #pragma mark - WelcomeBackPromoCommands

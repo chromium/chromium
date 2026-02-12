@@ -302,6 +302,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSReplaceSyncPromosWithSignInPromos,
 DEFINE_VARIATION_PARAM(kIPHiOSTabGridSwipeRightForIncognito,
                        "IPH_iOSTabGridSwipeRightForIncognito");
 DEFINE_VARIATION_PARAM(kIPHiOSDockingPromoFeature, "IPH_iOSDockingPromo");
+DEFINE_VARIATION_PARAM(kIPHiOSDockingPromoEligibilityFeature,
+                       "IPH_iOSDockingPromoEligibility");
 DEFINE_VARIATION_PARAM(kIPHiOSDockingPromoRemindMeLaterFeature,
                        "IPH_iOSDockingPromoRemindMeLater");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoAllTabsFeature, "IPH_iOSPromoAllTabs");

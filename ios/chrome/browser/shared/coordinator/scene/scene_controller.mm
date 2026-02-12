@@ -72,6 +72,7 @@
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/docking_promo/model/docking_promo_scene_agent.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -1567,6 +1568,11 @@ void InjectUnrealizedWebStates(Browser* browser, int count) {
 
   [sceneState addAgent:[[WhatsNewSceneAgent alloc]
                            initWithPromosManager:promosManager]];
+
+  if (IsDockingPromoV2Enabled()) {
+    [sceneState addAgent:[[DockingPromoSceneAgent alloc]
+                             initWithPromosManager:promosManager]];
+  }
 
   // Do not gate by feature flag so it can run for enabled -> disabled
   // scenarios.

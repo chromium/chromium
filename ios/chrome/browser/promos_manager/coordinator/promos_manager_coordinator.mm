@@ -57,7 +57,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
-#import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -107,9 +106,6 @@
 
   // The handler for the CredentialProviderPromoCommands.
   id<CredentialProviderPromoCommands> _credentialProviderPromoCommandHandler;
-
-  // The handler for the DockingPromoCommands.
-  id<DockingPromoCommands> _dockingPromoCommandHandler;
 }
 
 // A mediator that observes when it's a good time to display a promo.
@@ -137,9 +133,7 @@
                                    browser:(Browser*)browser
                               sceneHandler:(id<SceneCommands>)sceneHandler
             credentialProviderPromoHandler:(id<CredentialProviderPromoCommands>)
-                                               credentialProviderPromoHandler
-                       dockingPromoHandler:
-                           (id<DockingPromoCommands>)dockingPromoHandler {
+                                               credentialProviderPromoHandler {
   DCHECK(ShouldPromoManagerDisplayPromos());
   if ((self = [super initWithBaseViewController:viewController
                                         browser:browser])) {
@@ -147,7 +141,6 @@
     CHECK(browser, base::NotFatalUntil::M140);
     _sceneHandler = sceneHandler;
     _credentialProviderPromoCommandHandler = credentialProviderPromoHandler;
-    _dockingPromoCommandHandler = dockingPromoHandler;
 
     [self registerPromos];
 
@@ -589,14 +582,10 @@
           initWithHandler:_credentialProviderPromoCommandHandler];
 
   // Docking promo handler.
-  _displayHandlerPromos[promos_manager::Promo::DockingPromo] =
-      [[DockingPromoDisplayHandler alloc]
-                   initWithHandler:_dockingPromoCommandHandler
-          showRemindMeLaterVersion:NO];
-  _displayHandlerPromos[promos_manager::Promo::DockingPromoRemindMeLater] =
-      [[DockingPromoDisplayHandler alloc]
-                   initWithHandler:_dockingPromoCommandHandler
-          showRemindMeLaterVersion:YES];
+  if (IsDockingPromoV2Enabled()) {
+    _displayHandlerPromos[promos_manager::Promo::DockingPromo] =
+        [[DockingPromoDisplayHandler alloc] init];
+  }
 
   // Default browser promo handler.
   _displayHandlerPromos[promos_manager::Promo::DefaultBrowser] =

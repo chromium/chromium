@@ -86,9 +86,7 @@ class PromosManagerCoordinatorTest : public PlatformTest {
                           sceneHandler:OCMStrictProtocolMock(
                                            @protocol(SceneCommands))
         credentialProviderPromoHandler:OCMStrictProtocolMock(@protocol(
-                                           CredentialProviderPromoCommands))
-                   dockingPromoHandler:OCMStrictProtocolMock(
-                                           @protocol(DockingPromoCommands))];
+                                           CredentialProviderPromoCommands))];
   }
 
   // Forces the test promo for display.

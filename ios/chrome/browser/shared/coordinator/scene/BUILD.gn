@@ -147,6 +147,7 @@ source_set("scene") {
     "//ios/chrome/browser/default_browser/model",
     "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/docking_promo/model",
     "//ios/chrome/browser/enterprise/model/idle",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/coordinator",

@@ -6,9 +6,6 @@
 #define IOS_CHROME_BROWSER_DOCKING_PROMO_COORDINATOR_DOCKING_PROMO_DISPLAY_HANDLER_H_
 
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_display_handler.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-
-@protocol DockingPromoCommands;
 
 // Handler for displaying the Docking Promo.
 //
@@ -16,10 +13,8 @@
 // to eligible users.
 @interface DockingPromoDisplayHandler : NSObject <StandardPromoDisplayHandler>
 
-// Initializes a promo display handler for the Docking Promo, with the option to
-// display the "Remind Me Later" promo version.
-- (instancetype)initWithHandler:(id<DockingPromoCommands>)handler
-       showRemindMeLaterVersion:(BOOL)showRemindMeLaterVersion;
+// `PromosManagerCommands` handler.
+@property(nonatomic, weak) id<PromosManagerCommands> handler;
 
 @end
 

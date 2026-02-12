@@ -484,20 +484,6 @@ TEST_F(TipsNotificationClientTest, SetUpListContinuationHandle) {
       TipsNotificationType::kSetUpListContinuation, 1);
 }
 
-// Tests that the client handles a Docking promo notification response.
-TEST_F(TipsNotificationClientTest, DockingHandle) {
-  StubPrepareToPresentModal();
-  id mock_handler = MockHandler(@protocol(DockingPromoCommands));
-  OCMExpect([mock_handler showDockingPromo:YES]);
-
-  mock_response_ = MockRequestResponse(TipsNotificationType::kDocking);
-  client_->HandleNotificationInteraction(mock_response_);
-
-  EXPECT_OCMOCK_VERIFY(mock_handler);
-  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
-                                       TipsNotificationType::kDocking, 1);
-}
-
 // Tests that the client handles an Omnibox Position promo notification
 // response.
 TEST_F(TipsNotificationClientTest, OmniboxPositionHandle) {

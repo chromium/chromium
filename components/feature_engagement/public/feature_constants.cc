@@ -733,7 +733,10 @@ BASE_FEATURE(kIPHiOSTabGridSwipeRightForIncognito,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSDockingPromoFeature,
              "IPH_iOSDockingPromo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSDockingPromoEligibilityFeature,
+             "IPH_iOSDockingPromoEligibility",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSDockingPromoRemindMeLaterFeature,
              "IPH_iOSDockingPromoRemindMeLater",
              base::FEATURE_DISABLED_BY_DEFAULT);
