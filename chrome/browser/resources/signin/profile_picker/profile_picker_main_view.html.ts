@@ -2,21 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {isGlicVersion} from './profile_picker_flags.js';
 import type {ProfilePickerMainViewElement} from './profile_picker_main_view.js';
 
 export function getHtml(this: ProfilePickerMainViewElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
-<!-- Using a function vs ternary here to avoid unusual git cl formatting. -->
-${function() {
-    if (isGlicVersion()) {
-      return html`<link href="glic_profile_branding.css" rel="stylesheet" />`;
-    } else {
-      return nothing;
-    }
-  }()}
+${isGlicVersion() ? html`
+  <link href="glic_profile_branding.css" rel="stylesheet" />
+` : ''}
 <div class="flex-container">
   <div class="title-container">
     <img id="picker-logo" @click="${this.onProductLogoClick_}"
@@ -80,4 +76,5 @@ ${function() {
 <signin-error-dialog id="signinErrorDialog">
 </signin-error-dialog>
 <!--_html_template_end_-->`;
+  // clang-format on
 }
