@@ -209,11 +209,13 @@ const tests = [
         getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
     const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
 
-    chrome.test.assertEq('pdf:add-to-drive', controls.$.save.ironIcon);
+    chrome.test.assertEq(
+        'pdf-save-to-drive:add-to-drive', controls.$.save.ironIcon);
 
     privateProxy.sendUploadInProgress(25, 100);
     await microtasksFinished();
-    chrome.test.assertEq('pdf:arrow-upward-alt', controls.$.save.ironIcon);
+    chrome.test.assertEq(
+        'pdf-save-to-drive:arrow-upward-alt', controls.$.save.ironIcon);
     const progress = getRequiredElement(controls, 'circular-progress-ring');
     chrome.test.assertEq(25, progress.value);
     chrome.test.assertEq(
@@ -221,7 +223,8 @@ const tests = [
 
     privateProxy.sendSessionTimeoutError();
     await microtasksFinished();
-    chrome.test.assertEq('pdf:add-to-drive', controls.$.save.ironIcon);
+    chrome.test.assertEq(
+        'pdf-save-to-drive:add-to-drive', controls.$.save.ironIcon);
     chrome.test.assertFalse(
         !!controls.shadowRoot.querySelector('circular-progress-ring'));
 

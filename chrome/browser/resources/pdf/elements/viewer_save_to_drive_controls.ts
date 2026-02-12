@@ -52,7 +52,8 @@ export class ViewerSaveToDriveControlsElement extends ViewerSaveControlsBase {
   accessor state: SaveToDriveState = SaveToDriveState.UNINITIALIZED;
 
   protected getIronIcon(): string {
-    return this.isUploading_() ? 'pdf:arrow-upward-alt' : 'pdf:add-to-drive';
+    return this.isUploading_() ? 'pdf-save-to-drive:arrow-upward-alt' :
+                                 'pdf-save-to-drive:add-to-drive';
   }
 
   protected isUploading_(): boolean {
