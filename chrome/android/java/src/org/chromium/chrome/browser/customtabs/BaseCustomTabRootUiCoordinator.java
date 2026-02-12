@@ -80,8 +80,6 @@ import org.chromium.chrome.browser.open_in_app.OpenInAppUtils;
 import org.chromium.chrome.browser.pdf.PdfPageIphController;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
-import org.chromium.chrome.browser.privacy_sandbox.SurfaceType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudIphController;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
@@ -987,60 +985,13 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 mCallbackController.makeCancelable(
                         (profile) -> {
                             Profile regularProfile = profile.getOriginalProfile();
-                            Profile currentModelProfile =
-                                    mTabModelSelectorSupplier.get().getCurrentModel().getProfile();
-
-                            boolean didShowPrompt = false;
-                            boolean shouldShowPrivacySandboxDialog =
-                                    PrivacySandboxDialogController.shouldShowPrivacySandboxDialog(
-                                            currentModelProfile, SurfaceType.AGACCT);
-                            int activityType = mIntentDataProvider.get().getActivityType();
-                            boolean isCustomTab =
-                                    activityType == ActivityType.CUSTOM_TAB
-                                            && !mIntentDataProvider.get().isPartialCustomTab();
-                            if (isCustomTab) {
-                                RecordHistogram.recordBooleanHistogram(
-                                        "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT",
-                                        shouldShowPrivacySandboxDialog);
-                            }
-                            String appId = mIntentDataProvider.get().getClientPackageName();
-                            // TODO(crbug.com/390429345): Refactor Ads CCT Notice logic into the PS
-                            // dialog controller
-                            if (ChromeFeatureList.isEnabled(
-                                            ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT)
-                                    && shouldShowPrivacySandboxDialog
-                                    && isCustomTab) {
-                                boolean shouldShowPrivacySandboxDialogAppIdCheck = true;
-                                String paramAdsNoticeAppId =
-                                        ChromeFeatureList.getFieldTrialParamByFeature(
-                                                ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
-                                                "app-id");
-                                if (!paramAdsNoticeAppId.isEmpty()
-                                        && !paramAdsNoticeAppId.equals(appId)) {
-                                    shouldShowPrivacySandboxDialogAppIdCheck = false;
-                                }
-                                RecordHistogram.recordBooleanHistogram(
-                                        "Startup.Android.PrivacySandbox.AdsNoticeCCTAppIDCheck",
-                                        shouldShowPrivacySandboxDialogAppIdCheck);
-                                if (shouldShowPrivacySandboxDialogAppIdCheck) {
-                                    didShowPrompt =
-                                            PrivacySandboxDialogController
-                                                    .maybeLaunchPrivacySandboxDialog(
-                                                            mActivity,
-                                                            currentModelProfile,
-                                                            SurfaceType.AGACCT,
-                                                            mWindowAndroid);
-                                }
-                            }
-
-                            if (!didShowPrompt) {
-                                didShowPrompt =
+                            boolean didShowPrompt =
                                         RequestDesktopUtils
                                                 .maybeShowDefaultEnableGlobalSettingMessage(
                                                         regularProfile,
                                                         mMessageDispatcher,
                                                         mActivity);
-                            }
+
                             if (!didShowPrompt && mAppMenuCoordinator != null) {
                                 mDesktopSiteSettingsIphController =
                                         DesktopSiteSettingsIphController.create(

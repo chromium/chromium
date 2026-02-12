@@ -24,11 +24,9 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.PerformException;
 import androidx.test.filters.SmallTest;
 
@@ -53,8 +51,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -78,9 +74,6 @@ public final class PrivacySandboxDialogTest {
     @Rule
     public final AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
-
-    @Rule
-    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -668,29 +661,6 @@ public final class PrivacySandboxDialogTest {
         launchDialog();
         // Verify that nothing is shown. Notice & Consent share a title.
         onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-notice-row-for-testing/true/notice-required/true"
-    })
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.Q, message = "crbug.com/401594334")
-    public void cctLaunchDialogUpdatesDialogClass() throws IOException {
-        mPage = mActivityTestRule.startOnBlankPage();
-        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_ROW);
-        // Launch a CCT activity and click a button
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        ApplicationProvider.getApplicationContext(), mTestPage));
-
-        onViewWaiting(withId(R.id.privacy_sandbox_dialog), true);
-        tryClickOn(withId(R.id.ack_button));
-        assertEquals(
-                "Set surface type",
-                SurfaceType.AGACCT,
-                (int) mFakePrivacySandboxBridge.getLastSurfaceType());
     }
 
     @Test

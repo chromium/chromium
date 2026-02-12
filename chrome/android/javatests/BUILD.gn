@@ -688,7 +688,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.customtabs") {
     "src/org/chromium/chrome/browser/customtabs/CustomTabFromChromeExternalNavigationTest.java",
     "src/org/chromium/chrome/browser/customtabs/CustomTabModalDialogTest.java",
     "src/org/chromium/chrome/browser/customtabs/CustomTabPostMessageTest.java",
-    "src/org/chromium/chrome/browser/customtabs/CustomTabPrivacySandboxDialogTest.java",
     "src/org/chromium/chrome/browser/customtabs/CustomTabTabPersistenceIntegrationTest.java",
     "src/org/chromium/chrome/browser/customtabs/CustomTabTabPersistencePolicyTest.java",
     "src/org/chromium/chrome/browser/customtabs/CustomTabTaskDescriptionHelperTest.java",

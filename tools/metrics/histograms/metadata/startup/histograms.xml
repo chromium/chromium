@@ -687,17 +687,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.Android.PrivacySandbox.AdsNoticeCCTAppIDCheck"
-    enum="Boolean" expires_after="2026-03-01">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Whether or not the current AppID matches the required AppID from the
-    PrivacySandboxAdsNoticeCCT feature parameter. Returns true if required AppID
-    is not specified.
-  </summary>
-</histogram>
-
 <histogram
     name="Startup.Android.PrivacySandbox.DialogNotShownDueToTabLaunchedFromExternalApp"
     enum="Boolean" expires_after="2024-08-04">
@@ -706,16 +695,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Android: PrivacySandbox dialog not shown because Chrome Tab was launched
     from an external app.
-  </summary>
-</histogram>
-
-<histogram name="Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT"
-    enum="Boolean" expires_after="2026-02-22">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Whether or not the user using a CCT meets the requirements to view the
-    Privacy Sandbox Ads Notice.
   </summary>
 </histogram>
 
