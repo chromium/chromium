@@ -27,11 +27,10 @@ class PrefetcherTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
-    browser_context_ = std::make_unique<TestBrowserContext>();
-    web_contents_ = TestWebContents::Create(
-        browser_context_.get(),
-        SiteInstanceImpl::Create(browser_context_.get()));
-    web_contents_->NavigateAndCommit(GetSameOriginUrl("/"));
+    SetContents(TestWebContents::Create(
+        GetBrowserContext(), SiteInstanceImpl::Create(GetBrowserContext())));
+    NavigateAndCommit(GetSameOriginUrl("/"));
+
     prefetch_service_ =
         std::make_unique<TestPrefetchService>(GetBrowserContext());
     PrefetchDocumentManager::SetPrefetchServiceForTesting(
@@ -46,13 +45,8 @@ class PrefetcherTest : public RenderViewHostTestHarness {
     PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
     prefetch_service_.reset();
 
-    web_contents_.reset();
-    browser_context_.reset();
+    DeleteContents();
     RenderViewHostTestHarness::TearDown();
-  }
-
-  RenderFrameHostImpl& GetPrimaryMainFrame() {
-    return web_contents_->GetPrimaryPage().GetMainDocument();
   }
 
   GURL GetSameOriginUrl(const std::string& path) {
@@ -66,13 +60,11 @@ class PrefetcherTest : public RenderViewHostTestHarness {
   TestPrefetchService* GetPrefetchService() { return prefetch_service_.get(); }
 
  private:
-  std::unique_ptr<TestBrowserContext> browser_context_;
-  std::unique_ptr<TestWebContents> web_contents_;
   std::unique_ptr<TestPrefetchService> prefetch_service_;
 };
 
 TEST_F(PrefetcherTest, ProcessCandidatesForPrefetch) {
-  auto prefetcher = Prefetcher(GetPrimaryMainFrame());
+  auto prefetcher = Prefetcher(*main_rfh());
 
   // Create list of SpeculationCandidatePtrs.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
