@@ -459,6 +459,13 @@ bool VerticalTabStripRegionView::IsPositionInWindowCaption(
     return top_button_container_->IsPositionInWindowCaption(point_in_child);
   }
 
+  if (IsHitInView(bottom_button_container_, point)) {
+    gfx::Point point_in_child = point;
+    views::View::ConvertPointToTarget(this, bottom_button_container_,
+                                      &point_in_child);
+    return bottom_button_container_->IsPositionInWindowCaption(point_in_child);
+  }
+
   // For any of the other children, absorb the click as non window caption.
   for (views::View* child : children()) {
     if (!child->GetVisible()) {
