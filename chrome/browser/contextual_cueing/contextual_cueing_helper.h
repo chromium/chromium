@@ -18,9 +18,9 @@
 
 class OptimizationGuideKeyedService;
 
-namespace glic {
+namespace tabs {
 class GlicNudgeController;
-}  // namespace glic
+}  // namespace tabs
 
 namespace contextual_cueing {
 
@@ -60,7 +60,7 @@ class ContextualCueingHelper
     return has_first_contentful_paint_;
   }
 
-  glic::GlicNudgeController* GetGlicNudgeController();
+  tabs::GlicNudgeController* GetGlicNudgeController();
 
  private:
   ContextualCueingHelper(content::WebContents* contents,

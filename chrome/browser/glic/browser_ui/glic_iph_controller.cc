@@ -7,7 +7,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/chrome_features.h"

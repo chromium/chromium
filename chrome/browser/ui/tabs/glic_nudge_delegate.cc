@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/browser_ui/glic_nudge_delegate.h"
-
-namespace glic {
+#include "chrome/browser/ui/tabs/glic_nudge_delegate.h"
 
 // Default implementation for Destructor.
 GlicNudgeDelegate::~GlicNudgeDelegate() = default;
@@ -14,5 +12,3 @@ bool GlicNudgeDelegate::GetIsShowingGlicNudge() {
   // Default behavior is to return false.
   return false;
 }
-
-}  // namespace glic

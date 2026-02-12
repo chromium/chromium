@@ -348,11 +348,13 @@ if (!is_android) {
   }
 
   source_set("glic") {
-    sources = []
+    sources = [
+      "glic_nudge_controller.h",
+      "glic_nudge_delegate.h",
+    ]
     public_deps = [
       "//base",
       "//chrome/browser/actor/ui",
-      "//chrome/browser/glic/browser_ui",
       "//components/keyed_service/core",
       "//ui/base/unowned_user_data",
     ]
@@ -375,7 +377,10 @@ if (!is_android) {
   }
 
   source_set("glic_impl") {
-    sources = []
+    sources = [
+      "glic_nudge_controller.cc",
+      "glic_nudge_delegate.cc",
+    ]
     deps = [
       ":glic",
       "//base",

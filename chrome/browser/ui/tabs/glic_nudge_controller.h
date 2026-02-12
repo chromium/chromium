@@ -1,13 +1,14 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_NUDGE_CONTROLLER_H_
-#define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_NUDGE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_TABS_GLIC_NUDGE_CONTROLLER_H_
+#define CHROME_BROWSER_UI_TABS_GLIC_NUDGE_CONTROLLER_H_
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/glic/browser_ui/glic_nudge_delegate.h"
+#include "chrome/browser/ui/tabs/glic_nudge_delegate.h"
+#include "components/keyed_service/core/keyed_service.h"
 
 class BrowserWindowInterface;
 class ScopedWindowCallToAction;
@@ -16,7 +17,7 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace glic {
+namespace tabs {
 
 // Enumerates the various user action for the Glic nudge.
 enum class GlicNudgeActivity {
@@ -86,6 +87,6 @@ class GlicNudgeController {
   std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr;
 };
 
-}  // namespace glic
+}  // namespace tabs
 
-#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_NUDGE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_TABS_GLIC_NUDGE_CONTROLLER_H_

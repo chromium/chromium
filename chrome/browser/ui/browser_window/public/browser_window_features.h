@@ -157,9 +157,9 @@ class ContextualTasksSidePanelCoordinator;
 class EntryPointEligibilityManager;
 }  // namespace contextual_tasks
 
-namespace glic {
+namespace tabs {
 class GlicNudgeController;
-}  // namespace glic
+}  // namespace tabs
 
 namespace enterprise_data_protection {
 class DataProtectionUIController;
@@ -330,7 +330,7 @@ class BrowserWindowFeatures {
     return tab_declutter_controller_.get();
   }
 
-  glic::GlicNudgeController* glic_nudge_controller() {
+  tabs::GlicNudgeController* glic_nudge_controller() {
     return glic_nudge_controller_.get();
   }
 
@@ -664,7 +664,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<ContextualTasksEphemeralButtonController>
       contextual_tasks_ephemeral_button_controller_;
 
-  std::unique_ptr<glic::GlicNudgeController> glic_nudge_controller_;
+  std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
 
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<tabs::GlicActorNudgeController> glic_actor_nudge_controller_;

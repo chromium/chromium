@@ -72,40 +72,13 @@ source_set("glow_impl") {
 
 source_set("browser_ui") {
   sources = [
-    "glic_button_controller.h",
-    "glic_button_controller_delegate.h",
-    "glic_iph_controller.h",
-    "glic_nudge_controller.h",
-    "glic_nudge_delegate.h",
-    "glic_tab_indicator_helper.h",
-    "glic_vector_icon_manager.h",
-    "scoped_glic_button_indicator.h",
-  ]
-  deps = [
-    "////ui/base/unowned_user_data",
-    "//base",
-    "//chrome/browser/glic/fre:mojo_bindings",
-    "//chrome/browser/glic/resources:grit",
-    "//chrome/browser/ui/browser_window",
-    "//components/prefs",
-    "//components/tabs:public",
-    "//components/user_education/common",
-    "//ui/gfx",
-  ]
-}
-
-source_set("browser_ui_impl") {
-  sources = [
     "glic_button_controller.cc",
     "glic_iph_controller.cc",
-    "glic_nudge_controller.cc",
-    "glic_nudge_delegate.cc",
     "glic_tab_indicator_helper.cc",
     "glic_vector_icon_manager.cc",
     "scoped_glic_button_indicator.cc",
   ]
   deps = [
-    ":browser_ui",
     "//chrome/browser/actor/ui",
     "//chrome/browser/glic/fre",
     "//chrome/browser/themes",
@@ -164,7 +137,6 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/actor",
     "//chrome/browser/actor:test_support",
     "//chrome/browser/actor/ui",
-    "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/glic/fre",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/ui",

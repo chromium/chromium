@@ -180,7 +180,7 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
           return base::CallbackListSubscription();
         });
 
-    glic_nudge_controller_ = std::make_unique<glic::GlicNudgeController>(
+    glic_nudge_controller_ = std::make_unique<tabs::GlicNudgeController>(
         browser_window_interface_.get());
 
     tab_strip_action_container_ = std::make_unique<TabStripActionContainer>(
@@ -196,7 +196,7 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
   glic::GlicUnitTestEnvironment glic_test_environment_;
   std::unique_ptr<TabStrip> tab_strip_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
-  std::unique_ptr<glic::GlicNudgeController> glic_nudge_controller_;
+  std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
   std::unique_ptr<tabs::MockTabInterface> tab_interface_;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   TestTabStripModelDelegate tab_strip_model_delegate_;

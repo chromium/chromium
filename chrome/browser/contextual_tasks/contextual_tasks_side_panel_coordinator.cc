@@ -24,7 +24,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
-#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -35,6 +34,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
@@ -397,7 +397,7 @@ void ContextualTasksSidePanelCoordinator::Show(
           browser_window_->GetFeatures().glic_nudge_controller()) {
     glic_nudge_controller->UpdateNudgeLabel(
         active_tab_interface->GetContents(), "", std::nullopt,
-        glic::GlicNudgeActivity::kNudgeIgnoredOpenedContextualTasksSidePanel,
+        tabs::GlicNudgeActivity::kNudgeIgnoredOpenedContextualTasksSidePanel,
         base::DoNothing());
   }
 }

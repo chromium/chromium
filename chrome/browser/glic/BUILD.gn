@@ -64,6 +64,12 @@ source_set("glic") {
     # TODO(b/470059315): Make these work on Android, or move them to the
     # desktop-only section.
     sources += [
+      "browser_ui/glic_button_controller.h",
+      "browser_ui/glic_button_controller_delegate.h",
+      "browser_ui/glic_iph_controller.h",
+      "browser_ui/glic_tab_indicator_helper.h",
+      "browser_ui/glic_vector_icon_manager.h",
+      "browser_ui/scoped_glic_button_indicator.h",
       "fre/glic_fre_ui.h",
       "glic_tab_restore_data.h",
       "glic_tab_restore_helper.h",
@@ -110,7 +116,6 @@ source_set("glic") {
   ]
   if (!is_android) {
     public_deps += [
-      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/resources:browser_resources",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/themes",

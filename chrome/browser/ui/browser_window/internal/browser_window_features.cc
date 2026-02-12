@@ -24,7 +24,6 @@
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
-#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -63,6 +62,7 @@
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
 #include "chrome/browser/ui/tab_search_feature.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
@@ -299,7 +299,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       glic_iph_controller_ = std::make_unique<glic::GlicIphController>(
           browser, *glic::GlicKeyedService::Get(profile));
       glic_nudge_controller_ =
-          std::make_unique<glic::GlicNudgeController>(browser);
+          std::make_unique<tabs::GlicNudgeController>(browser);
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

@@ -11,12 +11,12 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace glic {
 
-class FocusedTabData;
 class GlicKeyedService;
 
 // This class is partially responsible for updating tab indicators for glic

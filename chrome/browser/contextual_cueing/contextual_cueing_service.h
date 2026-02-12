@@ -35,9 +35,9 @@ namespace predictors {
 class LoadingPredictor;
 }  // namespace predictors
 
-namespace glic {
+namespace tabs {
 enum class GlicNudgeActivity;
-}  // namespace glic
+}  // namespace tabs
 
 namespace contextual_cueing {
 
@@ -68,7 +68,7 @@ class ContextualCueingService
   void OnNudgeActivity(content::WebContents* web_contents,
                        base::TimeTicks document_available_time,
                        bool is_dynamic,
-                       glic::GlicNudgeActivity activity);
+                       tabs::GlicNudgeActivity activity);
 
   // Should be called when the cueing UI is shown for the tab with `url`.
   void CueingNudgeShown(const GURL& url);

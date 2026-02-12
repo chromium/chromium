@@ -10,8 +10,6 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
-#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_nudge_delegate.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -23,6 +21,8 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/glic_nudge_controller.h"
+#include "chrome/browser/ui/tabs/glic_nudge_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
@@ -48,7 +48,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 
-class FakeGlicNudgeDelegate : public glic::GlicNudgeDelegate {
+class FakeGlicNudgeDelegate : public GlicNudgeDelegate {
  public:
   void OnTriggerGlicNudgeUI(std::string label) override {
     last_nudge_label_ = label;
@@ -115,7 +115,7 @@ class ContextualCueingHelperBrowserTest
             optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, metadata);
   }
 
-  glic::GlicNudgeController* glic_nudge_controller() {
+  tabs::GlicNudgeController* glic_nudge_controller() {
     return browser()->browser_window_features()->glic_nudge_controller();
   }
 
@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       static_cast<int64_t>(contextual_cueing::NudgeDecision::kSuccess));
   // Simulate nudge click.
   glic_nudge_controller()->OnNudgeActivity(
-      glic::GlicNudgeActivity::kNudgeClicked);
+      tabs::GlicNudgeActivity::kNudgeClicked);
 
   auto interaction_entries = ukm_recorder.GetEntriesByName(
       ukm::builders::ContextualCueing_NudgeInteraction::kEntryName);

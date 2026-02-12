@@ -22,8 +22,8 @@
 #include "ui/views/controls/menu/submenu_view.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/tabs/public/tab_interface.h"
 #endif
@@ -95,7 +95,7 @@ void OmniboxContextMenu::RunMenuAt(const gfx::Point& point,
   glic_nudge_controller->UpdateNudgeLabel(
       browser_window_interface->GetActiveTabInterface()->GetContents(), "",
       std::nullopt,
-      glic::GlicNudgeActivity::kNudgeIgnoredOmniboxContextMenuInteraction,
+      tabs::GlicNudgeActivity::kNudgeIgnoredOmniboxContextMenuInteraction,
       base::DoNothing());
 #endif
 }

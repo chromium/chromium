@@ -5474,7 +5474,6 @@ static_library("ui") {
         "//chrome/browser/actor/ui/task_list_bubble:controller",
         "//chrome/browser/background/glic",
         "//chrome/browser/glic/browser_ui",
-        "//chrome/browser/glic/browser_ui:browser_ui_impl",
         "//chrome/browser/glic/browser_ui:glow",
         "//chrome/browser/glic/browser_ui:glow_controller",
         "//chrome/browser/glic/browser_ui:glow_controller_impl",
@@ -5488,7 +5487,6 @@ static_library("ui") {
         "//chrome/browser/ui/views/tabs/glic",
         "//chrome/browser/ui/views/tabs/glic:impl",
         "//chrome/browser/glic/browser_ui",
-        "//chrome/browser/glic/browser_ui:browser_ui_impl",
         "//chrome/browser/glic/browser_ui:glow_impl",
         "//chrome/browser/glic/browser_ui:glow_controller_impl",
       ]
