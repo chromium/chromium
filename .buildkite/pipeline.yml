@@ -94,6 +94,11 @@ steps:
           env:
             BUILDEVENT_APIKEY: honeycomb-api-key
             BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-buildevents
+          file:
+            - path: "/Users/administrator/chromium/engflow.crt"
+              secret-id: engflow-certificate
+            - path: "/Users/administrator/chromium/engflow.key"
+              secret-id: engflow-key
       - replayio/buildevents#76b6f57: ~
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
@@ -104,6 +109,11 @@ steps:
       - "be_cmd upload-artifacts -- node replay_build_scripts/upload_build_artifacts.mjs"
     env:
       RECORD_REPLAY_BACKEND_DIR: /Users/administrator/chromium/backend
+      RBE_service: simpsonite.cluster.engflow.com:443
+      RBE_service_no_auth: "true"
+      RBE_use_application_default_credentials: "true"
+      RBE_tls_client_auth_cert: /Users/administrator/chromium/engflow.crt
+      RBE_tls_client_auth_key: /Users/administrator/chromium/engflow.key
     agents:
       - "runtimeType=chromiumbuild"
       - "os=macos"
@@ -121,6 +131,11 @@ steps:
           env:
             BUILDEVENT_APIKEY: honeycomb-api-key
             BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-buildevents
+          file:
+            - path: "/Users/administrator/chromium/engflow.crt"
+              secret-id: engflow-certificate
+            - path: "/Users/administrator/chromium/engflow.key"
+              secret-id: engflow-key
       - replayio/buildevents#76b6f57: ~
     commands:
       - "be_cmd git-fetch-all -- git fetch --all"
@@ -132,6 +147,11 @@ steps:
     env:
       REPLAY_BUILD_ARM: true
       RECORD_REPLAY_BACKEND_DIR: /Users/administrator/chromium/backend
+      RBE_service: simpsonite.cluster.engflow.com:443
+      RBE_service_no_auth: "true"
+      RBE_use_application_default_credentials: "true"
+      RBE_tls_client_auth_cert: /Users/administrator/chromium/engflow.crt
+      RBE_tls_client_auth_key: /Users/administrator/chromium/engflow.key
     agents:
       - "runtimeType=chromiumbuild"
       - "os=macos"
