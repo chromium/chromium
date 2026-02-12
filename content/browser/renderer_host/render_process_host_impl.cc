@@ -3768,6 +3768,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       blink::switches::kDisableImageAnimationResync,
       blink::switches::kDisablePreferCompositingToLCDText,
       blink::switches::kDisableRGBA4444Textures,
+      blink::switches::kEnableDesktopAndroidScrollbars,
       blink::switches::kEnableLeakDetectionHeapSnapshot,
       blink::switches::kEnablePreferCompositingToLCDText,
       blink::switches::kEnableRGBA4444Textures,

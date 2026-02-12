@@ -61,6 +61,10 @@ const char kDisableZeroCopy[] = "disable-zero-copy";
 // this for the stats to be logged.
 const char kDumpRuntimeCallStats[] = "dump-blink-runtime-call-stats";
 
+// Enable desktop Android scrollbars.
+const char kEnableDesktopAndroidScrollbars[] =
+    "enable-desktop-android-scrollbars";
+
 // Specify that all compositor resources should be backed by GPU memory buffers.
 const char kEnableGpuMemoryBufferCompositorResources[] =
     "enable-gpu-memory-buffer-compositor-resources";

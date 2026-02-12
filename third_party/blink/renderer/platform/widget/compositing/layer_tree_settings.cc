@@ -50,18 +50,25 @@ constexpr base::FeatureParam<double> kFadeDurationScalingFactor{
     &kScaleScrollbarAnimationTiming, "fade_duration_scaling_factor",
     /*default_value=*/1.0};
 
+bool ShouldUseDesktopOverlayScrollbars() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kEnableDesktopAndroidScrollbars);
+#else
+  return ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar();
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 void InitializeScrollbarFadeAndDelay(cc::LayerTreeSettings& settings) {
   // Default settings that may be overridden below for specific platforms.
   settings.scrollbar_fade_delay = base::Milliseconds(300);
   settings.scrollbar_fade_duration = base::Milliseconds(300);
 
-#if !BUILDFLAG(IS_ANDROID)
-  if (ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar()) {
+  if (ShouldUseDesktopOverlayScrollbars()) {
     settings.idle_thickness_scale = ui::kOverlayScrollbarIdleThicknessScale;
     settings.scrollbar_fade_delay = ui::GetOverlayScrollbarFadeDelay();
     settings.scrollbar_fade_duration = ui::GetOverlayScrollbarFadeDuration();
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (base::FeatureList::IsEnabled(kScaleScrollbarAnimationTiming)) {
     settings.scrollbar_fade_delay *= kFadeDelayScalingFactor.Get();
@@ -429,8 +436,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
         &settings.initial_debug_state.slow_down_raster_scale_factor);
   }
 
-  settings.scrollbar_animator = cc::LayerTreeSettings::ANDROID_OVERLAY;
-
   InitializeScrollbarFadeAndDelay(settings);
 
   if (cmd.HasSwitch(::switches::kCCScrollAnimationDurationForTesting)) {
@@ -456,18 +461,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       !platform->IsSynchronousCompositingEnabledForAndroidWebView();
 
   settings.using_synchronous_renderer_compositor = use_synchronous_compositor;
-  if (use_synchronous_compositor) {
-    // Root frame in Android WebView uses system scrollbars, so make ours
-    // invisible. http://crbug.com/677348: This can't be done using
-    // hide_scrollbars setting because supporting -webkit custom scrollbars is
-    // still desired on sublayers.
-    settings.scrollbar_animator = cc::LayerTreeSettings::NO_ANIMATOR;
-    // Rendering of scrollbars will be disabled in cc::SolidColorScrollbarLayer.
-
-    // Early damage check works in combination with synchronous compositor.
-    settings.enable_early_damage_check =
-        cmd.HasSwitch(::switches::kCheckDamageEarly);
-  }
   if (using_low_memory_policy) {
     // On low-end we want to be very careful about killing other
     // apps. So initially we use 50% more memory to avoid flickering
@@ -481,13 +474,26 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   }
 
 #else   // BUILDFLAG(IS_ANDROID)
+  const bool use_synchronous_compositor = false;
   const bool using_low_memory_policy = base::SysInfo::IsLowEndDevice();
+#endif  // BUILDFLAG(IS_ANDROID)
 
   settings.enable_fluent_scrollbar = ui::IsFluentScrollbarEnabled();
   settings.enable_fluent_overlay_scrollbar =
       ui::IsFluentOverlayScrollbarEnabled();
 
-  if (ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar()) {
+  if (use_synchronous_compositor) {
+    // Root frame in Android WebView uses system scrollbars, so make ours
+    // invisible. http://crbug.com/677348: This can't be done using
+    // hide_scrollbars setting because supporting -webkit custom scrollbars is
+    // still desired on sublayers.
+    settings.scrollbar_animator = cc::LayerTreeSettings::NO_ANIMATOR;
+    // Rendering of scrollbars will be disabled in cc::SolidColorScrollbarLayer.
+
+    // Early damage check works in combination with synchronous compositor.
+    settings.enable_early_damage_check =
+        cmd.HasSwitch(::switches::kCheckDamageEarly);
+  } else if (ShouldUseDesktopOverlayScrollbars()) {
     settings.scrollbar_animator = cc::LayerTreeSettings::AURA_OVERLAY;
     settings.scrollbar_thinning_duration =
         settings.enable_fluent_overlay_scrollbar
@@ -505,16 +511,13 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       settings.scrollbar_flash_when_mouse_enter = base::FeatureList::IsEnabled(
           ::features::kOverlayScrollbarFlashWhenMouseEnter);
     }
-    // Avoid animating in web tests to improve reliability.
-    if (WebTestSupport::IsRunningWebTest()) {
-      settings.scrollbar_thinning_duration = base::TimeDelta();
-      settings.scrollbar_fade_delay = base::TimeDelta::Max();
-      settings.scrollbar_fade_duration = base::TimeDelta();
-    }
+  } else {
+    settings.scrollbar_animator = cc::LayerTreeSettings::ANDROID_OVERLAY;
   }
-#endif  // BUILDFLAG(IS_ANDROID)
 
-  if (!base::FeatureList::IsEnabled(::features::kScrollbarAnimations)) {
+  // Avoid animating in web tests to improve reliability.
+  if (WebTestSupport::IsRunningWebTest() ||
+      !base::FeatureList::IsEnabled(::features::kScrollbarAnimations)) {
     settings.scrollbar_thinning_duration = base::TimeDelta();
     settings.scrollbar_fade_delay = base::TimeDelta::Max();
     settings.scrollbar_fade_duration = base::TimeDelta();
