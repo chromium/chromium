@@ -15,6 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/views/interaction/interactive_views_test.h"
 
@@ -64,6 +65,29 @@ IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogInteractiveUiTest,
                   SelectMenuItem(AppMenuModel::kHelpMenuItem),
                   SelectMenuItem(HelpMenuModel::kReportUnsafeSiteMenuItem),
                   WaitForDialog(), CloseDialog());
+}
+
+// Only branded builds have links in dialog.
+IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogInteractiveUiTest,
+                       ClickOnUnsafeSitePolicy) {
+  const GURL kExpectedLinkUrl("https://safebrowsing.google.com/#policies");
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDialogWebviewId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContents2Id);
+  RunTestSequence(
+      ExecuteReportUnsafeSiteCommand(), WaitForDialog(),
+      InAnyContext(
+          InstrumentNonTabWebView(kDialogWebviewId,
+                                  feedback::kReportUnsafeSiteWebviewElementId),
+          ClickElement(kDialogWebviewId,
+                       {"report-unsafe-site-app", "#unsafe_site_policy_link"},
+                       ui_controls::LEFT, ui_controls::kNoAccelerator,
+                       ExecuteJsMode::kFireAndForget)),
+      InstrumentNextTab(kWebContents2Id),
+      // Use WaitForWebContentsReady() to check URL of new tab.
+      WaitForWebContentsReady(kWebContents2Id, kExpectedLinkUrl),
+      // Opening the new tab should have hidden the tab-modal dialog.
+      WaitForHide(
+          feedback::ReportUnsafeSiteDialogViews::kReportUnsafeSiteDialogId));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

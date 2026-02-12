@@ -9,6 +9,8 @@
 
 namespace feedback {
 
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kReportUnsafeSiteWebviewElementId);
+
 class ReportUnsafeSiteDialogViews {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kReportUnsafeSiteDialogId);

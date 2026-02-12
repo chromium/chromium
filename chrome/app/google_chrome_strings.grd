@@ -3200,7 +3200,7 @@ Google Chrome is unable to recover your settings.
       </message>
 
       <message name="IDS_REPORT_UNSAFE_SITE_DIALOG_DESCRIPTION" desc="Explanatory text in dialog for reporting an unsafe site to Google">
-        Improve online safety for everyone when you report a site you think is harmful. Learn more about <ph name="BEGIN_LINK">&lt;a href="https://safebrowsing.google.com/#policies"&gt;</ph>Google's unsafe site policy.<ph name="END_LINK">&lt;/a&gt;</ph>
+        Improve online safety for everyone when you report a site you think is harmful. Learn more about <ph name="BEGIN_LINK">&lt;a href="https://safebrowsing.google.com/#policies" target="_blank" id="unsafe_site_policy_link"&gt;</ph>Google's unsafe site policy.<ph name="END_LINK">&lt;/a&gt;</ph>
       </message>
     </messages>
   </release>

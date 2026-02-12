@@ -8,6 +8,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -24,10 +25,13 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace feedback {
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kReportUnsafeSiteWebviewElementId);
+
 namespace {
 
 // Report-unsafe-site WebUIBubbleDialogView.
@@ -37,11 +41,13 @@ class ReportUnsafeSiteDialogView : public WebUIBubbleDialogView {
  public:
   ReportUnsafeSiteDialogView(
       std::unique_ptr<WebUIContentsWrapper> contents_wrapper,
-      gfx::NativeWindow parent_window)
+      Browser* browser)
       : WebUIBubbleDialogView(/*anchor_view=*/nullptr,
                               contents_wrapper->GetWeakPtr()),
-        contents_wrapper_(std::move(contents_wrapper)) {
-    set_parent_window(platform_util::GetViewForWindow(parent_window));
+        contents_wrapper_(std::move(contents_wrapper)),
+        browser_(browser->AsWeakPtr()) {
+    set_parent_window(
+        platform_util::GetViewForWindow(browser->window()->GetNativeWindow()));
     set_close_on_deactivate(false);
     SetTitle(l10n_util::GetStringUTF16(IDS_REPORT_UNSAFE_SITE_DIALOG_TITLE));
     SetShowCloseButton(true);
@@ -49,11 +55,36 @@ class ReportUnsafeSiteDialogView : public WebUIBubbleDialogView {
         views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
     SetProperty(views::kElementIdentifierKey,
                 ReportUnsafeSiteDialogViews::kReportUnsafeSiteDialogId);
+    web_view()->SetProperty(views::kElementIdentifierKey,
+                            feedback::kReportUnsafeSiteWebviewElementId);
   }
   ~ReportUnsafeSiteDialogView() override = default;
 
+  // WebUIContentsWrapper::Host:
+  content::WebContents* AddNewContents(
+      content::WebContents* source,
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override {
+    if (!browser_ || !user_gesture) {
+      return nullptr;
+    }
+    if (disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB &&
+        disposition != WindowOpenDisposition::NEW_POPUP) {
+      return nullptr;
+    }
+    return chrome::AddWebContents(
+        browser_.get(), source, std::move(new_contents), target_url,
+        disposition, window_features, NavigateParams::WindowAction::kShowWindow,
+        user_gesture);
+  }
+
  private:
   std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
+  const base::WeakPtr<Browser> browser_;
 };
 
 BEGIN_METADATA(ReportUnsafeSiteDialogView)
@@ -91,7 +122,7 @@ void ReportUnsafeSiteDialog::Show(Browser* browser) {
       GURL(chrome::kChromeUIFeedbackReportUnsafeSiteURL), profile,
       IDS_REPORT_UNSAFE_SITE_DIALOG_TITLE);
   auto bubble_dialog = std::make_unique<ReportUnsafeSiteDialogView>(
-      std::move(contents_wrapper), browser->window()->GetNativeWindow());
+      std::move(contents_wrapper), browser);
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_dialog));
 
