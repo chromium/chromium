@@ -58,7 +58,8 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
       const SignedWebBundleMetadata& bundle_metadata) override;
 
   views::Widget* ShowDialog(
-      const IsolatedWebAppInstallerModel::Dialog& dialog) override;
+      const IsolatedWebAppInstallerModel::Dialog& dialog,
+      const views::DialogDelegate* dialog_delegate) override;
 
  private:
   template <class T, class... Args>
@@ -66,7 +67,7 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
     return AddChildView(std::make_unique<T>(std::forward<Args>(args)...));
   }
 
-  void Dim(bool dim);
+  void Dim(bool dim, const views::DialogDelegate* dialog_delegate);
 
   views::Widget* ShowChildDialog(int title,
                                  const ui::DialogModelLabel& subtitle,

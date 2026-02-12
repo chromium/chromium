@@ -54,6 +54,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -146,7 +147,8 @@ class MockView : public IsolatedWebAppInstallerView {
               (override));
   MOCK_METHOD(views::Widget*,
               ShowDialog,
-              (const IsolatedWebAppInstallerModel::Dialog& dialog),
+              (const IsolatedWebAppInstallerModel::Dialog& dialog,
+               const views::DialogDelegate* delegate),
               (override));
 };
 
@@ -301,7 +303,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   EXPECT_CALL(
       view,
       ShowDialog(
-          VariantWith<IsolatedWebAppInstallerModel::BundleInvalidDialog>(_)));
+          VariantWith<IsolatedWebAppInstallerModel::BundleInvalidDialog>(_),
+          _));
 
   controller.Start(base::DoNothing(), base::DoNothing());
 
@@ -330,7 +333,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
       view,
       ShowDialog(
           VariantWith<
-              IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog>(_)));
+              IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog>(_),
+          _));
 
   controller.Start(base::DoNothing(), base::DoNothing());
 
@@ -359,7 +363,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
       view,
       ShowDialog(
           VariantWith<
-              IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog>(_)));
+              IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog>(_),
+          _));
 
   controller.Start(base::DoNothing(), base::DoNothing());
 
@@ -384,7 +389,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
       view,
       ShowDialog(
           VariantWith<IsolatedWebAppInstallerModel::ConfirmInstallationDialog>(
-              _)));
+              _),
+          _));
 
   controller.OnAccept();
 
@@ -521,7 +527,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
       view,
       ShowDialog(
           VariantWith<IsolatedWebAppInstallerModel::InstallationFailedDialog>(
-              _)));
+              _),
+          _));
 
   controller.OnChildDialogAccepted();
 

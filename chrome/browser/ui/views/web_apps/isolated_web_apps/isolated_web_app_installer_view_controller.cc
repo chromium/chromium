@@ -564,7 +564,7 @@ void IsolatedWebAppInstallerViewController::OnStepChanged() {
 
 void IsolatedWebAppInstallerViewController::OnChildDialogChanged() {
   if (model_->has_dialog()) {
-    child_widget_ = view_->ShowDialog(model_->dialog());
+    child_widget_ = view_->ShowDialog(model_->dialog(), dialog_delegate_);
   }
 }
 
