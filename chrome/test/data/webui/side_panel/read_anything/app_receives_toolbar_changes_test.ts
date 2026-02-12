@@ -7,7 +7,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {BrowserProxy, LineFocusController, LineFocusMovement, LineFocusStyle, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
+import {hasStyle, microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent, mockMetrics, setContent, setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -228,11 +228,13 @@ suite('AppReceivesToolbarChanges', () => {
         {detail: {data: LineFocusMovement.STATIC}});
     // The app needs content so it has a non-zero height.
     app.updateContent();
+    await microtasksFinished();
 
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_STYLE,
         {detail: {data: LineFocusStyle.UNDERLINE}});
-    await microtasksFinished();
+    await whenCheck(
+        app, () => window.getComputedStyle(app.$.container).paddingTop !== '');
     const padding =
         +window.getComputedStyle(app.$.container).paddingTop.replace('px', '');
     assertLT(0, padding);
@@ -241,7 +243,7 @@ suite('AppReceivesToolbarChanges', () => {
         app, ToolbarEvent.LINE_FOCUS_STYLE,
         {detail: {data: LineFocusStyle.OFF}});
     await microtasksFinished();
-    assertEquals('', app.$.container.style.paddingTop);
+    assertEquals('0px', window.getComputedStyle(app.$.container).paddingTop);
   });
 
   test('line focus movement change updates line focus', () => {
