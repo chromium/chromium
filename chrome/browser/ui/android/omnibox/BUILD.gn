@@ -451,7 +451,6 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxSuggestionsDropdownEmbedderImplTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/OverrideUrlLoadingDelegateImplUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/SearchEngineUtilsUnitTest.java",
-    "java/src/org/chromium/chrome/browser/omnibox/ShadowUrlBarData.java",
     "java/src/org/chromium/chrome/browser/omnibox/SpannableAutocompleteEditTextModelUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarDataTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarMediatorUnitTest.java",

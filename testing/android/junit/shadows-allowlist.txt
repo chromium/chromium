@@ -14,10 +14,6 @@
 +org.chromium.chrome.browser.init.ChromeBrowserInitializer
 +org.chromium.chrome.browser.multiwindow.MultiInstanceManagerApi31
 +org.chromium.chrome.browser.night_mode.WebContentsDarkModeController
-+org.chromium.chrome.browser.omnibox.UrlBarData
-+org.chromium.chrome.browser.omnibox.geo.VisibleNetworksTracker
-+org.chromium.chrome.browser.partnercustomizations.CustomizationProviderDelegateUpstreamImpl
-+org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations
 +org.chromium.chrome.browser.profiles.Profile
 +org.chromium.chrome.browser.profiles.ProfileManager
 +org.chromium.chrome.browser.profiles.ProfileManagerUtils
@@ -36,13 +32,11 @@
 +org.chromium.chrome.browser.ui.hats.MessageSurveyUiDelegate
 +org.chromium.chrome.browser.webapps.WebApkShareTargetUtil
 +org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider
-+org.chromium.components.browser_ui.styles.SemanticColorUtils
 +org.chromium.components.browser_ui.widget.ContextMenuDialog
 +org.chromium.components.embedder_support.util.UrlUtilities
 +org.chromium.components.media_router.caf.CastMediaSource
 +org.chromium.components.url_formatter.UrlFormatter
 +org.chromium.ui.InsetsRectProvider$BoundingRectHelper
-+org.chromium.ui.base.MimeTypeUtils
 +org.chromium.ui.display.DisplayAndroid
 +org.chromium.ui.display.DisplayAndroidManager
 +org.chromium.ui.resources.dynamics.CaptureUtils

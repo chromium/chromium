@@ -9,6 +9,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Range;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -61,6 +62,8 @@ public class UrlBarData {
     /** Represents an empty URL bar. */
     public static final UrlBarData EMPTY = create(null, "", 0, 0, null);
 
+    private static @Nullable Boolean sShouldShowUrlForTesting;
+
     public static UrlBarData forUrl(GURL url) {
         return forUrlAndText(url, null, null);
     }
@@ -82,8 +85,16 @@ public class UrlBarData {
         return forUrlAndText(url, displayText, null);
     }
 
+    public static void setShouldShowUrlForTesting(boolean shouldShow) {
+        sShouldShowUrlForTesting = shouldShow;
+        ResettersForTesting.register(() -> sShouldShowUrlForTesting = null);
+    }
+
     /** Returns whether supplied URL should be shown in the Omnibox/Suggestions list. */
     public static boolean shouldShowUrl(GURL gurl, boolean isOffTheRecord) {
+        if (sShouldShowUrlForTesting != null) {
+            return sShouldShowUrlForTesting;
+        }
         return !NativePage.isChromePageUrl(gurl, isOffTheRecord) && !UrlUtilities.isNtpUrl(gurl);
     }
 

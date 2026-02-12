@@ -30,6 +30,9 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
     private static String sProviderAuthority = PROVIDER_AUTHORITY;
     private static @Nullable Boolean sIgnoreSystemPackageCheckForTesting;
     private static @Nullable Boolean sValid;
+    private static @Nullable String @Nullable [] sHomepageForTesting;
+    private static @Nullable Boolean sIsIncognitoModeDisabledForTesting;
+    private static @Nullable Boolean sIsBookmarksEditingDisabledForTesting;
 
     /** Provides a way to do some post-process timing for the validation function. */
     interface DelegateValidationCompletion {
@@ -48,6 +51,9 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
 
     @Override
     public @Nullable String getHomepage() {
+        if (sHomepageForTesting != null) {
+            return sHomepageForTesting[0];
+        }
         if (!isValid()) {
             return null;
         }
@@ -67,6 +73,9 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
 
     @Override
     public boolean isIncognitoModeDisabled() {
+        if (sIsIncognitoModeDisabledForTesting != null) {
+            return sIsIncognitoModeDisabledForTesting;
+        }
         if (!isValid()) {
             return false;
         }
@@ -91,6 +100,9 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
 
     @Override
     public boolean isBookmarksEditingDisabled() {
+        if (sIsBookmarksEditingDisabledForTesting != null) {
+            return sIsBookmarksEditingDisabledForTesting;
+        }
         if (!isValid()) {
             return false;
         }
@@ -202,5 +214,20 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
     static void ignoreBrowserProviderSystemPackageCheckForTesting(boolean ignore) {
         sIgnoreSystemPackageCheckForTesting = ignore;
         ResettersForTesting.register(() -> sIgnoreSystemPackageCheckForTesting = null);
+    }
+
+    static void setHomepageForTesting(@Nullable String homepage) {
+        sHomepageForTesting = new String[] {homepage};
+        ResettersForTesting.register(() -> sHomepageForTesting = null);
+    }
+
+    static void setIsIncognitoModeDisabledForTesting(boolean disabled) {
+        sIsIncognitoModeDisabledForTesting = disabled;
+        ResettersForTesting.register(() -> sIsIncognitoModeDisabledForTesting = null);
+    }
+
+    static void setIsBookmarksEditingDisabledForTesting(boolean disabled) {
+        sIsBookmarksEditingDisabledForTesting = disabled;
+        ResettersForTesting.register(() -> sIsBookmarksEditingDisabledForTesting = null);
     }
 }

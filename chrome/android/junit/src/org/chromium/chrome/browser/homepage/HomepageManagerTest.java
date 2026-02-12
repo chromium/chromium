@@ -17,8 +17,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -35,31 +33,15 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link HomepageManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {HomepageManagerTest.ShadowPartnerBrowserCustomizations.class})
+@Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING)
 public class HomepageManagerTest {
-    @Implements(PartnerBrowserCustomizations.class)
-    static class ShadowPartnerBrowserCustomizations {
-        private static PartnerBrowserCustomizations sPartnerBrowserCustomizations;
-
-        @Implementation
-        public static PartnerBrowserCustomizations getInstance() {
-            return sPartnerBrowserCustomizations;
-        }
-
-        static void setPartnerBrowserCustomizations(
-                PartnerBrowserCustomizations partnerBrowserCustomizations) {
-            sPartnerBrowserCustomizations = partnerBrowserCustomizations;
-        }
-    }
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private PartnerBrowserCustomizations mPartnerBrowserCustomizations;
 
     @Before
     public void setUp() {
-        ShadowPartnerBrowserCustomizations.setPartnerBrowserCustomizations(
-                mPartnerBrowserCustomizations);
+        PartnerBrowserCustomizations.setInstanceForTesting(mPartnerBrowserCustomizations);
         DseNewTabUrlManager.resetIsEeaChoiceCountryForTesting();
         ExtensionsUrlOverrideRegistry.resetRegistry();
         UrlConstantResolverFactory.resetResolvers();

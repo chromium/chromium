@@ -11,8 +11,6 @@ import static org.junit.Assert.assertTrue;
 import android.os.Handler;
 import android.os.Looper;
 
-import androidx.annotation.Nullable;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,8 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
@@ -32,21 +28,21 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizationsRoboUnitTest.ShadowCustomizationProviderDelegate;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsTestUtils.HomepageCharacterizationHelperStub;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.PartnerCustomizationsHomepageEnum;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link PartnerBrowserCustomizations}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowPostTask.class, ShadowCustomizationProviderDelegate.class})
+@Config(shadows = {ShadowPostTask.class})
 @EnableFeatures(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA)
 public class PartnerBrowserCustomizationsRoboUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
 
     @Before
     public void setup() {
-        ShadowCustomizationProviderDelegate.sHomepage = JUnitTestGURLs.EXAMPLE_URL.getSpec();
+        CustomizationProviderDelegateUpstreamImpl.setHomepageForTesting(
+                JUnitTestGURLs.EXAMPLE_URL.getSpec());
         ShadowPostTask.setTestImpl(
                 new ShadowPostTask.TestImpl() {
                     final Handler mHandler = new Handler(Looper.getMainLooper());
@@ -79,7 +75,8 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
 
         // Assuming homepage is changed during 1st #initializeAsync, and another #initializeAsync is
         // triggered. The 2nd #initializeAsync is ignored since there's one already in the process.
-        ShadowCustomizationProviderDelegate.sHomepage = JUnitTestGURLs.GOOGLE_URL.getSpec();
+        CustomizationProviderDelegateUpstreamImpl.setHomepageForTesting(
+                JUnitTestGURLs.GOOGLE_URL.getSpec());
         PartnerBrowserCustomizations.getInstance()
                 .initializeAsync(ContextUtils.getApplicationContext());
         assertFalse(
@@ -111,33 +108,6 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
                 PartnerBrowserCustomizations.getInstance().getHomePageUrl().getSpec());
     }
 
-    /** Convenient shadow class to set homepage provided by partner during robo tests. */
-    @Implements(CustomizationProviderDelegateUpstreamImpl.class)
-    public static class ShadowCustomizationProviderDelegate {
-        static String sHomepage;
-
-        public ShadowCustomizationProviderDelegate() {}
-
-        /** Returns the homepage string or null if none is available. */
-        @Implementation
-        @Nullable
-        protected String getHomepage() {
-            return sHomepage;
-        }
-
-        /** Returns whether incognito mode is disabled. */
-        @Implementation
-        protected boolean isIncognitoModeDisabled() {
-            return false;
-        }
-
-        /** Returns whether bookmark editing is disabled. */
-        @Implementation
-        protected boolean isBookmarksEditingDisabled() {
-            return false;
-        }
-    }
-
     /**
      * Tests the case where we think we're "certain" whether the NTP was created correctly or not.
      * We already created the Tab so when we complete customization we're ready to log to UMA, but
@@ -149,7 +119,7 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
      */
     @Test
     public void initializeAsyncWithPartnerCustomizationsUma() {
-        ShadowCustomizationProviderDelegate.sHomepage = null;
+        CustomizationProviderDelegateUpstreamImpl.setHomepageForTesting(null);
         HistogramWatcher histograms =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.PartnerCustomization.HomepageCustomizationOutcome",
