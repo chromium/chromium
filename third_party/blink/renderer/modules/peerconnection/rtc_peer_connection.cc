@@ -417,21 +417,21 @@ bool SdpMismatch(String old_sdp, String new_sdp, String attribute) {
   // Look for an attribute that is present in both old and new SDP
   // and is modified which is not allowed.
   String attribute_with_prefix = StrCat({"\na=", attribute, ":"});
-  const wtf_size_t new_attribute_pos = new_sdp.Find(attribute_with_prefix);
+  const wtf_size_t new_attribute_pos = new_sdp.find(attribute_with_prefix);
   if (new_attribute_pos == kNotFound) {
     return true;
   }
-  const wtf_size_t old_attribute_pos = old_sdp.Find(attribute_with_prefix);
+  const wtf_size_t old_attribute_pos = old_sdp.find(attribute_with_prefix);
   if (old_attribute_pos == kNotFound) {
     return true;
   }
-  wtf_size_t old_attribute_end = old_sdp.Find("\r\n", old_attribute_pos + 1);
+  wtf_size_t old_attribute_end = old_sdp.find("\r\n", old_attribute_pos + 1);
   if (old_attribute_end == kNotFound) {
-    old_attribute_end = old_sdp.Find("\n", old_attribute_pos + 1);
+    old_attribute_end = old_sdp.find("\n", old_attribute_pos + 1);
   }
-  wtf_size_t new_attribute_end = new_sdp.Find("\r\n", new_attribute_pos + 1);
+  wtf_size_t new_attribute_end = new_sdp.find("\r\n", new_attribute_pos + 1);
   if (new_attribute_end == kNotFound) {
-    new_attribute_end = new_sdp.Find("\n", new_attribute_pos + 1);
+    new_attribute_end = new_sdp.find("\n", new_attribute_pos + 1);
   }
   return old_sdp.Substring(old_attribute_pos,
                            old_attribute_end - old_attribute_pos) !=
@@ -449,26 +449,26 @@ bool FingerprintMismatch(String old_sdp, String new_sdp) {
   // It's impossible to generate a valid fingerprint without createOffer
   // or createAnswer, so this only applies when there are no fingerprints.
   // This is allowed.
-  const wtf_size_t new_fingerprint_pos = new_sdp.Find("\na=fingerprint:");
+  const wtf_size_t new_fingerprint_pos = new_sdp.find("\na=fingerprint:");
   if (new_fingerprint_pos == kNotFound) {
     return false;
   }
   // Look for fingerprint having been added. Not allowed.
-  const wtf_size_t old_fingerprint_pos = old_sdp.Find("\na=fingerprint:");
+  const wtf_size_t old_fingerprint_pos = old_sdp.find("\na=fingerprint:");
   if (old_fingerprint_pos == kNotFound) {
     return true;
   }
   // Look for fingerprint being modified. Not allowed.  Handle differences in
   // line endings ('\r\n' vs, '\n' when looking for the end of the fingerprint).
   wtf_size_t old_fingerprint_end =
-      old_sdp.Find("\r\n", old_fingerprint_pos + 1);
+      old_sdp.find("\r\n", old_fingerprint_pos + 1);
   if (old_fingerprint_end == kNotFound) {
-    old_fingerprint_end = old_sdp.Find("\n", old_fingerprint_pos + 1);
+    old_fingerprint_end = old_sdp.find("\n", old_fingerprint_pos + 1);
   }
   wtf_size_t new_fingerprint_end =
-      new_sdp.Find("\r\n", new_fingerprint_pos + 1);
+      new_sdp.find("\r\n", new_fingerprint_pos + 1);
   if (new_fingerprint_end == kNotFound) {
-    new_fingerprint_end = new_sdp.Find("\n", new_fingerprint_pos + 1);
+    new_fingerprint_end = new_sdp.find("\n", new_fingerprint_pos + 1);
   }
   return old_sdp.Substring(old_fingerprint_pos,
                            old_fingerprint_end - old_fingerprint_pos) !=

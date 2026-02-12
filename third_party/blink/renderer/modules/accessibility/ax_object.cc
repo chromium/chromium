@@ -6939,7 +6939,7 @@ AtomicString AXObject::Language() const {
   // This is not part of what the HTML5 Standard suggests but it still
   // appears to be necessary.
   if (const String languages = document->ContentLanguage()) {
-    String first_language = languages.Substring(0, languages.Find(","));
+    String first_language = languages.Substring(0, languages.find(","));
     if (!first_language.empty()) {
       return AtomicString(first_language.StripWhiteSpace());
     }
@@ -6948,7 +6948,7 @@ AtomicString AXObject::Language() const {
   // Use the first accept language preference if present.
   if (Page* page = document->GetPage()) {
     const String languages = page->GetChromeClient().AcceptLanguages();
-    String first_language = languages.Substring(0, languages.Find(","));
+    String first_language = languages.Substring(0, languages.find(","));
     if (!first_language.empty()) {
       return AtomicString(first_language.StripWhiteSpace());
     }

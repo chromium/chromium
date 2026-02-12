@@ -182,7 +182,7 @@ wtf_size_t FindColonIndex(const String& property_string) {
         return kNotFound;
       }
       // We're in a comment inside the property name, skip past it.
-      index = property_string.Find("*/", index + 2);
+      index = property_string.find("*/", index + 2);
       if (index != kNotFound) {
         // "*/" are two characters. Advance one more than the for-loop.
         index++;

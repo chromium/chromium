@@ -481,7 +481,7 @@ ToRtpParameters(ExecutionContext* context,
 webrtc::RtpCodec ToWebrtcRtpCodec(const RTCRtpCodec* codec) {
   webrtc::RtpCodec webrtc_codec;
   std::string mime_type = codec->mimeType().Utf8();
-  auto slash_index = codec->mimeType().Find("/");
+  auto slash_index = codec->mimeType().find("/");
   if (slash_index == kNotFound) {
     webrtc_codec.kind = webrtc::MediaType::UNSUPPORTED;
     return webrtc_codec;

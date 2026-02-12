@@ -156,7 +156,7 @@ bool LineReader::GetNextLine(String* line) {
   if (index_ >= text_.length())
     return false;
 
-  wtf_size_t end_of_line_index = text_.Find("\r\n", index_);
+  wtf_size_t end_of_line_index = text_.find("\r\n", index_);
   if (end_of_line_index == kNotFound) {
     *line = text_.Substring(index_);
     index_ = text_.length();

@@ -27,7 +27,7 @@ namespace {
 // TODO(bokan): Move this into FragmentDirective after
 // https://crrev.com/c/3216206 lands.
 String RemoveFragmentDirectives(const String& url_fragment) {
-  wtf_size_t directive_delimiter_ix = url_fragment.Find(":~:");
+  wtf_size_t directive_delimiter_ix = url_fragment.find(":~:");
   if (directive_delimiter_ix == kNotFound)
     return url_fragment;
 

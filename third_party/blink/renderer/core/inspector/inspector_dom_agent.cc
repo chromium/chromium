@@ -1361,7 +1361,7 @@ protocol::Response InspectorDOMAgent::performSearch(
 
   unsigned query_length = whitespace_trimmed_query.length();
   bool start_tag_found = !whitespace_trimmed_query.find('<');
-  bool start_closing_tag_found = !whitespace_trimmed_query.Find("</");
+  bool start_closing_tag_found = !whitespace_trimmed_query.find("</");
   bool end_tag_found =
       whitespace_trimmed_query.ReverseFind('>') + 1 == query_length;
   bool start_quote_found = !whitespace_trimmed_query.find('"');

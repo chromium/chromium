@@ -119,8 +119,9 @@ String EmailInputType::ConvertEmailAddressToUnicode(
   if (at_position == kNotFound)
     return address;
 
-  if (address.Find("xn--", at_position + 1) == kNotFound)
+  if (address.find("xn--", at_position + 1) == kNotFound) {
     return address;
+  }
 
   String unicode_host = Platform::Current()->ConvertIDNToUnicode(
       address.Substring(at_position + 1));
@@ -149,7 +150,7 @@ static bool CheckValidDotUsage(const String& domain) {
     return true;
   if (domain[0] == '.' || domain[domain.length() - 1] == '.')
     return false;
-  return domain.Find("..") == kNotFound;
+  return !domain.contains("..");
 }
 
 bool EmailInputType::IsValidEmailAddress(const ScriptRegexp& regexp,

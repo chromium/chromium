@@ -95,9 +95,9 @@ std::optional<VideoTrackRecorder::CodecProfile> VideoStringTagToCodecProfile(
     const std::vector<StringView>& codecs_tags) {
   std::optional<VideoTrackRecorder::CodecProfile> codec_profile;
   for (auto& codecs_tag : codecs_tags) {
-    wtf_size_t codecs_start = codecs.Find(codecs_tag);
+    wtf_size_t codecs_start = codecs.find(codecs_tag);
     if (codecs_start != kNotFound) {
-      wtf_size_t codecs_end = codecs.Find(",");
+      wtf_size_t codecs_end = codecs.find(",");
       auto codec_id =
           codecs
               .Substring(codecs_start,

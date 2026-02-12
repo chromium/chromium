@@ -34,7 +34,7 @@ TEST_F(SVGFilterElementSimTest,
     </div>
     <svg><filter id="green"><feFlood flood-color="green"/></filter></svg>
   )HTML");
-  const wtf_size_t cut_offset = document_text.Find("<feFlood");
+  const wtf_size_t cut_offset = document_text.find("<feFlood");
   ASSERT_NE(cut_offset, kNotFound);
 
   main_resource.Write(document_text.Left(cut_offset));

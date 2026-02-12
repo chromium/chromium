@@ -52,7 +52,7 @@ int MatchSubstring(const String& str, const char* pattern, wtf_size_t size) {
   int matches = 0;
   wtf_size_t start = 0;
   while (true) {
-    wtf_size_t pos = str.Find(pattern, start);
+    wtf_size_t pos = str.find(pattern, start);
     if (pos == kNotFound) {
       break;
     }
@@ -200,7 +200,7 @@ TEST_F(WebFrameSerializerSanitizationTest, RemoveIframeInHead) {
 
   // The iframe elements could only be found after body. Any iframes injected to
   // head should be removed.
-  EXPECT_GT(mhtml.Find("<iframe"), mhtml.Find("<body"));
+  EXPECT_GT(mhtml.find("<iframe"), mhtml.find("<body"));
 }
 
 // Regression test for crbug.com/678893, where in some cases serializing an

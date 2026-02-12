@@ -521,7 +521,7 @@ Value FunSubstringBefore::Evaluate(EvaluationContext& context) const {
   if (s2.empty())
     return "";
 
-  wtf_size_t i = s1.Find(s2);
+  wtf_size_t i = s1.find(s2);
 
   if (i == kNotFound)
     return "";
@@ -534,7 +534,7 @@ Value FunSubstringAfter::Evaluate(EvaluationContext& context) const {
   String s1 = Arg(0)->Evaluate(context).ToString();
   String s2 = Arg(1)->Evaluate(cloned_context).ToString();
 
-  wtf_size_t i = s1.Find(s2);
+  wtf_size_t i = s1.find(s2);
   if (i == kNotFound)
     return "";
 

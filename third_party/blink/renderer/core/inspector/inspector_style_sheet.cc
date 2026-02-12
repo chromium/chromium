@@ -135,7 +135,7 @@ String FindMagicComment(const String& content, const String& name) {
       continue;
     }
     if (kMultiline) {
-      closing_comment_pos = content.Find("*/", equal_sign_pos + 1);
+      closing_comment_pos = content.find("*/", equal_sign_pos + 1);
       if (closing_comment_pos == kNotFound) {
         return g_empty_string;
       }
@@ -151,7 +151,7 @@ String FindMagicComment(const String& content, const String& name) {
                      ? content.Substring(url_pos, closing_comment_pos - url_pos)
                      : content.Substring(url_pos);
 
-  wtf_size_t new_line = match.Find("\n");
+  wtf_size_t new_line = match.find("\n");
   if (new_line != kNotFound) {
     match = match.Substring(0, new_line);
   }

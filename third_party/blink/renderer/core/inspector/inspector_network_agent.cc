@@ -140,7 +140,7 @@ bool Matches(const String& url, const StringView& pattern) {
   Vector<StringView> parts = pattern.SplitSkippingEmpty('*');
   wtf_size_t pos = 0;
   for (const StringView& part : parts) {
-    pos = url.Find(part, pos);
+    pos = url.find(part, pos);
     if (pos == kNotFound)
       return false;
     pos += part.length();

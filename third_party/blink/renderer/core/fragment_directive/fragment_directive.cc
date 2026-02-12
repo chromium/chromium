@@ -33,7 +33,7 @@ KURL FragmentDirective::ConsumeFragmentDirective(const KURL& url) {
   // --> "#id". See https://github.com/WICG/scroll-to-text-fragment.
   String fragment = url.FragmentIdentifier().ToString();
   wtf_size_t start_pos =
-      fragment.Find(shared_highlighting::kFragmentsUrlDelimiter);
+      fragment.find(shared_highlighting::kFragmentsUrlDelimiter);
 
   last_navigation_had_fragment_directive_ = start_pos != kNotFound;
   fragment_directive_string_length_ = 0;

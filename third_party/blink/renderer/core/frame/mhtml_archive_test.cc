@@ -129,7 +129,7 @@ class MHTMLArchiveTest : public testing::Test {
       }
 
       line = builder.ToString();
-      wtf_size_t pos = line.Find(":");
+      wtf_size_t pos = line.find(":");
       if (pos == kNotFound)
         continue;
       String key = line.Substring(0, pos);
