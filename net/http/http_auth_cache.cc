@@ -7,6 +7,7 @@
 #include <list>
 #include <map>
 
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_macros.h"
@@ -233,8 +234,9 @@ bool HttpAuthCache::Entry::IsEqualForTesting(const Entry& other) const {
     return false;
   if (!credentials().Equals(other.credentials()))
     return false;
-  std::set<std::string> lhs_paths(paths_.begin(), paths_.end());
-  std::set<std::string> rhs_paths(other.paths_.begin(), other.paths_.end());
+  base::flat_set<std::string> lhs_paths(paths_.begin(), paths_.end());
+  base::flat_set<std::string> rhs_paths(other.paths_.begin(),
+                                        other.paths_.end());
   if (lhs_paths != rhs_paths)
     return false;
   return true;
