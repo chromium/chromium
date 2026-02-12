@@ -1126,6 +1126,8 @@ public class RootUiCoordinator
         initScrollCapture();
         mAdaptiveToolbarUiCoordinator.onFinishNativeInitialization();
 
+        EdgeToEdgeUtils.recordEligibilityForEveryStart(mActivity);
+
         if (mWindowAndroid.getInsetObserver() != null
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
                 && ChromeFeatureList.sEdgeToEdgeMonitorConfigurations.isEnabled()) {
@@ -2234,7 +2236,7 @@ public class RootUiCoordinator
     /** Setup drawing using Android Edge-to-Edge. */
     @CallSuper
     protected void initializeEdgeToEdgeController() {
-        boolean eligible = EdgeToEdgeUtils.recordEligibility(mActivity);
+        boolean eligible = EdgeToEdgeUtils.recordEligibilityOnCreate(mActivity);
 
         UmaSessionStats.registerSyntheticFieldTrial(
                 "EdgeToEdgeChinEligibility", eligible ? "Eligible" : "Not Eligible");

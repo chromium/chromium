@@ -98,8 +98,8 @@ public class EdgeToEdgeInstrumentationTest {
     // Declare the watcher before the app launches.
     HistogramWatcher mEligibleHistograms =
             HistogramWatcher.newBuilder()
-                    .expectBooleanRecord("Android.EdgeToEdge.Eligible", true)
-                    .expectNoRecords("Android.EdgeToEdge.IneligibilityReason")
+                    .expectBooleanRecord("Android.EdgeToEdge.Eligible2.OnCreateController", true)
+                    .expectNoRecords("Android.EdgeToEdge.IneligibilityReason2.OnCreateController")
                     .build();
 
     @Before
