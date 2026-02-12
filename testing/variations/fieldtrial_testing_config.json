@@ -18399,25 +18399,6 @@
             ]
         }
     ],
-    "OnDeviceNotificationContentDetectionModelv2": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledSyntheticOnly",
-                    "params": {
-                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "90",
-                        "ShowWarningsForSuspiciousNotificationsShouldSwapButtons": "false"
-                    },
-                    "enable_features": [
-                        "ShowWarningsForSuspiciousNotifications"
-                    ]
-                }
-            ]
-        }
-    ],
     "OnDeviceStorage": [
         {
             "platforms": [
